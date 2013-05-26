@@ -46,6 +46,16 @@ QGCToolBar::QGCToolBar(QWidget *parent) :
     // Do not load UI, wait for actions
 }
 
+void QGCToolBar::globalPositionChanged(UASInterface* uas, double lat, double lon, double alt, quint64 usec)
+{
+    Q_UNUSED(uas);
+    Q_UNUSED(lat);
+    Q_UNUSED(lon);
+    Q_UNUSED(usec);
+    altitudeMSL = alt;
+    changed = true;
+}
+
 void QGCToolBar::heartbeatTimeout(bool timeout, unsigned int ms)
 {
     // set timeout label visible
@@ -278,9 +288,10 @@ void QGCToolBar::setActiveUAS(UASInterface* active)
         disconnect(mav, SIGNAL(nameChanged(QString)), this, SLOT(updateName(QString)));
         disconnect(mav, SIGNAL(systemTypeSet(UASInterface*,uint)), this, SLOT(setSystemType(UASInterface*,uint)));
         disconnect(mav, SIGNAL(textMessageReceived(int,int,int,QString)), this, SLOT(receiveTextMessage(int,int,int,QString)));
-        disconnect(mav, SIGNAL(batteryChanged(UASInterface*,double,double,int)), this, SLOT(updateBatteryRemaining(UASInterface*,double,double,int)));
+        disconnect(mav, SIGNAL(batteryChanged(UASInterface*, double, double, double,int)), this, SLOT(updateBatteryRemaining(UASInterface*, double, double, double, int)));
         disconnect(mav, SIGNAL(armingChanged(bool)), this, SLOT(updateArmingState(bool)));
         disconnect(mav, SIGNAL(heartbeatTimeout(bool, unsigned int)), this, SLOT(heartbeatTimeout(bool,unsigned int)));
+        disconnect(active, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(globalPositionChanged(UASInterface*,double,double,double,quint64)));
         if (mav->getWaypointManager())
         {
             disconnect(mav->getWaypointManager(), SIGNAL(currentWaypointChanged(quint16)), this, SLOT(updateCurrentWaypoint(quint16)));
@@ -295,9 +306,10 @@ void QGCToolBar::setActiveUAS(UASInterface* active)
     connect(active, SIGNAL(nameChanged(QString)), this, SLOT(updateName(QString)));
     connect(active, SIGNAL(systemTypeSet(UASInterface*,uint)), this, SLOT(setSystemType(UASInterface*,uint)));
     connect(active, SIGNAL(textMessageReceived(int,int,int,QString)), this, SLOT(receiveTextMessage(int,int,int,QString)));
-    connect(active, SIGNAL(batteryChanged(UASInterface*,double,double,int)), this, SLOT(updateBatteryRemaining(UASInterface*,double,double,int)));
+    connect(active, SIGNAL(batteryChanged(UASInterface*, double, double, double, int)), this, SLOT(updateBatteryRemaining(UASInterface*, double, double, double, int)));
     connect(active, SIGNAL(armingChanged(bool)), this, SLOT(updateArmingState(bool)));
     connect(active, SIGNAL(heartbeatTimeout(bool, unsigned int)), this, SLOT(heartbeatTimeout(bool,unsigned int)));
+    connect(active, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(globalPositionChanged(UASInterface*,double,double,double,quint64)));
     if (active->getWaypointManager())
     {
         connect(active->getWaypointManager(), SIGNAL(currentWaypointChanged(quint16)), this, SLOT(updateCurrentWaypoint(quint16)));
@@ -314,6 +326,7 @@ void QGCToolBar::setActiveUAS(UASInterface* active)
     toolBarStateLabel->setText(mav->getShortState());
     toolBarTimeoutLabel->setStyleSheet(QString(""));
     toolBarTimeoutLabel->setText("");
+    toolBarDistLabel->setText("");
     setSystemType(mav, mav->getSystemType());
 }
 
@@ -333,7 +346,9 @@ void QGCToolBar::updateArmingState(bool armed)
 void QGCToolBar::updateView()
 {
     if (!changed) return;
-    toolBarDistLabel->setText(tr("%1 m").arg(wpDistance, 6, 'f', 2, '0'));
+    //toolBarDistLabel->setText(tr("%1 m").arg(wpDistance, 6, 'f', 2, '0'));
+    // XXX add also rel altitude
+    toolBarDistLabel->setText(QString("%1 m MSL").arg(altitudeMSL, 6, 'f', 2, '0'));
     toolBarWpLabel->setText(tr("WP%1").arg(wpId));
     toolBarBatteryBar->setValue(batteryPercent);
     if (batteryPercent < 30 && toolBarBatteryBar->value() >= 30) {
@@ -379,7 +394,7 @@ void QGCToolBar::updateCurrentWaypoint(quint16 id)
     wpId = id;
 }
 
-void QGCToolBar::updateBatteryRemaining(UASInterface* uas, double voltage, double percent, int seconds)
+void QGCToolBar::updateBatteryRemaining(UASInterface* uas, double voltage, double current, double percent, int seconds)
 {
     Q_UNUSED(uas);
     Q_UNUSED(seconds);

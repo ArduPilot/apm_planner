@@ -63,7 +63,7 @@ public slots:
     /** @brief Received system text message */
     void receiveTextMessage(int uasid, int componentid, int severity, QString text);
     /** @brief Update battery charge state */
-    void updateBatteryRemaining(UASInterface* uas, double voltage, double percent, int seconds);
+    void updateBatteryRemaining(UASInterface* uas, double voltage, double current, double percent, int seconds);
     /** @brief Update current waypoint */
     void updateCurrentWaypoint(quint16 id);
     /** @brief Update distance to current waypoint */
@@ -74,6 +74,8 @@ public slots:
     void updateView();
     /** @brief Update connection timeout time */
     void heartbeatTimeout(bool timeout, unsigned int ms);
+    /** @brief Update global position */
+    void globalPositionChanged(UASInterface* uas, double lat, double lon, double alt, quint64 usec);
     /** @brief Create or connect link */
     void connectLink(bool connect);
     /** @brief Clear status string */
@@ -106,6 +108,8 @@ protected:
     float batteryVoltage;
     int wpId;
     double wpDistance;
+    float altitudeMSL;
+    float altitudeRel;
     QString state;
     QString mode;
     QString systemName;
