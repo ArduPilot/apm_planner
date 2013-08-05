@@ -20,18 +20,21 @@
 
 # Qt configuration
 CONFIG += qt \
-    thread \
-    console
-#    serialport
+    thread
 
 QT += network \
     opengl \
     svg \
     xml \
-    phonon \
     webkit \
     sql \
     declarative
+
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT +=  multimedia
+} else {
+    QT += phonon
+}
 
 TEMPLATE = app
 TARGET = apmplanner2
@@ -150,8 +153,13 @@ DEPENDPATH += . \
 
 INCLUDEPATH += .
 
+greaterThan(QT_MAJOR_VERSION, 4) {
 # Include serial port library (QSerialPort)
-include(libs/serialport/apmserial.pri)
+    QT += serialport
+} else {
+    include(libs/serialport/apmserial.pri)
+}
+
 
 ## Serial port detection (ripped-off from qextserialport library)
 #macx|macx-g++|macx-g++42::SOURCES += libs/qextserialport/qextserialenumerator_osx.cpp
@@ -811,10 +819,10 @@ OTHER_FILES += \
     qml/resources/apmplanner/toolbar/connect.png \
     qml/resources/apmplanner/toolbar/flightplanner.png \
     qml/resources/apmplanner/toolbar/helpwizard.png \
-    qml/resources/apmplanner/toolbar/softwareconfig.png \
+    qml/resources/apmplanner/toolbar/light_initialsetup_icon.png \
     qml/resources/apmplanner/toolbar/terminal.png \
     qml/resources/apmplanner/toolbar/simulation.png \
-    qml/resources/apmplanner/toolbar/hardwareconfig.png \
+    qml/resources/apmplanner/toolbar/light_tuningconfig_icon.png \
     qml/resources/apmplanner/toolbar/flightdata.png \
     qml/resources/apmplanner/toolbar/disconnect.png \
     qml/resources/apmplanner/toolbar/donate.png \

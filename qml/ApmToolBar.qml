@@ -84,19 +84,19 @@ Rectangle {
         }
 
         Button {
-            id: hardwareConfigView
-            label: "HARDWARE"
-            image: "./resources/apmplanner/toolbar/hardwareconfig.png"
-            margins: 8
-            onClicked: globalObj.triggerHardwareView()
+            id: initialSetupView
+            label: "INITIAL SETUP"
+            image: "./resources/apmplanner/toolbar/light_initialsetup_icon.png"
+//            margins: 8
+            onClicked: globalObj.triggerInitialSetupView()
         }
 
         Button {
-            id: softwareConfigView
-            label: "SOFTWARE"
-            image: "./resources/apmplanner/toolbar/softwareconfig.png"
-            margins: 8
-            onClicked: globalObj.triggerSoftwareView()
+            id: configTuningView
+            label: "CONFIG/TUNING"
+            image: "./resources/apmplanner/toolbar/light_tuningconfig_icon.png"
+//            margins: 8
+            onClicked: globalObj.triggerConfigTuningView()
         }
 
         Button {

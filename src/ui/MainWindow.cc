@@ -223,8 +223,8 @@ MainWindow::MainWindow(QWidget *parent):
     APMToolBar *apmToolBar = new APMToolBar(this);
     apmToolBar->setFlightViewAction(ui.actionFlightView);
     apmToolBar->setFlightPlanViewAction(ui.actionMissionView);
-    apmToolBar->setHardwareViewAction(ui.actionHardwareConfig);
-    apmToolBar->setSoftwareViewAction(ui.actionSoftwareConfig);
+    apmToolBar->setInitialSetupViewAction(ui.actionHardwareConfig);
+    apmToolBar->setConfigTuningViewAction(ui.actionSoftwareConfig);
     apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
     apmToolBar->setTerminalViewAction(ui.actionTerminalView);
 

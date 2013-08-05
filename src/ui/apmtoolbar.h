@@ -16,8 +16,8 @@ public:
 
     void setFlightViewAction(QAction *action);
     void setFlightPlanViewAction(QAction *action);
-    void setHardwareViewAction(QAction *action);
-    void setSoftwareViewAction(QAction *action);
+    void setInitialSetupViewAction(QAction *action);
+    void setConfigTuningViewAction(QAction *action);
     void setSimulationViewAction(QAction *action);
     void setTerminalViewAction(QAction *action);
     void setConnectMAVAction(QAction *action);
@@ -25,8 +25,8 @@ public:
 signals:
     void triggerFlightView();
     void triggerFlightPlanView();
-    void triggerHardwareView();
-    void triggerSoftwareView();
+    void triggerInitialSetupView();
+    void triggerConfigTuningView();
     void triggerSimulationView();
     void triggerTerminalView();
 
@@ -35,8 +35,8 @@ signals:
 public slots:
     void selectFlightView();
     void selectFlightPlanView();
-    void selectHardwareView();
-    void selectSoftwareView();
+    void selectInitialSetupView();
+    void selectConfigTuningView();
     void selectSimulationView();
     void selectTerminalView();
 

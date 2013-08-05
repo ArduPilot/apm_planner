@@ -4,7 +4,7 @@
 #include "LinkManager.h"
 #include "MainWindow.h"
 
-#include "apmtoolbar.h"
+#include "apmtoolbar.h"®
 
 APMToolBar::APMToolBar(QWidget *parent):
     QDeclarativeView(parent), m_uas(0)
@@ -64,14 +64,14 @@ void APMToolBar::setFlightPlanViewAction(QAction *action)
     connect(this, SIGNAL(triggerFlightPlanView()), action, SIGNAL(triggered()));
 }
 
-void APMToolBar::setHardwareViewAction(QAction *action)
+void APMToolBar::setInitialSetupViewAction(QAction *action)
 {
-    connect(this, SIGNAL(triggerHardwareView()), action, SIGNAL(triggered()));
+    connect(this, SIGNAL(triggerInitialSetupView()), action, SIGNAL(triggered()));
 }
 
-void APMToolBar::setSoftwareViewAction(QAction *action)
+void APMToolBar::setConfigTuningViewAction(QAction *action)
 {
-    connect(this, SIGNAL(triggerSoftwareView()), action, SIGNAL(triggered()));
+    connect(this, SIGNAL(triggerConfigTuningView()), action, SIGNAL(triggered()));
 }
 
 void APMToolBar::setSimulationViewAction(QAction *action)
@@ -101,16 +101,16 @@ void APMToolBar::selectFlightPlanView()
     emit triggerFlightPlanView();
 }
 
-void APMToolBar::selectHardwareView()
+void APMToolBar::selectInitialSetupView()
 {
-    qDebug() << "APMToolBar: selectHardwareView";
-    emit triggerHardwareView();
+    qDebug() << "APMToolBar: selectInitialSetupView";
+    emit triggerInitialSetupView();
 }
 
-void APMToolBar::selectSoftwareView()
+void APMToolBar::selectConfigTuningView()
 {
-    qDebug() << "APMToolBar: selectSoftwareView";
-    emit triggerSoftwareView();
+    qDebug() << "APMToolBar: selectConfigTuningView";
+    emit triggerConfigTuningView();
 }
 
 void APMToolBar::selectSimulationView()

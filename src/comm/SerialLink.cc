@@ -12,6 +12,9 @@
 #include <QDebug>
 #include <QSettings>
 #include <QMutexLocker>
+//#include <QtSerialPort/QSerialPort>
+//#include <QtSerialPort/QSerialPortInfo>
+
 #include <qserialport.h>
 #include <qserialportinfo.h>
 #include "SerialLink.h"
