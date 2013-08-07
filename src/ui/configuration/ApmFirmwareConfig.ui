@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>868</width>
+    <width>1046</width>
     <height>684</height>
    </rect>
   </property>
@@ -504,6 +504,84 @@
    </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:large; font-weight:600; color:#e90000;&quot;&gt;WARNING:&lt;/span&gt;&lt;span style=&quot; font-size:large; font-weight:600; color:#ffaa00;&quot;&gt; Only install BETA firmware if you are an experienced tester.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="connectButton">
+   <property name="geometry">
+    <rect>
+     <x>842</x>
+     <y>64</y>
+     <width>131</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+     <horstretch>100</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>131</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>CONNECT</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="linkComboBox">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>148</y>
+     <width>123</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>123</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>220</width>
+     <height>32</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="disconnectButton">
+   <property name="geometry">
+    <rect>
+     <x>842</x>
+     <y>93</y>
+     <width>131</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>131</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>DISCONNECT</string>
    </property>
   </widget>
  </widget>

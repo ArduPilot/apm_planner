@@ -11,6 +11,7 @@
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
+    m_port=0;
     //firmwareStatus = 0;
     m_betaFirmwareChecked = false;
     m_tempFirmwareFile=0;
@@ -40,6 +41,8 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     ui.textBrowser->setVisible(false);
     connect(ui.showOutputCheckBox,SIGNAL(clicked(bool)),ui.textBrowser,SLOT(setShown(bool)));
 
+    connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+
     /*addBetaLabel(ui.roverPushButton);
     addBetaLabel(ui.planePushButton);
     addBetaLabel(ui.copterPushButton);
@@ -50,7 +53,30 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     addBetaLabel(ui.triPushButton);
     addBetaLabel(ui.y6PushButton);*/
 
+    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+        QStringList list;
+        list << info.portName()
+             << info.description()
+             << info.manufacturer()
+             << info.systemLocation()
+             << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
+             << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
+
+        ui.linkComboBox->insertItem(0,list.first(), list);
+        qDebug() << "Inserting " << list.first();
+    }
+
 }
+void ApmFirmwareConfig::connectButtonClicked()
+{
+
+}
+
+void ApmFirmwareConfig::disconnectButtonClicked()
+{
+
+}
+
 void ApmFirmwareConfig::hideBetaLabels()
 {
     for (int i=0;i<m_betaButtonLabelList.size();i++)
@@ -299,14 +325,34 @@ void ApmFirmwareConfig::downloadFinished()
 
     qDebug() << "Attempting to reset port";
 
-    QSerialPort port;
 
-    port.setPortName(m_detectedComPort);
-    port.open(QIODevice::ReadWrite);
-    port.setDataTerminalReady(true);
-    port.waitForBytesWritten(250);
-    port.setDataTerminalReady(false);
-    port.close();
+    m_port= new QSerialPort(this);
+    m_port->setPortName(m_settings.name);
+    if (m_port->open(QIODevice::ReadWrite)) {
+        if (m_port->setBaudRate(m_settings.baudRate)
+                && m_port->setDataBits(m_settings.dataBits)
+                && m_port->setParity(m_settings.parity)
+                && m_port->setStopBits(m_settings.stopBits)
+                && m_port->setFlowControl(m_settings.flowControl)) {
+            qDebug() << "Open Terminal Console Serial Port";
+            m_port->setDataTerminalReady(true);
+            m_port->waitForBytesWritten(250);
+            m_port->setDataTerminalReady(false);
+            m_port->close();
+        } else {
+            m_port->close();
+            QMessageBox::critical(this, tr("Error"), m_port->errorString());
+            m_port->deleteLater();
+            m_port=0;
+            return;
+        }
+    } else {
+        QMessageBox::critical(this, tr("Error"), m_port->errorString());
+        m_port->deleteLater();
+        m_port=0;
+        return;
+    }
+
 
     QString avrdudeExecutable;
     QStringList stringList;
@@ -314,14 +360,14 @@ void ApmFirmwareConfig::downloadFinished()
     ui.statusLabel->setText(tr("Flashing"));
 #ifdef Q_OS_WIN
     stringList = QStringList() << "-Cavrdude/avrdude.conf" << "-pm2560"
-                               << "-cstk500" << QString("-P").append(m_detectedComPort)
+                               << "-cstk500" << QString("-P").append(m_settings.name)
                                << QString("-Uflash:w:").append(m_tempFirmwareFile->fileName()).append(":i");
 
     avrdudeExecutable = "avrdude/avrdude.exe";
 #endif
 #ifdef Q_OS_MAC
     stringList = QStringList() << "-v" << "-pm2560"
-                                           << "-cstk500" << QString("-P/dev/cu.").append(m_detectedComPort)
+                                           << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
                                            << QString("-Uflash:w:").append(m_tempFirmwareFile->fileName()).append(":i");
     avrdudeExecutable = "/usr/local/CrossPack-AVR/bin/avrdude";
 #endif
@@ -344,7 +390,8 @@ void ApmFirmwareConfig::flashButtonClicked()
     QPushButton *senderbtn = qobject_cast<QPushButton*>(sender());
     if (m_buttonToUrlMap.contains(senderbtn))
     {
-        bool foundconnected = false;
+
+        /*bool foundconnected = false;
         for (int i=0;i<LinkManager::instance()->getLinks().size();i++)
         {
             if (LinkManager::instance()->getLinks()[i]->isConnected())
@@ -372,7 +419,34 @@ void ApmFirmwareConfig::flashButtonClicked()
         {
             QMessageBox::information(0,tr("Error"),tr("You must be connected to a MAV over serial link to flash firmware. Please connect to a MAV then try again"));
             return;
+        }*/
+        //Try to connect before downloading:
+
+        m_port = new QSerialPort(this);
+        m_port->setPortName(m_settings.name);
+        if (m_port->open(QIODevice::ReadWrite)) {
+            if (m_port->setBaudRate(m_settings.baudRate)
+                    && m_port->setDataBits(m_settings.dataBits)
+                    && m_port->setParity(m_settings.parity)
+                    && m_port->setStopBits(m_settings.stopBits)
+                    && m_port->setFlowControl(m_settings.flowControl)) {
+                qDebug() << "Open Terminal Console Serial Port";
+                m_port->close();
+            } else {
+                m_port->close();
+                QMessageBox::critical(this, tr("Error"), m_port->errorString());
+                m_port->deleteLater();
+                m_port=0;
+                return;
+            }
+        } else {
+            QMessageBox::critical(this, tr("Error"), m_port->errorString());
+            m_port->deleteLater();
+            m_port=0;
+            return;
         }
+        m_port->deleteLater();
+        m_port= 0;
 
         qDebug() << "Go download:" << m_buttonToUrlMap[senderbtn];
         QNetworkReply *reply = m_networkManager->get(QNetworkRequest(QUrl(m_buttonToUrlMap[senderbtn])));
@@ -383,6 +457,11 @@ void ApmFirmwareConfig::flashButtonClicked()
         connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
         ui.statusLabel->setText("Downloading");
     }
+}
+void ApmFirmwareConfig::setLink(int index)
+{
+    m_settings.name = ui.linkComboBox->currentText();
+    qDebug() << "Changed Link to:" << m_settings.name;
 }
 
 void ApmFirmwareConfig::firmwareListError(QNetworkReply::NetworkError error)

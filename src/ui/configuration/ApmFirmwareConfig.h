@@ -14,6 +14,7 @@
 #include <QScrollBar>
 
 #include "qserialport.h"
+#include "SerialSettingsDialog.h"
 #include "ui_ApmFirmwareConfig.h"
 
 class ApmFirmwareConfig : public QWidget
@@ -35,7 +36,12 @@ private slots:
     void firmwareDownloadProgress(qint64 received,qint64 total);
     void requestFirmwares();
     void requestBetaFirmwares();
+    void connectButtonClicked();
+    void disconnectButtonClicked();
+    void setLink(int index);
 private:
+    SerialSettings m_settings;
+    QSerialPort *m_port;
     void addBetaLabel(QWidget *parent);
     void hideBetaLabels();
     void showBetaLabels();
