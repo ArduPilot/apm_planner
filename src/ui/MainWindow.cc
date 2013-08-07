@@ -314,6 +314,7 @@ MainWindow::MainWindow(QWidget *parent):
     connect(&windowNameUpdateTimer, SIGNAL(timeout()), this, SLOT(configureWindowName()));
     windowNameUpdateTimer.start(15000);
     emit initStatusChanged("Done.");
+
     show();
 }
 
@@ -1331,7 +1332,8 @@ void MainWindow::loadStyle(QGC_MAINWINDOW_STYLE style)
         // take no action
         // Only if a style was set, remove it.
         if (style != currentStyle) {
-            qApp->setStyleSheet("");
+            qApp->setStyleSheet("QMainWindow::separator { background: rgb(0, 0, 0); width: 5px; height: 5px;}");
+            //qApp->setStyleSheet("");
             showInfoMessage(tr("Please restart QGroundControl"), tr("Please restart QGroundControl to switch to fully native look and feel. Currently you have loaded Qt's plastique style."));
         }
     }

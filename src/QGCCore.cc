@@ -192,6 +192,7 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
             QTimer::singleShot(200, mainWindow, SLOT(close()));
         }
     }
+    qApp->setStyleSheet("QMainWindow::separator { background: rgb(0, 0, 0); width: 5px; height: 5px;} QMainWindow::separator:hover { background: rgb(0, 0, 255);}");
 
 }
 
