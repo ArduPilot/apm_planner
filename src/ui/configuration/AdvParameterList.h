@@ -15,10 +15,14 @@ public:
     ~AdvParameterList();
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
+    void refreshButtonClicked();
+    void writeButtonClicked();
+    void tableWidgetItemChanged(QTableWidgetItem* item);
 private:
     QMap<QString,QTableWidgetItem*> m_paramValueMap;
     QMap<QString,QString> m_paramToNameMap;
     QMap<QString,QString> m_paramToDescriptionMap;
+    QMap<QString,double> m_modifiedParamMap;
     Ui::AdvParameterList ui;
 };
 
