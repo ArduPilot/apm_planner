@@ -104,11 +104,11 @@ MainWindow* MainWindow::instance(QSplashScreen* screen)
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
     currentView(VIEW_FLIGHT),
-    currentStyle(QGC_MAINWINDOW_STYLE_INDOOR),
+    currentStyle(QGC_MAINWINDOW_STYLE_NATIVE),
     aboutToCloseFlag(false),
     changingViewsFlag(false),
     centerStackActionGroup(new QActionGroup(this)),
-    styleFileName(QCoreApplication::applicationDirPath() + "/style-indoor.css"),
+    styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
     autoReconnect(false),
     lowPowerMode(false)
 {
@@ -152,6 +152,11 @@ MainWindow::MainWindow(QWidget *parent):
     // Setup user interface
     ui.setupUi(this);
     hide();
+
+    ui.actionSimulate->setVisible(false);
+
+
+
 
     // We only need this menu if we have more than one system
     //    ui.menuConnected_Systems->setEnabled(false);
@@ -1372,7 +1377,7 @@ void MainWindow::reloadStylesheet()
     QFile* styleSheet = new QFile(styleFileName);
     if (!styleSheet->exists())
     {
-        styleSheet = new QFile(":files/styles/style-indoor.css");
+        styleSheet = new QFile(":files/styles/style-outdoor.css");
     }
     if (styleSheet->open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -1575,6 +1580,17 @@ void MainWindow::connectCommonActions()
     connect(ui.actionJoystickSettings, SIGNAL(triggered()), this, SLOT(configure()));
     // Application Settings
     connect(ui.actionSettings, SIGNAL(triggered()), this, SLOT(showSettings()));
+
+    if (isAdvancedMode)
+    {
+        ui.menuPerspectives->menuAction()->setVisible(true);
+        ui.menuTools->menuAction()->setVisible(true);
+    }
+    else
+    {
+        ui.menuPerspectives->menuAction()->setVisible(false);
+        ui.menuTools->menuAction()->setVisible(false);
+    }
 }
 
 void MainWindow::showHelp()
@@ -2121,6 +2137,8 @@ void MainWindow::setAdvancedMode()
             dockToTitleBarMap[i.key()] = widget;
 
         }
+        ui.menuPerspectives->menuAction()->setVisible(true);
+        ui.menuTools->menuAction()->setVisible(true);
     }
     else
     {
@@ -2134,6 +2152,9 @@ void MainWindow::setAdvancedMode()
             i.key()->setTitleBarWidget(i.value());
             dockToTitleBarMap[i.key()] = widget;
         }
+        ui.menuPerspectives->menuAction()->setVisible(false);
+        ui.menuTools->menuAction()->setVisible(false);
+
     }
 }
 
