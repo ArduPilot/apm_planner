@@ -22,51 +22,32 @@
 #include "QGC.h"
 #include <MG.h>
 
-SerialLink::SerialLink(QString portname, int baudRate, bool hardwareFlowControl, bool parity,
-                       int dataBits, int stopBits) :
+SerialLink::SerialLink() :
     m_bytesRead(0),
     m_port(NULL),
+    m_baud(QSerialPort::Baud57600),
+    m_dataBits(QSerialPort::Data8),
+    m_flowControl(QSerialPort::NoFlowControl),
+    m_stopBits(QSerialPort::OneStop),
+    m_parity(QSerialPort::NoParity),
+    m_portName(""),
     m_stopp(false),
     m_reqReset(false)
 {
-    qDebug() << "create SerialLink " << portname << baudRate << hardwareFlowControl
-             << parity << dataBits << stopBits;
-    // Setup settings
-    m_portName = portname.trimmed();
+    qDebug() << "create SerialLink: Load Previous Settings ";
 
-    if (m_portName == "" && getCurrentPorts().size() > 0)
-    {
+    loadSettings();
+    m_id = getNextLinkId();
+
+    if (m_portName.length() == 0) {
+        // Create a new serial link
+        getCurrentPorts();
         m_portName = m_ports.first().trimmed();
     }
 
-    qDebug() << "m_portName " << m_portName;
+    qDebug() <<  m_portName << m_baud << m_flowControl
+             << m_parity << m_dataBits << m_stopBits;
 
-    // Set unique ID and add link to the list of links
-    m_id = getNextLinkId();
-
-    m_baud = baudRate;
-
-    if (hardwareFlowControl)
-    {
-        m_flowControl = QSerialPort::HardwareControl;
-    }
-    else
-    {
-        m_flowControl = QSerialPort::NoFlowControl;
-    }
-    if (parity)
-    {
-        m_parity = QSerialPort::EvenParity;
-    }
-    else
-    {
-        m_parity = QSerialPort::NoParity;
-    }
-
-    m_dataBits = dataBits;
-    m_stopBits = stopBits;
-
-    loadSettings();
 }
 void SerialLink::requestReset()
 {
@@ -409,8 +390,8 @@ bool SerialLink::hardwareConnect()
     }
 
     QObject::connect(m_port,SIGNAL(aboutToClose()),this,SIGNAL(disconnected()));
-    QObject::connect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
-                     this, SLOT(linkError(QSerialPort::SerialPortError)));
+//    QObject::connect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
+//                     this, SLOT(linkError(QSerialPort::SerialPortError)));
 
 //    port->setCommTimeouts(QSerialPort::CtScheme_NonBlockingRead);
     m_connectionStartTime = MG::TIME::getGroundTimeNow();

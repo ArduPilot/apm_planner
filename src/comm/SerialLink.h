@@ -54,12 +54,7 @@ class SerialLink : public SerialLinkInterface
     //Q_INTERFACES(SerialLinkInterface:LinkInterface)
 
 public:
-    SerialLink(QString portname = "",
-               int baudrate=57600,
-               bool flow=false,
-               bool parity=false,
-               int dataBits=8,
-               int stopBits=1);
+    SerialLink();
     ~SerialLink();
 
     static const int poll_interval = SERIAL_POLL_INTERVAL; ///< Polling interval, defined in configuration.h
@@ -153,7 +148,6 @@ protected:
     int m_stopBits;
     int m_parity;
     QString m_portName;
-//    QString m_name;
     int m_timeout;
     int m_id;
 

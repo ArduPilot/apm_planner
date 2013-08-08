@@ -218,6 +218,8 @@ void SerialConfigurationWindow::setupPortList()
 {
     if (!link) return;
 
+    qDebug() << "Link is " << link->isConnected();
+
     // Get the ports available on this system
     QList<QString> ports = link->getCurrentPorts();
 
