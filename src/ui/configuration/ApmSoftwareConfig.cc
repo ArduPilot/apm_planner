@@ -288,6 +288,12 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                             }
                                         }
                                     }
+                                    QString units = "";
+                                    if (fieldmap.contains("Units"))
+                                    {
+                                        units = fieldmap["Units"];
+                                    }
+
                                     if (tab == "Advanced")
                                     {
                                         advarraycount++;
@@ -316,7 +322,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                             {
                                                 m_advancedParamConfig->addCombo(humanname,docs,name,valuelist);
                                             }
-                                            m_advParameterList->setParameterMetaData(name,humanname,docs);
+                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }
                                     }
                                     else if (fieldmap.size() > 0)
@@ -347,7 +353,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                             {
                                                 m_advancedParamConfig->addRange(humanname,docs,name,min,max);
                                             }
-                                            m_advParameterList->setParameterMetaData(name,humanname,docs);
+                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }
                                     }
 
