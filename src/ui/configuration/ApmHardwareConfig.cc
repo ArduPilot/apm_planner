@@ -179,9 +179,11 @@ void ApmHardwareConfig::activeUASSet(UASInterface *uas)
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
     }
-    ui.firmwareButton->setVisible(true);
+    ui.firmwareButton->setVisible(false);
+    ui.radio3DRButton->setVisible(false);
+    ui.antennaTrackerButton->setVisible(false);
     ui.manditoryHardware->setVisible(true);
-    ui.manditoryHardware->setChecked(true);
+    ui.manditoryHardware->setChecked(false);
     ui.optionalHardwareButton->setVisible(true);
-    ui.optionalHardwareButton->setChecked(true);
+    ui.optionalHardwareButton->setChecked(false);
 }
