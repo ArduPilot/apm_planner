@@ -3,7 +3,7 @@
 #include <QGraphicsObject>
 #include "LinkManager.h"
 #include "MainWindow.h"
-
+#include "SerialLink.h"
 #include "apmtoolbar.h"®
 
 APMToolBar::APMToolBar(QWidget *parent):
@@ -189,6 +189,11 @@ void APMToolBar::showConnectionDialog()
 
 void APMToolBar::updateLinkDisplay(LinkInterface* newLink)
 {
+    if (!qobject_cast<SerialLink*>(newLink))
+    {
+        //We only want to operate on serial links
+        return;
+    }
     qDebug() << "APMToolBar: updateLinkDisplay";
     QObject *object = rootObject();
 

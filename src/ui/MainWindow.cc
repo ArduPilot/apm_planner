@@ -1587,11 +1587,13 @@ void MainWindow::connectCommonActions()
     {
         ui.menuPerspectives->menuAction()->setVisible(true);
         ui.menuTools->menuAction()->setVisible(true);
+        ui.menuNetwork->menuAction()->setVisible(true);
     }
     else
     {
         ui.menuPerspectives->menuAction()->setVisible(false);
         ui.menuTools->menuAction()->setVisible(false);
+        ui.menuNetwork->menuAction()->setVisible(false);
     }
 }
 
@@ -2141,6 +2143,7 @@ void MainWindow::setAdvancedMode()
         }
         ui.menuPerspectives->menuAction()->setVisible(true);
         ui.menuTools->menuAction()->setVisible(true);
+        ui.menuNetwork->menuAction()->setVisible(true);
     }
     else
     {
@@ -2155,6 +2158,7 @@ void MainWindow::setAdvancedMode()
             dockToTitleBarMap[i.key()] = widget;
         }
         ui.menuPerspectives->menuAction()->setVisible(false);
+        ui.menuNetwork->menuAction()->setVisible(false);
         ui.menuTools->menuAction()->setVisible(false);
 
     }
