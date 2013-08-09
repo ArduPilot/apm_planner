@@ -156,6 +156,7 @@
         <file>files/images/firmware/X8_on.png</file>
         <file>files/images/firmware/Y6_off.png</file>
         <file>files/images/firmware/Y6_on.png</file>
+        <file>files/images/mavs/frames-h.png</file>
     </qresource>
     <qresource prefix="/general">
         <file alias="vera.ttf">files/styles/Vera.ttf</file>

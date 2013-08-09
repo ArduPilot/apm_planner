@@ -44,6 +44,7 @@ FrameTypeConfig::FrameTypeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     connect(ui.plusRadioButton,SIGNAL(clicked()),this,SLOT(plusFrameSelected()));
     connect(ui.xRadioButton,SIGNAL(clicked()),this,SLOT(xFrameSelected()));
     connect(ui.vRadioButton,SIGNAL(clicked()),this,SLOT(vFrameSelected()));
+    connect(ui.hRadioButton,SIGNAL(clicked()),this,SLOT(hFrameSelected()));
     initConnections();
 }
 
@@ -80,6 +81,15 @@ void FrameTypeConfig::xFrameSelected()
         return;
     }
     m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(1));
+}
+void FrameTypeConfig::hFrameSelected()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(3));
 }
 
 void FrameTypeConfig::plusFrameSelected()

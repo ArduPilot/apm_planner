@@ -50,6 +50,7 @@ private slots:
     void xFrameSelected();
     void plusFrameSelected();
     void vFrameSelected();
+    void hFrameSelected();
 private:
     Ui::FrameTypeConfig ui;
 };

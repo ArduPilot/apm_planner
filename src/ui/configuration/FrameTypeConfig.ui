@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>553</width>
-    <height>497</height>
+    <width>1145</width>
+    <height>508</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,9 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QRadioButton" name="plusRadioButton">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
        <property name="text">
         <string>'Plus' Style</string>
        </property>
@@ -45,6 +48,9 @@
      </item>
      <item>
       <widget class="QRadioButton" name="xRadioButton">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
        <property name="text">
         <string>'X' Style</string>
        </property>
@@ -73,7 +79,24 @@
        </property>
        <property name="icon">
         <iconset resource="../../../qgroundcontrol.qrc">
-         <normaloff>:/files/images/mavs/frames-05.png</normaloff>:/files/images/mavs/frames-05.png</iconset>
+         <normaloff>:/files/images/firmware/quady.png</normaloff>:/files/images/firmware/quady.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>300</width>
+         <height>120</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="hRadioButton">
+       <property name="text">
+        <string>'H' Style</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../qgroundcontrol.qrc">
+         <normaloff>:/files/images/mavs/frames-h.png</normaloff>:/files/images/mavs/frames-h.png</iconset>
        </property>
        <property name="iconSize">
         <size>
