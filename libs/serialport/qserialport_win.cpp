@@ -248,6 +248,8 @@ bool QSerialPortPrivate::open(QIODevice::OpenMode mode)
     }
 
     currentDcb = restoredDcb;
+    currentDcb.BaudRate = 115200;
+    currentDcb.ByteSize = 8;
     currentDcb.fBinary = TRUE;
     currentDcb.fInX = FALSE;
     currentDcb.fOutX = FALSE;
