@@ -100,7 +100,7 @@
         </property>
         <property name="icon">
          <iconset resource="../../../qgroundcontrol.qrc">
-          <normaloff>:/files/images/firmware/quadplus.png</normaloff>:/files/images/firmware/quadplus.png</iconset>
+          <normaloff>:/files/images/firmware/quadx.png</normaloff>:/files/images/firmware/quadx.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -315,7 +315,7 @@
         </property>
         <property name="icon">
          <iconset resource="../../../qgroundcontrol.qrc">
-          <normaloff>:/files/images/firmware/octaplus.png</normaloff>:/files/images/firmware/octaplus.png</iconset>
+          <normaloff>:/files/images/firmware/octax.png</normaloff>:/files/images/firmware/octax.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -401,7 +401,7 @@
         </property>
         <property name="icon">
          <iconset resource="../../../qgroundcontrol.qrc">
-          <normaloff>:/files/images/firmware/hexaplus.png</normaloff>:/files/images/firmware/hexaplus.png</iconset>
+          <normaloff>:/files/images/firmware/hexax.png</normaloff>:/files/images/firmware/hexax.png</iconset>
         </property>
         <property name="iconSize">
          <size>

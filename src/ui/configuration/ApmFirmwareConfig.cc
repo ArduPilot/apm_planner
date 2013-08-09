@@ -15,6 +15,8 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     //firmwareStatus = 0;
     m_betaFirmwareChecked = false;
     m_tempFirmwareFile=0;
+    ui.progressBar->setVisible(false);
+    ui.warningLabel->setVisible(false);
     //
 
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
@@ -243,6 +245,7 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
     //qDebug() << "Upload finished!" << QString::number(status);
     m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
     m_tempFirmwareFile = 0;
+    ui.progressBar->setVisible(false);
 
 }
 void ApmFirmwareConfig::firmwareProcessReadyRead()
@@ -447,6 +450,7 @@ void ApmFirmwareConfig::flashButtonClicked()
         }
         m_port->deleteLater();
         m_port= 0;
+        ui.progressBar->setVisible(true);
 
         qDebug() << "Go download:" << m_buttonToUrlMap[senderbtn];
         QNetworkReply *reply = m_networkManager->get(QNetworkRequest(QUrl(m_buttonToUrlMap[senderbtn])));
