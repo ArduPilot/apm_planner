@@ -1,10 +1,10 @@
-#include <qdebug.h>
+#include "QsLog.h"
+#include "XbeeLink.h"
+
 #include <QThread>
 #include <QMutex>
 #include <MG.h>
 #include <configuration.h>
-#include<string>
-#include "XbeeLink.h"
 
 XbeeLink::XbeeLink(QString portName, int baudRate) : 
 	m_xbeeCon(NULL), m_portName(NULL), m_portNameLength(0), m_baudRate(baudRate), m_connected(false), m_id(-1),
@@ -173,7 +173,7 @@ bool XbeeLink::hardwareConnect()
 	if (xbee_setupAPI(this->m_portName,this->m_baudRate,0x2B,0x3E8) == -1) 
 		{
 		  /* oh no... it failed */
-			qDebug() <<"xbee_setup() failed...\n";
+            QLOG_WARN() <<"xbee_setup() failed...\n";
 			emit tryConnectEnd(true);
 			return false;
 		}
@@ -242,7 +242,7 @@ void XbeeLink::readBytes()
 		{
 			data.push_back(xbeePkt->data[i]);
 		}
-		qDebug() << data;
+        QLOG_TRACE() << data;
 		emit bytesReceived(this,data);
 	}
 }

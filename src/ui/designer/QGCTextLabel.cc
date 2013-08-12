@@ -1,10 +1,11 @@
-#include <QDockWidget>
-
 #include "QGCTextLabel.h"
 #include "ui_QGCTextLabel.h"
-
+#include "QsLog.h"
 #include "MAVLinkProtocol.h"
 #include "UASManager.h"
+
+#include <QDockWidget>
+
 
 QGCTextLabel::QGCTextLabel(QWidget *parent) :
     QGCToolWidgetItem("Command Button", parent),
@@ -104,7 +105,7 @@ void QGCTextLabel::endEditMode()
 
 void QGCTextLabel::writeSettings(QSettings& settings)
 {
-    qDebug() << "COMMAND BUTTON WRITING SETTINGS";
+    QLOG_DEBUG() << "COMMAND BUTTON WRITING SETTINGS";
     settings.setValue("TYPE", "COMMANDBUTTON");
     settings.setValue("QGC_COMMAND_BUTTON_DESCRIPTION", ui->nameLabel->text());
 

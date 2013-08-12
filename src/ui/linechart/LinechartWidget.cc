@@ -29,7 +29,16 @@ This file is part of the PIXHAWK project
  *
  */
 
-#include <QDebug>
+
+#include "LinechartWidget.h"
+#include "QsLog.h"
+#include "LinechartPlot.h"
+#include "LogCompressor.h"
+#include "MainWindow.h"
+#include "QGC.h"
+#include "MG.h"
+
+
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QGridLayout>
@@ -45,14 +54,6 @@ This file is part of the PIXHAWK project
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QMessageBox>
-
-#include "LinechartWidget.h"
-#include "LinechartPlot.h"
-#include "LogCompressor.h"
-#include "MainWindow.h"
-#include "QGC.h"
-#include "MG.h"
-
 
 LinechartWidget::LinechartWidget(int systemid, QWidget *parent) : QWidget(parent),
     sysid(systemid),
@@ -564,7 +565,7 @@ void LinechartWidget::startLogging()
         fileName = QFileDialog::getSaveFileName(this, tr("Specify log file name"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), tr("Logfile (*.log);;"));
     }
 
-    qDebug() << "SAVE FILE" << fileName;
+    QLOG_DEBUG() << "SAVE FILE" << fileName;
 
     // Check if the user did not abort the file save dialog
     if (!abort && fileName != "") {
@@ -697,7 +698,7 @@ void LinechartWidget::addCurve(const QString& curve, const QString& unit)
     unitLabel = new QLabel(this);
     unitLabel->setText(unit);
     unitLabel->setStyleSheet(QString("QLabel {color: %1;}").arg("#AAAAAA"));
-    //qDebug() << "UNIT" << unit;
+    //QLOG_DEBUG() << "UNIT" << unit;
     unitLabel->setToolTip(tr("Unit of ") + curve);
     unitLabel->setWhatsThis(tr("Unit of ") + curve);
     curvesWidgetLayout->addWidget(unitLabel, labelRow, 4);

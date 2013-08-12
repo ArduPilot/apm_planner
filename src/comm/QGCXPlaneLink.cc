@@ -28,18 +28,20 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include <QTimer>
-#include <QList>
-#include <QDebug>
-#include <QMutexLocker>
-#include <QNetworkInterface>
-#include <iostream>
+#include "QsLog.h"
 #include "QGCXPlaneLink.h"
 #include "QGC.h"
-#include <QHostInfo>
 #include "UAS.h"
 #include "UASInterface.h"
 #include "MainWindow.h"
+
+#include <QTimer>
+#include <QList>
+
+#include <QMutexLocker>
+#include <QNetworkInterface>
+#include <iostream>
+#include <QHostInfo>
 
 QGCXPlaneLink::QGCXPlaneLink(UASInterface* mav, QString remoteHost, QHostAddress localHost, quint16 localPort) :
     mav(mav),
@@ -405,9 +407,9 @@ void QGCXPlaneLink::writeBytes(const char* data, qint64 size)
             ascii.append(219);
         }
     }
-    //qDebug() << "Sent" << size << "bytes to" << remoteHost.toString() << ":" << remotePort << "data:";
-    //qDebug() << bytes;
-    //qDebug() << "ASCII:" << ascii;
+    QLOG_TRACE() << "Sent" << size << "bytes to" << remoteHost.toString() << ":" << remotePort << "data:";
+    QLOG_TRACE() << bytes;
+    QLOG_DEBUG() << "ASCII:" << ascii;
 #endif
     if (connectState && socket) socket->writeDatagram(data, size, remoteHost, remotePort);
 }
@@ -442,7 +444,7 @@ void QGCXPlaneLink::readBytes()
     // XPlane always has 5 bytes header: 'DATA@'
     unsigned nsegs = (s-5)/36;
 
-    //qDebug() << "XPLANE:" << "LEN:" << s << "segs:" << nsegs;
+    QLOG_TRACE() << "XPLANE:" << "LEN:" << s << "segs:" << nsegs;
 
     #pragma pack(push, 1)
     struct payload {
@@ -471,7 +473,7 @@ void QGCXPlaneLink::readBytes()
                 airspeed = p.f[6] * 0.44704f;
                 groundspeed = p.f[7] * 0.44704;
 
-                //qDebug() << "SPEEDS:" << "airspeed" << airspeed << "m/s, groundspeed" << groundspeed << "m/s";
+                QLOG_TRACE() << "SPEEDS:" << "airspeed" << airspeed << "m/s, groundspeed" << groundspeed << "m/s";
             }
             if (p.index == 4)
             {
@@ -501,7 +503,7 @@ void QGCXPlaneLink::readBytes()
             // better: Connect Joystick to QGroundControl
 //            else if (p.index == 8)
 //            {
-//                //qDebug() << "MAN:" << p.f[0] << p.f[3] << p.f[7];
+//                QLOG_DEBUG() << "MAN:" << p.f[0] << p.f[3] << p.f[7];
 //                man_roll = p.f[0];
 //                man_pitch = p.f[1];
 //                man_yaw = p.f[2];
@@ -518,7 +520,7 @@ void QGCXPlaneLink::readBytes()
             }
             else if ((xPlaneVersion == 10 && p.index == 17) || (xPlaneVersion == 9 && p.index == 18))
             {
-                //qDebug() << "HDNG" << "pitch" << p.f[0] << "roll" << p.f[1] << "hding true" << p.f[2] << "hding mag" << p.f[3];
+                QLOG_TRACE() << "HDNG" << "pitch" << p.f[0] << "roll" << p.f[1] << "hding true" << p.f[2] << "hding mag" << p.f[3];
                 pitch = p.f[0] / 180.0f * M_PI;
                 roll = p.f[1] / 180.0f * M_PI;
                 yaw = p.f[2] / 180.0f * M_PI;
@@ -556,11 +558,11 @@ void QGCXPlaneLink::readBytes()
 
 //            else if (p.index == 19)
 //            {
-//                qDebug() << "ATT:" << p.f[0] << p.f[1] << p.f[2];
+//                QLOG_DEBUG() << "ATT:" << p.f[0] << p.f[1] << p.f[2];
 //            }
             else if (p.index == 20)
             {
-                //qDebug() << "LAT/LON/ALT:" << p.f[0] << p.f[1] << p.f[2];
+                QLOG_TRACE() << "LAT/LON/ALT:" << p.f[0] << p.f[1] << p.f[2];
                 lat = p.f[0];
                 lon = p.f[1];
                 alt = p.f[2] * 0.3048f; // convert feet (MSL) to meters
@@ -573,23 +575,23 @@ void QGCXPlaneLink::readBytes()
             }
             else if (p.index == 12)
             {
-                //qDebug() << "AIL/ELEV/RUD" << p.f[0] << p.f[1] << p.f[2];
+                QLOG_TRACE() << "AIL/ELEV/RUD" << p.f[0] << p.f[1] << p.f[2];
             }
             else if (p.index == 25)
             {
-                //qDebug() << "THROTTLE" << p.f[0] << p.f[1] << p.f[2] << p.f[3];
+                QLOG_TRACE() << "THROTTLE" << p.f[0] << p.f[1] << p.f[2] << p.f[3];
             }
             else if (p.index == 0)
             {
-                //qDebug() << "STATS" << "fgraphics/s" << p.f[0] << "fsim/s" << p.f[2] << "t frame" << p.f[3] << "cpu load" << p.f[4] << "grnd ratio" << p.f[5] << "filt ratio" << p.f[6];
+                QLOG_TRACE() << "STATS" << "fgraphics/s" << p.f[0] << "fsim/s" << p.f[2] << "t frame" << p.f[3] << "cpu load" << p.f[4] << "grnd ratio" << p.f[5] << "filt ratio" << p.f[6];
             }
             else if (p.index == 11)
             {
-                //qDebug() << "CONTROLS" << "ail" << p.f[0] << "elev" << p.f[1] << "rudder" << p.f[2] << "nwheel" << p.f[3];
+                QLOG_TRACE() << "CONTROLS" << "ail" << p.f[0] << "elev" << p.f[1] << "rudder" << p.f[2] << "nwheel" << p.f[3];
             }
             else
             {
-                //qDebug() << "UNKNOWN #" << p.index << p.f[0] << p.f[1] << p.f[2] << p.f[3];
+                QLOG_TRACE() << "UNKNOWN #" << p.index << p.f[0] << p.f[1] << p.f[2] << p.f[3];
             }
         }
     }
@@ -609,7 +611,7 @@ void QGCXPlaneLink::readBytes()
     }
     else
     {
-        qDebug() << "UNKNOWN PACKET:" << data;
+        QLOG_DEBUG() << "UNKNOWN PACKET:" << data;
     }
 
     // Send updated state
@@ -860,7 +862,7 @@ void QGCXPlaneLink::setRandomAttitude()
  **/
 bool QGCXPlaneLink::connectSimulation()
 {
-    qDebug() << "STARTING X-PLANE LINK, CONNECTING TO" << remoteHost << ":" << remotePort;
+    QLOG_DEBUG() << "STARTING X-PLANE LINK, CONNECTING TO" << remoteHost << ":" << remotePort;
     // XXX Hack
     storeSettings();
 
@@ -921,7 +923,7 @@ bool QGCXPlaneLink::connectSimulation()
         }
     }
 
-    //qDebug() << "REQ SEND TO:" << localAddrStr << localPortStr;
+    QLOG_TRACE() << "REQ SEND TO:" << localAddrStr << localPortStr;
 
     ip.index = 0;
     strncpy(ip.str_ipad_them, localAddrStr.toAscii(), qMin((int)sizeof(ip.str_ipad_them), 16));

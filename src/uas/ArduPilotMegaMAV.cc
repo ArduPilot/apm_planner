@@ -85,11 +85,11 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
         switch (message.msgid) {
         case MAVLINK_MSG_ID_HEARTBEAT:
         {
-            //qDebug() << "ARDUPILOT RECEIVED HEARTBEAT";
+            //QLOG_DEBUG() << "ARDUPILOT RECEIVED HEARTBEAT";
             break;
         }
         default:
-            //qDebug() << "\nARDUPILOT RECEIVED MESSAGE WITH ID" << message.msgid;
+            //QLOG_DEBUG() << "\nARDUPILOT RECEIVED MESSAGE WITH ID" << message.msgid;
             break;
         }
     }

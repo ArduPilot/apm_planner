@@ -28,13 +28,13 @@ This file is part of the QGROUNDCONTROL project
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
  *
  */
-
+#include "QsLog.h"
+#include "LinkManager.h"
 #include <QList>
 #include <QApplication>
-#include "LinkManager.h"
 #include <iostream>
 
-#include <QDebug>
+
 
 LinkManager* LinkManager::instance()
 {
@@ -93,13 +93,13 @@ void LinkManager::addProtocol(LinkInterface* link, ProtocolInterface* protocol)
     if ((linkList.length() > 0 && !linkList.contains(link)) || linkList.length() == 0)
     {
         // Protocol is new, add
-        connect(link, SIGNAL(bytesReceived(LinkInterface*, QByteArray)), protocol, SLOT(receiveBytes(LinkInterface*, QByteArray)));
+        connect(link, SIGNAL(bytesReceived(LinkInterface*, QByteArray)), protocol, SLOT(receiveBytes(LinkInterface*, QByteArray)), Qt::QueuedConnection);
         // Add status
         connect(link, SIGNAL(connected(bool)), protocol, SLOT(linkStatusChanged(bool)));
         // Store the connection information in the protocol links map
         protocolLinks.insertMulti(protocol, link);
     }
-    //qDebug() << __FILE__ << __LINE__ << "ADDED LINK TO PROTOCOL" << link->getName() << protocol->getName() << "NEW SIZE OF LINK LIST:" << protocolLinks.size();
+    QLOG_INFO() << "ADDED LINK TO PROTOCOL" << link->getName() << protocol->getName() << "NEW SIZE OF LINK LIST:" << protocolLinks.size();
 }
 
 QList<LinkInterface*> LinkManager::getLinksForProtocol(ProtocolInterface* protocol)

@@ -1,10 +1,9 @@
+#include "QsLog.h"
 #include "SlugsDataSensorView.h"
 #include "ui_SlugsDataSensorView.h"
 
 #include <UASManager.h>
 #include "SlugsMAV.h"
-
-#include <QDebug>
 
 SlugsDataSensorView::SlugsDataSensorView(QWidget *parent) :
     QWidget(parent),
@@ -135,7 +134,7 @@ void SlugsDataSensorView::slugsGlobalPositionChanged(UASInterface *uas,
     ui->m_GpsLongitude->setText(QString::number(lon));
     ui->m_GpsHeight->setText(QString::number(alt));
 
-//qDebug()<<"GPS Position = "<<lat<<" - "<<lon<<" - "<<alt;
+//QLOG_DEBUG()<<"GPS Position = "<<lat<<" - "<<lon<<" - "<<alt;
 }
 
 
@@ -167,7 +166,7 @@ void SlugsDataSensorView::slugSpeedLocalPositionChanged(UASInterface* uas,
     ui->ed_vy->setText(QString::number(vy));
     ui->ed_vz->setText(QString::number(vz));
 
-    //qDebug()<<"Speed Local Position = "<<vx<<" - "<<vy<<" - "<<vz;
+    //QLOG_DEBUG()<<"Speed Local Position = "<<vx<<" - "<<vy<<" - "<<vz;
 
 
 }
@@ -185,7 +184,7 @@ void SlugsDataSensorView::slugAttitudeChanged(UASInterface* uas,
     ui->m_Pitch->setText(QString::number(slugpitch));
     ui->m_Yaw->setText(QString::number(slugyaw));
 
-    // qDebug()<<"Attitude change = "<<slugroll<<" - "<<slugpitch<<" - "<<slugyaw;
+    // QLOG_DEBUG()<<"Attitude change = "<<slugroll<<" - "<<slugpitch<<" - "<<slugyaw;
 
 }
 

@@ -1,8 +1,9 @@
+#include "Qslog.h"
 #include "PrimaryFlightDisplay.h"
 #include "UASManager.h"
 
 //#include "ui_primaryflightdisplay.h"
-#include <QDebug>
+
 #include <QRectF>
 #include <cmath>
 #include <QPen>
@@ -241,7 +242,7 @@ void PrimaryFlightDisplay::resizeEvent(QResizeEvent *e) {
     else
         layout = COMPASS_INTEGRATED;
     */
-    // qDebug("Width %d height %d decision %d", e->size().width(), e->size().height(), layout);
+    // QLOG_DEBUG() << "Width " << e->size().width() << " height " << e->size().height() << " decision" << layout;
 }
 
 void PrimaryFlightDisplay::paintEvent(QPaintEvent *event)
@@ -327,7 +328,7 @@ void PrimaryFlightDisplay::updateAttitude(UASInterface* uas, double roll, double
     }
     // TODO: Else-part. We really should have an "attitude bad or unknown" indication instead of just freezing.
 
-    //qDebug("r,p,y: %f,%f,%f", roll, pitch, yaw);
+//    QLOG_DEBUG() << "r,p,y: " << roll << "," << pitch << "," << yaw;
 }
 
 /*
@@ -347,7 +348,7 @@ void PrimaryFlightDisplay::updateAttitude(UASInterface* uas, int component, doub
         if (yaw<0) yaw+=360;
         this->heading = yaw;
     }
-    // qDebug("(2) r,p,y: %f,%f,%f", roll, pitch, yaw);
+//    QLOG_DEBUG() << "(2) r,p,y: " << roll << "," << pitch << "," << yaw;
 
 }
 

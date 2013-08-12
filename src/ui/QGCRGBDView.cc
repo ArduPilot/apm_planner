@@ -1,9 +1,10 @@
+#include"QsLog.h"
+#include "QGCRGBDView.h"
+#include "UASManager.h"
+
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QSettings>
-
-#include "QGCRGBDView.h"
-#include "UASManager.h"
 
 QGCRGBDView::QGCRGBDView(int width, int height, QWidget *parent) :
     HUD(width, height, parent),
@@ -76,7 +77,7 @@ void QGCRGBDView::setActiveUAS(UASInterface* uas)
 void QGCRGBDView::clearData(void)
 {
     QImage offlineImg;
-    qDebug() << offlineImg.load(":/files/images/status/colorbars.png");
+    QLOG_DEBUG() << offlineImg.load(":/files/images/status/colorbars.png");
 
     glImage = offlineImg;
 }
@@ -272,17 +273,17 @@ void QGCRGBDView::updateData(UASInterface *uas)
         QByteArray tmpImage(header.toStdString().c_str(), header.toStdString().size());
         tmpImage.append(rgbdImage.imagedata1().c_str(), rgbdImage.cols()*rgbdImage.rows());
 
-        //qDebug() << "IMAGE SIZE:" << tmpImage.size() << "HEADER SIZE: (15):" << header.size() << "HEADER: " << header;
+        //QLOG_DEBUG() << "IMAGE SIZE:" << tmpImage.size() << "HEADER SIZE: (15):" << header.size() << "HEADER: " << header;
 
 //        if (imageRecBuffer.isNull())
 //        {
-//            qDebug()<< "could not convertToPGM()";
+//            QLOG_DEBUG()<< "could not convertToPGM()";
 //            return QImage();
 //        }
 
         if (!fill.loadFromData(tmpImage, "PGM"))
         {
-            qDebug()<< "could not create extracted image";
+            QLOG_DEBUG()<< "could not create extracted image";
 //            return QImage();
         }
     }

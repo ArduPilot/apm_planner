@@ -5,7 +5,7 @@
 #include <QGraphicsView>
 #include <QMouseEvent>
 #include <QKeyEvent>
-#include <QDebug>
+
 #include <qmath.h>
 #include <QPainter>
 #include "UASManager.h"

@@ -1,5 +1,5 @@
 #include <QMessageBox>
-#include <QDebug>
+
 
 #include "CameraGimbalConfig.h"
 

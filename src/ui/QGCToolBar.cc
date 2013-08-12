@@ -20,14 +20,15 @@ This file is part of the QGROUNDCONTROL project
     along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
-
-#include <QToolButton>
-#include <QLabel>
-#include <QSpacerItem>
+#include "QsLog.h"
 #include "SerialLink.h"
 #include "QGCToolBar.h"
 #include "UASManager.h"
 #include "MainWindow.h"
+
+#include <QToolButton>
+#include <QLabel>
+#include <QSpacerItem>
 
 QGCToolBar::QGCToolBar(QWidget *parent) :
     QToolBar(parent),
@@ -265,7 +266,7 @@ void QGCToolBar::setPerspectiveChangeActions(const QList<QAction*> &actions)
         addWidget(advancedButton);
         group->addButton(advancedButton);
     } else {
-        qDebug() << __FILE__ << __LINE__ << "Not enough perspective change actions provided";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "Not enough perspective change actions provided";
     }
 
     // Add the "rest"
@@ -290,7 +291,7 @@ void QGCToolBar::setPerspectiveChangeAdvancedActions(const QList<QAction*> &acti
         connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(advancedActivityTriggered(QAction*)));
 
     } else {
-        qDebug() << __FILE__ << __LINE__ << "Not enough perspective change actions provided";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "Not enough perspective change actions provided";
     }
 }
 

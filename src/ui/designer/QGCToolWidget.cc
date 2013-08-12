@@ -1,5 +1,11 @@
 #include "QGCToolWidget.h"
 #include "ui_QGCToolWidget.h"
+#include "QsLog.h"
+#include "QGCParamSlider.h"
+#include "QGCComboBox.h"
+#include "QGCTextLabel.h"
+#include "QGCCommandButton.h"
+#include "UASManager.h"
 
 #include <QMenu>
 #include <QList>
@@ -9,12 +15,6 @@
 #include <QSettings>
 #include <QFileDialog>
 #include <QDesktopServices>
-
-#include "QGCParamSlider.h"
-#include "QGCComboBox.h"
-#include "QGCTextLabel.h"
-#include "QGCCommandButton.h"
-#include "UASManager.h"
 
 QGCToolWidget::QGCToolWidget(const QString& title, QWidget *parent, QSettings* settings) :
         QWidget(parent),
@@ -31,7 +31,7 @@ QGCToolWidget::QGCToolWidget(const QString& title, QWidget *parent, QSettings* s
     {
         widgetTitle = QString("%1 %2").arg(title).arg(QGCToolWidget::instances()->count());
     }
-    //qDebug() << "WidgetTitle" << widgetTitle;
+    //QLOG_DEBUG() << "WidgetTitle" << widgetTitle;
 
     setObjectName(widgetTitle);
     createActions();
@@ -102,12 +102,12 @@ QList<QGCToolWidget*> QGCToolWidget::createWidgetsFromSettings(QWidget* parent, 
     if (!settingsFile.isEmpty())
     {
         settings = new QSettings(settingsFile, QSettings::IniFormat);
-       //qDebug() << "LOADING SETTINGS FROM" << settingsFile;
+       //QLOG_DEBUG() << "LOADING SETTINGS FROM" << settingsFile;
     }
     else
     {
         settings = new QSettings();
-        //qDebug() << "LOADING SETTINGS FROM DEFAULT" << settings->fileName();
+        //QLOG_DEBUG() << "LOADING SETTINGS FROM DEFAULT" << settings->fileName();
     }
 
     QList<QGCToolWidget*> newWidgets;
@@ -121,7 +121,7 @@ QList<QGCToolWidget*> QGCToolWidget::createWidgetsFromSettings(QWidget* parent, 
 
         if (!instances()->contains(name) && name.length() != 0)
         {
-            //qDebug() << "CREATED WIDGET:" << name;
+            //QLOG_DEBUG() << "CREATED WIDGET:" << name;
             QGCToolWidget* tool = new QGCToolWidget(name, parent, settings);
             tool->setObjectName(objname);
             newWidgets.append(tool);
@@ -133,12 +133,12 @@ QList<QGCToolWidget*> QGCToolWidget::createWidgetsFromSettings(QWidget* parent, 
         }
         else
         {
-            //qDebug() << "WIDGET" << name << "DID ALREADY EXIST, REJECTING";
+            //QLOG_DEBUG() << "WIDGET" << name << "DID ALREADY EXIST, REJECTING";
         }
     }
     settings->endArray();
 
-    //qDebug() << "NEW WIDGETS: " << newWidgets.size();
+    //QLOG_DEBUG() << "NEW WIDGETS: " << newWidgets.size();
 
     // Load individual widget items
     for (int i = 0; i < newWidgets.size(); i++)
@@ -181,7 +181,7 @@ bool QGCToolWidget::loadSettings(const QString& settings, bool singleinstance)
         // Do not use setTitle() here,
         // interferes with loading settings
         widgetTitle = widgetName;
-        //qDebug() << "WIDGET TITLE LOADED: " << widgetName;
+        //QLOG_DEBUG() << "WIDGET TITLE LOADED: " << widgetName;
         loadSettings(set);
         return true;
     }
@@ -266,10 +266,10 @@ void QGCToolWidget::loadSettings(QVariantMap& settings)
 
     QString widgetName = getTitle();
     //settings.beginGroup(widgetName);
-    qDebug() << "LOADING FOR" << widgetName;
+    QLOG_DEBUG() << "LOADING FOR" << widgetName;
     //int size = settings.beginReadArray("QGC_TOOL_WIDGET_ITEMS");
     int size = settings["count"].toInt();
-    qDebug() << "CHILDREN SIZE:" << size;
+    QLOG_DEBUG() << "CHILDREN SIZE:" << size;
     for (int j = 0; j < size; j++)
     {
         QApplication::processEvents();
@@ -281,7 +281,7 @@ void QGCToolWidget::loadSettings(QVariantMap& settings)
             if (type == "COMMANDBUTTON")
             {
                 item = new QGCCommandButton(this);
-                //qDebug() << "CREATED COMMANDBUTTON";
+                //QLOG_DEBUG() << "CREATED COMMANDBUTTON";
             }
             else if (type == "TEXT")
             {
@@ -291,12 +291,12 @@ void QGCToolWidget::loadSettings(QVariantMap& settings)
             else if (type == "SLIDER")
             {
                 item = new QGCParamSlider(this);
-                //qDebug() << "CREATED PARAM SLIDER";
+                //QLOG_DEBUG() << "CREATED PARAM SLIDER";
             }
             else if (type == "COMBO")
             {
                 item = new QGCComboBox(this);
-                //qDebug() << "CREATED PARAM COMBOBOX";
+                //QLOG_DEBUG() << "CREATED PARAM COMBOBOX";
             }
             if (item)
             {
@@ -304,12 +304,12 @@ void QGCToolWidget::loadSettings(QVariantMap& settings)
                 addToolWidget(item);
                 item->readSettings(widgetName + "\\" + QString::number(j) + "\\",settings);
 
-                //qDebug() << "Created tool widget";
+                //QLOG_DEBUG() << "Created tool widget";
             }
         }
         else
         {
-            qDebug() << "UNKNOWN TOOL WIDGET TYPE" << type;
+            QLOG_DEBUG() << "UNKNOWN TOOL WIDGET TYPE" << type;
         }
     }
     //settings.endArray();
@@ -320,9 +320,9 @@ void QGCToolWidget::loadSettings(QSettings& settings)
 {
     QString widgetName = getTitle();
     settings.beginGroup(widgetName);
-    //qDebug() << "LOADING FOR" << widgetName;
+    //QLOG_DEBUG() << "LOADING FOR" << widgetName;
     int size = settings.beginReadArray("QGC_TOOL_WIDGET_ITEMS");
-    //qDebug() << "CHILDREN SIZE:" << size;
+    //QLOG_DEBUG() << "CHILDREN SIZE:" << size;
     for (int j = 0; j < size; j++)
     {
         settings.setArrayIndex(j);
@@ -336,19 +336,19 @@ void QGCToolWidget::loadSettings(QSettings& settings)
                 connect(button,SIGNAL(showLabel(QString,int)),this,SLOT(showLabel(QString,int)));
                 item = button;
                 item->setActiveUAS(mav);
-                //qDebug() << "CREATED COMMANDBUTTON";
+                //QLOG_DEBUG() << "CREATED COMMANDBUTTON";
             }
             else if (type == "SLIDER")
             {
                 item = new QGCParamSlider(this);
                 item->setActiveUAS(mav);
-                //qDebug() << "CREATED PARAM SLIDER";
+                //QLOG_DEBUG() << "CREATED PARAM SLIDER";
             }
             else if (type == "COMBO")
             {
                 item = new QGCComboBox(this);
                 item->setActiveUAS(mav);
-                qDebug() << "CREATED PARAM COMBOBOX";
+                QLOG_DEBUG() << "CREATED PARAM COMBOBOX";
             }
             else if (type == "TEXT")
             {
@@ -363,12 +363,12 @@ void QGCToolWidget::loadSettings(QSettings& settings)
                 addToolWidget(item);
                 item->readSettings(settings);
 
-                //qDebug() << "Created tool widget";
+                //QLOG_DEBUG() << "Created tool widget";
             }
         }
         else
         {
-            //qDebug() << "UNKNOWN TOOL WIDGET TYPE";
+            //QLOG_DEBUG() << "UNKNOWN TOOL WIDGET TYPE";
         }
     }
     settings.endArray();
@@ -382,12 +382,12 @@ void QGCToolWidget::storeWidgetsToSettings(QString settingsFile)
     if (!settingsFile.isEmpty())
     {
         settings = new QSettings(settingsFile, QSettings::IniFormat);
-        //qDebug() << "STORING SETTINGS TO" << settings->fileName();
+        //QLOG_DEBUG() << "STORING SETTINGS TO" << settings->fileName();
     }
     else
     {
         settings = new QSettings();
-        //qDebug() << "STORING SETTINGS TO DEFAULT" << settings->fileName();
+        //QLOG_DEBUG() << "STORING SETTINGS TO DEFAULT" << settings->fileName();
     }
 
     settings->beginGroup("Custom_Tool_Widgets");
@@ -406,7 +406,7 @@ void QGCToolWidget::storeWidgetsToSettings(QString settingsFile)
                 settings->setArrayIndex(num++);
                 settings->setValue("TITLE", instances()->values().at(i)->getTitle());
                 settings->setValue("OBJECT_NAME", instances()->values().at(i)->objectName());
-                //qDebug() << "WRITING TITLE" << instances()->values().at(i)->getTitle();
+                //QLOG_DEBUG() << "WRITING TITLE" << instances()->values().at(i)->getTitle();
             }
         }
         else
@@ -446,7 +446,7 @@ void QGCToolWidget::storeSettings(QSettings& settings)
         //Refuse to store if this is loaded from metadata or dynamically generated.
         return;
     }
-    //qDebug() << "WRITING WIDGET" << widgetTitle << "TO SETTINGS";
+    //QLOG_DEBUG() << "WRITING WIDGET" << widgetTitle << "TO SETTINGS";
     settings.beginGroup(widgetTitle);
     settings.beginWriteArray("QGC_TOOL_WIDGET_ITEMS");
     int k = 0; // QGCToolItem counter
@@ -462,7 +462,7 @@ void QGCToolWidget::storeSettings(QSettings& settings)
             item->writeSettings(settings);
         }
     }
-    //qDebug() << "WROTE" << k << "SUB-WIDGETS TO SETTINGS";
+    //QLOG_DEBUG() << "WROTE" << k << "SUB-WIDGETS TO SETTINGS";
     settings.endArray();
     settings.endGroup();
 }

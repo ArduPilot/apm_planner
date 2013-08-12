@@ -30,6 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "Q3DWidget.h"
+#include "QsLog.h"
 #include "QGC.h"
 
 #include <osg/Geometry>
@@ -365,7 +366,7 @@ Q3DWidget::redraw(void)
 {
     emit update();
 #if (QGC_EVENTLOOP_DEBUG)
-    qDebug() << "EVENTLOOP:" << __FILE__ << __LINE__;
+    QLOG_DEBUG() << "EVENTLOOP:" << __FILE__ << __LINE__;
 #endif
     updateGL();
 }

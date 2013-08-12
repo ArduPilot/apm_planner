@@ -1,5 +1,6 @@
 #include "UASControlParameters.h"
 #include "ui_UASControlParameters.h"
+#include "QsLog.h"
 
 #define CONTROL_MODE_LOCKED "MODE LOCKED"
 #define CONTROL_MODE_MANUAL "MODE MANUAL"
@@ -187,7 +188,7 @@ void UASControlParameters::setPassthrough()
 
         mavlink_msg_ctrl_srfc_pt_encode(MG::SYSTEM::ID, MG::SYSTEM::COMPID, &msg, &this->tempCtrl);
         myUas->sendMessage(msg);
-        //qDebug()<<tempCtrl.bitfieldPt;
+        QLOG_TRACE()<<tempCtrl.bitfieldPt;
     }
 #endif
 }

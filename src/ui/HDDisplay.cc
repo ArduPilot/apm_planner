@@ -9,6 +9,13 @@
  *
  */
 
+#include "QsLog.h"
+#include "UASManager.h"
+#include "HDDisplay.h"
+#include "ui_HDDisplay.h"
+#include "MG.h"
+#include "QGC.h"
+
 #include <QFile>
 #include <QGLWidget>
 #include <QStringList>
@@ -19,12 +26,6 @@
 #include <QMenu>
 #include <QSettings>
 #include <qmath.h>
-#include "UASManager.h"
-#include "HDDisplay.h"
-#include "ui_HDDisplay.h"
-#include "MG.h"
-#include "QGC.h"
-#include <QDebug>
 
 HDDisplay::HDDisplay(QStringList* plotList, QString title, QWidget *parent) :
     QGraphicsView(parent),
@@ -121,11 +122,11 @@ HDDisplay::HDDisplay(QStringList* plotList, QString title, QWidget *parent) :
     fontDatabase = QFontDatabase();
     const QString fontFileName = ":/general/vera.ttf"; ///< Font file is part of the QRC file and compiled into the app
     const QString fontFamilyName = "Bitstream Vera Sans";
-    if(!QFile::exists(fontFileName)) qDebug() << "ERROR! font file: " << fontFileName << " DOES NOT EXIST!";
+    if(!QFile::exists(fontFileName)) QLOG_DEBUG() << "ERROR! font file: " << fontFileName << " DOES NOT EXIST!";
 
     fontDatabase.addApplicationFont(fontFileName);
     font = fontDatabase.font(fontFamilyName, "Roman", qMax(5, (int)(10*scalingFactor*1.2f+0.5f)));
-    if (font.family() != fontFamilyName) qDebug() << "ERROR! Font not loaded: " << fontFamilyName;
+    if (font.family() != fontFamilyName) QLOG_DEBUG() << "ERROR! Font not loaded: " << fontFamilyName;
 
     // Connect with UAS
     connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(setActiveUAS(UASInterface*)), Qt::UniqueConnection);
@@ -194,14 +195,14 @@ void HDDisplay::triggerUpdate()
 //        lastUpdate.insert(name, msec);
 //        //}
 
-//        //qDebug() << __FILE__ << __LINE__ << "VALUE:" << value << "MEAN:" << mean << "DOT:" << dot << "COUNT:" << meanCount;
+//        //QLOG_DEBUG() << __FILE__ << __LINE__ << "VALUE:" << value << "MEAN:" << mean << "DOT:" << dot << "COUNT:" << meanCount;
 //    }
 //}
 
 void HDDisplay::paintEvent(QPaintEvent * event)
 {
     Q_UNUSED(event);
-    //qDebug() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval << __FILE__ << __LINE__;
+    //QLOG_DEBUG() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval << __FILE__ << __LINE__;
     renderOverlay();
 }
 
@@ -232,7 +233,7 @@ void HDDisplay::saveState()
         instruments += "|" + QString::number(minValues.value(key, -1.0))+","+key+","+acceptUnitList->at(i)+","+QString::number(maxValues.value(key, +1.0))+","+customNames.value(key, "")+","+((symmetric.value(key, false)) ? "s" : "");
     }
 
-    // qDebug() << "Saving" << instruments;
+    // QLOG_DEBUG() << "Saving" << instruments;
 
     settings.setValue(windowTitle()+"_gauges", instruments);
     settings.sync();
@@ -419,7 +420,7 @@ void HDDisplay::renderOverlay()
     if (!valuesChanged || !isVisible()) return;
 
 #if (QGC_EVENTLOOP_DEBUG)
-    qDebug() << "EVENTLOOP:" << __FILE__ << __LINE__;
+    QLOG_DEBUG() << "EVENTLOOP:" << __FILE__ << __LINE__;
 #endif
     quint64 refreshInterval = 100;
     quint64 currTime = MG::TIME::getGroundTimeNow();

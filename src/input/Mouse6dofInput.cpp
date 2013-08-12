@@ -67,7 +67,7 @@ Mouse6dofInput::Mouse6dofInput(QWidget* parent) :
     if (!mouseActive)
     {
 //        // man visudo --> then you can omit giving password (success not guarantied..)
-//        qDebug() << "Starting 3DxWare Daemon for 3dConnexion 3dMouse";
+//        QLOG_DEBUG() << "Starting 3DxWare Daemon for 3dConnexion 3dMouse";
 //        QString processProgramm = "gksudo";
 //        QStringList processArguments;
 //        processArguments << "/etc/3DxWare/daemon/3dxsrv -d usb";
@@ -75,14 +75,14 @@ Mouse6dofInput::Mouse6dofInput(QWidget* parent) :
 //        process3dxDaemon->start(processProgramm, processArguments);
 //    //    process3dxDaemon->waitForFinished();
 //    //    {
-//    //        qDebug() << "... continuing without 3DxWare. May not be initialized properly!";
-//    //        qDebug() << "Try in terminal as user root:" << processArguments.last();
+//    //       QLOG_DEBUG() << "... continuing without 3DxWare. May not be initialized properly!";
+//    //        QLOG_DEBUG() << "Try in terminal as user root:" << processArguments.last();
 //    //    }
 
         Display *display = QX11Info::display();
         if(!display)
         {
-            qDebug() << "Cannot open display!" << endl;
+            QLOG_DEBUG() << "Cannot open display!" << endl;
         }
         if ( !MagellanInit( display, parent->winId() ) )
         {
@@ -94,18 +94,18 @@ Mouse6dofInput::Mouse6dofInput(QWidget* parent) :
             msgBox.setDefaultButton(QMessageBox::Ok);
             msgBox.exec();
 
-            qDebug() << "No 3DxWare driver is running!";
+            QLOG_DEBUG() << "No 3DxWare driver is running!";
             return;
         }
         else
         {
-            qDebug() << "Initialized 3dMouse";
+            QLOG_DEBUG() << "Initialized 3dMouse";
             mouseActive = true;
         }
     }
     else
     {
-        qDebug() << "3dMouse already initialized..";
+        QLOG_DEBUG() << "3dMouse already initialized..";
     }
 
 }
@@ -218,7 +218,7 @@ void Mouse6dofInput::motion3DMouse(std::vector<float> &motionData)
         cValue = 0;
     }
 
-    //qDebug() << "NEW 3D MOUSE VALUES -- X" << xValue << " -- Y" << yValue << " -- Z" << zValue << " -- A" << aValue << " -- B" << bValue << " -- C" << cValue;
+    //QLOG_DEBUG() << "NEW 3D MOUSE VALUES -- X" << xValue << " -- Y" << yValue << " -- Z" << zValue << " -- A" << aValue << " -- B" << bValue << " -- C" << cValue;
 }
 #endif //MOUSE_ENABLED_WIN
 
@@ -231,14 +231,14 @@ void Mouse6dofInput::button3DMouseDown(int button)
     {
             rotationActive = !rotationActive;
             emit mouseRotationActiveChanged(rotationActive);
-            qDebug() << "Changed 3DMouse Rotation to " << (bool)rotationActive;
+            QLOG_DEBUG() << "Changed 3DMouse Rotation to " << (bool)rotationActive;
         break;
     }
     case 2:
     {
             translationActive = !translationActive;
             emit mouseTranslationActiveChanged(translationActive);
-            qDebug() << "Changed 3DMouse Translation to" << (bool)translationActive;
+            QLOG_DEBUG() << "Changed 3DMouse Translation to" << (bool)translationActive;
         break;
     }
     default:
@@ -250,10 +250,10 @@ void Mouse6dofInput::button3DMouseDown(int button)
 #ifdef MOUSE_ENABLED_LINUX
 void Mouse6dofInput::handleX11Event(XEvent *event)
 {
-    //qDebug("XEvent occured...");
+    //QLOG_DEBUG() << "XEvent occured...";
     if (!mouseActive)
     {
-        qDebug() << "3dMouse not initialized. Cancelled handling X11event for 3dMouse";
+        QLOG_DEBUG() << "3dMouse not initialized. Cancelled handling X11event for 3dMouse";
         return;
     }
 
@@ -262,7 +262,7 @@ void Mouse6dofInput::handleX11Event(XEvent *event)
     Display *display = QX11Info::display();
     if(!display)
     {
-        qDebug() << "Cannot open display!" << endl;
+        QLOG_DEBUG() << "Cannot open display!" << endl;
     }
 
     switch (event->type)
@@ -298,25 +298,25 @@ void Mouse6dofInput::handleX11Event(XEvent *event)
                  bValue = 0;
                  cValue = 0;
              }
-             //qDebug() << "NEW 3D MOUSE VALUES -- X" << xValue << " -- Y" << yValue << " -- Z" << zValue << " -- A" << aValue << " -- B" << bValue << " -- C" << cValue;
+             //QLOG_DEBUG() << "NEW 3D MOUSE VALUES -- X" << xValue << " -- Y" << yValue << " -- Z" << zValue << " -- A" << aValue << " -- B" << bValue << " -- C" << cValue;
         break;
 
         case MagellanInputButtonPressEvent :
-            qDebug() << "MagellanInputButtonPressEvent called with button " << MagellanEvent.MagellanButton;
+            QLOG_DEBUG() << "MagellanInputButtonPressEvent called with button " << MagellanEvent.MagellanButton;
             switch (MagellanEvent.MagellanButton)
             {
             case 1:
             {
                     rotationActive = !rotationActive;
                     emit mouseRotationActiveChanged(rotationActive);
-                    qDebug() << "Changed 3DMouse Rotation to " << (bool)rotationActive;
+                    QLOG_DEBUG() << "Changed 3DMouse Rotation to " << (bool)rotationActive;
                 break;
             }
             case 2:
             {
                     translationActive = !translationActive;
                     emit mouseTranslationActiveChanged(translationActive);
-                    qDebug() << "Changed 3DMouse Translation to" << (bool)translationActive;
+                    QLOG_DEBUG() << "Changed 3DMouse Translation to" << (bool)translationActive;
                 break;
             }
             default:

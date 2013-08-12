@@ -1,6 +1,14 @@
 // On Windows (for VS2010) stdint.h contains the limits normally contained in limits.h
 // It also needs the __STDC_LIMIT_MACROS macro defined in order to include them (done
 // in qgroundcontrol.pri).
+
+#include "QsLog.h"
+#include "QGCVehicleConfig.h"
+#include "UASManager.h"
+#include "QGC.h"
+#include "QGCToolWidget.h"
+#include "ui_QGCVehicleConfig.h"
+
 #ifdef WIN32
 #include <stdint.h>
 #else
@@ -11,12 +19,6 @@
 #include <QDir>
 #include <QXmlStreamReader>
 #include <QMessageBox>
-
-#include "QGCVehicleConfig.h"
-#include "UASManager.h"
-#include "QGC.h"
-#include "QGCToolWidget.h"
-#include "ui_QGCVehicleConfig.h"
 
 QGCVehicleConfig::QGCVehicleConfig(QWidget *parent) :
     QWidget(parent),
@@ -479,9 +481,9 @@ void QGCVehicleConfig::loadConfig()
         //TODO: Throw an error here too, no autopilot specific configuration
         qWarning() << "Invalid vehicle dir, no vehicle specific configuration will be loaded.";
     }
-    qDebug() << autopilotdir.absolutePath();
-    qDebug() << generaldir.absolutePath();
-    qDebug() << vehicledir.absolutePath();
+    QLOG_DEBUG() << autopilotdir.absolutePath();
+    QLOG_DEBUG() << generaldir.absolutePath();
+    QLOG_DEBUG() << vehicledir.absolutePath();
     QFile xmlfile(autopilotdir.absolutePath() + "/arduplane.pdef.xml");
     if (xmlfile.exists() && !xmlfile.open(QIODevice::ReadOnly))
     {
@@ -828,7 +830,7 @@ void QGCVehicleConfig::setActiveUAS(UASInterface* active)
     else
     {
         //Indication that we have no meta data for this system type.
-        qDebug() << "No parameters defined for system type:" << mav->getSystemTypeName();
+        QLOG_DEBUG() << "No parameters defined for system type:" << mav->getSystemTypeName();
         systemTypeToParamMap[mav->getSystemTypeName()] = new QMap<QString,QGCToolWidget*>();
         paramToWidgetMap = systemTypeToParamMap[mav->getSystemTypeName()];
     }
@@ -838,7 +840,7 @@ void QGCVehicleConfig::setActiveUAS(UASInterface* active)
            mav->getParamManager()->setParamInfo(paramTooltips);
     }
 
-    qDebug() << "CALIBRATION!! System Type Name:" << mav->getSystemTypeName();
+    QLOG_DEBUG() << "CALIBRATION!! System Type Name:" << mav->getSystemTypeName();
 
     //Load configuration after 1ms. This allows it to go into the event loop, and prevents application hangups due to the
     //amount of time it actually takes to load the configuration windows.
@@ -887,7 +889,7 @@ void QGCVehicleConfig::writeCalibrationRC()
 
     for (unsigned int i = 0; i < chanCount; ++i)
     {
-        //qDebug() << "SENDING" << minTpl.arg(i+1) << rcMin[i];
+        //QLOG_DEBUG() << "SENDING" << minTpl.arg(i+1) << rcMin[i];
         mav->setParameter(0, minTpl.arg(i+1), rcMin[i]);
         QGC::SLEEP::usleep(50000);
         mav->setParameter(0, trimTpl.arg(i+1), rcTrim[i]);
@@ -1040,7 +1042,7 @@ void QGCVehicleConfig::remoteControlChannelRawChanged(int chan, float val)
 
     changed = true;
 
-    //qDebug() << "RC CHAN:" << chan << "PPM:" << val << "NORMALIZED:" << normalized;
+    //QLOG_DEBUG() << "RC CHAN:" << chan << "PPM:" << val << "NORMALIZED:" << normalized;
 }
 
 void QGCVehicleConfig::updateInvertedCheckboxes(int index)
@@ -1179,7 +1181,7 @@ void QGCVehicleConfig::parameterChanged(int uas, int component, QString paramete
     if (minTpl.exactMatch(parameterName)) {
         bool ok;
         unsigned int index = parameterName.mid(2, 1).toInt(&ok) - 1;
-        //qDebug() << "PARAM:" << parameterName << "index:" << index;
+        //QLOG_DEBUG() << "PARAM:" << parameterName << "index:" << index;
         if (ok && index < chanMax)
         {
             rcMin[index] = value.toInt();

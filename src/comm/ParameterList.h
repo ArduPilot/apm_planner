@@ -102,7 +102,7 @@ public:
       Parameter p("simulinkpath", "simulinkparamname", compid, QGCParamID("PID_GAIN"));
       ParameterList pList;
       if ((int index=pList.indexOf(p)) != -1)
-         qDebug() << "PID_GAIN is at index " << index;
+         QLOG_DEBUG() << "PID_GAIN is at index " << index;
       \endcode
       */
     int indexOf(const Parameter& p);

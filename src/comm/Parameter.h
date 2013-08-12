@@ -33,7 +33,7 @@ This file is part of the QGROUNDCONTROL project
 #define PARAMETER_H
 
 #include <QString>
-#include <QDebug>
+
 
 #include "mavlink_types.h"
 #include "QGCParamID.h"

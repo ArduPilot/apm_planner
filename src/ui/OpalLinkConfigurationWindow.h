@@ -2,7 +2,7 @@
 #define OPALLINKCONFIGURATIONWINDOW_H
 
 #include <QWidget>
-#include <QDebug>
+
 
 #include "LinkInterface.h"
 #include "ui_OpalLinkSettings.h"

@@ -29,18 +29,17 @@ This file is part of the PIXHAWK project
  *
  */
 
-#include <QtGlobal>
+#include "UASInfoWidget.h"
+#include "UASManager.h"
+#include "QGC.h"
+#include "QsLog.h"
 
+#include <QtGlobal>
 #include <float.h>
-#include <UASInfoWidget.h>
-#include <UASManager.h>
-#include <QGC.h>
 #include <QTimer>
 #include <QDir>
 #include <cstdlib>
 #include <cmath>
-
-#include <QDebug>
 
 UASInfoWidget::UASInfoWidget(QWidget *parent, QString name) : QWidget(parent)
 {
@@ -123,7 +122,7 @@ void UASInfoWidget::updateBattery(UASInterface* uas, double voltage, double curr
 
 void UASInfoWidget::updateErrorCount(int uasid, QString component, QString device, int count)
 {
-    //qDebug() << __FILE__ << __LINE__ << activeUAS->getUASID() << "=" << uasid;
+    QLOG_TRACE() << activeUAS->getUASID() << "=" << uasid;
     if (activeUAS->getUASID() == uasid) {
         errors.remove(component + ":" + device);
         errors.insert(component + ":" + device, count);

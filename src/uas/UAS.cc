@@ -9,14 +9,7 @@
  *
  */
 
-#include <QList>
-#include <QMessageBox>
-#include <QTimer>
-#include <QSettings>
-#include <iostream>
-#include <QDebug>
-#include <cmath>
-#include <qmath.h>
+#include "QsLog.h"
 #include "UAS.h"
 #include "LinkInterface.h"
 #include "UASManager.h"
@@ -26,6 +19,15 @@
 #include "QGCMAVLink.h"
 #include "LinkManager.h"
 #include "SerialLink.h"
+
+#include <QList>
+#include <QMessageBox>
+#include <QTimer>
+#include <QSettings>
+#include <iostream>
+
+#include <cmath>
+#include <qmath.h>
 
 #ifdef QGC_PROTOBUF_ENABLED
 #include <google/protobuf/descriptor.h>
@@ -325,7 +327,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
     if (!links->contains(link))
     {
         addLink(link);
-        //        qDebug() << __FILE__ << __LINE__ << "ADDED LINK!" << link->getName();
+        QLOG_TRACE() << __FILE__ << __LINE__ << "ADDED LINK!" << link->getName();
     }
 
     if (!components.contains(message.compid))
@@ -360,7 +362,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         emit componentCreated(uasId, message.compid, componentName);
     }
 
-    //    qDebug() << "UAS RECEIVED from" << message.sysid << "component" << message.compid << "msg id" << message.msgid << "seq no" << message.seq;
+    //    QLOG_DEBUG() << "UAS RECEIVED from" << message.sysid << "component" << message.compid << "msg id" << message.msgid << "seq no" << message.seq;
 
     // Only accept messages from this system (condition 1)
     // and only then if a) attitudeStamped is disabled OR b) attitudeStamped is enabled
@@ -953,7 +955,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 // Emit change
                 emit parameterChanged(uasId, message.compid, parameterName, param);
                 emit parameterChanged(uasId, message.compid, value.param_count, value.param_index, parameterName, param);
-//                qDebug() << "RECEIVED PARAM:" << param;
+//                QLOG_DEBUG() << "RECEIVED PARAM:" << param;
             }
                 break;
             case MAV_PARAM_TYPE_UINT8:
@@ -972,7 +974,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 // Emit change
                 emit parameterChanged(uasId, message.compid, parameterName, param);
                 emit parameterChanged(uasId, message.compid, value.param_count, value.param_index, parameterName, param);
-                //qDebug() << "RECEIVED PARAM:" << param;
+                //QLOG_DEBUG() << "RECEIVED PARAM:" << param;
             }
                 break;
             case MAV_PARAM_TYPE_INT8:
@@ -991,7 +993,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 // Emit change
                 emit parameterChanged(uasId, message.compid, parameterName, param);
                 emit parameterChanged(uasId, message.compid, value.param_count, value.param_index, parameterName, param);
-                //qDebug() << "RECEIVED PARAM:" << param;
+                //QLOG_DEBUG() << "RECEIVED PARAM:" << param;
             }
                 break;
             case MAV_PARAM_TYPE_INT16:
@@ -1010,7 +1012,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 // Emit change
                 emit parameterChanged(uasId, message.compid, parameterName, param);
                 emit parameterChanged(uasId, message.compid, value.param_count, value.param_index, parameterName, param);
-                //qDebug() << "RECEIVED PARAM:" << param;
+                //QLOG_DEBUG() << "RECEIVED PARAM:" << param;
             }
                 break;
             case MAV_PARAM_TYPE_UINT32:
@@ -1047,7 +1049,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 // Emit change
                 emit parameterChanged(uasId, message.compid, parameterName, param);
                 emit parameterChanged(uasId, message.compid, value.param_count, value.param_index, parameterName, param);
-//                qDebug() << "RECEIVED PARAM:" << param;
+//                QLOG_DEBUG() << "RECEIVED PARAM:" << param;
             }
                 break;
             default:
@@ -1106,7 +1108,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             }
             else
             {
-                qDebug() << "Got waypoint message, but was wrong system id" << wpc.target_system;
+                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wpc.target_system;
             }
         }
             break;
@@ -1115,14 +1117,14 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_mission_item_t wp;
             mavlink_msg_mission_item_decode(&message, &wp);
-            //qDebug() << "got waypoint (" << wp.seq << ") from ID " << message.sysid << " x=" << wp.x << " y=" << wp.y << " z=" << wp.z;
+            //QLOG_DEBUG() << "got waypoint (" << wp.seq << ") from ID " << message.sysid << " x=" << wp.x << " y=" << wp.y << " z=" << wp.z;
             if(wp.target_system == mavlink->getSystemId() || wp.target_system == 0)
             {
                 waypointManager.handleWaypoint(message.sysid, message.compid, &wp);
             }
             else
             {
-                qDebug() << "Got waypoint message, but was wrong system id" << wp.target_system;
+                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wp.target_system;
             }
         }
             break;
@@ -1149,7 +1151,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             }
             else
             {
-                qDebug() << "Got waypoint message, but was wrong system id" << wpr.target_system;
+                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wpr.target_system;
             }
         }
             break;
@@ -1275,7 +1277,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             {
                 // Restart statemachine
                 emit imageReady(this);
-                //qDebug() << "imageReady emitted. all packets arrived";
+                //QLOG_DEBUG() << "imageReady emitted. all packets arrived";
             }
         }
             break;
@@ -1422,7 +1424,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 //GAudioOutput::instance()->say(errString+tr(", please check console for details."));
                 emit textMessageReceived(uasId, message.compid, 255, errString);
                 std::cout << "Unable to decode message from system " << std::dec << static_cast<int>(message.sysid) << " with message id:" << static_cast<int>(message.msgid) << std::endl;
-                //qDebug() << std::cerr << "Unable to decode message from system " << std::dec << static_cast<int>(message.acid) << " with message id:" << static_cast<int>(message.msgid) << std::endl;
+                //QLOG_DEBUG() << std::cerr << "Unable to decode message from system " << std::dec << static_cast<int>(message.acid) << " with message id:" << static_cast<int>(message.msgid) << std::endl;
             }
         }
             break;
@@ -1562,7 +1564,7 @@ void UAS::setHomePosition(double lat, double lon, double alt)
         home.latitude = lat*1E7;
         home.longitude = lon*1E7;
         home.altitude = alt*1000;
-        qDebug() << "lat:" << home.latitude << " lon:" << home.longitude;
+        QLOG_DEBUG() << "lat:" << home.latitude << " lon:" << home.longitude;
         mavlink_msg_set_gps_global_origin_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &home);
         sendMessage(msg);
     }
@@ -1692,7 +1694,7 @@ quint64 UAS::getUnixReferenceTime(quint64 time)
     // Same as getUnixTime, but does not react to attitudeStamped mode
     if (time == 0)
     {
-        //        qDebug() << "XNEW time:" <<QGC::groundTimeMilliseconds();
+        //        QLOG_DEBUG() << "XNEW time:" <<QGC::groundTimeMilliseconds();
         return QGC::groundTimeMilliseconds();
     }
     // Check if time is smaller than 40 years,
@@ -1717,7 +1719,7 @@ quint64 UAS::getUnixReferenceTime(quint64 time)
     else if (time < 1261440000000000)
 #endif
     {
-        //        qDebug() << "GEN time:" << time/1000 + onboardTimeOffset;
+        //        QLOG_DEBUG() << "GEN time:" << time/1000 + onboardTimeOffset;
         if (onboardTimeOffset == 0)
         {
             onboardTimeOffset = QGC::groundTimeMilliseconds() - time/1000;
@@ -1789,7 +1791,7 @@ quint64 UAS::getUnixTime(quint64 time)
     else if (time < 1261440000000000)
 #endif
     {
-        //        qDebug() << "GEN time:" << time/1000 + onboardTimeOffset;
+        //        QLOG_DEBUG() << "GEN time:" << time/1000 + onboardTimeOffset;
         if (onboardTimeOffset == 0 || time < (lastNonNullTime - 100))
         {
             lastNonNullTime = time;
@@ -1850,7 +1852,7 @@ void UAS::setMode(int mode)
     mavlink_message_t msg;
     mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, (uint8_t)uasId, newMode, (uint16_t)navMode);
     sendMessage(msg);
-    qDebug() << "SENDING REQUEST TO SET MODE TO SYSTEM" << uasId << ", REQUEST TO SET MODE " << newMode;
+    QLOG_DEBUG() << "SENDING REQUEST TO SET MODE TO SYSTEM" << uasId << ", REQUEST TO SET MODE " << newMode;
 }
 
 /**
@@ -1895,7 +1897,7 @@ void UAS::forwardMessage(mavlink_message_t message)
                 {
                     if(serial != links->at(i))
                     {
-                        qDebug()<<"Antenna tracking: Forwarding Over link: "<<serial->getName()<<" "<<serial;
+                        QLOG_TRACE()<<"Antenna tracking: Forwarding Over link: "<<serial->getName()<<" "<<serial;
                         sendMessage(serial, message);
                     }
                 }
@@ -2021,7 +2023,7 @@ QImage UAS::getImage()
 {
 #ifdef MAVLINK_ENABLED_PIXHAWK
 
-//    qDebug() << "IMAGE TYPE:" << imageType;
+//    QLOG_DEBUG() << "IMAGE TYPE:" << imageType;
 
     // RAW greyscale
     if (imageType == MAVLINK_DATA_STREAM_IMG_RAW8U)
@@ -2035,17 +2037,17 @@ QImage UAS::getImage()
         QByteArray tmpImage(header.toStdString().c_str(), header.toStdString().size() - 1);
         tmpImage.append(imageRecBuffer);
 
-        //qDebug() << "IMAGE SIZE:" << tmpImage.size() << "HEADER SIZE: (15):" << header.size() << "HEADER: " << header;
+        //QLOG_DEBUG() << "IMAGE SIZE:" << tmpImage.size() << "HEADER SIZE: (15):" << header.size() << "HEADER: " << header;
 
         if (imageRecBuffer.isNull())
         {
-            qDebug()<< "could not convertToPGM()";
+            QLOG_DEBUG()<< "could not convertToPGM()";
             return QImage();
         }
 
         if (!image.loadFromData(tmpImage, "PGM"))
         {
-            qDebug()<< __FILE__ << __LINE__ << "could not create extracted image";
+            QLOG_DEBUG()<< __FILE__ << __LINE__ << "could not create extracted image";
             return QImage();
         }
 
@@ -2058,7 +2060,7 @@ QImage UAS::getImage()
     {
         if (!image.loadFromData(imageRecBuffer))
         {
-            qDebug() << __FILE__ << __LINE__ << "Loading data from image buffer failed!";
+            QLOG_DEBUG() << __FILE__ << __LINE__ << "Loading data from image buffer failed!";
         }
     }
     // Restart statemachine
@@ -2074,7 +2076,7 @@ QImage UAS::getImage()
 void UAS::requestImage()
 {
 #ifdef MAVLINK_ENABLED_PIXHAWK
-    qDebug() << "trying to get an image from the uas...";
+    QLOG_DEBUG() << "trying to get an image from the uas...";
 
     // check if there is already an image transmission going on
     if (imagePacketsArrived == 0)
@@ -2116,14 +2118,14 @@ void UAS::requestParameters()
     mavlink_message_t msg;
     mavlink_msg_param_request_list_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), MAV_COMP_ID_ALL);
     sendMessage(msg);
-    qDebug() << __FILE__ << __LINE__ << "LOADING PARAM LIST";
+    QLOG_DEBUG() << __FILE__ << __LINE__ << "LOADING PARAM LIST";
 }
 
 void UAS::writeParametersToStorage()
 {
     mavlink_message_t msg;
     mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, MAV_CMD_PREFLIGHT_STORAGE, 1, 1, -1, -1, -1, 0, 0, 0);
-    qDebug() << "SENT COMMAND" << MAV_CMD_PREFLIGHT_STORAGE;
+    QLOG_DEBUG() << "SENT COMMAND" << MAV_CMD_PREFLIGHT_STORAGE;
     sendMessage(msg);
 }
 
@@ -2455,7 +2457,7 @@ void UAS::setParameter(const int component, const QString& id, const QVariant& v
         p.target_system = (uint8_t)uasId;
         p.target_component = (uint8_t)component;
 
-        //qDebug() << "SENT PARAM:" << value;
+        //QLOG_DEBUG() << "SENT PARAM:" << value;
 
         // Copy string into buffer, ensuring not to exceed the buffer size
         for (unsigned int i = 0; i < sizeof(p.param_id); i++)
@@ -2490,7 +2492,7 @@ void UAS::requestParameter(int component, int id)
     read.target_component = component;
     mavlink_msg_param_request_read_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &read);
     sendMessage(msg);
-    //qDebug() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM ID" << id;
+    //QLOG_DEBUG() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM ID" << id;
 }
 
 /**
@@ -2513,7 +2515,7 @@ void UAS::requestParameter(int component, const QString& parameter)
     read.target_component = component;
     mavlink_msg_param_request_read_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &read);
     sendMessage(msg);
-    qDebug() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM NAME" << parameter;
+    QLOG_DEBUG() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM NAME" << parameter;
 }
 
 /**
@@ -2658,13 +2660,13 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
         mavlink_message_t message;
         mavlink_msg_manual_control_pack(mavlink->getSystemId(), mavlink->getComponentId(), &message, this->uasId, (float)manualPitchAngle, (float)manualRollAngle, (float)manualThrust, (float)manualYawAngle, buttons);
         sendMessage(message);
-        //qDebug() << __FILE__ << __LINE__ << ": SENT MANUAL CONTROL MESSAGE: roll" << manualRollAngle << " pitch: " << manualPitchAngle << " yaw: " << manualYawAngle << " thrust: " << manualThrust;
+        //QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT MANUAL CONTROL MESSAGE: roll" << manualRollAngle << " pitch: " << manualPitchAngle << " yaw: " << manualYawAngle << " thrust: " << manualThrust;
 
         emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
     }
     else
     {
-        //qDebug() << "JOYSTICK/MANUAL CONTROL: IGNORING COMMANDS: Set mode to MANUAL to send joystick commands first";
+        //QLOG_DEBUG() << "JOYSTICK/MANUAL CONTROL: IGNORING COMMANDS: Set mode to MANUAL to send joystick commands first";
     }
 }
 
@@ -2676,13 +2678,13 @@ void UAS::setManual6DOFControlCommands(double x, double y, double z, double roll
         mavlink_message_t message;
         mavlink_msg_setpoint_6dof_pack(mavlink->getSystemId(), mavlink->getComponentId(), &message, this->uasId, (float)x, (float)y, (float)z, (float)roll, (float)pitch, (float)yaw);
         sendMessage(message);
-        qDebug() << __FILE__ << __LINE__ << ": SENT 6DOF CONTROL MESSAGE: x" << x << " y: " << y << " z: " << z << " roll: " << roll << " pitch: " << pitch << " yaw: " << yaw;
+        QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT 6DOF CONTROL MESSAGE: x" << x << " y: " << y << " z: " << z << " roll: " << roll << " pitch: " << pitch << " yaw: " << yaw;
 
         //emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
     }
     else
     {
-        qDebug() << "3DMOUSE/MANUAL CONTROL: IGNORING COMMANDS: Set mode to MANUAL to send 3DMouse commands first";
+        QLOG_DEBUG() << "3DMOUSE/MANUAL CONTROL: IGNORING COMMANDS: Set mode to MANUAL to send 3DMouse commands first";
     }
 }
 
@@ -2711,7 +2713,7 @@ void UAS::receiveButton(int buttonIndex)
 
         break;
     }
-    //    qDebug() << __FILE__ << __LINE__ << ": Received button clicked signal (button # is: " << buttonIndex << "), UNIMPLEMENTED IN MAVLINK!";
+    //    QLOG_DEBUG() << __FILE__ << __LINE__ << ": Received button clicked signal (button # is: " << buttonIndex << "), UNIMPLEMENTED IN MAVLINK!";
 
 }
 
@@ -2875,7 +2877,7 @@ void UAS::enableHilXPlane(bool enable)
             stopHil();
             delete simulation;
         }
-        qDebug() << "CREATED NEW XPLANE LINK";
+        QLOG_DEBUG() << "CREATED NEW XPLANE LINK";
         simulation = new QGCXPlaneLink(this);
     }
     // Connect X-Plane Link
@@ -2941,7 +2943,7 @@ void UAS::sendHilState(quint64 time_us, float roll, float pitch, float yaw, floa
         mavlink_message_t msg;
         mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, navMode);
         sendMessage(msg);
-        qDebug() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
     }
 }
 
@@ -2965,7 +2967,7 @@ void UAS::sendHilSensors(quint64 time_us, float xacc, float yacc, float zacc, fl
         mavlink_message_t msg;
         mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, navMode);
         sendMessage(msg);
-        qDebug() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
     }
 }
 
@@ -2996,7 +2998,7 @@ void UAS::sendHilGps(quint64 time_us, double lat, double lon, double alt, int fi
         mavlink_message_t msg;
         mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, navMode);
         sendMessage(msg);
-        qDebug() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
     }
 }
 
@@ -3152,7 +3154,7 @@ QString UAS::getShortModeTextFor(int id)
     QString mode;
     uint8_t modeid = id;
 
-    qDebug() << "MODE:" << modeid;
+    QLOG_DEBUG() << "MODE:" << modeid;
 
     // BASE MODE DECODING
     if (modeid & (uint8_t)MAV_MODE_FLAG_DECODE_POSITION_AUTO)

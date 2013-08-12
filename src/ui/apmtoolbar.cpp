@@ -1,10 +1,41 @@
-#include <QDebug>
-#include <QDeclarativeContext>
-#include <QGraphicsObject>
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2013 APM_PLANNER PROJECT <http://www.diydrones.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+
+/**
+ * @file
+ *   @brief APM Tool Bar
+ *
+ *   @author Bill Bonney <billbonney@communistech.com>
+ *
+ */
+
+#include "apmtoolbar.h"
+#include "QsLog.h"
 #include "LinkManager.h"
 #include "MainWindow.h"
 #include "SerialLink.h"
-#include "apmtoolbar.h"®
+#include <QDeclarativeContext>
+#include <QGraphicsObject>
+
 
 APMToolBar::APMToolBar(QWidget *parent):
     QDeclarativeView(parent), m_uas(0)
@@ -51,7 +82,7 @@ void APMToolBar::armingChanged(bool armed)
 
 void APMToolBar::armingChanged(int sysId, QString armingState)
 {
-    qDebug() << "APMToolBar: sysid " << sysId << " armState" << armingState;
+    QLOG_DEBUG() << "APMToolBar: sysid " << sysId << " armState" << armingState;
 }
 
 void APMToolBar::setFlightViewAction(QAction *action)
@@ -91,41 +122,41 @@ void APMToolBar::setConnectMAVAction(QAction *action)
 
 void APMToolBar::selectFlightView()
 {
-    qDebug() << "APMToolBar: SelectFlightView";
+    QLOG_DEBUG() << "APMToolBar: SelectFlightView";
     emit triggerFlightView();
 }
 
 void APMToolBar::selectFlightPlanView()
 {
-    qDebug() << "APMToolBar: SelectFlightPlanView";
+    QLOG_DEBUG() << "APMToolBar: SelectFlightPlanView";
     emit triggerFlightPlanView();
 }
 
 void APMToolBar::selectInitialSetupView()
 {
-    qDebug() << "APMToolBar: selectInitialSetupView";
+    QLOG_DEBUG() << "APMToolBar: selectInitialSetupView";
     emit triggerInitialSetupView();
 }
 
 void APMToolBar::selectConfigTuningView()
 {
-    qDebug() << "APMToolBar: selectConfigTuningView";
+    QLOG_DEBUG() << "APMToolBar: selectConfigTuningView";
     emit triggerConfigTuningView();
 }
 
 void APMToolBar::selectSimulationView()
 {
-    qDebug() << "APMToolBar: selectSimulationView";
+    QLOG_DEBUG() << "APMToolBar: selectSimulationView";
 }
 
 void APMToolBar::selectTerminalView()
 {
-    qDebug() << "APMToolBar: selectTerminalView";
+    QLOG_DEBUG() << "APMToolBar: selectTerminalView";
 }
 
 void APMToolBar::connectMAV()
 {
-    qDebug() << "APMToolBar: connectMAV ";
+    QLOG_DEBUG() << "APMToolBar: connectMAV ";
 
     bool connected = LinkManager::instance()->getLinks().last()->isConnected();
     bool result;
@@ -142,7 +173,7 @@ void APMToolBar::connectMAV()
         // result need to be the opposite of success.
         result = !LinkManager::instance()->getLinks().last()->disconnect();
     }
-    qDebug() << "result = " << result;
+    QLOG_DEBUG() << "result = " << result;
 
     // Change the image to represent the state
     setConnection(result);
@@ -159,13 +190,13 @@ void APMToolBar::setConnection(bool connection)
 
 APMToolBar::~APMToolBar()
 {
-    qDebug() << "Destory APM Toolbar";
+    QLOG_DEBUG() << "Destory APM Toolbar";
 }
 
 void APMToolBar::showConnectionDialog()
 {
     // Displays a UI where the user can select a MAV Link.
-    qDebug() << "APMToolBar: showConnectionDialog link count ="
+    QLOG_DEBUG() << "APMToolBar: showConnectionDialog link count ="
              << LinkManager::instance()->getLinks().count();
 
     LinkInterface *link = LinkManager::instance()->getLinks().last();
@@ -179,7 +210,7 @@ void APMToolBar::showConnectionDialog()
         result = MainWindow::instance()->configLink(link);
 
         if (!result)
-            qDebug() << "Link Config Failed!";
+            QLOG_DEBUG() << "Link Config Failed!";
     } else {
         // No Link so prompt to create one
         MainWindow::instance()->addLink();
@@ -194,7 +225,8 @@ void APMToolBar::updateLinkDisplay(LinkInterface* newLink)
         //We only want to operate on serial links
         return;
     }
-    qDebug() << "APMToolBar: updateLinkDisplay";
+    QLOG_DEBUG() << "APMToolBar: updateLinkDisplay";
+
     QObject *object = rootObject();
 
     if (newLink && object){

@@ -31,7 +31,7 @@ This file is part of the QGROUNDCONTROL project
 #define OPALLINK_H
 
 #include <QMutex>
-#include <QDebug>
+
 #include <QTextStreamManipulator>
 #include <QTimer>
 #include <QQueue>

@@ -1,14 +1,14 @@
+#include "QGCComboBox.h"
+#include "ui_QGCComboBox.h"
+#include "QsLog.h"
+#include "UASInterface.h"
+#include "UASManager.h"
+
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QSettings>
 #include <QTimer>
 #include <QToolTip>
-
-#include "QGCComboBox.h"
-#include "ui_QGCComboBox.h"
-#include "UASInterface.h"
-#include "UASManager.h"
-
 
 QGCComboBox::QGCComboBox(QWidget *parent) :
     QGCToolWidgetItem("Combo", parent),
@@ -249,17 +249,17 @@ void QGCComboBox::sendParameter()
         // Set value, param manager handles retransmission
         if (uas->getParamManager())
         {
-            qDebug() << "Sending param:" << parameterName << "to component" << component << "with a value of" << parameterValue;
+            QLOG_DEBUG() << "Sending param:" << parameterName << "to component" << component << "with a value of" << parameterValue;
             uas->getParamManager()->setParameter(component, parameterName, parameterValue);
         }
         else
         {
-            qDebug() << "UAS HAS NO PARAM MANAGER, DOING NOTHING";
+            QLOG_DEBUG() << "UAS HAS NO PARAM MANAGER, DOING NOTHING";
         }
     }
     else
     {
-        qDebug() << __FILE__ << __LINE__ << "NO UAS SET, DOING NOTHING";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "NO UAS SET, DOING NOTHING";
     }
 }
 
@@ -406,7 +406,7 @@ void QGCComboBox::readSettings(const QString& pre,const QVariantMap& settings)
             comboBoxIndexToPixmap[i] = QPixmap(pixmapfn);
         }
         ui->editOptionComboBox->addItem(settings.value(pre + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_TEXT").toString());
-        //qDebug() << "Adding val:" << settings.value(pre + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_TEXT").toString() << settings.value(pre + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_VAL").toInt();
+        //QLOG_DEBUG) << "Adding val:" << settings.value(pre + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_TEXT").toString() << settings.value(pre + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_VAL").toInt();
         comboBoxTextToValMap[settings.value(pre + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_TEXT").toString()] = settings.value(pre + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_VAL").toInt();
         if (type == "INDIVIDUAL")
         {
@@ -451,7 +451,7 @@ void QGCComboBox::readSettings(const QSettings& settings)
             comboBoxIndexToPixmap[i] = QPixmap(pixmapfn);
         }
         ui->editOptionComboBox->addItem(settings.value("QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_TEXT").toString());
-        qDebug() << "Adding val:" << settings.value("QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i)).toString() << settings.value("QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_VAL").toInt();
+        QLOG_DEBUG() << "Adding val:" << settings.value("QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i)).toString() << settings.value("QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_VAL").toInt();
         comboBoxTextToValMap[settings.value("QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_TEXT").toString()] = settings.value("QGC_PARAM_COMBOBOX_ITEM_" + QString::number(i) + "_VAL").toInt();
     }*/
 

@@ -29,6 +29,12 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
+#include "QsLog.h"
+#include "UASManager.h"
+#include "UAS.h"
+#include "HUD.h"
+#include "QGC.h"
+
 #include <QShowEvent>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -36,15 +42,10 @@ This file is part of the QGROUNDCONTROL project
 #include <QFileDialog>
 #include <QPaintEvent>
 
-#include <QDebug>
+
 #include <cmath>
 #include <qmath.h>
 #include <limits>
-
-#include "UASManager.h"
-#include "UAS.h"
-#include "HUD.h"
-#include "QGC.h"
 
 /**
  * @warning The HUD widget will not start painting its content automatically
@@ -150,15 +151,15 @@ HUD::HUD(int width, int height, QWidget* parent)
     fontDatabase = QFontDatabase();
     const QString fontFileName = ":/general/vera.ttf"; ///< Font file is part of the QRC file and compiled into the app
     const QString fontFamilyName = "Bitstream Vera Sans";
-    if(!QFile::exists(fontFileName)) qDebug() << "ERROR! font file: " << fontFileName << " DOES NOT EXIST!";
+    if(!QFile::exists(fontFileName)) QLOG_DEBUG() << "ERROR! font file: " << fontFileName << " DOES NOT EXIST!";
 
     fontDatabase.addApplicationFont(fontFileName);
     font = fontDatabase.font(fontFamilyName, "Roman", qMax(5,(int)(10.0f*scalingFactor*1.2f+0.5f)));
     QFont* fontPtr = &font;
     if (!fontPtr) {
-        qDebug() << "ERROR! FONT NOT LOADED!";
+        QLOG_DEBUG() << "ERROR! FONT NOT LOADED!";
     } else {
-        if (font.family() != fontFamilyName) qDebug() << "ERROR! WRONG FONT LOADED: " << fontFamilyName;
+        if (font.family() != fontFamilyName) QLOG_DEBUG() << "ERROR! WRONG FONT LOADED: " << fontFamilyName;
     }
 
     // Connect with UAS
@@ -417,7 +418,7 @@ void HUD::updateLoad(UASInterface* uas, double load)
  */
 float HUD::refToScreenX(float x)
 {
-    //qDebug() << "sX: " << (scalingFactor * x) << "Orig:" << x;
+    //QLOG_DEBUG() << "sX: " << (scalingFactor * x) << "Orig:" << x;
     return (scalingFactor * x);
 }
 /**
@@ -426,7 +427,7 @@ float HUD::refToScreenX(float x)
  */
 float HUD::refToScreenY(float y)
 {
-    //qDebug() << "sY: " << (scalingFactor * y);
+    //QLOG_DEBUG() << "sY: " << (scalingFactor * y);
     return (scalingFactor * y);
 }
 
@@ -493,11 +494,11 @@ void HUD::paintHUD()
 {
     if (isVisible()) {
         //    static quint64 interval = 0;
-        //    qDebug() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval << __FILE__ << __LINE__;
+        //    QLOG_DEBUG() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval << __FILE__ << __LINE__;
         //    interval = MG::TIME::getGroundTimeNow();
 
 #if (QGC_EVENTLOOP_DEBUG)
-        qDebug() << "EVENTLOOP:" << __FILE__ << __LINE__;
+        QLOG_DEBUG() << "EVENTLOOP:" << __FILE__ << __LINE__;
 #endif
 
         // Read out most important values to limit hash table lookups
@@ -534,7 +535,7 @@ void HUD::paintHUD()
 
         yawTrans = 0;
 
-        //qDebug() << "yaw translation" << yawTrans << "integral" << yawInt << "difference" << yawDiff << "yaw" << yaw;
+        //QLOG_DEBUG() << "yaw translation" << yawTrans << "integral" << yawInt << "difference" << yawDiff << "yaw" << yaw;
 
         // Update scaling factor
         // adjust scaling to fit both horizontally and vertically
@@ -545,7 +546,7 @@ void HUD::paintHUD()
         // Fill with black background
         if (videoEnabled) {
             if (nextOfflineImage != "" && QFileInfo(nextOfflineImage).exists()) {
-                qDebug() << __FILE__ << __LINE__ << "template image:" << nextOfflineImage;
+                QLOG_DEBUG() << __FILE__ << __LINE__ << "template image:" << nextOfflineImage;
                 QImage fill = QImage(nextOfflineImage);
 
                 glImage = fill;
@@ -717,7 +718,7 @@ void HUD::paintHUD()
 
 //            painter.translate(0, (-pitchLP/(float)M_PI)* -180.0f * refToScreenY(1.8f));
 
-//            //qDebug() << "ROLL" << roll << "PITCH" << pitch << "YAW DIFF" << valuesDot.value("roll", 0.0f);
+//            //QLOG_DEBUG() << "ROLL" << roll << "PITCH" << pitch << "YAW DIFF" << valuesDot.value("roll", 0.0f);
 
 //            // PITCH
 
@@ -735,7 +736,7 @@ void HUD::paintHUD()
 
                 painter.translate(0, (-att.y()/(float)M_PI)* -180.0f * refToScreenY(1.8f));
 
-                //qDebug() << "ROLL" << roll << "PITCH" << pitch << "YAW DIFF" << valuesDot.value("roll", 0.0f);
+                //QLOG_DEBUG() << "ROLL" << roll << "PITCH" << pitch << "YAW DIFF" << valuesDot.value("roll", 0.0f);
 
                 // PITCH
 
@@ -1195,7 +1196,7 @@ void HUD::setImageSize(int width, int height, int depth, int channels)
             image->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 image->setColor(i, qRgb(i, i, i));
-                //qDebug() << __FILE__ << __LINE__ << std::hex << i;
+                //QLOG_DEBUG() << __FILE__ << __LINE__ << std::hex << i;
             }
 
         }
@@ -1208,7 +1209,7 @@ void HUD::setImageSize(int width, int height, int depth, int channels)
         image->fill(0);
         glImage = *image;
 
-        qDebug() << __FILE__ << __LINE__ << "Setting up image";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "Setting up image";
 
         // Set size once
         setFixedSize(receivedWidth, receivedHeight);
@@ -1224,7 +1225,7 @@ void HUD::setImageSize(int width, int height, int depth, int channels)
 void HUD::startImage(int imgid, int width, int height, int depth, int channels)
 {
     Q_UNUSED(imgid);
-    //qDebug() << "HUD: starting image (" << width << "x" << height << ", " << depth << "bits) with " << channels << "channels";
+    //QLOG_DEBUG() << "HUD: starting image (" << width << "x" << height << ", " << depth << "bits) with " << channels << "channels";
 
     // Copy previous image to screen if it hasn't been finished properly
     finishImage();
@@ -1244,7 +1245,7 @@ void HUD::finishImage()
 
 void HUD::commitRawDataToGL()
 {
-    qDebug() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
+    QLOG_DEBUG() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
     if (image != NULL) {
         QImage::Format format = image->format();
         QImage* newImage = new QImage(rawImage, receivedWidth, receivedHeight, format);
@@ -1253,7 +1254,7 @@ void HUD::commitRawDataToGL()
             newImage->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 newImage->setColor(i, qRgb(i, i, i));
-                //qDebug() << __FILE__ << __LINE__ << std::hex << i;
+                //QLOG_DEBUG() << __FILE__ << __LINE__ << std::hex << i;
             }
         }
 
@@ -1263,10 +1264,10 @@ void HUD::commitRawDataToGL()
         // Switch buffers
         if (rawImage == rawBuffer1) {
             rawImage = rawBuffer2;
-            //qDebug() << "Now buffer 2";
+            //QLOG_DEBUG() << "Now buffer 2";
         } else {
             rawImage = rawBuffer1;
-            //qDebug() << "Now buffer 1";
+            //QLOG_DEBUG() << "Now buffer 1";
         }
     }
     update();
@@ -1313,15 +1314,15 @@ void HUD::enableVideo(bool enabled)
 void HUD::setPixels(int imgid, const unsigned char* imageData, int length, int startIndex)
 {
     Q_UNUSED(imgid);
-    //    qDebug() << "at" << __FILE__ << __LINE__ << ": Received startindex" << startIndex << "and length" << length << "(" << startIndex+length << "of" << rawExpectedBytes << "bytes)";
+    //    QLOG_DEBUG() << "at" << __FILE__ << __LINE__ << ": Received startindex" << startIndex << "and length" << length << "(" << startIndex+length << "of" << rawExpectedBytes << "bytes)";
 
     if (imageStarted)
     {
-        //if (rawLastIndex != startIndex) qDebug() << "PACKET LOSS!";
+        //if (rawLastIndex != startIndex) QLOG_DEBUG() << "PACKET LOSS!";
 
         if (startIndex+length > rawExpectedBytes)
         {
-            qDebug() << "HUD: OVERFLOW! startIndex:" << startIndex << "length:" << length << "image raw size" << ((receivedWidth * receivedHeight * receivedChannels * receivedDepth) / 8) - 1;
+            QLOG_DEBUG() << "HUD: OVERFLOW! startIndex:" << startIndex << "length:" << length << "image raw size" << ((receivedWidth * receivedHeight * receivedChannels * receivedDepth) / 8) - 1;
         }
         else
         {
@@ -1332,7 +1333,7 @@ void HUD::setPixels(int imgid, const unsigned char* imageData, int length, int s
             // Check if we just reached the end of the image
             if (startIndex+length == rawExpectedBytes)
             {
-                //qDebug() << "HUD: END OF IMAGE REACHED!";
+                //QLOG_DEBUG() << "HUD: END OF IMAGE REACHED!";
                 finishImage();
                 rawLastIndex = 0;
             }
@@ -1344,7 +1345,7 @@ void HUD::setPixels(int imgid, const unsigned char* imageData, int length, int s
         //            {
         //                unsigned int x = (startIndex+i) % receivedWidth;
         //                unsigned int y = (unsigned int)((startIndex+i) / receivedWidth);
-        //                qDebug() << "Setting pixel" << x << "," << y << "to" << (unsigned int)*(rawImage+startIndex+i);
+        //                QLOG_DEBUG() << "Setting pixel" << x << "," << y << "to" << (unsigned int)*(rawImage+startIndex+i);
         //            }
         //        }
     }
@@ -1375,13 +1376,13 @@ void HUD::saveImages(bool save)
 
         imageLogDirectory = QFileDialog::getExistingDirectory(this, tr("Select image log directory"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
 
-        qDebug() << "Logging to:" << imageLogDirectory;
+        QLOG_DEBUG() << "Logging to:" << imageLogDirectory;
 
         if (imageLogDirectory != "")
         {
             imageLogCounter = 0;
             imageLoggingEnabled = true;
-            qDebug() << "Logging on";
+            QLOG_DEBUG() << "Logging on";
         }
         else
         {

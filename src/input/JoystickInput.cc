@@ -10,13 +10,13 @@
  *
  */
 
+#include "QsLog.h"
 #include "JoystickInput.h"
-
-#include <QDebug>
-#include <limits.h>
 #include "UAS.h"
 #include "UASManager.h"
 #include "QGC.h"
+
+#include <limits.h>
 #include <QMutexLocker>
 #include <QSettings>
 
@@ -190,7 +190,7 @@ void JoystickInput::run()
             switch(event.type) {
             case SDL_KEYDOWN:
                 /* handle keyboard stuff here */
-                //qDebug() << "KEY PRESSED!";
+                QLOG_TRACE() << "KEY PRESSED!";
                 break;
 
             case SDL_QUIT:
@@ -200,7 +200,7 @@ void JoystickInput::run()
 
             case SDL_JOYBUTTONDOWN:  /* Handle Joystick Button Presses */
                 if ( event.jbutton.button == 0 ) {
-                    //qDebug() << "BUTTON PRESSED!";
+                    QLOG_TRACE() << "BUTTON PRESSED!";
                 }
                 break;
 
@@ -217,7 +217,7 @@ void JoystickInput::run()
                 break;
 
             default:
-                //qDebug() << "SDL event occured";
+                QLOG_TRACE() << "SDL event occured";
                 break;
             }
         }
@@ -225,7 +225,7 @@ void JoystickInput::run()
 //        // Display all axes
 //        for(int i = 0; i < SDL_JoystickNumAxes(joystick); i++)
 //        {
-//            qDebug() << "\rAXIS" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
+//            QLOG_TRACE() << "\rAXIS" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
 //        }
 
         // THRUST
@@ -297,7 +297,7 @@ void JoystickInput::run()
         int buttons = 0;
         for(int i = 0; i < SDL_JoystickNumButtons(joystick); i++)
         {
-            //qDebug() << "BUTTON" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
+            QLOG_TRACE() << "BUTTON" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
             if(SDL_JoystickGetButton(joystick, i))
             {
                 emit buttonPressed(i);

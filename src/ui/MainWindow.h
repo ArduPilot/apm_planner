@@ -346,14 +346,14 @@ protected:
     void storeSettings();
 
     // TODO Should be moved elsewhere, as the protocol does not belong to the UI
-    MAVLinkProtocol* mavlink;
+    QPointer<MAVLinkProtocol> mavlink;
 
-    MAVLinkSimulationLink* simulationLink;
-    LinkInterface* udpLink;
+    QPointer<MAVLinkSimulationLink> simulationLink;
+    QPointer<LinkInterface> udpLink;
 
     QSettings settings;
-    QStackedWidget *centerStack;
-    QActionGroup* centerStackActionGroup;
+    QPointer<QStackedWidget> centerStack;
+    QPointer<QActionGroup> centerStackActionGroup;
 
     // Center widgets
     QPointer<SubMainWindow> plannerView;
@@ -420,9 +420,9 @@ protected:
     QMap<int, QDockWidget*> hilDocks;
 
     // Popup widgets
-    JoystickWidget* joystickWidget;
+    QPointer<JoystickWidget> joystickWidget;
 
-    JoystickInput* joystick;
+    QPointer<JoystickInput> joystick;
 
 #ifdef MOUSE_ENABLED_WIN
     /** @brief 3d Mouse support (WIN only) */
@@ -437,23 +437,23 @@ protected:
 #endif // MOUSE_ENABLED_LINUX
 
     /** User interface actions **/
-    QAction* connectUASAct;
-    QAction* disconnectUASAct;
-    QAction* startUASAct;
-    QAction* returnUASAct;
-    QAction* stopUASAct;
-    QAction* killUASAct;
-    QAction* simulateUASAct;
+    QPointer<QAction> connectUASAct;
+    QPointer<QAction> disconnectUASAct;
+    QPointer<QAction> startUASAct;
+    QPointer<QAction> returnUASAct;
+    QPointer<QAction> stopUASAct;
+    QPointer<QAction> killUASAct;
+    QPointer<QAction> simulateUASAct;
 
 
-    LogCompressor* comp;
+    QPointer<LogCompressor> comp;
     QString screenFileName;
-    QTimer* videoTimer;
+    QPointer<QTimer> videoTimer;
     QString styleFileName;
     bool autoReconnect;
     Qt::WindowStates windowStateVal;
     bool lowPowerMode; ///< If enabled, QGC reduces the update rates of all widgets
-    QGCFlightGearLink* fgLink;
+    QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
 
 private:

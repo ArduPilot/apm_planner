@@ -36,7 +36,7 @@ This file is part of the PIXHAWK project
 #include <UASInterface.h>
 #include <UAS.h>
 #include <UASManager.h>
-#include <QDebug>
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>

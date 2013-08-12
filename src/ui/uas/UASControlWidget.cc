@@ -33,7 +33,7 @@ This file is part of the PIXHAWK project
 #include <QTimer>
 #include <QLabel>
 #include <QFileDialog>
-#include <QDebug>
+
 #include <QProcess>
 #include <QPalette>
 

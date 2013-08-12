@@ -1,12 +1,12 @@
-#include <QTimer>
-
+#include "ApmFirmwareConfig.h"
+#include "QsLog.h"
 #include "LinkManager.h"
 #include "LinkInterface.h"
 #include "qserialport.h"
 #include "qserialportinfo.h"
 #include "SerialLink.h"
 
-#include "ApmFirmwareConfig.h"
+#include <QTimer>
 
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
 {
@@ -65,7 +65,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
         ui.linkComboBox->insertItem(0,list.first(), list);
-        qDebug() << "Inserting " << list.first();
+        QLOG_DEBUG() << "Inserting " << list.first();
     }
 
 }
@@ -151,7 +151,7 @@ void ApmFirmwareConfig::requestBetaFirmwares()
     connect(reply8,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
     connect(reply9,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
     connect(reply9,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    qDebug() << "Getting Beta firmware...";
+    QLOG_DEBUG() << "Getting Beta firmware...";
 }
 
 void ApmFirmwareConfig::requestFirmwares()
@@ -197,7 +197,7 @@ void ApmFirmwareConfig::requestFirmwares()
     connect(reply8,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
     connect(reply9,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
     connect(reply9,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    qDebug() << "Getting Stable firmware...";
+    QLOG_DEBUG() << "Getting Stable firmware...";
 }
 
 void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
@@ -242,7 +242,7 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
         ui.progressBar->setValue(100);
         ui.statusLabel->setText(tr("Upload complete"));
     }
-    //qDebug() << "Upload finished!" << QString::number(status);
+    //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
     m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
     m_tempFirmwareFile = 0;
     ui.progressBar->setVisible(false);
@@ -286,14 +286,14 @@ void ApmFirmwareConfig::firmwareProcessReadyRead()
         }
     }
 
-    qDebug() << "E:" << output;
-    //qDebug() << "AVR Output:" << proc->readAllStandardOutput();
-    //qDebug() << "AVR Output:" << proc->readAllStandardError();
+    QLOG_DEBUG() << "E:" << output;
+    //QLOG_DEBUG() << "AVR Output:" << proc->readAllStandardOutput();
+    //QLOG_DEBUG() << "AVR Output:" << proc->readAllStandardError();
 }
 
 void ApmFirmwareConfig::downloadFinished()
 {
-    qDebug() << "Download finished, flashing firmware";
+    QLOG_DEBUG() << "Download finished, flashing firmware";
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply)
     {
@@ -316,9 +316,9 @@ void ApmFirmwareConfig::downloadFinished()
 
     foreach (const QSerialPortInfo &info, portList)
     {
-        qDebug() << "PortName    : " << info.portName()
+        QLOG_DEBUG() << "PortName    : " << info.portName()
                << "Description : " << info.description();
-        qDebug() << "Manufacturer: " << info.manufacturer();
+        QLOG_DEBUG() << "Manufacturer: " << info.manufacturer();
 
 
     }
@@ -326,7 +326,7 @@ void ApmFirmwareConfig::downloadFinished()
     //info.manufacturer() == "Arduino LLC (www.arduino.cc)"
     //info.description() == "%mega2560.name%"
 
-    qDebug() << "Attempting to reset port";
+    QLOG_DEBUG() << "Attempting to reset port";
 
 
     m_port= new QSerialPort(this);
@@ -337,7 +337,7 @@ void ApmFirmwareConfig::downloadFinished()
                 && m_port->setParity(m_settings.parity)
                 && m_port->setStopBits(m_settings.stopBits)
                 && m_port->setFlowControl(m_settings.flowControl)) {
-            qDebug() << "Open Terminal Console Serial Port";
+            QLOG_INFO() << "Open Terminal Console Serial Port";
             m_port->setDataTerminalReady(true);
             m_port->waitForBytesWritten(250);
             m_port->setDataTerminalReady(false);
@@ -355,7 +355,6 @@ void ApmFirmwareConfig::downloadFinished()
         m_port=0;
         return;
     }
-
 
     QString avrdudeExecutable;
     QStringList stringList;
@@ -376,12 +375,12 @@ void ApmFirmwareConfig::downloadFinished()
 #endif
 
     // Start the Flashing
-    qDebug() << avrdudeExecutable << stringList;
+    QLOG_DEBUG() << avrdudeExecutable << stringList;
     process->start(avrdudeExecutable,stringList);
 }
 void ApmFirmwareConfig::firmwareProcessError(QProcess::ProcessError error)
 {
-    qDebug() << "Error:" << error;
+    QLOG_DEBUG() << "Error:" << error;
 }
 void ApmFirmwareConfig::firmwareDownloadProgress(qint64 received,qint64 total)
 {
@@ -403,7 +402,7 @@ void ApmFirmwareConfig::flashButtonClicked()
                 SerialLink *link = qobject_cast<SerialLink*>(LinkManager::instance()->getLinks()[i]);
                 if (!link)
                 {
-                    qDebug() << "Eror, trying to program over a non serial link. This should not happen";
+                    QLOG_DEBUG() << "Eror, trying to program over a non serial link. This should not happen";
                     return;
                 }
                 if (!(QMessageBox::question(this,tr("WARNING"),tr("You are about to upload new firmware to your board. This will disconnect you if you are currently connected. Be sure the MAV is on the ground, and connected over USB/Serial link.\n\nDo you wish to proceed?"),QMessageBox::Yes,QMessageBox::No) == QMessageBox::Yes))
@@ -433,7 +432,7 @@ void ApmFirmwareConfig::flashButtonClicked()
                     && m_port->setParity(m_settings.parity)
                     && m_port->setStopBits(m_settings.stopBits)
                     && m_port->setFlowControl(m_settings.flowControl)) {
-                qDebug() << "Open Terminal Console Serial Port";
+                QLOG_INFO() << "Open Terminal Console Serial Port";
                 m_port->close();
             } else {
                 m_port->close();
@@ -452,7 +451,7 @@ void ApmFirmwareConfig::flashButtonClicked()
         m_port= 0;
         ui.progressBar->setVisible(true);
 
-        qDebug() << "Go download:" << m_buttonToUrlMap[senderbtn];
+        QLOG_DEBUG() << "Go download:" << m_buttonToUrlMap[senderbtn];
         QNetworkReply *reply = m_networkManager->get(QNetworkRequest(QUrl(m_buttonToUrlMap[senderbtn])));
         //http://firmware.diydrones.com/Plane/stable/apm2/ArduPlane.hex
         connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
@@ -465,13 +464,13 @@ void ApmFirmwareConfig::flashButtonClicked()
 void ApmFirmwareConfig::setLink(int index)
 {
     m_settings.name = ui.linkComboBox->currentText();
-    qDebug() << "Changed Link to:" << m_settings.name;
+    QLOG_INFO() << "Changed Link to:" << m_settings.name;
 }
 
 void ApmFirmwareConfig::firmwareListError(QNetworkReply::NetworkError error)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
-    qDebug() << "Error!" << reply->errorString();
+    QLOG_ERROR() << "Error!" << reply->errorString();
 }
 bool ApmFirmwareConfig::stripVersionFromGitReply(QString url, QString reply,QString type,QString stable,QString *out)
 {
@@ -535,8 +534,8 @@ void ApmFirmwareConfig::firmwareListFinished()
         ui.roverLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
         return;
     }
-    //qDebug() << "Match not found for:" << reply->url();
-    //qDebug() << "Git version line:" <<  replystr;
+    //QLOG_DEBUG() << "Match not found for:" << reply->url();
+    //QLOG_DEBUG() << "Git version line:" <<  replystr;
 }
 
 ApmFirmwareConfig::~ApmFirmwareConfig()

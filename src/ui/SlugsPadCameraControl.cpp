@@ -1,3 +1,4 @@
+#include "QsLog.h"
 #include "SlugsPadCameraControl.h"
 #include "ui_SlugsPadCameraControl.h"
 
@@ -107,7 +108,7 @@ void SlugsPadCameraControl::getDeltaPositionPad(int x2, int y2)
         ui->lbPixel->setText(QString::number(localMeasures.y()));
         ui->lbDirection->setText(dir);
 
-        //qDebug()<<dir;
+        //QLOG_DEBUG()<<dir;
         update();
     }
 }

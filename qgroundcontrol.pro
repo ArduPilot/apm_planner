@@ -53,6 +53,7 @@ linux-g++|linux-g++-64{
     BUILDDIR = $${OUT_PWD}/build
 }
 
+include (QsLog/QsLog.pri)
 
 
 LANGUAGE = C++

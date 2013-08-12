@@ -26,6 +26,8 @@ This file is part of the QGROUNDCONTROL project
  *   @brief Implementation of class OpalRT::Parameter
  *   @author Bryan Godbolt <godbolt@ualberta.ca>
  */
+
+#include "QsLog.h"
 #include "Parameter.h"
 using namespace OpalRT;
 
@@ -106,7 +108,7 @@ void Parameter::setValue(float val)
     int returnVal = OpalSetParameters(allocatedParams, &numParams, &opalID,
                                       numValues, &returnedNumValues, &value);
     if (returnVal != EOK) {
-        //qDebug() << __FILE__ << ":" << __LINE__ << ": Error numer: " << QString::number(returnVal);
+        QLOG_TRACE() << " OpalSetParameters Error: " << QString::number(returnVal);
         OpalErrorMsg::displayLastErrorMsg();
     }
 }

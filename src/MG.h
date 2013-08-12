@@ -34,7 +34,7 @@ This file is part of the PIXHAWK project
 #define _MG_H_
 
 #include <QDateTime>
-#include <QDebug>
+
 #include <QDir>
 #include <QThread>
 #include <cmath>
@@ -381,7 +381,7 @@ public:
             }
         }
         //TODO The Mac application bundle in distribution is not yet included here
-        //qDebug() << "MG::supportfilesdirectory" << path;
+        //QLOG_DEBUG() << "MG::supportfilesdirectory" << path;
         return path;
     }
 

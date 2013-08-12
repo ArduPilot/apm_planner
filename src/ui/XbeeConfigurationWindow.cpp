@@ -1,4 +1,4 @@
-#include <QDebug>
+#include "QsLog.h"
 
 #include <XbeeConfigurationWindow.h>
 #include <XbeeLinkInterface.h>
@@ -290,7 +290,7 @@ XbeeConfigurationWindow::XbeeConfigurationWindow(LinkInterface* link, QWidget *p
 	}
 	else
 	{
-		qDebug() << "This is not a Xbee Link";
+        QLOG_DEBUG() << "This is not a Xbee Link";
 	}
 }
 

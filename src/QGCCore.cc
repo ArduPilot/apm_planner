@@ -39,7 +39,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QStyleFactory>
 #include <QAction>
 
-#include <QDebug>
+
 
 #include "configuration.h"
 #include "QGC.h"

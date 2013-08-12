@@ -1,3 +1,4 @@
+#include "QsLog.h"
 #include "MAVLinkDecoder.h"
 #include "UASManager.h"
 
@@ -166,7 +167,7 @@ quint64 MAVLinkDecoder::getUnixTimeFromMs(int systemID, quint64 time)
 //        onboardTimeOffset = 0;
 //        onboardTimeOffsetInvalidCount = 0;
 //        lastNonNullTime = 0;
-//        qDebug() << "RESETTET ONBOARD TIME OFFSET";
+//        QLOG_DEBUG() << "RESETTET ONBOARD TIME OFFSET";
 //    }
 
 //    // If we're progressing in time, set it
@@ -458,6 +459,6 @@ void MAVLinkDecoder::emitFieldValue(mavlink_message_t* msg, int fieldid, quint64
         }
         break;
     default:
-        qDebug() << "WARNING: UNKNOWN MAVLINK TYPE";
+        QLOG_DEBUG() << "WARNING: UNKNOWN MAVLINK TYPE";
     }
 }

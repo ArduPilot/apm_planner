@@ -27,6 +27,7 @@ This file is part of the QGROUNDCONTROL project
  *   @author Bryan Godbolt <godbolt@ualberta.ca>
  */
 
+#include "QsLog.h"
 #include "ParameterList.h"
 using namespace OpalRT;
 
@@ -76,9 +77,9 @@ ParameterList::ParameterList()
                 s = (*paramIter).getSimulinkPath() + (*paramIter).getSimulinkName();
                 if (opalParams->contains(s)) {
                     (*paramIter).setOpalID(opalParams->value(s));
-                    //                qDebug() << __FILE__ << " Line:" << __LINE__ << ": Successfully added " << s;
+                    QLOG_TRACE() << "ParameterList: Successfully added " << s;
                 } else {
-                    qWarning() << __FILE__ << " Line:" << __LINE__ << ": " << s << " was not found in param list";
+                    QLOG_WARN() << __FILE__ << " Line:" << __LINE__ << ": " << s << " was not found in param list";
                 }
             }
         }
@@ -173,7 +174,7 @@ void ParameterList::getParameterList(QMap<QString, unsigned short> *opalParams)
 //     Dump out the list of parameters
 //    QMap<QString, unsigned short>::const_iterator paramPrint;
 //    for (paramPrint = opalParams->begin(); paramPrint != opalParams->end(); ++paramPrint)
-//        qDebug() << paramPrint.key();
+//        QLOG_DEBUG() << paramPrint.key();
 
 
 }
@@ -261,13 +262,13 @@ bool ParameterList::read(QIODevice *device)
 
     if (!paramConfig->setContent(device, true, &errorStr, &errorLine,
                                  &errorColumn)) {
-        qDebug() << "Error reading XML Parameter File on line: " << errorLine << errorStr;
+        QLOG_INFO() << "Error reading XML Parameter File on line: " << errorLine << errorStr;
         return false;
     }
 
     QDomElement root = paramConfig->documentElement();
     if (root.tagName() != "ParameterList") {
-        qDebug() << __FILE__ << __LINE__ << "This is not a parameter list xml file";
+        QLOG_INFO() << "This is not a parameter list xml file";
         return false;
     }
 
@@ -278,9 +279,9 @@ bool ParameterList::read(QIODevice *device)
     }
 
     if (!reqdServoParams->empty()) {
-        qDebug() << __FILE__ << __LINE__ << "Missing the following required servo parameters";
+        QLOG_INFO() << "Missing the following required servo parameters";
         foreach(QString s, *reqdServoParams) {
-            qDebug() << s;
+            QLOG_INFO() << s;
         }
     }
 
@@ -323,7 +324,7 @@ void ParameterList::parseBlock(const QDomElement &block)
 
 
         } else {
-            qDebug() << __FILE__ << ":" << __LINE__ << ": error in xml doc in block" << block.attribute("name");
+            QLOG_INFO() << ": error in xml doc in block" << block.attribute("name");
         }
     }
 

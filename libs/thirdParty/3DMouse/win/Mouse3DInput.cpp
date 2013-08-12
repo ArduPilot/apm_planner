@@ -1,4 +1,4 @@
-
+#include "QsLog.h"
 #include "Mouse3DInput.h"
 
 #include <QApplication>
@@ -393,7 +393,7 @@ void Mouse3DInput::On3dmouseInput()
 	}
 
 #if _TRACE_3DINPUT_PERIOD
-	qDebug("On3DmouseInput() period is %dms\n", dwElapsedTime);
+    QLOG_INFO() << "On3DmouseInput() period is %dms\n", dwElapsedTime;
 #endif
 
 	float mouseData2Rotation = k3dmouseAngularVelocity;
@@ -513,7 +513,7 @@ void Mouse3DInput::OnRawInput(UINT nInputCode, HRAWINPUT hRawInput)
 	cbSize = cbSizeOfBuffer;
 	UINT nCount = this->GetRawInputBuffer(pRawInput, &cbSize, sizeof(RAWINPUTHEADER));
 	if (nCount == (UINT)-1) {
-		 qDebug ("GetRawInputBuffer returned error %d\n", GetLastError());
+        QLOG_DEBUG() << "GetRawInputBuffer returned error" << GetLastError() << "\n";
 	}
 
 	while (nCount>0 && nCount !=  static_cast<UINT>(-1)) {
@@ -543,7 +543,7 @@ bool Mouse3DInput::TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput)
 	bool bIsForeground = (nInputCode == RIM_INPUT);
 
 #if _TRACE_RI_TYPE
-	qDebug("Rawinput.header.dwType=0x%x\n", pRawInput->header.dwType);
+    QLOG_DEBUG() << "Rawinput.header.dwType=0x%x\n", pRawInput->header.dwType;
 #endif
 	// We are not interested in keyboard or mouse data received via raw input
 	if (pRawInput->header.dwType != RIM_TYPEHID) return false;
@@ -553,7 +553,7 @@ bool Mouse3DInput::TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput)
 	if (::GetRawInputDeviceInfo(pRawInput->header.hDevice, RIDI_DEVICENAME, NULL, &dwSize) == 0)  {
 		std::vector<wchar_t> szDeviceName(dwSize+1);
 		if (::GetRawInputDeviceInfo(pRawInput->header.hDevice, RIDI_DEVICENAME, &szDeviceName[0],	&dwSize) >0) {
-			qDebug("Device Name = %s\nDevice handle = 0x%x\n", &szDeviceName[0], pRawInput->header.hDevice);
+            QLOG_TRACE() << "Device Name = %s\nDevice handle = 0x%x\n", &szDeviceName[0], pRawInput->header.hDevice;
 		}
    }
 #endif
@@ -566,14 +566,14 @@ bool Mouse3DInput::TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput)
 #if _TRACE_RIDI_DEVICEINFO
 		switch (sRidDeviceInfo.dwType)  {
 			case RIM_TYPEMOUSE:
-				qDebug("\tsRidDeviceInfo.dwType=RIM_TYPEMOUSE\n");
+                QLOG_DEBUG() << "\tsRidDeviceInfo.dwType=RIM_TYPEMOUSE\n";
 				break;
 			case RIM_TYPEKEYBOARD:
-				qDebug("\tsRidDeviceInfo.dwType=RIM_TYPEKEYBOARD\n");
+                QLOG_DEBUG() << "\tsRidDeviceInfo.dwType=RIM_TYPEKEYBOARD\n";
 				break;
 			case RIM_TYPEHID:
-				qDebug("\tsRidDeviceInfo.dwType=RIM_TYPEHID\n");
-				qDebug("\tVendor=0x%x\n\tProduct=0x%x\n\tUsagePage=0x%x\n\tUsage=0x%x\n",
+                QLOG_DEBUG() <<"\tsRidDeviceInfo.dwType=RIM_TYPEHID\n";
+                QLOG_DEBUG() <<"\tVendor=0x%x\n\tProduct=0x%x\n\tUsagePage=0x%x\n\tUsage=0x%x\n",
 						sRidDeviceInfo.hid.dwVendorId,
 						sRidDeviceInfo.hid.dwProductId,
 						sRidDeviceInfo.hid.usUsagePage,
@@ -595,8 +595,8 @@ bool Mouse3DInput::TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput)
 					deviceData.fAxes[2] = static_cast<float>(pnRawData[2]);
 
 #if _TRACE_RI_RAWDATA
-					qDebug("Pan/Zoom RI Data =\t0x%x,\t0x%x,\t0x%x\n",
-									pnRawData[0],  pnRawData[1],  pnRawData[2]);
+                    QLOG_DEBUG() <<"Pan/Zoom RI Data =\t0x%x,\t0x%x,\t0x%x\n",
+                                    pnRawData[0],  pnRawData[1],  pnRawData[2];
 #endif
 					if (pRawInput->data.hid.dwSizeHid >= 13) {// Highspeed package
 						// Cache the rotation data
@@ -605,8 +605,8 @@ bool Mouse3DInput::TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput)
 						deviceData.fAxes[5] = static_cast<float>(pnRawData[5]);
 						deviceData.fIsDirty = true;
 #if _TRACE_RI_RAWDATA
-						qDebug("Rotation RI Data =\t0x%x,\t0x%x,\t0x%x\n",
-							 pnRawData[3], pnRawData[4], pnRawData[5]);
+                        QLOG_DEBUG() <<"Rotation RI Data =\t0x%x,\t0x%x,\t0x%x\n",
+                             pnRawData[3], pnRawData[4], pnRawData[5];
 #endif
 						return true;
 					}
@@ -628,8 +628,8 @@ bool Mouse3DInput::TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput)
 					deviceData.fIsDirty = true;
 
 #if _TRACE_RI_RAWDATA
-					qDebug("Rotation RI Data =\t0x%x,\t0x%x,\t0x%x\n",
-						pnRawData[0],  pnRawData[1], pnRawData[2]);
+                    QLOG_DEBUG() <<"Rotation RI Data =\t0x%x,\t0x%x,\t0x%x\n",
+                        pnRawData[0],  pnRawData[1], pnRawData[2];
 #endif
 					return true;
 				}
@@ -640,7 +640,7 @@ bool Mouse3DInput::TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput)
 
 				unsigned long dwKeystate = *reinterpret_cast<unsigned long*>(&pRawInput->data.hid.bRawData[1]);
 #if _TRACE_RI_RAWDATA
-				qDebug("ButtonData =0x%x\n", dwKeystate);
+                QLOG_DEBUG() <<"ButtonData =0x%x\n", dwKeystate;
 #endif
 				// Log the keystate changes
 				unsigned long dwOldKeystate = fDevice2Keystate[pRawInput->header.hDevice];

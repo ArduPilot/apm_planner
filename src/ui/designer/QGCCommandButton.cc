@@ -1,10 +1,9 @@
-#include <QDockWidget>
-
 #include "QGCCommandButton.h"
 #include "ui_QGCCommandButton.h"
-
+#include "QsLog.h"
 #include "MAVLinkProtocol.h"
 #include "UASManager.h"
+#include <QDockWidget>
 
 QGCCommandButton::QGCCommandButton(QWidget *parent) :
     QGCToolWidgetItem("Command Button", parent),
@@ -103,21 +102,21 @@ void QGCCommandButton::sendCommand()
             if (responsecount == 0)
             {
                 //We're finished. Reset.
-                qDebug() << "Finished sequence";
+                QLOG_DEBUG() << "Finished sequence";
                 QGCToolWidgetItem::uas->executeCommandAck(responsenum-responsecount,true);
                 responsecount = responsenum;
                 return;
             }
             if (responsecount < responsenum)
             {
-                qDebug() << responsecount << responsenum;
+                QLOG_DEBUG() << responsecount << responsenum;
                 QGCToolWidgetItem::uas->executeCommandAck(responsenum-responsecount,true);
                 responsecount--;
                 return;
             }
             else
             {
-                qDebug() << "No sequence yet, sending command";
+                QLOG_DEBUG() << "No sequence yet, sending command";
                 responsecount--;
             }
         }
@@ -147,13 +146,13 @@ void QGCCommandButton::sendCommand()
                     emit showLabel(showlabelname,index);
                 }
                 QGCToolWidgetItem::uas->executeCommand(command, confirm, param1, param2, param3, param4, param5, param6, param7, component);
-                //qDebug() << __FILE__ << __LINE__ << "SENDING COMMAND" << index;
+                //QLOG_DEBUG() << __FILE__ << __LINE__ << "SENDING COMMAND" << index;
             }
         }
     }
     else
     {
-        qDebug() << __FILE__ << __LINE__ << "NO UAS SET, DOING NOTHING";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "NO UAS SET, DOING NOTHING";
     }
 }
 
@@ -255,7 +254,7 @@ void QGCCommandButton::endEditMode()
 
 void QGCCommandButton::writeSettings(QSettings& settings)
 {
-    //qDebug() << "COMMAND BUTTON WRITING SETTINGS";
+    QLOG_DEBUG() << "COMMAND BUTTON WRITING SETTINGS";
     settings.setValue("TYPE", "COMMANDBUTTON");
     settings.setValue("QGC_COMMAND_BUTTON_DESCRIPTION", ui->nameLabel->text());
     settings.setValue("QGC_COMMAND_BUTTON_BUTTONTEXT", ui->commandButton->text());

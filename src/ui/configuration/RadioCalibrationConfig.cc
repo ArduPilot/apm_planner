@@ -30,6 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "RadioCalibrationConfig.h"
+#include "QsLog.h"
 #include <QMessageBox>
 
 RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent)
@@ -215,8 +216,8 @@ void RadioCalibrationConfig::calibrateButtonClicked()
 
         for (unsigned int i = 0; i < 8; ++i)
         {
-            qDebug() << "SENDING MIN" << minTpl.arg(i+1) << rcMin[i];
-            qDebug() << "SENDING MAX" << maxTpl.arg(i+1) << rcMax[i];
+            QLOG_DEBUG() << "SENDING MIN" << minTpl.arg(i+1) << rcMin[i];
+            QLOG_DEBUG() << "SENDING MAX" << maxTpl.arg(i+1) << rcMax[i];
             m_uas->getParamManager()->setParameter(1, minTpl.arg(i+1), (float)rcMin[i]);
             QGC::SLEEP::usleep(50000);
             //m_uas->setParameter(0, trimTpl.arg(i+1), rcTrim[i]);

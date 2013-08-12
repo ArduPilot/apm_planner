@@ -35,7 +35,7 @@ This file is part of the QGROUNDCONTROL project
 #include "ui_ParameterInterface.h"
 #include "QGCSensorSettingsWidget.h"
 
-#include <QDebug>
+
 
 ParameterInterface::ParameterInterface(QWidget *parent) :
     QWidget(parent),

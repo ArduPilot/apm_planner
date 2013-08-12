@@ -32,11 +32,9 @@ This file is part of the QGROUNDCONTROL project
 #include "WatchdogView.h"
 #include "WatchdogProcessView.h"
 #include "ui_WatchdogControl.h"
+#include "QsLog.h"
 #include "PxQuadMAV.h"
-
 #include "UASManager.h"
-
-#include <QDebug>
 
 WatchdogControl::WatchdogControl(QWidget *parent) :
     QWidget(parent),
@@ -91,8 +89,8 @@ void WatchdogControl::updateWatchdog(int systemId, int watchdogId, unsigned int 
     // start the timeout timer
     //watchdog.timeoutTimer_.reset();
 
-    qDebug() << "WATCHDOG RECEIVED";
-    //qDebug() << "<-- received mavlink_watchdog_heartbeat_t " << msg->sysid << " / " << payload.watchdog_id << " / " << payload.process_count << std::endl;
+    QLOG_DEBUG() << "WATCHDOG RECEIVED";
+//    QLOG_TRACE() << "<-- received mavlink_watchdog_heartbeat_t " << msg->sysid << " / " << payload.watchdog_id << " / " << payload.process_count << std::endl;
 }
 
 void WatchdogControl::addProcess(int systemId, int watchdogId, int processId, QString name, QString arguments, int timeout)
@@ -105,9 +103,9 @@ void WatchdogControl::addProcess(int systemId, int watchdogId, int processId, QS
     process.name_ = name.toStdString();
     process.arguments_ = arguments.toStdString();
     process.timeout_ = timeout;
-    qDebug() << "PROCESS RECEIVED";
-    qDebug() << "SYS" << systemId << "WD" << watchdogId << "PROCESS" << processId << name << "ARG" << arguments << "TO" << timeout;
-    //qDebug() << "<-- received mavlink_watchdog_process_info_t " << msg->sysid << " / " << (const char*)payload.name << " / " << (const char*)payload.arguments << " / " << payload.timeout << std::endl;
+    QLOG_DEBUG() << "PROCESS RECEIVED";
+    QLOG_DEBUG() << "SYS" << systemId << "WD" << watchdogId << "PROCESS" << processId << name << "ARG" << arguments << "TO" << timeout;
+//    QLOG_TRACE() << "<-- received mavlink_watchdog_process_info_t " << msg->sysid << " / " << (const char*)payload.name << " / " << (const char*)payload.arguments << " / " << payload.timeout << std::endl;
 }
 
 
@@ -123,11 +121,11 @@ void WatchdogControl::updateProcess(int systemId, int watchdogId, int processId,
     process.crashes_ = crashes;
     process.pid_ = pid;
 
-    qDebug() << "PROCESS UPDATED";
-    qDebug() << "SYS" << systemId << "WD" << watchdogId << "PROCESS" << processId << "STATE" << state << "CRASH" << crashes << "PID" << pid;
+    QLOG_DEBUG() << "PROCESS UPDATED";
+    QLOG_DEBUG() << "SYS" << systemId << "WD" << watchdogId << "PROCESS" << processId << "STATE" << state << "CRASH" << crashes << "PID" << pid;
 
     //process.updateTimer_.reset();
-    //qDebug() << "<-- received mavlink_watchdog_process_status_t " << msg->sysid << " / " << payload.state << " / " << payload.muted << " / " << payload.crashes << " / " << payload.pid << std::endl;
+//    QLOG_TRACE() << "<-- received mavlink_watchdog_process_status_t " << msg->sysid << " / " << payload.state << " / " << payload.muted << " / " << payload.crashes << " / " << payload.pid << std::endl;
 }
 
 /**

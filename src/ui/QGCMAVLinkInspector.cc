@@ -5,7 +5,7 @@
 #include "UASManager.h"
 #include "ui_QGCMAVLinkInspector.h"
 
-#include <QDebug>
+
 
 const float QGCMAVLinkInspector::updateHzLowpass = 0.2f;
 const unsigned int QGCMAVLinkInspector::updateInterval = 1000U;

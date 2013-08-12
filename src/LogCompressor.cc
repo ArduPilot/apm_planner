@@ -37,7 +37,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QList>
 #include "LogCompressor.h"
 
-#include <QDebug>
+
 
 /**
  * Initializes all the variables necessary for a compression run. This won't actually happen

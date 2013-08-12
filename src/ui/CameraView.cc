@@ -25,11 +25,12 @@ This file is part of the QGROUNDCONTROL project
  * @file
  *   @brief Implementation of CameraView
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
+ *   @author Bill Bonney <billbonney@communistech.com>
  *
  */
-
+#include "QsLog.h"
 #include "CameraView.h"
-#include <QDebug>
+
 
 CameraView::CameraView(int width, int height, int depth, int channels, QWidget* parent) : QGLWidget(parent)
 {
@@ -107,7 +108,7 @@ void CameraView::setImageSize(int width, int height, int depth, int channels)
             image->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 image->setColor(i, qRgb(i, i, i));
-                //qDebug() << __FILE__ << __LINE__ << std::hex << i;
+                //QLOG_DEBUG() << __FILE__ << __LINE__ << std::hex << i;
             }
 
         }
@@ -120,7 +121,7 @@ void CameraView::setImageSize(int width, int height, int depth, int channels)
         image->fill(CameraView::initialColor);
         glImage = QGLWidget::convertToGLFormat(*image);
 
-        qDebug() << __FILE__ << __LINE__ << "Setting up image";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "Setting up image";
 
         // Set size once
         setFixedSize(receivedWidth, receivedHeight);
@@ -136,7 +137,7 @@ void CameraView::setImageSize(int width, int height, int depth, int channels)
 void CameraView::startImage(int imgid, int width, int height, int depth, int channels)
 {
     this->imageId = imgid;
-    //qDebug() << "CameraView: starting image (" << width << "x" << height << ", " << depth << "bits) with " << channels << "channels";
+    //QLOG_DEBUG() << "CameraView: starting image (" << width << "x" << height << ", " << depth << "bits) with " << channels << "channels";
 
     // Copy previous image to screen if it hasn't been finished properly
     finishImage();
@@ -156,7 +157,7 @@ void CameraView::finishImage()
 
 void CameraView::commitRawDataToGL()
 {
-    //qDebug() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
+    //QLOG_DEBUG() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
     if (image != NULL) {
         QImage::Format format = image->format();
         QImage* newImage = new QImage(rawImage, receivedWidth, receivedHeight, format);
@@ -165,7 +166,7 @@ void CameraView::commitRawDataToGL()
             newImage->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 newImage->setColor(i, qRgb(i, i, i));
-                //qDebug() << __FILE__ << __LINE__ << std::hex << i;
+                //QLOG_DEBUG() << __FILE__ << __LINE__ << std::hex << i;
             }
         }
 
@@ -175,10 +176,10 @@ void CameraView::commitRawDataToGL()
         // Switch buffers
         if (rawImage == rawBuffer1) {
             rawImage = rawBuffer2;
-            //qDebug() << "Now buffer 2";
+            //QLOG_DEBUG() << "Now buffer 2";
         } else {
             rawImage = rawBuffer1;
-            //qDebug() << "Now buffer 1";
+            //QLOG_DEBUG() << "Now buffer 1";
         }
     }
     paintGL();
@@ -202,13 +203,13 @@ void CameraView::setPixels(int imgid, const unsigned char* imageData, int length
     // the image buffer should be converted into a n image buffer.
     Q_UNUSED(imgid);
 
-    //    qDebug() << "at" << __FILE__ << __LINE__ << ": Received startindex" << startIndex << "and length" << length << "(" << startIndex+length << "of" << rawExpectedBytes << "bytes)";
+    //    QLOG_DEBUG() << "at" << __FILE__ << __LINE__ << ": Received startindex" << startIndex << "and length" << length << "(" << startIndex+length << "of" << rawExpectedBytes << "bytes)";
 
     if (imageStarted) {
-        //if (rawLastIndex != startIndex) qDebug() << "PACKET LOSS!";
+        //if (rawLastIndex != startIndex) QLOG_DEBUG() << "PACKET LOSS!";
 
         if (startIndex+length > rawExpectedBytes) {
-            qDebug() << "CAMERAVIEW: OVERFLOW! startIndex:" << startIndex << "length:" << length << "image raw size" << ((receivedWidth * receivedHeight * receivedChannels * receivedDepth) / 8) - 1;
+            QLOG_DEBUG() << "CAMERAVIEW: OVERFLOW! startIndex:" << startIndex << "length:" << length << "image raw size" << ((receivedWidth * receivedHeight * receivedChannels * receivedDepth) / 8) - 1;
         } else {
             memcpy(rawImage+startIndex, imageData, length);
 
@@ -216,7 +217,7 @@ void CameraView::setPixels(int imgid, const unsigned char* imageData, int length
 
             // Check if we just reached the end of the image
             if (startIndex+length == rawExpectedBytes) {
-                //qDebug() << "CAMERAVIEW: END OF IMAGE REACHED!";
+                //QLOG_DEBUG() << "CAMERAVIEW: END OF IMAGE REACHED!";
                 finishImage();
                 rawLastIndex = 0;
             }
@@ -228,7 +229,7 @@ void CameraView::setPixels(int imgid, const unsigned char* imageData, int length
         //            {
         //                unsigned int x = (startIndex+i) % receivedWidth;
         //                unsigned int y = static_cast<unsigned int>((startIndex+i) / receivedWidth);
-        //                qDebug() << "Setting pixel" << x << "," << y << "to" << (unsigned int)*(rawImage+startIndex+i);
+        //                QLOG_DEBUG() << "Setting pixel" << x << "," << y << "to" << (unsigned int)*(rawImage+startIndex+i);
         //            }
         //        }
     }

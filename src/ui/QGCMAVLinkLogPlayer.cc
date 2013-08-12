@@ -1,12 +1,13 @@
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QDesktopServices>
-
+#include "QsLog.h"
 #include "MainWindow.h"
 #include "SerialLink.h"
 #include "QGCMAVLinkLogPlayer.h"
 #include "QGC.h"
 #include "ui_QGCMAVLinkLogPlayer.h"
+
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDesktopServices>
 
 QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *parent) :
     QWidget(parent),
@@ -256,7 +257,7 @@ void QGCMAVLinkLogPlayer::setAccelerationFactorInt(int factor)
         loopTimer.start(interval/accelerationFactor);
     }
 
-    //qDebug() << "FACTOR:" << accelerationFactor;
+    //QLOG_DEBUG() << "FACTOR:" << accelerationFactor;
 
     ui->speedLabel->setText(tr("Speed: %1X").arg(accelerationFactor, 5, 'f', 2, '0'));
 }
@@ -317,7 +318,7 @@ bool QGCMAVLinkLogPlayer::loadLogFile(const QString& file)
             // Reset everything
             logFile.reset();
 
-            qDebug() << "Starttime:" << starttime << "End:" << endtime;
+            QLOG_DEBUG() << "Starttime:" << starttime << "End:" << endtime;
 
             // WARNING: Order matters in this computation
             int seconds = (endtime - starttime)/1000000;
@@ -436,7 +437,7 @@ void QGCMAVLinkLogPlayer::logLoop()
             currentStartTime = QGC::groundTimeUsecs();
             ok = true;
 
-            //qDebug() << "START TIME: " << startTime;
+            //QLOG_DEBUG() << "START TIME: " << startTime;
 
             // Check if these bytes could be correctly decoded
             // TODO
@@ -499,7 +500,7 @@ void QGCMAVLinkLogPlayer::logLoop()
 
             int nextExecutionTime = (((qint64)currentStartTime + (qint64)timediff) - (qint64)QGC::groundTimeUsecs())/1000;
 
-            //qDebug() << "nextExecutionTime:" << nextExecutionTime << "QGC START TIME:" << currentStartTime << "LOG START TIME:" << startTime;
+            //QLOG_DEBUG() << "nextExecutionTime:" << nextExecutionTime << "QGC START TIME:" << currentStartTime << "LOG START TIME:" << startTime;
 
             if (nextExecutionTime < 2)
             {
@@ -541,7 +542,7 @@ void QGCMAVLinkLogPlayer::logLoop()
     {
         QFileInfo logFileInfo(logFile);
         int progress = (ui->positionSlider->maximum()-ui->positionSlider->minimum())*(logFile.pos()/static_cast<float>(logFileInfo.size()));
-        //qDebug() << "Progress:" << progress;
+        //QLOG_DEBUG() << "Progress:" << progress;
         ui->positionSlider->blockSignals(true);
         ui->positionSlider->setValue(progress);
         ui->positionSlider->blockSignals(false);

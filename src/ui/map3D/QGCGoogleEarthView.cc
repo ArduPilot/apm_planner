@@ -1,13 +1,17 @@
+#include "QGC.h"
+#include "ui_QGCGoogleEarthView.h"
+#include "QsLog.h"
+#include "QGCGoogleEarthView.h"
+#include "UASWaypointManager.h"
+#include "UASManager.h"
+
 #include <QApplication>
 #include <QDir>
 #include <QShowEvent>
 #include <QSettings>
 #include <QInputDialog>
-
-#include <QDebug>
 #include <QFile>
 #include <QTextStream>
-#include "UASManager.h"
 
 #ifdef Q_OS_MAC
 #include <QWebFrame>
@@ -23,11 +27,6 @@
 #include <comdef.h>
 #include <qaxtypes.h>
 #endif
-
-#include "QGC.h"
-#include "ui_QGCGoogleEarthView.h"
-#include "QGCGoogleEarthView.h"
-#include "UASWaypointManager.h"
 
 #define QGCGOOGLEEARTHVIEWSETTINGS QString("GoogleEarthViewSettings_")
 
@@ -56,7 +55,7 @@ QGCGoogleEarthView::QGCGoogleEarthView(QWidget *parent) :
 
 //    QFile file("doc.html");
 //    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-//        qDebug() << __FILE__ << __LINE__ << "Could not open log file";
+//        QLOG_DEBUG() << __FILE__ << __LINE__ << "Could not open log file";
 
 //    QTextStream out(&file);
 //    out << webViewWin->generateDocumentation();
@@ -248,7 +247,7 @@ void QGCGoogleEarthView::updateWaypoint(int uas, Waypoint* wp)
         else
         {
             javaScript(QString("updateWaypoint(%1,%2,%3,%4,%5,%6);").arg(uas).arg(wpindex).arg(wp->getLatitude(), 0, 'f', 22).arg(wp->getLongitude(), 0, 'f', 22).arg(wp->getAltitude(), 0, 'f', 22).arg(wp->getAction()));
-            //qDebug() << QString("updateWaypoint(%1,%2,%3,%4,%5,%6);").arg(uas).arg(wpindex).arg(wp->getLatitude(), 0, 'f', 18).arg(wp->getLongitude(), 0, 'f', 18).arg(wp->getAltitude(), 0, 'f', 18).arg(wp->getAction());
+            //QLOG_DEBUG() << QString("updateWaypoint(%1,%2,%3,%4,%5,%6);").arg(uas).arg(wpindex).arg(wp->getLatitude(), 0, 'f', 18).arg(wp->getLongitude(), 0, 'f', 18).arg(wp->getAltitude(), 0, 'f', 18).arg(wp->getAction());
         }
     }
 }
@@ -270,7 +269,7 @@ void QGCGoogleEarthView::updateWaypointList(int uas)
         // Trim internal list to number of global waypoints in the waypoint manager list
         javaScript(QString("updateWaypointListLength(%1,%2);").arg(uas).arg(wpList.count()));
 
-        qDebug() << QString("updateWaypointListLength(%1,%2);").arg(uas).arg(wpList.count());
+        QLOG_DEBUG() << QString("updateWaypointListLength(%1,%2);").arg(uas).arg(wpList.count());
 
         // Load all existing waypoints into map view
         foreach (Waypoint* wp, wpList)
@@ -354,7 +353,7 @@ void QGCGoogleEarthView::goHome()
 
 void QGCGoogleEarthView::setHome(double lat, double lon, double alt)
 {
-    qDebug() << "SETTING GCS HOME IN GOOGLE MAPS" << lat << lon << alt;
+    QLOG_DEBUG() << "SETTING GCS HOME IN GOOGLE MAPS" << lat << lon << alt;
     javaScript(QString("setGCSHome(%1,%2,%3);").arg(lat, 0, 'f', 15).arg(lon, 0, 'f', 15).arg(alt, 0, 'f', 15));
 }
 
@@ -430,7 +429,7 @@ void QGCGoogleEarthView::showEvent(QShowEvent* event)
 
 void QGCGoogleEarthView::printWinException(int no, QString str1, QString str2, QString str3)
 {
-    qDebug() << no << str1 << str2 << str3;
+    QLOG_DEBUG() << no << str1 << str2 << str3;
 }
 
 QVariant QGCGoogleEarthView::javaScript(QString javaScript)
@@ -444,7 +443,7 @@ QVariant QGCGoogleEarthView::javaScript(QString javaScript)
 #endif
 #ifdef _MSC_VER
     if(!jScriptInitialized) {
-        qDebug() << "TOO EARLY JAVASCRIPT CALL, ABORTING";
+        QLOG_DEBUG() << "TOO EARLY JAVASCRIPT CALL, ABORTING";
         return QVariant(false);
     } else {
         QVariantList params;
@@ -465,7 +464,7 @@ QVariant QGCGoogleEarthView::documentElement(QString name)
 #endif
 #ifdef _MSC_VER
     if(!jScriptInitialized) {
-        qDebug() << "TOO EARLY JAVASCRIPT CALL, ABORTING";
+        QLOG_DEBUG() << "TOO EARLY JAVASCRIPT CALL, ABORTING";
     } else {
         if (documentWin) {
             QString resultString;
@@ -490,10 +489,10 @@ QVariant QGCGoogleEarthView::documentElement(QString name)
                     QVariant qtValue = VARIANTToQVariant(var,typeName);
                     return qtValue;
                 } else {
-                    qDebug() << __FILE__ << __LINE__ << "JAVASCRIPT ATTRIBUTE" << name << "NOT FOUND";
+                    QLOG_DEBUG() << __FILE__ << __LINE__ << "JAVASCRIPT ATTRIBUTE" << name << "NOT FOUND";
                 }
             } else {
-                qDebug() << __FILE__ << __LINE__ << "DID NOT GET HTML ELEMENT" << name;
+                QLOG_DEBUG() << __FILE__ << __LINE__ << "DID NOT GET HTML ELEMENT" << name;
             }
         }
     }
@@ -526,7 +525,7 @@ void QGCGoogleEarthView::initializeGoogleEarth()
             connect(jScriptWin, SIGNAL(exception(int,QString,QString,QString)), this, SLOT(printWinException(int,QString,QString,QString)));
             jScriptInitialized = true;
         } else {
-            qDebug() << "COULD NOT GET DOCUMENT OBJECT! Aborting";
+            QLOG_DEBUG() << "COULD NOT GET DOCUMENT OBJECT! Aborting";
         }
 #endif
         QTimer::singleShot(1500, this, SLOT(initializeGoogleEarth()));
@@ -536,7 +535,7 @@ void QGCGoogleEarthView::initializeGoogleEarth()
     if (!gEarthInitialized) {
         if (!documentElement("initialized").toBool()) {
             QTimer::singleShot(300, this, SLOT(initializeGoogleEarth()));
-            qDebug() << "NOT INITIALIZED, WAITING";
+            QLOG_DEBUG() << "NOT INITIALIZED, WAITING";
         } else {
             gEarthInitialized = true;
 
@@ -610,7 +609,7 @@ void QGCGoogleEarthView::initializeGoogleEarth()
 void QGCGoogleEarthView::updateState()
 {
 #if (QGC_EVENTLOOP_DEBUG)
-    qDebug() << "EVENTLOOP:" << __FILE__ << __LINE__;
+    QLOG_DEBUG() << "EVENTLOOP:" << __FILE__ << __LINE__;
 #endif
     if (gEarthInitialized)
     {
@@ -637,7 +636,7 @@ void QGCGoogleEarthView::updateState()
             pitch = currMav->getPitch();
             yaw = currMav->getYaw();
 
-            //qDebug() << "SETTING POSITION FOR" << uasId << lat << lon << alt << roll << pitch << yaw;
+            //QLOG_DEBUG() << "SETTING POSITION FOR" << uasId << lat << lon << alt << roll << pitch << yaw;
 
             javaScript(QString("setAircraftPositionAttitude(%1, %2, %3, %4, %6, %7, %8);")
                        .arg(uasId)
@@ -703,7 +702,7 @@ void QGCGoogleEarthView::updateState()
                 QString idText = documentElement("dragWaypointIndex").toString();
                 if (idText == "HOME")
                 {
-                    qDebug() << "HOME UPDATED!";
+                    QLOG_DEBUG() << "HOME UPDATED!";
                     UASManager::instance()->setHomePosition(latitude, longitude, altitude);
                     ui->setHomeButton->setChecked(false);
                 }

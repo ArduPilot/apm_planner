@@ -28,6 +28,12 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
+#include "QsLog.h"
+#include "QGCDataPlot2D.h"
+#include "ui_QGCDataPlot2D.h"
+#include "MG.h"
+#include "MainWindow.h"
+
 #include <QFileDialog>
 #include <QTemporaryFile>
 #include <QMessageBox>
@@ -37,13 +43,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QSvgGenerator>
 #include <QPrinter>
 #include <QDesktopServices>
-#include "QGCDataPlot2D.h"
-#include "ui_QGCDataPlot2D.h"
-#include "MG.h"
-#include "MainWindow.h"
 #include <cmath>
 
-#include <QDebug>
 
 QGCDataPlot2D::QGCDataPlot2D(QWidget *parent) :
     QWidget(parent),
@@ -85,7 +86,7 @@ void QGCDataPlot2D::reloadFile()
 
 void QGCDataPlot2D::loadFile()
 {
-    qDebug() << "DATA PLOT: Loading file:" << fileName;
+    QLOG_DEBUG() << "DATA PLOT: Loading file:" << fileName;
     if (QFileInfo(fileName).isReadable()) {
         if (ui->inputFileType->currentText().contains("pxIMU") || ui->inputFileType->currentText().contains("RAW")) {
             loadRawLog(fileName);
@@ -378,7 +379,7 @@ void QGCDataPlot2D::loadCsvLog(QString file, QString xAxisName, QString yAxisFil
     QString out = separator;
     out.replace("\t", "<tab>");
     ui->filenameLabel->setText(file.split("/").last().split("\\").last()+" Separator: \""+out+"\"");
-    //qDebug() << "READING CSV:" << header;
+    //QLOG_DEBUG() << "READING CSV:" << header;
 
     // Clear plot
     plot->removeData();
@@ -713,9 +714,9 @@ void QGCDataPlot2D::saveCsvLog()
 
     bool success = logFile->copy(fileName);
 
-    qDebug() << "Saved CSV log. Success: " << success;
+    QLOG_DEBUG() << "Saved CSV log. Success: " << success;
 
-    //qDebug() << "READE TO SAVE CSV LOG TO " << fileName;
+    //QLOG_DEBUG() << "READE TO SAVE CSV LOG TO " << fileName;
 }
 
 QGCDataPlot2D::~QGCDataPlot2D()

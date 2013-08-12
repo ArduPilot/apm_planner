@@ -31,7 +31,7 @@ This file is part of the QGROUNDCONTROL project
 #define RADIOCALIBRATIONDATA_H
 
 #include <QObject>
-#include <QDebug>
+
 #include <QVector>
 #include <QString>
 #include <stdexcept>

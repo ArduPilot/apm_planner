@@ -5,7 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QDebug>
+
 #include <QTemporaryFile>
 #include <QProcess>
 #include <QXmlStreamReader>

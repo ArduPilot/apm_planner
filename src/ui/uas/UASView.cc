@@ -28,19 +28,24 @@ This file is part of the PIXHAWK project
  *
  */
 
+#include "UASView.h"
+#include "ui_UASView.h"
+#include "QsLog.h"
+#include "QGC.h"
+#include "UASManager.h"
+#include "UASWaypointManager.h"
+#include "MainWindow.h"
+
+
+#include <QGCHilFlightGearConfiguration.h>
+
+
 #include <cmath>
 #include <QDateTime>
-#include <QDebug>
+
 #include <QMenu>
 #include <QInputDialog>
 
-#include "QGC.h"
-#include "UASManager.h"
-#include "UASView.h"
-#include "UASWaypointManager.h"
-#include "MainWindow.h"
-#include "ui_UASView.h"
-#include <QGCHilFlightGearConfiguration.h>
 
 UASView::UASView(UASInterface* uas, QWidget *parent) :
         QWidget(parent),
@@ -248,7 +253,7 @@ void UASView::mouseDoubleClickEvent (QMouseEvent * event)
 {
     Q_UNUSED(event);
     UASManager::instance()->setActiveUAS(uas);
-    // qDebug() << __FILE__ << __LINE__ << "DOUBLECLICKED";
+     QLOG_TRACE() << __FILE__ << __LINE__ << "DOUBLECLICKED";
 }
 
 void UASView::enterEvent(QEvent* event)
@@ -264,7 +269,7 @@ void UASView::enterEvent(QEvent* event)
 
     if (event->type() == QEvent::MouseButtonDblClick)
     {
-        // qDebug() << __FILE__ << __LINE__ << "UAS CLICKED!";
+         QLOG_TRACE() << __FILE__ << __LINE__ << "UAS CLICKED!";
     }
 }
 
@@ -575,16 +580,16 @@ void UASView::refresh()
     //setUpdatesEnabled(false);
     //setUpdatesEnabled(true);
     //repaint();
-    //qDebug() << "UPDATING UAS WIDGET!" << uas->getUASName();
+    QLOG_TRACE() << "UPDATING UAS WIDGET!" << uas->getUASName();
 
 
     if (generalUpdateCount == 4)
     {
 #if (QGC_EVENTLOOP_DEBUG)
-        // qDebug() << "EVENTLOOP:" << __FILE__ << __LINE__;
+         QLOG_TRACE() << "EVENTLOOP:" << __FILE__ << __LINE__;
 #endif
         generalUpdateCount = 0;
-        //// qDebug() << "UPDATING EVERYTHING";
+        QLOG_TRACE() << "UPDATING EVERYTHING";
         // State
         m_ui->stateLabel->setText(state);
         m_ui->statusTextLabel->setText(stateDesc);

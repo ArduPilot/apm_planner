@@ -43,7 +43,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QColor>
 #include <QString>
 #include <QSignalMapper>
-#include <QDebug>
+
 
 #include "AbstractCalibrator.h"
 

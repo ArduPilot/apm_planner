@@ -1,13 +1,15 @@
+
+#include "QGCParamSlider.h"
+#include "ui_QGCParamSlider.h"
+#include "QsLog.h"
+#include "UASInterface.h"
+#include "UASManager.h"
+
 #include <QMenu>
 #include <QContextMenuEvent>
 #include <QSettings>
 #include <QTimer>
 #include <QToolTip>
-
-#include "QGCParamSlider.h"
-#include "ui_QGCParamSlider.h"
-#include "UASInterface.h"
-#include "UASManager.h"
 
 
 QGCParamSlider::QGCParamSlider(QWidget *parent) :
@@ -290,12 +292,12 @@ void QGCParamSlider::sendParameter()
         }
         else
         {
-            qDebug() << "UAS HAS NO PARAM MANAGER, DOING NOTHING";
+            QLOG_DEBUG() << "UAS HAS NO PARAM MANAGER, DOING NOTHING";
         }
     }
     else
     {
-        qDebug() << __FILE__ << __LINE__ << "NO UAS SET, DOING NOTHING";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "NO UAS SET, DOING NOTHING";
     }
 }
 
@@ -492,14 +494,14 @@ void QGCParamSlider::changeEvent(QEvent *e)
 float QGCParamSlider::scaledIntToFloat(int sliderValue)
 {
     float result = (((double)sliderValue)/(double)scaledInt)*(ui->editMaxSpinBox->value() - ui->editMinSpinBox->value());
-    //qDebug() << "INT TO FLOAT: CONVERTED" << sliderValue << "TO" << result;
+    //QLOG_DEBUG() << "INT TO FLOAT: CONVERTED" << sliderValue << "TO" << result;
     return result;
 }
 
 int QGCParamSlider::floatToScaledInt(float value)
 {
     int result = ((value - ui->editMinSpinBox->value())/(ui->editMaxSpinBox->value() - ui->editMinSpinBox->value()))*scaledInt;
-    //qDebug() << "FLOAT TO INT: CONVERTED" << value << "TO" << result << "SCALEDINT" << scaledInt;
+    //QLOG_DEBUG() << "FLOAT TO INT: CONVERTED" << value << "TO" << result << "SCALEDINT" << scaledInt;
     return result;
 }
 

@@ -1,4 +1,5 @@
 #include "QGCMapWidget.h"
+#include "QsLog.h"
 #include "QGCMapToolBar.h"
 #include "UASInterface.h"
 #include "UASManager.h"
@@ -69,7 +70,7 @@ void QGCMapWidget::guidedActionTriggered()
         }
         // Create new waypoint and send it to the WPManager to send out.
         internals::PointLatLng pos = map->FromLocalToLatLng(mousePressPos.x(), mousePressPos.y());
-        qDebug() << "Guided action requested. Lat:" << pos.Lat() << "Lon:" << pos.Lng();
+        QLOG_DEBUG() << "Guided action requested. Lat:" << pos.Lat() << "Lon:" << pos.Lng();
         Waypoint wp;
         wp.setLatitude(pos.Lat());
         wp.setLongitude(pos.Lng());
@@ -568,7 +569,7 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
     if (firingWaypointChange == wp) return;
     // Not in cycle, block now from entering it
     firingWaypointChange = wp;
-    // // qDebug() << "UPDATING WP FROM MAP";
+    // // QLOG_DEBUG() << "UPDATING WP FROM MAP";
 
     // Update WP values
     internals::PointLatLng pos = waypoint->Coord();
@@ -585,9 +586,9 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
 
     internals::PointLatLng coord = waypoint->Coord();
     QString coord_str = " " + QString::number(coord.Lat(), 'f', 6) + "   " + QString::number(coord.Lng(), 'f', 6);
-    // // qDebug() << "MAP WP COORD (MAP):" << coord_str << __FILE__ << __LINE__;
+    // // QLOG_DEBUG() << "MAP WP COORD (MAP):" << coord_str << __FILE__ << __LINE__;
     QString wp_str = QString::number(wp->getLatitude(), 'f', 6) + "   " + QString::number(wp->getLongitude(), 'f', 6);
-    // // qDebug() << "MAP WP COORD (WP):" << wp_str << __FILE__ << __LINE__;
+    // // QLOG_DEBUG() << "MAP WP COORD (WP):" << wp_str << __FILE__ << __LINE__;
 
     firingWaypointChange = NULL;
 
@@ -602,7 +603,7 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
  */
 void QGCMapWidget::updateWaypoint(int uas, Waypoint* wp)
 {
-    qDebug() << __FILE__ << __LINE__ << "UPDATING WP FUNCTION CALLED";
+    QLOG_DEBUG() << __FILE__ << __LINE__ << "UPDATING WP FUNCTION CALLED";
     // Source of the event was in this widget, do nothing
     if (firingWaypointChange == wp) {
         return;
@@ -626,7 +627,7 @@ void QGCMapWidget::updateWaypoint(int uas, Waypoint* wp)
             // Mark this wp as currently edited
             firingWaypointChange = wp;
 
-            qDebug() << "UPDATING WAYPOINT" << wpindex << "IN 2D MAP";
+            QLOG_DEBUG() << "UPDATING WAYPOINT" << wpindex << "IN 2D MAP";
 
             // Check if wp exists yet in map
             if (!waypointsToIcons.contains(wp))
@@ -716,7 +717,7 @@ void QGCMapWidget::updateWaypoint(int uas, Waypoint* wp)
  */
 void QGCMapWidget::updateWaypointList(int uas)
 {
-    qDebug() << "UPDATE WP LIST IN 2D MAP CALLED FOR UAS" << uas;
+    QLOG_DEBUG() << "UPDATE WP LIST IN 2D MAP CALLED FOR UAS" << uas;
     // Currently only accept waypoint updates from the UAS in focus
     // this has to be changed to accept read-only updates from other systems as well.
     UASInterface* uasInstance = UASManager::instance()->getUASForId(uas);
@@ -725,7 +726,7 @@ void QGCMapWidget::updateWaypointList(int uas)
         // ORDER MATTERS HERE!
         // TWO LOOPS ARE NEEDED - INFINITY LOOP ELSE
 
-        qDebug() << "DELETING NOW OLD WPS";
+        QLOG_DEBUG() << "DELETING NOW OLD WPS";
 
         // Delete connecting waypoint lines
         QGraphicsItemGroup* group = waypointLines.value(uas, NULL);
@@ -762,7 +763,7 @@ void QGCMapWidget::updateWaypointList(int uas)
         // Update all potentially new waypoints
         foreach (Waypoint* wp, wps)
         {
-            qDebug() << "UPDATING NEW WP" << wp->getId();
+            QLOG_DEBUG() << "UPDATING NEW WP" << wp->getId();
             // Update / add only if new
             if (!waypointsToIcons.contains(wp)) updateWaypoint(uas, wp);
         }

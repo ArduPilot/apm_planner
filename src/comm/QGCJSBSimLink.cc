@@ -29,15 +29,17 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include <QTimer>
-#include <QList>
-#include <QDebug>
-#include <QMutexLocker>
-#include <iostream>
+#include "QsLog.h"
 #include "QGCJSBSimLink.h"
 #include "QGC.h"
-#include <QHostInfo>
 #include "MainWindow.h"
+
+#include <QTimer>
+#include <QList>
+
+#include <QMutexLocker>
+#include <iostream>
+#include <QHostInfo>
 
 QGCJSBSimLink::QGCJSBSimLink(UASInterface* mav, QString startupArguments, QString remoteHost, QHostAddress host, quint16 port) :
     socket(NULL),
@@ -110,7 +112,7 @@ void QGCJSBSimLink::setRemoteHost(const QString& host)
 {
     if (host.contains(":"))
     {
-        //qDebug() << "HOST: " << host.split(":").first();
+        QLOG_DEBUG() << "HOST: " << host.split(":").first();
         QHostInfo info = QHostInfo::fromName(host.split(":").first());
         if (info.error() == QHostInfo::NoError)
         {
@@ -126,7 +128,7 @@ void QGCJSBSimLink::setRemoteHost(const QString& host)
                 }
             }
             currentHost = address;
-            //qDebug() << "Address:" << address.toString();
+            QLOG_DEBUG() << "Address:" << address.toString();
             // Set port according to user input
             currentPort = host.split(":").last().toInt();
         }
@@ -173,9 +175,9 @@ void QGCJSBSimLink::updateControls(uint64_t time, float rollAilerons, float pitc
     }
     else
     {
-        qDebug() << "HIL: Got NaN values from the hardware: isnan output: roll: " << isnan(rollAilerons) << ", pitch: " << isnan(pitchElevator) << ", yaw: " << isnan(yawRudder) << ", throttle: " << isnan(throttle);
+        QLOG_INFO() << "HIL: Got NaN values from the hardware: isnan output: roll: " << isnan(rollAilerons) << ", pitch: " << isnan(pitchElevator) << ", yaw: " << isnan(yawRudder) << ", throttle: " << isnan(throttle);
     }
-    //qDebug() << "Updated controls" << state;
+    //QLOG_TRACE() << "Updated controls" << state;
 }
 
 void QGCJSBSimLink::writeBytes(const char* data, qint64 size)
@@ -197,9 +199,9 @@ void QGCJSBSimLink::writeBytes(const char* data, qint64 size)
             ascii.append(219);
         }
     }
-    qDebug() << "Sent" << size << "bytes to" << currentHost.toString() << ":" << currentPort << "data:";
-    qDebug() << bytes;
-    qDebug() << "ASCII:" << ascii;
+    QLOG_TRACE() << "Sent" << size << "bytes to" << currentHost.toString() << ":" << currentPort << "data:";
+    QLOG_TRACE() << bytes;
+    QLOG_TRACE() << "ASCII:" << ascii;
 #endif
     if (connectState && socket) socket->writeDatagram(data, size, currentHost, currentPort);
 }
@@ -217,7 +219,7 @@ void QGCJSBSimLink::readBytes()
     QHostAddress sender;
     quint16 senderPort;
 
-    unsigned int s = socket->pendingDatagramSize();
+    qint64 s = socket->pendingDatagramSize();
     if (s > maxLength) std::cerr << __FILE__ << __LINE__ << " UDP datagram overflow, allowed to read less bytes than datagram size" << std::endl;
     socket->readDatagram(data, maxLength, &sender, &senderPort);
 
@@ -300,7 +302,7 @@ bool QGCJSBSimLink::disconnectSimulation()
  **/
 bool QGCJSBSimLink::connectSimulation()
 {
-    qDebug() << "STARTING FLIGHTGEAR LINK";
+    QLOG_DEBUG() << "STARTING FLIGHTGEAR LINK";
 
     if (!mav) return false;
     socket = new QUdpSocket(this);
@@ -381,7 +383,7 @@ bool QGCJSBSimLink::connectSimulation()
         emit simulationConnected();
         connectionStartTime = QGC::groundTimeUsecs()/1000;
     }
-    qDebug() << "STARTING SIM";
+    QLOG_DEBUG() << "STARTING SIM";
 
     start(LowPriority);
     return connectState;

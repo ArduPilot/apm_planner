@@ -8,8 +8,13 @@
  *
  */
 
+#include "QsLog.h"
+#include "SerialLink.h"
+#include "LinkManager.h"
+#include "QGC.h"
+
 #include <QTimer>
-#include <QDebug>
+
 #include <QSettings>
 #include <QMutexLocker>
 //#include <QtSerialPort/QSerialPort>
@@ -17,9 +22,6 @@
 
 #include <qserialport.h>
 #include <qserialportinfo.h>
-#include "SerialLink.h"
-#include "LinkManager.h"
-#include "QGC.h"
 #include <MG.h>
 
 SerialLink::SerialLink() :
@@ -34,7 +36,7 @@ SerialLink::SerialLink() :
     m_stopp(false),
     m_reqReset(false)
 {
-    qDebug() << "create SerialLink: Load Previous Settings ";
+    QLOG_INFO() << "create SerialLink: Load Previous Settings ";
 
     loadSettings();
     m_id = getNextLinkId();
@@ -45,7 +47,7 @@ SerialLink::SerialLink() :
         m_portName = m_ports.first().trimmed();
     }
 
-    qDebug() <<  m_portName << m_baud << m_flowControl
+    QLOG_INFO() <<  m_portName << m_baud << m_flowControl
              << m_parity << m_dataBits << m_stopBits;
 
 }
@@ -69,14 +71,14 @@ QList<QString> SerialLink::getCurrentPorts()
     QList<QSerialPortInfo> portList =  QSerialPortInfo::availablePorts();
 
     if( portList.count() == 0){
-        qDebug() << "No Ports Found" << m_ports;
+        QLOG_INFO() << "No Ports Found" << m_ports;
     }
 
     foreach (const QSerialPortInfo &info, portList)
     {
-//        qDebug() << "PortName    : " << info.portName()
-//                 << "Description : " << info.description();
-//        qDebug() << "Manufacturer: " << info.manufacturer();
+        QLOG_TRACE() << "PortName    : " << info.portName()
+                 << "Description : " << info.description();
+        QLOG_TRACE() << "Manufacturer: " << info.manufacturer();
 
         m_ports.append(info.portName());
     }
@@ -160,11 +162,11 @@ void SerialLink::run()
             QMutexLocker writeLocker(&m_writeMutex);
             int numWritten = m_port->write(m_transmitBuffer);
             bool txError = m_port->waitForBytesWritten(-1);
-//            if ((txError) || (numWritten == -1))
-//                qDebug() << "TX Error!";
+            if ((txError) || (numWritten == -1))
+                QLOG_TRACE() << "TX Error!";
             m_transmitBuffer =  m_transmitBuffer.remove(0, numWritten);
         } else {
-//            qDebug() << "Wait write response timeout %1" << QTime::currentTime().toString();
+            QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
         }
 
         bool error = m_port->waitForReadyRead(10);
@@ -175,13 +177,13 @@ void SerialLink::run()
                 readData += m_port->readAll();
             if (readData.length() > 0) {
                 emit bytesReceived(this, readData);
-//                qDebug() << "rx of length " << QString::number(readData.length());
+                QLOG_TRACE() << "rx of length " << QString::number(readData.length());
 
                 m_bytesRead += readData.length();
                 m_bitsReceivedTotal += readData.length() * 8;
             }
         } else {
-//            qDebug() << "Wait write response timeout %1" << QTime::currentTime().toString();
+            QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
         }
 
         if (bytes != m_bytesRead) // i.e things are good and data is being read.
@@ -208,14 +210,14 @@ void SerialLink::run()
                 {
                     triedDTR = true;
                     communicationUpdate(getName(),"No data to receive on COM port. Attempting to reset via DTR signal");
-                    qDebug() << "No data!!! Attempting reset via DTR.";
+                    QLOG_TRACE() << "No data!!! Attempting reset via DTR.";
                     m_port->setDataTerminalReady(true);
                     msleep(250);
                     m_port->setDataTerminalReady(false);
                 }
                 else if (!triedreset)
                 {
-                    qDebug() << "No data!!! Attempting reset via reboot command.";
+                    QLOG_DEBUG() << "No data!!! Attempting reset via reboot command.";
                     communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
                     m_port->write("reboot\r\n",8);
                     triedreset = true;
@@ -223,7 +225,7 @@ void SerialLink::run()
                 else
                 {
                     communicationUpdate(getName(),"No data to receive on COM port....");
-                    qDebug() << "No data!!!";
+                    QLOG_DEBUG() << "No data!!!";
                 }
             }
         }
@@ -231,7 +233,7 @@ void SerialLink::run()
     } // end of forever
     
     if (m_port) { // [TODO][BB] Not sure we need to close the port here
-        qDebug() << "Closing Port #"<< __LINE__ << m_port->portName();
+        QLOG_DEBUG() << "Closing Port #"<< __LINE__ << m_port->portName();
         m_port->close();
         delete m_port;
         m_port = NULL;
@@ -244,7 +246,7 @@ void SerialLink::run()
 void SerialLink::writeBytes(const char* data, qint64 size)
 {
     if(m_port && m_port->isOpen()) {
-//        qDebug() << "writeBytes" << m_portName << "attempting to tx " << size << "bytes.";
+        QLOG_TRACE() << "writeBytes" << m_portName << "attempting to tx " << size << "bytes.";
 
         QByteArray byteArray(data, size);
         {
@@ -256,7 +258,7 @@ void SerialLink::writeBytes(const char* data, qint64 size)
         m_bitsSentTotal += size * 8;
 
         // Extra debug logging
-//            qDebug() << byteArray->toHex();
+        QLOG_TRACE() << QByteArray(data,size);
     } else {
         disconnect();
         // Error occured
@@ -277,7 +279,7 @@ void SerialLink::readBytes()
         const qint64 maxLength = 2048;
         char data[maxLength];
         qint64 numBytes = m_port->bytesAvailable();
-        //qDebug() << "numBytes: " << numBytes;
+        QLOG_TRACE() << "numBytes: " << numBytes;
 
         if(numBytes > 0) {
             /* Read as much data in buffer as possible without overflow */
@@ -287,7 +289,7 @@ void SerialLink::readBytes()
             QByteArray b(data, numBytes);
             emit bytesReceived(this, b);
 
-            //qDebug() << "SerialLink::readBytes()" << std::hex << data;
+            QLOG_TRACE() << "SerialLink::readBytes()" << std::hex << data;
             //            int i;
             //            for (i=0; i<numBytes; i++){
             //                unsigned int v=data[i];
@@ -323,13 +325,13 @@ qint64 SerialLink::bytesAvailable()
  **/
 bool SerialLink::disconnect()
 {
-    qDebug() << "disconnect";
+    QLOG_INFO() << "disconnect";
     if (m_port)
-        qDebug() << m_port->portName();
+        QLOG_INFO() << m_port->portName();
 
     if (isRunning())
     {
-        qDebug() << "running so disconnect" << m_port->portName();
+        QLOG_INFO() << "running so disconnect" << m_port->portName();
         {
             QMutexLocker locker(&m_stoppMutex);
             m_stopp = true;
@@ -341,7 +343,7 @@ bool SerialLink::disconnect()
         return true;
     }
 
-    qDebug() << "already disconnected";
+    QLOG_INFO() << "already disconnected";
     return true;
 }
 
@@ -375,12 +377,12 @@ bool SerialLink::hardwareConnect()
 {
     if(m_port)
     {
-        qDebug() << "SerialLink:" << QString::number((long)this, 16) << "closing port";
+        QLOG_INFO() << "SerialLink:" << QString::number((long)this, 16) << "closing port";
         m_port->close();
         delete m_port;
         m_port = NULL;
     }
-    qDebug() << "SerialLink: hardwareConnect to " << m_portName;
+    QLOG_INFO() << "SerialLink: hardwareConnect to " << m_portName;
     m_port = new QSerialPort(m_portName);
 
     if (m_port == NULL)
@@ -415,7 +417,7 @@ bool SerialLink::hardwareConnect()
     emit connected();
     emit connected(true);
 
-    qDebug() << "CONNECTING LINK: " << __FILE__ << __LINE__ << "with settings" << m_port->portName()
+    QLOG_DEBUG() << "CONNECTING LINK: "<< m_portName << "with settings" << m_port->portName()
              << getBaudRate() << getDataBits() << getParityType() << getStopBits();
 
     writeSettings();
@@ -425,7 +427,7 @@ bool SerialLink::hardwareConnect()
 
 void SerialLink::linkError(QSerialPort::SerialPortError error)
 {
-    qDebug() << error;
+    QLOG_ERROR() << error;
 }
 
 
@@ -439,12 +441,12 @@ bool SerialLink::isConnected()
 
     if (m_port) {
         bool isConnected = m_port->isOpen();
-//        qDebug() << "SerialLink #" << __LINE__ << ":"<<  m_port->portName()
-//                 << " isConnected =" << QString::number(isConnected);
+        QLOG_TRACE() << "SerialLink #" << __LINE__ << ":"<<  m_port->portName()
+                     << " isConnected =" << QString::number(isConnected);
         return isConnected;
     } else {
-//        qDebug() << "SerialLink #" << __LINE__ << ":" <<  m_portName
-//                 << " isConnected = NULL";
+        QLOG_TRACE() << "SerialLink #" << __LINE__ << ":" <<  m_portName
+                     << " isConnected = NULL";
         return false;
     }
 }
@@ -685,8 +687,8 @@ int SerialLink::getStopBits()
 
 bool SerialLink::setPortName(QString portName)
 {
-    qDebug() << "current portName " << m_portName;
-    qDebug() << "setPortName to " << portName;
+    QLOG_INFO() << "current portName " << m_portName;
+    QLOG_INFO() << "setPortName to " << portName;
     bool accepted = false;
     if ((portName != m_portName)
             && (portName.trimmed().length() > 0)) {

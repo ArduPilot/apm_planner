@@ -9,8 +9,11 @@
  *
  */
 
+#include "LinechartPlot.h"
+#include "QsLog.h"
 #include "float.h"
-#include <QDebug>
+#include "QGC.h"
+
 #include <QTimer>
 #include <qwt_plot.h>
 #include <qwt_plot_canvas.h>
@@ -19,11 +22,8 @@
 #include <qwt_plot_layout.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_symbol.h>
-#include <LinechartPlot.h>
 #include <MG.h>
 #include <QPaintEngine>
-
-#include "QGC.h"
 
 /**
  * @brief The default constructor
@@ -280,9 +280,9 @@ void LinechartPlot::appendData(QString dataname, quint64 ms, double value)
     if(!data.contains(dataname)) {
         addCurve(dataname);
         enforceGroundTime(m_groundTime);
-//        qDebug() << "ADDING CURVE WITH" << dataname << ms << value;
-//        qDebug() << "MINTIME:" << minTime << "MAXTIME:" << maxTime;
-//        qDebug() << "LASTTIME:" << lastTime;
+//        QLOG_DEBUG() << "ADDING CURVE WITH" << dataname << ms << value;
+//        QLOG_DEBUG() << "MINTIME:" << minTime << "MAXTIME:" << maxTime;
+//        QLOG_DEBUG() << "LASTTIME:" << lastTime;
     }
 
     // Add new value
@@ -311,7 +311,7 @@ void LinechartPlot::appendData(QString dataname, quint64 ms, double value)
 
     if(time > lastTime)
     {
-        //qDebug() << "UPDATED LAST TIME!" << dataname << time << lastTime;
+        //QLOG_DEBUG() << "UPDATED LAST TIME!" << dataname << time << lastTime;
         lastTime = time;
     }
 
@@ -324,7 +324,7 @@ void LinechartPlot::appendData(QString dataname, quint64 ms, double value)
     QwtPlotCurve* curve = curves.value(dataname);
     curve->setRawData(dataset->getPlotX(), dataset->getPlotY(), dataset->getPlotCount());
 
-    //    qDebug() << "mintime" << minTime << "maxtime" << maxTime << "last max time" << "window position" << getWindowPosition();
+    //    QLOG_DEBUG() << "mintime" << minTime << "maxtime" << maxTime << "last max time" << "window position" << getWindowPosition();
 
     datalock.unlock();
 }
@@ -689,7 +689,7 @@ void LinechartPlot::paintRealtime()
     if (m_active) {
 #if (QGC_EVENTLOOP_DEBUG)
         static quint64 timestamp = 0;
-        qDebug() << "EVENTLOOP: (" << MG::TIME::getGroundTimeNow() - timestamp << ")" << __FILE__ << __LINE__;
+        QLOG_DEBUG() << "EVENTLOOP: (" << MG::TIME::getGroundTimeNow() - timestamp << ")" << __FILE__ << __LINE__;
         timestamp = MG::TIME::getGroundTimeNow();
 #endif
         // Update plot window value to new max time if the last time was also the max time

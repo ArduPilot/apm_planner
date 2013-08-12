@@ -29,6 +29,7 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
+#include "QsLog.h"
 #include "UASWaypointManager.h"
 #include "UAS.h"
 #include "mavlink_types.h"
@@ -163,7 +164,12 @@ void UASWaypointManager::handleWaypointCount(quint8 systemId, quint8 compId, qui
 
 
     } else {
-        qDebug("Rejecting message, check mismatch: current_state: %d == %d, system id %d == %d, comp id %d == %d", current_state, WP_GETLIST, current_partner_systemid, systemId, current_partner_compid, compId);
+        QLOG_DEBUG() << "Rejecting message, check mismatch: current_state: " << current_state
+                     << " == " << WP_GETLIST
+                     << ", system id " << current_partner_systemid
+                     << " == " << systemId
+                     << ", comp id " << current_partner_compid
+                     << " == "<< compId;
     }
 }
 
@@ -212,7 +218,12 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
             emit updateStatusString(tr("Waypoint ID mismatch, rejecting waypoint"));
         }
     } else {
-        qDebug("Rejecting message, check mismatch: current_state: %d == %d, system id %d == %d, comp id %d == %d", current_state, WP_GETLIST, current_partner_systemid, systemId, current_partner_compid, compId);
+        QLOG_DEBUG() << "Rejecting message, check mismatch: current_state: " << current_state
+                     << " == " << WP_GETLIST
+                     << ", system id " << current_partner_systemid
+                     << " == " << systemId
+                     << ", comp id " << current_partner_compid
+                     << " == "<< compId;
     }
 }
 
@@ -247,7 +258,12 @@ void UASWaypointManager::handleWaypointRequest(quint8 systemId, quint8 compId, m
             //TODO: Error message or something
         }
     } else {
-        qDebug("Rejecting message, check mismatch: current_state: %d == %d, system id %d == %d, comp id %d == %d", current_state, WP_GETLIST, current_partner_systemid, systemId, current_partner_compid, compId);
+        QLOG_DEBUG() << "Rejecting message, check mismatch: current_state: " << current_state
+                     << " == " << WP_GETLIST
+                     << ", system id " << current_partner_systemid
+                     << " == " << systemId
+                     << ", comp id " << current_partner_compid
+                     << " == "<< compId;
     }
 }
 
@@ -911,7 +927,7 @@ void UASWaypointManager::writeWaypoints()
     else
     {
         //we're in another transaction, ignore command
-        qDebug() << "UASWaypointManager::sendWaypoints() doing something else ignoring command";
+        QLOG_DEBUG() << "UASWaypointManager::sendWaypoints() doing something else ignoring command";
     }
 }
 

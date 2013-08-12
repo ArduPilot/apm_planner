@@ -24,11 +24,10 @@
 #ifndef QGC_H
 #define QGC_H
 
+#include "configuration.h"
 #include <QDateTime>
 #include <QColor>
 #include <QThread>
-
-#include "configuration.h"
 
 
 /* Windows fixes */

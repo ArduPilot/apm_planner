@@ -28,11 +28,11 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include <QtGui/QApplication>
 #include "QGCCore.h"
 #include "MainWindow.h"
 #include "configuration.h"
-
+#include "QsLog.h"
+#include <QtGui/QApplication>
 
 /* SDL does ugly things to main() */
 #ifdef main
@@ -70,5 +70,18 @@ int main(int argc, char *argv[])
 #endif
 
     QGCCore core(argc, argv);
+    // init the logging mechanism
+    QsLogging::Logger& logger = QsLogging::Logger::instance();
+    logger.setLoggingLevel(QsLogging::DebugLevel);
+    const QString sLogPath(QDir(core.applicationDirPath()).filePath("log.txt"));
+
+    QsLogging::DestinationPtr fileDestination(
+       QsLogging::DestinationFactory::MakeFileDestination(sLogPath, true, 512, 5) );
+    QsLogging::DestinationPtr debugDestination(
+       QsLogging::DestinationFactory::MakeDebugOutputDestination() );
+    logger.addDestination(debugDestination);
+    logger.addDestination(fileDestination);
+
+
     return core.exec();
 }

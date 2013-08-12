@@ -1,3 +1,4 @@
+#include "QsLog.h"
 #include "RadioCalibrationWindow.h"
 
 RadioCalibrationWindow::RadioCalibrationWindow(QWidget *parent) :
@@ -99,7 +100,7 @@ void RadioCalibrationWindow::saveFile()
         rcFile.remove();
     }
     if (!rcFile.open(QFile::WriteOnly | QFile::Text)) {
-        qDebug() << __FILE__ << __LINE__ << "could not open"  << rcFile.fileName() << "for writing";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "could not open"  << rcFile.fileName() << "for writing";
         return;
     }
 
@@ -186,14 +187,14 @@ void RadioCalibrationWindow::loadFile()
 
     if (!rcConfig->setContent(&rcFile, true, &errorStr, &errorLine,
                               &errorColumn)) {
-        qDebug() << "Error reading XML Parameter File on line: " << errorLine << errorStr;
+        QLOG_DEBUG() << "Error reading XML Parameter File on line: " << errorLine << errorStr;
         return;
     }
 
     rcFile.close();
     QDomElement root = rcConfig->documentElement();
     if (root.tagName() != "channels") {
-        qDebug() << __FILE__ << __LINE__ << "This is not a Radio Calibration xml file";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "This is not a Radio Calibration xml file";
         return;
     }
 
@@ -218,7 +219,7 @@ void RadioCalibrationWindow::parseSetpoint(const QDomElement &setpoint, const QP
     foreach (QString setpoint, setpointList)
     setpoints << setpoint.trimmed().toFloat();
 
-//    qDebug() << __FILE__ << __LINE__ << ": " << setpoint.tagName() << ": " << setpoint.attribute("name") ;
+//    QLOG_DEBUG() << __FILE__ << __LINE__ << ": " << setpoint.tagName() << ": " << setpoint.attribute("name") ;
     if (setpoint.tagName() == "threeSetpoint") {
         if (setpoints.isEmpty())
             setpoints << 0 << 0 << 0;
@@ -251,7 +252,7 @@ void RadioCalibrationWindow::parseSetpoint(const QDomElement &setpoint, const QP
 
 void RadioCalibrationWindow::send()
 {
-    qDebug() << __FILE__ << __LINE__ << "uasId = " << uasId;
+    QLOG_DEBUG() << __FILE__ << __LINE__ << "uasId = " << uasId;
 #ifdef MAVLINK_ENABLED_UALBERTA
     UAS *uas = dynamic_cast<UAS*>(UASManager::instance()->getUASForId(uasId));
     if (uas) {
@@ -271,7 +272,7 @@ void RadioCalibrationWindow::send()
 void RadioCalibrationWindow::request()
 {
     // FIXME MAVLINKV10PORTINGNEEDED
-//    qDebug() << __FILE__ << __LINE__ << "READ FROM UAV";
+//    QLOG_DEBUG() << __FILE__ << __LINE__ << "READ FROM UAV";
 //    UAS *uas = dynamic_cast<UAS*>(UASManager::instance()->getUASForId(uasId));
 //    if (uas) {
 //        mavlink_message_t msg;

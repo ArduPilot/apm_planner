@@ -7,15 +7,7 @@
  *   @author Lorenz Meier <mail@qgroundcontrol.org>
  */
 
-#include <inttypes.h>
-#include <iostream>
-
-#include <QDebug>
-#include <QTime>
-#include <QApplication>
-#include <QMessageBox>
-#include <QSettings>
-#include <QDesktopServices>
+#include "QsLog.h"
 
 #include "MAVLinkProtocol.h"
 #include "UASInterface.h"
@@ -30,6 +22,17 @@
 #include "QGCMAVLink.h"
 #include "QGCMAVLinkUASFactory.h"
 #include "QGC.h"
+
+#include <inttypes.h>
+#include <iostream>
+
+
+#include <QTime>
+#include <QApplication>
+#include <QMessageBox>
+#include <QSettings>
+#include <QDesktopServices>
+
 
 #ifdef QGC_PROTOBUF_ENABLED
 #include <google/protobuf/descriptor.h>
@@ -144,7 +147,7 @@ void MAVLinkProtocol::storeSettings()
     settings.setValue("PARAMETER_TRANSMISSION_GUARD_ENABLED", m_paramGuardEnabled);
     settings.endGroup();
     settings.sync();
-    //qDebug() << "Storing settings!";
+    QLOG_DEBUG() << "Storing settings!";
 }
 
 MAVLinkProtocol::~MAVLinkProtocol()
@@ -272,7 +275,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                  (b.size() != MAVLINK_NUM_NON_PAYLOAD_BYTES+MAVLINK_EXTENDED_HEADER_LEN+ extended_message.extended_payload_len)
                 {
                     //invalid message
-                    qDebug() << "GOT INVALID EXTENDED MESSAGE, ABORTING";
+                    QLOG_DEBUG() << "GOT INVALID EXTENDED MESSAGE, ABORTING";
                     return;
                 }
 
@@ -429,7 +432,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 }
 
                 // Make some noise if a message was skipped
-                //qDebug() << "SYSID" << message.sysid << "COMPID" << message.compid << "MSGID" << message.msgid << "EXPECTED INDEX:" << expectedIndex << "SEQ" << message.seq;
+                //QLOG_DEBUG() << "SYSID" << message.sysid << "COMPID" << message.compid << "MSGID" << message.msgid << "EXPECTED INDEX:" << expectedIndex << "SEQ" << message.seq;
                 if (message.seq != expectedIndex)
                 {
                     // Determine how many messages were skipped accounting for 0-wraparound
@@ -442,7 +445,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                     else
                     {
                         // Console generates excessive load at high loss rates, needs better GUI visualization
-                        //qDebug() << QString("Lost %1 messages for comp %4: expected sequence ID %2 but received %3.").arg(lostMessages).arg(expectedIndex).arg(message.seq).arg(message.compid);
+                        //QLOG_DEBUG() << QString("Lost %1 messages for comp %4: expected sequence ID %2 but received %3.").arg(lostMessages).arg(expectedIndex).arg(message.seq).arg(message.compid);
                     }
                     totalLossCounter += lostMessages;
                     currLossCounter += lostMessages;
@@ -525,7 +528,7 @@ void MAVLinkProtocol::sendMessage(mavlink_message_t message)
     for (i = links.begin(); i != links.end(); ++i)
     {
         sendMessage(*i, message);
-        qDebug() << __FILE__ << __LINE__ << "SENT MESSAGE OVER" << ((LinkInterface*)*i)->getName() << "LIST SIZE:" << links.size();
+        QLOG_DEBUG() << "SENT MESSAGE OVER" << ((LinkInterface*)*i)->getName() << "LIST SIZE:" << links.size();
     }
 }
 

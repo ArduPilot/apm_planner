@@ -1,5 +1,5 @@
 #include "dockwidgettitlebareventfilter.h"
-#include <QDebug>
+
 #include <QEvent>
 DockWidgetTitleBarEventFilter::DockWidgetTitleBarEventFilter(QObject *parent) : QObject(parent)
 {

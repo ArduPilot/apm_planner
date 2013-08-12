@@ -37,7 +37,7 @@ This file is part of the PIXHAWK project
 #include "UASManager.h"
 #include "GAudioOutput.h"
 
-#include <QDebug>
+
 #include <QMap>
 
 ObjectDetectionView::ObjectDetectionView(QString folder, QWidget *parent) :

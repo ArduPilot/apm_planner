@@ -26,7 +26,7 @@ This file is part of the QGROUNDCONTROL project
  *   @brief Implementation of class OpalLink
  *   @author Bryan Godbolt <godbolt@ualberta.ca>
  */
-
+#include "QsLog.h"
 #include "OpalLink.h"
 
 OpalLink::OpalLink() :
@@ -82,7 +82,7 @@ void OpalLink::writeBytes(const char *bytes, qint64 length)
     if (decodeSuccess) {
         switch(msg.msgid) {
         case MAVLINK_MSG_ID_PARAM_REQUEST_LIST: {
-            qDebug() << "OpalLink::writeBytes(): request params";
+            QLOG_DEBUG() << "OpalLink::writeBytes(): request params";
 
             mavlink_message_t param;
 
@@ -103,17 +103,17 @@ void OpalLink::writeBytes(const char *bytes, qint64 length)
         }
         case MAVLINK_MSG_ID_PARAM_SET: {
 
-//                qDebug() << "OpalLink::writeBytes(): Attempt to set a parameter";
+            QLOG_TRACE() << "OpalLink::writeBytes(): Attempt to set a parameter";
 
             mavlink_param_set_t param;
             mavlink_msg_param_set_decode(&msg, &param);
             OpalRT::QGCParamID paramName((char*)param.param_id);
 
-//                qDebug() << "OpalLink::writeBytes():paramName: " << paramName;
+            QLOG_TRACE() << "OpalLink::writeBytes():paramName: " << paramName;
 
             if ((*params).contains(param.target_component, paramName)) {
                 OpalRT::Parameter p = (*params)(param.target_component, paramName);
-//                    qDebug() << __FILE__ << ":" << __LINE__ << ": "  << p;
+                QLOG_TRACE() << p;
                 // Set the param value in Opal-RT
                 p.setValue(param.param_value);
 
@@ -141,13 +141,13 @@ void OpalLink::writeBytes(const char *bytes, qint64 length)
         case MAVLINK_MSG_ID_RADIO_CALIBRATION: {
             mavlink_radio_calibration_t radio;
             mavlink_msg_radio_calibration_decode(&msg, &radio);
-//            qDebug() << "RADIO CALIBRATION RECEIVED";
-//            qDebug() << "AILERON: " << radio.aileron[0] << " " << radio.aileron[1] << " " << radio.aileron[2];
-//            qDebug() << "ELEVATOR: " << radio.elevator[0] << " " << radio.elevator[1] << " " << radio.elevator[2];
-//            qDebug() << "RUDDER: " << radio.rudder[0] << " " << radio.rudder[1] << " " << radio.rudder[2];
-//            qDebug() << "GYRO: " << radio.gyro[0] << " " << radio.gyro[1];
-//            qDebug() << "PITCH: " << radio.pitch[0] << radio.pitch[1] << radio.pitch[2] << radio.pitch[3] << radio.pitch[4];
-//            qDebug() << "THROTTLE: " << radio.throttle[0] << radio.throttle[1] << radio.throttle[2] << radio.throttle[3] << radio.throttle[4];
+            QLOG_TRACE() << "RADIO CALIBRATION RECEIVED";
+            QLOG_TRACE() << "AILERON: " << radio.aileron[0] << " " << radio.aileron[1] << " " << radio.aileron[2];
+            QLOG_TRACE() << "ELEVATOR: " << radio.elevator[0] << " " << radio.elevator[1] << " " << radio.elevator[2];
+            QLOG_TRACE() << "RUDDER: " << radio.rudder[0] << " " << radio.rudder[1] << " " << radio.rudder[2];
+            QLOG_TRACE() << "GYRO: " << radio.gyro[0] << " " << radio.gyro[1];
+            QLOG_TRACE() << "PITCH: " << radio.pitch[0] << radio.pitch[1] << radio.pitch[2] << radio.pitch[3] << radio.pitch[4];
+            QLOG_TRACE() << "THROTTLE: " << radio.throttle[0] << radio.throttle[1] << radio.throttle[2] << radio.throttle[3] << radio.throttle[4];
 
             /* AILERON SERVO */
             if (params->contains(OpalRT::SERVO_INPUTS, "AIL_RIGHT_IN"))
@@ -244,12 +244,12 @@ void OpalLink::writeBytes(const char *bytes, qint64 length)
             case 9: // extra 3
                 break;
             default:
-                qDebug() << __FILE__ << __LINE__ << "Received Unknown Data Strem Request with ID" << stream.req_stream_id;
+                QLOG_DEBUG() << __FILE__ << __LINE__ << "Received Unknown Data Strem Request with ID" << stream.req_stream_id;
             }
         }
         break;
         default: {
-            qDebug() << "OpalLink::writeBytes(): Unknown mavlink packet";
+            QLOG_DEBUG() << "OpalLink::writeBytes(): Unknown mavlink packet";
         }
         }
 #endif
@@ -408,7 +408,7 @@ void OpalLink::getSignals()
  */
 void OpalLink::run()
 {
-//    qDebug() << "OpalLink::run():: Starting the thread";
+    QLOG_TRACE() << "OpalLink::run():: Starting the thread";
 }
 
 int OpalLink::getId()

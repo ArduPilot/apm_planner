@@ -11,15 +11,9 @@
  *
  */
 
-#include <QDoubleSpinBox>
-#include <QDebug>
-
-#include <cmath>
-#include <qmath.h>
-
+#include "QsLog.h"
 #include "WaypointEditableView.h"
 #include "ui_WaypointEditableView.h"
-
 
 #include "mission/QGCMissionNavWaypoint.h"
 #include "mission/QGCMissionNavLoiterUnlim.h"
@@ -35,6 +29,9 @@
 #include "mission/QGCMissionDoFinishSearch.h"
 #include "mission/QGCMissionOther.h"
 
+#include <QDoubleSpinBox>
+#include <cmath>
+#include <qmath.h>
 
 WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     QWidget(parent),
@@ -389,7 +386,7 @@ void WaypointEditableView::updateValues()
         QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(children().at(j));
         if (spin)
         {
-            //qDebug() << "DEACTIVATED SPINBOX #" << j;
+            //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
             spin->blockSignals(true);
         }
         else
@@ -398,14 +395,14 @@ void WaypointEditableView::updateValues()
             QWidget* item = dynamic_cast<QWidget*>(children().at(j));
             if (item)
             {
-                //qDebug() << "FOUND WIDGET BOX";
+                //QLOG_DEBUG() << "FOUND WIDGET BOX";
                 for (int k = 0; k  < item->children().size(); ++k)
                 {
                     // Store only QGCToolWidgetItems
                     QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
                     if (spin)
                     {
-                        //qDebug() << "DEACTIVATED SPINBOX #" << k;
+                        //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
                         spin->blockSignals(true);
                     }
                 }
@@ -420,7 +417,7 @@ void WaypointEditableView::updateValues()
         QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(m_ui->customActionWidget->children().at(j));
         if (spin)
         {
-            //qDebug() << "DEACTIVATED SPINBOX #" << j;
+            //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
             spin->blockSignals(true);
         }
         else
@@ -429,14 +426,14 @@ void WaypointEditableView::updateValues()
             QWidget* item = dynamic_cast<QWidget*>(m_ui->customActionWidget->children().at(j));
             if (item)
             {
-                //qDebug() << "CUSTOM ACTIONS FOUND WIDGET BOX";
+                //QLOG_DEBUG() << "CUSTOM ACTIONS FOUND WIDGET BOX";
                 for (int k = 0; k  < item->children().size(); ++k)
                 {
                     // Store only QGCToolWidgetItems
                     QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
                     if (spin)
                     {
-                        //qDebug() << "DEACTIVATED SPINBOX #" << k;
+                        //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
                         spin->blockSignals(true);
                     }
                 }
@@ -500,7 +497,7 @@ void WaypointEditableView::updateValues()
     if (currId != lastId)
     {
 
-        // qDebug() << "COLOR ID: " << currId;
+        // QLOG_DEBUG() << "COLOR ID: " << currId;
         if (currId == 1)
         {
             //backGroundColor = backGroundColor.lighter(150);
@@ -510,7 +507,7 @@ void WaypointEditableView::updateValues()
         {
             backGroundColor = QColor("#252528").lighter(250);
         }
-        // qDebug() << "COLOR:" << backGroundColor.name();
+        // QLOG_DEBUG() << "COLOR:" << backGroundColor.name();
 
         // Update color based on id
         QString groupBoxStyle = QString("QGroupBox {padding: 0px; margin: 0px; border: 0px; background-color: %1; }").arg(backGroundColor.name());
@@ -534,7 +531,7 @@ void WaypointEditableView::updateValues()
         QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(children().at(j));
         if (spin)
         {
-            //qDebug() << "ACTIVATED SPINBOX #" << j;
+            //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << j;
             spin->blockSignals(false);
         }
         else
@@ -543,14 +540,14 @@ void WaypointEditableView::updateValues()
             QGroupBox* item = dynamic_cast<QGroupBox*>(children().at(j));
             if (item)
             {
-                //qDebug() << "FOUND GROUP BOX";
+                //QLOG_DEBUG() << "FOUND GROUP BOX";
                 for (int k = 0; k  < item->children().size(); ++k)
                 {
                     // Store only QGCToolWidgetItems
                     QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
                     if (spin)
                     {
-                        //qDebug() << "ACTIVATED SPINBOX #" << k;
+                        //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << k;
                         spin->blockSignals(false);
                     }
                 }
@@ -565,7 +562,7 @@ void WaypointEditableView::updateValues()
         QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(m_ui->customActionWidget->children().at(j));
         if (spin)
         {
-            //qDebug() << "ACTIVATED SPINBOX #" << j;
+            //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << j;
             spin->blockSignals(false);
         }
         else
@@ -574,14 +571,14 @@ void WaypointEditableView::updateValues()
             QWidget* item = dynamic_cast<QWidget*>(m_ui->customActionWidget->children().at(j));
             if (item)
             {
-                //qDebug() << "FOUND WIDGET BOX";
+                //QLOG_DEBUG() << "FOUND WIDGET BOX";
                 for (int k = 0; k  < item->children().size(); ++k)
                 {
                     // Store only QGCToolWidgetItems
                     QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
                     if (spin)
                     {
-                       //qDebug() << "ACTIVATED SPINBOX #" << k;
+                       //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << k;
                         spin->blockSignals(false);
                     }
                 }

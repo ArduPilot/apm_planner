@@ -26,15 +26,11 @@ This file is part of the QGROUNDCONTROL project
  *   @brief Implementation of CommConfigurationWindow
  *
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
+ *   @author Bill Bonney <billbonney@communistech.com>
  *
  */
 
-#include <QDebug>
-
-#include <QDir>
-#include <QFileInfoList>
-#include <QBoxLayout>
-#include <QWidget>
+#include "QsLog.h"
 
 #include "CommConfigurationWindow.h"
 #include "SerialConfigurationWindow.h"
@@ -54,6 +50,11 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCUDPLinkConfiguration.h"
 #include "LinkManager.h"
 #include "MainWindow.h"
+
+#include <QDir>
+#include <QFileInfoList>
+#include <QBoxLayout>
+#include <QWidget>
 
 CommConfigurationWindow::CommConfigurationWindow(LinkInterface* link, ProtocolInterface* protocol, QWidget *parent) : QWidget(parent)
 {
@@ -180,7 +181,7 @@ CommConfigurationWindow::CommConfigurationWindow(LinkInterface* link, ProtocolIn
 			&& xbee == 0
 #endif // XBEELINK
        ) {
-        qDebug() << "Link is NOT a known link, can't open configuration window";
+        QLOG_DEBUG() << "Link is NOT a known link, can't open configuration window";
     }
 
 #ifdef XBEELINK
@@ -194,7 +195,7 @@ CommConfigurationWindow::CommConfigurationWindow(LinkInterface* link, ProtocolIn
         ui.protocolScrollArea->setWidget(conf);
         ui.protocolGroupBox->setTitle(protocol->getName()+" (Global Settings)");
     } else {
-        qDebug() << "Protocol is NOT MAVLink, can't open configuration window";
+        QLOG_DEBUG() << "Protocol is NOT MAVLink, can't open configuration window";
     }
 
     // Open details for UDP link if necessary
@@ -286,7 +287,7 @@ void CommConfigurationWindow::setLinkType(int linktype)
 
 void CommConfigurationWindow::setProtocol(int protocol)
 {
-    qDebug() << "Changing to protocol" << protocol;
+    QLOG_DEBUG() << "Changing to protocol" << protocol;
 }
 
 void CommConfigurationWindow::setConnection()

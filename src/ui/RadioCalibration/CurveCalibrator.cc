@@ -1,3 +1,4 @@
+#include "QsLog.h"
 #include "CurveCalibrator.h"
 
 CurveCalibrator::CurveCalibrator(QString titleString, QWidget *parent) :
@@ -121,6 +122,6 @@ void CurveCalibrator::set(const QVector<uint16_t> &data)
         curve->setData(pos, set);
         plot->replot();
     } else {
-        qDebug() << __FILE__ << __LINE__ << ": wrong data vector size";
+        QLOG_DEBUG() << __FILE__ << __LINE__ << ": wrong data vector size";
     }
 }

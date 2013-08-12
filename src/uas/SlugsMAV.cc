@@ -1,6 +1,6 @@
 #include "SlugsMAV.h"
 
-#include <QDebug>
+
 
 SlugsMAV::SlugsMAV(MAVLinkProtocol* mavlink, int id) :
     UAS(mavlink, id)
@@ -146,7 +146,7 @@ void SlugsMAV::receiveMessage(LinkInterface* link, mavlink_message_t message)
             //break;
 
         default:
-            //        qDebug() << "\nSLUGS RECEIVED MESSAGE WITH ID" << message.msgid;
+            //        QLOG_DEBUG() << "\nSLUGS RECEIVED MESSAGE WITH ID" << message.msgid;
             break;
         }
 #endif
@@ -214,7 +214,7 @@ void SlugsMAV::emitSignals (void)
 void SlugsMAV::emitGpsSignals (void)
 {
 
-    // qDebug()<<"After Emit GPS Signal"<<mlGpsData.fix_type;
+    // QLOG_DEBUG()<<"After Emit GPS Signal"<<mlGpsData.fix_type;
 
 
     //ToDo Uncomment if. it was comment only to test

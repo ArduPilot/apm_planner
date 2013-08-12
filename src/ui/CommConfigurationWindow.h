@@ -35,6 +35,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QObject>
 #include <QWidget>
 #include <QAction>
+#include <QPointer>
 #include "LinkInterface.h"
 #include "ProtocolInterface.h"
 #include "ui_CommSettings.h"
@@ -51,7 +52,7 @@ enum qgc_link_t {
 };
 
 enum qgc_protocol_t {
-    QGC_PROTOCOL_MAVLINK,
+    QGC_PROTOCOL_MAVLINK
 };
 
 
@@ -85,8 +86,8 @@ public slots:
 private:
 
     Ui::commSettings ui;
-    LinkInterface* link;
-    QAction* action;
+    QPointer<LinkInterface> link;
+    QPointer<QAction> action;
 };
 
 

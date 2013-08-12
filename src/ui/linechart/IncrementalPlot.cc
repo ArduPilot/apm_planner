@@ -41,7 +41,7 @@ This file is part of the QGROUNDCONTROL project
 #include <float.h>
 #include <qpaintengine.h>
 
-#include <QDebug>
+
 
 CurveData::CurveData():
     d_count(0)

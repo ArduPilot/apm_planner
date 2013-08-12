@@ -29,13 +29,14 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include <QApplication>
-#include <QSettings>
-#include <QTemporaryFile>
+#include "QsLog.h"
 #include "GAudioOutput.h"
 #include "MG.h"
 
-#include <QDebug>
+#include <QApplication>
+#include <QSettings>
+#include <QTemporaryFile>
+
 
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h>
@@ -109,7 +110,7 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
     ISpVoice * pVoice = NULL;
     if (FAILED(::CoInitialize(NULL)))
     {
-        qDebug("Creating COM object for audio output failed!");
+        QLOG_WARN() << "Creating COM object for audio output failed!";
     }
     else
     {
@@ -299,7 +300,7 @@ void GAudioOutput::beep()
     {
         // Use QFile to transform path for all OS
         QFile f(QCoreApplication::applicationDirPath()+QString("/files/audio/alert.wav"));
-        qDebug() << "FILE:" << f.fileName();
+        QLOG_INFO() << "FILE:" << f.fileName();
         //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
         //m_media->play();
     }

@@ -29,15 +29,17 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include <QTimer>
-#include <QList>
-#include <QDebug>
-#include <QMutexLocker>
-#include <iostream>
+#include "QsLog.h"
 #include "QGCFlightGearLink.h"
 #include "QGC.h"
-#include <QHostInfo>
 #include "MainWindow.h"
+
+#include <QTimer>
+#include <QList>
+
+#include <QMutexLocker>
+#include <iostream>
+#include <QHostInfo>
 
 QGCFlightGearLink::QGCFlightGearLink(UASInterface* mav, QString startupArguments, QString remoteHost, QHostAddress host, quint16 port) :
     socket(NULL),
@@ -112,7 +114,7 @@ void QGCFlightGearLink::setRemoteHost(const QString& host)
 {
     if (host.contains(":"))
     {
-        //qDebug() << "HOST: " << host.split(":").first();
+        QLOG_TRACE() << "HOST: " << host.split(":").first();
         QHostInfo info = QHostInfo::fromName(host.split(":").first());
         if (info.error() == QHostInfo::NoError)
         {
@@ -128,7 +130,7 @@ void QGCFlightGearLink::setRemoteHost(const QString& host)
                 }
             }
             currentHost = address;
-            //qDebug() << "Address:" << address.toString();
+            QLOG_TRACE() << "Address:" << address.toString();
             // Set port according to user input
             currentPort = host.split(":").last().toInt();
         }
@@ -175,9 +177,9 @@ void QGCFlightGearLink::updateControls(uint64_t time, float rollAilerons, float 
     }
     else
     {
-        qDebug() << "HIL: Got NaN values from the hardware: isnan output: roll: " << isnan(rollAilerons) << ", pitch: " << isnan(pitchElevator) << ", yaw: " << isnan(yawRudder) << ", throttle: " << isnan(throttle);
+        QLOG_WARN() << "HIL: Got NaN values from the hardware: isnan output: roll: " << isnan(rollAilerons) << ", pitch: " << isnan(pitchElevator) << ", yaw: " << isnan(yawRudder) << ", throttle: " << isnan(throttle);
     }
-    //qDebug() << "Updated controls" << state;
+    //QLOG_INFO() << "Updated controls" << state;
 }
 
 void QGCFlightGearLink::writeBytes(const char* data, qint64 size)
@@ -199,9 +201,9 @@ void QGCFlightGearLink::writeBytes(const char* data, qint64 size)
             ascii.append(219);
         }
     }
-    qDebug() << "Sent" << size << "bytes to" << currentHost.toString() << ":" << currentPort << "data:";
-    qDebug() << bytes;
-    qDebug() << "ASCII:" << ascii;
+    QLOG_DEBUG() << "Sent" << size << "bytes to" << currentHost.toString() << ":" << currentPort << "data:";
+    QLOG_DEBUG() << bytes;
+    QLOG_DEBUG() << "ASCII:" << ascii;
 #endif
     if (connectState && socket) socket->writeDatagram(data, size, currentHost, currentPort);
 }
@@ -227,15 +229,15 @@ void QGCFlightGearLink::readBytes()
 
     // Print string
     QString state(b);
-    //qDebug() << "FG LINK GOT:" << state;
+    QLOG_TRACE() << "FG LINK GOT:" << state;
 
     QStringList values = state.split("\t");
 
     // Check length
     if (values.size() != 17)
     {
-        qDebug() << "RETURN LENGTH MISMATCHING EXPECTED" << 17 << "BUT GOT" << values.size();
-        qDebug() << state;
+        QLOG_DEBUG() << "RETURN LENGTH MISMATCHING EXPECTED" << 17 << "BUT GOT" << values.size();
+        QLOG_DEBUG() << state;
         return;
     }
 
@@ -334,7 +336,7 @@ bool QGCFlightGearLink::disconnectSimulation()
  **/
 bool QGCFlightGearLink::connectSimulation()
 {
-    qDebug() << "STARTING FLIGHTGEAR LINK";
+    QLOG_DEBUG() << "STARTING FLIGHTGEAR LINK";
 
     if (!mav) return false;
     socket = new QUdpSocket(this);
@@ -515,7 +517,7 @@ bool QGCFlightGearLink::connectSimulation()
 //    connect (terraSync, SIGNAL(readyReadStandardOutput()), this, SLOT(printTerraSyncOutput()));
 //    connect (terraSync, SIGNAL(readyReadStandardError()), this, SLOT(printTerraSyncError()));
     terraSync->start(processTerraSync, terraSyncArguments);
-//    qDebug() << "STARTING: " << processTerraSync << terraSyncArguments;
+    QLOG_TRACE() << "STARTING: " << processTerraSync << terraSyncArguments;
 
     process->start(processFgfs, flightGearArguments);
 
@@ -526,9 +528,9 @@ bool QGCFlightGearLink::connectSimulation()
         emit simulationConnected();
         connectionStartTime = QGC::groundTimeUsecs()/1000;
     }
-    qDebug() << "STARTING SIM";
+    QLOG_INFO() << "STARTING SIM";
 
-//    qDebug() << "STARTING: " << processFgfs << flightGearArguments;
+    QLOG_DEBUG() << "STARTING: " << processFgfs << flightGearArguments;
 
 
     start(LowPriority);
@@ -537,24 +539,24 @@ bool QGCFlightGearLink::connectSimulation()
 
 void QGCFlightGearLink::printTerraSyncOutput()
 {
-   qDebug() << "TerraSync stdout:";
+    QLOG_DEBUG() << "TerraSync stdout:";
    QByteArray byteArray = terraSync->readAllStandardOutput();
    QStringList strLines = QString(byteArray).split("\n");
 
    foreach (QString line, strLines){
-    qDebug() << line;
+       QLOG_DEBUG() << line;
    }
 }
 
 void QGCFlightGearLink::printTerraSyncError()
 {
-   qDebug() << "TerraSync stderr:";
+   QLOG_DEBUG() << "TerraSync stderr:";
 
    QByteArray byteArray = terraSync->readAllStandardError();
    QStringList strLines = QString(byteArray).split("\n");
 
    foreach (QString line, strLines){
-    qDebug() << line;
+    QLOG_DEBUG() << line;
    }
 }
 

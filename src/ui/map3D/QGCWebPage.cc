@@ -1,5 +1,5 @@
 #include "QGCWebPage.h"
-#include <QDebug>
+#include "QsLog.h"
 
 QGCWebPage::QGCWebPage(QObject *parent) :
     QWebPage(parent)
@@ -8,7 +8,7 @@ QGCWebPage::QGCWebPage(QObject *parent) :
 
 void QGCWebPage::javaScriptConsoleMessage ( const QString & message, int lineNumber, const QString & sourceID )
 {
-    qDebug() << "JAVASCRIPT: " << lineNumber << sourceID << message;
+    QLOG_DEBUG() << "JAVASCRIPT: " << lineNumber << sourceID << message;
 }
 
 #ifdef Q_OS_MAC64

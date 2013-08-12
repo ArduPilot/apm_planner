@@ -1,4 +1,4 @@
-#include <QDebug>
+#include "QsLog.h"
 #include "WaypointViewOnlyView.h"
 #include "ui_WaypointViewOnlyView.h"
 
@@ -29,7 +29,7 @@ void WaypointViewOnlyView::changedCurrent(int state)
 //This is a slot receiving signals from QCheckBox m_ui->current. The state given here is whatever the user has clicked and not the true "current" value onboard.
 {
     Q_UNUSED(state);
-    //qDebug() << "Trof: WaypointViewOnlyView::changedCurrent(" << state << ") ID:" << wp->getId();
+    //QLOG_DEBUG() << "Trof: WaypointViewOnlyView::changedCurrent(" << state << ") ID:" << wp->getId();
     m_ui->current->blockSignals(true);    
 
     if (m_ui->current->isChecked() == false)
@@ -37,19 +37,19 @@ void WaypointViewOnlyView::changedCurrent(int state)
         if (wp->getCurrent() == true) //User clicked on the waypoint, that is already current. Box stays checked
         {
             m_ui->current->setCheckState(Qt::Checked);
-            //qDebug() << "Trof: WaypointViewOnlyView::changedCurrent. Rechecked true. stay true " << m_ui->current->isChecked();
+            //QLOG_DEBUG() << "Trof: WaypointViewOnlyView::changedCurrent. Rechecked true. stay true " << m_ui->current->isChecked();
         }
         else // Strange case, unchecking the box which was not checked to start with
         {
             m_ui->current->setCheckState(Qt::Unchecked);
-            //qDebug() << "Trof: WaypointViewOnlyView::changedCurrent. Unchecked false. set false " << m_ui->current->isChecked();
+            //QLOG_DEBUG() << "Trof: WaypointViewOnlyView::changedCurrent. Unchecked false. set false " << m_ui->current->isChecked();
         }
     }
     else
     {
         hightlightDesiredCurrent(true);
         m_ui->current->setCheckState(Qt::Unchecked);
-        //qDebug() << "Trof: WaypointViewOnlyView::changedCurrent. Checked new. Sending set_current request to Manager " << m_ui->current->isChecked();
+        //QLOG_DEBUG() << "Trof: WaypointViewOnlyView::changedCurrent. Checked new. Sending set_current request to Manager " << m_ui->current->isChecked();
         emit changeCurrentWaypoint(wp->getId());   //the slot changeCurrentWaypoint() in WaypointList sets all other current flags to false
 
     }
@@ -77,7 +77,7 @@ void WaypointViewOnlyView::setCurrent(bool state)
 
 void WaypointViewOnlyView::updateValues()
 {
-    qDebug() << "Trof: WaypointViewOnlyView::updateValues() ID:" << wp->getId();
+    QLOG_DEBUG() << "Trof: WaypointViewOnlyView::updateValues() ID:" << wp->getId();
     // Check if we just lost the wp, delete the widget
     // accordingly
     if (!wp)
@@ -96,7 +96,7 @@ void WaypointViewOnlyView::updateValues()
     if (currId != lastId)
     {
 
-        // qDebug() << "COLOR ID: " << currId;
+        // QLOG_DEBUG() << "COLOR ID: " << currId;
         if (currId == 1)
         {
             backGroundColor = QColor("#252528").lighter(150);

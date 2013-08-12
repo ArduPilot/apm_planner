@@ -26,19 +26,7 @@ This file is part of the QGROUNDCONTROL project
  *   @brief Implementation of class MainWindow
  *   @author Lorenz Meier <mail@qgroundcontrol.org>
  */
-
-#include <QSettings>
-#include <QDockWidget>
-#include <QNetworkInterface>
-#include <QMessageBox>
-#include <QDebug>
-#include <QTimer>
-#include <QHostInfo>
-#include <QSplashScreen>
-#include <QGCHilLink.h>
-#include <QGCHilConfiguration.h>
-#include <QGCHilFlightGearConfiguration.h>
-#include <QDeclarativeView>
+#include "QsLog.h"
 #include "dockwidgettitlebareventfilter.h"
 #include "QGC.h"
 #include "MAVLinkSimulationLink.h"
@@ -75,9 +63,20 @@ This file is part of the QGROUNDCONTROL project
 // FIXME Move
 #include "PxQuadMAV.h"
 #include "SlugsMAV.h"
-
-
 #include "LogCompressor.h"
+
+#include <QSettings>
+#include <QDockWidget>
+#include <QNetworkInterface>
+#include <QMessageBox>
+
+#include <QTimer>
+#include <QHostInfo>
+#include <QSplashScreen>
+#include <QGCHilLink.h>
+#include <QGCHilConfiguration.h>
+#include <QGCHilFlightGearConfiguration.h>
+#include <QDeclarativeView>
 
 MainWindow* MainWindow::instance(QSplashScreen* screen)
 {
@@ -352,12 +351,15 @@ MainWindow::~MainWindow()
             // Remove dock widget from main window
             // removeDockWidget(dockWidget);
             // delete dockWidget->widget();
+            QLOG_DEBUG() << "Delete DockWidget " << dockWidget;
             delete dockWidget;
             dockWidget = NULL;
         }
-        else if (dynamic_cast<QWidget*>(*i))
+        else if (dynamic_cast<QWidget*>(*i)) // [ToDo] Stability
         {
-            delete dynamic_cast<QWidget*>(*i);
+            QWidget* widget = dynamic_cast<QWidget*>(*i);
+            QLOG_DEBUG() << "Delete Widget " << dockWidget;
+            delete widget;
             *i = NULL;
         }
     }
@@ -635,8 +637,6 @@ void MainWindow::buildCommonWidgets()
 
     createDockWidget(engineeringView,new HUD(320,240,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea,this->width()/1.5);
 
-    createDockWidget(engineeringView,new HUD(320,240,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea,this->width()/1.5);
-
     createDockWidget(simView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),"PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea,this->width()/1.5);
     createDockWidget(pilotView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),"PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea,this->width()/1.8);
 
@@ -872,7 +872,7 @@ void MainWindow::loadDockWidget(QString name)
     }
     else if (name == "Radio Control")
     {
-        qDebug() << "Error loading window:" << name << "Unknown window type";
+        QLOG_DEBUG() << "Error loading window:" << name << "Unknown window type";
         //createDockWidget(centerStack->currentWidget(),hddisplay,tr("Actuator Status"),"HEADS_DOWN_DISPLAY_2_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
     else if (name == "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET")
@@ -893,7 +893,7 @@ void MainWindow::loadDockWidget(QString name)
         }
         else
         {
-            qDebug() << "Error loading window:" << name;
+            QLOG_DEBUG() << "Error loading window:" << name;
         }
     }
 }
@@ -1048,7 +1048,7 @@ void MainWindow::loadCustomWidget(const QString& fileName, int view)
     QGCToolWidget* tool = new QGCToolWidget("", this);
     if (tool->loadSettings(fileName, true))
     {
-        qDebug() << "Loading custom tool:" << tool->getTitle() << tool->objectName();
+        QLOG_DEBUG() << "Loading custom tool:" << tool->getTitle() << tool->objectName();
         switch ((VIEW_SECTIONS)view)
         {
         case VIEW_ENGINEER:
@@ -1088,7 +1088,7 @@ void MainWindow::loadCustomWidget(const QString& fileName, bool singleinstance)
     QGCToolWidget* tool = new QGCToolWidget("", this);
     if (tool->loadSettings(fileName, true) || !singleinstance)
     {
-        qDebug() << "Loading custom tool:" << tool->getTitle() << tool->objectName();
+        QLOG_DEBUG() << "Loading custom tool:" << tool->getTitle() << tool->objectName();
         QSettings settings;
         settings.beginGroup("QGC_MAINWINDOW");
         //settings.setValue(QString("TOOL_PARENT_") + "UNNAMED_TOOL_" + QString::number(ui.menuTools->actions().size()),currentView);
@@ -1157,8 +1157,8 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 
     if (files.count() == 0)
     {
-        qDebug() << "No default custom widgets for system " << systemType << "autopilot" << autopilotType << " found";
-        qDebug() << "Tried with path: " << defaultsDir;
+        QLOG_DEBUG() << "No default custom widgets for system " << systemType << "autopilot" << autopilotType << " found";
+        QLOG_DEBUG() << "Tried with path: " << defaultsDir;
         showStatusMessage(tr("Did not find any custom widgets in %1").arg(defaultsDir));
     }
 
@@ -2114,7 +2114,7 @@ void MainWindow::loadViewState()
         {
             if (widgetname != "")
             {
-                qDebug() << "Loading widget:" << widgetname;
+                QLOG_DEBUG() << "Loading widget:" << widgetname;
                 loadDockWidget(widgetname);
             }
         }
@@ -2304,7 +2304,7 @@ QList<QAction*> MainWindow::listLinkMenuActions(void)
 bool MainWindow::x11Event(XEvent *event)
 {
     emit x11EventOccured(event);
-    //qDebug("XEvent occured...");
+    //QLOG_DEBUG() << "XEvent occured...";
     return false;
 }
 #endif // MOUSE_ENABLED_LINUX

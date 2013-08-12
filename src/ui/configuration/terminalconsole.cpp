@@ -33,13 +33,14 @@ This file is part of the APM_PLANNER project
  *
  */
 
-#include "SerialSettingsDialog.h"
 #include "terminalconsole.h"
+#include "QsLog.h"
+#include "SerialSettingsDialog.h"
 #include "ui_terminalconsole.h"
 #include "console.h"
 #include "configuration.h"
 
-#include <QDebug>
+
 #include <QSettings>
 #include <QStatusBar>
 #include <QMessageBox>
@@ -118,7 +119,7 @@ void TerminalConsole::fillPortsInfo(QComboBox &comboxBox)
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
         comboxBox.insertItem(0,list.first(), list);
-        qDebug() << "Inserting " << list.first();
+        QLOG_INFO() << "Inserting " << list.first();
     }
 }
 
@@ -152,7 +153,7 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
             ui->settingsButton->setEnabled(false);
             m_statusBar->showMessage(tr("Connected to %1 : baud %2z")
                                        .arg(settings.name).arg(QString::number(settings.baudRate)));
-            qDebug() << "Open Terminal Console Serial Port";
+            QLOG_INFO() << "Open Terminal Console Serial Port";
             writeSettings(); // Save last successful connection
 
             sendResetCommand();
@@ -191,14 +192,14 @@ void TerminalConsole::sendResetCommand()
 
 void TerminalConsole::writeData(const QByteArray &data)
 {
-//    qDebug() << "writeData:" << data;
+//    QLOG_TRACE() << "writeData:" << data;
     m_serial->write(data);
 }
 
 void TerminalConsole::readData()
 {
     QByteArray data = m_serial->readAll();
-//    qDebug() << "readData:" << data;
+//    QLOG_TRACE() << "readData:" << data;
     m_console->putData(data);
 
     switch(m_consoleMode)
@@ -214,7 +215,7 @@ void TerminalConsole::readData()
     case PX4:
         // Do nothing
     default:
-        qDebug() << "Mode not yet implemented";
+        QLOG_DEBUG() << "Mode not yet implemented";
     }
 
 }
@@ -251,14 +252,14 @@ void TerminalConsole::setBaudRate(int index)
 {
     m_settings.baudRate = static_cast<QSerialPort::BaudRate>(
                 ui->baudComboBox->itemData(index).toInt());
-    qDebug() << "Changed Baud to:" << m_settings.baudRate;
+    QLOG_INFO() << "Changed Baud to:" << m_settings.baudRate;
 
 }
 
 void TerminalConsole::setLink(int index)
 {
     m_settings.name = ui->linkComboBox->currentText();
-    qDebug() << "Changed Link to:" << m_settings.name;
+    QLOG_INFO() << "Changed Link to:" << m_settings.name;
 
 }
 

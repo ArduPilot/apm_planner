@@ -1,8 +1,8 @@
 #include "UASQuickView.h"
-#include <QMetaMethod>
-#include <QDebug>
 #include "UASQuickViewItemSelect.h"
 #include "UASQuickViewTextItem.h"
+#include "QsLog.h"
+#include <QMetaMethod>
 #include <QSettings>
 #include <QInputDialog>
 UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
@@ -186,7 +186,7 @@ void UASQuickView::sortItems(int columncount)
         }
     }
     m_currentColumn = currcol;
-    QApplication::processEvents();
+//    QApplication::processEvents();
     recalculateItemTextSizing();
 }
 void UASQuickView::resizeEvent(QResizeEvent *evt)
@@ -417,6 +417,6 @@ void UASQuickView::valueChanged(const int uasid, const QString& name, const QStr
 
 void UASQuickView::valChanged(double val,QString type)
 {
-    //qDebug() << "Value changed:" << type << val;
+    QLOG_TRACE() << "Value changed:" << type << val;
    // uasPropertyValueMap[type] = val;
 }

@@ -37,7 +37,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QVector>
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QDebug>
+
 #include <QPointer>
 #include <QFileDialog>
 #include <QFile>

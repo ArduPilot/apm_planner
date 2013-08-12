@@ -1,0 +1,12 @@
+QsLog version 2.0b1
+
+Changes:
+* destination pointers use shared pointer semantics
+* the file destination supports log rotation. As a consequence, log files are encoded as UTF-8 and
+the log appends rather than truncating on every startup when rotation is enabled.
+* added the posibility of disabling logging either at run time or compile time.
+* added the possibility of using a separate thread for writing to the log destinations.
+
+Fixes:
+* renamed the main.cpp example to avoid QtCreator confusion
+* offer a way to check if the destination creation has failed (for e.g files)

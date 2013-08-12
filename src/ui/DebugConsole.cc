@@ -28,9 +28,7 @@ This file is part of the QGROUNDCONTROL project
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
  *
  */
-#include <QPainter>
-#include <QSettings>
-
+#include "QsLog.h"
 #include "DebugConsole.h"
 #include "ui_DebugConsole.h"
 #include "LinkManager.h"
@@ -38,7 +36,8 @@ This file is part of the QGROUNDCONTROL project
 #include "protocol.h"
 #include "QGC.h"
 
-#include <QDebug>
+#include <QPainter>
+#include <QSettings>
 
 DebugConsole::DebugConsole(QWidget *parent) :
     QWidget(parent),
@@ -175,7 +174,7 @@ void DebugConsole::storeSettings()
     settings.setValue("AUTO_HOLD_ENABLED", autoHold);
     settings.endGroup();
     settings.sync();
-    //qDebug() << "Storing settings!";
+    //QLOG_DEBUG() << "Storing settings!";
 }
 
 void DebugConsole::uasCreated(UASInterface* uas)
@@ -350,7 +349,7 @@ void DebugConsole::paintEvent(QPaintEvent *event)
     // Update bandwidth
 //    if (holdOn)
 //    {
-//        //qDebug() << "Data rate:" << dataRate/1000.0f << "kB/s";
+//        //QLOG_DEBUG() << "Data rate:" << dataRate/1000.0f << "kB/s";
 //        QString rate("data rate: %1");
 //        rate.arg(dataRate);
 //        QPainter painter(this);
@@ -424,7 +423,7 @@ void DebugConsole::receiveBytes(LinkInterface* link, QByteArray bytes)
                         if (escIndex < static_cast<int>(sizeof(escBytes)))
                         {
                             escBytes[escIndex] = byte;
-                            //qDebug() << "GOT BYTE ESC:" << byte;
+                            //QLOG_DEBUG() << "GOT BYTE ESC:" << byte;
                             if (/*escIndex == 1 && */escBytes[escIndex] == 0x48)
                             {
                                 // Handle sequence
@@ -473,7 +472,7 @@ void DebugConsole::receiveBytes(LinkInterface* link, QByteArray bytes)
                             case 0x1b:                  // ESC received
                                 escReceived = true;
                                 escIndex = 0;
-                                //qDebug() << "GOT ESC";
+                                //QLOG_DEBUG() << "GOT ESC";
                                 break;
                             case 0x08:                  // BS (backspace) received
                                 // Do nothing for now

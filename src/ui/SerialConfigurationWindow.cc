@@ -28,7 +28,7 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include <QDebug>
+#include "QsLog.h"
 
 #include <SerialConfigurationWindow.h>
 #include <SerialLinkInterface.h>
@@ -180,7 +180,7 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
     }
     else
     {
-        qDebug() << "Link is NOT a serial link, can't open configuration window";
+        QLOG_DEBUG() << "Link is NOT a serial link, can't open configuration window";
     }
 }
 
@@ -218,7 +218,7 @@ void SerialConfigurationWindow::setupPortList()
 {
     if (!link) return;
 
-    qDebug() << "Link is " << link->isConnected();
+    QLOG_DEBUG() << "Link is " << link->isConnected();
 
     // Get the ports available on this system
     QList<QString> ports = link->getCurrentPorts();
