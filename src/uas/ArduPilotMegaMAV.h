@@ -38,6 +38,9 @@ public slots:
     /** @brief Receive a MAVLink message from this MAV */
     void receiveMessage(LinkInterface* link, mavlink_message_t message);
     void sendTxRequests();
+private slots:
+    void uasConnected();
+    void uasDisconnected();
 private:
     QTimer *txReqTimer;
 };
