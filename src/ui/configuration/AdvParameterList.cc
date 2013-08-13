@@ -186,6 +186,7 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
     }
     m_paramValueMap[parameterName]->setText(QString::number(value.toFloat(),'f',2));
     m_paramValueMap[parameterName]->setBackgroundColor(QColor::fromRgb(255,255,255));
+    m_paramValueMap[parameterName]->setBackground(m_paramValueMap[parameterName]->tableWidget()->palette().background());
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
 
 }
