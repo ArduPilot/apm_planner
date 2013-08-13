@@ -71,7 +71,7 @@ FailSafeConfig::FailSafeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.radio8Out->setOrientation(Qt::Horizontal);
 
     ui.throttleFailSafeComboBox->addItem("Disable");
-    ui.throttleFailSafeComboBox->addItem("Enabled - Always TRL");
+    ui.throttleFailSafeComboBox->addItem("Enabled - Always RTL");
     ui.throttleFailSafeComboBox->addItem("Enabled - Continue in auto");
 
     connect(ui.batteryFailCheckBox,SIGNAL(clicked(bool)),this,SLOT(batteryFailChecked(bool)));
@@ -427,14 +427,14 @@ void FailSafeConfig::gpsStatusChanged(UASInterface* uas,int fixtype)
 {
     if (fixtype == 0 || fixtype == 1)
     {
-        ui.gpsLabel->setText("<h1>None</h1>");
+        ui.gpsLabel->setText("<h1>GPS: No Fix</h1>");
     }
     else if (fixtype == 2)
     {
-        ui.gpsLabel->setText("<h1>2D Fix</h1>");
+        ui.gpsLabel->setText("<h1>GPS: 2D Fix</h1>");
     }
     else if (fixtype == 3)
     {
-        ui.gpsLabel->setText("<h1>3D Fix</h1>");
+        ui.gpsLabel->setText("<h1>GPS: 3D Fix</h1>");
     }
 }
