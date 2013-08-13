@@ -1387,9 +1387,6 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             break;
 
 #endif
-            // Messages to ignore
-        case MAVLINK_MSG_ID_RAW_IMU:
-        case MAVLINK_MSG_ID_SCALED_IMU:
         case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:
         {
             //mavlink_set_local_position_setpoint_t p;
@@ -1405,6 +1402,9 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit navigationControllerErrorsChanged(this, p.alt_error, p.aspd_error, p.xtrack_error);
         }
             break;
+        // Messages to ignore
+        case MAVLINK_MSG_ID_RAW_IMU:
+        case MAVLINK_MSG_ID_SCALED_IMU:
         case MAVLINK_MSG_ID_RAW_PRESSURE:
         case MAVLINK_MSG_ID_SCALED_PRESSURE:
         case MAVLINK_MSG_ID_OPTICAL_FLOW:
@@ -1423,8 +1423,8 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QString errString = tr("UNABLE TO DECODE MESSAGE NUMBER %1").arg(message.msgid);
                 //GAudioOutput::instance()->say(errString+tr(", please check console for details."));
                 emit textMessageReceived(uasId, message.compid, 255, errString);
-                std::cout << "Unable to decode message from system " << std::dec << static_cast<int>(message.sysid) << " with message id:" << static_cast<int>(message.msgid) << std::endl;
-                //QLOG_DEBUG() << std::cerr << "Unable to decode message from system " << std::dec << static_cast<int>(message.acid) << " with message id:" << static_cast<int>(message.msgid) << std::endl;
+                QLOG_INFO() << "Unable to decode message from system " << message.sysid)
+                        << " with message id:" << message.msgid;
             }
         }
             break;
@@ -3201,7 +3201,7 @@ QString UAS::getShortModeTextFor(int id)
     {
         mode.prepend("HIL:");
     }
-
+    QLOG_DEBUG() << mode;
     return mode;
 }
 
