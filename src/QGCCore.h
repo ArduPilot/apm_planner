@@ -59,6 +59,8 @@ public:
     QGCCore(int &argc, char* argv[]);
     ~QGCCore();
 
+    void initialize();
+
 protected:
     void startLinkManager();
 

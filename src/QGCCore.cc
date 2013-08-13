@@ -29,21 +29,10 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include <QFile>
-#include <QFlags>
-#include <QThread>
-#include <QSplashScreen>
-#include <QPixmap>
-#include <QDesktopWidget>
-#include <QPainter>
-#include <QStyleFactory>
-#include <QAction>
-
-
-
+#include "QGCCore.h"
+#include "QsLog.h"
 #include "configuration.h"
 #include "QGC.h"
-#include "QGCCore.h"
 #include "MainWindow.h"
 #include "GAudioOutput.h"
 
@@ -54,6 +43,15 @@ This file is part of the QGROUNDCONTROL project
 #include "MAVLinkSimulationLink.h"
 #include "SerialLink.h"
 
+#include <QFile>
+#include <QFlags>
+#include <QThread>
+#include <QSplashScreen>
+#include <QPixmap>
+#include <QDesktopWidget>
+#include <QPainter>
+#include <QStyleFactory>
+#include <QAction>
 
 /**
  * @brief Constructor for the main application.
@@ -68,6 +66,11 @@ This file is part of the QGROUNDCONTROL project
 
 QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
 {
+}
+
+void QGCCore::initialize()
+{
+    QLOG_INFO() << "QGCCore::initialize()";
     // Set application name
     this->setApplicationName(QGC_APPLICATION_NAME);
     this->setApplicationVersion(QGC_APPLICATION_VERSION);
@@ -223,6 +226,7 @@ QGCCore::~QGCCore()
  **/
 void QGCCore::startLinkManager()
 {
+    QLOG_INFO() << "Start Link Manager";
     LinkManager::instance();
 }
 
@@ -232,6 +236,7 @@ void QGCCore::startLinkManager()
  **/
 void QGCCore::startUASManager()
 {
+    QLOG_INFO() << "Start UAS Manager";
     // Load UAS plugins
     QDir pluginsDir = QDir(qApp->applicationDirPath());
 

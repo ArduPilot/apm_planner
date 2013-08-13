@@ -82,6 +82,8 @@ int main(int argc, char *argv[])
     logger.addDestination(debugDestination);
     logger.addDestination(fileDestination);
 
+    // This is required to start the logger
+    core.initialize();
 
     return core.exec();
 }
