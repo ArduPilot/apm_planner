@@ -3219,6 +3219,8 @@ void UAS::addLink(LinkInterface* link)
     {
         links->append(link);
         connect(link, SIGNAL(destroyed(QObject*)), this, SLOT(removeLink(QObject*)));
+        connect(link,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
+        connect(link,SIGNAL(connected()),this,SIGNAL(connected()));
     }
 }
 
@@ -3228,6 +3230,8 @@ void UAS::removeLink(QObject* object)
     if (link)
     {
         links->removeAt(links->indexOf(link));
+        disconnect(link,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
+        disconnect(link,SIGNAL(connected()),this,SIGNAL(connected()));
     }
 }
 
