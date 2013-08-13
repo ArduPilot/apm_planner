@@ -200,6 +200,7 @@ MainWindow::MainWindow(QWidget *parent):
     customStatusBar = new QGCStatusBar(this);
     setStatusBar(customStatusBar);
     statusBar()->setSizeGripEnabled(true);
+    statusBar()->hide();
 
     emit initStatusChanged("Building common widgets.");
 
