@@ -26,6 +26,16 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     valueLabel->setFont(valuefont);
     titleLabel->setFont(titlefont);
 }
+QString UASQuickViewTextItem::value()
+{
+    return valueLabel->text();
+}
+
+QString UASQuickViewTextItem::title()
+{
+    return titleLabel->text();
+}
+
 void UASQuickViewTextItem::setValue(double value)
 {
     if (value < 10 && value > -10)
@@ -66,7 +76,7 @@ int UASQuickViewTextItem::minValuePixelSize()
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(this->height());
-    titlefont.setPixelSize(valuefont.pixelSize() / 2.0);
+    titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
     //spacerItem->setGeometry(QRect(0,0,20,this->height()/10.0));
 
     QFontMetrics metrics(valuefont);
@@ -104,7 +114,7 @@ void UASQuickViewTextItem::setValuePixelSize(int size)
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(size);
-    titlefont.setPixelSize(valuefont.pixelSize() / 2.0);
+    titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
     valueLabel->setFont(valuefont);
     titleLabel->setFont(titlefont);
     update();
@@ -116,7 +126,7 @@ void UASQuickViewTextItem::resizeEvent(QResizeEvent *event)
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(this->height());
-    titlefont.setPixelSize(valuefont.pixelSize() / 2.0);
+    titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
     //spacerItem->setGeometry(QRect(0,0,20,this->height()/10.0));
 
     QFontMetrics metrics(valuefont);
@@ -147,7 +157,7 @@ void UASQuickViewTextItem::resizeEvent(QResizeEvent *event)
             QLOG_TRACE() << "Point size:" << valuefont.pixelSize() << valueLabel->width() << valueLabel->height();
         }
     }
-titlefont.setPixelSize(valuefont.pixelSize() / 2.0);
+titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
     valueLabel->setFont(valuefont);
     titleLabel->setFont(titlefont);
     update();

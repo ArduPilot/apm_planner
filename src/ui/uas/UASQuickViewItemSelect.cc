@@ -1,13 +1,14 @@
 #include "UASQuickViewItemSelect.h"
 #include <QLabel>
 #include <QCheckBox>
-UASQuickViewItemSelect::UASQuickViewItemSelect(QWidget *parent) : QWidget(parent)
+UASQuickViewItemSelect::UASQuickViewItemSelect(bool singleonly,QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
     currcol = 0;
     currrow = 0;
     ui.gridLayout->setSpacing(5);
     ui.gridLayout->setMargin(0);
+    m_isSingleOnly = singleonly;
 }
 void UASQuickViewItemSelect::addItem(QString item,bool enabled)
 {
@@ -90,12 +91,36 @@ void UASQuickViewItemSelect::checkBoxClicked(bool checked)
     }
     if (checked)
     {
-
-        emit valueEnabled(checkval);
+        if (m_isSingleOnly)
+        {
+            QString oldval = "";
+            for (int i=0;i<m_checkBoxList.size();i++)
+            {
+                if (m_checkBoxList[i]->isChecked() && (checkval != m_checkboxToValueMap[m_checkBoxList[i]]))
+                {
+                    oldval = m_checkboxToValueMap[m_checkBoxList[i]];
+                    m_checkBoxList[i]->setChecked(false);
+                    break;
+                }
+            }
+            emit valueSwapped(checkval,oldval);
+            close();
+        }
+        else
+        {
+            emit valueEnabled(checkval);
+        }
     }
     else
     {
-        emit valueDisabled(checkval);
+        if (m_isSingleOnly)
+        {
+            check->setChecked(true);
+        }
+        else
+        {
+            emit valueDisabled(checkval);
+        }
     }
 }
 

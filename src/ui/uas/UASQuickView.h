@@ -80,6 +80,8 @@ public slots:
     void valueEnabled(QString value);
     void valueDisabled(QString value);
     void columnActionTriggered();
+    void replaceSingleItem(QString olditem);
+    void replaceSingleItemSelected(QString newitem,QString olditem);
 };
 
 #endif // UASQUICKVIEW_H

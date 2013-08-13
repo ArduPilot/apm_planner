@@ -13,7 +13,9 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
     ui.setupUi(this);
 
     ui.horizontalLayout->setMargin(0);
+    //ui.horizontalLayout->setSpacing(0);
     m_verticalLayoutList.append(new QVBoxLayout());
+    m_verticalLayoutList[0]->setMargin(0);
     ui.horizontalLayout->addItem(m_verticalLayoutList[0]);
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(setActiveUAS(UASInterface*)));
@@ -69,6 +71,69 @@ void UASQuickView::columnActionTriggered()
     m_columnCount = newcolumns;
     sortItems(newcolumns);
     saveSettings();
+}
+void UASQuickView::replaceSingleItem(QString olditem)
+{
+    UASQuickViewItemSelect *itemSelect = new UASQuickViewItemSelect(true);
+    itemSelect->setAttribute(Qt::WA_DeleteOnClose,true);
+    connect(itemSelect,SIGNAL(valueSwapped(QString,QString)),this,SLOT(replaceSingleItemSelected(QString,QString)));
+    for (QMap<QString,double>::const_iterator i = uasPropertyValueMap.constBegin();i!=uasPropertyValueMap.constEnd();i++)
+    {
+        if (i.key().contains(olditem))
+        {
+            itemSelect->addItem(i.key(),true);
+        }
+        else
+        {
+            itemSelect->addItem(i.key(),false);
+        }
+    }
+    itemSelect->show();
+}
+void UASQuickView::replaceSingleItemSelected(QString newitem,QString olditem)
+{
+    if (uasPropertyToLabelMap.contains(newitem) && uasPropertyToLabelMap.contains(olditem))
+    {
+        //Newitem exists, swap the two items.
+        UASQuickViewItem *olditemptr = uasPropertyToLabelMap[olditem];
+        UASQuickViewItem *newitemptr = uasPropertyToLabelMap[newitem];
+        int oldindex = m_PropertyToLayoutIndexMap[olditem];
+        int newindex = m_PropertyToLayoutIndexMap[newitem];
+
+        uasPropertyToLabelMap.remove(olditem);
+        uasPropertyToLabelMap.remove(newitem);
+        uasPropertyToLabelMap[olditem] = newitemptr;
+        uasPropertyToLabelMap[newitem] = olditemptr;
+
+
+        uasPropertyValueMap.remove(olditem);
+        uasPropertyValueMap.remove(newitem);
+        olditemptr->setTitle(newitem);
+        newitemptr->setTitle(olditem);
+
+        m_PropertyToLayoutIndexMap.remove(olditem);
+        m_PropertyToLayoutIndexMap.remove(newitem);
+        m_PropertyToLayoutIndexMap[newitem] = oldindex;
+        m_PropertyToLayoutIndexMap[olditem] = newindex;
+
+        saveSettings();
+    }
+    else if (uasPropertyToLabelMap.contains(olditem))
+    {
+        UASQuickViewItem *item = uasPropertyToLabelMap[olditem];
+        uasPropertyToLabelMap.remove(olditem);
+        uasPropertyToLabelMap[newitem] = item;
+        uasPropertyValueMap.remove(olditem);
+        item->setTitle(newitem);
+        int index = m_PropertyToLayoutIndexMap[olditem];
+        m_PropertyToLayoutIndexMap.remove(olditem);
+        m_PropertyToLayoutIndexMap[newitem] = index;
+
+        uasEnabledPropertyList.removeOne(olditem);
+        uasEnabledPropertyList.append(newitem);
+        saveSettings();
+    }
+
 }
 
 void UASQuickView::actionTriggered()
@@ -126,6 +191,7 @@ void UASQuickView::loadSettings()
 void UASQuickView::valueEnabled(QString value)
 {
     UASQuickViewItem *item = new UASQuickViewTextItem(this);
+    connect(item,SIGNAL(showSelectDialog(QString)),this,SLOT(replaceSingleItem(QString)));
     item->setTitle(value);
     //ui.verticalLayout->addWidget(item);
     //m_currentColumn
@@ -172,6 +238,7 @@ void UASQuickView::sortItems(int columncount)
         ui.horizontalLayout->addItem(layout);
         m_verticalLayoutList.append(layout);
         layout->setMargin(0);
+        layout->setSpacing(0);
     }
 
     //Cycle through all items and add them to the layout

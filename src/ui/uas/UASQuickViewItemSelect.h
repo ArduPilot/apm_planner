@@ -10,7 +10,7 @@ class UASQuickViewItemSelect : public QWidget
     Q_OBJECT
     
 public:
-    explicit UASQuickViewItemSelect(QWidget *parent = 0);
+    explicit UASQuickViewItemSelect(bool singleonly = false,QWidget *parent = 0);
     ~UASQuickViewItemSelect();
     void addItem(QString item,bool enabled = false);
     int currrow;
@@ -18,6 +18,7 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event);
 private:
+    bool m_isSingleOnly;
     QMap<QString,int> m_categoryToIndexMap;
     QMap<QCheckBox*,QString> m_checkboxToValueMap;
     QList<QCheckBox*> m_checkBoxList;
@@ -27,6 +28,7 @@ private slots:
 signals:
     void valueEnabled(QString value);
     void valueDisabled(QString value);
+    void valueSwapped(QString newitem,QString olditem);
 };
 
 #endif // UASQUICKVIEWITEMSELECT_H

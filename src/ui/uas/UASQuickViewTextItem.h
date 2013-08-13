@@ -12,6 +12,8 @@ public:
     void setTitle(QString title);
     int minValuePixelSize();
     void setValuePixelSize(int size);
+    QString value();
+    QString title();
 protected:
     void resizeEvent(QResizeEvent *event);
 private:
