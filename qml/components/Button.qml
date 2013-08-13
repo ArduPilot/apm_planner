@@ -38,7 +38,7 @@ Rectangle {
     signal buttonClick()
 
     onButtonClick: {
-        console.log(buttonLabel.text + " clicked calling signal")
+        console.log("APMToolBar:" + buttonLabel.text + " clicked calling signal")
         clicked()
     }
 

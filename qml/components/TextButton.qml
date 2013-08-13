@@ -16,7 +16,7 @@ Rectangle {
     signal buttonClick()
 
     onButtonClick: {
-        console.log(label + " clicked calling signal")
+        console.log("APMToolBar:" + label + " clicked calling signal")
         clicked()
     }
 
