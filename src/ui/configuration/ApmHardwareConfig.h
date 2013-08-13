@@ -78,8 +78,11 @@ private:
 private slots:
     void activeUASSet(UASInterface *uas);
     void activateStackedWidget();
+    void uasConnected();
+    void uasDisconnected();
 private:
     Ui::ApmHardwareConfig ui;
+    UASInterface *m_uas;
 
     //This is a map between the buttons, and the widgets they should be displying
     QMap<QObject*,QWidget*> m_buttonToConfigWidgetMap;

@@ -12,6 +12,8 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QScrollBar>
+#include "UASInterface.h"
+#include "UASManager.h"
 
 #include "qserialport.h"
 #include "SerialSettingsDialog.h"
@@ -39,7 +41,11 @@ private slots:
     void connectButtonClicked();
     void disconnectButtonClicked();
     void setLink(int index);
+    void activeUASSet(UASInterface *uas);
+    void uasConnected();
+    void uasDisconnected();
 private:
+    UASInterface *m_uas;
     SerialSettings m_settings;
     QSerialPort *m_port;
     void addBetaLabel(QWidget *parent);

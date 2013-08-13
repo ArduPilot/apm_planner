@@ -67,8 +67,41 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
         ui.linkComboBox->insertItem(0,list.first(), list);
         QLOG_DEBUG() << "Inserting " << list.first();
     }
-
+    m_uas = 0;
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+    activeUASSet(UASManager::instance()->getActiveUAS());
 }
+void ApmFirmwareConfig::uasConnected()
+{
+    ui.stackedWidget->setCurrentIndex(1);
+}
+
+void ApmFirmwareConfig::uasDisconnected()
+{
+    ui.stackedWidget->setCurrentIndex(0);
+}
+
+void ApmFirmwareConfig::activeUASSet(UASInterface *uas)
+{
+    if (m_uas)
+    {
+        disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+        m_uas = 0;
+    }
+    if (!uas)
+    {
+        ui.stackedWidget->setCurrentIndex(0);
+    }
+    else
+    {
+        m_uas = uas;
+        connect(uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+        connect(uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+        uasConnected();
+    }
+}
+
 void ApmFirmwareConfig::connectButtonClicked()
 {
 
@@ -204,6 +237,7 @@ void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
 {
     if (betafirmwareenabled)
     {
+        QMessageBox::information(this,"Warning","These are beta firmware downloads. Use at your own risk!!!");
         ui.label->setText(tr("<h2>Beta Firmware</h2>"));
         ui.betaFirmwareButton->setText(tr("Stable Firmware"));
         requestBetaFirmwares();
@@ -264,6 +298,7 @@ void ApmFirmwareConfig::firmwareProcessReadyRead()
     else if (output.contains("Reading"))
     {
         ui.progressBar->setValue(50);
+        ui.statusLabel->setText("Verifying");
     }
     if (output.startsWith("#"))
     {
