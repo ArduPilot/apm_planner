@@ -16,7 +16,7 @@
 #endif //MOUSE_ENABLED_WIN
 
 #include "UASInterface.h"
-
+#include "QsLog.h"
 class Mouse6dofInput : public QThread
 {
     Q_OBJECT
