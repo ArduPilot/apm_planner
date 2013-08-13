@@ -82,7 +82,6 @@ public slots:
     void setLinkName(QString name);
     /** @brief Disconnects the associated link, removes it from all menus and closes the window. */
     void remove();
-
 private:
 
     Ui::commSettings ui;

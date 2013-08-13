@@ -115,6 +115,7 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
         ui.portName->setCurrentIndex(ui.baudRate->findText(QString("%1").arg(this->link->getPortName())));
 
         connect(action, SIGNAL(triggered()), this, SLOT(configureCommunication()));
+        ui.advCheckBox->setVisible(false);
 
         // Make sure that a change in the link name will be reflected in the UI
         connect(link, SIGNAL(nameChanged(QString)), this, SLOT(setLinkName(QString)));
@@ -182,6 +183,25 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
     {
         QLOG_DEBUG() << "Link is NOT a serial link, can't open configuration window";
     }
+    connect(link,SIGNAL(connected(bool)),this,SLOT(connectionStateChanged(bool)));
+}
+void SerialConfigurationWindow::connectionStateChanged(bool connected)
+{
+    if (connected)
+    {
+        ui.baudRate->setEnabled(false);
+        ui.portName->setEnabled(false);
+    }
+    else
+    {
+        ui.baudRate->setEnabled(true);
+        ui.portName->setEnabled(true);
+    }
+}
+
+void SerialConfigurationWindow::setAdvancedSettings(bool visible)
+{
+    ui.advGroupBox->setShown(visible);
 }
 
 SerialConfigurationWindow::~SerialConfigurationWindow()

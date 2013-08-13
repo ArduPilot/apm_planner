@@ -61,7 +61,9 @@ public slots:
     void setPortName(QString port);
     void setLinkName(QString name);
     void setupPortList();
-
+    void setAdvancedSettings(bool visible);
+private slots:
+    void connectionStateChanged(bool connected);
 protected:
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);

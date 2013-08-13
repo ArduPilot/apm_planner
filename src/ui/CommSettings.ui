@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>324</width>
-    <height>415</height>
+    <width>330</width>
+    <height>394</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="4,0,0,0,0,0,0,0">
    <item>
     <widget class="QGroupBox" name="linkGroupBox">
      <property name="title">
@@ -36,7 +36,7 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>302</width>
+           <width>308</width>
            <height>69</height>
           </rect>
          </property>
@@ -49,7 +49,7 @@
    <item>
     <widget class="QCheckBox" name="advCheckBox">
      <property name="text">
-      <string>Show Advanced Protocol Options</string>
+      <string>Show Advanced Options</string>
      </property>
     </widget>
    </item>
@@ -126,7 +126,7 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>302</width>
+           <width>308</width>
            <height>69</height>
           </rect>
          </property>
