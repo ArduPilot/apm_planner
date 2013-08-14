@@ -12,18 +12,36 @@ class UASActionsWidget : public QWidget
 public:
     explicit UASActionsWidget(QWidget *parent = 0);
     ~UASActionsWidget();
-private:
-    Ui::UASActionsWidget ui;
-    UASInterface *m_uas;
+
 private slots:
+    void activeUASSet(UASInterface *uas);
+
     void armButtonClicked();
     void armingChanged(bool state);
     void currentWaypointChanged(quint16 wpid);
     void updateWaypointList();
-    void activeUASSet(UASInterface *uas);
     void goToWaypointClicked();
     void changeAltitudeClicked();
     void changeSpeedClicked();
+    void setMode();   //[TODO] create a new ardupilot mode types
+    void setAction();
+    void setAutoMode();
+    void setRTLMode();
+    void setManualMode();
+
+private:
+    void setupApmCopterModes();
+    void setupApmPlaneModes();
+    void setupApmRoverModes();
+
+    void sendApmPlaneCommand(MAV_CMD command);
+    void sendApmCopterCommand(MAV_CMD command);
+    void sendApmRoverCommand(MAV_CMD command);
+
+private:
+    Ui::UASActionsWidget ui;
+    UASInterface *m_uas;
+    quint16 m_last_wpid;
 };
 
 #endif // UASACTIONSWIDGET_H
