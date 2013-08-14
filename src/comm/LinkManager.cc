@@ -71,12 +71,17 @@ LinkManager::~LinkManager()
 
 void LinkManager::add(LinkInterface* link)
 {
-    if (!links.contains(link))
+    QThread* thread = QThread::currentThread();
+    QLOG_DEBUG() << "LinkManager::Add " << link
+                 << "Thread " << thread;
+    if (link && !links.contains(link))
     {
-        if(!link) return;
+        QLOG_DEBUG() << "Sucess: Added " << link;
         connect(link, SIGNAL(destroyed(QObject*)), this, SLOT(removeObj(QObject*)));
         links.append(link);
         emit newLink(link);
+    } else {
+        QLOG_DEBUG() << "duplicate (not added)" << link;
     }
 }
 
@@ -84,22 +89,25 @@ void LinkManager::addProtocol(LinkInterface* link, ProtocolInterface* protocol)
 {
     // Connect link to protocol
     // the protocol will receive new bytes from the link
+    QLOG_DEBUG() << "LinkManager::addProtocol link:" << link << "protocol" << protocol;
     if(!link || !protocol) return;
 
     QList<LinkInterface*> linkList = protocolLinks.values(protocol);
 
     // If protocol has not been added before (list length == 0)
     // OR if link has not been added to protocol, add
-    if ((linkList.length() > 0 && !linkList.contains(link)) || linkList.length() == 0)
+    if (linkList.length() == 0 || !linkList.contains(link))
     {
         // Protocol is new, add
-        connect(link, SIGNAL(bytesReceived(LinkInterface*, QByteArray)), protocol, SLOT(receiveBytes(LinkInterface*, QByteArray)), Qt::QueuedConnection);
+        connect(link, SIGNAL(bytesReceived(LinkInterface*, QByteArray)),
+                protocol, SLOT(receiveBytes(LinkInterface*, QByteArray)), Qt::QueuedConnection);
         // Add status
         connect(link, SIGNAL(connected(bool)), protocol, SLOT(linkStatusChanged(bool)));
         // Store the connection information in the protocol links map
         protocolLinks.insertMulti(protocol, link);
     }
-    QLOG_INFO() << "ADDED LINK TO PROTOCOL" << link->getName() << protocol->getName() << "NEW SIZE OF LINK LIST:" << protocolLinks.size();
+    QLOG_INFO() << "ADDED LINK TO PROTOCOL" << link->getName() << protocol->getName() << "protocolLinks.size:"
+                << protocolLinks.size() << "Links.size:" << links.size();
 }
 
 QList<LinkInterface*> LinkManager::getLinksForProtocol(ProtocolInterface* protocol)
@@ -110,6 +118,7 @@ QList<LinkInterface*> LinkManager::getLinksForProtocol(ProtocolInterface* protoc
 
 bool LinkManager::connectAll()
 {
+    QLOG_DEBUG() << "LinkManager::connectAll()";
     bool allConnected = true;
 
     foreach (LinkInterface* link, links)
@@ -123,6 +132,7 @@ bool LinkManager::connectAll()
 
 bool LinkManager::disconnectAll()
 {
+    QLOG_DEBUG() << "LinkManager::disconnectAll()";
     bool allDisconnected = true;
 
     foreach (LinkInterface* link, links)
@@ -137,18 +147,21 @@ bool LinkManager::disconnectAll()
 
 bool LinkManager::connectLink(LinkInterface* link)
 {
+    QLOG_DEBUG() << "LinkManager::connectLink " << link;
     if(!link) return false;
     return link->connect();
 }
 
 bool LinkManager::disconnectLink(LinkInterface* link)
 {
+    QLOG_DEBUG() << "LinkManager::disconnectLink " << link;
     if(!link) return false;
     return link->disconnect();
 }
 
 void LinkManager::removeObj(QObject* link)
 {
+    QLOG_DEBUG() << "LinkManager::removeObj " << link;
     LinkInterface* linkInterface = dynamic_cast<LinkInterface*>(link);
     if (linkInterface)
     {
@@ -158,6 +171,7 @@ void LinkManager::removeObj(QObject* link)
 
 bool LinkManager::removeLink(LinkInterface* link)
 {
+
     if(link)
     {
         for (int i=0; i < QList<LinkInterface*>(links).size(); i++)
@@ -190,6 +204,7 @@ bool LinkManager::removeLink(LinkInterface* link)
  */
 LinkInterface* LinkManager::getLinkForId(int id)
 {
+    QLOG_DEBUG() << "LinkManager::getLinkForId " << id;
     foreach (LinkInterface* link, links)
     {
         if (link->getId() == id) return link;

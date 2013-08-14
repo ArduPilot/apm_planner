@@ -32,13 +32,14 @@ This file is part of the QGROUNDCONTROL project
 #ifndef SERIALLINK_H
 #define SERIALLINK_H
 
+#include "SerialLinkInterface.h"
+#include <QPointer>
 #include <QObject>
 #include <QThread>
 #include <QMutex>
 #include <QString>
 #include <qserialport.h>
 #include <configuration.h>
-#include "SerialLinkInterface.h"
 
 /**
  * @brief The SerialLink class provides cross-platform access to serial links.
@@ -141,7 +142,7 @@ public slots:
 
 protected:
     quint64 m_bytesRead;
-    QSerialPort* m_port;
+    QPointer<QSerialPort> m_port;
     int m_baud;
     int m_dataBits;
     int m_flowControl;

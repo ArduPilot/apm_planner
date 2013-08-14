@@ -60,6 +60,7 @@ void SerialLink::requestReset()
 SerialLink::~SerialLink()
 {
     disconnect();
+    QLOG_INFO() << "Serial Link destroyed";
     if(m_port) delete m_port;
     m_port = NULL;
 }
@@ -311,6 +312,7 @@ void SerialLink::readBytes()
  **/
 qint64 SerialLink::bytesAvailable()
 {
+    QLOG_TRACE() << "Serial Link bytes available";
     if (m_port) {
         return m_port->bytesAvailable();
     } else {

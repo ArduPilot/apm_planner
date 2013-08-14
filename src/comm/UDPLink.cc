@@ -289,7 +289,7 @@ bool UDPLink::disconnect()
  **/
 bool UDPLink::connect()
 {
-    QLOG_INFO() << "UDP connect";
+    QLOG_INFO() << "UDPLink::UDP connect";
 	if(this->isRunning())
 	{
 		this->quit();
