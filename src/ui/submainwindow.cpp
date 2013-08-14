@@ -9,7 +9,7 @@ SubMainWindow::SubMainWindow(QWidget *parent) : QMainWindow(parent)
 
 void SubMainWindow::setObjectName(const QString &name)
 {
-    QLOG_INFO() << "setting objectName: " << objectName();
+    QLOG_INFO() << "setting objectName: " << name;
     QMainWindow::setObjectName(name);
 }
 

@@ -2585,6 +2585,11 @@ void UAS::executeCommandAck(int num, bool success)
 
 void UAS::executeCommand(MAV_CMD command, int confirmation, float param1, float param2, float param3, float param4, float param5, float param6, float param7, int component)
 {
+    QLOG_DEBUG() << "UAS::executeCommand" << command << "conf" << confirmation
+                << "param1" << param1 << "param2" << param2 << "param3" << param3
+                << "param4" << param4 << "param5" << param5 << "param6" << param6
+                << "param7" << param7;
+
     mavlink_message_t msg;
     mavlink_command_long_t cmd;
     cmd.command = (uint16_t)command;

@@ -111,6 +111,7 @@ MainWindow::MainWindow(QWidget *parent):
     autoReconnect(false),
     lowPowerMode(false)
 {
+    QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
     hide();
     dockWidgetTitleBarEnabled = true;
@@ -220,7 +221,7 @@ MainWindow::MainWindow(QWidget *parent):
         this->addLink(link);
     }
 
-    connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addLink(LinkInterface*)));
+    connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addLink(LinkInterface*)), Qt::QueuedConnection);
 
 #ifndef QGC_TOOLBAR_ENABLED
     // Add the APM 'toolbar'
@@ -359,7 +360,7 @@ MainWindow::~MainWindow()
         else if (dynamic_cast<QWidget*>(*i)) // [ToDo] Stability
         {
             QWidget* widget = dynamic_cast<QWidget*>(*i);
-            QLOG_DEBUG() << "Delete Widget " << dockWidget;
+            QLOG_DEBUG() << "Delete Widget " << widget;
             delete widget;
             *i = NULL;
         }
