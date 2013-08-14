@@ -36,6 +36,180 @@ This file is part of the QGROUNDCONTROL project
 #include "ardupilotmega/mavlink_msg_mount_control.h"
 #endif
 
+#include <QString>
+
+CustomMode::CustomMode()
+{
+}
+
+CustomMode::CustomMode(int aMode)
+{
+    m_mode = aMode;
+}
+
+int CustomMode::modeAsInt()
+{
+    return m_mode;
+}
+
+QString CustomMode::operator <<(int aMode)
+{
+    return QString::number(aMode);
+}
+
+
+ApmPlane::ApmPlane(planeMode aMode)
+{
+    CustomMode(static_cast<int>(aMode));
+}
+
+ApmPlane::planeMode ApmPlane::mode()
+{
+    return static_cast<ApmPlane::planeMode>(m_mode);
+}
+
+QString ApmPlane::operator <<(planeMode aMode) {
+    switch(aMode) {
+    case MANUAL:
+        return "Manual";
+        break;
+    case CIRCLE:
+        return "Circle";
+        break;
+    case STABILIZE:
+        return "Stabilize";
+        break;
+    case TRAINING:
+        return "Training";
+        break;
+    case FLY_BY_WIRE_A:
+        return "Fly-By-Wire B";
+        break;
+    case FLY_BY_WIRE_B:
+        return "Fly-By-Wire B";
+        break;
+    case AUTO:
+        return "Auto";
+        break;
+    case RTL:
+        return "Return to Launch";
+        break;
+    case LOITER:
+        return "Loiter";
+        break;
+    case GUIDED:
+        return "Guided";
+        break;
+    case INITIALIZING:
+        return "Initialzing";
+        break;
+    default:
+        return "Undefined";
+    }
+}
+
+ApmCopter::ApmCopter(copterMode aMode)
+{
+     CustomMode(static_cast<int>(aMode));
+}
+
+ApmCopter::copterMode ApmCopter::mode()
+{
+    return static_cast<ApmCopter::copterMode>(m_mode);
+}
+
+QString ApmCopter::operator <<(copterMode aMode) {
+    switch(aMode) {
+    case STABILIZE:
+        return "Stabilize";
+        break;
+    case ACRO:
+        return "Acro";
+        break;
+    case ALT_HOLD:
+        return "Altitude Hold";
+        break;
+    case AUTO:
+        return "Auto";
+        break;
+    case GUIDED:
+        return "Guided";
+        break;
+    case LOITER:
+        return "Loiter";
+        break;
+    case RTL:
+        return "Return to Launch";
+        break;
+    case CIRCLE:
+        return "Circle";
+        break;
+    case POSITION:
+        return "Position";
+        break;
+    case LAND:
+        return "Land";
+        break;
+    case OF_LOITER:
+        return "OF Loiter";
+        break;
+    case TOY_A:
+        return "Toy A";
+        break;
+    case TOY_M:
+        return "Toy M";
+        break;
+    case SPORT:
+        return "Sport";
+        break;
+    default:
+        return "Undefined";
+    }
+}
+
+ApmRover::ApmRover(roverMode aMode)
+{
+     CustomMode(static_cast<int>(aMode));
+}
+
+ApmRover::roverMode ApmRover::mode()
+{
+    return static_cast<ApmRover::roverMode>(m_mode);
+}
+
+QString ApmRover::operator <<(roverMode aMode) {
+    switch(aMode) {
+    case MANUAL:
+        return "Manual";
+        break;
+    case LEARNING:
+        return "Learning";
+        break;
+    case STEERING:
+        return "Steering";
+        break;
+    case HOLD:
+        return "Hold";
+        break;
+    case AUTO:
+        return "Auto";
+        break;
+    case RTL:
+        return "Return to Launch";
+        break;
+    case GUIDED:
+        return "Guided";
+        break;
+    case INITIALIZING:
+        return "Initialzing";
+        break;
+    default:
+        return "Undefined";
+    }
+}
+
+
+
 ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
     UAS(mavlink, id)//,
     // place other initializers here
