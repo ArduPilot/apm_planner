@@ -9,11 +9,11 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     layout->setSpacing(0);
     layout->setMargin(0);
     titleLabel = new QLabel(this);
-    titleLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+   //titleLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     titleLabel->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
     this->layout()->addWidget(titleLabel);
     valueLabel = new QLabel(this);
-    valueLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+    //valueLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     valueLabel->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
     valueLabel->setText("0.00");
     this->layout()->addWidget(valueLabel);
@@ -76,7 +76,7 @@ int UASQuickViewTextItem::minValuePixelSize()
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(this->height());
-    titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
+    titlefont.setPixelSize(valuefont.pixelSize() / 1.3);
     //spacerItem->setGeometry(QRect(0,0,20,this->height()/10.0));
 
     QFontMetrics metrics(valuefont);
@@ -86,7 +86,7 @@ int UASQuickViewTextItem::minValuePixelSize()
     {
 
         QFontMetrics valfm( valuefont );
-        QRect valbound = valfm.boundingRect(0,0, valueLabel->width(), valueLabel->height(), Qt::TextWordWrap | Qt::AlignLeft, "12345678.00"/*valueLabel->text()*/);
+        QRect valbound = valfm.boundingRect(0,0, valueLabel->width(), valueLabel->height(), Qt::TextWordWrap | Qt::AlignLeft, "45678.00"/*valueLabel->text()*/);
         //QFontMetrics titlefm( titlefont );
         //QRect titlebound = titlefm.boundingRect(0,0, titleLabel->width(), titleLabel->height(), Qt::TextWordWrap | Qt::AlignLeft, titleLabel->text());
 
@@ -114,7 +114,7 @@ void UASQuickViewTextItem::setValuePixelSize(int size)
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(size);
-    titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
+    titlefont.setPixelSize(valuefont.pixelSize() / 1.3);
     valueLabel->setFont(valuefont);
     titleLabel->setFont(titlefont);
     update();
