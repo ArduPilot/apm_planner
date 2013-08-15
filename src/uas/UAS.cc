@@ -511,7 +511,9 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             {
                 emit navModeChanged(uasId, state.custom_mode, getNavModeText(state.custom_mode));
                 navMode = state.custom_mode;
-                //navModeAudio = tr(" changed nav mode to ") + tr("FIXME");
+                navModeAudio = tr("changed nav mode to ") + getNavModeText(state.custom_mode);
+                GAudioOutput::instance()->say(navModeAudio);
+                break; // skip the other audio messages.
             }
 
             // AUDIO
@@ -3139,6 +3141,10 @@ QString UAS::getAudioModeTextFor(int id)
     if (modeid & (uint8_t)MAV_MODE_FLAG_DECODE_POSITION_SAFETY)
     {
         mode.append(" and armed");
+    }
+    else
+    {
+        mode.append(" and disarmed");
     }
 
     // HARDWARE IN THE LOOP DECODING

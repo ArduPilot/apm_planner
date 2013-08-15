@@ -68,8 +68,8 @@ public:
 
 public:
     ApmPlane(planeMode aMode);
-    QString operator <<(planeMode aMode);
     ApmPlane::planeMode mode();
+    static QString stringForMode(int aMode);
 };
 // Arducopter Flight Mode Defines
 
@@ -95,8 +95,8 @@ public:
 
 public:
     ApmCopter(copterMode aMode);
-    QString operator <<(copterMode aMode);
     ApmCopter::copterMode mode();
+    static QString stringForMode(int aMode);
 };
 
 class ApmRover: public CustomMode {
@@ -115,6 +115,7 @@ public:
     ApmRover(roverMode aMode);
     QString operator <<(roverMode aMode);
     ApmRover::roverMode mode();
+    static QString stringForMode(int aMode);
 };
 
 class ArduPilotMegaMAV : public UAS
@@ -126,10 +127,23 @@ public:
     void setMountConfigure(unsigned char mode, bool stabilize_roll,bool stabilize_pitch,bool stabilize_yaw);
     /** @brief Set camera mount control */
     void setMountControl(double pa,double pb,double pc,bool islatlong);
+
+    QString getNavModeText(int custom_mode);
+
 public slots:
     /** @brief Receive a MAVLink message from this MAV */
     void receiveMessage(LinkInterface* link, mavlink_message_t message);
     void sendTxRequests();
+
+    void systemDisarmed();
+    void systemArmed();
+
+    // Overides from UAS virtual interface
+    virtual void armSystem();
+    virtual void disarmSystem();
+
+    void navModeChanged(int uasid, int mode, const QString& text);
+
 private slots:
     void uasConnected();
     void uasDisconnected();

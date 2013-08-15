@@ -505,7 +505,7 @@ public:
     /** @brief Get the human-readable status message for this code */
     void getStatusForCode(int statusCode, QString& uasState, QString& stateDescription);
     /** @brief Get the human-readable navigation mode translation for this mode */
-    QString getNavModeText(int mode);
+    virtual QString getNavModeText(int mode);
     /** @brief Check if vehicle is in autonomous mode */
     bool isAuto();
     /** @brief Check if vehicle is armed */
@@ -740,9 +740,9 @@ public slots:
     void stopLowBattAlarm();
 
     /** @brief Arm system */
-    void armSystem();
+    virtual void armSystem();
     /** @brief Disable the motors */
-    void disarmSystem();
+    virtual void disarmSystem();
 
     /** @brief Set the values for the manual control of the vehicle */
     void setManualControlCommands(double roll, double pitch, double yaw, double thrust, int xHat, int yHat, int buttons);
@@ -813,7 +813,7 @@ public slots:
     void enableExtra3Transmission(int rate);
 
     /** @brief Update the system state */
-    void updateState();
+    virtual void updateState();
 
     /** @brief Set world frame origin at current GPS position */
     void setLocalOriginAtCurrentGPSPosition();

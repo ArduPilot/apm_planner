@@ -40,7 +40,7 @@ private:
 
 private:
     Ui::UASActionsWidget ui;
-    UASInterface *m_uas;
+    UAS *m_uas;
     quint16 m_last_wpid;
 };
 

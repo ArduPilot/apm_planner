@@ -84,7 +84,7 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
     if (uas == NULL) {
         QLOG_WARN() << "uas object NULL";
     }
-    m_uas = uas;
+    m_uas = dynamic_cast<UAS*>(uas);
 
     connect(m_uas->getWaypointManager(),SIGNAL(waypointEditableListChanged()),this,SLOT(updateWaypointList()));
     connect(m_uas->getWaypointManager(),SIGNAL(currentWaypointChanged(quint16)),this,SLOT(currentWaypointChanged(quint16)));
@@ -136,19 +136,20 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
 
 void UASActionsWidget::armButtonClicked()
 {
-    QLOG_INFO() << "armButtonClicked";
+    QLOG_INFO() << "UASActionsWidget::armButtonClicked";
 
     if (m_uas)
     {
         if (m_uas->isArmed())
         {
-            dynamic_cast<UAS*>(m_uas)->disarmSystem();
-            QLOG_INFO() << "Attempt to Disarm System";
+            QLOG_INFO() << "UAS:: Attempt to Disarm System";
+            m_uas->disarmSystem();
+
         }
         else
         {
-            dynamic_cast<UAS*>(m_uas)->armSystem();
-            QLOG_INFO() << "Attempt to Arm System";
+            QLOG_INFO() << "UAS:: Attempt to Arm System";
+            m_uas->armSystem();
         }
     }
 }
