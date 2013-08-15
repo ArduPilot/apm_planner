@@ -118,7 +118,7 @@ void TerminalConsole::fillPortsInfo(QComboBox &comboxBox)
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        comboxBox.insertItem(0,list.first(), list);
+        comboxBox.insertItem(0,list[0] + " - " + list[1], list);
         QLOG_INFO() << "Inserting " << list.first();
     }
 }
@@ -258,7 +258,8 @@ void TerminalConsole::setBaudRate(int index)
 
 void TerminalConsole::setLink(int index)
 {
-    m_settings.name = ui->linkComboBox->currentText();
+    //m_settings.name = ui->linkComboBox->currentText();
+    m_settings.name = ui->linkComboBox->itemData(index).toStringList()[0];
     QLOG_INFO() << "Changed Link to:" << m_settings.name;
 
 }

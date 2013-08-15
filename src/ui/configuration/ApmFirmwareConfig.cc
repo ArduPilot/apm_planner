@@ -64,7 +64,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        ui.linkComboBox->insertItem(0,list.first(), list);
+        ui.linkComboBox->insertItem(0,list[0] + " - " + list[1], list);
         QLOG_DEBUG() << "Inserting " << list.first();
     }
     m_uas = 0;
@@ -498,7 +498,7 @@ void ApmFirmwareConfig::flashButtonClicked()
 }
 void ApmFirmwareConfig::setLink(int index)
 {
-    m_settings.name = ui.linkComboBox->currentText();
+    m_settings.name = ui.linkComboBox->itemData(index).toStringList()[0];
     QLOG_INFO() << "Changed Link to:" << m_settings.name;
 }
 
