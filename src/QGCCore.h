@@ -38,6 +38,7 @@ This file is part of the PIXHAWK project
 #include "MainWindow.h"
 #include "UASManager.h"
 #include "LinkManager.h"
+#include "QGCMouseWheelEventFilter.h"
 /*#include "ViconTarsusProtocol.h" */
 #ifdef OPAL_RT
 
