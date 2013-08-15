@@ -2,10 +2,21 @@
 
 
 #include "CameraGimbalConfig.h"
+#include "QGCCore.h"
 
 CameraGimbalConfig::CameraGimbalConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
+
+    foreach (QObject *obj,this->children())
+    {
+        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        {
+            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
+
+
     ui.tiltChannelComboBox->addItem(tr("Disable"));
     ui.tiltChannelComboBox->addItem("RC5");
     ui.tiltChannelComboBox->addItem("RC6");
@@ -59,6 +70,9 @@ CameraGimbalConfig::CameraGimbalConfig(QWidget *parent) : AP2ConfigWidget(parent
     ui.shutterChannelComboBox->addItem("RC8");
     ui.shutterChannelComboBox->addItem("RC10");
     ui.shutterChannelComboBox->addItem("RC11");
+
+
+
 
     connect(ui.tiltServoMinSpinBox,SIGNAL(editingFinished()),this,SLOT(updateTilt()));
     connect(ui.tiltServoMaxSpinBox,SIGNAL(editingFinished()),this,SLOT(updateTilt()));

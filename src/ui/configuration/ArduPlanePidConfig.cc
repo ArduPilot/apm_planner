@@ -1,9 +1,18 @@
 #include "ArduPlanePidConfig.h"
 
+#include "QGCCore.h"
 
 ArduPlanePidConfig::ArduPlanePidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
+
+    foreach (QObject *obj,this->children())
+    {
+        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        {
+            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
 
     m_nameToBoxMap["RLL2SRV_P"] = ui.servoRollPSpinBox;
     m_nameToBoxMap["RLL2SRV_I"] = ui.servoRollISpinBox;

@@ -1,6 +1,8 @@
 #include "SonarConfig.h"
 #include <QMessageBox>
 
+#include "QGCCore.h"
+
 SonarConfig::SonarConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
@@ -10,6 +12,14 @@ SonarConfig::SonarConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.sonarTypeComboBox->addItem("HRLV");
     connect(ui.enableCheckBox,SIGNAL(toggled(bool)),this,SLOT(checkBoxToggled(bool)));
     connect(ui.sonarTypeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(sonarTypeChanged(int)));
+
+    foreach (QObject *obj,this->children())
+    {
+        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        {
+            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
 
     initConnections();
 }

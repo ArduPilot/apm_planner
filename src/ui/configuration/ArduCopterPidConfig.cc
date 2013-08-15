@@ -1,13 +1,25 @@
 #include "ArduCopterPidConfig.h"
 
+#include "QGCCore.h"
+
 ArduCopterPidConfig::ArduCopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
+
+    foreach (QObject *obj,this->children())
+    {
+        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        {
+            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
+
     m_pitchRollLocked = false;
     connect(ui.checkBox,SIGNAL(clicked(bool)),this,SLOT(lockCheckBoxClicked(bool)));
     connect(ui.stabilPitchPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
     connect(ui.stabilRollPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
     connect(ui.stabilYawPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
+
     m_nameToBoxMap["STB_RLL_P"] = ui.stabilPitchPSpinBox;
     m_nameToBoxMap["STB_PIT_P"] = ui.stabilRollPSpinBox;
     m_nameToBoxMap["STB_YAW_P"] = ui.stabilYawPSpinBox;
@@ -112,6 +124,7 @@ ArduCopterPidConfig::ArduCopterPidConfig(QWidget *parent) : AP2ConfigWidget(pare
         ui.ch7OptComboBox->addItem(m_ch78ValueToTextList[i].second);
         ui.ch8OptComboBox->addItem(m_ch78ValueToTextList[i].second);
     }
+
     initConnections();
 }
 void ArduCopterPidConfig::lockCheckBoxClicked(bool checked)

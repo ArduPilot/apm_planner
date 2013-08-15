@@ -1,9 +1,20 @@
 #include "ArduRoverPidConfig.h"
 
+#include "QGCCore.h"
 
 ArduRoverPidConfig::ArduRoverPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
+
+    foreach (QObject *obj,this->children())
+    {
+        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        {
+            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
+
+
     nameToBoxMap["STEER2SRV_P"] = ui.steer2ServoPSpinBox;
     nameToBoxMap["STEER2SRV_I"] = ui.steer2ServoISpinBox;
     nameToBoxMap["STEER2SRV_D"] = ui.steer2ServoDSpinBox;

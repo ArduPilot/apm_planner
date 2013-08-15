@@ -66,6 +66,7 @@ This file is part of the QGROUNDCONTROL project
 
 QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
 {
+        m_mouseWheelFilter = new QGCMouseWheelEventFilter(this);
 }
 
 void QGCCore::initialize()

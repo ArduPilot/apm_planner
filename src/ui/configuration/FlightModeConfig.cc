@@ -1,9 +1,19 @@
 #include "FlightModeConfig.h"
 
+#include "QGCCore.h"
 
 FlightModeConfig::FlightModeConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
+
+    foreach (QObject *obj,this->children())
+    {
+        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        {
+            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
+
     connect(ui.savePushButton,SIGNAL(clicked()),this,SLOT(saveButtonClicked()));
     initConnections();
 }

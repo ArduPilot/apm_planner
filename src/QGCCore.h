@@ -60,6 +60,7 @@ public:
     ~QGCCore();
 
     void initialize();
+    QGCMouseWheelEventFilter *getMouseWheelFilter() { return m_mouseWheelFilter; }
 
 protected:
     void startLinkManager();
@@ -73,6 +74,7 @@ protected:
 
 private:
     MainWindow* mainWindow;
+    QGCMouseWheelEventFilter *m_mouseWheelFilter;
 };
 
 #endif /* _CORE_H_ */

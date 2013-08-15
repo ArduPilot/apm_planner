@@ -1,9 +1,19 @@
 #include "FailSafeConfig.h"
 
+#include "QGCCore.h"
 
 FailSafeConfig::FailSafeConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
+
+    foreach (QObject *obj,this->children())
+    {
+        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        {
+            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
+
     ui.radio1In->setName("Radio 1");
     ui.radio1In->setMin(800);
     ui.radio1In->setMax(2200);
@@ -87,6 +97,8 @@ FailSafeConfig::FailSafeConfig(QWidget *parent) : AP2ConfigWidget(parent)
 
 
     ui.modeLabel->setText("<h1>MODE</h1>");
+
+
     initConnections();
 }
 void FailSafeConfig::gcsChecked(bool checked)

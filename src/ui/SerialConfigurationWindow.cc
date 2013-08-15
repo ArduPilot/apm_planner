@@ -29,6 +29,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "QsLog.h"
+#include "QGCCore.h"
 
 #include <SerialConfigurationWindow.h>
 #include <SerialLinkInterface.h>
@@ -48,6 +49,14 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
 
         // Setup the user interface according to link type
         ui.setupUi(this);
+
+        foreach (QObject *obj,this->children())
+        {
+            if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+            {
+                obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+            }
+        }
 
         // Create action to open this menu
         // Create configuration action for this link

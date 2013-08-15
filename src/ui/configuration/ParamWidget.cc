@@ -1,8 +1,19 @@
 #include "ParamWidget.h"
 
+#include "QGCCore.h"
+
 ParamWidget::ParamWidget(QString param,QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
+
+    foreach (QObject *obj,this->children())
+    {
+        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        {
+            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
+
     m_param = param;
 
     connect(ui.doubleSpinBox,SIGNAL(editingFinished()),this,SLOT(doubleSpinEditFinished()));
