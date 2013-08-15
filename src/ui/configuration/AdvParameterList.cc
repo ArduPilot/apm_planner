@@ -13,19 +13,17 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent)
     connect(ui.loadPushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     connect(ui.savePushButton,SIGNAL(clicked()),this,SLOT(saveButtonClicked()));
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
-    ui.tableWidget->setColumnCount(5);
+    ui.tableWidget->setColumnCount(4);
     //ui.tableWidget->horizontalHeader()->hide();
     ui.tableWidget->verticalHeader()->hide();
     ui.tableWidget->setColumnWidth(0,200);
     ui.tableWidget->setColumnWidth(1,100);
     ui.tableWidget->setColumnWidth(2,100);
-    ui.tableWidget->setColumnWidth(3,200);
-    ui.tableWidget->setColumnWidth(4,800);
-    ui.tableWidget->setHorizontalHeaderItem(0,new QTableWidgetItem("Name"));
+    ui.tableWidget->setColumnWidth(3,800);
+    ui.tableWidget->setHorizontalHeaderItem(0,new QTableWidgetItem("Param"));
     ui.tableWidget->setHorizontalHeaderItem(1,new QTableWidgetItem("Value"));
     ui.tableWidget->setHorizontalHeaderItem(2,new QTableWidgetItem("Unit"));
-    ui.tableWidget->setHorizontalHeaderItem(3,new QTableWidgetItem("Param"));
-    ui.tableWidget->setHorizontalHeaderItem(4,new QTableWidgetItem("Description"));
+    ui.tableWidget->setHorizontalHeaderItem(3,new QTableWidgetItem("Description"));
     initConnections();
 }
 void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
@@ -138,37 +136,18 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
     if (!m_paramValueMap.contains(parameterName))
     {
         ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1);
-        if (m_paramToNameMap.contains(parameterName))
-        {
-            QTableWidgetItem *item = new QTableWidgetItem(m_paramToNameMap[parameterName]);
-            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,0,item);
-        }
-        else
-        {
-            QTableWidgetItem *item = new QTableWidgetItem("Unknown");
-            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,0,item);
-        }
+
+        //Col 0, param name
+        QTableWidgetItem *paramnameitem = new QTableWidgetItem(parameterName);
+        paramnameitem->setFlags(paramnameitem->flags() ^ Qt::ItemIsEditable);
+        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,0,paramnameitem);
+
+        //Col 1, param value
         QTableWidgetItem *valitem = new QTableWidgetItem(QString::number(value.toFloat(),'f',2));
         valitem->setFlags(valitem->flags() | Qt::ItemIsEditable);
         ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,1,valitem);
 
-        QTableWidgetItem *paramnameitem = new QTableWidgetItem(parameterName);
-        paramnameitem->setFlags(paramnameitem->flags() ^ Qt::ItemIsEditable);
-        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,3,paramnameitem);
-        if (m_paramToDescriptionMap.contains(parameterName))
-        {
-            QTableWidgetItem *item = new QTableWidgetItem(m_paramToDescriptionMap[parameterName]);
-            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,4,item);
-        }
-        else
-        {
-            QTableWidgetItem *item = new QTableWidgetItem("Unknown");
-            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,4,item);
-        }
+        //Col 2, param unit
         if (m_paramToUnitMap.contains(parameterName))
         {
             QTableWidgetItem *item = new QTableWidgetItem(m_paramToUnitMap[parameterName]);
@@ -181,12 +160,33 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
             item->setFlags(item->flags() ^ Qt::ItemIsEditable);
             ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,2,item);
         }
+
+        //Col 3, description
+        QString desc = "";
+        if (m_paramToNameMap.contains(parameterName))
+        {
+            desc += m_paramToNameMap[parameterName] + " - ";
+        }
+        else
+        {
+            desc = "unknown";
+        }
+
+        if (m_paramToDescriptionMap.contains(parameterName))
+        {
+            desc += m_paramToDescriptionMap[parameterName];
+        }
+        QTableWidgetItem *item = new QTableWidgetItem(desc);
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,3,item);
+
+
         m_paramValueMap[parameterName] = ui.tableWidget->item(ui.tableWidget->rowCount()-1,1);
-        ui.tableWidget->sortByColumn(3,Qt::AscendingOrder);
+        ui.tableWidget->sortByColumn(0,Qt::AscendingOrder);
     }
     m_paramValueMap[parameterName]->setText(QString::number(value.toFloat(),'f',2));
     m_paramValueMap[parameterName]->setBackgroundColor(QColor::fromRgb(255,255,255));
-    m_paramValueMap[parameterName]->setBackground(m_paramValueMap[parameterName]->tableWidget()->palette().background());
+    m_paramValueMap[parameterName]->setBackground(m_paramValueMap[parameterName]->tableWidget()->palette().base());
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
 
 }
