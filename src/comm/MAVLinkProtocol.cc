@@ -528,7 +528,7 @@ void MAVLinkProtocol::sendMessage(mavlink_message_t message)
     for (i = links.begin(); i != links.end(); ++i)
     {
         sendMessage(*i, message);
-        QLOG_DEBUG() << "SENT MESSAGE OVER" << ((LinkInterface*)*i)->getName() << "LIST SIZE:" << links.size();
+        QLOG_TRACE() << "SENT MESSAGE OVER" << ((LinkInterface*)*i)->getName() << "LIST SIZE:" << links.size();
     }
 }
 

@@ -378,30 +378,30 @@ QString ArduPilotMegaMAV::getNavModeText(int custom_mode)
 {
     QLOG_DEBUG() << "APM: getNavModeText()";
 
-    QString returnString;
+    QString returnString = tr("changed custom mode to ");
+    QString customModeString;
 
     int systemType = getSystemType();
             switch(systemType) {
         case MAV_TYPE_FIXED_WING:
-            returnString = ApmPlane::stringForMode(custom_mode);
+            customModeString = ApmPlane::stringForMode(custom_mode);
             break;
 
         case MAV_TYPE_QUADROTOR:
         case MAV_TYPE_OCTOROTOR:
         case MAV_TYPE_HELICOPTER:
         case MAV_TYPE_TRICOPTER:
-            returnString = ApmCopter::stringForMode(custom_mode);
+            customModeString = ApmCopter::stringForMode(custom_mode);
             break;
 
         case MAV_TYPE_GROUND_ROVER:
-            returnString = ApmCopter::stringForMode(custom_mode);
+            customModeString = ApmCopter::stringForMode(custom_mode);
             break;
 
         default:
             QLOG_WARN() << "APM: Unsupported System Type " << systemType;
+            customModeString = tr("UNKOWN");
         }
 
-
-
-    return returnString;
+    return returnString + customModeString;
 }

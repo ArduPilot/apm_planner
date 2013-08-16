@@ -504,14 +504,25 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
                 emit modeChanged(this->getUASID(), shortModeText, "");
 
-                modeAudio = " is now in " + audiomodeText;
+                QString armedAudio;
+                // ARMED STATE DECODING
+                if (mode & (uint8_t)MAV_MODE_FLAG_DECODE_POSITION_SAFETY)
+                {
+                    armedAudio.append("is armed");
+                }
+                else
+                {
+                    armedAudio.append("is disarmed");
+                }
+
+                modeAudio = armedAudio + " and now in " + audiomodeText;
             }
 
             if (navMode != state.custom_mode)
             {
                 emit navModeChanged(uasId, state.custom_mode, getNavModeText(state.custom_mode));
                 navMode = state.custom_mode;
-                navModeAudio = tr("changed nav mode to ") + getNavModeText(state.custom_mode);
+                navModeAudio = getNavModeText(state.custom_mode);
                 GAudioOutput::instance()->say(navModeAudio);
                 break; // skip the other audio messages.
             }
@@ -1946,10 +1957,12 @@ QString UAS::getNavModeText(int mode)
 {
     if (autopilot == MAV_AUTOPILOT_PIXHAWK)
     {
+        QString navModeString = tr("changed nav mode to ");
+
         switch (mode)
         {
         case 0:
-            return QString("PREFLIGHT");
+            return navModeString + QString("PREFLIGHT");
             break;
         default:
             return QString("UNKNOWN");
@@ -3135,16 +3148,6 @@ QString UAS::getAudioModeTextFor(int id)
     if (modeid != 0)
     {
         mode += " mode";
-    }
-
-    // ARMED STATE DECODING
-    if (modeid & (uint8_t)MAV_MODE_FLAG_DECODE_POSITION_SAFETY)
-    {
-        mode.append(" and armed");
-    }
-    else
-    {
-        mode.append(" and disarmed");
     }
 
     // HARDWARE IN THE LOOP DECODING
