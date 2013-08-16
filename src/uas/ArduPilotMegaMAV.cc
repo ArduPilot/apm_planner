@@ -419,7 +419,8 @@ void ArduPilotMegaMAV::textMessageReceived(int uasid, int componentid, int sever
     QLOG_DEBUG() << "APM: Text Message rx'd" << text;
     if (text.startsWith("PreArm:")) {
         // Speak the PreArm warning
-        GAudioOutput::instance()->say(text, severity);
+        QString audioString = "Pre-arm check:" + text.remove("PreArm:");
+        GAudioOutput::instance()->say(audioString, severity);
     }
 
 
