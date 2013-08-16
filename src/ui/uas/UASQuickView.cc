@@ -108,6 +108,8 @@ void UASQuickView::replaceSingleItemSelected(QString newitem,QString olditem)
 
         uasPropertyValueMap.remove(olditem);
         uasPropertyValueMap.remove(newitem);
+        uasPropertyValueMap[newitem] = 0;
+        uasPropertyValueMap[olditem] = 0;
         olditemptr->setTitle(newitem);
         newitemptr->setTitle(olditem);
 
@@ -124,6 +126,7 @@ void UASQuickView::replaceSingleItemSelected(QString newitem,QString olditem)
         uasPropertyToLabelMap.remove(olditem);
         uasPropertyToLabelMap[newitem] = item;
         uasPropertyValueMap.remove(olditem);
+        uasPropertyValueMap[newitem] = 0;
         item->setTitle(newitem);
         int index = m_PropertyToLayoutIndexMap[olditem];
         m_PropertyToLayoutIndexMap.remove(olditem);
