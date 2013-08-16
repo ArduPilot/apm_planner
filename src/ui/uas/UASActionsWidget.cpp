@@ -76,6 +76,12 @@ UASActionsWidget::UASActionsWidget(QWidget *parent) : QWidget(parent)
 
     connect(ui.exeActionButton, SIGNAL(clicked()),
             this, SLOT(setAction()));
+    connect(ui.autoModeButton, SIGNAL(clicked()),
+            this, SLOT(setAutoMode()));
+    connect(ui.manualModeButton, SIGNAL(clicked()),
+            this, SLOT(setManualMode()));
+    connect(ui.rtlModeButton, SIGNAL(clicked()),
+            this, SLOT(setRTLMode()));
 }
 
 void UASActionsWidget::activeUASSet(UASInterface *uas)
@@ -254,15 +260,11 @@ void UASActionsWidget::setMode()
         return;
     }
 
-    QLOG_INFO() << "Set Mode to " << ui.modeComboBox->currentIndex();
-    QLOG_DEBUG() << "Set Mode: To Be Implemented";
+    QLOG_INFO() << "Set Mode to "
+                << ui.modeComboBox->itemData(ui.modeComboBox->currentIndex()).toInt();
 
-//    mavlink_message_t msg;
-//    mavlink_msg_set_mode_pack(m_uas->getUASID(),
-//                                MAV_MODE_FLAG_CUSTOM_MODE_ENABLED, // Target Component
-//                                ui.actionComboBox->currentValue());
-//    sendMessage(msg);
-
+    m_uas->setMode(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+                   ui.modeComboBox->itemData(ui.modeComboBox->currentIndex()).toInt());
 }
 
 
@@ -543,18 +545,99 @@ void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
 void UASActionsWidget::setAutoMode()
 {
     QLOG_INFO() << "UASActionWidget::setAutoMode";
-    QLOG_INFO() << "to be implemented";
+
+    switch (m_uas->getAutopilotType()) {
+        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+
+            int idx = ui.modeComboBox->findText("Auto");
+            int mode = ui.modeComboBox->itemData(idx).toInt();
+            m_uas->setMode(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+                           mode);
+        } break;
+
+        case MAV_AUTOPILOT_PX4: {
+            // [TODO] PX4 flight controller go here
+        }
+
+        case MAV_AUTOPILOT_GENERIC:
+        default: {
+            // [TODO] Generic, and other flight controllers here (or own sections as above)
+        }
+    }
+
 }
 
 void UASActionsWidget::setManualMode()
 {
     QLOG_INFO() << "UASActionsWidget::setManualMode()";
-    QLOG_INFO() << "to be implemented";
+    int mode, idx;
+
+    switch (m_uas->getAutopilotType()) {
+        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+            int systemType = m_uas->getSystemType();
+            switch(systemType) {
+            case MAV_TYPE_FIXED_WING:
+
+                idx = ui.modeComboBox->findText("Manual");
+                mode = ui.modeComboBox->itemData(idx).toInt();
+
+                break;
+
+            case MAV_TYPE_QUADROTOR:
+            case MAV_TYPE_OCTOROTOR:
+            case MAV_TYPE_HELICOPTER:
+            case MAV_TYPE_TRICOPTER:
+                idx = ui.modeComboBox->findText("Stabilize");
+                mode = ui.modeComboBox->itemData(idx).toInt();
+
+                break;
+
+            case MAV_TYPE_GROUND_ROVER:
+                idx = ui.modeComboBox->findText("Manual");
+                mode = ui.modeComboBox->itemData(idx).toInt();
+
+                break;
+
+            default:
+                QLOG_WARN() << "UASActionWidget: Unsupported System Type" << systemType;
+            }
+
+            m_uas->setMode(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+                           mode);
+        } break;
+
+        case MAV_AUTOPILOT_PX4: {
+            // [TODO] PX4 flight controller go here
+        }
+
+        case MAV_AUTOPILOT_GENERIC:
+        default: {
+            // [TODO] Generic, and other flight controllers here (or own sections as above)
+        }
+    }
 }
 
 void UASActionsWidget::setRTLMode()
 {
-    QLOG_INFO() << "UASActionsWidget::setManualMode()";
-    QLOG_INFO() << "to be implemented";
+    QLOG_INFO() << "UASActionsWidget::setRTLMode()";
+
+    switch (m_uas->getAutopilotType()) {
+        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+
+            int idx = ui.modeComboBox->findText("RTL");
+            int mode = ui.modeComboBox->itemData(idx).toInt();
+            m_uas->setMode(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+                           mode);
+        } break;
+
+        case MAV_AUTOPILOT_PX4: {
+            // [TODO] PX4 flight controller go here
+        }
+
+        case MAV_AUTOPILOT_GENERIC:
+        default: {
+            // [TODO] Generic, and other flight controllers here (or own sections as above)
+        }
+    }
 }
 
