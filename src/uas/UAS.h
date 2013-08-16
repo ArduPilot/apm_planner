@@ -504,8 +504,13 @@ public:
     float getChargeLevel();
     /** @brief Get the human-readable status message for this code */
     void getStatusForCode(int statusCode, QString& uasState, QString& stateDescription);
-    /** @brief Get the human-readable navigation mode translation for this mode */
-    virtual QString getNavModeText(int mode);
+
+    /** @brief Get the human-readable custom mode string*/
+    virtual QString getCustomModeText(int mode);
+
+    /** @brief Get the human-speakable custom mode string */
+    virtual QString getCustomModeAudioText(int mode);
+
     /** @brief Check if vehicle is in autonomous mode */
     bool isAuto();
     /** @brief Check if vehicle is armed */

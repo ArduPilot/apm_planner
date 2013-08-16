@@ -32,6 +32,10 @@ class PxQuadMAV : public UAS
     Q_INTERFACES(UASInterface)
 public:
     PxQuadMAV(MAVLinkProtocol* mavlink, int id);
+
+    QString getCustomModeAudioText(int mode);
+    QString getCustomModeText(int mode);
+
 public slots:
     /** @brief Receive a MAVLink message from this MAV */
     void receiveMessage(LinkInterface* link, mavlink_message_t message);

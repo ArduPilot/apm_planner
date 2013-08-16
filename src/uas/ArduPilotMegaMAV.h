@@ -128,7 +128,8 @@ public:
     /** @brief Set camera mount control */
     void setMountControl(double pa,double pb,double pc,bool islatlong);
 
-    QString getNavModeText(int custom_mode);
+    QString getCustomModeText(int custom_mode);
+    QString getCustomModeAudioText(int custom_mode);
 
 public slots:
     /** @brief Receive a MAVLink message from this MAV */
@@ -143,6 +144,9 @@ public slots:
     virtual void disarmSystem();
 
     void navModeChanged(int uasid, int mode, const QString& text);
+
+    // UAS Interface
+    void textMessageReceived(int uasid, int componentid, int severity, QString text);
 
 private slots:
     void uasConnected();

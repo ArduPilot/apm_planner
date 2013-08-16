@@ -520,11 +520,11 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
             if (navMode != state.custom_mode)
             {
-                emit navModeChanged(uasId, state.custom_mode, getNavModeText(state.custom_mode));
+                emit navModeChanged(uasId, state.custom_mode, getCustomModeText(state.custom_mode));
                 navMode = state.custom_mode;
-                navModeAudio = getNavModeText(state.custom_mode);
+                navModeAudio = getCustomModeAudioText(state.custom_mode);
                 GAudioOutput::instance()->say(navModeAudio);
-                break; // skip the other audio messages.
+                break; // Separate custom_mode changes from system mode chnages
             }
 
             // AUDIO
@@ -1950,34 +1950,22 @@ float UAS::filterVoltage(float value) const
 }
 
 /**
-* The mode can be preflight or unknown.
-* @Return the mode of the autopilot
+* The string representation of the custom_mode.
+* @Return string
 */
-QString UAS::getNavModeText(int mode)
+QString UAS::getCustomModeText(int mode)
 {
-    if (autopilot == MAV_AUTOPILOT_PIXHAWK)
-    {
-        QString navModeString = tr("changed nav mode to ");
-
-        switch (mode)
-        {
-        case 0:
-            return navModeString + QString("PREFLIGHT");
-            break;
-        default:
-            return QString("UNKNOWN");
-        }
-    }
-    else if (autopilot == MAV_AUTOPILOT_ARDUPILOTMEGA)
-    {
-        return QString("UNKNOWN");
-    }
-    else if (autopilot == MAV_AUTOPILOT_OPENPILOT)
-    {
-        return QString("UNKNOWN");
-    }
-    // If nothing matches, return unknown
     return QString("UNKNOWN");
+}
+
+/**
+* The audio string representation of the custom_mode.
+* @Return string
+*/
+QString UAS::getCustomModeAudioText(int mode)
+{
+    QString navModeString = tr("changed custom mode to ");
+    return navModeString + getCustomModeText(mode);
 }
 
 /** 

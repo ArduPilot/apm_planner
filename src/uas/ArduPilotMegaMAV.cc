@@ -236,6 +236,9 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
     // checking for customeMode changes for Audio.
     connect(this, SIGNAL(navModeChanged(int,int,QString)),
             this, SLOT(navModeChanged(int,int,QString)));
+
+    connect(this, SIGNAL(textMessageReceived(int,int,int,QString)),
+            this, SLOT(textMessageReceived(int,int,int,QString)));
 }
 
 void ArduPilotMegaMAV::sendTxRequests()
@@ -374,11 +377,9 @@ void ArduPilotMegaMAV::navModeChanged(int uasid, int mode, const QString& text)
     QLOG_DEBUG() << "APM: Nav Mode Changed:" << mode << text;
 }
 
-QString ArduPilotMegaMAV::getNavModeText(int custom_mode)
+QString ArduPilotMegaMAV::getCustomModeText(int custom_mode)
 {
-    QLOG_DEBUG() << "APM: getNavModeText()";
-
-    QString returnString = tr("changed custom mode to ");
+    QLOG_DEBUG() << "APM: getCustomModeText()";
     QString customModeString;
 
     int systemType = getSystemType();
@@ -402,6 +403,24 @@ QString ArduPilotMegaMAV::getNavModeText(int custom_mode)
             QLOG_WARN() << "APM: Unsupported System Type " << systemType;
             customModeString = tr("UNKOWN");
         }
+    return customModeString;
+}
 
-    return returnString + customModeString;
+QString ArduPilotMegaMAV::getCustomModeAudioText(int custom_mode)
+{
+    QLOG_DEBUG() << "APM: getCustomModeAudioText()";
+
+    QString returnString = tr("changed mode to ");
+    return returnString + getCustomModeText(custom_mode);
+}
+
+void ArduPilotMegaMAV::textMessageReceived(int uasid, int componentid, int severity, QString text)
+{
+    QLOG_DEBUG() << "APM: Text Message rx'd" << text;
+    if (text.startsWith("PreArm:")) {
+        // Speak the PreArm warning
+        GAudioOutput::instance()->say(text, severity);
+    }
+
+
 }
