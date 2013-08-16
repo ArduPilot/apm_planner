@@ -550,6 +550,12 @@ void MainWindow::buildCommonWidgets()
         addToCentralStackedWidget(terminalView, VIEW_TERMINAL, tr("Terminal View"));
     }
 
+    if (!debugOutput)
+    {
+        debugOutput = new DebugOutput();
+        QsLogging::Logger::instance().addDestination(QsLogging::DestinationPtr(debugOutput));
+    }
+
     // Dock widgets
     QAction* tempAction = ui.menuTools->addAction(tr("Control"));
     tempAction->setCheckable(true);
@@ -1597,6 +1603,8 @@ void MainWindow::connectCommonActions()
         ui.menuTools->menuAction()->setVisible(false);
         ui.menuNetwork->menuAction()->setVisible(false);
     }
+
+    connect(ui.actionDebug_Console,SIGNAL(triggered()),debugOutput,SLOT(show()));
 }
 
 void MainWindow::showHelp()

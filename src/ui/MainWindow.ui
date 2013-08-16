@@ -101,6 +101,7 @@
     <addaction name="actionOnline_Documentation"/>
     <addaction name="actionProject_Roadmap_2"/>
     <addaction name="actionDeveloper_Credits"/>
+    <addaction name="actionDebug_Console"/>
    </widget>
    <widget class="QMenu" name="menuPerspectives">
     <property name="title">
@@ -528,6 +529,14 @@
    </property>
    <property name="text">
     <string>Terminal</string>
+   </property>
+  </action>
+  <action name="actionDebug_Console">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show Debug Console</string>
    </property>
   </action>
  </widget>

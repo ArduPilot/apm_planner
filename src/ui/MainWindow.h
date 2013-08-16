@@ -84,6 +84,7 @@ This file is part of the QGROUNDCONTROL project
 #include "ApmHardwareConfig.h"
 #include "ApmSoftwareConfig.h"
 #include "apmtoolbar.h"
+#include "DebugOutput.h"
 
 class QGCMapTool;
 class QGCMAVLinkMessageSender;
@@ -364,6 +365,7 @@ protected:
     QPointer<SubMainWindow> engineeringView;
     QPointer<SubMainWindow> simView;
     QPointer<SubMainWindow> terminalView;
+    QPointer<DebugOutput> debugOutput;
 
     // Center widgets
     QPointer<Linecharts> linechartWidget;
