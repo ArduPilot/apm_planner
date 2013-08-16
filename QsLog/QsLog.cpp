@@ -132,6 +132,17 @@ void Logger::addDestination(DestinationPtr destination)
     assert(destination.data());
     d->destList.push_back(destination);
 }
+void Logger::delDestination(Destination *destination)
+{
+    for (int i=0;i<d->destList.size();i++)
+    {
+        if (d->destList[i] == destination)
+        {
+            d->destList.remove(i);
+            return;
+        }
+    }
+}
 
 void Logger::setLoggingLevel(Level newLevel)
 {

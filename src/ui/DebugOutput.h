@@ -5,7 +5,7 @@
 #include <QsLogDestConsole.h>
 #include "ui_DebugOutput.h"
 
-class DebugOutput : public QWidget, QsLogging::DebugOutputDestination
+class DebugOutput : public QWidget, public QsLogging::Destination
 {
     Q_OBJECT
     

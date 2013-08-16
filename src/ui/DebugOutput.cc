@@ -2,7 +2,7 @@
 
 #include <QScrollBar>
 
-DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent), QsLogging::DebugOutputDestination()
+DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent), QsLogging::Destination()
 {
     ui.setupUi(this);
 }
