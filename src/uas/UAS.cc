@@ -1862,10 +1862,24 @@ void UAS::setMode(int mode)
     // Now set current state (request no change)
     newMode |= (uint8_t)(this->mode) & (uint8_t)(MAV_MODE_FLAG_HIL_ENABLED);
 
+    QLOG_DEBUG() << "SENDING REQUEST TO SET MODE TO SYSTEM" << uasId << ", REQUEST TO SET MODE " << mode;
+
     mavlink_message_t msg;
     mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, (uint8_t)uasId, newMode, (uint16_t)navMode);
     sendMessage(msg);
-    QLOG_DEBUG() << "SENDING REQUEST TO SET MODE TO SYSTEM" << uasId << ", REQUEST TO SET MODE " << newMode;
+
+}
+
+void UAS::setMode(int mode, int custom_mode)
+{
+    QLOG_DEBUG() << "UAS::SetMode sysId:" << uasId << " mode:" << mode
+                 << "custom_mode:" << custom_mode;
+    mavlink_message_t msg;
+    mavlink_msg_set_mode_pack(mavlink->getSystemId(),
+                              mavlink->getComponentId(),
+                              &msg, (uint8_t)uasId,
+                              mode, (uint16_t)custom_mode);
+    sendMessage(msg);
 }
 
 /**

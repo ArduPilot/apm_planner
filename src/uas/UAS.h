@@ -784,6 +784,9 @@ public slots:
     /** @brief Set current mode of operation, e.g. auto or manual */
     void setMode(int mode);
 
+    /** @brief Set current mode and custom_mode of operation, e.g. auto or manual */
+    void setMode(int mode, int custom_mode);
+
     /** @brief Request all parameters */
     void requestParameters();
 
