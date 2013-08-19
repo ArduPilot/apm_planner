@@ -94,6 +94,9 @@ void TerminalConsole::addBaudComboBoxConfig()
 {
     ui->consoleModeBox->addItem(QLatin1String("APM"), APM);
     ui->consoleModeBox->addItem(QLatin1String("PX4"), PX4);
+
+    // [TODO] complete PX4 and APM modes
+    ui->consoleModeBox->setHidden(true);
 }
 
 void TerminalConsole::addConsoleModesComboBoxConfig()
@@ -160,14 +163,18 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
 
         } else {
             m_serial->close();
-            QMessageBox::critical(this, tr("Error"), m_serial->errorString());
+            QString errorMessage = m_serial->errorString()
+                    + tr("\nPlease ensure you have disconnected from the UAS, before connecting using terminal mode.");
+            QMessageBox::critical(this, tr("Error"), errorMessage);
 
-            m_statusBar->showMessage(tr("Open error"));
+            m_statusBar->showMessage(tr("Open error:") + errorMessage);
         }
     } else {
-        QMessageBox::critical(this, tr("Error"), m_serial->errorString());
+        QString errorMessage = m_serial->errorString()
+                + tr("\nPlease ensure you have disconnected from the UAS, before connecting using terminal mode.");
+        QMessageBox::critical(this, tr("Error"), errorMessage);
 
-        m_statusBar->showMessage(tr("Configure error"));
+        m_statusBar->showMessage(tr("Configure error: ") + errorMessage);
     }
 }
 
