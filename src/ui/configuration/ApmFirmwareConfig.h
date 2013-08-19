@@ -44,7 +44,9 @@ private slots:
     void activeUASSet(UASInterface *uas);
     void uasConnected();
     void uasDisconnected();
+    void cancelButtonClicked();
 private:
+    QProcess *m_burnProcess;
     UASInterface *m_uas;
     SerialSettings m_settings;
     QSerialPort *m_port;

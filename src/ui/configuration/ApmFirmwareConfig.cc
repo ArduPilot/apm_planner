@@ -36,6 +36,8 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     connect(ui.y6PushButton,SIGNAL(clicked()),this,SLOT(flashButtonClicked()));
     QTimer::singleShot(10000,this,SLOT(requestFirmwares()));
     connect(ui.betaFirmwareButton,SIGNAL(clicked(bool)),this,SLOT(betaFirmwareButtonClicked(bool)));
+    connect(ui.cancelPushButton,SIGNAL(clicked()),this,SLOT(cancelButtonClicked()));
+    ui.cancelPushButton->setEnabled(false);
 
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(0);
@@ -64,7 +66,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        ui.linkComboBox->insertItem(0,list[0] + " - " + list[1], list);
+        ui.linkComboBox->insertItem(0,list[1], list);
         QLOG_DEBUG() << "Inserting " << list.first();
     }
     m_uas = 0;
@@ -73,12 +75,22 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
 }
 void ApmFirmwareConfig::uasConnected()
 {
-    ui.stackedWidget->setCurrentIndex(1);
+    //ui.stackedWidget->setCurrentIndex(1);
+}
+void ApmFirmwareConfig::cancelButtonClicked()
+{
+    if (QMessageBox::question(this,"Warning","You are about to cancel the firmware upload process. ONLY do this if the process has not started properly. Are you sure you awnt to continue?",QMessageBox::Yes,QMessageBox::No) != QMessageBox::Yes)
+    {
+        return;
+    }
+    m_burnProcess->terminate();
+    m_burnProcess->deleteLater();
+
 }
 
 void ApmFirmwareConfig::uasDisconnected()
 {
-    ui.stackedWidget->setCurrentIndex(0);
+    //ui.stackedWidget->setCurrentIndex(0);
 }
 
 void ApmFirmwareConfig::activeUASSet(UASInterface *uas)
@@ -91,7 +103,7 @@ void ApmFirmwareConfig::activeUASSet(UASInterface *uas)
     }
     if (!uas)
     {
-        ui.stackedWidget->setCurrentIndex(0);
+        //ui.stackedWidget->setCurrentIndex(0);
     }
     else
     {
@@ -280,6 +292,7 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
     m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
     m_tempFirmwareFile = 0;
     ui.progressBar->setVisible(false);
+    ui.cancelPushButton->setEnabled(false);
 
 }
 void ApmFirmwareConfig::firmwareProcessReadyRead()
@@ -341,11 +354,12 @@ void ApmFirmwareConfig::downloadFinished()
     m_tempFirmwareFile->flush();
     m_tempFirmwareFile->close();
     //tempfirmware.fileName()
-    QProcess *process = new QProcess(this);
-    connect(process,SIGNAL(finished(int)),this,SLOT(firmwareProcessFinished(int)));
-    connect(process,SIGNAL(readyReadStandardOutput()),this,SLOT(firmwareProcessReadyRead()));
-    connect(process,SIGNAL(readyReadStandardError()),this,SLOT(firmwareProcessReadyRead()));
-    connect(process,SIGNAL(error(QProcess::ProcessError)),this,SLOT(firmwareProcessError(QProcess::ProcessError)));
+    ui.cancelPushButton->setEnabled(true);
+    m_burnProcess = new QProcess(this);
+    connect(m_burnProcess,SIGNAL(finished(int)),this,SLOT(firmwareProcessFinished(int)));
+    connect(m_burnProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(firmwareProcessReadyRead()));
+    connect(m_burnProcess,SIGNAL(readyReadStandardError()),this,SLOT(firmwareProcessReadyRead()));
+    connect(m_burnProcess,SIGNAL(error(QProcess::ProcessError)),this,SLOT(firmwareProcessError(QProcess::ProcessError)));
     QList<QSerialPortInfo> portList =  QSerialPortInfo::availablePorts();
 
 
@@ -411,7 +425,7 @@ void ApmFirmwareConfig::downloadFinished()
 
     // Start the Flashing
     QLOG_DEBUG() << avrdudeExecutable << stringList;
-    process->start(avrdudeExecutable,stringList);
+    m_burnProcess->start(avrdudeExecutable,stringList);
 }
 void ApmFirmwareConfig::firmwareProcessError(QProcess::ProcessError error)
 {
@@ -458,6 +472,24 @@ void ApmFirmwareConfig::flashButtonClicked()
             return;
         }*/
         //Try to connect before downloading:
+        if (m_uas)
+        {
+            //Active UAS. Ensure it's not connected over Serial
+            for (int i=0;i<m_uas->getLinks()->size();i++)
+            {
+                SerialLink *testlink = qobject_cast<SerialLink*>(m_uas->getLinks()->at(i));
+                if (testlink)
+                {
+                    //It's a serial link
+                    if (testlink->isConnected())
+                    {
+                        //Error out, we don't want to attempt firmware upload when there is a serial link active.
+                        QMessageBox::information(this,"Error","You cannot load new firmware while connected via MAVLink. Please press the Disconnect button at top right to end the current MAVLink session and enable the firmware loading screen.");
+                        return;
+                    }
+                }
+            }
+        }
 
         m_port = new QSerialPort(this);
         m_port->setPortName(m_settings.name);

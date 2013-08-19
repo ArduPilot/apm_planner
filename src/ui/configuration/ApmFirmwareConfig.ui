@@ -27,7 +27,7 @@
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -541,6 +541,13 @@
             </spacer>
            </item>
           </layout>
+         </item>
+         <item row="4" column="5">
+          <widget class="QPushButton" name="cancelPushButton">
+           <property name="text">
+            <string>Cancel</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
