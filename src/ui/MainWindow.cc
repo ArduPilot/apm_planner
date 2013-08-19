@@ -103,7 +103,7 @@ MainWindow* MainWindow::instance(QSplashScreen* screen)
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
     currentView(VIEW_FLIGHT),
-    currentStyle(QGC_MAINWINDOW_STYLE_NATIVE),
+    currentStyle(QGC_MAINWINDOW_STYLE_OUTDOOR),
     aboutToCloseFlag(false),
     changingViewsFlag(false),
     centerStackActionGroup(new QActionGroup(this)),
