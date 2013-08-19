@@ -108,8 +108,9 @@ void QGCCore::initialize()
         // Write current application version
         settings.setValue("QGC_APPLICATION_VERSION", QGC_APPLICATION_VERSION);
     }
-
+    //settings.clear();
     settings.sync();
+
 
     // Show splash screen
     QPixmap splashImage(":/files/images/apm_planner_2_0-07.png");
@@ -196,7 +197,6 @@ void QGCCore::initialize()
             QTimer::singleShot(200, mainWindow, SLOT(close()));
         }
     }
-    qApp->setStyleSheet("QMainWindow::separator { background: rgb(0, 0, 0); width: 5px; height: 5px;} QMainWindow::separator:hover { background: rgb(0, 0, 255);}");
 
 }
 
