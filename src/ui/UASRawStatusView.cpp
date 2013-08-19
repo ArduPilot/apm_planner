@@ -68,7 +68,7 @@ void UASRawStatusView::valueChanged(const int uasId, const QString& name, const 
     valueMap[name] = value;
     if (nameToUpdateWidgetMap.contains(name))
     {
-        nameToUpdateWidgetMap[name]->setText(QString::number(value));
+        nameToUpdateWidgetMap[name]->setText(QString::number(value,'f',4));
     }
     else
     {

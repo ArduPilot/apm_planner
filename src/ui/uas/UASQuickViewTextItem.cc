@@ -40,15 +40,15 @@ void UASQuickViewTextItem::setValue(double value)
 {
     if (value < 10 && value > -10)
     {
-        valueLabel->setText(QString::number(value,'f',4));
+        valueLabel->setText(QString::number(value,'f',2));
     }
     else if (value < 100 && value > -100)
     {
-        valueLabel->setText(QString::number(value,'f',3));
+        valueLabel->setText(QString::number(value,'f',2));
     }
     else if (value < 1000 && value > -1000)
     {
-        valueLabel->setText(QString::number(value,'f',2));
+        valueLabel->setText(QString::number(value,'f',1));
     }
     else if (value < 10000 && value > -10000)
     {
