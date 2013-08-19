@@ -26,7 +26,10 @@ public:
 private slots:
     void activateStackedWidget();
     void activeUASSet(UASInterface *uas);
+    void uasConnected();
+    void uasDisconnected();
 private:
+    UASInterface *m_uas;
     Ui::ApmSoftwareConfig ui;
     QPointer<BasicPidConfig> m_basicPidConfig;
     QPointer<FlightModeConfig> m_flightConfig;
