@@ -16,9 +16,15 @@
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QScrollArea" name="scrollArea_6">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
-       <width>175</width>
+       <width>200</width>
        <height>0</height>
       </size>
      </property>
@@ -36,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>173</width>
-        <height>807</height>
+        <width>233</width>
+        <height>786</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
