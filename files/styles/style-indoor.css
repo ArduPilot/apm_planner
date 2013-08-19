@@ -81,13 +81,13 @@ border: 1px solid #777777;
  
  QMainWindow::separator {
     background-color: #323235;
-    width: 2px; /* when vertical */
-    height: 2px; /* when horizontal */
+    width: 4px; /* when vertical */
+    height: 4px; /* when horizontal */
+ }
+ QMainWindow::separator:hover { 
+    background: rgb(0, 0, 255);
  }
 
- QMainWindow::separator:hover {
-     background: white;
- }
  
  QGCToolWidgetItem {
 	border: 1px solid #66666B;
