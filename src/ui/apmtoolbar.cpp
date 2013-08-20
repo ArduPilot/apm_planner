@@ -33,9 +33,10 @@ This file is part of the APM_PLANNER project
 #include "LinkManager.h"
 #include "MainWindow.h"
 #include "SerialLink.h"
+#include "ArduPilotMegaMAV.h"
 #include <QDeclarativeContext>
 #include <QGraphicsObject>
-
+#include <QTimer>
 
 APMToolBar::APMToolBar(QWidget *parent):
     QDeclarativeView(parent), m_uas(0)
@@ -55,7 +56,10 @@ APMToolBar::APMToolBar(QWidget *parent):
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUasSet(UASInterface*)));
     activeUasSet(UASManager::instance()->getActiveUAS());
+
+    connect(&m_heartbeatTimer, SIGNAL(timeout()), this, SLOT(stopHeartbeat()));
 }
+
 void APMToolBar::activeUasSet(UASInterface *uas)
 {
     if (!uas)
@@ -66,15 +70,29 @@ void APMToolBar::activeUasSet(UASInterface *uas)
     {
         disconnect(m_uas,SIGNAL(armingChanged(bool)),
                    this,SLOT(armingChanged(bool)));
-        disconnect(uas,SIGNAL(armingChanged(int, QString)),
+        disconnect(m_uas,SIGNAL(armingChanged(int, QString)),
                 this,SLOT(armingChanged(int, QString)));
+        disconnect(m_uas, SIGNAL(navModeChanged(int,int,QString)),
+                this, SLOT(navModeChanged(int,int,QString)));
+        disconnect(m_uas, SIGNAL(heartbeat(UASInterface*)),
+                   this, SLOT(heartbeat(UASInterface*)));
+
     }
-    connect(uas,SIGNAL(armingChanged(bool)),
+
+    m_uas = uas;
+
+    connect(m_uas,SIGNAL(armingChanged(bool)),
             this,SLOT(armingChanged(bool)));
-    connect(uas,SIGNAL(armingChanged(int, QString)),
+    connect(m_uas,SIGNAL(armingChanged(int, QString)),
             this,SLOT(armingChanged(int, QString)));
 
+    connect(m_uas, SIGNAL(navModeChanged(int,int,QString)),
+            this, SLOT(navModeChanged(int,int,QString)));
+    connect(m_uas, SIGNAL(heartbeat(UASInterface*)),
+               this, SLOT(heartbeat(UASInterface*)));
+
 }
+
 void APMToolBar::armingChanged(bool armed)
 {
     this->rootObject()->setProperty("armed",armed);
@@ -241,4 +259,44 @@ void APMToolBar::updateLinkDisplay(LinkInterface* newLink)
 
         setConnection(newLink->isConnected());
     }
+}
+
+void APMToolBar::navModeChanged(int uasid, int mode, const QString &text)
+{
+    QLOG_DEBUG() << "APMToolBar::mode:" << text;
+    Q_UNUSED(uasid);
+
+    QObject *object = rootObject();
+    object->setProperty("modeText", text.toUpper());
+
+    if (mode == ApmCopter::RTL) {
+        object->setProperty("modeTextColor", QColor("red"));
+        object->setProperty("modeBkgColor", QColor(0x88, 0x00, 0x00, 0x80));
+        object->setProperty("modeBorderColor", QColor("red"));
+    } else {
+        object->setProperty("modeTextColor", QColor("white"));
+        object->setProperty("modeBkgColor", QColor(0x00, 0x88, 0x00, 0x80));
+        object->setProperty("modeBorderColor", QColor("white"));
+    }
+}
+
+void APMToolBar::heartbeat(UASInterface* uas)
+{
+    QLOG_TRACE() << "APMToolBar::Heartbeat " << uas;
+    QObject *object = rootObject();
+    object->setProperty("heartbeat",QVariant(true));
+
+    // Start a timer to turn the heartbeat animation off
+    // if the timer is started again, the call is not made
+    m_heartbeatTimer.setSingleShot(true);
+    m_heartbeatTimer.start(1500);
+
+}
+
+void APMToolBar::stopHeartbeat()
+{
+    QLOG_TRACE() << "APMToolBar::stopHeartBeatDisplay";
+    QObject *object = rootObject();
+    object->setProperty("heartbeat",QVariant(false));
+    m_heartbeatTimer.stop();
 }

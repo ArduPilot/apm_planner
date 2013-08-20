@@ -31,11 +31,12 @@ This file is part of the APM_PLANNER project
 #ifndef APMTOOLBAR_H
 #define APMTOOLBAR_H
 
+#include "UASInterface.h"
 #include <QAction>
 #include <QDeclarativeView>
-#include "UASInterface.h"
 
 class LinkInterface;
+class QTimer;
 
 class APMToolBar : public QDeclarativeView
 {
@@ -80,8 +81,14 @@ public slots:
 
     void updateLinkDisplay(LinkInterface *newLink);
 
+    void navModeChanged(int uasid, int mode, const QString& text);
+    void heartbeat(UASInterface* uas);
+    void stopHeartbeat();
+
+
 private:
     QPointer<UASInterface> m_uas;
+    QTimer m_heartbeatTimer;
 };
 
 #endif // APMTOOLBAR_H

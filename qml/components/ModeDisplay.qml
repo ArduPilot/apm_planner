@@ -11,36 +11,34 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//    (c) Author: Bill Bonney <billbonney@communistech.com>
+//    (c) 2013 Author: Bill Bonney <billbonney@communistech.com>
 //
 
 import QtQuick 1.1
 
 Rectangle {
+    id:modeDisplay
 
-    property alias title: displayTitle.text
-    property string textValue: "none"
+    property alias modeText: modeTextId.text
+    property alias modeTextColor: modeTextId.color
+    property alias modeBackgroundColor: modeDisplay.color
+    property color modeBorderColor: "White"
 
-    width: 110
+    width: 155
     height: parent.height/3
     anchors.verticalCenter: parent.verticalCenter
-    border.color: "white"
+    radius: 3
+    border.color: modeBorderColor
+    border.width: 1
 
     Text {
-        id:displayTitle
-        anchors.left: parent.left
-        anchors.leftMargin: 3
+        id:modeTextId
+        anchors.centerIn: parent
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
         anchors.verticalCenter: parent.verticalCenter
-        text: "blank"
-        color: "white"
-    }
-
-    Text {
-        id:displayValue
-        anchors.right: parent.right
-        anchors.rightMargin: 3
-        anchors.verticalCenter: parent.verticalCenter
-        text: textValue
-        color: "white"
+        font.pixelSize: 14
+        font.bold: true
+        smooth: true
     }
 }

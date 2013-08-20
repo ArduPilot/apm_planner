@@ -816,7 +816,9 @@ OTHER_FILES += \
     dongfang_notes.txt \
     src/ui/dongfang-scrapyard.txt \
     qml/components/DigitalDisplay.qml \
-    qml/components/StatusDisplay.qml
+    qml/components/StatusDisplay.qml \
+    qml/components/ModeDisplay.qml \
+    qml/components/HeartbeatDisplay.qml
 
 OTHER_FILES += \
     qml/ApmToolBar.qml \

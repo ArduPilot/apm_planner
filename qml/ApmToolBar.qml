@@ -1,3 +1,19 @@
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//    (c) 2013 Author: Bill Bonney <billbonney@communistech.com>
+//
+
 import QtQuick 1.1
 import "./components"
 
@@ -11,6 +27,13 @@ Rectangle {
     property bool connected: false
     property bool armed: false
     property string armedstr: "DISARMED"
+
+    property alias modeText: modeTextId.modeText
+    property alias modeTextColor: modeTextId.modeTextColor
+    property alias modeBkgColor: modeTextId.modeBackgroundColor
+    property alias modeBorderColor: modeTextId.modeBorderColor
+
+    property alias heartbeat: heartbeatDisplayId.heartbeat
 
     width: toolbar.width
     height: 72
@@ -99,12 +122,13 @@ Rectangle {
             onClicked: globalObj.triggerConfigTuningView()
         }
 
-        Button {
-            id: simulationView
-            label: "SIMULATION"
-            image: "./resources/apmplanner/toolbar/simulation.png"
-            onClicked: globalObj.triggerSimulationView()
-        }
+// [TODO] removed from toolbar until we have simulation working
+//        Button {
+//            id: simulationView
+//            label: "SIMULATION"
+//            image: "./resources/apmplanner/toolbar/simulation.png"
+//            onClicked: globalObj.triggerSimulationView()
+//        }
 
         Button {
             id: terminalView
@@ -133,13 +157,25 @@ Rectangle {
             color: "black"
         }
 
-// [BB] Commented out ToolBar Status info work.
-//      WIP: To be fixed later
-//            DigitalDisplay { // Information Pane
-//                title:"Mode"
-//                textValue: "Stabilize"
-//                color: "black"
-//            }
+        ModeDisplay {
+            id:modeTextId
+            modeText: "unknown"
+            modeTextColor: "red"
+            modeBackgroundColor: "black"
+            modeBorderColor: "white"
+        }
+
+        Rectangle { // Spacer
+            width: 5
+            height: parent.height
+            color: "black"
+        }
+
+        HeartbeatDisplay {
+            id:heartbeatDisplayId
+            heartbeatBackgroundColor: "black"
+        }
+
 //            DigitalDisplay { // Information Pane
 //                title: "Speed"
 //                textValue: "11.0m/s"
