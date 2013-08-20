@@ -38,6 +38,8 @@ private:
     void sendApmCopterCommand(MAV_CMD command);
     void sendApmRoverCommand(MAV_CMD command);
 
+    bool activeUas();
+
 private:
     Ui::UASActionsWidget ui;
     UAS *m_uas;

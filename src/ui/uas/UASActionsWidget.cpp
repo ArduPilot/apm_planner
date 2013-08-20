@@ -144,19 +144,19 @@ void UASActionsWidget::armButtonClicked()
 {
     QLOG_INFO() << "UASActionsWidget::armButtonClicked";
 
-    if (m_uas)
-    {
-        if (m_uas->isArmed())
-        {
-            QLOG_INFO() << "UAS:: Attempt to Disarm System";
-            m_uas->disarmSystem();
+    if(!activeUas())
+        return;
 
-        }
-        else
-        {
-            QLOG_INFO() << "UAS:: Attempt to Arm System";
-            m_uas->armSystem();
-        }
+    if (m_uas->isArmed())
+    {
+        QLOG_INFO() << "UAS:: Attempt to Disarm System";
+        m_uas->disarmSystem();
+
+    }
+    else
+    {
+        QLOG_INFO() << "UAS:: Attempt to Arm System";
+        m_uas->armSystem();
     }
 }
 
@@ -188,6 +188,8 @@ void UASActionsWidget::currentWaypointChanged(quint16 wpid)
 
 void UASActionsWidget::updateWaypointList()
 {
+    if(!activeUas())
+        return;
     QLOG_INFO() << "updateWaypointList: ";
 
     ui.waypointListComboBox->clear();
@@ -204,10 +206,8 @@ UASActionsWidget::~UASActionsWidget()
 
 void UASActionsWidget::goToWaypointClicked()
 {
-    if (!m_uas)
-    {
+    if(!activeUas())
         return;
-    }
     QLOG_INFO() << "Go to Waypoint" << ui.waypointListComboBox->currentIndex();
     m_uas->getWaypointManager()->setCurrentWaypoint(ui.waypointListComboBox->currentIndex());
 }
@@ -220,16 +220,14 @@ void UASActionsWidget::changeAltitudeClicked()
 
 void UASActionsWidget::changeSpeedClicked()
 {
-    if (!m_uas)
-    {
+    if(!activeUas())
         return;
-    }
 
     QLOG_INFO() << "Change System Speed " << (float)ui.altitudeSpinBox->value() * 100;
 
     if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
     {
-        QLOG_INFO() << "APMCopter: setting WP_SPEED_MAX";
+        QLOG_INFO() << "APMCopter: setting WP_SPEED_MAX: " << ui.altitudeSpinBox->value() * 100;
         m_uas->setParameter(1,"WP_SPEED_MAX",QVariant(((float)ui.altitudeSpinBox->value() * 100)));
         return;
     }
@@ -255,10 +253,8 @@ void UASActionsWidget::setMode()
 {
     QLOG_INFO() << "    UASActionsWidget::setAction()";
 
-    if (m_uas == NULL) {
-        QLOG_INFO() << "No Active UAS";
+    if(!activeUas())
         return;
-    }
 
     QLOG_INFO() << "Set Mode to "
                 << ui.modeComboBox->itemData(ui.modeComboBox->currentIndex()).toInt();
@@ -273,11 +269,8 @@ void UASActionsWidget::setAction()
 {
     QLOG_INFO() << "UASActionsWidget::setAction()";
 
-    if (m_uas == NULL) {
-        QLOG_INFO() << "No Active UAS";
+    if(!activeUas())
         return;
-    }
-
 
     QLOG_INFO() << "Set Action to " << ui.actionComboBox->currentIndex();
 
@@ -544,6 +537,9 @@ void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
 
 void UASActionsWidget::setAutoMode()
 {
+    if(!activeUas())
+        return;
+
     QLOG_INFO() << "UASActionWidget::setAutoMode";
 
     switch (m_uas->getAutopilotType()) {
@@ -569,6 +565,9 @@ void UASActionsWidget::setAutoMode()
 
 void UASActionsWidget::setManualMode()
 {
+    if(!activeUas())
+        return;
+
     QLOG_INFO() << "UASActionsWidget::setManualMode()";
     int mode, idx;
 
@@ -619,6 +618,9 @@ void UASActionsWidget::setManualMode()
 
 void UASActionsWidget::setRTLMode()
 {
+    if(!activeUas())
+        return;
+
     QLOG_INFO() << "UASActionsWidget::setRTLMode()";
 
     switch (m_uas->getAutopilotType()) {
@@ -641,3 +643,12 @@ void UASActionsWidget::setRTLMode()
     }
 }
 
+bool UASActionsWidget::activeUas()
+{
+    if (m_uas == NULL) {
+        QLOG_ERROR() << "UASActionsWidget: Error: No Active UAS, please connnect";
+        return false;
+    }
+
+    return true;
+}
