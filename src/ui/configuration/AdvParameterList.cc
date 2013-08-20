@@ -33,8 +33,10 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
         //Invalid item, something has gone awry.
         return;
     }
-    item->setBackgroundColor(QColor::fromRgb(255,100,100));
-    m_modifiedParamMap[ui.tableWidget->item(item->row(),1)->text()] = item->text().toDouble();
+    m_origBrushList.append(ui.tableWidget->item(item->row(),0)->text());
+    QBrush brush = QBrush(QColor::fromRgb(255,100,100));
+    item->setBackground(brush);
+    m_modifiedParamMap[ui.tableWidget->item(item->row(),0)->text()] = item->text().toDouble();
 }
 void AdvParameterList::writeButtonClicked()
 {
@@ -184,9 +186,12 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
         m_paramValueMap[parameterName] = ui.tableWidget->item(ui.tableWidget->rowCount()-1,1);
         ui.tableWidget->sortByColumn(0,Qt::AscendingOrder);
     }
+    if (m_origBrushList.contains(parameterName))
+    {
+        m_paramValueMap[parameterName]->setBackground(QBrush());
+        m_origBrushList.removeAll(parameterName);
+    }
     m_paramValueMap[parameterName]->setText(QString::number(value.toFloat(),'f',2));
-    m_paramValueMap[parameterName]->setBackgroundColor(QColor::fromRgb(255,255,255));
-    m_paramValueMap[parameterName]->setBackground(m_paramValueMap[parameterName]->tableWidget()->palette().base());
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
 
 }

@@ -22,6 +22,7 @@ private slots:
     void saveButtonClicked();
 private:
     QMap<QString,QTableWidgetItem*> m_paramValueMap;
+    QList<QString> m_origBrushList;
     QMap<QString,QString> m_paramToNameMap;
     QMap<QString,QString> m_paramToDescriptionMap;
     QMap<QString,double> m_modifiedParamMap;
