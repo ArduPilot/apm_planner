@@ -20,6 +20,7 @@ Rectangle {
     id:heartbeatDisplay
 
     property bool heartbeat: false
+    property bool stopAnimation: false
     property alias heartbeatBackgroundColor: heartbeatDisplay.color
     property color heartbeatBorderColor: "White"
 
@@ -36,6 +37,15 @@ Rectangle {
         }
     }
 
+    onStopAnimationChanged: {
+        if (stopAnimation) {
+            console.debug("HBD: Stop Heartbeat Anitmation")
+            warnAnimator.stop()
+            animator.stop()
+            color = "black"
+        }
+    }
+
     width: parent.height/3
     height: parent.height/3
     anchors.verticalCenter: parent.verticalCenter
@@ -45,6 +55,7 @@ Rectangle {
 
     SequentialAnimation on color {
         id: animator
+        running: false
         loops: Animation.Infinite
         ColorAnimation {id:toDark; from: "#24e448"; to: "#003000"; duration: 1000 }
         ColorAnimation {id:toLight; from: "#003000"; to: "#24e448"; duration: 1000 }
@@ -52,7 +63,7 @@ Rectangle {
 
     SequentialAnimation on color {
         id: warnAnimator
-        running: no
+        running: false
         loops: Animation.Infinite
         ColorAnimation {id:toRed; to: "#FF0000"; duration: 500 }
         ColorAnimation {id:toBlack; to: "#000000"; duration: 500 }

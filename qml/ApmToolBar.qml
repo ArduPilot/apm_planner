@@ -62,6 +62,7 @@ Rectangle {
             console.log("APM Tool BAR QML: disconnected")
             connectButton.image = "./resources/apmplanner/toolbar/connect.png"
             connectButton.label = "CONNECT"
+            heartbeatDisplayId.stopAnimation = true;
         }
     }
 
