@@ -471,7 +471,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             QString audiostring = QString("System %1").arg(uasId);
             QString stateAudio = "";
             QString modeAudio = "";
-            QString navModeAudio = "";
+            QString customModeAudio = "";
             bool statechanged = false;
             bool modechanged = false;
 
@@ -515,28 +515,57 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                     armedAudio.append("is disarmed");
                 }
 
-                modeAudio = armedAudio + " and now in " + audiomodeText;
+                modeAudio = armedAudio;
             }
 
             if (navMode != state.custom_mode)
             {
                 emit navModeChanged(uasId, state.custom_mode, getCustomModeText(state.custom_mode));
                 navMode = state.custom_mode;
-                navModeAudio = getCustomModeAudioText(state.custom_mode);
-                GAudioOutput::instance()->say(navModeAudio);
-                break; // Separate custom_mode changes from system mode chnages
+                customModeAudio = getCustomModeAudioText(state.custom_mode);
             }
 
             // AUDIO
             if (modechanged && statechanged)
             {
-                // Output both messages
-                audiostring += modeAudio + " and " + stateAudio;
+                // Output the one message
+                switch (getAutopilotType()) {
+                    // [ToDo] temp fix, need to refactor audio to UAS specialization classes.
+                    case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+                        if ( getSystemType() == MAV_TYPE_FIXED_WING) {
+                            // Output both messages
+                            audiostring += /*modeAudio + " and " +*/ " is " + customModeAudio ;
+                        } else {
+                            // Output both messages
+                            audiostring += modeAudio + " and " + stateAudio;
+                        }
+                    } break;
+
+                    case MAV_AUTOPILOT_PIXHAWK:
+                    default: {
+                    // Output both messages
+                        audiostring += modeAudio + " and " + stateAudio;
+                    }
+                }
             }
             else if (modechanged || statechanged)
             {
                 // Output the one message
-                audiostring += modeAudio + stateAudio + navModeAudio;
+                switch (getAutopilotType()) {
+                    // [ToDo] temp fix, need to refactor audio to UAS specialization classes.
+                    case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+                        if ( getSystemType() == MAV_TYPE_FIXED_WING) {
+                            audiostring += /*modeAudio + stateAudio +*/ customModeAudio;
+                        } else {
+                            audiostring += modeAudio /*+ stateAudio*/ + customModeAudio;
+                        }
+                    } break;
+
+                    case MAV_AUTOPILOT_PIXHAWK:
+                    default: {
+                         audiostring += modeAudio + stateAudio + customModeAudio;
+                    }
+                }
             }
 
             if (statechanged && ((int)state.system_status == (int)MAV_STATE_CRITICAL || state.system_status == (int)MAV_STATE_EMERGENCY))

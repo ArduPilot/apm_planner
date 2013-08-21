@@ -410,7 +410,7 @@ QString ArduPilotMegaMAV::getCustomModeAudioText(int custom_mode)
 {
     QLOG_DEBUG() << "APM: getCustomModeAudioText()";
 
-    QString returnString = tr("changed mode to ");
+    QString returnString = tr("and mode is ");
     return returnString + getCustomModeText(custom_mode);
 }
 
