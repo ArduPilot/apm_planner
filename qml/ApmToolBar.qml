@@ -27,6 +27,7 @@ Rectangle {
     property bool connected: false
     property bool armed: false
     property string armedstr: "DISARMED"
+    property bool disableStatusDisplay: false
 
     property alias modeText: modeTextId.modeText
     property alias modeTextColor: modeTextId.modeTextColor
@@ -42,14 +43,14 @@ Rectangle {
 
     onArmedChanged: {
         if (armed) {
-            statusDisplay.statusText = "ARMED"
-            statusDisplay.statusTextColor = "red"
-            statusDisplay.statusBackgroundColor = "#FF880000"
+            statusDisplayId.statusText = "ARMED"
+            statusDisplayId.statusTextColor = "red"
+            statusDisplayId.statusBackgroundColor = "#FF880000"
         }
         else {
-            statusDisplay.statusText = "DISARMED"
-            statusDisplay.statusTextColor = "yellow"
-            statusDisplay.statusBackgroundColor = "black"
+            statusDisplayId.statusText = "DISARMED"
+            statusDisplayId.statusTextColor = "yellow"
+            statusDisplayId.statusBackgroundColor = "black"
         }
     }
 
@@ -63,6 +64,16 @@ Rectangle {
             connectButton.image = "./resources/apmplanner/toolbar/connect.png"
             connectButton.label = "CONNECT"
             heartbeatDisplayId.stopAnimation = true;
+        }
+    }
+
+    onDisableStatusDisplayChanged: {
+        if (disableStatusDisplay) {
+            statusSpacerId.visible = false
+            statusDisplayId.visible = false
+        } else {
+            statusSpacerId.visible = true
+            statusDisplayId.visible = true
         }
     }
 
@@ -139,13 +150,14 @@ Rectangle {
         }
 
         Rectangle { // Spacer
+            id: statusSpacerId
             width: 5
             height: parent.height
             color: "black"
         }
 
         StatusDisplay {
-            id: statusDisplay
+            id: statusDisplayId
             width: 110
             statusText: "DISARMED"
             statusTextColor: "yellow"

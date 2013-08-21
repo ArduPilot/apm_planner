@@ -42,7 +42,12 @@ APMToolBar::APMToolBar(QWidget *parent):
     QDeclarativeView(parent), m_uas(0)
 {
     // Configure our QML object
+
+    QDir qmlBaseDir = QDir(qApp->applicationDirPath());
+    QLOG_DEBUG() << "qmlBaseDir" << qmlBaseDir;
+
     setSource(QUrl::fromLocalFile("qml/ApmToolBar.qml"));
+
     setResizeMode(QDeclarativeView::SizeRootObjectToView);
     this->rootContext()->setContextProperty("globalObj", this);
     connect(LinkManager::instance(),SIGNAL(newLink(LinkInterface*)),
@@ -90,6 +95,12 @@ void APMToolBar::activeUasSet(UASInterface *uas)
             this, SLOT(navModeChanged(int,int,QString)));
     connect(m_uas, SIGNAL(heartbeat(UASInterface*)),
                this, SLOT(heartbeat(UASInterface*)));
+
+    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING) {
+        rootObject()->setProperty("disableStatusDisplay", QVariant(true));
+    } else {
+        rootObject()->setProperty("disableStatusDisplay", QVariant(false));
+    }
 
 }
 
@@ -174,6 +185,7 @@ void APMToolBar::selectTerminalView()
 
 void APMToolBar::connectMAV()
 {
+    //[ToDo] needs to be updated as activeUAS
     QLOG_DEBUG() << "APMToolBar: connectMAV ";
 
     bool connected = LinkManager::instance()->getLinks().last()->isConnected();
@@ -213,6 +225,7 @@ APMToolBar::~APMToolBar()
 
 void APMToolBar::showConnectionDialog()
 {
+    // [ToDo] Fix this to be for active linke
     // Displays a UI where the user can select a MAV Link.
     QLOG_DEBUG() << "APMToolBar: showConnectionDialog link count ="
              << LinkManager::instance()->getLinks().count();
@@ -283,6 +296,10 @@ void APMToolBar::navModeChanged(int uasid, int mode, const QString &text)
 void APMToolBar::heartbeat(UASInterface* uas)
 {
     QLOG_TRACE() << "APMToolBar::Heartbeat " << uas;
+
+    if (uas != m_uas)
+        return; // Only deal with the Active UAS
+
     QObject *object = rootObject();
     object->setProperty("heartbeat",QVariant(true));
 
