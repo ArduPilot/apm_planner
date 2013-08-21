@@ -104,7 +104,7 @@ QString ApmPlane::stringForMode(int aMode)
         return "Guided";
         break;
     case INITIALIZING:
-        return "Initialzing";
+        return "Initializing";
         break;
     default:
         return "Undefined";
@@ -204,7 +204,7 @@ QString ApmRover::stringForMode(int aMode) {
         return "Guided";
         break;
     case INITIALIZING:
-        return "Initialzing";
+        return "Initializing";
         break;
     default:
         return "Undefined";
