@@ -45,9 +45,10 @@ APMToolBar::APMToolBar(QWidget *parent):
 
     QDir qmlBaseDir = QDir(qApp->applicationDirPath());
     QLOG_DEBUG() << "qmlBaseDir" << qmlBaseDir;
-
-    setSource(QUrl::fromLocalFile("qml/ApmToolBar.qml"));
-
+    QUrl url = QUrl::fromLocalFile(qmlBaseDir.absolutePath() + "/qml/ApmToolBar.qml");
+    QLOG_DEBUG() << url;
+    setSource(url);
+    QLOG_DEBUG() << "QML Status:" << status();
     setResizeMode(QDeclarativeView::SizeRootObjectToView);
     this->rootContext()->setContextProperty("globalObj", this);
     connect(LinkManager::instance(),SIGNAL(newLink(LinkInterface*)),
