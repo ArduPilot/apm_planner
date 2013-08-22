@@ -20,13 +20,13 @@ QCheckBox {
     color: #DDDDDF;
 }
 
-QCheckBox::indicator {
+/*QCheckBox::indicator {
     border: 1px solid #777777;
     border-radius: 2px;
     color: #FFFFFF;
     width: 10px;
     height: 10px;
-}
+}*/
 
 QLineEdit {
 border: 1px solid #777777;
@@ -50,7 +50,7 @@ border: 1px solid #777777;
     border-radius: 2px;
     }
 
- QCheckBox::indicator:checked {
+/* QCheckBox::indicator:checked {
      background-color: #379AC3;
  }
 
@@ -68,7 +68,7 @@ border: 1px solid #777777;
 
  QCheckBox::indicator:indeterminate:pressed {
      image: url(:/files/images/checkbox_indeterminate_pressed.png);
- }
+ }*/
 
  QGroupBox::title {
      subcontrol-origin: margin;
