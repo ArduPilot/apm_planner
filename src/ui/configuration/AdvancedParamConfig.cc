@@ -35,7 +35,7 @@ void AdvancedParamConfig::parameterChanged(int uas, int component, QString param
 {
     if (m_paramToWidgetMap.contains(parameterName))
     {
-        if (value.type() == QVariant::Double)
+        if (value.type() == QVariant::Double || value.type() == QMetaType::Float)
         {
             m_paramToWidgetMap[parameterName]->setValue(value.toDouble());
         }
