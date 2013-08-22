@@ -46,6 +46,8 @@ private slots:
     void uasDisconnected();
     void cancelButtonClicked();
 private:
+    int m_timeoutCounter;
+    bool m_hasError;
     QProcess *m_burnProcess;
     UASInterface *m_uas;
     SerialSettings m_settings;
@@ -78,3 +80,4 @@ private:
 };
 
 #endif // APMFIRMWARECONFIG_H
+

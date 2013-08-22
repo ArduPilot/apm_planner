@@ -11,7 +11,9 @@
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
+    m_timeoutCounter=0;
     m_port=0;
+    m_hasError=0;
     //firmwareStatus = 0;
     m_betaFirmwareChecked = false;
     m_tempFirmwareFile=0;
@@ -286,7 +288,10 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
     {
         //Ensure we're reading 100%
         ui.progressBar->setValue(100);
-        ui.statusLabel->setText(tr("Upload complete"));
+        if (!m_hasError)
+        {
+            ui.statusLabel->setText(tr("Upload complete"));
+        }
     }
     //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
     m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
@@ -307,6 +312,7 @@ void ApmFirmwareConfig::firmwareProcessReadyRead()
     {
         //firmwareStatus->resetProgress();
         ui.progressBar->setValue(0);
+        ui.statusLabel->setText("Flashing");
     }
     else if (output.contains("Reading"))
     {
@@ -326,6 +332,20 @@ void ApmFirmwareConfig::firmwareProcessReadyRead()
     }
     else
     {
+        if (output.contains("timeout"))
+        {
+            //Timeout, increment timeout timer.
+            m_timeoutCounter++;
+            if (m_timeoutCounter > 3)
+            {
+                //We've reached timeout
+                QMessageBox::information(0,tr("Error"),tr("An error has occured during the upload process. Check to make sure you are connected to the correct serial port"));
+                ui.statusLabel->setText(tr("Error during upload"));
+                proc->terminate();
+                proc->deleteLater();
+                m_hasError = true;
+            }
+        }
         ui.textBrowser->setPlainText(ui.textBrowser->toPlainText().append(output + "\n"));
         QScrollBar *sb = ui.textBrowser->verticalScrollBar();
         if (sb)
@@ -426,6 +446,9 @@ void ApmFirmwareConfig::downloadFinished()
     // Start the Flashing
     QLOG_DEBUG() << avrdudeExecutable << stringList;
     m_burnProcess->start(avrdudeExecutable,stringList);
+    m_timeoutCounter=0;
+    m_hasError=false;
+    ui.progressBar->setValue(0);
 }
 void ApmFirmwareConfig::firmwareProcessError(QProcess::ProcessError error)
 {
@@ -608,3 +631,4 @@ void ApmFirmwareConfig::firmwareListFinished()
 ApmFirmwareConfig::~ApmFirmwareConfig()
 {
 }
+
