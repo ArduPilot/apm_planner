@@ -216,7 +216,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     }
                                     if (name.contains(":"))
                                     {
-                                        name = name.split(":")[1];
+                                        name = name.split(":")[1].toUpper();
                                     }
                                     QString docs = xml.attributes().value("documentation").toString();
                                     //paramTooltips[name] = name + " - " + docs;
