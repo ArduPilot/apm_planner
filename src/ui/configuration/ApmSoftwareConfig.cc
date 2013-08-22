@@ -378,6 +378,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     {
                                         float min = 0;
                                         float max = 65535;
+                                        float increment = 655.35; //Starting increment of 1%.
                                         if (fieldmap.contains("Range"))
                                         {
                                             //Some range fields list "0-10" and some list "0 10". Handle both.
@@ -391,16 +392,17 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 min = fieldmap["Range"].split("-")[0].trimmed().toFloat();
                                                 max = fieldmap["Range"].split("-")[1].trimmed().toFloat();
                                             }
+                                            increment = (max - min) / 100.0; //1% of total range increment
                                         }
                                         if (compare == parametersname)
                                         {
                                             if (tab == "Standard")
                                             {
-                                                m_standardParamConfig->addRange(humanname,docs,name,min,max);
+                                                m_standardParamConfig->addRange(humanname,docs,name,min,max,increment);
                                             }
                                             else if (tab == "Advanced")
                                             {
-                                                m_advancedParamConfig->addRange(humanname,docs,name,min,max);
+                                                m_advancedParamConfig->addRange(humanname,docs,name,min,max,increment);
                                             }
                                             m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }

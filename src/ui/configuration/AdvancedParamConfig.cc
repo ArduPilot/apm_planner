@@ -10,13 +10,13 @@ AdvancedParamConfig::AdvancedParamConfig(QWidget *parent) : AP2ConfigWidget(pare
 AdvancedParamConfig::~AdvancedParamConfig()
 {
 }
-void AdvancedParamConfig::addRange(QString title,QString description,QString param,double min,double max)
+void AdvancedParamConfig::addRange(QString title,QString description,QString param,double min,double max,double increment)
 {
     ParamWidget *widget = new ParamWidget(param,ui.scrollAreaWidgetContents);
     connect(widget,SIGNAL(doubleValueChanged(QString,double)),this,SLOT(doubleValueChanged(QString,double)));
     connect(widget,SIGNAL(intValueChanged(QString,int)),this,SLOT(intValueChanged(QString,int)));
     m_paramToWidgetMap[param] = widget;
-    widget->setupDouble(title + "(" + param + ")",description,0,min,max);
+    widget->setupDouble(title + "(" + param + ")",description,0,min,max,increment);
     ui.verticalLayout->addWidget(widget);
     widget->show();
 }

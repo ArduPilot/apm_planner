@@ -12,7 +12,7 @@ public:
     explicit ParamWidget(QString param,QWidget *parent = 0);
     ~ParamWidget();
     void setupInt(QString title,QString description,int value,int min,int max);
-    void setupDouble(QString title,QString description,double value,double min,double max);
+    void setupDouble(QString title,QString description,double value,double min,double max,double increment);
     void setupCombo(QString title,QString description,QList<QPair<int,QString> > list);
     void setValue(double value);
 signals:
@@ -22,7 +22,9 @@ private slots:
     void doubleSpinEditFinished();
     void intSpinEditFinished();
     void comboIndexChanged(int index);
+    void valueSliderPressed();
     void valueSliderReleased();
+    void valueSliderChanged();
 private:
     QString m_param;
     enum VIEWTYPE
