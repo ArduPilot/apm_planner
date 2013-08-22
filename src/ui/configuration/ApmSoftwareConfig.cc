@@ -87,7 +87,29 @@ void ApmSoftwareConfig::uasDisconnected()
 
 void ApmSoftwareConfig::uasConnected()
 {
-
+    ui.flightModesButton->setVisible(true);
+    ui.standardParamButton->setVisible(true);
+    ui.failSafeButton->setVisible(true);
+    ui.advancedParamButton->setVisible(true);
+    ui.advParamListButton->setVisible(true);
+    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    {
+        ui.arduPlanePidButton->setVisible(true);
+        ui.arduCopterPidButton->setVisible(false);
+        ui.arduRoverPidButton->setVisible(false);
+    }
+    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    {
+        ui.arduCopterPidButton->setVisible(true);
+        ui.arduPlanePidButton->setVisible(false);
+        ui.arduRoverPidButton->setVisible(false);
+    }
+    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    {
+        ui.arduRoverPidButton->setVisible(true);
+        ui.arduCopterPidButton->setVisible(false);
+        ui.arduPlanePidButton->setVisible(false);
+    }
 }
 
 void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
