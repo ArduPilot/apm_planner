@@ -466,7 +466,9 @@ HEADERS += src/MG.h \
     src/ui/configuration/ApmHighlighter.h \
     src/ui/configuration/ApmFirmwareConfig.h \
     src/ui/designer/QGCMouseWheelEventFilter.h \
-    src/ui/DebugOutput.h
+    src/ui/DebugOutput.h \
+    src/ui/configuration/APDoubleSpinBox.h \
+    src/ui/configuration/APSpinBox.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -678,7 +680,9 @@ SOURCES += src/main.cc \
     src/ui/configuration/ApmHighlighter.cc \
     src/ui/configuration/ApmFirmwareConfig.cc \
     src/ui/designer/QGCMouseWheelEventFilter.cc \
-    src/ui/DebugOutput.cc
+    src/ui/DebugOutput.cc \
+    src/ui/configuration/APDoubleSpinBox.cc \
+    src/ui/configuration/APSpinBox.cc
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc

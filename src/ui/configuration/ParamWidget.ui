@@ -36,10 +36,10 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QSpinBox" name="intSpinBox"/>
+        <widget class="APSpinBox" name="intSpinBox"/>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+        <widget class="APDoubleSpinBox" name="doubleSpinBox"/>
        </item>
        <item>
         <widget class="QSlider" name="valueSlider">
@@ -76,6 +76,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>APDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>APDoubleSpinBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>APSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>APSpinBox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

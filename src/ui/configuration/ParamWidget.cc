@@ -17,7 +17,9 @@ ParamWidget::ParamWidget(QString param,QWidget *parent) : QWidget(parent)
     m_param = param;
 
     connect(ui.doubleSpinBox,SIGNAL(editingFinished()),this,SLOT(doubleSpinEditFinished()));
+    connect(ui.doubleSpinBox,SIGNAL(returnPressed()),this,SLOT(doubleSpinEditFinished()));
     connect(ui.intSpinBox,SIGNAL(editingFinished()),this,SLOT(intSpinEditFinished()));
+    connect(ui.intSpinBox,SIGNAL(returnPressed()),this,SLOT(intSpinEditFinished()));
     connect(ui.valueComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(comboIndexChanged(int)));
     connect(ui.valueSlider,SIGNAL(sliderReleased()),this,SLOT(valueSliderReleased()));
 }
@@ -99,6 +101,7 @@ void ParamWidget::setupDouble(QString title,QString description,double value,dou
         m_min = min;
         m_max = max;
     }
+    ui.doubleSpinBox->setSingleStep((m_max - m_min) / 100.0);
     ui.doubleSpinBox->setMinimum(m_min);
     ui.doubleSpinBox->setMaximum(m_max);
 }
