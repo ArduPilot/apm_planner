@@ -5,6 +5,8 @@
 DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent), QsLogging::Destination()
 {
     ui.setupUi(this);
+    ui.hashLineEdit->setText(define2string(GIT_HASH));
+    ui.commitLineEdit->setText(define2string(GIT_COMMIT));
 }
 
 DebugOutput::~DebugOutput()
