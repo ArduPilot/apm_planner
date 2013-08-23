@@ -35,7 +35,6 @@ private:
     QPointer<FlightModeConfig> m_flightConfig;
     QPointer<StandardParamConfig> m_standardParamConfig;
     QPointer<GeoFenceConfig> m_geoFenceConfig;
-    QPointer<FailSafeConfig> m_failSafeConfig;
     QPointer<AdvancedParamConfig> m_advancedParamConfig;
     QPointer<ArduCopterPidConfig> m_arduCopterPidConfig;
     QPointer<ArduPlanePidConfig> m_arduPlanePidConfig;

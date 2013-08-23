@@ -37,7 +37,7 @@
         <x>0</x>
         <y>0</y>
         <width>198</width>
-        <height>593</height>
+        <height>598</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -46,19 +46,6 @@
          <property name="sizeConstraint">
           <enum>QLayout::SetMinAndMaxSize</enum>
          </property>
-         <item>
-          <widget class="QPushButton" name="plannerConfigButton">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>35</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>APM Planner 2.0 Config</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QPushButton" name="flightModesButton">
            <property name="minimumSize">
@@ -69,70 +56,6 @@
            </property>
            <property name="text">
             <string>Flight Modes</string>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="standardParamButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>35</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Standard Params</string>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="failSafeButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>35</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>FailSafe</string>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="advancedParamButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>35</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Advanced Params</string>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="advParamListButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>35</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Full Parameter List</string>
            </property>
            <property name="checkable">
             <bool>false</bool>
@@ -178,6 +101,67 @@
            </property>
            <property name="text">
             <string>ArduRover Pids</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="standardParamButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>35</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Standard Params</string>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="advancedParamButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>35</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Advanced Params</string>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="advParamListButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>35</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Full Parameter List</string>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="plannerConfigButton">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>35</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>APM Planner 2.0 Config</string>
            </property>
           </widget>
          </item>

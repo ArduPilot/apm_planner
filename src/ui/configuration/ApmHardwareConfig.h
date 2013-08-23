@@ -50,6 +50,8 @@ This file is part of the QGROUNDCONTROL project
 #include "AntennaTrackerConfig.h"
 #include "ApmPlaneLevel.h"
 #include "ApmFirmwareConfig.h"
+#include "FlightModeConfig.h"
+#include "FailSafeConfig.h"
 
 class ApmHardwareConfig : public QWidget
 {
@@ -59,12 +61,18 @@ public:
     explicit ApmHardwareConfig(QWidget *parent = 0);
     ~ApmHardwareConfig();
 private:
+    QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;
+
+    //Manditory
     QPointer<FrameTypeConfig> m_frameConfig;
     QPointer<CompassConfig> m_compassConfig;
     QPointer<AccelCalibrationConfig> m_accelConfig;
+    QPointer<ApmPlaneLevel> m_planeLevel;
     QPointer<RadioCalibrationConfig> m_radioConfig;
+    QPointer<FlightModeConfig> m_flightConfig;
+    QPointer<FailSafeConfig> m_failSafeConfig;
 
-    QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;
+    //Optional
     QPointer<Radio3DRConfig> m_radio3drConfig;
     QPointer<BatteryMonitorConfig> m_batteryConfig;
     QPointer<SonarConfig> m_sonarConfig;
@@ -73,7 +81,6 @@ private:
     QPointer<OsdConfig> m_osdConfig;
     QPointer<CameraGimbalConfig> m_cameraGimbalConfig;
     QPointer<AntennaTrackerConfig> m_antennaTrackerConfig;
-    QPointer<ApmPlaneLevel> m_planeLevel;
 
 private slots:
     void activeUASSet(UASInterface *uas);

@@ -42,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>233</width>
-        <height>786</height>
+        <width>198</width>
+        <height>807</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -93,7 +93,7 @@
             <enum>Qt::LeftToRight</enum>
            </property>
            <property name="text">
-            <string>         Frame Type</string>
+            <string>       Frame Type</string>
            </property>
           </widget>
          </item>
@@ -170,6 +170,32 @@
            </property>
            <property name="checked">
             <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="flightModesButton">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>35</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>      Flight Modes</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="failSafeButton">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>35</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Failsafe</string>
            </property>
           </widget>
          </item>

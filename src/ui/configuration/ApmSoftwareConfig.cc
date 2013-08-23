@@ -12,7 +12,6 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
 
     ui.flightModesButton->setVisible(false);
     ui.standardParamButton->setVisible(false);
-    ui.failSafeButton->setVisible(false);
     ui.advancedParamButton->setVisible(false);
     ui.advParamListButton->setVisible(false);
     ui.arduCopterPidButton->setVisible(false);
@@ -28,11 +27,6 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     ui.stackedWidget->addWidget(m_standardParamConfig);
     m_buttonToConfigWidgetMap[ui.standardParamButton] = m_standardParamConfig;
     connect(ui.standardParamButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-
-    m_failSafeConfig = new FailSafeConfig(this);
-    ui.stackedWidget->addWidget(m_failSafeConfig);
-    m_buttonToConfigWidgetMap[ui.failSafeButton] = m_failSafeConfig;
-    connect(ui.failSafeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_advancedParamConfig = new AdvancedParamConfig(this);
     ui.stackedWidget->addWidget(m_advancedParamConfig);
@@ -59,6 +53,12 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     m_buttonToConfigWidgetMap[ui.arduRoverPidButton] = m_arduRoverPidConfig;
     connect(ui.arduRoverPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
+    QWidget *temp = new QWidget(this);
+    ui.stackedWidget->addWidget(temp);
+    m_buttonToConfigWidgetMap[ui.plannerConfigButton] = temp;
+    connect(ui.plannerConfigButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.plannerConfigButton]);
+
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 }
@@ -77,7 +77,6 @@ void ApmSoftwareConfig::uasDisconnected()
 {
     ui.flightModesButton->setVisible(false);
     ui.standardParamButton->setVisible(false);
-    ui.failSafeButton->setVisible(false);
     ui.advancedParamButton->setVisible(false);
     ui.advParamListButton->setVisible(false);
     ui.arduCopterPidButton->setVisible(false);
@@ -89,7 +88,6 @@ void ApmSoftwareConfig::uasConnected()
 {
     ui.flightModesButton->setVisible(true);
     ui.standardParamButton->setVisible(true);
-    ui.failSafeButton->setVisible(true);
     ui.advancedParamButton->setVisible(true);
     ui.advParamListButton->setVisible(true);
     if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
@@ -130,7 +128,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
 
     ui.flightModesButton->setVisible(true);
     ui.standardParamButton->setVisible(true);
-    ui.failSafeButton->setVisible(true);
     ui.advancedParamButton->setVisible(true);
     ui.advParamListButton->setVisible(true);
 

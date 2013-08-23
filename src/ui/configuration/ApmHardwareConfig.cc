@@ -39,6 +39,8 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
     ui.frameTypeButton->setVisible(false);
     ui.compassButton->setVisible(false);
     ui.accelCalibrateButton->setVisible(false);
+    ui.failSafeButton->setVisible(false);
+    ui.flightModesButton->setVisible(false);
     ui.arduPlaneLevelButton->setVisible(false);
     ui.radioCalibrateButton->setVisible(false);
     ui.optionalHardwareButton->setVisible(false);
@@ -56,6 +58,8 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
     connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.osdButton,SLOT(setShown(bool)));
     connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.cameraGimbalButton,SLOT(setShown(bool)));
     connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.antennaTrackerButton,SLOT(setShown(bool)));
+    connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.flightModesButton,SLOT(setShown(bool)));
+    connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.failSafeButton,SLOT(setShown(bool)));
 
     connect(ui.frameTypeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
@@ -64,6 +68,11 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
     ui.stackedWidget->addWidget(m_apmFirmwareConfig); //Firmware placeholder.
     m_buttonToConfigWidgetMap[ui.firmwareButton] = m_apmFirmwareConfig;
     connect(ui.firmwareButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
+    m_flightConfig = new FlightModeConfig(this);
+    ui.stackedWidget->addWidget(m_flightConfig);
+    m_buttonToConfigWidgetMap[ui.flightModesButton] = m_flightConfig;
+    connect(ui.flightModesButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_frameConfig = new FrameTypeConfig(this);
     ui.stackedWidget->addWidget(m_frameConfig);
@@ -74,6 +83,12 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
     ui.stackedWidget->addWidget(m_compassConfig);
     m_buttonToConfigWidgetMap[ui.compassButton] = m_compassConfig;
     connect(ui.compassButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
+    m_failSafeConfig = new FailSafeConfig(this);
+    ui.stackedWidget->addWidget(m_failSafeConfig);
+    m_buttonToConfigWidgetMap[ui.failSafeButton] = m_failSafeConfig;
+    connect(ui.failSafeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
 
     m_accelConfig = new AccelCalibrationConfig(this);
     ui.stackedWidget->addWidget(m_accelConfig);
@@ -196,6 +211,8 @@ void ApmHardwareConfig::uasDisconnected()
     ui.radio3DRButton->setVisible(true);
     ui.antennaTrackerButton->setVisible(true);
     ui.manditoryHardware->setVisible(false);
+    ui.failSafeButton->setVisible(false);
+    ui.flightModesButton->setVisible(false);
     ui.manditoryHardware->setChecked(false);
     ui.optionalHardwareButton->setVisible(false);
     ui.optionalHardwareButton->setChecked(false);
