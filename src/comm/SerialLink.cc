@@ -27,7 +27,7 @@
 SerialLink::SerialLink() :
     m_bytesRead(0),
     m_port(NULL),
-    m_baud(QSerialPort::Baud57600),
+    m_baud(QSerialPort::Baud115200),
     m_dataBits(QSerialPort::Data8),
     m_flowControl(QSerialPort::NoFlowControl),
     m_stopBits(QSerialPort::OneStop),
