@@ -60,6 +60,7 @@ void SerialLink::requestReset()
 SerialLink::~SerialLink()
 {
     disconnect();
+    writeSettings();
     QLOG_INFO() << "Serial Link destroyed";
     if(m_port) delete m_port;
     m_port = NULL;
@@ -99,6 +100,19 @@ void SerialLink::loadSettings()
         m_stopBits = settings.value("SERIALLINK_COMM_STOPBITS").toInt();
         m_dataBits = settings.value("SERIALLINK_COMM_DATABITS").toInt();
         m_flowControl = settings.value("SERIALLINK_COMM_FLOW_CONTROL").toInt();
+        QString portbaudmap = settings.value("SERIALLINK_COMM_PORTMAP").toString();
+        QStringList portbaudsplit = portbaudmap.split(",");
+        foreach (QString portbaud,portbaudsplit)
+        {
+            if (portbaud.split(":").size() == 2)
+            {
+                m_portBaudMap[portbaud.split(":")[0]] = portbaud.split(":")[1].toInt();
+            }
+        }
+        if (m_portBaudMap.size() == 0)
+        {
+            m_portBaudMap[m_portName] = m_baud;
+        }
     }
 }
 
@@ -112,6 +126,13 @@ void SerialLink::writeSettings()
     settings.setValue("SERIALLINK_COMM_STOPBITS", getStopBits());
     settings.setValue("SERIALLINK_COMM_DATABITS", getDataBits());
     settings.setValue("SERIALLINK_COMM_FLOW_CONTROL", getFlowType());
+    QString portbaudmap = "";
+    for (QMap<QString,int>::const_iterator i=m_portBaudMap.constBegin();i!=m_portBaudMap.constEnd();i++)
+    {
+        portbaudmap += i.key() + ":" + QString::number(i.value()) + ",";
+    }
+    portbaudmap = portbaudmap.mid(0,portbaudmap.length()-1); //Remove the last comma (,)
+    settings.setValue("SERIALLINK_COMM_PORTMAP",portbaudmap);
     settings.sync();
 }
 
@@ -701,6 +722,10 @@ bool SerialLink::setPortName(QString portName)
 
         emit nameChanged(m_portName); // [TODO] maybe we can eliminate this
         emit updateLink(this);
+        if (m_portBaudMap.contains(m_portName))
+        {
+            setBaudRate(m_portBaudMap[m_portName]);
+        }
         return accepted;
     }
     return false;
@@ -739,6 +764,7 @@ bool SerialLink::setBaudRate(int rate)
     if (rate != m_baud) {
         m_baud = rate;
         accepted = true;
+        m_portBaudMap[m_portName] = rate; //Update baud rate for that port in the map.
         if (m_port)
             accepted = m_port->setBaudRate(rate);
         emit updateLink(this);

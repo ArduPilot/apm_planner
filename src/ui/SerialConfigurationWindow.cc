@@ -311,6 +311,14 @@ void SerialConfigurationWindow::setPortName(QString port)
     if (this->link->getPortName() != port) {
         link->setPortName(port);
     }
+    for (int i=0;i<ui.baudRate->count();i++)
+    {
+        if (ui.baudRate->itemData(i).toInt() == link->getBaudRate())
+        {
+            ui.baudRate->setCurrentIndex(i);
+            break;
+        }
+    }
     userConfigured = true;
 }
 

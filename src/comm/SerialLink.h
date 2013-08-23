@@ -38,6 +38,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QThread>
 #include <QMutex>
 #include <QString>
+#include <QMap>
 #include <qserialport.h>
 #include <configuration.h>
 
@@ -171,6 +172,7 @@ private:
     volatile bool m_reqReset;
 	QMutex m_stoppMutex;
     QByteArray m_transmitBuffer;
+    QMap<QString,int> m_portBaudMap;
 
     bool hardwareConnect();
 
