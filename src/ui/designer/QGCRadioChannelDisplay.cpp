@@ -40,7 +40,6 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
     {
         painter.drawRect(0,0,width()-1,(height()-1) - (painter.fontMetrics().height() * 2));
         painter.setBrush(QBrush(QColor::fromRgb(50,255,50),Qt::SolidPattern));
-        painter.setPen(QColor::fromRgb(50,255,50));
         //m_value - m_min / m_max - m_min
 
         //if (!m_showMinMax)
@@ -57,7 +56,7 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
         //}
 
         QString valstr = QString::number(m_value);
-        painter.setPen(QColor::fromRgb(255,255,255));
+        painter.setBrush(this->palette().windowText());
         painter.drawText((width()/2.0) - (painter.fontMetrics().width(m_name)/2.0),((height()-3) - (painter.fontMetrics().height()*1)),m_name);
         painter.drawText((width()/2.0) - (painter.fontMetrics().width(valstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),valstr);
         if (m_showMinMax)
@@ -82,7 +81,7 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
     {
         painter.drawRect(0,0,width()-1,(height()-1) - (painter.fontMetrics().height() * 2));
         painter.setBrush(QBrush(QColor::fromRgb(50,255,50),Qt::SolidPattern));
-        painter.setPen(QColor::fromRgb(50,255,50));
+        //painter.setPen(QColor::fromRgb(50,255,50));
         //if (!m_showMinMax)
         //{
         //    painter.drawRect(1,1,(width()-3) * ((float)(currval-m_min) / (m_max-m_min)),(height()-3) - (painter.fontMetrics().height() * 2));
@@ -91,7 +90,7 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
         //{
             painter.drawRect(1,1,(width()-3) * ((float)(currval-800.0) / 1400.0),(height()-3) - (painter.fontMetrics().height() * 2));
         //}
-        painter.setPen(QColor::fromRgb(255,255,255));
+        painter.setBrush(this->palette().windowText());
         QString valstr = QString::number(m_value);
         painter.drawText((width()/2.0) - (painter.fontMetrics().width(m_name)/2.0),((height()-3) - (painter.fontMetrics().height()*1)),m_name);
         painter.drawText((width()/2.0) - (painter.fontMetrics().width(valstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),valstr);
