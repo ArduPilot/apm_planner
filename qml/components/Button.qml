@@ -37,7 +37,7 @@ Rectangle {
         anchors.margins: 5
         text: label
         color: "white"
-        font.pointSize: 9
+        font.pixelSize: 9
     }
 
     Image {
