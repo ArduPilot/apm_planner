@@ -223,7 +223,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
 
                                     int type = -1; //Type of item
                                     QMap<QString,QString> fieldmap;
-                                    QMap<QString,QString> valuemap;
+                                    QList<QPair<QString,QString> > valuemap;
                                     xml.readNext();
                                     while ((xml.name() != "param") && !xml.atEnd())
                                     {
@@ -253,7 +253,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
 
                                                     QString code = xml.attributes().value("code").toString();
                                                     QString arg = xml.readElementText();
-                                                    valuemap[code] = arg;
+                                                    valuemap.append(QPair<QString,QString>(code,arg));
                                                     if (tab == "Advanced")
                                                     {
                                                         advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(paramcount) + "_TEXT"] = arg;
@@ -357,9 +357,9 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     if (valuemap.size() > 0)
                                     {
                                         QList<QPair<int,QString> > valuelist;
-                                        for (QMap<QString,QString>::const_iterator i = valuemap.constBegin();i!=valuemap.constEnd();i++)
+                                        for (int i=0;i<valuemap.size();i++)
                                         {
-                                            valuelist.append(QPair<int,QString>(i.key().toInt(),i.value()));
+                                            valuelist.append(QPair<int,QString>(valuemap[i].first.toInt(),valuemap[i].second));
                                         }
                                         if (compare == parametersname)
                                         {
