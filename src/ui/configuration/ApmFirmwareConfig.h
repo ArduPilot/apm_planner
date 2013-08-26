@@ -48,17 +48,17 @@ private slots:
 private:
     int m_timeoutCounter;
     bool m_hasError;
-    QProcess *m_burnProcess;
-    UASInterface *m_uas;
+    QPointer<QProcess> m_burnProcess;
+    QPointer<UASInterface> m_uas;
     SerialSettings m_settings;
-    QSerialPort *m_port;
+    QPointer<QSerialPort> m_port;
     void addBetaLabel(QWidget *parent);
     void hideBetaLabels();
     void showBetaLabels();
     //ApmFirmwareStatus *firmwareStatus;
     QString m_detectedComPort;
-    QTemporaryFile *m_tempFirmwareFile;
-    QNetworkAccessManager *m_networkManager;
+    QPointer<QTemporaryFile> m_tempFirmwareFile;
+    QPointer<QNetworkAccessManager> m_networkManager;
     QList<QLabel*> m_betaButtonLabelList;
     bool stripVersionFromGitReply(QString url,QString reply,QString type,QString stable,QString *out);
     bool m_betaFirmwareChecked;

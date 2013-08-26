@@ -68,8 +68,12 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        ui.linkComboBox->insertItem(0,list[1], list);
-        QLOG_DEBUG() << "Inserting " << list.first();
+        if (!(info.portName().contains("Bluetooth"))){
+            // Don't add bluetooth ports to be less confusing to the user
+            ui.linkComboBox->insertItem(0,list[1], list);
+            QLOG_DEBUG() << "Inserting " << list.first();
+        }
+
     }
     m_uas = 0;
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
@@ -85,8 +89,11 @@ void ApmFirmwareConfig::cancelButtonClicked()
     {
         return;
     }
-    m_burnProcess->terminate();
-    m_burnProcess->deleteLater();
+    if (m_burnProcess){
+        QLOG_DEBUG() << "Closing Flashing Process";
+        m_burnProcess->terminate();
+        m_burnProcess->deleteLater();
+    }
 
 }
 
@@ -249,6 +256,8 @@ void ApmFirmwareConfig::requestFirmwares()
 
 void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
 {
+    QLOG_DEBUG() << "Beta FW Button clicked";
+
     if (betafirmwareenabled)
     {
         QMessageBox::information(this,"Warning","These are beta firmware downloads. Use at your own risk!!!");
@@ -263,8 +272,10 @@ void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
         requestFirmwares();
     }
 }
+
 void ApmFirmwareConfig::firmwareProcessFinished(int status)
 {
+    QLOG_DEBUG() << "firmwareProcessFinished: " << status;
     QProcess *proc = qobject_cast<QProcess*>(sender());
     if (!proc)
     {
@@ -303,10 +314,13 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
 void ApmFirmwareConfig::firmwareProcessReadyRead()
 {
     QProcess *proc = qobject_cast<QProcess*>(sender());
+    QLOG_DEBUG() << "firmwareProcessReadyRead: " << proc;
+
     if (!proc)
     {
         return;
     }
+
     QString output = proc->readAllStandardError() + proc->readAllStandardOutput();
     if (output.contains("Writing"))
     {
@@ -395,7 +409,7 @@ void ApmFirmwareConfig::downloadFinished()
     //info.manufacturer() == "Arduino LLC (www.arduino.cc)"
     //info.description() == "%mega2560.name%"
 
-    QLOG_DEBUG() << "Attempting to reset port";
+    QLOG_DEBUG() << "Attempting to Open port";
 
 
     m_port= new QSerialPort(this);
@@ -415,15 +429,15 @@ void ApmFirmwareConfig::downloadFinished()
             m_port->close();
             QMessageBox::critical(this, tr("Error"), m_port->errorString());
             m_port->deleteLater();
-            m_port=0;
             return;
         }
     } else {
         QMessageBox::critical(this, tr("Error"), m_port->errorString());
         m_port->deleteLater();
-        m_port=0;
         return;
     }
+
+    QLOG_INFO() << "Port Open fro FW Upload";
 
     QString avrdudeExecutable;
     QStringList stringList;
@@ -461,6 +475,7 @@ void ApmFirmwareConfig::firmwareDownloadProgress(qint64 received,qint64 total)
 
 void ApmFirmwareConfig::flashButtonClicked()
 {
+    QLOG_DEBUG() << "flashButtonClicked";
     QPushButton *senderbtn = qobject_cast<QPushButton*>(sender());
     if (m_buttonToUrlMap.contains(senderbtn))
     {
@@ -513,8 +528,9 @@ void ApmFirmwareConfig::flashButtonClicked()
                 }
             }
         }
-
+        QLOG_DEBUG() << "creating new serial port";
         m_port = new QSerialPort(this);
+        QLOG_DEBUG() << m_port;
         m_port->setPortName(m_settings.name);
         if (m_port->open(QIODevice::ReadWrite)) {
             if (m_port->setBaudRate(m_settings.baudRate)
@@ -522,23 +538,20 @@ void ApmFirmwareConfig::flashButtonClicked()
                     && m_port->setParity(m_settings.parity)
                     && m_port->setStopBits(m_settings.stopBits)
                     && m_port->setFlowControl(m_settings.flowControl)) {
-                QLOG_INFO() << "Open Terminal Console Serial Port";
+                QLOG_INFO() << "Open Firmware Upload Serial Port";
                 m_port->close();
             } else {
                 m_port->close();
                 QMessageBox::critical(this, tr("Error"), m_port->errorString());
                 m_port->deleteLater();
-                m_port=0;
                 return;
             }
         } else {
             QMessageBox::critical(this, tr("Error"), m_port->errorString());
             m_port->deleteLater();
-            m_port=0;
             return;
         }
         m_port->deleteLater();
-        m_port= 0;
         ui.progressBar->setVisible(true);
 
         QLOG_DEBUG() << "Go download:" << m_buttonToUrlMap[senderbtn];
@@ -579,6 +592,9 @@ void ApmFirmwareConfig::firmwareListFinished()
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     QString replystr = reply->readAll();
     QString outstr = "";
+
+    QLOG_DEBUG() << "firmwareListFinished error: " << reply->error() << reply->errorString();
+
     if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-heli",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
     {
         ui.copterLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
