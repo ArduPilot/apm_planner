@@ -266,6 +266,7 @@ void BatteryMonitorConfig::parameterChanged(int uas, int component, QString para
     }
     else if (parameterName == "BATT_MONITOR")
     {
+        disconnect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
         if (value.toInt() == 0) //0: Disable
         {
             ui.monitorComboBox->setCurrentIndex(0);
@@ -278,7 +279,7 @@ void BatteryMonitorConfig::parameterChanged(int uas, int component, QString para
         {
             ui.monitorComboBox->setCurrentIndex(2);
         }
-
+        connect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
     }
     else if (parameterName == "BATT_CAPACITY")
     {
@@ -287,6 +288,7 @@ void BatteryMonitorConfig::parameterChanged(int uas, int component, QString para
     else if (parameterName == "BATT_VOLT_PIN")
     {
         int ivalue = value.toInt();
+        disconnect(ui.apmVerComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(apmVerCurrentIndexChanged(int)));
         if (ivalue == 0) //APM1
         {
             ui.apmVerComboBox->setCurrentIndex(0);
@@ -303,6 +305,7 @@ void BatteryMonitorConfig::parameterChanged(int uas, int component, QString para
         {
             ui.apmVerComboBox->setCurrentIndex(3);
         }
+        connect(ui.apmVerComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(apmVerCurrentIndexChanged(int)));
     }
     else if (parameterName == "BATT_CURR_PIN")
     {

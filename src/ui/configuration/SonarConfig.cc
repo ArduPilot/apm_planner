@@ -10,7 +10,7 @@ SonarConfig::SonarConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.sonarTypeComboBox->addItem("LV-EZ0");
     ui.sonarTypeComboBox->addItem("XL-EZL0");
     ui.sonarTypeComboBox->addItem("HRLV");
-    connect(ui.enableCheckBox,SIGNAL(toggled(bool)),this,SLOT(checkBoxToggled(bool)));
+    connect(ui.enableCheckBox,SIGNAL(clicked(bool)),this,SLOT(checkBoxToggled(bool)));
     connect(ui.sonarTypeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(sonarTypeChanged(int)));
 
     foreach (QObject *obj,this->children())
@@ -57,16 +57,12 @@ void SonarConfig::parameterChanged(int uas, int component, QString parameterName
         if (value.toInt() == 0)
         {
             //Disabled
-            disconnect(ui.enableCheckBox,SIGNAL(toggled(bool)),this,SLOT(checkBoxToggled(bool)));
             ui.enableCheckBox->setChecked(false);
-            connect(ui.enableCheckBox,SIGNAL(toggled(bool)),this,SLOT(checkBoxToggled(bool)));
             ui.sonarTypeComboBox->setEnabled(false);
         }
         else
         {
-            disconnect(ui.enableCheckBox,SIGNAL(toggled(bool)),this,SLOT(checkBoxToggled(bool)));
             ui.enableCheckBox->setChecked(true);
-            connect(ui.enableCheckBox,SIGNAL(toggled(bool)),this,SLOT(checkBoxToggled(bool)));
             ui.sonarTypeComboBox->setEnabled(true);
         }
     }

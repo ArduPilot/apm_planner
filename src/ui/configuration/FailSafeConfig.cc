@@ -293,7 +293,9 @@ void FailSafeConfig::parameterChanged(int uas, int component, QString parameterN
     //Arducopter
     if (parameterName == "FS_THR_ENABLE")
     {
+        disconnect(ui.throttleFailSafeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(throttleFailSafeChanged(int)));
         ui.throttleFailSafeComboBox->setCurrentIndex(value.toInt());
+        connect(ui.throttleFailSafeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(throttleFailSafeChanged(int)));
     }
     else if (parameterName == "FS_THR_VALUE")
     {
