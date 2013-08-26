@@ -16,8 +16,8 @@
 namespace QGC
 
 {
-const QString APPNAME = "APMPLANNER";
-const QString COMPANYNAME = "3DROBOTICS";
+const QString APPNAME = "APMPLANNER2";
+const QString COMPANYNAME = "DIYDRONES";
 const int APPLICATIONVERSION = 200; // 1.0.9
 }
 
