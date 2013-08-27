@@ -44,15 +44,10 @@ SerialLink::SerialLink() :
     if (m_portName.length() == 0) {
         // Create a new serial link
         getCurrentPorts();
-        if (m_ports.size() > 0)
-        {
+        if (!m_ports.isEmpty())
             m_portName = m_ports.first().trimmed();
-        }
         else
-        {
-            QLOG_DEBUG() << "No serial links found when attempting to create a new serial link. Setting to possible non-existant COM1";
-            m_portName = "COM1";
-        }
+            m_portName = "No Devices";
     }
 
     QLOG_INFO() <<  m_portName << m_baud << m_flowControl
@@ -79,7 +74,6 @@ QList<QString> SerialLink::getCurrentPorts()
     m_ports.clear();
 
     QList<QSerialPortInfo> portList =  QSerialPortInfo::availablePorts();
-    portList.clear();
 
     if( portList.count() == 0){
         QLOG_INFO() << "No Ports Found" << m_ports;
@@ -88,7 +82,7 @@ QList<QString> SerialLink::getCurrentPorts()
     foreach (const QSerialPortInfo &info, portList)
     {
         QLOG_TRACE() << "PortName    : " << info.portName()
-                 << "Description : " << info.description();
+                     << "Description : " << info.description();
         QLOG_TRACE() << "Manufacturer: " << info.manufacturer();
 
         m_ports.append(info.portName());
@@ -263,15 +257,19 @@ void SerialLink::run()
         MG::SLEEP::msleep(SerialLink::poll_interval);
     } // end of forever
     
-    if (m_port) { // [TODO][BB] Not sure we need to close the port here
-        QLOG_DEBUG() << "Closing Port #"<< __LINE__ << m_port->portName();
-        m_port->close();
-        delete m_port;
-        m_port = NULL;
-
-        emit disconnected();
-        emit connected(false);
+    {
+        QMutexLocker locker(&this->m_stoppMutex);
+        if (m_port) { // [TODO][BB] Not sure we need to close the port here
+            QLOG_DEBUG() << "Closing Port #"<< __LINE__ << m_port->portName();
+            m_port->close();
+            delete m_port;
+            m_port = NULL;
+        }
     }
+
+    emit disconnected();
+    emit connected(false);
+
 }
 
 void SerialLink::writeBytes(const char* data, qint64 size)
@@ -368,7 +366,6 @@ bool SerialLink::disconnect()
             QMutexLocker locker(&m_stoppMutex);
             m_stopp = true;
         }
-        wait(); // This will terminate the thread and close the serial port
 
         emit disconnected(); // [TODO] There are signals from QSerialPort we should use
         emit connected(false);
