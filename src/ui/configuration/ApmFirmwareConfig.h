@@ -45,6 +45,7 @@ private slots:
     void uasConnected();
     void uasDisconnected();
     void cancelButtonClicked();
+    void populateSerialPorts();
 private:
     int m_timeoutCounter;
     bool m_hasError;

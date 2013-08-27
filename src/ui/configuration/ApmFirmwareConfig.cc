@@ -58,7 +58,19 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     addBetaLabel(ui.octaPushButton);
     addBetaLabel(ui.triPushButton);
     addBetaLabel(ui.y6PushButton);*/
+    populateSerialPorts();
 
+    m_uas = 0;
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+    activeUASSet(UASManager::instance()->getActiveUAS());
+    QTimer *timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+    timer->start(2000);
+}
+void ApmFirmwareConfig::populateSerialPorts()
+{
+    ui.linkComboBox->clear();
+    QString current = ui.linkComboBox->currentText();
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         QStringList list;
         list << info.portName()
@@ -73,15 +85,12 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
             ui.linkComboBox->insertItem(0,list[1], list);
             QLOG_DEBUG() << "Inserting " << list.first();
         }
-
     }
-    m_uas = 0;
-    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
-    activeUASSet(UASManager::instance()->getActiveUAS());
 }
+
 void ApmFirmwareConfig::uasConnected()
 {
-    //ui.stackedWidget->setCurrentIndex(1);
+    ui.stackedWidget->setCurrentIndex(1);
 }
 void ApmFirmwareConfig::cancelButtonClicked()
 {
@@ -99,7 +108,7 @@ void ApmFirmwareConfig::cancelButtonClicked()
 
 void ApmFirmwareConfig::uasDisconnected()
 {
-    //ui.stackedWidget->setCurrentIndex(0);
+    ui.stackedWidget->setCurrentIndex(0);
 }
 
 void ApmFirmwareConfig::activeUASSet(UASInterface *uas)
@@ -566,8 +575,11 @@ void ApmFirmwareConfig::flashButtonClicked()
 }
 void ApmFirmwareConfig::setLink(int index)
 {
-    m_settings.name = ui.linkComboBox->itemData(index).toStringList()[0];
-    QLOG_INFO() << "Changed Link to:" << m_settings.name;
+    if (ui.linkComboBox->itemData(index).toStringList().size() > 0)
+    {
+        m_settings.name = ui.linkComboBox->itemData(index).toStringList()[0];
+        //QLOG_INFO() << "Changed Link to:" << m_settings.name;
+    }
 }
 
 void ApmFirmwareConfig::firmwareListError(QNetworkReply::NetworkError error)
