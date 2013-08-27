@@ -40,6 +40,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     connect(ui.betaFirmwareButton,SIGNAL(clicked(bool)),this,SLOT(betaFirmwareButtonClicked(bool)));
     connect(ui.cancelPushButton,SIGNAL(clicked()),this,SLOT(cancelButtonClicked()));
     ui.cancelPushButton->setEnabled(false);
+    ui.cancelPushButton->setVisible(false);
 
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(0);
@@ -84,7 +85,7 @@ void ApmFirmwareConfig::populateSerialPorts()
         if (!(info.portName().contains("Bluetooth"))){
             // Don't add bluetooth ports to be less confusing to the user
             ui.linkComboBox->insertItem(0,list[1], list);
-            QLOG_DEBUG() << "Inserting " << list.first();
+            //QLOG_DEBUG() << "Inserting " << list.first();
         }
     }
     for (int i=0;i<ui.linkComboBox->count();i++)
@@ -329,6 +330,7 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
     m_tempFirmwareFile = 0;
     ui.progressBar->setVisible(false);
     ui.cancelPushButton->setEnabled(false);
+    ui.cancelPushButton->setVisible(false);
 
 }
 void ApmFirmwareConfig::firmwareProcessReadyRead()
@@ -409,6 +411,7 @@ void ApmFirmwareConfig::downloadFinished()
     m_tempFirmwareFile->close();
     //tempfirmware.fileName()
     ui.cancelPushButton->setEnabled(true);
+    ui.cancelPushButton->setVisible(true);
     m_burnProcess = new QProcess(this);
     connect(m_burnProcess,SIGNAL(finished(int)),this,SLOT(firmwareProcessFinished(int)));
     connect(m_burnProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(firmwareProcessReadyRead()));
