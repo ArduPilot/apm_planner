@@ -18,6 +18,7 @@ signals:
 public slots:
     virtual void activeUASSet(UASInterface *uas);
     virtual void parameterChanged(int uas, int component, QString parameterName, QVariant value);
+    virtual void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
 };
 
 #endif // AP2CONFIGWIDGET_H

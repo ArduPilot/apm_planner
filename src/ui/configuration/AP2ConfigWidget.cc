@@ -15,18 +15,38 @@ void AP2ConfigWidget::activeUASSet(UASInterface *uas)
 {
     if (m_uas)
     {
-        disconnect(m_uas,SIGNAL(parameterChanged(int,int,QString,QVariant)),this,SLOT(parameterChanged(int,int,QString,QVariant)));
+        disconnect(m_uas,SIGNAL(parameterChanged(int,int,QString,QVariant)),
+                   this,SLOT(parameterChanged(int,int,QString,QVariant)));
+        disconnect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+                this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
         m_uas = 0;
     }
     if (!uas) return;
     m_uas = uas;
-    connect(m_uas,SIGNAL(parameterChanged(int,int,QString,QVariant)),this,SLOT(parameterChanged(int,int,QString,QVariant)));
+    connect(m_uas,SIGNAL(parameterChanged(int,int,QString,QVariant)),
+            this,SLOT(parameterChanged(int,int,QString,QVariant)));
+    connect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+            this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
 }
 
 void AP2ConfigWidget::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
-
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+    Q_UNUSED(parameterName);
+    Q_UNUSED(value);
 }
+
+void AP2ConfigWidget::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
+{
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+    Q_UNUSED(parameterName);
+    Q_UNUSED(value);
+    Q_UNUSED(parameterCount);
+    Q_UNUSED(parameterId);
+}
+
 void AP2ConfigWidget::showNullMAVErrorMessageBox()
 {
     QMessageBox::information(0,tr("Error"),tr("Please connect to a MAV before attempting to set configuration"));

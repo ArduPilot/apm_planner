@@ -502,6 +502,7 @@ qint64 SerialLink::getNominalDataRate()
     } else {
         baudRate = m_baud;
     }
+    QLOG_DEBUG() << "getNominalDataRate() :" << baudRate;
     qint64 dataRate;
     switch (baudRate)
     {
