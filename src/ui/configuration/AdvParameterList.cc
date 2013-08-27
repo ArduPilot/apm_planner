@@ -28,6 +28,7 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     ui.tableWidget->setHorizontalHeaderItem(1,new QTableWidgetItem("Value"));
     ui.tableWidget->setHorizontalHeaderItem(2,new QTableWidgetItem("Unit"));
     ui.tableWidget->setHorizontalHeaderItem(3,new QTableWidgetItem("Description"));
+    ui.tableWidget->horizontalHeaderItem (3)->setTextAlignment(Qt::AlignLeft);
 
     ui.paramProgressBar->setRange(0,100);
 
@@ -179,7 +180,7 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
         }
         else
         {
-            desc = "unknown";
+            desc = "";
         }
 
         if (m_paramToDescriptionMap.contains(parameterName))
