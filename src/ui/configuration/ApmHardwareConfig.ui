@@ -69,7 +69,7 @@
           <widget class="QPushButton" name="manditoryHardware">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -85,7 +85,7 @@
           <widget class="QPushButton" name="frameTypeButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -101,7 +101,7 @@
           <widget class="QPushButton" name="compassButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -114,7 +114,7 @@
           <widget class="QPushButton" name="accelCalibrateButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -133,7 +133,7 @@
           <widget class="QPushButton" name="arduPlaneLevelButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -203,7 +203,7 @@
           <widget class="QPushButton" name="optionalHardwareButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -219,7 +219,7 @@
           <widget class="QPushButton" name="radio3DRButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -232,7 +232,7 @@
           <widget class="QPushButton" name="batteryMonitorButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -245,7 +245,7 @@
           <widget class="QPushButton" name="sonarButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -258,7 +258,7 @@
           <widget class="QPushButton" name="airspeedButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -271,7 +271,7 @@
           <widget class="QPushButton" name="opticalFlowButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -284,7 +284,7 @@
           <widget class="QPushButton" name="osdButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -297,7 +297,7 @@
           <widget class="QPushButton" name="cameraGimbalButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -310,7 +310,7 @@
           <widget class="QPushButton" name="antennaTrackerButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>

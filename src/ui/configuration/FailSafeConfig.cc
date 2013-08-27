@@ -6,13 +6,14 @@ FailSafeConfig::FailSafeConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
 
-    foreach (QObject *obj,this->children())
+    /*foreach (QObject *obj,this->children())
     {
         if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
         {
             obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
         }
-    }
+    }*/
+    ui.throttleFailSafeComboBox->installEventFilter(QGCMouseWheelEventFilter::getFilter());
 
     ui.radio1In->setName("Radio 1");
     ui.radio1In->setMin(800);

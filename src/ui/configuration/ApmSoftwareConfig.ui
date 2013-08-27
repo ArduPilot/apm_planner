@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
    <item>
     <widget class="QScrollArea" name="scrollArea_6">
      <property name="minimumSize">
@@ -50,7 +50,7 @@
           <widget class="QPushButton" name="flightModesButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -66,7 +66,7 @@
           <widget class="QPushButton" name="arduCopterPidButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -82,7 +82,7 @@
           <widget class="QPushButton" name="arduPlanePidButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -95,7 +95,7 @@
           <widget class="QPushButton" name="arduRoverPidButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -108,7 +108,7 @@
           <widget class="QPushButton" name="standardParamButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -124,7 +124,7 @@
           <widget class="QPushButton" name="advancedParamButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
@@ -140,7 +140,7 @@
           <widget class="QPushButton" name="advParamListButton">
            <property name="minimumSize">
             <size>
-             <width>0</width>
+             <width>100</width>
              <height>35</height>
             </size>
            </property>
