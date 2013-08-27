@@ -69,8 +69,9 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
 }
 void ApmFirmwareConfig::populateSerialPorts()
 {
+    QString current = ui.linkComboBox->itemText(ui.linkComboBox->currentIndex());
+    disconnect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
     ui.linkComboBox->clear();
-    QString current = ui.linkComboBox->currentText();
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         QStringList list;
         list << info.portName()
@@ -86,6 +87,16 @@ void ApmFirmwareConfig::populateSerialPorts()
             QLOG_DEBUG() << "Inserting " << list.first();
         }
     }
+    for (int i=0;i<ui.linkComboBox->count();i++)
+    {
+        if (ui.linkComboBox->itemText(i) == current)
+        {
+            ui.linkComboBox->setCurrentIndex(i);
+            connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+            return;
+        }
+    }
+    connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
 }
 
 void ApmFirmwareConfig::uasConnected()
