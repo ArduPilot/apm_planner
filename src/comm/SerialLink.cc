@@ -44,7 +44,15 @@ SerialLink::SerialLink() :
     if (m_portName.length() == 0) {
         // Create a new serial link
         getCurrentPorts();
-        m_portName = m_ports.first().trimmed();
+        if (m_ports.size() > 0)
+        {
+            m_portName = m_ports.first().trimmed();
+        }
+        else
+        {
+            QLOG_DEBUG() << "No serial links found when attempting to create a new serial link. Setting to possible non-existant COM1";
+            m_portName = "COM1";
+        }
     }
 
     QLOG_INFO() <<  m_portName << m_baud << m_flowControl
@@ -71,6 +79,7 @@ QList<QString> SerialLink::getCurrentPorts()
     m_ports.clear();
 
     QList<QSerialPortInfo> portList =  QSerialPortInfo::availablePorts();
+    portList.clear();
 
     if( portList.count() == 0){
         QLOG_INFO() << "No Ports Found" << m_ports;
