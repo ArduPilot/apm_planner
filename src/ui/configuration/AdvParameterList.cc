@@ -55,6 +55,7 @@ void AdvParameterList::writeButtonClicked()
     }
     for (QMap<QString,double>::const_iterator i = m_modifiedParamMap.constBegin();i!=m_modifiedParamMap.constEnd();i++)
     {
+        QLOG_DEBUG() << "setParam:" << i.key() << "value:" << i.value();
         m_uas->getParamManager()->setParameter(1,i.key(),i.value());
     }
     m_modifiedParamMap.clear();
@@ -143,6 +144,7 @@ void AdvParameterList::saveButtonClicked()
 
 void AdvParameterList::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    QLOG_DEBUG() << "APL::parameterChanged " << parameterName << ":" <<value.toFloat();
     disconnect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
     if (!m_paramValueMap.contains(parameterName))
     {
@@ -211,13 +213,14 @@ void AdvParameterList::parameterChanged(int uas, int component, int parameterCou
     // Create progress of downloading all parameters for UI
     switch (m_paramDownloadState){
     case starting:
-        QLOG_DEBUG() << "Starting Param Progress Bar Updating sys:" << uas;
+        QLOG_INFO() << "Starting Param Progress Bar Updating sys:" << uas;
         m_paramDownloadCount = 1;
 
         countString = QString::number(m_paramDownloadCount) + "/"
                         + QString::number(parameterCount);
-        QLOG_DEBUG() << "Param Progress Bar: " << countString
-                     << "paramId:" << parameterId << "name:" << parameterName;
+        QLOG_INFO() << "Param Progress Bar: " << countString
+                     << "paramId:" << parameterId << "name:" << parameterName
+                     << "paramValue:" << value;
         ui.progressLabel->setText(countString);
         ui.paramProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
 
@@ -228,8 +231,9 @@ void AdvParameterList::parameterChanged(int uas, int component, int parameterCou
         m_paramDownloadCount++;
         countString = QString::number(m_paramDownloadCount) + "/"
                         + QString::number(parameterCount);
-        QLOG_DEBUG() << "Param Progress Bar: " << countString
-                     << "paramId:" << parameterId << "name:" << parameterName;
+        QLOG_INFO() << "Param Progress Bar: " << countString
+                     << "paramId:" << parameterId << "name:" << parameterName
+                     << "paramValue:" << value;
         ui.progressLabel->setText(countString);
         ui.paramProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
 
@@ -238,7 +242,7 @@ void AdvParameterList::parameterChanged(int uas, int component, int parameterCou
         break;
 
     case completed:
-        QLOG_DEBUG() << "Finished Downloading Params" << m_paramDownloadCount;
+        QLOG_INFO() << "Finished Downloading Params" << m_paramDownloadCount;
         m_paramDownloadState = none;
         break;
 
