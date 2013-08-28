@@ -92,6 +92,7 @@ FailSafeConfig::FailSafeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     connect(ui.throttleActionCheckBox,SIGNAL(clicked(bool)),this,SLOT(throttleActionChecked(bool)));
     connect(ui.throttleCheckBox,SIGNAL(clicked(bool)),this,SLOT(throttleChecked(bool)));
     connect(ui.throttlePwmSpinBox,SIGNAL(editingFinished()),this,SLOT(throttlePwmChanged()));
+    connect(ui.batteryVoltSpinBox,SIGNAL(editingFinished()),this,SLOT(batteryVoltChanged()));
     connect(ui.throttleFailSafeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(throttleFailSafeChanged(int)));
 
     ui.armedLabel->setText("<h1>DISARMED</h1>");
@@ -152,6 +153,15 @@ void FailSafeConfig::throttleChecked(bool checked)
         m_uas->setParameter(1,"THR_FAILSAFE",0);
     }
 }
+void FailSafeConfig::batteryVoltChanged()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    m_uas->setParameter(1,"LOW_VOLT",ui.batteryVoltSpinBox->value());
+}
 
 void FailSafeConfig::throttlePwmChanged()
 {
@@ -160,7 +170,14 @@ void FailSafeConfig::throttlePwmChanged()
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->setParameter(1,"THR_FS_VALUE",ui.throttlePwmSpinBox->value());
+    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    {
+        m_uas->setParameter(1,"THR_FS_VALUE",ui.throttlePwmSpinBox->value());
+    }
+    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    {
+        m_uas->setParameter(1,"FS_THR_VALUE",ui.throttlePwmSpinBox->value());
+    }
 }
 
 void FailSafeConfig::throttleFailSafeChanged(int index)
