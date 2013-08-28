@@ -1006,11 +1006,12 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QVariant param;
                 if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
                 {
-                    param = QVariant(QChar((unsigned char)val.param_float));
+                    // Store in natural unsigned int and avoid conversion issues.
+                    param = QVariant((uint)val.param_float);
                 }
                 else
                 {
-                    param = QVariant(QChar((unsigned char)val.param_uint8));
+                    param = QVariant((uint)val.param_uint8);
                 }
                 parameters.value(component)->insert(parameterName, param);
                 // Emit change
@@ -1025,11 +1026,12 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QVariant param;
                 if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
                 {
-                    param = QVariant(QChar((char)val.param_float));
+                    // Store in natural signed int and avoid conversion issues.
+                    param = QVariant((int)val.param_float);
                 }
                 else
                 {
-                    param = QVariant(QChar((char)val.param_int8));
+                    param = QVariant((int)val.param_int8);
                 }
                 parameters.value(component)->insert(parameterName, param);
                 // Emit change
@@ -1044,7 +1046,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QVariant param;
                 if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
                 {
-                    param = QVariant((short)val.param_float);
+                    param = QVariant((int)val.param_float);
                 }
                 else
                 {
@@ -1063,7 +1065,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QVariant param;
                 if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
                 {
-                    param = QVariant((unsigned int)val.param_float);
+                    param = QVariant((uint)val.param_float);
                 }
                 else
                 {
