@@ -265,6 +265,10 @@ void TerminalConsole::setBaudRate(int index)
 
 void TerminalConsole::setLink(int index)
 {
+    if (index == -1)
+    {
+        return;
+    }
     //m_settings.name = ui->linkComboBox->currentText();
     m_settings.name = ui->linkComboBox->itemData(index).toStringList()[0];
     QLOG_INFO() << "Changed Link to:" << m_settings.name;
