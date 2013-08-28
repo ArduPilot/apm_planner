@@ -27,6 +27,7 @@ private slots:
     void throttleFailSafeChanged(int index);
     void gpsStatusChanged(UASInterface* uas,int fixtype);
     void batteryVoltChanged();
+    void navModeChanged(int uasid, int mode, const QString& text);
 private:
     Ui::FailSafeConfig ui;
 };

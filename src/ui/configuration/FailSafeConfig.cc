@@ -251,6 +251,7 @@ void FailSafeConfig::activeUASSet(UASInterface *uas)
         disconnect(m_uas,SIGNAL(remoteControlChannelRawChanged(int,float)),this,SLOT(remoteControlChannelRawChanges(int,float)));
         disconnect(m_uas,SIGNAL(hilActuatorsChanged(uint64_t,float,float,float,float,float,float,float,float)),this,SLOT(hilActuatorsChanged(uint64_t,float,float,float,float,float,float,float,float)));
         disconnect(m_uas,SIGNAL(armingChanged(bool)),this,SLOT(armingChanged(bool)));
+        disconnect(m_uas,SIGNAL(navModeChanged(int,int,QString)),this,SLOT(navModeChanged(int,int,QString)));
     }
     AP2ConfigWidget::activeUASSet(uas);
     if (!uas)
@@ -261,6 +262,7 @@ void FailSafeConfig::activeUASSet(UASInterface *uas)
     connect(m_uas,SIGNAL(hilActuatorsChanged(uint64_t,float,float,float,float,float,float,float,float)),this,SLOT(hilActuatorsChanged(uint64_t,float,float,float,float,float,float,float,float)));
     connect(m_uas,SIGNAL(armingChanged(bool)),this,SLOT(armingChanged(bool)));
     connect(m_uas,SIGNAL(gpsLocalizationChanged(UASInterface*,int)),this,SLOT(gpsStatusChanged(UASInterface*,int)));
+    connect(m_uas,SIGNAL(navModeChanged(int,int,QString)),this,SLOT(navModeChanged(int,int,QString)));
     if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
     {
         ui.batteryFailCheckBox->setVisible(false);
@@ -469,4 +471,8 @@ void FailSafeConfig::gpsStatusChanged(UASInterface* uas,int fixtype)
     {
         ui.gpsLabel->setText("<h1>GPS: 3D Fix</h1>");
     }
+}
+void FailSafeConfig::navModeChanged(int uasid, int mode, const QString& text)
+{
+    ui.modeLabel->setText("<h1>" + text + "</h1>");
 }
