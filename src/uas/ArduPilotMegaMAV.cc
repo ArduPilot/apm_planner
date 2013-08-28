@@ -221,9 +221,9 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
     // Ask for all streams at 4 Hz
     //enableAllDataTransmission(4);
     txReqTimer = new QTimer(this);
-    connect(txReqTimer,SIGNAL(timeout()),this,SLOT(sendTxRequests()));
+    connect(txReqTimer,SIGNAL(timeout()),this,SLOT(RequestAllDataStreams()));
 
-    QTimer::singleShot(5000,this,SLOT(sendTxRequests())); //Send an initial TX request in 5 seconds.
+    QTimer::singleShot(5000,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 5 seconds.
 
     txReqTimer->start(300000); //Resend the TX requests every 5 minutes.
 
@@ -241,26 +241,27 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
             this, SLOT(textMessageReceived(int,int,int,QString)));
 }
 
-void ArduPilotMegaMAV::sendTxRequests()
+void ArduPilotMegaMAV::RequestAllDataStreams()
 {
+    QLOG_DEBUG() << "APM:RequestAllDataRates";
     enableExtendedSystemStatusTransmission(2);
-    QGC::SLEEP::msleep(250);
+
     enablePositionTransmission(3);
-    QGC::SLEEP::msleep(250);
+
     enableExtra1Transmission(10);
-    QGC::SLEEP::msleep(250);
+
     enableExtra2Transmission(10);
-    QGC::SLEEP::msleep(250);
+
     enableExtra3Transmission(2);
-    QGC::SLEEP::msleep(250);
+
     enableRawSensorDataTransmission(2);
-    QGC::SLEEP::msleep(250);
+
     enableRCChannelDataTransmission(2);
 }
 void ArduPilotMegaMAV::uasConnected()
 {
     QLOG_INFO() << "APM Connected";
-    QTimer::singleShot(500,this,SLOT(sendTxRequests())); //Send an initial TX request in 0.5 seconds.
+    QTimer::singleShot(500,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 0.5 seconds.
 }
 
 void ArduPilotMegaMAV::uasDisconnected()

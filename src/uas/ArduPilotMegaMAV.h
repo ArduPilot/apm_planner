@@ -134,7 +134,7 @@ public:
 public slots:
     /** @brief Receive a MAVLink message from this MAV */
     void receiveMessage(LinkInterface* link, mavlink_message_t message);
-    void sendTxRequests();
+    void RequestAllDataStreams();
 
     void systemDisarmed();
     void systemArmed();
