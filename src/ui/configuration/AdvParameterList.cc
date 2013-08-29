@@ -134,7 +134,11 @@ void AdvParameterList::loadButtonClicked()
             {
                 //linesplit[0] == name
                 //linesplit[1] == value as a double.
-                m_uas->getParamManager()->setParameter(1,linesplit[0],linesplit[1].toDouble());
+                //m_uas->getParamManager()->setParameter(1,linesplit[0],linesplit[1].toDouble());
+                if (m_paramValueMap.contains(linesplit[0]))
+                {
+                    m_paramValueMap[linesplit[0]]->setText(linesplit[1]);
+                }
 
             }
         }
