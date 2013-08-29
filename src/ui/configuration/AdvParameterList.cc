@@ -78,6 +78,7 @@ void AdvParameterList::writeButtonClicked()
     for (QMap<QString,double>::const_iterator i = m_modifiedParamMap.constBegin();i!=m_modifiedParamMap.constEnd();i++)
     {
         m_uas->getParamManager()->setParameter(1,i.key(),i.value());
+        m_waitingParamList.append(i.key());
     }
     m_modifiedParamMap.clear();
 }
@@ -180,7 +181,16 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
         ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,0,paramnameitem);
 
         //Col 1, param value
-        QTableWidgetItem *valitem = new QTableWidgetItem(QString::number(value.toFloat(),'f',2));
+        QString valstr = "";
+        if (value.type() == QMetaType::Float || value.type() == QVariant::Double)
+        {
+            valstr = QString::number(value.toFloat(),'f',4);
+        }
+        else
+        {
+            valstr = QString::number(value.toFloat(),'f',0);
+        }
+        QTableWidgetItem *valitem = new QTableWidgetItem(valstr);
         valitem->setFlags(valitem->flags() | Qt::ItemIsEditable);
         ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,1,valitem);
 
@@ -221,12 +231,34 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
         m_paramValueMap[parameterName] = ui.tableWidget->item(ui.tableWidget->rowCount()-1,1);
         ui.tableWidget->sortByColumn(0,Qt::AscendingOrder);
     }
-    if (m_origBrushList.contains(parameterName))
+    if (m_waitingParamList.contains(parameterName))
     {
-        m_paramValueMap[parameterName]->setBackground(QBrush());
-        m_origBrushList.removeAll(parameterName);
+        //Parameter is modified,
+        m_waitingParamList.removeOne(parameterName);
+        //m_origBrushList.append(ui.tableWidget->item(item->row(),0)->text());
+        QBrush brush = QBrush(QColor::fromRgb(100,255,100));
+        m_paramValueMap[parameterName]->setBackground(brush);
+        //m_modifiedParamMap[ui.tableWidget->item(item->row(),0)->text()] = item->text().toDouble();
+
     }
-    m_paramValueMap[parameterName]->setText(QString::number(value.toFloat(),'f',2));
+    else
+    {
+        if (m_origBrushList.contains(parameterName))
+        {
+            m_paramValueMap[parameterName]->setBackground(QBrush());
+            m_origBrushList.removeAll(parameterName);
+        }
+    }
+    QString valstr = "";
+    if (value.type() == QMetaType::Float || value.type() == QVariant::Double)
+    {
+        valstr = QString::number(value.toFloat(),'f',4);
+    }
+    else
+    {
+        valstr = QString::number(value.toFloat(),'f',0);
+    }
+    m_paramValueMap[parameterName]->setText(valstr);
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
 
 }
