@@ -60,6 +60,10 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     addBetaLabel(ui.triPushButton);
     addBetaLabel(ui.y6PushButton);*/
     populateSerialPorts();
+    if (ui.linkComboBox->count() > 0)
+    {
+        setLink(0);
+    }
 
     m_uas = 0;
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
@@ -84,7 +88,14 @@ void ApmFirmwareConfig::populateSerialPorts()
 
         if (!(info.portName().contains("Bluetooth"))){
             // Don't add bluetooth ports to be less confusing to the user
+            //on windows, the friendly name is annoyingly identical between devices. On OSX it's different
+#ifdef Q_OS_WIN
+            ui.linkComboBox->insertItem(0,list[0], list);
+#elif Q_OS_DARWIN
             ui.linkComboBox->insertItem(0,list[1], list);
+#else
+            ui.linkComboBox->insertItem(0,list[1], list);
+#endif
             //QLOG_DEBUG() << "Inserting " << list.first();
         }
     }
@@ -592,6 +603,13 @@ void ApmFirmwareConfig::setLink(int index)
     if (ui.linkComboBox->itemData(index).toStringList().size() > 0)
     {
         m_settings.name = ui.linkComboBox->itemData(index).toStringList()[0];
+#ifdef Q_OS_WIN
+        ui.comPortNameLabel->setText("Port: " + ui.linkComboBox->itemData(index).toStringList()[1]);
+#elif Q_OS_DARWIN
+        ui.comPortNameLabel->setText("Port: " + ui.linkComboBox->itemData(index).toStringList()[0]);
+#else
+        ui.comPortNameLabel->setText("Port: " + ui.linkComboBox->itemData(index).toStringList()[0]);
+#endif
         //QLOG_INFO() << "Changed Link to:" << m_settings.name;
     }
 }

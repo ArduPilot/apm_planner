@@ -496,7 +496,7 @@
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>&lt;h2&gt;Firmware Upload&lt;br&gt;Com Port&lt;/h2&gt;</string>
+              <string>&lt;h3&gt;Firmware Upload&lt;br&gt;Com Port&lt;/h3&gt;</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -525,6 +525,13 @@
                <width>220</width>
                <height>32</height>
               </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="comPortNameLabel">
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>
