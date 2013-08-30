@@ -113,8 +113,6 @@ void ApmFirmwareConfig::populateSerialPorts()
             //on windows, the friendly name is annoyingly identical between devices. On OSX it's different
 #ifdef Q_OS_WIN
             ui.linkComboBox->insertItem(0,list[0], list);
-#elif Q_OS_DARWIN
-            ui.linkComboBox->insertItem(0,list[1], list);
 #else
             ui.linkComboBox->insertItem(0,list[1], list);
 #endif
@@ -626,11 +624,9 @@ void ApmFirmwareConfig::setLink(int index)
     {
         m_settings.name = ui.linkComboBox->itemData(index).toStringList()[0];
 #ifdef Q_OS_WIN
-        ui.comPortNameLabel->setText("Port: " + ui.linkComboBox->itemData(index).toStringList()[1]);
-#elif Q_OS_DARWIN
-        ui.comPortNameLabel->setText("Port: " + ui.linkComboBox->itemData(index).toStringList()[0]);
+        ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[1] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
 #else
-        ui.comPortNameLabel->setText("Port: " + ui.linkComboBox->itemData(index).toStringList()[0]);
+        ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[0] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
 #endif
         //QLOG_INFO() << "Changed Link to:" << m_settings.name;
     }
