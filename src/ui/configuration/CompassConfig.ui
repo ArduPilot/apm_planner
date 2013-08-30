@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>565</width>
+    <width>635</width>
     <height>241</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>260</x>
      <y>100</y>
      <width>101</width>
      <height>16</height>
@@ -45,7 +45,7 @@
   <widget class="QComboBox" name="orientationComboBox">
    <property name="geometry">
     <rect>
-     <x>280</x>
+     <x>320</x>
      <y>120</y>
      <width>201</width>
      <height>22</height>
@@ -55,10 +55,10 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>250</x>
      <y>180</y>
-     <width>101</width>
-     <height>23</height>
+     <width>141</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -70,8 +70,8 @@
     <rect>
      <x>390</x>
      <y>180</y>
-     <width>101</width>
-     <height>23</height>
+     <width>151</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -94,7 +94,7 @@
   <widget class="QWidget" name="horizontalLayoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>220</x>
+     <x>260</x>
      <y>70</y>
      <width>321</width>
      <height>31</height>
@@ -178,7 +178,7 @@
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>220</x>
+     <x>260</x>
      <y>120</y>
      <width>54</width>
      <height>20</height>
