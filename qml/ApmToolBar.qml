@@ -21,6 +21,9 @@ import "./components"
 Rectangle {
     id: toolbar
 
+    property int rowSpacerSize: 3
+    property int linkDeviceSize: 100
+
     property alias backgroundColor : toolbar.color
     property alias linkNameLabel: linkDevice.label
     property alias baudrateLabel: baudrate.label
@@ -94,7 +97,7 @@ Rectangle {
 
     Row {
         anchors.left: parent.left
-        spacing: 10
+        spacing: rowSpacerSize
 
         Rectangle { // Spacer
             width: 5
@@ -224,7 +227,7 @@ Rectangle {
         TextButton {
             id: linkDevice
             label: "none"
-            minWidth: 100
+            minWidth: linkDeviceSize
 
             onClicked: globalObj.showConnectionDialog()
         }
@@ -232,7 +235,7 @@ Rectangle {
         TextButton {
             id: baudrate
             label: "none"
-            minWidth: 100
+            minWidth: 70
 
             onClicked: globalObj.showConnectionDialog()
         }

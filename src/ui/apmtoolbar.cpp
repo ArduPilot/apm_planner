@@ -60,6 +60,18 @@ APMToolBar::APMToolBar(QWidget *parent):
 
     setConnection(false);
 
+    // set the size of the device box and row spacing for icons
+#ifdef Q_OS_MAC
+    rootObject()->setProperty("rowSpacerSize", QVariant(3));
+    rootObject()->setProperty("linkDeviceSize", QVariant(105));
+#elif Q_OS_UNIX
+    rootObject()->setProperty("rowSpacerSize", QVariant(3));
+    rootObject()->setProperty("linkDeviceSize", QVariant(100));
+#else
+    rootObject()->setProperty("rowSpacerSize", QVariant(3));
+    rootObject()->setProperty("linkDeviceSize", QVariant(80));
+#endif
+
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUasSet(UASInterface*)));
     activeUasSet(UASManager::instance()->getActiveUAS());
 
