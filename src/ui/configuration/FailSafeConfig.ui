@@ -347,7 +347,7 @@
     <rect>
      <x>570</x>
      <y>250</y>
-     <width>161</width>
+     <width>241</width>
      <height>261</height>
     </rect>
    </property>
@@ -370,7 +370,7 @@
       <item>
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>FS Pwm</string>
+         <string>Failsafe PWM</string>
         </property>
        </widget>
       </item>
