@@ -48,6 +48,10 @@ private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void lockCheckBoxClicked(bool checked);
     void stabilLockedChanged(double value);
+    void ratePChanged(double value);
+    void rateIChanged(double value);
+    void rateDChanged(double value);
+    void rateIMAXChanged(double value);
 private:
     bool m_pitchRollLocked;
     QList<QPair<int,QString> > m_ch6ValueToTextList;

@@ -40,7 +40,16 @@ ArduCopterPidConfig::ArduCopterPidConfig(QWidget *parent) : AP2ConfigWidget(pare
     connect(ui.checkBox,SIGNAL(clicked(bool)),this,SLOT(lockCheckBoxClicked(bool)));
     connect(ui.stabilPitchPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
     connect(ui.stabilRollPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
-    connect(ui.stabilYawPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
+    connect(ui.ratePitchPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(ratePChanged(double)));
+    connect(ui.ratePitchISpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIChanged(double)));
+    connect(ui.ratePitchDSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateDChanged(double)));
+    connect(ui.ratePitchIMAXSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIMAXChanged(double)));
+
+    connect(ui.rateRollPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(ratePChanged(double)));
+    connect(ui.rateRollISpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIChanged(double)));
+    connect(ui.rateRollDSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateDChanged(double)));
+    connect(ui.rateRollIMAXSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIMAXChanged(double)));
+
 
     m_nameToBoxMap["STB_RLL_P"] = ui.stabilPitchPSpinBox;
     m_nameToBoxMap["STB_PIT_P"] = ui.stabilRollPSpinBox;
@@ -83,8 +92,8 @@ ArduCopterPidConfig::ArduCopterPidConfig(QWidget *parent) : AP2ConfigWidget(pare
     m_nameToBoxMap["WPNAV_LOIT_SPEED"] = ui.wpNavSpeedSpinBox;
     m_nameToBoxMap["WPNAV_SPEED_UP"] = ui.wpNavSpeedUpSpinBox;
 
-    m_nameToBoxMap["TUNE_HIGH"] = ui.ch6MaxSpinBox;
-    m_nameToBoxMap["TUNE_LOW"] = ui.ch6MinSpinBox;
+    //m_nameToBoxMap["TUNE_HIGH"] = ui.ch6MaxSpinBox;
+   // m_nameToBoxMap["TUNE_LOW"] = ui.ch6MinSpinBox;
 
     connect(ui.writePushButton,SIGNAL(clicked()),this,SLOT(writeButtonClicked()));
     connect(ui.refreshPushButton,SIGNAL(clicked()),this,SLOT(refreshButtonClicked()));
@@ -159,13 +168,58 @@ void ArduCopterPidConfig::stabilLockedChanged(double value)
     {
         disconnect(ui.stabilPitchPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
         disconnect(ui.stabilRollPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
-        disconnect(ui.stabilYawPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
         ui.stabilPitchPSpinBox->setValue(value);
         ui.stabilRollPSpinBox->setValue(value);
-        ui.stabilYawPSpinBox->setValue(value);
         connect(ui.stabilPitchPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
         connect(ui.stabilRollPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
-        connect(ui.stabilYawPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(stabilLockedChanged(double)));
+    }
+}
+void ArduCopterPidConfig::ratePChanged(double value)
+{
+    if (m_pitchRollLocked)
+    {
+        disconnect(ui.ratePitchPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(ratePChanged(double)));
+        disconnect(ui.rateRollPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(ratePChanged(double)));
+        ui.ratePitchPSpinBox->setValue(value);
+        ui.rateRollPSpinBox->setValue(value);
+        connect(ui.ratePitchPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(ratePChanged(double)));
+        connect(ui.rateRollPSpinBox,SIGNAL(valueChanged(double)),this,SLOT(ratePChanged(double)));
+    }
+}
+void ArduCopterPidConfig::rateIChanged(double value)
+{
+    if (m_pitchRollLocked)
+    {
+        disconnect(ui.ratePitchISpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIChanged(double)));
+        disconnect(ui.rateRollISpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIChanged(double)));
+        ui.ratePitchISpinBox->setValue(value);
+        ui.rateRollISpinBox->setValue(value);
+        connect(ui.ratePitchISpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIChanged(double)));
+        connect(ui.rateRollISpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIChanged(double)));
+    }
+}
+void ArduCopterPidConfig::rateDChanged(double value)
+{
+    if (m_pitchRollLocked)
+    {
+        disconnect(ui.ratePitchDSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateDChanged(double)));
+        disconnect(ui.rateRollDSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateDChanged(double)));
+        ui.ratePitchDSpinBox->setValue(value);
+        ui.rateRollDSpinBox->setValue(value);
+        connect(ui.ratePitchDSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateDChanged(double)));
+        connect(ui.rateRollDSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateDChanged(double)));
+    }
+}
+void ArduCopterPidConfig::rateIMAXChanged(double value)
+{
+    if (m_pitchRollLocked)
+    {
+        disconnect(ui.ratePitchIMAXSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIMAXChanged(double)));
+        disconnect(ui.rateRollIMAXSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIMAXChanged(double)));
+        ui.ratePitchIMAXSpinBox->setValue(value);
+        ui.rateRollIMAXSpinBox->setValue(value);
+        connect(ui.ratePitchIMAXSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIMAXChanged(double)));
+        connect(ui.rateRollIMAXSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIMAXChanged(double)));
     }
 }
 
@@ -177,6 +231,14 @@ void ArduCopterPidConfig::parameterChanged(int uas, int component, QString param
     if (m_nameToBoxMap.contains(parameterName))
     {
         m_nameToBoxMap[parameterName]->setValue(value.toDouble());
+    }
+    else if (parameterName == "TUNE_HIGH")
+    {
+        ui.ch6MaxSpinBox->setValue(value.toDouble() / 1000.0);
+    }
+    else if (parameterName == "TUNE_LOW")
+    {
+        ui.ch6MaxSpinBox->setValue(value.toDouble() / 1000.0);
     }
     else if (parameterName == "TUNE")
     {
@@ -223,6 +285,8 @@ void ArduCopterPidConfig::writeButtonClicked()
     m_uas->getParamManager()->setParameter(1,"TUNE",m_ch78ValueToTextList[ui.ch6OptComboBox->currentIndex()].first);
     m_uas->getParamManager()->setParameter(1,"CH7_OPT",m_ch78ValueToTextList[ui.ch7OptComboBox->currentIndex()].first);
     m_uas->getParamManager()->setParameter(1,"CH8_OPT",m_ch78ValueToTextList[ui.ch8OptComboBox->currentIndex()].first);
+    m_uas->getParamManager()->setParameter(1,"TUNE_HIGH",ui.ch6MaxSpinBox->value() * 1000.0);
+    m_uas->getParamManager()->setParameter(1,"TUNE_LOW",ui.ch6MinSpinBox->value() * 1000.0);
 }
 
 void ArduCopterPidConfig::refreshButtonClicked()
@@ -239,4 +303,6 @@ void ArduCopterPidConfig::refreshButtonClicked()
     m_uas->getParamManager()->requestParameterUpdate(1,"TUNE");
     m_uas->getParamManager()->requestParameterUpdate(1,"CH7_OPT");
     m_uas->getParamManager()->requestParameterUpdate(1,"CH8_OPT");
+    m_uas->getParamManager()->requestParameterUpdate(1,"TUNE_HIGH");
+    m_uas->getParamManager()->requestParameterUpdate(1,"TUNE_LOW");
 }
