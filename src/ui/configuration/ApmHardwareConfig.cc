@@ -153,6 +153,10 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
 }
 void ApmHardwareConfig::activateStackedWidget()
 {
+    if (ui.failSafeButton == sender())
+    {
+        QMessageBox::information(this,"Warning","Ensure all rotors/props are REMOVED from your aircraft before proceeding");
+    }
     if (m_buttonToConfigWidgetMap.contains(sender()))
     {
         ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[sender()]);
