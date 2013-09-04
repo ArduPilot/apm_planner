@@ -221,9 +221,9 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
     // Ask for all streams at 4 Hz
     //enableAllDataTransmission(4);
     txReqTimer = new QTimer(this);
-    connect(txReqTimer,SIGNAL(timeout()),this,SLOT(sendTxRequests()));
+    connect(txReqTimer,SIGNAL(timeout()),this,SLOT(RequestAllDataStreams()));
 
-    QTimer::singleShot(5000,this,SLOT(sendTxRequests())); //Send an initial TX request in 5 seconds.
+    QTimer::singleShot(5000,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 5 seconds.
 
     txReqTimer->start(300000); //Resend the TX requests every 5 minutes.
 
@@ -241,26 +241,27 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
             this, SLOT(textMessageReceived(int,int,int,QString)));
 }
 
-void ArduPilotMegaMAV::sendTxRequests()
+void ArduPilotMegaMAV::RequestAllDataStreams()
 {
+    QLOG_DEBUG() << "APM:RequestAllDataRates";
     enableExtendedSystemStatusTransmission(2);
-    QGC::SLEEP::msleep(250);
+
     enablePositionTransmission(3);
-    QGC::SLEEP::msleep(250);
+
     enableExtra1Transmission(10);
-    QGC::SLEEP::msleep(250);
+
     enableExtra2Transmission(10);
-    QGC::SLEEP::msleep(250);
+
     enableExtra3Transmission(2);
-    QGC::SLEEP::msleep(250);
+
     enableRawSensorDataTransmission(2);
-    QGC::SLEEP::msleep(250);
+
     enableRCChannelDataTransmission(2);
 }
 void ArduPilotMegaMAV::uasConnected()
 {
     QLOG_INFO() << "APM Connected";
-    QTimer::singleShot(500,this,SLOT(sendTxRequests())); //Send an initial TX request in 0.5 seconds.
+    QTimer::singleShot(500,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 0.5 seconds.
 }
 
 void ArduPilotMegaMAV::uasDisconnected()
@@ -377,7 +378,7 @@ void ArduPilotMegaMAV::navModeChanged(int uasid, int mode, const QString& text)
     QLOG_DEBUG() << "APM: Nav Mode Changed:" << mode << text;
 }
 
-QString ArduPilotMegaMAV::getCustomModeText(int custom_mode)
+QString ArduPilotMegaMAV::getCustomModeText()
 {
     QLOG_DEBUG() << "APM: getCustomModeText()";
     QString customModeString;
@@ -401,17 +402,17 @@ QString ArduPilotMegaMAV::getCustomModeText(int custom_mode)
 
         default:
             QLOG_WARN() << "APM: Unsupported System Type " << systemType;
-            customModeString = tr("UNKOWN");
+            customModeString = tr("APM UNKOWN");
         }
     return customModeString;
 }
 
-QString ArduPilotMegaMAV::getCustomModeAudioText(int custom_mode)
+QString ArduPilotMegaMAV::getCustomModeAudioText()
 {
     QLOG_DEBUG() << "APM: getCustomModeAudioText()";
 
     QString returnString = tr("and mode is ");
-    return returnString + getCustomModeText(custom_mode);
+    return returnString + getCustomModeText();
 }
 
 void ArduPilotMegaMAV::textMessageReceived(int uasid, int componentid, int severity, QString text)

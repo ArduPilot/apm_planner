@@ -32,9 +32,9 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>100</y>
-     <width>101</width>
+     <x>280</x>
+     <y>80</y>
+     <width>125</width>
      <height>16</height>
     </rect>
    </property>
@@ -45,8 +45,8 @@
   <widget class="QComboBox" name="orientationComboBox">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>120</y>
+     <x>90</x>
+     <y>160</y>
      <width>201</width>
      <height>22</height>
     </rect>
@@ -55,11 +55,17 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>250</x>
-     <y>180</y>
+     <x>150</x>
+     <y>200</y>
      <width>141</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>101</width>
+     <height>0</height>
+    </size>
    </property>
    <property name="text">
     <string>Live Calibration</string>
@@ -68,8 +74,8 @@
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>180</y>
+     <x>420</x>
+     <y>200</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -81,9 +87,9 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>160</y>
-     <width>91</width>
+     <x>440</x>
+     <y>180</y>
+     <width>111</width>
      <height>16</height>
     </rect>
    </property>
@@ -95,7 +101,7 @@
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>70</y>
+     <y>50</y>
      <width>321</width>
      <height>31</height>
     </rect>
@@ -117,9 +123,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>70</y>
-     <width>211</width>
-     <height>111</height>
+     <y>30</y>
+     <width>240</width>
+     <height>102</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -178,10 +184,10 @@
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>260</x>
-     <y>120</y>
-     <width>54</width>
-     <height>20</height>
+     <x>10</x>
+     <y>160</y>
+     <width>72</width>
+     <height>16</height>
     </rect>
    </property>
    <property name="text">

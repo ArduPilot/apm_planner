@@ -21,12 +21,15 @@ import "./components"
 Rectangle {
     id: toolbar
 
+    property int rowSpacerSize: 3
+    property int linkDeviceSize: 100
+
     property alias backgroundColor : toolbar.color
     property alias linkNameLabel: linkDevice.label
     property alias baudrateLabel: baudrate.label
     property bool connected: false
     property bool armed: false
-    property string armedstr: "DISARMED"
+    property string armedstr: "status"
     property bool disableStatusDisplay: false
 
     property alias modeText: modeTextId.modeText
@@ -36,22 +39,34 @@ Rectangle {
 
     property alias heartbeat: heartbeatDisplayId.heartbeat
 
+    function setArmed(armedState) {
+        if (armedState) {
+            statusDisplayId.statusText = "ARMED"
+            statusDisplayId.statusTextColor = "red"
+            statusDisplayId.statusBackgroundColor = "#FF880000"
+
+        } else {
+            statusDisplayId.statusText = "DISARMED"
+            statusDisplayId.statusTextColor = "yellow"
+            statusDisplayId.statusBackgroundColor = "black"
+        }
+    }
+
+    function clearArmedMode() {
+        // clear indicators from showing info
+        statusDisplayId.statusText = "status"
+        statusDisplayId.statusTextColor = "yellow"
+        statusDisplayId.statusBackgroundColor = "black"
+        modeTextId.modeText = "mode"
+    }
+
     width: toolbar.width
     height: 72
     color: "black"
     border.color: "black"
 
     onArmedChanged: {
-        if (armed) {
-            statusDisplayId.statusText = "ARMED"
-            statusDisplayId.statusTextColor = "red"
-            statusDisplayId.statusBackgroundColor = "#FF880000"
-        }
-        else {
-            statusDisplayId.statusText = "DISARMED"
-            statusDisplayId.statusTextColor = "yellow"
-            statusDisplayId.statusBackgroundColor = "black"
-        }
+        setArmed(armed)
     }
 
     onConnectedChanged: {
@@ -59,11 +74,15 @@ Rectangle {
             console.log("APM Tool BAR QML: connected")
             connectButton.image = "./resources/apmplanner/toolbar/disconnect.png"
             connectButton.label = "DISCONNECT"
+            setArmed(armed)
+            setMode(modeText)
+
         } else {
             console.log("APM Tool BAR QML: disconnected")
             connectButton.image = "./resources/apmplanner/toolbar/connect.png"
             connectButton.label = "CONNECT"
             heartbeatDisplayId.stopAnimation = true;
+            clearArmedMode()
         }
     }
 
@@ -94,7 +113,7 @@ Rectangle {
 
     Row {
         anchors.left: parent.left
-        spacing: 10
+        spacing: rowSpacerSize
 
         Rectangle { // Spacer
             width: 5
@@ -159,7 +178,7 @@ Rectangle {
         StatusDisplay {
             id: statusDisplayId
             width: 110
-            statusText: "DISARMED"
+            statusText: "status"
             statusTextColor: "yellow"
             statusBackgroundColor: "black"
         }
@@ -172,7 +191,7 @@ Rectangle {
 
         ModeDisplay {
             id:modeTextId
-            modeText: "unknown"
+            modeText: "mode"
             modeTextColor: "red"
             modeBackgroundColor: "black"
             modeBorderColor: "white"
@@ -224,7 +243,7 @@ Rectangle {
         TextButton {
             id: linkDevice
             label: "none"
-            minWidth: 100
+            minWidth: linkDeviceSize
 
             onClicked: globalObj.showConnectionDialog()
         }
@@ -232,7 +251,7 @@ Rectangle {
         TextButton {
             id: baudrate
             label: "none"
-            minWidth: 100
+            minWidth: 70
 
             onClicked: globalObj.showConnectionDialog()
         }

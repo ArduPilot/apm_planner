@@ -34,6 +34,7 @@ Rectangle {
         anchors.centerIn: parent
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
+        anchors.verticalCenter: parent.verticalCenter
         font.pixelSize: 20
         smooth: true
     }

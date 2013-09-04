@@ -56,7 +56,7 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     systemIsArmed(false),
     mode(-1),
     // custom_mode not initialized
-    navMode(-1),
+    custom_mode(-1),
     status(-1),
     // shortModeText not initialized
     // shortStateText not initialized
@@ -518,11 +518,11 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 modeAudio = armedAudio;
             }
 
-            if (navMode != state.custom_mode)
+            if (custom_mode != state.custom_mode)
             {
-                emit navModeChanged(uasId, state.custom_mode, getCustomModeText(state.custom_mode));
-                navMode = state.custom_mode;
-                customModeAudio = getCustomModeAudioText(state.custom_mode);
+                custom_mode = state.custom_mode;
+                emit navModeChanged(uasId, state.custom_mode, getCustomModeText());
+                customModeAudio = getCustomModeAudioText();
             }
 
             // AUDIO
@@ -1006,11 +1006,12 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QVariant param;
                 if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
                 {
-                    param = QVariant(QChar((unsigned char)val.param_float));
+                    // Store in natural unsigned int and avoid conversion issues.
+                    param = QVariant((uint)val.param_float);
                 }
                 else
                 {
-                    param = QVariant(QChar((unsigned char)val.param_uint8));
+                    param = QVariant((uint)val.param_uint8);
                 }
                 parameters.value(component)->insert(parameterName, param);
                 // Emit change
@@ -1025,11 +1026,12 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QVariant param;
                 if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
                 {
-                    param = QVariant(QChar((char)val.param_float));
+                    // Store in natural signed int and avoid conversion issues.
+                    param = QVariant((int)val.param_float);
                 }
                 else
                 {
-                    param = QVariant(QChar((char)val.param_int8));
+                    param = QVariant((int)val.param_int8);
                 }
                 parameters.value(component)->insert(parameterName, param);
                 // Emit change
@@ -1044,7 +1046,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QVariant param;
                 if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
                 {
-                    param = QVariant((short)val.param_float);
+                    param = QVariant((int)val.param_float);
                 }
                 else
                 {
@@ -1063,7 +1065,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 QVariant param;
                 if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
                 {
-                    param = QVariant((unsigned int)val.param_float);
+                    param = QVariant((uint)val.param_float);
                 }
                 else
                 {
@@ -1894,7 +1896,7 @@ void UAS::setMode(int mode)
     QLOG_DEBUG() << "SENDING REQUEST TO SET MODE TO SYSTEM" << uasId << ", REQUEST TO SET MODE " << mode;
 
     mavlink_message_t msg;
-    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, (uint8_t)uasId, newMode, (uint16_t)navMode);
+    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, (uint8_t)uasId, newMode, (uint16_t)custom_mode);
     sendMessage(msg);
 
 }
@@ -1996,7 +1998,7 @@ float UAS::filterVoltage(float value) const
 * The string representation of the custom_mode.
 * @Return string
 */
-QString UAS::getCustomModeText(int mode)
+QString UAS::getCustomModeText()
 {
     return QString("UNKNOWN");
 }
@@ -2005,10 +2007,10 @@ QString UAS::getCustomModeText(int mode)
 * The audio string representation of the custom_mode.
 * @Return string
 */
-QString UAS::getCustomModeAudioText(int mode)
+QString UAS::getCustomModeAudioText()
 {
-    QString navModeString = tr("changed custom mode to ");
-    return navModeString + getCustomModeText(mode);
+    QString customModeString = tr("changed custom mode to ");
+    return customModeString + getCustomModeText();
 }
 
 /** 
@@ -2672,7 +2674,7 @@ void UAS::launch()
 void UAS::armSystem()
 {
     mavlink_message_t msg;
-    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_SAFETY_ARMED, navMode);
+    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_SAFETY_ARMED, custom_mode);
     sendMessage(msg);
 }
 
@@ -2683,7 +2685,7 @@ void UAS::armSystem()
 void UAS::disarmSystem()
 {
     mavlink_message_t msg;
-    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode & ~MAV_MODE_FLAG_SAFETY_ARMED, navMode);
+    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode & ~MAV_MODE_FLAG_SAFETY_ARMED, custom_mode);
     sendMessage(msg);
 }
 
@@ -2993,7 +2995,7 @@ void UAS::sendHilState(quint64 time_us, float roll, float pitch, float yaw, floa
     {
         // Attempt to set HIL mode
         mavlink_message_t msg;
-        mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, navMode);
+        mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, custom_mode);
         sendMessage(msg);
         QLOG_DEBUG() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
     }
@@ -3017,7 +3019,7 @@ void UAS::sendHilSensors(quint64 time_us, float xacc, float yacc, float zacc, fl
     {
         // Attempt to set HIL mode
         mavlink_message_t msg;
-        mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, navMode);
+        mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, custom_mode);
         sendMessage(msg);
         QLOG_DEBUG() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
     }
@@ -3048,7 +3050,7 @@ void UAS::sendHilGps(quint64 time_us, double lat, double lon, double alt, int fi
     {
         // Attempt to set HIL mode
         mavlink_message_t msg;
-        mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, navMode);
+        mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, custom_mode);
         sendMessage(msg);
         QLOG_DEBUG() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
     }
@@ -3064,7 +3066,7 @@ void UAS::startHil()
     hilEnabled = true;
     sensorHil = false;
     mavlink_message_t msg;
-    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, navMode);
+    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode | MAV_MODE_FLAG_HIL_ENABLED, custom_mode);
     sendMessage(msg);
     // Connect HIL simulation link
     simulation->connectSimulation();
@@ -3077,7 +3079,7 @@ void UAS::stopHil()
 {
     if (simulation) simulation->disconnectSimulation();
     mavlink_message_t msg;
-    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode & !MAV_MODE_FLAG_HIL_ENABLED, navMode);
+    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), mode & !MAV_MODE_FLAG_HIL_ENABLED, custom_mode);
     sendMessage(msg);
     hilEnabled = false;
     sensorHil = false;
@@ -3446,4 +3448,9 @@ void UAS::stopLowBattAlarm()
         GAudioOutput::instance()->stopEmergency();
         lowBattAlarm = false;
     }
+}
+
+int UAS::getCustomMode()
+{
+    return custom_mode;
 }

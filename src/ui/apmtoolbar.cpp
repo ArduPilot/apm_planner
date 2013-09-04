@@ -60,6 +60,18 @@ APMToolBar::APMToolBar(QWidget *parent):
 
     setConnection(false);
 
+    // set the size of the device box and row spacing for icons
+#ifdef Q_OS_MAC
+    rootObject()->setProperty("rowSpacerSize", QVariant(3));
+    rootObject()->setProperty("linkDeviceSize", QVariant(105));
+#elif Q_OS_UNIX
+    rootObject()->setProperty("rowSpacerSize", QVariant(3));
+    rootObject()->setProperty("linkDeviceSize", QVariant(100));
+#else
+    rootObject()->setProperty("rowSpacerSize", QVariant(3));
+    rootObject()->setProperty("linkDeviceSize", QVariant(80));
+#endif
+
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUasSet(UASInterface*)));
     activeUasSet(UASManager::instance()->getActiveUAS());
 
@@ -83,6 +95,15 @@ void APMToolBar::activeUasSet(UASInterface *uas)
         disconnect(m_uas, SIGNAL(heartbeat(UASInterface*)),
                    this, SLOT(heartbeat(UASInterface*)));
 
+        // disconnect signals from the active links
+        QList<LinkInterface*>* list = uas->getLinks();
+        foreach( LinkInterface* link, *list)  {
+            SerialLinkInterface* slink = dynamic_cast<SerialLinkInterface*>(link);
+            if (slink != NULL) {
+                    disconnect(slink, SIGNAL(connected(bool)),
+                            this, SLOT(setConnection(bool)));
+                }
+            };
     }
 
     m_uas = uas;
@@ -101,6 +122,17 @@ void APMToolBar::activeUasSet(UASInterface *uas)
         rootObject()->setProperty("disableStatusDisplay", QVariant(true));
     } else {
         rootObject()->setProperty("disableStatusDisplay", QVariant(false));
+    }
+
+    // Connect the signals from active links
+    QList<LinkInterface*>* list = uas->getLinks();
+    foreach( LinkInterface* link, *list)  {
+        SerialLinkInterface* slink = dynamic_cast<SerialLinkInterface*>(link);
+        if (slink != NULL) {
+                connect(slink, SIGNAL(connected(bool)),
+                        this, SLOT(setConnection(bool)));
+                break;
+        }
     }
 
 }
@@ -184,32 +216,53 @@ void APMToolBar::selectTerminalView()
     QLOG_DEBUG() << "APMToolBar: selectTerminalView";
 }
 
+void APMToolBar::connectToActiveMav(UASInterface* uas)
+{
+    QLOG_DEBUG() << "connectToActiveMav: " << uas;
+    bool connected;
+
+    if (uas) {
+        // Connected to a MAV
+        QList<LinkInterface*>* list = uas->getLinks();
+        foreach( LinkInterface* link, *list)  {
+            SerialLinkInterface* slink = dynamic_cast<SerialLinkInterface*>(link);
+            if (slink != NULL) {
+                if (slink->isConnected()) {
+                    connected = !slink->disconnect();
+                    disconnect(slink, SIGNAL(connected(bool)),
+                            this, SLOT(setConnection(bool)));
+                } else {
+                    connected = slink->connect();
+                    connect(slink, SIGNAL(connected(bool)),
+                            this, SLOT(setConnection(bool)));
+                }
+                break;
+            } else {
+                connected = false; // disconnected
+            }
+        };
+
+    } else {
+        // No active UAS set, pop up Serial Interface
+        connected = false; //disconnected
+
+        if (LinkManager::instance()->getLinks().count() < 3) {
+            // No Link so prompt to connect one
+            MainWindow::instance()->addLink();
+        } else {
+            // Need to Connect Link
+            connected = LinkManager::instance()->getLinks().last()->connect();
+        }
+
+        MainWindow::instance()->addLink();
+    }
+}
+
 void APMToolBar::connectMAV()
 {
-    //[ToDo] needs to be updated as activeUAS
     QLOG_DEBUG() << "APMToolBar: connectMAV ";
 
-    bool connected = LinkManager::instance()->getLinks().last()->isConnected();
-    bool result;
-
-    if (!connected && LinkManager::instance()->getLinks().count() < 3)
-    {
-        // No Link so prompt to connect one
-        MainWindow::instance()->addLink();
-    } else if (!connected) {
-        // Need to Connect Link
-        result = LinkManager::instance()->getLinks().last()->connect();
-
-    } else if (connected && LinkManager::instance()->getLinks().count() > 2) {
-        // result need to be the opposite of success.
-        result = !LinkManager::instance()->getLinks().last()->disconnect();
-    }
-    QLOG_DEBUG() << "result = " << result;
-
-    // Change the image to represent the state
-    setConnection(result);
-
-    emit MAVConnected(result);
+    connectToActiveMav(m_uas);
 }
 
 void APMToolBar::setConnection(bool connection)
@@ -217,6 +270,14 @@ void APMToolBar::setConnection(bool connection)
     // Change the image to represent the state
     QObject *object = rootObject();
     object->setProperty("connected", connection);
+
+    if ((m_uas)&&(connection==true)) {
+        QLOG_DEBUG() << "APMToolBar: CustomMode" << m_uas->getCustomMode();
+        setModeText(m_uas->getCustomModeText());
+    } else {
+        // disconnected
+        rootObject()->setProperty("modeText", "mode");
+    }
 }
 
 APMToolBar::~APMToolBar()
@@ -226,28 +287,31 @@ APMToolBar::~APMToolBar()
 
 void APMToolBar::showConnectionDialog()
 {
-    // [ToDo] Fix this to be for active linke
     // Displays a UI where the user can select a MAV Link.
     QLOG_DEBUG() << "APMToolBar: showConnectionDialog link count ="
              << LinkManager::instance()->getLinks().count();
 
-    LinkInterface *link = LinkManager::instance()->getLinks().last();
-    bool result;
+    if (m_uas) {
+        // Active to a MAV
+        QList<LinkInterface*>* list = m_uas->getLinks();
+        foreach( LinkInterface* link, *list)  {
+            SerialLinkInterface* slink = dynamic_cast<SerialLinkInterface*>(link);
+            if (slink != NULL) {
+                MainWindow::instance()->configLink(slink);
+                break;
+            }
+        };
 
-    if (link && LinkManager::instance()->getLinks().count() >= 3)
-    {
-        // Serial Link so prompt to config it
-        connect(link, SIGNAL(updateLink(LinkInterface*)),
-                             this, SLOT(updateLinkDisplay(LinkInterface*)));
-        result = MainWindow::instance()->configLink(link);
-
-        if (!result)
-            QLOG_DEBUG() << "Link Config Failed!";
     } else {
-        // No Link so prompt to create one
-        MainWindow::instance()->addLink();
+        // No active UAS set, pop up Serial Interface
+        if (LinkManager::instance()->getLinks().count() < 3) {
+            // No Link so prompt to connect one
+            MainWindow::instance()->addLink();
+        } else {
+            // Need to Connect to a Link
+            MainWindow::instance()->configLink(LinkManager::instance()->getLinks().last());
+        }
     }
-
 }
 
 void APMToolBar::updateLinkDisplay(LinkInterface* newLink)
@@ -275,15 +339,30 @@ void APMToolBar::updateLinkDisplay(LinkInterface* newLink)
     }
 }
 
-void APMToolBar::navModeChanged(int uasid, int mode, const QString &text)
+void APMToolBar::setModeText(const QString &text)
 {
-    QLOG_DEBUG() << "APMToolBar::mode:" << text;
-    Q_UNUSED(uasid);
-
     QObject *object = rootObject();
     object->setProperty("modeText", text.toUpper());
 
-    if (mode == ApmCopter::RTL) {
+    // [ToDo] ptentially factor the code below into the APMToolBar
+    int customMode = m_uas->getCustomMode();
+    bool inRTL;
+
+    switch (m_uas->getSystemType()){
+    case MAV_TYPE_FIXED_WING:
+        inRTL = (customMode == ApmPlane::RTL);
+        break;
+    case MAV_TYPE_QUADROTOR:
+        inRTL = (customMode == ApmCopter::RTL);
+        break;
+    case MAV_TYPE_GROUND_ROVER:
+        inRTL = (customMode == ApmRover::RTL);
+        break;
+    default:
+        inRTL = false;
+    }
+
+    if (inRTL) {
         object->setProperty("modeTextColor", QColor("red"));
         object->setProperty("modeBkgColor", QColor(0x88, 0x00, 0x00, 0x80));
         object->setProperty("modeBorderColor", QColor("red"));
@@ -292,6 +371,15 @@ void APMToolBar::navModeChanged(int uasid, int mode, const QString &text)
         object->setProperty("modeBkgColor", QColor(0x00, 0x88, 0x00, 0x80));
         object->setProperty("modeBorderColor", QColor("white"));
     }
+}
+
+void APMToolBar::navModeChanged(int uasid, int mode, const QString &text)
+{
+    QLOG_DEBUG() << "APMToolBar::mode:" << text;
+    Q_UNUSED(uasid);
+    Q_UNUSED(mode);
+
+    setModeText(text);
 }
 
 void APMToolBar::heartbeat(UASInterface* uas)

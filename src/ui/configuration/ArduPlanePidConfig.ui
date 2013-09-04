@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>733</width>
-    <height>641</height>
+    <width>862</width>
+    <height>802</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,112 +18,53 @@
     <rect>
      <x>20</x>
      <y>10</y>
-     <width>681</width>
-     <height>581</height>
+     <width>761</width>
+     <height>811</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="title">
-       <string>L1 Control - Turn Control</string>
+    <property name="sizeConstraint">
+     <enum>QLayout::SetFixedSize</enum>
+    </property>
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="groupBox_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_29">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_27">
-           <item>
-            <widget class="QLabel" name="label_41">
-             <property name="text">
-              <string>Period</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_42">
-             <property name="text">
-              <string>Damping</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_28">
-           <item>
-            <widget class="QDoubleSpinBox" name="l1PeriodSpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="l1DampingSpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>Servo Roll Pid</string>
+       <string>Servo Pitch Pid</string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_14">
+      <layout class="QVBoxLayout" name="verticalLayout_15">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="label_5">
              <property name="text">
               <string>P</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="label_6">
              <property name="text">
               <string>I</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="label_7">
              <property name="text">
               <string>D</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="label_8">
              <property name="text">
               <string>INT_MAX</string>
              </property>
@@ -132,211 +73,48 @@
           </layout>
          </item>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QDoubleSpinBox" name="servoRollPSpinBox">
+            <widget class="QDoubleSpinBox" name="servoPitchPSpinBox">
              <property name="decimals">
               <number>3</number>
              </property>
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="servoRollISpinBox">
+            <widget class="QDoubleSpinBox" name="servoPitchISpinBox">
              <property name="decimals">
               <number>3</number>
              </property>
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="servoRollDSpinBox">
+            <widget class="QDoubleSpinBox" name="servoPitchDSpinBox">
              <property name="decimals">
               <number>3</number>
              </property>
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="servoRollIMAXSpinBox">
-             <property name="maximum">
-              <double>10000.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="1" column="2">
-     <widget class="QGroupBox" name="groupBox_6">
-      <property name="title">
-       <string>Nav Pitch Alt Pid</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_18">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <item>
-            <widget class="QLabel" name="label_21">
-             <property name="text">
-              <string>P</string>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_22">
-             <property name="text">
-              <string>I</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_23">
-             <property name="text">
-              <string>D</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_24">
-             <property name="text">
-              <string>INT_MAX</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_12">
-           <item>
-            <widget class="QDoubleSpinBox" name="navAltPSpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="navAltISpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="navAltDSpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="navAltIMAXSpinBox">
-             <property name="maximum">
-              <double>10000.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QGroupBox" name="groupBox_4">
-      <property name="title">
-       <string>Nav Pitch AS Pid</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_17">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
-           <item>
-            <widget class="QLabel" name="label_17">
-             <property name="text">
-              <string>P</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_18">
-             <property name="text">
-              <string>I</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_19">
-             <property name="text">
-              <string>D</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_20">
-             <property name="text">
-              <string>INT_MAX</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_10">
-           <item>
-            <widget class="QDoubleSpinBox" name="navASPSpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="navASISpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="navASDSpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="navASIMAXSpinBox">
+            <widget class="QDoubleSpinBox" name="servoPitchIMAXSpinBox">
              <property name="maximum">
               <double>10000.000000000000000</double>
              </property>
@@ -351,6 +129,12 @@
     </item>
     <item row="0" column="2">
      <widget class="QGroupBox" name="groupBox_5">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="title">
        <string>Servo Yaw Pid</string>
       </property>
@@ -399,6 +183,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -409,6 +196,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -418,6 +208,9 @@
              </property>
              <property name="maximum">
               <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
              </property>
             </widget>
            </item>
@@ -435,8 +228,397 @@
       </layout>
      </widget>
     </item>
+    <item row="1" column="1">
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Nav Pitch AS Pid</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_17">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <widget class="QLabel" name="label_17">
+             <property name="text">
+              <string>P</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_18">
+             <property name="text">
+              <string>I</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_19">
+             <property name="text">
+              <string>D</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_20">
+             <property name="text">
+              <string>INT_MAX</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <item>
+            <widget class="QDoubleSpinBox" name="navASPSpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="navASISpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="navASDSpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="navASIMAXSpinBox">
+             <property name="maximum">
+              <double>10000.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Servo Roll Pid</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_14">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>P</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>I</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>D</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>INT_MAX</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QDoubleSpinBox" name="servoRollPSpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="servoRollISpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="servoRollDSpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="servoRollIMAXSpinBox">
+             <property name="maximum">
+              <double>10000.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Nav Pitch Alt Pid</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_18">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <item>
+            <widget class="QLabel" name="label_21">
+             <property name="text">
+              <string>P</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_22">
+             <property name="text">
+              <string>I</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_23">
+             <property name="text">
+              <string>D</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_24">
+             <property name="text">
+              <string>INT_MAX</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_12">
+           <item>
+            <widget class="QDoubleSpinBox" name="navAltPSpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="navAltISpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="navAltDSpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="navAltIMAXSpinBox">
+             <property name="maximum">
+              <double>10000.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>L1 Control - Turn Control</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_29">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_27">
+           <item>
+            <widget class="QLabel" name="label_41">
+             <property name="text">
+              <string>Period</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_42">
+             <property name="text">
+              <string>Damping</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_28">
+           <item>
+            <widget class="QDoubleSpinBox" name="l1PeriodSpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="l1DampingSpinBox">
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="2" column="2">
      <widget class="QGroupBox" name="groupBox_7">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="title">
        <string>Throttle 0-100%</string>
       </property>
@@ -495,6 +677,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -505,6 +690,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -512,91 +700,8 @@
              <property name="maximum">
               <double>10000.000000000000000</double>
              </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="title">
-       <string>Servo Pitch Pid</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_15">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>P</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>I</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>D</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>INT_MAX</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QDoubleSpinBox" name="servoPitchPSpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="servoPitchISpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="servoPitchDSpinBox">
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="maximum">
-              <double>100.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDoubleSpinBox" name="servoPitchIMAXSpinBox">
-             <property name="maximum">
-              <double>10000.000000000000000</double>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
              </property>
             </widget>
            </item>
@@ -607,8 +712,14 @@
       </layout>
      </widget>
     </item>
-    <item row="3" column="2">
+    <item row="4" column="2">
      <widget class="QGroupBox" name="groupBox_8">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="title">
        <string>Aiespeed m/s</string>
       </property>
@@ -657,6 +768,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -666,6 +780,9 @@
              </property>
              <property name="maximum">
               <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
              </property>
             </widget>
            </item>
@@ -677,12 +794,18 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="airspeedRatioSpinBox">
              <property name="maximum">
               <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
              </property>
             </widget>
            </item>
@@ -736,6 +859,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -745,6 +871,9 @@
              </property>
              <property name="maximum">
               <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
              </property>
             </widget>
            </item>
@@ -756,6 +885,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
             </widget>
            </item>
           </layout>
@@ -765,7 +897,7 @@
       </layout>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="4" column="1">
      <widget class="QGroupBox" name="groupBox_10">
       <property name="title">
        <string>Navigation Angles</string>
@@ -821,6 +953,9 @@
              <property name="maximum">
               <double>10000.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -830,6 +965,9 @@
              </property>
              <property name="maximum">
               <double>10000.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
              </property>
              <property name="value">
               <double>0.000000000000000</double>
@@ -845,6 +983,12 @@
     </item>
     <item row="2" column="0">
      <widget class="QGroupBox" name="groupBox_11">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="title">
        <string>Energy/Alt Pid</string>
       </property>
@@ -893,6 +1037,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -903,6 +1050,9 @@
              <property name="maximum">
               <double>100.000000000000000</double>
              </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
+             </property>
             </widget>
            </item>
            <item>
@@ -912,6 +1062,9 @@
              </property>
              <property name="maximum">
               <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.001000000000000</double>
              </property>
             </widget>
            </item>
@@ -929,33 +1082,73 @@
       </layout>
      </widget>
     </item>
+    <item row="4" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_34">
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QPushButton" name="writePushButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>120</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>120</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Write Params</string>
+        </property>
+       </widget>
+      </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QPushButton" name="refreshPushButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>120</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>120</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Refresh Params</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
-  </widget>
-  <widget class="QPushButton" name="writePushButton">
-   <property name="geometry">
-    <rect>
-     <x>260</x>
-     <y>600</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Write Params</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="refreshPushButton">
-   <property name="geometry">
-    <rect>
-     <x>350</x>
-     <y>600</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Refresh Params</string>
-   </property>
   </widget>
  </widget>
  <resources/>
