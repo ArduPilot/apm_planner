@@ -75,7 +75,6 @@ Rectangle {
             connectButton.image = "./resources/apmplanner/toolbar/disconnect.png"
             connectButton.label = "DISCONNECT"
             setArmed(armed)
-            setMode(modeText)
 
         } else {
             console.log("APM Tool BAR QML: disconnected")
