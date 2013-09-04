@@ -53,6 +53,7 @@ public:
     void setTerminalViewAction(QAction *action);
     void setConnectMAVAction(QAction *action);
     
+    bool connectToActiveMav(UASInterface *uas);
 signals:
     void triggerFlightView();
     void triggerFlightPlanView();

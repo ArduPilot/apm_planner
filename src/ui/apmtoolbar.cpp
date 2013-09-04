@@ -196,32 +196,59 @@ void APMToolBar::selectTerminalView()
     QLOG_DEBUG() << "APMToolBar: selectTerminalView";
 }
 
+bool APMToolBar::connectToActiveMav(UASInterface* uas)
+{
+    QLOG_DEBUG() << "connectToActiveMav: " << uas;
+    bool connected;
+
+    if (uas) {
+        // Connected to a MAV
+        QList<LinkInterface*>* list = uas->getLinks();
+        foreach( LinkInterface* link, *list)  {
+            SerialLinkInterface* slink = dynamic_cast<SerialLinkInterface*>(link);
+            if (slink != NULL) {
+                if (slink->isConnected()) {
+                    connected = !slink->disconnect();
+                } else {
+                    connected = slink->connect();
+                }
+                break;
+            } else {
+                connected = false; // disconnected
+            }
+        };
+
+    } else {
+        // No active UAS set, pop up Serial Interface
+        connected = false; //disconnected
+
+        if (LinkManager::instance()->getLinks().count() < 3) {
+            // No Link so prompt to connect one
+            MainWindow::instance()->addLink();
+        } else {
+            // Need to Connect Link
+            connected = LinkManager::instance()->getLinks().last()->connect();
+        }
+
+        MainWindow::instance()->addLink();
+
+    }
+    return connected;
+}
+
 void APMToolBar::connectMAV()
 {
-    //[ToDo] needs to be updated as activeUAS
     QLOG_DEBUG() << "APMToolBar: connectMAV ";
 
-    bool connected = LinkManager::instance()->getLinks().last()->isConnected();
-    bool result;
 
-    if (!connected && LinkManager::instance()->getLinks().count() < 3)
-    {
-        // No Link so prompt to connect one
-        MainWindow::instance()->addLink();
-    } else if (!connected) {
-        // Need to Connect Link
-        result = LinkManager::instance()->getLinks().last()->connect();
+    bool connected = connectToActiveMav(m_uas);
 
-    } else if (connected && LinkManager::instance()->getLinks().count() > 2) {
-        // result need to be the opposite of success.
-        result = !LinkManager::instance()->getLinks().last()->disconnect();
-    }
-    QLOG_DEBUG() << "result = " << result;
+    QLOG_DEBUG() << "connectMAV connected = " << connected;
 
     // Change the image to represent the state
-    setConnection(result);
+    setConnection(connected);
 
-    emit MAVConnected(result);
+    emit MAVConnected(connected);
 }
 
 void APMToolBar::setConnection(bool connection)
@@ -238,28 +265,31 @@ APMToolBar::~APMToolBar()
 
 void APMToolBar::showConnectionDialog()
 {
-    // [ToDo] Fix this to be for active linke
     // Displays a UI where the user can select a MAV Link.
     QLOG_DEBUG() << "APMToolBar: showConnectionDialog link count ="
              << LinkManager::instance()->getLinks().count();
 
-    LinkInterface *link = LinkManager::instance()->getLinks().last();
-    bool result;
+    if (m_uas) {
+        // Active to a MAV
+        QList<LinkInterface*>* list = m_uas->getLinks();
+        foreach( LinkInterface* link, *list)  {
+            SerialLinkInterface* slink = dynamic_cast<SerialLinkInterface*>(link);
+            if (slink != NULL) {
+                MainWindow::instance()->configLink(slink);
+                break;
+            }
+        };
 
-    if (link && LinkManager::instance()->getLinks().count() >= 3)
-    {
-        // Serial Link so prompt to config it
-        connect(link, SIGNAL(updateLink(LinkInterface*)),
-                             this, SLOT(updateLinkDisplay(LinkInterface*)));
-        result = MainWindow::instance()->configLink(link);
-
-        if (!result)
-            QLOG_DEBUG() << "Link Config Failed!";
     } else {
-        // No Link so prompt to create one
-        MainWindow::instance()->addLink();
+        // No active UAS set, pop up Serial Interface
+        if (LinkManager::instance()->getLinks().count() < 3) {
+            // No Link so prompt to connect one
+            MainWindow::instance()->addLink();
+        } else {
+            // Need to Connect to a Link
+            MainWindow::instance()->configLink(LinkManager::instance()->getLinks().last());
+        }
     }
-
 }
 
 void APMToolBar::updateLinkDisplay(LinkInterface* newLink)
