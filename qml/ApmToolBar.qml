@@ -29,7 +29,7 @@ Rectangle {
     property alias baudrateLabel: baudrate.label
     property bool connected: false
     property bool armed: false
-    property string armedstr: "DISARMED"
+    property string armedstr: "status"
     property bool disableStatusDisplay: false
 
     property alias modeText: modeTextId.modeText
@@ -67,6 +67,12 @@ Rectangle {
             connectButton.image = "./resources/apmplanner/toolbar/connect.png"
             connectButton.label = "CONNECT"
             heartbeatDisplayId.stopAnimation = true;
+
+            // clear indicators from showing info
+            statusDisplayId.statusText = "status"
+            statusDisplayId.statusTextColor = "yellow"
+            statusDisplayId.statusBackgroundColor = "black"
+            modeTextId.modeText = "mode"
         }
     }
 
@@ -162,7 +168,7 @@ Rectangle {
         StatusDisplay {
             id: statusDisplayId
             width: 110
-            statusText: "DISARMED"
+            statusText: "status"
             statusTextColor: "yellow"
             statusBackgroundColor: "black"
         }
@@ -175,7 +181,7 @@ Rectangle {
 
         ModeDisplay {
             id:modeTextId
-            modeText: "unknown"
+            modeText: "mode"
             modeTextColor: "red"
             modeBackgroundColor: "black"
             modeBorderColor: "white"
