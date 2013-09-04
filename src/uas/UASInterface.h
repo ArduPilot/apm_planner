@@ -109,6 +109,13 @@ public:
     virtual const QString& getShortMode() const = 0;
     /** @brief Translate mode id into text */
     static QString getShortModeTextFor(int id);
+    /** @brief Get the human-readable custom mode string*/
+    virtual QString getCustomModeText() = 0;
+    /** @brief Get the human-speakable custom mode string */
+    virtual QString getCustomModeAudioText() = 0;
+    /** @brief Get the human-speakable custom mode string */
+    virtual int getCustomMode() = 0;
+
     //virtual QColor getColor() = 0;
     virtual int getUASID() const = 0; ///< Get the ID of the connected UAS
     /** @brief The time interval the robot is switched on **/

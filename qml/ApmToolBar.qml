@@ -39,22 +39,34 @@ Rectangle {
 
     property alias heartbeat: heartbeatDisplayId.heartbeat
 
+    function setArmed(armedState) {
+        if (armedState) {
+            statusDisplayId.statusText = "ARMED"
+            statusDisplayId.statusTextColor = "red"
+            statusDisplayId.statusBackgroundColor = "#FF880000"
+
+        } else {
+            statusDisplayId.statusText = "DISARMED"
+            statusDisplayId.statusTextColor = "yellow"
+            statusDisplayId.statusBackgroundColor = "black"
+        }
+    }
+
+    function clearArmedMode() {
+        // clear indicators from showing info
+        statusDisplayId.statusText = "status"
+        statusDisplayId.statusTextColor = "yellow"
+        statusDisplayId.statusBackgroundColor = "black"
+        modeTextId.modeText = "mode"
+    }
+
     width: toolbar.width
     height: 72
     color: "black"
     border.color: "black"
 
     onArmedChanged: {
-        if (armed) {
-            statusDisplayId.statusText = "ARMED"
-            statusDisplayId.statusTextColor = "red"
-            statusDisplayId.statusBackgroundColor = "#FF880000"
-        }
-        else {
-            statusDisplayId.statusText = "DISARMED"
-            statusDisplayId.statusTextColor = "yellow"
-            statusDisplayId.statusBackgroundColor = "black"
-        }
+        setArmed(armed)
     }
 
     onConnectedChanged: {
@@ -62,17 +74,15 @@ Rectangle {
             console.log("APM Tool BAR QML: connected")
             connectButton.image = "./resources/apmplanner/toolbar/disconnect.png"
             connectButton.label = "DISCONNECT"
+            setArmed(armed)
+            setMode(modeText)
+
         } else {
             console.log("APM Tool BAR QML: disconnected")
             connectButton.image = "./resources/apmplanner/toolbar/connect.png"
             connectButton.label = "CONNECT"
             heartbeatDisplayId.stopAnimation = true;
-
-            // clear indicators from showing info
-            statusDisplayId.statusText = "status"
-            statusDisplayId.statusTextColor = "yellow"
-            statusDisplayId.statusBackgroundColor = "black"
-            modeTextId.modeText = "mode"
+            clearArmedMode()
         }
     }
 

@@ -71,6 +71,10 @@ public:
     static QString getShortModeTextFor(int id);
     /** @brief Translate from mode id to audio text */
     static QString getAudioModeTextFor(int id);
+
+    /** @brief Get the human-speakable custom mode string */
+    int getCustomMode();
+
     /** @brief Get the unique system id */
     int getUASID() const;
     /** @brief Get the airframe */
@@ -363,7 +367,6 @@ protected: //COMMENTS FOR TEST UNIT
     bool systemIsArmed;           ///< If the system is armed
     uint8_t mode;                 ///< The current mode of the MAV
     uint32_t custom_mode;         ///< The current mode of the MAV
-    uint32_t navMode;             ///< The current navigation mode of the MAV
     int status;                   ///< The current status of the MAV
     QString shortModeText;        ///< Short textual mode description
     QString shortStateText;       ///< Short textual state description
@@ -506,10 +509,10 @@ public:
     void getStatusForCode(int statusCode, QString& uasState, QString& stateDescription);
 
     /** @brief Get the human-readable custom mode string*/
-    virtual QString getCustomModeText(int mode);
+    virtual QString getCustomModeText();
 
     /** @brief Get the human-speakable custom mode string */
-    virtual QString getCustomModeAudioText(int mode);
+    virtual QString getCustomModeAudioText();
 
     /** @brief Check if vehicle is in autonomous mode */
     bool isAuto();
@@ -856,7 +859,7 @@ signals:
     /** @brief A new camera image has arrived */
     void imageReady(UASInterface* uas);
     /** @brief HIL controls have changed */
-    void hilControlsChanged(uint64_t time, float rollAilerons, float pitchElevator, float yawRudder, float throttle, uint8_t systemMode, uint8_t navMode);
+    void hilControlsChanged(uint64_t time, float rollAilerons, float pitchElevator, float yawRudder, float throttle, uint8_t systemMode, uint8_t custom_mode);
     /** @brief HIL actuator outputs have changed */
     void hilActuatorsChanged(uint64_t time, float act1, float act2, float act3, float act4, float act5, float act6, float act7, float act8);
 

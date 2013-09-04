@@ -378,7 +378,7 @@ void ArduPilotMegaMAV::navModeChanged(int uasid, int mode, const QString& text)
     QLOG_DEBUG() << "APM: Nav Mode Changed:" << mode << text;
 }
 
-QString ArduPilotMegaMAV::getCustomModeText(int custom_mode)
+QString ArduPilotMegaMAV::getCustomModeText()
 {
     QLOG_DEBUG() << "APM: getCustomModeText()";
     QString customModeString;
@@ -402,17 +402,17 @@ QString ArduPilotMegaMAV::getCustomModeText(int custom_mode)
 
         default:
             QLOG_WARN() << "APM: Unsupported System Type " << systemType;
-            customModeString = tr("UNKOWN");
+            customModeString = tr("APM UNKOWN");
         }
     return customModeString;
 }
 
-QString ArduPilotMegaMAV::getCustomModeAudioText(int custom_mode)
+QString ArduPilotMegaMAV::getCustomModeAudioText()
 {
     QLOG_DEBUG() << "APM: getCustomModeAudioText()";
 
     QString returnString = tr("and mode is ");
-    return returnString + getCustomModeText(custom_mode);
+    return returnString + getCustomModeText();
 }
 
 void ArduPilotMegaMAV::textMessageReceived(int uasid, int componentid, int severity, QString text)

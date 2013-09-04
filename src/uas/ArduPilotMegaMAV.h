@@ -128,8 +128,8 @@ public:
     /** @brief Set camera mount control */
     void setMountControl(double pa,double pb,double pc,bool islatlong);
 
-    QString getCustomModeText(int custom_mode);
-    QString getCustomModeAudioText(int custom_mode);
+    QString getCustomModeText();
+    QString getCustomModeAudioText();
 
 public slots:
     /** @brief Receive a MAVLink message from this MAV */

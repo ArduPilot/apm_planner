@@ -95,6 +95,15 @@ void APMToolBar::activeUasSet(UASInterface *uas)
         disconnect(m_uas, SIGNAL(heartbeat(UASInterface*)),
                    this, SLOT(heartbeat(UASInterface*)));
 
+        // disconnect signals from the active links
+        QList<LinkInterface*>* list = uas->getLinks();
+        foreach( LinkInterface* link, *list)  {
+            SerialLinkInterface* slink = dynamic_cast<SerialLinkInterface*>(link);
+            if (slink != NULL) {
+                    disconnect(slink, SIGNAL(connected(bool)),
+                            this, SLOT(setConnection(bool)));
+                }
+            };
     }
 
     m_uas = uas;
@@ -113,6 +122,17 @@ void APMToolBar::activeUasSet(UASInterface *uas)
         rootObject()->setProperty("disableStatusDisplay", QVariant(true));
     } else {
         rootObject()->setProperty("disableStatusDisplay", QVariant(false));
+    }
+
+    // Connect the signals from active links
+    QList<LinkInterface*>* list = uas->getLinks();
+    foreach( LinkInterface* link, *list)  {
+        SerialLinkInterface* slink = dynamic_cast<SerialLinkInterface*>(link);
+        if (slink != NULL) {
+                connect(slink, SIGNAL(connected(bool)),
+                        this, SLOT(setConnection(bool)));
+                break;
+        }
     }
 
 }
@@ -196,7 +216,7 @@ void APMToolBar::selectTerminalView()
     QLOG_DEBUG() << "APMToolBar: selectTerminalView";
 }
 
-bool APMToolBar::connectToActiveMav(UASInterface* uas)
+void APMToolBar::connectToActiveMav(UASInterface* uas)
 {
     QLOG_DEBUG() << "connectToActiveMav: " << uas;
     bool connected;
@@ -209,8 +229,12 @@ bool APMToolBar::connectToActiveMav(UASInterface* uas)
             if (slink != NULL) {
                 if (slink->isConnected()) {
                     connected = !slink->disconnect();
+                    disconnect(slink, SIGNAL(connected(bool)),
+                            this, SLOT(setConnection(bool)));
                 } else {
                     connected = slink->connect();
+                    connect(slink, SIGNAL(connected(bool)),
+                            this, SLOT(setConnection(bool)));
                 }
                 break;
             } else {
@@ -231,24 +255,14 @@ bool APMToolBar::connectToActiveMav(UASInterface* uas)
         }
 
         MainWindow::instance()->addLink();
-
     }
-    return connected;
 }
 
 void APMToolBar::connectMAV()
 {
     QLOG_DEBUG() << "APMToolBar: connectMAV ";
 
-
-    bool connected = connectToActiveMav(m_uas);
-
-    QLOG_DEBUG() << "connectMAV connected = " << connected;
-
-    // Change the image to represent the state
-    setConnection(connected);
-
-    emit MAVConnected(connected);
+    connectToActiveMav(m_uas);
 }
 
 void APMToolBar::setConnection(bool connection)
@@ -256,6 +270,14 @@ void APMToolBar::setConnection(bool connection)
     // Change the image to represent the state
     QObject *object = rootObject();
     object->setProperty("connected", connection);
+
+    if ((m_uas)&&(connection==true)) {
+        QLOG_DEBUG() << "APMToolBar: CustomMode" << m_uas->getCustomMode();
+        setModeText(m_uas->getCustomModeText());
+    } else {
+        // disconnected
+        rootObject()->setProperty("modeText", "mode");
+    }
 }
 
 APMToolBar::~APMToolBar()
@@ -317,15 +339,30 @@ void APMToolBar::updateLinkDisplay(LinkInterface* newLink)
     }
 }
 
-void APMToolBar::navModeChanged(int uasid, int mode, const QString &text)
+void APMToolBar::setModeText(const QString &text)
 {
-    QLOG_DEBUG() << "APMToolBar::mode:" << text;
-    Q_UNUSED(uasid);
-
     QObject *object = rootObject();
     object->setProperty("modeText", text.toUpper());
 
-    if (mode == ApmCopter::RTL) {
+    // [ToDo] ptentially factor the code below into the APMToolBar
+    int customMode = m_uas->getCustomMode();
+    bool inRTL;
+
+    switch (m_uas->getSystemType()){
+    case MAV_TYPE_FIXED_WING:
+        inRTL = (customMode == ApmPlane::RTL);
+        break;
+    case MAV_TYPE_QUADROTOR:
+        inRTL = (customMode == ApmCopter::RTL);
+        break;
+    case MAV_TYPE_GROUND_ROVER:
+        inRTL = (customMode == ApmRover::RTL);
+        break;
+    default:
+        inRTL = false;
+    }
+
+    if (inRTL) {
         object->setProperty("modeTextColor", QColor("red"));
         object->setProperty("modeBkgColor", QColor(0x88, 0x00, 0x00, 0x80));
         object->setProperty("modeBorderColor", QColor("red"));
@@ -334,6 +371,15 @@ void APMToolBar::navModeChanged(int uasid, int mode, const QString &text)
         object->setProperty("modeBkgColor", QColor(0x00, 0x88, 0x00, 0x80));
         object->setProperty("modeBorderColor", QColor("white"));
     }
+}
+
+void APMToolBar::navModeChanged(int uasid, int mode, const QString &text)
+{
+    QLOG_DEBUG() << "APMToolBar::mode:" << text;
+    Q_UNUSED(uasid);
+    Q_UNUSED(mode);
+
+    setModeText(text);
 }
 
 void APMToolBar::heartbeat(UASInterface* uas)
