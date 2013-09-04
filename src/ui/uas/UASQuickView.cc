@@ -34,8 +34,8 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
         valueEnabled("altitude");
         valueEnabled("groundSpeed");
         valueEnabled("distToWP");
-        valueEnabled("yaw");
-        valueEnabled("roll");
+        valueEnabled("M1:ATTITUDE.pitch");
+        valueEnabled("M1:ATTITUDE.roll");
     }
 
     QAction *action = new QAction("Add/Remove Items",this);
