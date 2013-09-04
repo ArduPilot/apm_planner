@@ -36,6 +36,12 @@ FlightModeConfig::FlightModeConfig(QWidget *parent) : AP2ConfigWidget(parent)
         }
     }
 
+    ui.mode1SimpleCheckBox->setVisible(false);
+    ui.mode2SimpleCheckBox->setVisible(false);
+    ui.mode3SimpleCheckBox->setVisible(false);
+    ui.mode4SimpleCheckBox->setVisible(false);
+    ui.mode5SimpleCheckBox->setVisible(false);
+    ui.mode6SimpleCheckBox->setVisible(false);
     connect(ui.savePushButton,SIGNAL(clicked()),this,SLOT(saveButtonClicked()));
     initConnections();
 }
@@ -152,6 +158,12 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
         itemlist << "OF_LOITER";
         itemlist << "Toy";
         ui.mode6ComboBox->setEnabled(true);
+        ui.mode1SimpleCheckBox->setVisible(true);
+        ui.mode2SimpleCheckBox->setVisible(true);
+        ui.mode3SimpleCheckBox->setVisible(true);
+        ui.mode4SimpleCheckBox->setVisible(true);
+        ui.mode5SimpleCheckBox->setVisible(true);
+        ui.mode6SimpleCheckBox->setVisible(true);
     }
     ui.mode1ComboBox->addItems(itemlist);
     ui.mode2ComboBox->addItems(itemlist);
@@ -191,6 +203,15 @@ void FlightModeConfig::saveButtonClicked()
         m_uas->getParamManager()->setParameter(1,"FLTMODE4",(char)ui.mode4ComboBox->currentIndex());
         m_uas->getParamManager()->setParameter(1,"FLTMODE5",(char)ui.mode5ComboBox->currentIndex());
         m_uas->getParamManager()->setParameter(1,"FLTMODE6",(char)ui.mode6ComboBox->currentIndex());
+        int value = 0;
+        value += (ui.mode1SimpleCheckBox->isChecked() ? 1 : 0);
+        value += (ui.mode2SimpleCheckBox->isChecked() ? 1 : 0) << 1;
+        value += (ui.mode3SimpleCheckBox->isChecked() ? 1 : 0) << 2;
+        value += (ui.mode4SimpleCheckBox->isChecked() ? 1 : 0) << 3;
+        value += (ui.mode5SimpleCheckBox->isChecked() ? 1 : 0) << 4;
+        value += (ui.mode6SimpleCheckBox->isChecked() ? 1 : 0) << 5;
+        m_uas->getParamManager()->setParameter(1,"SIMPLE",value);
+
     }
 }
 
@@ -334,6 +355,16 @@ void FlightModeConfig::parameterChanged(int uas, int component, QString paramete
         else if (parameterName == "FLTMODE6")
         {
             ui.mode6ComboBox->setCurrentIndex(value.toInt());
+        }
+        else if (parameterName == "SIMPLE")
+        {
+            int newval = value.toInt();
+            ui.mode1SimpleCheckBox->setChecked(newval >> 0 & 1);
+            ui.mode2SimpleCheckBox->setChecked(newval >> 1 & 1);
+            ui.mode3SimpleCheckBox->setChecked(newval >> 2 & 1);
+            ui.mode4SimpleCheckBox->setChecked(newval >> 3 & 1);
+            ui.mode5SimpleCheckBox->setChecked(newval >> 4 & 1);
+            ui.mode6SimpleCheckBox->setChecked(newval >> 5 & 1);
         }
     }
 }
