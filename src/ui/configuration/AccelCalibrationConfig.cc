@@ -21,9 +21,10 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 
 #include "AccelCalibrationConfig.h"
+#include "GAudioOutput.h"
 
-
-AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent)
+AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_muted(false)
 {
     ui.setupUi(this);
     connect(ui.calibrateAccelButton,SIGNAL(clicked()),this,SLOT(calibrateButtonClicked()));
@@ -56,6 +57,12 @@ void AccelCalibrationConfig::calibrateButtonClicked()
     {
         showNullMAVErrorMessageBox();
         return;
+    }
+    // Mute Audio until calibrated to avoid HeartBeat Warning message
+    // Mute Audio until calibrated to avoid HeartBeat Warning message
+    if (GAudioOutput::instance()->isMuted() == false) {
+        GAudioOutput::instance()->mute(true);
+        m_muted = true;
     }
     if (m_accelAckCount == 0)
     {
@@ -93,6 +100,11 @@ void AccelCalibrationConfig::calibrateButtonClicked()
 }
 void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
 {
+    if (m_muted) { // turns audio backon, when you leave the page
+        GAudioOutput::instance()->mute(false);
+        m_muted = false;
+    }
+
     if (!m_uas || !m_accelAckCount)
     {
         return;
@@ -124,6 +136,11 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
         }
         if (m_accelAckCount == 8)
         {
+            if (m_muted) { // turns audio backon, when you complete fail or success
+                GAudioOutput::instance()->mute(false);
+                m_muted = false;
+            }
+
             if (text.contains("Calibration") && text.contains("successful"))
             {
                 m_accelAckCount = 0;

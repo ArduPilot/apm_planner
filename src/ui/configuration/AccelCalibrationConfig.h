@@ -52,6 +52,7 @@ private slots:
 private:
     int m_accelAckCount;
     Ui::AccelCalibrationConfig ui;
+    bool m_muted;
 };
 
 #endif // ACCELCALIBRATIONCONFIG_H
