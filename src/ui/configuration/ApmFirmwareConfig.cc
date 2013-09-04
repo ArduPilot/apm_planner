@@ -110,12 +110,8 @@ void ApmFirmwareConfig::populateSerialPorts()
 
         if (!(info.portName().contains("Bluetooth"))){
             // Don't add bluetooth ports to be less confusing to the user
-            //on windows, the friendly name is annoyingly identical between devices. On OSX it's different
-#ifdef Q_OS_WIN
+            // on windows, the friendly name is annoyingly identical between devices. On OSX it's different
             ui.linkComboBox->insertItem(0,list[0], list);
-#else
-            ui.linkComboBox->insertItem(0,list[1], list);
-#endif
             //QLOG_DEBUG() << "Inserting " << list.first();
         }
     }
