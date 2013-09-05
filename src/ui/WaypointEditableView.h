@@ -115,6 +115,8 @@ protected:
     QGCMissionConditionDelay* MissionConditionDelayWidget;
     QGCMissionOther* MissionOtherWidget;
 
+private:
+    void disableMouseScrollWheel(QWidget &parentWidget);
 
 private:
     Ui::WaypointEditableView *m_ui;

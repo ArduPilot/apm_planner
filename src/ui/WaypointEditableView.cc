@@ -29,6 +29,8 @@
 #include "mission/QGCMissionDoFinishSearch.h"
 #include "mission/QGCMissionOther.h"
 
+#include "QGCMouseWheelEventFilter.h"
+
 #include <QDoubleSpinBox>
 #include <cmath>
 #include <qmath.h>
@@ -232,6 +234,20 @@ void WaypointEditableView::changedAction(int index)
     updateActionView(actionID);
 }
 
+void WaypointEditableView::disableMouseScrollWheel(QWidget& parentWidget)
+{
+    QList<QWidget*> widgetList = parentWidget.findChildren<QWidget*>();
+
+    foreach (QWidget *widget, widgetList)
+    {
+        if (qobject_cast<QAbstractSlider*>(widget) || qobject_cast<QComboBox*>(widget)
+                || qobject_cast<QAbstractSpinBox*>(widget))
+        {
+            widget->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+        }
+    }
+}
+
 void WaypointEditableView::initializeActionView(int actionID)
 {
     //initialize a new action-widget, if needed.
@@ -331,6 +347,10 @@ void WaypointEditableView::initializeActionView(int actionID)
         }
         break;
     }
+
+    // Make sure the mouse or trackpad scrolling doesn't
+    // change a value when you hover over it
+    disableMouseScrollWheel(*m_ui->customActionWidget);
 }
 
 void WaypointEditableView::deleted(QObject* waypoint)
