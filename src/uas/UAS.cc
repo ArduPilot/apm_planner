@@ -592,18 +592,18 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
 			// Prepare for sending data to the realtime plotter, which is every field excluding onboard_control_sensors_present.
             quint64 time = getUnixTime();
-			QString name = QString("M%1:SYS_STATUS.%2").arg(message.sysid);
-			emit valueChanged(uasId, name.arg("sensors_enabled"), "bits", state.onboard_control_sensors_enabled, time);
-			emit valueChanged(uasId, name.arg("sensors_health"), "bits", state.onboard_control_sensors_health, time);
-			emit valueChanged(uasId, name.arg("errors_comm"), "-", state.errors_comm, time);
-			emit valueChanged(uasId, name.arg("errors_count1"), "-", state.errors_count1, time);
-			emit valueChanged(uasId, name.arg("errors_count2"), "-", state.errors_count2, time);
-			emit valueChanged(uasId, name.arg("errors_count3"), "-", state.errors_count3, time);
-            emit valueChanged(uasId, name.arg("errors_count4"), "-", state.errors_count4, time);
+            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
+            emit valueChanged(uasId, name.arg("Sensors Enabled"), "bits", state.onboard_control_sensors_enabled, time);
+            emit valueChanged(uasId, name.arg("Sensors Health"), "bits", state.onboard_control_sensors_health, time);
+            emit valueChanged(uasId, name.arg("Comms Errors"), "-", state.errors_comm, time);
+            emit valueChanged(uasId, name.arg("Errors Count 1"), "-", state.errors_count1, time);
+            emit valueChanged(uasId, name.arg("Errors Count 2"), "-", state.errors_count2, time);
+            emit valueChanged(uasId, name.arg("Errors Count 3"), "-", state.errors_count3, time);
+            emit valueChanged(uasId, name.arg("Errors Count 4"), "-", state.errors_count4, time);
 
 			// Process CPU load.
             emit loadChanged(this,state.load/10.0f);
-			emit valueChanged(uasId, name.arg("load"), "%", state.load/10.0f, time);
+            emit valueChanged(uasId, name.arg("CPU Load"), "%", state.load/10.0f, time);
 
 			// Battery charge/time remaining/voltage calculations
             currentVoltage = state.voltage_battery/1000.0f;
@@ -639,15 +639,15 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             }
 
             emit batteryChanged(this, lpVoltage, currentCurrent, getChargeLevel(), timeRemaining);
-			emit valueChanged(uasId, name.arg("battery_remaining"), "%", getChargeLevel(), time);
+            emit valueChanged(uasId, name.arg("Remaining Battery"), "%", getChargeLevel(), time);
             // emit voltageChanged(message.sysid, currentVoltage);
-			emit valueChanged(uasId, name.arg("battery_voltage"), "V", currentVoltage, time);
+            emit valueChanged(uasId, name.arg("Battery Voltage"), "V", currentVoltage, time);
 
 			// And if the battery current draw is measured, log that also.
 			if (state.current_battery != -1)
 			{
                 currentCurrent = ((double)state.current_battery)/100.0f;
-                emit valueChanged(uasId, name.arg("battery_current"), "A", currentCurrent, time);
+                emit valueChanged(uasId, name.arg("Battery Current"), "A", currentCurrent, time);
 			}
 
             // LOW BATTERY ALARM
@@ -677,7 +677,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 				state.drop_rate_comm = 10000;
 			}
 			emit dropRateChanged(this->getUASID(), state.drop_rate_comm/100.0f);
-			emit valueChanged(uasId, name.arg("drop_rate_comm"), "%", state.drop_rate_comm/100.0f, time);
+            emit valueChanged(uasId, name.arg("Comms Drop Rate"), "%", state.drop_rate_comm/100.0f, time);
 		}
             break;
         case MAVLINK_MSG_ID_ATTITUDE:
