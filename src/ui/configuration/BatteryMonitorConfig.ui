@@ -64,14 +64,14 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>160</x>
+     <x>150</x>
      <y>170</y>
-     <width>241</width>
-     <height>141</height>
+     <width>281</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="title">
-    <string>Calibration</string>
+    <string>Voltage Sensor</string>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
@@ -81,28 +81,21 @@
         <item>
          <widget class="QLabel" name="label_9">
           <property name="text">
-           <string>1. Measured battery voltage:</string>
+           <string> Enter Known Battery Voltage</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QLabel" name="label_8">
           <property name="text">
-           <string>2. Battery voltage (Calc'ed):</string>
+           <string>Voltage from APM</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QLabel" name="label_10">
           <property name="text">
-           <string>3. Voltage divider (Calc'ed):</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>4. Amperes per volt:</string>
+           <string>Voltage Divider</string>
           </property>
          </widget>
         </item>
@@ -126,13 +119,6 @@
         </item>
         <item>
          <widget class="QLineEdit" name="calcDividerLineEdit">
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="ampsPerVoltsLineEdit">
           <property name="readOnly">
            <bool>false</bool>
           </property>
@@ -194,32 +180,57 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget_3">
+  <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>470</x>
-     <y>70</y>
-     <width>195</width>
-     <height>41</height>
+     <x>430</x>
+     <y>170</y>
+     <width>281</width>
+     <height>111</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
+   <property name="title">
+    <string>Current Sensor</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <widget class="QLabel" name="label_13">
-      <property name="text">
-       <string>Battery Capacity:</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Battery Capacity:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="battCapacityLineEdit"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>mAh</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
-     <widget class="QLineEdit" name="battCapacityLineEdit"/>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_12">
-      <property name="text">
-       <string>mAh</string>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Amperes per volt:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="ampsPerVoltsLineEdit">
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>

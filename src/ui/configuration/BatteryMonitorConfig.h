@@ -47,6 +47,7 @@ private slots:
     void sensorCurrentIndexChanged(int index);
     void apmVerCurrentIndexChanged(int index);
     void calcDividerSet();
+    void measuredVoltsSet();
     void ampsPerVoltSet();
     void batteryCapacitySet();
     void alertOnLowClicked(bool checked);

@@ -26,20 +26,20 @@ This file is part of the APM_PLANNER project
 BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
-    ui.monitorComboBox->addItem(tr("0: Disabled"));
-    ui.monitorComboBox->addItem(tr("3: Battery Volts"));
-    ui.monitorComboBox->addItem(tr("4: Voltage and Current"));
+    ui.monitorComboBox->addItem(tr("0: Disabled"),0);
+    ui.monitorComboBox->addItem(tr("3: Battery Volts"),3);
+    ui.monitorComboBox->addItem(tr("4: Voltage and Current"),4);
 
-    ui.sensorComboBox->addItem(tr("0: Other"));
-    ui.sensorComboBox->addItem("1: AttoPilot 45A");
-    ui.sensorComboBox->addItem("2: AttoPilot 90A");
-    ui.sensorComboBox->addItem("3: AttoPilot 180A");
-    ui.sensorComboBox->addItem("4: 3DR Power Module");
+    ui.sensorComboBox->addItem(tr("0: Other"),0);
+    ui.sensorComboBox->addItem(tr("1: AttoPilot 45A"),1);
+    ui.sensorComboBox->addItem(tr("2: AttoPilot 90A"),2);
+    ui.sensorComboBox->addItem(tr("3: AttoPilot 180A"),3);
+    ui.sensorComboBox->addItem(tr("4: 3DR Power Module"),4);
 
-    ui.apmVerComboBox->addItem("0: APM1");
-    ui.apmVerComboBox->addItem("1: APM2 - 2.5 non 3DR");
-    ui.apmVerComboBox->addItem("2: APM2.5 - 3DR Power Module");
-    ui.apmVerComboBox->addItem("3: PX4");
+    ui.apmVerComboBox->addItem(tr("0: APM1"));
+    ui.apmVerComboBox->addItem(tr("1: APM2 - 2.5 non 3DR"));
+    ui.apmVerComboBox->addItem(tr("2: APM2.5 - 3DR Power Module"));
+    ui.apmVerComboBox->addItem(tr("3: PX4"));
 
     ui.alertOnLowCheckBox->setVisible(false); //Unimpelemented, but TODO.
 
@@ -49,12 +49,36 @@ BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(pa
     connect(ui.apmVerComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(apmVerCurrentIndexChanged(int)));
 
     connect(ui.calcDividerLineEdit,SIGNAL(editingFinished()),this,SLOT(calcDividerSet()));
+    connect(ui.measuredVoltsLineEdit,SIGNAL(editingFinished()),this,SLOT(measuredVoltsSet()));
     connect(ui.ampsPerVoltsLineEdit,SIGNAL(editingFinished()),this,SLOT(ampsPerVoltSet()));
     connect(ui.battCapacityLineEdit,SIGNAL(editingFinished()),this,SLOT(batteryCapacitySet()));
 
 
     initConnections();
 }
+void BatteryMonitorConfig::measuredVoltsSet()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    bool ok = false;
+    float measured = ui.measuredVoltsLineEdit->text().toFloat(&ok);
+    if (!ok)
+    {
+        QMessageBox::information(0,"Error","Invalid number entered for measured voltage. Please try again");
+        return;
+    }
+    float calced = ui.calcVoltsLineEdit->text().toFloat(&ok);
+    float divider = ui.calcDividerLineEdit->text().toFloat(&ok);
+    float newval = (measured * divider)/ calced;
+    disconnect(ui.calcDividerLineEdit,SIGNAL(editingFinished()),this,SLOT(calcDividerSet()));
+    ui.calcDividerLineEdit->setText(QString::number(newval,'f',6));
+    m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",newval);
+    connect(ui.calcDividerLineEdit,SIGNAL(editingFinished()),this,SLOT(calcDividerSet()));
+}
+
 void BatteryMonitorConfig::activeUASSet(UASInterface *uas)
 {
     if (m_uas)
@@ -81,6 +105,7 @@ void BatteryMonitorConfig::calcDividerSet()
         return;
     }
     bool ok = false;
+
     float newval = ui.calcDividerLineEdit->text().toFloat(&ok);
     if (!ok)
     {
@@ -279,11 +304,11 @@ void BatteryMonitorConfig::parameterChanged(int uas, int component, QString para
 {
     if (parameterName == "VOLT_DIVIDER")
     {
-        ui.calcDividerLineEdit->setText(QString::number(value.toFloat(),'f',4));
+        ui.calcDividerLineEdit->setText(QString::number(value.toFloat(),'f',6));
     }
     else if (parameterName == "AMP_PER_VOLT")
     {
-        ui.ampsPerVoltsLineEdit->setText(QString::number(value.toFloat(),'g',2));
+        ui.ampsPerVoltsLineEdit->setText(QString::number(value.toFloat(),'g',4));
 
     }
     else if (parameterName == "BATT_MONITOR")
