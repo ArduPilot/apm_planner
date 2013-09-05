@@ -54,7 +54,7 @@ void UASQuickViewTextItem::setValue(double value)
     {
         valueLabel->setText(QString::number(value,'f',1));
     }
-    else if (value >= 100000 || value <= -100000)
+    else
     {
         valueLabel->setText(QString::number(value,'f',0));
     }
