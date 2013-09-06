@@ -217,9 +217,20 @@ signals:
     void connected();
 
     /**
+     * @brief This signal is emitted when the link is connected
+     **/
+    void connected(LinkInterface* linkInterface);
+
+
+    /**
      * @brief This signal is emitted instantly when the link is disconnected
      **/
     void disconnected();
+
+    /**
+     * @brief This signal is emitted when the link is disconnected
+     **/
+    void disconnected(LinkInterface* linkInterface);
 
     /**
      * @brief This signal is emitted instantly when the link status changes

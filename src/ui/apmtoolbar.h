@@ -53,7 +53,6 @@ public:
     void setTerminalViewAction(QAction *action);
     void setConnectMAVAction(QAction *action);
     
-    void connectToActiveMav(UASInterface *uas);
     void setModeText(const QString &text);
 signals:
     void triggerFlightView();
@@ -76,12 +75,15 @@ public slots:
     void connectMAV();
     void showConnectionDialog();
     void setConnection(bool connection);
+    void connected(LinkInterface *linkInterface);
+    void disconnected(LinkInterface *linkInterface);
 
     void activeUasSet(UASInterface *uas);
     void armingChanged(int sysId, QString armingState);
     void armingChanged(bool armed);
 
-    void updateLinkDisplay(LinkInterface *newLink);
+    void updateLinkDisplay(LinkInterface *link);
+    void newLinkCreated(LinkInterface* newLink);
 
     void navModeChanged(int uasid, int mode, const QString& text);
     void heartbeat(UASInterface* uas);
@@ -91,6 +93,7 @@ public slots:
 private:
     QPointer<UASInterface> m_uas;
     QTimer m_heartbeatTimer;
+    QPointer<LinkInterface> m_currentLink;
 };
 
 #endif // APMTOOLBAR_H

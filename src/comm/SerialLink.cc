@@ -12,6 +12,7 @@
 #include "SerialLink.h"
 #include "LinkManager.h"
 #include "QGC.h"
+#include "UASInterface.h"
 
 #include <QTimer>
 
@@ -261,6 +262,7 @@ void SerialLink::run()
         QMutexLocker locker(&this->m_stoppMutex);
         if (m_port) { // [TODO][BB] Not sure we need to close the port here
             QLOG_DEBUG() << "Closing Port #"<< __LINE__ << m_port->portName();
+
             m_port->close();
             delete m_port;
             m_port = NULL;
@@ -269,6 +271,7 @@ void SerialLink::run()
 
     emit disconnected();
     emit connected(false);
+    emit disconnected(this);
 
 }
 
@@ -366,12 +369,17 @@ bool SerialLink::disconnect()
             QMutexLocker locker(&m_stoppMutex);
             m_stopp = true;
         }
-
-        emit disconnected(); // [TODO] There are signals from QSerialPort we should use
+        // [TODO] these signals are also emitted from RUN()
+        // are these even required?
+        emit disconnected();
         emit connected(false);
+        emit disconnected(this);
         return true;
     }
-
+    // [TODO]
+    // Should we emit the disconncted signals to keep the states
+    // in order. ie. if disconned is called the UI maybe out of sync
+    // and a emit disconnect here could rectify this
     QLOG_INFO() << "already disconnected";
     return true;
 }
@@ -445,6 +453,7 @@ bool SerialLink::hardwareConnect()
 
     emit connected();
     emit connected(true);
+    emit connected(this);
 
     QLOG_DEBUG() << "CONNECTING LINK: "<< m_portName << "with settings" << m_port->portName()
              << getBaudRate() << getDataBits() << getParityType() << getStopBits();
@@ -875,4 +884,38 @@ bool SerialLink::setStopBitsType(int stopBits)
         emit updateLink(this);
     }
     return accepted;
+}
+
+const QList<SerialLink*> SerialLink::getSerialLinks(LinkManager *linkManager)
+{
+    if(!linkManager)
+        return QList<SerialLink*>();
+
+    QList<LinkInterface*> list = linkManager->instance()->getLinks();
+    QList<SerialLink*> serialLinklist;
+    foreach( LinkInterface* link, list)  {
+        SerialLink* serialLink = dynamic_cast<SerialLink*>(link);
+        if (serialLink) {
+                serialLinklist.append(serialLink);
+            }
+        };
+
+    return serialLinklist;
+}
+
+const QList<SerialLink*> SerialLink::getSerialLinks(UASInterface *uas)
+{
+    if(!uas)
+        return QList<SerialLink*>();
+
+    QList<LinkInterface*>* list = uas->getLinks();
+    QList<SerialLink*> serialLinklist;
+    foreach( LinkInterface* link, *list)  {
+        SerialLink* serialLink = dynamic_cast<SerialLink*>(link);
+        if (serialLink) {
+                serialLinklist.append(serialLink);
+            }
+        };
+
+    return serialLinklist;
 }

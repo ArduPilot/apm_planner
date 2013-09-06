@@ -279,6 +279,7 @@ bool UDPLink::disconnect()
 
     emit disconnected();
     emit connected(false);
+    emit disconnected(this);
     return !connectState;
 }
 
@@ -345,6 +346,7 @@ bool UDPLink::hardwareConnect(void)
     QObject::connect(socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
 
     emit connected(connectState);
+    emit connected(this);
     if (connectState) {
         emit connected();
         connectionStartTime = QGC::groundTimeUsecs()/1000;

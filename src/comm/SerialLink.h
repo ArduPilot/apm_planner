@@ -42,6 +42,9 @@ This file is part of the QGROUNDCONTROL project
 #include <qserialport.h>
 #include <configuration.h>
 
+class UASInterface;
+class LinkManager;
+
 /**
  * @brief The SerialLink class provides cross-platform access to serial links.
  * It takes care of the link management and provides a common API to higher
@@ -108,6 +111,12 @@ public:
     int getLinkQuality();
     bool isFullDuplex();
     int getId();
+
+    /** @brief Returns a list of Serial Ports known to the LinkManager */
+    static const QList<SerialLink*> getSerialLinks(LinkManager* linkManager);
+
+    /** @brief Returns a list of Serial Ports known to a UAS */
+    static const QList<SerialLink*> getSerialLinks(UASInterface* uas);
 
 signals: //[TODO] Refactor to Linkinterface
     void updateLink(LinkInterface*);
