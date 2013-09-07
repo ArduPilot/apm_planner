@@ -257,6 +257,16 @@ linux-g++|linux-g++-64{
 	QMAKE_POST_LINK += && cp -rf $$BASEDIR/data $$TARGETDIR
 	QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/files/images
 	QMAKE_POST_LINK += && cp -rf $$BASEDIR/files/styles/Vera.ttf $$TARGETDIR/files/styles/Vera.ttf
+        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml
+        QMAKE_POST_LINK += && cp -rf $$BASEDIR/qml/*.qml $$TARGETDIR/qml
+
+        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml/components/
+        QMAKE_POST_LINK += && cp -rf $$BASEDIR/qml/components/*.qml $$TARGETDIR/qml/components
+
+        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml/resources
+        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml/resources/apmplanner
+        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml/resources/apmplanner/toolbar
+        QMAKE_POST_LINK += && cp -rf $$BASEDIR/qml/resources/apmplanner/toolbar/*.png $$TARGETDIR/qml/resources/apmplanner/toolbar
 
 	# osg/osgEarth dynamic casts might fail without this compiler option.
 	# see http://osgearth.org/wiki/FAQ for details.
