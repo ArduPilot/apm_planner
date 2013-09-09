@@ -245,6 +245,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 if (!checkedUserNonMavlink)
                 {
                     link->requestReset();
+                    nonmavlinkCount=0;
                     checkedUserNonMavlink = true;
                 }
                 else
