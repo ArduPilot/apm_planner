@@ -95,10 +95,10 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     m_uas = 0;
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
-    QTimer *timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
-    timer->start(2000);
+    m_timer = new QTimer(this);
+    connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
 }
+
 void ApmFirmwareConfig::populateSerialPorts()
 {
     QString current = ui.linkComboBox->itemText(ui.linkComboBox->currentIndex());
@@ -130,6 +130,18 @@ void ApmFirmwareConfig::populateSerialPorts()
         }
     }
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+}
+
+void ApmFirmwareConfig::showEvent(QShowEvent *)
+{
+    // Start Port scanning
+    m_timer->start(2000);
+}
+
+void ApmFirmwareConfig::hideEvent(QHideEvent *)
+{
+    // Stop Port scanning
+    m_timer->stop();
 }
 
 void ApmFirmwareConfig::uasConnected()

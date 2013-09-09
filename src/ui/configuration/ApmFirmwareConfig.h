@@ -55,6 +55,11 @@ class ApmFirmwareConfig : public QWidget
 public:
     explicit ApmFirmwareConfig(QWidget *parent = 0);
     ~ApmFirmwareConfig();
+
+protected:
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
+
 private slots:
     void firmwareListFinished();
     void firmwareListError(QNetworkReply::NetworkError error);
@@ -109,6 +114,7 @@ private:
         int version;
     };
     QList<FirmwareDef> m_firmwareList;
+    QPointer<QTimer> m_timer;
 };
 
 #endif // APMFIRMWARECONFIG_H
