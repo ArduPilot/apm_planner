@@ -47,6 +47,11 @@ APMToolBar::APMToolBar(QWidget *parent):
     QLOG_DEBUG() << "qmlBaseDir" << qmlBaseDir;
     QUrl url = QUrl::fromLocalFile(qmlBaseDir.absolutePath() + "/qml/ApmToolBar.qml");
     QLOG_DEBUG() << url;
+    if (!QFile::exists(qmlBaseDir.absolutePath() + "/qml/ApmToolBar.qml"))
+    {
+        QMessageBox::information(0,"Error","ApmToolBar.qml not found. Please reinstall the application and try again");
+        exit(-1);
+    }
     setSource(url);
     QLOG_DEBUG() << "QML Status:" << status();
     setResizeMode(QDeclarativeView::SizeRootObjectToView);
@@ -135,7 +140,10 @@ void APMToolBar::activeUasSet(UASInterface *uas)
         connect(slink, SIGNAL(disconnected(LinkInterface*)),
                         this, SLOT(disconnected(LinkInterface*)));
         if(slink->isConnected())
+        {
             m_currentLink = slink;
+            updateLinkDisplay(slink);
+        }
     }
 }
 
