@@ -40,6 +40,7 @@ This file is part of the APM_PLANNER project
 
 #include <QWidget>
 #include <qserialport.h>
+#include <QPointer>
 
 namespace Ui {
 class TerminalConsole;
@@ -73,6 +74,11 @@ private slots:
 private slots:
     void setBaudRate(int index);
     void setLink(int index);
+    void populateSerialPorts();
+
+protected:
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
 
 private:
     void initConnections();
@@ -86,12 +92,13 @@ private:
 private:
     Ui::TerminalConsole *ui;
 
-    Console *m_console;
-    QStatusBar *m_statusBar;
-    SettingsDialog *m_settingsDialog;
-    QSerialPort *m_serial;
+    QPointer<Console> m_console;
+    QPointer<QStatusBar> m_statusBar;
+    QPointer<SettingsDialog> m_settingsDialog;
+    QPointer<QSerialPort> m_serial;
     SerialSettings m_settings;
     ConsoleMode m_consoleMode;
+    QPointer<QTimer> m_timer;
 };
 
 #endif // TERMINALCONSOLE_H

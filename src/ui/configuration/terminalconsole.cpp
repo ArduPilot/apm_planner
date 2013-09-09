@@ -46,8 +46,10 @@ This file is part of the APM_PLANNER project
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QComboBox>
+#include <QTimer>
 #include <qserialportinfo.h>
 #include <qserialport.h>
+#include <QPointer>
 
 TerminalConsole::TerminalConsole(QWidget *parent) :
     QWidget(parent),
@@ -79,15 +81,13 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
 
     loadSettings();
 
-    if (m_settings.name == "") {
-        setLink(ui->linkComboBox->currentIndex());
-    } else {
-        ui->linkComboBox->setCurrentIndex(0);
-    }
-
     addConsoleModesComboBoxConfig();
 
     initConnections();
+
+    //Keep refreshing the serial port list
+    m_timer = new QTimer(this);
+    connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
 }
 
 void TerminalConsole::addBaudComboBoxConfig()
@@ -111,7 +111,7 @@ void TerminalConsole::addConsoleModesComboBoxConfig()
 
 void TerminalConsole::fillPortsInfo(QComboBox &comboxBox)
 {
-    comboxBox.clear();
+    QLOG_DEBUG() << "fillPortsInfo ";
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         QStringList list;
         list << info.portName()
@@ -121,9 +121,29 @@ void TerminalConsole::fillPortsInfo(QComboBox &comboxBox)
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        comboxBox.insertItem(0,list[0] + " - " + list[1], list);
-        QLOG_INFO() << "Inserting " << list.first();
+        int found = comboxBox.findData(list);
+        if (found == -1) {
+            QLOG_INFO() << "Inserting " << list.first();
+            comboxBox.insertItem(0,list[0], list);
+        } else {
+            // Do nothing as the port is already listed
+        }
     }
+}
+
+void TerminalConsole::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event);
+    // Start refresh Timer
+    m_timer->start(2000);
+}
+
+void TerminalConsole::hideEvent(QHideEvent *event)
+{
+    Q_UNUSED(event);
+    // Stop the port list refeshing
+    m_timer->stop();
+
 }
 
 TerminalConsole::~TerminalConsole()
@@ -132,6 +152,12 @@ TerminalConsole::~TerminalConsole()
     delete m_statusBar;
     delete m_settingsDialog;
     delete ui;
+}
+
+void TerminalConsole::populateSerialPorts()
+{
+    QLOG_TRACE() << "populateSerialPorts";
+    fillPortsInfo(*ui->linkComboBox);
 }
 
 void TerminalConsole::openSerialPort()
@@ -175,6 +201,7 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
         QMessageBox::critical(this, tr("Error"), errorMessage);
 
         m_statusBar->showMessage(tr("Configure error: ") + errorMessage);
+        QLOG_ERROR() << "ERROR: Cannot open" << settings.name << "baud" << settings.baudRate;
     }
 }
 
