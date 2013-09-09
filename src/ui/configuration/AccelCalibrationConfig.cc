@@ -28,6 +28,7 @@ AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidge
 {
     ui.setupUi(this);
     connect(ui.calibrateAccelButton,SIGNAL(clicked()),this,SLOT(calibrateButtonClicked()));
+    connect(ui.levelAccelButton,SIGNAL(clicked()),this,SLOT(levelButtonClicked()));
 
     m_accelAckCount=0;
     initConnections();
@@ -41,6 +42,8 @@ void AccelCalibrationConfig::activeUASSet(UASInterface *uas)
     if (m_uas)
     {
         disconnect(m_uas,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessageReceived(int,int,int,QString)));
+    disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+    disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
     }
     AP2ConfigWidget::activeUASSet(uas);
     if (!uas)
@@ -48,7 +51,71 @@ void AccelCalibrationConfig::activeUASSet(UASInterface *uas)
         return;
     }
     connect(m_uas,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessageReceived(int,int,int,QString)));
+    connect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+    connect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
 
+}
+void AccelCalibrationConfig::uasConnected()
+{
+    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    {
+        //Show fixed wing level stuff here
+        ui.levelAccelButton->setVisible(true);
+        ui.levelOutputLabel->setVisible(true);
+        ui.levelDescLabel->setVisible(true);
+    }
+    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    {
+        ui.levelAccelButton->setVisible(false);
+        ui.levelOutputLabel->setVisible(false);
+        ui.levelDescLabel->setVisible(false);
+    }
+    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    {
+        ui.levelAccelButton->setVisible(false);
+        ui.levelOutputLabel->setVisible(false);
+        ui.levelDescLabel->setVisible(false);
+    }
+    else
+    {
+        ui.levelAccelButton->setVisible(false);
+        ui.levelOutputLabel->setVisible(false);
+        ui.levelDescLabel->setVisible(false);
+    }
+}
+
+void AccelCalibrationConfig::uasDisconnected()
+{
+
+}
+
+void AccelCalibrationConfig::levelButtonClicked()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    // Mute Audio until calibrated to avoid HeartBeat Warning message
+    if (GAudioOutput::instance()->isMuted() == false) {
+        GAudioOutput::instance()->mute(true);
+        m_muted = true;
+    }
+    MAV_CMD command = MAV_CMD_PREFLIGHT_CALIBRATION;
+    int confirm = 0;
+    float param1 = 1.0;
+    float param2 = 0.0;
+    float param3 = 0.0;
+    float param4 = 0.0;
+    float param5 = 0.0;
+    float param6 = 0.0;
+    float param7 = 0.0;
+    int component = 1;
+    m_uas->executeCommand(command, confirm, param1, param2, param3, param4, param5, param6, param7, component);
+    if (m_muted) { // turns audio backon, when you leave the page
+        GAudioOutput::instance()->mute(false);
+        m_muted = false;
+    }
 }
 
 void AccelCalibrationConfig::calibrateButtonClicked()
@@ -58,7 +125,6 @@ void AccelCalibrationConfig::calibrateButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
-    // Mute Audio until calibrated to avoid HeartBeat Warning message
     // Mute Audio until calibrated to avoid HeartBeat Warning message
     if (GAudioOutput::instance()->isMuted() == false) {
         GAudioOutput::instance()->mute(true);
@@ -98,6 +164,7 @@ void AccelCalibrationConfig::calibrateButtonClicked()
     }
 
 }
+
 void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
 {
     if (m_muted) { // turns audio backon, when you leave the page

@@ -49,6 +49,9 @@ private slots:
     void activeUASSet(UASInterface *uas);
     void calibrateButtonClicked();
     void uasTextMessageReceived(int uasid, int componentid, int severity, QString text);
+    void uasConnected();
+    void uasDisconnected();
+    void levelButtonClicked();
 private:
     int m_accelAckCount;
     Ui::AccelCalibrationConfig ui;
