@@ -38,6 +38,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     m_hasError=0;
     //firmwareStatus = 0;
     m_betaFirmwareChecked = false;
+    m_trunkFirmwareChecked = false;
     m_tempFirmwareFile=0;
     ui.progressBar->setVisible(false);
     ui.warningLabel->setVisible(false);
@@ -60,6 +61,10 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     connect(ui.y6PushButton,SIGNAL(clicked()),this,SLOT(flashButtonClicked()));
     QTimer::singleShot(10000,this,SLOT(requestFirmwares()));
     connect(ui.betaFirmwareButton,SIGNAL(clicked(bool)),this,SLOT(betaFirmwareButtonClicked(bool)));
+    ui.betaFirmwareButton->setContextMenuPolicy(Qt::ActionsContextMenu);
+    QAction *action = new QAction(QString("Load Trunk Firmware"),ui.betaFirmwareButton);
+    connect(action,SIGNAL(triggered()),this,SLOT(trunkFirmwareButtonClicked()));
+    ui.betaFirmwareButton->addAction(action);
     connect(ui.cancelPushButton,SIGNAL(clicked()),this,SLOT(cancelButtonClicked()));
     ui.cancelPushButton->setEnabled(false);
     ui.cancelPushButton->setVisible(false);
@@ -213,6 +218,7 @@ void ApmFirmwareConfig::addBetaLabel(QWidget *parent)
 void ApmFirmwareConfig::requestBetaFirmwares()
 {
     m_betaFirmwareChecked = true;
+    m_trunkFirmwareChecked = false;
     showBetaLabels();
     QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-heli/git-version.txt")));
     QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-quad/git-version.txt")));
@@ -259,6 +265,7 @@ void ApmFirmwareConfig::requestBetaFirmwares()
 void ApmFirmwareConfig::requestFirmwares()
 {
     m_betaFirmwareChecked = false;
+    m_trunkFirmwareChecked = false;
     hideBetaLabels();
     QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-heli/git-version.txt")));
     QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-quad/git-version.txt")));
@@ -319,6 +326,56 @@ void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
         ui.betaFirmwareButton->setText(tr("Beta Firmware"));
         requestFirmwares();
     }
+}
+void ApmFirmwareConfig::trunkFirmwareButtonClicked()
+{
+    QMessageBox::information(this,"Warning","These are trunk firmware downloads. These should ONLY BE USED if you know what you're doing!!!");
+    ui.label->setText(tr("<h2>Trunk Firmware</h2>"));
+    ui.betaFirmwareButton->setText(tr("Stable Firmware"));
+    ui.betaFirmwareButton->setChecked(true);
+    m_trunkFirmwareChecked = true;
+    m_betaFirmwareChecked = false;
+    //showBetaLabels();
+    QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-heli/git-version.txt")));
+    QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-quad/git-version.txt")));
+    QNetworkReply *reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-hexa/git-version.txt")));
+    QNetworkReply *reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-octa/git-version.txt")));
+    QNetworkReply *reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-octa-quad/git-version.txt")));
+    QNetworkReply *reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-tri/git-version.txt")));
+    QNetworkReply *reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-y6/git-version.txt")));
+    QNetworkReply *reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Plane/latest/apm2/git-version.txt")));
+    QNetworkReply *reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Rover/latest/apm2/git-version.txt")));
+
+    m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/latest/apm2/APMrover2.hex";
+    m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/latest/apm2/ArduPlane.hex";
+    m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-heli/ArduCopter.hex";
+    m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-hexa/ArduCopter.hex";
+    m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-octa-quad/ArduCopter.hex";
+    m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-octa/ArduCopter.hex";
+    m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-quad/ArduCopter.hex";
+    m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-tri/ArduCopter.hex";
+    m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-y6/ArduCopter.hex";
+
+    connect(reply1,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply1,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    connect(reply2,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply2,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    connect(reply3,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply3,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    connect(reply4,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply4,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    connect(reply5,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply5,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    connect(reply6,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply6,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    connect(reply7,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply7,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    connect(reply8,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply8,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    connect(reply9,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+    connect(reply9,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+    QLOG_DEBUG() << "Getting Trunk firmware...";
+
 }
 
 void ApmFirmwareConfig::firmwareProcessFinished(int status)
@@ -578,7 +635,7 @@ void ApmFirmwareConfig::flashButtonClicked()
                 }
             }
         }
-        QLOG_DEBUG() << "creating new serial port";
+        QLOG_DEBUG() << "creating new serial port" << m_settings.name;
         m_port = new QSerialPort(this);
         QLOG_DEBUG() << m_port;
         m_port->setPortName(m_settings.name);
@@ -652,50 +709,67 @@ void ApmFirmwareConfig::firmwareListFinished()
     QString outstr = "";
 
     QLOG_DEBUG() << "firmwareListFinished error: " << reply->error() << reply->errorString();
+    QString cmpstr = "";
+    QString labelstr = "";
+    if (m_betaFirmwareChecked)
+    {
+        cmpstr = "beta";
+        labelstr = "BETA ";
+    }
+    else if (m_trunkFirmwareChecked)
+    {
+        cmpstr = "latest";
+        labelstr = "TRUNK ";
+    }
+    else
+    {
+        cmpstr = "stable";
+        labelstr = "";
+    }
 
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-heli",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-heli",cmpstr,&outstr))
     {
-        ui.copterLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.copterLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-quad",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-quad",cmpstr,&outstr))
     {
-        ui.quadLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.quadLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-hexa",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-hexa",cmpstr,&outstr))
     {
-        ui.hexaLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.hexaLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-octa-quad",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-octa-quad",cmpstr,&outstr))
     {
-        ui.octaQuadLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.octaQuadLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-octa",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-octa",cmpstr,&outstr))
     {
-        ui.octaLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.octaLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-tri",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-tri",cmpstr,&outstr))
     {
-        ui.triLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.triLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-y6",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-y6",cmpstr,&outstr))
     {
-        ui.y6Label->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.y6Label->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"Plane",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"Plane",cmpstr,&outstr))
     {
-        ui.planeLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.planeLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"Rover",(m_betaFirmwareChecked ? "beta" : "stable"),&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,"Rover",cmpstr,&outstr))
     {
-        ui.roverLabel->setText((m_betaFirmwareChecked ? "BETA " : "") + outstr);
+        ui.roverLabel->setText(labelstr + outstr);
         return;
     }
     //QLOG_DEBUG() << "Match not found for:" << reply->url();

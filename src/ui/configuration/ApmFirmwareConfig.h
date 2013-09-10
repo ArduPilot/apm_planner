@@ -60,6 +60,7 @@ private slots:
     void firmwareListError(QNetworkReply::NetworkError error);
     void flashButtonClicked();
     void betaFirmwareButtonClicked(bool betafirmwareenabled);
+    void trunkFirmwareButtonClicked();
     void downloadFinished();
     void firmwareProcessFinished(int status);
     void firmwareProcessReadyRead();
@@ -92,6 +93,7 @@ private:
     QList<QLabel*> m_betaButtonLabelList;
     bool stripVersionFromGitReply(QString url,QString reply,QString type,QString stable,QString *out);
     bool m_betaFirmwareChecked;
+    bool m_trunkFirmwareChecked;
     QMap<QPushButton*,QString> m_buttonToUrlMap;
     Ui::ApmFirmwareConfig ui;
     class FirmwareDef
