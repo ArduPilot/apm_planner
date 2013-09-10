@@ -63,6 +63,8 @@ This file is part of the QGROUNDCONTROL project
  * @param argv The string array of parameters
  **/
 
+#define define2string_p(x) #x
+#define define2string(x) define2string_p(x)
 
 QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
 {
@@ -72,6 +74,12 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
 void QGCCore::initialize()
 {
     QLOG_INFO() << "QGCCore::initialize()";
+    QLOG_INFO() << "Current Build Info";
+    QLOG_INFO() << "Git Hash:" << define2string(GIT_HASH);
+    QLOG_INFO() << "Git Commit:" << define2string(GIT_COMMIT);
+    QLOG_INFO() << "APPLICATION_NAME:" << define2string(QGC_APPLICATION_NAME);
+    QLOG_INFO() << "APPLICATION_VERSION:" << define2string(QGC_APPLICATION_VERSION);
+
     // Set application name
     this->setApplicationName(QGC_APPLICATION_NAME);
     this->setApplicationVersion(QGC_APPLICATION_VERSION);
