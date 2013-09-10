@@ -15,11 +15,13 @@ class QGCSettingsWidget : public QDialog
 public:
     QGCSettingsWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::Sheet);
     ~QGCSettingsWidget();
-
+protected:
+    void showEvent(QShowEvent *evt);
 public slots:
 
 private:
     Ui::QGCSettingsWidget *ui;
+    bool m_init;
 };
 
 #endif // QGCSETTINGSWIDGET_H

@@ -75,14 +75,17 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     m_buttonToConfigWidgetMap[ui.arduRoverPidButton] = m_arduRoverPidConfig;
     connect(ui.arduRoverPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
-    QWidget *temp = new QWidget(this);
-    ui.stackedWidget->addWidget(temp);
-    m_buttonToConfigWidgetMap[ui.plannerConfigButton] = temp;
+    //QWidget *temp = new QWidget(this);
+    m_settingsConfig = new QGCSettingsWidget(this);
+    ui.stackedWidget->addWidget(m_settingsConfig);
+    m_buttonToConfigWidgetMap[ui.plannerConfigButton] = m_settingsConfig;
     connect(ui.plannerConfigButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.plannerConfigButton]);
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
+
+
 }
 
 ApmSoftwareConfig::~ApmSoftwareConfig()

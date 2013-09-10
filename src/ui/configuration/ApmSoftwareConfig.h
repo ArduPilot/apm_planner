@@ -44,6 +44,7 @@ This file is part of the APM_PLANNER project
 #include "AdvParameterList.h"
 #include "UASInterface.h"
 #include "UASManager.h"
+#include "QGCSettingsWidget.h"
 
 class ApmSoftwareConfig : public QWidget
 {
@@ -69,6 +70,7 @@ private:
     QPointer<ArduPlanePidConfig> m_arduPlanePidConfig;
     QPointer<ArduRoverPidConfig> m_arduRoverPidConfig;
     QPointer<AdvParameterList> m_advParameterList;
+    QPointer<QGCSettingsWidget> m_settingsConfig;
     QMap<QObject*,QWidget*> m_buttonToConfigWidgetMap;
 };
 
