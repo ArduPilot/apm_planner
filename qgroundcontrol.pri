@@ -417,7 +417,7 @@ win32-msvc2008|win32-msvc2010|win32-msvc2012 {
 }
 
 # Windows (32bit)
-win32-g++ {
+win32-g++|win32-x-g++|win64-x-g++ {
 
 	message(Building for Windows Platform (32bit))
 
@@ -432,9 +432,7 @@ win32-g++ {
 	INCLUDEPATH += $$BASEDIR/libs/lib/sdl/include \
 				$$BASEDIR/libs/lib/opal/include
 
-	LIBS += -L$$BASEDIR/libs/lib/sdl/win32 \
-			-lmingw32 -lSDLmain -lSDL -mwindows \
-			-lsetupapi
+	LIBS += -L$$BASEDIR/libs/lib/sdl/win32 -lmingw32 -lSDLmain -lSDL.dll -mwindows -lsetupapi
 
 	CONFIG += windows
 

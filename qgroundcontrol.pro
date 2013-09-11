@@ -61,7 +61,14 @@ unix {
         DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 }
 include (QsLog/QsLog.pri)
-
+win32-x-g++ {
+	CONFIG += exceptions rtti
+	DEFINES += UINT8_MAX=0xFF
+	DEFINES += UINT16_MAX=0xFFFF
+	DEFINES += INT32_MIN=0x80000000
+	DEFINES += INT32_MAX=0x7FFFFFFF
+	DEFINES += UINT32_MAX=0xFFFFFFFF
+}
 
 LANGUAGE = C++
 OBJECTS_DIR = $${BUILDDIR}/obj
@@ -72,7 +79,7 @@ MAVLINK_CONF = ""
 MAVLINKPATH = $$BASEDIR/libs/mavlink/include/mavlink/v1.0
 DEFINES += MAVLINK_NO_DATA
 
-win32 {
+win32&!win32-x-g++ {
     QMAKE_INCDIR_QT = $$(QTDIR)/include
     QMAKE_LIBDIR_QT = $$(QTDIR)/lib
     QMAKE_UIC = "$$(QTDIR)/bin/uic.exe"
