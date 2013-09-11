@@ -316,6 +316,9 @@ MainWindow::MainWindow(QWidget *parent):
     windowNameUpdateTimer.start(15000);
     emit initStatusChanged("Done.");
 
+    ui.actionDeveloper_Credits->setVisible(false);
+    ui.actionOnline_Documentation->setVisible(false);
+    ui.actionProject_Roadmap_2->setVisible(false);
     show();
 }
 
