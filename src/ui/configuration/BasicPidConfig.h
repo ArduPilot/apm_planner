@@ -23,19 +23,30 @@ This file is part of the APM_PLANNER project
 #ifndef BASICPIDCONFIG_H
 #define BASICPIDCONFIG_H
 
-#include <QWidget>
+#include "AP2ConfigWidget.h"
 #include "ui_BasicPidConfig.h"
-
-class BasicPidConfig : public QWidget
+class ParamWidget;
+class BasicPidConfig : public AP2ConfigWidget
 {
     Q_OBJECT
     
 public:
     explicit BasicPidConfig(QWidget *parent = 0);
     ~BasicPidConfig();
-    
+private slots:
+    void rPRCValueChanged(QString name,double value);
+    void rPRDValueChanged(QString name,double value);
+    void yARCValueChanged(QString name,double value);
+    void tAValueChanged(QString name,double value);
+    void tHValueChanged(QString name,int value);
+    void parameterChanged(int uas, int component, QString parameterName, QVariant value);
 private:
     Ui::BasicPidConfig ui;
+    ParamWidget *m_rPRCWidget;
+    ParamWidget *m_rPRDWidget;
+    ParamWidget *m_yARCWidget;
+    ParamWidget *m_tAWidget;
+    ParamWidget *m_tHWidget;
 };
 
 #endif // BASICPIDCONFIG_H

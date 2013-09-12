@@ -39,6 +39,7 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     ui.arduCopterPidButton->setVisible(false);
     ui.arduRoverPidButton->setVisible(false);
     ui.arduPlanePidButton->setVisible(false);
+    ui.basicPidButton->setVisible(false);
 
     m_flightConfig = new FlightModeConfig(this);
     ui.stackedWidget->addWidget(m_flightConfig);
@@ -59,6 +60,11 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     ui.stackedWidget->addWidget(m_advParameterList);
     m_buttonToConfigWidgetMap[ui.advParamListButton] = m_advParameterList;
     connect(ui.advParamListButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
+    m_basicPidConfig = new BasicPidConfig(this);
+    ui.stackedWidget->addWidget(m_basicPidConfig);
+    m_buttonToConfigWidgetMap[ui.basicPidButton] = m_basicPidConfig;
+    connect(ui.basicPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_arduCopterPidConfig = new ArduCopterPidConfig(this);
     ui.stackedWidget->addWidget(m_arduCopterPidConfig);
@@ -107,6 +113,7 @@ void ApmSoftwareConfig::uasDisconnected()
     ui.arduCopterPidButton->setVisible(false);
     ui.arduRoverPidButton->setVisible(false);
     ui.arduPlanePidButton->setVisible(false);
+    ui.basicPidButton->setVisible(false);
 }
 
 void ApmSoftwareConfig::uasConnected()
@@ -115,6 +122,7 @@ void ApmSoftwareConfig::uasConnected()
     ui.standardParamButton->setVisible(true);
     ui.advancedParamButton->setVisible(true);
     ui.advParamListButton->setVisible(true);
+    ui.basicPidButton->setVisible(true);
     if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
     {
         ui.arduPlanePidButton->setVisible(true);
@@ -155,6 +163,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     ui.standardParamButton->setVisible(true);
     ui.advancedParamButton->setVisible(true);
     ui.advParamListButton->setVisible(true);
+    ui.basicPidButton->setVisible(true);
 
     QString compare = "";
     if (uas->getSystemType() == MAV_TYPE_FIXED_WING)
