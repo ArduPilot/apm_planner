@@ -1,5 +1,13 @@
 Name "APM Planner 2"
 
+!ifndef QTDIR
+  !error "Please define QT installation directory via /DQTDIR=/home/michael/QtWin32"
+!endif
+
+!system 'python apm_installer.py ../files apm_install.list apm_uninstall.list y'
+!system 'python apm_installer.py ../qml qml_install.list qml_uninstall.list y'
+!system 'python apm_installer.py ${QTDIR}\plugins qt_install.list qt_uninstall.list n'
+
 OutFile "apmplanner2-installer-win32.exe"
 
 InstallDir $PROGRAMFILES\APMPlanner2
@@ -18,11 +26,17 @@ Section "APM Planner 2 files"
   SetOutPath $INSTDIR
   File ../release/apmplanner2.exe
   !include apm_install.list
+  !include qml_install.list
   ;File /r ..\release\*.*
   ;File /r ..\libs\mavlink
   ;File /r ..\files
   SetOutPath $INSTDIR
   File ../libs/lib/sdl/win32/SDL.dll
+  File ../libs/thirdParty/libxbee/lib/libxbee.dll
+  SetOutPath $INSTDIR\avrdude
+  File ../avrdude/avrdude.exe
+  File ../avrdude/libusb0.dll
+  File ../avrdude/avrdude.conf
   WriteUninstaller $INSTDIR\APMPlanner2_uninstall.exe
 SectionEnd 
 
@@ -50,9 +64,11 @@ SectionEnd
 
 Section "Uninstall"
   !include apm_uninstall.list
+  !include qml_uninstall.list
   !include qt_uninstall.list
   Delete $INSTDIR\apmplanner2.exe
   Delete $INSTDIR\SDL.dll
+  Delete $INSTDIR\libxbee.dll
   Delete $INSTDIR\APMPlanner2_uninstall.exe
   Delete $INSTDIR\libgcc_s_sjlj-1.dll
   Delete $INSTDIR\libstdc++-6.dll
