@@ -125,11 +125,16 @@ void ApmFirmwareConfig::populateSerialPorts()
         if (ui.linkComboBox->itemText(i) == current)
         {
             ui.linkComboBox->setCurrentIndex(i);
+            setLink(ui.linkComboBox->currentIndex());
             connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
             return;
         }
     }
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    if (current == "")
+    {
+        setLink(ui.linkComboBox->currentIndex());
+    }
 }
 
 void ApmFirmwareConfig::showEvent(QShowEvent *)
