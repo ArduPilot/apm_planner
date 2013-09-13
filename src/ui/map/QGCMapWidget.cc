@@ -70,7 +70,7 @@ void QGCMapWidget::guidedActionTriggered()
         }
         // Create new waypoint and send it to the WPManager to send out.
         internals::PointLatLng pos = map->FromLocalToLatLng(mousePressPos.x(), mousePressPos.y());
-        QLOG_DEBUG() << "Guided action requested. Lat:" << pos.Lat() << "Lon:" << pos.Lng();
+        QLOG_DEBUG() << "Guided action requested. Lat:" << pos.Lat() << "Lon:" << pos.Lng() << "Alt:" << defaultGuidedAlt;
         Waypoint wp;
         wp.setLatitude(pos.Lat());
         wp.setLongitude(pos.Lng());
