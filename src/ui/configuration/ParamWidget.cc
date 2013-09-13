@@ -113,6 +113,8 @@ void ParamWidget::setupInt(QString title,QString description,int value,int min,i
     ui.valueSlider->show();
     ui.intSpinBox->show();
     ui.doubleSpinBox->hide();
+    ui.minLabel->show();
+    ui.maxLabel->show();
     if (min == 0 && max == 0)
     {
         m_min = 0;
@@ -125,6 +127,8 @@ void ParamWidget::setupInt(QString title,QString description,int value,int min,i
     }
     ui.intSpinBox->setMinimum(m_min);
     ui.intSpinBox->setMaximum(m_max);
+    ui.minLabel->setText(QString::number(m_min));
+    ui.maxLabel->setText(QString::number(m_max));
 }
 
 void ParamWidget::setupDouble(QString title,QString description,double value,double min,double max,double increment)
