@@ -102,6 +102,30 @@ win32&!win32-x-g++ {
 #################################################################
 # EXTERNAL LIBRARY CONFIGURATION
 
+# AGLLIB math library
+INCLUDEPATH += libs/alglib/src
+HEADERS +=     libs/alglib/src/ap.h \
+    libs/alglib/src/alglibinternal.h\
+    libs/alglib/src/interpolation.h \
+    libs/alglib/src/optimization.h \
+    libs/alglib/src/linalg.h \
+    libs/alglib/src/alglibmisc.h \
+    libs/alglib/src/diffequations.h \
+    libs/alglib/src/integration.h \
+    libs/alglib/src/solvers.h \
+    libs/alglib/src/specialfunctions.cpp
+
+SOURCES +=     libs/alglib/src/ap.cpp \
+    libs/alglib/src/alglibinternal.cpp \
+    libs/alglib/src/interpolation.cpp \
+    libs/alglib/src/optimization.cpp \
+    libs/alglib/src/linalg.cpp \
+    libs/alglib/src/alglibmisc.cpp \
+    libs/alglib/src/diffequations.cpp \
+    libs/alglib/src/integration.cpp \
+    libs/alglib/src/solvers.cpp \
+    libs/alglib/src/specialfunctions.cpp
+
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
 
@@ -289,6 +313,7 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/SerialSettingsDialog.ui \
     src/ui/configuration/ApmFirmwareConfig.ui \
     src/ui/DebugOutput.ui
+
 INCLUDEPATH += src \
     src/ui \
     src/ui/linechart \
@@ -483,6 +508,8 @@ HEADERS += src/MG.h \
     src/ui/DebugOutput.h \
     src/ui/configuration/APDoubleSpinBox.h \
     src/ui/configuration/APSpinBox.h
+
+
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -696,7 +723,7 @@ SOURCES += src/main.cc \
     src/ui/designer/QGCMouseWheelEventFilter.cc \
     src/ui/DebugOutput.cc \
     src/ui/configuration/APDoubleSpinBox.cc \
-    src/ui/configuration/APSpinBox.cc
+    src/ui/configuration/APSpinBox.cc \
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc
