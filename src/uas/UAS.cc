@@ -1446,8 +1446,22 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit navigationControllerErrorsChanged(this, p.alt_error, p.aspd_error, p.xtrack_error);
         }
             break;
-        // Messages to ignore
+
         case MAVLINK_MSG_ID_RAW_IMU:
+        {
+            mavlink_raw_imu_t rawImu;
+            mavlink_msg_raw_imu_decode(&message, &rawImu);
+            emit rawImuMessageUpdate(this, rawImu);
+        }
+            break;
+        case MAVLINK_MSG_ID_SENSOR_OFFSETS:
+        {
+            mavlink_sensor_offsets_t sensorOffsets;
+            mavlink_msg_sensor_offsets_decode(&message, &sensorOffsets);
+            emit sensorOffsetsMessageUpdate(this, sensorOffsets);
+        }
+            break;
+        // Messages to ignore
         case MAVLINK_MSG_ID_SCALED_IMU:
         case MAVLINK_MSG_ID_RAW_PRESSURE:
         case MAVLINK_MSG_ID_SCALED_PRESSURE:

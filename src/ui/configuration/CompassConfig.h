@@ -30,11 +30,33 @@ This file is part of the APM_PLANNER project
 #ifndef COMPASSCONFIG_H
 #define COMPASSCONFIG_H
 
-#include <QWidget>
+
 #include "ui_CompassConfig.h"
 #include "UASManager.h"
 #include "UASInterface.h"
 #include "AP2ConfigWidget.h"
+#include <QWidget>
+#include <QProgressDialog>
+// Using alglib for least squares calc (could migrate to Eigen Lib?)
+#include "ap.h"
+#include "optimization.h"
+#include "interpolation.h"
+
+
+class RawImuTuple{
+public:
+    RawImuTuple():magX(0.0f),
+        magY(0.0f),
+        magZ(0.0f){}
+
+public:
+    float magX;
+    float magY;
+    float magZ;
+};
+
+using namespace alglib;
+
 class CompassConfig : public AP2ConfigWidget
 {
     Q_OBJECT
@@ -42,13 +64,39 @@ class CompassConfig : public AP2ConfigWidget
 public:
     explicit CompassConfig(QWidget *parent = 0);
     ~CompassConfig();
+
+    static void sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj);
+
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void enableClicked(bool enabled);
     void autoDecClicked(bool enabled);
     void orientationComboChanged(int index);
+    void liveCalibrationClicked();
+
+    void finishCompassCalibration();
+    void cancelCompassCalibration();
+    void progressCounter();
+
+    void activeUASSet(UASInterface *uas);
+    void rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu);
+    void sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets);
+
+    real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
+    void saveOffsets(alglib::real_1d_array* ofs);
+
+private:
+    void cleanup();
+
 private:
     Ui::CompassConfig ui;
+    QPointer<QProgressDialog> m_progressDialog;
+    QPointer<QTimer> m_timer;
+    QVector<RawImuTuple> m_rawImuList;
+    mavlink_sensor_offsets_t m_sensorOffsets;
+    double m_oldxmag;
+    double m_oldymag;
+    double m_oldzmag;
 };
 
 #endif // COMPASSCONFIG_H

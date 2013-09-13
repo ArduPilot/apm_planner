@@ -643,6 +643,10 @@ signals:
     // HOME POSITION / ORIGIN CHANGES
     void homePositionChanged(int uas, double lat, double lon, double alt);
 
+    /** @brief RAW IMU message used for calculating offsets etc */
+    void rawImuMessageUpdate(UASInterface *uas, mavlink_raw_imu_t rawImu);
+    /** @brief Sensor Offset update message*/
+    void sensorOffsetsMessageUpdate(UASInterface *uas, mavlink_sensor_offsets_t sensorOffsets);
 protected:
 
     // TIMEOUT CONSTANTS

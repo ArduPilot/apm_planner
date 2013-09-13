@@ -20,12 +20,15 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 
+#include "QsLog.h"
 #include "CompassConfig.h"
-
+#include <qmath.h>
 #include "QGCCore.h"
 
-
-CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent)
+CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_progressDialog(NULL),
+    m_timer(NULL),
+    m_rawImuList()
 {
     ui.setupUi(this);
 
@@ -36,7 +39,6 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent)
             obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
         }
     }
-
 
     ui.autoDecCheckBox->setEnabled(false);
     ui.enableCheckBox->setEnabled(false);
@@ -73,11 +75,25 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.orientationComboBox->addItem("ROTATION_PITCH_90");
     ui.orientationComboBox->addItem("ROTATION_PITCH_270");
     ui.orientationComboBox->addItem("ROTATION_MAX");
+
     initConnections();
+
+    connect(ui.liveCalibrationButton, SIGNAL(clicked()),
+            this, SLOT(liveCalibrationClicked()));
 }
+
+void CompassConfig::activeUASSet(UASInterface *uas)
+{
+    AP2ConfigWidget::activeUASSet(uas);
+}
+
 CompassConfig::~CompassConfig()
 {
+    delete m_timer;
+    delete m_progressDialog;
+    m_rawImuList.clear();
 }
+
 void CompassConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
     if (parameterName == "MAG_ENABLE")
@@ -118,6 +134,7 @@ void CompassConfig::parameterChanged(int uas, int component, QString parameterNa
         disconnect(ui.orientationComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(orientationComboChanged(int)));
         ui.orientationComboBox->setCurrentIndex(value.toInt());
         connect(ui.orientationComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(orientationComboChanged(int)));
+
     }
 }
 
@@ -167,4 +184,182 @@ void CompassConfig::orientationComboChanged(int index)
     }
     m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",index);
 
+}
+
+void CompassConfig::liveCalibrationClicked()
+{
+    QLOG_DEBUG() << "live Calibration Started";
+    if (!m_uas) {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+
+    QMessageBox::information(this,"Live Compass calibration",
+                             "Data will be collected for 60 seconds, Please click ok and move the apm around all axises");
+
+    connect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
+                this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
+    connect(m_uas, SIGNAL(sensorOffsetsMessageUpdate(UASInterface*,mavlink_sensor_offsets_t)),
+                this, SLOT(sensorUpdateMessage(UASInterface*,mavlink_sensor_offsets_t)));
+     m_uas->enableRawSensorDataTransmission(10);
+
+    m_progressDialog = new QProgressDialog("Compass calibration in progress.", "Cancel", 0, 60);
+//    m_progressDialog->setModal(true);
+    connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(cancelCompassCalibration()));
+    m_timer = new QTimer(this);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(progressCounter()));
+    m_timer->start(1000); // second counting progress timer
+}
+
+void CompassConfig::progressCounter()
+{
+    int newValue = m_progressDialog->value()+1;
+    m_progressDialog->setValue(newValue);
+    if (newValue >= 60) {
+        m_timer->stop();
+        finishCompassCalibration();
+    }
+}
+
+void CompassConfig::cancelCompassCalibration()
+{
+    QLOG_INFO() << "cancelCompassCalibration";
+    cleanup();
+}
+
+void CompassConfig::cleanup()
+{
+    m_timer->stop();
+    delete m_timer;
+    m_rawImuList.clear();
+    delete m_progressDialog;
+}
+
+void CompassConfig::finishCompassCalibration()
+{
+    QLOG_INFO() << "finishCompassCalibration with " << m_rawImuList.count() << " data points";
+    disconnect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
+                this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
+    m_uas->enableRawSensorDataTransmission(2);
+    m_timer->stop();
+
+    // Now calulate the offsets
+
+    if (m_rawImuList.count() < 10) {
+        QLOG_ERROR() << "Not enough data points for calculation:" ;
+        QMessageBox::warning(this, "Compass Calibration Failed", "Not enough data points to calibrate the compass.");
+        return;
+    }
+
+    // Calculate and send the update message
+    alglib::real_1d_array* answer = leastSq(&m_rawImuList);
+    saveOffsets(answer);
+
+}
+
+void CompassConfig::saveOffsets(alglib::real_1d_array* ofs)
+{
+//    QLOG_INFO() << "New Mag Offset to be set are: " << QString::number(*ofs[0].getcontent())
+//                << ", " <<  QString::number(*ofs[1].getcontent())
+//                << ", " <<   QString::number(*ofs[2].getcontent())
+//                << ", " <<  QString::number(*ofs[3].getcontent()) ;
+    QGCUASParamManager* paramMgr = m_uas->getParamManager();
+
+    paramMgr->setParameter(1, "COMPASS_LEARN", 0);
+    // set values
+    paramMgr->setParameter(1, "COMPASS_OFS_X", *ofs[0].getcontent());
+    paramMgr->setParameter(1, "COMPASS_OFS_Y", *ofs[1].getcontent());
+    paramMgr->setParameter(1, "COMPASS_OFS_Z", *ofs[2].getcontent());
+
+//    QMessageBox::information(this, "New Mag Offsets", "New offsets are " + QString::number(*ofs[0].getcontent())
+//            + " " + QString::number(*ofs[1].getcontent()) + " " + QString::number(*ofs[2].getcontent())
+//            + "These have been saved for you.");
+
+    delete ofs;
+}
+
+
+void CompassConfig::rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu)
+{
+    if (m_uas == uas){
+        QLOG_DEBUG() << "RAW IMU x:" << rawImu.xmag << " y:" << rawImu.ymag << " z:" << rawImu.zmag;
+
+        if (m_oldxmag != rawImu.xmag &&
+            m_oldymag != rawImu.ymag &&
+            m_oldzmag != rawImu.zmag)
+        {
+            RawImuTuple value;
+            value.magX = rawImu.xmag - (float)m_sensorOffsets.mag_ofs_x;
+            value.magY = rawImu.xmag - (float)m_sensorOffsets.mag_ofs_y;
+            value.magZ = rawImu.xmag - (float)m_sensorOffsets.mag_ofs_z;
+
+            m_rawImuList.append(value);
+
+            m_oldxmag = rawImu.xmag;
+            m_oldymag = rawImu.ymag;
+            m_oldzmag = rawImu.zmag;
+        }
+    }
+}
+
+void CompassConfig::sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets)
+{
+    if (m_uas == uas){
+        m_sensorOffsets = sensorOffsets;
+    }
+}
+
+/// <summary>
+/// Does the least sq adjustment to find the center of the sphere
+/// </summary>
+/// <param name="data">list of x,y,z data</param>
+/// <returns>offsets</returns>
+///
+
+alglib::real_1d_array* CompassConfig::leastSq(QVector<RawImuTuple> *data)
+{
+    {
+    using namespace alglib;
+
+        real_1d_array* x = new real_1d_array("[0.0 , 0.0 , 0.0 , 0.0]");
+        double epsg = 0.0000000001;
+        double epsf = 0;
+        double epsx = 0;
+        int maxits = 0;
+        alglib::minlmstate state;
+        alglib::minlmreport rep;
+
+        alglib::minlmcreatev(data->count(), *x, 100.0f,  state);
+        alglib::minlmsetcond(state, epsg, epsf, epsx, maxits);
+        alglib::minlmoptimize(state, &CompassConfig::sphere_error, NULL, data);
+        alglib::minlmresults(state, *x, rep);
+
+        QLOG_INFO() << "terminationType", rep.terminationtype;
+//        QLOG_DEBUG() << "alglib" << alglib::ap::format(x, 2));
+
+        return x;
+
+    }
+}
+
+void CompassConfig::sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj)
+{
+    double xofs = xi[0];
+    double yofs = xi[1];
+    double zofs = xi[2];
+    double r = xi[3];
+    int a = 0;
+
+    QVector<RawImuTuple>& rawImuVector = *reinterpret_cast<QVector<RawImuTuple>*>(obj);
+
+    for(int count = 0; count < rawImuVector.count() ; count ++)
+        {
+            RawImuTuple d = rawImuVector[count];
+            double x = d.magX;
+            double y = d.magY;
+            double z = d.magZ;
+            double err = r - sqrt(pow((x + xofs), 2) + pow((y + yofs), 2) + pow((z + zofs), 2));
+            fi[a] = err;
+            a++;
+        }
 }

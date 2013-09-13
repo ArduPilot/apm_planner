@@ -52,7 +52,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="liveCalibrationButton">
    <property name="geometry">
     <rect>
      <x>150</x>
