@@ -178,6 +178,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     QString compare = "";
     if (uas->getSystemType() == MAV_TYPE_FIXED_WING)
     {
+        ui.geoFenceButton->setVisible(false); // [TODO] Ony support copter for now
         ui.arduPlanePidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
@@ -185,6 +186,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     }
     else if (uas->getSystemType() == MAV_TYPE_QUADROTOR)
     {
+        ui.geoFenceButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(true);
         ui.arduPlanePidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
@@ -192,6 +194,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     }
     else if (uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
     {
+        ui.geoFenceButton->setVisible(false);  // [TODO] Ony support copter for now
         ui.arduRoverPidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduPlanePidButton->setVisible(false);

@@ -34,8 +34,11 @@ public:
     explicit GeoFenceConfig(QWidget *parent = 0);
     ~GeoFenceConfig();
 
+    void showEvent(QShowEvent *);
+
 private slots:
     void activeUASSet(UASInterface *uas);
+    void enabledChangedState(int state);
     void fenceTypeChanged(int index);
     void fenceActionChanged(int index);
     void valueChangedMaxAlt();
@@ -44,6 +47,10 @@ private slots:
 
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     
+private:
+    void enableControls();
+    void disableControls();
+
 private:
     Ui::GeoFenceConfig ui;
 };
