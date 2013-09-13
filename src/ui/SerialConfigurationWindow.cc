@@ -256,22 +256,28 @@ void SerialConfigurationWindow::setupPortList()
     bool storedFound = false;
 
     // Add the ports in reverse order, because we prepend them to the list
+    ui.portName->clear();
     for (int i = ports.count() - 1; i >= 0; --i)
     {
         // Prepend newly found port to the list
-        if (ui.portName->findText(ports[i]) == -1)
+        /*if (ui.portName->findText(ports[i]) == -1)
         {
             ui.portName->insertItem(0, ports[i]);
             if (!userConfigured) ui.portName->setEditText(ports[i]);
         }
-
+       */
+        ui.portName->insertItem(0,ports[i]);
         // Check if the stored link name is still present
         if (ports[i].contains(storedName) || storedName.contains(ports[i]))
             storedFound = true;
     }
 
     if (storedFound)
-        ui.portName->setEditText(storedName);
+    {
+        int index = ui.portName->findText(storedName);
+        //ui.portName->setEditText(storedName);
+        ui.portName->setCurrentIndex(index);
+    }
 }
 
 void SerialConfigurationWindow::enableFlowControl(bool flow)

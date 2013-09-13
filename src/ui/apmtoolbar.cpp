@@ -363,6 +363,7 @@ void APMToolBar::newLinkCreated(LinkInterface* newLink)
         QLOG_DEBUG() << "APMToolBar: new Srial Link Created" << newLink;
         m_currentLink = sLink;
         updateLinkDisplay(m_currentLink);
+        connect(m_currentLink,SIGNAL(updateLink(LinkInterface*)),this,SLOT(updateLinkDisplay(LinkInterface*)));
     }
 }
 
