@@ -203,20 +203,22 @@ void CompassConfig::liveCalibrationClicked()
                 this, SLOT(sensorUpdateMessage(UASInterface*,mavlink_sensor_offsets_t)));
      m_uas->enableRawSensorDataTransmission(10);
 
-    m_progressDialog = new QProgressDialog("Compass calibration in progress.", "Cancel", 0, 60);
+    m_progressDialog = new QProgressDialog("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds.", "Cancel", 0, 60);
 //    m_progressDialog->setModal(true);
     connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(cancelCompassCalibration()));
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(progressCounter()));
-    m_timer->start(1000); // second counting progress timer
+    m_timer->start(1); // second counting progress timer
 }
 
 void CompassConfig::progressCounter()
 {
+
     int newValue = m_progressDialog->value()+1;
     m_progressDialog->setValue(newValue);
-    if (newValue >= 60) {
-        m_timer->stop();
+    if (newValue < 60) {
+        m_timer->start(1000);
+    } else {
         finishCompassCalibration();
     }
 }
@@ -224,12 +226,15 @@ void CompassConfig::progressCounter()
 void CompassConfig::cancelCompassCalibration()
 {
     QLOG_INFO() << "cancelCompassCalibration";
+    m_uas->enableRawSensorDataTransmission(2);
+    disconnect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
+                this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
     cleanup();
 }
 
 void CompassConfig::cleanup()
 {
-    m_timer->stop();
+    if (m_timer) m_timer->stop();
     delete m_timer;
     m_rawImuList.clear();
     delete m_progressDialog;
@@ -253,29 +258,33 @@ void CompassConfig::finishCompassCalibration()
 
     // Calculate and send the update message
     alglib::real_1d_array* answer = leastSq(&m_rawImuList);
-    saveOffsets(answer);
-
+    saveOffsets(*answer);
+    delete answer;
 }
 
-void CompassConfig::saveOffsets(alglib::real_1d_array* ofs)
+void CompassConfig::saveOffsets(alglib::real_1d_array& ofs)
 {
-//    QLOG_INFO() << "New Mag Offset to be set are: " << QString::number(*ofs[0].getcontent())
-//                << ", " <<  QString::number(*ofs[1].getcontent())
-//                << ", " <<   QString::number(*ofs[2].getcontent())
-//                << ", " <<  QString::number(*ofs[3].getcontent()) ;
+    float xOffset = static_cast<float>(ofs[0]);
+    float yOffset = static_cast<float>(ofs[1]);
+    float zOffset = static_cast<float>(ofs[2]);
+
+    QLOG_INFO() << "New Mag Offset to be set are: " << xOffset
+                << ", " <<  yOffset
+                << ", " <<  zOffset;
+
     QGCUASParamManager* paramMgr = m_uas->getParamManager();
 
     paramMgr->setParameter(1, "COMPASS_LEARN", 0);
     // set values
-    paramMgr->setParameter(1, "COMPASS_OFS_X", *ofs[0].getcontent());
-    paramMgr->setParameter(1, "COMPASS_OFS_Y", *ofs[1].getcontent());
-    paramMgr->setParameter(1, "COMPASS_OFS_Z", *ofs[2].getcontent());
+    paramMgr->setParameter(1, "COMPASS_OFS_X", xOffset);
+    paramMgr->setParameter(1, "COMPASS_OFS_Y", yOffset);
+    paramMgr->setParameter(1, "COMPASS_OFS_Z", zOffset);
 
-//    QMessageBox::information(this, "New Mag Offsets", "New offsets are " + QString::number(*ofs[0].getcontent())
-//            + " " + QString::number(*ofs[1].getcontent()) + " " + QString::number(*ofs[2].getcontent())
-//            + "These have been saved for you.");
+    cleanup();
 
-    delete ofs;
+    QMessageBox::information(this, "New Mag Offsets", "New offsets are \n\nx:" + QString::number(xOffset,'f',3)
+                             + " y:" + QString::number(yOffset,'f',3) + " z:" + QString::number(zOffset,'f',3)
+                             + "\n\nThese have been saved for you.");
 }
 
 
@@ -290,8 +299,8 @@ void CompassConfig::rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t raw
         {
             RawImuTuple value;
             value.magX = rawImu.xmag - (float)m_sensorOffsets.mag_ofs_x;
-            value.magY = rawImu.xmag - (float)m_sensorOffsets.mag_ofs_y;
-            value.magZ = rawImu.xmag - (float)m_sensorOffsets.mag_ofs_z;
+            value.magY = rawImu.ymag - (float)m_sensorOffsets.mag_ofs_y;
+            value.magZ = rawImu.zmag - (float)m_sensorOffsets.mag_ofs_z;
 
             m_rawImuList.append(value);
 
@@ -329,12 +338,12 @@ alglib::real_1d_array* CompassConfig::leastSq(QVector<RawImuTuple> *data)
         alglib::minlmstate state;
         alglib::minlmreport rep;
 
-        alglib::minlmcreatev(data->count(), *x, 100.0f,  state);
+        alglib::minlmcreatev(data->count(), *x, 100,  state);
         alglib::minlmsetcond(state, epsg, epsf, epsx, maxits);
         alglib::minlmoptimize(state, &CompassConfig::sphere_error, NULL, data);
         alglib::minlmresults(state, *x, rep);
 
-        QLOG_INFO() << "terminationType", rep.terminationtype;
+        QLOG_INFO() << "rep.terminationType" << rep.terminationtype;
 //        QLOG_DEBUG() << "alglib" << alglib::ap::format(x, 2));
 
         return x;

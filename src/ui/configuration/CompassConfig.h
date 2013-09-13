@@ -83,7 +83,7 @@ private slots:
     void sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets);
 
     real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
-    void saveOffsets(alglib::real_1d_array* ofs);
+    void saveOffsets(real_1d_array &ofs);
 
 private:
     void cleanup();
