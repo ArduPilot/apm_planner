@@ -37,7 +37,7 @@
         <x>0</x>
         <y>0</y>
         <width>198</width>
-        <height>598</height>
+        <height>592</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -71,7 +71,20 @@
             </size>
            </property>
            <property name="text">
-            <string>Basic Pids</string>
+            <string>Basic Tuning (PIDs)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="geoFenceButton">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>35</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Geo Fence</string>
            </property>
           </widget>
          </item>
@@ -84,7 +97,7 @@
             </size>
            </property>
            <property name="text">
-            <string>ArduCopter Pids</string>
+            <string>APM:Copter PIDs</string>
            </property>
            <property name="checkable">
             <bool>false</bool>
@@ -100,7 +113,7 @@
             </size>
            </property>
            <property name="text">
-            <string>ArduPlane Pids</string>
+            <string>APM:Plane PIDs</string>
            </property>
           </widget>
          </item>
@@ -113,7 +126,7 @@
             </size>
            </property>
            <property name="text">
-            <string>ArduRover Pids</string>
+            <string>APM:Rover PIDs</string>
            </property>
           </widget>
          </item>
