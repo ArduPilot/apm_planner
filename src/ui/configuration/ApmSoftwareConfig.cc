@@ -33,6 +33,7 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     ui.setupUi(this);
 
     ui.flightModesButton->setVisible(false);
+    ui.geoFenceButton->setVisible(false);
     ui.standardParamButton->setVisible(false);
     ui.advancedParamButton->setVisible(false);
     ui.advParamListButton->setVisible(false);
@@ -45,6 +46,11 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     ui.stackedWidget->addWidget(m_flightConfig);
     m_buttonToConfigWidgetMap[ui.flightModesButton] = m_flightConfig;
     connect(ui.flightModesButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
+    m_geoFenceConfig = new GeoFenceConfig(this);
+    ui.stackedWidget->addWidget(m_geoFenceConfig);
+    m_buttonToConfigWidgetMap[ui.geoFenceButton] = m_geoFenceConfig;
+    connect(ui.geoFenceButton, SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_standardParamConfig = new StandardParamConfig(this);
     ui.stackedWidget->addWidget(m_standardParamConfig);
@@ -107,6 +113,7 @@ void ApmSoftwareConfig::activateStackedWidget()
 void ApmSoftwareConfig::uasDisconnected()
 {
     ui.flightModesButton->setVisible(false);
+    ui.geoFenceButton->setVisible(false);
     ui.standardParamButton->setVisible(false);
     ui.advancedParamButton->setVisible(false);
     ui.advParamListButton->setVisible(false);
@@ -125,18 +132,21 @@ void ApmSoftwareConfig::uasConnected()
     ui.basicPidButton->setVisible(true);
     if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
     {
+        ui.geoFenceButton->setVisible(false); // TODO - enable when plane geo fence implemented
         ui.arduPlanePidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
     }
     else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
     {
+        ui.geoFenceButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(true);
         ui.arduPlanePidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
     }
     else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
     {
+        ui.geoFenceButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduPlanePidButton->setVisible(false);

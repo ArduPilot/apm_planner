@@ -23,16 +23,26 @@ This file is part of the APM_PLANNER project
 #ifndef GEOFENCECONFIG_H
 #define GEOFENCECONFIG_H
 
-#include <QWidget>
+#include "AP2ConfigWidget.h"
 #include "ui_GeoFenceConfig.h"
 
-class GeoFenceConfig : public QWidget
+class GeoFenceConfig : public AP2ConfigWidget
 {
     Q_OBJECT
     
 public:
     explicit GeoFenceConfig(QWidget *parent = 0);
     ~GeoFenceConfig();
+
+private slots:
+    void activeUASSet(UASInterface *uas);
+    void fenceTypeChanged(int index);
+    void fenceActionChanged(int index);
+    void valueChangedMaxAlt();
+    void valueChangedRtlAlt();
+    void valueChangedRadius();
+
+    void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     
 private:
     Ui::GeoFenceConfig ui;

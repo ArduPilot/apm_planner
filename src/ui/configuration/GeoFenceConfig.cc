@@ -21,13 +21,91 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 
 #include "GeoFenceConfig.h"
+#include "QsLog.h"
 
-
-GeoFenceConfig::GeoFenceConfig(QWidget *parent) : QWidget(parent)
+GeoFenceConfig::GeoFenceConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
+
+    // Init Connections
+    connect(ui.typeComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(fenceTypeChanged(int)));
+    connect(ui.actionComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(fenceActionChanged(int)));
+    connect(ui.maxAltSpinBox, SIGNAL(editingFinished()),
+            this, SLOT(valueChangedMaxAlt()));
+    connect(ui.rtlAltSpinBox, SIGNAL(editingFinished()),
+            this, SLOT(valueChangedRtlAlt()));
+    connect(ui.radiusSpinBox, SIGNAL(editingFinished()),
+            this, SLOT(valueChangedRadius()));
+}
+
+void GeoFenceConfig::activeUASSet(UASInterface *uas)
+{
+    if (m_uas) {
+        // disconnect previous connections.
+
+    }
+
+    m_uas = uas;
+    // Read Update of Parameters
+    m_uas->getParamManager()->requestParameterUpdate(1,"FENCE_ENABLE");
+    m_uas->getParamManager()->requestParameterUpdate(1,"FENCE_TYPE");
+    m_uas->getParamManager()->requestParameterUpdate(1,"FENCE_ACTION");
+    m_uas->getParamManager()->requestParameterUpdate(1,"FENCE_ALT_MAX");
+    m_uas->getParamManager()->requestParameterUpdate(1,"FENCE_RADIUS");
+    m_uas->getParamManager()->requestParameterUpdate(1,"FENCE_MARGIN");
 }
 
 GeoFenceConfig::~GeoFenceConfig()
 {
+}
+
+void GeoFenceConfig::fenceTypeChanged(int index)
+{
+    QLOG_DEBUG() << "GeoFenceConfigfenceTypeChanged:" << index;
+}
+
+void GeoFenceConfig::fenceActionChanged(int index)
+{
+    QLOG_DEBUG() << "GeoFenceConfig fenceActionChanged:" << index;
+}
+
+void GeoFenceConfig::valueChangedMaxAlt()
+{
+    QLOG_DEBUG() << "GeoFenceConfig valueChangedMaxAlt:" << ui.maxAltSpinBox->value();
+}
+
+void GeoFenceConfig::valueChangedRtlAlt()
+{
+    QLOG_DEBUG() << "GeoFenceConfig valueChangedRtlAlt:" << ui.rtlAltSpinBox->value();
+}
+
+void GeoFenceConfig::valueChangedRadius()
+{
+    QLOG_DEBUG() << "GeoFenceConfig valueChangedRadius:" << ui.radiusSpinBox->value();
+}
+
+void GeoFenceConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
+{
+    if (parameterName.contains("FENCE_ENABLE")) {
+        QLOG_DEBUG() << "Update FENCE_ENABLE" << value;
+
+    } else if(parameterName.contains("FENCE_TYPE")) {
+        QLOG_DEBUG() << "Update FENCE_TYPE" << value;
+
+    } else if(parameterName.contains("FENCE_ACTION")) {
+        QLOG_DEBUG() << "Update FENCE_ACTION" << value;
+
+    } else if(parameterName.contains("FENCE_ALT_MAX")) {
+        QLOG_DEBUG() << "Update FENCE_ALT_MAX" << value;
+
+    } else if(parameterName.contains("FENCE_RADIUS")) {
+        QLOG_DEBUG() << "Update FENCE_RADIUS" << value;
+
+    } else if(parameterName.contains("FENCE_MARGIN")) {
+        QLOG_DEBUG() << "Update FENCE_MARGIN" << value;
+
+    }
+
 }
