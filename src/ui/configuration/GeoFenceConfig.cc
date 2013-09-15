@@ -23,6 +23,9 @@ This file is part of the APM_PLANNER project
 #include "GeoFenceConfig.h"
 #include "QsLog.h"
 
+#define TO_METERS 100.0f
+#define TO_CENTIMETERS 100.0f
+
 GeoFenceConfig::GeoFenceConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
@@ -30,6 +33,13 @@ GeoFenceConfig::GeoFenceConfig(QWidget *parent) : AP2ConfigWidget(parent)
     disableControls();
 
     // Init Connections
+//    connectAllSignals();
+
+    AP2ConfigWidget::initConnections();
+}
+
+void GeoFenceConfig::connectAllSignals()
+{
     connect(ui.enableCheckBox, SIGNAL(stateChanged(int)),
             this, SLOT(enabledChangedState(int)));
     connect(ui.typeComboBox, SIGNAL(currentIndexChanged(int)),
@@ -42,8 +52,27 @@ GeoFenceConfig::GeoFenceConfig(QWidget *parent) : AP2ConfigWidget(parent)
             this, SLOT(valueChangedRtlAlt()));
     connect(ui.radiusSpinBox, SIGNAL(editingFinished()),
             this, SLOT(valueChangedRadius()));
+    connect(ui.finalAltSpinBox, SIGNAL(editingFinished()),
+            this, SLOT(valueChangedFinalRtlAlt()));
+}
 
-    initConnections();
+void GeoFenceConfig::disconnectAllSignals()
+{
+    // Make disconnections
+    connect(ui.enableCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(enabledChangedState(int)));
+    connect(ui.typeComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(fenceTypeChanged(int)));
+    connect(ui.actionComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(fenceActionChanged(int)));
+    connect(ui.maxAltSpinBox, SIGNAL(editingFinished()),
+            this, SLOT(valueChangedMaxAlt()));
+    connect(ui.rtlAltSpinBox, SIGNAL(editingFinished()),
+            this, SLOT(valueChangedRtlAlt()));
+    connect(ui.radiusSpinBox, SIGNAL(editingFinished()),
+            this, SLOT(valueChangedRadius()));
+    connect(ui.finalAltSpinBox, SIGNAL(editingFinished()),
+            this, SLOT(valueChangedFinalRtlAlt()));
 }
 
 void GeoFenceConfig::activeUASSet(UASInterface *uas)
@@ -76,8 +105,6 @@ void GeoFenceConfig::enabledChangedState(int state)
     default:
         QLOG_ERROR() << "Error State";
     }
-
-
 }
 
 void GeoFenceConfig::fenceTypeChanged(int index)
@@ -101,7 +128,13 @@ void GeoFenceConfig::valueChangedMaxAlt()
 void GeoFenceConfig::valueChangedRtlAlt()
 {
     QLOG_DEBUG() << "GeoFenceConfig valueChangedRtlAlt:" << ui.rtlAltSpinBox->value();
-    m_uas->getParamManager()->setParameter(1,"RTL_ALT", static_cast<float>(ui.rtlAltSpinBox->value()));
+    m_uas->getParamManager()->setParameter(1,"RTL_ALT", static_cast<float>(ui.rtlAltSpinBox->value()*TO_CENTIMETERS));
+}
+
+void GeoFenceConfig::valueChangedFinalRtlAlt()
+{
+    QLOG_DEBUG() << "GeoFenceConfig valueChangedRtlAlt:" << ui.finalAltSpinBox->value();
+    m_uas->getParamManager()->setParameter(1,"RTL_ALT_FINAL", static_cast<float>(ui.finalAltSpinBox->value()*TO_CENTIMETERS));
 }
 
 void GeoFenceConfig::valueChangedRadius()
@@ -116,6 +149,8 @@ void GeoFenceConfig::parameterChanged(int uas, int component, QString parameterN
 
     if (uas != m_uas->getUASID())
         return;
+
+    disconnectAllSignals();
 
     if (parameterName.contains("FENCE_ENABLE")) {
         QLOG_DEBUG() << "Update FENCE_ENABLE" << value;
@@ -148,7 +183,20 @@ void GeoFenceConfig::parameterChanged(int uas, int component, QString parameterN
         QLOG_DEBUG() << "Update FENCE_MARGIN" << value;
         // Currently not part of the 'users' settings
         // See advanced view to change.
+
+    } else if(parameterName.contains("RTL_ALT_FINAL")) {
+        QLOG_DEBUG() << "Update RTL_ALT_FINAL" << value.toDouble();
+        double finalRtlAlt = (value.toDouble()/TO_METERS);
+        ui.finalAltSpinBox->setValue(finalRtlAlt);
+
+    } else if(parameterName.contains("RTL_ALT")) {
+        QLOG_DEBUG() << "Update RTL_ALT" << value.toDouble();
+        double rtlAlt = (value.toDouble()/TO_METERS);
+        ui.rtlAltSpinBox->setValue(rtlAlt);
+
     }
+
+    connectAllSignals();
 
 }
 
@@ -160,6 +208,8 @@ void GeoFenceConfig::enableControls()
     ui.maxAltSpinBox->setDisabled(false);
     ui.rtlAltSpinBox->setDisabled(false);
     ui.radiusSpinBox->setDisabled(false);
+    ui.finalAltSpinBox->setDisabled(false);
+
 }
 
 void GeoFenceConfig::disableControls()
@@ -170,6 +220,7 @@ void GeoFenceConfig::disableControls()
     ui.maxAltSpinBox->setDisabled(true);
     ui.rtlAltSpinBox->setDisabled(true);
     ui.radiusSpinBox->setDisabled(true);
+    ui.finalAltSpinBox->setDisabled(true);
 }
 
 void GeoFenceConfig::showEvent(QShowEvent *)
@@ -182,6 +233,7 @@ void GeoFenceConfig::showEvent(QShowEvent *)
     m_uas->getParamManager()->requestParameterUpdate(1,"FENCE_RADIUS");
 //    m_uas->getParamManager()->requestParameterUpdate(1,"FENCE_MARGIN"); Not Being used currently
     m_uas->getParamManager()->requestParameterUpdate(1,"RTL_ALT");
+    m_uas->getParamManager()->requestParameterUpdate(1,"RTL_ALT_FINAL");
 }
 
 

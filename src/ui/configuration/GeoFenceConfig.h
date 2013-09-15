@@ -44,13 +44,15 @@ private slots:
     void valueChangedMaxAlt();
     void valueChangedRtlAlt();
     void valueChangedRadius();
+    void valueChangedFinalRtlAlt();
 
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     
 private:
     void enableControls();
     void disableControls();
-
+    void connectAllSignals();
+    void disconnectAllSignals();
 private:
     Ui::GeoFenceConfig ui;
 };

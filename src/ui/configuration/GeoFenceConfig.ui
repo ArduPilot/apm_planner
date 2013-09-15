@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>438</width>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,13 +26,13 @@
     <string>&lt;h2&gt;Geo Fence&lt;/h2&gt;</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>39</x>
      <y>49</y>
-     <width>347</width>
-     <height>218</height>
+     <width>376</width>
+     <height>279</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -115,7 +115,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Max Alt (m)</string>
+         <string>Max Alt</string>
         </property>
        </widget>
       </item>
@@ -123,6 +123,9 @@
        <widget class="QDoubleSpinBox" name="maxAltSpinBox">
         <property name="alignment">
          <set>Qt::AlignCenter</set>
+        </property>
+        <property name="suffix">
+         <string>m</string>
         </property>
         <property name="maximum">
          <double>999.990000000000009</double>
@@ -132,7 +135,7 @@
       <item row="5" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Radius (m)</string>
+         <string>Radius</string>
         </property>
        </widget>
       </item>
@@ -140,6 +143,9 @@
        <widget class="QDoubleSpinBox" name="radiusSpinBox">
         <property name="alignment">
          <set>Qt::AlignCenter</set>
+        </property>
+        <property name="suffix">
+         <string>m</string>
         </property>
         <property name="maximum">
          <double>999.990000000000009</double>
@@ -149,7 +155,7 @@
       <item row="6" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>RTL Alt (m)</string>
+         <string>RTL Alt</string>
         </property>
        </widget>
       </item>
@@ -158,15 +164,45 @@
         <property name="alignment">
          <set>Qt::AlignCenter</set>
         </property>
+        <property name="suffix">
+         <string>m</string>
+        </property>
         <property name="maximum">
          <double>999.990000000000009</double>
         </property>
        </widget>
       </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>final RTL Alt</string>
+        </property>
+       </widget>
+      </item>
       <item row="7" column="1">
+       <widget class="QDoubleSpinBox" name="finalAltSpinBox">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="suffix">
+         <string>m</string>
+        </property>
+        <property name="maximum">
+         <double>999.990000000000009</double>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
        <widget class="QLabel" name="label_7">
         <property name="text">
          <string>0 for RTL ALT = return at current alttiude</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>0 for final RTL = LAND on home reached</string>
         </property>
        </widget>
       </item>
