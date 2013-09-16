@@ -24,7 +24,7 @@ Rectangle {
     property int margins: 2
 
     id: button
-    width: 72
+    width: 76
     height: 72
     radius: 3
     smooth: true
