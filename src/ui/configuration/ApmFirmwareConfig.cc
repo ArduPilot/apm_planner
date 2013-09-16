@@ -155,7 +155,7 @@ void ApmFirmwareConfig::uasConnected()
 }
 void ApmFirmwareConfig::cancelButtonClicked()
 {
-    if (QMessageBox::question(this,"Warning","You are about to cancel the firmware upload process. ONLY do this if the process has not started properly. Are you sure you awnt to continue?",QMessageBox::Yes,QMessageBox::No) != QMessageBox::Yes)
+    if (QMessageBox::question(this,tr("Warning"),tr("You are about to cancel the firmware upload process. ONLY do this if the process has not started properly. Are you sure you want to continue?"),QMessageBox::Yes,QMessageBox::No) != QMessageBox::Yes)
     {
         return;
     }
@@ -332,7 +332,7 @@ void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
 
     if (betafirmwareenabled)
     {
-        QMessageBox::information(this,"Warning","These are beta firmware downloads. Use at your own risk!!!");
+        QMessageBox::information(this,tr("Warning"),tr("These are beta firmware downloads. Use at your own risk!!!"));
         ui.label->setText(tr("<h2>Beta Firmware</h2>"));
         ui.betaFirmwareButton->setText(tr("Stable Firmware"));
         requestBetaFirmwares();
@@ -346,7 +346,7 @@ void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
 }
 void ApmFirmwareConfig::trunkFirmwareButtonClicked()
 {
-    QMessageBox::information(this,"Warning","These are trunk firmware downloads. These should ONLY BE USED if you know what you're doing!!!");
+    QMessageBox::information(this,tr("Warning"),tr("These are trunk firmware downloads. These should ONLY BE USED if you know what you're doing!!!"));
     ui.label->setText(tr("<h2>Trunk Firmware</h2>"));
     ui.betaFirmwareButton->setText(tr("Stable Firmware"));
     ui.betaFirmwareButton->setChecked(true);
