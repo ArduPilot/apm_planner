@@ -58,7 +58,9 @@ private slots:
     void activeUASSet(UASInterface *uas);
     void uasConnected();
     void uasDisconnected();
+    void apmParamNetworkReplyFinished();
 private:
+    QString m_apmPdefFilename;
     UASInterface *m_uas;
     Ui::ApmSoftwareConfig ui;
     QPointer<BasicPidConfig> m_basicPidConfig;

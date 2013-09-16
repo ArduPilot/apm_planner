@@ -23,7 +23,9 @@ This file is part of the APM_PLANNER project
 #include <QXmlStreamReader>
 #include <QDir>
 #include <QFile>
-
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include "ApmSoftwareConfig.h"
 
 
@@ -97,6 +99,32 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
+//
+    QNetworkAccessManager *man = new QNetworkAccessManager(this);
+    QNetworkReply *reply = man->get(QNetworkRequest(QUrl("http://autotest.diydrones.com/Parameters/apm.pdef.xml")));
+    connect(reply,SIGNAL(finished()),this,SLOT(apmParamNetworkReplyFinished()));
+    //m_apmPdefFilename = ""
+
+}
+void ApmSoftwareConfig::apmParamNetworkReplyFinished()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    if (!reply)
+    {
+        return;
+    }
+    QByteArray apmpdef = reply->readAll();
+#ifdef Q_OS_WIN
+    QString appDataDir = QString(getenv("USERPROFILE")).replace("\\","/");
+#else
+    QString appDataDir = getenv("HOME");
+#endif
+    m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml");
+    QFile file(m_apmPdefFilename);
+    file.open(QIODevice::ReadWrite | QIODevice::Truncate);
+    file.write(apmpdef);
+    file.flush();
+    file.close();
 
 }
 
@@ -201,9 +229,20 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         compare = "APMRover2";
     }
 
+#ifdef Q_OS_WIN
+    QString appDataDir = QString(getenv("USERPROFILE")).replace("\\","/");
+#else
+    QString appDataDir = getenv("HOME");
+#endif
+    m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml");
+    if (!QFile::exists(m_apmPdefFilename))
+    {
+        QDir autopilotdir(qApp->applicationDirPath() + "/files/" + uas->getAutopilotTypeName().toLower());
+        m_apmPdefFilename = autopilotdir.absolutePath() + "/arduplane.pdef.xml";
+    }
 
-    QDir autopilotdir(qApp->applicationDirPath() + "/files/" + uas->getAutopilotTypeName().toLower());
-    QFile xmlfile(autopilotdir.absolutePath() + "/arduplane.pdef.xml");
+    //QDir autopilotdir(qApp->applicationDirPath() + "/files/" + uas->getAutopilotTypeName().toLower());
+    QFile xmlfile(m_apmPdefFilename);
     if (xmlfile.exists() && !xmlfile.open(QIODevice::ReadOnly))
     {
         return;
