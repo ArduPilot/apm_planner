@@ -40,6 +40,7 @@ BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(pa
     ui.apmVerComboBox->addItem(tr("1: APM2 - 2.5 non 3DR"));
     ui.apmVerComboBox->addItem(tr("2: APM2.5 - 3DR Power Module"));
     ui.apmVerComboBox->addItem(tr("3: PX4"));
+    ui.apmVerComboBox->addItem(tr("4: Pixhawk"));
 
     ui.alertOnLowCheckBox->setVisible(false); //Unimpelemented, but TODO.
 
@@ -285,6 +286,16 @@ void BatteryMonitorConfig::apmVerCurrentIndexChanged(int index)
         m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",101);
         m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",1);
         ui.calcDividerLineEdit->setText("1");
+    }
+    else if (index == 4) //Pixhawk
+    {
+        m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
+        m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",2);
+        m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",3);
+        m_uas->getParamManager()->setParameter(1,"AMP_PER_VOLT",17);
+        m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",10.1);
+        ui.calcDividerLineEdit->setText("1");
+        ui.ampsPerVoltsLineEdit->setText("17");
     }
 }
 
