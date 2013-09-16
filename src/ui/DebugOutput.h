@@ -15,6 +15,8 @@ public:
     ~DebugOutput();
     void write(const QString& message, QsLogging::Level level);
     bool isValid() { return true; }
+private slots:
+    void onTopCheckBoxChecked(bool checked);
 private:
     Ui::DebugOutput ui;
 };

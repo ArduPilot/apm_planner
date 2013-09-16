@@ -7,6 +7,7 @@ DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent), QsLogging::Destinat
     ui.setupUi(this);
     ui.hashLineEdit->setText(define2string(GIT_HASH));
     ui.commitLineEdit->setText(define2string(GIT_COMMIT));
+    connect(ui.onTopCheckBox,SIGNAL(clicked(bool)),this,SLOT(onTopCheckBoxChecked(bool)));
 }
 
 DebugOutput::~DebugOutput()
@@ -19,5 +20,18 @@ void DebugOutput::write(const QString& message, QsLogging::Level level)
     {
         QScrollBar *sb = ui.textBrowser->verticalScrollBar();
         sb->setValue(sb->maximum());
+    }
+}
+void DebugOutput::onTopCheckBoxChecked(bool checked)
+{
+    if (checked)
+    {
+        this->setWindowFlags(this->windowFlags() | Qt::WindowStaysOnTopHint);
+        this->show();
+    }
+    else
+    {
+        this->setWindowFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint);
+        this->show();
     }
 }

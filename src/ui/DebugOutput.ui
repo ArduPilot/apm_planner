@@ -34,6 +34,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QCheckBox" name="onTopCheckBox">
+       <property name="text">
+        <string>Keep Window On Top</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
