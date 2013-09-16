@@ -53,6 +53,7 @@ void AccelCalibrationConfig::activeUASSet(UASInterface *uas)
     connect(m_uas,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessageReceived(int,int,int,QString)));
     connect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
     connect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+    uasConnected();
 
 }
 void AccelCalibrationConfig::uasConnected()
