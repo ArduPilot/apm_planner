@@ -292,6 +292,7 @@ void APMToolBar::connectMAV()
             QLOG_DEBUG() << "APMToolBar: Disconnecting m_currentLink " << m_currentLink;
             m_currentLink->disconnect();
             updateLinkDisplay(m_currentLink);
+            setConnection(false);
         } else {
             QLOG_DEBUG() << "APMToolBar: Connecting m_currentLink " << m_currentLink;
             m_currentLink->connect();

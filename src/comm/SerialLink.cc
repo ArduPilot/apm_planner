@@ -507,7 +507,9 @@ qint64 SerialLink::getNominalDataRate()
 {
     int baudRate;
     if (m_port) {
-        baudRate = m_port->baudRate();
+        int newBaud = m_port->baudRate();
+        if (newBaud!=0)
+            baudRate = newBaud;
     } else {
         baudRate = m_baud;
     }
