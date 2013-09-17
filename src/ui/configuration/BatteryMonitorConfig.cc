@@ -248,6 +248,8 @@ void BatteryMonitorConfig::sensorCurrentIndexChanged(int index)
         ui.ampsPerVoltsLineEdit->setEnabled(false);
         ui.calcDividerLineEdit->setEnabled(false);
         ui.measuredVoltsLineEdit->setEnabled(false);
+        m_uas->getParamManager()->setParameter(1,"AMP_PER_VOLT",(float)(maxamps/topamps));
+        m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",(float)(maxvolt/topvolt));
     }
 }
 float BatteryMonitorConfig::calculatemVPerAmp(float maxvoltsout,float maxamps)
@@ -288,22 +290,22 @@ void BatteryMonitorConfig::apmVerCurrentIndexChanged(int index)
         m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",101);
         m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",1);
         ui.calcDividerLineEdit->setText("1");
-        disconnect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
-        ui.monitorComboBox->setCurrentIndex(0); //PX4 must be other
-        connect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
+        disconnect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
+        ui.sensorComboBox->setCurrentIndex(0); //PX4 must be other
+        connect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
     }
     else if (index == 4) //Pixhawk
     {
         m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
         m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",2);
         m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",3);
-        m_uas->getParamManager()->setParameter(1,"AMP_PER_VOLT",17);
+        m_uas->getParamManager()->setParameter(1,"AMP_PER_VOLT",(float)17);
         m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",(float)10.1);
         ui.calcDividerLineEdit->setText("1");
         ui.ampsPerVoltsLineEdit->setText("17");
-        disconnect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
-        ui.monitorComboBox->setCurrentIndex(0); //Pixhawk must be other
-        connect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
+        disconnect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
+        ui.sensorComboBox->setCurrentIndex(0); //Pixhawk must be other
+        connect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
     }
 }
 
@@ -362,6 +364,10 @@ void BatteryMonitorConfig::parameterChanged(int uas, int component, QString para
         else if (ivalue == 1) //APM2
         {
             ui.apmVerComboBox->setCurrentIndex(1);
+        }
+        else if (ivalue == 2) //Pixhawk
+        {
+            ui.apmVerComboBox->setCurrentIndex(4);
         }
         else if (ivalue == 13) //APM2.5
         {
