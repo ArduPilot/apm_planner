@@ -27,7 +27,7 @@ This file is part of the APM_PLANNER project
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include "ApmSoftwareConfig.h"
-
+#include "QsLog.h"
 
 ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
 {
@@ -275,13 +275,10 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     parametersname = xml.attributes().value("name").toString();
                             }
 
-                            QVariantMap genset;
-                            QVariantMap advset;
+                            //QVariantMap genset;
+                            //QVariantMap advset;
 
-                            QString setname = parametersname;
                             xml.readNext();
-                            int genarraycount = 0;
-                            int advarraycount = 0;
                             while ((xml.name() != "parameters") && !xml.atEnd())
                             {
                                 if (xml.isStartElement() && xml.name() == "param")
@@ -289,14 +286,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     QString humanname = xml.attributes().value("humanName").toString();
                                     QString name = xml.attributes().value("name").toString();
                                     QString tab= xml.attributes().value("user").toString();
-                                    if (tab == "Advanced")
-                                    {
-                                        advset["title"] = parametersname;
-                                    }
-                                    else
-                                    {
-                                        genset["title"] = parametersname;
-                                    }
                                     if (name.contains(":"))
                                     {
                                         name = name.split(":")[1].toUpper();
@@ -313,20 +302,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                         if (xml.isStartElement() && xml.name() == "values")
                                         {
                                             type = 1; //1 is a combobox
-                                            if (tab == "Advanced")
-                                            {
-                                                advset[setname + "\\" + QString::number(advarraycount) + "\\" + "TYPE"] = "COMBO";
-                                                advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_COMBOBOX_DESCRIPTION"] = humanname;
-                                                advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_COMBOBOX_PARAMID"] = name;
-                                                advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_COMBOBOX_COMPONENTID"] = 1;
-                                            }
-                                            else
-                                            {
-                                                genset[setname + "\\" + QString::number(genarraycount) + "\\" + "TYPE"] = "COMBO";
-                                                genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_COMBOBOX_DESCRIPTION"] = humanname;
-                                                genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_COMBOBOX_PARAMID"] = name;
-                                                genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_COMBOBOX_COMPONENTID"] = 1;
-                                            }
                                             int paramcount = 0;
                                             xml.readNext();
                                             while ((xml.name() != "values") && !xml.atEnd())
@@ -337,27 +312,9 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                     QString code = xml.attributes().value("code").toString();
                                                     QString arg = xml.readElementText();
                                                     valuemap.append(QPair<QString,QString>(code,arg));
-                                                    if (tab == "Advanced")
-                                                    {
-                                                        advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(paramcount) + "_TEXT"] = arg;
-                                                        advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(paramcount) + "_VAL"] = code.toInt();
-                                                    }
-                                                    else
-                                                    {
-                                                        genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(paramcount) + "_TEXT"] = arg;
-                                                        genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_COMBOBOX_ITEM_" + QString::number(paramcount) + "_VAL"] = code.toInt();
-                                                    }
                                                     paramcount++;
                                                 }
                                                 xml.readNext();
-                                            }
-                                            if (tab == "Advanced")
-                                            {
-                                                advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_COMBOBOX_COUNT"] = paramcount;
-                                            }
-                                            else
-                                            {
-                                                genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_COMBOBOX_COUNT"] = paramcount;
                                             }
                                         }
                                         if (xml.isStartElement() && xml.name() == "field")
@@ -379,20 +336,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     }
                                     if (type == 2)
                                     {
-                                        if (tab == "Advanced")
-                                        {
-                                            advset[setname + "\\" + QString::number(advarraycount) + "\\" + "TYPE"] = "SLIDER";
-                                            advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_SLIDER_DESCRIPTION"] = humanname;
-                                            advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_SLIDER_PARAMID"] = name;
-                                            advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_SLIDER_COMPONENTID"] = 1;
-                                        }
-                                        else
-                                        {
-                                            genset[setname + "\\" + QString::number(genarraycount) + "\\" + "TYPE"] = "SLIDER";
-                                            genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_SLIDER_DESCRIPTION"] = humanname;
-                                            genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_SLIDER_PARAMID"] = name;
-                                            genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_SLIDER_COMPONENTID"] = 1;
-                                        }
                                         if (fieldmap.contains("Range"))
                                         {
                                             float min = 0;
@@ -408,16 +351,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 min = fieldmap["Range"].split("-")[0].trimmed().toFloat();
                                                 max = fieldmap["Range"].split("-")[1].trimmed().toFloat();
                                             }
-                                            if (tab == "Advanced")
-                                            {
-                                                advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_SLIDER_MIN"] = min;
-                                                advset[setname + "\\" + QString::number(advarraycount) + "\\" + "QGC_PARAM_SLIDER_MAX"] = max;
-                                            }
-                                            else
-                                            {
-                                                genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_SLIDER_MIN"] = min;
-                                                genset[setname + "\\" + QString::number(genarraycount) + "\\" + "QGC_PARAM_SLIDER_MAX"] = max;
-                                            }
                                         }
                                     }
                                     QString units = "";
@@ -426,16 +359,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                         units = fieldmap["Units"];
                                     }
 
-                                    if (tab == "Advanced")
-                                    {
-                                        advarraycount++;
-                                        advset["count"] = advarraycount;
-                                    }
-                                    else
-                                    {
-                                        genarraycount++;
-                                        genset["count"] = genarraycount;
-                                    }
                                     //Right here we have a single param in memory
                                     if (valuemap.size() > 0)
                                     {
@@ -444,7 +367,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                         {
                                             valuelist.append(QPair<int,QString>(valuemap[i].first.toInt(),valuemap[i].second));
                                         }
-                                        if (compare == parametersname)
+                                        if (compare == parametersname || valuetype == "libraries")
                                         {
                                             if (tab == "Standard")
                                             {
@@ -477,7 +400,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                             }
                                             increment = (max - min) / 100.0; //1% of total range increment
                                         }
-                                        if (compare == parametersname)
+                                        if (compare == parametersname || valuetype == "libraries")
                                         {
                                             if (tab == "Standard")
                                             {
