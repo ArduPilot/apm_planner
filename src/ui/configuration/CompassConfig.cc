@@ -194,8 +194,8 @@ void CompassConfig::liveCalibrationClicked()
         return;
     }
 
-    QMessageBox::information(this,"Live Compass calibration",
-                             "Data will be collected for 60 seconds, Please click ok and move the apm around all axises");
+    QMessageBox::information(this,tr("Live Compass calibration"),
+                             tr("Data will be collected for 60 seconds, Please click ok and move the apm around all axises"));
 
     connect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
                 this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
@@ -203,12 +203,15 @@ void CompassConfig::liveCalibrationClicked()
                 this, SLOT(sensorUpdateMessage(UASInterface*,mavlink_sensor_offsets_t)));
      m_uas->enableRawSensorDataTransmission(10);
 
-    m_progressDialog = new QProgressDialog("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds.", "Cancel", 0, 60);
+    m_progressDialog = new QProgressDialog(tr("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds."), tr("Cancel"), 0, 60);
 //    m_progressDialog->setModal(true);
     connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(cancelCompassCalibration()));
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(progressCounter()));
     m_timer->start(1); // second counting progress timer
+    m_uas->getParamManager()->setParameter(1,"COMPASS_OFS_X",0.0f);
+    m_uas->getParamManager()->setParameter(1,"COMPASS_OFS_Y",0.0f);
+    m_uas->getParamManager()->setParameter(1,"COMPASS_OFS_Z",0.0f);
 }
 
 void CompassConfig::progressCounter()
@@ -252,7 +255,7 @@ void CompassConfig::finishCompassCalibration()
 
     if (m_rawImuList.count() < 10) {
         QLOG_ERROR() << "Not enough data points for calculation:" ;
-        QMessageBox::warning(this, "Compass Calibration Failed", "Not enough data points to calibrate the compass.");
+        QMessageBox::warning(this, tr("Compass Calibration Failed"), tr("Not enough data points to calibrate the compass."));
         return;
     }
 
@@ -282,9 +285,9 @@ void CompassConfig::saveOffsets(alglib::real_1d_array& ofs)
 
     cleanup();
 
-    QMessageBox::information(this, "New Mag Offsets", "New offsets are \n\nx:" + QString::number(xOffset,'f',3)
+    QMessageBox::information(this, tr("New Mag Offsets"), tr("New offsets are \n\nx:") + QString::number(xOffset,'f',3)
                              + " y:" + QString::number(yOffset,'f',3) + " z:" + QString::number(zOffset,'f',3)
-                             + "\n\nThese have been saved for you.");
+                             + tr("\n\nThese have been saved for you."));
 }
 
 
@@ -338,7 +341,7 @@ alglib::real_1d_array* CompassConfig::leastSq(QVector<RawImuTuple> *data)
         alglib::minlmstate state;
         alglib::minlmreport rep;
 
-        alglib::minlmcreatev(data->count(), *x, 100,  state);
+        alglib::minlmcreatev(data->count(), *x, 100.0f,  state);
         alglib::minlmsetcond(state, epsg, epsf, epsx, maxits);
         alglib::minlmoptimize(state, &CompassConfig::sphere_error, NULL, data);
         alglib::minlmresults(state, *x, rep);
