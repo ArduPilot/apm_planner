@@ -148,6 +148,7 @@ void TerminalConsole::hideEvent(QHideEvent *event)
 
 TerminalConsole::~TerminalConsole()
 {
+    delete m_serial;
     delete m_console;
     delete m_statusBar;
     delete m_settingsDialog;
