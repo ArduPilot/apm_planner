@@ -83,12 +83,15 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     connect(ui.liveCalibrationButton, SIGNAL(clicked()),
             this, SLOT(liveCalibrationClicked()));
+
+
 }
 
 void CompassConfig::activeUASSet(UASInterface *uas)
 {
     AP2ConfigWidget::activeUASSet(uas);
 }
+
 void CompassConfig::degreeEditFinished()
 {
     if (!m_uas)
@@ -176,6 +179,22 @@ void CompassConfig::parameterChanged(int uas, int component, QString parameterNa
         ui.orientationComboBox->setCurrentIndex(value.toInt());
         connect(ui.orientationComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(orientationComboChanged(int)));
 
+    } else if (parameterName.contains("COMPASS_OFS")) {
+        QLOG_DEBUG() << "Clearing " << parameterName;
+        if (parameterName == "COMPASS_OFS_X") {
+            m_allOffsetsSet += 2;
+        } else if (parameterName == "COMPASS_OFS_Y") {
+            m_allOffsetsSet += 4;
+        } else if (parameterName == "COMPASS_OFS_Z") {
+            m_allOffsetsSet += 8;
+        }
+
+        if (m_allOffsetsSet == 15) { // ie all offsets have been set
+            QLOG_DEBUG() << "Start Data Collection";
+            startDataCollection();
+        }
+
+
     }
 }
 
@@ -240,6 +259,22 @@ void CompassConfig::liveCalibrationClicked()
     QMessageBox::information(this,tr("Live Compass calibration"),
                              tr("Data will be collected for 60 seconds, Please click ok and move the apm around all axises"));
 
+    QGCUASParamManager* pm = m_uas->getParamManager();
+    if ((pm->getParameterValue(1, "COMPASS_OFS_X") != 0.0f)
+       ||(pm->getParameterValue(1, "COMPASS_OFS_Y") != 0.0f)
+       || (pm->getParameterValue(1, "COMPASS_OFS_Z") != 0.0f)) {
+        // Initialiase to zero
+        pm->setParameter(1,"COMPASS_OFS_X", QVariant(static_cast<float>(0.0f)));
+        pm->setParameter(1,"COMPASS_OFS_Y", QVariant(static_cast<float>(0.0f)));
+        pm->setParameter(1,"COMPASS_OFS_Z", QVariant(static_cast<float>(0.0f)));
+        m_allOffsetsSet = 1; // Add 2 for X, 4 for Y, 8 for Z, add 1 means it's enabled.
+    } else {
+        startDataCollection();
+    }
+}
+
+void CompassConfig::startDataCollection()
+{
     connect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
                 this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
     connect(m_uas, SIGNAL(sensorOffsetsMessageUpdate(UASInterface*,mavlink_sensor_offsets_t)),
@@ -247,14 +282,10 @@ void CompassConfig::liveCalibrationClicked()
      m_uas->enableRawSensorDataTransmission(10);
 
     m_progressDialog = new QProgressDialog(tr("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds."), tr("Cancel"), 0, 60);
-//    m_progressDialog->setModal(true);
     connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(cancelCompassCalibration()));
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(progressCounter()));
     m_timer->start(1); // second counting progress timer
-    m_uas->getParamManager()->setParameter(1,"COMPASS_OFS_X",0.0f);
-    m_uas->getParamManager()->setParameter(1,"COMPASS_OFS_Y",0.0f);
-    m_uas->getParamManager()->setParameter(1,"COMPASS_OFS_Z",0.0f);
 }
 
 void CompassConfig::progressCounter()

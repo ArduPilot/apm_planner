@@ -67,12 +67,16 @@ public:
 
     static void sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj);
 
+private:
+    enum CompassType {none, APM, ExternalCompass, PX4};
+
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void enableClicked(bool enabled);
     void autoDecClicked(bool enabled);
     void orientationComboChanged(int index);
     void liveCalibrationClicked();
+    void startDataCollection();
 
     void finishCompassCalibration();
     void cancelCompassCalibration();
@@ -84,8 +88,8 @@ private slots:
 
     real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
     void saveOffsets(real_1d_array &ofs);
-
     void degreeEditFinished();
+//    void setCompassOrientationForBoard(BoardType boardType);
 
 private:
     void cleanup();
@@ -99,6 +103,7 @@ private:
     double m_oldxmag;
     double m_oldymag;
     double m_oldzmag;
+    int m_allOffsetsSet;
 };
 
 #endif // COMPASSCONFIG_H

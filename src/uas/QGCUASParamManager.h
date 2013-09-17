@@ -36,6 +36,11 @@ public:
         return true;
     }
 
+    QVariant& getParameterValue(int component, const QString& parameter) const {
+        QVariant* value = new QVariant(parameters.value(component)->value(parameter));
+        return *value;
+    }
+
     virtual bool isParamMinKnown(const QString& param) = 0;
     virtual bool isParamMaxKnown(const QString& param) = 0;
     virtual bool isParamDefaultKnown(const QString& param) = 0;
