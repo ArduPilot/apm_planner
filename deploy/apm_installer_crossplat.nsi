@@ -1,4 +1,4 @@
-!inclusde "MUI2.nsh"
+!include "MUI2.nsh"
 !define MUI_ICON "..\files\images\icons\apmplanner.ico"
 Name "APM Planner 2"
 
