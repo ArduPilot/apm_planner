@@ -180,6 +180,7 @@ void BatteryMonitorConfig::monitorCurrentIndexChanged(int index)
         ui.calcDividerLineEdit->setEnabled(true);
         ui.calcVoltsLineEdit->setEnabled(false);
         ui.ampsPerVoltsLineEdit->setEnabled(false);
+        apmVerCurrentIndexChanged(ui.apmVerComboBox->currentIndex());
     }
     else if (index == 2) //Monitor voltage and current
     {
@@ -190,6 +191,7 @@ void BatteryMonitorConfig::monitorCurrentIndexChanged(int index)
         ui.calcDividerLineEdit->setEnabled(true);
         ui.calcVoltsLineEdit->setEnabled(false);
         ui.ampsPerVoltsLineEdit->setEnabled(true);
+        apmVerCurrentIndexChanged(ui.apmVerComboBox->currentIndex());
     }
 
 
@@ -286,6 +288,9 @@ void BatteryMonitorConfig::apmVerCurrentIndexChanged(int index)
         m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",101);
         m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",1);
         ui.calcDividerLineEdit->setText("1");
+        disconnect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
+        ui.monitorComboBox->setCurrentIndex(0); //PX4 must be other
+        connect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
     }
     else if (index == 4) //Pixhawk
     {
@@ -293,9 +298,12 @@ void BatteryMonitorConfig::apmVerCurrentIndexChanged(int index)
         m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",2);
         m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",3);
         m_uas->getParamManager()->setParameter(1,"AMP_PER_VOLT",17);
-        m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",10.1);
+        m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",(float)10.1);
         ui.calcDividerLineEdit->setText("1");
         ui.ampsPerVoltsLineEdit->setText("17");
+        disconnect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
+        ui.monitorComboBox->setCurrentIndex(0); //Pixhawk must be other
+        connect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
     }
 }
 
