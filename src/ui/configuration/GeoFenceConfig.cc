@@ -59,19 +59,19 @@ void GeoFenceConfig::connectAllSignals()
 void GeoFenceConfig::disconnectAllSignals()
 {
     // Make disconnections
-    connect(ui.enableCheckBox, SIGNAL(stateChanged(int)),
+    disconnect(ui.enableCheckBox, SIGNAL(stateChanged(int)),
             this, SLOT(enabledChangedState(int)));
-    connect(ui.typeComboBox, SIGNAL(currentIndexChanged(int)),
+    disconnect(ui.typeComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(fenceTypeChanged(int)));
-    connect(ui.actionComboBox, SIGNAL(currentIndexChanged(int)),
+    disconnect(ui.actionComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(fenceActionChanged(int)));
-    connect(ui.maxAltSpinBox, SIGNAL(editingFinished()),
+    disconnect(ui.maxAltSpinBox, SIGNAL(editingFinished()),
             this, SLOT(valueChangedMaxAlt()));
-    connect(ui.rtlAltSpinBox, SIGNAL(editingFinished()),
+    disconnect(ui.rtlAltSpinBox, SIGNAL(editingFinished()),
             this, SLOT(valueChangedRtlAlt()));
-    connect(ui.radiusSpinBox, SIGNAL(editingFinished()),
+    disconnect(ui.radiusSpinBox, SIGNAL(editingFinished()),
             this, SLOT(valueChangedRadius()));
-    connect(ui.finalAltSpinBox, SIGNAL(editingFinished()),
+    disconnect(ui.finalAltSpinBox, SIGNAL(editingFinished()),
             this, SLOT(valueChangedFinalRtlAlt()));
 }
 
