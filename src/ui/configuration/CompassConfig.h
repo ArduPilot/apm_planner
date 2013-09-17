@@ -85,6 +85,8 @@ private slots:
     real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
     void saveOffsets(real_1d_array &ofs);
 
+    void degreeEditFinished();
+
 private:
     void cleanup();
 

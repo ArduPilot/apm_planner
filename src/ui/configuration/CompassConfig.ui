@@ -108,14 +108,24 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <widget class="QLineEdit" name="declinationLineEdit"/>
-    </item>
-    <item>
      <widget class="QLabel" name="label_3">
       <property name="text">
-       <string>in Degrees eg 2* 3' W is -2.3</string>
+       <string>Degrees:</string>
       </property>
      </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="degreesLineEdit"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>Minutes:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="minutesLineEdit"/>
     </item>
    </layout>
   </widget>

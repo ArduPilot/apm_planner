@@ -43,10 +43,13 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.autoDecCheckBox->setEnabled(false);
     ui.enableCheckBox->setEnabled(false);
     ui.orientationComboBox->setEnabled(false);
-    ui.declinationLineEdit->setEnabled(false);
+    ui.degreesLineEdit->setEnabled(false);
+    ui.minutesLineEdit->setEnabled(false);
     connect(ui.enableCheckBox,SIGNAL(clicked(bool)),this,SLOT(enableClicked(bool)));
     connect(ui.autoDecCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoDecClicked(bool)));
     connect(ui.orientationComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(orientationComboChanged(int)));
+    connect(ui.degreesLineEdit,SIGNAL(editingFinished()),this,SLOT(degreeEditFinished()));
+    connect(ui.minutesLineEdit,SIGNAL(editingFinished()),this,SLOT(degreeEditFinished()));
 
     ui.orientationComboBox->addItem("ROTATION_NONE");
     ui.orientationComboBox->addItem("ROTATION_YAW_45");
@@ -86,6 +89,35 @@ void CompassConfig::activeUASSet(UASInterface *uas)
 {
     AP2ConfigWidget::activeUASSet(uas);
 }
+void CompassConfig::degreeEditFinished()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    //float degrees = value.toDouble() * (float)(180.0 / M_PI);
+    //float minutes  = (degrees - ((int)degreees)) * 60.0;
+    bool degok = false;
+    bool minok = false;
+    double degrees = ui.degreesLineEdit->text().toDouble(&degok);
+    double minutes = ui.minutesLineEdit->text().toDouble(&minok);
+    if (degrees < 0)
+    {
+        degrees = degrees - (minutes / 60.0);
+    }
+    else
+    {
+        degrees = degrees + (minutes / 60.0);
+    }
+    degrees = degrees * (M_PI/180.0);
+    m_uas->getParamManager()->setParameter(1,"COMPASS_DEC",(float)degrees);
+    if (!degok || !minok)
+    {
+        QMessageBox::information(this,tr("Error"),tr("Error, degrees or minutes entered are nor in valid numeric format. Please re-enter the information"));
+        return;
+    }
+}
 
 CompassConfig::~CompassConfig()
 {
@@ -102,14 +134,16 @@ void CompassConfig::parameterChanged(int uas, int component, QString parameterNa
         {
             ui.enableCheckBox->setChecked(false);
             ui.autoDecCheckBox->setEnabled(false);
-            ui.declinationLineEdit->setEnabled(false);
+            ui.degreesLineEdit->setEnabled(false);
+            ui.minutesLineEdit->setEnabled(false);
             ui.orientationComboBox->setEnabled(false);
         }
         else
         {
             ui.enableCheckBox->setChecked(true);
             ui.autoDecCheckBox->setEnabled(true);
-            ui.declinationLineEdit->setEnabled(true);
+            ui.degreesLineEdit->setEnabled(true);
+            ui.minutesLineEdit->setEnabled(true);
             ui.orientationComboBox->setEnabled(true);
         }
         ui.enableCheckBox->setEnabled(true);
@@ -127,7 +161,14 @@ void CompassConfig::parameterChanged(int uas, int component, QString parameterNa
     }
     else if (parameterName == "COMPASS_DEC")
     {
-        ui.declinationLineEdit->setText(QString::number(value.toDouble()));
+        float degrees = value.toDouble() * (float)(180.0 / M_PI);
+        float minutes  = (degrees - ((int)degrees)) * 60.0;
+        if (degrees < 0)
+        {
+            minutes = minutes * -1;
+        }
+        ui.degreesLineEdit->setText(QString::number((int)degrees));
+        ui.minutesLineEdit->setText(QString::number(minutes,'f',0));
     }
     else if (parameterName == "COMPASS_ORIENT")
     {
@@ -148,14 +189,16 @@ void CompassConfig::enableClicked(bool enabled)
             ui.autoDecCheckBox->setEnabled(true);
             if (!ui.autoDecCheckBox->isChecked())
             {
-                ui.declinationLineEdit->setEnabled(true);
+                ui.minutesLineEdit->setEnabled(true);
+                ui.degreesLineEdit->setEnabled(true);
             }
         }
         else
         {
             m_uas->getParamManager()->setParameter(1,"MAG_ENABLE",QVariant(0));
             ui.autoDecCheckBox->setEnabled(false);
-            ui.declinationLineEdit->setEnabled(false);
+            ui.degreesLineEdit->setEnabled(false);
+            ui.minutesLineEdit->setEnabled(false);
         }
     }
 }
