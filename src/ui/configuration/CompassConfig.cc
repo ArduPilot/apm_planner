@@ -51,39 +51,45 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.degreesLineEdit,SIGNAL(editingFinished()),this,SLOT(degreeEditFinished()));
     connect(ui.minutesLineEdit,SIGNAL(editingFinished()),this,SLOT(degreeEditFinished()));
 
-    ui.orientationComboBox->addItem("ROTATION_NONE");
-    ui.orientationComboBox->addItem("ROTATION_YAW_45");
-    ui.orientationComboBox->addItem("ROTATION_YAW_90");
-    ui.orientationComboBox->addItem("ROTATION_YAW_135");
-    ui.orientationComboBox->addItem("ROTATION_YAW_180");
-    ui.orientationComboBox->addItem("ROTATION_YAW_225");
-    ui.orientationComboBox->addItem("ROTATION_YAW_270");
-    ui.orientationComboBox->addItem("ROTATION_YAW_315");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_180");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_180_YAW_45");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_180_YAW_90");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_180_YAW_135");
-    ui.orientationComboBox->addItem("ROTATION_PITCH_180");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_180_YAW_225");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_180_YAW_270");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_180_YAW_315");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_90");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_90_YAW_45");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_90_YAW_90");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_90_YAW_135");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_270");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_270_YAW_45");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_270_YAW_90");
-    ui.orientationComboBox->addItem("ROTATION_ROLL_270_YAW_135");
-    ui.orientationComboBox->addItem("ROTATION_PITCH_90");
-    ui.orientationComboBox->addItem("ROTATION_PITCH_270");
-    ui.orientationComboBox->addItem("ROTATION_MAX");
+    ui.orientationComboBox->addItem("0");
+    ui.orientationComboBox->addItem("Yaw 45");
+    ui.orientationComboBox->addItem("Yaw 90");
+    ui.orientationComboBox->addItem("Yaw 135");
+    ui.orientationComboBox->addItem("Yaw 180");
+    ui.orientationComboBox->addItem("Yaw 225");
+    ui.orientationComboBox->addItem("Yaw 270");
+    ui.orientationComboBox->addItem("Yaw 315");
+    ui.orientationComboBox->addItem("Roll 180");
+    ui.orientationComboBox->addItem("Roll 180, Yaw 45");
+    ui.orientationComboBox->addItem("Roll 180, Yaw 90");
+    ui.orientationComboBox->addItem("Roll 180, Yaw 135");
+    ui.orientationComboBox->addItem("Pitch 180");
+    ui.orientationComboBox->addItem("Roll 180, Yaw 225");
+    ui.orientationComboBox->addItem("Roll 180, Yaw 270");
+    ui.orientationComboBox->addItem("Roll 180, Yaw 315");
+    ui.orientationComboBox->addItem("Roll 90");
+    ui.orientationComboBox->addItem("Roll 90, Yaw 45");
+    ui.orientationComboBox->addItem("Roll 90, Yaw 90");
+    ui.orientationComboBox->addItem("Roll 90, Yaw 135");
+    ui.orientationComboBox->addItem("Roll 270");
+    ui.orientationComboBox->addItem("Roll 270, Yaw 45");
+    ui.orientationComboBox->addItem("Roll 270, Yaw 90");
+    ui.orientationComboBox->addItem("Roll 270, Yaw 135");
+    ui.orientationComboBox->addItem("Pitch 90");
+    ui.orientationComboBox->addItem("Pitch 270");
+//    ui.orientationComboBox->addItem("MAX");
 
     initConnections();
 
     connect(ui.liveCalibrationButton, SIGNAL(clicked()),
             this, SLOT(liveCalibrationClicked()));
 
+    connect(ui.onBoardApmButton, SIGNAL(clicked()),
+            this,SLOT(setCompassAPMOnBoard()));
+    connect(ui.onBoardPX4Button, SIGNAL(clicked()),
+            this,SLOT(setCompassPX4OnBoard()));
+    connect(ui.gpsCompassButton, SIGNAL(clicked()),
+            this,SLOT(setCompass3DRGPS()));
 
 }
 
@@ -244,7 +250,38 @@ void CompassConfig::orientationComboChanged(int index)
     {
         return;
     }
+    QLOG_DEBUG() << "setCompassOrientation index:" << index;
     m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",index);
+
+}
+
+void CompassConfig::setCompassAPMOnBoard()
+{
+    if (!m_uas)
+        return;
+    // ROTATION_NONE
+    QLOG_DEBUG() << "setCompassAPMOnBoard ROTATION_NONE";
+    m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",0);
+
+}
+
+void CompassConfig::setCompassPX4OnBoard()
+{
+    if (!m_uas)
+        return;
+    // FMUv1 & FMUv2 is ROTATION_ROLL_180_YAW_90
+    QLOG_DEBUG() << "setCompassPX4OnBoard ROLL_180_YAW_90";
+    m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",10);
+
+}
+
+void CompassConfig::setCompass3DRGPS()
+{
+    if (!m_uas)
+        return;
+    // ROTATION_ROLL_180
+    QLOG_DEBUG() << "setCompass3DRGPS ROLL_180";
+    m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",8);
 
 }
 

@@ -89,7 +89,10 @@ private slots:
     real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
     void saveOffsets(real_1d_array &ofs);
     void degreeEditFinished();
-//    void setCompassOrientationForBoard(BoardType boardType);
+
+    void setCompassAPMOnBoard();
+    void setCompassPX4OnBoard();
+    void setCompass3DRGPS();
 
 private:
     void cleanup();
