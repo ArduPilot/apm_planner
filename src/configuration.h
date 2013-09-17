@@ -11,7 +11,7 @@
 #define WITH_TEXT_TO_SPEECH 1
 
 #define QGC_APPLICATION_NAME "APM Planner"
-#define QGC_APPLICATION_VERSION "v2.0.0 (alpha-RC1)"
+#define QGC_APPLICATION_VERSION "v2.0.0 (alpha-RC2)"
 
 namespace QGC
 

@@ -448,7 +448,8 @@ win32-g++|win32-x-g++|win64-x-g++ {
 	}
 
 	RC_FILE = $$BASEDIR/qgroundcontrol.rc
-
+}
+win32-g++ {
 	# Copy dependencies
 
 	system(cp): {
