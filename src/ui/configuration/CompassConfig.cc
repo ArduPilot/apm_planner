@@ -28,7 +28,8 @@ This file is part of the APM_PLANNER project
 CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_progressDialog(NULL),
     m_timer(NULL),
-    m_rawImuList()
+    m_rawImuList(),
+    m_allOffsetsSet(0)
 {
     ui.setupUi(this);
 
