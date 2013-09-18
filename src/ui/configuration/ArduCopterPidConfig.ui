@@ -17,13 +17,13 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>10</y>
-     <width>241</width>
-     <height>51</height>
+     <y>20</y>
+     <width>172</width>
+     <height>24</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;h2&gt;ArduCopter Pids&lt;/h2&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;APM:Copter PIDs&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QPushButton" name="writePushButton">
@@ -57,8 +57,8 @@
     <rect>
      <x>10</x>
      <y>70</y>
-     <width>711</width>
-     <height>428</height>
+     <width>931</width>
+     <height>558</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
