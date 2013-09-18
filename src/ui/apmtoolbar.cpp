@@ -61,7 +61,7 @@ APMToolBar::APMToolBar(QWidget *parent):
 #ifdef Q_OS_MAC
     rootObject()->setProperty("rowSpacerSize", QVariant(3));
     rootObject()->setProperty("linkDeviceSize", QVariant(105));
-#elif Q_OS_UNIX
+#elif defined(Q_OS_UNIX)
     rootObject()->setProperty("rowSpacerSize", QVariant(3));
     rootObject()->setProperty("linkDeviceSize", QVariant(100));
 #else
