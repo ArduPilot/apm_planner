@@ -30,11 +30,12 @@ CameraGimbalConfig::CameraGimbalConfig(QWidget *parent) : AP2ConfigWidget(parent
 {
     ui.setupUi(this);
 
-    foreach (QObject *obj,this->children())
+    QList<QWidget*> widgetList = this->findChildren<QWidget*>();
+    for (int i=0;i<widgetList.size();i++)
     {
-        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj))
+        if (qobject_cast<QComboBox*>(widgetList[i]) || qobject_cast<QAbstractSpinBox*>(widgetList[i]) || qobject_cast<QAbstractSlider*>(widgetList[i]))
         {
-            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+            widgetList[i]->installEventFilter(QGCMouseWheelEventFilter::getFilter());
         }
     }
 

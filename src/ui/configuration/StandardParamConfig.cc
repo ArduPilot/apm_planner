@@ -22,6 +22,7 @@ This file is part of the APM_PLANNER project
 
 #include "StandardParamConfig.h"
 #include "ParamWidget.h"
+#include "QGCMouseWheelEventFilter.h"
 StandardParamConfig::StandardParamConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
@@ -38,6 +39,7 @@ void StandardParamConfig::addRange(QString title,QString description,QString par
     paramToWidgetMap[param] = widget;
     widget->setupDouble(title + "(" + param + ")",description,0,min,max,increment);
     ui.verticalLayout->addWidget(widget);
+    widget->installEventFilter(QGCMouseWheelEventFilter::getFilter());
     widget->show();
 }
 
@@ -49,6 +51,7 @@ void StandardParamConfig::addCombo(QString title,QString description,QString par
     paramToWidgetMap[param] = widget;
     widget->setupCombo(title + "(" + param + ")",description,valuelist);
     ui.verticalLayout->addWidget(widget);
+    widget->installEventFilter(QGCMouseWheelEventFilter::getFilter());
     widget->show();
 }
 void StandardParamConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)

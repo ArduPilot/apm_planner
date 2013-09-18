@@ -28,11 +28,12 @@ ParamWidget::ParamWidget(QString param,QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
 
-    foreach (QObject *obj,this->children())
+    QList<QWidget*> widgetList = this->findChildren<QWidget*>();
+    for (int i=0;i<widgetList.size();i++)
     {
-        if (qobject_cast<QAbstractSlider*>(obj) || qobject_cast<QComboBox*>(obj) || qobject_cast<QAbstractSpinBox*>(obj) || qobject_cast<QAbstractSlider*>(obj))
+        if (qobject_cast<QComboBox*>(widgetList[i]) || qobject_cast<QAbstractSpinBox*>(widgetList[i]) || qobject_cast<QAbstractSlider*>(widgetList[i]))
         {
-            obj->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+            widgetList[i]->installEventFilter(QGCMouseWheelEventFilter::getFilter());
         }
     }
 
@@ -174,11 +175,13 @@ void ParamWidget::setupDouble(QString title,QString description,double value,dou
         maxstr = QString::number(m_max,'f',3);
         minstr = QString::number(m_min,'f',3);
     }
+    ui.doubleSpinBox->setDecimals(3);
     ui.minLabel->setText(minstr);
     ui.maxLabel->setText(maxstr);
     //ui.doubleSpinBox->setSingleStep(increment);
     ui.valueSlider->setSingleStep(increment);
     ui.valueSlider->setPageStep(increment * 10);
+    ui.doubleSpinBox->setSingleStep(increment);
     ui.doubleSpinBox->setMinimum(m_min);
     ui.doubleSpinBox->setMaximum(m_max);
 }
