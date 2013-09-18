@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1145</width>
-    <height>508</height>
+    <height>627</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>300</width>
+         <width>500</width>
          <height>150</height>
         </size>
        </property>
@@ -60,7 +60,7 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>300</width>
+         <width>500</width>
          <height>150</height>
         </size>
        </property>
@@ -83,7 +83,7 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>300</width>
+         <width>500</width>
          <height>120</height>
         </size>
        </property>
@@ -100,7 +100,7 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>300</width>
+         <width>500</width>
          <height>120</height>
         </size>
        </property>
