@@ -27,12 +27,14 @@ This file is part of the APM_PLANNER project
  *   @author Michael Carpenter <malcom2073@gmail.com>
  *
  */
+#include "QsLog.h"
 #include "ApmHardwareConfig.h"
 
-ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
+ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
+    m_paramDownloadState(none),
+    m_paramDownloadCount(0)
 {
     ui.setupUi(this);
-
 
     ui.manditoryHardware->setVisible(false);
     ui.frameTypeButton->setVisible(false);
@@ -149,6 +151,9 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
     {
         activeUASSet(UASManager::instance()->getActiveUAS());
     }
+
+    // Setup Parameter Progress bars
+    ui.globalParamProgressBar->setRange(0,100);
 }
 void ApmHardwareConfig::activateStackedWidget()
 {
@@ -254,6 +259,10 @@ void ApmHardwareConfig::activeUASSet(UASInterface *uas)
         uasDisconnected();
         disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
         disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+
+        disconnect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+                this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
+
         m_uas = 0;
     }
     if (!uas)
@@ -263,6 +272,68 @@ void ApmHardwareConfig::activeUASSet(UASInterface *uas)
     m_uas = uas;
     connect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
     connect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+
+    connect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+            this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
+
     uasConnected();
 
+}
+
+void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
+{
+    QString countString;
+    // Create progress of downloading all parameters for UI
+    switch (m_paramDownloadState){
+    case none:
+        if (parameterId == UINT16_MAX){
+            // This is an ACK package, not a full read
+            break;
+        } else if ((parameterId == 0) && (parameterCount != UINT16_MAX)) {
+            // Its a new download List, Start from zero.
+            ui.globalParamStateLabel->setText(tr("Downloading Params..."));
+        } else {
+            break;
+        }
+
+        // Otherwise, trigger progress bar update.
+    case startRead:
+        QLOG_INFO() << "Starting Global Param Progress Bar Updating sys:" << uas;
+        m_paramDownloadCount = 1;
+
+        countString = QString::number(m_paramDownloadCount) + "/"
+                        + QString::number(parameterCount);
+        QLOG_INFO() << "Global Param Progress Bar: " << countString
+                     << "paramId:" << parameterId << "name:" << parameterName
+                     << "paramValue:" << value;
+        ui.globalParamProgressLabel->setText(countString);
+        ui.globalParamProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
+
+        m_paramDownloadState = readingParams;
+        break;
+
+    case readingParams:
+        m_paramDownloadCount++;
+        countString = QString::number(m_paramDownloadCount) + "/"
+                        + QString::number(parameterCount);
+        QLOG_INFO() << "Param Progress Bar: " << countString
+                     << "paramId:" << parameterId << "name:" << parameterName
+                     << "paramValue:" << value;
+        ui.globalParamProgressLabel->setText(countString);
+        ui.globalParamProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
+
+        if (m_paramDownloadCount == parameterCount){
+            m_paramDownloadState = completed;
+            ui.globalParamStateLabel->setText(tr("Params Downloaded"));
+        }
+        break;
+
+    case completed:
+        QLOG_INFO() << "Global Finished Downloading Params" << m_paramDownloadCount;
+        m_paramDownloadState = none;
+        break;
+
+    default:
+        ; // Do Nothing
+    }
 }

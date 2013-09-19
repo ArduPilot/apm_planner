@@ -49,10 +49,19 @@ This file is part of the APM_PLANNER project
 class ApmSoftwareConfig : public QWidget
 {
     Q_OBJECT
+
+    // Download state machine for parameters
+    enum ParamReadWriteState { none, startRead, startWrite, readingParams, writingParams, completed };
     
 public:
     explicit ApmSoftwareConfig(QWidget *parent = 0);
     ~ApmSoftwareConfig();
+
+public slots:
+    void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
+    void writeParameter(int component, QString parameterName, QVariant value);
+    void readParameter(int component, QString parameterName, QVariant value);
+
 private slots:
     void activateStackedWidget();
     void activeUASSet(UASInterface *uas);
@@ -74,6 +83,10 @@ private:
     QPointer<AdvParameterList> m_advParameterList;
     QPointer<QGCSettingsWidget> m_settingsConfig;
     QMap<QObject*,QWidget*> m_buttonToConfigWidgetMap;
+
+    ParamReadWriteState m_paramDownloadState;
+    int m_paramDownloadCount;
+    int m_paramTotalCount;
 };
 
 #endif // APMSOFTWARECONFIG_H

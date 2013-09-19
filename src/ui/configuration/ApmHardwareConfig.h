@@ -55,10 +55,19 @@ This file is part of the APM_PLANNER project
 class ApmHardwareConfig : public QWidget
 {
     Q_OBJECT
+
+    // Download state machine for parameters
+    enum ParamReadWriteState { none, startRead, startWrite, readingParams, writingParams, completed };
     
 public:
     explicit ApmHardwareConfig(QWidget *parent = 0);
     ~ApmHardwareConfig();
+
+public slots:
+    void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
+//    void writeParameter(int component, QString parameterName, QVariant value);
+//    void readParameter(int component, QString parameterName, QVariant value);
+
 private:
     QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;
 
@@ -92,6 +101,10 @@ private:
 
     //This is a map between the buttons, and the widgets they should be displying
     QMap<QObject*,QWidget*> m_buttonToConfigWidgetMap;
+
+    ParamReadWriteState m_paramDownloadState;
+    int m_paramDownloadCount;
+    int m_paramTotalCount;
 };
 
 #endif // APMHARDWARECONFIG_H

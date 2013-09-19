@@ -20,16 +20,18 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 
+#include "ApmSoftwareConfig.h"
+#include "QsLog.h"
 #include <QXmlStreamReader>
 #include <QDir>
 #include <QFile>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include "ApmSoftwareConfig.h"
-#include "QsLog.h"
 
-ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
+ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
+    m_paramDownloadState(none),
+    m_paramDownloadCount(0)
 {
     m_uas=0;
     ui.setupUi(this);
@@ -89,7 +91,6 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     m_buttonToConfigWidgetMap[ui.arduRoverPidButton] = m_arduRoverPidConfig;
     connect(ui.arduRoverPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
-    //QWidget *temp = new QWidget(this);
     m_settingsConfig = new QGCSettingsWidget(this);
     ui.stackedWidget->addWidget(m_settingsConfig);
     m_buttonToConfigWidgetMap[ui.plannerConfigButton] = m_settingsConfig;
@@ -99,11 +100,12 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent)
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
-//
     QNetworkAccessManager *man = new QNetworkAccessManager(this);
     QNetworkReply *reply = man->get(QNetworkRequest(QUrl("http://autotest.diydrones.com/Parameters/apm.pdef.xml")));
     connect(reply,SIGNAL(finished()),this,SLOT(apmParamNetworkReplyFinished()));
-    //m_apmPdefFilename = ""
+
+    // Setup Parameter Progress bars
+    ui.globalParamProgressBar->setRange(0,100);
 
 }
 void ApmSoftwareConfig::apmParamNetworkReplyFinished()
@@ -190,6 +192,9 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     {
         disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
         disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+
+        disconnect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+                this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
         m_uas = 0;
     }
     if (!uas)
@@ -199,6 +204,8 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     m_uas = uas;
     connect(uas,SIGNAL(connected()),this,SLOT(uasConnected()));
     connect(uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+    connect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+            this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
 
     ui.flightModesButton->setVisible(true);
     ui.standardParamButton->setVisible(true);
@@ -434,3 +441,72 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     }
 
 }
+
+void ApmSoftwareConfig::writeParameter(int component, QString parameterName, QVariant value)
+{
+    QLOG_DEBUG() << "ASC writeParameter";
+}
+
+void ApmSoftwareConfig::readParameter(int component, QString parameterName, QVariant value)
+{
+    QLOG_DEBUG() << "ASC readParameter";
+}
+
+void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
+{
+    QString countString;
+    // Create progress of downloading all parameters for UI
+    switch (m_paramDownloadState){
+    case none:
+        if (parameterId == UINT16_MAX){
+            // This is an ACK package, not a full read
+            break;
+        } else if ((parameterId == 0) && (parameterCount != UINT16_MAX)) {
+            // Its a new download List, Start from zero.
+            ui.globalParamStateLabel->setText(tr("Downloading Params..."));
+        } else {
+            break;
+        }
+
+        // Otherwise, trigger progress bar update.
+    case startRead:
+        QLOG_INFO() << "Starting Global Param Progress Bar Updating sys:" << uas;
+        m_paramDownloadCount = 1;
+
+        countString = QString::number(m_paramDownloadCount) + "/"
+                        + QString::number(parameterCount);
+        QLOG_INFO() << "Global Param Progress Bar: " << countString
+                     << "paramId:" << parameterId << "name:" << parameterName
+                     << "paramValue:" << value;
+        ui.globalParamProgressLabel->setText(countString);
+        ui.globalParamProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
+
+        m_paramDownloadState = readingParams;
+        break;
+
+    case readingParams:
+        m_paramDownloadCount++;
+        countString = QString::number(m_paramDownloadCount) + "/"
+                        + QString::number(parameterCount);
+        QLOG_INFO() << "Param Progress Bar: " << countString
+                     << "paramId:" << parameterId << "name:" << parameterName
+                     << "paramValue:" << value;
+        ui.globalParamProgressLabel->setText(countString);
+        ui.globalParamProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
+
+        if (m_paramDownloadCount == parameterCount){
+            m_paramDownloadState = completed;
+            ui.globalParamStateLabel->setText(tr("Params Downloaded"));
+        }
+        break;
+
+    case completed:
+        QLOG_INFO() << "Global Finished Downloading Params" << m_paramDownloadCount;
+        m_paramDownloadState = none;
+        break;
+
+    default:
+        ; // Do Nothing
+    }
+}
+

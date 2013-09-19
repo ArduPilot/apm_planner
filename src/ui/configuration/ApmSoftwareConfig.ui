@@ -204,6 +204,33 @@
            </property>
           </spacer>
          </item>
+         <item>
+          <widget class="QLabel" name="globalParamStateLabel">
+           <property name="text">
+            <string>Parameters</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QProgressBar" name="globalParamProgressBar">
+           <property name="value">
+            <number>0</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="globalParamProgressLabel">
+           <property name="text">
+            <string>0/?</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
