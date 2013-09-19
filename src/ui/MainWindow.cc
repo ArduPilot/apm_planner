@@ -579,8 +579,8 @@ void MainWindow::buildCommonWidgets()
     createDockWidget(simView,new QGCWaypointListMulti(this),tr("Mission Plan"),"WAYPOINT_LIST_DOCKWIDGET",VIEW_SIMULATION,Qt::BottomDockWidgetArea);
     createDockWidget(engineeringView,new QGCMAVLinkInspector(mavlink,this),tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea);
 
-    createDockWidget(engineeringView,new ParameterInterface(this),tr("Onboard Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea);
-    createDockWidget(simView,new ParameterInterface(this),tr("Onboard Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
+    createDockWidget(engineeringView,new ParameterInterface(this),tr("Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea);
+    createDockWidget(simView,new ParameterInterface(this),tr("Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
 
 
     {
