@@ -157,13 +157,14 @@ void ApmSoftwareConfig::uasConnected()
     ui.standardParamButton->setVisible(true);
     ui.advancedParamButton->setVisible(true);
     ui.advParamListButton->setVisible(true);
-    ui.basicPidButton->setVisible(true);
+
     if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
     {
         ui.geoFenceButton->setVisible(false); // TODO - enable when plane geo fence implemented
         ui.arduPlanePidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
+        ui.basicPidButton->setVisible(false);
     }
     else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
     {
@@ -171,6 +172,7 @@ void ApmSoftwareConfig::uasConnected()
         ui.arduCopterPidButton->setVisible(true);
         ui.arduPlanePidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
+        ui.basicPidButton->setVisible(true);
     }
     else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
     {
@@ -178,6 +180,7 @@ void ApmSoftwareConfig::uasConnected()
         ui.arduRoverPidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduPlanePidButton->setVisible(false);
+        ui.basicPidButton->setVisible(false);
     }
 }
 
@@ -201,7 +204,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     ui.standardParamButton->setVisible(true);
     ui.advancedParamButton->setVisible(true);
     ui.advParamListButton->setVisible(true);
-    ui.basicPidButton->setVisible(true);
 
     QString compare = "";
     if (uas->getSystemType() == MAV_TYPE_FIXED_WING)
@@ -210,6 +212,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         ui.arduPlanePidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
+        ui.basicPidButton->setVisible(false);
         compare = "ArduPlane";
     }
     else if (uas->getSystemType() == MAV_TYPE_QUADROTOR)
@@ -218,6 +221,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         ui.arduCopterPidButton->setVisible(true);
         ui.arduPlanePidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
+        ui.basicPidButton->setVisible(true);
         compare = "ArduCopter";
     }
     else if (uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
@@ -226,6 +230,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         ui.arduRoverPidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduPlanePidButton->setVisible(false);
+        ui.basicPidButton->setVisible(false);
         compare = "APMRover2";
     }
 
