@@ -197,6 +197,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.optionalHardwareButton->setChecked(false);
 
     ui.frameTypeButton->setShown(false);
+    ui.sonarButton->setShown(false);
     ui.compassButton->setShown(false);
     ui.accelCalibrateButton->setShown(false);
     ui.radioCalibrateButton->setShown(false);
@@ -271,6 +272,7 @@ void ApmHardwareConfig::toggleMandatoryShown(bool show)
         ui.osdButton->setShown(!show);
         ui.cameraGimbalButton->setShown(!show);
         ui.antennaTrackerButton->setShown(!show);
+        ui.sonarButton->setShown(!show);
 
     } else if (m_uas->isFixedWing()){
         QLOG_DEBUG() << "FixedWing";
@@ -314,7 +316,7 @@ void ApmHardwareConfig::toggleMandatoryShown(bool show)
         ui.osdButton->setShown(!show);
         ui.cameraGimbalButton->setShown(!show);
         ui.antennaTrackerButton->setShown(!show);
-
+        ui.sonarButton->setShown(!show);
     }
 }
 
