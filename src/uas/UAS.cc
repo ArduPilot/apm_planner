@@ -3468,3 +3468,38 @@ int UAS::getCustomMode()
 {
     return custom_mode;
 }
+
+bool UAS::isMultirotor()
+{
+    switch(getSystemType){
+    case MAV_TYPE_TRICOPTER:
+    case MAV_TYPE_QUADROTOR:
+    case MAV_TYPE_HEXAROTOR:
+    case MAV_TYPE_OCTOROTOR:
+    case MAV_TYPE_HELICOPTER:
+    case MAV_TYPE_COAXIAL:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool UAS::isFixedWing()
+{
+    switch(getSystemType){
+    case MAV_TYPE_FIXED_WING:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool UAS::isGroundRover()
+{
+    switch(getSystemType){
+    case MAV_TYPE_GROUND_ROVER:
+        return true;
+    default:
+        return false;
+    }
+}

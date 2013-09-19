@@ -249,7 +249,14 @@ public:
 
     /** @brief Get the type of the system (airplane, quadrotor, helicopter,..)*/
     virtual int getSystemType() = 0;
+    /** @brief Get the name of the system (ie. APM, PX4 etc..*/
     virtual QString getSystemTypeName() = 0;
+
+    /** @brief Test if the system is in a sub-group*/
+    virtual bool isMultirotor() = 0;
+    virtual bool isFixedWing() = 0;
+    virtual bool isGroundRover() = 0;
+
     /** @brief Get the type of the autopilot (PIXHAWK, APM, UDB, PPZ,..) */
     virtual int getAutopilotType() = 0;
     virtual QString getAutopilotTypeName() = 0;

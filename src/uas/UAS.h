@@ -651,6 +651,11 @@ public:
         }
     }
 
+    /** @brief Test for sub-group */
+    bool isMultirotor();
+    bool isFixedWing();
+    bool isGroundRover();
+
 public slots:
     /** @brief Set the autopilot type */
     void setAutopilotType(int apType)
