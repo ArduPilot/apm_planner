@@ -40,7 +40,6 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
 
     ui.tableWidget->setColumnCount(4);
-    //ui.tableWidget->horizontalHeader()->hide();
     ui.tableWidget->verticalHeader()->hide();
     ui.tableWidget->setColumnWidth(0,200);
     ui.tableWidget->setColumnWidth(1,100);
@@ -122,8 +121,7 @@ void AdvParameterList::loadButtonClicked()
     QString filestr = file.readAll();
     file.close();
     QStringList filesplit = filestr.split("\r\n");
-    //QProgressDialog dialog("Loading parameters...","",0,filesplit.size());
-    //dialog.setWindowModality(Qt::WindowModal);
+
     foreach (QString fileline,filesplit)
     {
         if (fileline.startsWith("#"))
@@ -135,9 +133,6 @@ void AdvParameterList::loadButtonClicked()
             QStringList linesplit = fileline.split(",");
             if (linesplit.size() == 2)
             {
-                //linesplit[0] == name
-                //linesplit[1] == value as a double.
-                //m_uas->getParamManager()->setParameter(1,linesplit[0],linesplit[1].toDouble());
                 if (m_paramValueMap.contains(linesplit[0]))
                 {
                     m_paramValueMap[linesplit[0]]->setText(linesplit[1]);
@@ -145,7 +140,6 @@ void AdvParameterList::loadButtonClicked()
 
             }
         }
-        //dialog.setValue(dialog.value()+1);
     }
 }
 
@@ -160,12 +154,9 @@ void AdvParameterList::saveButtonClicked()
     }
     QString fileheader = QInputDialog::getText(this,"Input file header","Header at beginning of file:");
 
-    file.write(QString("#NOTE: " + QDateTime::currentDateTime().toString("M/d/yyyy h:m:s AP") + ": " + fileheader + "\r\n").toAscii());
-    //QMap<QString,QTableWidgetItem*> m_paramValueMap;
-    /*for (QMap<QString,QTableWidgetItem*>::const_iterator i = m_paramValueMap.constBegin();i!=m_paramValueMap.constEnd();i++)
-    {
-        file.write(QString(i.key()).append(",").append(i.value()->text()).append("\r\n").toAscii());
-    }*/
+    file.write(QString("#NOTE: " + QDateTime::currentDateTime().toString("M/d/yyyy h:m:s AP")
+                       + ": " + fileheader + "\r\n").toAscii());
+
     QList<QString> paramnamelist = m_uas->getParamManager()->getParameterNames(1);
     for (int i=0;i<paramnamelist.size();i++)
     {
@@ -182,7 +173,6 @@ void AdvParameterList::saveButtonClicked()
     }
     file.flush();
     file.close();
-    //m_uas->getParamManager()->getParameterValue()
 }
 
 void AdvParameterList::parameterChanged(int uas, int component, QString parameterName, QVariant value)
@@ -249,25 +239,14 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
         m_paramValueMap[parameterName] = ui.tableWidget->item(ui.tableWidget->rowCount()-1,1);
         ui.tableWidget->sortByColumn(0,Qt::AscendingOrder);
     }
-    /*if (m_waitingParamList.contains(parameterName))
-    {
-        //Parameter is modified,
-        m_waitingParamList.removeOne(parameterName);
-        //m_origBrushList.append(ui.tableWidget->item(item->row(),0)->text());
-        QBrush brush = QBrush(QColor::fromRgb(100,255,100));
-        m_paramValueMap[parameterName]->setBackground(brush);
-        //m_modifiedParamMap[ui.tableWidget->item(item->row(),0)->text()] = item->text().toDouble();
 
+    if (m_origBrushList.contains(parameterName))
+    {
+        m_paramValueMap[parameterName]->setBackground(QBrush());
+    ui.tableWidget->item(m_paramValueMap[parameterName]->row(),0)->setBackground(QBrush());
+        m_origBrushList.removeAll(parameterName);
     }
-    else
-    {*/
-        if (m_origBrushList.contains(parameterName))
-        {
-            m_paramValueMap[parameterName]->setBackground(QBrush());
-	    ui.tableWidget->item(m_paramValueMap[parameterName]->row(),0)->setBackground(QBrush());
-            m_origBrushList.removeAll(parameterName);
-        }
-    //}
+
     QString valstr = "";
     if (value.type() == QMetaType::Float || value.type() == QVariant::Double)
     {

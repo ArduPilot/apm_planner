@@ -253,7 +253,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         m_apmPdefFilename = autopilotdir.absolutePath() + "/arduplane.pdef.xml";
     }
 
-    //QDir autopilotdir(qApp->applicationDirPath() + "/files/" + uas->getAutopilotTypeName().toLower());
     QFile xmlfile(m_apmPdefFilename);
     if (xmlfile.exists() && !xmlfile.open(QIODevice::ReadOnly))
     {
@@ -287,9 +286,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     parametersname = xml.attributes().value("name").toString();
                             }
 
-                            //QVariantMap genset;
-                            //QVariantMap advset;
-
                             xml.readNext();
                             while ((xml.name() != "parameters") && !xml.atEnd())
                             {
@@ -303,7 +299,6 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                         name = name.split(":")[1].toUpper();
                                     }
                                     QString docs = xml.attributes().value("documentation").toString();
-                                    //paramTooltips[name] = name + " - " + docs;
 
                                     int type = -1; //Type of item
                                     QMap<QString,QString> fieldmap;

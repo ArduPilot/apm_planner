@@ -208,7 +208,6 @@ void ApmHardwareConfig::uasConnected()
     ui.manditoryHardware->setChecked(false);
     ui.optionalHardwareButton->setVisible(true);
     ui.optionalHardwareButton->setChecked(false);
-    //ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.frameTypeButton]);
 }
 
 void ApmHardwareConfig::uasDisconnected()
