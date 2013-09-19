@@ -58,7 +58,7 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
 }
 void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
 {
-    if (!ui.tableWidget->item(item->row(),1))
+	if (!ui.tableWidget->item(item->row(),1) || !ui.tableWidget->item(item->row(),0))
     {
         //Invalid item, something has gone awry.
         return;
@@ -66,6 +66,7 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     m_origBrushList.append(ui.tableWidget->item(item->row(),0)->text());
     QBrush brush = QBrush(QColor::fromRgb(100,255,100));
     item->setBackground(brush);
+    ui.tableWidget->item(item->row(),0)->setBackground(brush);
     m_modifiedParamMap[ui.tableWidget->item(item->row(),0)->text()] = item->text().toDouble();
 }
 void AdvParameterList::writeButtonClicked()
@@ -263,6 +264,7 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
         if (m_origBrushList.contains(parameterName))
         {
             m_paramValueMap[parameterName]->setBackground(QBrush());
+	    ui.tableWidget->item(m_paramValueMap[parameterName]->row(),0)->setBackground(QBrush());
             m_origBrushList.removeAll(parameterName);
         }
     //}
