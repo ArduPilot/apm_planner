@@ -52,25 +52,39 @@ linux-g++|linux-g++-64{
     TARGETDIR = $${OUT_PWD}
     BUILDDIR = $${OUT_PWD}/build
 }
-win32&!win32-x-g++&!win64-x-g++ {
-        DEFINES += GIT_COMMIT=$$system(\"c:/program files (x86)/git/bin/git.exe\" describe --dirty=-DEV --always)
-        DEFINES += GIT_HASH=$$system(\"c:/program files (x86)/git/bin/git.exe\" log -n 1 --pretty=format:%H)
+win32-x-g++|win64-x-g++ {
+    CONFIG += exceptions rtti
+    DEFINES += UINT8_MAX=0xFF
+    DEFINES += UINT16_MAX=0xFFFF
+    DEFINES += INT32_MIN=0x80000000
+    DEFINES += INT32_MAX=0x7FFFFFFF
+    DEFINES += UINT32_MAX=0xFFFFFFFF
+    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
+    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
+} else:win32 {
+    DEFINES += GIT_COMMIT=$$system(\"c:/program files (x86)/git/bin/git.exe\" describe --dirty=-DEV --always)
+    DEFINES += GIT_HASH=$$system(\"c:/program files (x86)/git/bin/git.exe\" log -n 1 --pretty=format:%H)
+    QMAKE_INCDIR_QT = $$(QTDIR)/include
+    QMAKE_LIBDIR_QT = $$(QTDIR)/lib
+    QMAKE_UIC = "$$(QTDIR)/bin/uic.exe"
+    QMAKE_MOC = "$$(QTDIR)/bin/moc.exe"
+    QMAKE_RCC = "$$(QTDIR)/bin/rcc.exe"
+    QMAKE_QMAKE = "$$(QTDIR)/bin/qmake.exe"
+
+	# Build QAX for GoogleEarth API access
+	!exists( $(QTDIR)/src/activeqt/Makefile ) {
+		message( Making QAx (ONE TIME) )
+		system( cd $$(QTDIR)\\src\\activeqt && $$(QTDIR)\\bin\\qmake.exe )
+		system( cd $$(QTDIR)\\src\\activeqt\\container && $$(QTDIR)\\bin\\qmake.exe )
+		system( cd $$(QTDIR)\\src\\activeqt\\control && $$(QTDIR)\\bin\\qmake.exe )
+		system( cd $$(QTDIR)\\src\\activeqt && nmake )
+	}
 }
 unix {
         DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
         DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 }
 include (QsLog/QsLog.pri)
-win32-x-g++|win64-x-g++ {
-	CONFIG += exceptions rtti
-	DEFINES += UINT8_MAX=0xFF
-	DEFINES += UINT16_MAX=0xFFFF
-	DEFINES += INT32_MIN=0x80000000
-	DEFINES += INT32_MAX=0x7FFFFFFF
-	DEFINES += UINT32_MAX=0xFFFFFFFF
-	DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
-	DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
-}
 
 LANGUAGE = C++
 OBJECTS_DIR = $${BUILDDIR}/obj
@@ -81,23 +95,6 @@ MAVLINK_CONF = ""
 MAVLINKPATH = $$BASEDIR/libs/mavlink/include/mavlink/v1.0
 DEFINES += MAVLINK_NO_DATA
 
-win32&!win32-x-g++&!win64-x-g++ {
-    QMAKE_INCDIR_QT = $$(QTDIR)/include
-    QMAKE_LIBDIR_QT = $$(QTDIR)/lib
-    QMAKE_UIC = "$$(QTDIR)/bin/uic.exe"
-    QMAKE_MOC = "$$(QTDIR)/bin/moc.exe"
-    QMAKE_RCC = "$$(QTDIR)/bin/rcc.exe"
-    QMAKE_QMAKE = "$$(QTDIR)/bin/qmake.exe"
-	
-	# Build QAX for GoogleEarth API access
-	!exists( $(QTDIR)/src/activeqt/Makefile ) {
-		message( Making QAx (ONE TIME) )
-		system( cd $$(QTDIR)\\src\\activeqt && $$(QTDIR)\\bin\\qmake.exe )
-		system( cd $$(QTDIR)\\src\\activeqt\\container && $$(QTDIR)\\bin\\qmake.exe )
-		system( cd $$(QTDIR)\\src\\activeqt\\control && $$(QTDIR)\\bin\\qmake.exe )
-                system( cd $$(QTDIR)\\src\\activeqt && nmake )
-	}
-}
 
 
 
