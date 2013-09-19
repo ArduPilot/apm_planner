@@ -62,7 +62,8 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
     connect(m_uas,SIGNAL(modeChanged(int,QString,QString)),this,SLOT(modeChanged(int,QString,QString)));
     connect(m_uas,SIGNAL(remoteControlChannelRawChanged(int,float)),this,SLOT(remoteControlChannelRawChanged(int,float)));
     QStringList itemlist;
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+
+    if (m_uas->isFixedWing())
     {
         itemlist << "Manual";
         itemlist << "Circle";
@@ -107,7 +108,7 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
 
         ui.mode6ComboBox->setEnabled(true);
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    else if (m_uas->isGroundRover())
     {
         itemlist << "Manual";
         itemlist << "Learning";
@@ -144,7 +145,7 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
 
 
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         itemlist << "Stabilize";
         itemlist << "Acro";
@@ -179,7 +180,7 @@ void FlightModeConfig::modeChanged(int sysId, QString status, QString descriptio
 }
 void FlightModeConfig::saveButtonClicked()
 {
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    if (m_uas->isFixedWing())
     {
         m_uas->getParamManager()->setParameter(1,"FLTMODE1",(char)planeModeUiIndexToIndex[ui.mode1ComboBox->currentIndex()]);
         m_uas->getParamManager()->setParameter(1,"FLTMODE2",(char)planeModeUiIndexToIndex[ui.mode2ComboBox->currentIndex()]);
@@ -188,7 +189,7 @@ void FlightModeConfig::saveButtonClicked()
         m_uas->getParamManager()->setParameter(1,"FLTMODE5",(char)planeModeUiIndexToIndex[ui.mode5ComboBox->currentIndex()]);
         m_uas->getParamManager()->setParameter(1,"FLTMODE6",(char)planeModeUiIndexToIndex[ui.mode6ComboBox->currentIndex()]);
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    else if (m_uas->isGroundRover())
     {
         m_uas->getParamManager()->setParameter(1,"MODE1",(char)roverModeUiIndexToIndex[ui.mode1ComboBox->currentIndex()]);
         m_uas->getParamManager()->setParameter(1,"MODE2",(char)roverModeUiIndexToIndex[ui.mode2ComboBox->currentIndex()]);
@@ -196,7 +197,7 @@ void FlightModeConfig::saveButtonClicked()
         m_uas->getParamManager()->setParameter(1,"MODE4",(char)roverModeUiIndexToIndex[ui.mode4ComboBox->currentIndex()]);
         m_uas->getParamManager()->setParameter(1,"MODE5",(char)roverModeUiIndexToIndex[ui.mode5ComboBox->currentIndex()]);
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         m_uas->getParamManager()->setParameter(1,"FLTMODE1",(char)ui.mode1ComboBox->currentIndex());
         m_uas->getParamManager()->setParameter(1,"FLTMODE2",(char)ui.mode2ComboBox->currentIndex());
@@ -281,7 +282,7 @@ void FlightModeConfig::remoteControlChannelRawChanged(int chan,float val)
 
 void FlightModeConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    if (m_uas->isFixedWing())
     {
         if (parameterName == "FLTMODE1")
         {
@@ -308,7 +309,7 @@ void FlightModeConfig::parameterChanged(int uas, int component, QString paramete
             ui.mode6ComboBox->setCurrentIndex(planeModeIndexToUiIndex[value.toInt()]);
         }
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    else if (m_uas->isGroundRover())
     {
         if (parameterName == "MODE1")
         {
@@ -331,7 +332,7 @@ void FlightModeConfig::parameterChanged(int uas, int component, QString paramete
             ui.mode5ComboBox->setCurrentIndex(roverModeIndexToUiIndex[value.toInt()]);
         }
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         if (parameterName == "FLTMODE1")
         {

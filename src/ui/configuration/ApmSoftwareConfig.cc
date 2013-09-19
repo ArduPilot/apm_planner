@@ -160,7 +160,7 @@ void ApmSoftwareConfig::uasConnected()
     ui.advancedParamButton->setVisible(true);
     ui.advParamListButton->setVisible(true);
 
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    if (m_uas->isFixedWing())
     {
         ui.geoFenceButton->setVisible(false); // TODO - enable when plane geo fence implemented
         ui.arduPlanePidButton->setVisible(true);
@@ -168,7 +168,7 @@ void ApmSoftwareConfig::uasConnected()
         ui.arduRoverPidButton->setVisible(false);
         ui.basicPidButton->setVisible(false);
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         ui.geoFenceButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(true);
@@ -176,7 +176,7 @@ void ApmSoftwareConfig::uasConnected()
         ui.arduRoverPidButton->setVisible(false);
         ui.basicPidButton->setVisible(true);
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    else if (m_uas->isGroundRover())
     {
         ui.geoFenceButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(true);
@@ -213,7 +213,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     ui.advParamListButton->setVisible(true);
 
     QString compare = "";
-    if (uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    if (uas->isFixedWing())
     {
         ui.geoFenceButton->setVisible(false); // [TODO] Ony support copter for now
         ui.arduPlanePidButton->setVisible(true);
@@ -222,7 +222,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         ui.basicPidButton->setVisible(false);
         compare = "ArduPlane";
     }
-    else if (uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (uas->isMultirotor())
     {
         ui.geoFenceButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(true);
@@ -231,7 +231,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         ui.basicPidButton->setVisible(true);
         compare = "ArduCopter";
     }
-    else if (uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    else if (uas->isGroundRover())
     {
         ui.geoFenceButton->setVisible(false);  // [TODO] Ony support copter for now
         ui.arduRoverPidButton->setVisible(true);

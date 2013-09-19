@@ -192,11 +192,11 @@ void FailSafeConfig::throttlePwmChanged()
         showNullMAVErrorMessageBox();
         return;
     }
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    if (m_uas->isFixedWing())
     {
         m_uas->setParameter(1,"THR_FS_VALUE",ui.throttlePwmSpinBox->value());
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         m_uas->setParameter(1,"FS_THR_VALUE",ui.throttlePwmSpinBox->value());
     }
@@ -285,7 +285,8 @@ void FailSafeConfig::activeUASSet(UASInterface *uas)
     connect(m_uas,SIGNAL(armingChanged(bool)),this,SLOT(armingChanged(bool)));
     connect(m_uas,SIGNAL(gpsLocalizationChanged(UASInterface*,int)),this,SLOT(gpsStatusChanged(UASInterface*,int)));
     connect(m_uas,SIGNAL(navModeChanged(int,int,QString)),this,SLOT(navModeChanged(int,int,QString)));
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+
+    if (m_uas->isFixedWing())
     {
         ui.batteryFailCheckBox->setVisible(false);
         ui.throttleFailSafeComboBox->setVisible(false);
@@ -300,7 +301,7 @@ void FailSafeConfig::activeUASSet(UASInterface *uas)
         ui.fsLongCheckBox->setVisible(true);
         ui.fsShortCheckBox->setVisible(true);
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         ui.batteryFailCheckBox->setVisible(true);
         ui.throttleFailSafeComboBox->setVisible(true);

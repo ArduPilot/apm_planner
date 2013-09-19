@@ -99,33 +99,22 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
     armingChanged(m_uas->isArmed());
     updateWaypointList();
 
-    switch (uas->getAutopilotType()) {
-        case MAV_AUTOPILOT_ARDUPILOTMEGA:
-        {
-            int systemType = uas->getSystemType();
-            switch(systemType) {
-            case MAV_TYPE_FIXED_WING:
+    switch (uas->getAutopilotType()){
+        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+            if (uas->isFixedWing()){
                 setupApmPlaneModes();
-                break;
 
-            case MAV_TYPE_QUADROTOR:
-            case MAV_TYPE_OCTOROTOR:
-            case MAV_TYPE_HELICOPTER:
-            case MAV_TYPE_TRICOPTER:
+            } else if (uas->isMultirotor()){
                 setupApmCopterModes();
-                break;
 
-            case MAV_TYPE_GROUND_ROVER:
+            } else if (uas->isGroundRover()){
                 setupApmRoverModes();
-                break;
 
-            default:
-                QLOG_WARN() << "UASActionWidget: Unsupported System Type" << systemType;
+            } else {
+                QLOG_WARN() << "UASActionWidget: Unsupported System Type" << uas->getSystemType();
             }
-
             // Setup Final Connections
-            connect(ui.setModeButton, SIGNAL(clicked()),
-                    this, SLOT(setMode()));
+            connect(ui.setModeButton, SIGNAL(clicked()),this, SLOT(setMode()));
 
         } break;
         case MAV_AUTOPILOT_PX4:
@@ -225,13 +214,13 @@ void UASActionsWidget::changeSpeedClicked()
 
     QLOG_INFO() << "Change System Speed " << (float)ui.altitudeSpinBox->value() * 100;
 
-    if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    if (m_uas->isMultirotor())
     {
         QLOG_INFO() << "APMCopter: setting WP_SPEED_MAX: " << ui.altitudeSpinBox->value() * 100;
         m_uas->setParameter(1,"WP_SPEED_MAX",QVariant(((float)ui.altitudeSpinBox->value() * 100)));
         return;
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    else if (m_uas->isFixedWing())
     {
         QVariant variant;
         if (m_uas->getParamManager()->getParameterValue(1,"ARSPD_ENABLE",variant))
@@ -279,27 +268,20 @@ void UASActionsWidget::setAction()
 
     switch (m_uas->getAutopilotType()) {
         case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-            int systemType = m_uas->getSystemType();
-            switch(systemType) {
-            case MAV_TYPE_FIXED_WING:
+            if (m_uas->isFixedWing()){
                 sendApmPlaneCommand(currentCommand);
-                break;
 
-            case MAV_TYPE_QUADROTOR:
-            case MAV_TYPE_OCTOROTOR:
-            case MAV_TYPE_HELICOPTER:
-            case MAV_TYPE_TRICOPTER:
+            } else if (m_uas->isMultirotor()){
                 sendApmCopterCommand(currentCommand);
-                break;
 
-            case MAV_TYPE_GROUND_ROVER:
+            } else if (m_uas->isGroundRover()){
                 sendApmRoverCommand(currentCommand);
-                break;
 
-            default:
-                QLOG_WARN() << "UASActionWidget: Unsupported System Type" << systemType;
+            } else {
+                QLOG_WARN() << "UASActionWidget: Unsupported System Type" << m_uas->getSystemType();
             }
-        } break;
+
+            } break;
 
         case MAV_AUTOPILOT_PX4: {
             // [TODO] PX4 flight controller go here
@@ -586,6 +568,8 @@ void UASActionsWidget::setManualMode()
             case MAV_TYPE_OCTOROTOR:
             case MAV_TYPE_HELICOPTER:
             case MAV_TYPE_TRICOPTER:
+            case MAV_TYPE_HEXAROTOR:
+            case MAV_TYPE_COAXIAL:
                 idx = ui.modeComboBox->findText("Stabilize");
                 mode = ui.modeComboBox->itemData(idx).toInt();
 

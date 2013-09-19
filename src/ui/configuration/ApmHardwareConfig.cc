@@ -176,7 +176,7 @@ void ApmHardwareConfig::uasConnected()
     {
         return;
     }
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    if (m_uas->isFixedWing())
     {
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
         //connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.arduPlaneLevelButton,SLOT(setShown(bool)));
@@ -184,7 +184,7 @@ void ApmHardwareConfig::uasConnected()
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
         connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.airspeedButton,SLOT(setShown(bool)));
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.frameTypeButton,SLOT(setShown(bool)));
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
@@ -192,7 +192,7 @@ void ApmHardwareConfig::uasConnected()
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
         connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.sonarButton,SLOT(setShown(bool)));
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    else if (m_uas->isGroundRover())
     {
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
         connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
@@ -224,14 +224,14 @@ void ApmHardwareConfig::uasDisconnected()
     ui.manditoryHardware->setChecked(false);
     ui.optionalHardwareButton->setVisible(false);
     ui.optionalHardwareButton->setChecked(false);
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    if (m_uas->isFixedWing())
     {
         disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
         disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.arduPlaneLevelButton,SLOT(setShown(bool)));
         disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
         disconnect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.airspeedButton,SLOT(setShown(bool)));
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.frameTypeButton,SLOT(setShown(bool)));
         disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
@@ -239,7 +239,7 @@ void ApmHardwareConfig::uasDisconnected()
         disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
         disconnect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.sonarButton,SLOT(setShown(bool)));
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    else if (m_uas->isGroundRover())
     {
         disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
         disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));

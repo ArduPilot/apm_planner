@@ -123,7 +123,7 @@ void APMToolBar::activeUasSet(UASInterface *uas)
     connect(m_uas, SIGNAL(heartbeat(UASInterface*)),
                this, SLOT(heartbeat(UASInterface*)));
 
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING) {
+    if (m_uas->isFixedWing()) {
         rootObject()->setProperty("disableStatusDisplay", QVariant(true));
     } else {
         rootObject()->setProperty("disableStatusDisplay", QVariant(false));
@@ -382,6 +382,10 @@ void APMToolBar::setModeText(const QString &text)
         inRTL = (customMode == ApmPlane::RTL);
         break;
     case MAV_TYPE_QUADROTOR:
+    case MAV_TYPE_HEXAROTOR:
+    case MAV_TYPE_OCTOROTOR:
+    case MAV_TYPE_TRICOPTER:
+    case MAV_TYPE_HELICOPTER:
         inRTL = (customMode == ApmCopter::RTL);
         break;
     case MAV_TYPE_GROUND_ROVER:

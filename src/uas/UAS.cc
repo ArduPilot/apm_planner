@@ -532,7 +532,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 switch (getAutopilotType()) {
                     // [ToDo] temp fix, need to refactor audio to UAS specialization classes.
                     case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-                        if ( getSystemType() == MAV_TYPE_FIXED_WING) {
+                        if (isFixedWing()) {
                             // Output both messages
                             audiostring += /*modeAudio + " and " +*/ " is " + customModeAudio ;
                         } else {
@@ -554,7 +554,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 switch (getAutopilotType()) {
                     // [ToDo] temp fix, need to refactor audio to UAS specialization classes.
                     case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-                        if ( getSystemType() == MAV_TYPE_FIXED_WING) {
+                        if (isFixedWing()) {
                             audiostring += /*modeAudio + stateAudio +*/ customModeAudio;
                         } else {
                             audiostring += modeAudio /*+ stateAudio*/ + customModeAudio;
@@ -2599,6 +2599,10 @@ void UAS::setSystemType(int systemType)
               airframe = QGC_AIRFRAME_EASYSTAR;
               break;
           case MAV_TYPE_QUADROTOR:
+          case MAV_TYPE_HEXAROTOR:
+          case MAV_TYPE_OCTOROTOR:
+          case MAV_TYPE_TRICOPTER:
+          case MAV_TYPE_HELICOPTER:
               airframe = QGC_AIRFRAME_MIKROKOPTER;
               break;
           }
@@ -3471,7 +3475,7 @@ int UAS::getCustomMode()
 
 bool UAS::isMultirotor()
 {
-    switch(getSystemType){
+    switch(type){
     case MAV_TYPE_TRICOPTER:
     case MAV_TYPE_QUADROTOR:
     case MAV_TYPE_HEXAROTOR:
@@ -3486,7 +3490,7 @@ bool UAS::isMultirotor()
 
 bool UAS::isFixedWing()
 {
-    switch(getSystemType){
+    switch(type){
     case MAV_TYPE_FIXED_WING:
         return true;
     default:
@@ -3496,7 +3500,7 @@ bool UAS::isFixedWing()
 
 bool UAS::isGroundRover()
 {
-    switch(getSystemType){
+    switch(type){
     case MAV_TYPE_GROUND_ROVER:
         return true;
     default:

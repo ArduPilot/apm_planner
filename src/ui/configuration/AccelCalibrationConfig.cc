@@ -58,20 +58,20 @@ void AccelCalibrationConfig::activeUASSet(UASInterface *uas)
 }
 void AccelCalibrationConfig::uasConnected()
 {
-    if (m_uas->getSystemType() == MAV_TYPE_FIXED_WING)
+    if (m_uas->isFixedWing())
     {
         //Show fixed wing level stuff here
         ui.levelAccelButton->setVisible(true);
         ui.levelOutputLabel->setVisible(true);
         ui.levelDescLabel->setVisible(true);
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_QUADROTOR)
+    else if (m_uas->isMultirotor())
     {
         ui.levelAccelButton->setVisible(false);
         ui.levelOutputLabel->setVisible(false);
         ui.levelDescLabel->setVisible(false);
     }
-    else if (m_uas->getSystemType() == MAV_TYPE_GROUND_ROVER)
+    else if (m_uas->isGroundRover())
     {
         ui.levelAccelButton->setVisible(false);
         ui.levelOutputLabel->setVisible(false);
