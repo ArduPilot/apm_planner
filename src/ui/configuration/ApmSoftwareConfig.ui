@@ -36,8 +36,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>198</width>
-        <height>592</height>
+        <width>199</width>
+        <height>577</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -50,8 +50,14 @@
           <widget class="QPushButton" name="flightModesButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -66,8 +72,14 @@
           <widget class="QPushButton" name="basicPidButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -79,8 +91,14 @@
           <widget class="QPushButton" name="geoFenceButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -92,8 +110,14 @@
           <widget class="QPushButton" name="arduCopterPidButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -108,8 +132,14 @@
           <widget class="QPushButton" name="arduPlanePidButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -121,8 +151,14 @@
           <widget class="QPushButton" name="arduRoverPidButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -134,8 +170,14 @@
           <widget class="QPushButton" name="standardParamButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -150,8 +192,14 @@
           <widget class="QPushButton" name="advancedParamButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -166,8 +214,14 @@
           <widget class="QPushButton" name="advParamListButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -182,8 +236,14 @@
           <widget class="QPushButton" name="plannerConfigButton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">

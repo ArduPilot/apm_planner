@@ -68,10 +68,13 @@ public slots:
 //    void writeParameter(int component, QString parameterName, QVariant value);
 //    void readParameter(int component, QString parameterName, QVariant value);
 
+    void toggleOptionalShown(bool show);
+    void toggleMandatoryShown(bool show);
+
 private:
     QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;
 
-    //Manditory
+    //Mandatory
     QPointer<FrameTypeConfig> m_frameConfig;
     QPointer<CompassConfig> m_compassConfig;
     QPointer<AccelCalibrationConfig> m_accelConfig;

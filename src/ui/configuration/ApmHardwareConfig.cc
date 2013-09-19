@@ -36,7 +36,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
 {
     ui.setupUi(this);
 
-    ui.manditoryHardware->setVisible(false);
+    ui.mandatoryHardware->setVisible(false);
     ui.frameTypeButton->setVisible(false);
     ui.compassButton->setVisible(false);
     ui.accelCalibrateButton->setVisible(false);
@@ -52,17 +52,10 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.osdButton->setVisible(false);
     ui.cameraGimbalButton->setVisible(false);
 
-    connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.radio3DRButton,SLOT(setShown(bool)));
-    connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.batteryMonitorButton,SLOT(setShown(bool)));
-    connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.opticalFlowButton,SLOT(setShown(bool)));
-    connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.osdButton,SLOT(setShown(bool)));
-    connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.cameraGimbalButton,SLOT(setShown(bool)));
-    connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.antennaTrackerButton,SLOT(setShown(bool)));
-    connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.flightModesButton,SLOT(setShown(bool)));
-    connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.failSafeButton,SLOT(setShown(bool)));
-
-    connect(ui.frameTypeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-
+    connect(ui.mandatoryHardware, SIGNAL(toggled(bool)),
+            this, SLOT(toggleMandatoryShown(bool)));
+    connect(ui.optionalHardwareButton, SIGNAL(toggled(bool)),
+            this, SLOT(toggleOptionalShown(bool)));
 
     m_apmFirmwareConfig = new ApmFirmwareConfig(this);
     ui.stackedWidget->addWidget(m_apmFirmwareConfig); //Firmware placeholder.
@@ -104,7 +97,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.stackedWidget->addWidget(m_radioConfig);
     m_buttonToConfigWidgetMap[ui.radioCalibrateButton] = m_radioConfig;
     connect(ui.radioCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-
 
     m_radio3drConfig = new Radio3DRConfig(this);
     ui.stackedWidget->addWidget(m_radio3drConfig);
@@ -176,38 +168,17 @@ void ApmHardwareConfig::uasConnected()
     {
         return;
     }
-    if (m_uas->isFixedWing())
-    {
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
-        //connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.arduPlaneLevelButton,SLOT(setShown(bool)));
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.accelCalibrateButton,SLOT(setShown(bool)));
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
-        connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.airspeedButton,SLOT(setShown(bool)));
-    }
-    else if (m_uas->isMultirotor())
-    {
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.frameTypeButton,SLOT(setShown(bool)));
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.accelCalibrateButton,SLOT(setShown(bool)));
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
-        connect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.sonarButton,SLOT(setShown(bool)));
-    }
-    else if (m_uas->isGroundRover())
-    {
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
-    }
-    else
-    {
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
-        connect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
-    }
+    // Hide offline options and show Optional and Mandatory buttons
     ui.radio3DRButton->setVisible(false);
     ui.antennaTrackerButton->setVisible(false);
-    ui.manditoryHardware->setVisible(true);
-    ui.manditoryHardware->setChecked(false);
+
+    ui.mandatoryHardware->setVisible(true);
+    ui.mandatoryHardware->setChecked(false);
     ui.optionalHardwareButton->setVisible(true);
     ui.optionalHardwareButton->setChecked(false);
+
+    ui.mandatoryHardware->setAutoExclusive(true);
+    ui.optionalHardwareButton->setAutoExclusive(true);
 }
 
 void ApmHardwareConfig::uasDisconnected()
@@ -216,39 +187,31 @@ void ApmHardwareConfig::uasDisconnected()
     {
         return;
     }
+    // Show offline options and hide Optional and Mandatory buttons
     ui.radio3DRButton->setVisible(true);
     ui.antennaTrackerButton->setVisible(true);
-    ui.manditoryHardware->setVisible(false);
-    ui.failSafeButton->setVisible(false);
-    ui.flightModesButton->setVisible(false);
-    ui.manditoryHardware->setChecked(false);
+
+    ui.mandatoryHardware->setVisible(false);
+    ui.mandatoryHardware->setChecked(false);
     ui.optionalHardwareButton->setVisible(false);
     ui.optionalHardwareButton->setChecked(false);
-    if (m_uas->isFixedWing())
-    {
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.arduPlaneLevelButton,SLOT(setShown(bool)));
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
-        disconnect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.airspeedButton,SLOT(setShown(bool)));
-    }
-    else if (m_uas->isMultirotor())
-    {
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.frameTypeButton,SLOT(setShown(bool)));
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.accelCalibrateButton,SLOT(setShown(bool)));
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
-        disconnect(ui.optionalHardwareButton,SIGNAL(toggled(bool)),ui.sonarButton,SLOT(setShown(bool)));
-    }
-    else if (m_uas->isGroundRover())
-    {
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
-    }
-    else
-    {
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.compassButton,SLOT(setShown(bool)));
-        disconnect(ui.manditoryHardware,SIGNAL(toggled(bool)),ui.radioCalibrateButton,SLOT(setShown(bool)));
-    }
+
+    ui.frameTypeButton->setShown(false);
+    ui.compassButton->setShown(false);
+    ui.accelCalibrateButton->setShown(false);
+    ui.radioCalibrateButton->setShown(false);
+    ui.flightModesButton->setShown(false);
+    ui.failSafeButton->setShown(false);
+
+    ui.batteryMonitorButton->setShown(false);
+    ui.airspeedButton->setShown(false);
+    ui.opticalFlowButton->setShown(false);
+    ui.osdButton->setShown(false);
+    ui.cameraGimbalButton->setShown(false);
+
+    ui.mandatoryHardware->setAutoExclusive(false);
+    ui.optionalHardwareButton->setAutoExclusive(false);
+
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.firmwareButton]);
 }
 void ApmHardwareConfig::activeUASSet(UASInterface *uas)
@@ -277,6 +240,82 @@ void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 
     uasConnected();
 
+}
+
+void ApmHardwareConfig::toggleOptionalShown(bool show)
+{
+    QLOG_DEBUG() << "toggleOptionalShown" << show;
+    toggleMandatoryShown(!show);
+}
+
+void ApmHardwareConfig::toggleMandatoryShown(bool show)
+{
+    QLOG_DEBUG() << "toggleMandatoryShown" << show;
+    if (m_uas->isMultirotor()){
+        QLOG_DEBUG() << "Multirotor";
+        // Buttons to disable
+        ui.airspeedButton->setShown(false);
+
+        // Mandatory Options to show
+        ui.frameTypeButton->setShown(show);
+        ui.compassButton->setShown(show);
+        ui.accelCalibrateButton->setShown(show);
+        ui.radioCalibrateButton->setShown(show);
+        ui.flightModesButton->setShown(show);
+        ui.failSafeButton->setShown(show);
+
+        // Optional Options to Hide
+        ui.radio3DRButton->setShown(!show);
+        ui.batteryMonitorButton->setShown(!show);
+        ui.opticalFlowButton->setShown(!show);
+        ui.osdButton->setShown(!show);
+        ui.cameraGimbalButton->setShown(!show);
+        ui.antennaTrackerButton->setShown(!show);
+
+    } else if (m_uas->isFixedWing()){
+        QLOG_DEBUG() << "FixedWing";
+        // Buttons to disable
+        ui.frameTypeButton->setShown(false);
+
+        // Mandatory Options to show
+        ui.compassButton->setShown(show);
+        ui.accelCalibrateButton->setShown(show);
+        ui.radioCalibrateButton->setShown(show);
+        ui.flightModesButton->setShown(show);
+        ui.failSafeButton->setShown(show);
+
+        // Optional Options to Hide
+        ui.radio3DRButton->setShown(!show);
+        ui.batteryMonitorButton->setShown(!show);
+        ui.opticalFlowButton->setShown(!show);
+        ui.osdButton->setShown(!show);
+        ui.cameraGimbalButton->setShown(!show);
+        ui.antennaTrackerButton->setShown(!show);
+        ui.airspeedButton->setShown(!show);
+
+    } else {
+        // Assume Ground Vehicle et al.
+        QLOG_DEBUG() << "Ground Vehicle & Other";
+        // Butons to disable
+        ui.frameTypeButton->setShown(false);
+        ui.airspeedButton->setShown(false);
+
+        // Mandatory Options to show
+        ui.compassButton->setShown(show);
+        ui.accelCalibrateButton->setShown(show);
+        ui.radioCalibrateButton->setShown(show);
+        ui.flightModesButton->setShown(show);
+        ui.failSafeButton->setShown(show);
+
+        // Optional Options to Hide
+        ui.radio3DRButton->setShown(!show);
+        ui.batteryMonitorButton->setShown(!show);
+        ui.opticalFlowButton->setShown(!show);
+        ui.osdButton->setShown(!show);
+        ui.cameraGimbalButton->setShown(!show);
+        ui.antennaTrackerButton->setShown(!show);
+
+    }
 }
 
 void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)

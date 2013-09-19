@@ -10,6 +10,12 @@
     <height>827</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>175</width>
+    <height>0</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -17,20 +23,20 @@
    <item>
     <widget class="QScrollArea" name="scrollArea_6">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>230</width>
+       <width>200</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>230</width>
+       <width>175</width>
        <height>16777215</height>
       </size>
      </property>
@@ -42,28 +48,28 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>228</width>
-        <height>801</height>
+        <width>199</width>
+        <height>786</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
        <item>
         <layout class="QVBoxLayout" name="navBarLayout">
          <property name="sizeConstraint">
-          <enum>QLayout::SetMinAndMaxSize</enum>
+          <enum>QLayout::SetNoConstraint</enum>
          </property>
          <item>
           <widget class="QPushButton" name="firmwareButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -72,24 +78,47 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="manditoryHardware">
+          <widget class="QPushButton" name="mandatoryHardware">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+	font-weight: bold;
+	/*min-height: 18px;*/
+	/*max-height: 18px;*/
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(spread:pad, x1:0.512, y1:1, x2:0.512, y2:0.0284091, stop:0 rgba(0, 118, 0, 255), stop:1 rgba(188, 255, 192, 255))
+}
+
+QToolButton:checked {
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #090909, stop: 1 #353535);
+}
+
+QToolButton:pressed {
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #bbbbbb, stop: 1 #b0b0b0);
+}</string>
+           </property>
            <property name="text">
-            <string> &gt;&gt;&gt; Manditory Hardware</string>
+            <string>Mandatory Setup ...</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -97,21 +126,21 @@
           <widget class="QPushButton" name="frameTypeButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
            <property name="text">
-            <string>       Frame Type</string>
+            <string>Frame Type</string>
            </property>
           </widget>
          </item>
@@ -119,18 +148,18 @@
           <widget class="QPushButton" name="compassButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>   Compass</string>
+            <string>Compass</string>
            </property>
           </widget>
          </item>
@@ -138,14 +167,14 @@
           <widget class="QPushButton" name="accelCalibrateButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="layoutDirection">
@@ -155,7 +184,7 @@
             <bool>false</bool>
            </property>
            <property name="text">
-            <string>              Accel Calibration</string>
+            <string>Accel Calibration</string>
            </property>
           </widget>
          </item>
@@ -163,14 +192,14 @@
           <widget class="QPushButton" name="arduPlaneLevelButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="layoutDirection">
@@ -180,7 +209,7 @@
             <bool>false</bool>
            </property>
            <property name="text">
-            <string>             ArduPlane Level</string>
+            <string>ArduPlane Level</string>
            </property>
           </widget>
          </item>
@@ -188,18 +217,18 @@
           <widget class="QPushButton" name="radioCalibrateButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>              Radio Calibration</string>
+            <string>Radio Calibration</string>
            </property>
            <property name="checkable">
             <bool>false</bool>
@@ -213,18 +242,18 @@
           <widget class="QPushButton" name="flightModesButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>      Flight Modes</string>
+            <string>Flight Modes</string>
            </property>
           </widget>
          </item>
@@ -232,14 +261,14 @@
           <widget class="QPushButton" name="failSafeButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -251,21 +280,44 @@
           <widget class="QPushButton" name="optionalHardwareButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+	font-weight: bold;
+	/*min-height: 18px;*/
+	/*max-height: 18px;*/
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(spread:pad, x1:0.512, y1:1, x2:0.512, y2:0.0284091, stop:0 rgba(0, 118, 0, 255), stop:1 rgba(188, 255, 192, 255))
+}
+
+QToolButton:checked {
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #090909, stop: 1 #353535);
+}
+
+QToolButton:pressed {
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #bbbbbb, stop: 1 #b0b0b0);
+}</string>
+           </property>
            <property name="text">
-            <string>&gt;&gt;&gt; Optional Hardware</string>
+            <string>Optional Setup ...</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -273,18 +325,18 @@
           <widget class="QPushButton" name="radio3DRButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>      3DR Radio</string>
+            <string>3DR Radio</string>
            </property>
           </widget>
          </item>
@@ -292,18 +344,18 @@
           <widget class="QPushButton" name="batteryMonitorButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>          Battery Monitor</string>
+            <string>Battery Monitor</string>
            </property>
           </widget>
          </item>
@@ -311,14 +363,14 @@
           <widget class="QPushButton" name="sonarButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -330,18 +382,18 @@
           <widget class="QPushButton" name="airspeedButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>      Airspeed</string>
+            <string>Airspeed</string>
            </property>
           </widget>
          </item>
@@ -349,18 +401,18 @@
           <widget class="QPushButton" name="opticalFlowButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>          Optical Flow</string>
+            <string>Optical Flow</string>
            </property>
           </widget>
          </item>
@@ -368,14 +420,14 @@
           <widget class="QPushButton" name="osdButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
@@ -387,18 +439,18 @@
           <widget class="QPushButton" name="cameraGimbalButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>              Camera Gimbal</string>
+            <string>Camera Gimbal</string>
            </property>
           </widget>
          </item>
@@ -406,18 +458,18 @@
           <widget class="QPushButton" name="antennaTrackerButton">
            <property name="minimumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>190</width>
-             <height>35</height>
+             <width>175</width>
+             <height>30</height>
             </size>
            </property>
            <property name="text">
-            <string>               Antenna Tracker</string>
+            <string>Antenna Tracker</string>
            </property>
           </widget>
          </item>
@@ -469,6 +521,18 @@
    </item>
    <item>
     <widget class="QStackedWidget" name="stackedWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>175</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="currentIndex">
       <number>-1</number>
      </property>
