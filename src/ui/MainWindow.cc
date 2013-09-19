@@ -158,6 +158,7 @@ MainWindow::MainWindow(QWidget *parent):
 
 
 
+
     // We only need this menu if we have more than one system
     //    ui.menuConnected_Systems->setEnabled(false);
 
@@ -320,6 +321,11 @@ MainWindow::MainWindow(QWidget *parent):
     ui.actionOnline_Documentation->setVisible(false);
     ui.actionProject_Roadmap_2->setVisible(false);
     show();
+
+
+    //Disable firmware update and unconnected view buttons, as they aren't required for the moment.
+    ui.actionFirmwareUpdateView->setVisible(false);
+    ui.actionUnconnectedView->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -386,6 +392,7 @@ MainWindow::~MainWindow()
     {
         commsWidgetList[i]->deleteLater();
     }
+
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)
@@ -583,12 +590,12 @@ void MainWindow::buildCommonWidgets()
     createDockWidget(simView,new ParameterInterface(this),tr("Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
 
 
-    {
+    /*{ //Status details disabled until such a point that we can ensure it's completly operational
         QAction* tempAction = ui.menuTools->addAction(tr("Status Details"));
         menuToDockNameMap[tempAction] = "UAS_STATUS_DETAILS_DOCKWIDGET";
         tempAction->setCheckable(true);
         connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
-    }
+    }*/
     {
         if (!debugConsole)
         {
@@ -602,28 +609,9 @@ void MainWindow::buildCommonWidgets()
 
         }
     }
-    createDockWidget(simView,new HSIDisplay(this),tr("Horizontal Situation"),"HORIZONTAL_SITUATION_INDICATOR_DOCKWIDGET",VIEW_SIMULATION,Qt::BottomDockWidgetArea);
+    //Horizontal situation disabled until such a point that we can ensure it's completly operational
+    //createDockWidget(simView,new HSIDisplay(this),tr("Horizontal Situation"),"HORIZONTAL_SITUATION_INDICATOR_DOCKWIDGET",VIEW_SIMULATION,Qt::BottomDockWidgetArea);
 
-
-
-    //FIXME: memory of acceptList will never be freed again
-    QStringList* acceptList = new QStringList();
-    acceptList->append("-3.3,ATTITUDE.roll,rad,+3.3,s");
-    acceptList->append("-3.3,ATTITUDE.pitch,deg,+3.3,s");
-    acceptList->append("-3.3,ATTITUDE.yaw,deg,+3.3,s");
-
-    //FIXME: memory of acceptList2 will never be freed again
-    QStringList* acceptList2 = new QStringList();
-    acceptList2->append("0,RAW_PRESSURE.pres_abs,hPa,65500");
-
-
-    //HDDisplay* hdDisplay = new HDDisplay(acceptList, "Flight Display", this);
-    //hdDisplay->addSource(mavlinkDecoder);
-    //createDockWidget(pilotView,hdDisplay,tr("Flight Display"),"HEAD_DOWN_DISPLAY_1_DOCKWIDGET",VIEW_FLIGHT,Qt::RightDockWidgetArea);
-
-    //HDDisplay* hdDisplay2 = new HDDisplay(acceptList2, "Actuator Status", this);
-    //hdDisplay2->addSource(mavlinkDecoder);
-    //createDockWidget(pilotView,hdDisplay2,tr("Actuator Status"),"HEAD_DOWN_DISPLAY_2_DOCKWIDGET",VIEW_FLIGHT,Qt::RightDockWidgetArea);
 
     {
         QAction* tempAction = ui.menuTools->addAction(tr("Flight Display"));
@@ -632,20 +620,21 @@ void MainWindow::buildCommonWidgets()
         menuToDockNameMap[tempAction] = "HEAD_DOWN_DISPLAY_1_DOCKWIDGET";
     }
 
-    {
+    /*{ //Actuator status disabled until such a point that we can ensure it's completly operational
         QAction* tempAction = ui.menuTools->addAction(tr("Actuator Status"));
         tempAction->setCheckable(true);
         connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
         menuToDockNameMap[tempAction] = "HEAD_DOWN_DISPLAY_2_DOCKWIDGET";
-    }
+    }*/
 
-    {
-        QAction* tempAction = ui.menuTools->addAction(tr("Radio Control"));
+    /*{ //Radio Control disabled until such a point that we can ensure it's completly operational
+	QAction* tempAction = ui.menuTools->addAction(tr("Radio Control"));
         tempAction->setCheckable(true);
-        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
-    }
+	connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+    }*/
 
-    createDockWidget(engineeringView,new HUD(320,240,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea,this->width()/1.5);
+    //HUD disabled until such a point that we can ensure it's completly operational
+    //createDockWidget(engineeringView,new HUD(320,240,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea,this->width()/1.5);
 
     createDockWidget(simView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),"PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea,this->width()/1.5);
     createDockWidget(pilotView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),"PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea,this->width()/1.8);
@@ -655,60 +644,10 @@ void MainWindow::buildCommonWidgets()
     createDockWidget(pilotView,infoview,tr("Info View"),"UAS_INFO_INFOVIEW_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
 
 
-    //createDockWidget(pilotView,new HUD(320,240,this),tr("Head Up Display"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea,this->width()/1.8);
-
-//    createDockWidget(pilotView,new UASQuickView(this),tr("Quick View"),"UAS_INFO_QUICKVIEW_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
-//    createDockWidget(pilotView,new HSIDisplay(this),tr("Horizontal Situation"),"HORIZONTAL_SITUATION_INDICATOR_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
-//    pilotView->setTabPosition(Qt::LeftDockWidgetArea,QTabWidget::North);
-//    pilotView->tabifyDockWidget((QDockWidget*)centralWidgetToDockWidgetsMap[VIEW_FLIGHT]["HORIZONTAL_SITUATION_INDICATOR_DOCKWIDGET"],(QDockWidget*)centralWidgetToDockWidgetsMap[VIEW_FLIGHT]["UAS_INFO_QUICKVIEW_DOCKWIDGET"]);
-
-    //UASRawStatusView *view = new UASRawStatusView();
-    //view->setDecoder(mavlinkDecoder);
-    //view->show();
-    //hddisplay->addSource(mavlinkDecoder);
-    //createDockWidget(pilotView,new HSIDisplay(this),tr("Horizontal Situation"),"HORIZONTAL_SITUATION_INDICATOR_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
-    //pilotView->setTabPosition(Qt::LeftDockWidgetArea,QTabWidget::North);
-    //pilotView->tabifyDockWidget((QDockWidget*)centralWidgetToDockWidgetsMap[VIEW_FLIGHT]["HORIZONTAL_SITUATION_INDICATOR_DOCKWIDGET"],(QDockWidget*)centralWidgetToDockWidgetsMap[VIEW_FLIGHT]["UAS_INFO_QUICKVIEW_DOCKWIDGET"]);
-
-
-    //createDockWidget(pilotView,new UASActionsWidget(this),tr("Actions"),"UNMANNED_SYSTEM_ACTION_DOCKWIDGET",VIEW_FLIGHT,Qt::RightDockWidgetArea);
-
     // Custom widgets, added last to all menus and layouts
     buildCustomWidget();
 
 
-
-    /*if (!protocolWidget)
-    {
-        protocolWidget    = new XMLCommProtocolWidget(this);
-        addCentralWidget(protocolWidget, "Mavlink Generator");
-    }*/
-
-
-    //    if (!firmwareUpdateWidget)
-    //    {
-    //        firmwareUpdateWidget    = new QGCFirmwareUpdate(this);
-    //        addCentralWidget(firmwareUpdateWidget, "Firmware Update");
-    //    }
-
-    /*if (!hudWidget)
-    {
-        hudWidget         = new HUD(320, 240, this);
-        addCentralWidget(hudWidget, tr("Head Up Display"));
-    }*/
-
-    /*if (!configWidget)
-    {
-        configWidget = new QGCVehicleConfig(this);
-        addCentralWidget(configWidget, tr("Vehicle Configuration"));
-    }*/
-
-
-    /*if (!dataplotWidget)
-    {
-        dataplotWidget    = new QGCDataPlot2D(this);
-        addCentralWidget(dataplotWidget, tr("Logfile Plot"));
-    }*/
 
 #ifdef QGC_OSG_ENABLED
     if (q3DWidget)
@@ -1470,9 +1409,9 @@ void MainWindow::connectCommonActions()
     //perspectives->addAction(ui.actionConfiguration_2);
     perspectives->addAction(ui.actionHardwareConfig);
     perspectives->addAction(ui.actionSoftwareConfig);
-    perspectives->addAction(ui.actionFirmwareUpdateView);
+    //perspectives->addAction(ui.actionFirmwareUpdateView);
     perspectives->addAction(ui.actionTerminalView);
-    perspectives->addAction(ui.actionUnconnectedView);
+    //perspectives->addAction(ui.actionUnconnectedView);
     perspectives->setExclusive(true);
 
     // Mark the right one as selected
@@ -1585,7 +1524,8 @@ void MainWindow::connectCommonActions()
     // configuration widget is not instantiated
     // unless it is actually used
     // so no ressources spend on this.
-    ui.actionJoystickSettings->setVisible(true);
+    //Joystick is disabled until we can ensure it's operational.
+    ui.actionJoystickSettings->setVisible(false);
 
     // Configuration
     // Joystick
@@ -1607,6 +1547,10 @@ void MainWindow::connectCommonActions()
     }
 
     connect(ui.actionDebug_Console,SIGNAL(triggered()),debugOutput,SLOT(show()));
+
+
+    //Disable simulation view until we ensure it's operational.
+    ui.actionSimulationView->setVisible(false);
 }
 
 void MainWindow::showHelp()
