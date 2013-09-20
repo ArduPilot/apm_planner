@@ -56,8 +56,6 @@ class TerminalConsole : public QWidget
     Q_OBJECT
     
 public:
-    enum ConsoleMode { APM, PX4 };
-public:
     explicit TerminalConsole(QWidget *parent = 0);
     ~TerminalConsole();
 
@@ -97,7 +95,6 @@ private:
     QPointer<SettingsDialog> m_settingsDialog;
     QPointer<QSerialPort> m_serial;
     SerialSettings m_settings;
-    ConsoleMode m_consoleMode;
     QPointer<QTimer> m_timer;
 };
 

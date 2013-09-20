@@ -53,8 +53,7 @@ This file is part of the APM_PLANNER project
 
 TerminalConsole::TerminalConsole(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::TerminalConsole),
-    m_consoleMode(APM)
+    ui(new Ui::TerminalConsole)
 {
     ui->setupUi(this);
 
@@ -81,8 +80,6 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
 
     loadSettings();
 
-    addConsoleModesComboBoxConfig();
-
     initConnections();
 
     //Keep refreshing the serial port list
@@ -91,15 +88,6 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
 }
 
 void TerminalConsole::addBaudComboBoxConfig()
-{
-    ui->consoleModeBox->addItem(QLatin1String("APM"), APM);
-    ui->consoleModeBox->addItem(QLatin1String("PX4"), PX4);
-
-    // [TODO] complete PX4 and APM modes
-    ui->consoleModeBox->setHidden(true);
-}
-
-void TerminalConsole::addConsoleModesComboBoxConfig()
 {
     ui->baudComboBox->addItem(QLatin1String("115200"), QSerialPort::Baud115200);
     ui->baudComboBox->addItem(QLatin1String("57600"), QSerialPort::Baud57600);
@@ -237,22 +225,12 @@ void TerminalConsole::readData()
 //    QLOG_TRACE() << "readData:" << data;
     m_console->putData(data);
 
-    switch(m_consoleMode)
-    {
-    case APM: // APM
-        // On reset, send the break sequence and display help
-        if (data.contains("ENTER 3")) {
-            m_serial->write("\r\r\r");
-            m_serial->waitForBytesWritten(10);
-            m_serial->write("HELP\r");
-        }
-        break;
-    case PX4:
-        // Do nothing
-    default:
-        QLOG_DEBUG() << "Mode not yet implemented";
+    // On reset, send the break sequence and display help
+    if (data.contains("ENTER 3")) {
+        m_serial->write("\r\r\r");
+        m_serial->waitForBytesWritten(10);
+        m_serial->write("HELP\r");
     }
-
 }
 
 void TerminalConsole::handleError(QSerialPort::SerialPortError error)
@@ -273,7 +251,6 @@ void TerminalConsole::initConnections()
 
     connect(ui->baudComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setBaudRate(int)));
     connect(ui->linkComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setLink(int)));
-//    connect(ui->linkComboBox, SIGNAL()), this, SLOT(setLink(int)));
 
     // Serial Port Connections
     connect(m_serial, SIGNAL(error(QSerialPort::SerialPortError)), this,

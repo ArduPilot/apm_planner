@@ -45,6 +45,8 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent)
 
     loadSettings();
 
+    initConnections();
+
     //Keep refreshing the serial port list
     m_timer = new QTimer(this);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
