@@ -35,6 +35,7 @@ BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(pa
     ui.sensorComboBox->addItem(tr("2: AttoPilot 90A"),2);
     ui.sensorComboBox->addItem(tr("3: AttoPilot 180A"),3);
     ui.sensorComboBox->addItem(tr("4: 3DR Power Module"),4);
+    ui.sensorComboBox->addItem(tr("5: 3DR 4 in 1 ESC"),5);
 
     ui.apmVerComboBox->addItem(tr("0: APM1"));
     ui.apmVerComboBox->addItem(tr("1: APM2 - 2.5 non 3DR"));
@@ -229,6 +230,12 @@ void BatteryMonitorConfig::sensorCurrentIndexChanged(int index)
         maxvolt = 50.0;
         maxamps = 90.0;
     }
+    else if (index == 5)
+    {
+        //3dr 4 in 1
+        maxvolt = 39.67;
+        maxamps = 56.1;
+    }
     mvpervolt = calculatemVPerVolt(3.3,maxvolt);
     mvperamp = calculatemVPerAmp(3.3,maxamps);
     if (index == 0)
@@ -242,14 +249,14 @@ void BatteryMonitorConfig::sensorCurrentIndexChanged(int index)
     {
         topvolt = (maxvolt * mvpervolt) / 1000.0;
         topamps = (maxamps * mvperamp) / 1000.0;
-
         ui.calcDividerLineEdit->setText(QString::number(maxvolt/topvolt));
         ui.ampsPerVoltsLineEdit->setText(QString::number(maxamps / topamps));
+        m_uas->getParamManager()->setParameter(1,"AMP_PER_VOLT",(float)(maxamps/topamps));
+        m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",(float)(maxvolt/topvolt));
         ui.ampsPerVoltsLineEdit->setEnabled(false);
         ui.calcDividerLineEdit->setEnabled(false);
         ui.measuredVoltsLineEdit->setEnabled(false);
-        m_uas->getParamManager()->setParameter(1,"AMP_PER_VOLT",(float)(maxamps/topamps));
-        m_uas->getParamManager()->setParameter(1,"VOLT_DIVIDER",(float)(maxvolt/topvolt));
+
     }
 }
 float BatteryMonitorConfig::calculatemVPerAmp(float maxvoltsout,float maxamps)
