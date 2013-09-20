@@ -32,8 +32,8 @@
   <widget class="QLabel" name="apmGraphicLabel">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>100</y>
+     <x>440</x>
+     <y>80</y>
      <width>241</width>
      <height>201</height>
     </rect>
@@ -69,6 +69,13 @@
      </widget>
     </item>
     <item>
+     <widget class="QLabel" name="outputLabel">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <spacer name="horizontalSpacer">
@@ -85,6 +92,12 @@
       </item>
       <item>
        <widget class="QPushButton" name="calibrateAccelButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>35</height>
+         </size>
+        </property>
         <property name="text">
          <string>Calibrate
 Accelerometer</string>
@@ -107,7 +120,14 @@ Accelerometer</string>
      </layout>
     </item>
     <item>
-     <widget class="QLabel" name="outputLabel">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="levelOutputLabel">
       <property name="text">
        <string/>
       </property>
@@ -140,6 +160,12 @@ Accelerometer</string>
       </item>
       <item>
        <widget class="QPushButton" name="levelAccelButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>35</height>
+         </size>
+        </property>
         <property name="text">
          <string>Level
 Accelerometer</string>
@@ -160,13 +186,6 @@ Accelerometer</string>
        </spacer>
       </item>
      </layout>
-    </item>
-    <item>
-     <widget class="QLabel" name="levelOutputLabel">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>

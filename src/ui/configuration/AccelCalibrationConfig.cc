@@ -31,6 +31,7 @@ AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     connect(ui.levelAccelButton,SIGNAL(clicked()),this,SLOT(levelButtonClicked()));
 
     m_accelAckCount=0;
+    m_isLeveling = false;
     initConnections();
 }
 
@@ -117,6 +118,7 @@ void AccelCalibrationConfig::levelButtonClicked()
         GAudioOutput::instance()->mute(false);
         m_muted = false;
     }
+    m_isLeveling = true;
 }
 
 void AccelCalibrationConfig::calibrateButtonClicked()
@@ -186,6 +188,14 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
 {
     //command received: " Severity 1
     //Place APM Level and press any key" severity 5
+    if (m_isLeveling)
+    {
+        ui.levelOutputLabel->setText(text);
+        if (text.toLower().contains("success"))
+        {
+            m_isLeveling = false;
+        }
+    }
     if (severity == 5)
     {
         //This is a calibration instruction

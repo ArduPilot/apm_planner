@@ -56,6 +56,7 @@ private:
     int m_accelAckCount;
     Ui::AccelCalibrationConfig ui;
     bool m_muted;
+    bool m_isLeveling;
 };
 
 #endif // ACCELCALIBRATIONCONFIG_H
