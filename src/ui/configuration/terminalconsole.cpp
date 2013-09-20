@@ -97,9 +97,11 @@ void TerminalConsole::addBaudComboBoxConfig()
     ui->baudComboBox->addItem(QLatin1String("9600"), QSerialPort::Baud9600);
 }
 
-void TerminalConsole::fillPortsInfo(QComboBox &comboxBox)
+void TerminalConsole::fillPortsInfo(QComboBox &comboBox)
 {
     QLOG_DEBUG() << "fillPortsInfo ";
+    disconnect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    QString current = comboBox.itemText(comboBox.currentIndex());
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         QStringList list;
         list << info.portName()
@@ -109,14 +111,26 @@ void TerminalConsole::fillPortsInfo(QComboBox &comboxBox)
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        int found = comboxBox.findData(list);
+        int found = comboBox.findData(list);
         if (found == -1) {
             QLOG_INFO() << "Inserting " << list.first();
-            comboxBox.insertItem(0,list[0], list);
+            comboBox.insertItem(0,list[0], list);
         } else {
             // Do nothing as the port is already listed
         }
     }
+    for (int i=0;i<comboBox.count();i++)
+    {
+        if (comboBox.itemText(i) == current)
+        {
+            comboBox.setCurrentIndex(i);
+            setLink(comboBox.currentIndex());
+            connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+            return;
+        }
+    }
+    connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    setLink(comboBox.currentIndex());
 }
 
 void TerminalConsole::showEvent(QShowEvent *event)
