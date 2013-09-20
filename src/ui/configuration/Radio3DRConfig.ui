@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>817</width>
+    <width>812</width>
     <height>510</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>70</x>
+     <x>40</x>
      <y>30</y>
      <width>127</width>
      <height>30</height>
@@ -45,7 +45,7 @@
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>180</x>
      <y>30</y>
      <width>125</width>
      <height>30</height>
@@ -58,7 +58,7 @@
   <widget class="QPushButton" name="pushButton_3">
    <property name="geometry">
     <rect>
-     <x>430</x>
+     <x>340</x>
      <y>30</y>
      <width>149</width>
      <height>30</height>
@@ -71,7 +71,7 @@
   <widget class="QPushButton" name="pushButton_4">
    <property name="geometry">
     <rect>
-     <x>590</x>
+     <x>510</x>
      <y>30</y>
      <width>150</width>
      <height>30</height>
@@ -84,9 +84,9 @@
   <widget class="QGroupBox" name="localGroupBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>10</x>
      <y>70</y>
-     <width>361</width>
+     <width>321</width>
      <height>351</height>
     </rect>
    </property>
@@ -99,12 +99,18 @@
       <property name="text">
        <string>LBT RSSI</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="3" column="3">
      <widget class="QLabel" name="label_8">
       <property name="text">
        <string>Max Freq.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -120,6 +126,9 @@
       <property name="text">
        <string>Net ID</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="2" column="4">
@@ -129,6 +138,9 @@
      <widget class="QLabel" name="label_12">
       <property name="text">
        <string>Node Dest.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -150,12 +162,18 @@
       <property name="text">
        <string>Format</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="7" column="3">
      <widget class="QLabel" name="label_11">
       <property name="text">
        <string>Node ID</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -174,12 +192,18 @@
       <property name="text">
        <string>Air Baud</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="2" column="3">
      <widget class="QLabel" name="label_6">
       <property name="text">
        <string>Min Freq.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -188,12 +212,18 @@
       <property name="text">
        <string>Tx Power</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="4" column="3">
      <widget class="QLabel" name="label_9">
       <property name="text">
        <string># Channels</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -214,6 +244,9 @@
       <property name="text">
        <string>Node Count</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="6" column="1">
@@ -223,6 +256,9 @@
      <widget class="QLabel" name="label_4">
       <property name="text">
        <string>Baud</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -251,12 +287,21 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Version</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="buddy">
+       <cstring>versionLineEdit</cstring>
+      </property>
      </widget>
     </item>
     <item row="5" column="3">
      <widget class="QLabel" name="label_7">
       <property name="text">
        <string>Duty Cycle</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -267,6 +312,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_2">
       <property name="text">
        <string>RSSI</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -312,9 +360,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QProgressBar" name="progressBar">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>10</x>
      <y>480</y>
-     <width>731</width>
+     <width>651</width>
      <height>23</height>
     </rect>
    </property>
@@ -325,9 +373,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QGroupBox" name="remoteGroupBox">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>340</x>
      <y>70</y>
-     <width>361</width>
+     <width>321</width>
      <height>351</height>
     </rect>
    </property>
@@ -340,6 +388,9 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Net ID</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="2" column="4">
@@ -349,6 +400,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_19">
       <property name="text">
        <string>Node Dest.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -377,12 +431,18 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Air Baud</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="2" column="3">
      <widget class="QLabel" name="label_22">
       <property name="text">
        <string>Min Freq.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -394,6 +454,9 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Tx Power</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="7" column="3">
@@ -401,12 +464,18 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Node ID</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="4" column="3">
      <widget class="QLabel" name="label_24">
       <property name="text">
        <string># Channels</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -430,6 +499,9 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>LBT RSSI</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="6" column="1">
@@ -446,12 +518,18 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Node Count</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="3" column="0">
      <widget class="QLabel" name="label_26">
       <property name="text">
        <string>Baud</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -463,12 +541,18 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>Version</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="5" column="3">
      <widget class="QLabel" name="label_28">
       <property name="text">
        <string>Duty Cycle</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -480,12 +564,18 @@ p, li { white-space: pre-wrap; }
       <property name="text">
        <string>RSSI</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="label_30">
       <property name="text">
        <string>Format</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -496,6 +586,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_16">
       <property name="text">
        <string>Max Freq.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -511,7 +604,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QPushButton" name="pushButton_5">
    <property name="geometry">
     <rect>
-     <x>320</x>
+     <x>260</x>
      <y>430</y>
      <width>141</width>
      <height>41</height>
@@ -521,6 +614,86 @@ p, li { white-space: pre-wrap; }
     <string>Copy Required
 Items to Remote</string>
    </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>66</y>
+     <width>131</width>
+     <height>137</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetMinAndMaxSize</enum>
+    </property>
+    <item>
+     <widget class="QLabel" name="label_31">
+      <property name="text">
+       <string>Link Settings</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="linkPortComboBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>123</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="baudPortComboBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>123</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>91</width>
+        <height>10</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QPushButton" name="settingsButton">
+      <property name="text">
+       <string>Adv. Settings</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

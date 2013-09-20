@@ -23,6 +23,11 @@ This file is part of the APM_PLANNER project
 #ifndef RADIO3DRCONFIG_H
 #define RADIO3DRCONFIG_H
 
+#include "QsLog.h"
+#include "SerialSettingsDialog.h"
+#include "qserialport.h"
+
+#include <QPointer>
 #include <QWidget>
 #include "ui_Radio3DRConfig.h"
 
@@ -34,8 +39,29 @@ public:
     explicit Radio3DRConfig(QWidget *parent = 0);
     ~Radio3DRConfig();
     
+protected:
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
+
+private slots:
+    void setBaudRate(int index);
+    void setLink(int index);
+    void populateSerialPorts();
+
+private:
+    void initConnections();
+    void addBaudComboBoxConfig();
+    void fillPortsInfo(QComboBox &comboxBox);
+    void writeSettings();
+    void loadSettings();
+
 private:
     Ui::Radio3DRConfig ui;
+
+    QPointer<SettingsDialog> m_settingsDialog;
+    SerialSettings m_settings;
+    QPointer<QSerialPort> m_serial;
+    QPointer<QTimer> m_timer;
 };
 
 #endif // RADIO3DRCONFIG_H
