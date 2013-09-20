@@ -212,12 +212,12 @@ void UASActionsWidget::changeSpeedClicked()
     if(!activeUas())
         return;
 
-    QLOG_INFO() << "Change System Speed " << (float)ui.altitudeSpinBox->value() * 100;
+    QLOG_INFO() << "Change System Speed " << (float)ui.speedSpinBox->value() * 100;
 
     if (m_uas->isMultirotor())
     {
-        QLOG_INFO() << "APMCopter: setting WP_SPEED_MAX: " << ui.altitudeSpinBox->value() * 100;
-        m_uas->setParameter(1,"WP_SPEED_MAX",QVariant(((float)ui.altitudeSpinBox->value() * 100)));
+        QLOG_INFO() << "APMCopter: setting WPNAV_SPEED: " << ui.speedSpinBox->value() * 100;
+        m_uas->setParameter(1,"WPNAV_SPEED",QVariant(((float)ui.speedSpinBox->value() * 100)));
         return;
     }
     else if (m_uas->isFixedWing())
@@ -228,13 +228,13 @@ void UASActionsWidget::changeSpeedClicked()
             if (variant.toInt() == 1)
             {
                 QLOG_INFO() << "APMPlane: ARSPD_ENABLED setting TRIM_ARSPD_CN";
-                m_uas->setParameter(1,"TRIM_ARSPD_CN",QVariant(((float)ui.altitudeSpinBox->value() * 100)));
+                m_uas->setParameter(1,"TRIM_ARSPD_CN",QVariant(((float)ui.speedSpinBox->value() * 100)));
                 return;
             }
 
         }
         QLOG_INFO() << "APMPlane: setting TRIM_ARSPD_CN";
-        m_uas->setParameter(1,"TRIM_ARSPD_CN",QVariant(((float)ui.altitudeSpinBox->value() * 100)));
+        m_uas->setParameter(1,"TRIM_ARSPD_CN",QVariant(((float)ui.speedSpinBox->value() * 100)));
     }
 }
 
