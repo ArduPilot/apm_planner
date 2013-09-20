@@ -142,7 +142,7 @@
      <x>10</x>
      <y>150</y>
      <width>321</width>
-     <height>361</height>
+     <height>331</height>
     </rect>
    </property>
    <property name="title">
@@ -154,7 +154,7 @@
       <x>10</x>
       <y>20</y>
       <width>301</width>
-      <height>331</height>
+      <height>301</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
