@@ -544,7 +544,13 @@ qint64 SerialLink::getNominalDataRate()
             // Otherwise do nothing.
         case QSerialPort::UnknownBaud:
         default:
-            dataRate = -1;
+	    //m_port has likely returned an invalid value here. Default to 57600 to make connecting
+	    //to a 3DR radio easier.
+	    dataRate = 57600;
+	    if (m_port)
+	    {
+		    m_port->setBaudRate(57600);
+	    }
             break;
     }
     return dataRate;
