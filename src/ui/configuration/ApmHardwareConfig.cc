@@ -32,7 +32,8 @@ This file is part of the APM_PLANNER project
 
 ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
-    m_paramDownloadCount(0)
+    m_paramDownloadCount(0),
+    m_uas(NULL)
 {
     ui.setupUi(this);
 
@@ -44,7 +45,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.flightModesButton->setVisible(false);
     ui.arduPlaneLevelButton->setVisible(false);
     ui.radioCalibrateButton->setVisible(false);
-    ui.optionalHardwareButton->setVisible(false);
     ui.batteryMonitorButton->setVisible(false);
     ui.sonarButton->setVisible(false);
     ui.airspeedButton->setVisible(false);
@@ -193,7 +193,6 @@ void ApmHardwareConfig::uasDisconnected()
 
     ui.mandatoryHardware->setVisible(false);
     ui.mandatoryHardware->setChecked(false);
-    ui.optionalHardwareButton->setVisible(false);
     ui.optionalHardwareButton->setChecked(false);
 
     ui.frameTypeButton->setShown(false);
@@ -201,6 +200,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.compassButton->setShown(false);
     ui.accelCalibrateButton->setShown(false);
     ui.radioCalibrateButton->setShown(false);
+
     ui.flightModesButton->setShown(false);
     ui.failSafeButton->setShown(false);
 
@@ -246,12 +246,18 @@ void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 void ApmHardwareConfig::toggleOptionalShown(bool show)
 {
     QLOG_DEBUG() << "toggleOptionalShown" << show;
+    if(!m_uas)
+        return;
     toggleMandatoryShown(!show);
 }
 
 void ApmHardwareConfig::toggleMandatoryShown(bool show)
 {
     QLOG_DEBUG() << "toggleMandatoryShown" << show;
+
+    if(!m_uas)
+        return;
+
     if (m_uas->isMultirotor()){
         QLOG_DEBUG() << "Multirotor";
         // Buttons to disable
