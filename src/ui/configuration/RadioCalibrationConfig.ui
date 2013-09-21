@@ -35,7 +35,7 @@
      <x>10</x>
      <y>50</y>
      <width>716</width>
-     <height>300</height>
+     <height>308</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -57,6 +57,11 @@
           <width>250</width>
           <height>40</height>
          </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QGCRadioChannelDisplay{
+qlineargradient(spread:pad, x1:0.473, y1:0, x2:0.443, y2:0.994318, stop:0 rgba(0, 118, 0, 255), stop:1 rgba(188, 255, 192, 255))qlineargradient(spread:pad, x1:0, y1:0.494, x2:0.995074, y2:0.511, stop:0 rgba(0, 118, 0, 255), stop:1 rgba(188, 255, 192, 255))
+}</string>
         </property>
        </widget>
       </item>
