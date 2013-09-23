@@ -52,11 +52,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.osdButton->setVisible(false);
     ui.cameraGimbalButton->setVisible(false);
 
-    connect(ui.mandatoryHardware, SIGNAL(toggled(bool)),
-            this, SLOT(toggleMandatoryShown(bool)));
-    connect(ui.optionalHardwareButton, SIGNAL(toggled(bool)),
-            this, SLOT(toggleOptionalShown(bool)));
-
     m_apmFirmwareConfig = new ApmFirmwareConfig(this);
     ui.stackedWidget->addWidget(m_apmFirmwareConfig); //Firmware placeholder.
     m_buttonToConfigWidgetMap[ui.firmwareButton] = m_apmFirmwareConfig;
@@ -168,6 +163,7 @@ void ApmHardwareConfig::uasConnected()
     {
         return;
     }
+    QLOG_DEBUG() << "AHC: uasConnected()";
     // Hide offline options and show Optional and Mandatory buttons
     ui.radio3DRButton->setVisible(false);
     ui.antennaTrackerButton->setVisible(false);
@@ -179,6 +175,12 @@ void ApmHardwareConfig::uasConnected()
 
     ui.mandatoryHardware->setAutoExclusive(true);
     ui.optionalHardwareButton->setAutoExclusive(true);
+
+    connect(ui.mandatoryHardware, SIGNAL(toggled(bool)),
+            this, SLOT(toggleMandatoryShown(bool)));
+    connect(ui.optionalHardwareButton, SIGNAL(toggled(bool)),
+            this, SLOT(toggleOptionalShown(bool)));
+
 }
 
 void ApmHardwareConfig::uasDisconnected()
@@ -187,13 +189,22 @@ void ApmHardwareConfig::uasDisconnected()
     {
         return;
     }
+    QLOG_DEBUG() << "AHC: uasDisconnected()";
     // Show offline options and hide Optional and Mandatory buttons
+    ui.mandatoryHardware->setAutoExclusive(false);
+    ui.optionalHardwareButton->setAutoExclusive(false);
+
+    disconnect(ui.mandatoryHardware, SIGNAL(toggled(bool)),
+                this, SLOT(toggleMandatoryShown(bool)));
+    disconnect(ui.optionalHardwareButton, SIGNAL(toggled(bool)),
+                this, SLOT(toggleOptionalShown(bool)));
+
+    ui.optionalHardwareButton->setChecked(true);
     ui.radio3DRButton->setVisible(true);
     ui.antennaTrackerButton->setVisible(true);
 
     ui.mandatoryHardware->setVisible(false);
     ui.mandatoryHardware->setChecked(false);
-    ui.optionalHardwareButton->setChecked(false);
 
     ui.frameTypeButton->setShown(false);
     ui.sonarButton->setShown(false);
@@ -209,9 +220,6 @@ void ApmHardwareConfig::uasDisconnected()
     ui.opticalFlowButton->setShown(false);
     ui.osdButton->setShown(false);
     ui.cameraGimbalButton->setShown(false);
-
-    ui.mandatoryHardware->setAutoExclusive(false);
-    ui.optionalHardwareButton->setAutoExclusive(false);
 
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.firmwareButton]);
 }
