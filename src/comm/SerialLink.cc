@@ -38,7 +38,7 @@ SerialLink::SerialLink() :
     m_reqReset(false)
 {
     QLOG_INFO() << "create SerialLink: Load Previous Settings ";
-
+    m_baud = -1;
     loadSettings();
     m_id = getNextLinkId();
 
@@ -219,6 +219,14 @@ void SerialLink::run()
         }
         else
         {
+            /*
+                MLC - The entire timeout code block has been disabled for the time being.
+                There needs to be more discussion about when and how to do resets, as it is
+                inherently unsafe that we can reset PX4 via software at any time (even in flight!!!)
+                Possibly query the user to be sure?
+            */
+        /*
+
             if (QDateTime::currentMSecsSinceEpoch() - msecs > timeout)
             {
                 //It's been 10 seconds since the last data came in. Reset and try again
@@ -253,7 +261,7 @@ void SerialLink::run()
                     communicationUpdate(getName(),"No data to receive on COM port....");
                     QLOG_DEBUG() << "No data!!!";
                 }
-            }
+            }*/
         }
         MG::SLEEP::msleep(SerialLink::poll_interval);
     } // end of forever
@@ -546,10 +554,17 @@ qint64 SerialLink::getNominalDataRate()
         default:
 	    //m_port has likely returned an invalid value here. Default to 57600 to make connecting
 	    //to a 3DR radio easier.
-	    dataRate = 57600;
+        if (m_baud != -1)
+        {
+            dataRate = m_baud;
+        }
+        else
+        {
+            dataRate = 57600;
+        }
 	    if (m_port)
 	    {
-		    m_port->setBaudRate(57600);
+            m_port->setBaudRate(dataRate);
 	    }
             break;
     }
