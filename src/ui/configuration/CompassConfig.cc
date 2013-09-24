@@ -90,6 +90,8 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
             this,SLOT(setCompassAPMOnBoard()));
     connect(ui.gpsCompassButton, SIGNAL(clicked()),
             this,SLOT(setCompass3DRGPS()));
+    connect(ui.px4Button, SIGNAL(clicked()),
+            this,SLOT(setCompassPX4OnBoard()));
 
 }
 
@@ -269,9 +271,9 @@ void CompassConfig::setCompassPX4OnBoard()
 {
     if (!m_uas)
         return;
-    // FMUv1 & FMUv2 is ROTATION_ROLL_180_YAW_90
-    QLOG_DEBUG() << "setCompassPX4OnBoard ROLL_180_YAW_90";
-    m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",10);
+    // FMUv1 & FMUv2 is None
+    QLOG_DEBUG() << "setCompassPX4OnBoard None 0Deg";
+    m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",0);
 
 }
 

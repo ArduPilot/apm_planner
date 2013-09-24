@@ -89,7 +89,6 @@
         <file>files/images/status/audio-volume-high.svg</file>
         <file>files/images/status/colorbars.png</file>
         <file>files/styles/style-indoor.css</file>
-        <file>files/images/splash.png</file>
         <file>files/audio/alert.wav</file>
         <file>demo-log.txt</file>
         <file>files/images/mapproviders/openstreetmap.png</file>
@@ -160,6 +159,7 @@
         <file>files/ardupilotmega/images/apm2.5.jpg</file>
         <file>files/ardupilotmega/images/maggps.png</file>
         <file>files/ardupilotmega/images/px4.jpg</file>
+        <file>files/ardupilotmega/images/Pixhawk.png</file>
     </qresource>
     <qresource prefix="/general">
         <file alias="vera.ttf">files/styles/Vera.ttf</file>

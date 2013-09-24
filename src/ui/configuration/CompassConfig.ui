@@ -140,9 +140,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>150</y>
-     <width>321</width>
-     <height>281</height>
+     <y>130</y>
+     <width>332</width>
+     <height>368</height>
     </rect>
    </property>
    <property name="title">
@@ -153,8 +153,8 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>306</width>
-      <height>251</height>
+      <width>312</width>
+      <height>328</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -162,6 +162,38 @@
       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
      </property>
      <item row="1" column="0">
+      <widget class="QLabel" name="px4Label">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/Pixhawk.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QRadioButton" name="px4Button">
+       <property name="text">
+        <string>Pixhawk / PX4</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QLabel" name="apmLabel">
        <property name="maximumSize">
         <size>
@@ -180,14 +212,46 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <widget class="QRadioButton" name="onBoardApmButton">
        <property name="text">
-        <string>On-Board APM</string>
+        <string>APM with On-Board
+Compass</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="1">
+      <widget class="QRadioButton" name="gpsCompassButton">
+       <property name="text">
+        <string>APM with 3DR
+GPS/Compass</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QComboBox" name="orientationComboBox">
+       <property name="minimumSize">
+        <size>
+         <width>160</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QRadioButton" name="manualOrientationButton">
+       <property name="text">
+        <string>Manual</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
       <widget class="QLabel" name="compassGpsLabel">
        <property name="minimumSize">
         <size>
@@ -212,43 +276,13 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QRadioButton" name="gpsCompassButton">
-       <property name="text">
-        <string>3DR GPS/Compass</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QComboBox" name="orientationComboBox">
-       <property name="minimumSize">
-        <size>
-         <width>160</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QRadioButton" name="manualOrientationButton">
-       <property name="text">
-        <string>Manual</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
   <widget class="QPushButton" name="liveCalibrationButton">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>420</x>
      <y>120</y>
      <width>131</width>
      <height>32</height>
@@ -267,7 +301,7 @@
   <widget class="QLabel" name="label_9">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>430</x>
      <y>160</y>
      <width>114</width>
      <height>16</height>
@@ -283,14 +317,14 @@
   <widget class="QGroupBox" name="Examples">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>340</y>
-     <width>389</width>
-     <height>91</height>
+     <x>350</x>
+     <y>370</y>
+     <width>311</width>
+     <height>121</height>
     </rect>
    </property>
    <property name="title">
-    <string>Example Settings</string>
+    <string>Example Manual Settings</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
@@ -310,7 +344,8 @@
     <item>
      <widget class="QLabel" name="label_8">
       <property name="text">
-       <string>PX4/Pixhawk with onboard or external compass: None i.e 0°</string>
+       <string>PX4/Pixhawk with onboard or 
+     external compass: None i.e 0°</string>
       </property>
      </widget>
     </item>
