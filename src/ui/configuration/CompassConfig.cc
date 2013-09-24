@@ -53,7 +53,7 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.degreesLineEdit,SIGNAL(editingFinished()),this,SLOT(degreeEditFinished()));
     connect(ui.minutesLineEdit,SIGNAL(editingFinished()),this,SLOT(degreeEditFinished()));
 
-    ui.orientationComboBox->addItem("0");
+    ui.orientationComboBox->addItem("None 0");
     ui.orientationComboBox->addItem("Yaw 45");
     ui.orientationComboBox->addItem("Yaw 90");
     ui.orientationComboBox->addItem("Yaw 135");
@@ -88,8 +88,6 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     connect(ui.onBoardApmButton, SIGNAL(clicked()),
             this,SLOT(setCompassAPMOnBoard()));
-    connect(ui.onBoardPX4Button, SIGNAL(clicked()),
-            this,SLOT(setCompassPX4OnBoard()));
     connect(ui.gpsCompassButton, SIGNAL(clicked()),
             this,SLOT(setCompass3DRGPS()));
 

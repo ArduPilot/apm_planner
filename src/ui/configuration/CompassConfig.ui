@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>990</width>
-    <height>572</height>
+    <width>749</width>
+    <height>494</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -142,19 +142,19 @@
      <x>10</x>
      <y>150</y>
      <width>321</width>
-     <height>331</height>
+     <height>281</height>
     </rect>
    </property>
    <property name="title">
-    <string>Orientation</string>
+    <string>Orientation (ROTATION)</string>
    </property>
    <widget class="QWidget" name="formLayoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>301</width>
-      <height>301</height>
+      <width>306</width>
+      <height>251</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -219,14 +219,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QRadioButton" name="onBoardPX4Button">
-       <property name="text">
-        <string>On Board PX4</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
+     <item row="4" column="0">
       <widget class="QComboBox" name="orientationComboBox">
        <property name="minimumSize">
         <size>
@@ -242,35 +235,10 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="4" column="1">
       <widget class="QRadioButton" name="manualOrientationButton">
        <property name="text">
         <string>Manual</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="px4Label">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>100</width>
-         <height>73</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/px4.jpg</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -295,6 +263,58 @@
    <property name="text">
     <string>Live Calibration</string>
    </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>160</y>
+     <width>114</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;a href=&quot;https://www.youtube.com/watch?v=DmsueBS0J3E&quot;&gt;YouTube Example&lt;/a&gt;</string>
+   </property>
+   <property name="openExternalLinks">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="Examples">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>340</y>
+     <width>389</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Example Settings</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>APM with onboard compass: None ie. 0°</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_6">
+      <property name="text">
+       <string>APM with external compass: Roll 180° </string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_8">
+      <property name="text">
+       <string>PX4/Pixhawk with onboard or external compass: None i.e 0°</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources>
