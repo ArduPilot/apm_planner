@@ -78,7 +78,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_buttonToConfigWidgetMap[ui.failSafeButton] = m_failSafeConfig;
     connect(ui.failSafeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
-
     m_accelConfig = new AccelCalibrationConfig(this);
     ui.stackedWidget->addWidget(m_accelConfig);
     m_buttonToConfigWidgetMap[ui.accelCalibrateButton] = m_accelConfig;
@@ -145,6 +144,9 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
 
     ui.optionalHardwareButton->setDisabled(true);
     ui.optionalHardwareButton->setChecked(true);
+
+    // Set start up view
+    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
 }
 void ApmHardwareConfig::activateStackedWidget()
 {
@@ -232,7 +234,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.osdButton->setShown(false);
     ui.cameraGimbalButton->setShown(false);
 
-    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.firmwareButton]);
+    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
 }
 void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 {
