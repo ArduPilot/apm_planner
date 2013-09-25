@@ -792,7 +792,7 @@ void MainWindow::loadDockWidget(QString name)
     }
     else if (name == "PARAMETER_INTERFACE_DOCKWIDGET")
     {
-        createDockWidget(centerStack->currentWidget(),new ParameterInterface(this),tr("Onboard Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+        createDockWidget(centerStack->currentWidget(),new ParameterInterface(this),tr("Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
     else if (name == "UAS_STATUS_DETAILS_DOCKWIDGET")
     {
