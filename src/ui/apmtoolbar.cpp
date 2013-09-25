@@ -49,7 +49,7 @@ APMToolBar::APMToolBar(QWidget *parent):
     QLOG_DEBUG() << url;
     if (!QFile::exists(qmlBaseDir.absolutePath() + "/qml/ApmToolBar.qml"))
     {
-        QMessageBox::information(0,"Error","ApmToolBar.qml not found. Please reinstall the application and try again");
+         QMessageBox::information(0,"Error","ApmToolBar.qml not found. Please reinstall the application and try again");
         exit(-1);
     }
     setSource(url);
@@ -430,7 +430,6 @@ void APMToolBar::heartbeat(UASInterface* uas)
     // if the timer is started again, the call is not made
     m_heartbeatTimer.setSingleShot(true);
     m_heartbeatTimer.start(1500);
-
 }
 
 void APMToolBar::stopHeartbeat()
@@ -439,4 +438,19 @@ void APMToolBar::stopHeartbeat()
     QObject *object = rootObject();
     object->setProperty("heartbeat",QVariant(false));
     m_heartbeatTimer.stop();
+}
+
+void APMToolBar::startAnimation()
+{
+    rootObject()->setProperty("stopAnimation",QVariant(false));
+}
+
+void APMToolBar::stopAnimation()
+{
+    rootObject()->setProperty("stopAnimation",QVariant(true));
+}
+
+void APMToolBar::disableConnectWidget(bool disable)
+{
+    rootObject()->setProperty("disableConnectWidget",QVariant(disable));
 }

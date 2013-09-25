@@ -89,6 +89,10 @@ public slots:
     void heartbeat(UASInterface* uas);
     void stopHeartbeat();
 
+    void startAnimation();
+    void stopAnimation();
+
+    void disableConnectWidget(bool disable);
 
 private:
     QPointer<UASInterface> m_uas;

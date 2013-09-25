@@ -258,7 +258,9 @@ public slots:
     void configureWindowName();
 
     void commsWidgetDestroyed(QObject *obj);
-
+#ifndef QGC_TOOLBAR_ENABLED
+    APMToolBar &toolBar();
+#endif
 signals:
     void initStatusChanged(const QString& message);
 #ifdef MOUSE_ENABLED_LINUX
@@ -410,7 +412,12 @@ protected:
     QPointer<QDockWidget> slugsHilSimWidget;
     QPointer<QDockWidget> slugsCamControlWidget;
 
+#ifdef QGC_TOOLBAR_ENABLED
     QPointer<QGCToolBar> toolBar;
+#else
+    QPointer<APMToolBar> m_apmToolBar;
+#endif
+
     QPointer<QGCStatusBar> customStatusBar;
 
     QPointer<DebugConsole> debugConsole;

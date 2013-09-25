@@ -26,12 +26,12 @@ Rectangle {
 
     onHeartbeatChanged: {
        if (heartbeat) {
-           console.debug("HBD: Start Heartbeat Animation")
+           console.debug("HBD: Heartbeat started")
            warnAnimator.stop()
            animator.start()
 
         } else {
-            console.debug("HBD: Stop Heartbeat Animation")
+            console.debug("HBD: Heartbeat stopped")
             animator.stop()
             warnAnimator.start()
         }
@@ -39,10 +39,17 @@ Rectangle {
 
     onStopAnimationChanged: {
         if (stopAnimation) {
-            console.debug("HBD: Stop Heartbeat Anitmation")
+            console.debug("HBD: Stop heartbeat anitmations")
             warnAnimator.stop()
             animator.stop()
-            color = "black"
+            heartbeatDisplay.color = "black"
+        } else {
+            console.debug("HBD: Stop heartbeat anitmations")
+            if (heartbeat) {
+                animator.start()
+            } else {
+                warnAnimator.start();
+            }
         }
     }
 

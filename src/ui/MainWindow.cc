@@ -227,16 +227,16 @@ MainWindow::MainWindow(QWidget *parent):
 #ifndef QGC_TOOLBAR_ENABLED
     // Add the APM 'toolbar'
 
-    APMToolBar *apmToolBar = new APMToolBar(this);
-    apmToolBar->setFlightViewAction(ui.actionFlightView);
-    apmToolBar->setFlightPlanViewAction(ui.actionMissionView);
-    apmToolBar->setInitialSetupViewAction(ui.actionHardwareConfig);
-    apmToolBar->setConfigTuningViewAction(ui.actionSoftwareConfig);
-    apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
-    apmToolBar->setTerminalViewAction(ui.actionTerminalView);
+    m_apmToolBar = new APMToolBar(this);
+    m_apmToolBar->setFlightViewAction(ui.actionFlightView);
+    m_apmToolBar->setFlightPlanViewAction(ui.actionMissionView);
+    m_apmToolBar->setInitialSetupViewAction(ui.actionHardwareConfig);
+    m_apmToolBar->setConfigTuningViewAction(ui.actionSoftwareConfig);
+    m_apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
+    m_apmToolBar->setTerminalViewAction(ui.actionTerminalView);
 
     QDockWidget *widget = new QDockWidget(tr("APM Tool Bar"),this);
-    widget->setWidget(apmToolBar);
+    widget->setWidget(m_apmToolBar);
     widget->setMinimumHeight(72);
     widget->setMaximumHeight(72);
     widget->setMinimumWidth(1024);
@@ -487,6 +487,13 @@ void MainWindow::buildCustomWidget()
         }
     }
 }
+
+#ifndef QGC_TOOLBAR_ENABLED
+APMToolBar& MainWindow::toolBar()
+{
+    return *m_apmToolBar;
+}
+#endif
 
 void MainWindow::buildCommonWidgets()
 {

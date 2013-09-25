@@ -38,6 +38,8 @@ Rectangle {
     property alias modeBorderColor: modeTextId.modeBorderColor
 
     property alias heartbeat: heartbeatDisplayId.heartbeat
+    property bool stopAnimation: false
+    property alias disableConnectWidget: connectionWidget.disable
 
     function setArmed(armedState) {
         if (armedState) {
@@ -80,7 +82,7 @@ Rectangle {
             console.log("APM Tool BAR QML: disconnected")
             connectButton.image = "./resources/apmplanner/toolbar/connect.png"
             connectButton.label = "CONNECT"
-            heartbeatDisplayId.stopAnimation = true;
+            stopAnimation = true;
             clearArmedMode()
         }
     }
@@ -205,6 +207,7 @@ Rectangle {
         HeartbeatDisplay {
             id:heartbeatDisplayId
             heartbeatBackgroundColor: "black"
+            stopAnimation: stopAnimation
         }
 
 //            DigitalDisplay { // Information Pane
@@ -236,8 +239,19 @@ Rectangle {
     }
 
     Row {
+        id: connectionWidget
         anchors.right: parent.right
         spacing: 2
+
+        property bool disable: false
+
+        onDisableChanged:{
+            if(disable){
+                visible = false;
+            } else {
+                visible = true;
+            }
+        }
 
         TextButton {
             id: linkDevice

@@ -27,6 +27,7 @@ This file is part of the APM_PLANNER project
 #include "qserialport.h"
 #include "qserialportinfo.h"
 #include "SerialLink.h"
+#include "MainWindow.h"
 
 #include <QTimer>
 
@@ -141,16 +142,20 @@ void ApmFirmwareConfig::showEvent(QShowEvent *)
 {
     // Start Port scanning
     m_timer->start(2000);
+    if(ui.stackedWidget->currentIndex() == 0)
+        MainWindow::instance()->toolBar().disableConnectWidget(true);
 }
 
 void ApmFirmwareConfig::hideEvent(QHideEvent *)
 {
     // Stop Port scanning
     m_timer->stop();
+    MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
 
 void ApmFirmwareConfig::uasConnected()
 {
+    MainWindow::instance()->toolBar().disableConnectWidget(false);
     ui.stackedWidget->setCurrentIndex(1);
 }
 void ApmFirmwareConfig::cancelButtonClicked()
