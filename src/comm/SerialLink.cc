@@ -163,7 +163,24 @@ void SerialLink::run()
     bool triedreset = false;
     bool triedDTR = false;
     qint64 timeout = 5000;
-
+    //While we're connected, find the serial port info we're on
+    QString description = "X";
+    foreach (QSerialPortInfo info,QSerialPortInfo::availablePorts())
+    {
+        if (m_port->portName() == info.portName())
+        {
+            description = info.description();
+            break;
+        }
+    }
+    if (description.contains("mega") && description.contains("2560"))
+    {
+        QLOG_DEBUG() << "Connected to an APM, with description:" << description;
+    }
+    else
+    {
+        QLOG_DEBUG() << "Connected to a NON-APM, with description:" << description;
+    }
     forever
     {
         {
@@ -225,7 +242,7 @@ void SerialLink::run()
                 inherently unsafe that we can reset PX4 via software at any time (even in flight!!!)
                 Possibly query the user to be sure?
             */
-        /*
+
 
             if (QDateTime::currentMSecsSinceEpoch() - msecs > timeout)
             {
@@ -242,26 +259,32 @@ void SerialLink::run()
                 }
                 if (!triedDTR && triedreset)
                 {
-                    triedDTR = true;
-                    communicationUpdate(getName(),"No data to receive on COM port. Attempting to reset via DTR signal");
-                    QLOG_TRACE() << "No data!!! Attempting reset via DTR.";
-                    m_port->setDataTerminalReady(true);
-                    msleep(250);
-                    m_port->setDataTerminalReady(false);
+                    if (description.contains("mega") && description.contains("2560"))
+                    {
+                        triedDTR = true;
+                        communicationUpdate(getName(),"No data to receive on COM port. Attempting to reset via DTR signal");
+                        QLOG_TRACE() << "No data!!! Attempting reset via DTR.";
+                        m_port->setDataTerminalReady(true);
+                        msleep(250);
+                        m_port->setDataTerminalReady(false);
+                    }
                 }
                 else if (!triedreset)
                 {
-                    QLOG_DEBUG() << "No data!!! Attempting reset via reboot command.";
-                    communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
-                    m_port->write("reboot\r\n",8);
-                    triedreset = true;
+                    if (description.contains("mega") && description.contains("2560"))
+                    {
+                        QLOG_DEBUG() << "No data!!! Attempting reset via reboot command.";
+                        communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
+                        m_port->write("reboot\r\n",8);
+                        triedreset = true;
+                    }
                 }
                 else
                 {
                     communicationUpdate(getName(),"No data to receive on COM port....");
                     QLOG_DEBUG() << "No data!!!";
                 }
-            }*/
+            }
         }
         MG::SLEEP::msleep(SerialLink::poll_interval);
     } // end of forever
