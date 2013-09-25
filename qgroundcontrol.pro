@@ -501,6 +501,7 @@ HEADERS += src/MG.h \
     src/ui/configuration/AdvancedParamConfig.h \
     src/ui/configuration/ArduCopterPidConfig.h \
     src/ui/ApmToolBar.h \
+    src/ui/configuration/PX4FirmwareUploader.h \
     src/ui/configuration/ApmPlaneLevel.h \
     src/ui/configuration/ParamWidget.h \
     src/ui/configuration/ArduPlanePidConfig.h \
@@ -717,6 +718,7 @@ SOURCES += src/main.cc \
     src/ui/configuration/AdvancedParamConfig.cc \
     src/ui/configuration/ArduCopterPidConfig.cc \
     src/ui/ApmToolBar.cc \
+    src/ui/configuration/PX4FirmwareUploader.cpp \
     src/ui/configuration/ApmPlaneLevel.cc \
     src/ui/configuration/ParamWidget.cc \
     src/ui/configuration/ArduPlanePidConfig.cc \

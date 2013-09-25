@@ -28,7 +28,7 @@ This file is part of the APM_PLANNER project
 #include "qserialportinfo.h"
 #include "SerialLink.h"
 #include "MainWindow.h"
-
+#include "px4firmwareuploader.h"
 #include <QTimer>
 
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
@@ -43,6 +43,8 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     m_tempFirmwareFile=0;
     ui.progressBar->setVisible(false);
     ui.warningLabel->setVisible(false);
+    m_firmwareType = "stable";
+    m_autopilotType = "apm";
     //
 
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
@@ -237,77 +239,62 @@ void ApmFirmwareConfig::addBetaLabel(QWidget *parent)
     m_betaButtonLabelList.append(label);
 }
 
-void ApmFirmwareConfig::requestBetaFirmwares()
+void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot)
 {
-    m_betaFirmwareChecked = true;
-    m_trunkFirmwareChecked = false;
-    showBetaLabels();
-    QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-heli/git-version.txt")));
-    QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-quad/git-version.txt")));
-    QNetworkReply *reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-hexa/git-version.txt")));
-    QNetworkReply *reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-octa/git-version.txt")));
-    QNetworkReply *reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-octa-quad/git-version.txt")));
-    QNetworkReply *reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-tri/git-version.txt")));
-    QNetworkReply *reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/beta/apm2-y6/git-version.txt")));
-    QNetworkReply *reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Plane/beta/apm2/git-version.txt")));
-    QNetworkReply *reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Rover/beta/apm2/git-version.txt")));
-
-    m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/beta/apm2/APMrover2.hex";
-    m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/beta/apm2/ArduPlane.hex";
-    m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/beta/apm2-heli/ArduCopter.hex";
-    m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/beta/apm2-hexa/ArduCopter.hex";
-    m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/beta/apm2-octa-quad/ArduCopter.hex";
-    m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/beta/apm2-octa/ArduCopter.hex";
-    m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/beta/apm2-quad/ArduCopter.hex";
-    m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/beta/apm2-tri/ArduCopter.hex";
-    m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/beta/apm2-y6/ArduCopter.hex";
-
-    //http://firmware.diydrones.com/Plane/stable/apm2/ArduPlane.hex
-    connect(reply1,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply1,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply2,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply2,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply3,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply3,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply4,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply4,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply5,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply5,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply6,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply6,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply7,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply7,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply8,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply8,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply9,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply9,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    QLOG_DEBUG() << "Getting Beta firmware...";
-}
-
-void ApmFirmwareConfig::requestFirmwares()
-{
+    //type can be "stable" "beta" or "latest"
+    //autopilot can be "apm" "px4" or "pixhawk"
     m_betaFirmwareChecked = false;
     m_trunkFirmwareChecked = false;
     hideBetaLabels();
-    QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-heli/git-version.txt")));
-    QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-quad/git-version.txt")));
-    QNetworkReply *reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-hexa/git-version.txt")));
-    QNetworkReply *reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-octa/git-version.txt")));
-    QNetworkReply *reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-octa-quad/git-version.txt")));
-    QNetworkReply *reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-tri/git-version.txt")));
-    QNetworkReply *reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/stable/apm2-y6/git-version.txt")));
-    QNetworkReply *reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Plane/stable/apm2/git-version.txt")));
-    QNetworkReply *reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Rover/stable/apm2/git-version.txt")));
+    QString prestring = "apm2";
+    if (autopilot == "apm")
+    {
+        prestring = "apm2";
+    }
+    else if (autopilot == "px4")
+    {
+        prestring = "PX4";
+    }
+    else if (autopilot == "pixhawk")
+    {
+        prestring = "PX4";
+    }
+    m_autopilotType = autopilot;
+    m_firmwareType = type;
+    QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
+    QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
+    QNetworkReply *reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
+    QNetworkReply *reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
+    QNetworkReply *reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
+    QNetworkReply *reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
+    QNetworkReply *reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+    QNetworkReply *reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/git-version.txt")));
+    QNetworkReply *reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/git-version.txt")));
 
-    m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/stable/apm2/APMrover2.hex";
-    m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/stable/apm2/ArduPlane.hex";
-    m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/stable/apm2-heli/ArduCopter.hex";
-    m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/stable/apm2-hexa/ArduCopter.hex";
-    m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/stable/apm2-octa-quad/ArduCopter.hex";
-    m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/stable/apm2-octa/ArduCopter.hex";
-    m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/stable/apm2-quad/ArduCopter.hex";
-    m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/stable/apm2-tri/ArduCopter.hex";
-    m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/stable/apm2-y6/ArduCopter.hex";
+    if (autopilot == "apm" || autopilot == "px4")
+    {
+        m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/APMrover2-v1.px4";
+        m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/ArduPlane-v1.px4";
+        m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/ArduCopter-v1.px4";
+        m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/ArduCopter-v1.px4";
+        m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter-v1.px4";
+        m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/ArduCopter-v1.px4";
+        m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter-v1.px4";
+        m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter-v1.px4";
+        m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter-v1.px4";
+    }
+    else if (autopilot == "pixhawk")
+    {
+        m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/APMrover2-v2.px4";
+        m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/ArduPlane-v2.px4";
+        m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/ArduCopter-v2.px4";
+        m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/ArduCopter-v2.px4";
+        m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter-v2.px4";
+        m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/ArduCopter-v2.px4";
+        m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter-v2.px4";
+        m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter-v2.px4";
+        m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter-v2.px4";
+    }
 
     //http://firmware.diydrones.com/Plane/stable/apm2/ArduPlane.hex
     connect(reply1,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
@@ -340,13 +327,15 @@ void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
         QMessageBox::information(this,tr("Warning"),tr("These are beta firmware downloads. Use at your own risk!!!"));
         ui.label->setText(tr("<h2>Beta Firmware</h2>"));
         ui.betaFirmwareButton->setText(tr("Stable Firmware"));
-        requestBetaFirmwares();
+        //equestBetaFirmwares();
+        showBetaLabels();
+        requestFirmwares("beta","apm");
     }
     else
     {
         ui.label->setText(tr("<h2>Firmware</h2>"));
         ui.betaFirmwareButton->setText(tr("Beta Firmware"));
-        requestFirmwares();
+        requestFirmwares("stable","apm");
     }
 }
 void ApmFirmwareConfig::trunkFirmwareButtonClicked()
@@ -355,49 +344,7 @@ void ApmFirmwareConfig::trunkFirmwareButtonClicked()
     ui.label->setText(tr("<h2>Trunk Firmware</h2>"));
     ui.betaFirmwareButton->setText(tr("Stable Firmware"));
     ui.betaFirmwareButton->setChecked(true);
-    m_trunkFirmwareChecked = true;
-    m_betaFirmwareChecked = false;
-    //showBetaLabels();
-    QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-heli/git-version.txt")));
-    QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-quad/git-version.txt")));
-    QNetworkReply *reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-hexa/git-version.txt")));
-    QNetworkReply *reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-octa/git-version.txt")));
-    QNetworkReply *reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-octa-quad/git-version.txt")));
-    QNetworkReply *reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-tri/git-version.txt")));
-    QNetworkReply *reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/latest/apm2-y6/git-version.txt")));
-    QNetworkReply *reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Plane/latest/apm2/git-version.txt")));
-    QNetworkReply *reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Rover/latest/apm2/git-version.txt")));
-
-    m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/latest/apm2/APMrover2.hex";
-    m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/latest/apm2/ArduPlane.hex";
-    m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-heli/ArduCopter.hex";
-    m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-hexa/ArduCopter.hex";
-    m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-octa-quad/ArduCopter.hex";
-    m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-octa/ArduCopter.hex";
-    m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-quad/ArduCopter.hex";
-    m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-tri/ArduCopter.hex";
-    m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/latest/apm2-y6/ArduCopter.hex";
-
-    connect(reply1,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply1,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply2,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply2,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply3,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply3,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply4,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply4,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply5,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply5,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply6,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply6,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply7,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply7,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply8,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply8,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    connect(reply9,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
-    connect(reply9,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    QLOG_DEBUG() << "Getting Trunk firmware...";
-
+    requestFirmwares("latest","apm");
 }
 
 void ApmFirmwareConfig::firmwareProcessFinished(int status)
@@ -540,7 +487,7 @@ void ApmFirmwareConfig::downloadFinished()
 
     QLOG_DEBUG() << "Attempting to Open port";
 
-
+/*
     m_port= new QSerialPort(this);
     m_port->setPortName(m_settings.name);
     if (m_port->open(QIODevice::ReadWrite)) {
@@ -564,9 +511,11 @@ void ApmFirmwareConfig::downloadFinished()
         QMessageBox::critical(this, tr("Error"), m_port->errorString());
         m_port->deleteLater();
         return;
-    }
+    }*/
 
-    QLOG_INFO() << "Port Open fro FW Upload";
+    QLOG_INFO() << "Port Open for FW Upload";
+    if (m_autopilotType == "apm")
+    {
 
     QString avrdudeExecutable;
     QStringList stringList;
@@ -589,10 +538,22 @@ void ApmFirmwareConfig::downloadFinished()
     // Start the Flashing
     QLOG_DEBUG() << avrdudeExecutable << stringList;
     m_burnProcess->start(avrdudeExecutable,stringList);
+    }
+    else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4")
+    {
+        PX4FirmwareUploader *uploader = new PX4FirmwareUploader();
+        connect(uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
+        uploader->loadFile(m_tempFirmwareFile->fileName());
+    }
     m_timeoutCounter=0;
     m_hasError=false;
     ui.progressBar->setValue(0);
 }
+void ApmFirmwareConfig::requestDeviceReplug()
+{
+    QMessageBox::information(this,"Warning","Please click ok, then unplug, and plug back in the PX4/Pixhawk");
+}
+
 void ApmFirmwareConfig::firmwareProcessError(QProcess::ProcessError error)
 {
     QLOG_DEBUG() << "Error:" << error;
@@ -657,7 +618,7 @@ void ApmFirmwareConfig::flashButtonClicked()
                 }
             }
         }
-        QLOG_DEBUG() << "creating new serial port" << m_settings.name;
+        /*QLOG_DEBUG() << "creating new serial port" << m_settings.name;
         m_port = new QSerialPort(this);
         QLOG_DEBUG() << m_port;
         m_port->setPortName(m_settings.name);
@@ -680,7 +641,7 @@ void ApmFirmwareConfig::flashButtonClicked()
             m_port->deleteLater();
             return;
         }
-        m_port->deleteLater();
+        m_port->deleteLater();*/
         ui.progressBar->setVisible(true);
 
         QLOG_DEBUG() << "Go download:" << m_buttonToUrlMap[senderbtn];
@@ -703,6 +664,48 @@ void ApmFirmwareConfig::setLink(int index)
 #else
         ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[0] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
 #endif
+        foreach(QSerialPortInfo info,QSerialPortInfo::availablePorts())
+        {
+            if (info.portName() == m_settings.name)
+            {
+                if (info.description().toLower().contains("mega") && info.description().contains("2650"))
+                {
+                    //APM
+                    if (m_autopilotType != "apm")
+                    {
+                        requestFirmwares(m_firmwareType,"apm");
+                    }
+                }
+                else if (info.description().toLower().contains("px4"))
+                {
+                    //PX4
+                    if (info.productIdentifier() == 0x0010)
+                    {
+                        if (m_autopilotType != "px4")
+                        {
+                            requestFirmwares(m_firmwareType,"px4");
+                        }
+                    }
+                    else if (info.productIdentifier() == 0x0011)
+                    {
+                        if (m_autopilotType != "pixhawk")
+                        {
+                            requestFirmwares(m_firmwareType,"pixhawk");
+                        }
+                    }
+                }
+                else
+                {
+                    //Unknown
+
+                }
+            }
+        }
+
+        if (ui.linkComboBox->itemData(index).toStringList()[1].contains("PX4"))
+        {
+            m_isPx4 = true;
+        }
         //QLOG_INFO() << "Changed Link to:" << m_settings.name;
     }
 }
@@ -733,12 +736,21 @@ void ApmFirmwareConfig::firmwareListFinished()
     QLOG_DEBUG() << "firmwareListFinished error: " << reply->error() << reply->errorString();
     QString cmpstr = "";
     QString labelstr = "";
-    if (m_betaFirmwareChecked)
+    QString apmver = "";
+    if (m_autopilotType == "apm")
+    {
+        apmver = "apm2";
+    }
+    else if (m_autopilotType == "px4" || m_autopilotType == "pixhawk")
+    {
+        apmver = "PX4";
+    }
+    if (m_firmwareType == "beta")
     {
         cmpstr = "beta";
         labelstr = "BETA ";
     }
-    else if (m_trunkFirmwareChecked)
+    else if (m_firmwareType == "latest")
     {
         cmpstr = "latest";
         labelstr = "TRUNK ";
@@ -749,37 +761,37 @@ void ApmFirmwareConfig::firmwareListFinished()
         labelstr = "";
     }
 
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-heli",cmpstr,&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-heli",cmpstr,&outstr))
     {
         ui.copterLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-quad",cmpstr,&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-quad",cmpstr,&outstr))
     {
         ui.quadLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-hexa",cmpstr,&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-hexa",cmpstr,&outstr))
     {
         ui.hexaLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-octa-quad",cmpstr,&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-octa-quad",cmpstr,&outstr))
     {
         ui.octaQuadLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-octa",cmpstr,&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-octa",cmpstr,&outstr))
     {
         ui.octaLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-tri",cmpstr,&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-tri",cmpstr,&outstr))
     {
         ui.triLabel->setText(labelstr + outstr);
         return;
     }
-    if (stripVersionFromGitReply(reply->url().toString(),replystr,"apm2-y6",cmpstr,&outstr))
+    if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-y6",cmpstr,&outstr))
     {
         ui.y6Label->setText(labelstr + outstr);
         return;

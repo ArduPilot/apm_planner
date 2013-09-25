@@ -65,14 +65,13 @@ private slots:
     void firmwareListError(QNetworkReply::NetworkError error);
     void flashButtonClicked();
     void betaFirmwareButtonClicked(bool betafirmwareenabled);
-    void trunkFirmwareButtonClicked();
     void downloadFinished();
+    void trunkFirmwareButtonClicked();
     void firmwareProcessFinished(int status);
     void firmwareProcessReadyRead();
     void firmwareProcessError(QProcess::ProcessError error);
     void firmwareDownloadProgress(qint64 received,qint64 total);
-    void requestFirmwares();
-    void requestBetaFirmwares();
+    void requestFirmwares(QString type,QString autopilot);
     void connectButtonClicked();
     void disconnectButtonClicked();
     void setLink(int index);
@@ -81,7 +80,11 @@ private slots:
     void uasDisconnected();
     void cancelButtonClicked();
     void populateSerialPorts();
+    void requestDeviceReplug();
 private:
+    QString m_firmwareType;
+    QString m_autopilotType;
+    bool m_isPx4;
     int m_timeoutCounter;
     bool m_hasError;
     QPointer<QProcess> m_burnProcess;
