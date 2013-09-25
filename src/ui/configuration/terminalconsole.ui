@@ -125,22 +125,6 @@
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignRight">
-      <widget class="QComboBox" name="consoleModeBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>123</width>
-         <height>0</height>
-        </size>
-       </property>
-      </widget>
-     </item>
      <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
