@@ -79,7 +79,7 @@
             <bool>true</bool>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="autoExclusive">
             <bool>true</bool>
@@ -383,6 +383,9 @@ QPushButton:pressed {
            <property name="checkable">
             <bool>true</bool>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
            <property name="autoExclusive">
             <bool>false</bool>
            </property>
@@ -406,6 +409,9 @@ QPushButton:pressed {
             <string>3DR Radio</string>
            </property>
            <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
             <bool>true</bool>
            </property>
            <property name="autoExclusive">
