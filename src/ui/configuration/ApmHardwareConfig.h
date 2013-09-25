@@ -68,8 +68,9 @@ public slots:
 //    void writeParameter(int component, QString parameterName, QVariant value);
 //    void readParameter(int component, QString parameterName, QVariant value);
 
-    void toggleOptionalShown(bool show);
-    void toggleMandatoryShown(bool show);
+    void optionalClicked();
+    void mandatoryClicked();
+    void toggleButtonsShown(bool show);
 
 private:
     QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;
@@ -108,6 +109,7 @@ private:
     ParamReadWriteState m_paramDownloadState;
     int m_paramDownloadCount;
     int m_paramTotalCount;
+    bool m_mandatory;
 };
 
 #endif // APMHARDWARECONFIG_H

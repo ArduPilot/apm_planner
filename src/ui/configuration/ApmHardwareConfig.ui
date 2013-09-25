@@ -75,6 +75,15 @@
            <property name="text">
             <string>Install Firmware</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item>
@@ -100,14 +109,14 @@
 	border-radius: 5px;
 	padding-left: 10px;
 	padding-right: 10px;
-	background-color: qlineargradient(spread:pad, x1:0.512, y1:1, x2:0.512, y2:0.0284091, stop:0 rgba(0, 118, 0, 255), stop:1 rgba(188, 255, 192, 255))
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
 
-QToolButton:checked {
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #090909, stop: 1 #353535);
+QPushButton:checked {
+	background-color: qlineargradient(spread:pad, x1:0.507, y1:0.0340909, x2:0.522167, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(123, 123, 123, 255))
 }
 
-QToolButton:pressed {
+QPushButton:pressed {
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #bbbbbb, stop: 1 #b0b0b0);
 }</string>
            </property>
@@ -115,12 +124,18 @@ QToolButton:pressed {
             <string>Mandatory Setup ...</string>
            </property>
            <property name="icon">
-            <iconset theme="://files/images/actions/list-add.svg">
-             <normaloff/>
-            </iconset>
+            <iconset theme="://files/images/actions/list-add.svg" resource="../../../qgroundcontrol.qrc">
+             <normaloff>:/files/images/actions/list-add.svg</normaloff>
+             <normalon>:/files/images/actions/list-remove.svg</normalon>
+             <disabledon>:/files/images/actions/list-remove.svg</disabledon>
+             <activeon>:/files/images/actions/list-remove.svg</activeon>
+             <selectedon>:/files/images/actions/list-remove.svg</selectedon>:/files/images/actions/list-add.svg</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
            <property name="flat">
             <bool>false</bool>
@@ -147,6 +162,12 @@ QToolButton:pressed {
            <property name="text">
             <string>Frame Type</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
@@ -165,6 +186,12 @@ QToolButton:pressed {
            </property>
            <property name="text">
             <string>Compass</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -191,6 +218,12 @@ QToolButton:pressed {
            <property name="text">
             <string>Accel Calibration</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
@@ -216,6 +249,12 @@ QToolButton:pressed {
            <property name="text">
             <string>ArduPlane Level</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
@@ -236,10 +275,13 @@ QToolButton:pressed {
             <string>Radio Calibration</string>
            </property>
            <property name="checkable">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="checked">
             <bool>false</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -260,6 +302,12 @@ QToolButton:pressed {
            <property name="text">
             <string>Flight Modes</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
@@ -278,6 +326,12 @@ QToolButton:pressed {
            </property>
            <property name="text">
             <string>Failsafe</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -304,14 +358,14 @@ QToolButton:pressed {
 	border-radius: 5px;
 	padding-left: 10px;
 	padding-right: 10px;
-	background-color: qlineargradient(spread:pad, x1:0.512, y1:1, x2:0.512, y2:0.0284091, stop:0 rgba(0, 118, 0, 255), stop:1 rgba(188, 255, 192, 255))
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
 
-QToolButton:checked {
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #090909, stop: 1 #353535);
+QPushButton:checked {
+	background-color: qlineargradient(spread:pad, x1:0.507, y1:0.0340909, x2:0.522167, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(123, 123, 123, 255))
 }
 
-QToolButton:pressed {
+QPushButton:pressed {
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #bbbbbb, stop: 1 #b0b0b0);
 }</string>
            </property>
@@ -319,9 +373,12 @@ QToolButton:pressed {
             <string>Optional Setup ...</string>
            </property>
            <property name="icon">
-            <iconset theme="://files/images/actions/list-add.svg">
-             <normaloff/>
-            </iconset>
+            <iconset theme="://files/images/actions/list-add.svg" resource="../../../qgroundcontrol.qrc">
+             <normaloff>:/files/images/actions/list-add.svg</normaloff>
+             <normalon>:/files/images/actions/list-remove.svg</normalon>
+             <disabledon>:/files/images/actions/list-remove.svg</disabledon>
+             <activeon>:/files/images/actions/list-remove.svg</activeon>
+             <selectedon>:/files/images/actions/list-remove.svg</selectedon>:/files/images/actions/list-add.svg</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -348,6 +405,12 @@ QToolButton:pressed {
            <property name="text">
             <string>3DR Radio</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
@@ -366,6 +429,12 @@ QToolButton:pressed {
            </property>
            <property name="text">
             <string>Battery Monitor</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -386,6 +455,12 @@ QToolButton:pressed {
            <property name="text">
             <string> Sonar</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
@@ -404,6 +479,12 @@ QToolButton:pressed {
            </property>
            <property name="text">
             <string>Airspeed</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -424,6 +505,12 @@ QToolButton:pressed {
            <property name="text">
             <string>Optical Flow</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
@@ -442,6 +529,12 @@ QToolButton:pressed {
            </property>
            <property name="text">
             <string>OSD</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -462,6 +555,12 @@ QToolButton:pressed {
            <property name="text">
             <string>Camera Gimbal</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
@@ -480,6 +579,12 @@ QToolButton:pressed {
            </property>
            <property name="text">
             <string>Antenna Tracker</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -550,6 +655,8 @@ QToolButton:pressed {
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../../qgroundcontrol.qrc"/>
+ </resources>
  <connections/>
 </ui>

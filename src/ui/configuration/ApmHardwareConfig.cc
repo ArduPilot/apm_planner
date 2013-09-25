@@ -33,7 +33,8 @@ This file is part of the APM_PLANNER project
 ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
-    m_uas(NULL)
+    m_uas(NULL),
+    m_mandatory(true)
 {
     ui.setupUi(this);
 
@@ -141,6 +142,9 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
 
     // Setup Parameter Progress bars
     ui.globalParamProgressBar->setRange(0,100);
+
+    ui.optionalHardwareButton->setDisabled(true);
+    ui.optionalHardwareButton->setChecked(true);
 }
 void ApmHardwareConfig::activateStackedWidget()
 {
@@ -172,14 +176,19 @@ void ApmHardwareConfig::uasConnected()
     ui.mandatoryHardware->setChecked(false);
     ui.optionalHardwareButton->setVisible(true);
     ui.optionalHardwareButton->setChecked(false);
+    ui.optionalHardwareButton->setDisabled(false);
 
-    ui.mandatoryHardware->setAutoExclusive(true);
-    ui.optionalHardwareButton->setAutoExclusive(true);
+//    ui.mandatoryHardware->setAutoExclusive(true);
+//    ui.optionalHardwareButton->setAutoExclusive(true);
 
-    connect(ui.mandatoryHardware, SIGNAL(toggled(bool)),
-            this, SLOT(toggleMandatoryShown(bool)));
-    connect(ui.optionalHardwareButton, SIGNAL(toggled(bool)),
-            this, SLOT(toggleOptionalShown(bool)));
+    connect(ui.mandatoryHardware, SIGNAL(clicked()),
+            this, SLOT(mandatoryClicked()));
+    connect(ui.optionalHardwareButton, SIGNAL(clicked()),
+            this, SLOT(optionalClicked()));
+
+    m_mandatory = true;
+    toggleButtonsShown(m_mandatory);
+    ui.mandatoryHardware->setChecked(true);
 
 }
 
@@ -191,15 +200,17 @@ void ApmHardwareConfig::uasDisconnected()
     }
     QLOG_DEBUG() << "AHC: uasDisconnected()";
     // Show offline options and hide Optional and Mandatory buttons
-    ui.mandatoryHardware->setAutoExclusive(false);
-    ui.optionalHardwareButton->setAutoExclusive(false);
+//    ui.mandatoryHardware->setAutoExclusive(false);
+//    ui.optionalHardwareButton->setAutoExclusive(false);
 
-    disconnect(ui.mandatoryHardware, SIGNAL(toggled(bool)),
-                this, SLOT(toggleMandatoryShown(bool)));
-    disconnect(ui.optionalHardwareButton, SIGNAL(toggled(bool)),
-                this, SLOT(toggleOptionalShown(bool)));
+    disconnect(ui.mandatoryHardware, SIGNAL(clicked(bool)),
+                this, SLOT(mandatoryClicked(bool)));
+    disconnect(ui.optionalHardwareButton, SIGNAL(clicked(bool)),
+                this, SLOT(optionalClicked(bool)));
 
-    ui.optionalHardwareButton->setChecked(true);
+    ui.optionalHardwareButton->setChecked(false);
+    ui.optionalHardwareButton->setDisabled(true);
+
     ui.radio3DRButton->setVisible(true);
     ui.antennaTrackerButton->setVisible(true);
 
@@ -251,17 +262,40 @@ void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 
 }
 
-void ApmHardwareConfig::toggleOptionalShown(bool show)
+void ApmHardwareConfig::optionalClicked()
 {
-    QLOG_DEBUG() << "toggleOptionalShown" << show;
+    QLOG_DEBUG() << "optionalClicked";
     if(!m_uas)
         return;
-    toggleMandatoryShown(!show);
+    if (m_mandatory == false) {
+        ui.optionalHardwareButton->setChecked(true);
+        return; // no change of state
+    }
+    m_mandatory = false; // show optional options
+
+    toggleButtonsShown(m_mandatory);
+    ui.mandatoryHardware->setChecked(false);
 }
 
-void ApmHardwareConfig::toggleMandatoryShown(bool show)
+void ApmHardwareConfig::mandatoryClicked()
 {
-    QLOG_DEBUG() << "toggleMandatoryShown" << show;
+    QLOG_DEBUG() << "mandatoryClicked";
+    if(!m_uas)
+        return;
+    if (m_mandatory == true){
+        ui.mandatoryHardware->setChecked(true);
+        return; // no change of state
+    }
+    m_mandatory = true; // show mandatory options.
+
+    toggleButtonsShown(m_mandatory);
+    ui.optionalHardwareButton->setChecked(false);
+}
+
+void ApmHardwareConfig::toggleButtonsShown(bool show)
+{
+
+    QLOG_DEBUG() << "toggleButtonsShown" << show;
 
     if(!m_uas)
         return;
