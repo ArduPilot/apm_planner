@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>749</width>
-    <height>494</height>
+    <height>511</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -142,7 +142,7 @@
      <x>10</x>
      <y>130</y>
      <width>332</width>
-     <height>368</height>
+     <height>351</height>
     </rect>
    </property>
    <property name="title">
@@ -154,7 +154,7 @@
       <x>10</x>
       <y>20</y>
       <width>312</width>
-      <height>328</height>
+      <height>311</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -317,8 +317,8 @@ GPS/Compass</string>
   <widget class="QGroupBox" name="Examples">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>370</y>
+     <x>360</x>
+     <y>360</y>
      <width>311</width>
      <height>121</height>
     </rect>
