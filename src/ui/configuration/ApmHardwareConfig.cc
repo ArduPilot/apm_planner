@@ -147,6 +147,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
 
     // Set start up view
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
+    ui.radio3DRButton->setChecked(true);
 }
 void ApmHardwareConfig::activateStackedWidget()
 {
@@ -235,6 +236,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.cameraGimbalButton->setShown(false);
 
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
+    ui.radio3DRButton->setChecked(true);
 }
 void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 {
