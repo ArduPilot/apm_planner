@@ -233,7 +233,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
             warnedUser = true;
             // Obviously the user tries to use a 0.9 autopilot
             // with QGroundControl built for version 1.0
-            emit protocolStatusMessage("MAVLink Version or Baud Rate Mismatch", "Your MAVLink device seems to use the deprecated version 0.9, while QGroundControl only supports version 1.0+. Please upgrade the MAVLink version of your autopilot. If your autopilot is using version 1.0, check if the baud rates of QGroundControl and your autopilot are the same.");
+            emit protocolStatusMessage("MAVLink Version or Baud Rate Mismatch", "Your MAVLink device seems to use the deprecated version 0.9, while APM Planner only supports version 1.0+. Please upgrade the MAVLink version of your autopilot. If your autopilot is using version 1.0, check if the baud rates of APM Planner and your autopilot are the same.");
         }
 
         if (decodeState == 0 && !decodedFirstPacket)
@@ -251,7 +251,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 else
                 {
                     warnedUserNonMavlink = true;
-                    emit protocolStatusMessage("MAVLink Baud Rate Mismatch", "Please check if the baud rates of QGroundControl and your autopilot are the same.");
+                    emit protocolStatusMessage("MAVLink Baud Rate Mismatch", "Please check if the baud rates of APM Planner and your autopilot are the same.");
                 }
             }
         }
@@ -397,8 +397,8 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                     // Bring up dialog to inform user
                     if (!versionMismatchIgnore)
                     {
-                        emit protocolStatusMessage(tr("The MAVLink protocol version on the MAV and QGroundControl mismatch!"),
-                                                   tr("It is unsafe to use different MAVLink versions. QGroundControl therefore refuses to connect to system %1, which sends MAVLink version %2 (QGroundControl uses version %3).").arg(message.sysid).arg(heartbeat.mavlink_version).arg(MAVLINK_VERSION));
+                        emit protocolStatusMessage(tr("The MAVLink protocol version on the MAV and APM Planner mismatch!"),
+                                                   tr("It is unsafe to use different MAVLink versions. APM Planner therefore refuses to connect to system %1, which sends MAVLink version %2 (APM Planner uses version %3).").arg(message.sysid).arg(heartbeat.mavlink_version).arg(MAVLINK_VERSION));
                         versionMismatchIgnore = true;
                     }
 
