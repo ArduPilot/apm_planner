@@ -144,6 +144,11 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     connect(ui.antennaTrackerButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
     connect(ui.antennaTrackerLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
+    m_setupWarningMessage = new SetupWarningMessage(this);
+    ui.stackedWidget->addWidget(m_setupWarningMessage);
+    m_buttonToConfigWidgetMap[ui.hiddenPushButton] = m_setupWarningMessage;
+    connect(ui.hiddenPushButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
     m_uas=0;
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     if (UASManager::instance()->getActiveUAS())
@@ -160,8 +165,8 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     connect(ui.mandatoryHardware, SIGNAL(clicked()),
             this, SLOT(mandatoryClicked()));
 
-    // Set start up view
-//    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
+    // Set start up WarningMessageView view
+    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
     ui.hiddenPushButton->setChecked(true);
 }
 void ApmHardwareConfig::activateStackedWidget()
@@ -241,8 +246,8 @@ void ApmHardwareConfig::uasDisconnected()
     ui.radio3DRLargeButton->setVisible(true);
     ui.antennaTrackerLargeButton->setVisible(true);
 
-//    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
-//    ui.radio3DRButton->setChecked(true);
+    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
+    ui.hiddenPushButton->setChecked(true);
 }
 void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 {

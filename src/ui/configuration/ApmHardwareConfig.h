@@ -51,6 +51,7 @@ This file is part of the APM_PLANNER project
 #include "ApmFirmwareConfig.h"
 #include "FlightModeConfig.h"
 #include "FailSafeConfig.h"
+#include "SetupWarningMessage.h"
 
 class ApmHardwareConfig : public QWidget
 {
@@ -93,6 +94,8 @@ private:
     QPointer<OsdConfig> m_osdConfig;
     QPointer<CameraGimbalConfig> m_cameraGimbalConfig;
     QPointer<AntennaTrackerConfig> m_antennaTrackerConfig;
+
+    QPointer<SetupWarningMessage> m_setupWarningMessage;
 
 private slots:
     void activeUASSet(UASInterface *uas);

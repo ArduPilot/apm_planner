@@ -112,7 +112,8 @@ HEADERS +=     libs/alglib/src/ap.h \
     libs/alglib/src/diffequations.h \
     libs/alglib/src/integration.h \
     libs/alglib/src/solvers.h \
-    libs/alglib/src/specialfunctions.cpp
+    libs/alglib/src/specialfunctions.cpp \
+    src/ui/configuration/SetupWarningMessage.h
 
 SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/alglibinternal.cpp \
@@ -123,7 +124,8 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/diffequations.cpp \
     libs/alglib/src/integration.cpp \
     libs/alglib/src/solvers.cpp \
-    libs/alglib/src/specialfunctions.cpp
+    libs/alglib/src/specialfunctions.cpp \
+    src/ui/configuration/SetupWarningMessage.cc
 
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
@@ -311,7 +313,8 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/terminalconsole.ui \
     src/ui/configuration/SerialSettingsDialog.ui \
     src/ui/configuration/ApmFirmwareConfig.ui \
-    src/ui/DebugOutput.ui
+    src/ui/DebugOutput.ui \
+    src/ui/configuration/SetupWarningMessage.ui
 
 INCLUDEPATH += src \
     src/ui \
