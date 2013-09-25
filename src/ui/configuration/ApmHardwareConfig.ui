@@ -101,24 +101,7 @@
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">QPushButton {
-	font-weight: bold;
-	/*min-height: 18px;*/
-	/*max-height: 18px;*/
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-
-QPushButton:checked {
-	background-color: qlineargradient(spread:pad, x1:0.507, y1:0.0340909, x2:0.522167, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(123, 123, 123, 255))
-}
-
-QPushButton:pressed {
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #bbbbbb, stop: 1 #b0b0b0);
-}</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string>Mandatory Setup ...</string>
@@ -164,6 +147,9 @@ QPushButton:pressed {
            </property>
            <property name="checkable">
             <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
            <property name="autoExclusive">
             <bool>true</bool>
@@ -350,24 +336,7 @@ QPushButton:pressed {
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">QPushButton {
-	font-weight: bold;
-	/*min-height: 18px;*/
-	/*max-height: 18px;*/
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-
-QPushButton:checked {
-	background-color: qlineargradient(spread:pad, x1:0.507, y1:0.0340909, x2:0.522167, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(123, 123, 123, 255))
-}
-
-QPushButton:pressed {
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #bbbbbb, stop: 1 #b0b0b0);
-}</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string>Optional Setup ...</string>
@@ -384,7 +353,7 @@ QPushButton:pressed {
             <bool>true</bool>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="autoExclusive">
             <bool>false</bool>
@@ -412,7 +381,7 @@ QPushButton:pressed {
             <bool>true</bool>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="autoExclusive">
             <bool>true</bool>
@@ -587,6 +556,84 @@ QPushButton:pressed {
             <string>Antenna Tracker</string>
            </property>
            <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="radio3DRLargeButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>30</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>3DR Radio</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="antennaTrackerLargeButton">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>30</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Antenna Tracker</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="hiddenPushButton">
+           <property name="text">
+            <string>hidden</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
             <bool>true</bool>
            </property>
            <property name="autoExclusive">

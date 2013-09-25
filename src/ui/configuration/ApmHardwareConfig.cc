@@ -34,11 +34,12 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
     m_uas(NULL),
-    m_mandatory(true)
+    m_mandatory(false)
 {
     ui.setupUi(this);
 
     ui.mandatoryHardware->setVisible(false);
+    ui.optionalHardwareButton->setVisible(false);
     ui.frameTypeButton->setVisible(false);
     ui.compassButton->setVisible(false);
     ui.accelCalibrateButton->setVisible(false);
@@ -52,6 +53,12 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.opticalFlowButton->setVisible(false);
     ui.osdButton->setVisible(false);
     ui.cameraGimbalButton->setVisible(false);
+    ui.radio3DRButton->setVisible(false);
+    ui.antennaTrackerButton->setVisible(false);
+
+    ui.hiddenPushButton->setVisible(false); // And it's checked.
+    ui.radio3DRLargeButton->setVisible(true);
+    ui.antennaTrackerLargeButton->setVisible(true);
 
     m_apmFirmwareConfig = new ApmFirmwareConfig(this);
     ui.stackedWidget->addWidget(m_apmFirmwareConfig); //Firmware placeholder.
@@ -96,7 +103,9 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_radio3drConfig = new Radio3DRConfig(this);
     ui.stackedWidget->addWidget(m_radio3drConfig);
     m_buttonToConfigWidgetMap[ui.radio3DRButton] = m_radio3drConfig;
+    m_buttonToConfigWidgetMap[ui.radio3DRLargeButton] = m_radio3drConfig;
     connect(ui.radio3DRButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.radio3DRLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_batteryConfig = new BatteryMonitorConfig(this);
     ui.stackedWidget->addWidget(m_batteryConfig);
@@ -131,7 +140,10 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_antennaTrackerConfig = new AntennaTrackerConfig(this);
     ui.stackedWidget->addWidget(m_antennaTrackerConfig);
     m_buttonToConfigWidgetMap[ui.antennaTrackerButton] = m_antennaTrackerConfig;
+    m_buttonToConfigWidgetMap[ui.antennaTrackerLargeButton] = m_antennaTrackerConfig;
     connect(ui.antennaTrackerButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.antennaTrackerLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
     m_uas=0;
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     if (UASManager::instance()->getActiveUAS())
@@ -142,12 +154,15 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     // Setup Parameter Progress bars
     ui.globalParamProgressBar->setRange(0,100);
 
-    ui.optionalHardwareButton->setDisabled(true);
-    ui.optionalHardwareButton->setChecked(true);
+    ui.mandatoryHardware->setChecked(true);
+    connect(ui.optionalHardwareButton, SIGNAL(clicked()),
+            this, SLOT(optionalClicked()));
+    connect(ui.mandatoryHardware, SIGNAL(clicked()),
+            this, SLOT(mandatoryClicked()));
 
     // Set start up view
-    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
-    ui.radio3DRButton->setChecked(true);
+//    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
+    ui.hiddenPushButton->setChecked(true);
 }
 void ApmHardwareConfig::activateStackedWidget()
 {
@@ -172,22 +187,13 @@ void ApmHardwareConfig::uasConnected()
     }
     QLOG_DEBUG() << "AHC: uasConnected()";
     // Hide offline options and show Optional and Mandatory buttons
-    ui.radio3DRButton->setVisible(false);
-    ui.antennaTrackerButton->setVisible(false);
+    ui.radio3DRLargeButton->setVisible(false);
+    ui.antennaTrackerLargeButton->setVisible(false);
 
     ui.mandatoryHardware->setVisible(true);
     ui.mandatoryHardware->setChecked(false);
     ui.optionalHardwareButton->setVisible(true);
     ui.optionalHardwareButton->setChecked(false);
-    ui.optionalHardwareButton->setDisabled(false);
-
-//    ui.mandatoryHardware->setAutoExclusive(true);
-//    ui.optionalHardwareButton->setAutoExclusive(true);
-
-    connect(ui.mandatoryHardware, SIGNAL(clicked()),
-            this, SLOT(mandatoryClicked()));
-    connect(ui.optionalHardwareButton, SIGNAL(clicked()),
-            this, SLOT(optionalClicked()));
 
     m_mandatory = true;
     toggleButtonsShown(m_mandatory);
@@ -203,19 +209,16 @@ void ApmHardwareConfig::uasDisconnected()
     }
     QLOG_DEBUG() << "AHC: uasDisconnected()";
     // Show offline options and hide Optional and Mandatory buttons
-//    ui.mandatoryHardware->setAutoExclusive(false);
-//    ui.optionalHardwareButton->setAutoExclusive(false);
-
     disconnect(ui.mandatoryHardware, SIGNAL(clicked(bool)),
                 this, SLOT(mandatoryClicked(bool)));
     disconnect(ui.optionalHardwareButton, SIGNAL(clicked(bool)),
                 this, SLOT(optionalClicked(bool)));
 
     ui.optionalHardwareButton->setChecked(false);
-    ui.optionalHardwareButton->setDisabled(true);
+    ui.optionalHardwareButton->setVisible(false);
 
-    ui.radio3DRButton->setVisible(true);
-    ui.antennaTrackerButton->setVisible(true);
+    ui.radio3DRButton->setVisible(false);
+    ui.antennaTrackerButton->setVisible(false);
 
     ui.mandatoryHardware->setVisible(false);
     ui.mandatoryHardware->setChecked(false);
@@ -235,8 +238,11 @@ void ApmHardwareConfig::uasDisconnected()
     ui.osdButton->setShown(false);
     ui.cameraGimbalButton->setShown(false);
 
-    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
-    ui.radio3DRButton->setChecked(true);
+    ui.radio3DRLargeButton->setVisible(true);
+    ui.antennaTrackerLargeButton->setVisible(true);
+
+//    ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.radio3DRButton]);
+//    ui.radio3DRButton->setChecked(true);
 }
 void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 {
