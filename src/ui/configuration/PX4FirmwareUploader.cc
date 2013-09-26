@@ -275,7 +275,7 @@ void PX4FirmwareUploader::run()
             if (bootloaderrev >= 4)
             {
                 QLOG_FATAL() << "PX4Firmware Uploader does not yet support V4 bootloaders";
-                return;
+                //return;
             }
             msleep(500);
             reply = reqInfo(PROTO_DEVICE_BOARD_ID,&read);

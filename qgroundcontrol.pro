@@ -130,7 +130,8 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/integration.cpp \
     libs/alglib/src/solvers.cpp \
     libs/alglib/src/specialfunctions.cpp \
-    src/ui/configuration/SetupWarningMessage.cc
+    src/ui/configuration/SetupWarningMessage.cc \
+    src/ui/configuration/PX4FirmwareUploader.cc
 
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
