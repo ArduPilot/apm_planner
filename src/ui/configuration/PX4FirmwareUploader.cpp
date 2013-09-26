@@ -1,4 +1,4 @@
-#include "px4firmwareuploader.h"
+#include "PX4FirmwareUploader.h"
 #include "qserialportinfo.h"
 //#include <QtCrypto/qca.h>
 #include <QCryptographicHash>
@@ -44,18 +44,19 @@ QString hmacSha1(QByteArray key, QByteArray baseString)
 
 bool PX4FirmwareUploader::reqInfo(unsigned char infobyte,unsigned int *reply)
 {
-    for (int i=0;i<128;i++)
-    {
-        port->write(QByteArray().append((char)0x0));
-    }
-    port->waitForBytesWritten(100);
-    while(port->bytesAvailable())
-    {
-        port->waitForReadyRead(1);
-        int num = port->read(1)[0];
-    }
+    //for (int i=0;i<128;i++)
+    //{
+    //    port->write(QByteArray().append((char)0x0));
+    //}
+    //port->waitForBytesWritten(100);
+    //msleep(100);
+    //while(port->waitForReadyRead(1))
+    //{
+    //    int num = port->read(1)[0];
+    //}
     port->write(QByteArray().append(PROTO_GET_DEVICE).append(infobyte).append(PROTO_EOC));
-    port->waitForBytesWritten(100);
+    port->waitForBytesWritten(-1);
+    port->flush();
     QByteArray infobuf;
     int read = readBytes(4,2000,infobuf);
     if (read != 4)
@@ -77,14 +78,17 @@ bool PX4FirmwareUploader::reqInfo(unsigned char infobyte,unsigned int *reply)
 int PX4FirmwareUploader::readBytes(int num,int timeout,QByteArray &buf)
 {
     int count = -1;
+    bool first = true;
     qint64 msec = QDateTime::currentMSecsSinceEpoch();
     while (count < num && QDateTime::currentMSecsSinceEpoch() < (msec + timeout))
     {
-        if (port->waitForReadyRead(250) && count < num)
+        if ((port->waitForReadyRead(10) && count < num) || first)
         {
+            first = false;
             char c;
             while (count < num && port->read(&c,1))
             {
+                port->waitForReadyRead(10);
                 if (count == -1)
                 {
                     count = 0;
@@ -92,6 +96,11 @@ int PX4FirmwareUploader::readBytes(int num,int timeout,QByteArray &buf)
                 count++;
                 buf.append(c);
             }
+            //QLOG_DEBUG() << "Ready read success" << count << num;
+        }
+        else
+        {
+            //QLOG_DEBUG() << "Ready read failure" << count << num;
         }
         msleep(10);
     }
@@ -241,7 +250,8 @@ void PX4FirmwareUploader::run()
     {
         QLOG_INFO() << "Sending SYNC command, loop" << retry << "of" << 5;
         port->write(QByteArray().append(0x21).append(0x20));
-        port->waitForBytesWritten(100);
+        port->waitForBytesWritten(-1);
+        port->flush();
         int sync = get_sync();
         if (sync == 0)
         {
@@ -312,8 +322,8 @@ void PX4FirmwareUploader::run()
                 for (int i=0;i<512;i+=4)
                 {
                     port->write(QByteArray().append(0x2A).append(i & 0xFF).append(((i >> 8) & 0xFF)).append((char)0).append((char)0).append(PROTO_EOC));
+                    port->waitForBytesWritten(-1);
                     port->flush();
-                    port->waitForBytesWritten(250);
                     timeout = 0;
                     int bytesread = 0;
 
@@ -329,6 +339,8 @@ void PX4FirmwareUploader::run()
                         {
                             int num = port->read(1)[0];
                         }
+                        //Clear the port
+                        port->clear();
                         continue;
                     }
 
@@ -350,11 +362,11 @@ void PX4FirmwareUploader::run()
                         //bad = true;
                         //break;
                     }
-                    while(port->bytesAvailable())
-                    {
-                        int num = port->read(1)[0];
+                    //while(port->bytesAvailable())
+                    //{
+                    //    int num = port->read(1)[0];
                         //qDebug() << "Avail:" << port->bytesAvailable() << QString::number(num);
-                    }
+                    //}
                     //msleep(250);
                 }
                 if (bad)
@@ -515,8 +527,8 @@ void PX4FirmwareUploader::run()
                         tosend.append(buf);
                         tosend.append(0x20);
                         port->write(tosend);
-                        port->waitForBytesWritten(1);
-                        //port->flush();
+                        port->waitForBytesWritten(-1);
+                        port->flush();
                         //msleep(1000);
                         int sync = get_sync(5000);
                         if (sync != 0)

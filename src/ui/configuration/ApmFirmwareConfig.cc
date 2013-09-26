@@ -92,7 +92,12 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     populateSerialPorts();
     if (ui.linkComboBox->count() > 0)
     {
+        QLOG_DEBUG() << "Setting ApmFirmware link to 0";
         setLink(0);
+    }
+    else
+    {
+        QLOG_DEBUG() << "No Links found for ApmFirmware";
     }
 
     m_uas = 0;
@@ -329,13 +334,13 @@ void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
         ui.betaFirmwareButton->setText(tr("Stable Firmware"));
         //equestBetaFirmwares();
         showBetaLabels();
-        requestFirmwares("beta","apm");
+        requestFirmwares("beta",m_autopilotType);
     }
     else
     {
         ui.label->setText(tr("<h2>Firmware</h2>"));
         ui.betaFirmwareButton->setText(tr("Beta Firmware"));
-        requestFirmwares("stable","apm");
+        requestFirmwares("stable",m_autopilotType);
     }
 }
 void ApmFirmwareConfig::trunkFirmwareButtonClicked()
@@ -344,7 +349,7 @@ void ApmFirmwareConfig::trunkFirmwareButtonClicked()
     ui.label->setText(tr("<h2>Trunk Firmware</h2>"));
     ui.betaFirmwareButton->setText(tr("Stable Firmware"));
     ui.betaFirmwareButton->setChecked(true);
-    requestFirmwares("latest","apm");
+    requestFirmwares("latest",m_autopilotType);
 }
 
 void ApmFirmwareConfig::firmwareProcessFinished(int status)
@@ -701,30 +706,33 @@ void ApmFirmwareConfig::setLink(int index)
                     if (m_autopilotType != "apm")
                     {
                         requestFirmwares(m_firmwareType,"apm");
+                        QLOG_DEBUG() << "APM Detected";
                     }
                 }
                 else if (info.description().toLower().contains("px4"))
                 {
                     //PX4
-                    if (info.productIdentifier() == 0x0010)
+                    if (info.productIdentifier() == 0x0010) //Both PX4 and PX4 bootloader are 0x0010.
                     {
                         if (m_autopilotType != "px4")
                         {
                             requestFirmwares(m_firmwareType,"px4");
+                            QLOG_DEBUG() << "PX4 Detected";
                         }
                     }
-                    else if (info.productIdentifier() == 0x0011)
+                    else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
                     {
                         if (m_autopilotType != "pixhawk")
                         {
                             requestFirmwares(m_firmwareType,"pixhawk");
+                            QLOG_DEBUG() << "Pixhawk Detected";
                         }
                     }
                 }
                 else
                 {
                     //Unknown
-
+                    QLOG_DEBUG() << "Unknown detected:" << info.productIdentifier() << info.description();
                 }
             }
         }
