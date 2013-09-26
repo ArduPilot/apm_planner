@@ -28,7 +28,7 @@ This file is part of the APM_PLANNER project
  *
  */
 
-#include "apmtoolbar.h"
+#include "ApmToolBar.h"
 #include "QsLog.h"
 #include "SerialLink.h"
 #include "LinkManager.h"

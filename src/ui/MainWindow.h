@@ -83,7 +83,7 @@ This file is part of the QGROUNDCONTROL project
 #include "MAVLinkDecoder.h"
 #include "ApmHardwareConfig.h"
 #include "ApmSoftwareConfig.h"
-#include "apmtoolbar.h"
+#include "ApmToolBar.h"
 #include "DebugOutput.h"
 
 class QGCMapTool;

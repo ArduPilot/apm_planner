@@ -52,9 +52,9 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCTabbedInfoView.h"
 #include "UASRawStatusView.h"
 #include "PrimaryFlightDisplay.h"
-#include "apmtoolbar.h"
+#include "ApmToolBar.h"
 #include "SerialSettingsDialog.h"
-#include "terminalconsole.h"
+#include "TerminalConsole.h"
 
 #ifdef QGC_OSG_ENABLED
 #include "Q3DWidgetFactory.h"

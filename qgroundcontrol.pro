@@ -1,15 +1,20 @@
 # -------------------------------------------------
-# QGroundControl - Micro Air Vehicle Groundstation
-# Please see our website at <http://qgroundcontrol.org>
+# APM Planner - Micro Air Vehicle Groundstation
+# Please see our website at <http://ardupilot.com>
 # Maintainer:
-# Lorenz Meier <lm@inf.ethz.ch>
+# Bill Bonney <billbonney@communitech.com>
+# Based of QGroundControl by Lorenz Meier <lm@inf.ethz.ch>
+#
 # (c) 2009-2011 QGroundControl Developers
+# (c) 2013 Bill Bonney <billbonney@communitech.com>
+# (c) 2013 Michael Carpenter <malcom2073@gmail.com>
+#
 # This file is part of the open groundstation project
-# QGroundControl is free software: you can redistribute it and/or modify
+# APM Planner is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# QGroundControl is distributed in the hope that it will be useful,
+# APM Planner is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -310,7 +315,7 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/ArduPlanePidConfig.ui \
     src/ui/configuration/AdvParameterList.ui \
     src/ui/configuration/ArduRoverPidConfig.ui \
-    src/ui/configuration/terminalconsole.ui \
+    src/ui/configuration/TerminalConsole.ui \
     src/ui/configuration/SerialSettingsDialog.ui \
     src/ui/configuration/ApmFirmwareConfig.ui \
     src/ui/DebugOutput.ui \
@@ -495,15 +500,15 @@ HEADERS += src/MG.h \
     src/ui/configuration/FailSafeConfig.h \
     src/ui/configuration/AdvancedParamConfig.h \
     src/ui/configuration/ArduCopterPidConfig.h \
-    src/ui/apmtoolbar.h \
+    src/ui/ApmToolBar.h \
     src/ui/configuration/ApmPlaneLevel.h \
     src/ui/configuration/ParamWidget.h \
     src/ui/configuration/ArduPlanePidConfig.h \
     src/ui/configuration/AdvParameterList.h \
     src/ui/configuration/ArduRoverPidConfig.h \
-    src/ui/configuration/console.h \
+    src/ui/configuration/Console.h \
     src/ui/configuration/SerialSettingsDialog.h \
-    src/ui/configuration/terminalconsole.h \
+    src/ui/configuration/TerminalConsole.h \
     src/ui/configuration/ApmHighlighter.h \
     src/ui/configuration/ApmFirmwareConfig.h \
     src/ui/designer/QGCMouseWheelEventFilter.h \
@@ -711,14 +716,14 @@ SOURCES += src/main.cc \
     src/ui/configuration/FailSafeConfig.cc \
     src/ui/configuration/AdvancedParamConfig.cc \
     src/ui/configuration/ArduCopterPidConfig.cc \
-    src/ui/apmtoolbar.cpp \
+    src/ui/ApmToolBar.cc \
     src/ui/configuration/ApmPlaneLevel.cc \
     src/ui/configuration/ParamWidget.cc \
     src/ui/configuration/ArduPlanePidConfig.cc \
     src/ui/configuration/AdvParameterList.cc \
     src/ui/configuration/ArduRoverPidConfig.cc \
-    src/ui/configuration/terminalconsole.cpp \
-    src/ui/configuration/console.cpp \
+    src/ui/configuration/TerminalConsole.cc \
+    src/ui/configuration/Console.cc \
     src/ui/configuration/SerialSettingsDialog.cc \
     src/ui/configuration/ApmHighlighter.cc \
     src/ui/configuration/ApmFirmwareConfig.cc \

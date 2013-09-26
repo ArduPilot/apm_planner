@@ -33,7 +33,7 @@ This file is part of the APM_PLANNER project
  *
  */
 
-#include "console.h"
+#include "Console.h"
 #include "ApmHighlighter.h"
 
 #include <QScrollBar>
