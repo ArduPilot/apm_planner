@@ -34,7 +34,8 @@ signals:
     void boardId(int id);
     void bootloaderRev(int rev);
     void flashSize(int size);
-    void flashProgress(int current,int total);
+    void flashProgress(qint64 current,qint64 total);
+    void error(QString error);
 public slots:
 
 };

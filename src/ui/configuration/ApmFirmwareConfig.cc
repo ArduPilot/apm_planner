@@ -28,7 +28,7 @@ This file is part of the APM_PLANNER project
 #include "qserialportinfo.h"
 #include "SerialLink.h"
 #include "MainWindow.h"
-#include "px4firmwareuploader.h"
+#include "PX4FirmwareUploader.h"
 #include <QTimer>
 
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
@@ -386,6 +386,29 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
     ui.cancelPushButton->setVisible(false);
 
 }
+void ApmFirmwareConfig::px4Error(QString error)
+{
+    QMessageBox::information(0,tr("Error"),tr("Error during upload:") + error);
+    ui.statusLabel->setText(tr("Error during upload"));
+}
+void ApmFirmwareConfig::px4Terminated()
+{
+    PX4FirmwareUploader *uploader = qobject_cast<PX4FirmwareUploader*>(sender());
+    if (uploader)
+    {
+        uploader->deleteLater();
+    }
+}
+
+void ApmFirmwareConfig::px4Finished()
+{
+    ui.progressBar->setValue(100);
+    if (!m_hasError)
+    {
+        ui.statusLabel->setText(tr("Upload complete"));
+    }
+}
+
 void ApmFirmwareConfig::firmwareProcessReadyRead()
 {
     QProcess *proc = qobject_cast<QProcess*>(sender());
@@ -542,6 +565,10 @@ void ApmFirmwareConfig::downloadFinished()
     else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4")
     {
         PX4FirmwareUploader *uploader = new PX4FirmwareUploader();
+        connect(uploader,SIGNAL(terminated()),this,SLOT(px4Terminated()));
+        connect(uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
+        connect(uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
+        connect(uploader,SIGNAL(done()),this,SLOT(px4Finished()));
         connect(uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
         uploader->loadFile(m_tempFirmwareFile->fileName());
     }

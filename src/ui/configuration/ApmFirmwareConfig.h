@@ -81,6 +81,9 @@ private slots:
     void cancelButtonClicked();
     void populateSerialPorts();
     void requestDeviceReplug();
+    void px4Error(QString error);
+    void px4Finished();
+    void px4Terminated();
 private:
     QString m_firmwareType;
     QString m_autopilotType;

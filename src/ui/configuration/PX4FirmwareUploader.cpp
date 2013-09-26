@@ -239,13 +239,13 @@ void PX4FirmwareUploader::run()
 
     for (int retry=0;retry<5;retry++)
     {
-        QLOG_TRACE() << "Sending SYNC command, loop" << retry << "of" << 5;
+        QLOG_INFO() << "Sending SYNC command, loop" << retry << "of" << 5;
         port->write(QByteArray().append(0x21).append(0x20));
         port->waitForBytesWritten(100);
         int sync = get_sync();
         if (sync == 0)
         {
-            QLOG_TRACE() << "Initial Sync successful";
+            QLOG_INFO() << "Initial Sync successful";
             int bootloaderrev=0;
             int boardid=0;
             int boardrev=0;
@@ -361,7 +361,7 @@ void PX4FirmwareUploader::run()
                 {
                     continue;
                 }
-                QLOG_DEBUG() << "OTP read";
+                QLOG_INFO() << "OTP read";
                 if (otpbuf[0] != 80 && otpbuf[1] != 88 && otpbuf[2] != 52 && otpbuf[3] != 0)
                 {
                     QLOG_ERROR() << "OTP header failure";
@@ -479,7 +479,7 @@ void PX4FirmwareUploader::run()
             //port->close();
             //return;
             //Erase
-            QLOG_DEBUG() << "Requesting erase";
+            QLOG_INFO() << "Requesting erase";
             port->write(QByteArray().append(0x23).append(0x20));
             port->flush();
             //msleep(20000);
@@ -522,6 +522,10 @@ void PX4FirmwareUploader::run()
                         if (sync != 0)
                         {
                             QLOG_FATAL() << "error writing firmware" << tempFile->pos() << tempFile->size();
+                            emit error("Error writing firmware, invalid sync. Please retry");
+                            port->close();
+                            tempFile->close();
+                            delete tempFile;
                             return;
                         }
                         if (counter++ % 50 == 0)
@@ -539,11 +543,11 @@ void PX4FirmwareUploader::run()
                     }
                 }
                 QLOG_DEBUG() << "Done";
-                emit done();
                 port->write(QByteArray().append(0x30).append(0x20));
                 port->flush();
                 port->waitForBytesWritten(1000);
                 port->close();
+                emit done();
                 return;
 
 
