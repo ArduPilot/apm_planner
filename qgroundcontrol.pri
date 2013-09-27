@@ -45,7 +45,7 @@ macx|macx-g++42|macx-g++|macx-llvm: {
                 -framework ApplicationServices \
                 -lm
 
-	ICON = $$BASEDIR/files/images/icons/macx.icns
+        ICON = $$BASEDIR/files/APMIcons/icon.icns
 
 	# Copy contributed files
         QMAKE_POST_LINK += && cp -rf $$BASEDIR/files $$TARGETDIR/apmplanner2.app/Contents/MacOS
