@@ -15,6 +15,7 @@
 PX4FirmwareUploader::PX4FirmwareUploader(QObject *parent) :
     QThread(parent)
 {
+    m_stop = false;
 }
 QString hmacSha1(QByteArray key, QByteArray baseString)
 {
@@ -106,6 +107,11 @@ int PX4FirmwareUploader::readBytes(int num,int timeout,QByteArray &buf)
     }
     return count;
 }
+void PX4FirmwareUploader::stop()
+{
+    m_stop = true;
+}
+
 bool PX4FirmwareUploader::loadFile(QString file)
 {
     QFile json(file);
@@ -218,11 +224,14 @@ void PX4FirmwareUploader::run()
             }
             size = portlist.size();
         }
+        if (m_stop)
+        {
+            return;
+        }
         msleep(100);
     }
     port = new QSerialPort();
     msleep(500);
-
     port->setPortName(portnametouse);
     if (!port->open(QIODevice::ReadWrite))
     {
@@ -245,7 +254,12 @@ void PX4FirmwareUploader::run()
     {
         int num = port->read(1)[0];
     }
-
+    if (m_stop)
+    {
+        port->close();
+        delete port;
+        return;
+    }
     for (int retry=0;retry<5;retry++)
     {
         QLOG_INFO() << "Sending SYNC command, loop" << retry << "of" << 5;
@@ -264,6 +278,7 @@ void PX4FirmwareUploader::run()
             QString snstr = "";
             //we're synced
             unsigned int read = 0;
+            emit statusUpdate("Requesting bootloader rev");
             bool reply = reqInfo(PROTO_DEVICE_BL_REV,&read);
             QLOG_INFO() << "Bootloader rev:" << read;
             if (!reply)
@@ -278,6 +293,7 @@ void PX4FirmwareUploader::run()
                 //return;
             }
             msleep(500);
+            emit statusUpdate("Requesting board ID");
             reply = reqInfo(PROTO_DEVICE_BOARD_ID,&read);
             QLOG_INFO() << "Board ID:" << read;
             if (!reply)
@@ -287,6 +303,7 @@ void PX4FirmwareUploader::run()
             }
             boardid = read;
             msleep(500);
+            emit statusUpdate("Requesting board rev");
             reply = reqInfo(PROTO_DEVICE_BOARD_REV,&read);
             QLOG_INFO() << "Board rev:" << read;
             if (!reply)
@@ -296,6 +313,7 @@ void PX4FirmwareUploader::run()
             }
             boardrev = read;
             msleep(500);
+            emit statusUpdate("Requesting firmware size");
             reply = reqInfo(PROTO_DEVICE_FW_SIZE,&read);
             QLOG_INFO() << "Flash size:" << read;
             if (!reply)
@@ -309,6 +327,12 @@ void PX4FirmwareUploader::run()
             {
                 int num = port->read(1)[0];
             }
+            if (m_stop)
+            {
+                port->close();
+                delete port;
+                return;
+            }
 
             //Create an empty buffer
             msleep(250);
@@ -319,6 +343,7 @@ void PX4FirmwareUploader::run()
             if (bootloaderrev >= 4)
             {
                 QLOG_INFO() << "Requesting OTP";
+                emit statusUpdate("Requesting OTP");
                 for (int i=0;i<512;i+=4)
                 {
                     port->write(QByteArray().append(0x2A).append(i & 0xFF).append(((i >> 8) & 0xFF)).append((char)0).append((char)0).append(PROTO_EOC));
@@ -362,12 +387,12 @@ void PX4FirmwareUploader::run()
                         //bad = true;
                         //break;
                     }
-                    //while(port->bytesAvailable())
-                    //{
-                    //    int num = port->read(1)[0];
-                        //qDebug() << "Avail:" << port->bytesAvailable() << QString::number(num);
-                    //}
-                    //msleep(250);
+                    if (m_stop)
+                    {
+                        port->close();
+                        delete port;
+                        return;
+                    }
                 }
                 if (bad)
                 {
@@ -395,6 +420,7 @@ void PX4FirmwareUploader::run()
 
 
                 //Create an empty buffer for the serialnumber
+                emit statusUpdate("Requesting board SN");
                 unsigned char snbuf[12];
                 memset(snbuf,0,12);
                 for (int i=0;i<12;i+=4)
@@ -445,7 +471,7 @@ void PX4FirmwareUploader::run()
                     //snstr += SN + "\n";
                 }
 
-                qDebug() << "Board SN:" << SN;
+                QLOG_INFO() << "Board SN:" << SN;
                 snstr = SN;
                 QByteArray signature;
                 for (int i=32;i<(128+32);i++)
@@ -461,6 +487,7 @@ void PX4FirmwareUploader::run()
                 {
                     serial.append((char)0);
                 }
+                emit statusUpdate("Verifying OTP");
                 //qDebug() << "Sig size:" << signature.size();
                 //qDebug() << "First three of sig:" << QString::number(signature[0],16) << QString::number(signature[1],16) << QString::number(signature[2],16);
                 //qDebug() << "Last three of sig:" << QString::number(signature[125],16) << QString::number(signature[126],16) << QString::number(signature[127],16);
@@ -478,7 +505,12 @@ void PX4FirmwareUploader::run()
                     qDebug() << "Signature is invalid!";
                 }*/
             } //if bootloaderrev >= 4
-
+            if (m_stop)
+            {
+                port->close();
+                delete port;
+                return;
+            }
 
 
             emit boardRev(boardrev);
@@ -492,6 +524,7 @@ void PX4FirmwareUploader::run()
             //return;
             //Erase
             QLOG_INFO() << "Requesting erase";
+            emit statusUpdate("Erasing flash, this may take up to a minute");
             port->write(QByteArray().append(0x23).append(0x20));
             port->flush();
             //msleep(20000);
@@ -499,6 +532,12 @@ void PX4FirmwareUploader::run()
             if (sync)
             {
                 QLOG_DEBUG() << "never returned from erase.";
+                return;
+            }
+            if (m_stop)
+            {
+                port->close();
+                delete port;
                 return;
             }
 
@@ -514,6 +553,7 @@ void PX4FirmwareUploader::run()
                 }
 
                 QLOG_INFO() << "Starting flash process";
+                emit statusUpdate("Flashing firmware");
                 tempFile->open();
                 int counter = 0;
                 while (!tempFile->atEnd())
@@ -545,20 +585,35 @@ void PX4FirmwareUploader::run()
                             emit flashProgress(tempFile->pos(),tempFile->size());
                             QLOG_INFO() << "flashing:" << tempFile->pos() << "/" << tempFile->size();
                         }
+                        if (m_stop)
+                        {
+                            port->close();
+                            tempFile->close();
+                            delete tempFile;
+                            delete port;
+                            return;
+                        }
 
                     }
                     else
                     {
                         QLOG_ERROR() << "Something went wrong, couldn't read from tmp file";
                         port->close();
+                        tempFile->close();
+                        delete tempFile;
+                        delete port;
                         return;
                     }
                 }
                 QLOG_DEBUG() << "Done";
+                emit statusUpdate("Flashing complete!");
                 port->write(QByteArray().append(0x30).append(0x20));
                 port->flush();
                 port->waitForBytesWritten(1000);
                 port->close();
+                tempFile->close();
+                delete tempFile;
+                delete port;
                 emit done();
                 return;
 

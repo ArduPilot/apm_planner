@@ -45,6 +45,8 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     ui.warningLabel->setVisible(false);
     m_firmwareType = "stable";
     m_autopilotType = "apm";
+    m_px4uploader = 0;
+    m_isPx4 = false;
     //
 
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
@@ -171,12 +173,22 @@ void ApmFirmwareConfig::cancelButtonClicked()
     {
         return;
     }
+    if (m_isPx4)
+    {
+        m_px4uploader->stop();
+        ui.statusLabel->setText("Flashing Canceled");
+        return;
+    }
     if (m_burnProcess){
         QLOG_DEBUG() << "Closing Flashing Process";
         m_burnProcess->terminate();
         m_burnProcess->deleteLater();
     }
 
+}
+void ApmFirmwareConfig::px4StatusUpdate(QString update)
+{
+    ui.statusLabel->setText(update);
 }
 
 void ApmFirmwareConfig::uasDisconnected()
@@ -398,10 +410,10 @@ void ApmFirmwareConfig::px4Error(QString error)
 }
 void ApmFirmwareConfig::px4Terminated()
 {
-    PX4FirmwareUploader *uploader = qobject_cast<PX4FirmwareUploader*>(sender());
-    if (uploader)
+    if (m_px4uploader)
     {
-        uploader->deleteLater();
+        m_px4uploader->deleteLater();
+        m_isPx4 = false;
     }
 }
 
@@ -484,6 +496,16 @@ void ApmFirmwareConfig::downloadFinished()
     {
         return;
     }
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        //Something went wrong when downloading the firmware.
+        QMessageBox::information(this,tr("Error downloading firmware"),tr("There was an error while downloading the firmware.\nError number: ") + QString::number(reply->error()) + "\nError text: " + reply->errorString());
+        ui.textBrowser->append("Error downloading firmware.");
+        ui.textBrowser->append("Error Number: " + QString::number(reply->error()));
+        ui.textBrowser->append("Error Text: " + reply->errorString());
+        return;
+    }
+    qDebug() << "Error:" << reply->errorString() << reply->error();
     QByteArray hex = reply->readAll();
     m_tempFirmwareFile = new QTemporaryFile();
     m_tempFirmwareFile->open();
@@ -569,13 +591,20 @@ void ApmFirmwareConfig::downloadFinished()
     }
     else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4")
     {
-        PX4FirmwareUploader *uploader = new PX4FirmwareUploader();
-        connect(uploader,SIGNAL(terminated()),this,SLOT(px4Terminated()));
-        connect(uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
-        connect(uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
-        connect(uploader,SIGNAL(done()),this,SLOT(px4Finished()));
-        connect(uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
-        uploader->loadFile(m_tempFirmwareFile->fileName());
+        if (m_px4uploader)
+        {
+            QLOG_FATAL() << "Tried to load PX4 Firmware when it was already started!";
+            return;
+        }
+        m_isPx4 = true;
+    m_px4uploader = new PX4FirmwareUploader();
+    connect(m_px4uploader,SIGNAL(statusUpdate(QString)),this,SLOT(px4StatusUpdate(QString)));
+    connect(m_px4uploader,SIGNAL(terminated()),this,SLOT(px4Terminated()));
+    connect(m_px4uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
+    connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
+    connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
+    connect(m_px4uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
+    m_px4uploader->loadFile(m_tempFirmwareFile->fileName());
     }
     m_timeoutCounter=0;
     m_hasError=false;
@@ -737,10 +766,7 @@ void ApmFirmwareConfig::setLink(int index)
             }
         }
 
-        if (ui.linkComboBox->itemData(index).toStringList()[1].contains("PX4"))
-        {
-            m_isPx4 = true;
-        }
+
         //QLOG_INFO() << "Changed Link to:" << m_settings.name;
     }
 }

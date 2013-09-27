@@ -47,6 +47,7 @@ This file is part of the APM_PLANNER project
 #include "qserialport.h"
 #include "SerialSettingsDialog.h"
 #include "ui_ApmFirmwareConfig.h"
+#include "PX4FirmwareUploader.h"
 
 class ApmFirmwareConfig : public QWidget
 {
@@ -84,7 +85,9 @@ private slots:
     void px4Error(QString error);
     void px4Finished();
     void px4Terminated();
+    void px4StatusUpdate(QString update);
 private:
+    PX4FirmwareUploader *m_px4uploader;
     QString m_firmwareType;
     QString m_autopilotType;
     bool m_isPx4;

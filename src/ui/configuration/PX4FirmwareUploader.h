@@ -14,9 +14,11 @@ class PX4FirmwareUploader : public QThread
 public:
     explicit PX4FirmwareUploader(QObject *parent = 0);
     bool loadFile(QString file);
+    void stop();
 protected:
     void run();
 private:
+    bool m_stop;
     QSerialPort *port;
     int get_sync(int timeout=1000);
     bool reqInfo(unsigned char infobyte,unsigned int *reply);
@@ -36,6 +38,7 @@ signals:
     void flashSize(int size);
     void flashProgress(qint64 current,qint64 total);
     void error(QString error);
+    void statusUpdate(QString status);
 public slots:
 
 };
