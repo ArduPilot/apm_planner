@@ -37,7 +37,9 @@ This file is part of the APM_PLANNER project
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
+#include <QComboBox>
 #include <qserialport.h>
+#include <QPointer>
 
 namespace Ui {
 class SettingsDialog;
@@ -76,16 +78,23 @@ private slots:
     void showPortInfo(int idx);
     void apply();
     void checkCustomBaudRatePolicy(int idx);
+    void populateSerialPorts();
+    void setLink(int index);
+
+protected:
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
 
 private:
     void fillPortsParameters();
-    void fillPortsInfo();
+    void fillPortsInfo(QComboBox &comboBox);
     void updateSettings();
 
 private:
     Ui::SettingsDialog *ui;
     SerialSettings m_currentSettings;
     QIntValidator *m_intValidator;
+    QPointer<QTimer> m_timer;
 };
 
 #endif // SETTINGSDIALOG_H

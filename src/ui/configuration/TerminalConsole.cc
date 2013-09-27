@@ -100,8 +100,9 @@ void TerminalConsole::addBaudComboBoxConfig()
 void TerminalConsole::fillPortsInfo(QComboBox &comboBox)
 {
     QLOG_DEBUG() << "fillPortsInfo ";
-    disconnect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
     QString current = comboBox.itemText(comboBox.currentIndex());
+    disconnect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    comboBox.clear();
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         QStringList list;
         list << info.portName()
@@ -130,7 +131,9 @@ void TerminalConsole::fillPortsInfo(QComboBox &comboBox)
         }
     }
     connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
-    setLink(comboBox.currentIndex());
+    if (current == "") {
+        setLink(comboBox.currentIndex());
+    }
 }
 
 void TerminalConsole::showEvent(QShowEvent *event)

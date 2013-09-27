@@ -32,7 +32,7 @@ This file is part of the APM_PLANNER project
  * Copyright (C) 2012 Laszlo Papp <lpapp@kde.org>
  *
  */
-
+#include "QsLog.h"
 #include "SerialSettingsDialog.h"
 #include "TerminalConsole.h"
 #include "ui_SerialSettingsDialog.h"
@@ -41,6 +41,8 @@ This file is part of the APM_PLANNER project
 #include <qserialportinfo.h>
 #include <QIntValidator>
 #include <QLineEdit>
+#include <QPointer>
+#include <QTimer>
 
 QT_USE_NAMESPACE
 
@@ -62,9 +64,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
             this, SLOT(checkCustomBaudRatePolicy(int)));
 
     fillPortsParameters();
-    fillPortsInfo();
-
+    fillPortsInfo(*ui->serialPortInfoListBox);
     updateSettings();
+
+    //Keep refreshing the serial port list
+    m_timer = new QTimer(this);
+    connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
 }
 
 SettingsDialog::~SettingsDialog()
@@ -145,9 +150,18 @@ void SettingsDialog::fillPortsParameters()
     ui->flowControlBox->addItem(QLatin1String("XON/XOFF"), QSerialPort::SoftwareControl);
 }
 
-void SettingsDialog::fillPortsInfo()
+void SettingsDialog::populateSerialPorts()
 {
-    ui->serialPortInfoListBox->clear();
+    QLOG_TRACE() << "SettingsDialog::populateSerialPorts";
+    fillPortsInfo(*ui->serialPortInfoListBox);
+}
+
+void SettingsDialog::fillPortsInfo(QComboBox &comboBox)
+{
+    QLOG_DEBUG() << "fillPortsInfo ";
+    QString current = comboBox.itemText(comboBox.currentIndex());
+    disconnect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    comboBox.clear();
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         QStringList list;
         list << info.portName()
@@ -157,8 +171,53 @@ void SettingsDialog::fillPortsInfo()
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        ui->serialPortInfoListBox->insertItem(0, list.first(), list);
+        int found = comboBox.findData(list);
+        if (found == -1) {
+            QLOG_INFO() << "Inserting " << list.first();
+            comboBox.insertItem(0,list[0], list);
+        } else {
+            // Do nothing as the port is already listed
+        }
     }
+    for (int i=0;i<comboBox.count();i++)
+    {
+        if (comboBox.itemText(i) == current)
+        {
+            comboBox.setCurrentIndex(i);
+            setLink(comboBox.currentIndex());
+            connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+            return;
+        }
+    }
+    connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    setLink(comboBox.currentIndex());
+}
+
+void SettingsDialog::setLink(int index)
+{
+    if (index == -1)
+    {
+        return;
+    }
+
+    m_currentSettings.name = ui->serialPortInfoListBox->itemData(index).toStringList()[0];
+    QLOG_INFO() << "Changed Link to:" << m_currentSettings.name;
+
+}
+
+void SettingsDialog::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event);
+    // Start refresh Timer
+    m_timer->start(2000);
+}
+
+void SettingsDialog::hideEvent(QHideEvent *event)
+{
+    Q_UNUSED(event);
+    // Stop the port list refeshing
+    m_timer->stop();
+
 }
 
 void SettingsDialog::updateSettings()
