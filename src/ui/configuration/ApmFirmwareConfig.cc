@@ -723,7 +723,7 @@ void ApmFirmwareConfig::setLink(int index)
 #ifdef Q_OS_WIN
         ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[1] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
 #else
-        ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[0] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
+        ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[1] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
 #endif
         foreach(QSerialPortInfo info,QSerialPortInfo::availablePorts())
         {

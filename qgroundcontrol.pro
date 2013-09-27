@@ -719,7 +719,7 @@ SOURCES += src/main.cc \
     src/ui/configuration/AdvancedParamConfig.cc \
     src/ui/configuration/ArduCopterPidConfig.cc \
     src/ui/ApmToolBar.cc \
-    src/ui/configuration/PX4FirmwareUploader.cpp \
+    src/ui/configuration/PX4FirmwareUploader.cc \
     src/ui/configuration/ApmPlaneLevel.cc \
     src/ui/configuration/ParamWidget.cc \
     src/ui/configuration/ArduPlanePidConfig.cc \

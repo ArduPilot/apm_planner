@@ -1,5 +1,5 @@
 !include "MUI2.nsh"
-!define MUI_ICON "..\files\images\icons\apmplanner.ico"
+!define MUI_ICON "..\files\APMIcons\ap_rc.ico"
 Name "APM Planner 2"
 
 !ifndef QTDIR
