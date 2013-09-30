@@ -19,7 +19,8 @@ protected:
     void run();
 private:
     bool m_stop;
-    QSerialPort *port;
+    QSerialPort *m_port;
+    QByteArray m_serialBuffer;
     int get_sync(int timeout=1000);
     bool reqInfo(unsigned char infobyte,unsigned int *reply);
     int readBytes(int num,int timeout,QByteArray &buf);

@@ -47,17 +47,17 @@ bool PX4FirmwareUploader::reqInfo(unsigned char infobyte,unsigned int *reply)
 {
     //for (int i=0;i<128;i++)
     //{
-    //    port->write(QByteArray().append((char)0x0));
+    //    m_port->write(QByteArray().append((char)0x0));
     //}
-    //port->waitForBytesWritten(100);
+    //m_port->waitForBytesWritten(100);
     //msleep(100);
-    //while(port->waitForReadyRead(1))
+    //while(m_port->waitForReadyRead(1))
     //{
-    //    int num = port->read(1)[0];
+    //    int num = m_port->read(1)[0];
     //}
-    port->write(QByteArray().append(PROTO_GET_DEVICE).append(infobyte).append(PROTO_EOC));
-    port->waitForBytesWritten(-1);
-    port->flush();
+    m_port->write(QByteArray().append(PROTO_GET_DEVICE).append(infobyte).append(PROTO_EOC));
+    m_port->waitForBytesWritten(-1);
+    m_port->flush();
     QByteArray infobuf;
     int read = readBytes(4,2000,infobuf);
     if (read != 4)
@@ -78,18 +78,36 @@ bool PX4FirmwareUploader::reqInfo(unsigned char infobyte,unsigned int *reply)
 }
 int PX4FirmwareUploader::readBytes(int num,int timeout,QByteArray &buf)
 {
+    if (m_serialBuffer.size() >= num)
+    {
+        buf.append(m_serialBuffer.mid(0,num));
+        m_serialBuffer.remove(0,num);
+        return num;
+    }
     int count = -1;
     bool first = true;
     qint64 msec = QDateTime::currentMSecsSinceEpoch();
+    //m_serialBuffer
     while (count < num && QDateTime::currentMSecsSinceEpoch() < (msec + timeout))
     {
-        if ((port->waitForReadyRead(10) && count < num) || first)
+        while (m_port->waitForReadyRead(timeout))
+        {
+            m_serialBuffer.append(m_port->readAll());
+            if (m_serialBuffer.size() >= num)
+            {
+                buf.append(m_serialBuffer.mid(0,num));
+                m_serialBuffer.remove(0,num);
+                return num;
+            }
+        }
+        return -1;
+        if ( m_port->bytesAvailable() > 0 || (m_port->waitForReadyRead(10) && count < num) || first)
         {
             first = false;
             char c;
-            while (count < num && port->read(&c,1))
+            while (count < num && m_port->read(&c,1))
             {
-                port->waitForReadyRead(10);
+                //m_port->waitForReadyRead(1);
                 if (count == -1)
                 {
                     count = 0;
@@ -103,7 +121,6 @@ int PX4FirmwareUploader::readBytes(int num,int timeout,QByteArray &buf)
         {
             //QLOG_DEBUG() << "Ready read failure" << count << num;
         }
-        msleep(10);
     }
     return count;
 }
@@ -175,7 +192,7 @@ bool PX4FirmwareUploader::loadFile(QString file)
     if (uncompressed.size() != m_loadedFwSize)
     {
         QLOG_ERROR() << "Error in decompressing firmware. Please re-download and try again";
-        port->close();
+        m_port->close();
         return false;
     }
     //Per QUpgrade, pad it to a 4 byte multiple.
@@ -230,42 +247,42 @@ void PX4FirmwareUploader::run()
         }
         msleep(100);
     }
-    port = new QSerialPort();
+    m_port = new QSerialPort();
     msleep(500);
-    port->setPortName(portnametouse);
-    if (!port->open(QIODevice::ReadWrite))
+    m_port->setPortName(portnametouse);
+    if (!m_port->open(QIODevice::ReadWrite))
     {
-        QLOG_ERROR() << "Unable to open port" << port->errorString() << port->portName();
+        QLOG_ERROR() << "Unable to open port" << m_port->errorString() << m_port->portName();
         return;
     }
-    port->setBaudRate(QSerialPort::Baud115200);
-    port->setDataBits(QSerialPort::Data8);
-    port->setStopBits(QSerialPort::OneStop);
-    port->setParity(QSerialPort::NoParity);
-    port->setFlowControl(QSerialPort::NoFlowControl);
-    port->setTextModeEnabled(false);
+    m_port->setBaudRate(QSerialPort::Baud115200);
+    m_port->setDataBits(QSerialPort::Data8);
+    m_port->setStopBits(QSerialPort::OneStop);
+    m_port->setParity(QSerialPort::NoParity);
+    m_port->setFlowControl(QSerialPort::NoFlowControl);
+    m_port->setTextModeEnabled(false);
     for (int i=0;i<128;i++)
     {
-        port->write(QByteArray().append((char)0x0));
+        m_port->write(QByteArray().append((char)0x0));
     }
-    port->waitForBytesWritten(100);
+    m_port->waitForBytesWritten(100);
     msleep(1000);
-    while(port->bytesAvailable())
+    while(m_port->bytesAvailable())
     {
-        int num = port->read(1)[0];
+        int num = m_port->read(1)[0];
     }
     if (m_stop)
     {
-        port->close();
-        delete port;
+        m_port->close();
+        delete m_port;
         return;
     }
     for (int retry=0;retry<5;retry++)
     {
         QLOG_INFO() << "Sending SYNC command, loop" << retry << "of" << 5;
-        port->write(QByteArray().append(0x21).append(0x20));
-        port->waitForBytesWritten(-1);
-        port->flush();
+        m_port->write(QByteArray().append(0x21).append(0x20));
+        m_port->waitForBytesWritten(-1);
+        m_port->flush();
         int sync = get_sync();
         if (sync == 0)
         {
@@ -290,7 +307,7 @@ void PX4FirmwareUploader::run()
             if (bootloaderrev >= 4)
             {
                 QLOG_FATAL() << "PX4Firmware Uploader does not yet support V4 bootloaders";
-                return;
+                //return;
             }
             msleep(500);
             emit statusUpdate("Requesting board ID");
@@ -323,14 +340,14 @@ void PX4FirmwareUploader::run()
             }
             flashsize = read;
 
-            while(port->bytesAvailable())
+            while(m_port->bytesAvailable())
             {
-                int num = port->read(1)[0];
+                int num = m_port->read(1)[0];
             }
             if (m_stop)
             {
-                port->close();
-                delete port;
+                m_port->close();
+                delete m_port;
                 return;
             }
 
@@ -346,9 +363,9 @@ void PX4FirmwareUploader::run()
                 emit statusUpdate("Requesting OTP");
                 for (int i=0;i<512;i+=4)
                 {
-                    port->write(QByteArray().append(0x2A).append(i & 0xFF).append(((i >> 8) & 0xFF)).append((char)0).append((char)0).append(PROTO_EOC));
-                    port->waitForBytesWritten(-1);
-                    port->flush();
+                    m_port->write(QByteArray().append(0x2A).append(i & 0xFF).append(((i >> 8) & 0xFF)).append((char)0).append((char)0).append(PROTO_EOC));
+                    m_port->waitForBytesWritten(-1);
+                    m_port->flush();
                     timeout = 0;
                     int bytesread = 0;
 
@@ -359,13 +376,13 @@ void PX4FirmwareUploader::run()
                         QLOG_ERROR() << "wrong bytes available:" << count;
                         //bad = true;
                         i-=4;
-                        port->waitForReadyRead(1000);
-                        while(port->bytesAvailable())
+                        m_port->waitForReadyRead(1000);
+                        while(m_port->bytesAvailable())
                         {
-                            int num = port->read(1)[0];
+                            int num = m_port->read(1)[0];
                         }
                         //Clear the port
-                        port->clear();
+                        m_port->clear();
                         continue;
                     }
 
@@ -378,10 +395,10 @@ void PX4FirmwareUploader::run()
                     {
                         QLOG_ERROR() << "Bad sync";
                         i-=4;
-                        port->waitForReadyRead(1000);
-                        while(port->bytesAvailable())
+                        m_port->waitForReadyRead(1000);
+                        while(m_port->bytesAvailable())
                         {
-                            int num = port->read(1)[0];
+                            int num = m_port->read(1)[0];
                         }
                         continue;
                         //bad = true;
@@ -389,8 +406,8 @@ void PX4FirmwareUploader::run()
                     }
                     if (m_stop)
                     {
-                        port->close();
-                        delete port;
+                        m_port->close();
+                        delete m_port;
                         return;
                     }
                 }
@@ -425,8 +442,8 @@ void PX4FirmwareUploader::run()
                 memset(snbuf,0,12);
                 for (int i=0;i<12;i+=4)
                 {
-                    port->write(QByteArray().append(0x2B).append(i).append((char)0).append((char)0).append((char)0).append(PROTO_EOC));
-                    port->flush();
+                    m_port->write(QByteArray().append(0x2B).append(i).append((char)0).append((char)0).append((char)0).append(PROTO_EOC));
+                    m_port->flush();
                     timeout = 0;
                     QByteArray bytes;
                     int count = readBytes(4,2000,bytes);
@@ -435,10 +452,10 @@ void PX4FirmwareUploader::run()
                         QLOG_ERROR() << "wrong bytes available:" << count;
                         //bad = true;
                         i-=4;
-                        port->waitForReadyRead(1000);
-                        while(port->bytesAvailable())
+                        m_port->waitForReadyRead(1000);
+                        while(m_port->bytesAvailable())
                         {
-                            int num = port->read(1)[0];
+                            int num = m_port->read(1)[0];
                         }
                         continue;
                     }
@@ -453,9 +470,9 @@ void PX4FirmwareUploader::run()
                         bad = true;
                         break;
                     }
-                    while(port->bytesAvailable())
+                    while(m_port->bytesAvailable())
                     {
-                        port->read(1)[0];
+                        m_port->read(1)[0];
                     }
 
                 }
@@ -507,8 +524,8 @@ void PX4FirmwareUploader::run()
             } //if bootloaderrev >= 4
             if (m_stop)
             {
-                port->close();
-                delete port;
+                m_port->close();
+                delete m_port;
                 return;
             }
 
@@ -520,13 +537,13 @@ void PX4FirmwareUploader::run()
             emit serialNumber(snstr);
             emit OTP(otpstr);
 
-            //port->close();
+            //m_port->close();
             //return;
             //Erase
             QLOG_INFO() << "Requesting erase";
             emit statusUpdate("Erasing flash, this may take up to a minute");
-            port->write(QByteArray().append(0x23).append(0x20));
-            port->flush();
+            m_port->write(QByteArray().append(0x23).append(0x20));
+            m_port->flush();
             //msleep(20000);
             sync = get_sync(60000);
             if (sync)
@@ -536,8 +553,8 @@ void PX4FirmwareUploader::run()
             }
             if (m_stop)
             {
-                port->close();
-                delete port;
+                m_port->close();
+                delete m_port;
                 return;
             }
 
@@ -546,10 +563,10 @@ void PX4FirmwareUploader::run()
 
                 //unsigned int fwsize = fwmap["image_size"].toUInt();
                 //Lorenz says that this is a more reliable way of parsing out the image, I agree.
-                //Clear out the port->
-                while(port->bytesAvailable())
+                //Clear out the m_port->
+                while(m_port->bytesAvailable())
                 {
-                    port->read(1);
+                    m_port->read(1);
                 }
 
                 QLOG_INFO() << "Starting flash process";
@@ -566,16 +583,16 @@ void PX4FirmwareUploader::run()
                         tosend.append(buf.size());
                         tosend.append(buf);
                         tosend.append(0x20);
-                        port->write(tosend);
-                        port->waitForBytesWritten(-1);
-                        port->flush();
+                        m_port->write(tosend);
+                        m_port->waitForBytesWritten(-1);
+                        m_port->flush();
                         //msleep(1000);
                         int sync = get_sync(5000);
                         if (sync != 0)
                         {
                             QLOG_FATAL() << "error writing firmware" << tempFile->pos() << tempFile->size();
                             emit error("Error writing firmware, invalid sync. Please retry");
-                            port->close();
+                            m_port->close();
                             tempFile->close();
                             delete tempFile;
                             return;
@@ -587,10 +604,10 @@ void PX4FirmwareUploader::run()
                         }
                         if (m_stop)
                         {
-                            port->close();
+                            m_port->close();
                             tempFile->close();
                             delete tempFile;
-                            delete port;
+                            delete m_port;
                             return;
                         }
 
@@ -598,22 +615,22 @@ void PX4FirmwareUploader::run()
                     else
                     {
                         QLOG_ERROR() << "Something went wrong, couldn't read from tmp file";
-                        port->close();
+                        m_port->close();
                         tempFile->close();
                         delete tempFile;
-                        delete port;
+                        delete m_port;
                         return;
                     }
                 }
                 QLOG_DEBUG() << "Done";
                 emit statusUpdate("Flashing complete!");
-                port->write(QByteArray().append(0x30).append(0x20));
-                port->flush();
-                port->waitForBytesWritten(1000);
-                port->close();
+                m_port->write(QByteArray().append(0x30).append(0x20));
+                m_port->flush();
+                m_port->waitForBytesWritten(1000);
+                m_port->close();
                 tempFile->close();
                 delete tempFile;
-                delete port;
+                delete m_port;
                 emit done();
                 return;
 
@@ -621,7 +638,7 @@ void PX4FirmwareUploader::run()
             }
 
 
-            port->close();
+            m_port->close();
         }
         else
         {
@@ -633,40 +650,40 @@ void PX4FirmwareUploader::run()
             // XXX hacky but safe
             // Start NSH
             const char init[] = {0x0d, 0x0d, 0x0d};
-            port->write(init, sizeof(init));
-            port->flush();
+            m_port->write(init, sizeof(init));
+            m_port->flush();
 
             // Reboot into bootloader
             const char* cmd = "reboot -b\n";
-            port->write(cmd, strlen(cmd));
-            port->flush();
-            port->write(init, 2);
-            port->flush();
+            m_port->write(cmd, strlen(cmd));
+            m_port->flush();
+            m_port->write(init, 2);
+            m_port->flush();
 
             // Old reboot command
             const char* cmd_old = "reboot\n";
-            port->write(cmd_old, strlen(cmd_old));
-            port->flush();
-            port->write(init, 2);
-            port->flush();
+            m_port->write(cmd_old, strlen(cmd_old));
+            m_port->flush();
+            m_port->write(init, 2);
+            m_port->flush();
 
             // Reboot via MAVLink (if enabled)
             // Try system ID 1
             const char mavlink_msg_id1[] = {0xfe,0x21,0x72,0xff,0x00,0x4c,0x00,0x00,0x80,0x3f,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xf6,0x00,0x01,0x00,0x00,0x48,0xf0};
-            port->write(mavlink_msg_id1, sizeof(mavlink_msg_id1));
-            port->flush();
+            m_port->write(mavlink_msg_id1, sizeof(mavlink_msg_id1));
+            m_port->flush();
             // Try system ID 0 (broadcast)
             const char mavlink_msg_id0[] = {0xfe,0x21,0x45,0xff,0x00,0x4c,0x00,0x00,0x80,0x3f,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xf6,0x00,0x00,0x00,0x00,0xd7,0xac};
-            port->write(mavlink_msg_id0, sizeof(mavlink_msg_id0));
-            port->flush();
-            //port->close();
+            m_port->write(mavlink_msg_id0, sizeof(mavlink_msg_id0));
+            m_port->flush();
+            //m_port->close();
             msleep(1000);
-            if (!port->open(QIODevice::ReadWrite))
+            if (!m_port->open(QIODevice::ReadWrite))
             {
                 //return;
             }
-            port->waitForReadyRead(1000);
-            port->write(QByteArray().append(0x21).append(0x20));
+            m_port->waitForReadyRead(1000);
+            m_port->write(QByteArray().append(0x21).append(0x20));
             int sync = get_sync();
         }
     }
