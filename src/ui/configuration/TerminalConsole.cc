@@ -36,7 +36,7 @@ This file is part of the APM_PLANNER project
 #include "TerminalConsole.h"
 #include "QsLog.h"
 #include "SerialSettingsDialog.h"
-#include "ui_terminalconsole.h"
+#include "ui_TerminalConsole.h"
 #include "Console.h"
 #include "configuration.h"
 
