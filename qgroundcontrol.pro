@@ -27,6 +27,8 @@
 CONFIG += qt \
     thread
 
+CONFIG += x86_64
+
 QT += network \
     opengl \
     svg \
