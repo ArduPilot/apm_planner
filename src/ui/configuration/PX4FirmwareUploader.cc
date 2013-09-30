@@ -45,21 +45,24 @@ QString hmacSha1(QByteArray key, QByteArray baseString)
 
 bool PX4FirmwareUploader::reqInfo(unsigned char infobyte,unsigned int *reply)
 {
+    m_port->clear();
     //for (int i=0;i<128;i++)
     //{
     //    m_port->write(QByteArray().append((char)0x0));
     //}
     //m_port->waitForBytesWritten(100);
+    //m_port->flush();
     //msleep(100);
     //while(m_port->waitForReadyRead(1))
     //{
     //    int num = m_port->read(1)[0];
     //}
+    //int sync = get_sync(2000);
     m_port->write(QByteArray().append(PROTO_GET_DEVICE).append(infobyte).append(PROTO_EOC));
     m_port->waitForBytesWritten(-1);
     m_port->flush();
     QByteArray infobuf;
-    int read = readBytes(4,2000,infobuf);
+    int read = readBytes(4,5000,infobuf);
     if (read != 4)
     {
         //Bad read
@@ -100,6 +103,7 @@ int PX4FirmwareUploader::readBytes(int num,int timeout,QByteArray &buf)
                 return num;
             }
         }
+        QLOG_DEBUG() << "timeout expired:" << m_serialBuffer.size() << num;
         return -1;
         if ( m_port->bytesAvailable() > 0 || (m_port->waitForReadyRead(10) && count < num) || first)
         {
@@ -363,7 +367,8 @@ void PX4FirmwareUploader::run()
                 emit statusUpdate("Requesting OTP");
                 for (int i=0;i<512;i+=4)
                 {
-                    m_port->write(QByteArray().append(0x2A).append(i & 0xFF).append(((i >> 8) & 0xFF)).append((char)0).append((char)0).append(PROTO_EOC));
+                    m_port->clear();
+                    m_port->write(QByteArray().append(0x2A).append(i & 0xFF).append(((i >> 8) & 0xFF)).append((char)0).append((char)0));//.append(PROTO_EOC));
                     m_port->waitForBytesWritten(-1);
                     m_port->flush();
                     timeout = 0;
@@ -442,6 +447,7 @@ void PX4FirmwareUploader::run()
                 memset(snbuf,0,12);
                 for (int i=0;i<12;i+=4)
                 {
+                    m_port->clear();
                     m_port->write(QByteArray().append(0x2B).append(i).append((char)0).append((char)0).append((char)0).append(PROTO_EOC));
                     m_port->flush();
                     timeout = 0;
@@ -564,15 +570,14 @@ void PX4FirmwareUploader::run()
                 //unsigned int fwsize = fwmap["image_size"].toUInt();
                 //Lorenz says that this is a more reliable way of parsing out the image, I agree.
                 //Clear out the m_port->
-                while(m_port->bytesAvailable())
-                {
-                    m_port->read(1);
-                }
+                m_port->clear();
+                msleep(1000);
 
                 QLOG_INFO() << "Starting flash process";
                 emit statusUpdate("Flashing firmware");
                 tempFile->open();
                 int counter = 0;
+                int failure = 0;
                 while (!tempFile->atEnd())
                 {
                     QByteArray buf = tempFile->read(60);
@@ -583,19 +588,39 @@ void PX4FirmwareUploader::run()
                         tosend.append(buf.size());
                         tosend.append(buf);
                         tosend.append(0x20);
+                        m_port->clear();
                         m_port->write(tosend);
                         m_port->waitForBytesWritten(-1);
                         m_port->flush();
                         //msleep(1000);
-                        int sync = get_sync(5000);
+                        int sync = get_sync(1000);
                         if (sync != 0)
                         {
-                            QLOG_FATAL() << "error writing firmware" << tempFile->pos() << tempFile->size();
-                            emit error("Error writing firmware, invalid sync. Please retry");
-                            m_port->close();
-                            tempFile->close();
-                            delete tempFile;
-                            return;
+                            failure++;
+                            if (failure > 2)
+                            {
+                                QLOG_FATAL() << "error writing firmware" << tempFile->pos() << tempFile->size();
+                                emit error("Error writing firmware, invalid sync. Please retry");
+                                m_port->close();
+                                tempFile->close();
+                                delete tempFile;
+                                return;
+                            }
+                            msleep(1000);
+                            QLOG_INFO() << "Requesting erase";
+                            emit statusUpdate("Erasing flash, this may take up to a minute");
+                            m_port->clear();
+                            m_port->write(QByteArray().append(0x23).append(0x20));
+                            m_port->flush();
+                            //msleep(20000);
+                            sync = get_sync(60000);
+                            if (sync)
+                            {
+                                QLOG_DEBUG() << "never returned from erase.";
+                                return;
+                            }
+                            tempFile->seek(0);
+                            continue;
                         }
                         if (counter++ % 50 == 0)
                         {
