@@ -214,10 +214,10 @@ void ApmHardwareConfig::uasDisconnected()
     }
     QLOG_DEBUG() << "AHC: uasDisconnected()";
     // Show offline options and hide Optional and Mandatory buttons
-    disconnect(ui.mandatoryHardware, SIGNAL(clicked(bool)),
-                this, SLOT(mandatoryClicked(bool)));
-    disconnect(ui.optionalHardwareButton, SIGNAL(clicked(bool)),
-                this, SLOT(optionalClicked(bool)));
+    disconnect(ui.mandatoryHardware, SIGNAL(clicked()),
+                this, SLOT(mandatoryClicked()));
+    disconnect(ui.optionalHardwareButton, SIGNAL(clicked()),
+                this, SLOT(optionalClicked()));
 
     ui.optionalHardwareButton->setChecked(false);
     ui.optionalHardwareButton->setVisible(false);
