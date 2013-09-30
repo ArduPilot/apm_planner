@@ -100,10 +100,10 @@ void APMToolBar::activeUasSet(UASInterface *uas)
 
         foreach(SerialLink* slink, sList)  {
             // for all connected serial ports for a UAS disconnect
-            disconnect(slink, SIGNAL(connected(LinkInterface)),
-                            this, SLOT(connected(LinkInterface)));
-            disconnect(slink, SIGNAL(disconnected(LinkInterface)),
-                            this, SLOT(disconnected(LinkInterface)));
+            disconnect(slink, SIGNAL(connected(LinkInterface*)),
+                            this, SLOT(connected(LinkInterface*)));
+            disconnect(slink, SIGNAL(disconnected(LinkInterface*)),
+                            this, SLOT(disconnected(LinkInterface*)));
             m_currentLink = NULL;
         }
     }
@@ -291,14 +291,9 @@ void APMToolBar::connectMAV()
         if(m_currentLink->isConnected()){
             QLOG_DEBUG() << "APMToolBar: Disconnecting m_currentLink " << m_currentLink;
             m_currentLink->disconnect();
-            updateLinkDisplay(m_currentLink);
-	    setConnection(false);
         } else {
             QLOG_DEBUG() << "APMToolBar: Connecting m_currentLink " << m_currentLink;
-	    setConnection(true);
             m_currentLink->connect();
-            updateLinkDisplay(m_currentLink);
-
         }
 
     }
@@ -366,6 +361,10 @@ void APMToolBar::newLinkCreated(LinkInterface* newLink)
         m_currentLink = sLink;
         updateLinkDisplay(m_currentLink);
         connect(m_currentLink,SIGNAL(updateLink(LinkInterface*)),this,SLOT(updateLinkDisplay(LinkInterface*)));
+        connect(m_currentLink, SIGNAL(connected(LinkInterface*)),
+                        this, SLOT(connected(LinkInterface*)));
+        connect(m_currentLink, SIGNAL(disconnected(LinkInterface*)),
+                        this, SLOT(disconnected(LinkInterface*)));
     }
 }
 

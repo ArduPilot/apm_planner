@@ -205,8 +205,9 @@ void SerialLink::run()
             QMutexLocker writeLocker(&m_writeMutex);
             int numWritten = m_port->write(m_transmitBuffer);
             bool txError = m_port->waitForBytesWritten(-1);
-            if ((txError) || (numWritten == -1))
+            if ((txError) || (numWritten == -1)){
                 QLOG_TRACE() << "TX Error!";
+            }
             m_transmitBuffer =  m_transmitBuffer.remove(0, numWritten);
         } else {
             QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
@@ -352,7 +353,7 @@ void SerialLink::readBytes()
             QByteArray b(data, numBytes);
             emit bytesReceived(this, b);
 
-            QLOG_TRACE() << "SerialLink::readBytes()" << std::hex << data;
+            QLOG_TRACE() << "SerialLink::readBytes()" << &std::hex << data;
             //            int i;
             //            for (i=0; i<numBytes; i++){
             //                unsigned int v=data[i];
@@ -390,8 +391,9 @@ qint64 SerialLink::bytesAvailable()
 bool SerialLink::disconnect()
 {
     QLOG_INFO() << "disconnect";
-    if (m_port)
+    if (m_port) {
         QLOG_INFO() << m_port->portName();
+    }
 
     if (isRunning())
     {
@@ -460,10 +462,6 @@ bool SerialLink::hardwareConnect()
     }
 
     QObject::connect(m_port,SIGNAL(aboutToClose()),this,SIGNAL(disconnected()));
-//    QObject::connect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
-//                     this, SLOT(linkError(QSerialPort::SerialPortError)));
-
-//    port->setCommTimeouts(QSerialPort::CtScheme_NonBlockingRead);
     m_connectionStartTime = MG::TIME::getGroundTimeNow();
 
     if (!m_port->open(QIODevice::ReadWrite))
@@ -476,11 +474,32 @@ bool SerialLink::hardwareConnect()
     emit communicationUpdate(getName(),"Opened port!");
 
     // Need to configure the port
-    m_port->setBaudRate(m_baud);
-    m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits));
-    m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(m_flowControl));
-    m_port->setStopBits(static_cast<QSerialPort::StopBits>(m_stopBits));
-    m_port->setParity(static_cast<QSerialPort::Parity>(m_parity));
+    if (!m_port->setBaudRate(m_baud)){
+        QLOG_ERROR() << "Failed to set Baud Rate" << m_baud;
+        disconnect();
+        return false;
+
+    } else if(!m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits))){
+        QLOG_ERROR() << "Failed to set data bits Rate:" << m_dataBits;
+        disconnect();
+        return false;
+
+    } else if(!m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(m_flowControl))){
+        QLOG_ERROR() << "Failed to set flow control:" << m_flowControl;
+        disconnect();
+        return false;
+
+    } else if(!m_port->setStopBits(static_cast<QSerialPort::StopBits>(m_stopBits))){
+        QLOG_ERROR() << "Failed to set stop bits" << m_stopBits;
+        disconnect();
+        return false;
+
+    } else if(!m_port->setParity(static_cast<QSerialPort::Parity>(m_parity))){
+        QLOG_ERROR() << "Failed to set parity" << m_parity;
+        disconnect();
+        return false;
+
+    }
 
     emit connected();
     emit connected(true);
@@ -515,7 +534,7 @@ bool SerialLink::isConnected()
         return isConnected;
     } else {
         QLOG_TRACE() << "SerialLink #" << __LINE__ << ":" <<  m_portName
-                     << " isConnected = NULL";
+                     << " isConnected = false";
         return false;
     }
 }
@@ -536,62 +555,7 @@ QString SerialLink::getName()
   */
 qint64 SerialLink::getNominalDataRate()
 {
-    int baudRate;
-    if (m_port) {
-        int newBaud = m_port->baudRate();
-        if (newBaud!=0)
-            baudRate = newBaud;
-    } else {
-        baudRate = m_baud;
-    }
-    QLOG_DEBUG() << "getNominalDataRate() :" << baudRate;
-    qint64 dataRate;
-    switch (baudRate)
-    {
-        case QSerialPort::Baud1200:
-            dataRate = 1200;
-            break;
-        case QSerialPort::Baud2400:
-            dataRate = 2400;
-            break;
-        case QSerialPort::Baud4800:
-            dataRate = 4800;
-            break;
-        case QSerialPort::Baud9600:
-            dataRate = 9600;
-            break;
-        case QSerialPort::Baud19200:
-            dataRate = 19200;
-            break;
-        case QSerialPort::Baud38400:
-            dataRate = 38400;
-            break;
-        case QSerialPort::Baud57600:
-            dataRate = 57600;
-            break;
-        case QSerialPort::Baud115200:
-            dataRate = 115200;
-            break;
-            // Otherwise do nothing.
-        case QSerialPort::UnknownBaud:
-        default:
-	    //m_port has likely returned an invalid value here. Default to 57600 to make connecting
-	    //to a 3DR radio easier.
-        if (m_baud != -1)
-        {
-            dataRate = m_baud;
-        }
-        else
-        {
-            dataRate = 57600;
-        }
-	    if (m_port)
-	    {
-            m_port->setBaudRate(dataRate);
-	    }
-            break;
-    }
-    return dataRate;
+    return m_baud;
 }
 
 qint64 SerialLink::getTotalUpstream()
@@ -664,131 +628,53 @@ int SerialLink::getBaudRate()
 
 int SerialLink::getBaudRateType()
 {
-    int baudRate;
-    if (m_port) {
-        baudRate = m_port->baudRate();
-    } else {
-        baudRate = m_baud;
-    }
-    return baudRate;
+    return m_baud;
 }
 
 int SerialLink::getFlowType()
 {
-    int flowControl;
-    if (m_port) {
-        flowControl = m_port->flowControl();
-    } else {
-        flowControl = m_flowControl;
-    }
-    return flowControl;
+    return m_flowControl;
 }
 
 int SerialLink::getParityType()
 {
-    int parity;
-    if (m_port) {
-        parity = m_port->parity();
-    } else {
-        parity = m_parity;
-    }
-    return parity;
+    return m_parity;
 }
 
 int SerialLink::getDataBitsType()
 {
-    int dataBits;
-    if (m_port) {
-        dataBits = m_port->dataBits();
-    } else {
-        dataBits = m_dataBits;
-    }
-    return dataBits;
+    return m_dataBits;
 }
 
 int SerialLink::getStopBitsType()
 {
-    int stopBits;
-    if (m_port) {
-        stopBits = m_port->stopBits();
-    } else {
-        stopBits = m_stopBits;
-    }
-    return stopBits;
+    return m_stopBits;
 }
 
 int SerialLink::getDataBits()
 {
-    int ret;
-    int dataBits;
-    if (m_port) {
-        dataBits = m_port->dataBits();
-    } else {
-        dataBits = m_dataBits;
-    }
-
-    switch (dataBits) {
-    case QSerialPort::Data5:
-        ret = 5;
-        break;
-    case QSerialPort::Data6:
-        ret = 6;
-        break;
-    case QSerialPort::Data7:
-        ret = 7;
-        break;
-    case QSerialPort::Data8:
-        ret = 8;
-        break;
-    default:
-        ret = -1;
-        break;
-    }
-    return ret;
+    return m_dataBits;
 }
 
 int SerialLink::getStopBits()
 {
-    int stopBits;
-    if (m_port) {
-        stopBits = m_port->stopBits();
-    } else {
-        stopBits = m_stopBits;
-    }
-    int ret = -1;
-    switch (stopBits) {
-    case QSerialPort::OneStop:
-        ret = 1;
-        break;
-    case QSerialPort::TwoStop:
-        ret = 2;
-        break;
-    default:
-        ret = -1;
-        break;
-    }
-    return ret;
+    return m_stopBits;
 }
 
 bool SerialLink::setPortName(QString portName)
 {
     QLOG_INFO() << "current portName " << m_portName;
     QLOG_INFO() << "setPortName to " << portName;
-    bool accepted = false;
-    if ((portName != m_portName)
-            && (portName.trimmed().length() > 0)) {
-        m_portName = portName.trimmed();
-//        m_name = tr("serial port ") + portName.trimmed(); // [TODO] Do we need this?
-        if(m_port)
-            m_port->setPortName(portName);
-
+    if (portName != m_portName) {
+        m_portName = portName;
         emit nameChanged(m_portName); // [TODO] maybe we can eliminate this
-        emit updateLink(this);
+
         if (m_portBaudMap.contains(m_portName))
         {
             setBaudRate(m_portBaudMap[m_portName]);
         }
-        return accepted;
+        emit updateLink(this);
+        return true;
     }
     return false;
 }
@@ -796,17 +682,15 @@ bool SerialLink::setPortName(QString portName)
 
 bool SerialLink::setBaudRateType(int rateIndex)
 {
-    Q_ASSERT_X(m_port != NULL, "setBaudRateType", "m_port is NULL");
     // These minimum and maximum baud rates were based on those enumerated in qserialport.h
-    bool result;
     const int minBaud = (int)QSerialPort::Baud1200;
     const int maxBaud = (int)QSerialPort::Baud115200;
 
-    if (m_port && (rateIndex >= minBaud && rateIndex <= maxBaud))
+    if (rateIndex >= minBaud && rateIndex <= maxBaud)
     {
-        result = m_port->setBaudRate(static_cast<QSerialPort::BaudRate>(rateIndex));
+        m_baud = rateIndex;
         emit updateLink(this);
-        return result;
+        return true;
     }
 
     return false;
@@ -816,120 +700,77 @@ bool SerialLink::setBaudRateString(const QString& rate)
 {
     bool ok;
     int intrate = rate.toInt(&ok);
-    if (!ok) return false;
+    if (!ok) {
+        emit updateLink(this);
+        return false;
+    }
+    emit updateLink(this);
     return setBaudRate(intrate);
 }
 
 bool SerialLink::setBaudRate(int rate)
 {
-    bool accepted = false;
     if (rate != m_baud) {
         m_baud = rate;
-        accepted = true;
         m_portBaudMap[m_portName] = rate; //Update baud rate for that port in the map.
-        if (m_port)
-            accepted = m_port->setBaudRate(rate);
         emit updateLink(this);
     }
-    return accepted;
+    return true;
 }
 
 bool SerialLink::setFlowType(int flow)
 {
-    bool accepted = false;
     if (flow != m_flowControl) {
         m_flowControl = static_cast<QSerialPort::FlowControl>(flow);
-        accepted = true;
-        if (m_port)
-            accepted = m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(flow));
         emit updateLink(this);
     }
-    return accepted;
+    return true;
 }
 
 bool SerialLink::setParityType(int parity)
 {
-    bool accepted = false;
     if (parity != m_parity) {
         m_parity = static_cast<QSerialPort::Parity>(parity);
-        accepted = true;
-        if (m_port) {
-            switch (parity) {
-                case QSerialPort::NoParity:
-                accepted = m_port->setParity(QSerialPort::NoParity);
-                break;
-                case 1: // Odd Parity setting for backwards compatibilty
-                    accepted = m_port->setParity(QSerialPort::OddParity);
-                    break;
-                case QSerialPort::EvenParity:
-                    accepted = m_port->setParity(QSerialPort::EvenParity);
-                    break;
-                case QSerialPort::OddParity:
-                    accepted = m_port->setParity(QSerialPort::OddParity);
-                    break;
-                default:
-                    // If none of the above cases matches, there must be an error
-                    accepted = false;
-                    break;
-                }
-            emit updateLink(this);
-        }
+        emit updateLink(this);
     }
-    return accepted;
+    return true;
 }
 
 
 bool SerialLink::setDataBits(int dataBits)
 {
-    bool accepted = false;
     if (dataBits != m_dataBits) {
         m_dataBits = static_cast<QSerialPort::DataBits>(dataBits);
-        accepted = true;
-        if (m_port)
-            accepted = m_port->setDataBits(static_cast<QSerialPort::DataBits>(dataBits));
         emit updateLink(this);
     }
-    return accepted;
+    return true;
 }
 
 bool SerialLink::setStopBits(int stopBits)
 {
-    // Note 3 is OneAndAHalf stopbits.
-    bool accepted = false;
     if (stopBits != m_stopBits) {
         m_stopBits = static_cast<QSerialPort::StopBits>(stopBits);
-        accepted = true;
-        if (m_port)
-            accepted = m_port->setStopBits(static_cast<QSerialPort::StopBits>(stopBits));
         emit updateLink(this);
     }
-    return accepted;
+    return true;
 }
 
 bool SerialLink::setDataBitsType(int dataBits)
 {
-    bool accepted = false;
     if (dataBits != m_dataBits) {
         m_dataBits = static_cast<QSerialPort::DataBits>(dataBits);
-        accepted = true;
-        if (m_port)
-            accepted = m_port->setDataBits(static_cast<QSerialPort::DataBits>(dataBits));
         emit updateLink(this);
     }
-    return accepted;
+    return true;
 }
 
 bool SerialLink::setStopBitsType(int stopBits)
 {
-    bool accepted = false;
     if (stopBits != m_stopBits) {
         m_stopBits = static_cast<QSerialPort::StopBits>(stopBits);
-        accepted = true;
-        if (m_port)
-            accepted = m_port->setStopBits(static_cast<QSerialPort::StopBits>(stopBits));
         emit updateLink(this);
     }
-    return accepted;
+    return true;
 }
 
 const QList<SerialLink*> SerialLink::getSerialLinks(LinkManager *linkManager)
