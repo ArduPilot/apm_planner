@@ -35,13 +35,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0,0,0">
-           <item row="2" column="0">
-            <widget class="QLabel" name="statusLabel">
-             <property name="text">
-              <string>Status</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="1">
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
@@ -127,33 +120,6 @@
               </widget>
              </item>
             </layout>
-           </item>
-           <item row="3" column="4">
-            <widget class="QCheckBox" name="showOutputCheckBox">
-             <property name="text">
-              <string>Show Output</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="4">
-            <widget class="QPushButton" name="betaFirmwareButton">
-             <property name="text">
-              <string>Beta firmware</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1" colspan="3">
-            <widget class="QLabel" name="warningLabel">
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:large; font-weight:600; color:#e90000;&quot;&gt;WARNING:&lt;/span&gt;&lt;span style=&quot; font-size:large; font-weight:600; color:#ffaa00;&quot;&gt; Only install BETA firmware if you are an experienced tester.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
            </item>
            <item row="5" column="0" colspan="5">
             <widget class="QTextBrowser" name="textBrowser"/>
@@ -473,6 +439,46 @@
             <widget class="QPushButton" name="cancelPushButton">
              <property name="text">
               <string>Cancel</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QLabel" name="statusLabel">
+             <property name="text">
+              <string>Status</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QCheckBox" name="showOutputCheckBox">
+             <property name="text">
+              <string>Show Output</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="4">
+            <widget class="QPushButton" name="betaFirmwareButton">
+             <property name="minimumSize">
+              <size>
+               <width>135</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Beta firmware</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="5">
+            <widget class="QLabel" name="warningLabel">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:large; font-weight:600; color:#e90000;&quot;&gt;WARNING:&lt;/span&gt;&lt;span style=&quot; font-size:large; font-weight:600; color:#ffaa00;&quot;&gt; Only install BETA firmware if you are an experienced tester.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>

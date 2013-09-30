@@ -276,6 +276,14 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot)
     {
         prestring = "PX4";
     }
+    if (type != "stable")
+    {
+        ui.warningLabel->show();
+    }
+    else
+    {
+        ui.warningLabel->hide();
+    }
     m_autopilotType = autopilot;
     m_firmwareType = type;
     QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
@@ -413,6 +421,7 @@ void ApmFirmwareConfig::px4Terminated()
     if (m_px4uploader)
     {
         m_px4uploader->deleteLater();
+        m_px4uploader = 0;
         m_isPx4 = false;
     }
 }
@@ -599,7 +608,7 @@ void ApmFirmwareConfig::downloadFinished()
         m_isPx4 = true;
     m_px4uploader = new PX4FirmwareUploader();
     connect(m_px4uploader,SIGNAL(statusUpdate(QString)),this,SLOT(px4StatusUpdate(QString)));
-    connect(m_px4uploader,SIGNAL(terminated()),this,SLOT(px4Terminated()));
+    connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Terminated()));
     connect(m_px4uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
     connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
     connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
@@ -809,12 +818,12 @@ void ApmFirmwareConfig::firmwareListFinished()
     if (m_firmwareType == "beta")
     {
         cmpstr = "beta";
-        labelstr = "BETA ";
+        labelstr = "BETA\n";
     }
     else if (m_firmwareType == "latest")
     {
         cmpstr = "latest";
-        labelstr = "TRUNK ";
+        labelstr = "TRUNK\n";
     }
     else
     {
