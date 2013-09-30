@@ -688,6 +688,11 @@ void PX4FirmwareUploader::run()
                 {
                     emit error("CRC mismatch! Firmware write failed, please try again");
                     emit statusUpdate("CRC mismatch! Firmware write failed, please try again");
+                    m_port->close();
+                    tempFile->close();
+                    delete tempFile;
+                    delete m_port;
+                    return;
                 }
 
 
