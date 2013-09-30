@@ -189,6 +189,7 @@ void ApmFirmwareConfig::cancelButtonClicked()
 void ApmFirmwareConfig::px4StatusUpdate(QString update)
 {
     ui.statusLabel->setText(update);
+    ui.textBrowser->append(update);
 }
 
 void ApmFirmwareConfig::uasDisconnected()
