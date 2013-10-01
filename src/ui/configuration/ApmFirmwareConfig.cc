@@ -95,6 +95,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     if (ui.linkComboBox->count() > 0)
     {
         QLOG_DEBUG() << "Setting ApmFirmware link to 0";
+        requestFirmwares(m_firmwareType,"apm");
         setLink(0);
     }
     else
@@ -297,7 +298,19 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot)
     QNetworkReply *reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/git-version.txt")));
     QNetworkReply *reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/git-version.txt")));
 
-    if (autopilot == "apm" || autopilot == "px4")
+    if (autopilot == "apm")
+    {
+        m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/APMrover2.hex";
+        m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/ArduPlane.hex";
+        m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/ArduCopter.hex";
+        m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/ArduCopter.hex";
+        m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter.hex";
+        m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/ArduCopter.hex";
+        m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter.hex";
+        m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter.hex";
+        m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter.hex";
+    }
+    else if (autopilot == "px4")
     {
         m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/APMrover2-v1.px4";
         m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/ArduPlane-v1.px4";
@@ -545,38 +558,37 @@ void ApmFirmwareConfig::downloadFinished()
     //info.manufacturer() == "Arduino LLC (www.arduino.cc)"
     //info.description() == "%mega2560.name%"
 
-    QLOG_DEBUG() << "Attempting to Open port";
+    if (m_autopilotType == "apm")
+    {
 
-/*
-    m_port= new QSerialPort(this);
-    m_port->setPortName(m_settings.name);
-    if (m_port->open(QIODevice::ReadWrite)) {
-        if (m_port->setBaudRate(m_settings.baudRate)
-                && m_port->setDataBits(m_settings.dataBits)
-                && m_port->setParity(m_settings.parity)
-                && m_port->setStopBits(m_settings.stopBits)
-                && m_port->setFlowControl(m_settings.flowControl)) {
-            QLOG_INFO() << "Open Terminal Console Serial Port";
-            m_port->setDataTerminalReady(true);
-            m_port->waitForBytesWritten(250);
-            m_port->setDataTerminalReady(false);
-            m_port->close();
+        QLOG_DEBUG() << "Attempting to Open port";
+
+
+        m_port= new QSerialPort(this);
+        m_port->setPortName(m_settings.name);
+        if (m_port->open(QIODevice::ReadWrite)) {
+            if (m_port->setBaudRate(m_settings.baudRate)
+                    && m_port->setDataBits(m_settings.dataBits)
+                    && m_port->setParity(m_settings.parity)
+                    && m_port->setStopBits(m_settings.stopBits)
+                    && m_port->setFlowControl(m_settings.flowControl)) {
+                QLOG_INFO() << "Open Terminal Console Serial Port";
+                m_port->setDataTerminalReady(true);
+                m_port->waitForBytesWritten(250);
+                m_port->setDataTerminalReady(false);
+                m_port->close();
+            } else {
+                m_port->close();
+                QMessageBox::critical(this, tr("Error"), m_port->errorString());
+                m_port->deleteLater();
+                return;
+            }
         } else {
-            m_port->close();
             QMessageBox::critical(this, tr("Error"), m_port->errorString());
             m_port->deleteLater();
             return;
         }
-    } else {
-        QMessageBox::critical(this, tr("Error"), m_port->errorString());
-        m_port->deleteLater();
-        return;
-    }*/
-
-    QLOG_INFO() << "Port Open for FW Upload";
-    if (m_autopilotType == "apm")
-    {
-
+        QLOG_INFO() << "Port Open for FW Upload";
     QString avrdudeExecutable;
     QStringList stringList;
 
@@ -739,7 +751,7 @@ void ApmFirmwareConfig::setLink(int index)
         {
             if (info.portName() == m_settings.name)
             {
-                if (info.description().toLower().contains("mega") && info.description().contains("2650"))
+                if (info.description().toLower().contains("mega") && info.description().contains("2560"))
                 {
                     //APM
                     if (m_autopilotType != "apm")
