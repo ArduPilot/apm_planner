@@ -124,10 +124,15 @@ void ApmFirmwareConfig::populateSerialPorts()
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        if (!(info.portName().contains("Bluetooth"))){
+        if (!(info.portName().contains("Bluetooth")))
+        {
             // Don't add bluetooth ports to be less confusing to the user
             // on windows, the friendly name is annoyingly identical between devices. On OSX it's different
-            ui.linkComboBox->insertItem(0,list[0], list);
+            // We also want to only display COM ports for PX4/Pixhawk, or arduino mega 2560's.
+            if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega"))
+            {
+                ui.linkComboBox->insertItem(0,list[0], list);
+            }
             //QLOG_DEBUG() << "Inserting " << list.first();
         }
     }
