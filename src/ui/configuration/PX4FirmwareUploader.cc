@@ -304,6 +304,7 @@ void PX4FirmwareUploader::run()
             {
                 QLOG_FATAL() << "PX4Firmware Uploader does not yet support V4 bootloaders";
                 emit statusUpdate("PX4 Firmware Uploader does not yet support V4 bootloaders");
+                emit error("PX4FirmwareUploader does not yet support V4 bootloaders");
                 return;
             }
             msleep(500);
@@ -436,7 +437,7 @@ void PX4FirmwareUploader::run()
                         otpoutput = "";
                     }
                 }
-
+                QLOG_INFO() << "OTP:" << otpstr;
 
 
                 //Create an empty buffer for the serialnumber
@@ -508,7 +509,61 @@ void PX4FirmwareUploader::run()
                 {
                     serial.append((char)0);
                 }
+                qDebug() << "Serial size:" << serial.size();
                 emit statusUpdate("Verifying OTP");
+
+                //Verify OTP here
+                /*QCA::Initializer init;
+                if(!QCA::isSupported("pkey") || !QCA::PKey::supportedIOTypes().contains(QCA::PKey::RSA))
+                {
+                      qDebug() << "RSA not supported!";
+                      for (int i=0;i<QCA::supportedFeatures().size();i++)
+                      {
+                          qDebug() << "Supported:" << QCA::supportedFeatures()[i];
+                      }
+
+                      for (int i=0;i<QCA::PKey::supportedIOTypes().size();i++)
+                      {
+                          qDebug() << "Supported2:" << QCA::PKey::supportedIOTypes()[i];
+                      }
+
+                }
+                else
+                {
+                    qDebug() << "PKey supported";
+                }
+                QCA::ConvertResult conresult;
+                QString test = "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
+                QByteArray bytes = QByteArray::fromBase64(test.toAscii());
+                QCA::PublicKey key = QCA::RSAPublicKey::fromDER(bytes,&conresult);
+                if (conresult != QCA::ConvertGood)
+                {
+                    qDebug() << "Error converting" << conresult;
+                    return;
+                }
+                else
+                {
+                    qDebug() << "Good conversion";
+                }
+
+                if (!key.canVerify())
+                {
+                    qDebug() << "Unable to verify";
+                    return;
+                }
+                //key.startVerify(QCA::EMSA3_SHA1);
+                //key.update(serial.data());
+
+                if (!key.verifyMessage(serial,signature,QCA::EMSA3_SHA1))
+                {
+                    qDebug() << "Invalid signature2";
+                }*/
+
+
+
+
+               // return;
+
                 //qDebug() << "Sig size:" << signature.size();
                 //qDebug() << "First three of sig:" << QString::number(signature[0],16) << QString::number(signature[1],16) << QString::number(signature[2],16);
                 //qDebug() << "Last three of sig:" << QString::number(signature[125],16) << QString::number(signature[126],16) << QString::number(signature[127],16);
@@ -695,25 +750,17 @@ void PX4FirmwareUploader::run()
                     return;
                 }
 
-
-
-
-
-
                 m_port->write(QByteArray().append(0x30).append(0x20));
                 m_port->flush();
                 m_port->waitForBytesWritten(1000);
                 m_port->close();
                 tempFile->close();
+                emit statusUpdate("Verification successful, rebooting...");
                 delete tempFile;
                 delete m_port;
                 emit done();
                 return;
-
-
             }
-
-
             m_port->close();
         }
         else
