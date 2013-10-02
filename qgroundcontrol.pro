@@ -122,6 +122,7 @@ HEADERS +=     libs/alglib/src/ap.h \
     libs/alglib/src/integration.h \
     libs/alglib/src/solvers.h \
     libs/alglib/src/specialfunctions.cpp \
+    src/ui/configuration/Radio3DRSettings.h \
     src/ui/configuration/SetupWarningMessage.h
 
 SOURCES +=     libs/alglib/src/ap.cpp \
@@ -134,6 +135,7 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/integration.cpp \
     libs/alglib/src/solvers.cpp \
     libs/alglib/src/specialfunctions.cpp \
+    src/ui/configuration/Radio3DRSettings.cc \
     src/ui/configuration/SetupWarningMessage.cc
 
 # EIGEN matrix library (header-only)

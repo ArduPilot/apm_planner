@@ -1,0 +1,196 @@
+#ifndef RADIO3DRSETTINGS_H
+#define RADIO3DRSETTINGS_H
+
+#include "SerialSettingsDialog.h"
+#include <QObject>
+#include <QPointer>
+#include <QTimer>
+#include "qserialport.h"
+#include "qserialportinfo.h"
+
+//  Command Set for 3DR SiK Radios
+//
+//        +++ - Escape to command mode (need 1s silence before it will work)
+//        ATI - show radio version
+//        ATI2 - show board type
+//        ATI3 - show board frequency
+//        ATI4 - show board version
+//        ATI5 - show all user settable EEPROM parameters
+//        ATI6 - display TDM timing report
+//        ATI7 - display RSSI signal report
+//        ATO - exit AT command mode
+//        ATSn? - display radio parameter number 'n'
+//        ATSn=X - set radio parameter number 'n' to 'X'
+//        ATZ - reboot the radio
+//        AT&W - write current parameters to EEPROM
+//        AT&F - reset all parameters to factory default
+//        AT&T=RSSI - enable RSSI debug reporting
+//        AT&T=TDM - enable TDM debug reporting
+//        AT&T - disable debug reporting
+//
+//        e.g.    ATI0 Version = SiK 1.5 on HM-TRP
+//                ATI5
+//                S0: FORMAT=25
+//                S1: SERIAL_SPEED=57
+//                S2: AIR_SPEED=64
+//                S3: NETID=41
+//                S4: TXPOWER=20
+//                S5: ECC=1
+//                S6: MAVLINK=1
+//                S7: OPPRESEND=1
+//                S8: MIN_FREQ=915000
+//                S9: MAX_FREQ=928000
+//                S10: NUM_CHANNELS=50
+//                S11: DUTY_CYCLE=100
+//                S12: LBT_RSSI=0
+//                S13: MANCHESTER=0
+//                S14: RTSCTS=0
+
+static const int FREQ_NONE      = 0xf0;
+static const int FREQ_433		= 0x43;
+static const int FREQ_470		= 0x47;
+static const int FREQ_868		= 0x86;
+static const int FREQ_915		= 0x91;
+
+
+class Radio3DREeprom
+{
+    // Helper Object that stores Radio Settings
+public:
+
+    Radio3DREeprom();
+    // Take the repsonse from an A(R)TI5 repsonse.
+    bool setVersion(QString &versionString);
+    bool setParameter(QString &parameterString);
+    bool setRadioFreqCode(int freqCode);
+
+    const QString parameter(int index);
+
+    // accessors
+    int version();
+    const QString& versionString();
+    int eepromVersion() { return m_eepromVersion;}
+    int serialSpeed(){ return m_serialSpeed;}
+    int airSpeed(){ return m_airSpeed;}
+    int netID(){ return m_netID;}
+    int txPower(){ return m_txPower;}
+    int ecc(){ return m_ecc;}
+    int mavlink(){ return m_mavlink;}
+    int oppResend(){ return m_oppResend;}
+    int minFreq(){ return m_minFreq;}
+    int maxFreq(){ return m_maxFreq;}
+    int numChannels(){ return m_numChannels;}
+    int dutyCyle(){ return m_dutyCyle;}
+    int lbtRssi(){ return m_lbtRssi;}
+    int manchester(){ return m_manchester;}
+    int rtsCts(){ return m_rtsCts;}
+    int radioFrequency();
+    int frequencyCode() {return m_radioFreqCode;}
+
+    // settors
+    void serialSpeed(int serialSpeed){ m_serialSpeed = serialSpeed;}
+    void airSpeed(int airSpeed){ m_airSpeed = airSpeed;}
+    void netID(int netID){ m_netID = netID;}
+    void txPower(int txPower){ m_txPower = txPower;}
+    void ecc(int ecc){ m_ecc = ecc;}
+    void mavlink(int mavlink){ m_mavlink = mavlink;}
+    void oppResend(int oppResend){ m_oppResend = oppResend;}
+    void minFreq(int minFreq){ m_minFreq = minFreq;}
+    void maxFreq(int maxFreq){ m_maxFreq = maxFreq;}
+    void numChannels(int numChannels){ m_numChannels = numChannels;}
+    void dutyCyle(int dutyCycle){ m_dutyCyle = dutyCycle;}
+    void lbtRssi(int lbtRssi){ m_lbtRssi = lbtRssi;}
+    void manchester(int manchester){ m_manchester = manchester;}
+    void rtsCts(int rtsCts){ m_rtsCts = rtsCts;}
+
+private:
+    // EEPROM settings
+    QString m_versionString;
+    int m_radioFreqCode;
+    float m_version;
+    int m_eepromVersion;
+    int m_serialSpeed;
+    int m_airSpeed;
+    int m_netID;
+    int m_txPower;
+    int m_ecc;
+    int m_mavlink;
+    int m_oppResend;
+    int m_minFreq;
+    int m_maxFreq;
+    int m_numChannels;
+    int m_dutyCyle;
+    int m_lbtRssi;
+    int m_manchester;
+    int m_rtsCts;
+};
+
+class Radio3DRSettings : public QObject
+{
+    Q_OBJECT
+
+    enum State { none, sendEscapeSequence, enterCommandMode,
+                 readLocalVersion, readLocalFrequency, readLocalParams,
+                 readRemoteVersion, readRemoteFrequency,
+                 readRemoteParams,
+                 writeLocalParams,
+                 complete, error };
+
+public:
+    explicit Radio3DRSettings(QObject *parent = 0);
+    virtual ~Radio3DRSettings();
+    
+signals:
+    void serialPortOpenFailure(int error, QString errorString);
+    void startReadLocalParams();
+    void startReadRemoteParams();
+    void localReadComplete(Radio3DREeprom& eeprom, bool success);
+    void remoteReadComplete(Radio3DREeprom& eeprom, bool success);
+    void updateLocalStatus(QString status);
+    void updateRemoteStatus(QString status);
+
+
+public slots:
+    bool openSerialPort(SerialSettings settings);
+
+    void writeEscapeSeqeunce();
+    void writeEscapeSeqeunceNow();
+    void readLocalVersionString();
+    void readRemoteVersionString();
+    void readLocalRadioFrequency();
+    void readRemoteRadioFrequency();
+    void readLocalSettingsStrings();
+    void readRemoteSettingsStrings();
+
+    void writeLocalSettings(Radio3DREeprom eepromSettings);
+    void writeRemoteSettings(SerialSettings settings);
+
+    void readData();
+
+    void handleError(QSerialPort::SerialPortError error);
+
+private slots:
+    void deleteSerialPort();
+
+private:
+    void closeSerialPort();
+
+private:
+    State m_state;
+    Radio3DREeprom m_localRadio;
+    Radio3DREeprom m_newLocalRadio;
+    Radio3DREeprom m_remoteRadio;
+    Radio3DREeprom m_newRemoteRadio;
+
+    // Helper Variables
+    int m_freqStepSize; // 100 for 433Mhz, 1000 for 915/868Mhz & 1 for RFD900,
+
+    QPointer<QSerialPort> m_serialPort;
+    int m_retryCount;
+    QString m_rxBuffer;
+    QTimer m_timer;
+    int m_paramIndexSend;
+
+};
+
+#endif // RADIO3DRSETTINGS_H

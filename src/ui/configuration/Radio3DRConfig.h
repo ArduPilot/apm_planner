@@ -25,11 +25,14 @@ This file is part of the APM_PLANNER project
 
 #include "QsLog.h"
 #include "SerialSettingsDialog.h"
+#include "Radio3DRSettings.h"
 #include "qserialport.h"
 
 #include <QPointer>
 #include <QWidget>
 #include "ui_Radio3DRConfig.h"
+
+class Radio3DRSettings;
 
 class Radio3DRConfig : public QWidget
 {
@@ -44,24 +47,41 @@ protected:
     void hideEvent(QHideEvent *event);
 
 private slots:
+    void serialPortOpenFailure(int error, QString errorString);
+
     void setBaudRate(int index);
     void setLink(int index);
     void populateSerialPorts();
 
+    void loadSavedSerialSettings();
+    void saveSerialSettings();
+
+    void writeRadioSettings();
+    void readRadioSettings();
+
+    void localReadComplete(Radio3DREeprom& eeprom, bool success);
+    void remoteReadComplete(Radio3DREeprom& eeprom, bool success);
+
+    void updateLocalStatus(QString status);
+    void updateRemoteStatus(QString status);
+
 private:
     void initConnections();
-    void addBaudComboBoxConfig();
+    void addBaudComboBoxConfig(QComboBox *comboBox);
     void fillPortsInfo(QComboBox &comboxBox);
-    void writeSettings();
-    void loadSettings();
+    void addRadioBaudComboBoxConfig(QComboBox &comboBox);
+    void addRadioAirBaudComboBoxConfig(QComboBox &comboBox);
+    void addTxPowerComboBoxConfig(QComboBox &comboBox);
+    void setupFrequencyComboBox(QComboBox& comboBox, int freqCode);
 
 private:
     Ui::Radio3DRConfig ui;
 
     QPointer<SettingsDialog> m_settingsDialog;
     SerialSettings m_settings;
-    QPointer<QSerialPort> m_serial;
+    Radio3DREeprom m_localRadioSettings;
     QPointer<QTimer> m_timer;
+    QPointer<Radio3DRSettings> m_radioSettings;
 };
 
 #endif // RADIO3DRCONFIG_H

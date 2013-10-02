@@ -22,6 +22,7 @@ This file is part of the APM_PLANNER project
 
 #include "AccelCalibrationConfig.h"
 #include "GAudioOutput.h"
+#include "MainWindow.h"
 
 AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_muted(false)
@@ -103,6 +104,9 @@ void AccelCalibrationConfig::levelButtonClicked()
         GAudioOutput::instance()->mute(true);
         m_muted = true;
     }
+
+    MainWindow::instance()->toolBar().stopAnimation();
+
     MAV_CMD command = MAV_CMD_PREFLIGHT_CALIBRATION;
     int confirm = 0;
     float param1 = 1.0;
@@ -133,6 +137,9 @@ void AccelCalibrationConfig::calibrateButtonClicked()
         GAudioOutput::instance()->mute(true);
         m_muted = true;
     }
+
+    MainWindow::instance()->toolBar().stopAnimation();
+
     if (m_accelAckCount == 0)
     {
         MAV_CMD command = MAV_CMD_PREFLIGHT_CALIBRATION;
@@ -174,6 +181,8 @@ void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
         GAudioOutput::instance()->mute(false);
         m_muted = false;
     }
+
+    MainWindow::instance()->toolBar().startAnimation();
 
     if (!m_uas || !m_accelAckCount)
     {
@@ -228,6 +237,7 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
                 m_accelAckCount = 0;
             }
             ui.outputLabel->setText(ui.outputLabel->text() + "\n" + text);
+            MainWindow::instance()->toolBar().startAnimation();
         }
         else
         {

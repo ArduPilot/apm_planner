@@ -70,13 +70,14 @@ void Console::setLocalEchoEnabled(bool set)
 void Console::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key()) {
-    case Qt::Key_Backspace:
     case Qt::Key_Left:
     case Qt::Key_Right:
     case Qt::Key_Up:
     case Qt::Key_Down:
         // skip processing
         break;
+//    case Qt::Key_Backspace:
+//        break;
     default:
         if (localEchoEnabled)
             QPlainTextEdit::keyPressEvent(e);
