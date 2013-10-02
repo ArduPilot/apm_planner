@@ -101,8 +101,6 @@ void LinkManager::addProtocol(LinkInterface* link, ProtocolInterface* protocol)
         // Protocol is new, add
         connect(link, SIGNAL(bytesReceived(LinkInterface*, QByteArray)),
                 protocol, SLOT(receiveBytes(LinkInterface*, QByteArray)), Qt::QueuedConnection);
-        // Add status
-        connect(link, SIGNAL(connected(bool)), protocol, SLOT(linkStatusChanged(bool)));
         // Store the connection information in the protocol links map
         protocolLinks.insertMulti(protocol, link);
     }
