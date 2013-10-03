@@ -267,6 +267,7 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot)
 {
     //type can be "stable" "beta" or "latest"
     //autopilot can be "apm" "px4" or "pixhawk"
+    QLOG_DEBUG() << "Requesting firmware:" << type << autopilot;
     m_betaFirmwareChecked = false;
     m_trunkFirmwareChecked = false;
     hideBetaLabels();
@@ -339,6 +340,10 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot)
         m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter-v2.px4";
         m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter-v2.px4";
     }
+    else
+    {
+        QLOG_ERROR() << "Unknown autopilot in ApmFirmwareConfig::requestFirmwares()" << autopilot;
+    }
 
     //http://firmware.diydrones.com/Plane/stable/apm2/ArduPlane.hex
     connect(reply1,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
@@ -359,7 +364,6 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot)
     connect(reply8,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
     connect(reply9,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
     connect(reply9,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
-    QLOG_DEBUG() << "Getting Stable firmware...";
 }
 
 void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
@@ -533,7 +537,6 @@ void ApmFirmwareConfig::downloadFinished()
         ui.textBrowser->append("Error Text: " + reply->errorString());
         return;
     }
-    qDebug() << "Error:" << reply->errorString() << reply->error();
     QByteArray hex = reply->readAll();
     m_tempFirmwareFile = new QTemporaryFile();
     m_tempFirmwareFile->open();
@@ -657,36 +660,6 @@ void ApmFirmwareConfig::flashButtonClicked()
     QPushButton *senderbtn = qobject_cast<QPushButton*>(sender());
     if (m_buttonToUrlMap.contains(senderbtn))
     {
-
-        /*bool foundconnected = false;
-        for (int i=0;i<LinkManager::instance()->getLinks().size();i++)
-        {
-            if (LinkManager::instance()->getLinks()[i]->isConnected())
-            {
-                //This is likely the serial link we want.
-                SerialLink *link = qobject_cast<SerialLink*>(LinkManager::instance()->getLinks()[i]);
-                if (!link)
-                {
-                    QLOG_DEBUG() << "Eror, trying to program over a non serial link. This should not happen";
-                    return;
-                }
-                if (!(QMessageBox::question(this,tr("WARNING"),tr("You are about to upload new firmware to your board. This will disconnect you if you are currently connected. Be sure the MAV is on the ground, and connected over USB/Serial link.\n\nDo you wish to proceed?"),QMessageBox::Yes,QMessageBox::No) == QMessageBox::Yes))
-                {
-                    return;
-                }
-
-                m_detectedComPort = link->getPortName();
-                link->requestReset();
-                foundconnected = true;
-                link->disconnect();
-                link->wait(1000); // Wait 1 second for it to disconnect.
-            }
-        }
-        if (!foundconnected)
-        {
-            QMessageBox::information(0,tr("Error"),tr("You must be connected to a MAV over serial link to flash firmware. Please connect to a MAV then try again"));
-            return;
-        }*/
         //Try to connect before downloading:
         if (m_uas)
         {
@@ -706,30 +679,6 @@ void ApmFirmwareConfig::flashButtonClicked()
                 }
             }
         }
-        /*QLOG_DEBUG() << "creating new serial port" << m_settings.name;
-        m_port = new QSerialPort(this);
-        QLOG_DEBUG() << m_port;
-        m_port->setPortName(m_settings.name);
-        if (m_port->open(QIODevice::ReadWrite)) {
-            if (m_port->setBaudRate(m_settings.baudRate)
-                    && m_port->setDataBits(m_settings.dataBits)
-                    && m_port->setParity(m_settings.parity)
-                    && m_port->setStopBits(m_settings.stopBits)
-                    && m_port->setFlowControl(m_settings.flowControl)) {
-                QLOG_INFO() << "Open Firmware Upload Serial Port";
-                m_port->close();
-            } else {
-                m_port->close();
-                QMessageBox::critical(this, tr("Error"), m_port->errorString());
-                m_port->deleteLater();
-                return;
-            }
-        } else {
-            QMessageBox::critical(this, tr("Error"), m_port->errorString());
-            m_port->deleteLater();
-            return;
-        }
-        m_port->deleteLater();*/
         ui.progressBar->setVisible(true);
 
         QLOG_DEBUG() << "Go download:" << m_buttonToUrlMap[senderbtn];
@@ -741,11 +690,23 @@ void ApmFirmwareConfig::flashButtonClicked()
         connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
         ui.statusLabel->setText("Downloading");
     }
+    else
+    {
+        QLOG_DEBUG() << "Flash button clicked without any HTTP links!";
+        QLOG_DEBUG() << "Autopilot:" << m_autopilotType;
+        QLOG_DEBUG() << "Firmware:" << m_firmwareType;
+        QLOG_DEBUG() << "Set COM port:" << m_settings.name;
+    }
 }
 void ApmFirmwareConfig::setLink(int index)
 {
     if (ui.linkComboBox->itemData(index).toStringList().size() > 0)
     {
+        bool blank = false;
+        if (m_settings.name == "")
+        {
+            blank = true;
+        }
         m_settings.name = ui.linkComboBox->itemData(index).toStringList()[0];
 #ifdef Q_OS_WIN
         ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[1] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
@@ -759,7 +720,7 @@ void ApmFirmwareConfig::setLink(int index)
                 if (info.description().toLower().contains("mega") && info.description().contains("2560"))
                 {
                     //APM
-                    if (m_autopilotType != "apm")
+                    if (m_autopilotType != "apm" || blank)
                     {
                         requestFirmwares(m_firmwareType,"apm");
                         QLOG_DEBUG() << "APM Detected";
@@ -770,7 +731,7 @@ void ApmFirmwareConfig::setLink(int index)
                     //PX4
                     if (info.productIdentifier() == 0x0010) //Both PX4 and PX4 bootloader are 0x0010.
                     {
-                        if (m_autopilotType != "px4")
+                        if (m_autopilotType != "px4" || blank)
                         {
                             requestFirmwares(m_firmwareType,"px4");
                             QLOG_DEBUG() << "PX4 Detected";
@@ -778,7 +739,7 @@ void ApmFirmwareConfig::setLink(int index)
                     }
                     else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
                     {
-                        if (m_autopilotType != "pixhawk")
+                        if (m_autopilotType != "pixhawk" || blank)
                         {
                             requestFirmwares(m_firmwareType,"pixhawk");
                             QLOG_DEBUG() << "Pixhawk Detected";
