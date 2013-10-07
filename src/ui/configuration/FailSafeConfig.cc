@@ -116,15 +116,20 @@ FailSafeConfig::FailSafeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     connect(ui.throttlePwmSpinBox,SIGNAL(editingFinished()),this,SLOT(throttlePwmChanged()));
     connect(ui.batteryVoltSpinBox,SIGNAL(editingFinished()),this,SLOT(batteryVoltChanged()));
     connect(ui.throttleFailSafeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(throttleFailSafeChanged(int)));
+    connect(ui.batteryCapSpinBox,SIGNAL(editingFinished()),this,SLOT(batteryCapChanged()));
 
     ui.armedLabel->setText("<h1>DISARMED</h1>");
 
 
     ui.modeLabel->setText("<h1>MODE</h1>");
 
+    ui.label_7->setVisible(false);
+    ui.batteryCapSpinBox->setVisible(false);
+
 
     initConnections();
 }
+
 void FailSafeConfig::gcsChecked(bool checked)
 {
     if (!m_uas)
@@ -175,6 +180,7 @@ void FailSafeConfig::throttleChecked(bool checked)
         m_uas->setParameter(1,"THR_FAILSAFE",0);
     }
 }
+
 void FailSafeConfig::batteryVoltChanged()
 {
     if (!m_uas)
@@ -182,7 +188,17 @@ void FailSafeConfig::batteryVoltChanged()
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->setParameter(1,"LOW_VOLT",ui.batteryVoltSpinBox->value());
+    m_uas->setParameter(1,m_lowVoltParam,ui.batteryVoltSpinBox->value());
+}
+
+void FailSafeConfig::batteryCapChanged()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    m_uas->setParameter(1,"FS_BATT_MAH",ui.batteryCapSpinBox->value());
 }
 
 void FailSafeConfig::throttlePwmChanged()
@@ -357,7 +373,19 @@ void FailSafeConfig::parameterChanged(int uas, int component, QString parameterN
     }
     else if (parameterName == "LOW_VOLT")
     {
+        m_lowVoltParam = "LOW_VOLT";
         ui.batteryVoltSpinBox->setValue(value.toFloat());
+    }
+    else if (parameterName == "FS_BATT_VOLTAGE")
+    {
+        m_lowVoltParam = "FS_BATT_VOLTAGE";
+        ui.batteryVoltSpinBox->setValue(value.toFloat());
+    }
+    else if (parameterName == "FS_BATT_MAH")
+    {
+        ui.label_7->setVisible(true);
+        ui.batteryCapSpinBox->setVisible(true);
+        ui.batteryCapSpinBox->setValue(value.toFloat());
     }
     //Arduplane
     else if (parameterName == "THR_FAILSAFE")

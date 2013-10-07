@@ -64,7 +64,7 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>10</x>
      <y>170</y>
      <width>281</width>
      <height>131</height>
@@ -88,7 +88,7 @@
         <item>
          <widget class="QLabel" name="label_8">
           <property name="text">
-           <string>Voltage from APM</string>
+           <string>Voltage from Autopilot</string>
           </property>
          </widget>
         </item>
@@ -183,10 +183,10 @@
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>430</x>
+     <x>300</x>
      <y>170</y>
      <width>281</width>
-     <height>111</height>
+     <height>191</height>
     </rect>
    </property>
    <property name="title">
@@ -194,41 +194,77 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
-      <item>
-       <widget class="QLabel" name="label_13">
-        <property name="text">
-         <string>Battery Capacity:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="battCapacityLineEdit"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_12">
-        <property name="text">
-         <string>mAh</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
-       <widget class="QLabel" name="label_11">
-        <property name="text">
-         <string>Amperes per volt:</string>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>Battery Capacity:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>Measured Current: </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_15">
+          <property name="text">
+           <string>Battery Current from Autopilot </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Amperes per volt:</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <widget class="QLineEdit" name="ampsPerVoltsLineEdit">
-        <property name="readOnly">
-         <bool>false</bool>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="0,1,1,1">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QLineEdit" name="battCapacityLineEdit"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>mAh</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="measuredCurrentLineEdit">
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="batteryCurrentLineEdit">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="ampsPerVoltsLineEdit">
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>

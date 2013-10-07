@@ -57,7 +57,9 @@ private slots:
     void gpsStatusChanged(UASInterface* uas,int fixtype);
     void batteryVoltChanged();
     void navModeChanged(int uasid, int mode, const QString& text);
+    void batteryCapChanged();
 private:
+    QString m_lowVoltParam;
     Ui::FailSafeConfig ui;
 };
 

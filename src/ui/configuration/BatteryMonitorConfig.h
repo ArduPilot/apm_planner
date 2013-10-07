@@ -48,13 +48,19 @@ private slots:
     void apmVerCurrentIndexChanged(int index);
     void calcDividerSet();
     void measuredVoltsSet();
+    void measuredCurrentSet();
     void ampsPerVoltSet();
     void batteryCapacitySet();
     void alertOnLowClicked(bool checked);
     void activeUASSet(UASInterface *uas);
     void batteryChanged(UASInterface* uas, double voltage, double current, double percent, int seconds);
 private:
+    QString m_voltDividerParam;
+    QString m_ampPerVoltParam;
+    double m_savedAmpsPerVolts;
+    double m_savedVoltDivider;
     Ui::BatteryMonitorConfig ui;
+    void checkSensorType();
     inline float calculatemVPerAmp(float maxvoltsout,float maxamps);
     inline float calculatemVPerVolt(float maxvoltsout,float maxvolts);
 };

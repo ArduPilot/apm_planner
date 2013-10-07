@@ -436,6 +436,24 @@
       </item>
      </layout>
     </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Low Capacity (mAh)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="batteryCapSpinBox">
+        <property name="maximum">
+         <number>10000</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
  </widget>
