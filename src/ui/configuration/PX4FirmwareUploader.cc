@@ -1,6 +1,11 @@
 #include "PX4FirmwareUploader.h"
 #include "qserialportinfo.h"
-//#include <QtCrypto/qca.h>
+#ifndef Q_OS_WIN
+#include <openssl/rsa.h>
+#include <openssl/x509.h>
+#endif //Q_OS_WIN
+#include <QProcess>
+
 #include <QCryptographicHash>
 #include <QDateTime>
 #include "QsLog.h"
@@ -304,8 +309,8 @@ void PX4FirmwareUploader::run()
             {
                 QLOG_FATAL() << "PX4Firmware Uploader does not yet support V4 bootloaders";
                 emit statusUpdate("PX4 Firmware Uploader does not yet support V4 bootloaders");
-                emit error("PX4FirmwareUploader does not yet support V4 bootloaders");
-                return;
+                //emit error("PX4FirmwareUploader does not yet support V4 bootloaders");
+                //return;
             }
             msleep(500);
             emit statusUpdate("Requesting board ID");
@@ -509,77 +514,56 @@ void PX4FirmwareUploader::run()
                 {
                     serial.append((char)0);
                 }
+                serial[0] = serial[1];
                 qDebug() << "Serial size:" << serial.size();
                 emit statusUpdate("Verifying OTP");
 
-                //Verify OTP here
-                /*QCA::Initializer init;
-                if(!QCA::isSupported("pkey") || !QCA::PKey::supportedIOTypes().contains(QCA::PKey::RSA))
-                {
-                      qDebug() << "RSA not supported!";
-                      for (int i=0;i<QCA::supportedFeatures().size();i++)
-                      {
-                          qDebug() << "Supported:" << QCA::supportedFeatures()[i];
-                      }
+#ifdef Q_OS_WIN
+                QProcess *proc = new QProcess();
 
-                      for (int i=0;i<QCA::PKey::supportedIOTypes().size();i++)
-                      {
-                          qDebug() << "Supported2:" << QCA::PKey::supportedIOTypes()[i];
-                      }
+#else
 
-                }
-                else
-                {
-                    qDebug() << "PKey supported";
-                }
-                QCA::ConvertResult conresult;
                 QString test = "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
                 QByteArray bytes = QByteArray::fromBase64(test.toAscii());
-                QCA::PublicKey key = QCA::RSAPublicKey::fromDER(bytes,&conresult);
-                if (conresult != QCA::ConvertGood)
+
+                BIO *bi = BIO_new(BIO_s_mem());
+                BIO_write(bi, bytes.data(), bytes.size());
+                EVP_PKEY *pkey = d2i_PUBKEY_bio(bi, NULL);
+                BIO_free(bi);
+                if(!pkey)
                 {
-                    qDebug() << "Error converting" << conresult;
+                    QLOG_FATAL() << "PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?";
+                    emit statusUpdate("PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?");
+                    emit error("PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?");
+                    m_port->close();
+                    delete m_port;
                     return;
                 }
-                else
-                {
-                    qDebug() << "Good conversion";
-                }
 
-                if (!key.canVerify())
+                int verify = RSA_verify(NID_sha1,(unsigned char*)serial.data(),serial.size(),(unsigned char*)signature.data(),signature.size(),pkey->pkey.rsa);
+                if (verify)
                 {
-                    qDebug() << "Unable to verify";
+                    //Failed!
+                    QLOG_FATAL() << "PX4Firmware Uploader failed OTP check";
+                    emit statusUpdate("PX4Firmware Uploader failed OTP check");
+                    emit error("PX4Firmware Uploader failed OTP check! Are you sure this is a legimiate 3DR PX4?");
+                    m_port->close();
+                    delete m_port;
                     return;
                 }
-                //key.startVerify(QCA::EMSA3_SHA1);
-                //key.update(serial.data());
-
-                if (!key.verifyMessage(serial,signature,QCA::EMSA3_SHA1))
-                {
-                    qDebug() << "Invalid signature2";
-                }*/
-
-
-
-
-               // return;
-
+#endif //Q_OS_WIN
+                QLOG_FATAL() << "PX4Firmware Uploader does not yet support uploading on Windows";
+                emit statusUpdate("PX4Firmware Uploader does not yet support uploading on Windows");
+                emit error("PX4Firmware Uploader does not yet support uploading on Windows");
+                m_port->close();
+                delete m_port;
+                return;
+                //QLOG_INFO() << "OTP Successful";
+                //emit statusUpdate("OTP Verification successful!");
                 //qDebug() << "Sig size:" << signature.size();
                 //qDebug() << "First three of sig:" << QString::number(signature[0],16) << QString::number(signature[1],16) << QString::number(signature[2],16);
                 //qDebug() << "Last three of sig:" << QString::number(signature[125],16) << QString::number(signature[126],16) << QString::number(signature[127],16);
                 //qDebug() << "Serial size:" << serial.size();
-
-                //msleep(1000);
-
-                /*publicKey.update(serial);
-                if (publicKey.validSignature(signature))
-                {
-                    qDebug() << "Signature is valid!!";
-                }
-                else
-                {
-                    qDebug() << "Signature is invalid!";
-                }*/
             } //if bootloaderrev >= 4
             if (m_stop)
             {
@@ -596,8 +580,6 @@ void PX4FirmwareUploader::run()
             emit serialNumber(snstr);
             emit OTP(otpstr);
 
-            //m_port->close();
-            //return;
             //Erase
             QLOG_INFO() << "Requesting erase";
             emit statusUpdate("Erasing flash, this may take up to a minute");
