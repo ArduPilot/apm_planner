@@ -160,10 +160,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.globalParamProgressBar->setRange(0,100);
 
     ui.mandatoryHardware->setChecked(true);
-    connect(ui.optionalHardwareButton, SIGNAL(clicked()),
-            this, SLOT(optionalClicked()));
-    connect(ui.mandatoryHardware, SIGNAL(clicked()),
-            this, SLOT(mandatoryClicked()));
 
     // Set start up WarningMessageView view
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
@@ -191,6 +187,10 @@ void ApmHardwareConfig::uasConnected()
         return;
     }
     QLOG_DEBUG() << "AHC: uasConnected()";
+    connect(ui.optionalHardwareButton, SIGNAL(clicked()),
+            this, SLOT(optionalClicked()),Qt::UniqueConnection);
+    connect(ui.mandatoryHardware, SIGNAL(clicked()),
+            this, SLOT(mandatoryClicked()),Qt::UniqueConnection);
     // Hide offline options and show Optional and Mandatory buttons
     ui.radio3DRLargeButton->setVisible(false);
     ui.antennaTrackerLargeButton->setVisible(false);
