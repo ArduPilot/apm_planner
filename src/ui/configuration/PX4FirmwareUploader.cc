@@ -307,8 +307,8 @@ void PX4FirmwareUploader::run()
             emit statusUpdate("Bootloader Rev: " + QString::number(read));
             if (bootloaderrev >= 4)
             {
-                QLOG_FATAL() << "PX4Firmware Uploader does not yet support V4 bootloaders";
-                emit statusUpdate("PX4 Firmware Uploader does not yet support V4 bootloaders");
+                //QLOG_FATAL() << "PX4Firmware Uploader does not yet support V4 bootloaders";
+                //emit statusUpdate("PX4 Firmware Uploader does not yet support V4 bootloaders");
                 //emit error("PX4FirmwareUploader does not yet support V4 bootloaders");
                 //return;
             }
@@ -519,7 +519,13 @@ void PX4FirmwareUploader::run()
                 emit statusUpdate("Verifying OTP");
 
 #ifdef Q_OS_WIN
-                QProcess *proc = new QProcess();
+                //QProcess *proc = new QProcess();
+                QLOG_FATAL() << "PX4Firmware Uploader does not yet support uploading on Windows";
+                emit statusUpdate("PX4Firmware Uploader does not yet support uploading on Windows");
+                emit error("PX4Firmware Uploader does not yet support uploading on Windows");
+                m_port->close();
+                delete m_port;
+                return;
 
 #else
 
@@ -552,12 +558,8 @@ void PX4FirmwareUploader::run()
                     return;
                 }
 #endif //Q_OS_WIN
-                QLOG_FATAL() << "PX4Firmware Uploader does not yet support uploading on Windows";
-                emit statusUpdate("PX4Firmware Uploader does not yet support uploading on Windows");
-                emit error("PX4Firmware Uploader does not yet support uploading on Windows");
-                m_port->close();
-                delete m_port;
-                return;
+                QLOG_DEBUG() << "OTP verification successful";
+                emit statusUpdate("OTP verification successful");
                 //QLOG_INFO() << "OTP Successful";
                 //emit statusUpdate("OTP Verification successful!");
                 //qDebug() << "Sig size:" << signature.size();

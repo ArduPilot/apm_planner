@@ -91,7 +91,7 @@ unix {
         DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
         DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 	INCLUDEPATH += C:/openssl-1.0.1e/include
-	LIBS += -LC:/openssl-1.0.1e/out32dll -lssleay32 -llibeay32
+	LIBS += -lssl -lcrypto
 }
 include (QsLog/QsLog.pri)
 
