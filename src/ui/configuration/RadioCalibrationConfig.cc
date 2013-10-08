@@ -202,7 +202,7 @@ void RadioCalibrationConfig::calibrateButtonClicked()
         statusstr += "--------------------\n";
         for (int i=0;i<8;i++)
         {
-            statusstr += QString::number(i) + "\t" + QString::number(rcMin[i]) + "\t" + QString::number(rcValue[i]) + "\t" + QString::number(rcMax[i]) + "\n";
+            statusstr += QString::number(i+1) + "\t" + QString::number(rcMin[i]) + "\t" + QString::number(rcValue[i]) + "\t" + QString::number(rcMax[i]) + "\n";
         }
         QMessageBox::information(0,"Status",statusstr);
         //Send calibrations.
