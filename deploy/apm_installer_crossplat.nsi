@@ -39,6 +39,11 @@ Section "APM Planner 2 files"
   File ../avrdude/avrdude.exe
   File ../avrdude/libusb0.dll
   File ../avrdude/avrdude.conf
+  SetOutPath $INSTDIR\uploader
+  File ../uploader/px4uploader.exe
+  File ../uploader/Ionic.Zip.Reduced.dll
+  File ../uploader/BouncyCastle.Crypto.dll
+
   WriteUninstaller $INSTDIR\APMPlanner2_uninstall.exe
 SectionEnd 
 
