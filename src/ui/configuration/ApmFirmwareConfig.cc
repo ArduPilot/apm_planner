@@ -197,6 +197,10 @@ void ApmFirmwareConfig::px4StatusUpdate(QString update)
     ui.statusLabel->setText(update);
     ui.textBrowser->append(update);
 }
+void ApmFirmwareConfig::px4DebugUpdate(QString update)
+{
+    ui.textBrowser->append(update);
+}
 
 void ApmFirmwareConfig::uasDisconnected()
 {
@@ -629,6 +633,7 @@ void ApmFirmwareConfig::downloadFinished()
         m_isPx4 = true;
     m_px4uploader = new PX4FirmwareUploader();
     connect(m_px4uploader,SIGNAL(statusUpdate(QString)),this,SLOT(px4StatusUpdate(QString)));
+    connect(m_px4uploader,SIGNAL(debugUpdate(QString)),this,SLOT(px4DebugUpdate(QString)));
     connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Terminated()));
     connect(m_px4uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
     connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));

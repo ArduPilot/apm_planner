@@ -86,6 +86,7 @@ private slots:
     void px4Finished();
     void px4Terminated();
     void px4StatusUpdate(QString update);
+    void px4DebugUpdate(QString update);
 private:
     PX4FirmwareUploader *m_px4uploader;
     QString m_firmwareType;

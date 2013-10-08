@@ -28,6 +28,7 @@ private:
     unsigned int m_loadedFwSize;
     QString m_loadedDescription;
     QTemporaryFile *tempFile;
+    QTemporaryFile *tempJsonFile;
 signals:
     void requestDevicePlug();
     void done();
@@ -40,6 +41,7 @@ signals:
     void flashProgress(qint64 current,qint64 total);
     void error(QString error);
     void statusUpdate(QString status);
+    void debugUpdate(QString debug);
 public slots:
 
 };

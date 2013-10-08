@@ -130,6 +130,11 @@ bool PX4FirmwareUploader::loadFile(QString file)
     QString jsonstring(jsonbytes);
     json.close();
 
+    tempJsonFile = new QTemporaryFile();
+    tempJsonFile->open();
+    tempJsonFile->write(jsonbytes);
+    tempJsonFile->close();
+
     //This chunk of code is from QUpgrade
     //Available https://github.com/LorenzMeier/qupgrade
     // BOARD ID
@@ -241,6 +246,92 @@ void PX4FirmwareUploader::run()
         }
         msleep(100);
     }
+#ifdef Q_OS_WIN
+    //Windows stuff is all QProcess based for px4uploader
+    tempJsonFile->setAutoRemove(false);
+    QString filename = tempJsonFile->fileName();
+    delete tempJsonFile;
+    tempJsonFile = 0;
+    QProcess *proc = new QProcess(this);
+    //proc->setWorkingDirectory("C:\\Users\\Michael\\qgroundcontroltwo\\qgroundcontrol\\uploader");
+    proc->start("uploader\\px4uploader.exe",QStringList() << filename);
+    emit statusUpdate("Loading file: " + filename);
+    proc->waitForStarted();
+    int total = 0;
+    int show = 0;
+    bool finished = false;
+    while ((proc->state() == QProcess::Running) || !finished)
+    {
+        proc->waitForReadyRead(1);
+        QString bytes = proc->readLine();
+        if (bytes.contains("Trying Port"))
+        {
+            emit statusUpdate("Attempting to find COM port...");
+        }
+        else if (bytes.contains("Valid Key"))
+        {
+            emit statusUpdate("OTP Verified");
+        }
+        else if (bytes.contains("erase"))
+        {
+            emit statusUpdate("Erasing...");
+        }
+        else if (bytes.contains("Program"))
+        {
+            show++;
+            if (!(show % 100))
+            {
+                emit statusUpdate("Programming...");
+                QStringList numsplit = bytes.mid(bytes.indexOf(" ")).split("/");
+                if (numsplit.size() > 1)
+                {
+                    emit flashProgress(numsplit[0].toInt(),numsplit[1].toInt());
+                }
+            }
+        }
+        else if (bytes.contains("Same Firmware. Not uploading"))
+        {
+            proc->kill();
+            return;
+        }
+        else if (bytes.contains("Programming packet total:"))
+        {
+            QString totalstr = bytes.mid(bytes.indexOf("Programming packet total:")+25,bytes.indexOf("\n",bytes.indexOf("Programming packet total:")+25));
+            bool ok = false;
+            total = totalstr.toInt(&ok);
+            if (!ok)
+            {
+                total = 0;
+            }
+
+        }
+        else if (bytes.contains("done, rebooting") || bytes.contains("Press Any Key"))
+        {
+            //Finished
+            proc->write("\r");
+            proc->write("\n");
+            proc->waitForBytesWritten();
+            finished = true;
+        }
+        else if (bytes != "")
+        {
+            emit debugUpdate(bytes);
+        }
+    }
+    emit debugUpdate(proc->readAllStandardError());
+    if (finished)
+    {
+        emit statusUpdate("Process Success");
+    }
+    else
+    {
+        emit statusUpdate("Process ended: " + proc->errorString());
+    }
+    delete tempFile;
+    tempFile = 0;
+    emit done();
+    return;
+#endif
     m_port = new QSerialPort();
     msleep(500);
     m_port->setPortName(portnametouse);
