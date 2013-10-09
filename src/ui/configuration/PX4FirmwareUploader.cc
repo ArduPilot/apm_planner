@@ -253,10 +253,12 @@ void PX4FirmwareUploader::run()
     delete tempJsonFile;
     tempJsonFile = 0;
     QProcess *proc = new QProcess(this);
-    //proc->setWorkingDirectory("C:\\Users\\Michael\\qgroundcontroltwo\\qgroundcontrol\\uploader");
-    proc->start("uploader\\px4uploader.exe",QStringList() << filename);
+
+    //Set the working directory to the temp directory, should be universally writable.
+    proc->setWorkingDirectory(tempFile->fileName().mid(0,tempFile->fileName().lastIndexOf("/")));
+    proc->start("uploader\\px4uploader.exe",QStringList() << filename.replace("/","\\"));
     emit statusUpdate("Loading file: " + filename);
-    proc->waitForStarted();
+    proc->waitForStarted(2000);
     int total = 0;
     int show = 0;
     bool finished = false;
@@ -291,6 +293,7 @@ void PX4FirmwareUploader::run()
         }
         else if (bytes.contains("Same Firmware. Not uploading"))
         {
+            emit statusUpdate("No need to update, identical firmware already loaded");
             proc->kill();
             return;
         }
