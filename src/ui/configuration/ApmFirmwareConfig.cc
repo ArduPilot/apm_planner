@@ -38,6 +38,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     m_port=0;
     m_hasError=0;
     //firmwareStatus = 0;
+    m_replugRequestMessageBox = 0;
     m_betaFirmwareChecked = false;
     m_trunkFirmwareChecked = false;
     m_tempFirmwareFile=0;
@@ -429,6 +430,8 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
         {
             ui.statusLabel->setText(tr("Upload complete"));
         }
+        QMessageBox::information(this,"Complete","APM Flashing is complete!");
+        MainWindow::instance()->toolBar().selectFlightView();
     }
     //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
     m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
@@ -460,6 +463,8 @@ void ApmFirmwareConfig::px4Finished()
     {
         ui.statusLabel->setText(tr("Upload complete"));
     }
+    QMessageBox::information(this,"Complete","PX4 Flashing is complete!");
+    MainWindow::instance()->toolBar().selectFlightView();
 }
 
 void ApmFirmwareConfig::firmwareProcessReadyRead()
@@ -639,6 +644,7 @@ void ApmFirmwareConfig::downloadFinished()
     connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
     connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
     connect(m_px4uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
+    connect(m_px4uploader,SIGNAL(devicePlugDetected()),this,SLOT(devicePlugDetected()));
     m_px4uploader->loadFile(m_tempFirmwareFile->fileName());
     }
     m_timeoutCounter=0;
@@ -647,7 +653,24 @@ void ApmFirmwareConfig::downloadFinished()
 }
 void ApmFirmwareConfig::requestDeviceReplug()
 {
-    QMessageBox::information(this,"Warning","Please click ok, then unplug, and plug back in the PX4/Pixhawk");
+    if (m_replugRequestMessageBox)
+    {
+        m_replugRequestMessageBox->hide();
+        delete m_replugRequestMessageBox;
+        m_replugRequestMessageBox = 0;
+    }
+    m_replugRequestMessageBox = new QMessageBox(QMessageBox::Warning,"Warning","Please unplug, and plug back in the PX4/Pixhawk");
+    m_replugRequestMessageBox->show();
+    //QMessageBox::information(this,"Warning","Please click ok, then unplug, and plug back in the PX4/Pixhawk");
+}
+void ApmFirmwareConfig::devicePlugDetected()
+{
+    if (m_replugRequestMessageBox)
+    {
+        m_replugRequestMessageBox->hide();
+        delete m_replugRequestMessageBox;
+        m_replugRequestMessageBox = 0;
+    }
 }
 
 void ApmFirmwareConfig::firmwareProcessError(QProcess::ProcessError error)

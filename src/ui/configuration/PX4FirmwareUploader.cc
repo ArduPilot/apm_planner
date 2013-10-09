@@ -246,6 +246,7 @@ void PX4FirmwareUploader::run()
         }
         msleep(100);
     }
+    emit devicePlugDetected();
 #ifdef Q_OS_WIN
     //Windows stuff is all QProcess based for px4uploader
     tempJsonFile->setAutoRemove(false);

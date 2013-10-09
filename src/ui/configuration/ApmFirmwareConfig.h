@@ -82,12 +82,14 @@ private slots:
     void cancelButtonClicked();
     void populateSerialPorts();
     void requestDeviceReplug();
+    void devicePlugDetected();
     void px4Error(QString error);
     void px4Finished();
     void px4Terminated();
     void px4StatusUpdate(QString update);
     void px4DebugUpdate(QString update);
 private:
+    QMessageBox *m_replugRequestMessageBox;
     PX4FirmwareUploader *m_px4uploader;
     QString m_firmwareType;
     QString m_autopilotType;

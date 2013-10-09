@@ -31,6 +31,7 @@ private:
     QTemporaryFile *tempJsonFile;
 signals:
     void requestDevicePlug();
+    void devicePlugDetected();
     void done();
     void serialNumber(QString sn);
     void OTP(QString otp);
