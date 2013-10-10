@@ -156,7 +156,7 @@ void BatteryMonitorConfig::ampsPerVoltSet()
         QMessageBox::information(0,"Error","Invalid number entered for amps per volts. Please try again");
         return;
     }
-    m_uas->getParamManager()->setParameter(1,"AMPS_PER_VOLT",newval);
+    m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,newval);
 }
 void BatteryMonitorConfig::batteryCapacitySet()
 {
