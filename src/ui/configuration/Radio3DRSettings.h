@@ -142,6 +142,7 @@ class Radio3DRSettings : public QObject
                  readRemoteParams,
                  writeLocalParams,
                  writeRemoteParams,
+                 readRssiLocal, readRssiRemote,
                  complete, portOpen, error };
 
 public:
@@ -156,6 +157,8 @@ signals:
     void remoteReadComplete(Radio3DREeprom& eeprom, bool success);
     void updateLocalStatus(QString status);
     void updateRemoteStatus(QString status);
+    void updateLocalRssi(QString status);
+    void updateRemoteRssi(QString status);
 
 
 public slots:
@@ -172,6 +175,9 @@ public slots:
 
     void writeLocalSettings(Radio3DREeprom eepromSettings);
     void writeRemoteSettings(Radio3DREeprom eepromSettings);
+
+    void readLocalRssi();
+    void readRemoteRssi();
 
     void resetToDefaults();
 

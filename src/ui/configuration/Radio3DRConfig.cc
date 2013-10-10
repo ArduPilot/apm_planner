@@ -221,6 +221,10 @@ void Radio3DRConfig::readRadioSettings()
                 this, SLOT(updateLocalStatus(QString)));
         connect(m_radioSettings, SIGNAL(updateRemoteStatus(QString)),
                 this, SLOT(updateRemoteStatus(QString)));
+        connect(m_radioSettings, SIGNAL(updateLocalRssi(QString)),
+                this, SLOT(updateLocalRssi(QString)));
+        connect(m_radioSettings, SIGNAL(updateRemoteRssi(QString)),
+                this, SLOT(updateRemoteRssi(QString)));
     }
 
     if(m_radioSettings->openSerialPort(m_settings)){
@@ -376,6 +380,16 @@ void Radio3DRConfig::copyLocalSettingsToRemote()
 
     ui.minFreqComboBox_remote->setCurrentIndex(ui.minFreqComboBox->currentIndex());
     ui.maxFreqComboBox_remote->setCurrentIndex(ui.maxFreqComboBox->currentIndex());
+}
+
+void Radio3DRConfig::updateLocalRssi(QString status)
+{
+    ui.rssiTextEdit->setText(status);
+}
+
+void Radio3DRConfig::updateRemoteRssi(QString status)
+{
+    ui.rssiTextEdit_remote->setText(status);
 }
 
 void Radio3DRConfig::addRadioBaudComboBoxConfig(QComboBox &comboBox)

@@ -487,9 +487,24 @@ void Radio3DRSettings::readData()
             emit updateRemoteStatus(tr("SUCCESS"));
             emit remoteReadComplete(m_remoteRadio, true);
 //            closeSerialPort();
-            m_state = portOpen;
+            // Start the RSSI reading
+            readLocalRssi();
         };
     } break;
+
+    case readRssiLocal:{
+        if (currentLine.startsWith("L/R RSSI:")){
+            emit updateRemoteRssi(currentLine);
+        }
+        readRemoteRssi();
+    }break;
+
+    case readRssiRemote:{
+        if (currentLine.startsWith("L/R RSSI:")){
+            emit updateLocalRssi(currentLine);
+        }
+        m_state = portOpen; // finshed
+    }break;
 
     case error:
         QLOG_DEBUG() << "Error: " << m_serialPort->errorString();
@@ -662,6 +677,21 @@ void Radio3DRSettings::writeRemoteSettings(Radio3DREeprom eepromSettings)
     QLOG_DEBUG() << " Sending" << m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toAscii();
     m_serialPort->write(m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toAscii());
     m_state = writeRemoteParams;
+}
+
+void Radio3DRSettings::readLocalRssi()
+{
+    QLOG_DEBUG() << "readLocalRssi";
+    m_serialPort->write("ATI7\r\n");
+    m_state = readRssiLocal;
+
+}
+
+void Radio3DRSettings::readRemoteRssi()
+{
+    QLOG_DEBUG() << "readRemoteRssi";
+    m_serialPort->write("RTI7\r\n");
+    m_state = readRssiRemote;
 }
 
 void Radio3DRSettings::handleError(QSerialPort::SerialPortError error)

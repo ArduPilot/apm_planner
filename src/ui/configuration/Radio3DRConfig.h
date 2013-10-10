@@ -68,6 +68,8 @@ private slots:
 
     void updateLocalStatus(QString status);
     void updateRemoteStatus(QString status);
+    void updateLocalRssi(QString status);
+    void updateRemoteRssi(QString status);
 
 private:
     void initConnections();
