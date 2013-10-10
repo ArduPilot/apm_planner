@@ -58,13 +58,20 @@ class Radio3DREeprom
     // Helper Object that stores Radio Settings
 public:
 
+    enum Mode {local, remote};
+
+    static const int numberofParams = 14;
+
+public:
+
     Radio3DREeprom();
     // Take the repsonse from an A(R)TI5 repsonse.
     bool setVersion(QString &versionString);
     bool setParameter(QString &parameterString);
     bool setRadioFreqCode(int freqCode);
 
-    const QString parameter(int index);
+    // returns a valid AT string to set the eeprom
+    const QString formattedParameter(Mode mode, int index);
 
     // accessors
     int version();
@@ -134,7 +141,8 @@ class Radio3DRSettings : public QObject
                  readRemoteVersion, readRemoteFrequency,
                  readRemoteParams,
                  writeLocalParams,
-                 complete, error };
+                 writeRemoteParams,
+                 complete, portOpen, error };
 
 public:
     explicit Radio3DRSettings(QObject *parent = 0);
@@ -163,7 +171,9 @@ public slots:
     void readRemoteSettingsStrings();
 
     void writeLocalSettings(Radio3DREeprom eepromSettings);
-    void writeRemoteSettings(SerialSettings settings);
+    void writeRemoteSettings(Radio3DREeprom eepromSettings);
+
+    void resetToDefaults();
 
     void readData();
 

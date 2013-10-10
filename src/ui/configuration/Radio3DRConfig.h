@@ -56,8 +56,12 @@ private slots:
     void loadSavedSerialSettings();
     void saveSerialSettings();
 
-    void writeRadioSettings();
+    void writeLocalRadioSettings();
+    void writeRemoteRadioSettings();
     void readRadioSettings();
+    void resetRadioSettingsToDefaults();
+
+    void copyLocalSettingsToRemote();
 
     void localReadComplete(Radio3DREeprom& eeprom, bool success);
     void remoteReadComplete(Radio3DREeprom& eeprom, bool success);
@@ -79,7 +83,8 @@ private:
 
     QPointer<SettingsDialog> m_settingsDialog;
     SerialSettings m_settings;
-    Radio3DREeprom m_localRadioSettings;
+    Radio3DREeprom m_newRadioSettings;
+    Radio3DREeprom m_remoteRadioSettings;
     QPointer<QTimer> m_timer;
     QPointer<Radio3DRSettings> m_radioSettings;
 };

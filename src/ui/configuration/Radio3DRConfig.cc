@@ -76,7 +76,7 @@ void Radio3DRConfig::addBaudComboBoxConfig(QComboBox *comboBox)
     comboBox->addItem(QLatin1String("1200"), QSerialPort::Baud1200);
 
     // Set combobox to default baud rate of 57600.
-    comboBox->setCurrentIndex(comboBox->findData(QSerialPort::Baud57600));
+    comboBox->setCurrentIndex(2);
 }
 
 void Radio3DRConfig::fillPortsInfo(QComboBox &comboxBox)
@@ -118,8 +118,8 @@ void Radio3DRConfig::loadSavedSerialSettings()
         m_settings.flowControl = static_cast<QSerialPort::FlowControl>
                 (settings.value("3DRRADIO_COMM_FLOW_CONTROL").toInt());
 
-        ui.baudPortComboBox->setCurrentIndex(ui.baudComboBox->findText(m_settings.name));
-        ui.baudComboBox->setCurrentIndex(ui.baudComboBox->findData(m_settings.baudRate));
+        ui.linkPortComboBox->setCurrentIndex(ui.linkPortComboBox->findText(m_settings.name));
+        ui.baudPortComboBox->setCurrentIndex(ui.baudPortComboBox->findData(m_settings.baudRate));
     } else {
         // init the structure
     }
@@ -169,7 +169,10 @@ void Radio3DRConfig::initConnections()
     // Ui Connections
     connect(ui.loadSettingsButton, SIGNAL(clicked()), this, SLOT(readRadioSettings()));
 
-    connect(ui.saveSettingsButton, SIGNAL(clicked()), this, SLOT(writeRadioSettings()));
+    connect(ui.saveLocalSettingsButton, SIGNAL(clicked()), this, SLOT(writeLocalRadioSettings()));
+    connect(ui.saveRemoteSettingsButton, SIGNAL(clicked()), this, SLOT(writeRemoteRadioSettings()));
+    connect(ui.resetDefaultsButton, SIGNAL(clicked()), this, SLOT(resetRadioSettingsToDefaults()));
+    connect(ui.copyToRemoteButton, SIGNAL(clicked()), this, SLOT(copyLocalSettingsToRemote()));
 
     connect(ui.settingsButton, SIGNAL(released()), m_settingsDialog, SLOT(show()));
 
@@ -210,7 +213,7 @@ void Radio3DRConfig::readRadioSettings()
         m_radioSettings = new Radio3DRSettings(this);
         connect(m_radioSettings, SIGNAL(localReadComplete(Radio3DREeprom&, bool)),
                 this, SLOT(localReadComplete(Radio3DREeprom&, bool)));
-        connect(m_radioSettings, SIGNAL(remoteReadComplete(Radio3DREepro&,bool)),
+        connect(m_radioSettings, SIGNAL(remoteReadComplete(Radio3DREeprom&,bool)),
                 this, SLOT(remoteReadComplete(Radio3DREeprom&, bool)));
         connect(m_radioSettings, SIGNAL(serialPortOpenFailure(int,QString)),
                 this, SLOT(serialPortOpenFailure(int, QString)));
@@ -273,7 +276,7 @@ void Radio3DRConfig::remoteReadComplete(Radio3DREeprom& eeprom, bool success)
         ui.versionLabel_remote->setText(eeprom.versionString());
 
         ui.formatLineEdit_remote->setText(QString::number(eeprom.eepromVersion()));
-        ui.baudComboBox_remote->setCurrentIndex(ui.baudComboBox->findData(eeprom.serialSpeed()));
+        ui.baudComboBox_remote->setCurrentIndex(ui.baudComboBox_remote->findData(eeprom.serialSpeed()));
         ui.airBaudComboBox_remote->setCurrentIndex(ui.airBaudComboBox_remote->findData(eeprom.airSpeed()));
         ui.netIdSpinBox_remote->setValue(eeprom.netID());
         ui.txPowerComboBox_remote->setCurrentIndex(ui.txPowerComboBox_remote->findData(eeprom.txPower()));
@@ -295,32 +298,84 @@ void Radio3DRConfig::remoteReadComplete(Radio3DREeprom& eeprom, bool success)
 }
 
 
-void Radio3DRConfig::writeRadioSettings()
+void Radio3DRConfig::writeLocalRadioSettings()
 {
-    QLOG_INFO() << "save 3DR Radio Settings";
+    QLOG_INFO() << "save 3DR Local Radio Settings";
 
     if(m_radioSettings == NULL){
-        QMessageBox::critical(this, tr("Radio Config"), tr("Please read radio setting before setting"));
+        QMessageBox::critical(this, tr("Radio Config"), tr("Please Load Settings before attempting to change them"));
         return;
     }
 
-    m_localRadioSettings.airSpeed(ui.airBaudComboBox->itemData(ui.airBaudComboBox->currentIndex()).toInt());
-    m_localRadioSettings.serialSpeed(ui.baudComboBox->itemData(ui.baudComboBox->currentIndex()).toInt());
-    m_localRadioSettings.netID(ui.netIdSpinBox->value());
-    m_localRadioSettings.txPower(ui.txPowerComboBox->itemData(ui.txPowerComboBox->currentIndex()).toInt());
-    m_localRadioSettings.ecc(ui.eccCheckBox->checkState() == Qt::Checked?1:0);
-    m_localRadioSettings.mavlink(ui.mavLinkCheckBox->checkState() == Qt::Checked?1:0);
-    m_localRadioSettings.oppResend(ui.opResendCheckBox->checkState() == Qt::Checked?1:0);
-    m_localRadioSettings.minFreq(ui.minFreqComboBox->itemData(ui.minFreqComboBox->currentIndex()).toInt());
-    m_localRadioSettings.maxFreq(ui.maxFreqComboBox->itemData(ui.maxFreqComboBox->currentIndex()).toInt());
-    m_localRadioSettings.numChannels(ui.numChannelsSpinBox->value());
-    m_localRadioSettings.dutyCyle(ui.dutyCycleSpinBox->value());
-    m_localRadioSettings.lbtRssi(ui.lbtRssiSpinBox->value());
-    m_localRadioSettings.manchester(0);
-    m_localRadioSettings.rtsCts(0);
+    m_newRadioSettings.airSpeed(ui.airBaudComboBox->itemData(ui.airBaudComboBox->currentIndex()).toInt());
+    m_newRadioSettings.serialSpeed(ui.baudComboBox->itemData(ui.baudComboBox->currentIndex()).toInt());
+    m_newRadioSettings.netID(ui.netIdSpinBox->value());
+    m_newRadioSettings.txPower(ui.txPowerComboBox->itemData(ui.txPowerComboBox->currentIndex()).toInt());
+    m_newRadioSettings.ecc(ui.eccCheckBox->checkState() == Qt::Checked?1:0);
+    m_newRadioSettings.mavlink(ui.mavLinkCheckBox->checkState() == Qt::Checked?1:0);
+    m_newRadioSettings.oppResend(ui.opResendCheckBox->checkState() == Qt::Checked?1:0);
+    m_newRadioSettings.minFreq(ui.minFreqComboBox->itemData(ui.minFreqComboBox->currentIndex()).toInt());
+    m_newRadioSettings.maxFreq(ui.maxFreqComboBox->itemData(ui.maxFreqComboBox->currentIndex()).toInt());
+    m_newRadioSettings.numChannels(ui.numChannelsSpinBox->value());
+    m_newRadioSettings.dutyCyle(ui.dutyCycleSpinBox->value());
+    m_newRadioSettings.lbtRssi(ui.lbtRssiSpinBox->value());
+    m_newRadioSettings.manchester(0);
+    m_newRadioSettings.rtsCts(0);
 
-    m_radioSettings->writeLocalSettings(m_localRadioSettings);
+    m_radioSettings->writeLocalSettings(m_newRadioSettings);
 
+}
+
+void Radio3DRConfig::writeRemoteRadioSettings()
+{
+    QLOG_INFO() << "save 3DR Remote Radio Settings";
+
+    if(m_radioSettings == NULL){
+        QMessageBox::critical(this, tr("Radio Config"), tr("Please Load Settings before attempting to change them"));
+        return;
+    }
+
+    m_newRadioSettings.airSpeed(ui.airBaudComboBox_remote->itemData(ui.airBaudComboBox_remote->currentIndex()).toInt());
+    m_newRadioSettings.serialSpeed(ui.baudComboBox_remote->itemData(ui.baudComboBox_remote->currentIndex()).toInt());
+    m_newRadioSettings.netID(ui.netIdSpinBox_remote->value());
+    m_newRadioSettings.txPower(ui.txPowerComboBox_remote->itemData(ui.txPowerComboBox_remote->currentIndex()).toInt());
+    m_newRadioSettings.ecc(ui.eccCheckBox_remote->checkState() == Qt::Checked?1:0);
+    m_newRadioSettings.mavlink(ui.mavLinkCheckBox_remote->checkState() == Qt::Checked?1:0);
+    m_newRadioSettings.oppResend(ui.opResendCheckBox_remote->checkState() == Qt::Checked?1:0);
+    m_newRadioSettings.minFreq(ui.minFreqComboBox_remote->itemData(ui.minFreqComboBox_remote->currentIndex()).toInt());
+    m_newRadioSettings.maxFreq(ui.maxFreqComboBox_remote->itemData(ui.maxFreqComboBox_remote->currentIndex()).toInt());
+    m_newRadioSettings.numChannels(ui.numChannelsSpinBox_remote->value());
+    m_newRadioSettings.dutyCyle(ui.dutyCycleSpinBox_remote->value());
+    m_newRadioSettings.lbtRssi(ui.lbtRssiSpinBox_remote->value());
+    m_newRadioSettings.manchester(0);
+    m_newRadioSettings.rtsCts(0);
+
+    m_radioSettings->writeRemoteSettings(m_newRadioSettings);
+
+}
+
+void Radio3DRConfig::copyLocalSettingsToRemote()
+{
+    QLOG_INFO() << "Copy 3DR Local Radio Settings to remote";
+    if(m_radioSettings == NULL){
+        QMessageBox::critical(this, tr("Radio Config"), tr("Please Load Settings before attempting to change them"));
+        return;
+    }
+
+    ui.baudComboBox_remote->setCurrentIndex(ui.baudComboBox->currentIndex());
+    ui.airBaudComboBox_remote->setCurrentIndex(ui.airBaudComboBox->currentIndex());
+    ui.netIdSpinBox_remote->setValue(ui.netIdSpinBox->value());
+    ui.txPowerComboBox_remote->setCurrentIndex(ui.txPowerComboBox->currentIndex());
+    ui.eccCheckBox_remote->setChecked(ui.eccCheckBox->checkState());
+    ui.mavLinkCheckBox_remote->setChecked(ui.mavLinkCheckBox->checkState());
+    ui.opResendCheckBox_remote->setChecked(ui.opResendCheckBox->checkState());
+
+    ui.dutyCycleSpinBox_remote->setValue(ui.dutyCycleSpinBox->value());
+    ui.lbtRssiSpinBox_remote->setValue(ui.lbtRssiSpinBox->value());
+    ui.numChannelsSpinBox_remote->setValue(ui.numChannelsSpinBox->value());
+
+    ui.minFreqComboBox_remote->setCurrentIndex(ui.minFreqComboBox->currentIndex());
+    ui.maxFreqComboBox_remote->setCurrentIndex(ui.maxFreqComboBox->currentIndex());
 }
 
 void Radio3DRConfig::addRadioBaudComboBoxConfig(QComboBox &comboBox)
@@ -390,5 +445,16 @@ void Radio3DRConfig::setupFrequencyComboBox(QComboBox &comboBox, int freqCode )
     }
     for (int freq = minFreq; freq <= maxFreq; freq = freq + freqStepSize) {
         comboBox.addItem(QString::number(freq), freq);
+    }
+}
+
+void Radio3DRConfig::resetRadioSettingsToDefaults()
+{
+    if(m_radioSettings) {
+
+        if (QMessageBox::warning(this, tr("Reset Radios"), tr("You are about to reset your radios to thier factory settings!"),
+                             QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok){
+            m_radioSettings->resetToDefaults();
+        }
     }
 }

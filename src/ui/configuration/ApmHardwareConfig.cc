@@ -57,7 +57,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.antennaTrackerButton->setVisible(false);
 
     ui.hiddenPushButton->setVisible(false); // And it's checked.
-    ui.radio3DRLargeButton->setVisible(false); // [HIDE 3DR RADIO]
+    ui.radio3DRLargeButton->setVisible(true); // [SHOW 3DR RADIO]
     ui.antennaTrackerLargeButton->setVisible(false); // [HIDE Antenna Tracking]
 
     m_apmFirmwareConfig = new ApmFirmwareConfig(this);
@@ -243,7 +243,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.osdButton->setShown(false);
     ui.cameraGimbalButton->setShown(false);
 
-    ui.radio3DRLargeButton->setVisible(false); // [HIDE 3DR RADIO]
+    ui.radio3DRLargeButton->setVisible(true); // [SHOW 3DR RADIO]
     ui.antennaTrackerLargeButton->setVisible(false); // [HIDE Antenna Tracking]
 
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
@@ -329,7 +329,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.failSafeButton->setShown(show);
 
         // Optional Options to Hide
-//        ui.radio3DRButton->setShown(!show); [HIDE 3DR RADIO]
+        ui.radio3DRButton->setShown(!show); // [SHOW 3DR RADIO]
         ui.batteryMonitorButton->setShown(!show);
         ui.opticalFlowButton->setShown(!show);
         ui.osdButton->setShown(!show);
@@ -350,7 +350,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.failSafeButton->setShown(show);
 
         // Optional Options to Hide
-//        ui.radio3DRButton->setShown(!show); [HIDE 3DR RADIO]
+        ui.radio3DRButton->setShown(!show); // [SHOW 3DR RADIO]
         ui.batteryMonitorButton->setShown(!show);
         ui.opticalFlowButton->setShown(!show);
         ui.osdButton->setShown(!show);

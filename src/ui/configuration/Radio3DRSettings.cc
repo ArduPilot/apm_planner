@@ -109,38 +109,61 @@ bool Radio3DREeprom::setRadioFreqCode(int freqCode)
     return true;
 }
 
-const QString Radio3DREeprom::parameter(int index)
+const QString Radio3DREeprom::formattedParameter(Mode mode, int index)
 {
+    QString result;
+
+    if(mode == local) {
+        result = "A";
+    } else {
+        result = "R";
+    }
     switch(index){
     case 1:
-        return "ATS1=" + QString::number(m_serialSpeed) + "\r\n";
+        result += "TS1=" + QString::number(m_serialSpeed) + "\r\n";
+        break;
     case 2:
-        return "ATS2=" + QString::number(m_airSpeed) + "\r\n";
+        result += "TS2=" + QString::number(m_airSpeed) + "\r\n";
+        break;
     case 3:
-        return "ATS3=" + QString::number(m_netID) + "\r\n";
+        result += "TS3=" + QString::number(m_netID) + "\r\n";
+        break;
     case 4:
-        return "ATS4=" + QString::number(m_txPower) + "\r\n";
+        result += "TS4=" + QString::number(m_txPower) + "\r\n";
+        break;
     case 5:
-        return "ATS5=" + QString::number(m_ecc) + "\r\n";
+        result += "TS5=" + QString::number(m_ecc) + "\r\n";
+        break;
     case 6:
-        return "ATS6=" + QString::number(m_mavlink) + "\r\n";
+        result += "TS6=" + QString::number(m_mavlink) + "\r\n";
+        break;
     case 7:
-        return "ATS7=" + QString::number(m_oppResend) + "\r\n";
+        result += "TS7=" + QString::number(m_oppResend) + "\r\n";
+        break;
     case 8:
-        return "ATS8=" + QString::number(m_minFreq) + "\r\n";
+        result += "TS8=" + QString::number(m_minFreq) + "\r\n";
+        break;
     case 9:
-        return "ATS9=" + QString::number(m_maxFreq) + "\r\n";
+        result += "TS9=" + QString::number(m_maxFreq) + "\r\n";
+        break;
     case 10:
-        return "ATS10=" + QString::number(m_numChannels) + "\r\n";
+        result += "TS10=" + QString::number(m_numChannels) + "\r\n";
+        break;
     case 11:
-        return "ATS11=" + QString::number(m_dutyCyle) + "\r\n";
+        result += "TS11=" + QString::number(m_dutyCyle) + "\r\n";
+        break;
     case 12:
-        return "ATS12=" + QString::number(m_lbtRssi) + "\r\n";
+        result += "TS12=" + QString::number(m_lbtRssi) + "\r\n";
+        break;
     case 13:
-        return "ATS13=" + QString::number(m_manchester) + "\r\n";
+        result += "TS13=" + QString::number(m_manchester) + "\r\n";
+        break;
     case 14:
-        return "ATS14=" + QString::number(m_rtsCts) + "\r\n";
+        result += "TS14=" + QString::number(m_rtsCts) + "\r\n";
+        break;
     }
+    QLOG_DEBUG() << "Setting Radio Parameter: " << result;
+    return result;
 }
 
 const QString& Radio3DREeprom::versionString()
@@ -262,8 +285,8 @@ void Radio3DRSettings::closeSerialPort()
     QLOG_DEBUG() << "Close Serial Port:" << m_serialPort->portName() << m_serialPort;
     if (m_serialPort){
         // Disengage Command Mode
-        m_serialPort->write("RTZ\r\n");
-        m_serialPort->write("ATZ\r\n");
+//        m_serialPort->write("RTZ\r\n");
+//        m_serialPort->write("ATZ\r\n");
         m_serialPort->flush();
         m_serialPort->close();
     }
@@ -278,7 +301,7 @@ void Radio3DRSettings::deleteSerialPort()
 void Radio3DRSettings::readData()
 {
     if(!m_serialPort->canReadLine()){
-        QLOG_DEBUG() << "read data: cannot read line";
+        QLOG_TRACE() << "read data: cannot read line";
         return;
     }
 
@@ -298,16 +321,16 @@ void Radio3DRSettings::readData()
         return;
     }
 
-    if(currentLine.contains("ATI")||currentLine.contains("RTI")/*||currentLine.contains("\n")*/){
+    if(currentLine.startsWith("AT")||currentLine.startsWith("RT")){
         //throw away the command echo
-        if(currentLine.contains("RTI0")){
-            QLOG_DEBUG() << " STOP HERE";
-        }
-        while(m_serialPort->canReadLine()){
+        if(m_serialPort->canReadLine()){
            currentLine = m_serialPort->readLine();
            QLOG_DEBUG() << "Radio readData nextline:" << currentLine;
-           // Need to decern it something e can use.
-           if (currentLine.length() > 0) break;
+
+        } else {
+            // no data to read so wait for more
+            currentLine = "";
+            return;
         }
     }
 
@@ -325,12 +348,45 @@ void Radio3DRSettings::readData()
 
     case writeLocalParams: {
         if (currentLine.contains("OK")){
+            emit updateLocalStatus(tr("param %1 written ok").arg(m_paramIndexSend));
             m_paramIndexSend++;
-            QLOG_INFO() << "Writing Param:" << m_newLocalRadio.parameter(m_paramIndexSend);
-            emit updateLocalStatus(tr("param written ok"));
-            m_serialPort->write(m_newLocalRadio.parameter(m_paramIndexSend).toAscii());
+
+            if (m_paramIndexSend > Radio3DREeprom::numberofParams){
+                emit updateLocalStatus(tr("param write complete"));
+                return;
+            }
+
+            QLOG_INFO() << "Writing Local Param:"
+                        << m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend);
+            m_serialPort->write(m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toAscii());
+
         } else {
-            QLOG_ERROR() << "FAILED Writing Param:" << m_newLocalRadio.parameter(m_paramIndexSend);
+            emit updateLocalStatus(tr("param %1 failed write").arg(m_paramIndexSend));
+            QLOG_ERROR() << "FAILED Writing Local Param:"
+                         << m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend);
+            // [ToDo] Can retry at this point
+        }
+    } break;
+
+    case writeRemoteParams: {
+        if (currentLine.contains("OK")){
+            emit updateRemoteStatus(tr("param %1 written ok").arg(m_paramIndexSend));
+            m_paramIndexSend++;
+
+            if (m_paramIndexSend > Radio3DREeprom::numberofParams){
+                emit updateRemoteStatus(tr("param write complete"));
+                return;
+            }
+
+            QLOG_INFO() << "Writing Remote Param:"
+                        << m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend);
+            m_serialPort->write(m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toAscii());
+
+        } else {
+            emit updateRemoteStatus(tr("param %1 failed write").arg(m_paramIndexSend));
+            QLOG_ERROR() << "FAILED Writing Remote Param:"
+                         << m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote,m_paramIndexSend);
+            // [ToDo] Can retry at this point
         }
     } break;
 
@@ -407,7 +463,7 @@ void Radio3DRSettings::readData()
         if(currentLine.toInt() > 0){
             QLOG_DEBUG() << "Read Remote Freq:" << currentLine.toInt();
             emit updateRemoteStatus(tr("Read remote radio frequency"));
-            m_localRadio.setRadioFreqCode(currentLine.toInt());
+            m_remoteRadio.setRadioFreqCode(currentLine.toInt());
             readRemoteSettingsStrings();
         } else {
             emit remoteReadComplete(m_localRadio, false);
@@ -430,8 +486,8 @@ void Radio3DRSettings::readData()
             // All data received
             emit updateRemoteStatus(tr("SUCCESS"));
             emit remoteReadComplete(m_remoteRadio, true);
-            closeSerialPort();
-            m_state = complete;
+//            closeSerialPort();
+            m_state = portOpen;
         };
     } break;
 
@@ -582,16 +638,30 @@ void Radio3DRSettings::readRemoteSettingsStrings()
 void Radio3DRSettings::writeLocalSettings(Radio3DREeprom eepromSettings)
 {
     QLOG_DEBUG() << "Radio3DRSettings::writeLocalSettings()";
+    if (!m_serialPort->isOpen()) {
+        QLOG_DEBUG() << "Serial Port not Open";
+        return;
+    }
     m_newLocalRadio = eepromSettings;
     m_paramIndexSend = 1; // start of the first parameter
-    QLOG_DEBUG() << " Sending" << m_newLocalRadio.parameter(m_paramIndexSend).toAscii();
-    m_serialPort->write(m_newLocalRadio.parameter(m_paramIndexSend).toAscii());
+    QLOG_DEBUG() << " Sending" << m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toAscii();
+    m_serialPort->write(m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toAscii());
     m_state = writeLocalParams;
 }
 
-void Radio3DRSettings::writeRemoteSettings(SerialSettings settings)
+void Radio3DRSettings::writeRemoteSettings(Radio3DREeprom eepromSettings)
 {
     QLOG_DEBUG() << "Radio3DRSettings::writeRemoteSettings()";
+
+    if (!m_serialPort->isOpen()) {
+        QLOG_DEBUG() << "Serial Port not Open";
+        return;
+    }
+    m_newRemoteRadio = eepromSettings;
+    m_paramIndexSend = 1; // start of the first parameter
+    QLOG_DEBUG() << " Sending" << m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toAscii();
+    m_serialPort->write(m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toAscii());
+    m_state = writeRemoteParams;
 }
 
 void Radio3DRSettings::handleError(QSerialPort::SerialPortError error)
@@ -600,4 +670,13 @@ void Radio3DRSettings::handleError(QSerialPort::SerialPortError error)
         QLOG_ERROR() << "Crtical Error!" << m_serialPort->errorString();
         closeSerialPort();
     }
+}
+
+void Radio3DRSettings::resetToDefaults()
+{
+    if (m_serialPort && m_serialPort->isOpen()){
+        QLOG_INFO() << "Reseting local and remote radios back to defaults";
+        m_serialPort->write("RT&F\r\nRTZ\rnAT&F\r\nATZ\r\n");
+    }
+
 }
