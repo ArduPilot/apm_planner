@@ -24,7 +24,8 @@ This file is part of the APM_PLANNER project
 #include <QMessageBox>
 #include "QsLog.h"
 
-BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(parent)
+BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_maxVoltOut(3.3)
 {
     ui.setupUi(this);
     ui.monitorComboBox->addItem(tr("0: Disabled"),0);
@@ -42,7 +43,8 @@ BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(pa
     ui.apmVerComboBox->addItem(tr("1: APM2 - 2.5 non 3DR"));
     ui.apmVerComboBox->addItem(tr("2: APM2.5 - 3DR Power Module"));
     ui.apmVerComboBox->addItem(tr("3: PX4"));
-    ui.apmVerComboBox->addItem(tr("4: Pixhawk - 3DR Power Module"));
+    ui.apmVerComboBox->addItem(tr("4: Pixhawk - 3DR 4in1 ESC"));
+    ui.apmVerComboBox->addItem(tr("5: Pixhawk - 3DR Power Module"));
 
     ui.alertOnLowCheckBox->setVisible(false); //Unimpelemented, but TODO.
 
@@ -228,7 +230,7 @@ void BatteryMonitorConfig::monitorCurrentIndexChanged(int index)
 void BatteryMonitorConfig::sensorCurrentIndexChanged(int index)
 {
     QLOG_DEBUG() << "sensorCurrentIndexChanged" << index;
-    float maxVoltOut = 3.3; // standrd scaled output, need to change to 5V for APM2.5 PM
+    m_maxVoltOut = 3.3;
     float maxvolt = 0.0;
     float maxamps = 0.0;
     float mvpervolt = 0.0;
@@ -259,7 +261,7 @@ void BatteryMonitorConfig::sensorCurrentIndexChanged(int index)
         //3dr
         maxvolt = 50.0;
         maxamps = 90.0;
-        maxVoltOut = 5.0;
+        m_maxVoltOut = 5.0;
     }
     else if (index == 5)
     {
@@ -267,8 +269,8 @@ void BatteryMonitorConfig::sensorCurrentIndexChanged(int index)
         maxvolt = 39.67;
         maxamps = 56.1;
     }
-    mvpervolt = calculatemVPerVolt(maxVoltOut,maxvolt);
-    mvperamp = calculatemVPerAmp(maxVoltOut,maxamps);
+    mvpervolt = calculatemVPerVolt(m_maxVoltOut,maxvolt);
+    mvperamp = calculatemVPerAmp(m_maxVoltOut,maxamps);
     if (index == 0)
     {
         //Other
@@ -338,7 +340,21 @@ void BatteryMonitorConfig::apmVerCurrentIndexChanged(int index)
         ui.sensorComboBox->setCurrentIndex(0); //PX4 must be other
         connect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
     }
-    else if (index == 4) //Pixhawk
+    else if (index == 4) //Pixhawk - 4in1 ESC
+    {
+        QLOG_DEBUG() << "Pixhawk settings";
+        m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
+        m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",2);
+        m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",3);
+        m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,(float)17);
+        m_uas->getParamManager()->setParameter(1,m_voltDividerParam,(float)12.02);
+        ui.calcDividerLineEdit->setText("12.02");
+        ui.ampsPerVoltsLineEdit->setText("17.0");
+        disconnect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
+        ui.sensorComboBox->setCurrentIndex(0); //Pixhawk using 3DR Power Module
+        connect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
+    }
+    else if (index == 5) //Pixhawk 3DR Power Module
     {
         QLOG_DEBUG() << "Pixhawk settings";
         m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
@@ -346,10 +362,10 @@ void BatteryMonitorConfig::apmVerCurrentIndexChanged(int index)
         m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",3);
         m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,(float)17);
         m_uas->getParamManager()->setParameter(1,m_voltDividerParam,(float)10.1);
-        ui.calcDividerLineEdit->setText("1");
-        ui.ampsPerVoltsLineEdit->setText("17");
+        ui.calcDividerLineEdit->setText("10.1");
+        ui.ampsPerVoltsLineEdit->setText("17.0");
         disconnect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
-        ui.sensorComboBox->setCurrentIndex(4); //Pixhawk using 3DR Power Module
+        ui.sensorComboBox->setCurrentIndex(0); //Pixhawk using 3DR Power Module
         connect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
     }
 }
@@ -369,36 +385,36 @@ void BatteryMonitorConfig::batteryChanged(UASInterface* uas, double voltage, dou
 
 void BatteryMonitorConfig::checkSensorType()
 {
-    if (m_savedAmpsPerVolts < 14 && m_savedAmpsPerVolts > 13 && m_savedVoltDivider < 5 && m_savedVoltDivider > 4)
-    {
-        //atto45
-        QLOG_DEBUG() << "Setting ATTO 45 sensor";
-        ui.sensorComboBox->setCurrentIndex(1);
-    }
-    else if (m_savedAmpsPerVolts < 28 && m_savedAmpsPerVolts > 27 && m_savedVoltDivider < 16 && m_savedVoltDivider > 15)
-    {
-        //atto90
-        QLOG_DEBUG() << "Setting ATTO 90 sensor";
-        ui.sensorComboBox->setCurrentIndex(2);
-    }
-    else if (m_savedAmpsPerVolts < 55 && m_savedAmpsPerVolts > 54 && m_savedVoltDivider < 16 && m_savedVoltDivider > 15)
-    {
-        //atto180
-        QLOG_DEBUG() << "Setting ATTO 180 sensor";
-        ui.sensorComboBox->setCurrentIndex(3);
-    }
-    else if (m_savedAmpsPerVolts < 19 && m_savedAmpsPerVolts > 18 && m_savedVoltDivider < 11 && m_savedVoltDivider > 9)
-    {
-        //3dr
-        QLOG_DEBUG() << "Setting 3DR Power Module sensor";
-        ui.sensorComboBox->setCurrentIndex(4);
-    }
-    else if (m_savedAmpsPerVolts < 18 && m_savedAmpsPerVolts > 16 && m_savedVoltDivider < 13 && m_savedVoltDivider > 12)
-    {
-        //pixhawk with 3dr
-        QLOG_DEBUG() << "Setting 3DR with Pixhawk sensor";
-        ui.sensorComboBox->setCurrentIndex(4);
-    }
+//    if (m_savedAmpsPerVolts < 14 && m_savedAmpsPerVolts > 13 && m_savedVoltDivider < 5 && m_savedVoltDivider > 4)
+//    {
+//        //atto45
+//        QLOG_DEBUG() << "Setting ATTO 45 sensor";
+//        ui.sensorComboBox->setCurrentIndex(1);
+//    }
+//    else if (m_savedAmpsPerVolts < 28 && m_savedAmpsPerVolts > 27 && m_savedVoltDivider < 16 && m_savedVoltDivider > 15)
+//    {
+//        //atto90
+//        QLOG_DEBUG() << "Setting ATTO 90 sensor";
+//        ui.sensorComboBox->setCurrentIndex(2);
+//    }
+//    else if (m_savedAmpsPerVolts < 55 && m_savedAmpsPerVolts > 54 && m_savedVoltDivider < 16 && m_savedVoltDivider > 15)
+//    {
+//        //atto180
+//        QLOG_DEBUG() << "Setting ATTO 180 sensor";
+//        ui.sensorComboBox->setCurrentIndex(3);
+//    }
+//    else if (m_savedAmpsPerVolts < 19 && m_savedAmpsPerVolts > 18 && m_savedVoltDivider < 11 && m_savedVoltDivider > 9)
+//    {
+//        //3dr
+//        QLOG_DEBUG() << "Setting 3DR Power Module sensor";
+//        ui.sensorComboBox->setCurrentIndex(4);
+//    }
+//    else if (m_savedAmpsPerVolts < 18 && m_savedAmpsPerVolts > 16 && m_savedVoltDivider < 13 && m_savedVoltDivider > 12)
+//    {
+//        //pixhawk with 3dr
+//        QLOG_DEBUG() << "Setting 3DR with Pixhawk sensor";
+//        ui.sensorComboBox->setCurrentIndex(4);
+//    }
 }
 
 void BatteryMonitorConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)

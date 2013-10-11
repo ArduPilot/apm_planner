@@ -57,6 +57,7 @@ private slots:
 private:
     QString m_voltDividerParam;
     QString m_ampPerVoltParam;
+    float m_maxVoltOut; // ie. 3.3V or 5.0V
     double m_savedAmpsPerVolts;
     double m_savedVoltDivider;
     Ui::BatteryMonitorConfig ui;
