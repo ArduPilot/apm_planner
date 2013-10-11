@@ -53,7 +53,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.opticalFlowButton->setVisible(false);
     ui.osdButton->setVisible(false);
     ui.cameraGimbalButton->setVisible(false);
-    ui.radio3DRButton->setVisible(false);
     ui.antennaTrackerButton->setVisible(false);
 
     ui.hiddenPushButton->setVisible(false); // And it's checked.
@@ -100,13 +99,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.stackedWidget->addWidget(m_radioConfig);
     m_buttonToConfigWidgetMap[ui.radioCalibrateButton] = m_radioConfig;
     connect(ui.radioCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-
-    m_radio3drConfig = new Radio3DRConfig(this);
-    ui.stackedWidget->addWidget(m_radio3drConfig);
-    m_buttonToConfigWidgetMap[ui.radio3DRButton] = m_radio3drConfig;
-    m_buttonToConfigWidgetMap[ui.radio3DRLargeButton] = m_radio3drConfig;
-    connect(ui.radio3DRButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-    connect(ui.radio3DRLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_batteryConfig = new BatteryMonitorConfig(this);
     ui.stackedWidget->addWidget(m_batteryConfig);
@@ -228,7 +220,6 @@ void ApmHardwareConfig::uasDisconnected()
     ui.optionalHardwareButton->setChecked(false);
     ui.optionalHardwareButton->setVisible(false);
 
-    ui.radio3DRButton->setVisible(false);
     ui.antennaTrackerButton->setVisible(false);
 
     ui.mandatoryHardware->setVisible(false);
@@ -335,7 +326,6 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.failSafeButton->setShown(show);
 
         // Optional Options to Hide
-        ui.radio3DRButton->setShown(!show); // [SHOW 3DR RADIO]
         ui.batteryMonitorButton->setShown(!show);
         ui.opticalFlowButton->setShown(!show);
         ui.osdButton->setShown(!show);
@@ -356,7 +346,6 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.failSafeButton->setShown(show);
 
         // Optional Options to Hide
-        ui.radio3DRButton->setShown(!show); // [SHOW 3DR RADIO]
         ui.batteryMonitorButton->setShown(!show);
         ui.opticalFlowButton->setShown(!show);
         ui.osdButton->setShown(!show);
