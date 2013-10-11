@@ -102,6 +102,7 @@ private slots:
     void activateStackedWidget();
     void uasConnected();
     void uasDisconnected();
+    void activateBlankingScreen();
 private:
     Ui::ApmHardwareConfig ui;
     UASInterface *m_uas;

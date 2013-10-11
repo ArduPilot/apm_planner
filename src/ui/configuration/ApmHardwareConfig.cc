@@ -61,6 +61,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.antennaTrackerLargeButton->setVisible(false); // [HIDE Antenna Tracking]
 
     m_apmFirmwareConfig = new ApmFirmwareConfig(this);
+    connect(m_apmFirmwareConfig,SIGNAL(showBlankingScreen()),this,SLOT(activateBlankingScreen()));
     ui.stackedWidget->addWidget(m_apmFirmwareConfig); //Firmware placeholder.
     m_buttonToConfigWidgetMap[ui.firmwareButton] = m_apmFirmwareConfig;
     connect(ui.firmwareButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
@@ -165,6 +166,11 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
     ui.hiddenPushButton->setChecked(true);
 }
+void ApmHardwareConfig::activateBlankingScreen()
+{
+        ui.stackedWidget->setCurrentWidget(m_setupWarningMessage);
+}
+
 void ApmHardwareConfig::activateStackedWidget()
 {
     if (ui.failSafeButton == sender())

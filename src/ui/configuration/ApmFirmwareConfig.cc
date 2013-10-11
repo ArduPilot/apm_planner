@@ -39,6 +39,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     m_hasError=0;
     //firmwareStatus = 0;
     m_replugRequestMessageBox = 0;
+    m_px4UnplugTimer=0;
     m_betaFirmwareChecked = false;
     m_trunkFirmwareChecked = false;
     m_tempFirmwareFile=0;
@@ -183,7 +184,22 @@ void ApmFirmwareConfig::cancelButtonClicked()
     if (m_isPx4)
     {
         m_px4uploader->stop();
+        m_px4uploader->wait(50);
         ui.statusLabel->setText("Flashing Canceled");
+        m_px4uploader->deleteLater();
+        m_px4uploader = 0;
+        if (m_px4UnplugTimer)
+        {
+            m_px4UnplugTimer->stop();
+            m_px4UnplugTimer->deleteLater();
+            m_px4UnplugTimer = 0;
+        }
+        if (m_replugRequestMessageBox)
+        {
+            m_replugRequestMessageBox->hide();
+            m_replugRequestMessageBox->deleteLater();
+            m_replugRequestMessageBox = 0;
+        }
         return;
     }
     if (m_burnProcess){
@@ -431,7 +447,7 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
             ui.statusLabel->setText(tr("Upload complete"));
         }
         QMessageBox::information(this,"Complete","APM Flashing is complete!");
-        MainWindow::instance()->toolBar().selectFlightView();
+        emit showBlankingScreen();
     }
     //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
     m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
@@ -464,7 +480,7 @@ void ApmFirmwareConfig::px4Finished()
         ui.statusLabel->setText(tr("Upload complete"));
     }
     QMessageBox::information(this,"Complete","PX4 Flashing is complete!");
-    MainWindow::instance()->toolBar().selectFlightView();
+    emit showBlankingScreen();
 }
 
 void ApmFirmwareConfig::firmwareProcessReadyRead()
@@ -659,12 +675,38 @@ void ApmFirmwareConfig::requestDeviceReplug()
         delete m_replugRequestMessageBox;
         m_replugRequestMessageBox = 0;
     }
-    m_replugRequestMessageBox = new QMessageBox(QMessageBox::Warning,"Warning","Please unplug, and plug back in the PX4/Pixhawk");
+    m_replugRequestMessageBox = new QProgressDialog("Please unplug, and plug back in the PX4/Pixhawk","Cancel",0,30,this);
+    connect(m_replugRequestMessageBox,SIGNAL(canceled()),this,SLOT(cancelButtonClicked()));
     m_replugRequestMessageBox->show();
+    m_px4UnplugTimer = new QTimer(this);
+    connect(m_px4UnplugTimer,SIGNAL(timeout()),this,SLOT(px4UnplugTimerTick()));
+    m_px4UnplugTimer->start(1000);
     //QMessageBox::information(this,"Warning","Please click ok, then unplug, and plug back in the PX4/Pixhawk");
 }
+void ApmFirmwareConfig::px4UnplugTimerTick()
+{
+    m_replugRequestMessageBox->setValue(m_replugRequestMessageBox->value()+1);
+    if (m_replugRequestMessageBox->value() >= 30)
+    {
+        m_px4UnplugTimer->stop();
+        m_px4UnplugTimer->deleteLater();
+        m_px4UnplugTimer = 0;
+        m_replugRequestMessageBox->hide();
+        m_replugRequestMessageBox->deleteLater();
+        m_replugRequestMessageBox = 0;
+        cancelButtonClicked();
+
+    }
+}
+
 void ApmFirmwareConfig::devicePlugDetected()
 {
+    if (m_px4UnplugTimer)
+    {
+        m_px4UnplugTimer->stop();
+        m_px4UnplugTimer->deleteLater();
+        m_px4UnplugTimer = 0;
+    }
     if (m_replugRequestMessageBox)
     {
         m_replugRequestMessageBox->hide();

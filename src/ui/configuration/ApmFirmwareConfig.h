@@ -41,6 +41,9 @@ This file is part of the APM_PLANNER project
 #include <QMessageBox>
 #include <QProcess>
 #include <QScrollBar>
+#include <QProgressDialog>
+#include <QTimer>
+
 #include "UASInterface.h"
 #include "UASManager.h"
 
@@ -56,7 +59,8 @@ class ApmFirmwareConfig : public QWidget
 public:
     explicit ApmFirmwareConfig(QWidget *parent = 0);
     ~ApmFirmwareConfig();
-
+signals:
+    void showBlankingScreen();
 protected:
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
@@ -88,8 +92,10 @@ private slots:
     void px4Terminated();
     void px4StatusUpdate(QString update);
     void px4DebugUpdate(QString update);
+    void px4UnplugTimerTick();
 private:
-    QMessageBox *m_replugRequestMessageBox;
+    QProgressDialog *m_replugRequestMessageBox;
+    QTimer *m_px4UnplugTimer;
     PX4FirmwareUploader *m_px4uploader;
     QString m_firmwareType;
     QString m_autopilotType;
