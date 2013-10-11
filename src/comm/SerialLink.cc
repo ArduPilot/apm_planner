@@ -38,7 +38,7 @@ SerialLink::SerialLink() :
     m_reqReset(false)
 {
     QLOG_INFO() << "create SerialLink: Load Previous Settings ";
-    m_baud = -1;
+
     loadSettings();
     m_id = getNextLinkId();
 
