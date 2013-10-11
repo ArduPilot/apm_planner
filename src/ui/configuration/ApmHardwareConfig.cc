@@ -100,6 +100,11 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_buttonToConfigWidgetMap[ui.radioCalibrateButton] = m_radioConfig;
     connect(ui.radioCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
+    m_radio3drConfig = new Radio3DRConfig(this);
+    ui.stackedWidget->addWidget(m_radio3drConfig);
+    m_buttonToConfigWidgetMap[ui.radio3DRLargeButton] = m_radio3drConfig;
+    connect(ui.radio3DRLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
     m_batteryConfig = new BatteryMonitorConfig(this);
     ui.stackedWidget->addWidget(m_batteryConfig);
     m_buttonToConfigWidgetMap[ui.batteryMonitorButton] = m_batteryConfig;
