@@ -244,7 +244,7 @@ void PX4FirmwareUploader::run()
         {
             return;
         }
-        msleep(100);
+        msleep(10);
     }
     emit devicePlugDetected();
 #ifdef Q_OS_WIN

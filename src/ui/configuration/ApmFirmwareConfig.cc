@@ -177,6 +177,10 @@ void ApmFirmwareConfig::uasConnected()
 }
 void ApmFirmwareConfig::cancelButtonClicked()
 {
+    if (m_isPx4 && !m_px4uploader)
+    {
+        return;
+    }
     if (QMessageBox::question(this,tr("Warning"),tr("You are about to cancel the firmware upload process. ONLY do this if the process has not started properly. Are you sure you want to continue?"),QMessageBox::Yes,QMessageBox::No) != QMessageBox::Yes)
     {
         return;
@@ -184,7 +188,7 @@ void ApmFirmwareConfig::cancelButtonClicked()
     if (m_isPx4)
     {
         m_px4uploader->stop();
-        m_px4uploader->wait(50);
+        m_px4uploader->wait(250);
         ui.statusLabel->setText("Flashing Canceled");
         m_px4uploader->deleteLater();
         m_px4uploader = 0;
@@ -676,11 +680,14 @@ void ApmFirmwareConfig::requestDeviceReplug()
         m_replugRequestMessageBox = 0;
     }
     m_replugRequestMessageBox = new QProgressDialog("Please unplug, and plug back in the PX4/Pixhawk","Cancel",0,30,this);
+    QProgressBar *bar = new QProgressBar(m_replugRequestMessageBox);
+    m_replugRequestMessageBox->setBar(bar);
+    bar->hide();
     connect(m_replugRequestMessageBox,SIGNAL(canceled()),this,SLOT(cancelButtonClicked()));
     m_replugRequestMessageBox->show();
     m_px4UnplugTimer = new QTimer(this);
-    connect(m_px4UnplugTimer,SIGNAL(timeout()),this,SLOT(px4UnplugTimerTick()));
-    m_px4UnplugTimer->start(1000);
+    //connect(m_px4UnplugTimer,SIGNAL(timeout()),this,SLOT(px4UnplugTimerTick()));
+    //m_px4UnplugTimer->start(1000);
     //QMessageBox::information(this,"Warning","Please click ok, then unplug, and plug back in the PX4/Pixhawk");
 }
 void ApmFirmwareConfig::px4UnplugTimerTick()
