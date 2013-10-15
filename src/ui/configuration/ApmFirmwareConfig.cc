@@ -814,7 +814,7 @@ void ApmFirmwareConfig::setLink(int index)
                             QLOG_DEBUG() << "PX4 Detected";
                         }
                     }
-                    else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
+                    else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001 || info.productIdentifier() == 0x0016) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
                     {
                         if (m_autopilotType != "pixhawk" || blank)
                         {
