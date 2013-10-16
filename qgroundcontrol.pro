@@ -27,8 +27,6 @@
 CONFIG += qt \
     thread
 
-CONFIG += x86_64
-
 QT += network \
     opengl \
     svg \
@@ -45,6 +43,9 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 TEMPLATE = app
 TARGET = apmplanner2
+
+QMAKE_INFO_PLIST = APMPlanner.plist   # Sets the pretty name for the build
+
 BASEDIR = $${IN_PWD}
 linux-g++|linux-g++-64{
     debug {
@@ -873,8 +874,6 @@ win32-msvc2008|win32-msvc2010|win32-msvc2012 {
 unix:!macx:!symbian: LIBS += -losg
 
 OTHER_FILES += \
-    dongfang_notes.txt \
-    src/ui/dongfang-scrapyard.txt \
     qml/components/DigitalDisplay.qml \
     qml/components/StatusDisplay.qml \
     qml/components/ModeDisplay.qml \
