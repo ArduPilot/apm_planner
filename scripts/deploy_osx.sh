@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "Deploy Step"
 trap 'echo "error"; do_cleanup failed; exit' ERR
 trap 'echo "received signal to stop"; do_cleanup interrupted; exit' SIGQUIT SIGTERM SIGINT
 
