@@ -45,7 +45,7 @@ public slots:
     /** @brief Action triggered when guided action is selected from the context menu */
     void guidedActionTriggered();
     /** @brief Action triggered when guided action is selected from the context menu, allows for altitude selection */
-    bool guidedAltActionTriggered();
+    void guidedAltActionTriggered();
     /** @brief Add system to map view */
     void addUAS(UASInterface* uas);
     /** @brief Update the global position of a system */
@@ -126,6 +126,9 @@ protected slots:
     /** @brief Convert a map edit into a QGC waypoint event */
     void handleMapWaypointEdit(WayPointItem* waypoint);
 
+private:
+    void sendGuidedAction(Waypoint *wp, double alt);
+
 protected:
     /** @brief Update the highlighting of the currently controlled system */
     void updateSelectedSystem(int uas);
@@ -160,7 +163,9 @@ protected:
     bool mapInitialized;                ///< Map initialized?
     float homeAltitude;                 ///< Home altitude
     QPoint mousePressPos;               ///< Mouse position when the button is released.
-    int defaultGuidedAlt;               ///< Default altitude for guided mode
+    double defaultGuidedRelativeAlt;            ///< Default relative altitude for guided mode
+    int defaultGuidedFrame;             ///< Default guided frame
+    bool defaultGuidedAltFirstTimeSet;   ///< manages the first time set of guided alt
     UASInterface *uas;                  ///< Currently selected UAS.
 
 };

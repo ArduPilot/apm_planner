@@ -12,7 +12,7 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     mapcontrol::OPMapWidget(parent),
     firingWaypointChange(NULL),
     maxUpdateInterval(2.1f), // 2 seconds
-    followUAVEnabled(false),
+    followUAVEnabled(true),
     trailType(mapcontrol::UAVTrailType::ByTimeElapsed),
     trailInterval(2.0f),
     followUAVID(0),
@@ -28,7 +28,8 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     connect(this, SIGNAL(waypointChanged(Waypoint*)), currWPManager, SLOT(notifyOfChangeEditable(Waypoint*)));
     offlineMode = true;
     // Widget is inactive until shown
-    defaultGuidedAlt = -1;
+    defaultGuidedRelativeAlt = 100.0; // Default set to 100m
+    defaultGuidedAltFirstTimeSet = false;
     loadSettings(false);
 
     //handy for debugging:
@@ -59,43 +60,111 @@ void QGCMapWidget::guidedActionTriggered()
         QMessageBox::information(0,"Error","Please connect first");
         return;
     }
-    if (currWPManager)
+    if (!currWPManager)
+        return;
+    Waypoint wp;
+    double tmpAlt;
+    // check the frame has not been changed from the last time we executed
+    bool aslAglChanged = defaultGuidedFrame != currWPManager->getFrameRecommendation();
+
+    if ( aslAglChanged || !defaultGuidedAltFirstTimeSet)
     {
-        if (defaultGuidedAlt == -1)
-        {
-            if (!guidedAltActionTriggered())
-            {
-                return;
-            }
+        defaultGuidedAltFirstTimeSet = true; // so we don't prompt again.
+        QString altFrame;
+        defaultGuidedFrame = currWPManager->getFrameRecommendation();
+
+        if (defaultGuidedFrame == MAV_FRAME_GLOBAL_RELATIVE_ALT){
+            altFrame = "Relative Alt (AGL)";
+            tmpAlt = defaultGuidedRelativeAlt;
+        } else {
+            altFrame = "Abs Alt (ASL)";
+            // Waypoint 0 is always home on APM
+            tmpAlt = currWPManager->getWaypoint(0)->getAltitude() + defaultGuidedRelativeAlt;
         }
-        // Create new waypoint and send it to the WPManager to send out.
-        internals::PointLatLng pos = map->FromLocalToLatLng(mousePressPos.x(), mousePressPos.y());
-        QLOG_DEBUG() << "Guided action requested. Lat:" << pos.Lat() << "Lon:" << pos.Lng() << "Alt:" << defaultGuidedAlt;
-        Waypoint wp;
-        wp.setLatitude(pos.Lat());
-        wp.setLongitude(pos.Lng());
-        wp.setAltitude(defaultGuidedAlt);
-        currWPManager->goToWaypoint(&wp);
+
+        bool ok = false;
+        tmpAlt = QInputDialog::getDouble(this,altFrame,"Enter " + altFrame + " (in meters) of destination point for guided mode",
+                                          tmpAlt,0,30000.0,2,&ok);
+        if (!ok)
+        {
+            //Use has chosen cancel. Do not send the waypoint
+            return;
+        }
+
+        if (defaultGuidedFrame == MAV_FRAME_GLOBAL_RELATIVE_ALT){
+            defaultGuidedRelativeAlt = tmpAlt;
+        } else {
+            defaultGuidedRelativeAlt = tmpAlt - currWPManager->getWaypoint(0)->getAltitude();
+        }
+    } else if (defaultGuidedFrame == MAV_FRAME_GLOBAL_RELATIVE_ALT){
+        tmpAlt = defaultGuidedRelativeAlt;
+    } else {
+        tmpAlt = currWPManager->getWaypoint(0)->getAltitude() + defaultGuidedRelativeAlt;
     }
+    wp.setFrame(static_cast<MAV_FRAME>(defaultGuidedFrame));
+    sendGuidedAction(&wp, tmpAlt);
 }
-bool QGCMapWidget::guidedAltActionTriggered()
+
+void QGCMapWidget::guidedAltActionTriggered()
 {
     if (!uas)
     {
         QMessageBox::information(0,"Error","Please connect first");
-        return false;
+        return;
     }
+    if (!currWPManager)
+        return;
+
+    Waypoint wp;
+    double tmpAlt;
+    if(  defaultGuidedFrame != currWPManager->getFrameRecommendation()){
+
+        defaultGuidedFrame = currWPManager->getFrameRecommendation();
+        QLOG_DEBUG() << "Changing from Frame type to:"
+                     << (defaultGuidedFrame == MAV_FRAME_GLOBAL_RELATIVE_ALT? "AGL": "ASL");
+    }
+
+    wp.setFrame(static_cast<MAV_FRAME>(defaultGuidedFrame));
+    QString altFrame;
+
+    if (wp.getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT){
+        altFrame = "Relative Alt (AGL)";
+        tmpAlt = defaultGuidedRelativeAlt;
+    } else {
+        altFrame = "Abs Alt (ASL)";
+        // Waypoint 0 is always home on APM
+        tmpAlt = currWPManager->getWaypoint(0)->getAltitude() + defaultGuidedRelativeAlt;
+    }
+
     bool ok = false;
-    int tmpalt = QInputDialog::getInt(this,"Altitude","Enter default altitude (in meters) of destination point for guided mode",100,0,30000,1,&ok);
+    tmpAlt = QInputDialog::getDouble(this,altFrame,"Enter " + altFrame + " (in meters) of destination point for guided mode",
+                                      tmpAlt,0,30000.0,2,&ok);
     if (!ok)
     {
         //Use has chosen cancel. Do not send the waypoint
-        return false;
+        return;
     }
-    defaultGuidedAlt = tmpalt;
-    guidedActionTriggered();
-    return true;
+    if (defaultGuidedFrame == MAV_FRAME_GLOBAL_RELATIVE_ALT){
+        defaultGuidedRelativeAlt = tmpAlt;
+    } else {
+        defaultGuidedRelativeAlt = tmpAlt - currWPManager->getWaypoint(0)->getAltitude();
+    }
+    sendGuidedAction(&wp, tmpAlt);
 }
+
+void QGCMapWidget::sendGuidedAction(Waypoint* wp, double alt)
+{
+    // Create new waypoint and send it to the WPManager to send out.
+    internals::PointLatLng pos = map->FromLocalToLatLng(mousePressPos.x(), mousePressPos.y());
+    QLOG_DEBUG() << "Guided action requested. Lat:" << pos.Lat() << "Lon:" << pos.Lng()
+                 << "Alt:" << alt << "MAV_FRAME:"
+                 << (defaultGuidedFrame == MAV_FRAME_GLOBAL_RELATIVE_ALT? "AGL": "ASL");
+    wp->setLongitude(pos.Lng());
+    wp->setLatitude(pos.Lat());
+    wp->setAltitude(alt);
+    currWPManager->goToWaypoint(wp);
+}
+
 void QGCMapWidget::cameraActionTriggered()
 {
     if (!uas)
@@ -114,11 +183,14 @@ void QGCMapWidget::cameraActionTriggered()
 
 void QGCMapWidget::mousePressEvent(QMouseEvent *event)
 {
+    QLOG_DEBUG() << "mousePressEvent pos:" << event->pos() << " posF:" << event->posF();
+    mousePressPos = event->pos();
     mapcontrol::OPMapWidget::mousePressEvent(event);
 }
 
 void QGCMapWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    QLOG_DEBUG() << "mouseReleaseEvent pos:" << event->pos() << " posF:" << event->posF();
     mousePressPos = event->pos();
     mapcontrol::OPMapWidget::mouseReleaseEvent(event);
 }
@@ -327,6 +399,7 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
     updateSelectedSystem(uas->getUASID());
     followUAVID = uas->getUASID();
     updateWaypointList(uas->getUASID());
+    SetZoom(15); // zoom map to newly aquired activeUAS
 
     // Connect the waypoint manager / data storage to the UI
     connect(currWPManager, SIGNAL(waypointEditableListChanged(int)), this, SLOT(updateWaypointList(int)));

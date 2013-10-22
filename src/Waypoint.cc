@@ -320,3 +320,24 @@ void Waypoint::setTurns(int turns)
         emit changed(this);
     }
 }
+
+QString Waypoint::debugString()
+{
+     QString debugString("Waypoint: " + name
+                + " id: " + QString::number(id)
+                + " x:" + QString::number(x)
+                + " y:" + QString::number(y)
+                + " z:" + QString::number(z)
+                + " yaw:" + QString::number(yaw)
+                + " MAV_FRAME:" + QString::number(frame)
+                + " MAV_CMD:" + QString::number(action)
+                + " autocontinue:" + autocontinue
+                + " current:" + current
+                + " orbit:" + QString::number(orbit)
+                + " param1:" + QString::number(param1)
+                + " param2:" + QString::number(param2)
+                + " turns:" + QString::number(turns)
+                + " description:" + description
+                + " reachedTime:" + QString::number(reachedTime)) ;
+    return debugString;
+}

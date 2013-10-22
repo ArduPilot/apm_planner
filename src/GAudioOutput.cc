@@ -171,6 +171,10 @@ bool GAudioOutput::say(QString text, int severity)
 {
     if (!muted)
     {
+        if (text.compare("system %1") == 0)
+            //don't say system %1 [HACK] :(
+            return true;
+
         // TODO Add severity filter
         Q_UNUSED(severity);
         bool res = false;

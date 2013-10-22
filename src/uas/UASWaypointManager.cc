@@ -390,7 +390,7 @@ void UASWaypointManager::addWaypointEditable(Waypoint *wp, bool enforceFirstActi
     {
         // Check if this is the first waypoint in an offline list
         if (waypointsEditable.count() == 0 && uas == NULL)
-            MainWindow::instance()->showCriticalMessage(tr("OFFLINE Waypoint Editing Mode"), tr("You are in offline editing mode. Make sure to safe your mission to a file before connecting to a system - you will need to load the file into the system, the offline list will be cleared on connect."));
+            MainWindow::instance()->showCriticalMessage(tr("OFFLINE Waypoint Editing Mode"), tr("You are in offline editing mode. Make sure to save your mission to a file before connecting to a system - you will need to load the file into the system, the offline list will be cleared on connect."));
 
         wp->setId(waypointsEditable.count());
         if (enforceFirstActive && waypointsEditable.count() == 0)
@@ -413,7 +413,7 @@ Waypoint* UASWaypointManager::createWaypoint(bool enforceFirstActive)
 {
     // Check if this is the first waypoint in an offline list
     if (waypointsEditable.count() == 0 && uas == NULL)
-        MainWindow::instance()->showCriticalMessage(tr("OFFLINE Waypoint Editing Mode"), tr("You are in offline editing mode. Make sure to safe your mission to a file before connecting to a system - you will need to load the file into the system, the offline list will be cleared on connect."));
+        MainWindow::instance()->showCriticalMessage(tr("OFFLINE Waypoint Editing Mode"), tr("You are in offline editing mode. Make sure to save your mission to a file before connecting to a system - you will need to load the file into the system, the offline list will be cleared on connect."));
 
     Waypoint* wp = new Waypoint();
     wp->setId(waypointsEditable.count());
@@ -838,6 +838,7 @@ void UASWaypointManager::goToWaypoint(Waypoint *wp)
     //Don't try to send a guided mode message to an AP that does not support it.
     if (uas->getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
     {
+        QLOG_DEBUG() << "APM: goToWaypont: " + wp->debugString();
         mavlink_mission_item_t mission;
         memset(&mission, 0, sizeof(mavlink_mission_item_t));   //initialize with zeros
         //const Waypoint *cur_s = waypointsEditable.at(i);
@@ -1068,11 +1069,25 @@ float UASWaypointManager::getAltitudeRecommendation()
 
 int UASWaypointManager::getFrameRecommendation()
 {
-    if (waypointsEditable.count() > 0) {
-        return static_cast<int>(waypointsEditable.last()->getFrame());
-    } else {
-        return MAV_FRAME_GLOBAL;
+    switch(uas->getAutopilotType()){
+    case MAV_AUTOPILOT_ARDUPILOTMEGA: {
+        // APM always uses waypoint 0 as HOME location (ie. it's MAV_FRAME_GLOBAL)
+        if (waypointsEditable.count() > 1) {
+            // new waypoints adopt the last waypoint setting by default.
+            return static_cast<int>(waypointsEditable.last()->getFrame());
+        } else {
+            return MAV_FRAME_GLOBAL_RELATIVE_ALT;
+        }
+
+    }break;
+    default:
+        if (waypointsEditable.count() > 0) {
+            return static_cast<int>(waypointsEditable.last()->getFrame());
+        } else {
+            return MAV_FRAME_GLOBAL;
+        }
     }
+
 }
 
 float UASWaypointManager::getAcceptanceRadiusRecommendation()
@@ -1087,4 +1102,13 @@ float UASWaypointManager::getAcceptanceRadiusRecommendation()
 float UASWaypointManager::getHomeAltitudeOffsetDefault()
 {
     return defaultAltitudeHomeOffset;
+}
+
+const Waypoint *UASWaypointManager::getWaypoint(int index)
+{
+    if (index > 0 || index < waypointsEditable.count()){
+        return waypointsEditable[index];
+    } else {
+        return NULL;
+    }
 }

@@ -445,6 +445,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                         break;
                     default:
                         // Do nothing
+                        QLOG_DEBUG() << "Airframe is set to: " << type;
                         break;
                     }
                 }
