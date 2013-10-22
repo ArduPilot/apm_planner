@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>321</width>
-    <height>363</height>
+    <width>325</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,16 @@
     <number>6</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="missionGroupBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>180</height>
+      </size>
+     </property>
      <property name="title">
       <string>Mission Controls</string>
      </property>
@@ -26,38 +35,14 @@
       <property name="margin">
        <number>6</number>
       </property>
-      <item row="1" column="1">
+      <item row="4" column="1">
        <widget class="QPushButton" name="goToWaypointButton">
         <property name="text">
          <string>Go To Waypoint</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QComboBox" name="waypointListComboBox"/>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="restartMissionButton">
-        <property name="text">
-         <string>Restart Mission</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QSpinBox" name="altitudeSpinBox"/>
-        </item>
-        <item>
-         <widget class="QPushButton" name="changeAltitudeButton">
-          <property name="text">
-           <string>Change Altitude</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="5" column="0" colspan="2">
+      <item row="7" column="0" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QSpinBox" name="speedSpinBox"/>
@@ -71,10 +56,34 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="0">
+      <item row="6" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QSpinBox" name="altitudeSpinBox"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="changeAltitudeButton">
+          <property name="text">
+           <string>Change Altitude</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="4" column="0">
+       <widget class="QComboBox" name="waypointListComboBox"/>
+      </item>
+      <item row="2" column="0">
        <widget class="QLabel" name="currentWaypointLabel">
         <property name="text">
          <string>Current WP:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="restartMissionButton">
+        <property name="text">
+         <string>Restart Mission</string>
         </property>
        </widget>
       </item>
@@ -82,22 +91,87 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="actionsGroupBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
-      <string>Auto Actions</string>
+      <string>Actions</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="margin">
        <number>6</number>
       </property>
+      <item row="2" column="2" colspan="2">
+       <widget class="QPushButton" name="armDisarmButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>ARM</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QComboBox" name="modeComboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="armedStatuslabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+	font: 75 14pt &quot;Lucida Grande&quot;;
+}</string>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;disconnected&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0" colspan="2">
        <widget class="QComboBox" name="actionComboBox"/>
       </item>
       <item row="0" column="2" colspan="2">
-       <widget class="QComboBox" name="modeComboBox"/>
-      </item>
-      <item row="1" column="0" colspan="2">
        <widget class="QPushButton" name="exeActionButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="text">
          <string>Execute Action</string>
         </property>
@@ -105,37 +179,396 @@
       </item>
       <item row="1" column="2" colspan="2">
        <widget class="QPushButton" name="setModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="text">
          <string>Set Mode</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="shortcutGroupBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>65000</width>
+       <height>96</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Shortcut Modes</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
        <widget class="QPushButton" name="autoModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}</string>
+        </property>
         <property name="text">
          <string>Auto</string>
         </property>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="2">
-       <widget class="QPushButton" name="manualModeButton">
-        <property name="text">
-         <string>Manual</string>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">shortcutButtonGroup</string>
+        </attribute>
        </widget>
       </item>
-      <item row="2" column="3">
+      <item row="0" column="1">
+       <widget class="QPushButton" name="stabilizeModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}</string>
+        </property>
+        <property name="text">
+         <string>Stabilize</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">shortcutButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="loiterModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>75</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}
+</string>
+        </property>
+        <property name="text">
+         <string>Loiter</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">shortcutButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="0" column="3">
        <widget class="QPushButton" name="rtlModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(spread:pad, x1:0.507813, y1:1, x2:0.517, y2:0, stop:0 rgba(255, 0, 0, 255), stop:1 rgba(203, 205, 205, 124))
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}
+
+</string>
+        </property>
         <property name="text">
          <string>RTL</string>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">shortcutButtonGroup</string>
+        </attribute>
        </widget>
       </item>
-      <item row="3" column="0" colspan="4">
-       <widget class="QPushButton" name="armDisarmButton">
-        <property name="text">
-         <string>ARM</string>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="opt1ModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}
+</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">shortcutButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="opt2ModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}
+</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">shortcutButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="opt3ModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}
+</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">shortcutButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QPushButton" name="opt4ModeButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>75</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+	border: 2px solid #4A4A4F;
+	border-radius: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+}
+
+QPushButton:checked {
+	background-color: rgb(0,255,0);
+}
+
+QPushButton:pressed {
+	background-color: rgb(0,255,0);
+}
+</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">shortcutButtonGroup</string>
+        </attribute>
        </widget>
       </item>
      </layout>
@@ -145,4 +578,7 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="shortcutButtonGroup"/>
+ </buttongroups>
 </ui>

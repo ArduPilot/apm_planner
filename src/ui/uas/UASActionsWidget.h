@@ -15,6 +15,8 @@ public:
 
 private slots:
     void activeUASSet(UASInterface *uas);
+    void uasConnected();
+    void uasDisconnected();
 
     void armButtonClicked();
     void armingChanged(bool state);
@@ -24,10 +26,9 @@ private slots:
     void changeAltitudeClicked();
     void changeSpeedClicked();
     void setMode();   //[TODO] create a new ardupilot mode types
+    void setShortcutMode();
     void setAction();
-    void setAutoMode();
     void setRTLMode();
-    void setManualMode();
 
 private:
     void setupApmCopterModes();

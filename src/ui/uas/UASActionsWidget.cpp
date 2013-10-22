@@ -17,12 +17,22 @@ void UASActionsWidget::setupApmPlaneModes()
     ui.modeComboBox->addItem("RTL", ApmPlane::RTL);
     ui.modeComboBox->addItem("Loiter", ApmPlane::LOITER);
     ui.modeComboBox->addItem("Guided", ApmPlane::GUIDED);
+
+    ui.armDisarmButton->setVisible(false);
+    ui.armedStatuslabel->setVisible(false);
+
+    // Setup configurable shortcut action
+    ui.opt1ModeButton->setText("FBW A");
+    ui.opt2ModeButton->setText("FBW B");
+    ui.opt3ModeButton->setText("Circle");
+    ui.opt4ModeButton->setText("Manual");
+
 }
 
 void UASActionsWidget::setupApmCopterModes()
 {
     QLOG_INFO() << "UASActionWidget: set for Copter";
-    ui.modeComboBox->addItem("Stablize", ApmCopter::STABILIZE);
+    ui.modeComboBox->addItem("Stabilize", ApmCopter::STABILIZE);
     ui.modeComboBox->addItem("Acro", ApmCopter::ACRO);
     ui.modeComboBox->addItem("Alt Hold", ApmCopter::ALT_HOLD);
     ui.modeComboBox->addItem("Auto", ApmCopter::AUTO);
@@ -36,6 +46,15 @@ void UASActionsWidget::setupApmCopterModes()
     ui.modeComboBox->addItem("Toy A", ApmCopter::TOY_A);
     ui.modeComboBox->addItem("Toy M", ApmCopter::TOY_M);
     ui.modeComboBox->addItem("Sport", ApmCopter::SPORT);
+
+    ui.armDisarmButton->setVisible(true);
+    ui.armedStatuslabel->setVisible(true);
+
+    // Setup configurable shortcut action
+    ui.opt1ModeButton->setVisible(false);
+    ui.opt2ModeButton->setText("Acro");
+    ui.opt3ModeButton->setText("Alt Hold");
+    ui.opt4ModeButton->setText("Land");
 }
 
 void UASActionsWidget::setupApmRoverModes()
@@ -49,6 +68,15 @@ void UASActionsWidget::setupApmRoverModes()
     ui.modeComboBox->addItem("RTL", ApmRover::RTL);
     ui.modeComboBox->addItem("Guided", ApmRover::GUIDED);
     ui.modeComboBox->addItem("Initializing", ApmRover::INITIALIZING);
+
+    ui.armDisarmButton->setVisible(false);
+    ui.armedStatuslabel->setVisible(false);
+
+    // Setup configurable shortcut action
+    ui.opt1ModeButton->setText("Learn");
+    ui.opt2ModeButton->setText("Steer");
+    ui.opt3ModeButton->setText("Hold");
+    ui.opt4ModeButton->setVisible(false);
 }
 
 UASActionsWidget::UASActionsWidget(QWidget *parent) : QWidget(parent)
@@ -76,25 +104,47 @@ UASActionsWidget::UASActionsWidget(QWidget *parent) : QWidget(parent)
 
     connect(ui.exeActionButton, SIGNAL(clicked()),
             this, SLOT(setAction()));
+
+    // Mode Shortcut Buttons
     connect(ui.autoModeButton, SIGNAL(clicked()),
-            this, SLOT(setAutoMode()));
-    connect(ui.manualModeButton, SIGNAL(clicked()),
-            this, SLOT(setManualMode()));
+            this, SLOT(setShortcutMode()));
+    connect(ui.stabilizeModeButton, SIGNAL(clicked()),
+            this, SLOT(setShortcutMode()));
     connect(ui.rtlModeButton, SIGNAL(clicked()),
             this, SLOT(setRTLMode()));
+    connect(ui.loiterModeButton, SIGNAL(clicked()),
+            this, SLOT(setShortcutMode()));
+
+    connect(ui.opt1ModeButton, SIGNAL(clicked()),
+            this, SLOT(setShortcutMode()));
+    connect(ui.opt2ModeButton, SIGNAL(clicked()),
+            this, SLOT(setShortcutMode()));
+    connect(ui.opt3ModeButton, SIGNAL(clicked()),
+            this, SLOT(setShortcutMode()));
+    connect(ui.opt4ModeButton, SIGNAL(clicked()),
+            this, SLOT(setShortcutMode()));
 }
 
 void UASActionsWidget::activeUASSet(UASInterface *uas)
 {
     QLOG_INFO() << "UASActionWidget::activeUASSet";
     if (uas == NULL) {
-        QLOG_WARN() << "uas object NULL";
+        QLOG_ERROR() << "uas object NULL";
+        return;
     }
-    m_uas = dynamic_cast<UAS*>(uas);
+    // enable the controls
+    ui.actionsGroupBox->setDisabled(false);
+    ui.missionGroupBox->setDisabled(false);
+    ui.shortcutGroupBox->setDisabled(false);
+
+    m_uas = static_cast<UAS*>(uas);
 
     connect(m_uas->getWaypointManager(),SIGNAL(waypointEditableListChanged()),this,SLOT(updateWaypointList()));
     connect(m_uas->getWaypointManager(),SIGNAL(currentWaypointChanged(quint16)),this,SLOT(currentWaypointChanged(quint16)));
     connect(m_uas,SIGNAL(armingChanged(bool)),this,SLOT(armingChanged(bool)));
+
+    connect(m_uas, SIGNAL(connected()), this, SLOT(uasConnected()));
+    connect(m_uas, SIGNAL(disconnected()), this, SLOT(uasDisconnected()));
 
     armingChanged(m_uas->isArmed());
     updateWaypointList();
@@ -129,6 +179,19 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
     }
 }
 
+void UASActionsWidget::uasConnected()
+{
+    QLOG_INFO() << "UASActionsWidget::connected()" << m_uas;
+}
+
+void UASActionsWidget::uasDisconnected()
+{
+    QLOG_INFO() << "UASActionsWidget::disconnected()" << m_uas;
+    ui.actionsGroupBox->setDisabled(true);
+    ui.missionGroupBox->setDisabled(true);
+    ui.shortcutGroupBox->setDisabled(true);
+}
+
 void UASActionsWidget::armButtonClicked()
 {
     QLOG_INFO() << "UASActionsWidget::armButtonClicked";
@@ -157,11 +220,13 @@ void UASActionsWidget::armingChanged(bool state)
     //Figure out why arm/disarm is in UAS.h and not part of the interface, and fix.
     if (state)
     {
-        ui.armDisarmButton->setText("DISARM\nCurrently Armed");
+        ui.armDisarmButton->setText("DISARM");
+        ui.armedStatuslabel->setText("<html><head/><body><p><span style=color:#ff0000>ARMED</span></p></body></html>");
     }
     else
     {
-        ui.armDisarmButton->setText("ARM\nCurrently Disarmed");
+        ui.armDisarmButton->setText("ARM");
+        ui.armedStatuslabel->setText("<html><head/><body><p><span style=color:#00AA00>DISARMED</span></p></body></html>");
     }
 
 }
@@ -240,7 +305,7 @@ void UASActionsWidget::changeSpeedClicked()
 
 void UASActionsWidget::setMode()
 {
-    QLOG_INFO() << "    UASActionsWidget::setAction()";
+    QLOG_INFO() << "    UASActionsWidget::setMode()";
 
     if(!activeUas())
         return;
@@ -252,6 +317,22 @@ void UASActionsWidget::setMode()
                    ui.modeComboBox->itemData(ui.modeComboBox->currentIndex()).toInt());
 }
 
+void UASActionsWidget::setShortcutMode()
+{
+    QLOG_INFO() << "    UASActionsWidget::setShortcutMode()";
+
+    if(!activeUas())
+        return;
+
+    QLOG_INFO() << "Set Mode to "
+                << ui.shortcutButtonGroup->checkedButton()->text();
+    int index = ui.modeComboBox->findText(ui.shortcutButtonGroup->checkedButton()->text());
+    QLOG_DEBUG() << "index: "
+                << index;
+    ui.modeComboBox->setCurrentIndex(index);
+    m_uas->setMode(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+                   ui.modeComboBox->itemData(ui.modeComboBox->currentIndex()).toInt());
+}
 
 
 void UASActionsWidget::setAction()
@@ -515,89 +596,6 @@ void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
     // [TODO] :(
     QLOG_INFO() << "UASActionWidget::sendApmRoverCommand";
     QLOG_INFO() << "to be implemented";
-}
-
-void UASActionsWidget::setAutoMode()
-{
-    if(!activeUas())
-        return;
-
-    QLOG_INFO() << "UASActionWidget::setAutoMode";
-
-    switch (m_uas->getAutopilotType()) {
-        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-
-            int idx = ui.modeComboBox->findText("Auto");
-            int mode = ui.modeComboBox->itemData(idx).toInt();
-            m_uas->setMode(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
-                           mode);
-        } break;
-
-        case MAV_AUTOPILOT_PX4: {
-            // [TODO] PX4 flight controller go here
-        }
-
-        case MAV_AUTOPILOT_GENERIC:
-        default: {
-            // [TODO] Generic, and other flight controllers here (or own sections as above)
-        }
-    }
-
-}
-
-void UASActionsWidget::setManualMode()
-{
-    if(!activeUas())
-        return;
-
-    QLOG_INFO() << "UASActionsWidget::setManualMode()";
-    int mode, idx;
-
-    switch (m_uas->getAutopilotType()) {
-        case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-            int systemType = m_uas->getSystemType();
-            switch(systemType) {
-            case MAV_TYPE_FIXED_WING:
-
-                idx = ui.modeComboBox->findText("Manual");
-                mode = ui.modeComboBox->itemData(idx).toInt();
-
-                break;
-
-            case MAV_TYPE_QUADROTOR:
-            case MAV_TYPE_OCTOROTOR:
-            case MAV_TYPE_HELICOPTER:
-            case MAV_TYPE_TRICOPTER:
-            case MAV_TYPE_HEXAROTOR:
-            case MAV_TYPE_COAXIAL:
-                idx = ui.modeComboBox->findText("Stabilize");
-                mode = ui.modeComboBox->itemData(idx).toInt();
-
-                break;
-
-            case MAV_TYPE_GROUND_ROVER:
-                idx = ui.modeComboBox->findText("Manual");
-                mode = ui.modeComboBox->itemData(idx).toInt();
-
-                break;
-
-            default:
-                QLOG_WARN() << "UASActionWidget: Unsupported System Type" << systemType;
-            }
-
-            m_uas->setMode(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
-                           mode);
-        } break;
-
-        case MAV_AUTOPILOT_PX4: {
-            // [TODO] PX4 flight controller go here
-        }
-
-        case MAV_AUTOPILOT_GENERIC:
-        default: {
-            // [TODO] Generic, and other flight controllers here (or own sections as above)
-        }
-    }
 }
 
 void UASActionsWidget::setRTLMode()
