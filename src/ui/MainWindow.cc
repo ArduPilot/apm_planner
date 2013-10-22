@@ -297,8 +297,11 @@ MainWindow::MainWindow(QWidget *parent):
     else
     {
         // Adjust the size
-        const int screenWidth = QApplication::desktop()->width();
-        const int screenHeight = QApplication::desktop()->height();
+        QDesktopWidget* desktopWidget = qApp->desktop();
+        static QRect rect = desktopWidget->screenGeometry();
+        QLOG_INFO() << "Screen Size is " << rect;
+        const int screenWidth = rect.width();
+        const int screenHeight = rect.height();
 
         if (screenWidth < 1500)
         {
