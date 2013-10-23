@@ -42,7 +42,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     m_px4UnplugTimer=0;
     m_betaFirmwareChecked = false;
     m_trunkFirmwareChecked = false;
-    m_tempFirmwareFile=0;
+    m_tempFirmwareFile=NULL;
     ui.progressBar->setVisible(false);
     ui.warningLabel->setVisible(false);
     m_firmwareType = "stable";
@@ -66,6 +66,9 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     connect(ui.quadPushButton,SIGNAL(clicked()),this,SLOT(flashButtonClicked()));
     connect(ui.triPushButton,SIGNAL(clicked()),this,SLOT(flashButtonClicked()));
     connect(ui.y6PushButton,SIGNAL(clicked()),this,SLOT(flashButtonClicked()));
+
+    connect(ui.flashCustomFWButton,SIGNAL(clicked()),this,SLOT(flashCustomFirmware()));
+
     QTimer::singleShot(10000,this,SLOT(requestFirmwares()));
     connect(ui.betaFirmwareButton,SIGNAL(clicked(bool)),this,SLOT(betaFirmwareButtonClicked(bool)));
     ui.betaFirmwareButton->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -454,8 +457,8 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
         emit showBlankingScreen();
     }
     //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
-    m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
-    m_tempFirmwareFile = 0;
+    if (m_tempFirmwareFile) delete m_tempFirmwareFile; //This will remove the temporary file.
+    m_tempFirmwareFile = NULL;
     ui.progressBar->setVisible(false);
     ui.cancelPushButton->setEnabled(false);
     ui.cancelPushButton->setVisible(false);
@@ -567,12 +570,20 @@ void ApmFirmwareConfig::downloadFinished()
         return;
     }
     QByteArray hex = reply->readAll();
+    Q_ASSERT_X(m_tempFirmwareFile == NULL, "ApmFirmwareConfig", "m_tempFirmwareFile != NULL");
     m_tempFirmwareFile = new QTemporaryFile();
     m_tempFirmwareFile->open();
     m_tempFirmwareFile->write(hex);
     m_tempFirmwareFile->flush();
     m_tempFirmwareFile->close();
-    //tempfirmware.fileName()
+
+    QLOG_DEBUG() << "Temp file to flash is: " << m_tempFirmwareFile->fileName();
+    flashFirmware(m_tempFirmwareFile->fileName());
+}
+
+
+ void ApmFirmwareConfig::flashFirmware(QString filename)
+ {
     ui.cancelPushButton->setEnabled(true);
     ui.cancelPushButton->setVisible(true);
     m_burnProcess = new QProcess(this);
@@ -633,14 +644,14 @@ void ApmFirmwareConfig::downloadFinished()
 #ifdef Q_OS_WIN
     stringList = QStringList() << "-Cavrdude/avrdude.conf" << "-pm2560"
                                << "-cstk500" << QString("-P").append(m_settings.name)
-                               << QString("-Uflash:w:").append(m_tempFirmwareFile->fileName()).append(":i");
+                               << QString("-Uflash:w:").append(filename).append(":i");
 
     avrdudeExecutable = "avrdude/avrdude.exe";
 #endif
 #ifdef Q_OS_MAC
     stringList = QStringList() << "-v" << "-pm2560"
                                            << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
-                                           << QString("-Uflash:w:").append(m_tempFirmwareFile->fileName()).append(":i");
+                                           << QString("-Uflash:w:").append(filename).append(":i");
     avrdudeExecutable = "/usr/local/CrossPack-AVR/bin/avrdude";
 #endif
 
@@ -665,7 +676,7 @@ void ApmFirmwareConfig::downloadFinished()
     connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
     connect(m_px4uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
     connect(m_px4uploader,SIGNAL(devicePlugDetected()),this,SLOT(devicePlugDetected()));
-    m_px4uploader->loadFile(m_tempFirmwareFile->fileName());
+    m_px4uploader->loadFile(filename);
     }
     m_timeoutCounter=0;
     m_hasError=false;
@@ -934,6 +945,26 @@ void ApmFirmwareConfig::firmwareListFinished()
     }
     //QLOG_DEBUG() << "Match not found for:" << reply->url();
     //QLOG_DEBUG() << "Git version line:" <<  replystr;
+}
+
+void ApmFirmwareConfig::flashCustomFirmware()
+{
+    // Show File SelectionDialog
+
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),"~",
+                                                     tr("bin (*.hex *.px4)"));
+
+    if (filename.length() > 0){
+        QLOG_DEBUG() << "Selected File to flash: " << filename;
+        ui.progressBar->setVisible(true);
+        ui.statusLabel->setText("Flashing");
+        flashFirmware(filename);
+
+    } else {
+        QLOG_DEBUG() << "custom firmware flash cancelled: ";
+        return;
+    }
+
 }
 
 ApmFirmwareConfig::~ApmFirmwareConfig()

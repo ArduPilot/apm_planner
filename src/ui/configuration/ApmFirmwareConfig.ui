@@ -35,181 +35,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0,0,0">
-           <item row="0" column="1">
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QPushButton" name="planePushButton">
-               <property name="minimumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../../qgroundcontrol.qrc">
-                 <normaloff>:/files/images/firmware/plane.png</normaloff>:/files/images/firmware/plane.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="planeLabel">
-               <property name="text">
-                <string>ArduPlane vX.XX</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="1" column="3">
-            <layout class="QVBoxLayout" name="verticalLayout_5">
-             <item>
-              <widget class="QPushButton" name="y6PushButton">
-               <property name="minimumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../../qgroundcontrol.qrc">
-                 <normaloff>:/files/images/firmware/hexay.png</normaloff>:/files/images/firmware/hexay.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="y6Label">
-               <property name="text">
-                <string>ArduCopter vX.XX</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="5" column="0" colspan="5">
-            <widget class="QTextBrowser" name="textBrowser"/>
-           </item>
-           <item row="1" column="1">
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
-              <widget class="QPushButton" name="copterPushButton">
-               <property name="minimumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../../qgroundcontrol.qrc">
-                 <normaloff>:/files/images/firmware/heli.png</normaloff>:/files/images/firmware/heli.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="copterLabel">
-               <property name="text">
-                <string>ArduCopter vX.XX</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="2">
-            <layout class="QVBoxLayout" name="verticalLayout_7">
-             <item>
-              <widget class="QPushButton" name="quadPushButton">
-               <property name="minimumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../../qgroundcontrol.qrc">
-                 <normaloff>:/files/images/firmware/quadx.png</normaloff>:/files/images/firmware/quadx.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="quadLabel">
-               <property name="text">
-                <string>ArduCopter vX.XX</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
            <item row="1" column="2">
             <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
@@ -243,138 +68,6 @@
              </item>
              <item>
               <widget class="QLabel" name="triLabel">
-               <property name="text">
-                <string>ArduCopter vX.XX</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="6">
-            <layout class="QVBoxLayout" name="verticalLayout_10"/>
-           </item>
-           <item row="0" column="4">
-            <layout class="QVBoxLayout" name="verticalLayout_9">
-             <item>
-              <widget class="QPushButton" name="octaQuadPushButton">
-               <property name="minimumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../../qgroundcontrol.qrc">
-                 <normaloff>:/files/images/firmware/octx.png</normaloff>:/files/images/firmware/octx.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="octaQuadLabel">
-               <property name="text">
-                <string>ArduCopter vX.XX</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="1" column="4">
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <widget class="QPushButton" name="octaPushButton">
-               <property name="minimumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../../qgroundcontrol.qrc">
-                 <normaloff>:/files/images/firmware/octax.png</normaloff>:/files/images/firmware/octax.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="octaLabel">
-               <property name="text">
-                <string>ArduCopter vX.XX</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="3">
-            <layout class="QVBoxLayout" name="verticalLayout_8">
-             <item>
-              <widget class="QPushButton" name="hexaPushButton">
-               <property name="minimumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>125</width>
-                 <height>125</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="../../../qgroundcontrol.qrc">
-                 <normaloff>:/files/images/firmware/hexax.png</normaloff>:/files/images/firmware/hexax.png</iconset>
-               </property>
-               <property name="iconSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="hexaLabel">
                <property name="text">
                 <string>ArduCopter vX.XX</string>
                </property>
@@ -428,40 +121,12 @@
              </item>
             </layout>
            </item>
-           <item row="4" column="0" colspan="4">
-            <widget class="QProgressBar" name="progressBar">
-             <property name="value">
-              <number>24</number>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="4">
-            <widget class="QPushButton" name="cancelPushButton">
-             <property name="text">
-              <string>Cancel</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0" colspan="3">
-            <widget class="QLabel" name="statusLabel">
-             <property name="text">
-              <string>Status</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="3">
-            <widget class="QCheckBox" name="showOutputCheckBox">
-             <property name="text">
-              <string>Show Output</string>
-             </property>
-            </widget>
-           </item>
            <item row="3" column="4">
             <widget class="QPushButton" name="betaFirmwareButton">
              <property name="minimumSize">
               <size>
-               <width>135</width>
-               <height>30</height>
+               <width>100</width>
+               <height>25</height>
               </size>
              </property>
              <property name="text">
@@ -481,6 +146,347 @@
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:large; font-weight:600; color:#e90000;&quot;&gt;WARNING:&lt;/span&gt;&lt;span style=&quot; font-size:large; font-weight:600; color:#ffaa00;&quot;&gt; Only install BETA firmware if you are an experienced tester.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
+           </item>
+           <item row="4" column="0" colspan="4">
+            <widget class="QProgressBar" name="progressBar">
+             <property name="value">
+              <number>24</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <widget class="QPushButton" name="quadPushButton">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../../qgroundcontrol.qrc">
+                 <normaloff>:/files/images/firmware/quadx.png</normaloff>:/files/images/firmware/quadx.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="quadLabel">
+               <property name="text">
+                <string>ArduCopter vX.XX</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="3">
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QPushButton" name="y6PushButton">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../../qgroundcontrol.qrc">
+                 <normaloff>:/files/images/firmware/hexay.png</normaloff>:/files/images/firmware/hexay.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="y6Label">
+               <property name="text">
+                <string>ArduCopter vX.XX</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="3" column="3">
+            <widget class="QCheckBox" name="showOutputCheckBox">
+             <property name="text">
+              <string>Show Output</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="4">
+            <widget class="QPushButton" name="cancelPushButton">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Cancel</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QLabel" name="statusLabel">
+             <property name="text">
+              <string>Status</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QPushButton" name="planePushButton">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../../qgroundcontrol.qrc">
+                 <normaloff>:/files/images/firmware/plane.png</normaloff>:/files/images/firmware/plane.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="planeLabel">
+               <property name="text">
+                <string>ArduPlane vX.XX</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="0" column="6">
+            <layout class="QVBoxLayout" name="verticalLayout_10"/>
+           </item>
+           <item row="0" column="3">
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <widget class="QPushButton" name="hexaPushButton">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../../qgroundcontrol.qrc">
+                 <normaloff>:/files/images/firmware/hexax.png</normaloff>:/files/images/firmware/hexax.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="hexaLabel">
+               <property name="text">
+                <string>ArduCopter vX.XX</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="0" column="4">
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QPushButton" name="octaQuadPushButton">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../../qgroundcontrol.qrc">
+                 <normaloff>:/files/images/firmware/octx.png</normaloff>:/files/images/firmware/octx.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="octaQuadLabel">
+               <property name="text">
+                <string>ArduCopter vX.XX</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="1">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QPushButton" name="copterPushButton">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../../qgroundcontrol.qrc">
+                 <normaloff>:/files/images/firmware/heli.png</normaloff>:/files/images/firmware/heli.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="copterLabel">
+               <property name="text">
+                <string>ArduCopter vX.XX</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="5" column="0" colspan="5">
+            <widget class="QTextBrowser" name="textBrowser"/>
+           </item>
+           <item row="1" column="4">
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QPushButton" name="octaPushButton">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>125</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="../../../qgroundcontrol.qrc">
+                 <normaloff>:/files/images/firmware/octax.png</normaloff>:/files/images/firmware/octax.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>100</width>
+                 <height>100</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="octaLabel">
+               <property name="text">
+                <string>ArduCopter vX.XX</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
@@ -553,6 +559,25 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="flashCustomFWButton">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>180</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Flash Custom Firmware</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>

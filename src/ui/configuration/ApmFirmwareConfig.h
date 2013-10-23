@@ -93,6 +93,10 @@ private slots:
     void px4StatusUpdate(QString update);
     void px4DebugUpdate(QString update);
     void px4UnplugTimerTick();
+
+    void flashCustomFirmware();
+    void flashFirmware(QString filename);
+
 private:
     QProgressDialog *m_replugRequestMessageBox;
     QTimer *m_px4UnplugTimer;
