@@ -6,7 +6,6 @@ trap 'echo "received signal to stop"; do_cleanup interrupted; exit' SIGQUIT SIGT
 function do_cleanup {
     hdiutil eject /Volumes/APM\ Planner\ 2.0\ \(Alpha\)/
     rm apm_planner2_target.sparseimage
-    rm apm_planner2_todaysdate.dmg
 }
 
 macdeployqt apmplanner2.app/
