@@ -111,7 +111,15 @@ void AdvParameterList::loadButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
+
     QString filename = QFileDialog::getOpenFileName(this,"Open File");
+
+    if(NULL == filename)
+    {
+        return;
+    }
+
+
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
@@ -146,12 +154,19 @@ void AdvParameterList::loadButtonClicked()
 void AdvParameterList::saveButtonClicked()
 {
     QString filename = QFileDialog::getSaveFileName(this,"Save File");
+
+    if(NULL == filename)
+    {
+        return;
+    }
+
     QFile file(filename);
     if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {
-        QMessageBox::information(this,"Error","Unable to open file");
+        QMessageBox::information(this,"Error","Unable to save the file.");
         return;
     }
+
     QString fileheader = QInputDialog::getText(this,"Input file header","Header at beginning of file:");
 
     file.write(QString("#NOTE: " + QDateTime::currentDateTime().toString("M/d/yyyy h:m:s AP")

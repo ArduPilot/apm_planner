@@ -954,7 +954,7 @@ void ApmFirmwareConfig::flashCustomFirmware()
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),"~",
                                                      tr("bin (*.hex *.px4)"));
 
-    if (filename.length() > 0){
+    if (NULL != filename && filename.length() > 0){
         QLOG_DEBUG() << "Selected File to flash: " << filename;
         ui.progressBar->setVisible(true);
         ui.statusLabel->setText("Flashing");
