@@ -41,7 +41,7 @@ void ApmPlaneLevel::levelClicked()
         showNullMAVErrorMessageBox();
         return;
     }
-    QMessageBox::information(0,"Warning","Be sure the plane is completly level, then click ok");
+    QMessageBox::information(0,"Warning","Be sure the plane is completely level, then click OK.");
     MAV_CMD command = MAV_CMD_PREFLIGHT_CALIBRATION;
     int confirm = 0;
     float param1 = 1.0;
