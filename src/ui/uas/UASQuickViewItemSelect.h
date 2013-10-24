@@ -25,6 +25,7 @@ private:
     Ui::UASQuickViewItemSelect ui;
 private slots:
     void checkBoxClicked(bool checked);
+    void listItemChanged(int item);
 signals:
     void valueEnabled(QString value);
     void valueDisabled(QString value);
