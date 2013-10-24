@@ -307,8 +307,8 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
 
     if(m_writingParams) {
         ++m_paramsWritten;
-        float written = (float)m_paramsWritten;
-        float toWrite = (float)m_paramsToWrite;
+        float written = static_cast<float>(m_paramsWritten);
+        float toWrite = static_cast<float>(m_paramsToWrite);
         float pct = ((written / toWrite) * 100.0f);
 
         QString str;
