@@ -1,11 +1,10 @@
-maah
-QGroundControl Open Source Micro Air Vehicle Ground Control Station
+APM Planner
 
 Project:
-http://qgroundcontrol.org
+http://github.com/diydrones/apm_planner
 
 Files:
-http://github.com/mavlink/qgroundcontrol
+https://github.com/diydrones/apm_planner
 
 Credits:
 http://qgroundcontrol.org/credits
@@ -33,9 +32,9 @@ Install QT
 
 2) Double click the package installer
 
-Build QGroundControl
+Build APM Planner
 --------------------
-1) From the terminal go to the `groundcontrol` directory
+1) From the terminal go to the `apm_planner` directory created when you cloned the repository.
 
 2) Run `qmake -spec macx-g++`
 
@@ -55,7 +54,7 @@ sudo apt-get install phonon libqt4-dev \
 
 cd directory
 
-git clone https://github.com/mavlink/qgroundcontrol.git
+git clone https://github.com/diydrones/apm_planner
 
 go to libs/thirdParty -> libxbee 
 
@@ -65,7 +64,7 @@ Ubuntu Application Menu -> Development -> Qt Creator
 
 QtCreator Menu File -> Open File or Project..
 
-Open directory/qgroundcontrol/qgroundcontrol.pro
+Open directory/apm_planner/qgroundcontrol.pro
 
 Hit the green play button to compile and launch it
 
