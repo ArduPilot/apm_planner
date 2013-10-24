@@ -28,9 +28,13 @@ This file is part of the APM_PLANNER project
 #include <QFile>
 #include <QMessageBox>
 #include <QProgressDialog>
+
 AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     m_paramDownloadState(starting),
-    m_paramDownloadCount(0)
+    m_paramDownloadCount(0),
+    m_writingParams(false),
+    m_paramsWritten(0),
+    m_paramsToWrite(0)
 {
     ui.setupUi(this);
     connect(ui.refreshPushButton,SIGNAL(clicked()),this,SLOT(refreshButtonClicked()));
@@ -63,11 +67,18 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
         return;
     }
     m_origBrushList.append(ui.tableWidget->item(item->row(),0)->text());
-    QBrush brush = QBrush(QColor::fromRgb(100,255,100));
+    QBrush brush = QBrush(QColor::fromRgb(132,181,132));
     item->setBackground(brush);
     ui.tableWidget->item(item->row(),0)->setBackground(brush);
     m_modifiedParamMap[ui.tableWidget->item(item->row(),0)->text()] = item->text().toDouble();
+
+    int itemsChanged = m_modifiedParamMap.size();
+
+    QString str;
+    str.sprintf("%d %s changed", itemsChanged, (itemsChanged == 1)? "param": "params");
+    ui.progressLabel->setText(str);
 }
+
 void AdvParameterList::writeButtonClicked()
 {
     if (!m_uas)
@@ -75,18 +86,31 @@ void AdvParameterList::writeButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
+
+    m_waitingParamList.clear();
     for (QMap<QString,double>::const_iterator i = m_modifiedParamMap.constBegin();i!=m_modifiedParamMap.constEnd();i++)
     {
         QLOG_DEBUG() << "setParam:" << i.key() << "value:" << i.value();
         m_uas->getParamManager()->setParameter(1,i.key(),i.value());
         m_waitingParamList.append(i.key());
     }
+
+    m_writingParams = true;
+    m_paramsToWrite = m_modifiedParamMap.size();
+    m_paramsWritten = 0;
+
+    if(m_paramsToWrite == 0) {
+        ui.paramProgressBar->setValue(100);
+        ui.progressLabel->setText("No params to write");
+    }
+
     m_modifiedParamMap.clear();
 }
 
 AdvParameterList::~AdvParameterList()
 {
 }
+
 void AdvParameterList::refreshButtonClicked()
 {
     if (!m_uas)
@@ -94,6 +118,11 @@ void AdvParameterList::refreshButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
+
+    m_writingParams = false;
+    m_paramsToWrite = 0;
+    m_paramsWritten = 0;
+
     m_uas->getParamManager()->requestParameterList();
     m_paramDownloadState = starting;
 }
@@ -122,12 +151,15 @@ void AdvParameterList::loadButtonClicked()
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
-        QMessageBox::information(this,"Error","Unable to open file");
+        QMessageBox::information(this,"Error","Unable to open the file.");
         return;
     }
+
     QString filestr = file.readAll();
     file.close();
     QStringList filesplit = filestr.split("\r\n");
+
+    ui.progressLabel->setText("File loaded");
 
     foreach (QString fileline,filesplit)
     {
@@ -273,6 +305,25 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
     m_paramValueMap[parameterName]->setText(valstr);
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
 
+    if(m_writingParams) {
+        ++m_paramsWritten;
+        float written = (float)m_paramsWritten;
+        float toWrite = (float)m_paramsToWrite;
+        float pct = ((written / toWrite) * 100.0f);
+
+        QString str;
+
+        if(written >= toWrite) {
+            str.sprintf("%d params written", m_paramsWritten);
+            m_writingParams = false;
+        }
+        else {
+            str.sprintf("%d of %d", m_paramsWritten, m_paramsToWrite);
+        }
+
+        ui.progressLabel->setText(str);
+        ui.paramProgressBar->setValue((int)pct);
+    }
 }
 
 void AdvParameterList::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
