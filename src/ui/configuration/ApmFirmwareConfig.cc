@@ -420,7 +420,6 @@ void ApmFirmwareConfig::trunkFirmwareButtonClicked()
 {
     QMessageBox::information(this,tr("Warning"),tr("These are trunk firmware downloads. These should ONLY BE USED if you know what you're doing!!!"));
     ui.label->setText(tr("<h2>Trunk Firmware</h2>"));
-    ui.betaFirmwareButton->setText(tr("Stable Firmware"));
     ui.betaFirmwareButton->setChecked(true);
     requestFirmwares("latest",m_autopilotType);
 }
