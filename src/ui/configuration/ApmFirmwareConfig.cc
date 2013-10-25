@@ -44,7 +44,10 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     m_trunkFirmwareChecked = false;
     m_tempFirmwareFile=NULL;
     ui.progressBar->setVisible(false);
+    ui.cancelPushButton->setVisible(false);
+    ui.rebootButton->setVisible(false);
     ui.warningLabel->setVisible(false);
+    ui.textBrowser->setVisible(false);
     m_firmwareType = "stable";
     m_autopilotType = "apm";
     m_px4uploader = 0;
@@ -70,19 +73,21 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     connect(ui.flashCustomFWButton,SIGNAL(clicked()),this,SLOT(flashCustomFirmware()));
 
     QTimer::singleShot(10000,this,SLOT(requestFirmwares()));
-    connect(ui.betaFirmwareButton,SIGNAL(clicked(bool)),this,SLOT(betaFirmwareButtonClicked(bool)));
+
+    connect(ui.betaFirmwareButton,SIGNAL(clicked()),this,SLOT(betaFirmwareButtonClicked()));
+    connect(ui.stableFirmwareButton,SIGNAL(clicked()),this,SLOT(stableFirmwareButtonClicked()));
+
     ui.betaFirmwareButton->setContextMenuPolicy(Qt::ActionsContextMenu);
     QAction *action = new QAction(QString("Load Trunk Firmware"),ui.betaFirmwareButton);
     connect(action,SIGNAL(triggered()),this,SLOT(trunkFirmwareButtonClicked()));
     ui.betaFirmwareButton->addAction(action);
+
     connect(ui.cancelPushButton,SIGNAL(clicked()),this,SLOT(cancelButtonClicked()));
-    ui.cancelPushButton->setEnabled(false);
-    ui.cancelPushButton->setVisible(false);
 
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(0);
 
-    ui.textBrowser->setVisible(false);
+    ui.textBrowser->setEnabled(false);
     connect(ui.showOutputCheckBox,SIGNAL(clicked(bool)),ui.textBrowser,SLOT(setShown(bool)));
 
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
@@ -394,26 +399,23 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot)
     connect(reply9,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
 }
 
-void ApmFirmwareConfig::betaFirmwareButtonClicked(bool betafirmwareenabled)
+void ApmFirmwareConfig::betaFirmwareButtonClicked()
 {
     QLOG_DEBUG() << "Beta FW Button clicked";
 
-    if (betafirmwareenabled)
-    {
-        QMessageBox::information(this,tr("Warning"),tr("These are beta firmware downloads. Use at your own risk!!!"));
-        ui.label->setText(tr("<h2>Beta Firmware</h2>"));
-        ui.betaFirmwareButton->setText(tr("Stable Firmware"));
-        //equestBetaFirmwares();
-        showBetaLabels();
-        requestFirmwares("beta",m_autopilotType);
-    }
-    else
-    {
-        ui.label->setText(tr("<h2>Firmware</h2>"));
-        ui.betaFirmwareButton->setText(tr("Beta Firmware"));
-        requestFirmwares("stable",m_autopilotType);
-    }
+    QMessageBox::information(this,tr("Warning"),tr("These are beta firmware downloads. Use at your own risk!!!"));
+    ui.label->setText(tr("<h2>Beta Firmware</h2>"));
+    //equestBetaFirmwares();
+    showBetaLabels();
+    requestFirmwares("beta",m_autopilotType);
 }
+
+void ApmFirmwareConfig::stableFirmwareButtonClicked()
+{
+    ui.label->setText(tr("<h2>Firmware</h2>"));
+    requestFirmwares("stable",m_autopilotType);
+}
+
 void ApmFirmwareConfig::trunkFirmwareButtonClicked()
 {
     QMessageBox::information(this,tr("Warning"),tr("These are trunk firmware downloads. These should ONLY BE USED if you know what you're doing!!!"));
@@ -451,16 +453,18 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
         ui.progressBar->setValue(100);
         if (!m_hasError)
         {
-            ui.statusLabel->setText(tr("Upload complete"));
+            QMessageBox::information(this,"Complete","APM Flashing is complete!");
+            ui.statusLabel->setText(tr("Flashing complete"));
+            emit showBlankingScreen();
+        } else {
+            QMessageBox::critical(this,"FAILED","APM Flashing FAILED!");
+            ui.statusLabel->setText(tr("Flashing FAILED!"));
         }
-        QMessageBox::information(this,"Complete","APM Flashing is complete!");
-        emit showBlankingScreen();
     }
     //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
-    if (m_tempFirmwareFile) delete m_tempFirmwareFile; //This will remove the temporary file.
+    if (m_tempFirmwareFile) m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
     m_tempFirmwareFile = NULL;
     ui.progressBar->setVisible(false);
-    ui.cancelPushButton->setEnabled(false);
     ui.cancelPushButton->setVisible(false);
 
 }
@@ -484,10 +488,16 @@ void ApmFirmwareConfig::px4Finished()
     ui.progressBar->setValue(100);
     if (!m_hasError)
     {
-        ui.statusLabel->setText(tr("Upload complete"));
+        ui.statusLabel->setText(tr("Flashing complete"));
+        QMessageBox::information(this,"Complete","PX4 Flashing is complete!");
+    } else {
+        ui.statusLabel->setText(tr("Flashing FAILED!"));
+        QMessageBox::critical(this,"FAILED","PX4 Flashing failed!");
     }
-    QMessageBox::information(this,"Complete","PX4 Flashing is complete!");
+
     emit showBlankingScreen();
+    ui.progressBar->setVisible(false);
+    ui.cancelPushButton->setVisible(false);
 }
 
 void ApmFirmwareConfig::firmwareProcessReadyRead()
@@ -570,7 +580,6 @@ void ApmFirmwareConfig::downloadFinished()
         return;
     }
     QByteArray hex = reply->readAll();
-    Q_ASSERT_X(m_tempFirmwareFile == NULL, "ApmFirmwareConfig", "m_tempFirmwareFile != NULL");
     m_tempFirmwareFile = new QTemporaryFile();
     m_tempFirmwareFile->open();
     m_tempFirmwareFile->write(hex);
@@ -584,8 +593,8 @@ void ApmFirmwareConfig::downloadFinished()
 
  void ApmFirmwareConfig::flashFirmware(QString filename)
  {
-    ui.cancelPushButton->setEnabled(true);
     ui.cancelPushButton->setVisible(true);
+    ui.progressBar->setVisible(true);
     m_burnProcess = new QProcess(this);
     connect(m_burnProcess,SIGNAL(finished(int)),this,SLOT(firmwareProcessFinished(int)));
     connect(m_burnProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(firmwareProcessReadyRead()));
@@ -767,7 +776,6 @@ void ApmFirmwareConfig::flashButtonClicked()
                 }
             }
         }
-        ui.progressBar->setVisible(true);
 
         QLOG_DEBUG() << "Go download:" << m_buttonToUrlMap[senderbtn];
         QNetworkReply *reply = m_networkManager->get(QNetworkRequest(QUrl(m_buttonToUrlMap[senderbtn])));
@@ -956,7 +964,8 @@ void ApmFirmwareConfig::flashCustomFirmware()
 
     if (filename.length() > 0){
         QLOG_DEBUG() << "Selected File to flash: " << filename;
-        ui.progressBar->setVisible(true);
+        ui.progressBar->setEnabled(true);
+        ui.progressBar->setTextVisible(false);
         ui.statusLabel->setText("Flashing");
         flashFirmware(filename);
 

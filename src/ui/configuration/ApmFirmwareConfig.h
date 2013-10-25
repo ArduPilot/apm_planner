@@ -69,7 +69,8 @@ private slots:
     void firmwareListFinished();
     void firmwareListError(QNetworkReply::NetworkError error);
     void flashButtonClicked();
-    void betaFirmwareButtonClicked(bool betafirmwareenabled);
+    void betaFirmwareButtonClicked();
+    void stableFirmwareButtonClicked();
     void downloadFinished();
     void trunkFirmwareButtonClicked();
     void firmwareProcessFinished(int status);
