@@ -66,6 +66,10 @@ private:
     ParamDownloadState m_paramDownloadState;
     int m_paramDownloadCount;
     int m_paramTotalCount;
+
+    bool m_writingParams;
+    int m_paramsWritten;
+    int m_paramsToWrite;
 };
 
 #endif // ADVPARAMETERLIST_H
