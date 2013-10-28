@@ -283,7 +283,8 @@ void ArduCopterPidConfig::writeButtonClicked()
     {
         m_uas->getParamManager()->setParameter(1,i.key(),i.value()->value());
     }
-    m_uas->getParamManager()->setParameter(1,"TUNE",m_ch78ValueToTextList[ui.ch6OptComboBox->currentIndex()].first);
+
+    m_uas->getParamManager()->setParameter(1,"TUNE",m_ch6ValueToTextList[ui.ch6OptComboBox->currentIndex()].first);
     m_uas->getParamManager()->setParameter(1,"CH7_OPT",m_ch78ValueToTextList[ui.ch7OptComboBox->currentIndex()].first);
     m_uas->getParamManager()->setParameter(1,"CH8_OPT",m_ch78ValueToTextList[ui.ch8OptComboBox->currentIndex()].first);
     m_uas->getParamManager()->setParameter(1,"TUNE_HIGH",ui.ch6MaxSpinBox->value() * 1000.0);
