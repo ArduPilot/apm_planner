@@ -376,6 +376,13 @@ void UASActionsWidget::setAction()
 }
 
 
+int UASActionsWidget::preFlightWarningBox()
+{
+    QLOG_INFO() << "Display Pre-Flight Warning Check";
+    return QMessageBox::critical(this,tr("Warning"),tr("This action must be done when on the gorund. If vehicle is in the air the this action will result in a crash!"),
+                         QMessageBox::Ok,QMessageBox::Abort);
+}
+
 void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
 {
     switch(command) {
@@ -424,6 +431,9 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         Q_ASSERT(command == MAV_CMD_PREFLIGHT_CALIBRATION);
         QLOG_INFO() << "MAV_CMD_PREFLIGHT_CALIBRATION";
 
+        if (preFlightWarningBox() == QMessageBox::Abort)
+            return;
+
         int confirm = 1;
         float param1 = 1.0; // Gyro calibration: 0: no, 1: yes
         float param2 = 0.0; // Magnetometer calibration: 0: no, 1: yes
@@ -442,7 +452,6 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         // start running a mission last_item:
         Q_ASSERT(command == MAV_CMD_MISSION_START);
         QLOG_INFO() << "MAV_CMD_MISSION_START";
-
 
         int confirm = 1;
         float param1 = 1.0; // first_item: the first mission item to run
@@ -463,6 +472,9 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         // Request the reboot or shutdown of system components.
         Q_ASSERT(command == MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
         QLOG_INFO() << "MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN";
+
+        if (preFlightWarningBox() == QMessageBox::Abort)
+            return;
 
         int confirm = 1;
         float param1 = 1.0; // | 0: Do nothing for autopilot 1: Reboot autopilot, 2: Shutdown autopilot.
@@ -532,6 +544,9 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
         Q_ASSERT(command == MAV_CMD_PREFLIGHT_CALIBRATION);
         QLOG_INFO() << "MAV_CMD_PREFLIGHT_CALIBRATION";
 
+        if (preFlightWarningBox() == QMessageBox::Abort)
+            return;
+
         int confirm = 1;
         float param1 = 1.0; // Gyro calibration: 0: no, 1: yes
         float param2 = 0.0; // Magnetometer calibration: 0: no, 1: yes
@@ -569,7 +584,10 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
     case MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN: {
         // Request the reboot or shutdown of system components.
         Q_ASSERT(command == MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
-        QLOG_INFO() << "MAV_CMD_MISSION_START";
+        QLOG_INFO() << "MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN";
+
+        if (preFlightWarningBox() == QMessageBox::Abort)
+            return;
 
         int confirm = 1;
         float param1 = 1.0; // | 0: Do nothing for autopilot 1: Reboot autopilot, 2: Shutdown autopilot.

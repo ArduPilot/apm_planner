@@ -41,6 +41,8 @@ private:
 
     bool activeUas();
 
+    int preFlightWarningBox();
+
 private:
     Ui::UASActionsWidget ui;
     UAS *m_uas;
