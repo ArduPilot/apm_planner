@@ -687,11 +687,17 @@ void PX4FirmwareUploader::run()
             if (sync)
             {
                 QLOG_DEBUG() << "never returned from erase.";
+                emit statusUpdate("Flash erase never completed, please restart autopilot board and retry.");
+                emit error("Flash erase never completed, please restart autopilot board and retry.");
+                m_port->close();
+                delete tempFile;
+                delete m_port;
                 return;
             }
             if (m_stop)
             {
                 m_port->close();
+                delete tempFile;
                 delete m_port;
                 return;
             }
@@ -751,6 +757,12 @@ void PX4FirmwareUploader::run()
                             if (sync)
                             {
                                 QLOG_DEBUG() << "never returned from erase.";
+                                emit statusUpdate("Flash erase never completed, please restart autopilot board and retry.");
+                                emit error("Flash erase never completed, please restart autopilot board and retry.");
+                                m_port->close();
+                                tempFile->close();
+                                delete tempFile;
+                                delete m_port;
                                 return;
                             }
                             tempFile->seek(0);
@@ -849,7 +861,10 @@ void PX4FirmwareUploader::run()
         }
     }
     QLOG_DEBUG() << "Retry timeout";
+    m_port->close();
+    delete m_port;
     emit statusUpdate("Unable to flash board, 5 retries attempted. Please check hardware and try again");
+    emit error("Unable to flash board, 5 retries attempted. Please check hardware and try again");
 
 }
 int PX4FirmwareUploader::get_sync(int timeout)

@@ -106,9 +106,9 @@ public:
 
     enum QGC_MAINWINDOW_STYLE
     {
-        QGC_MAINWINDOW_STYLE_NATIVE,
-        QGC_MAINWINDOW_STYLE_INDOOR,
-        QGC_MAINWINDOW_STYLE_OUTDOOR
+        QGC_MAINWINDOW_STYLE_NATIVE = 0,
+        QGC_MAINWINDOW_STYLE_INDOOR = 1,
+        QGC_MAINWINDOW_STYLE_OUTDOOR = 2
     };
 
     /** @brief Get current visual style */
