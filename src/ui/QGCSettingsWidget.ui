@@ -24,20 +24,6 @@
        <string>General Settings</string>
       </attribute>
       <layout class="QGridLayout" name="generalPaneGridLayout">
-       <item row="5" column="0">
-        <widget class="QRadioButton" name="outdoorStyle">
-         <property name="text">
-          <string>Use outdoor mission style (light background)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QRadioButton" name="indoorStyle">
-         <property name="text">
-          <string>Use indoor mission style (black background)</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QCheckBox" name="lowPowerCheckBox">
          <property name="toolTip">
@@ -45,6 +31,13 @@
          </property>
          <property name="text">
           <string>Enable low power mode</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QRadioButton" name="outdoorStyle">
+         <property name="text">
+          <string>Use outdoor mission style (light background)</string>
          </property>
         </widget>
        </item>
@@ -59,24 +52,10 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QRadioButton" name="nativeStyle">
+       <item row="6" column="0">
+        <widget class="QRadioButton" name="indoorStyle">
          <property name="text">
-          <string>Use native platform look and feel (Windows/Linux/Mac OS)</string>
-         </property>
-         <property name="autoExclusive">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="reconnectCheckBox">
-         <property name="text">
-          <string>Automatically reconnect last link on application startup</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../../qgroundcontrol.qrc">
-           <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
+          <string>Use indoor mission style (black background)</string>
          </property>
         </widget>
        </item>
@@ -90,7 +69,7 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="0">
+       <item row="8" column="0">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -102,6 +81,48 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="reconnectCheckBox">
+         <property name="text">
+          <string>Automatically reconnect last link on application startup</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../../qgroundcontrol.qrc">
+           <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QRadioButton" name="nativeStyle">
+         <property name="text">
+          <string>Use native platform look and feel (Windows/Linux/Mac OS)</string>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Log output directory:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="logDirEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="logDirBrowseButton">
+           <property name="text">
+            <string>Browse...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>

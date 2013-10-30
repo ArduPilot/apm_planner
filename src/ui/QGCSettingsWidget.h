@@ -17,6 +17,9 @@ public:
     ~QGCSettingsWidget();
 protected:
     void showEvent(QShowEvent *evt);
+private slots:
+    void browseButtonClicked();
+
 public slots:
 
 private:

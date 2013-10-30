@@ -50,6 +50,7 @@ class Console;
 class SettingsDialog;
 class QStatusBar;
 class QComboBox;
+class LogConsole;
 
 class TerminalConsole : public QWidget
 {
@@ -66,6 +67,10 @@ private slots:
     void writeData(const QByteArray &data);
     void readData();
     void sendResetCommand();
+    void logsButtonClicked();
+    void logConsoleShown();
+    void logConsoleHidden();
+    void logConsoleStatusMessage(QString);
 
     void handleError(QSerialPort::SerialPortError error);
 
@@ -96,6 +101,7 @@ private:
     QPointer<QSerialPort> m_serial;
     SerialSettings m_settings;
     QPointer<QTimer> m_timer;
+    QPointer<LogConsole> m_logConsole;
 };
 
 #endif // TERMINALCONSOLE_H
