@@ -319,6 +319,7 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/AdvParameterList.ui \
     src/ui/configuration/ArduRoverPidConfig.ui \
     src/ui/configuration/TerminalConsole.ui \
+    src/ui/configuration/LogConsole.ui \
     src/ui/configuration/SerialSettingsDialog.ui \
     src/ui/configuration/ApmFirmwareConfig.ui \
     src/ui/DebugOutput.ui \
@@ -515,6 +516,7 @@ HEADERS += src/MG.h \
     src/ui/configuration/Console.h \
     src/ui/configuration/SerialSettingsDialog.h \
     src/ui/configuration/TerminalConsole.h \
+    src/ui/configuration/LogConsole.h \
     src/ui/configuration/ApmHighlighter.h \
     src/ui/configuration/ApmFirmwareConfig.h \
     src/ui/designer/QGCMouseWheelEventFilter.h \
@@ -732,6 +734,7 @@ SOURCES += src/main.cc \
     src/ui/configuration/AdvParameterList.cc \
     src/ui/configuration/ArduRoverPidConfig.cc \
     src/ui/configuration/TerminalConsole.cc \
+    src/ui/configuration/LogConsole.cc \
     src/ui/configuration/Console.cc \
     src/ui/configuration/SerialSettingsDialog.cc \
     src/ui/configuration/ApmHighlighter.cc \
