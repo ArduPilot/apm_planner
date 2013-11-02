@@ -1145,6 +1145,7 @@ void MainWindow::loadSettings()
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
     lowPowerMode = settings.value("LOW_POWER_MODE", lowPowerMode).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS",dockWidgetTitleBarEnabled).toBool();
+    logDirectory = settings.value("LOG_DIRECTORY", qApp->applicationDirPath()).toString();
     settings.endGroup();
     enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 }
@@ -1155,6 +1156,7 @@ void MainWindow::storeSettings()
     settings.beginGroup("QGC_MAINWINDOW");
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
+    settings.setValue("LOG_DIRECTORY", logDirectory);
     settings.endGroup();
     if (!aboutToCloseFlag && isVisible())
     {
