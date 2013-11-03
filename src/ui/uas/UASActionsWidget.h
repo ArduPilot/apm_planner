@@ -30,6 +30,9 @@ private slots:
     void setAction();
     void setRTLMode();
 
+    void parameterChanged(int uas, int component, int parameterCount,
+                          int parameterId, QString parameterName, QVariant value);
+
 private:
     void setupApmCopterModes();
     void setupApmPlaneModes();

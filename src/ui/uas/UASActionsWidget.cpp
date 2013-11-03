@@ -132,19 +132,43 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
         QLOG_ERROR() << "uas object NULL";
         return;
     }
+
+    if (m_uas) {
+        // disconnect previous connections
+        disconnect(m_uas->getWaypointManager(),SIGNAL(waypointEditableListChanged()),
+                this,SLOT(updateWaypointList()));
+        disconnect(m_uas->getWaypointManager(),SIGNAL(currentWaypointChanged(quint16)),
+                this,SLOT(currentWaypointChanged(quint16)));
+        disconnect(m_uas,SIGNAL(armingChanged(bool)),this,SLOT(armingChanged(bool)));
+
+        disconnect(m_uas, SIGNAL(connected()), this, SLOT(uasConnected()));
+        disconnect(m_uas, SIGNAL(disconnected()), this, SLOT(uasDisconnected()));
+
+        disconnect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+                this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
+    }
+
     // enable the controls
     ui.actionsGroupBox->setDisabled(false);
     ui.missionGroupBox->setDisabled(false);
+    ui.altitudeTypeComboBox->addItem(tr("Relative (AGL)"), MAV_FRAME_GLOBAL_RELATIVE_ALT);
+    ui.altitudeTypeComboBox->addItem(tr("Absolute (ASL)"), MAV_FRAME_GLOBAL);
     ui.shortcutGroupBox->setDisabled(false);
+    ui.altitudeDoubleSpinBox->setValue(50.0f); // set a default altitude
 
     m_uas = static_cast<UAS*>(uas);
 
-    connect(m_uas->getWaypointManager(),SIGNAL(waypointEditableListChanged()),this,SLOT(updateWaypointList()));
-    connect(m_uas->getWaypointManager(),SIGNAL(currentWaypointChanged(quint16)),this,SLOT(currentWaypointChanged(quint16)));
+    connect(m_uas->getWaypointManager(),SIGNAL(waypointEditableListChanged()),
+            this,SLOT(updateWaypointList()));
+    connect(m_uas->getWaypointManager(),SIGNAL(currentWaypointChanged(quint16)),
+            this,SLOT(currentWaypointChanged(quint16)));
     connect(m_uas,SIGNAL(armingChanged(bool)),this,SLOT(armingChanged(bool)));
 
     connect(m_uas, SIGNAL(connected()), this, SLOT(uasConnected()));
     connect(m_uas, SIGNAL(disconnected()), this, SLOT(uasDisconnected()));
+
+    connect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+            this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
 
     armingChanged(m_uas->isArmed());
     updateWaypointList();
@@ -237,6 +261,7 @@ void UASActionsWidget::currentWaypointChanged(quint16 wpid)
         m_last_wpid = wpid;
         QLOG_INFO() << "Waypoint Changed to: " << wpid;
         ui.currentWaypointLabel->setText("Current: " + QString::number(wpid));
+        ui.waypointListComboBox->setCurrentIndex(ui.waypointListComboBox->findData(QString::number(wpid)));
     }
 }
 
@@ -268,8 +293,17 @@ void UASActionsWidget::goToWaypointClicked()
 
 void UASActionsWidget::changeAltitudeClicked()
 {
-    QLOG_WARN() << "changeAltitudeClicked: Not implemented yet.";
-//    QMessageBox::information(0,"Error","No implemented yet.");
+    QLOG_WARN() << "changeAltitudeClicked";
+
+    QLOG_DEBUG() << "Start guided action requested. Lat:" << m_uas->getLatitude()<< "Lon:" << m_uas->getLongitude()
+                 << "Alt:" << ui.altitudeDoubleSpinBox->value() << "MAV_FRAME:"
+                 << (ui.altitudeTypeComboBox->itemData(ui.altitudeTypeComboBox->currentIndex()).toInt() == MAV_FRAME_GLOBAL_RELATIVE_ALT? "AGL": "ASL");
+    Waypoint wp;
+    wp.setFrame(static_cast<MAV_FRAME>(ui.altitudeTypeComboBox->itemData(ui.altitudeTypeComboBox->currentIndex()).toInt()));
+    wp.setLatitude(m_uas->getLatitude());
+    wp.setLongitude(m_uas->getLongitude());
+    wp.setAltitude(ui.altitudeDoubleSpinBox->value());
+    m_uas->getWaypointManager()->goToWaypoint(&wp);
 }
 
 void UASActionsWidget::changeSpeedClicked()
@@ -277,29 +311,39 @@ void UASActionsWidget::changeSpeedClicked()
     if(!activeUas())
         return;
 
-    QLOG_INFO() << "Change System Speed " << (float)ui.speedSpinBox->value() * 100;
+    QLOG_INFO() << "Change Vehicle Speed ";
 
     if (m_uas->isMultirotor())
     {
-        QLOG_INFO() << "APMCopter: setting WPNAV_SPEED: " << ui.speedSpinBox->value() * 100;
-        m_uas->setParameter(1,"WPNAV_SPEED",QVariant(((float)ui.speedSpinBox->value() * 100)));
+        QLOG_INFO() << "APMCopter: setting WPNAV_SPEED: " << ui.speedDoubleSpinBox->value() * 100.0f;
+        m_uas->setParameter(1,"WPNAV_SPEED",
+                            QVariant((static_cast<float>(ui.speedDoubleSpinBox->value() * 100.0f))));
         return;
     }
     else if (m_uas->isFixedWing())
     {
+        // [TODO} need to add AirSpeed/GroundSpeed options here as well
         QVariant variant;
         if (m_uas->getParamManager()->getParameterValue(1,"ARSPD_ENABLE",variant))
         {
             if (variant.toInt() == 1)
             {
                 QLOG_INFO() << "APMPlane: ARSPD_ENABLED setting TRIM_ARSPD_CN";
-                m_uas->setParameter(1,"TRIM_ARSPD_CN",QVariant(((float)ui.speedSpinBox->value() * 100)));
+                m_uas->setParameter(1,"TRIM_ARSPD_CN",
+                                    QVariant((static_cast<float>(ui.speedDoubleSpinBox->value() * 100.0f))));
                 return;
             }
 
         }
         QLOG_INFO() << "APMPlane: setting TRIM_ARSPD_CN";
-        m_uas->setParameter(1,"TRIM_ARSPD_CN",QVariant(((float)ui.speedSpinBox->value() * 100)));
+        m_uas->setParameter(1,"TRIM_ARSPD_CN",
+                            QVariant((static_cast<float>(ui.speedDoubleSpinBox->value() * 100.0f))));
+
+    } else if (m_uas->isGroundRover()) {
+        QLOG_INFO() << "APMCopter: setting CRUISE_SPEED: " << ui.speedDoubleSpinBox->value() * 100.0f;
+        m_uas->setParameter(1, "CRUISE_SPEED",
+                            QVariant((static_cast<float>(ui.speedDoubleSpinBox->value() * 100.0f))));
+
     }
 }
 
@@ -651,4 +695,15 @@ bool UASActionsWidget::activeUas()
     }
 
     return true;
+}
+
+void UASActionsWidget::parameterChanged(int uas, int component, int parameterCount,
+                                        int parameterId, QString parameterName, QVariant value)
+{
+    if((parameterName == "WPNAV_SPEED")|| (parameterName == "TRIM_ARSPD_CN")
+        || (parameterName == "CRUISE_SPEED")){
+        QLOG_DEBUG() << "UASAction setting speed spin box from " << parameterName;
+        ui.speedDoubleSpinBox->setValue(value.toDouble()/100.0f);
+
+    }
 }
