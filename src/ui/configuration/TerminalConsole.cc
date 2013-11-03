@@ -192,7 +192,7 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
             writeSettings(); // Save last successful connection
 
             sendResetCommand();
-
+            m_timer->stop();
         } else {
             m_serial->close();
             QString errorMessage = m_serial->errorString()
@@ -219,6 +219,7 @@ void TerminalConsole::closeSerialPort()
     ui->disconnectButton->setEnabled(false);
     ui->settingsButton->setEnabled(true);
     m_statusBar->showMessage(tr("Disconnected"));
+    m_timer->start(2000); //re-start port scanning
 }
 
 void TerminalConsole::sendResetCommand()
