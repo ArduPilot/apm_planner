@@ -645,50 +645,80 @@ void ApmFirmwareConfig::downloadFinished()
             return;
         }
         QLOG_INFO() << "Port Open for FW Upload";
-    QString avrdudeExecutable;
-    QStringList stringList;
+        QString avrdudeExecutable;
+        QStringList stringList;
 
-    ui.statusLabel->setText(tr("Flashing"));
+        ui.statusLabel->setText(tr("Flashing"));
 #ifdef Q_OS_WIN
-    stringList = QStringList() << "-Cavrdude/avrdude.conf" << "-pm2560"
-                               << "-cstk500" << QString("-P").append(m_settings.name)
-                               << QString("-Uflash:w:").append(filename).append(":i");
+        stringList = QStringList() << "-Cavrdude/avrdude.conf" << "-pm2560"
+                                   << "-cstk500" << QString("-P").append(m_settings.name)
+                                   << QString("-Uflash:w:").append(filename).append(":i");
 
-    avrdudeExecutable = "avrdude/avrdude.exe";
+        avrdudeExecutable = "avrdude/avrdude.exe";
 #endif
 #ifdef Q_OS_MAC
-    stringList = QStringList() << "-v" << "-pm2560"
-                                           << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
-                                           << QString("-Uflash:w:").append(filename).append(":i");
-    avrdudeExecutable = "/usr/local/CrossPack-AVR/bin/avrdude";
+
+        // Check for avrdude in the /usr/local/bin
+        // This could be that a user install this via brew etc..
+        QFile avrdude;
+
+        if (avrdude.exists("/usr/local/bin/avrdude")){
+            // Use the copy in /user/local/bin
+            avrdudeExecutable = "/usr/local/bin/avrdude";
+
+        } else if (avrdude.exists("/usr/local/CrossPack-AVR/bin/avrdude")){
+            // Use the installed Cross Pack Version
+            avrdudeExecutable = "/usr/local/CrossPack-AVR/bin/avrdude";
+
+        } else {
+            avrdudeExecutable = "";
+        }
+
+        stringList = QStringList() << "-v" << "-pm2560"
+                                   << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
+                                   << QString("-Uflash:w:").append(filename).append(":i");
 #endif
 
     // Start the Flashing
-    QLOG_DEBUG() << avrdudeExecutable << stringList;
-    m_burnProcess->start(avrdudeExecutable,stringList);
-    }
-    else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4")
-    {
+
+        QLOG_DEBUG() << avrdudeExecutable << stringList;
+        if (avrdudeExecutable.length()>0){
+             m_burnProcess->start(avrdudeExecutable,stringList);
+             m_timeoutCounter=0;
+             m_hasError=false;
+             ui.progressBar->setValue(0);
+
+        } else {
+            // no avrdude installed, write status
+            QLOG_ERROR() << " No avrdude on the system. please install one using Brew or CrossPack-Avr";
+#ifdef Q_OS_MAC
+            ui.statusLabel->setText("Status: ERROR No avrdude installed! Please install CrossPack-AVR or use Brew");
+#elif
+            ui.statusLabel->setText("Status: ERROR: No avrdude installed!");
+#endif
+        }
+
+    } else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4") {
         if (m_px4uploader)
         {
             QLOG_FATAL() << "Tried to load PX4 Firmware when it was already started!";
             return;
         }
         m_isPx4 = true;
-    m_px4uploader = new PX4FirmwareUploader();
-    connect(m_px4uploader,SIGNAL(statusUpdate(QString)),this,SLOT(px4StatusUpdate(QString)));
-    connect(m_px4uploader,SIGNAL(debugUpdate(QString)),this,SLOT(px4DebugUpdate(QString)));
-    connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Terminated()));
-    connect(m_px4uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
-    connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
-    connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
-    connect(m_px4uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
-    connect(m_px4uploader,SIGNAL(devicePlugDetected()),this,SLOT(devicePlugDetected()));
-    m_px4uploader->loadFile(filename);
-    }
-    m_timeoutCounter=0;
-    m_hasError=false;
-    ui.progressBar->setValue(0);
+        m_px4uploader = new PX4FirmwareUploader();
+        connect(m_px4uploader,SIGNAL(statusUpdate(QString)),this,SLOT(px4StatusUpdate(QString)));
+        connect(m_px4uploader,SIGNAL(debugUpdate(QString)),this,SLOT(px4DebugUpdate(QString)));
+        connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Terminated()));
+        connect(m_px4uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
+        connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
+        connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
+        connect(m_px4uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
+        connect(m_px4uploader,SIGNAL(devicePlugDetected()),this,SLOT(devicePlugDetected()));
+        m_px4uploader->loadFile(filename);
+        m_timeoutCounter=0;
+        m_hasError=false;
+        ui.progressBar->setValue(0);
+        }
 }
 void ApmFirmwareConfig::requestDeviceReplug()
 {
