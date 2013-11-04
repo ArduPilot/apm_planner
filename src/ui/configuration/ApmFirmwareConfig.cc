@@ -693,7 +693,7 @@ void ApmFirmwareConfig::downloadFinished()
             QLOG_ERROR() << " No avrdude on the system. please install one using Brew or CrossPack-Avr";
 #ifdef Q_OS_MAC
             ui.statusLabel->setText("Status: ERROR No avrdude installed! Please install CrossPack-AVR or use Brew");
-#elif
+#else
             ui.statusLabel->setText("Status: ERROR: No avrdude installed!");
 #endif
         }
