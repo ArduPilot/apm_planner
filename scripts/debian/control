@@ -1,0 +1,15 @@
+Package: apmplanner2
+Source: apmplanner
+Version: 20131103
+Maintainer: APM Planner Developers <stephen_dade@hotmail.com>
+Installed-Size: 92263
+Section: science
+Priority: extra
+Homepage: https://github.com/diydrones/apm_planner
+Architecture: i386
+Depends: libc6 (>= 2.3.6-6~), libc6 (>= 2.15), libflite1, libgcc1 (>= 1:4.1.1), libgl1-mesa-glx | libgl1, libopenscenegraph80, libopenthreads14, libqt4-declarative (>= 4:4.7.0~rc1), libqt4-network (>= 4:4.6.1), libqt4-opengl (>= 4:4.5.3), libqt4-sql (>= 4:4.5.3), libqt4-svg (>= 4:4.5.3), libqt4-xml (>= 4:4.5.3), libqtcore4 (>= 4:4.8.0), libqtgui4 (>= 4:4.6.2), libqtwebkit4, libsdl1.2debian (>= 1.2.11), libssl1.0.0 (>= 1.0.0), libstdc++6 (>= 4.4.0)
+Description: Ground station software for autonomous vehicles.
+ A GUI ground control station for autonomous vehicles 
+ using the MAVLink protocol.
+ Includes support for the APM and PX4 based controllers.
+
