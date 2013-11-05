@@ -1,0 +1,2 @@
+?package(apmplanner2):needs="X11" section="Applications/Science/Engineering" \
+  title="APM Planner 2" command="/usr/bin/apmplanner2"
