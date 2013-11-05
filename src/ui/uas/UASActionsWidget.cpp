@@ -206,6 +206,9 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
 void UASActionsWidget::uasConnected()
 {
     QLOG_INFO() << "UASActionsWidget::connected()" << m_uas;
+    ui.actionsGroupBox->setDisabled(false);
+    ui.missionGroupBox->setDisabled(false);
+    ui.shortcutGroupBox->setDisabled(false);
 }
 
 void UASActionsWidget::uasDisconnected()
