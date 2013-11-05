@@ -342,6 +342,7 @@ void UASQuickView::setActiveUAS(UASInterface* uas)
     connect(uas,SIGNAL(valueChanged(int,QString,QString,quint16,quint64)),this,SLOT(valueChanged(int,QString,QString,quint16,quint64)));
     connect(uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
+    connect(uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 
     //connect(uas,SIGNAL())
 }
@@ -492,7 +493,13 @@ void UASQuickView::actionTriggered(bool checked)
 }
 void UASQuickView::valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs)
 {
-
+    if (!uasPropertyValueMap.contains(name))
+    {
+        if (quickViewSelectDialog)
+        {
+            quickViewSelectDialog->addItem(name);
+        }
+    }
     uasPropertyValueMap[name] = value.toDouble();
 }
 

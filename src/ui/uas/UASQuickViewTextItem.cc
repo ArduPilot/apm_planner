@@ -38,6 +38,16 @@ QString UASQuickViewTextItem::title()
 
 void UASQuickViewTextItem::setValue(double value)
 {
+
+    //Lon/Lat needs 7 decimal places, everything else should be scaled by value.
+    if ((titleLabel->text().toLower() == "longitude") ||
+            (titleLabel->text().toLower() == "latitude") ||
+            (titleLabel->text().toLower() == "lon") ||
+            (titleLabel->text().toLower() == "lat"))
+    {
+        valueLabel->setText(QString::number(value,'f',7));
+        return;
+    }
     if (value < 10 && value > -10)
     {
         valueLabel->setText(QString::number(value,'f',2));

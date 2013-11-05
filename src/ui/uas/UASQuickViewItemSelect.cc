@@ -48,7 +48,16 @@ void UASQuickViewItemSelect::addItem(QString item,bool enabled)
         titlelabel->show();
         //ui.gridLayout->addWidget(titlelabel,0,col);
         ui.stackedWidget->widget(col)->layout()->addWidget(titlelabel);
-        ui.listWidget->addItem(category);
+
+        //Ensure that GCS Status gets the top slot
+        if (category == "GCS Status")
+        {
+            ui.listWidget->insertItem(0,category);
+        }
+        else
+        {
+            ui.listWidget->addItem(category);
+        }
         ui.stackedWidget->widget(col)->layout()->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
     }
     QCheckBox *label = new QCheckBox(this);

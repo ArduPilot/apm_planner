@@ -815,6 +815,12 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             setLatitude(pos.lat/(double)1E7);
             setLongitude(pos.lon/(double)1E7);
 
+            //valueChanged(uasId, str.arg(vect.address+(i*2)), "ui16", mem1[i], time);
+            emit valueChanged(uasId,"M1:GCS Status.Latitude","degrees",QVariant((double)pos.lat / (double(1E7))),time);
+            emit valueChanged(uasId,"M1:GCS Status.Longitude","degrees",QVariant((double)pos.lon / (double(1E7))),time);
+            emit valueChanged(uasId,"M1:GCS Status.GPS Altitude","meters",QVariant((double)pos.alt / 1000.0),time);
+            emit valueChanged(uasId,"M1:GCS Status.GPS Heading","degrees",QVariant((double)pos.hdg),time);
+
             // dongfang: Beware. There are 2 altitudes in this message; neither is the primary.
             // pos.alt is GPS altitude and pos.relative_alt is above-home altitude.
             // It would be nice if APM could be modified to present the primary (mix) alt. instead
