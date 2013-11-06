@@ -16,6 +16,7 @@ mkdir ./apmplanner-$NOW/usr/bin
 mkdir -p ./apmplanner-$NOW/usr/share/apmplanner2
 mkdir -p ./apmplanner-$NOW/usr/share/doc/apmplanner2
 mkdir -p ./apmplanner-$NOW/usr/share/menu
+mkdir -p ./apmplanner-$NOW/usr/share/applications
 
 #copy files over
 cp -r -f ./release/apmplanner2 ./apmplanner-$NOW/usr/bin
@@ -30,6 +31,7 @@ cp -f ./apm_planner/scripts/debian/changelog ./apmplanner-$NOW/usr/share/doc/apm
 cp -r -f ./apm_planner/scripts/debian/postinst ./apmplanner-$NOW/debian/postinst
 cp -r -f ./apm_planner/scripts/debian/postrm ./apmplanner-$NOW/debian/postrm
 cp -f ./apm_planner/scripts/debian/apmplanner2 ./apmplanner-$NOW/usr/share/menu/apmplanner2
+cp -f ./apm_planner/scripts/debian/apmplanner2.desktop ./apmplanner-$NOW/usr/share/applications/apmplanner2.desktop
 gzip -9 ./apmplanner-$NOW/usr/share/doc/apmplanner2/changelog
 
 #make symbolic links to folders
@@ -46,6 +48,7 @@ mv ./apmplanner-$NOW/debian ./apmplanner-$NOW/DEBIAN
 #fix up permissions
 find ./apmplanner-$NOW/usr -type d -exec chmod 755 {} \;
 find ./apmplanner-$NOW/usr -type f -exec chmod 644 {} \;
+chmod +x ./apmplanner-$NOW/usr/bin/apmplanner2
 
 #create the pacakge and check compliance (report.txt)
 fakeroot dpkg-deb -b ./apmplanner-$NOW
