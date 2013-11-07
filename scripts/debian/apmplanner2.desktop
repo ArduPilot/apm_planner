@@ -7,4 +7,4 @@ Exec=apmplanner2
 Terminal=false
 Categories=Education;Robotics;
 Comment=A UAV Ground Station
-Name[en_AU]=apmplanner2
+Name=apmplanner2
