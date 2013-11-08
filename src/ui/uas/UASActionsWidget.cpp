@@ -1,22 +1,29 @@
 #include "QsLog.h"
 #include "ArduPilotMegaMAV.h"
 #include "UASActionsWidget.h"
+#include "APMShortcutModesDialog.h"
 #include <QMessageBox>
 #include <UAS.h>
+#include <QSettings>
+
+void UASActionsWidget::setupApmPlaneComboBox(QComboBox *comboBox)
+{
+    comboBox->addItem("Manual", ApmPlane::MANUAL);
+    comboBox->addItem("Circle", ApmPlane::CIRCLE);
+    comboBox->addItem("Stabilize", ApmPlane::STABILIZE);
+    comboBox->addItem("Training", ApmPlane::TRAINING);
+    comboBox->addItem("FBW A", ApmPlane::FLY_BY_WIRE_A);
+    comboBox->addItem("FBW B", ApmPlane::FLY_BY_WIRE_B);
+    comboBox->addItem("Auto", ApmPlane::AUTO);
+    comboBox->addItem("RTL", ApmPlane::RTL);
+    comboBox->addItem("Loiter", ApmPlane::LOITER);
+    comboBox->addItem("Guided", ApmPlane::GUIDED);
+}
 
 void UASActionsWidget::setupApmPlaneModes()
 {
     QLOG_INFO() << "UASActionWidget: Set for Plane";
-    ui.modeComboBox->addItem("Manual", ApmPlane::MANUAL);
-    ui.modeComboBox->addItem("Circle", ApmPlane::CIRCLE);
-    ui.modeComboBox->addItem("Stabilize", ApmPlane::STABILIZE);
-    ui.modeComboBox->addItem("Training", ApmPlane::TRAINING);
-    ui.modeComboBox->addItem("FBW A", ApmPlane::FLY_BY_WIRE_A);
-    ui.modeComboBox->addItem("FBW B", ApmPlane::FLY_BY_WIRE_B);
-    ui.modeComboBox->addItem("Auto", ApmPlane::AUTO);
-    ui.modeComboBox->addItem("RTL", ApmPlane::RTL);
-    ui.modeComboBox->addItem("Loiter", ApmPlane::LOITER);
-    ui.modeComboBox->addItem("Guided", ApmPlane::GUIDED);
+    setupApmPlaneComboBox(ui.modeComboBox);
 
     ui.armDisarmButton->setVisible(false);
     ui.armedStatuslabel->setVisible(false);
@@ -29,45 +36,56 @@ void UASActionsWidget::setupApmPlaneModes()
 
 }
 
+void UASActionsWidget::setupApmCopterComboBox(QComboBox *comboBox)
+{
+    comboBox->addItem("Stabilize", ApmCopter::STABILIZE);
+    comboBox->addItem("Acro", ApmCopter::ACRO);
+    comboBox->addItem("Alt Hold", ApmCopter::ALT_HOLD);
+    comboBox->addItem("Auto", ApmCopter::AUTO);
+    comboBox->addItem("Guided", ApmCopter::GUIDED);
+    comboBox->addItem("Loiter", ApmCopter::LOITER);
+    comboBox->addItem("RTL", ApmCopter::RTL);
+    comboBox->addItem("Circle", ApmCopter::CIRCLE);
+    comboBox->addItem("Position", ApmCopter::POSITION);
+    comboBox->addItem("Land", ApmCopter::LAND);
+    comboBox->addItem("Loiter", ApmCopter::OF_LOITER);
+    comboBox->addItem("Toy A", ApmCopter::TOY_A);
+    comboBox->addItem("Toy M", ApmCopter::TOY_M);
+    comboBox->addItem("Sport", ApmCopter::SPORT);
+}
+
 void UASActionsWidget::setupApmCopterModes()
 {
     QLOG_INFO() << "UASActionWidget: set for Copter";
-    ui.modeComboBox->addItem("Stabilize", ApmCopter::STABILIZE);
-    ui.modeComboBox->addItem("Acro", ApmCopter::ACRO);
-    ui.modeComboBox->addItem("Alt Hold", ApmCopter::ALT_HOLD);
-    ui.modeComboBox->addItem("Auto", ApmCopter::AUTO);
-    ui.modeComboBox->addItem("Guided", ApmCopter::GUIDED);
-    ui.modeComboBox->addItem("Loiter", ApmCopter::LOITER);
-    ui.modeComboBox->addItem("RTL", ApmCopter::RTL);
-    ui.modeComboBox->addItem("Circle", ApmCopter::CIRCLE);
-    ui.modeComboBox->addItem("Position", ApmCopter::POSITION);
-    ui.modeComboBox->addItem("Land", ApmCopter::LAND);
-    ui.modeComboBox->addItem("Loiter", ApmCopter::OF_LOITER);
-    ui.modeComboBox->addItem("Toy A", ApmCopter::TOY_A);
-    ui.modeComboBox->addItem("Toy M", ApmCopter::TOY_M);
-    ui.modeComboBox->addItem("Sport", ApmCopter::SPORT);
+    setupApmCopterComboBox(ui.modeComboBox);
 
     ui.armDisarmButton->setVisible(true);
     ui.armedStatuslabel->setVisible(true);
 
     // Setup configurable shortcut action
-    ui.opt1ModeButton->setVisible(false);
+    ui.opt1ModeButton->setText("none");
     ui.opt2ModeButton->setText("Acro");
     ui.opt3ModeButton->setText("Alt Hold");
     ui.opt4ModeButton->setText("Land");
+    configureModeButtonEnableDisable();
+}
+
+void UASActionsWidget::setupApmRoverComboBox(QComboBox *comboBox)
+{
+    comboBox->addItem("Manual", ApmRover::MANUAL);
+    comboBox->addItem("Learning", ApmRover::LEARNING);
+    comboBox->addItem("Steering", ApmRover::STEERING);
+    comboBox->addItem("Hold", ApmRover::HOLD);
+    comboBox->addItem("Auto", ApmRover::AUTO);
+    comboBox->addItem("RTL", ApmRover::RTL);
+    comboBox->addItem("Guided", ApmRover::GUIDED);
+    comboBox->addItem("Initializing", ApmRover::INITIALIZING);
 }
 
 void UASActionsWidget::setupApmRoverModes()
 {
     QLOG_INFO() << "UASActionWidget: Setfor Rover";
-    ui.modeComboBox->addItem("Manual", ApmRover::MANUAL);
-    ui.modeComboBox->addItem("Learning", ApmRover::LEARNING);
-    ui.modeComboBox->addItem("Steering", ApmRover::STEERING);
-    ui.modeComboBox->addItem("Hold", ApmRover::HOLD);
-    ui.modeComboBox->addItem("Auto", ApmRover::AUTO);
-    ui.modeComboBox->addItem("RTL", ApmRover::RTL);
-    ui.modeComboBox->addItem("Guided", ApmRover::GUIDED);
-    ui.modeComboBox->addItem("Initializing", ApmRover::INITIALIZING);
+    setupApmRoverComboBox(ui.modeComboBox);
 
     ui.armDisarmButton->setVisible(false);
     ui.armedStatuslabel->setVisible(false);
@@ -76,7 +94,9 @@ void UASActionsWidget::setupApmRoverModes()
     ui.opt1ModeButton->setText("Learn");
     ui.opt2ModeButton->setText("Steer");
     ui.opt3ModeButton->setText("Hold");
-    ui.opt4ModeButton->setVisible(false);
+    ui.opt4ModeButton->setText("none");
+    configureModeButtonEnableDisable();
+
 }
 
 UASActionsWidget::UASActionsWidget(QWidget *parent) : QWidget(parent)
@@ -200,6 +220,9 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
         {
             // [TODO] Generic, and other flight controllers
         }
+
+        loadApmSettings();
+        configureModeButtonEnableDisable();
     }
 }
 
@@ -710,3 +733,155 @@ void UASActionsWidget::parameterChanged(int uas, int component, int parameterCou
 
     }
 }
+
+void UASActionsWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QLOG_DEBUG() << "contextMenuEvent";
+
+    if(m_uas == NULL)
+        return;
+
+    APMShortcutModesDialog* dialog = new APMShortcutModesDialog();
+
+    if(m_uas->isMultirotor()){
+        setupApmCopterComboBox(dialog->opt1ComboBox());
+        setupApmCopterComboBox(dialog->opt2ComboBox());
+        setupApmCopterComboBox(dialog->opt3ComboBox());
+        setupApmCopterComboBox(dialog->opt4ComboBox());
+    } else if (m_uas->isFixedWing()) {
+        setupApmPlaneComboBox(dialog->opt1ComboBox());
+        setupApmPlaneComboBox(dialog->opt2ComboBox());
+        setupApmPlaneComboBox(dialog->opt3ComboBox());
+        setupApmPlaneComboBox(dialog->opt4ComboBox());
+    } else if (m_uas->isGroundRover()){
+        setupApmRoverComboBox(dialog->opt1ComboBox());
+        setupApmRoverComboBox(dialog->opt2ComboBox());
+        setupApmRoverComboBox(dialog->opt3ComboBox());
+        setupApmRoverComboBox(dialog->opt4ComboBox());
+    } else {
+        // Do nothing.
+        delete dialog;
+        dialog = NULL;
+        return;
+    }
+
+    dialog->opt1ComboBox()->setCurrentIndex(dialog->opt1ComboBox()->findText(ui.opt1ModeButton->text()));
+    dialog->opt2ComboBox()->setCurrentIndex(dialog->opt2ComboBox()->findText(ui.opt2ModeButton->text()));
+    dialog->opt3ComboBox()->setCurrentIndex(dialog->opt3ComboBox()->findText(ui.opt3ModeButton->text()));
+    dialog->opt4ComboBox()->setCurrentIndex(dialog->opt4ComboBox()->findText(ui.opt4ModeButton->text()));
+
+    if(dialog->exec() == QDialog::Accepted) {
+        // Changes where made and OK'd
+        ui.opt1ModeButton->setText(dialog->opt1ComboBox()->currentText());
+        ui.opt2ModeButton->setText(dialog->opt2ComboBox()->currentText());
+        ui.opt3ModeButton->setText(dialog->opt3ComboBox()->currentText());
+        ui.opt4ModeButton->setText(dialog->opt4ComboBox()->currentText());
+        configureModeButtonEnableDisable();
+        saveApmSettings();
+     } else {
+        QLOG_DEBUG() << "No Shortcut mode changes made";
+     }
+}
+
+void UASActionsWidget::configureModeButtonEnableDisable()
+{
+    if (ui.opt1ModeButton->text().compare("none",Qt::CaseInsensitive)==0){
+        ui.opt1ModeButton->setVisible(false);
+    } else {
+        ui.opt1ModeButton->setVisible(true);
+    }
+
+    if (ui.opt2ModeButton->text().compare("none",Qt::CaseInsensitive)==0){
+        ui.opt2ModeButton->setVisible(false);
+    } else {
+        ui.opt2ModeButton->setVisible(true);
+    }
+
+    if (ui.opt3ModeButton->text().compare("none",Qt::CaseInsensitive)==0){
+        ui.opt3ModeButton->setVisible(false);
+    } else {
+        ui.opt3ModeButton->setVisible(true);
+    }
+
+    if (ui.opt4ModeButton->text().compare("none",Qt::CaseInsensitive)==0){
+        ui.opt4ModeButton->setVisible(false);
+    } else {
+        ui.opt4ModeButton->setVisible(true);
+    }
+}
+
+void UASActionsWidget::saveApmSettings()
+{
+    // Store settings
+    QSettings settings;
+
+    if(m_uas->isMultirotor()){
+        settings.setValue("APM_MULTI_SHORTCUT_OPT1",ui.opt1ModeButton->text());
+        settings.setValue("APM_MULTI_SHORTCUT_OPT2",ui.opt2ModeButton->text());
+        settings.setValue("APM_MULTI_SHORTCUT_OPT3",ui.opt3ModeButton->text());
+        settings.setValue("APM_MULTI_SHORTCUT_OPT4",ui.opt4ModeButton->text());
+
+    } else if (m_uas->isFixedWing()){
+        settings.setValue("APM_FIXED_SHORTCUT_OPT1",ui.opt1ModeButton->text());
+        settings.setValue("APM_FIXED_SHORTCUT_OPT2",ui.opt2ModeButton->text());
+        settings.setValue("APM_FIXED_SHORTCUT_OPT3",ui.opt3ModeButton->text());
+        settings.setValue("APM_FIXED_SHORTCUT_OPT4",ui.opt4ModeButton->text());
+
+    } else if (m_uas->isGroundRover()) {
+        settings.setValue("APM_GROUND_SHORTCUT_OPT1",ui.opt1ModeButton->text());
+        settings.setValue("APM_GROUND_SHORTCUT_OPT2",ui.opt2ModeButton->text());
+        settings.setValue("APM_GROUND_SHORTCUT_OPT3",ui.opt3ModeButton->text());
+        settings.setValue("APM_GROUND_SHORTCUT_OPT4",ui.opt4ModeButton->text());
+
+    } else {
+       // Nothing here to save
+    }
+
+    settings.sync();
+}
+
+void UASActionsWidget::loadApmSettings()
+{
+    // Load defaults from settings
+    QSettings settings;
+    settings.sync();
+
+    if(m_uas->isMultirotor()){
+       if (settings.contains("APM_MULTI_SHORTCUT_OPT1")){
+           QLOG_DEBUG() << "Mutli: opt1Mode: " << settings.value("APM_MULTI_SHORTCUT_OPT1").toString();
+           QLOG_DEBUG() << "Mutli: opt2Mode: " << settings.value("APM_MULTI_SHORTCUT_OPT2").toString();
+           QLOG_DEBUG() << "Mutli: opt3Mode: " << settings.value("APM_MULTI_SHORTCUT_OPT3").toString();
+           QLOG_DEBUG() << "Mutli: opt4Mode: " << settings.value("APM_MULTI_SHORTCUT_OPT4").toString();
+           ui.opt1ModeButton->setText(settings.value("APM_MULTI_SHORTCUT_OPT1").toString());
+           ui.opt2ModeButton->setText(settings.value("APM_MULTI_SHORTCUT_OPT2").toString());
+           ui.opt3ModeButton->setText(settings.value("APM_MULTI_SHORTCUT_OPT3").toString());
+           ui.opt4ModeButton->setText(settings.value("APM_MULTI_SHORTCUT_OPT4").toString());
+        }
+
+    } else if (m_uas->isFixedWing()){
+       if (settings.contains("APM_FIXED_SHORTCUT_OPT1")){
+           QLOG_DEBUG() << "Fixed: opt1Mode: " << settings.value("APM_FIXED_SHORTCUT_OPT1").toString();
+           QLOG_DEBUG() << "Fixed: opt2Mode: " << settings.value("APM_FIXED_SHORTCUT_OPT2").toString();
+           QLOG_DEBUG() << "Fixed: opt3Mode: " << settings.value("APM_FIXED_SHORTCUT_OPT3").toString();
+           QLOG_DEBUG() << "Fixed: opt4Mode: " << settings.value("APM_FIXED_SHORTCUT_OPT4").toString();
+           ui.opt1ModeButton->setText(settings.value("APM_FIXED_SHORTCUT_OPT1").toString());
+           ui.opt2ModeButton->setText(settings.value("APM_FIXED_SHORTCUT_OPT2").toString());
+           ui.opt3ModeButton->setText(settings.value("APM_FIXED_SHORTCUT_OPT3").toString());
+           ui.opt4ModeButton->setText(settings.value("APM_FIXED_SHORTCUT_OPT4").toString());
+       }
+
+     } else if(m_uas->isMultirotor()){
+       if (settings.contains("APM_GROUND_SHORTCUT_OPT1")){
+           QLOG_DEBUG() << "Ground: opt1Mode: " << settings.value("APM_GROUND_SHORTCUT_OPT1").toString();
+           QLOG_DEBUG() << "Ground: opt2Mode: " << settings.value("APM_GROUND_SHORTCUT_OPT2").toString();
+           QLOG_DEBUG() << "Ground: opt3Mode: " << settings.value("APM_GROUND_SHORTCUT_OPT3").toString();
+           QLOG_DEBUG() << "Ground: opt4Mode: " << settings.value("APM_GROUND_SHORTCUT_OPT4").toString();
+
+           ui.opt1ModeButton->setText(settings.value("APM_GROUND_SHORTCUT_OPT1").toString());
+           ui.opt2ModeButton->setText(settings.value("APM_GROUND_SHORTCUT_OPT2").toString());
+           ui.opt3ModeButton->setText(settings.value("APM_GROUND_SHORTCUT_OPT3").toString());
+           ui.opt4ModeButton->setText(settings.value("APM_GROUND_SHORTCUT_OPT4").toString());
+       }
+     }
+}
+

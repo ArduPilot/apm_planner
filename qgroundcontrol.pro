@@ -124,7 +124,9 @@ HEADERS +=     libs/alglib/src/ap.h \
     libs/alglib/src/solvers.h \
     libs/alglib/src/specialfunctions.cpp \
     src/ui/configuration/Radio3DRSettings.h \
-    src/ui/configuration/SetupWarningMessage.h
+    src/ui/configuration/SetupWarningMessage.h \
+    src/ui/uas/APMShortcutModesDialog.h
+#    src/ui/DownloadRemoteParamsDialog.h
 
 SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/alglibinternal.cpp \
@@ -137,7 +139,9 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/solvers.cpp \
     libs/alglib/src/specialfunctions.cpp \
     src/ui/configuration/Radio3DRSettings.cc \
-    src/ui/configuration/SetupWarningMessage.cc
+    src/ui/configuration/SetupWarningMessage.cc \
+    src/ui/uas/APMShortcutModesDialog.cpp
+#    src/ui/DownloadRemoteParamsDialog.cc
 
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
@@ -326,7 +330,9 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/SerialSettingsDialog.ui \
     src/ui/configuration/ApmFirmwareConfig.ui \
     src/ui/DebugOutput.ui \
-    src/ui/configuration/SetupWarningMessage.ui
+    src/ui/configuration/SetupWarningMessage.ui \
+    src/ui/uas/APMShortcutModesDialog.ui
+#    src/ui/DownloadRemoteParamsDialog.ui
 
 INCLUDEPATH += src \
     src/ui \
