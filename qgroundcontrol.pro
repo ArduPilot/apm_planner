@@ -127,8 +127,15 @@ HEADERS +=     libs/alglib/src/ap.h \
     libs/alglib/src/diffequations.h \
     libs/alglib/src/integration.h \
     libs/alglib/src/solvers.h \
-    libs/alglib/src/specialfunctions.cpp
 # NOTE: Add new HEADERS to the HEADER definition below
+    libs/alglib/src/specialfunctions.cpp \
+    src/ui/configuration/Radio3DRSettings.h \
+    src/ui/configuration/SetupWarningMessage.h \
+    src/ui/AP2DataPlot2D.h \
+    src/ui/AP2DataPlotThread.h \
+    src/ui/QGraph.h \
+    src/ui/dataselectionscreen.h \
+    src/ui/qcustomplot.h
 
 SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/alglibinternal.cpp \
@@ -139,8 +146,15 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/diffequations.cpp \
     libs/alglib/src/integration.cpp \
     libs/alglib/src/solvers.cpp \
-    libs/alglib/src/specialfunctions.cpp
 # NOTE: Add new SOURCES to the SOURCE definition below
+    libs/alglib/src/specialfunctions.cpp \
+    src/ui/configuration/Radio3DRSettings.cc \
+    src/ui/configuration/SetupWarningMessage.cc \
+    src/ui/AP2DataPlot2D.cpp \
+    src/ui/AP2DataPlotThread.cc \
+    src/ui/QGraph.cc \
+    src/ui/dataselectionscreen.cpp \
+    src/ui/qcustomplot.cpp
 
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
@@ -333,7 +347,9 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/SetupWarningMessage.ui \
     src/ui/uas/APMShortcutModesDialog.ui \
     src/ui/configuration/DownloadRemoteParamsDialog.ui \
-    src/ui/configuration/ParamCompareDialog.ui
+    src/ui/configuration/ParamCompareDialog.ui \
+    src/ui/AP2DataPlot2D.ui \
+    src/ui/dataselectionscreen.ui
 
 INCLUDEPATH += src \
     src/ui \
