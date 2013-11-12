@@ -4,7 +4,6 @@
 #include <QWidget>
 #include "ui_AP2DataPlot2D.h"
 #include "AP2DataPlotThread.h"
-#include "QGraph.h"
 #include "dataselectionscreen.h"
 #include "qcustomplot.h"
 class AP2DataPlot2D : public QWidget
@@ -17,18 +16,19 @@ public:
 private slots:
     void loadButtonClicked();
     void threadDone();
-    void payloadDecoded(QVariantMap map);
+    void payloadDecoded(int index,QString name,QVariantMap map);
     void itemDisabled(QString name);
     void itemEnabled(QString name);
 private:
+    QMap<QString,QCPAxis*> m_axisList;
+    QMap<QString,QCPGraph*> m_graphList;
     int graphCount;
-    QGraph *graph;
-    QCustomPlot *plot;
-    QCPAxisRect *wideAxisRect;
-    QList<QVariantMap> datalist;
+    QCustomPlot *m_plot;
+    QCPAxisRect *m_wideAxisRect;
+    QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
     Ui::AP2DataPlot2D ui;
-    AP2DataPlotThread *loader;
-    DataSelectionScreen *dataSelectionScreen;
+    AP2DataPlotThread *m_logLoaderThread;
+    DataSelectionScreen *m_dataSelectionScreen;
 };
 
 #endif // AP2DATAPLOT2D_H
