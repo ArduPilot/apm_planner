@@ -95,6 +95,13 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QPushButton" name="downloadRemoteButton">
+         <property name="text">
+          <string>Download Param Files</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>

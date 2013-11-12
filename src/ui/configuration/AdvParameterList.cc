@@ -21,6 +21,7 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 
 #include "AdvParameterList.h"
+#include "DownloadRemoteParamsDialog.h"
 #include "QsLog.h"
 #include <QTableWidgetItem>
 #include <QInputDialog>
@@ -41,7 +42,9 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.writePushButton,SIGNAL(clicked()),this,SLOT(writeButtonClicked()));
     connect(ui.loadPushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     connect(ui.savePushButton,SIGNAL(clicked()),this,SLOT(saveButtonClicked()));
-    connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+    connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),
+            this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+    connect(ui.downloadRemoteButton, SIGNAL(clicked()),this,SLOT(downloadRemoteFiles()));
 
     ui.tableWidget->setColumnCount(4);
     ui.tableWidget->verticalHeader()->hide();
@@ -371,3 +374,16 @@ void AdvParameterList::parameterChanged(int uas, int component, int parameterCou
     }
 }
 
+void AdvParameterList::downloadRemoteFiles()
+{
+    QLOG_DEBUG() << "DownloadRemoteFiles";
+
+    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog();
+
+    if(dialog->exec() == QDialog::Accepted) {
+        // Pull the selected file and
+        // modidy the parameters on the adv param list.
+
+    }
+
+}

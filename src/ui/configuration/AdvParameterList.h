@@ -53,6 +53,8 @@ private slots:
     void tableWidgetItemChanged(QTableWidgetItem* item);
     void loadButtonClicked();
     void saveButtonClicked();
+    void downloadRemoteFiles();
+
 private:
     QMap<QString,QTableWidgetItem*> m_paramValueMap;
     QList<QString> m_origBrushList;
