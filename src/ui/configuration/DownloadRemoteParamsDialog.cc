@@ -18,7 +18,7 @@ DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent) :
     // [ToDo] For now just add a deafult item for Iris.
     QListWidgetItem *item = new QListWidgetItem("Iris.param", ui->listWidget);
     ui->listWidget->addItem(item);
-    m_paramUrls.append("https://api.github.com/repos/diydrones/ardupilot/contents/Tools/Frame_params/Iris.param?ref=master");
+    m_paramUrls.append("https://raw.github.com/diydrones/ardupilot/master/Tools/Frame_params/Iris.param?ref=master");
 
     // [TODO] stop hiding the refresh button
     ui->refreshButton->setVisible(false);
