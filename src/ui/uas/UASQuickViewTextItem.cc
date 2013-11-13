@@ -124,7 +124,7 @@ void UASQuickViewTextItem::setValuePixelSize(int size)
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(size);
-    titlefont.setPixelSize(valuefont.pixelSize() / 1.3);
+    titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
     valueLabel->setFont(valuefont);
     titleLabel->setFont(titlefont);
     update();
@@ -167,7 +167,7 @@ void UASQuickViewTextItem::resizeEvent(QResizeEvent *event)
             QLOG_TRACE() << "Point size:" << valuefont.pixelSize() << valueLabel->width() << valueLabel->height();
         }
     }
-titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
+titlefont.setPixelSize(valuefont.pixelSize() / 1.8);
     valueLabel->setFont(valuefont);
     titleLabel->setFont(titlefont);
     update();
