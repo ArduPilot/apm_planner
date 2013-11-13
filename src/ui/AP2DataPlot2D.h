@@ -19,7 +19,11 @@ private slots:
     void payloadDecoded(int index,QString name,QVariantMap map);
     void itemDisabled(QString name);
     void itemEnabled(QString name);
+    void verticalSliderMoved(int value);
+    void horizontalSliderMoved(int value);
+    void zoomSliderMoved(int value);
 private:
+    QMap<QCPAxis*,QPair<double,double> > m_rangeMap;
     QMap<QString,QCPAxis*> m_axisList;
     QMap<QString,QCPGraph*> m_graphList;
     int graphCount;

@@ -7,8 +7,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect(ui.pushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     graphCount=0;
     m_plot = new QCustomPlot(ui.widget);
-    m_plot->setInteraction(QCP::iRangeDrag, true);
-    m_plot->setInteraction(QCP::iRangeZoom, true);
+    //m_plot->setInteraction(QCP::iRangeDrag, true);
+   // m_plot->setInteraction(QCP::iRangeZoom, true);
+    //m_plot->setInteraction(QCP::iMultiSelect,true);
     ui.verticalLayout_3->addWidget(m_plot);
     m_plot->show();
     m_plot->plotLayout()->clear(); // clear default axis rect so we can start from scratch
@@ -23,8 +24,49 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect( m_dataSelectionScreen,SIGNAL(itemEnabled(QString)),this,SLOT(itemEnabled(QString)));
     connect( m_dataSelectionScreen,SIGNAL(itemDisabled(QString)),this,SLOT(itemDisabled(QString)));
 
+    connect(ui.verticalSlider,SIGNAL(sliderMoved(int)),this,SLOT(verticalSliderMoved(int)));
+    connect(ui.horizontalSlider,SIGNAL(sliderMoved(int)),this,SLOT(horizontalSliderMoved(int)));
+    connect(ui.zoomSlider,SIGNAL(sliderMoved(int)),this,SLOT(zoomSliderMoved(int)));
+
 
 }
+void AP2DataPlot2D::verticalSliderMoved(int value)
+{
+    for (int i=0;i<m_wideAxisRect->axisCount(QCPAxis::atLeft);i++)
+    {
+        QCPAxis *axis = m_wideAxisRect->axis(QCPAxis::atLeft,i);
+        float percent = value / 100.0;
+        float zoompercent = ui.zoomSlider->value() / 100.0;
+        double range = m_rangeMap[axis].second - m_rangeMap[axis].first;
+        double newrange = range * zoompercent;
+        double start = m_rangeMap[axis].first + (percent * range);
+        axis->setRangeLower(start);
+        axis->setRangeUpper(start+newrange);
+    }
+    m_plot->replot();
+
+}
+void AP2DataPlot2D::horizontalSliderMoved(int value)
+{
+
+}
+
+void AP2DataPlot2D::zoomSliderMoved(int value)
+{
+    for (int i=0;i<m_wideAxisRect->axisCount(QCPAxis::atLeft);i++)
+    {
+        QCPAxis *axis = m_wideAxisRect->axis(QCPAxis::atLeft,i);
+        float percent = ui.verticalSlider->value() / 100.0;
+        float zoompercent = value / 100.0;
+        double range = m_rangeMap[axis].second - m_rangeMap[axis].first;
+        double newrange = range * zoompercent;
+        double start = m_rangeMap[axis].first + (percent * range);
+        axis->setRangeLower(start);
+        axis->setRangeUpper(start+newrange);
+    }
+    m_plot->replot();
+}
+
 void AP2DataPlot2D::loadButtonClicked()
 {
     QString filename = QFileDialog::getOpenFileName(this,"Select log file to open");
@@ -77,6 +119,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
                 m_graphList[name] = mainGraph1;
                 mainGraph1->setData(xlist, ylist);
                 mainGraph1->rescaleAxes();
+                m_rangeMap[axis] = QPair<double,double>(min,max);
 
                // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
                 mainGraph1->setPen(QPen(QColor(120, 120, 120), 2));
