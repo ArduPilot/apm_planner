@@ -13,6 +13,12 @@ public:
     explicit UASActionsWidget(QWidget *parent = 0);
     ~UASActionsWidget();
 
+    void contextMenuEvent(QContextMenuEvent *event);
+
+    void setupApmPlaneComboBox(QComboBox *comboBox);
+    void setupApmCopterComboBox(QComboBox *comboBox);
+    void setupApmRoverComboBox(QComboBox *comboBox);
+
 private slots:
     void activeUASSet(UASInterface *uas);
     void uasConnected();
@@ -45,6 +51,11 @@ private:
     bool activeUas();
 
     int preFlightWarningBox();
+
+    void configureModeButtonEnableDisable();
+
+    void saveApmSettings();
+    void loadApmSettings();
 
 private:
     Ui::UASActionsWidget ui;

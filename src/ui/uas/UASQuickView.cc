@@ -29,13 +29,14 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
     loadSettings();
 
     //If we don't have any predefined settings, set some defaults.
+    m_columnCount = 2;
     if (uasPropertyValueMap.size() == 0)
     {
-        valueEnabled("altitude");
-        valueEnabled("groundSpeed");
-        valueEnabled("distToWP");
-        valueEnabled("M1:ATTITUDE.pitch");
-        valueEnabled("M1:ATTITUDE.roll");
+        valueEnabled("M1:GCS Status.Roll(deg)");
+        valueEnabled("M1:GCS Status.Pitch(deg)");
+        valueEnabled("M1:GCS Status.Yaw(deg)");
+        valueEnabled("M1:GCS Status.GPS Altitude");
+        valueEnabled("M1:GCS Status.Vertical Speed(m/s)");
     }
 
     QAction *action = new QAction("Add/Remove Items",this);
@@ -342,6 +343,7 @@ void UASQuickView::setActiveUAS(UASInterface* uas)
     connect(uas,SIGNAL(valueChanged(int,QString,QString,quint16,quint64)),this,SLOT(valueChanged(int,QString,QString,quint16,quint64)));
     connect(uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
+    connect(uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 
     //connect(uas,SIGNAL())
 }
@@ -468,31 +470,21 @@ void UASQuickView::actionTriggered(bool checked)
     if (checked)
     {
         valueEnabled(senderlabel->text());
-        /*UASQuickViewItem *item = new UASQuickViewTextItem(this);
-        item->setTitle(senderlabel->text());
-        layout->addWidget(item);
-        //ui.verticalLayout->addWidget(item);
-        m_currentColumn++;
-        if (m_currentColumn >= m_verticalLayoutList.size())
-        {
-            m_currentColumn = 0;
-        }
-        uasPropertyToLabelMap[senderlabel->text()] = item;*/
-
-
     }
     else
     {
         valueDisabled(senderlabel->text());
-        /*layout->removeWidget(uasPropertyToLabelMap[senderlabel->text()]);
-        uasPropertyToLabelMap[senderlabel->text()]->deleteLater();
-        uasPropertyToLabelMap.remove(senderlabel->text());*/
-
     }
 }
 void UASQuickView::valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs)
 {
-
+    if (!uasPropertyValueMap.contains(name))
+    {
+        if (quickViewSelectDialog)
+        {
+            quickViewSelectDialog->addItem(name);
+        }
+    }
     uasPropertyValueMap[name] = value.toDouble();
 }
 

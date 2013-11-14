@@ -719,6 +719,9 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 attitudeKnown = true;
                 emit attitudeChanged(this, getRoll(), getPitch(), getYaw(), time);
                 emit attitudeRotationRatesChanged(uasId, attitude.rollspeed, attitude.pitchspeed, attitude.yawspeed, time);
+                emit valueChanged(uasId,"M1:GCS Status.Roll(deg)","degrees",QVariant(getRoll() * (180.0/M_PI)),time);
+                emit valueChanged(uasId,"M1:GCS Status.Pitch(deg)","degrees",QVariant(getPitch() * (180.0/M_PI)),time);
+                emit valueChanged(uasId,"M1:GCS Status.Yaw(deg)","degrees",QVariant(getYaw() * (180.0/M_PI)),time);
             }
         }
             break;
@@ -815,6 +818,14 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             setLatitude(pos.lat/(double)1E7);
             setLongitude(pos.lon/(double)1E7);
 
+            //valueChanged(uasId, str.arg(vect.address+(i*2)), "ui16", mem1[i], time);
+            emit valueChanged(uasId,"M1:GCS Status.Latitude","degrees",QVariant((double)pos.lat / (double(1E7))),time);
+            emit valueChanged(uasId,"M1:GCS Status.Longitude","degrees",QVariant((double)pos.lon / (double(1E7))),time);
+            emit valueChanged(uasId,"M1:GCS Status.GPS Altitude","meters",QVariant((double)pos.alt / 1000.0),time);
+            emit valueChanged(uasId,"M1:GCS Status.GPS Heading","degrees",QVariant((double)pos.hdg),time);
+            emit valueChanged(uasId,"M1:GCS Status.Vertical Speed(m/s)","m/s",QVariant((double)pos.vz / 100.0),time);
+
+
             // dongfang: Beware. There are 2 altitudes in this message; neither is the primary.
             // pos.alt is GPS altitude and pos.relative_alt is above-home altitude.
             // It would be nice if APM could be modified to present the primary (mix) alt. instead
@@ -870,7 +881,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
             if (pos.fix_type > 2)
             {
-
+                //emit valueChanged(uasId,"M1:GCS Status.Latitude","degrees",QVariant((double)pos.lat / (double(1E7))),time);
                 latitude_gps = pos.lat/(double)1E7;
                 longitude_gps = pos.lon/(double)1E7;
                 altitude_gps = pos.alt/1000.0;
@@ -899,12 +910,18 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                         setGroundSpeed(vel);
                         // TODO: Other sources also? Actually this condition does not quite belong here.
                         emit gpsSpeedChanged(this, vel, time);
+                        emit valueChanged(uasId,"M1:GCS Status.GPS Velocity","m/s",QVariant(vel),time);
                     }
                     else
                     {
                         emit textMessageReceived(uasId, message.compid, 255, QString("GCS ERROR: RECEIVED INVALID SPEED OF %1 m/s").arg(vel));
                     }
                 }
+                emit valueChanged(uasId,"M1:GCS Status.GPS Fix","int",QVariant(pos.fix_type),time);
+            }
+            else if (pos.fix_type == 0)
+            {
+                emit valueChanged(uasId,"M1:GCS Status.GPS Fix","bool",QVariant("No Fix"),time);
             }
         }
             break;

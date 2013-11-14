@@ -151,6 +151,12 @@ ArduCopterPidConfig::ArduCopterPidConfig(QWidget *parent) : AP2ConfigWidget(pare
     m_ch78ValueToTextList.append(QPair<int,QString>(10,"Sonar"));
     m_ch78ValueToTextList.append(QPair<int,QString>(11,"Fence"));
     m_ch78ValueToTextList.append(QPair<int,QString>(12,"ResetToArmedYaw"));
+    m_ch78ValueToTextList.append(QPair<int,QString>(13,"Super Simple Mode"));
+    m_ch78ValueToTextList.append(QPair<int,QString>(14,"Acro Trainer"));
+    m_ch78ValueToTextList.append(QPair<int,QString>(16,"Auto"));
+    m_ch78ValueToTextList.append(QPair<int,QString>(17,"Auto Tune"));
+    m_ch78ValueToTextList.append(QPair<int,QString>(18,"Land"));
+
     for (int i=0;i<m_ch78ValueToTextList.size();i++)
     {
         ui.ch7OptComboBox->addItem(m_ch78ValueToTextList[i].second);
