@@ -134,6 +134,18 @@ public:
         return lowPowerMode;
     }
 
+    /** @brief Get the log directory setting */
+    QString getLogDirectory()
+    {
+        return logDirectory;
+    }
+
+    /** @brief Set the log directory */
+    void setLogDirectory(QString &d)
+    {
+        logDirectory = d;
+    }
+
     QList<QAction*> listLinkMenuActions(void);
 
 public slots:
@@ -464,6 +476,7 @@ protected:
     bool lowPowerMode; ///< If enabled, QGC reduces the update rates of all widgets
     QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
+    QString logDirectory;
 
 private:
     QList<QObject*> commsWidgetList;
