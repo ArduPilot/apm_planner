@@ -19,6 +19,7 @@ signals:
 private slots:
 	void checkBoxClicked(bool checked);
 private:
+    QList<QWidget*> m_itemList;
 	Ui::DataSelectionScreen ui;
 };
 

@@ -34,9 +34,14 @@ void DataSelectionScreen::addItem(QString name)
 	box->setText(name);
 	connect(box,SIGNAL(clicked(bool)),this,SLOT(checkBoxClicked(bool)));
 	box->show();
+    m_itemList.append(box);
 }
 
 void DataSelectionScreen::clear()
 {
-
+    for (int i=0;i<m_itemList.size();i++)
+    {
+        delete m_itemList[i];
+    }
+    m_itemList.clear();
 }

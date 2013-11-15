@@ -7,8 +7,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect(ui.pushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     graphCount=0;
     m_plot = new QCustomPlot(ui.widget);
-    //m_plot->setInteraction(QCP::iRangeDrag, true);
-   // m_plot->setInteraction(QCP::iRangeZoom, true);
+    m_plot->setInteraction(QCP::iRangeDrag, true);
+    m_plot->setInteraction(QCP::iRangeZoom, true);
     //m_plot->setInteraction(QCP::iMultiSelect,true);
     ui.verticalLayout_3->addWidget(m_plot);
     m_plot->show();
@@ -16,6 +16,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     m_wideAxisRect = new QCPAxisRect(m_plot);
     m_wideAxisRect->setupFullAxesBox(true);
     m_wideAxisRect->axis(QCPAxis::atRight, 0)->setTickLabels(false);
+    m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft,0));
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect); // insert axis rect in first row
     QCPMarginGroup *marginGroup = new QCPMarginGroup(m_plot);
     m_wideAxisRect->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
@@ -24,47 +25,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect( m_dataSelectionScreen,SIGNAL(itemEnabled(QString)),this,SLOT(itemEnabled(QString)));
     connect( m_dataSelectionScreen,SIGNAL(itemDisabled(QString)),this,SLOT(itemDisabled(QString)));
 
-    connect(ui.verticalSlider,SIGNAL(sliderMoved(int)),this,SLOT(verticalSliderMoved(int)));
-    connect(ui.horizontalSlider,SIGNAL(sliderMoved(int)),this,SLOT(horizontalSliderMoved(int)));
-    connect(ui.zoomSlider,SIGNAL(sliderMoved(int)),this,SLOT(zoomSliderMoved(int)));
 
 
-}
-void AP2DataPlot2D::verticalSliderMoved(int value)
-{
-    for (int i=0;i<m_wideAxisRect->axisCount(QCPAxis::atLeft);i++)
-    {
-        QCPAxis *axis = m_wideAxisRect->axis(QCPAxis::atLeft,i);
-        float percent = value / 100.0;
-        float zoompercent = ui.zoomSlider->value() / 100.0;
-        double range = m_rangeMap[axis].second - m_rangeMap[axis].first;
-        double newrange = range * zoompercent;
-        double start = m_rangeMap[axis].first + (percent * range);
-        axis->setRangeLower(start);
-        axis->setRangeUpper(start+newrange);
-    }
-    m_plot->replot();
-
-}
-void AP2DataPlot2D::horizontalSliderMoved(int value)
-{
-
-}
-
-void AP2DataPlot2D::zoomSliderMoved(int value)
-{
-    for (int i=0;i<m_wideAxisRect->axisCount(QCPAxis::atLeft);i++)
-    {
-        QCPAxis *axis = m_wideAxisRect->axis(QCPAxis::atLeft,i);
-        float percent = ui.verticalSlider->value() / 100.0;
-        float zoompercent = value / 100.0;
-        double range = m_rangeMap[axis].second - m_rangeMap[axis].first;
-        double newrange = range * zoompercent;
-        double start = m_rangeMap[axis].first + (percent * range);
-        axis->setRangeLower(start);
-        axis->setRangeUpper(start+newrange);
-    }
-    m_plot->replot();
 }
 
 void AP2DataPlot2D::loadButtonClicked()
@@ -74,10 +36,28 @@ void AP2DataPlot2D::loadButtonClicked()
     {
         return;
     }
+    for (int i=0;i<m_graphNameList.size();i++)
+    {
+        m_wideAxisRect->removeAxis(m_axisList[m_graphNameList[i]]);
+        m_plot->removeGraph(m_graphMap[m_graphNameList[i]]);
+        m_graphMap.remove(m_graphNameList[i]);
+        m_axisList.remove(m_graphNameList[i]);
+    }
+    m_dataSelectionScreen->hide();
+    m_dataSelectionScreen->clear();
+    m_dataList.clear();
+    m_plot->replot();
+    graphCount=0;
     m_logLoaderThread = new AP2DataPlotThread();
     connect(m_logLoaderThread,SIGNAL(done()),this,SLOT(threadDone()));
+    connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     m_logLoaderThread->loadFile(filename);
+}
+void AP2DataPlot2D::threadTerminated()
+{
+    m_logLoaderThread->deleteLater();
+    m_logLoaderThread = 0;
 }
 
 AP2DataPlot2D::~AP2DataPlot2D()
@@ -113,16 +93,29 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     ylist.append(val);
                 }
                 QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-                axis->setTickLabelColor(QColor("#6050F8")); // add an extra axis on the left and color its numbers
+                axis->setLabel(name);
+
+                if (graphCount > 0)
+                {
+                    connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+                }
+                QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+                axis->setLabelColor(color);
+                axis->setTickLabelColor(color);
+                axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
                 m_axisList[name] = axis;
                 QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,graphCount++));
-                m_graphList[name] = mainGraph1;
+                m_graphMap[name] = mainGraph1;
+                m_graphNameList.append(name);
                 mainGraph1->setData(xlist, ylist);
-                mainGraph1->rescaleAxes();
-                m_rangeMap[axis] = QPair<double,double>(min,max);
+                mainGraph1->rescaleValueAxis();
+                if (graphCount == 1)
+                {
+                    mainGraph1->rescaleKeyAxis();
+                }
 
                // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
-                mainGraph1->setPen(QPen(QColor(120, 120, 120), 2));
+                mainGraph1->setPen(QPen(color, 2));
                 m_plot->replot();
                 return;
             }
@@ -133,10 +126,11 @@ void AP2DataPlot2D::itemEnabled(QString name)
 void AP2DataPlot2D::itemDisabled(QString name)
 {
     m_wideAxisRect->removeAxis(m_axisList[name]);
-    m_plot->removeGraph(m_graphList[name]);
+    m_plot->removeGraph(m_graphMap[name]);
     m_plot->replot();
-    m_graphList.remove(name);
+    m_graphMap.remove(name);
     m_axisList.remove(name);
+    m_graphNameList.removeOne(name);
     graphCount--;
 
 }
