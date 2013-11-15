@@ -2,11 +2,14 @@
 #include "MainWindow.h"
 #include "LogConsole.h"
 #include "ui_LogConsole.h"
+#include "kmlcreator.h"
 
 #include <qfile.h>
 #include <qdatetime.h>
 #include <qserialport.h>
 #include <qregexp.h>
+
+using namespace kml;
 
 static bool writeSerial(QSerialPort* port, const char *s) {
     QLOG_DEBUG() << "writeSerial(): cmd=" << s;
@@ -28,7 +31,6 @@ static bool writeSerial(QSerialPort* port, const char *s) {
 
     return (!fail);
 }
-
 
 Worker::Worker(QSerialPort* port, QList<LogConsole::FileData>& fileData):
     m_port(port),
@@ -88,8 +90,24 @@ void Worker::onFinishFile() {
 
     out << QString::number(m_files[m_fdIndex].index) << "\r\n";
 
+    KMLCreator kml;
+
+    if(m_generateKml) {
+        QString fn = m_files[m_fdIndex].filename;
+        QString kmlfile = fn.replace(fn.indexOf(".log"), 4, ".kml");
+        kml.start(kmlfile);
+    }
+
     foreach(QString line, m_logLines) {
         out << line << "\r\n";
+
+        if(m_generateKml) {
+            kml.processLine(line);
+        }
+    }
+
+    if(m_generateKml) {
+        kml.finish(true);
     }
 
     emit finishFile(m_files[m_fdIndex].filename);
@@ -101,6 +119,10 @@ void Worker::onFinishAll() {
 }
 
 void Worker::onLineRead(char *data) {
+    if(!m_run) {
+        return;
+    }
+
     QString line = QString(data).trimmed();
 
     int idx = m_files[m_fdIndex].index;
@@ -159,7 +181,7 @@ void Worker::readData() {
     QWaitCondition waitCondition;
     QMutex mutex;
 
-    while(m_port->canReadLine()) {
+    while(m_port->canReadLine() && m_run) {
         int len = m_port->readLine(line, 256);
         if(len < 0) {
             QLOG_WARN() << "read error";
@@ -173,7 +195,19 @@ void Worker::readData() {
 
         // Oddly, this seems necessary
         waitCondition.wait(&mutex, 5);
+
+        if(!m_run) {
+            onCancel();
+            break;
+        }
     }
+}
+
+void Worker::onCancel() {
+    QLOG_DEBUG() << "onCancel()";
+    // Happens when the worker is cancelled
+    disconnect(m_port, SIGNAL(readyRead()), this, SLOT(readData()));
+    emit cancelled();
 }
 
 //
@@ -325,6 +359,7 @@ void LogConsole::pullSelectedClicked() {
     if(files.size() > 0) {
         QThread* thread = new QThread();
         m_worker = new Worker(m_serial, files);
+        m_worker->generateKml(ui->generateKmlCheck->isChecked());
         m_worker->moveToThread(thread);
         connect(m_worker, SIGNAL(error(QString)), this, SLOT(dumpError(QString)));
         connect(m_worker, SIGNAL(startFile(QString)), this, SLOT(dumpFileStart(QString)));
@@ -335,6 +370,7 @@ void LogConsole::pullSelectedClicked() {
         connect(m_worker, SIGNAL(finishAll()), thread, SLOT(quit()));
         connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
         connect(m_worker, SIGNAL(finishAll()), this, SLOT(workerStopped()));
+        connect(m_worker, SIGNAL(cancelled()), this, SLOT(workerCancelled()));
         thread->start();
     }
 
@@ -365,6 +401,11 @@ void LogConsole::workerStopped() {
     emit activityStop();
 }
 
+void LogConsole::workerCancelled() {
+    emit statusMessage(QString("Canceled"));
+    workerStopped();
+}
+
 void LogConsole::dumpError(QString err) {
     QLOG_ERROR() << "dumpError: err=" << err;
 }
@@ -392,7 +433,9 @@ void LogConsole::refreshClicked() {
 
 void LogConsole::stopClicked() {
     if(m_worker) {
-        m_worker->stop();
+        if(QMessageBox::question(this, "Stop", "Stop pulling log data?", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+            m_worker->stop();
+        }
     }
 }
 
@@ -422,6 +465,7 @@ void LogConsole::setButtonEnabledStates() {
     bool working = (m_worker);
 
     ui->pullLogsButton->setEnabled((count > 0) && (selSize > 0) && (!working));
+    ui->generateKmlCheck->setEnabled((count > 0) && (selSize > 0) && (!working));
     ui->eraseLogsButton->setEnabled((count > 0) && (!working));
     ui->selectAllButton->setEnabled((count > 0) && (!working));
     ui->selectNoneButton->setEnabled((count > 0) && (!working));

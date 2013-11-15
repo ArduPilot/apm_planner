@@ -95,6 +95,7 @@ unix {
 	LIBS += -lssl -lcrypto
 }
 include (QsLog/QsLog.pri)
+include (src/quazip/quazip.pri)
 
 LANGUAGE = C++
 OBJECTS_DIR = $${BUILDDIR}/obj
@@ -122,7 +123,8 @@ HEADERS +=     libs/alglib/src/ap.h \
     libs/alglib/src/diffequations.h \
     libs/alglib/src/integration.h \
     libs/alglib/src/solvers.h \
-    libs/alglib/src/specialfunctions.cpp
+    libs/alglib/src/specialfunctions.cpp \
+    src/output/logdata.h
 
 SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/alglibinternal.cpp \
@@ -133,7 +135,8 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/diffequations.cpp \
     libs/alglib/src/integration.cpp \
     libs/alglib/src/solvers.cpp \
-    libs/alglib/src/specialfunctions.cpp
+    libs/alglib/src/specialfunctions.cpp \
+    src/output/logdata.cc
 
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
@@ -344,7 +347,8 @@ INCLUDEPATH += src \
     src/ui/map3D \
     src/ui/mission \
     src/ui/designer \
-    src/ui/configuration
+    src/ui/configuration \
+    src/output
 HEADERS += src/MG.h \
     src/QGCCore.h \
     src/uas/UASInterface.h \
@@ -529,7 +533,8 @@ HEADERS += src/MG.h \
     src/ui/uas/APMShortcutModesDialog.h \
     src/ui/configuration/DownloadRemoteParamsDialog.h \
     src/ui/configuration/ParamCompareDialog.h \
-    src/uas/UASParameter.h
+    src/uas/UASParameter.h \
+    src/output/kmlcreator.h
 #    src/uas/UASParameterManager.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
@@ -752,7 +757,8 @@ SOURCES += src/main.cc \
     src/ui/uas/APMShortcutModesDialog.cpp \
     src/ui/configuration/DownloadRemoteParamsDialog.cc \
     src/ui/configuration/ParamCompareDialog.cpp \
-    src/uas/UASParameter.cpp
+    src/uas/UASParameter.cpp \
+    src/output/kmlcreator.cc
 #    src/uas/UASParameterManager.cc
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
