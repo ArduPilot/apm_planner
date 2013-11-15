@@ -1139,13 +1139,22 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 
 void MainWindow::loadSettings()
 {
+    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    QString logHomeDir = homeDir + "/apmplanner2/dataflashLogs";
+
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     autoReconnect = settings.value("AUTO_RECONNECT", autoReconnect).toBool();
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
     lowPowerMode = settings.value("LOW_POWER_MODE", lowPowerMode).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS",dockWidgetTitleBarEnabled).toBool();
-    logDirectory = settings.value("LOG_DIRECTORY", qApp->applicationDirPath()).toString();
+    logDirectory = settings.value("LOG_DIRECTORY", logHomeDir).toString();
+
+    QDir logDir(logDirectory);
+    if (!logDir.cd(logHomeDir)){
+        logDir.mkdir(logHomeDir);
+    }
+
     settings.endGroup();
     enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 }
