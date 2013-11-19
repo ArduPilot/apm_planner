@@ -1,5 +1,7 @@
 #include "QsLog.h"
+#include "configuration.h"
 #include <QMessageBox>
+#include <QDesktopServices>
 #include "DownloadRemoteParamsDialog.h"
 #include "ui_DownloadRemoteParamsDialog.h"
 
