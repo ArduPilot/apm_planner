@@ -130,7 +130,7 @@ void DownloadRemoteParamsDialog::downloadParamFile()
 {
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
 
-    QDir parameterDir = QDir(homeDir + "/apmplanner2/parameters");
+    QDir parameterDir = QDir(homeDir + APP_DATA_DIRECTORY + PARAMETER_DIRECTORY);
 
     if (!parameterDir.exists())
         parameterDir.mkdir(parameterDir.filePath(""));
