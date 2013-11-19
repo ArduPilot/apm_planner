@@ -22,6 +22,7 @@ This file is part of the APM_PLANNER project
 
 #include "AdvParameterList.h"
 #include "DownloadRemoteParamsDialog.h"
+#include "ParamCompareDialog.h"
 #include "QsLog.h"
 #include <QTableWidgetItem>
 #include <QInputDialog>
@@ -29,6 +30,12 @@ This file is part of the APM_PLANNER project
 #include <QFile>
 #include <QMessageBox>
 #include <QProgressDialog>
+#include <QDesktopServices>
+
+#define ADV_TABLE_COLUMN_PARAM 0
+#define ADV_TABLE_COLUMN_VALUE 1
+#define ADV_TABLE_COLUMN_UNIT 2
+#define ADV_TABLE_COLUMN_DESCRIPTION 3
 
 AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     m_paramDownloadState(starting),
@@ -45,18 +52,19 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),
             this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
     connect(ui.downloadRemoteButton, SIGNAL(clicked()),this,SLOT(downloadRemoteFiles()));
+    connect(ui.compareButton,SIGNAL(clicked()),this, SLOT(compareButtonClicked()));
 
     ui.tableWidget->setColumnCount(4);
     ui.tableWidget->verticalHeader()->hide();
-    ui.tableWidget->setColumnWidth(0,200);
-    ui.tableWidget->setColumnWidth(1,100);
-    ui.tableWidget->setColumnWidth(2,100);
-    ui.tableWidget->setColumnWidth(3,800);
-    ui.tableWidget->setHorizontalHeaderItem(0,new QTableWidgetItem("Param"));
-    ui.tableWidget->setHorizontalHeaderItem(1,new QTableWidgetItem("Value"));
-    ui.tableWidget->setHorizontalHeaderItem(2,new QTableWidgetItem("Unit"));
-    ui.tableWidget->setHorizontalHeaderItem(3,new QTableWidgetItem("Description"));
-    ui.tableWidget->horizontalHeaderItem (3)->setTextAlignment(Qt::AlignLeft);
+    ui.tableWidget->setColumnWidth(ADV_TABLE_COLUMN_PARAM,200);
+    ui.tableWidget->setColumnWidth(ADV_TABLE_COLUMN_VALUE,100);
+    ui.tableWidget->setColumnWidth(ADV_TABLE_COLUMN_UNIT,100);
+    ui.tableWidget->setColumnWidth(ADV_TABLE_COLUMN_DESCRIPTION,800);
+    ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_PARAM, new QTableWidgetItem("Param"));
+    ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_VALUE, new QTableWidgetItem("Value"));
+    ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_UNIT, new QTableWidgetItem("Unit"));
+    ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_DESCRIPTION,new QTableWidgetItem("Description"));
+    ui.tableWidget->horizontalHeaderItem(ADV_TABLE_COLUMN_DESCRIPTION)->setTextAlignment(Qt::AlignLeft);
 
     ui.paramProgressBar->setRange(0,100);
 
@@ -64,16 +72,17 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
 }
 void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
 {
-	if (!ui.tableWidget->item(item->row(),1) || !ui.tableWidget->item(item->row(),0))
+    if (!ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_VALUE)
+            || !ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM))
     {
         //Invalid item, something has gone awry.
         return;
     }
-    m_origBrushList.append(ui.tableWidget->item(item->row(),0)->text());
+    m_origBrushList.append(ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text());
     QBrush brush = QBrush(QColor::fromRgb(132,181,132));
     item->setBackground(brush);
-    ui.tableWidget->item(item->row(),0)->setBackground(brush);
-    m_modifiedParamMap[ui.tableWidget->item(item->row(),0)->text()] = item->text().toDouble();
+    ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->setBackground(brush);
+    m_modifiedParamMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = item->text().toDouble();
 
     int itemsChanged = m_modifiedParamMap.size();
 
@@ -224,7 +233,7 @@ void AdvParameterList::saveButtonClicked()
     file.close();
 }
 
-void AdvParameterList::parameterChanged(int uas, int component, QString parameterName, QVariant value)
+void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString parameterName, QVariant value)
 {
     QLOG_DEBUG() << "APL::parameterChanged " << parameterName << ":" <<value.toFloat();
     disconnect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
@@ -292,7 +301,7 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
     if (m_origBrushList.contains(parameterName))
     {
         m_paramValueMap[parameterName]->setBackground(QBrush());
-    ui.tableWidget->item(m_paramValueMap[parameterName]->row(),0)->setBackground(QBrush());
+        ui.tableWidget->item(m_paramValueMap[parameterName]->row(),0)->setBackground(QBrush());
         m_origBrushList.removeAll(parameterName);
     }
 
@@ -329,10 +338,27 @@ void AdvParameterList::parameterChanged(int uas, int component, QString paramete
     }
 }
 
-void AdvParameterList::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
+void AdvParameterList::parameterChanged(int uas, int /*component*/, int parameterCount, int parameterId, QString parameterName, QVariant value)
 {
+    // Create a parameter list model for comparison feature
+    // [TODO] This needs to move to the global parameter model.
+
+    if (m_parameterList.contains(parameterName)){
+        UASParameter* param = m_parameterList.value(parameterName);
+        param->setValue(value); // This also sets the modified bit
+        param->setModified(false); // but it's no longer different from the vehicle, so clear it.
+
+    } else {
+        // create a new entry
+        UASParameter* param = new UASParameter();
+        param->setName(parameterName);
+        param->setIndex(parameterId);
+        param->setValue(value);
+        m_parameterList.insert(parameterName, param);
+    }
+
     QString countString;
-    // Create progress of downloading all parameters for UI
+    // Create progress of downloading of all parameters for the UI
     switch (m_paramDownloadState){
     case starting:
         QLOG_INFO() << "Starting Param Progress Bar Updating sys:" << uas;
@@ -382,8 +408,36 @@ void AdvParameterList::downloadRemoteFiles()
 
     if(dialog->exec() == QDialog::Accepted) {
         // Pull the selected file and
-        // modidy the parameters on the adv param list.
+        // modify the parameters on the adv param list.
+        QLOG_DEBUG() << "Remote File Downloaded";
+        QLOG_DEBUG() << "TODO: Trigger auto load or compare of the downloaded file";
+    }
+    delete dialog;
+    dialog = NULL;
+}
+
+void AdvParameterList::compareButtonClicked()
+{
+    QLOG_DEBUG() << "Compare Params to File";
+
+    ParamCompareDialog* dialog = new ParamCompareDialog();
+    dialog->setCurrentList(m_parameterList);
+
+    if(dialog->exec() == QDialog::Accepted) {
+        // Apply the selected parameters
+        // [TODO] For now just scan the returned new list and update the advanced tableview
+
+        foreach(UASParameter* param, m_parameterList){
+            // Modify the elements in the table widget.
+            if (param->isModified()){
+                // Update the local table widget
+                QTableWidgetItem* item = m_paramValueMap.value(param->name());
+                item->setData(Qt::DisplayRole, param->value());
+                tableWidgetItemChanged(item);
+            }
+        }
 
     }
-
+    delete dialog;
+    dialog = NULL;
 }

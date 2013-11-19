@@ -325,7 +325,8 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/DebugOutput.ui \
     src/ui/configuration/SetupWarningMessage.ui \
     src/ui/uas/APMShortcutModesDialog.ui \
-    src/ui/configuration/DownloadRemoteParamsDialog.ui
+    src/ui/configuration/DownloadRemoteParamsDialog.ui \
+    src/ui/configuration/ParamCompareDialog.ui
 
 INCLUDEPATH += src \
     src/ui \
@@ -526,7 +527,10 @@ HEADERS += src/MG.h \
     src/ui/configuration/Radio3DRSettings.h \
     src/ui/configuration/SetupWarningMessage.h \
     src/ui/uas/APMShortcutModesDialog.h \
-    src/ui/configuration/DownloadRemoteParamsDialog.h
+    src/ui/configuration/DownloadRemoteParamsDialog.h \
+    src/ui/configuration/ParamCompareDialog.h \
+    src/uas/UASParameter.h
+#    src/uas/UASParameterManager.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -746,7 +750,10 @@ SOURCES += src/main.cc \
     src/ui/configuration/Radio3DRSettings.cc \
     src/ui/configuration/SetupWarningMessage.cc \
     src/ui/uas/APMShortcutModesDialog.cpp \
-    src/ui/configuration/DownloadRemoteParamsDialog.cc
+    src/ui/configuration/DownloadRemoteParamsDialog.cc \
+    src/ui/configuration/ParamCompareDialog.cpp \
+    src/uas/UASParameter.cpp
+#    src/uas/UASParameterManager.cc
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc
