@@ -123,10 +123,11 @@ void APMToolBar::activeUasSet(UASInterface *uas)
     connect(m_uas, SIGNAL(heartbeat(UASInterface*)),
                this, SLOT(heartbeat(UASInterface*)));
 
-    if (m_uas->isFixedWing()) {
+    if (m_uas->isFixedWing()||m_uas->isGroundRover()) {
         rootObject()->setProperty("disableStatusDisplay", QVariant(true));
     } else {
         rootObject()->setProperty("disableStatusDisplay", QVariant(false));
+        rootObject()->setProperty("armed", QVariant(m_uas->isArmed()));
     }
 
     // Connect the signals from active links
