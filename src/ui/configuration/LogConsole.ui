@@ -117,6 +117,25 @@
     </item>
    </layout>
   </widget>
+  <widget class="QCheckBox" name="generateKmlCheck">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>220</y>
+     <width>131</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>When checked, generate KML when extracting logs</string>
+   </property>
+   <property name="text">
+    <string>Generate KML</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

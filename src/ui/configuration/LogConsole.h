@@ -54,6 +54,7 @@ private slots:
     void dumpFileFinish(QString);
     void dumpFileBytesRead(long);
     void workerStopped();
+    void workerCancelled();
 
 private:
     Ui::LogConsole *ui;
@@ -87,6 +88,9 @@ public:
 
     void stop() { m_run = false; }
 
+    void generateKml(bool gen = true) { m_generateKml = gen; }
+    bool generatesKml() { return m_generateKml; }
+
 public slots:
     void process();
     void readData();
@@ -98,6 +102,7 @@ signals:
     void bytesRead(long);
     void finishAll();
     void error(QString);
+    void cancelled();
 
 private:
     void onData(QByteArray& data);
@@ -105,7 +110,9 @@ private:
     void onStartNextFile();
     void onFinishFile();
     void onFinishAll();
+    void onCancel();
 
+    bool m_generateKml;
     state m_state;
     QSerialPort* m_port;
     QList<LogConsole::FileData> m_files;

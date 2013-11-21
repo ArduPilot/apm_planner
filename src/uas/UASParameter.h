@@ -1,6 +1,7 @@
 #ifndef UASPARAMETER_H
 #define UASPARAMETER_H
 
+#include <stdint.h>
 #include <QObject>
 #include <QVariant>
 
