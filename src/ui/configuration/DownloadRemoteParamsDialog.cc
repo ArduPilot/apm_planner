@@ -1,5 +1,7 @@
 #include "QsLog.h"
+#include "configuration.h"
 #include <QMessageBox>
+#include <QDesktopServices>
 #include "DownloadRemoteParamsDialog.h"
 #include "ui_DownloadRemoteParamsDialog.h"
 
@@ -128,22 +130,14 @@ void DownloadRemoteParamsDialog::startFileDownloadRequest(QUrl url)
 
 void DownloadRemoteParamsDialog::downloadParamFile()
 {
-#ifdef Q_OS_WIN
-    QString appDataDir = QString(getenv("USERPROFILE")).replace("\\","/");
-#else
-    QString appDataDir = getenv("HOME");
-#endif
+    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
 
-    QDir appDir(appDataDir);
+    QDir parameterDir = QDir(homeDir + APP_DATA_DIRECTORY + PARAMETER_DIRECTORY);
 
-    if (appDir.exists()) {
-        if (!appDir.cd("apmplanner2/parameters"))
-        {
-            appDir.mkdir("apmplanner2/parameters");
-        }
-    }
+    if (!parameterDir.exists())
+        parameterDir.mkdir(parameterDir.filePath(""));
 
-    QString fileName(QDir(appDataDir + "/apmplanner2/parameters").filePath(
+    QString fileName(parameterDir.filePath(
                           ui->listWidget->currentItem()->text()));
 
     if (fileName.isEmpty())

@@ -1140,7 +1140,7 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 void MainWindow::loadSettings()
 {
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString logHomeDir = homeDir + "/apmplanner2/dataflashLogs";
+    QString logHomeDir = homeDir + APP_DATA_DIRECTORY + LOG_DIRECTORY;
 
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");

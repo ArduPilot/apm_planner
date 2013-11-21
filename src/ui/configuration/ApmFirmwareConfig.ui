@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>935</width>
-    <height>668</height>
+    <width>938</width>
+    <height>717</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -68,7 +68,7 @@
          <x>24</x>
          <y>464</y>
          <width>681</width>
-         <height>111</height>
+         <height>151</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -752,7 +752,7 @@
              </size>
             </property>
             <property name="text">
-             <string>BETA </string>
+             <string>Beta</string>
             </property>
             <property name="checkable">
              <bool>false</bool>
