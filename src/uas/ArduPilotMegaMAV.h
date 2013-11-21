@@ -147,6 +147,7 @@ public slots:
 
     // UAS Interface
     void textMessageReceived(int uasid, int componentid, int severity, QString text);
+    void heartbeatTimeout(bool timeout, unsigned int ms);
 
 private slots:
     void uasConnected();
