@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>819</width>
-    <height>245</height>
+    <width>821</width>
+    <height>295</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,122 +19,112 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>521</width>
-     <height>215</height>
+     <width>671</width>
+     <height>279</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="listLayout">
-    <property name="sizeConstraint">
-     <enum>QLayout::SetNoConstraint</enum>
-    </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QLabel" name="label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <layout class="QVBoxLayout" name="listLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetNoConstraint</enum>
       </property>
-      <property name="text">
-       <string>Logs from UAV:</string>
-      </property>
-     </widget>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Logs from UAV:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="logsTable"/>
+      </item>
+     </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="logsTable"/>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="selectAllButton">
+        <property name="text">
+         <string>Select All</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="selectNoneButton">
+        <property name="text">
+         <string>Select None</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pullLogsButton">
+        <property name="text">
+         <string>Pull Selected</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="eraseLogsButton">
+        <property name="text">
+         <string>Erase Logs</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="stopWorkerButton">
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="refreshButton">
+        <property name="text">
+         <string>Refresh</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="generateKmlCheck">
+        <property name="toolTip">
+         <string>When checked, generate KML when extracting logs</string>
+        </property>
+        <property name="text">
+         <string>Generate KML</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>30</y>
-     <width>100</width>
-     <height>187</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QPushButton" name="selectAllButton">
-      <property name="text">
-       <string>Select All</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="selectNoneButton">
-      <property name="text">
-       <string>Select None</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pullLogsButton">
-      <property name="text">
-       <string>Pull Selected</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QPushButton" name="eraseLogsButton">
-      <property name="text">
-       <string>Erase Logs</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="stopWorkerButton">
-      <property name="text">
-       <string>Stop</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="refreshButton">
-      <property name="text">
-       <string>Refresh</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QCheckBox" name="generateKmlCheck">
-   <property name="geometry">
-    <rect>
-     <x>550</x>
-     <y>220</y>
-     <width>131</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="toolTip">
-    <string>When checked, generate KML when extracting logs</string>
-   </property>
-   <property name="text">
-    <string>Generate KML</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
   </widget>
  </widget>
  <resources/>
