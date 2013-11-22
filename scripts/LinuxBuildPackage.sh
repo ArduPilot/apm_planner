@@ -26,7 +26,7 @@ cp -r -f ./release/qml ./apmplanner-$NOW/usr/share/apmplanner2/qml
 
 #copy deb support files
 cp -r -f ./apm_planner/scripts/debian/control ./apmplanner-$NOW/debian/control
-cp -f ./apm_planner/scripts/debian/copyright ./apmplanner-$NOW/usr/share/doc/apmplanner2
+cp -f ./apm_planner/license.txt ./apmplanner-$NOW/usr/share/doc/apmplanner2/copyright
 cp -f ./apm_planner/scripts/debian/changelog ./apmplanner-$NOW/usr/share/doc/apmplanner2/changelog
 cp -r -f ./apm_planner/scripts/debian/postinst ./apmplanner-$NOW/debian/postinst
 cp -r -f ./apm_planner/scripts/debian/postrm ./apmplanner-$NOW/debian/postrm
