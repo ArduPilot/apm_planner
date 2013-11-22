@@ -48,6 +48,8 @@ mv ./apmplanner-$NOW/debian ./apmplanner-$NOW/DEBIAN
 #fix up permissions
 find ./apmplanner-$NOW/usr -type d -exec chmod 755 {} \;
 find ./apmplanner-$NOW/usr -type f -exec chmod 644 {} \;
+chmod 755 ./apmplanner-$NOW/DEBIAN/postinst
+chmod 755 ./apmplanner-$NOW/DEBIAN/postrm
 chmod +x ./apmplanner-$NOW/usr/bin/apmplanner2
 
 #create the pacakge and check compliance (report.txt)
