@@ -31,7 +31,7 @@ This file is part of the APM_PLANNER project
 #define ADVPARAMETERLIST_H
 
 #include "UASParameter.h"
-#include "UASParameterManager.h"
+// #include "UASParameterManager.h"
 #include <QWidget>
 #include "ui_AdvParameterList.h"
 #include "AP2ConfigWidget.h"

@@ -32,11 +32,16 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
     m_columnCount = 2;
     if (uasPropertyValueMap.size() == 0)
     {
-        valueEnabled("M1:GCS Status.Roll(deg)");
-        valueEnabled("M1:GCS Status.Pitch(deg)");
-        valueEnabled("M1:GCS Status.Yaw(deg)");
-        valueEnabled("M1:GCS Status.GPS Altitude");
-        valueEnabled("M1:GCS Status.Vertical Speed(m/s)");
+        valueEnabled("M1:GCS Status.Roll");
+        valueEnabled("M1:GCS Status.Pitch");
+        valueEnabled("M1:GCS Status.Yaw");
+        valueEnabled("M1:GCS Status.Altitude (GPS)");
+        valueEnabled("M1:GCS Status.Altitude (REL)");
+        valueEnabled("M1:GCS Status.Climb");
+        valueEnabled("M1:GCS Status.Battery %");
+        valueEnabled("M1:GCS Status.Current");
+        valueEnabled("M1:GCS Status.GPS Fix");
+        valueEnabled("M1:GCS Status.GPS Sats");
     }
 
     QAction *action = new QAction("Add/Remove Items",this);

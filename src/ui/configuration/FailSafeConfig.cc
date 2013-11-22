@@ -106,6 +106,7 @@ FailSafeConfig::FailSafeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.throttleFailSafeComboBox->addItem("Disable");
     ui.throttleFailSafeComboBox->addItem("Enabled - Always RTL");
     ui.throttleFailSafeComboBox->addItem("Enabled - Continue in auto");
+    ui.throttleFailSafeComboBox->addItem("Enabled - always LAND");
 
     connect(ui.batteryFailCheckBox,SIGNAL(clicked(bool)),this,SLOT(batteryFailChecked(bool)));
     connect(ui.fsLongCheckBox,SIGNAL(clicked(bool)),this,SLOT(fsLongClicked(bool)));

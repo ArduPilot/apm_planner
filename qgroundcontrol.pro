@@ -41,6 +41,8 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += phonon
 }
 
+LIBS += -lz
+
 TEMPLATE = app
 TARGET = apmplanner2
 
@@ -96,6 +98,9 @@ unix {
 }
 include (QsLog/QsLog.pri)
 
+message(PWD $$PWD)
+include (src/quazip/quazip.pri)
+
 LANGUAGE = C++
 OBJECTS_DIR = $${BUILDDIR}/obj
 MOC_DIR = $${BUILDDIR}/moc
@@ -123,6 +128,7 @@ HEADERS +=     libs/alglib/src/ap.h \
     libs/alglib/src/integration.h \
     libs/alglib/src/solvers.h \
     libs/alglib/src/specialfunctions.cpp
+# NOTE: Add new HEADERS to the HEADER definition below
 
 SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/alglibinternal.cpp \
@@ -134,6 +140,7 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/integration.cpp \
     libs/alglib/src/solvers.cpp \
     libs/alglib/src/specialfunctions.cpp
+# NOTE: Add new SOURCES to the SOURCE definition below
 
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
@@ -344,7 +351,8 @@ INCLUDEPATH += src \
     src/ui/map3D \
     src/ui/mission \
     src/ui/designer \
-    src/ui/configuration
+    src/ui/configuration \
+    src/output
 HEADERS += src/MG.h \
     src/QGCCore.h \
     src/uas/UASInterface.h \
@@ -529,8 +537,9 @@ HEADERS += src/MG.h \
     src/ui/uas/APMShortcutModesDialog.h \
     src/ui/configuration/DownloadRemoteParamsDialog.h \
     src/ui/configuration/ParamCompareDialog.h \
-    src/uas/UASParameter.h
-#    src/uas/UASParameterManager.h
+    src/uas/UASParameter.h \
+    src/output/kmlcreator.h \
+    src/output/logdata.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -752,8 +761,9 @@ SOURCES += src/main.cc \
     src/ui/uas/APMShortcutModesDialog.cpp \
     src/ui/configuration/DownloadRemoteParamsDialog.cc \
     src/ui/configuration/ParamCompareDialog.cpp \
-    src/uas/UASParameter.cpp
-#    src/uas/UASParameterManager.cc
+    src/uas/UASParameter.cpp \
+    src/output/kmlcreator.cc \
+    src/output/logdata.cc
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc

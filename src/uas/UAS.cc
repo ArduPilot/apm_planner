@@ -640,15 +640,16 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             }
 
             emit batteryChanged(this, lpVoltage, currentCurrent, getChargeLevel(), timeRemaining);
-            emit valueChanged(uasId, name.arg("Remaining Battery"), "%", getChargeLevel(), time);
             // emit voltageChanged(message.sysid, currentVoltage);
-            emit valueChanged(uasId, name.arg("Battery Voltage"), "V", currentVoltage, time);
+
+            emit valueChanged(uasId, name.arg("Battery %"), "%", state.battery_remaining, time);
+            emit valueChanged(uasId, name.arg("Voltage"), "V", state.voltage_battery/1000.0f, time);
 
 			// And if the battery current draw is measured, log that also.
 			if (state.current_battery != -1)
 			{
                 currentCurrent = ((double)state.current_battery)/100.0f;
-                emit valueChanged(uasId, name.arg("Battery Current"), "A", currentCurrent, time);
+                emit valueChanged(uasId, name.arg("Current"), "A", currentCurrent, time);
 			}
 
             // LOW BATTERY ALARM
@@ -719,9 +720,11 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 attitudeKnown = true;
                 emit attitudeChanged(this, getRoll(), getPitch(), getYaw(), time);
                 emit attitudeRotationRatesChanged(uasId, attitude.rollspeed, attitude.pitchspeed, attitude.yawspeed, time);
-                emit valueChanged(uasId,"M1:GCS Status.Roll(deg)","degrees",QVariant(getRoll() * (180.0/M_PI)),time);
-                emit valueChanged(uasId,"M1:GCS Status.Pitch(deg)","degrees",QVariant(getPitch() * (180.0/M_PI)),time);
-                emit valueChanged(uasId,"M1:GCS Status.Yaw(deg)","degrees",QVariant(getYaw() * (180.0/M_PI)),time);
+
+                QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
+                emit valueChanged(uasId,name.arg("Roll"),"deg",QVariant(getRoll() * (180.0/M_PI)),time);
+                emit valueChanged(uasId,name.arg("Pitch"),"deg",QVariant(getPitch() * (180.0/M_PI)),time);
+                emit valueChanged(uasId,name.arg("Yaw"),"deg",QVariant(getYaw() * (180.0/M_PI)),time);
             }
         }
             break;
@@ -819,11 +822,13 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             setLongitude(pos.lon/(double)1E7);
 
             //valueChanged(uasId, str.arg(vect.address+(i*2)), "ui16", mem1[i], time);
-            emit valueChanged(uasId,"M1:GCS Status.Latitude","degrees",QVariant((double)pos.lat / (double(1E7))),time);
-            emit valueChanged(uasId,"M1:GCS Status.Longitude","degrees",QVariant((double)pos.lon / (double(1E7))),time);
-            emit valueChanged(uasId,"M1:GCS Status.GPS Altitude","meters",QVariant((double)pos.alt / 1000.0),time);
-            emit valueChanged(uasId,"M1:GCS Status.GPS Heading","degrees",QVariant((double)pos.hdg),time);
-            emit valueChanged(uasId,"M1:GCS Status.Vertical Speed(m/s)","m/s",QVariant((double)pos.vz / 100.0),time);
+            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
+            emit valueChanged(uasId,name.arg("Latitude"),"deg",QVariant((double)pos.lat / (double(1E7))),time);
+            emit valueChanged(uasId,name.arg("Longitude"),"deg",QVariant((double)pos.lon / (double(1E7))),time);
+            emit valueChanged(uasId,name.arg("Altitude (GPS)"),"m",QVariant((double)pos.alt / 1000.0),time);
+            emit valueChanged(uasId,name.arg("Altitude (REL)"),"m",QVariant((double)pos.relative_alt / 1000.0),time);
+            emit valueChanged(uasId,name.arg("Heading (GPS)"),"degs",QVariant((double)pos.hdg),time);
+            emit valueChanged(uasId,name.arg("Climb"),"m/s",QVariant((double)pos.vz / 100.0),time);
 
 
             // dongfang: Beware. There are 2 altitudes in this message; neither is the primary.
@@ -868,7 +873,8 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             // only accept values in a realistic range
             // quint64 time = getUnixTime(pos.time_usec);
             quint64 time = getUnixTime(pos.time_usec);
-            
+            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
+
             emit gpsLocalizationChanged(this, pos.fix_type);
             // TODO: track localization state not only for gps but also for other loc. sources
             int loc_type = pos.fix_type;
@@ -881,7 +887,6 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
             if (pos.fix_type > 2)
             {
-                //emit valueChanged(uasId,"M1:GCS Status.Latitude","degrees",QVariant((double)pos.lat / (double(1E7))),time);
                 latitude_gps = pos.lat/(double)1E7;
                 longitude_gps = pos.lon/(double)1E7;
                 altitude_gps = pos.alt/1000.0;
@@ -910,19 +915,20 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                         setGroundSpeed(vel);
                         // TODO: Other sources also? Actually this condition does not quite belong here.
                         emit gpsSpeedChanged(this, vel, time);
-                        emit valueChanged(uasId,"M1:GCS Status.GPS Velocity","m/s",QVariant(vel),time);
+                        emit valueChanged(uasId,name.arg("GPS Velocity"),"m/s",QVariant(vel),time);
                     }
                     else
                     {
                         emit textMessageReceived(uasId, message.compid, 255, QString("GCS ERROR: RECEIVED INVALID SPEED OF %1 m/s").arg(vel));
                     }
                 }
-                emit valueChanged(uasId,"M1:GCS Status.GPS Fix","int",QVariant(pos.fix_type),time);
             }
-            else if (pos.fix_type == 0)
-            {
-                emit valueChanged(uasId,"M1:GCS Status.GPS Fix","bool",QVariant("No Fix"),time);
-            }
+
+            emit valueChanged(uasId,name.arg("GPS Fix"),"",pos.fix_type,time);
+            emit valueChanged(uasId,name.arg("GPS Sats"),"",pos.satellites_visible,time);
+            emit valueChanged(uasId,name.arg("GPS HDOP"),"m",pos.eph/100.0f,time);
+            emit valueChanged(uasId,name.arg("GPS COG"),"",pos.cog/100.0f,time);
+
         }
             break;
         case MAVLINK_MSG_ID_GPS_STATUS:
