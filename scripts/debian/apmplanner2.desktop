@@ -8,3 +8,5 @@ Terminal=false
 Categories=Education;Robotics;
 Comment=A UAV Ground Station
 Name=apmplanner2
+Icon=/usr/share/apmplanner2/files/APMIcons/ap_rc.png
+
