@@ -38,6 +38,16 @@ QString UASQuickViewTextItem::title()
 
 void UASQuickViewTextItem::setValue(double value)
 {
+
+    //Lon/Lat needs 7 decimal places, everything else should be scaled by value.
+    if ((titleLabel->text().toLower() == "longitude") ||
+            (titleLabel->text().toLower() == "latitude") ||
+            (titleLabel->text().toLower() == "lon") ||
+            (titleLabel->text().toLower() == "lat"))
+    {
+        valueLabel->setText(QString::number(value,'f',7));
+        return;
+    }
     if (value < 10 && value > -10)
     {
         valueLabel->setText(QString::number(value,'f',2));
@@ -114,7 +124,7 @@ void UASQuickViewTextItem::setValuePixelSize(int size)
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(size);
-    titlefont.setPixelSize(valuefont.pixelSize() / 1.3);
+    titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
     valueLabel->setFont(valuefont);
     titleLabel->setFont(titlefont);
     update();
@@ -157,7 +167,7 @@ void UASQuickViewTextItem::resizeEvent(QResizeEvent *event)
             QLOG_TRACE() << "Point size:" << valuefont.pixelSize() << valueLabel->width() << valueLabel->height();
         }
     }
-titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
+titlefont.setPixelSize(valuefont.pixelSize() / 1.8);
     valueLabel->setFont(valuefont);
     titleLabel->setFont(titlefont);
     update();

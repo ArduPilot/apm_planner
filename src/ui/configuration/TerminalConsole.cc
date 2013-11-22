@@ -39,6 +39,7 @@ This file is part of the APM_PLANNER project
 #include "ui_TerminalConsole.h"
 #include "Console.h"
 #include "configuration.h"
+#include "LogConsole.h"
 
 
 #include <QSettings>
@@ -61,11 +62,16 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
     m_console = new Console;
     m_console->setEnabled(false);
 
+    m_logConsole = new LogConsole;
+    m_logConsole->setVisible(false);
+    m_logConsole->setEnabled(false);
+
     m_statusBar = new QStatusBar;
 
     QLayout* layout = ui->terminalGroupBox->layout();
     layout->addWidget(m_console);
     layout->addWidget(m_statusBar);
+    layout->addWidget(m_logConsole);
 
     m_serial = new QSerialPort(this);
     m_settingsDialog = new SettingsDialog;
@@ -73,7 +79,7 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
     ui->connectButton->setEnabled(true);
     ui->disconnectButton->setEnabled(false);
     ui->settingsButton->setEnabled(true);
-
+    ui->logsButton->setEnabled(false);
 
     addBaudComboBoxConfig();
     fillPortsInfo(*ui->linkComboBox);
@@ -99,7 +105,7 @@ void TerminalConsole::addBaudComboBoxConfig()
 
 void TerminalConsole::fillPortsInfo(QComboBox &comboBox)
 {
-    QLOG_DEBUG() << "fillPortsInfo ";
+    // QLOG_DEBUG() << "fillPortsInfo ";
     QString current = comboBox.itemText(comboBox.currentIndex());
     disconnect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
     comboBox.clear();
@@ -114,7 +120,7 @@ void TerminalConsole::fillPortsInfo(QComboBox &comboBox)
 
         int found = comboBox.findData(list);
         if (found == -1) {
-            QLOG_INFO() << "Inserting " << list.first();
+            // QLOG_INFO() << "Inserting " << list.first();
             comboBox.insertItem(0,list[0], list);
         } else {
             // Do nothing as the port is already listed
@@ -157,6 +163,7 @@ TerminalConsole::~TerminalConsole()
     delete m_console;
     delete m_statusBar;
     delete m_settingsDialog;
+    delete m_logConsole;
     delete ui;
 }
 
@@ -169,6 +176,25 @@ void TerminalConsole::populateSerialPorts()
 void TerminalConsole::openSerialPort()
 {
     openSerialPort(m_settings);
+}
+
+void TerminalConsole::logsButtonClicked() {
+    bool visible = m_logConsole->isVisible();
+
+    if(visible) {
+        m_logConsole->setVisible(false);
+        m_logConsole->setEnabled(false);
+        m_logConsole->setSerial(0);
+        logConsoleHidden();
+        m_logConsole->onShow(false);
+    }
+    else {
+        m_logConsole->setVisible(true);
+        m_logConsole->setEnabled(true);
+        m_logConsole->setSerial(m_serial);
+        logConsoleShown();
+        m_logConsole->onShow(true);
+    }
 }
 
 void TerminalConsole::openSerialPort(const SerialSettings &settings)
@@ -192,7 +218,8 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
             writeSettings(); // Save last successful connection
 
             sendResetCommand();
-
+            m_timer->stop();
+            ui->logsButton->setEnabled(true);
         } else {
             m_serial->close();
             QString errorMessage = m_serial->errorString()
@@ -200,6 +227,7 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
             QMessageBox::critical(this, tr("Error"), errorMessage);
 
             m_statusBar->showMessage(tr("Open error:") + errorMessage);
+            ui->logsButton->setEnabled(false);
         }
     } else {
         QString errorMessage = m_serial->errorString()
@@ -219,6 +247,7 @@ void TerminalConsole::closeSerialPort()
     ui->disconnectButton->setEnabled(false);
     ui->settingsButton->setEnabled(true);
     m_statusBar->showMessage(tr("Disconnected"));
+    m_timer->start(2000); //re-start port scanning
 }
 
 void TerminalConsole::sendResetCommand()
@@ -239,7 +268,7 @@ void TerminalConsole::writeData(const QByteArray &data)
 void TerminalConsole::readData()
 {
     QByteArray data = m_serial->readAll();
-//    QLOG_TRACE() << "readData:" << data;
+
     m_console->putData(data);
 
     // On reset, send the break sequence and display help
@@ -265,6 +294,7 @@ void TerminalConsole::initConnections()
     connect(ui->disconnectButton, SIGNAL(released()), this, SLOT(closeSerialPort()));
     connect(ui->settingsButton, SIGNAL(released()), m_settingsDialog, SLOT(show()));
     connect(ui->clearButton, SIGNAL(released()), m_console, SLOT(clear()));
+    connect(ui->logsButton, SIGNAL(released()), this, SLOT(logsButtonClicked()));
 
     connect(ui->baudComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setBaudRate(int)));
     connect(ui->linkComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setLink(int)));
@@ -275,6 +305,30 @@ void TerminalConsole::initConnections()
 
     connect(m_serial, SIGNAL(readyRead()), this, SLOT(readData()));
     connect(m_console, SIGNAL(getData(QByteArray)), this, SLOT(writeData(QByteArray)));
+
+    connect(m_logConsole, SIGNAL(statusMessage(QString)), this, SLOT(logConsoleStatusMessage(QString)));
+    connect(m_logConsole, SIGNAL(activityStart()), this, SLOT(logConsoleActivityStart()));
+    connect(m_logConsole, SIGNAL(activityStop()), this, SLOT(logConsoleActivityStop()));
+}
+
+void TerminalConsole::logConsoleShown() {
+    disconnect(m_serial, SIGNAL(readyRead()), this, SLOT(readData()));
+}
+
+void TerminalConsole::logConsoleHidden() {
+    connect(m_serial, SIGNAL(readyRead()), this, SLOT(readData()));
+}
+
+void TerminalConsole::logConsoleStatusMessage(QString msg) {
+    m_statusBar->showMessage(msg);
+}
+
+void TerminalConsole::logConsoleActivityStart() {
+    ui->logsButton->setEnabled(false);
+}
+
+void TerminalConsole::logConsoleActivityStop() {
+    ui->logsButton->setEnabled(true);
 }
 
 void TerminalConsole::setBaudRate(int index)
@@ -293,7 +347,7 @@ void TerminalConsole::setLink(int index)
     }
     //m_settings.name = ui->linkComboBox->currentText();
     m_settings.name = ui->linkComboBox->itemData(index).toStringList()[0];
-    QLOG_INFO() << "Changed Link to:" << m_settings.name;
+//    QLOG_INFO() << "Changed Link to:" << m_settings.name;
 
 }
 

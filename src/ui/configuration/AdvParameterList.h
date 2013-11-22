@@ -30,6 +30,8 @@ This file is part of the APM_PLANNER project
 #ifndef ADVPARAMETERLIST_H
 #define ADVPARAMETERLIST_H
 
+#include "UASParameter.h"
+// #include "UASParameterManager.h"
 #include <QWidget>
 #include "ui_AdvParameterList.h"
 #include "AP2ConfigWidget.h"
@@ -47,13 +49,19 @@ public:
     ~AdvParameterList();
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
-    void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
+    void parameterChanged(int uas, int component, int parameterCount, int parameterId,
+                          QString parameterName, QVariant value);
     void refreshButtonClicked();
     void writeButtonClicked();
     void tableWidgetItemChanged(QTableWidgetItem* item);
     void loadButtonClicked();
     void saveButtonClicked();
+    void downloadRemoteFiles();
+    void compareButtonClicked();
+
 private:
+    QMap<QString, UASParameter*> m_parameterList;
+
     QMap<QString,QTableWidgetItem*> m_paramValueMap;
     QList<QString> m_origBrushList;
     QList<QString> m_waitingParamList;

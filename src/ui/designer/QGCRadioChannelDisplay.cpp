@@ -91,7 +91,7 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
         }
         else {
             //draw the value
-            int newval = (height()-2-twiceFontHeight) * ((float)(curVal / 2001.0));
+            int newval = (height()-2-twiceFontHeight) * ((float)(curVal / 3001.0));
             int yVal = (height()-2-twiceFontHeight) - newval;
             painter.drawRect(1,yVal,width()-3,((height()-2) - yVal - twiceFontHeight));
 
@@ -99,8 +99,8 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
             painter.setPen(minMaxColor);
             painter.setBrush(Qt::NoBrush);
 
-            int yMax = (height()-3 - twiceFontHeight) - (((height()-3-twiceFontHeight) * ((float)m_max / 2000.0)));
-            int yMin = (height()-3 - twiceFontHeight) - (((height()-3-twiceFontHeight) * ((float)m_min / 2000.0)));
+            int yMax = (height()-3 - twiceFontHeight) - (((height()-3-twiceFontHeight) * ((float)m_max / 3000.0)));
+            int yMin = (height()-3 - twiceFontHeight) - (((height()-3-twiceFontHeight) * ((float)m_min / 3000.0)));
             painter.drawRect(2,yMax,width()-3,yMin - yMax);
 
             //draw min and max labels
@@ -142,21 +142,21 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
         }
         else {
             //draw the value
-            painter.drawRect(1,1,(width()-3) * ((float)curVal / 2000.0),(height()-3) - twiceFontHeight);
+            painter.drawRect(1,1,(width()-3) * ((float)curVal / 3000.0),(height()-3) - twiceFontHeight);
 
              //draw the min and max bars
             painter.setBrush(Qt::NoBrush);
             painter.setPen(minMaxColor);
-            painter.drawRect(width() * ((float)m_min / 2000.0),2,((width()-1) * ((float)m_max / 2000.0)) - (width() * ((float)m_min / 2000.0)),(height()-5) - twiceFontHeight);
+            painter.drawRect(width() * ((float)m_min / 3000.0),2,((width()-1) * ((float)m_max / 3000.0)) - (width() * ((float)m_min / 3000.0)),(height()-5) - twiceFontHeight);
 
             //draw the min and max strings
             QString minstr = QString::number(m_min);
-            painter.drawText((width() * ((float)m_min / 2000.0)) - (painter.fontMetrics().width("min")/2.0),((height()-3) - (painter.fontMetrics().height()*1)),"min");
-            painter.drawText((width() * ((float)m_min / 2000.0)) - (painter.fontMetrics().width(minstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),minstr);
+            painter.drawText((width() * ((float)m_min / 3000.0)) - (painter.fontMetrics().width("min")/2.0),((height()-3) - (painter.fontMetrics().height()*1)),"min");
+            painter.drawText((width() * ((float)m_min / 3000.0)) - (painter.fontMetrics().width(minstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),minstr);
 
             QString maxstr = QString::number(m_max);
-            painter.drawText((width() * ((float)m_max / 2000.0)) - (painter.fontMetrics().width("max")/2.0),((height()-3) - (painter.fontMetrics().height()*1)),"max");
-            painter.drawText((width() * ((float)m_max / 2000.0)) - (painter.fontMetrics().width(maxstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),maxstr);
+            painter.drawText((width() * ((float)m_max / 3000.0)) - (painter.fontMetrics().width("max")/2.0),((height()-3) - (painter.fontMetrics().height()*1)),"max");
+            painter.drawText((width() * ((float)m_max / 3000.0)) - (painter.fontMetrics().width(maxstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),maxstr);
         }
     }
 }
@@ -167,9 +167,9 @@ void QGCRadioChannelDisplay::setValue(int value)
     {
         m_value = 0;
     }
-    else if (value > 2000)
+    else if (value > 3000)
     {
-        m_value = 2000;
+        m_value = 3000;
     }
     else
     {

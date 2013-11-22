@@ -1139,12 +1139,22 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 
 void MainWindow::loadSettings()
 {
+    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    QString logHomeDir = homeDir + APP_DATA_DIRECTORY + LOG_DIRECTORY;
+
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     autoReconnect = settings.value("AUTO_RECONNECT", autoReconnect).toBool();
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
     lowPowerMode = settings.value("LOW_POWER_MODE", lowPowerMode).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS",dockWidgetTitleBarEnabled).toBool();
+    logDirectory = settings.value("LOG_DIRECTORY", logHomeDir).toString();
+
+    QDir logDir(logDirectory);
+    if (!logDir.cd(logHomeDir)){
+        logDir.mkdir(logHomeDir);
+    }
+
     settings.endGroup();
     enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 }
@@ -1155,6 +1165,7 @@ void MainWindow::storeSettings()
     settings.beginGroup("QGC_MAINWINDOW");
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
+    settings.setValue("LOG_DIRECTORY", logDirectory);
     settings.endGroup();
     if (!aboutToCloseFlag && isVisible())
     {

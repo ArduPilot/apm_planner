@@ -292,6 +292,8 @@ void Waypoint2DIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         redPen.setWidth(1);
         painter->setPen(redPen);
         const int acceptance = map->metersToPixels(waypoint->getAcceptanceRadius(), Coord());
+        if (acceptance <= 0)
+            return;
         painter->setPen(penBlack);
         painter->drawEllipse(QPointF(0, 0), acceptance, acceptance);
         painter->setPen(redPen);

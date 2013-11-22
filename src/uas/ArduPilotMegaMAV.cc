@@ -225,7 +225,7 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
 
     QTimer::singleShot(5000,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 5 seconds.
 
-    txReqTimer->start(300000); //Resend the TX requests every 5 minutes.
+    txReqTimer->start(300000); //Resend the TX requests every 30 seconds.
 
     connect(this,SIGNAL(connected()),this,SLOT(uasConnected()));
     connect(this,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
@@ -239,6 +239,9 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
 
     connect(this, SIGNAL(textMessageReceived(int,int,int,QString)),
             this, SLOT(textMessageReceived(int,int,int,QString)));
+
+    connect(this, SIGNAL(heartbeatTimeout(bool,uint)),
+            this, SLOT(heartbeatTimeout(bool,uint)));
 }
 
 void ArduPilotMegaMAV::RequestAllDataStreams()
@@ -260,13 +263,13 @@ void ArduPilotMegaMAV::RequestAllDataStreams()
 }
 void ArduPilotMegaMAV::uasConnected()
 {
-    QLOG_INFO() << "APM Connected";
+    QLOG_INFO() << "ArduPilotMegaMAV APM Connected";
     QTimer::singleShot(500,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 0.5 seconds.
 }
 
 void ArduPilotMegaMAV::uasDisconnected()
 {
-    QLOG_INFO() << "APM disconnected";
+    QLOG_INFO() << "ArduPilotMegaMAV APM disconnected";
 }
 
 /**
@@ -423,6 +426,14 @@ void ArduPilotMegaMAV::textMessageReceived(int uasid, int componentid, int sever
         QString audioString = "Pre-arm check:" + text.remove("PreArm:");
         GAudioOutput::instance()->say(audioString, severity);
     }
+}
 
-
+void ArduPilotMegaMAV::heartbeatTimeout(bool timeout, unsigned int /*ms*/)
+{
+    if(timeout == false) {
+        QLOG_DEBUG() << "Send requestall data streams when heartbeat restarts";
+        // Request data, as this means we have reconnected
+        // Send an request in .5 seconds.
+        QTimer::singleShot(500,this,SLOT(RequestAllDataStreams()));
+    }
 }
