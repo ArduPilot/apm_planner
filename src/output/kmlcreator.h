@@ -115,7 +115,7 @@ public:
 
     void processLine(QString &line);
 
-    void finish(bool kmz = false);
+    QString finish(bool kmz = false);
 
 private:
     Placemark *lastPlacemark();
