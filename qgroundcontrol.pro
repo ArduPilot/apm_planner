@@ -99,7 +99,7 @@ unix {
 include (QsLog/QsLog.pri)
 
 message(PWD $$PWD)
-include (src/quazip/quazip.pri)
+include (libs/thirdParty/quazip/quazip.pri)
 
 LANGUAGE = C++
 OBJECTS_DIR = $${BUILDDIR}/obj
