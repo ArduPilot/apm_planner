@@ -111,59 +111,65 @@ bool Radio3DREeprom::setRadioFreqCode(int freqCode)
 
 const QString Radio3DREeprom::formattedParameter(Mode mode, int index)
 {
-    QString result;
+    QString modeString;
 
     if(mode == local) {
-        result = "A";
+        modeString = "A";
     } else {
-        result = "R";
+        modeString = "R";
     }
+    QString command;
+
     switch(index){
     case 1:
-        result += "TS1=" + QString::number(m_serialSpeed) + "\r\n";
+        command = QString("%1TS1=%2\r\n").arg(modeString).arg(m_serialSpeed);
         break;
     case 2:
-        result += "TS2=" + QString::number(m_airSpeed) + "\r\n";
+        command = QString("%1TS2=%2\r\n").arg(modeString).arg(m_airSpeed);
         break;
     case 3:
-        result += "TS3=" + QString::number(m_netID) + "\r\n";
+        command = QString("%1TS3=%2\r\n").arg(modeString).arg(m_netID);
         break;
     case 4:
-        result += "TS4=" + QString::number(m_txPower) + "\r\n";
+        command = QString("%1TS4=%2\r\n").arg(modeString).arg(m_txPower);
         break;
     case 5:
-        result += "TS5=" + QString::number(m_ecc) + "\r\n";
+        command = QString("%1TS5=%2\r\n").arg(modeString).arg(m_ecc);
         break;
     case 6:
-        result += "TS6=" + QString::number(m_mavlink) + "\r\n";
+        command = QString("%1TS6=%2\r\n").arg(modeString).arg(m_mavlink);
         break;
     case 7:
-        result += "TS7=" + QString::number(m_oppResend) + "\r\n";
+        command = QString("%1TS7=%2\r\n").arg(modeString).arg(m_oppResend);
         break;
     case 8:
-        result += "TS8=" + QString::number(m_minFreq) + "\r\n";
+        command = QString("%1TS8=%2\r\n").arg(modeString).arg(m_minFreq);
         break;
     case 9:
-        result += "TS9=" + QString::number(m_maxFreq) + "\r\n";
+        command = QString("%1TS9=%2\r\n").arg(modeString).arg(m_maxFreq);
         break;
     case 10:
-        result += "TS10=" + QString::number(m_numChannels) + "\r\n";
+        command = QString("%1TS10=%2\r\n").arg(modeString).arg(m_numChannels);
         break;
     case 11:
-        result += "TS11=" + QString::number(m_dutyCyle) + "\r\n";
+        command = QString("%1TS11=%2\r\n").arg(modeString).arg(m_dutyCyle);
         break;
     case 12:
-        result += "TS12=" + QString::number(m_lbtRssi) + "\r\n";
+        command = QString("%1TS12=%2\r\n").arg(modeString).arg(m_lbtRssi);
         break;
     case 13:
-        result += "TS13=" + QString::number(m_manchester) + "\r\n";
+        command = QString("%1TS13=%2\r\n").arg(modeString).arg(m_manchester);
         break;
     case 14:
-        result += "TS14=" + QString::number(m_rtsCts) + "\r\n";
+        command = QString("%1TS14=%2\r\n").arg(modeString).arg(m_rtsCts);
+        break;
+    case 15:
+        command = QString("%1T&W\r\n").arg(modeString);
         break;
     }
-    QLOG_DEBUG() << "Setting Radio Parameter: " << result;
-    return result;
+
+    QLOG_DEBUG() << "Setting Radio Parameter: " << modeString;
+    return command;
 }
 
 const QString& Radio3DREeprom::versionString()
