@@ -6,8 +6,8 @@
 void DataLine::readFields(FormatLine& format, QString &line) {
     QStringList parts = line.split(QRegExp(","), QString::KeepEmptyParts);
 
-    if(parts.length() > 1) {
-        const int size = parts.length();
+    const int size = parts.length();
+    if(size == (format.fields.length() + 1)) {
         for(int i = 1; i < size; ++i) {
             QString key = format.fields[i-1];
             QString value = parts[i].trimmed();
