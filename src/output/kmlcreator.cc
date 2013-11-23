@@ -171,11 +171,13 @@ Placemark* KMLCreator::lastPlacemark() {
     return (m_placemarks.size() > 0)? m_placemarks[m_placemarks.size()-1]: 0;
 }
 
-void KMLCreator::finish(bool kmz) {
+QString KMLCreator::finish(bool kmz) {
     if(m_filename.isEmpty()) {
         QLOG_DEBUG() << "No filename specified. Call start() first.";
-        return;
+        return "";
     }
+
+    QString result(m_filename);
 
     QLOG_DEBUG() << "write kml to " << m_filename;
 
@@ -183,7 +185,7 @@ void KMLCreator::finish(bool kmz) {
 
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QLOG_ERROR() << "Unable to write to " << m_filename;
-        return;
+        return "";
     }
 
     QXmlStreamWriter writer;
@@ -285,6 +287,8 @@ void KMLCreator::finish(bool kmz) {
             kmzFile = fn + ".kmz";
         }
 
+        result = kmzFile;
+
         QStringList params;
 
         params << file.fileName();
@@ -299,6 +303,8 @@ void KMLCreator::finish(bool kmz) {
 
         QLOG_DEBUG() << "Done";
     }
+
+    return result;
 }
 
 void KMLCreator::writeWaypointsPlacemarkElement(QXmlStreamWriter &writer) {

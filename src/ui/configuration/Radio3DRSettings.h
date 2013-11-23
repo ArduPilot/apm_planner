@@ -60,7 +60,7 @@ public:
 
     enum Mode {local, remote};
 
-    static const int numberofParams = 14;
+    static const int numberofParams = 15; // include AT&W eeprom write
 
 public:
 
