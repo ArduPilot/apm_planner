@@ -222,7 +222,7 @@ void AdvParameterList::saveButtonClicked()
         m_uas->getParamManager()->getParameterValue(1,paramnamelist[i],value);
         if (value.type() == QVariant::Double || value.type() == QMetaType::Float)
         {
-            file.write(paramnamelist[i].append(",").append(QString::number(value.toDouble(),'f',6)).append("\r\n").toAscii());
+            file.write(paramnamelist[i].append(",").append(QString::number(value.toFloat(),'f',8)).append("\r\n").toAscii());
         }
         else
         {
@@ -338,7 +338,7 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
     }
 }
 
-void AdvParameterList::parameterChanged(int uas, int /*component*/, int parameterCount, int parameterId, QString parameterName, QVariant value)
+void AdvParameterList::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
 {
     // Create a parameter list model for comparison feature
     // [TODO] This needs to move to the global parameter model.
@@ -346,14 +346,9 @@ void AdvParameterList::parameterChanged(int uas, int /*component*/, int paramete
     if (m_parameterList.contains(parameterName)){
         UASParameter* param = m_parameterList.value(parameterName);
         param->setValue(value); // This also sets the modified bit
-        param->setModified(false); // but it's no longer different from the vehicle, so clear it.
-
     } else {
         // create a new entry
-        UASParameter* param = new UASParameter();
-        param->setName(parameterName);
-        param->setIndex(parameterId);
-        param->setValue(value);
+        UASParameter* param = new UASParameter(parameterName,component,value,parameterId);
         m_parameterList.insert(parameterName, param);
     }
 
