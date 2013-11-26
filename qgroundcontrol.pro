@@ -133,7 +133,6 @@ HEADERS +=     libs/alglib/src/ap.h \
     src/ui/configuration/SetupWarningMessage.h \
     src/ui/AP2DataPlot2D.h \
     src/ui/AP2DataPlotThread.h \
-    src/ui/QGraph.h \
     src/ui/dataselectionscreen.h \
     src/ui/qcustomplot.h
 
@@ -152,7 +151,6 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     src/ui/configuration/SetupWarningMessage.cc \
     src/ui/AP2DataPlot2D.cpp \
     src/ui/AP2DataPlotThread.cc \
-    src/ui/QGraph.cc \
     src/ui/dataselectionscreen.cpp \
     src/ui/qcustomplot.cpp
 
