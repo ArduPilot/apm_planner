@@ -225,7 +225,7 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
 
     QTimer::singleShot(5000,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 5 seconds.
 
-    txReqTimer->start(300000); //Resend the TX requests every 30 seconds.
+    txReqTimer->start(10000); //Resend the TX requests every 10 seconds.
 
     connect(this,SIGNAL(connected()),this,SLOT(uasConnected()));
     connect(this,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
