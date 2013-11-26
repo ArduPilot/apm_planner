@@ -41,7 +41,6 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += phonon
 }
 
-LIBS += -lz
 
 TEMPLATE = app
 TARGET = apmplanner2
@@ -58,6 +57,7 @@ linux-g++|linux-g++-64{
         TARGETDIR = $${OUT_PWD}/release
         BUILDDIR = $${OUT_PWD}/build-release
     }
+    LIBS += -lz
 } else {
     TARGETDIR = $${OUT_PWD}
     BUILDDIR = $${OUT_PWD}/build
