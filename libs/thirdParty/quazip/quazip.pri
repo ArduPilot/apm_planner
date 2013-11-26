@@ -1,6 +1,6 @@
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
-
+INCLUDEPATH += $$[QT_INSTALL_PREFIX]/src/3rdparty/zlib
 HEADERS += $$PWD/crypt.h \
            $$PWD/ioapi.h \
            $$PWD/JlCompress.h \
