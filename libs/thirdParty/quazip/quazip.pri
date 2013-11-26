@@ -1,6 +1,9 @@
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 INCLUDEPATH += $$[QT_INSTALL_PREFIX]/src/3rdparty/zlib
+win32-x-g++|win64-x-g++|win32 {
+    DEFINES +=QUAZIP_STATIC
+}
 HEADERS += $$PWD/crypt.h \
            $$PWD/ioapi.h \
            $$PWD/JlCompress.h \
