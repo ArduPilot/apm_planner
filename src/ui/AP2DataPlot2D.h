@@ -2,6 +2,7 @@
 #define AP2DATAPLOT2D_H
 
 #include <QWidget>
+#include <QProgressDialog>
 #include "ui_AP2DataPlot2D.h"
 #include "AP2DataPlotThread.h"
 #include "dataselectionscreen.h"
@@ -20,7 +21,12 @@ private slots:
     void itemDisabled(QString name);
     void itemEnabled(QString name);
     void threadTerminated();
+    void threadError(QString errorstr);
+    void loadStarted();
+    void loadProgress(qint64 pos,qint64 size);
+    void progressDialogCanceled();
 private:
+    QProgressDialog *m_progressDialog;
     QMap<QString,QCPAxis*> m_axisList;
     QMap<QString,QCPGraph*> m_graphMap;
     QList<QString> m_graphNameList;

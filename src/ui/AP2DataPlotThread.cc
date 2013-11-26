@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QStringList>
 #include <QDateTime>
+#include "QsLog.h"
 
 AP2DataPlotThread::AP2DataPlotThread(QObject *parent) :
     QThread(parent)
@@ -16,16 +17,22 @@ void AP2DataPlotThread::loadFile(QString file)
 }
 void AP2DataPlotThread::run()
 {
+    m_stop = false;
+    emit startLoad();
     qint64 msecs = QDateTime::currentMSecsSinceEpoch();
     QFile logfile(m_fileName);
-    logfile.open(QIODevice::ReadOnly);
+    if (!logfile.open(QIODevice::ReadOnly))
+    {
+        emit error("Unable to open log file");
+        return;
+    }
     QMap<QString,QList<QString> > typeToFieldnameMap;
     QList<QString> typelist;
     QVariantMap currentmap;
-
     int index = 0;
-    while (!logfile.atEnd())
+    while (!logfile.atEnd() && !m_stop)
     {
+        emit loadProgress(logfile.pos(),logfile.size());
         QString line = logfile.readLine();
         QStringList linesplit = line.replace("\r","").replace("\n","").split(",");
         if (linesplit.size() > 0)
@@ -33,18 +40,25 @@ void AP2DataPlotThread::run()
             if (line.startsWith("FMT"))
             {
                 //Format line
-                QString type = linesplit[3].trimmed();
-                QString descstr = linesplit[4].trimmed();
-                QList<QString> fieldnames;
-                for (int i=5;i<linesplit.size();i++)
+                if (linesplit.size() > 4)
                 {
-                    fieldnames.append(linesplit[i].trimmed());
+                    QString type = linesplit[3].trimmed();
+                    QString descstr = linesplit[4].trimmed();
+                    QList<QString> fieldnames;
+                    for (int i=5;i<linesplit.size();i++)
+                    {
+                        fieldnames.append(linesplit[i].trimmed());
+                    }
+                    if (!typelist.contains(type))
+                    {
+                        typelist.append(type);
+                    }
+                    typeToFieldnameMap[type] = fieldnames;
                 }
-                if (!typelist.contains(type))
+                else
                 {
-                    typelist.append(type);
+                    QLOG_ERROR() << "Error with line in plot log file:" << line;
                 }
-                typeToFieldnameMap[type] = fieldnames;
             }
             else if (typelist.contains(linesplit[0].trimmed()) && linesplit[0].trimmed() != "PARM")
             {
@@ -52,7 +66,7 @@ void AP2DataPlotThread::run()
                 QList<QString> list = typeToFieldnameMap[linesplit[0].trimmed()];
                 if (linesplit.size() != list.size() + 1)
                 {
-                    qDebug() << "Error with line:" << line;
+                    QLOG_ERROR() << "Error with line in plot log file:" << line;
                 }
                 for (int i=0;i<list.size();i++)
                 {
@@ -63,6 +77,14 @@ void AP2DataPlotThread::run()
             }
         }
     }
-    qDebug() << "Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
-    emit done();
+    if (m_stop)
+    {
+        QLOG_ERROR() << "Plot Log loading was canceled after" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
+        emit error("Log loading Canceled");
+    }
+    else
+    {
+        QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
+        emit done();
+    }
 }

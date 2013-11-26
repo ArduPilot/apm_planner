@@ -24,7 +24,7 @@
           <widget class="QWidget" name="widget" native="true">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_3"/>
+             <layout class="QHBoxLayout" name="horizontalLayout_3"/>
             </item>
            </layout>
           </widget>

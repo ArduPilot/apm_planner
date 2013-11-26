@@ -1,16 +1,19 @@
 #include "AP2DataPlot2D.h"
 #include <QFileDialog>
 #include <QDebug>
+#include <QMessageBox>
+
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
+    m_progressDialog=0;
     connect(ui.pushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     graphCount=0;
     m_plot = new QCustomPlot(ui.widget);
     m_plot->setInteraction(QCP::iRangeDrag, true);
     m_plot->setInteraction(QCP::iRangeZoom, true);
     //m_plot->setInteraction(QCP::iMultiSelect,true);
-    ui.verticalLayout_3->addWidget(m_plot);
+    ui.horizontalLayout_3->addWidget(m_plot);
     m_plot->show();
     m_plot->plotLayout()->clear(); // clear default axis rect so we can start from scratch
     m_wideAxisRect = new QCPAxisRect(m_plot);
@@ -21,9 +24,12 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     QCPMarginGroup *marginGroup = new QCPMarginGroup(m_plot);
     m_wideAxisRect->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
 
-    m_dataSelectionScreen = new DataSelectionScreen();
+    m_dataSelectionScreen = new DataSelectionScreen(this);
     connect( m_dataSelectionScreen,SIGNAL(itemEnabled(QString)),this,SLOT(itemEnabled(QString)));
     connect( m_dataSelectionScreen,SIGNAL(itemDisabled(QString)),this,SLOT(itemDisabled(QString)));
+    ui.horizontalLayout_3->addWidget(m_dataSelectionScreen);
+    ui.horizontalLayout_3->setStretch(0,5);
+    ui.horizontalLayout_3->setStretch(1,1);
 
 
 
@@ -43,12 +49,15 @@ void AP2DataPlot2D::loadButtonClicked()
         m_graphMap.remove(m_graphNameList[i]);
         m_axisList.remove(m_graphNameList[i]);
     }
-    m_dataSelectionScreen->hide();
+   //m_dataSelectionScreen->hide();
     m_dataSelectionScreen->clear();
     m_dataList.clear();
     m_plot->replot();
     graphCount=0;
     m_logLoaderThread = new AP2DataPlotThread();
+    connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
+    connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
+    connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
     connect(m_logLoaderThread,SIGNAL(done()),this,SLOT(threadDone()));
     connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
@@ -134,6 +143,23 @@ void AP2DataPlot2D::itemDisabled(QString name)
     graphCount--;
 
 }
+void AP2DataPlot2D::progressDialogCanceled()
+{
+    m_logLoaderThread->stopLoad();
+}
+
+void AP2DataPlot2D::loadStarted()
+{
+    m_progressDialog = new QProgressDialog("Loading File","Cancel",0,100);
+    connect(m_progressDialog,SIGNAL(canceled()),this,SLOT(progressDialogCanceled()));
+    m_progressDialog->show();
+}
+
+void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
+{
+    m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
+}
+
 void AP2DataPlot2D::threadDone()
 {
     for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
@@ -146,8 +172,18 @@ void AP2DataPlot2D::threadDone()
             }
         }
     }
-    m_dataSelectionScreen->show();
-    m_dataSelectionScreen->setGeometry(100,100,400,600);
+    m_progressDialog->hide();
+    delete m_progressDialog;
+    m_progressDialog=0;
+}
+void AP2DataPlot2D::threadError(QString errorstr)
+{
+    QMessageBox::information(0,"Error",errorstr);
+    m_progressDialog->hide();
+    delete m_progressDialog;
+    m_progressDialog=0;
+    m_dataSelectionScreen->clear();
+    m_dataList.clear();
 }
 
 void AP2DataPlot2D::payloadDecoded(int index,QString name,QVariantMap map)

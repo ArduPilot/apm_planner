@@ -9,14 +9,19 @@ class AP2DataPlotThread : public QThread
 public:
     explicit AP2DataPlotThread(QObject *parent = 0);
     void loadFile(QString file);
+    void stopLoad() { m_stop = true; }
 private:
     void loadDataFieldsFromValues();
     QString m_fileName;
+    bool m_stop;
 protected:
     void run();
 signals:
+    void startLoad();
+    void loadProgress(qint64 pos,qint64 size);
     void payloadDecoded(int index,QString name,QVariantMap map);
     void done();
+    void error(QString errorstr);
 public slots:
 
 };
