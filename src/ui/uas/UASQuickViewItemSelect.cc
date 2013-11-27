@@ -52,6 +52,7 @@ void UASQuickViewItemSelect::addItem(QString item,bool enabled)
         //Ensure that GCS Status gets the top slot
         if (category == "GCS Status")
         {
+            ui.listWidget->insertItem(0,"----------");
             ui.listWidget->insertItem(0,category);
         }
         else
