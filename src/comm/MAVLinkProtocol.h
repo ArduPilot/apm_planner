@@ -104,6 +104,7 @@ public:
     }
     /** @brief Get the name of the packet log file */
     QString getLogfileName();
+
     /** @brief Get state of parameter retransmission */
     bool paramGuardEnabled() {
         return m_paramGuardEnabled;
@@ -142,8 +143,11 @@ public slots:
     /** @brief Enable / disable the heartbeat emission */
     void enableHeartbeats(bool enabled);
 
-    /** @brief Enable/disable binary packet logging */
-    void enableLogging(bool enabled);
+    /** @brief Starts binary packet logging */
+    bool startLogging(const QString &filename);
+
+    /** @brief Stops binary packet logging)*/
+    void stopLogging();
 
     /** @brief Enabled/disable packet multiplexing */
     void enableMultiplexing(bool enabled);
@@ -162,9 +166,6 @@ public slots:
 
     /** @brief Set parameter read timeout */
     void setActionRetransmissionTimeout(int ms);
-
-    /** @brief Set log file name */
-    void setLogfileName(const QString& filename);
 
     /** @brief Enable / disable version check */
     void enableVersionCheck(bool enabled);
