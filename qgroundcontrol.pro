@@ -63,6 +63,7 @@ linux-g++|linux-g++-64{
     BUILDDIR = $${OUT_PWD}/build
 }
 win32-x-g++|win64-x-g++ {
+LIBS += -lz.dll
     CONFIG += exceptions rtti
     DEFINES += UINT8_MAX=0xFF
     DEFINES += UINT16_MAX=0xFFFF
