@@ -239,7 +239,7 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
 
 void ArduPilotMegaMAV::RequestAllDataStreams()
 {
-    QLOG_DEBUG() << "APM:RequestAllDataRates";
+    QLOG_TRACE() << "APM:RequestAllDataRates";
     enableExtendedSystemStatusTransmission(2);
 
     enablePositionTransmission(3);
