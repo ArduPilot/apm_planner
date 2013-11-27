@@ -537,7 +537,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit batteryChanged(this, lpVoltage, currentCurrent, getChargeLevel(), timeRemaining);
             // emit voltageChanged(message.sysid, currentVoltage);
 
-            emit valueChanged(uasId, name.arg("Battery %"), "%", state.battery_remaining, time);
+            emit valueChanged(uasId, name.arg("Battery"), "%", state.battery_remaining, time);
             emit valueChanged(uasId, name.arg("Voltage"), "V", state.voltage_battery/1000.0f, time);
 
 			// And if the battery current draw is measured, log that also.

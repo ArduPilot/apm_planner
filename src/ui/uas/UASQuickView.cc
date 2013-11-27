@@ -38,12 +38,12 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
         valueEnabled("M1:GCS Status.Altitude (GPS) (m)");
         valueEnabled("M1:GCS Status.Altitude (REL) (m)");
         valueEnabled("M1:GCS Status.Climb (m/s)");
-        valueEnabled("M1:GCS Status.Battery %");
-        valueEnabled("M1:GCS Status.Voltage");
-        valueEnabled("M1:GCS Status.Current");
+        valueEnabled("M1:GCS Status.Battery (%)");
+        valueEnabled("M1:GCS Status.Voltage (V)");
+        valueEnabled("M1:GCS Status.Current (A)");
         valueEnabled("M1:GCS Status.GPS Fix");
         valueEnabled("M1:GCS Status.GPS Sats");
-        valueEnabled("M1:GCS Status.GPS HDOP");
+        valueEnabled("M1:GCS Status.GPS HDOP (m)");
     }
 
     QAction *action = new QAction("Add/Remove Items",this);
