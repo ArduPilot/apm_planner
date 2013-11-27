@@ -514,6 +514,11 @@ public:
     /** @brief Get the human-speakable custom mode string */
     virtual QString getCustomModeAudioText();
 
+    /** @brief Ask to play autopilots audio annoucement for mode changes */
+    virtual void playCustomModeChangedAudioMessage();
+    /** @brief Ask to play autopilots audio annoucement for armed changes */
+    virtual void playArmStateChangedAudioMessage(bool armedState);
+
     /** @brief Check if vehicle is in autonomous mode */
     bool isAuto();
     /** @brief Check if vehicle is armed */

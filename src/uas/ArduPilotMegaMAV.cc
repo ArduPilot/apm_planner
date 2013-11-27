@@ -230,13 +230,6 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
     connect(this,SIGNAL(connected()),this,SLOT(uasConnected()));
     connect(this,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
 
-    connect(this, SIGNAL(armed()), this, SLOT(systemArmed()));
-    connect(this, SIGNAL(disarmed()), this, SLOT(systemDisarmed()));
-
-    // checking for customeMode changes for Audio.
-    connect(this, SIGNAL(navModeChanged(int,int,QString)),
-            this, SLOT(navModeChanged(int,int,QString)));
-
     connect(this, SIGNAL(textMessageReceived(int,int,int,QString)),
             this, SLOT(textMessageReceived(int,int,int,QString)));
 
@@ -364,23 +357,6 @@ void ArduPilotMegaMAV::disarmSystem()
     sendMessage(msg);
 }
 
-void ArduPilotMegaMAV::systemArmed()
-{
-    QLOG_DEBUG() << "APM: Armed";
-    GAudioOutput::instance()->say("Armed!");
-}
-
-void ArduPilotMegaMAV::systemDisarmed()
-{
-    QLOG_DEBUG() << "APM: Disarmed";
-    GAudioOutput::instance()->say("Disarmed!");
-}
-
-void ArduPilotMegaMAV::navModeChanged(int uasid, int mode, const QString& text)
-{
-    QLOG_DEBUG() << "APM: Nav Mode Changed:" << mode << text;
-}
-
 QString ArduPilotMegaMAV::getCustomModeText()
 {
     QLOG_DEBUG() << "APM: getCustomModeText()";
@@ -418,12 +394,15 @@ QString ArduPilotMegaMAV::getCustomModeAudioText()
     return returnString + getCustomModeText();
 }
 
-void ArduPilotMegaMAV::textMessageReceived(int uasid, int componentid, int severity, QString text)
+void ArduPilotMegaMAV::textMessageReceived(int /*uasid*/, int /*componentid*/, int severity, QString text)
 {
     QLOG_DEBUG() << "APM: Text Message rx'd" << text;
     if (text.startsWith("PreArm:")) {
         // Speak the PreArm warning
         QString audioString = "Pre-arm check:" + text.remove("PreArm:");
+        GAudioOutput::instance()->say(audioString, severity);
+    } else if (text.startsWith("Arm:")){
+        QString audioString = "Please press and hold safety switch";
         GAudioOutput::instance()->say(audioString, severity);
     }
 }
@@ -436,4 +415,25 @@ void ArduPilotMegaMAV::heartbeatTimeout(bool timeout, unsigned int /*ms*/)
         // Send an request in .5 seconds.
         QTimer::singleShot(500,this,SLOT(RequestAllDataStreams()));
     }
+}
+
+void ArduPilotMegaMAV::playCustomModeChangedAudioMessage()
+{
+    QString phrase;
+
+    phrase = "Mode changed to " + getCustomModeText() + " for system " + QString::number(getUASID());
+    QLOG_DEBUG() << "APM say:" << phrase;
+    GAudioOutput::instance()->say(phrase.toLower());
+}
+
+void ArduPilotMegaMAV::playArmStateChangedAudioMessage(bool armedState)
+{
+    QString armedPhrase("disarmed");
+
+    if (armedState){
+        armedPhrase = "armed";
+    }
+
+    QLOG_DEBUG() << "APM say:" << armedPhrase;
+    GAudioOutput::instance()->say(QString("system %1 is %2").arg(QString::number(getUASID()),armedPhrase));
 }

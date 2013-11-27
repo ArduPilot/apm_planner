@@ -113,6 +113,10 @@ public:
     virtual QString getCustomModeText() = 0;
     /** @brief Get the human-speakable custom mode string */
     virtual QString getCustomModeAudioText() = 0;
+    /** @brief Ask to play autopilots audio annoucement for mode changes */
+    virtual void playCustomModeChangedAudioMessage() = 0;
+    /** @brief Ask to play autopilots audio annoucement for armed state changes */
+    virtual void playArmStateChangedAudioMessage(bool armedState) = 0;
     /** @brief Get the human-speakable custom mode string */
     virtual int getCustomMode() = 0;
 
