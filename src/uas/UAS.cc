@@ -33,6 +33,11 @@
 #include <google/protobuf/descriptor.h>
 #endif
 
+
+const float UAS::lipoFull = 4.2f;  ///< 100% charged voltage
+const float UAS::lipoEmpty = 3.5f; ///< Discharged voltage
+
+
 /**
 * Gets the settings from the previous UAS (name, airframe, autopilot, battery specs)
 * by calling readSettings. This means the new UAS will have the same settings 
@@ -270,34 +275,6 @@ void UAS::updateState()
             GAudioOutput::instance()->notifyNegative();
         }
     }
-
-//#define MAVLINK_OFFBOARD_CONTROL_MODE_NONE 0
-//#define MAVLINK_OFFBOARD_CONTROL_MODE_RATES 1
-//#define MAVLINK_OFFBOARD_CONTROL_MODE_ATTITUDE 2
-//#define MAVLINK_OFFBOARD_CONTROL_MODE_VELOCITY 3
-//#define MAVLINK_OFFBOARD_CONTROL_MODE_POSITION 4
-//#define MAVLINK_OFFBOARD_CONTROL_FLAG_ARMED 0x10
-
-//#warning THIS IS A HUGE HACK AND SHOULD NEVER SHOW UP IN ANY GIT REPOSITORY
-//    mavlink_message_t message;
-
-//            mavlink_set_quad_swarm_roll_pitch_yaw_thrust_t sp;
-
-//            sp.group = 0;
-
-//            /* set rate mode, set zero rates and 20% throttle */
-//            sp.mode = MAVLINK_OFFBOARD_CONTROL_MODE_RATES | MAVLINK_OFFBOARD_CONTROL_FLAG_ARMED;
-
-//            sp.roll[0] = INT16_MAX * 0.0f;
-//            sp.pitch[0] = INT16_MAX * 0.0f;
-//            sp.yaw[0] = INT16_MAX * 0.0f;
-//            sp.thrust[0] = UINT16_MAX * 0.3f;
-
-
-//            /* send from system 200 and component 0 */
-//            mavlink_msg_set_quad_swarm_roll_pitch_yaw_thrust_encode(200, 0, &message, &sp);
-
-//            sendMessage(message);
 }
 
 /**
@@ -467,121 +444,44 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 {
                     emit disarmed();
                 }
+                playArmStateChangedAudioMessage(systemIsArmed);
             }
 
-            QString audiostring = QString("System %1").arg(uasId);
-            QString stateAudio = "";
-            QString modeAudio = "";
-            QString customModeAudio = "";
-            bool statechanged = false;
-            bool modechanged = false;
+            bool stateHasChanged = false;
+            bool modeHasChanged = false;
+            bool customModeHasChanged = false;
 
-            QString audiomodeText = getAudioModeTextFor(static_cast<int>(state.base_mode));
-
-            if ((state.system_status != this->status) && state.system_status != MAV_STATE_UNINIT)
-            {
-                statechanged = true;
-                this->status = state.system_status;
+            if ((state.system_status != static_cast<uint8_t>(this->status))) {
+                QLOG_DEBUG() << "UAS: new system_statuse " << state.system_status;
+                stateHasChanged = true;
+                this->status = static_cast<uint8_t>(state.system_status);
                 getStatusForCode((int)state.system_status, uasState, stateDescription);
                 emit statusChanged(this, uasState, stateDescription);
                 emit statusChanged(this->status);
-
                 shortStateText = uasState;
-
-                // Adjust for better audio
-                if (uasState == QString("STANDBY")) uasState = QString("standing by");
-                if (uasState == QString("EMERGENCY")) uasState = QString("emergency condition");
-                if (uasState == QString("CRITICAL")) uasState = QString("critical condition");
-                if (uasState == QString("SHUTDOWN")) uasState = QString("shutting down");
-
-                stateAudio = uasState;
             }
 
-            if (this->mode != static_cast<int>(state.base_mode))
-            {
-                modechanged = true;
-                this->mode = static_cast<int>(state.base_mode);
+            if (this->mode != state.base_mode) {
+                QLOG_DEBUG() << "UAS: new base mode " << state.base_mode;
+                modeHasChanged = true;
+                this->mode = state.base_mode;
                 shortModeText = getShortModeTextFor(this->mode);
-
                 emit modeChanged(this->getUASID(), shortModeText, "");
-
-                QString armedAudio;
-                // ARMED STATE DECODING
-                if (mode & (uint8_t)MAV_MODE_FLAG_DECODE_POSITION_SAFETY)
-                {
-                    armedAudio.append("is armed");
-                }
-                else
-                {
-                    armedAudio.append("is disarmed");
-                }
-
-                modeAudio = armedAudio;
             }
 
-            if (custom_mode != state.custom_mode)
-            {
+            if (custom_mode != state.custom_mode) {
+                QLOG_DEBUG() << "UAS: new custom mode " << state.custom_mode;
+                customModeHasChanged = true;
                 custom_mode = state.custom_mode;
                 emit navModeChanged(uasId, state.custom_mode, getCustomModeText());
-                customModeAudio = getCustomModeAudioText();
             }
 
             // AUDIO
-            if (modechanged && statechanged)
-            {
-                // Output the one message
-                switch (getAutopilotType()) {
-                    // [ToDo] temp fix, need to refactor audio to UAS specialization classes.
-                    case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-                        if (isFixedWing()) {
-                            // Output both messages
-                            audiostring += /*modeAudio + " and " +*/ " is " + customModeAudio ;
-                        } else {
-                            // Output both messages
-                            audiostring += modeAudio + " and " + stateAudio;
-                        }
-                    } break;
-
-                    case MAV_AUTOPILOT_PIXHAWK:
-                    default: {
-                    // Output both messages
-                        audiostring += modeAudio + " and " + stateAudio;
-                    }
-                }
-            }
-            else if (modechanged || statechanged)
-            {
-                // Output the one message
-                switch (getAutopilotType()) {
-                    // [ToDo] temp fix, need to refactor audio to UAS specialization classes.
-                    case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-                        if (isFixedWing()) {
-                            audiostring += /*modeAudio + stateAudio +*/ customModeAudio;
-                        } else {
-                            audiostring += modeAudio /*+ stateAudio*/ + customModeAudio;
-                        }
-                    } break;
-
-                    case MAV_AUTOPILOT_PIXHAWK:
-                    default: {
-                         audiostring += modeAudio + stateAudio + customModeAudio;
-                    }
-                }
+            if (/*modeHasChanged || stateHasChanged || */customModeHasChanged){
+                playCustomModeChangedAudioMessage(); // delegate audio to autopilot specializations
             }
 
-            if (statechanged && ((int)state.system_status == (int)MAV_STATE_CRITICAL || state.system_status == (int)MAV_STATE_EMERGENCY))
-            {
-                GAudioOutput::instance()->say(QString("emergency for system %1").arg(this->getUASID()));
-                QTimer::singleShot(3000, GAudioOutput::instance(), SLOT(startEmergency()));
-            }
-            else if (modechanged || statechanged)
-            {
-                GAudioOutput::instance()->stopEmergency();
-                GAudioOutput::instance()->say(audiostring.toLower());
-            }
-        }
-
-            break;
+            } break;
         case MAVLINK_MSG_ID_SYS_STATUS:
         {
             if (multiComponentSourceDetected && wrongComponent)
@@ -642,7 +542,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit batteryChanged(this, lpVoltage, currentCurrent, getChargeLevel(), timeRemaining);
             // emit voltageChanged(message.sysid, currentVoltage);
 
-            emit valueChanged(uasId, name.arg("Battery %"), "%", state.battery_remaining, time);
+            emit valueChanged(uasId, name.arg("Battery"), "%", state.battery_remaining, time);
             emit valueChanged(uasId, name.arg("Voltage"), "V", state.voltage_battery/1000.0f, time);
 
 			// And if the battery current draw is measured, log that also.
@@ -3509,6 +3409,20 @@ bool UAS::isMultirotor()
         return true;
     default:
         return false;
+    }
+}
+
+void UAS::playCustomModeChangedAudioMessage()
+{
+    // [ToDo] Do nothing for now. but should emit normal QGC audio message
+}
+
+void UAS::playArmStateChangedAudioMessage(bool armedState)
+{
+    if (armedState){
+        GAudioOutput::instance()->say("armed");
+    } else {
+        GAudioOutput::instance()->say("disarmed");
     }
 }
 

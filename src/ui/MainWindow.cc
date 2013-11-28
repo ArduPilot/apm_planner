@@ -55,6 +55,7 @@ This file is part of the QGROUNDCONTROL project
 #include "ApmToolBar.h"
 #include "SerialSettingsDialog.h"
 #include "TerminalConsole.h"
+#include "AP2DataPlot2D.h"
 
 #ifdef QGC_OSG_ENABLED
 #include "Q3DWidgetFactory.h"
@@ -548,7 +549,11 @@ void MainWindow::buildCommonWidgets()
     {
         engineeringView = new SubMainWindow(this);
         engineeringView->setObjectName("VIEW_ENGINEER");
-        engineeringView->setCentralWidget(new QGCDataPlot2D(this));
+        //engineeringView->setCentralWidget(new QGCDataPlot2D(this));
+        AP2DataPlot2D *plot = new AP2DataPlot2D(this);
+        plot->addSource(mavlinkDecoder);
+        engineeringView->setCentralWidget(plot);
+
         addToCentralStackedWidget(engineeringView, VIEW_ENGINEER, tr("Logfile Plot"));
     }
 
@@ -1885,11 +1890,11 @@ void MainWindow::UASCreated(UASInterface* uas)
     }
 
     linechartWidget->addSource(mavlinkDecoder);
-    if (engineeringView->centralWidget() != linechartWidget)
+    /*if (engineeringView->centralWidget() != linechartWidget)
     {
         engineeringView->setCentralWidget(linechartWidget);
         linechartWidget->show();
-    }
+    }*/
 
     // Load default custom widgets for this autopilot type
     loadCustomWidgetsFromDefaults(uas->getSystemTypeName(), uas->getAutopilotTypeName());

@@ -15,6 +15,25 @@
 
 namespace kml {
 
+static const QString kModesToColors[][2] = {
+    // Colors are expressed in aabbggrr.
+    {"AUTO", "FFFF00FF"},
+    {"STABILIZE", "FF00FF00"},
+    {"LOITER", "FFFF0000"},
+    {"OF_LOITER", "FFFF2323"},
+    {"RTL", "FFFFCE00"},
+    {"ALT_HOLD", "FF00CEFF"},
+    {"LAND", "FF009900"},
+    {"CIRCLE", "FF33FFCC"},
+    {"ACRO", "FF0000FF"},
+    {"GUIDED", "FFFFAAAA"},
+    {"POSITION", "FFABABAB"},
+    {"TOY_A", "FF99FF33"},
+    {"TOY_B", "FF66CC99"},
+    {"SPORT", "FFCC3300"},
+    {"", ""}
+};
+
 /**
  * @brief Given a mode string, return a color for it.
  * @param str the mode string
@@ -23,21 +42,14 @@ namespace kml {
 static QString getColorFor(QString &str) {
     QLOG_DEBUG() << "str=" << str;
 
-    // Colors are expressed in aabbggrr.
-    if("AUTO" == str) return QString("FFFF00FF");
-    if("STABILIZE" == str) return QString("FF00FF00");
-    if("LOITER" == str) return QString("FFFF0000");
-    if("OF_LOITER" == str) return QString("FFFF2323");
-    if("RTL" == str) return QString("FFFFCE00");
-    if("ALT_HOLD" == str) return QString("FF00CEFF");
-    if("LAND" == str) return QString("FF009900");
-    if("CIRCLE" == str) return QString("FF33FFCC");
-    if("ACRO" == str) return QString("FF0000FF");
-    if("GUIDED" == str) return QString("FFFFAAAA");
-    if("POSITION" == str) return QString("FFABABAB");
-    if("TOY_A" == str) return QString("FF99FF33");
-    if("TOY_B" == str) return QString("FF66CC99");
-    if("SPORT" == str) return QString("FFCC3300");
+    int i = 0;
+    while(kModesToColors[i][0] != "") {
+        if(str == kModesToColors[i][0]) {
+            return kModesToColors[i][1];
+        }
+
+        ++i;
+    }
 
     return QString("FF000000");
 }

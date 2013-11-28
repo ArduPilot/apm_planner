@@ -83,6 +83,15 @@
          <height>31</height>
         </size>
        </property>
+       <property name="readOnly">
+        <bool>false</bool>
+       </property>
+       <property name="overwriteMode">
+        <bool>false</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextEditorInteraction</set>
+       </property>
       </widget>
       <widget class="QLabel" name="statusLabel">
        <property name="geometry">

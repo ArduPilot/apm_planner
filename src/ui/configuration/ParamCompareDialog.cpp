@@ -50,6 +50,8 @@ void ParamCompareDialog::initConnections()
 
 void ParamCompareDialog::loadParameterFile()
 {
+    ui->compareTableWidget->setRowCount(0);
+
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
     QDir parameterDir = QDir(homeDir + APP_DATA_DIRECTORY + PARAMETER_DIRECTORY);
 
@@ -97,7 +99,7 @@ void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<Q
                 UASParameter* param = new UASParameter();
                 param->setName(lineSplit[0]);
 
-                double value = lineSplit[1].toDouble(&ok);
+                double value = lineSplit[1].toFloat(&ok);
                 if (ok){
                     param->setValue(QVariant(value));
                 } else {
@@ -128,7 +130,7 @@ void ParamCompareDialog::compareLists()
 
             if (currentParam->value() != newParam->value() ){
                 QLOG_DEBUG() << "Difference : " << currentParam->name()
-                             << " current: "<< currentParam->value() << " new:" << newParam->value();
+                             << " current: " << currentParam->value() << " new:" << newParam->value();
 
                 int rowCount = ui->compareTableWidget->rowCount();
                 ui->compareTableWidget->setRowCount(ui->compareTableWidget->rowCount()+1);

@@ -32,16 +32,18 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
     m_columnCount = 2;
     if (uasPropertyValueMap.size() == 0)
     {
-        valueEnabled("M1:GCS Status.Roll");
-        valueEnabled("M1:GCS Status.Pitch");
-        valueEnabled("M1:GCS Status.Yaw");
-        valueEnabled("M1:GCS Status.Altitude (GPS)");
-        valueEnabled("M1:GCS Status.Altitude (REL)");
-        valueEnabled("M1:GCS Status.Climb");
-        valueEnabled("M1:GCS Status.Battery %");
-        valueEnabled("M1:GCS Status.Current");
+        valueEnabled("M1:GCS Status.Roll (deg)");
+        valueEnabled("M1:GCS Status.Pitch (deg)");
+        valueEnabled("M1:GCS Status.Yaw (deg)");
+        valueEnabled("M1:GCS Status.Altitude (GPS) (m)");
+        valueEnabled("M1:GCS Status.Altitude (REL) (m)");
+        valueEnabled("M1:GCS Status.Climb (m/s)");
+        valueEnabled("M1:GCS Status.Battery (%)");
+        valueEnabled("M1:GCS Status.Voltage (V)");
+        valueEnabled("M1:GCS Status.Current (A)");
         valueEnabled("M1:GCS Status.GPS Fix");
         valueEnabled("M1:GCS Status.GPS Sats");
+        valueEnabled("M1:GCS Status.GPS HDOP (m)");
     }
 
     QAction *action = new QAction("Add/Remove Items",this);
@@ -226,12 +228,18 @@ void UASQuickView::valueEnabled(QString value)
 void UASQuickView::sortItems(int columncount)
 {
     QList<QWidget*> itemlist;
-    for (QMap<QString,UASQuickViewItem*>::const_iterator i = uasPropertyToLabelMap.constBegin();i!=uasPropertyToLabelMap.constEnd();i++)
+    for (int i=0;i<uasEnabledPropertyList.size();i++)
+    {
+        m_verticalLayoutList[m_PropertyToLayoutIndexMap[uasEnabledPropertyList[i]]]->removeWidget(uasPropertyToLabelMap[uasEnabledPropertyList[i]]);
+        m_PropertyToLayoutIndexMap.remove(uasEnabledPropertyList[i]);
+        itemlist.append(uasPropertyToLabelMap[uasEnabledPropertyList[i]]);
+    }
+    /*for (QMap<QString,UASQuickViewItem*>::const_iterator i = uasPropertyToLabelMap.constBegin();i!=uasPropertyToLabelMap.constEnd();i++)
     {
         m_verticalLayoutList[m_PropertyToLayoutIndexMap[i.key()]]->removeWidget(i.value());
         m_PropertyToLayoutIndexMap.remove(i.key());
         itemlist.append(i.value());
-    }
+    }*/
     //Item list has all the widgets availble, now re-add them to the layouts.
     for (int i=0;i<m_verticalLayoutList.size();i++)
     {
@@ -296,9 +304,9 @@ void UASQuickView::valueDisabled(QString value)
         //ui.verticalLayout->removeWidget(item);
         //layout->removeWidget(item);
         m_verticalLayoutList[m_PropertyToLayoutIndexMap[value]]->removeWidget(item);
+        uasEnabledPropertyList.removeOne(value);
         sortItems(m_columnCount);
         item->deleteLater();
-        uasEnabledPropertyList.removeOne(value);
         saveSettings();
     }
 }
@@ -366,103 +374,103 @@ void UASQuickView::addSource(MAVLinkDecoder *decoder)
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value;
+    uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 
 void UASQuickView::actionTriggered(bool checked)
@@ -483,14 +491,14 @@ void UASQuickView::actionTriggered(bool checked)
 }
 void UASQuickView::valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs)
 {
-    if (!uasPropertyValueMap.contains(name))
+    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name);
+            quickViewSelectDialog->addItem(name +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name] = value.toDouble();
+    uasPropertyValueMap[name +" ("+unit+")"] = value.toDouble();
 }
 
 void UASQuickView::valChanged(double val,QString type)

@@ -32,6 +32,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QDesktopServices>
+#include <QDir>
 
 
 #ifdef QGC_PROTOBUF_ENABLED
@@ -91,18 +92,6 @@ void MAVLinkProtocol::loadSettings()
     enableVersionCheck(settings.value("VERSION_CHECK_ENABLED", m_enable_version_check).toBool());
     enableMultiplexing(settings.value("MULTIPLEXING_ENABLED", m_multiplexingEnabled).toBool());
 
-    // Only set logfile if there is a name present in settings
-    if (settings.contains("LOGFILE_NAME") && m_logfile == NULL)
-    {
-        m_logfile = new QFile(settings.value("LOGFILE_NAME").toString());
-    }
-    else if (m_logfile == NULL)
-    {
-        m_logfile = new QFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/qgroundcontrol_packetlog.mavlink");
-    }
-    // Enable logging
-    enableLogging(settings.value("LOGGING_ENABLED", m_loggingEnabled).toBool());
-
     // Only set system id if it was valid
     int temp = settings.value("GCS_SYSTEM_ID", systemId).toInt();
     if (temp > 0 && temp < 256)
@@ -130,17 +119,12 @@ void MAVLinkProtocol::storeSettings()
     QSettings settings;
     settings.beginGroup("QGC_MAVLINK_PROTOCOL");
     settings.setValue("HEARTBEATS_ENABLED", m_heartbeatsEnabled);
-    settings.setValue("LOGGING_ENABLED", m_loggingEnabled);
     settings.setValue("VERSION_CHECK_ENABLED", m_enable_version_check);
     settings.setValue("MULTIPLEXING_ENABLED", m_multiplexingEnabled);
     settings.setValue("GCS_SYSTEM_ID", systemId);
     settings.setValue("GCS_AUTH_KEY", m_authKey);
     settings.setValue("GCS_AUTH_ENABLED", m_authEnabled);
-    if (m_logfile)
-    {
-        // Logfile exists, store the name
-        settings.setValue("LOGFILE_NAME", m_logfile->fileName());
-    }
+
     // Parameter interface settings
     settings.setValue("PARAMETER_RETRANSMISSION_TIMEOUT", m_paramRetransmissionTimeout);
     settings.setValue("PARAMETER_REWRITE_TIMEOUT", m_paramRewriteTimeout);
@@ -155,13 +139,7 @@ MAVLinkProtocol::~MAVLinkProtocol()
     storeSettings();
     if (m_logfile)
     {
-        if (m_logfile->isOpen())
-        {
-            m_logfile->flush();
-            m_logfile->close();
-        }
-        delete m_logfile;
-        m_logfile = NULL;
+        stopLogging();
     }
 }
 
@@ -173,7 +151,8 @@ QString MAVLinkProtocol::getLogfileName()
     }
     else
     {
-        return QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/qgroundcontrol_packetlog.mavlink";
+        return QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
+                + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY + QGC::fileNameAsTime();
     }
 }
 
@@ -329,7 +308,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 {
                     emit protocolStatusMessage(tr("MAVLink Logging failed"), tr("Could not write to file %1, disabling logging.").arg(m_logfile->fileName()));
                     // Stop logging
-                    enableLogging(false);
+                    stopLogging();
                 }
             }
 
@@ -641,60 +620,41 @@ void MAVLinkProtocol::setActionRetransmissionTimeout(int ms)
     }
 }
 
-void MAVLinkProtocol::enableLogging(bool enabled)
+bool MAVLinkProtocol::startLogging(const QString& filename)
 {
-    bool changed = false;
-    if (enabled != m_loggingEnabled) changed = true;
+    stopLogging();
+    QLOG_DEBUG() << "Start MAVLink logging" << filename;
 
-    if (enabled)
-    {
-        if (m_logfile && m_logfile->isOpen())
-        {
-            m_logfile->flush();
-            m_logfile->close();
-        }
+    Q_ASSERT_X(m_logfile == NULL, "startLogging", "m_logFile == NULL");
 
-        if (m_logfile)
-        {
-            if (!m_logfile->open(QIODevice::WriteOnly | QIODevice::Append))
-            {
-                emit protocolStatusMessage(tr("Opening MAVLink logfile for writing failed"), tr("MAVLink cannot log to the file %1, please choose a different file. Stopping logging.").arg(m_logfile->fileName()));
-                m_loggingEnabled = false;
-            }
-        }
-        else
-        {
-            emit protocolStatusMessage(tr("Opening MAVLink logfile for writing failed"), tr("MAVLink cannot start logging, no logfile selected."));
-        }
+    m_logfile = new QFile(filename);
+    if (m_logfile->open(QIODevice::WriteOnly | QIODevice::Append)){
+        emit protocolStatusMessage(tr("Started MAVLink logging"),
+                                   tr("MAVLink logging to the file %1.")
+                                   .arg(m_logfile->fileName()));
+        m_loggingEnabled = true;
+
+    } else {
+        emit protocolStatusMessage(tr("Started MAVLink logging"),
+                                   tr("FAILED: MAVLink cannot start logging to.").arg(m_logfile->fileName()));
+        m_loggingEnabled = false;
+        delete m_logfile;
+        m_logfile = NULL;
     }
-    else if (!enabled)
-    {
-        if (m_logfile)
-        {
-            if (m_logfile->isOpen())
-            {
-                m_logfile->flush();
-                m_logfile->close();
-            }
-        }
-    }
-    m_loggingEnabled = enabled;
-    if (changed) emit loggingChanged(enabled);
+    emit loggingChanged(m_loggingEnabled);
+    return m_loggingEnabled; // reflects if logging started or not.
 }
 
-void MAVLinkProtocol::setLogfileName(const QString& filename)
+void MAVLinkProtocol::stopLogging()
 {
-    if (!m_logfile)
-    {
-        m_logfile = new QFile(filename);
-    }
-    else
-    {
-        m_logfile->flush();
+    if (m_logfile && m_logfile->isOpen()){
+        QLOG_DEBUG() << "Stop MAVLink logging" << m_logfile->fileName();
+        // Close the current open file
         m_logfile->close();
+        delete m_logfile;
+        m_logfile = NULL;
     }
-    m_logfile->setFileName(filename);
-    enableLogging(m_loggingEnabled);
+    m_loggingEnabled = false;
 }
 
 void MAVLinkProtocol::enableVersionCheck(bool enabled)

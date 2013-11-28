@@ -50,6 +50,7 @@ SectionEnd
 Section "Qt components"
   !include qt_install.list
   SetOutPath $INSTDIR
+  File /home/michael/QtWin32/lib/zlib1.dll
   File /home/michael/QtWin32/lib/libgcc_s_sjlj-1.dll
   File /home/michael/QtWin32/lib/libstdc++-6.dll
   File /home/michael/QtWin32/lib/libwinpthread-1.dll
@@ -92,6 +93,9 @@ Section "Uninstall"
   Delete $INSTDIR\QtWebkit4.dll
   Delete $INSTDIR\QtXml4.dll
   Delete $INSTDIR\QtXmlPatterns4.dll
+  Delete $INSTDIR\zlib1.dll
+  Delete $APPDATA\diydrones\*.*
+  RMDir $APPDATA\diydrones
 
   ;Delete $INSTDIR\*.*
   RMDir $INSTDIR

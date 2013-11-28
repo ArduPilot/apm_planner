@@ -56,8 +56,8 @@ public:
     UAS(MAVLinkProtocol* protocol, int id = 0);
     ~UAS();
 
-    static const int lipoFull = 4.2f;  ///< 100% charged voltage
-    static const int lipoEmpty = 3.5f; ///< Discharged voltage
+    static const float lipoFull;  ///< 100% charged voltage
+    static const float lipoEmpty; ///< Discharged voltage
 
     /* MANAGEMENT */
 
@@ -513,6 +513,11 @@ public:
 
     /** @brief Get the human-speakable custom mode string */
     virtual QString getCustomModeAudioText();
+
+    /** @brief Ask to play autopilots audio annoucement for mode changes */
+    virtual void playCustomModeChangedAudioMessage();
+    /** @brief Ask to play autopilots audio annoucement for armed changes */
+    virtual void playArmStateChangedAudioMessage(bool armedState);
 
     /** @brief Check if vehicle is in autonomous mode */
     bool isAuto();

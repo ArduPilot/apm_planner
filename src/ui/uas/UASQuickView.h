@@ -29,6 +29,7 @@ private:
     /** Maps from property name to the display item */
     QMap<QString,UASQuickViewItem*> uasPropertyToLabelMap;
 
+
     /** Timer for updating the UI */
     QTimer *updateTimer;
 
