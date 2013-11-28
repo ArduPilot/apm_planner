@@ -33,6 +33,11 @@
 #include <google/protobuf/descriptor.h>
 #endif
 
+
+const float UAS::lipoFull = 4.2f;  ///< 100% charged voltage
+const float UAS::lipoEmpty = 3.5f; ///< Discharged voltage
+
+
 /**
 * Gets the settings from the previous UAS (name, airframe, autopilot, battery specs)
 * by calling readSettings. This means the new UAS will have the same settings 
