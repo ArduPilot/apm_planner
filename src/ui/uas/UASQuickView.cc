@@ -39,9 +39,11 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
         valueEnabled("M1:GCS Status.Altitude (REL)");
         valueEnabled("M1:GCS Status.Climb");
         valueEnabled("M1:GCS Status.Battery %");
+        valueEnabled("M1:GCS Status.Voltage");
         valueEnabled("M1:GCS Status.Current");
         valueEnabled("M1:GCS Status.GPS Fix");
         valueEnabled("M1:GCS Status.GPS Sats");
+        valueEnabled("M1:GCS Status.GPS HDOP");
     }
 
     QAction *action = new QAction("Add/Remove Items",this);

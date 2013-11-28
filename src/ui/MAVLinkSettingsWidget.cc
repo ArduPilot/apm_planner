@@ -73,7 +73,6 @@ MAVLinkSettingsWidget::MAVLinkSettingsWidget(MAVLinkProtocol* protocol, QWidget 
     connect(m_ui->heartbeatCheckBox, SIGNAL(toggled(bool)), protocol, SLOT(enableHeartbeats(bool)));
     // Logging
     connect(protocol, SIGNAL(loggingChanged(bool)), m_ui->loggingCheckBox, SLOT(setChecked(bool)));
-    connect(m_ui->loggingCheckBox, SIGNAL(toggled(bool)), protocol, SLOT(enableLogging(bool)));
     // Version check
     connect(protocol, SIGNAL(versionCheckChanged(bool)), m_ui->versionCheckBox, SLOT(setChecked(bool)));
     connect(m_ui->versionCheckBox, SIGNAL(toggled(bool)), protocol, SLOT(enableVersionCheck(bool)));
@@ -115,11 +114,6 @@ MAVLinkSettingsWidget::MAVLinkSettingsWidget(MAVLinkProtocol* protocol, QWidget 
     // Connect visibility updates
     connect(protocol, SIGNAL(versionCheckChanged(bool)), m_ui->versionLabel, SLOT(setVisible(bool)));
     m_ui->versionLabel->setVisible(protocol->versionCheckEnabled());
-    // Logging visibility
-    connect(protocol, SIGNAL(loggingChanged(bool)), m_ui->logFileLabel, SLOT(setVisible(bool)));
-    m_ui->logFileLabel->setVisible(protocol->loggingEnabled());
-    connect(protocol, SIGNAL(loggingChanged(bool)), m_ui->logFileButton, SLOT(setVisible(bool)));
-    m_ui->logFileButton->setVisible(protocol->loggingEnabled());
 //    // Multiplexing visibility
 //    connect(protocol, SIGNAL(multiplexingChanged(bool)), m_ui->multiplexingFilterCheckBox, SLOT(setVisible(bool)));
 //    m_ui->multiplexingFilterCheckBox->setVisible(protocol->multiplexingEnabled());
@@ -159,11 +153,22 @@ void MAVLinkSettingsWidget::updateLogfileName(const QString& fileName)
 
 void MAVLinkSettingsWidget::chooseLogfileName()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Specify MAVLink log file name"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), tr("MAVLink Logfile (*.mavlink);;"));
+    QDir logDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
+            + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY);
 
-    if (!fileName.endsWith(".mavlink"))
+    if (!logDir.exists()){
+        logDir.mkdir(logDir.absolutePath());
+    }
+
+    QString suggestedFileName = QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
+            + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY + "/" + QGC::fileNameAsTime();
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Specify MAVLink log file name"),
+                                                    suggestedFileName
+                                                    , tr("MAVLink Logfile (%1);;").arg(MAVLINK_LOGFILE_EXT));
+
+    if (!fileName.endsWith(MAVLINK_LOGFILE_EXT))
     {
-        fileName.append(".mavlink");
+        fileName.append(MAVLINK_LOGFILE_EXT);
     }
 
     QFileInfo file(fileName);
@@ -180,7 +185,7 @@ void MAVLinkSettingsWidget::chooseLogfileName()
     else
     {
         updateLogfileName(fileName);
-        protocol->setLogfileName(fileName);
+        m_ui->loggingCheckBox->setEnabled(protocol->startLogging(fileName));
     }
 }
 

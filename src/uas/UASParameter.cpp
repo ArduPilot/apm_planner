@@ -39,8 +39,12 @@ int UASParameter::component()
 
 void UASParameter::setValue(const QVariant value)
 {
-    m_paramValue = value;
-    m_modified = true;
+    if (value != m_paramValue){
+        m_paramValue = value;
+        m_modified = true;
+    } else {
+        m_modified = false;
+    }
 }
 
 const QVariant& UASParameter::value()

@@ -41,7 +41,6 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += phonon
 }
 
-LIBS += -lz
 
 TEMPLATE = app
 TARGET = apmplanner2
@@ -58,11 +57,13 @@ linux-g++|linux-g++-64{
         TARGETDIR = $${OUT_PWD}/release
         BUILDDIR = $${OUT_PWD}/build-release
     }
+    LIBS += -lz
 } else {
     TARGETDIR = $${OUT_PWD}
     BUILDDIR = $${OUT_PWD}/build
 }
 win32-x-g++|win64-x-g++ {
+LIBS += -lz.dll
     CONFIG += exceptions rtti
     DEFINES += UINT8_MAX=0xFF
     DEFINES += UINT16_MAX=0xFFFF
@@ -96,6 +97,12 @@ unix {
 	INCLUDEPATH += C:/openssl-1.0.1e/include
 	LIBS += -lssl -lcrypto
 }
+
+macx {
+    LIBS += -lz
+}
+
+
 include (QsLog/QsLog.pri)
 
 message(PWD $$PWD)
@@ -128,7 +135,8 @@ HEADERS +=     libs/alglib/src/ap.h \
     libs/alglib/src/integration.h \
     libs/alglib/src/solvers.h \
     libs/alglib/src/specialfunctions.cpp
-# NOTE: Add new HEADERS to the HEADER definition below
+# NOTE: Add new headers to the HEADER definition further below
+# marked "headers_here", but not directly below
 
 SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/alglibinternal.cpp \
@@ -140,7 +148,8 @@ SOURCES +=     libs/alglib/src/ap.cpp \
     libs/alglib/src/integration.cpp \
     libs/alglib/src/solvers.cpp \
     libs/alglib/src/specialfunctions.cpp
-# NOTE: Add new SOURCES to the SOURCE definition below
+# NOTE: Add new sources to the SOURCE definition further below
+# marked "sources_here", but not directly below
 
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
@@ -333,7 +342,9 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/SetupWarningMessage.ui \
     src/ui/uas/APMShortcutModesDialog.ui \
     src/ui/configuration/DownloadRemoteParamsDialog.ui \
-    src/ui/configuration/ParamCompareDialog.ui
+    src/ui/configuration/ParamCompareDialog.ui \
+    src/ui/AP2DataPlot2D.ui \
+    src/ui/dataselectionscreen.ui
 
 INCLUDEPATH += src \
     src/ui \
@@ -353,6 +364,8 @@ INCLUDEPATH += src \
     src/ui/designer \
     src/ui/configuration \
     src/output
+
+# headers_here
 HEADERS += src/MG.h \
     src/QGCCore.h \
     src/uas/UASInterface.h \
@@ -539,7 +552,11 @@ HEADERS += src/MG.h \
     src/ui/configuration/ParamCompareDialog.h \
     src/uas/UASParameter.h \
     src/output/kmlcreator.h \
-    src/output/logdata.h
+    src/output/logdata.h \
+    src/ui/AP2DataPlot2D.h \
+    src/ui/AP2DataPlotThread.h \
+    src/ui/dataselectionscreen.h \
+    src/ui/qcustomplot.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -584,6 +601,8 @@ contains(DEPENDENCIES_PRESENT, libfreenect) {
     # Enable only if libfreenect is available
     HEADERS += src/input/Freenect.h
 }
+
+# sources_here
 SOURCES += src/main.cc \
     src/QGCCore.cc \
     src/uas/UASManager.cc \
@@ -763,7 +782,11 @@ SOURCES += src/main.cc \
     src/ui/configuration/ParamCompareDialog.cpp \
     src/uas/UASParameter.cpp \
     src/output/kmlcreator.cc \
-    src/output/logdata.cc
+    src/output/logdata.cc \
+    src/ui/AP2DataPlot2D.cpp \
+    src/ui/AP2DataPlotThread.cc \
+    src/ui/dataselectionscreen.cpp \
+    src/ui/qcustomplot.cpp
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc

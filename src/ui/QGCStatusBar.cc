@@ -33,7 +33,7 @@ QGCStatusBar::QGCStatusBar(QWidget *parent) :
     toggleLoggingButton(NULL),
     player(NULL),
     changed(true),
-    lastLogDirectory(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation))
+    lastLogDirectory(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY)
 {
     setObjectName("QGC_STATUSBAR");
 
@@ -66,7 +66,7 @@ void QGCStatusBar::setLogPlayer(QGCMAVLinkLogPlayer* player)
 void QGCStatusBar::logging(bool checked)
 {
     // Stop logging in any case
-    MainWindow::instance()->getMAVLink()->enableLogging(false);
+    MainWindow::instance()->getMAVLink()->stopLogging();
 
     if (!checked && player)
     {
@@ -107,8 +107,7 @@ void QGCStatusBar::logging(bool checked)
 		// Otherwise we're off and logging
         else
         {
-            MainWindow::instance()->getMAVLink()->setLogfileName(fileName);
-            MainWindow::instance()->getMAVLink()->enableLogging(true);
+            MainWindow::instance()->getMAVLink()->startLogging(fileName);
             lastLogDirectory = file.absoluteDir().absolutePath(); //save last log directory
         }
     }

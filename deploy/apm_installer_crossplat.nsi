@@ -50,6 +50,7 @@ SectionEnd
 Section "Qt components"
   !include qt_install.list
   SetOutPath $INSTDIR
+  File /home/michael/QtWin32/lib/zlib1.dll
   File /home/michael/QtWin32/lib/libgcc_s_sjlj-1.dll
   File /home/michael/QtWin32/lib/libstdc++-6.dll
   File /home/michael/QtWin32/lib/libwinpthread-1.dll

@@ -55,6 +55,7 @@ This file is part of the QGROUNDCONTROL project
 #include "ApmToolBar.h"
 #include "SerialSettingsDialog.h"
 #include "TerminalConsole.h"
+#include "AP2DataPlot2D.h"
 
 #ifdef QGC_OSG_ENABLED
 #include "Q3DWidgetFactory.h"
@@ -548,7 +549,9 @@ void MainWindow::buildCommonWidgets()
     {
         engineeringView = new SubMainWindow(this);
         engineeringView->setObjectName("VIEW_ENGINEER");
-        engineeringView->setCentralWidget(new QGCDataPlot2D(this));
+        //engineeringView->setCentralWidget(new QGCDataPlot2D(this));
+        engineeringView->setCentralWidget(new AP2DataPlot2D(this));
+
         addToCentralStackedWidget(engineeringView, VIEW_ENGINEER, tr("Logfile Plot"));
     }
 

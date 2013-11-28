@@ -130,20 +130,17 @@ public:
 
     QString getCustomModeText();
     QString getCustomModeAudioText();
+    void playCustomModeChangedAudioMessage();
+    void playArmStateChangedAudioMessage(bool armedState) ;
 
 public slots:
     /** @brief Receive a MAVLink message from this MAV */
     void receiveMessage(LinkInterface* link, mavlink_message_t message);
     void RequestAllDataStreams();
 
-    void systemDisarmed();
-    void systemArmed();
-
     // Overides from UAS virtual interface
     virtual void armSystem();
     virtual void disarmSystem();
-
-    void navModeChanged(int uasid, int mode, const QString& text);
 
     // UAS Interface
     void textMessageReceived(int uasid, int componentid, int severity, QString text);

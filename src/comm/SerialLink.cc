@@ -179,7 +179,7 @@ void SerialLink::run()
     }
     else
     {
-        QLOG_DEBUG() << "Connected to a NON-APM, with description:" << description;
+        QLOG_DEBUG() << "Connected to a NON-APM or 3DR Radio with description:" << description;
     }
     forever
     {

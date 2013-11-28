@@ -87,7 +87,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(0);
 
-    ui.textBrowser->setEnabled(false);
+    //ui.textBrowser->setEnabled(false);
     connect(ui.showOutputCheckBox,SIGNAL(clicked(bool)),ui.textBrowser,SLOT(setShown(bool)));
 
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
