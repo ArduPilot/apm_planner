@@ -25,6 +25,7 @@
 #include <QTimer>
 #include <QSettings>
 #include <iostream>
+#include <QDesktopServices>
 
 #include <cmath>
 #include <qmath.h>
@@ -407,24 +408,21 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             if (this->type != state.type)
             {
                 this->type = state.type;
-                if (airframe == 0)
-                {
-                    switch (type)
-                    {
-                    case MAV_TYPE_FIXED_WING:
-                        setAirframe(UASInterface::QGC_AIRFRAME_EASYSTAR);
-                        break;
-                    case MAV_TYPE_QUADROTOR:
-                        setAirframe(UASInterface::QGC_AIRFRAME_CHEETAH);
-                        break;
-                    case MAV_TYPE_HEXAROTOR:
-                        setAirframe(UASInterface::QGC_AIRFRAME_HEXCOPTER);
-                        break;
-                    default:
-                        // Do nothing
-                        QLOG_DEBUG() << "Airframe is set to: " << type;
-                        break;
-                    }
+                if (isFixedWing()) {
+                    setAirframe(UASInterface::QGC_AIRFRAME_EASYSTAR);
+
+                } else if (isMultirotor()) {
+                    setAirframe(UASInterface::QGC_AIRFRAME_CHEETAH);
+
+                } else if (isGroundRover()) {
+                    setAirframe(UASInterface::QGC_AIRFRAME_HEXCOPTER);
+
+                } else if (isHelicopter()) {
+                    setAirframe(UASInterface::QGC_AIRFRAME_HELICOPTER);
+
+                } else {
+                    QLOG_DEBUG() << "Airframe is set to: " << type;
+                    setAirframe(UASInterface::QGC_AIRFRAME_GENERIC);
                 }
                 this->autopilot = state.autopilot;
                 emit systemTypeSet(this, type);
@@ -3211,6 +3209,8 @@ void UAS::addLink(LinkInterface* link)
         connect(link, SIGNAL(destroyed(QObject*)), this, SLOT(removeLink(QObject*)));
         connect(link,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
         connect(link,SIGNAL(connected()),this,SIGNAL(connected()));
+        if(link->isConnected())
+            emit connected(); // Fixes issue that the link is already connected and signal not sent
     }
 }
 
@@ -3412,17 +3412,13 @@ bool UAS::isMultirotor()
     }
 }
 
-void UAS::playCustomModeChangedAudioMessage()
+bool UAS::isHelicopter()
 {
-    // [ToDo] Do nothing for now. but should emit normal QGC audio message
-}
-
-void UAS::playArmStateChangedAudioMessage(bool armedState)
-{
-    if (armedState){
-        GAudioOutput::instance()->say("armed");
-    } else {
-        GAudioOutput::instance()->say("disarmed");
+    switch(type){
+    case MAV_TYPE_HELICOPTER:
+        return true;
+    default:
+        return false;
     }
 }
 
@@ -3443,5 +3439,19 @@ bool UAS::isGroundRover()
         return true;
     default:
         return false;
+    }
+}
+
+void UAS::playCustomModeChangedAudioMessage()
+{
+    // Do nothing as its custom message only a autopilot will know the correct action
+}
+
+void UAS::playArmStateChangedAudioMessage(bool armedState)
+{
+    if (armedState){
+        GAudioOutput::instance()->say("armed");
+    } else {
+        GAudioOutput::instance()->say("disarmed");
     }
 }
