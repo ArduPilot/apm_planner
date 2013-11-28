@@ -99,11 +99,13 @@ Section "Uninstall"
 
   ;Delete $INSTDIR\*.*
   RMDir $INSTDIR
+  SetShellVarContext all
   Delete "$SMPROGRAMS\APMPlanner2\*.*"
   RMDir "$SMPROGRAMS\APMPlanner2\"
 SectionEnd
 
 Section "Create Start Menu Shortcuts"
+  SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\APMPlanner2"
   CreateShortCut "$SMPROGRAMS\APMPlanner2\uninstall.lnk" "$INSTDIR\APMPlanner2_uninstall.exe" "" "$INSTDIR\APMPlanner2_uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\APMPlanner2\APMPlanner2.lnk" "$INSTDIR\apmplanner2.exe" "" "$INSTDIR\apmplanner2.exe" 0
