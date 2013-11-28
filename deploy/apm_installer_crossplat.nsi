@@ -93,6 +93,9 @@ Section "Uninstall"
   Delete $INSTDIR\QtWebkit4.dll
   Delete $INSTDIR\QtXml4.dll
   Delete $INSTDIR\QtXmlPatterns4.dll
+  Delete $INSTDIR\zlib1.dll
+  Delete $APPDATA\diydrones\*.*
+  RMDir $APPDATA\diydrones
 
   ;Delete $INSTDIR\*.*
   RMDir $INSTDIR
