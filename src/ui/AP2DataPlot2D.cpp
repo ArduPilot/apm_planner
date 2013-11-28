@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QTimer>
+
 #include "UAS.h"
 #include "UASManager.h"
 
@@ -39,7 +41,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
-
+    QTimer *timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
+    timer->start(500);
 
 }
 void AP2DataPlot2D::activeUASSet(UASInterface* uas)
@@ -77,237 +81,72 @@ void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
 }
+void AP2DataPlot2D::updateValue(QString name,double value)
+{
+    if (!m_nameToAxisIndex.contains(name))
+    {
+        //Also doesn't exist on the data select screen
+        m_dataSelectionScreen->addItem(name);
+        m_nameToAxisIndex[name] = m_currentIndex;
+    }
+    else
+    {
+        if (m_nameToAxisIndex[name] == m_currentIndex)
+        {
+            m_currentIndex++;
+        }
+    }
+    m_nameToAxisIndex[name] = m_currentIndex;
+    if (m_graphMap.contains(name))
+    {
+        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
+        if (!m_graphMap[name]->keyAxis()->range().contains(value))
+        {
+            m_graphMap[name]->rescaleValueAxis();
+        }
+    }
+    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+}
 
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        m_graphMap[name]->rescaleValueAxis();
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    updateValue(name,value);
 }
 void AP2DataPlot2D::valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs)
 {
-    if (!m_nameToAxisIndex.contains(name))
-    {
-        //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
-    }
-    else
-    {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
-        {
-            m_currentIndex++;
-        }
-    }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
-    {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value.toDouble());
-        m_plot->replot();
-    }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value.toDouble()));
+    updateValue(name,value.toDouble());
 }
 
 void AP2DataPlot2D::loadButtonClicked()
