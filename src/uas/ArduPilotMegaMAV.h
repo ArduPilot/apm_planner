@@ -149,6 +149,10 @@ public slots:
 private slots:
     void uasConnected();
     void uasDisconnected();
+
+private:
+    void createNewMAVLinkLog(uint8_t type);
+
 private:
     QTimer *txReqTimer;
 };

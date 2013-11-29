@@ -660,6 +660,7 @@ public:
     bool isMultirotor();
     bool isFixedWing();
     bool isGroundRover();
+    bool isHelicopter();
 
 public slots:
     /** @brief Set the autopilot type */
@@ -915,13 +916,6 @@ protected slots:
     void writeSettings();
     /** @brief Read settings from disk */
     void readSettings();
-
-//    // MESSAGE RECEPTION
-//    /** @brief Receive a named value message */
-//    void receiveMessageNamedValue(const mavlink_message_t& message);
-
-private:
-//    unsigned int mode;          ///< The current mode of the MAV
 };
 
 

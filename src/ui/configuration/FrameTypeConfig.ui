@@ -96,7 +96,7 @@
        </property>
        <property name="icon">
         <iconset resource="../../../qgroundcontrol.qrc">
-         <normaloff>:/files/images/mavs/frames-h.png</normaloff>:/files/images/mavs/frames-h.png</iconset>
+         <normaloff>:/files/images/mavs/frames_quad_I.png</normaloff>:/files/images/mavs/frames_quad_I.png</iconset>
        </property>
        <property name="iconSize">
         <size>
