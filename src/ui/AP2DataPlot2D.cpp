@@ -7,6 +7,7 @@
 
 #include "UAS.h"
 #include "UASManager.h"
+#include "MainWindow.h"
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
@@ -151,9 +152,9 @@ void AP2DataPlot2D::valueChanged(const int uasid, const QString& name, const QSt
 
 void AP2DataPlot2D::loadButtonClicked()
 {
-    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString logHomeDir = homeDir + "/apmplanner2/dataflashLogs";
-    QString filename = QFileDialog::getOpenFileName(this,"Select log file to open",logHomeDir);
+    // Open a dialog on the configured dataflash logs directory
+    QString filename = QFileDialog::getOpenFileName(this, "Open Log File", MainWindow::instance()->getLogDirectory(), tr("Log Files (*.log)"));
+
     if (filename == "")
     {
         return;
