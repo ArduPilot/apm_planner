@@ -151,8 +151,7 @@ QString MAVLinkProtocol::getLogfileName()
     }
     else
     {
-        return QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
-                + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY + QGC::fileNameAsTime();
+        return QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
     }
 }
 

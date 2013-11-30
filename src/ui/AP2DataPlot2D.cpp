@@ -151,9 +151,7 @@ void AP2DataPlot2D::valueChanged(const int uasid, const QString& name, const QSt
 
 void AP2DataPlot2D::loadButtonClicked()
 {
-    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString logHomeDir = homeDir + "/apmplanner2/dataflashLogs";
-    QString filename = QFileDialog::getOpenFileName(this,"Select log file to open",logHomeDir);
+    QString filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory());
     if (filename == "")
     {
         return;

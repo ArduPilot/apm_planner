@@ -132,7 +132,7 @@ void DownloadRemoteParamsDialog::downloadParamFile()
 {
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
 
-    QDir parameterDir = QDir(homeDir + APP_DATA_DIRECTORY + PARAMETER_DIRECTORY);
+    QDir parameterDir = QDir(QGC::parameterDirectory());
 
     if (!parameterDir.exists())
         parameterDir.mkdir(parameterDir.filePath(""));

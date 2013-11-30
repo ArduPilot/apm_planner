@@ -94,7 +94,6 @@ protected:
     QString lastLogDirectory;
     void changeEvent(QEvent *e);
 
-    void loadSettings();
     void storeSettings();
 
 private:

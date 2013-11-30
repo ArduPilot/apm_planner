@@ -94,6 +94,28 @@ MainWindow* MainWindow::instance(QSplashScreen* screen)
     return _instance;
 }
 
+// inline function definitions
+
+int MainWindow::getStyle()
+{
+    return currentStyle;
+}
+
+bool MainWindow::autoReconnectEnabled()
+{
+    return autoReconnect;
+}
+
+bool MainWindow::dockWidgetTitleBarsEnabled()
+{
+    return dockWidgetTitleBarEnabled;
+}
+
+bool MainWindow::lowPowerModeEnabled()
+{
+    return lowPowerMode;
+}
+
 /**
 * Create new mainwindow. The constructor instantiates all parts of the user
 * interface. It does NOT show the mainwindow. To display it, call the show()
@@ -1006,7 +1028,9 @@ void MainWindow::createCustomWidget()
 void MainWindow::loadCustomWidget()
 {
     QString widgetFileExtension(".qgw");
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Specify Widget File Name"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), tr("QGroundControl Widget (*%1);;").arg(widgetFileExtension));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Specify Widget File Name"),
+                                                    QGC::appDataDirectory(),
+                                                    tr("QGroundControl Widget (*%1);;").arg(widgetFileExtension));
     if (fileName != "") loadCustomWidget(fileName);
 }
 void MainWindow::loadCustomWidget(const QString& fileName, int view)
@@ -1113,8 +1137,8 @@ void MainWindow::loadCustomWidget(const QString& fileName, bool singleinstance)
 
 void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const QString& autopilotType)
 {
-    QString defaultsDir = qApp->applicationDirPath() + "/files/" + autopilotType.toLower() + "/widgets/";
-    QString platformDir = qApp->applicationDirPath() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
+    QString defaultsDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/widgets/";
+    QString platformDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
 
     QDir widgets(defaultsDir);
     QStringList files = widgets.entryList();
@@ -1144,22 +1168,12 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 
 void MainWindow::loadSettings()
 {
-    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString logHomeDir = homeDir + APP_DATA_DIRECTORY + LOG_DIRECTORY;
-
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     autoReconnect = settings.value("AUTO_RECONNECT", autoReconnect).toBool();
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
     lowPowerMode = settings.value("LOW_POWER_MODE", lowPowerMode).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS",dockWidgetTitleBarEnabled).toBool();
-    logDirectory = settings.value("LOG_DIRECTORY", logHomeDir).toString();
-
-    QDir logDir(logDirectory);
-    if (!logDir.cd(logHomeDir)){
-        logDir.mkdir(logHomeDir);
-    }
-
     settings.endGroup();
     enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 }
@@ -1170,7 +1184,6 @@ void MainWindow::storeSettings()
     settings.beginGroup("QGC_MAINWINDOW");
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
-    settings.setValue("LOG_DIRECTORY", logDirectory);
     settings.endGroup();
     if (!aboutToCloseFlag && isVisible())
     {
@@ -1218,7 +1231,7 @@ void MainWindow::configureWindowName()
 void MainWindow::startVideoCapture()
 {
     QString format = "bmp";
-    QString initialPath = QDir::currentPath() + tr("/untitled.") + format;
+    QString initialPath = QGC::appDataDirectory();
 
     QString screenFileName = QFileDialog::getSaveFileName(this, tr("Save As"),
                                                           initialPath,

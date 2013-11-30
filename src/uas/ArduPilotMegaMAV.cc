@@ -310,14 +310,7 @@ void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
         subDir = "/";
     }
 
-    QDir logFileDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
-            + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY + subDir);
-
-    if(!logFileDir.exists()){
-        logFileDir.mkdir(logFileDir.absolutePath());
-    }
-
-    QString logFileName =  logFileDir.absolutePath() + "/" + QGC::fileNameAsTime();
+    QString logFileName =  QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
     QLOG_DEBUG() << "start new MAVLink Log:" << logFileName;
     mavlink->startLogging(logFileName);
 }

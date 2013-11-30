@@ -54,7 +54,7 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         ui->titleBarCheckBox->setChecked(MainWindow::instance()->dockWidgetTitleBarsEnabled());
         connect(ui->titleBarCheckBox,SIGNAL(clicked(bool)),MainWindow::instance(),SLOT(enableDockWidgetTitleBars(bool)));
 
-        ui->logDirEdit->setText(MainWindow::instance()->getLogDirectory());
+        ui->logDirEdit->setText(QGC::logDirectory());
         connect(ui->logDirBrowseButton, SIGNAL(clicked()), this, SLOT(browseButtonClicked()));
 
         // Style
@@ -90,12 +90,12 @@ QGCSettingsWidget::~QGCSettingsWidget()
 void QGCSettingsWidget::browseButtonClicked() {
     QFileDialog dlg(this);
     dlg.setFileMode(QFileDialog::Directory);
-    dlg.setDirectory(MainWindow::instance()->getLogDirectory());
+    dlg.setDirectory(QGC::logDirectory());
 
     if(dlg.exec()) {
         QDir dir = dlg.directory();
         QString name = dir.absolutePath();
-        MainWindow::instance()->setLogDirectory(name);
+        QGC::setLogDirectory(name);
         ui->logDirEdit->setText(name);
     }
 }

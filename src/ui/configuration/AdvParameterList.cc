@@ -153,7 +153,7 @@ void AdvParameterList::loadButtonClicked()
         return;
     }
 
-    QString filename = QFileDialog::getOpenFileName(this,"Open File");
+    QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory());
 
     if(filename.length() == 0)
     {
@@ -196,7 +196,7 @@ void AdvParameterList::loadButtonClicked()
 
 void AdvParameterList::saveButtonClicked()
 {
-    QString filename = QFileDialog::getSaveFileName(this,"Save File");
+    QString filename = QFileDialog::getSaveFileName(this,"Save File", QGC::parameterDirectory());
 
     if(filename.length() == 0)
     {

@@ -112,39 +112,13 @@ public:
     };
 
     /** @brief Get current visual style */
-    int getStyle()
-    {
-        return currentStyle;
-    }
+    int getStyle();
     /** @brief Get auto link reconnect setting */
-    bool autoReconnectEnabled()
-    {
-        return autoReconnect;
-    }
-
+    bool autoReconnectEnabled();
     /** @brief Get title bar mode setting */
-    bool dockWidgetTitleBarsEnabled()
-    {
-        return dockWidgetTitleBarEnabled;
-    }
-
+    bool dockWidgetTitleBarsEnabled();
     /** @brief Get low power mode setting */
-    bool lowPowerModeEnabled()
-    {
-        return lowPowerMode;
-    }
-
-    /** @brief Get the log directory setting */
-    QString getLogDirectory()
-    {
-        return logDirectory;
-    }
-
-    /** @brief Set the log directory */
-    void setLogDirectory(QString &d)
-    {
-        logDirectory = d;
-    }
+    bool lowPowerModeEnabled();
 
     QList<QAction*> listLinkMenuActions(void);
 
@@ -476,7 +450,6 @@ protected:
     bool lowPowerMode; ///< If enabled, QGC reduces the update rates of all widgets
     QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
-    QString logDirectory;
 
 private:
     QList<QObject*> commsWidgetList;
