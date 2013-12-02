@@ -81,12 +81,6 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         connect(ui->nativeStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadNativeStyle()));
         connect(ui->indoorStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadIndoorStyle()));
         connect(ui->outdoorStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadOutdoorStyle()));
-
-        // Close / destroy
-        //connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(deleteLater()));
-
-        // Set layout options
-//        ui->generoalPaneGridLayout->setAlignment(Qt::AlignTop);
     }
 }
 
