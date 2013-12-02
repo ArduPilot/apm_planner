@@ -93,7 +93,7 @@ LIBS += -lz.dll
 }
 unix {
         DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
-        DEFINES += GIT_HASH =$$system(git log -n 1 --pretty=format:%H)
+        DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 	INCLUDEPATH += C:/openssl-1.0.1e/include
 	LIBS += -lssl -lcrypto
 }
