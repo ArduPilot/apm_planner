@@ -93,7 +93,7 @@ LIBS += -lz.dll
 }
 unix {
         DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
-        DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
+        DEFINES += GIT_HASH =$$system(git log -n 1 --pretty=format:%H)
 	INCLUDEPATH += C:/openssl-1.0.1e/include
 	LIBS += -lssl -lcrypto
 }
@@ -315,7 +315,8 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/DownloadRemoteParamsDialog.ui \
     src/ui/configuration/ParamCompareDialog.ui \
     src/ui/AP2DataPlot2D.ui \
-    src/ui/dataselectionscreen.ui
+    src/ui/dataselectionscreen.ui \
+    src/ui/AboutDialog.ui
 
 INCLUDEPATH += src \
     src/ui \
@@ -528,7 +529,8 @@ HEADERS += src/MG.h \
     src/ui/AP2DataPlotThread.h \
     src/ui/dataselectionscreen.h \
     src/ui/qcustomplot.h \
-    src/globalobject.h
+    src/globalobject.h \
+    src/ui/AboutDialog.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -759,7 +761,8 @@ SOURCES += src/main.cc \
     src/ui/AP2DataPlotThread.cc \
     src/ui/dataselectionscreen.cpp \
     src/ui/qcustomplot.cpp \
-    src/globalobject.cc
+    src/globalobject.cc \
+    src/ui/AboutDialog.cc
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc
