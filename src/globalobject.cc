@@ -32,7 +32,7 @@ void GlobalObject::loadSettings()
     m_appDataDirectory = settings.value("APP_DATA_DIRECTORY", defaultAppDataDirectory()).toString();
     m_logDirectory = settings.value("LOG_DIRECTORY", defaultLogDirectory()).toString();
     m_MAVLinklogDirectory = settings.value("MAVLINK_LOG_DIRECTORY", defaultMAVLinkLogDirectory()).toString();
-    m_parameterDirectory = settings.value("PARAMETER_DIRECTORY", defaultMAVLinkLogDirectory()).toString();
+    m_parameterDirectory = settings.value("PARAMETER_DIRECTORY", defaultParameterDirectory()).toString();
 
     //    autoReconnect = settings.value("AUTO_RECONNECT", autoReconnect).toBool();
     //    currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
@@ -143,7 +143,7 @@ void GlobalObject::setMAVLinkLogDirectory(const QString &dir)
 QString GlobalObject::defaultParameterDirectory()
 {
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString paramHomeDir = homeDir + PARAMETER_DIRECTORY;
+    QString paramHomeDir = homeDir + APP_DATA_DIRECTORY + PARAMETER_DIRECTORY;
     return paramHomeDir;
 }
 
