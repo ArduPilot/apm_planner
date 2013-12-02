@@ -372,8 +372,13 @@ void UASQuickView::addSource(MAVLinkDecoder *decoder)
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
 }
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
+void UASQuickView::valueUpdate(const int uasId,const QString &name,const QString &unit,const double value,const quint64 msec)
 {
+    if (this->uas->getUASID() != uasId)
+    {
+        //This message is for the non active UAS
+        return;
+    }
     if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
@@ -384,93 +389,42 @@ void UASQuickView::valueChanged(const int uasId, const QString& name, const QStr
     uasPropertyValueMap[name +" ("+unit+")"] = value;
 }
 
+void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
+{
+    valueUpdate(uasId,name,unit,value,msec);
+}
+
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    valueUpdate(uasId,name,unit,value,msec);
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    valueUpdate(uasId,name,unit,value,msec);
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    valueUpdate(uasId,name,unit,value,msec);
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    valueUpdate(uasId,name,unit,value,msec);
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    valueUpdate(uasId,name,unit,value,msec);
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    valueUpdate(uasId,name,unit,value,msec);
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    valueUpdate(uasId,name,unit,value,msec);
 }
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    valueUpdate(uasId,name,unit,value,msec);
 }
 
 void UASQuickView::actionTriggered(bool checked)
@@ -489,16 +443,9 @@ void UASQuickView::actionTriggered(bool checked)
         valueDisabled(senderlabel->text());
     }
 }
-void UASQuickView::valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs)
+void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value,const quint64 msec)
 {
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
-    {
-        if (quickViewSelectDialog)
-        {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
-        }
-    }
-    uasPropertyValueMap[name +" ("+unit+")"] = value.toDouble();
+    valueUpdate(uasId,name,unit,value.toDouble(),msec);
 }
 
 void UASQuickView::valChanged(double val,QString type)
