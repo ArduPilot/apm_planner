@@ -61,6 +61,8 @@ This file is part of the QGROUNDCONTROL project
 #include "Q3DWidgetFactory.h"
 #endif
 
+#include "AboutDialog.h"
+
 // FIXME Move
 #include "PxQuadMAV.h"
 #include "SlugsMAV.h"
@@ -1514,6 +1516,9 @@ void MainWindow::connectCommonActions()
     ui.actionEmergency_Land->setEnabled(false);
     ui.actionShutdownMAV->setEnabled(false);
 
+    // About
+    connect(ui.actionAbout_APM_Planner_2_0, SIGNAL(triggered()), this, SLOT(showAbout()));
+
     // Connect actions from ui
     connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
     connect(ui.actionAdvanced_Mode,SIGNAL(triggered()),this,SLOT(setAdvancedMode()));
@@ -2305,3 +2310,12 @@ bool MainWindow::x11Event(XEvent *event)
     return false;
 }
 #endif // MOUSE_ENABLED_LINUX
+
+void MainWindow::showAbout()
+{
+    AboutDialog* dialog = new AboutDialog(this);
+    dialog->exec();
+    dialog->hide();
+    delete dialog;
+    dialog = NULL;
+}
