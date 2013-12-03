@@ -86,6 +86,7 @@ QString GlobalObject::defaultAppDataDirectory()
 
 QString GlobalObject::appDataDirectory()
 {
+    makeDirectory(m_appDataDirectory);
     return m_appDataDirectory;
 }
 
@@ -107,6 +108,7 @@ QString GlobalObject::defaultLogDirectory()
 
 QString GlobalObject::logDirectory()
 {
+    makeDirectory(m_logDirectory);
     return m_logDirectory;
 }
 
@@ -128,6 +130,7 @@ QString GlobalObject::defaultMAVLinkLogDirectory()
 
 QString GlobalObject::MAVLinkLogDirectory()
 {
+    makeDirectory(m_MAVLinklogDirectory);
     return m_MAVLinklogDirectory;
 }
 
@@ -149,6 +152,7 @@ QString GlobalObject::defaultParameterDirectory()
 
 QString GlobalObject::parameterDirectory()
 {
+    makeDirectory(m_parameterDirectory);
     return m_parameterDirectory;
 }
 
