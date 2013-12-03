@@ -13,7 +13,9 @@ AboutDialog::AboutDialog(QWidget *parent) :
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(accept()));
 
     ui->appnameLabel->setText(tr("%1 %2").arg(QGC_APPLICATION_NAME).arg(QGC_APPLICATION_VERSION));
-    ui->versionLabel->setText(tr("(%1-%2)").arg(define2string(GIT_HASH))
+    QString hash = QString(define2string(GIT_HASH));
+    hash.truncate(8);
+    ui->versionLabel->setText(tr("(%1-%2)").arg(hash)
                                .arg(define2string(GIT_COMMIT)));
 }
 
