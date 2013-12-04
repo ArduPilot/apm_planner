@@ -68,7 +68,7 @@ bool GlobalObject::makeDirectory(const QString& dir)
 {
     QDir newDir(dir);
     if (!newDir.exists()){
-        return newDir.mkdir(dir);
+        return newDir.mkpath(dir);
     }
     return true;
 }
