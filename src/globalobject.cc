@@ -80,7 +80,7 @@ bool GlobalObject::makeDirectory(const QString& dir)
 QString GlobalObject::defaultAppDataDirectory()
 {
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString appHomeDir = homeDir + "/" + APP_DATA_DIRECTORY;
+    QString appHomeDir = homeDir + APP_DATA_DIRECTORY;
     makeDirectory(appHomeDir);
     return appHomeDir;
 }
@@ -103,7 +103,7 @@ void GlobalObject::setAppDataDirectory(const QString &dir)
 QString GlobalObject::defaultLogDirectory()
 {
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString logHomeDir = homeDir + "/" + APP_DATA_DIRECTORY + "/" + LOG_DIRECTORY;
+    QString logHomeDir = homeDir + APP_DATA_DIRECTORY + LOG_DIRECTORY;
     makeDirectory(logHomeDir);
     return logHomeDir;
 }
@@ -126,7 +126,7 @@ void GlobalObject::setLogDirectory(const QString &dir)
 QString GlobalObject::defaultMAVLinkLogDirectory()
 {
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString logHomeDir = homeDir + "/" + APP_DATA_DIRECTORY + "/" + MAVLINK_LOG_DIRECTORY;
+    QString logHomeDir = homeDir + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY;
     makeDirectory(logHomeDir);
     return logHomeDir;
 }
