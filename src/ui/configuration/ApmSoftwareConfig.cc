@@ -116,12 +116,7 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished()
         return;
     }
     QByteArray apmpdef = reply->readAll();
-#ifdef Q_OS_WIN
-    QString appDataDir = QString(getenv("USERPROFILE")).replace("\\","/");
-#else
-    QString appDataDir = getenv("HOME");
-#endif
-    m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml");
+    m_apmPdefFilename = QDir(QGC::appDataDirectory()).filePath("apm.pdef.xml");
     QFile file(m_apmPdefFilename);
     file.open(QIODevice::ReadWrite | QIODevice::Truncate);
     file.write(apmpdef);
