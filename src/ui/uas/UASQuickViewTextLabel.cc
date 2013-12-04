@@ -8,7 +8,6 @@ void UASQuickViewTextLabel::setFontColor(QColor color)
 {
     m_fontColor = color;
     this->setStyleSheet(m_styleSheetString.arg(m_fontColor.name(),QString::number(m_fontSize) + "px"));
-    qDebug() << "Stylesheet:" << m_styleSheetString.arg(m_fontColor.name(),QString::number(m_fontSize) + "px");
 }
 
 void UASQuickViewTextLabel::setFontSize(int pixelsize)
