@@ -151,8 +151,7 @@ QString MAVLinkProtocol::getLogfileName()
     }
     else
     {
-        return QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
-                + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY + QGC::fileNameAsTime();
+        return QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
     }
 }
 
@@ -361,7 +360,6 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
 
                 // Create a new UAS object
                 uas = QGCMAVLinkUASFactory::createUAS(this, link, message.sysid, &heartbeat);
-
             }
 
             // Only count message if UAS exists for this message
@@ -629,10 +627,7 @@ bool MAVLinkProtocol::startLogging(const QString& filename)
 
     m_logfile = new QFile(filename);
     if (m_logfile->open(QIODevice::WriteOnly | QIODevice::Append)){
-        emit protocolStatusMessage(tr("Started MAVLink logging"),
-                                   tr("MAVLink logging to the file %1.")
-                                   .arg(m_logfile->fileName()));
-        m_loggingEnabled = true;
+         m_loggingEnabled = true;
 
     } else {
         emit protocolStatusMessage(tr("Started MAVLink logging"),
@@ -679,3 +674,5 @@ int MAVLinkProtocol::getHeartbeatRate()
 {
     return heartbeatRate;
 }
+
+

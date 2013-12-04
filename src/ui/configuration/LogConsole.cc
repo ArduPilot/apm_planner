@@ -338,7 +338,7 @@ void LogConsole::selectNoneClicked() {
 
 void LogConsole::pullSelectedClicked() {
     QDateTime now = QDateTime::currentDateTime();
-    QString parentDir = MainWindow::instance()->getLogDirectory();
+    QString parentDir = QGC::logDirectory();
     QString todayString = now.toString("yyyy-MM-dd hh-mm-ss");
 
     QList<FileData> files;

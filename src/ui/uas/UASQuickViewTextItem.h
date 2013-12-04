@@ -4,6 +4,7 @@
 #include "UASQuickViewItem.h"
 #include <QLabel>
 #include <QSpacerItem>
+#include "UASQuickViewTextLabel.h"
 class UASQuickViewTextItem : public UASQuickViewItem
 {
 public:
@@ -17,8 +18,8 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event);
 private:
-    QLabel *titleLabel;
-    QLabel *valueLabel;
+    UASQuickViewTextLabel *titleLabel;
+    UASQuickViewTextLabel *valueLabel;
     QSpacerItem *spacerItem;
 };
 

@@ -38,9 +38,9 @@ This file is part of the APM_PLANNER project
 #include <QWidget>
 #include <QProgressDialog>
 // Using alglib for least squares calc (could migrate to Eigen Lib?)
-#include "ap.h"
-#include "optimization.h"
-#include "interpolation.h"
+#include "libs/alglib/src/ap.h"
+#include "libs/alglib/src/optimization.h"
+#include "libs/alglib/src/interpolation.h"
 
 
 class RawImuTuple{

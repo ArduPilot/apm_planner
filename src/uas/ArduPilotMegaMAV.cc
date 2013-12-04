@@ -39,6 +39,8 @@ This file is part of the QGROUNDCONTROL project
 #endif
 
 #include <QString>
+#include <QDir>
+#include <QDesktopServices>
 
 CustomMode::CustomMode()
 {
@@ -254,15 +256,63 @@ void ArduPilotMegaMAV::RequestAllDataStreams()
 
     enableRCChannelDataTransmission(2);
 }
+
 void ArduPilotMegaMAV::uasConnected()
 {
     QLOG_INFO() << "ArduPilotMegaMAV APM Connected";
     QTimer::singleShot(500,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 0.5 seconds.
+    createNewMAVLinkLog(type);
 }
 
 void ArduPilotMegaMAV::uasDisconnected()
 {
     QLOG_INFO() << "ArduPilotMegaMAV APM disconnected";
+    mavlink->stopLogging();
+}
+
+void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
+{
+    QString subDir;
+
+    // This creates a log in subdir based on the vehicle
+    // first detected. When connecting to multiple vehicles
+    // it will not log message based on each specific.
+    switch(type) {
+    case MAV_TYPE_TRICOPTER:
+        subDir = "/tricopter/";
+        break;
+
+    case MAV_TYPE_QUADROTOR:
+        subDir = "/quadcopter/";
+        break;
+
+    case MAV_TYPE_HEXAROTOR:
+        subDir = "/hexcopter/";
+        break;
+
+    case MAV_TYPE_OCTOROTOR:
+        subDir = "/octocopter/";
+        break;
+
+    case MAV_TYPE_GROUND_ROVER:
+        subDir = "/rover/";
+        break;
+
+    case MAV_TYPE_HELICOPTER:
+        subDir = "/helicopter/";
+        break;
+
+    case MAV_TYPE_FIXED_WING:
+        subDir = "/plane/";
+        break;
+
+    default:
+        subDir = "/";
+    }
+
+    QString logFileName =  QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
+    QLOG_DEBUG() << "start new MAVLink Log:" << logFileName;
+    mavlink->startLogging(logFileName);
 }
 
 /**
@@ -437,3 +487,4 @@ void ArduPilotMegaMAV::playArmStateChangedAudioMessage(bool armedState)
     QLOG_DEBUG() << "APM say:" << armedPhrase;
     GAudioOutput::instance()->say(QString("system %1 is %2").arg(QString::number(getUASID()),armedPhrase));
 }
+

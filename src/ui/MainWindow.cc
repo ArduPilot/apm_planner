@@ -61,6 +61,8 @@ This file is part of the QGROUNDCONTROL project
 #include "Q3DWidgetFactory.h"
 #endif
 
+#include "AboutDialog.h"
+
 // FIXME Move
 #include "PxQuadMAV.h"
 #include "SlugsMAV.h"
@@ -92,6 +94,28 @@ MainWindow* MainWindow::instance(QSplashScreen* screen)
         //_instance->setParent(qApp);
     }
     return _instance;
+}
+
+// inline function definitions
+
+int MainWindow::getStyle()
+{
+    return currentStyle;
+}
+
+bool MainWindow::autoReconnectEnabled()
+{
+    return autoReconnect;
+}
+
+bool MainWindow::dockWidgetTitleBarsEnabled()
+{
+    return dockWidgetTitleBarEnabled;
+}
+
+bool MainWindow::lowPowerModeEnabled()
+{
+    return lowPowerMode;
 }
 
 /**
@@ -550,7 +574,9 @@ void MainWindow::buildCommonWidgets()
         engineeringView = new SubMainWindow(this);
         engineeringView->setObjectName("VIEW_ENGINEER");
         //engineeringView->setCentralWidget(new QGCDataPlot2D(this));
-        engineeringView->setCentralWidget(new AP2DataPlot2D(this));
+        AP2DataPlot2D *plot = new AP2DataPlot2D(this);
+        plot->addSource(mavlinkDecoder);
+        engineeringView->setCentralWidget(plot);
 
         addToCentralStackedWidget(engineeringView, VIEW_ENGINEER, tr("Logfile Plot"));
     }
@@ -1004,7 +1030,9 @@ void MainWindow::createCustomWidget()
 void MainWindow::loadCustomWidget()
 {
     QString widgetFileExtension(".qgw");
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Specify Widget File Name"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), tr("QGroundControl Widget (*%1);;").arg(widgetFileExtension));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Specify Widget File Name"),
+                                                    QGC::appDataDirectory(),
+                                                    tr("QGroundControl Widget (*%1);;").arg(widgetFileExtension));
     if (fileName != "") loadCustomWidget(fileName);
 }
 void MainWindow::loadCustomWidget(const QString& fileName, int view)
@@ -1111,8 +1139,8 @@ void MainWindow::loadCustomWidget(const QString& fileName, bool singleinstance)
 
 void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const QString& autopilotType)
 {
-    QString defaultsDir = qApp->applicationDirPath() + "/files/" + autopilotType.toLower() + "/widgets/";
-    QString platformDir = qApp->applicationDirPath() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
+    QString defaultsDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/widgets/";
+    QString platformDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
 
     QDir widgets(defaultsDir);
     QStringList files = widgets.entryList();
@@ -1142,22 +1170,12 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 
 void MainWindow::loadSettings()
 {
-    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString logHomeDir = homeDir + APP_DATA_DIRECTORY + LOG_DIRECTORY;
-
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     autoReconnect = settings.value("AUTO_RECONNECT", autoReconnect).toBool();
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
     lowPowerMode = settings.value("LOW_POWER_MODE", lowPowerMode).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS",dockWidgetTitleBarEnabled).toBool();
-    logDirectory = settings.value("LOG_DIRECTORY", logHomeDir).toString();
-
-    QDir logDir(logDirectory);
-    if (!logDir.cd(logHomeDir)){
-        logDir.mkdir(logHomeDir);
-    }
-
     settings.endGroup();
     enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 }
@@ -1168,7 +1186,6 @@ void MainWindow::storeSettings()
     settings.beginGroup("QGC_MAINWINDOW");
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
-    settings.setValue("LOG_DIRECTORY", logDirectory);
     settings.endGroup();
     if (!aboutToCloseFlag && isVisible())
     {
@@ -1216,7 +1233,7 @@ void MainWindow::configureWindowName()
 void MainWindow::startVideoCapture()
 {
     QString format = "bmp";
-    QString initialPath = QDir::currentPath() + tr("/untitled.") + format;
+    QString initialPath = QGC::appDataDirectory();
 
     QString screenFileName = QFileDialog::getSaveFileName(this, tr("Save As"),
                                                           initialPath,
@@ -1498,6 +1515,9 @@ void MainWindow::connectCommonActions()
     ui.actionEmergency_Kill->setEnabled(false);
     ui.actionEmergency_Land->setEnabled(false);
     ui.actionShutdownMAV->setEnabled(false);
+
+    // About
+    connect(ui.actionAbout_APM_Planner_2_0, SIGNAL(triggered()), this, SLOT(showAbout()));
 
     // Connect actions from ui
     connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
@@ -1888,11 +1908,11 @@ void MainWindow::UASCreated(UASInterface* uas)
     }
 
     linechartWidget->addSource(mavlinkDecoder);
-    if (engineeringView->centralWidget() != linechartWidget)
+    /*if (engineeringView->centralWidget() != linechartWidget)
     {
         engineeringView->setCentralWidget(linechartWidget);
         linechartWidget->show();
-    }
+    }*/
 
     // Load default custom widgets for this autopilot type
     loadCustomWidgetsFromDefaults(uas->getSystemTypeName(), uas->getAutopilotTypeName());
@@ -2290,3 +2310,12 @@ bool MainWindow::x11Event(XEvent *event)
     return false;
 }
 #endif // MOUSE_ENABLED_LINUX
+
+void MainWindow::showAbout()
+{
+    AboutDialog* dialog = new AboutDialog(this);
+    dialog->exec();
+    dialog->hide();
+    delete dialog;
+    dialog = NULL;
+}

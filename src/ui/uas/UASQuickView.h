@@ -29,6 +29,7 @@ private:
     /** Maps from property name to the display item */
     QMap<QString,UASQuickViewItem*> uasPropertyToLabelMap;
 
+
     /** Timer for updating the UI */
     QTimer *updateTimer;
 
@@ -42,6 +43,8 @@ private:
     void loadSettings();
 
     void recalculateItemTextSizing();
+
+    void valueUpdate(const int uasId,const QString &name,const QString &unit,const double value,const quint64 msec);
 
     /** Column Count */
     int m_columnCount;

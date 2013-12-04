@@ -102,10 +102,7 @@ macx {
     LIBS += -lz
 }
 
-
 include (QsLog/QsLog.pri)
-
-message(PWD $$PWD)
 include (libs/thirdParty/quazip/quazip.pri)
 
 LANGUAGE = C++
@@ -124,33 +121,7 @@ DEFINES += MAVLINK_NO_DATA
 # EXTERNAL LIBRARY CONFIGURATION
 
 # AGLLIB math library
-INCLUDEPATH += libs/alglib/src
-HEADERS +=     libs/alglib/src/ap.h \
-    libs/alglib/src/alglibinternal.h\
-    libs/alglib/src/interpolation.h \
-    libs/alglib/src/optimization.h \
-    libs/alglib/src/linalg.h \
-    libs/alglib/src/alglibmisc.h \
-    libs/alglib/src/diffequations.h \
-    libs/alglib/src/integration.h \
-    libs/alglib/src/solvers.h \
-    libs/alglib/src/specialfunctions.cpp
-# NOTE: Add new headers to the HEADER definition further below
-# marked "headers_here", but not directly below
-
-SOURCES +=     libs/alglib/src/ap.cpp \
-    libs/alglib/src/alglibinternal.cpp \
-    libs/alglib/src/interpolation.cpp \
-    libs/alglib/src/optimization.cpp \
-    libs/alglib/src/linalg.cpp \
-    libs/alglib/src/alglibmisc.cpp \
-    libs/alglib/src/diffequations.cpp \
-    libs/alglib/src/integration.cpp \
-    libs/alglib/src/solvers.cpp \
-    libs/alglib/src/specialfunctions.cpp
-# NOTE: Add new sources to the SOURCE definition further below
-# marked "sources_here", but not directly below
-
+include(libs/alglib/alglib.pri)
 # EIGEN matrix library (header-only)
 INCLUDEPATH += libs/eigen
 
@@ -344,7 +315,8 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/DownloadRemoteParamsDialog.ui \
     src/ui/configuration/ParamCompareDialog.ui \
     src/ui/AP2DataPlot2D.ui \
-    src/ui/dataselectionscreen.ui
+    src/ui/dataselectionscreen.ui \
+    src/ui/AboutDialog.ui
 
 INCLUDEPATH += src \
     src/ui \
@@ -556,7 +528,10 @@ HEADERS += src/MG.h \
     src/ui/AP2DataPlot2D.h \
     src/ui/AP2DataPlotThread.h \
     src/ui/dataselectionscreen.h \
-    src/ui/qcustomplot.h
+    src/ui/qcustomplot.h \
+    src/globalobject.h \
+    src/ui/AboutDialog.h \
+    src/ui/uas/UASQuickViewTextLabel.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -786,7 +761,10 @@ SOURCES += src/main.cc \
     src/ui/AP2DataPlot2D.cpp \
     src/ui/AP2DataPlotThread.cc \
     src/ui/dataselectionscreen.cpp \
-    src/ui/qcustomplot.cpp
+    src/ui/qcustomplot.cpp \
+    src/globalobject.cc \
+    src/ui/AboutDialog.cc \
+    src/ui/uas/UASQuickViewTextLabel.cc
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc

@@ -988,7 +988,7 @@ void ApmFirmwareConfig::flashCustomFirmware()
 {
     // Show File SelectionDialog
 
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),"~",
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QGC::appDataDirectory(),
                                                      tr("bin (*.hex *.px4)"));
 
     if (filename.length() > 0){

@@ -101,13 +101,15 @@
     <addaction name="actionProject_Roadmap_2"/>
     <addaction name="actionDeveloper_Credits"/>
     <addaction name="actionDebug_Console"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_APM_Planner_2_0"/>
    </widget>
    <widget class="QMenu" name="menuPerspectives">
     <property name="title">
      <string>Views</string>
     </property>
-    <addaction name="actionMissionView"/>
     <addaction name="actionFlightView"/>
+    <addaction name="actionMissionView"/>
     <addaction name="actionHardwareConfig"/>
     <addaction name="actionSoftwareConfig"/>
     <addaction name="actionTerminalView"/>
@@ -291,10 +293,10 @@
      <normaloff>:/files/images/categories/applications-internet.svg</normaloff>:/files/images/categories/applications-internet.svg</iconset>
    </property>
    <property name="text">
-    <string>Flight Data</string>
+    <string>Flight Plan</string>
    </property>
    <property name="shortcut">
-    <string>Meta+O</string>
+    <string>Ctrl+2</string>
    </property>
   </action>
   <action name="actionEngineersView">
@@ -309,7 +311,7 @@
     <string>Plot</string>
    </property>
    <property name="shortcut">
-    <string>Meta+E</string>
+    <string>Ctrl+6</string>
    </property>
   </action>
   <action name="actionMavlinkView">
@@ -345,10 +347,10 @@
      <normaloff>:/files/images/status/network-wireless-encrypted.svg</normaloff>:/files/images/status/network-wireless-encrypted.svg</iconset>
    </property>
    <property name="text">
-    <string>Flight Plan</string>
+    <string>Flight Data</string>
    </property>
    <property name="shortcut">
-    <string>Meta+P</string>
+    <string>Ctrl+1</string>
    </property>
   </action>
   <action name="actionNewCustomWidget">
@@ -485,6 +487,9 @@
    <property name="toolTip">
     <string>Configuration options of the vehicle.</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
   </action>
   <action name="actionAdvanced_Mode">
    <property name="checkable">
@@ -517,6 +522,9 @@
    <property name="text">
     <string>Config/Tuning</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
    <property name="menuRole">
     <enum>QAction::NoRole</enum>
    </property>
@@ -532,6 +540,9 @@
    <property name="text">
     <string>Terminal</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
+   </property>
   </action>
   <action name="actionDebug_Console">
    <property name="checkable">
@@ -539,6 +550,11 @@
    </property>
    <property name="text">
     <string>Show Debug Console</string>
+   </property>
+  </action>
+  <action name="actionAbout_APM_Planner_2_0">
+   <property name="text">
+    <string>About APM Planner 2.0</string>
    </property>
   </action>
  </widget>

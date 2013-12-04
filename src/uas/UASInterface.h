@@ -200,6 +200,7 @@ public:
         QGC_AIRFRAME_X8,
         QGC_AIRFRAME_VIPER_2_0,
         QGC_AIRFRAME_CAMFLYER_Q,
+        QGC_AIRFRAME_HELICOPTER,
         QGC_AIRFRAME_END_OF_ENUM
     };
 
@@ -260,6 +261,7 @@ public:
     virtual bool isMultirotor() = 0;
     virtual bool isFixedWing() = 0;
     virtual bool isGroundRover() = 0;
+    virtual bool isHelicopter() = 0;
 
     /** @brief Get the type of the autopilot (PIXHAWK, APM, UDB, PPZ,..) */
     virtual int getAutopilotType() = 0;

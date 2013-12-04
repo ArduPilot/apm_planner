@@ -161,6 +161,9 @@
         <file>files/ardupilotmega/images/px4.jpg</file>
         <file>files/ardupilotmega/images/Pixhawk.png</file>
         <file>files/vehicles/block_plane/block_plane_0.dae</file>
+        <file>files/images/mavs/frames_quad_I.png</file>
+        <file alias="APMIcon">files/APMIcons/AP_flat.png</file>
+        <file alias="APMIcon128">files/APMIcons/AP_flat_128.png</file>
     </qresource>
     <qresource prefix="/general">
         <file alias="vera.ttf">files/styles/Vera.ttf</file>

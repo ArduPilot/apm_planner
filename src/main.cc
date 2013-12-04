@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
             appDir.mkdir("apmplanner2");
         }
     }
-    const QString sLogPath(QDir(appDataDir + "/apmplanner2").filePath("log.txt"));
+    const QString sLogPath(QDir(QGC::appDataDirectory()).filePath("log.txt"));
 
     QsLogging::DestinationPtr fileDestination(
        QsLogging::DestinationFactory::MakeFileDestination(sLogPath, true, 0, 5) );

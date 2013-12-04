@@ -153,15 +153,7 @@ void MAVLinkSettingsWidget::updateLogfileName(const QString& fileName)
 
 void MAVLinkSettingsWidget::chooseLogfileName()
 {
-    QDir logDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
-            + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY);
-
-    if (!logDir.exists()){
-        logDir.mkdir(logDir.absolutePath());
-    }
-
-    QString suggestedFileName = QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
-            + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY + "/" + QGC::fileNameAsTime();
+    QString suggestedFileName = QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
     QString fileName = QFileDialog::getSaveFileName(this, tr("Specify MAVLink log file name"),
                                                     suggestedFileName
                                                     , tr("MAVLink Logfile (%1);;").arg(MAVLINK_LOGFILE_EXT));

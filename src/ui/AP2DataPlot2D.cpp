@@ -2,11 +2,19 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
+#include <QDesktopServices>
+#include <QTimer>
+
+#include "UAS.h"
+#include "UASManager.h"
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
+    m_uas = 0;
+    m_logLoaded = false;
     m_progressDialog=0;
+    m_currentIndex=0;
     connect(ui.pushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     graphCount=0;
     m_plot = new QCustomPlot(ui.widget);
@@ -31,17 +39,124 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     ui.horizontalLayout_3->setStretch(0,5);
     ui.horizontalLayout_3->setStretch(1,1);
 
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+    activeUASSet(UASManager::instance()->getActiveUAS());
+    QTimer *timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
+    timer->start(500);
 
+}
+void AP2DataPlot2D::activeUASSet(UASInterface* uas)
+{
+    if (!uas)
+    {
+        return;
+    }
+    if (m_uas)
+    {
 
+    }
+    m_uas = uas;
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint16,quint64)),this,SLOT(valueChanged(int,QString,QString,qint16,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint32,quint64)),this,SLOT(valueChanged(int,QString,QString,qint32,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint64,quint64)),this,SLOT(valueChanged(int,QString,QString,qint64,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint8,quint64)),this,SLOT(valueChanged(int,QString,QString,quint8,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint16,quint64)),this,SLOT(valueChanged(int,QString,QString,quint16,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+
+}
+void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
+{
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint16,quint64)),this,SLOT(valueChanged(int,QString,QString,qint16,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint32,quint64)),this,SLOT(valueChanged(int,QString,QString,qint32,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint64,quint64)),this,SLOT(valueChanged(int,QString,QString,qint64,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint8,quint64)),this,SLOT(valueChanged(int,QString,QString,quint8,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint16,quint64)),this,SLOT(valueChanged(int,QString,QString,quint16,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
+}
+void AP2DataPlot2D::updateValue(QString name,double value)
+{
+    if (!m_nameToAxisIndex.contains(name))
+    {
+        //Also doesn't exist on the data select screen
+        m_dataSelectionScreen->addItem(name);
+        m_nameToAxisIndex[name] = m_currentIndex;
+    }
+    else
+    {
+        if (m_nameToAxisIndex[name] == m_currentIndex)
+        {
+            m_currentIndex++;
+        }
+    }
+    m_nameToAxisIndex[name] = m_currentIndex;
+    if (m_graphMap.contains(name))
+    {
+        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
+        if (!m_graphMap[name]->keyAxis()->range().contains(value))
+        {
+            m_graphMap[name]->rescaleValueAxis();
+        }
+    }
+    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+}
+
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
+{
+    updateValue(name,value);
+}
+void AP2DataPlot2D::valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs)
+{
+    updateValue(name,value.toDouble());
 }
 
 void AP2DataPlot2D::loadButtonClicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,"Select log file to open");
+    QString filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory());
     if (filename == "")
     {
         return;
     }
+    m_logLoaded = true;
     for (int i=0;i<m_graphNameList.size();i++)
     {
         m_wideAxisRect->removeAxis(m_axisList[m_graphNameList[i]]);
@@ -75,59 +190,115 @@ AP2DataPlot2D::~AP2DataPlot2D()
 }
 void AP2DataPlot2D::itemEnabled(QString name)
 {
-    for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
+    if (m_logLoaded)
     {
-        if (i.value().size() > 0)
+        for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
         {
-            if (i.value()[0].second.contains(name))
+            if (i.value().size() > 0)
             {
-                //This is the one we want.
-                QVector<double> xlist;
-                QVector<double> ylist;
-                int count = 0;
-                float min = i.value()[0].second[name].toDouble();
-                float max = i.value()[0].second[name].toDouble();
-                for (int j=0;j<i.value().size();j++)
+                if (i.value()[0].second.contains(name))
                 {
-                    xlist.append(i.value()[j].first);
-                    double val = i.value()[j].second[name].toDouble();
-                    if (val > max)
+                    //This is the one we want.
+                    QVector<double> xlist;
+                    QVector<double> ylist;
+                    int count = 0;
+                    float min = i.value()[0].second[name].toDouble();
+                    float max = i.value()[0].second[name].toDouble();
+                    for (int j=0;j<i.value().size();j++)
                     {
-                        max = val;
+                        xlist.append(i.value()[j].first);
+                        double val = i.value()[j].second[name].toDouble();
+                        if (val > max)
+                        {
+                            max = val;
+                        }
+                        if (val < min)
+                        {
+                            min = val;
+                        }
+                        ylist.append(val);
                     }
-                    if (val < min)
+                    QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+                    axis->setLabel(name);
+
+                    if (graphCount > 0)
                     {
-                        min = val;
+                        connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
                     }
-                    ylist.append(val);
-                }
-                QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-                axis->setLabel(name);
+                    QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+                    axis->setLabelColor(color);
+                    axis->setTickLabelColor(color);
+                    axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+                    m_axisList[name] = axis;
+                    QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,graphCount++));
+                    m_graphMap[name] = mainGraph1;
+                    m_graphNameList.append(name);
+                    mainGraph1->setData(xlist, ylist);
+                    mainGraph1->rescaleValueAxis();
+                    if (graphCount == 1)
+                    {
+                        mainGraph1->rescaleKeyAxis();
+                    }
 
-                if (graphCount > 0)
-                {
-                    connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+                   // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
+                    mainGraph1->setPen(QPen(color, 2));
+                    m_plot->replot();
+                    return;
                 }
-                QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
-                axis->setLabelColor(color);
-                axis->setTickLabelColor(color);
-                axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
-                m_axisList[name] = axis;
-                QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,graphCount++));
-                m_graphMap[name] = mainGraph1;
-                m_graphNameList.append(name);
-                mainGraph1->setData(xlist, ylist);
-                mainGraph1->rescaleValueAxis();
-                if (graphCount == 1)
-                {
-                    mainGraph1->rescaleKeyAxis();
-                }
-
-               // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
-                mainGraph1->setPen(QPen(color, 2));
-                m_plot->replot();
-                return;
             }
+
+        }
+    } //if (m_logLoaded)
+    else
+    {
+        if (m_onlineValueMap.contains(name))
+        {
+            QVector<double> xlist;
+            QVector<double> ylist;
+            int count = 0;
+
+            float min = m_onlineValueMap[name][0].second;
+            float max = m_onlineValueMap[name][0].second;
+            for (int j=0;j<m_onlineValueMap[name].size();j++)
+            {
+                xlist.append(m_onlineValueMap[name][j].first);
+                double val = m_onlineValueMap[name][j].second;
+                if (val > max)
+                {
+                    max = val;
+                }
+                if (val < min)
+                {
+                    min = val;
+                }
+                ylist.append(val);
+            }
+            QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+            axis->setLabel(name);
+
+            if (graphCount > 0)
+            {
+                connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+            }
+            QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+            axis->setLabelColor(color);
+            axis->setTickLabelColor(color);
+            axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+            m_axisList[name] = axis;
+            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,graphCount++));
+            m_graphMap[name] = mainGraph1;
+            m_graphNameList.append(name);
+            mainGraph1->setData(xlist, ylist);
+            mainGraph1->rescaleValueAxis();
+            if (graphCount == 1)
+            {
+                mainGraph1->rescaleKeyAxis();
+            }
+
+           // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
+            mainGraph1->setPen(QPen(color, 2));
+            m_plot->replot();
+
         }
 
     }

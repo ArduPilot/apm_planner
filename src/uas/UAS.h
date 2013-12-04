@@ -56,8 +56,8 @@ public:
     UAS(MAVLinkProtocol* protocol, int id = 0);
     ~UAS();
 
-    static const float lipoFull = 4.2f;  ///< 100% charged voltage
-    static const float lipoEmpty = 3.5f; ///< Discharged voltage
+    static const float lipoFull;  ///< 100% charged voltage
+    static const float lipoEmpty; ///< Discharged voltage
 
     /* MANAGEMENT */
 
@@ -660,6 +660,7 @@ public:
     bool isMultirotor();
     bool isFixedWing();
     bool isGroundRover();
+    bool isHelicopter();
 
 public slots:
     /** @brief Set the autopilot type */
@@ -915,13 +916,6 @@ protected slots:
     void writeSettings();
     /** @brief Read settings from disk */
     void readSettings();
-
-//    // MESSAGE RECEPTION
-//    /** @brief Receive a named value message */
-//    void receiveMessageNamedValue(const mavlink_message_t& message);
-
-private:
-//    unsigned int mode;          ///< The current mode of the MAV
 };
 
 

@@ -24,7 +24,7 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
     binaryBaudRate(57600),
     isPlaying(false),
     currPacketCount(0),
-    lastLogDirectory(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation)),
+    lastLogDirectory(QGC::MAVLinkLogDirectory()),
     ui(new Ui::QGCMAVLinkLogPlayer)
 {
     ui->setupUi(this);
@@ -53,8 +53,6 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
     ui->speedLabel->setEnabled(false);
     ui->logFileNameLabel->setEnabled(false);
     ui->logStatsLabel->setEnabled(false);
-
-    loadSettings();
 }
 
 QGCMAVLinkLogPlayer::~QGCMAVLinkLogPlayer()
@@ -180,21 +178,9 @@ bool QGCMAVLinkLogPlayer::reset(int packetIndex)
     }
 }
 
-void QGCMAVLinkLogPlayer::loadSettings()
-{
-    QSettings settings;
-    settings.beginGroup("QGC_MAVLINKLOGPLAYER");
-    lastLogDirectory = settings.value("LAST_LOG_DIRECTORY", lastLogDirectory).toString();
-    settings.endGroup();
-}
-
 void QGCMAVLinkLogPlayer::storeSettings()
 {
-    QSettings settings;
-    settings.beginGroup("QGC_MAVLINKLOGPLAYER");
-    settings.setValue("LAST_LOG_DIRECTORY", lastLogDirectory);
-    settings.endGroup();
-    settings.sync();
+    QGC::setMAVLinkLogDirectory(lastLogDirectory);
 }
 
 /**

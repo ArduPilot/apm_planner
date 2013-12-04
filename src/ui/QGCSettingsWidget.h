@@ -18,7 +18,10 @@ public:
 protected:
     void showEvent(QShowEvent *evt);
 private slots:
-    void browseButtonClicked();
+    void setLogDir();
+    void setMAVLinkLogDir();
+    void setParamDir();
+    void setAppDataDir();
 
 public slots:
 
