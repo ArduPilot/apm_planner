@@ -18,7 +18,7 @@ GlobalObject* GlobalObject::sharedInstance()
 
 GlobalObject::GlobalObject()
 {
-
+    loadSettings();
 }
 
 GlobalObject::~GlobalObject()
