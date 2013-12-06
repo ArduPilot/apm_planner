@@ -40,7 +40,7 @@ public:
     explicit AP2ConfigWidget(QWidget *parent = 0);
 protected:
     UASInterface *m_uas;
-    void showNullMAVErrorMessageBox();
+    bool showNullMAVErrorMessageBox();
     void initConnections();
 signals:
     

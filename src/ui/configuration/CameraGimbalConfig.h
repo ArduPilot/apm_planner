@@ -19,13 +19,42 @@ This file is part of the APM_PLANNER project
     along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
-
 #ifndef CAMERAGIMBALCONFIG_H
 #define CAMERAGIMBALCONFIG_H
 
 #include <QWidget>
 #include "AP2ConfigWidget.h"
 #include "ui_CameraGimbalConfig.h"
+
+
+class RC_FUNCTION {
+public:
+    static const int Disabled = 0;
+    static const int Manual = 1;
+    static const int Flap = 2;
+    static const int Flap_auto = 3;
+    static const int Aileron = 4;
+    static const int flaperon = 5;
+    static const int mount_pan = 6;
+    static const int mount_tilt = 7;
+    static const int mount_roll = 8;
+    static const int mount_open = 9;
+    static const int camera_trigger = 10;
+    static const int release = 11;
+    static const int mount2_pan = 12;
+    static const int mount2_tilt = 13;
+    static const int mount2_roll = 14;
+    static const int mount2_open = 15;
+    static const int DifferentialSpoiler1 = 16;
+    static const int DifferentialSpoiler2 = 17;
+    static const int AileronWithInput = 18;
+    static const int Elevator = 19;
+    static const int ElevatorWithInput = 20;
+    static const int Rudder = 21;
+};
+
+#define CAM_TRIGG_TYPE_SERVO 0
+#define CAM_TRIGG_TYPE_RELAY 1
 
 class CameraGimbalConfig : public AP2ConfigWidget
 {
@@ -34,21 +63,61 @@ class CameraGimbalConfig : public AP2ConfigWidget
 public:
     explicit CameraGimbalConfig(QWidget *parent = 0);
     ~CameraGimbalConfig();
+
+public slots:
+    void activeUASSet(UASInterface *uas);
+
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
+
     void updateTilt();
     void updateRoll();
     void updatePan();
-    void updateShutter();
+
+    void updateTilt(int index);
+    void updateRoll(int index);
+    void updatePan(int index);
+
+    void updateCameraTriggerOutputCh(int index);
+    void updateCameraTriggerSettings();
+
     void updateRetractAngles();
     void updateNeutralAngles();
     void updateControlAngles();
+
+private:
+    void initConnections();
+    void connectSignals();
+    void disconnectSignals();
+
+    void addOutputRcChannels(QComboBox *comboBox);
+    void addInputRcChannels(QComboBox *comboBox);
+    void addTriggerTypes(QComboBox* comboBox);
+
+    void refreshMountParameters(QString mount, QString parameter, QVariant &value);
+    void refreshCameraTriggerParameters(QString parameter, QVariant value);
+    void refreshRcFunctionComboxBox(QString rcChannelName, QVariant &value);
+
+    void updateCameraGimbalParams(QString& prefix, const QString& newChPrefix,
+                                  const QString& mountType, int rcFunction,
+                                  QComboBox *outputChCombo, QComboBox* inputChCombo,
+                                  QSpinBox* servoMin, QSpinBox* servoMax, QCheckBox* servoReverse,
+                                  QSpinBox* angleMin, QSpinBox* angleMax);
+
 private:
     Ui::CameraGimbalConfig ui;
-    QString m_shutterPrefix;
+
+    QString m_newTriggerPrefix;
+    QString m_newRollPrefix;
+    QString m_newTiltPrefix;
+    QString m_newPanPrefix;
+
+    QString m_triggerPrefix;
     QString m_rollPrefix;
     QString m_tiltPrefix;
     QString m_panPrefix;
+
+    QList<QString> m_cameraParams;
 };
 
 #endif // CAMERAGIMBALCONFIG_H
