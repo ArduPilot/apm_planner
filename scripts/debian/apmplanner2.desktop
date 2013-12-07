@@ -1,12 +1,11 @@
 [Desktop Entry]
 Type=Application
-Version=20131106
-Name=APM Planner 2
+Version=v2.0.0 (Beta-RC1)
+Name=APM Planner
 GenericName=apmplanner2
 Exec=apmplanner2
 Terminal=false
 Categories=Education;Robotics;
 Comment=A UAV Ground Station
-Name=apmplanner2
 Icon=/usr/share/apmplanner2/files/APMIcons/ap_rc.png
 
