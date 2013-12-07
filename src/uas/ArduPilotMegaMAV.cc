@@ -88,7 +88,7 @@ QString ApmPlane::stringForMode(int aMode)
         return "Training";
         break;
     case FLY_BY_WIRE_A:
-        return "Fly-By-Wire B";
+        return "Fly-By-Wire A";
         break;
     case FLY_BY_WIRE_B:
         return "Fly-By-Wire B";
