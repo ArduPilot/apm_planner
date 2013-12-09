@@ -114,6 +114,11 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     {
         return;
     }
+    if (m_logLoaded)
+    {
+        //If a log is currently loaded, we don't care about incoming data.
+        return;
+    }
     if (!m_nameToAxisIndex.contains(name))
     {
         //Also doesn't exist on the data select screen
@@ -187,12 +192,16 @@ void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QSt
 
 void AP2DataPlot2D::loadButtonClicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory());
-    if (filename == "")
+    QString filename = "";
+    if (!m_logLoaded)
     {
-        return;
+        filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory());
+        if (filename == "")
+        {
+            return;
+        }
     }
-    m_logLoaded = true;
+    //Clear the graph
     for (int i=0;i<m_graphNameList.size();i++)
     {
         m_wideAxisRect->removeAxis(m_axisList[m_graphNameList[i]]);
@@ -200,11 +209,24 @@ void AP2DataPlot2D::loadButtonClicked()
         m_graphMap.remove(m_graphNameList[i]);
         m_axisList.remove(m_graphNameList[i]);
     }
-   //m_dataSelectionScreen->hide();
     m_dataSelectionScreen->clear();
+    m_nameToAxisIndex.clear();
     m_dataList.clear();
+    m_onlineValueMap.clear();
     m_plot->replot();
     graphCount=0;
+
+    if (m_logLoaded)
+    {
+        //Unload the log.
+        m_logLoaded = false;
+        ui.pushButton->setText("Load Log");
+        return;
+    }
+    ui.autoScrollCheckBox->setChecked(false);
+    ui.pushButton->setText("Unload Log");
+
+    m_logLoaded = true;
     m_logLoaderThread = new AP2DataPlotThread();
     connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
