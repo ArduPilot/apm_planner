@@ -43,6 +43,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="autoScrollCheckBox">
+         <property name="text">
+          <string>Auto Scroll With Data</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

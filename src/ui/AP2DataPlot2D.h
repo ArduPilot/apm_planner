@@ -42,6 +42,8 @@ private slots:
     void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs);
     void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
 
+    void autoScrollClicked(bool checked);
+
 private:
     QMap<QString,int> m_nameToAxisIndex;
     int m_currentIndex;

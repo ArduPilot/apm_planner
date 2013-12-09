@@ -45,7 +45,23 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
     timer->start(500);
 
+    connect(ui.autoScrollCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoScrollClicked(bool)));
+
 }
+void AP2DataPlot2D::autoScrollClicked(bool checked)
+{
+    if (checked)
+    {
+        if (graphCount > 0)
+        {
+            double difference = m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower;
+            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_currentIndex - difference);
+            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(m_currentIndex);
+            m_plot->replot();
+        }
+    }
+}
+
 void AP2DataPlot2D::activeUASSet(UASInterface* uas)
 {
     if (!uas)
@@ -109,6 +125,11 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         if (m_nameToAxisIndex[name] == m_currentIndex)
         {
             m_currentIndex++;
+            if (graphCount > 0 && ui.autoScrollCheckBox->isChecked())
+            {
+                m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower+1);
+                m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(m_currentIndex);
+            }
         }
     }
     m_nameToAxisIndex[name] = m_currentIndex;
