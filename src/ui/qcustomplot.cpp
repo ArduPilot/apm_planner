@@ -5933,7 +5933,10 @@ QCPAxis::TickLabelData QCPAxis::getTickLabelData(const QFont &font, const QStrin
   
   // calculate text bounding rects and do string preparation for beautiful decimal powers:
   result.baseFont = font;
-  result.baseFont.setPointSizeF(result.baseFont.pointSizeF()+0.05); // QFontMetrics.boundingRect has a bug for exact point sizes that make the results oscillate due to internal rounding 
+  if (result.baseFont.pointSizeF() != -1)
+  {
+    result.baseFont.setPointSizeF(result.baseFont.pointSizeF()+0.05); // QFontMetrics.boundingRect has a bug for exact point sizes that make the results oscillate due to internal rounding
+  }
   if (useBeautifulPowers)
   {
     // split text into parts of number/symbol that will be drawn normally and part that will be drawn as exponent:
