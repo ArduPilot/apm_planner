@@ -40,7 +40,8 @@ private slots:
     void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
 
     void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs);
-    void updateValue(QString name,double value);
+    void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
+
 private:
     QMap<QString,int> m_nameToAxisIndex;
     int m_currentIndex;

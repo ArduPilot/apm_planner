@@ -54,7 +54,16 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
     }
     if (m_uas)
     {
-
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint16,quint64)),this,SLOT(valueChanged(int,QString,QString,qint16,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint32,quint64)),this,SLOT(valueChanged(int,QString,QString,qint32,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint64,quint64)),this,SLOT(valueChanged(int,QString,QString,qint64,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint8,quint64)),this,SLOT(valueChanged(int,QString,QString,quint8,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint16,quint64)),this,SLOT(valueChanged(int,QString,QString,quint16,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
     }
     m_uas = uas;
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
@@ -81,8 +90,14 @@ void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
 }
-void AP2DataPlot2D::updateValue(QString name,double value)
+void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
 {
+    Q_UNUSED(msec)
+    Q_UNUSED(unit)
+    if (m_uas->getUASID() != uasId)
+    {
+        return;
+    }
     if (!m_nameToAxisIndex.contains(name))
     {
         //Also doesn't exist on the data select screen
@@ -110,43 +125,43 @@ void AP2DataPlot2D::updateValue(QString name,double value)
 
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
 {
-    updateValue(name,value);
+    updateValue(uasId,name,unit,value,msec);
 }
-void AP2DataPlot2D::valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs)
+void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value,const quint64 msec)
 {
-    updateValue(name,value.toDouble());
+    updateValue(uasId,name,unit,value.toDouble(),msec);
 }
 
 void AP2DataPlot2D::loadButtonClicked()
@@ -201,7 +216,6 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     //This is the one we want.
                     QVector<double> xlist;
                     QVector<double> ylist;
-                    int count = 0;
                     float min = i.value()[0].second[name].toDouble();
                     float max = i.value()[0].second[name].toDouble();
                     for (int j=0;j<i.value().size();j++)
@@ -255,7 +269,6 @@ void AP2DataPlot2D::itemEnabled(QString name)
         {
             QVector<double> xlist;
             QVector<double> ylist;
-            int count = 0;
 
             float min = m_onlineValueMap[name][0].second;
             float max = m_onlineValueMap[name][0].second;
