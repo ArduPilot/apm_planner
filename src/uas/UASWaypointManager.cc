@@ -835,6 +835,8 @@ bool UASWaypointManager::guidedModeSupported()
 
 void UASWaypointManager::goToWaypoint(Waypoint *wp)
 {
+    if (!uas) return;
+
     //Don't try to send a guided mode message to an AP that does not support it.
     if (uas->getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
     {
@@ -1069,6 +1071,10 @@ float UASWaypointManager::getAltitudeRecommendation()
 
 int UASWaypointManager::getFrameRecommendation()
 {
+    if (!uas)
+        // Offline Edit mode.
+        return MAV_FRAME_GLOBAL_RELATIVE_ALT;
+
     switch(uas->getAutopilotType()){
     case MAV_AUTOPILOT_ARDUPILOTMEGA: {
         // APM always uses waypoint 0 as HOME location (ie. it's MAV_FRAME_GLOBAL)
