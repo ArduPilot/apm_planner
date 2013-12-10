@@ -21,6 +21,7 @@ signals:
 private slots:
 	void checkBoxClicked(bool checked);
     void treeDoubleClicked(QTreeWidgetItem* item,int column);
+    void clearSelectionButtonClicked();
 private:
     QList<QWidget*> m_itemList;
 	Ui::DataSelectionScreen ui;

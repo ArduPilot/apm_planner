@@ -8,6 +8,7 @@ DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
     //ui.scrollAreaWidgetContents->setLayout(new QVBoxLayout());
     //connect(ui.treeWidget,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(treeDoubleClicked(QTreeWidgetItem*,int)));
     connect(ui.treeWidget,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(treeDoubleClicked(QTreeWidgetItem*,int)));
+    connect(ui.clearPushButton,SIGNAL(clicked()),this,SLOT(clearSelectionButtonClicked()));
 }
 
 DataSelectionScreen::~DataSelectionScreen()
@@ -29,6 +30,23 @@ void DataSelectionScreen::checkBoxClicked(bool checked)
 		emit itemDisabled(check->text());
 	}
 }
+void DataSelectionScreen::clearSelectionButtonClicked()
+{
+    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems("",Qt::MatchContains | Qt::MatchRecursive);
+    for (int i=0;i<items.size();i++)
+    {
+        if (items[i]->parent())
+        {
+            if (items[i]->checkState(0) == Qt::Checked)
+            {
+                items[i]->setCheckState(0,Qt::Unchecked);
+                emit itemDisabled("M1:" + items[i]->parent()->text(0) + "." + items[i]->text(0));
+            }
+        }
+    }
+
+}
+
 void DataSelectionScreen::enableItem(QString name)
 {
     QString first = name.split(".")[0];
