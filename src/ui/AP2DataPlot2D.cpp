@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QTimer>
+#include <QStringList>
 
 #include "UAS.h"
 #include "UASManager.h"
@@ -46,8 +47,109 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     timer->start(500);
 
     connect(ui.autoScrollCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoScrollClicked(bool)));
+    connect(ui.hideExcelView,SIGNAL(clicked(bool)),ui.tableWidget,SLOT(setHidden(bool)));
+    connect(ui.tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(tableCellClicked(int,int)));
+
+    ui.tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    m_addGraphAction = new QAction("Add To Graph",0);
+    ui.tableWidget->addAction(m_addGraphAction);
+    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft()));
+
+    //QAction *rightgraphaction = new QAction("Add To Right Graph",0);
+    //ui.tableWidget->addAction(rightgraphaction);
+    //connect(rightgraphaction,SIGNAL(triggered()),this,SLOT(addGraphRight()));
+    ui.tableWidget->setVisible(false);
+    ui.hideExcelView->setVisible(false);
+}
+//m_tableHeaderNameMap
+void AP2DataPlot2D::addGraphRight()
+{
+    if (ui.tableWidget->selectedItems().size() == 0)
+    {
+        return;
+    }
+    ui.tableWidget->selectedItems()[0]->row();
+    if (ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column()))
+    {
+        QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
+        QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
+        itemEnabled(itemtext + "." + headertext);
+        m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
+    }
 
 }
+
+void AP2DataPlot2D::addGraphLeft()
+{
+    if (ui.tableWidget->selectedItems().size() == 0)
+    {
+        return;
+    }
+    //ui.tableWidget->selectedItems()[0]->row();
+    if (ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column()))
+    {
+        QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
+        QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
+        itemEnabled(itemtext + "." + headertext);
+        m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
+    }
+}
+void AP2DataPlot2D::removeGraphLeft()
+{
+    if (ui.tableWidget->selectedItems().size() == 0)
+    {
+        return;
+    }
+    ui.tableWidget->selectedItems()[0]->row();
+    if (ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column()))
+    {
+        QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
+        QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
+        itemDisabled(itemtext + "." + headertext);
+        m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
+    }
+}
+
+void AP2DataPlot2D::tableCellClicked(int row,int column)
+{
+    if (ui.tableWidget->item(row,0))
+    {
+        if (m_tableHeaderNameMap.contains(ui.tableWidget->item(row,0)->text()))
+        {
+            QString formatstr = m_tableHeaderNameMap.value(ui.tableWidget->item(row,0)->text());
+            QStringList split = formatstr.split(",");
+            for (int i=0;i<split.size();i++)
+            {
+                ui.tableWidget->setHorizontalHeaderItem(i+1,new QTableWidgetItem(split[i]));
+            }
+            for (int i=split.size();i<ui.tableWidget->columnCount()-1;i++)
+            {
+                ui.tableWidget->setHorizontalHeaderItem(i+1,new QTableWidgetItem(""));
+            }
+            if (ui.tableWidget->horizontalHeaderItem(column))
+            {
+                if (m_axisList.contains(ui.tableWidget->item(row,0)->text() + "." + ui.tableWidget->horizontalHeaderItem(column)->text()))
+                {
+                    //It's an enabled
+                    m_addGraphAction->setText("Remove From Graph");
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft()));
+                }
+                else
+                {
+                    m_addGraphAction->setText("Add To Graph");
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
+                }
+            }
+        }
+    }
+
+}
+
 void AP2DataPlot2D::autoScrollClicked(bool checked)
 {
     if (checked)
@@ -221,8 +323,12 @@ void AP2DataPlot2D::loadButtonClicked()
         //Unload the log.
         m_logLoaded = false;
         ui.pushButton->setText("Load Log");
+        ui.tableWidget->setVisible(false);
+        ui.hideExcelView->setVisible(false);
         return;
     }
+    ui.tableWidget->setVisible(true);
+    ui.hideExcelView->setVisible(true);
     ui.autoScrollCheckBox->setChecked(false);
     ui.pushButton->setText("Unload Log");
 
@@ -234,8 +340,31 @@ void AP2DataPlot2D::loadButtonClicked()
     connect(m_logLoaderThread,SIGNAL(done()),this,SLOT(threadDone()));
     connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
+    connect(m_logLoaderThread,SIGNAL(lineRead(QString)),this,SLOT(logLine(QString)));
     m_logLoaderThread->loadFile(filename);
 }
+void AP2DataPlot2D::logLine(QString line)
+{
+    QStringList linesplit = line.split(",");
+    if (ui.tableWidget->columnCount() < linesplit.size())
+    {
+        ui.tableWidget->setColumnCount(linesplit.size());
+    }
+    ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1);
+    for (int i=0;i<linesplit.size();i++)
+    {
+        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,i,new QTableWidgetItem(linesplit[i].trimmed()));
+    }
+    if (line.startsWith("FMT"))
+    {
+        //Format line
+        QString linename = linesplit[3].trimmed();
+        QString lastformat = line.mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
+        m_tableHeaderNameMap[linename] = lastformat.trimmed();
+
+    }
+}
+
 void AP2DataPlot2D::threadTerminated()
 {
     m_logLoaderThread->deleteLater();
@@ -250,6 +379,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
 {
     if (m_logLoaded)
     {
+        name = name.mid(name.indexOf(":")+1);
         for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
         {
             if (i.value().size() > 0)
@@ -361,6 +491,10 @@ void AP2DataPlot2D::itemEnabled(QString name)
 }
 void AP2DataPlot2D::itemDisabled(QString name)
 {
+    if (m_logLoaded)
+    {
+        name = name.mid(name.indexOf(":")+1);
+    }
     m_wideAxisRect->removeAxis(m_axisList[name]);
     m_plot->removeGraph(m_graphMap[name]);
     m_plot->replot();

@@ -22,6 +22,7 @@ signals:
     void payloadDecoded(int index,QString name,QVariantMap map);
     void done();
     void error(QString errorstr);
+    void lineRead(QString line);
 public slots:
 
 };

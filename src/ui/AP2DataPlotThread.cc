@@ -34,6 +34,7 @@ void AP2DataPlotThread::run()
     {
         emit loadProgress(logfile.pos(),logfile.size());
         QString line = logfile.readLine();
+        emit lineRead(line);
         QStringList linesplit = line.replace("\r","").replace("\n","").split(",");
         if (linesplit.size() > 0)
         {

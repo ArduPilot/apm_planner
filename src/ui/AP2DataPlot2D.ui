@@ -22,9 +22,12 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QWidget" name="widget" native="true">
-           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="tableWidget"/>
             </item>
            </layout>
           </widget>
@@ -46,6 +49,13 @@
         <widget class="QCheckBox" name="autoScrollCheckBox">
          <property name="text">
           <string>Auto Scroll With Data</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="hideExcelView">
+         <property name="text">
+          <string>Hide Grid View</string>
          </property>
         </widget>
        </item>
