@@ -5,30 +5,12 @@
 DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
 {
 	ui.setupUi(this);
-    //ui.scrollAreaWidgetContents->setLayout(new QVBoxLayout());
-    //connect(ui.treeWidget,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(treeDoubleClicked(QTreeWidgetItem*,int)));
     connect(ui.treeWidget,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(treeDoubleClicked(QTreeWidgetItem*,int)));
     connect(ui.clearPushButton,SIGNAL(clicked()),this,SLOT(clearSelectionButtonClicked()));
 }
 
 DataSelectionScreen::~DataSelectionScreen()
 {
-}
-void DataSelectionScreen::checkBoxClicked(bool checked)
-{
-	QCheckBox *check = qobject_cast<QCheckBox*>(sender());
-	if (!check)
-	{
-		return;
-	}
-	if (checked)
-	{
-		emit itemEnabled(check->text());
-	}
-	else
-	{
-		emit itemDisabled(check->text());
-	}
 }
 void DataSelectionScreen::clearSelectionButtonClicked()
 {
@@ -85,7 +67,6 @@ void DataSelectionScreen::disableItem(QString name)
         if (items[i]->parent()->text(0).contains(first))
         {
             items[0]->setCheckState(0,Qt::Unchecked);
-            //ui.treeWidget->scrollToItem(items[0]);
             return;
         }
     }
@@ -99,7 +80,7 @@ void DataSelectionScreen::addItem(QString name)
     }
     if (name.contains("."))
     {
-        //It's a split name
+        //It's a split name, "GCS Status.Roll" for instance.
         QString shortname = name.split(".")[1];
         QString groupname = name.split(".")[0];
         QList<QTreeWidgetItem*> findlist = ui.treeWidget->findItems(groupname,Qt::MatchContains);
@@ -122,12 +103,6 @@ void DataSelectionScreen::addItem(QString name)
         }
 
     }
-    //QCheckBox *box = new QCheckBox(this);
-    //ui.scrollAreaWidgetContents->layout()->addWidget(box);
-    //box->setText(name);
-    //connect(box,SIGNAL(clicked(bool)),this,SLOT(checkBoxClicked(bool)));
-    //box->show();
-    //m_itemList.append(box);
 }
 void DataSelectionScreen::treeDoubleClicked(QTreeWidgetItem* item,int column)
 {
@@ -138,17 +113,17 @@ void DataSelectionScreen::treeDoubleClicked(QTreeWidgetItem* item,int column)
     QString name = "M1:" + item->parent()->text(0) + "." + item->text(0);
     if (item->checkState(0) == Qt::Checked)
     {
-        if (!m_enabedList.contains(name))
+        if (!m_enabledList.contains(name))
         {
-            m_enabedList.append(name);
+            m_enabledList.append(name);
             emit itemEnabled(name);
         }
     }
     else
     {
-        if (m_enabedList.contains(name))
+        if (m_enabledList.contains(name))
         {
-            m_enabedList.removeOne(name);
+            m_enabledList.removeOne(name);
             emit itemDisabled(name);
         }
     }
@@ -157,10 +132,5 @@ void DataSelectionScreen::treeDoubleClicked(QTreeWidgetItem* item,int column)
 void DataSelectionScreen::clear()
 {
     ui.treeWidget->clear();
-    m_enabedList.clear();
-    //for (int i=0;i<m_itemList.size();i++)
-    //{
-    //    delete m_itemList[i];
-    //}
-    //m_itemList.clear();
+    m_enabledList.clear();
 }

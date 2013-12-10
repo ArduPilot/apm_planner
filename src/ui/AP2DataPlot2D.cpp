@@ -21,15 +21,19 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     m_plot = new QCustomPlot(ui.widget);
     m_plot->setInteraction(QCP::iRangeDrag, true);
     m_plot->setInteraction(QCP::iRangeZoom, true);
-    //m_plot->setInteraction(QCP::iMultiSelect,true);
+
     ui.horizontalLayout_3->addWidget(m_plot);
+
     m_plot->show();
     m_plot->plotLayout()->clear(); // clear default axis rect so we can start from scratch
+
     m_wideAxisRect = new QCPAxisRect(m_plot);
     m_wideAxisRect->setupFullAxesBox(true);
     m_wideAxisRect->axis(QCPAxis::atRight, 0)->setTickLabels(false);
     m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft,0));
+
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect); // insert axis rect in first row
+
     QCPMarginGroup *marginGroup = new QCPMarginGroup(m_plot);
     m_wideAxisRect->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
 
@@ -37,11 +41,13 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect( m_dataSelectionScreen,SIGNAL(itemEnabled(QString)),this,SLOT(itemEnabled(QString)));
     connect( m_dataSelectionScreen,SIGNAL(itemDisabled(QString)),this,SLOT(itemDisabled(QString)));
     ui.horizontalLayout_3->addWidget(m_dataSelectionScreen);
+
     ui.horizontalLayout_3->setStretch(0,5);
     ui.horizontalLayout_3->setStretch(1,1);
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
+
     QTimer *timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
     timer->start(500);
@@ -56,13 +62,10 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     ui.tableWidget->addAction(m_addGraphAction);
     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft()));
 
-    //QAction *rightgraphaction = new QAction("Add To Right Graph",0);
-    //ui.tableWidget->addAction(rightgraphaction);
-    //connect(rightgraphaction,SIGNAL(triggered()),this,SLOT(addGraphRight()));
     ui.tableWidget->setVisible(false);
     ui.hideExcelView->setVisible(false);
 }
-//m_tableHeaderNameMap
+
 void AP2DataPlot2D::addGraphRight()
 {
     if (ui.tableWidget->selectedItems().size() == 0)
@@ -77,7 +80,6 @@ void AP2DataPlot2D::addGraphRight()
         itemEnabled(itemtext + "." + headertext);
         m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
     }
-
 }
 
 void AP2DataPlot2D::addGraphLeft()
@@ -86,7 +88,6 @@ void AP2DataPlot2D::addGraphLeft()
     {
         return;
     }
-    //ui.tableWidget->selectedItems()[0]->row();
     if (ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column()))
     {
         QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
