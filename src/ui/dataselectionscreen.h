@@ -22,6 +22,7 @@ private slots:
     void treeDoubleClicked(QTreeWidgetItem* item,int column);
     void clearSelectionButtonClicked();
 private:
+    QMap<QString,QString> m_nameToSysId;
     QList<QWidget*> m_itemList;
 	Ui::DataSelectionScreen ui;
     QList<QString> m_enabledList;

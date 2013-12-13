@@ -76,7 +76,9 @@ void DataSelectionScreen::addItem(QString name)
 {
     if (name.contains(":"))
     {
+        QString sysid = name.mid(0,name.indexOf(":"));
         name = name.mid(name.indexOf(":")+1);
+        m_nameToSysId[name] = sysid;
     }
     if (name.contains("."))
     {
@@ -110,7 +112,15 @@ void DataSelectionScreen::treeDoubleClicked(QTreeWidgetItem* item,int column)
     {
         return;
     }
-    QString name = "M1:" + item->parent()->text(0) + "." + item->text(0);
+    QString name = item->parent()->text(0) + "." + item->text(0);
+    if (m_nameToSysId.contains(name))
+    {
+        name = m_nameToSysId[name] + ":" + name;
+    }
+    else
+    {
+        name = "M1:" + name;
+    }
     if (item->checkState(0) == Qt::Checked)
     {
         if (!m_enabledList.contains(name))
