@@ -9,6 +9,7 @@
 #include "qcustomplot.h"
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
+#include "AP2DataPlotAxisDialog.h"
 class AP2DataPlot2D : public QWidget
 {
     Q_OBJECT
@@ -48,7 +49,13 @@ private slots:
     void addGraphRight();
     void addGraphLeft();
     void removeGraphLeft();
+    void axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt);
+    void graphAddedToGroup(QString name,QString group);
+    void graphRemovedFromGroup(QString name);
 private:
+    QMap<QString,QList<QString> > m_graphGrouping;
+    QMap<QString,QCPRange> m_graphGroupRanges;
+    QMap<QString,QString> m_graphToGroupMap;
     QAction *m_addGraphAction;
     QMap<QString,int> m_nameToAxisIndex;
     QMap<QString,QString> m_tableHeaderNameMap;
