@@ -75,7 +75,7 @@ void UASQuickViewTextItem::setValue(double value)
 
 void UASQuickViewTextItem::setTitle(QString title)
 {
-    if (title.indexOf(".") != -1 && title.indexOf(":") != -1)
+    if (title.indexOf("."))
     {
         titleLabel->setText(title.mid(title.indexOf(".")+1));
     }

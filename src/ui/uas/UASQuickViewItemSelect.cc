@@ -24,10 +24,10 @@ void UASQuickViewItemSelect::addItem(QString item,bool enabled)
 {
     QString category = ".";
     QString name = item;
-    if (item.indexOf(":") != -1 && item.indexOf(".") != -1)
+    if (item.indexOf(".") != -1)
     {
         //Item has a subcateogry
-        category = item.mid(item.indexOf(":")+1,item.indexOf(".") - item.indexOf(":")-1);
+        category = item.mid(0,item.indexOf("."));
         name = item.mid(item.indexOf(".")+1);
     }
     int col = -1;

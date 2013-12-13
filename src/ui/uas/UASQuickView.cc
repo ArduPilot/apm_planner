@@ -32,18 +32,18 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
     m_columnCount = 2;
     if (uasPropertyValueMap.size() == 0)
     {
-        valueEnabled("M1:GCS Status.Altitude (GPS) (m)");
-        valueEnabled("M1:GCS Status.Altitude (REL) (m)");
-        valueEnabled("M1:GCS Status.Roll (deg)");
-        valueEnabled("M1:GCS Status.Pitch (deg)");
-        valueEnabled("M1:GCS Status.Yaw (deg)");
-        valueEnabled("M1:GCS Status.Climb (m/s)");
-        valueEnabled("M1:GCS Status.Voltage (V)");
-        valueEnabled("M1:GCS Status.Current (A)");
-        valueEnabled("M1:GCS Status.Battery (%)");
-        valueEnabled("M1:GCS Status.GPS Fix");
-        valueEnabled("M1:GCS Status.GPS Sats");
-        valueEnabled("M1:GCS Status.GPS HDOP (m)");
+        valueEnabled("GCS Status.Altitude (GPS) (m)");
+        valueEnabled("GCS Status.Altitude (REL) (m)");
+        valueEnabled("GCS Status.Roll (deg)");
+        valueEnabled("GCS Status.Pitch (deg)");
+        valueEnabled("GCS Status.Yaw (deg)");
+        valueEnabled("GCS Status.Climb (m/s)");
+        valueEnabled("GCS Status.Voltage (V)");
+        valueEnabled("GCS Status.Current (A)");
+        valueEnabled("GCS Status.Battery (%)");
+        valueEnabled("GCS Status.GPS Fix");
+        valueEnabled("GCS Status.GPS Sats");
+        valueEnabled("GCS Status.GPS HDOP (m)");
     }
 
     QAction *action = new QAction("Add/Remove Items",this);
@@ -357,6 +357,24 @@ void UASQuickView::setActiveUAS(UASInterface* uas)
     connect(uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
     connect(uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+    int uasid = uas->getUASID();
+    if (m_PropertyToLayoutIndexMap.contains("test"))
+    {
+
+    }
+    /*    m_PropertyToLayoutIndexMap[value] = m_currentColumn;
+    m_currentColumn++;
+    if (m_currentColumn >= m_columnCount-1)
+    {
+        m_currentColumn = 0;
+    }
+    uasPropertyToLabelMap[value] = item;
+    uasEnabledPropertyList.append(value);
+
+    if (!uasPropertyValueMap.contains(value))
+    {
+        uasPropertyValueMap[value] = 0;
+    }*/
 
     //connect(uas,SIGNAL())
 }
@@ -379,14 +397,15 @@ void UASQuickView::valueUpdate(const int uasId,const QString &name,const QString
         //This message is for the non active UAS
         return;
     }
-    if (!uasPropertyValueMap.contains(name +" ("+unit+")"))
+    QString propername = name.mid(name.indexOf(":")+1);
+    if (!uasPropertyValueMap.contains(propername +" ("+unit+")"))
     {
         if (quickViewSelectDialog)
         {
-            quickViewSelectDialog->addItem(name +" ("+unit+")");
+            quickViewSelectDialog->addItem(propername +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[name +" ("+unit+")"] = value;
+    uasPropertyValueMap[propername +" ("+unit+")"] = value;
 }
 
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
