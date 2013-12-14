@@ -18,3 +18,7 @@ sudo dpkg -i apmplanner-XXX.deb
 
 If uninstalling:
 sudo dpkg -r apmplanner
+
+After installing, you may need to log out and log in again to refresh the user groups.
+
+
