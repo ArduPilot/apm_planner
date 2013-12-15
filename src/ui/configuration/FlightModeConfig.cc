@@ -158,7 +158,7 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
         itemlist << "Pos Hold";
         itemlist << "Land";
         itemlist << "OF_LOITER";
-        itemlist << "Toy";
+        itemlist << "Drift";
         ui.mode6ComboBox->setEnabled(true);
         ui.mode1SimpleCheckBox->setVisible(true);
         ui.mode2SimpleCheckBox->setVisible(true);
