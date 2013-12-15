@@ -10,10 +10,13 @@
 #include <QWaitCondition>
 #include <QMutex>
 #include <quazip.h>
+#include <math.h>
 
 #include <JlCompress.h>
 
 namespace kml {
+
+const float PI = 3.14159265;
 
 static const QString kModesToColors[][2] = {
     // Colors are expressed in aabbggrr.
@@ -33,6 +36,30 @@ static const QString kModesToColors[][2] = {
     {"SPORT", "FFCC3300"},
     {"", ""}
 };
+
+/** @brief Return the specified degrees converted to radians */
+static float toRadians(float deg) {
+    return deg * (PI / 180);
+}
+
+/** @brief Return the distance between the two specified lat/lng pairs in km */
+static float distanceBetween(float hereLat, float hereLng, float thereLat, float thereLng) {
+    const float R = 6371; // earth radius in km
+
+    float dLat = toRadians(thereLat - hereLat);
+    float dLon = toRadians(thereLng - hereLng);
+    float lat1 = toRadians(hereLat);
+    float lat2 = toRadians(thereLat);
+
+    float a = sin(dLat/2) * sin(dLat/2) +
+            sin(dLon/2) * sin(dLon/2) * cos(lat1) * cos(lat2);
+
+    float c = 2 * atan2(sqrt(a), sqrt(1-a));
+
+    float d = R * c;
+
+    return d;
+}
 
 /**
  * @brief Given a mode string, return a color for it.
@@ -99,10 +126,46 @@ Placemark& Placemark::add(Attitude &a) {
     return *this;
 }
 
-KMLCreator::KMLCreator() {
+void SummaryData::add(GPSRecord &gps) {
+    float speed = gps.speed().toFloat();
+    if(speed > topSpeed) {
+        topSpeed = speed;
+    }
+
+    float alt = gps.relAlt().toFloat();
+    if(alt > highestAltitude) {
+        highestAltitude = alt;
+    }
+
+    float lat = gps.lat().toFloat();
+    float lng = gps.lng().toFloat();
+
+    if(lastLat != 0 && lastLng != 0) {
+        float dist = distanceBetween(lastLat, lastLng, lat, lng);
+        totalDistance += dist;
+    }
+
+    lastLat = lat;
+    lastLng = lng;
+}
+
+QString SummaryData::summarize() {
+    QString s = QString("Total distance: %1 m\r\nTop speed: %2 m/sec\r\nHighest altitude: %3 m")
+            .arg(QString::number(totalDistance * 1000))
+            .arg(QString::number(topSpeed))
+            .arg(QString::number(highestAltitude))
+            ;
+    return s;
+}
+
+KMLCreator::KMLCreator():
+    m_summary(new SummaryData()) {
 }
 
 KMLCreator::~KMLCreator() {
+    if(m_summary) {
+        delete m_summary;
+    }
 }
 
 void KMLCreator::start(QString &fn) {
@@ -122,12 +185,14 @@ void KMLCreator::processLine(QString &line) {
     else if(line.indexOf("GPS,") == 0) {
         FormatLine fl = m_formatLines.value("GPS");
         if(fl.hasData()) {
-            GPSRecord point = GPSRecord::from(fl, line);
+            GPSRecord gps = GPSRecord::from(fl, line);
 
-            if(point.hasData()) {
+            if(gps.hasData()) {
+                m_summary->add(gps);
+
                 Placemark* pm = lastPlacemark();
                 if(pm) {
-                    pm->add(point);
+                    pm->add(gps);
                 }
                 else {
                     QLOG_WARN() << "No placemark";
@@ -226,6 +291,7 @@ QString KMLCreator::finish(bool kmz) {
 
     writer.writeStartElement("Folder");
     writer.writeTextElement("name", "Flight Path");
+    writer.writeTextElement("description", m_summary->summarize());
 
     /*
      * Flight log

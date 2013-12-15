@@ -6,6 +6,7 @@
 #include <QHash>
 #include <QStringList>
 #include <QXmlStreamWriter>
+#include <QPointer>
 
 #include "logdata.h"
 
@@ -94,6 +95,26 @@ struct Placemark {
     Placemark& add(Attitude &a);
 };
 
+struct SummaryData {
+    float topSpeed;
+    float highestAltitude;
+    float totalDistance;
+
+    float lastLat;
+    float lastLng;
+
+    SummaryData()
+    : topSpeed(0),
+      highestAltitude(0),
+      totalDistance(0),
+      lastLat(0),
+      lastLng(0)
+    {}
+
+    void add(GPSRecord& gps);
+    QString summarize();
+};
+
 /**
  * @brief An interface for creating KML files.
  *
@@ -128,6 +149,7 @@ private:
     QList<Placemark *> m_placemarks;
     QList<CommandedWaypoint> m_waypoints;
     QHash<QString, FormatLine> m_formatLines;
+    SummaryData* m_summary;
 };
 
 } // namespace kml

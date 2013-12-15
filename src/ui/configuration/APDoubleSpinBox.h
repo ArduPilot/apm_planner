@@ -39,6 +39,9 @@ public:
     explicit APDoubleSpinBox(QWidget *parent = 0);
 protected:
     void keyReleaseEvent(QKeyEvent *evt);
+    void focusInEvent(QFocusEvent *evt);
+private:
+    double m_savedValue;
 signals:
     void returnPressed();
 public slots:

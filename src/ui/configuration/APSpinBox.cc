@@ -32,4 +32,17 @@ void APSpinBox::keyReleaseEvent(QKeyEvent *evt)
     {
         emit returnPressed();
     }
+    else if (evt->key() == Qt::Key_Escape)
+    {
+        this->setValue(m_savedValue);
+    }
+    else
+    {
+        QSpinBox::keyReleaseEvent(evt);
+    }
+}
+void APSpinBox::focusInEvent(QFocusEvent *evt)
+{
+    m_savedValue = this->value();
+    QSpinBox::focusInEvent(evt);
 }

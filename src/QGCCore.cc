@@ -119,7 +119,6 @@ void QGCCore::initialize()
     //settings.clear();
     settings.sync();
 
-    QGC::loadSettings();
 
     // Show splash screen
     QPixmap splashImage(":/files/images/apm_planner_2_0-07.png");

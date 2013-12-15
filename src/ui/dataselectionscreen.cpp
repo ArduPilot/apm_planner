@@ -5,43 +5,142 @@
 DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
 {
 	ui.setupUi(this);
-	ui.scrollAreaWidgetContents->setLayout(new QVBoxLayout());
+    connect(ui.treeWidget,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(treeDoubleClicked(QTreeWidgetItem*,int)));
+    connect(ui.clearPushButton,SIGNAL(clicked()),this,SLOT(clearSelectionButtonClicked()));
 }
 
 DataSelectionScreen::~DataSelectionScreen()
 {
 }
-void DataSelectionScreen::checkBoxClicked(bool checked)
+void DataSelectionScreen::clearSelectionButtonClicked()
 {
-	QCheckBox *check = qobject_cast<QCheckBox*>(sender());
-	if (!check)
-	{
-		return;
-	}
-	if (checked)
-	{
-		emit itemEnabled(check->text());
-	}
-	else
-	{
-		emit itemDisabled(check->text());
-	}
+    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems("",Qt::MatchContains | Qt::MatchRecursive);
+    for (int i=0;i<items.size();i++)
+    {
+        if (items[i]->parent())
+        {
+            if (items[i]->checkState(0) == Qt::Checked)
+            {
+                items[i]->setCheckState(0,Qt::Unchecked);
+                emit itemDisabled("M1:" + items[i]->parent()->text(0) + "." + items[i]->text(0));
+            }
+        }
+    }
+
 }
+
+void DataSelectionScreen::enableItem(QString name)
+{
+    QString first = name.split(".")[0];
+    QString second = name.split(".")[1];
+    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchContains | Qt::MatchRecursive);
+    if (items.size() == 0)
+    {
+        return;
+    }
+    for (int i=0;i<items.size();i++)
+    {
+        if (items[i]->parent())
+        {
+            if (items[i]->parent()->text(0).contains(first))
+            {
+                items[i]->setCheckState(0,Qt::Checked);
+                ui.treeWidget->scrollToItem(items[i]);
+                return;
+            }
+        }
+    }
+
+}
+
+void DataSelectionScreen::disableItem(QString name)
+{
+    QString first = name.split(".")[0];
+    QString second = name.split(".")[1];
+    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchContains | Qt::MatchRecursive);
+    if (items.size() == 0)
+    {
+        return;
+    }
+    for (int i=0;i<items.size();i++)
+    {
+        if (items[i]->parent()->text(0).contains(first))
+        {
+            items[0]->setCheckState(0,Qt::Unchecked);
+            return;
+        }
+    }
+}
+
 void DataSelectionScreen::addItem(QString name)
 {
-	QCheckBox *box = new QCheckBox(this);
-	ui.scrollAreaWidgetContents->layout()->addWidget(box);
-	box->setText(name);
-	connect(box,SIGNAL(clicked(bool)),this,SLOT(checkBoxClicked(bool)));
-	box->show();
-    m_itemList.append(box);
+    if (name.contains(":"))
+    {
+        QString sysid = name.mid(0,name.indexOf(":"));
+        name = name.mid(name.indexOf(":")+1);
+        m_nameToSysId[name] = sysid;
+    }
+    if (name.contains("."))
+    {
+        //It's a split name, "GCS Status.Roll" for instance.
+        QString shortname = name.split(".")[1];
+        QString groupname = name.split(".")[0];
+        QList<QTreeWidgetItem*> findlist = ui.treeWidget->findItems(groupname,Qt::MatchContains);
+        if (findlist.size() > 0)
+        {
+            QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << shortname);
+            child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
+            child->setCheckState(0,Qt::Unchecked);
+            findlist[0]->addChild(child);
+
+        }
+        else
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << groupname);
+            ui.treeWidget->addTopLevelItem(item);
+            QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << shortname);
+            child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
+            child->setCheckState(0,Qt::Unchecked);
+            item->addChild(child);
+        }
+
+    }
+}
+void DataSelectionScreen::treeDoubleClicked(QTreeWidgetItem* item,int column)
+{
+    if (!item->parent())
+    {
+        return;
+    }
+    QString name = item->parent()->text(0) + "." + item->text(0);
+    if (m_nameToSysId.contains(name))
+    {
+        name = m_nameToSysId[name] + ":" + name;
+    }
+    else
+    {
+        name = "M1:" + name;
+    }
+    if (item->checkState(0) == Qt::Checked)
+    {
+        if (!m_enabledList.contains(name))
+        {
+            m_enabledList.append(name);
+            emit itemEnabled(name);
+        }
+    }
+    else
+    {
+        if (m_enabledList.contains(name))
+        {
+            m_enabledList.removeOne(name);
+            emit itemDisabled(name);
+        }
+    }
 }
 
 void DataSelectionScreen::clear()
 {
-    for (int i=0;i<m_itemList.size();i++)
-    {
-        delete m_itemList[i];
-    }
-    m_itemList.clear();
+    ui.treeWidget->clear();
+    m_enabledList.clear();
 }

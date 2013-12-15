@@ -41,6 +41,9 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += phonon
 }
 
+gittouch.commands = touch qgroundcontrol.pro
+QMAKE_EXTRA_TARGETS += gittouch
+POST_TARGETDEPS += gittouch
 
 TEMPLATE = app
 TARGET = apmplanner2

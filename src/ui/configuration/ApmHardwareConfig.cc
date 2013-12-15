@@ -334,7 +334,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.batteryMonitorButton->setShown(!show);
         ui.opticalFlowButton->setShown(!show);
         ui.osdButton->setShown(!show);
-//        ui.cameraGimbalButton->setShown(!show);// [HIDE Camera Gimbal]
+        ui.cameraGimbalButton->setShown(!show);// [SHOW Camera Gimbal]
 //        ui.antennaTrackerButton->setShown(!show);// [HIDE Antenna Tracking]
         ui.sonarButton->setShown(!show);
 
@@ -354,7 +354,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.batteryMonitorButton->setShown(!show);
         ui.opticalFlowButton->setShown(!show);
         ui.osdButton->setShown(!show);
-//        ui.cameraGimbalButton->setShown(!show); // // [HIDE Camera Gimbal]
+        ui.cameraGimbalButton->setShown(!show); // [SHOW Camera Gimbal]
 //        ui.antennaTrackerButton->setShown(!show); // [HIDE Antenna Tracking]
         ui.airspeedButton->setShown(!show);
 
@@ -377,7 +377,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.batteryMonitorButton->setShown(!show);
         ui.opticalFlowButton->setShown(!show);
         ui.osdButton->setShown(!show);
-//        ui.cameraGimbalButton->setShown(!show); // [HIDE Camera Gimbal]
+        ui.cameraGimbalButton->setShown(!show); // [SHOW Camera Gimbal]
 //        ui.antennaTrackerButton->setShown(!show); // [HIDE Antenna Tracking]
         ui.sonarButton->setShown(!show);
     }
