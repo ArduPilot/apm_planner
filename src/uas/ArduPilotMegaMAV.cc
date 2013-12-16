@@ -158,15 +158,13 @@ QString ApmCopter::stringForMode(int aMode) {
     case OF_LOITER:
         return "OF Loiter";
         break;
-    case TOY_A:
-        return "Toy A";
-        break;
-    case TOY_M:
-        return "Toy M";
+    case DRIFT:
+        return "Drift";
         break;
     case SPORT:
         return "Sport";
         break;
+    case RESERVED:
     default:
         return "Undefined";
     }

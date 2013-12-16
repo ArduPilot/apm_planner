@@ -88,8 +88,8 @@ public:
     LAND        = 9,   // AUTO control
     OF_LOITER   = 10,  // Hold a single location using optical flow
                        // sensor
-    TOY_A       = 11,  // THOR Enum for Toy mode
-    TOY_M       = 12,  // THOR Enum for Toy mode
+    DRIFT       = 11,  // Drift 'Car Like' mode
+    RESERVED    = 12,  // RESERVED FOR FUTURE USE
     SPORT       = 13   // [TODO] Verify this is correct.
     };
 
