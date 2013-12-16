@@ -530,9 +530,11 @@ void UASWaypointManager::loadWaypoints(const QString &loadFile)
 
     const QStringList &version = in.readLine().split(" ");
 
-    if (!(version.size() == 3 && version[0] == "QGC" && version[1] == "WPL" && version[2] == "120"))
+    int versionInt = version[2].toInt();
+
+    if (!(version.size() == 3 && version[0] == "QGC" && version[1] == "WPL" && versionInt >= 110))
     {
-        emit updateStatusString(tr("The waypoint file is not compatible with the current version of QGroundControl."));
+        emit updateStatusString(tr("The waypoint file is version %1 and is not compatible").arg(versionInt));
     }
     else
     {
