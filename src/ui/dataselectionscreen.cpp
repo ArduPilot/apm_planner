@@ -22,7 +22,9 @@ void DataSelectionScreen::clearSelectionButtonClicked()
             if (items[i]->checkState(0) == Qt::Checked)
             {
                 items[i]->setCheckState(0,Qt::Unchecked);
-                emit itemDisabled("M1:" + items[i]->parent()->text(0) + "." + items[i]->text(0));
+                QString name = items[i]->parent()->text(0) + "." + items[i]->text(0);
+                m_enabledList.removeOne(name);
+                emit itemDisabled(name);
             }
         }
     }
@@ -113,14 +115,6 @@ void DataSelectionScreen::treeDoubleClicked(QTreeWidgetItem* item,int column)
         return;
     }
     QString name = item->parent()->text(0) + "." + item->text(0);
-    if (m_nameToSysId.contains(name))
-    {
-        name = m_nameToSysId[name] + ":" + name;
-    }
-    else
-    {
-        name = "M1:" + name;
-    }
     if (item->checkState(0) == Qt::Checked)
     {
         if (!m_enabledList.contains(name))

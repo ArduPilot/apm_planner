@@ -59,7 +59,8 @@ private:
     QMap<QString,QCPAxis*> m_axisList;
     QMap<QString,QCPGraph*> m_graphMap;
     QList<QString> m_graphNameList;
-    int graphCount;
+    AP2DataPlotAxisDialog *m_axisGroupingDialog;
+    int m_graphCount;
     QCustomPlot *m_plot;
     QCPAxisRect *m_wideAxisRect;
     QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
