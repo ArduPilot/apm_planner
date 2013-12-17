@@ -49,8 +49,7 @@ void UASActionsWidget::setupApmCopterComboBox(QComboBox *comboBox)
     comboBox->addItem("Position", ApmCopter::POSITION);
     comboBox->addItem("Land", ApmCopter::LAND);
     comboBox->addItem("Loiter", ApmCopter::OF_LOITER);
-    comboBox->addItem("Toy A", ApmCopter::TOY_A);
-    comboBox->addItem("Toy M", ApmCopter::TOY_M);
+    comboBox->addItem("Drift", ApmCopter::DRIFT);
     comboBox->addItem("Sport", ApmCopter::SPORT);
 }
 
