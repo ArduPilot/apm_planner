@@ -37,6 +37,8 @@ class Radio3DRSettings;
 class Radio3DRConfig : public QWidget
 {
     Q_OBJECT
+
+    enum State { none, writeRadioSettings, resetRadioSettings, complete};
     
 public:
     explicit Radio3DRConfig(QWidget *parent = 0);
@@ -59,7 +61,8 @@ private slots:
     void writeLocalRadioSettings();
     void writeRemoteRadioSettings();
     void readRadioSettings();
-    void resetRadioSettingsToDefaults();
+    void resetLocalRadioSettingsToDefaults();
+    void resetRemoteRadioSettingsToDefaults();
 
     void copyLocalSettingsToRemote();
 
@@ -68,16 +71,21 @@ private slots:
 
     void updateLocalStatus(QString status);
     void updateRemoteStatus(QString status);
+    void updateLocalComplete(int result);
+    void updateRemoteComplete(int result);
     void updateLocalRssi(QString status);
     void updateRemoteRssi(QString status);
 
 private:
+    void resetUI();
     void initConnections();
     void addBaudComboBoxConfig(QComboBox *comboBox);
     void fillPortsInfo(QComboBox &comboxBox);
     void addRadioBaudComboBoxConfig(QComboBox &comboBox);
     void addRadioAirBaudComboBoxConfig(QComboBox &comboBox);
     void addTxPowerComboBoxConfig(QComboBox &comboBox);
+    void addMavLinkComboBoxConfig(QComboBox &comboBox);
+    void addMavLinkLowLatencyComboBoxConfig(QComboBox &comboBox);
     void setupFrequencyComboBox(QComboBox& comboBox, int freqCode);
 
 private:
@@ -89,6 +97,7 @@ private:
     Radio3DREeprom m_remoteRadioSettings;
     QPointer<QTimer> m_timer;
     QPointer<Radio3DRSettings> m_radioSettings;
+    State m_state;
 };
 
 #endif // RADIO3DRCONFIG_H
