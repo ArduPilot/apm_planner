@@ -68,12 +68,16 @@ void AP2DataPlotThread::run()
                 if (linesplit.size() != list.size() + 1)
                 {
                     QLOG_ERROR() << "Error with line in plot log file:" << line;
+                    // [TODO] may want to log the valid values, and show some
+                    // kind of error with the frame in the viewer, instead of just
+                    // dropping the frame (will impact timing)
+                } else {
+                    for (int i=0;i<list.size();i++)
+                    {
+                        currentmap[linesplit[0].trimmed() + "." + list[i]] = linesplit[i+1].trimmed().toDouble();
+                    }
+                    emit payloadDecoded(index++,linesplit[0].trimmed(),currentmap);
                 }
-                for (int i=0;i<list.size();i++)
-                {
-                    currentmap[linesplit[0].trimmed() + "." + list[i]] = linesplit[i+1].trimmed().toDouble();
-                }
-                emit payloadDecoded(index++,linesplit[0].trimmed(),currentmap);
                 currentmap.clear();
             }
         }
