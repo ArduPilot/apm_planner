@@ -48,6 +48,7 @@ void DataSelectionScreen::enableItem(QString name)
             {
                 items[i]->setCheckState(0,Qt::Checked);
                 ui.treeWidget->scrollToItem(items[i]);
+                m_enabledList.append(name);
                 return;
             }
         }
@@ -69,6 +70,7 @@ void DataSelectionScreen::disableItem(QString name)
         if (items[i]->parent()->text(0).contains(first))
         {
             items[0]->setCheckState(0,Qt::Unchecked);
+            m_enabledList.removeOne(name);
             return;
         }
     }
