@@ -21,6 +21,7 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 
 #include "QsLog.h"
+#include "MainWindow.h"
 #include "SerialSettingsDialog.h"
 #include "Radio3DRConfig.h"
 #include "Radio3DRSettings.h"
@@ -148,6 +149,8 @@ void Radio3DRConfig::showEvent(QShowEvent *event)
     QLOG_DEBUG() << "3DR Radio Start Serial Port Scanning";
     m_timer->start(2000);
     loadSavedSerialSettings();
+
+    MainWindow::instance()->toolBar().disableConnectWidget(true);
 }
 
 void Radio3DRConfig::hideEvent(QHideEvent *event)
@@ -159,6 +162,7 @@ void Radio3DRConfig::hideEvent(QHideEvent *event)
     saveSerialSettings();
     QLOG_DEBUG() << "3DR Radio Remove Conenction to Serial Port";
     delete m_radioSettings;
+    MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
 
 void Radio3DRConfig::populateSerialPorts()
@@ -185,7 +189,7 @@ void Radio3DRConfig::serialPortOpenFailure(int error, QString errorString)
 {
     Q_UNUSED(error);
     QLOG_ERROR() << "Serial Port Open Crtical Error!" << errorString;
-    QMessageBox::critical(this, tr("Cannot Open Serial Port"), errorString);
+    QMessageBox::critical(this, tr("Serial Port"), "Cannot open serial port, please make sure you have your radio connected, and the corerct link selected)");
 }
 
 void Radio3DRConfig::setBaudRate(int index)
@@ -210,6 +214,7 @@ void Radio3DRConfig::setLink(int index)
 void Radio3DRConfig::readRadioSettings()
 {
     QLOG_INFO() << "read 3DR Radio Settings";
+
     if (m_radioSettings == NULL) {
         m_radioSettings = new Radio3DRSettings(this);
         connect(m_radioSettings, SIGNAL(localReadComplete(Radio3DREeprom&, bool)),
