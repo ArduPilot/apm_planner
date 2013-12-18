@@ -52,16 +52,23 @@ protected:
 
 class ApmPlane: public CustomMode {
 public:
+    static const int modeCount = 16;
     enum planeMode {
     MANUAL        = 0,
     CIRCLE        = 1,
     STABILIZE     = 2,
     TRAINING      = 3,
+    RESERVED_4    = 4,  // RESERVED FOR FUTURE USE
     FLY_BY_WIRE_A = 5,
     FLY_BY_WIRE_B = 6,
+    RESERVED_7    = 7,  // RESERVED FOR FUTURE USE
+    RESERVED_8    = 8,  // RESERVED FOR FUTURE USE
+    RESERVED_9    = 9,  // RESERVED FOR FUTURE USE
     AUTO          = 10,
     RTL           = 11,
     LOITER        = 12,
+    RESERVED_13   = 13, // RESERVED FOR FUTURE USE
+    RESERVED_14   = 14, // RESERVED FOR FUTURE USE
     GUIDED        = 15,
     INITIALIZING  = 16
     };
@@ -75,6 +82,7 @@ public:
 
 class ApmCopter: public CustomMode {
 public:
+    static const int modeCount = 14;
     enum copterMode {
     STABILIZE   = 0,   // hold level position
     ACRO        = 1,   // rate control
@@ -89,7 +97,7 @@ public:
     OF_LOITER   = 10,  // Hold a single location using optical flow
                        // sensor
     DRIFT       = 11,  // Drift 'Car Like' mode
-    RESERVED    = 12,  // RESERVED FOR FUTURE USE
+    RESERVED_12 = 12,  // RESERVED FOR FUTURE USE
     SPORT       = 13   // [TODO] Verify this is correct.
     };
 
@@ -101,15 +109,25 @@ public:
 
 class ApmRover: public CustomMode {
 public:
+    static const int modeCount = 16;
     enum roverMode {
-    MANUAL      =0,
-    LEARNING    =2,
-    STEERING    =3,
-    HOLD        =4,
-    AUTO        =10,
-    RTL         =11,
-    GUIDED      =15,
-    INITIALIZING=16
+    MANUAL        = 0,
+    RESERVED_1    = 1, // RESERVED FOR FUTURE USE
+    LEARNING      = 2,
+    STEERING      = 3,
+    HOLD          = 4,
+    RESERVED_5    = 5, // RESERVED FOR FUTURE USE
+    RESERVED_6    = 6, // RESERVED FOR FUTURE USE
+    RESERVED_7    = 7, // RESERVED FOR FUTURE USE
+    RESERVED_8    = 8, // RESERVED FOR FUTURE USE
+    RESERVED_9    = 9, // RESERVED FOR FUTURE USE
+    AUTO          = 10,
+    RTL           = 11,
+    RESERVED_12   = 12, // RESERVED FOR FUTURE USE
+    RESERVED_13   = 13, // RESERVED FOR FUTURE USE
+    RESERVED_14   = 14, // RESERVED FOR FUTURE USE
+    GUIDED        = 15,
+    INITIALIZING  = 16,
     };
 public:
     ApmRover(roverMode aMode);
