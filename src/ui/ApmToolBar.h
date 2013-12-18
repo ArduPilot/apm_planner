@@ -49,6 +49,7 @@ public:
     void setFlightPlanViewAction(QAction *action);
     void setInitialSetupViewAction(QAction *action);
     void setConfigTuningViewAction(QAction *action);
+    void setPlotViewAction(QAction *action);
     void setSimulationViewAction(QAction *action);
     void setTerminalViewAction(QAction *action);
     void setConnectMAVAction(QAction *action);
@@ -60,6 +61,7 @@ signals:
     void triggerInitialSetupView();
     void triggerConfigTuningView();
     void triggerSimulationView();
+    void triggerPlotView();
     void triggerTerminalView();
 
     void MAVConnected(bool connected);
@@ -70,6 +72,7 @@ public slots:
     void selectInitialSetupView();
     void selectConfigTuningView();
     void selectSimulationView();
+    void selectPlotView();
     void selectTerminalView();
 
     void connectMAV();
