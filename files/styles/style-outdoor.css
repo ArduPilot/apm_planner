@@ -223,7 +223,7 @@ QToolButton:pressed {
 }
 
 QToolTip {
-        background-color: #404040;
+/*        background-color: #404040;*/
 	border-radius: 3px;
 }
 
