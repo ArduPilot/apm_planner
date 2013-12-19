@@ -32,53 +32,27 @@
   <widget class="QPushButton" name="loadSettingsButton">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>10</x>
      <y>30</y>
-     <width>127</width>
-     <height>30</height>
+     <width>141</width>
+     <height>27</height>
     </rect>
    </property>
    <property name="text">
     <string>Load Settings</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="saveLocalSettingsButton">
+  <widget class="QPushButton" name="saveSettingsButton">
    <property name="geometry">
     <rect>
-     <x>180</x>
+     <x>170</x>
      <y>30</y>
-     <width>125</width>
-     <height>30</height>
+     <width>141</width>
+     <height>27</height>
     </rect>
    </property>
    <property name="text">
-    <string>Save Local</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="saveRemoteSettingsButton">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>30</y>
-     <width>149</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Save Remote</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="resetDefaultsButton">
-   <property name="geometry">
-    <rect>
-     <x>510</x>
-     <y>30</y>
-     <width>150</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Reset to Defaults</string>
+    <string>Save Settings</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="localGroupBox">
@@ -151,13 +125,6 @@
      <widget class="QComboBox" name="nodeDestComboBox">
       <property name="enabled">
        <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="1">
-     <widget class="QCheckBox" name="mavLinkCheckBox">
-      <property name="text">
-       <string>MAVLink</string>
       </property>
      </widget>
     </item>
@@ -283,8 +250,8 @@
        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.Lucida Grande UI'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Lucida Grande';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
@@ -378,6 +345,30 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="label_32">
+      <property name="text">
+       <string>MAVLink</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QComboBox" name="mavLinkComboBox"/>
+    </item>
+    <item row="10" column="1">
+     <widget class="QSpinBox" name="maxWindowSpinBox">
+      <property name="maximum">
+       <number>999</number>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="label_34">
+      <property name="text">
+       <string>Max Win</string>
+      </property>
+     </widget>
+    </item>
    </layout>
    <zorder>label_1</zorder>
    <zorder>label_2</zorder>
@@ -404,7 +395,6 @@ p, li { white-space: pre-wrap; }
    <zorder>label_17</zorder>
    <zorder>txPowerComboBox</zorder>
    <zorder>eccCheckBox</zorder>
-   <zorder>mavLinkCheckBox</zorder>
    <zorder>opResendCheckBox</zorder>
    <zorder>rssiTextEdit</zorder>
    <zorder>versionLabel</zorder>
@@ -412,6 +402,10 @@ p, li { white-space: pre-wrap; }
    <zorder>dutyCycleSpinBox</zorder>
    <zorder>lbtRssiSpinBox</zorder>
    <zorder>numChannelsSpinBox</zorder>
+   <zorder>label_32</zorder>
+   <zorder>mavLinkComboBox</zorder>
+   <zorder>maxWindowSpinBox</zorder>
+   <zorder>label_34</zorder>
   </widget>
   <widget class="QProgressBar" name="progressBar">
    <property name="geometry">
@@ -451,13 +445,6 @@ p, li { white-space: pre-wrap; }
     </item>
     <item row="2" column="4">
      <widget class="QComboBox" name="minFreqComboBox_remote"/>
-    </item>
-    <item row="8" column="1">
-     <widget class="QCheckBox" name="mavLinkCheckBox_remote">
-      <property name="text">
-       <string>MAVLink</string>
-      </property>
-     </widget>
     </item>
     <item row="9" column="1">
      <widget class="QCheckBox" name="opResendCheckBox_remote">
@@ -708,6 +695,30 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="label_33">
+      <property name="text">
+       <string>MAVLink</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QComboBox" name="mavLinkComboBox_remote"/>
+    </item>
+    <item row="10" column="1">
+     <widget class="QSpinBox" name="maxWindowSpinBox_remote">
+      <property name="maximum">
+       <number>999</number>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="label_35">
+      <property name="text">
+       <string>Max Win</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QPushButton" name="copyToRemoteButton">
@@ -828,6 +839,19 @@ Items to Remote</string>
    </property>
    <property name="text">
     <string>STATUS:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="resetDefaultsButton">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>30</y>
+     <width>151</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Restore Defaults</string>
    </property>
   </widget>
  </widget>

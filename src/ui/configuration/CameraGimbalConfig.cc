@@ -473,7 +473,7 @@ void CameraGimbalConfig::refreshMountParameters(QString mount, QString parameter
     else if (parameterName == "MNT_RC_IN_ROLL")
     {
         int index = ui.rollInputChannelComboBox->findData(value.toInt());
-        ui.tiltInputChannelComboBox->setCurrentIndex(index);
+        ui.rollInputChannelComboBox->setCurrentIndex(index);
     }
     else if (parameterName == "MNT_ANGMIN_PAN") //PAN
     {

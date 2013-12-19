@@ -12,12 +12,14 @@
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
+    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+
     m_uas = 0;
     m_logLoaded = false;
     m_progressDialog=0;
     m_currentIndex=0;
     connect(ui.pushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
-    graphCount=0;
+    m_graphCount=0;
     m_plot = new QCustomPlot(ui.widget);
     m_plot->setInteraction(QCP::iRangeDrag, true);
     m_plot->setInteraction(QCP::iRangeZoom, true);
@@ -155,7 +157,7 @@ void AP2DataPlot2D::autoScrollClicked(bool checked)
 {
     if (checked)
     {
-        if (graphCount > 0)
+        if (m_graphCount > 0)
         {
             double difference = m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower;
             m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_currentIndex - difference);
@@ -222,34 +224,35 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         //If a log is currently loaded, we don't care about incoming data.
         return;
     }
-    if (!m_nameToAxisIndex.contains(name))
+    QString propername  = name.mid(name.indexOf(":")+1);
+    if (!m_nameToAxisIndex.contains(propername))
     {
         //Also doesn't exist on the data select screen
-        m_dataSelectionScreen->addItem(name);
-        m_nameToAxisIndex[name] = m_currentIndex;
+        m_dataSelectionScreen->addItem(propername);
+        m_nameToAxisIndex[propername] = m_currentIndex;
     }
     else
     {
-        if (m_nameToAxisIndex[name] == m_currentIndex)
+        if (m_nameToAxisIndex[propername] == m_currentIndex)
         {
             m_currentIndex++;
-            if (graphCount > 0 && ui.autoScrollCheckBox->isChecked())
+            if (m_graphCount > 0 && ui.autoScrollCheckBox->isChecked())
             {
                 m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower+1);
                 m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(m_currentIndex);
             }
         }
     }
-    m_nameToAxisIndex[name] = m_currentIndex;
-    if (m_graphMap.contains(name))
+    m_nameToAxisIndex[propername] = m_currentIndex;
+    if (m_graphMap.contains(propername))
     {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        if (!m_graphMap[name]->keyAxis()->range().contains(value))
+        m_graphMap[propername]->addData(m_nameToAxisIndex[propername],value);
+        if (!m_graphMap[propername]->keyAxis()->range().contains(value))
         {
-            m_graphMap[name]->rescaleValueAxis();
+            m_graphMap[propername]->rescaleValueAxis();
         }
     }
-    m_onlineValueMap[name].append(QPair<double,double>(m_nameToAxisIndex[name],value));
+    m_onlineValueMap[propername].append(QPair<double,double>(m_nameToAxisIndex[propername],value));
 }
 
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
@@ -317,7 +320,7 @@ void AP2DataPlot2D::loadButtonClicked()
     m_dataList.clear();
     m_onlineValueMap.clear();
     m_plot->replot();
-    graphCount=0;
+    m_graphCount=0;
 
     if (m_logLoaded)
     {
@@ -326,7 +329,13 @@ void AP2DataPlot2D::loadButtonClicked()
         ui.pushButton->setText("Load Log");
         ui.tableWidget->setVisible(false);
         ui.hideExcelView->setVisible(false);
+        //<html><head/><body><p align="center">asdf</p></body></html>
+        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
         return;
+    }
+    else
+    {
+        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded</span></p>");
     }
     ui.tableWidget->setVisible(true);
     ui.hideExcelView->setVisible(true);
@@ -374,7 +383,6 @@ void AP2DataPlot2D::threadTerminated()
 
 AP2DataPlot2D::~AP2DataPlot2D()
 {
-    delete m_dataSelectionScreen;
 }
 void AP2DataPlot2D::itemEnabled(QString name)
 {
@@ -409,7 +417,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
                     axis->setLabel(name);
 
-                    if (graphCount > 0)
+                    if (m_graphCount > 0)
                     {
                         connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
                     }
@@ -418,12 +426,12 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     axis->setTickLabelColor(color);
                     axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
                     m_axisList[name] = axis;
-                    QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,graphCount++));
+                    QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
                     m_graphMap[name] = mainGraph1;
                     m_graphNameList.append(name);
                     mainGraph1->setData(xlist, ylist);
                     mainGraph1->rescaleValueAxis();
-                    if (graphCount == 1)
+                    if (m_graphCount == 1)
                     {
                         mainGraph1->rescaleKeyAxis();
                     }
@@ -463,7 +471,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
             axis->setLabel(name);
 
-            if (graphCount > 0)
+            if (m_graphCount > 0)
             {
                 connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
             }
@@ -472,12 +480,12 @@ void AP2DataPlot2D::itemEnabled(QString name)
             axis->setTickLabelColor(color);
             axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
             m_axisList[name] = axis;
-            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,graphCount++));
+            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
             m_graphMap[name] = mainGraph1;
             m_graphNameList.append(name);
             mainGraph1->setData(xlist, ylist);
             mainGraph1->rescaleValueAxis();
-            if (graphCount == 1)
+            if (m_graphCount == 1)
             {
                 mainGraph1->rescaleKeyAxis();
             }
@@ -502,7 +510,7 @@ void AP2DataPlot2D::itemDisabled(QString name)
     m_graphMap.remove(name);
     m_axisList.remove(name);
     m_graphNameList.removeOne(name);
-    graphCount--;
+    m_graphCount--;
 
 }
 void AP2DataPlot2D::progressDialogCanceled()

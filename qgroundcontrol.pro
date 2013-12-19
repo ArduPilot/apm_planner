@@ -534,7 +534,8 @@ HEADERS += src/MG.h \
     src/ui/qcustomplot.h \
     src/globalobject.h \
     src/ui/AboutDialog.h \
-    src/ui/uas/UASQuickViewTextLabel.h
+    src/ui/uas/UASQuickViewTextLabel.h \
+    src/uas/ApmUiHelpers.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -767,7 +768,8 @@ SOURCES += src/main.cc \
     src/ui/qcustomplot.cpp \
     src/globalobject.cc \
     src/ui/AboutDialog.cc \
-    src/ui/uas/UASQuickViewTextLabel.cc
+    src/ui/uas/UASQuickViewTextLabel.cc \
+    src/uas/ApmUiHelpers.cc
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc

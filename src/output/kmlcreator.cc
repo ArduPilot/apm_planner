@@ -34,6 +34,7 @@ static const QString kModesToColors[][2] = {
     {"TOY_A", "FF99FF33"},
     {"TOY_B", "FF66CC99"},
     {"SPORT", "FFCC3300"},
+    {"DRIFT", "FF0066FF"},
     {"", ""}
 };
 

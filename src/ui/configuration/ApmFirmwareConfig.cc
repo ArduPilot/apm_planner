@@ -35,6 +35,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
     m_timeoutCounter=0;
+    m_throwPropSpinWarning = false;
     m_port=0;
     m_hasError=0;
     //firmwareStatus = 0;
@@ -455,6 +456,11 @@ void ApmFirmwareConfig::firmwareProcessFinished(int status)
             QMessageBox::information(this,"Complete","APM Flashing is complete!");
             ui.statusLabel->setText(tr("Flashing complete"));
             emit showBlankingScreen();
+            if (m_throwPropSpinWarning)
+            {
+                QMessageBox::information(this,"Warning","As of AC 3.1, motors will spin when armed. This is configurable through the MOT_SPIN_ARMED parameter");
+                m_throwPropSpinWarning = false;
+            }
         } else {
             QMessageBox::critical(this,"FAILED","APM Flashing FAILED!");
             ui.statusLabel->setText(tr("Flashing FAILED!"));
@@ -814,6 +820,14 @@ void ApmFirmwareConfig::flashButtonClicked()
         connect(reply,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
         connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
         ui.statusLabel->setText("Downloading");
+        if (m_buttonToWarning.contains(senderbtn))
+        {
+            if (m_buttonToWarning[senderbtn])
+            {
+                m_throwPropSpinWarning = true;
+
+            }
+        }
     }
     else
     {
@@ -937,51 +951,87 @@ void ApmFirmwareConfig::firmwareListFinished()
 
     if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-heli",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.copterPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.copterLabel->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-quad",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.quadPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.quadLabel->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-hexa",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.hexaPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.hexaLabel->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-octa-quad",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.octaQuadPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.octaQuadLabel->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-octa",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.octaPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.octaLabel->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-tri",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.triPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.triLabel->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-y6",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.y6PushButton] = versionIsGreaterThan(outstr,3.1);
         ui.y6Label->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,"Plane",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.planePushButton] = versionIsGreaterThan(outstr,3.1);
         ui.planeLabel->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,"Rover",cmpstr,&outstr))
     {
+        //Version checking
+        m_buttonToWarning[ui.roverPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.roverLabel->setText(labelstr + outstr);
         return;
     }
+
+
+
+
+
+
     //QLOG_DEBUG() << "Match not found for:" << reply->url();
     //QLOG_DEBUG() << "Git version line:" <<  replystr;
+}
+//Takes the format: "AnythingHere VX.Y.Z, where .Z is optional, and X and Y can be any number of digits.
+bool ApmFirmwareConfig::versionIsGreaterThan(QString verstr,double version)
+{
+    QRegExp versionEx("\\d*\\.\\d+");
+    QString versionstr = "";
+    int pos = versionEx.indexIn(verstr);
+    if (pos > -1) {
+        versionstr = versionEx.cap(0);
+    }
+    float versionfloat = versionstr.toFloat();
+    return ((versionfloat+0.005) > (version));
 }
 
 void ApmFirmwareConfig::flashCustomFirmware()

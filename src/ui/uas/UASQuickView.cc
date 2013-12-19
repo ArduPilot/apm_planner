@@ -41,8 +41,8 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
         valueEnabled("GCS Status.Voltage (V)");
         valueEnabled("GCS Status.Current (A)");
         valueEnabled("GCS Status.Battery (%)");
-        valueEnabled("GCS Status.GPS Fix");
-        valueEnabled("GCS Status.GPS Sats");
+        valueEnabled("GCS Status.GPS Fix ()");
+        valueEnabled("GCS Status.GPS Sats ()");
         valueEnabled("GCS Status.GPS HDOP (m)");
     }
 
