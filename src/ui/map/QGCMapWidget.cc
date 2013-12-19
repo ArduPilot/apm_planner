@@ -836,7 +836,7 @@ void QGCMapWidget::updateWaypointList(int uas)
         // Update all potentially new waypoints
         foreach (Waypoint* wp, wps)
         {
-            QLOG_DEBUG() << "UPDATING NEW WP" << wp->getId();
+            QLOG_TRACE() << "UPDATING NEW WP" << wp->getId();
             // Update / add only if new
             if (!waypointsToIcons.contains(wp)) updateWaypoint(uas, wp);
         }

@@ -1,3 +1,5 @@
+#include "UASManager.h"
+#include "ArduPilotMegaMAV.h"
 #include "QGCMapToolBar.h"
 #include "QGCMapWidget.h"
 #include "ui_QGCMapToolBar.h"
@@ -24,7 +26,7 @@ void QGCMapToolBar::setMap(QGCMapWidget* map)
     if (map)
     {
         connect(ui->goToButton, SIGNAL(clicked()), map, SLOT(showGoToDialog()));
-        connect(ui->goHomeButton, SIGNAL(clicked()), map, SLOT(goHome()));
+        connect(ui->goHomeButton, SIGNAL(clicked()), this, SLOT(goHome()));
         connect(ui->lastPosButton, SIGNAL(clicked()), map, SLOT(loadSettings()));
         connect(ui->clearTrailsButton, SIGNAL(clicked()), map, SLOT(deleteTrails()));
         connect(map, SIGNAL(OnTileLoadStart()), this, SLOT(tileLoadStart()));
@@ -32,8 +34,8 @@ void QGCMapToolBar::setMap(QGCMapWidget* map)
         connect(map, SIGNAL(OnTilesStillToLoad(int)), this, SLOT(tileLoadProgress(int)));
         connect(ui->ripMapButton, SIGNAL(clicked()), map, SLOT(cacheVisibleRegion()));
 
-        ui->followCheckBox->setChecked(map->getFollowUAVEnabled());
-        connect(ui->followCheckBox, SIGNAL(clicked(bool)), map, SLOT(setFollowUAVEnabled(bool)));
+        ui->followPushButton->setChecked(map->getFollowUAVEnabled());
+        connect(ui->followPushButton, SIGNAL(clicked(bool)), map, SLOT(setFollowUAVEnabled(bool)));
 
         // Edit mode handling
         ui->editButton->hide();
@@ -238,6 +240,24 @@ void QGCMapToolBar::tileLoadProgress(int progress)
     else
     {
         tileLoadEnd();
+    }
+}
+
+void QGCMapToolBar::goHome()
+{
+    UASManager *umanager = UASManager::instance();
+    if (umanager){
+        ArduPilotMegaMAV* apmUas= dynamic_cast<ArduPilotMegaMAV*>(umanager->getActiveUAS());
+        if (apmUas){
+            UASWaypointManager* wpManager = apmUas->getWaypointManager();
+            const Waypoint* homeWp = wpManager->getWaypoint(0); // Waypoint 0 is home in APM
+            if (homeWp){
+                map->updateHomePosition(homeWp->getLatitude(), homeWp->getLongitude(), homeWp->getAltitude());
+                map->goHome();
+            }
+        } else {
+            map->goHome();
+        }
     }
 }
 

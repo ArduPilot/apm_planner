@@ -29,6 +29,7 @@ public slots:
     void setUAVTrailDistance();
     void setUpdateInterval();
     void setMapType();
+    void goHome();
 
 private:
     Ui::QGCMapToolBar *ui;
