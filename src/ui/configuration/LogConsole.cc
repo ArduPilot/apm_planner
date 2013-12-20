@@ -358,6 +358,7 @@ void LogConsole::pullSelectedClicked() {
             files.append(FileData(fn, logNumber));
         }
     }
+    
     disconnect(m_serial, SIGNAL(readyRead()), this, SLOT(readData()));
 
     if(files.size() > 0) {
