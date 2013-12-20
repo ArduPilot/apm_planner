@@ -16,6 +16,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     m_uas = 0;
     m_axisGroupingDialog = 0;
+    m_logLoaderThread= 0;
     m_logLoaded = false;
     m_progressDialog=0;
     m_currentIndex=0;
@@ -430,6 +431,17 @@ void AP2DataPlot2D::threadTerminated()
 
 AP2DataPlot2D::~AP2DataPlot2D()
 {
+    if (m_logLoaderThread)
+    {
+        m_logLoaderThread->stopLoad();
+        m_logLoaderThread->deleteLater();
+        m_logLoaderThread = 0;
+    }
+    if (m_axisGroupingDialog)
+    {
+        m_axisGroupingDialog->close();
+        delete m_axisGroupingDialog;
+    }
 }
 void AP2DataPlot2D::itemEnabled(QString name)
 {
