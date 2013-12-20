@@ -152,6 +152,22 @@ QGCParamWidget::QGCParamWidget(UASInterface* uas, QWidget *parent) :
     if (uas) requestParameterList();
 }
 
+void QGCParamWidget::loadParamsFromFile(const QString &filename)
+{
+    //Load the filename, it will be a CSV of PARAM,VALUE\n
+    QFile paramfile(filename);
+    paramfile.open(QIODevice::ReadOnly);
+    while (!paramfile.atEnd())
+    {
+        QString line = paramfile.readLine();
+        if (line.indexOf(",") != -1)
+        {
+            setParameter(1,line.split(",")[0],line.split(",")[1].toFloat());
+        }
+    }
+    paramfile.close();
+}
+
 void QGCParamWidget::loadSettings()
 {
     QSettings settings;
@@ -1057,7 +1073,7 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
     }
         break;
     default:
-        qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE";
+        qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE. PARAM NAME:" << parameterName << "Type:" << parameters.value(component)->value(parameterName).type();
         return;
     }
 

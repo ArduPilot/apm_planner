@@ -50,6 +50,8 @@ public:
     virtual QString getParamInfo(const QString& param) = 0;
     virtual void setParamInfo(const QMap<QString,QString>& param) = 0;
 
+    virtual void loadParamsFromFile(const QString &filename) = 0;
+
     /** @brief Request an update for the parameter list */
     void requestParameterListUpdate(int component = 0);
     /** @brief Request an update for this specific parameter */

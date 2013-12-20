@@ -2408,7 +2408,7 @@ void UAS::setParameter(const int component, const QString& id, const QVariant& v
                 p.param_type = MAV_PARAM_TYPE_REAL32;
                 break;
             default:
-                qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE";
+                qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE:" << id << "TYPE IS:" << value.type();
                 return;
             }
         }
@@ -2433,7 +2433,7 @@ void UAS::setParameter(const int component, const QString& id, const QVariant& v
                 p.param_type = MAV_PARAM_TYPE_REAL32;
                 break;
             default:
-                qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE";
+                qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE:" << id << "TYPE IS:" << value.type();
                 return;
             }
         }

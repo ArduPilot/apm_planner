@@ -60,6 +60,8 @@ public:
     QString getParamInfo(const QString& param) { return paramToolTips.value(param, ""); }
     void setParamInfo(const QMap<QString,QString>& param) { paramToolTips = param; }
 
+    void loadParamsFromFile(const QString &filename);
+
 signals:
     /** @brief A parameter was changed in the widget, NOT onboard */
     //void parameterChanged(int component, QString parametername, float value); // defined in QGCUASParamManager already

@@ -103,6 +103,7 @@ private slots:
     void uasConnected();
     void uasDisconnected();
     void activateBlankingScreen();
+    void paramButtonClicked();
 private:
     Ui::ApmHardwareConfig ui;
     UASInterface *m_uas;
