@@ -53,6 +53,7 @@ private slots:
     void graphAddedToGroup(QString name,QString group);
     void graphRemovedFromGroup(QString name);
 private:
+    AP2DataPlotAxisDialog *m_axisGroupingDialog;
     QMap<QString,QList<QString> > m_graphGrouping;
     QMap<QString,QCPRange> m_graphGroupRanges;
     QMap<QString,QString> m_graphToGroupMap;

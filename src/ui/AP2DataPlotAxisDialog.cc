@@ -1,3 +1,7 @@
+#include <QCloseEvent>
+#include <QWidget>
+#include <QMap>
+
 #include "AP2DataPlotAxisDialog.h"
 #include "ui_AP2DataPlotAxisDialog.h"
 
@@ -21,7 +25,16 @@ void AP2DataPlotAxisDialog::autoButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
+    if (m_groupMap.contains(graphname))
+    {
+        m_groupMap.remove(graphname);
+    }
     emit graphRemovedFromGroup(graphname);
+}
+void AP2DataPlotAxisDialog::closeEvent(QCloseEvent *evt)
+{
+    evt->ignore();
+    this->hide();
 }
 
 void AP2DataPlotAxisDialog::groupAButtonClicked(bool checked)
@@ -31,6 +44,11 @@ void AP2DataPlotAxisDialog::groupAButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
+    if (m_groupMap[graphname] == "GROUPA")
+    {
+        return;
+    }
+    m_groupMap[graphname] = "GROUPA";
     emit graphAddedToGroup(graphname,"GROUPA");
 }
 
@@ -41,6 +59,11 @@ void AP2DataPlotAxisDialog::groupBButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
+    if (m_groupMap[graphname] == "GROUPB")
+    {
+        return;
+    }
+    m_groupMap[graphname] = "GROUPB";
     emit graphAddedToGroup(graphname,"GROUPB");
 }
 
@@ -51,6 +74,11 @@ void AP2DataPlotAxisDialog::groupCButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
+    if (m_groupMap[graphname] == "GROUPC")
+    {
+        return;
+    }
+    m_groupMap[graphname] = "GROUPC";
     emit graphAddedToGroup(graphname,"GROUPC");
 }
 
@@ -61,6 +89,11 @@ void AP2DataPlotAxisDialog::groupDButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
+    if (m_groupMap[graphname] == "GROUPD")
+    {
+        return;
+    }
+    m_groupMap[graphname] = "GROUPD";
     emit graphAddedToGroup(graphname,"GROUPD");
 }
 
@@ -76,6 +109,30 @@ void AP2DataPlotAxisDialog::listCurrentChanged(int index)
         return;
     }
     QString itemtext = ui->listWidget->item(index)->text();
+    if (m_groupMap.contains(itemtext))
+    {
+        if (m_groupMap[itemtext] == "GROUPA")
+        {
+            ui->groupARadioButton->setChecked(true);
+        }
+        else if (m_groupMap[itemtext] == "GROUPB")
+        {
+            ui->groupBRadioButton->setChecked(true);
+        }
+        else if (m_groupMap[itemtext] == "GROUPC")
+        {
+            ui->groupCRadioButton->setChecked(true);
+        }
+        else if (m_groupMap[itemtext] == "GROUPD")
+        {
+            ui->groupDRadioButton->setChecked(true);
+        }
+
+    }
+    else
+    {
+        ui->autoRadioButton->setChecked(true);
+    }
     if (m_rangeMap.contains(itemtext))
     {
         ui->minDoubleSpinBox->setValue(m_rangeMap[itemtext].first);
@@ -95,6 +152,10 @@ void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
     {
         m_rangeMap[name].first = lower;
         m_rangeMap[name].second = upper;
+    }
+    else
+    {
+        addAxis(name,lower,upper);
     }
 }
 void AP2DataPlotAxisDialog::setMinMaxButtonClicked()

@@ -74,6 +74,7 @@ void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,Q
 {
     if (m_axisGroupingDialog)
     {
+        m_axisGroupingDialog->show();
         return;
     }
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
@@ -265,36 +266,36 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     m_nameToAxisIndex[propername] = m_currentIndex;
     if (m_graphMap.contains(propername))
     {
-        m_graphMap[name]->addData(m_nameToAxisIndex[name],value);
-        if (m_graphToGroupMap.contains(name))
+        m_graphMap[propername]->addData(m_nameToAxisIndex[propername],value);
+        if (m_graphToGroupMap.contains(propername))
         {
             //It's in a group
-            if (!m_graphGroupRanges[m_graphToGroupMap[name]].contains(value))
+            if (!m_graphGroupRanges[m_graphToGroupMap[propername]].contains(value))
             {
                 //It's out of scale for the group, expand it.
-                if (m_graphGroupRanges[m_graphToGroupMap[name]].lower > value)
+                if (m_graphGroupRanges[m_graphToGroupMap[propername]].lower > value)
                 {
-                    m_graphGroupRanges[m_graphToGroupMap[name]].lower = value;
+                    m_graphGroupRanges[m_graphToGroupMap[propername]].lower = value;
                 }
-                else if (m_graphGroupRanges[m_graphToGroupMap[name]].upper < value)
+                else if (m_graphGroupRanges[m_graphToGroupMap[propername]].upper < value)
                 {
-                    m_graphGroupRanges[m_graphToGroupMap[name]].upper = value;
+                    m_graphGroupRanges[m_graphToGroupMap[propername]].upper = value;
                 }
-                for (int i=0;i<m_graphGrouping[m_graphToGroupMap[name]].size();i++)
+                for (int i=0;i<m_graphGrouping[m_graphToGroupMap[propername]].size();i++)
                 {
                     //m_graphMap[m_graphGrouping[m_graphToGroupName[name]][i]]->getA
                     //m_axisList[
-                   m_axisList[m_graphGrouping[m_graphToGroupMap[name]][i]]->setRange(m_graphGroupRanges[m_graphToGroupMap[name]]);
+                   m_axisList[m_graphGrouping[m_graphToGroupMap[propername]][i]]->setRange(m_graphGroupRanges[m_graphToGroupMap[propername]]);
                 }
 
             }
         }
-        else if (!m_graphMap[name]->keyAxis()->range().contains(value))
+        else if (!m_graphMap[propername]->keyAxis()->range().contains(value))
         {
-            m_graphMap[name]->rescaleValueAxis();
+            m_graphMap[propername]->rescaleValueAxis();
             if (m_axisGroupingDialog)
             {
-                m_axisGroupingDialog->updateAxis(name,m_axisList[name]->range().lower,m_axisList[name]->range().upper);
+                m_axisGroupingDialog->updateAxis(propername,m_axisList[propername]->range().lower,m_axisList[propername]->range().upper);
             }
         }
     }

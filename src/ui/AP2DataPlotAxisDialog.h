@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QMap>
 
+class QCloseEvent;
+
 namespace Ui {
 class AP2DataPlotAxisDialog;
 }
@@ -17,6 +19,8 @@ public:
     ~AP2DataPlotAxisDialog();
     void addAxis(QString name,double lower, double upper);
     void updateAxis(QString name,double lower, double upper);
+protected:
+    void closeEvent(QCloseEvent *evt);
 public slots:
     void listCurrentChanged(int index);
     void setMinMaxButtonClicked();
@@ -30,6 +34,7 @@ signals:
     void graphRemovedFromGroup(QString name);
 private:
     QMap<QString,QPair<double,double> > m_rangeMap;
+    QMap<QString,QString > m_groupMap;
     Ui::AP2DataPlotAxisDialog *ui;
 };
 
