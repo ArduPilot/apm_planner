@@ -45,6 +45,11 @@
 //                S12: LBT_RSSI=0
 //                S13: MANCHESTER=0
 //                S14: RTSCTS=0
+//                S15: MAX_WINDOW=131 // new for SiK 1.8 and greater
+
+#define SIK_LOWLATENCY_MIN_VERSION 1.8f
+#define LAST_PARAM_SIK17_AND_LESS "S14"
+#define LAST_PARAM_SIK18_AND_GREATER "S15"
 
 static const int FREQ_NONE      = 0xf0;
 static const int FREQ_433		= 0x43;
@@ -60,13 +65,13 @@ public:
 
     enum Mode {local, remote};
 
-    static const int numberofParams = 15; // include AT&W eeprom write
-
 public:
 
     Radio3DREeprom();
     // Take the repsonse from an A(R)TI5 repsonse.
-    bool setVersion(QString &versionString);
+    bool setVersion(const QString &versionString);
+    void numberOfParams(int numberOfParams) { m_numberOfParams = numberOfParams;}
+    const QString endParam() { return m_endParam;}
     bool setParameter(QString &parameterString);
     bool setRadioFreqCode(int freqCode);
 
@@ -74,8 +79,9 @@ public:
     const QString formattedParameter(Mode mode, int index);
 
     // accessors
-    int version();
+    float version() {return m_version;}
     const QString& versionString();
+    int numberOfParams() {return m_numberOfParams;}
     int eepromVersion() { return m_eepromVersion;}
     int serialSpeed(){ return m_serialSpeed;}
     int airSpeed(){ return m_airSpeed;}
@@ -93,6 +99,7 @@ public:
     int rtsCts(){ return m_rtsCts;}
     int radioFrequency();
     int frequencyCode() {return m_radioFreqCode;}
+    int maxWindow() {return m_maxWindow;}
 
     // settors
     void serialSpeed(int serialSpeed){ m_serialSpeed = serialSpeed;}
@@ -109,10 +116,12 @@ public:
     void lbtRssi(int lbtRssi){ m_lbtRssi = lbtRssi;}
     void manchester(int manchester){ m_manchester = manchester;}
     void rtsCts(int rtsCts){ m_rtsCts = rtsCts;}
+    void maxWindow(int maxWindow){ m_maxWindow = maxWindow;}
 
 private:
     // EEPROM settings
     QString m_versionString;
+    int m_numberOfParams;
     int m_radioFreqCode;
     float m_version;
     int m_eepromVersion;
@@ -130,6 +139,8 @@ private:
     int m_lbtRssi;
     int m_manchester;
     int m_rtsCts;
+    int m_maxWindow;
+    QString m_endParam;
 };
 
 class Radio3DRSettings : public QObject
@@ -143,6 +154,12 @@ class Radio3DRSettings : public QObject
                  writeLocalParams,
                  writeRemoteParams,
                  readRssiLocal, readRssiRemote,
+                 writeRemoteFactorySettings,
+                 writeRemoteEepromValues,
+                 writeLocalFactorySettings,
+                 writeLocalEepromValues,
+                 rebootLocal,
+                 rebootRemote,
                  complete, portOpen, error };
 
 public:
@@ -155,11 +172,12 @@ signals:
     void startReadRemoteParams();
     void localReadComplete(Radio3DREeprom& eeprom, bool success);
     void remoteReadComplete(Radio3DREeprom& eeprom, bool success);
+    void updateLocalComplete(int error);
+    void updateRemoteComplete(int error);
     void updateLocalStatus(QString status);
     void updateRemoteStatus(QString status);
     void updateLocalRssi(QString status);
     void updateRemoteRssi(QString status);
-
 
 public slots:
     bool openSerialPort(SerialSettings settings);
@@ -179,10 +197,15 @@ public slots:
     void readLocalRssi();
     void readRemoteRssi();
 
-    void resetToDefaults();
+    void resetLocalRadioToDefaults();
+    void resetRemoteRadioToDefaults();
+
+    void rebootLocalRadio();
+    void rebootRemoteRadio();
 
     void readData();
 
+    void readRemoteTimeout();
     void handleError(QSerialPort::SerialPortError error);
 
 private slots:
@@ -205,6 +228,7 @@ private:
     int m_retryCount;
     QString m_rxBuffer;
     QTimer m_timer;
+    QTimer m_timerReadWrite;
     int m_paramIndexSend;
 
 };

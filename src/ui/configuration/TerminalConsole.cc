@@ -315,7 +315,7 @@ void TerminalConsole::initConnections()
 }
 
 void TerminalConsole::logToKmlClicked() {
-    QString filename = QFileDialog::getOpenFileName(this, "Open Log File", MainWindow::instance()->getLogDirectory(), tr("Log Files (*.log)"));
+    QString filename = QFileDialog::getOpenFileName(this, "Open Log File", QGC::logDirectory(), tr("Log Files (*.log)"));
     if(filename.length() > 0) {
         QFile file(filename);
         if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {

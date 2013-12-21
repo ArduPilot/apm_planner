@@ -2,7 +2,7 @@
 QGroundControl Open Source Ground Control Station
 
 (c) 2009, 2010 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
-
+(c) 2013 APMPLANNER PROJECT <http://www.ardupliot.com>
 This file is part of the QGROUNDCONTROL project
 
     QGROUNDCONTROL is free software: you can redistribute it and/or modify
@@ -22,8 +22,9 @@ This file is part of the QGROUNDCONTROL project
 
 /**
  * @file
- *   @brief Implementation of class MainWindow
- *   @author Your Name here
+ *   @brief Implementation of class ArduPilotMegaMAV Uas Object
+ *   @author Lorenz Meier
+ *   @author Bill Bonney
  */
 
 #include "ArduPilotMegaMAV.h"
@@ -88,16 +89,16 @@ QString ApmPlane::stringForMode(int aMode)
         return "Training";
         break;
     case FLY_BY_WIRE_A:
-        return "Fly-By-Wire B";
+        return "FBW A";
         break;
     case FLY_BY_WIRE_B:
-        return "Fly-By-Wire B";
+        return "FBW B";
         break;
     case AUTO:
         return "Auto";
         break;
     case RTL:
-        return "Return to Launch";
+        return "RTL";
         break;
     case LOITER:
         return "Loiter";
@@ -108,6 +109,13 @@ QString ApmPlane::stringForMode(int aMode)
     case INITIALIZING:
         return "Initializing";
         break;
+    case RESERVED_4:
+    case RESERVED_7:
+    case RESERVED_8:
+    case RESERVED_9:
+    case RESERVED_13:
+    case RESERVED_14:
+        return "Reserved";
     default:
         return "Undefined";
     }
@@ -144,7 +152,7 @@ QString ApmCopter::stringForMode(int aMode) {
         return "Loiter";
         break;
     case RTL:
-        return "Return to Launch";
+        return "RTL";
         break;
     case CIRCLE:
         return "Circle";
@@ -158,15 +166,14 @@ QString ApmCopter::stringForMode(int aMode) {
     case OF_LOITER:
         return "OF Loiter";
         break;
-    case TOY_A:
-        return "Toy A";
-        break;
-    case TOY_M:
-        return "Toy M";
+    case DRIFT:
+        return "Drift";
         break;
     case SPORT:
         return "Sport";
         break;
+    case RESERVED_12:
+        return "Reserved";
     default:
         return "Undefined";
     }
@@ -200,7 +207,7 @@ QString ApmRover::stringForMode(int aMode) {
         return "Auto";
         break;
     case RTL:
-        return "Return to Launch";
+        return "RTL";
         break;
     case GUIDED:
         return "Guided";
@@ -208,12 +215,20 @@ QString ApmRover::stringForMode(int aMode) {
     case INITIALIZING:
         return "Initializing";
         break;
+    case RESERVED_1:
+    case RESERVED_5:
+    case RESERVED_6:
+    case RESERVED_7:
+    case RESERVED_8:
+    case RESERVED_9:
+    case RESERVED_12:
+    case RESERVED_13:
+    case RESERVED_14:
+        return "Reserved";
     default:
         return "Undefined";
     }
 }
-
-
 
 ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
     UAS(mavlink, id)//,
@@ -310,14 +325,7 @@ void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
         subDir = "/";
     }
 
-    QDir logFileDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)
-            + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY + subDir);
-
-    if(!logFileDir.exists()){
-        logFileDir.mkdir(logFileDir.absolutePath());
-    }
-
-    QString logFileName =  logFileDir.absolutePath() + "/" + QGC::fileNameAsTime();
+    QString logFileName =  QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
     QLOG_DEBUG() << "start new MAVLink Log:" << logFileName;
     mavlink->startLogging(logFileName);
 }
@@ -419,27 +427,19 @@ QString ArduPilotMegaMAV::getCustomModeText()
     QLOG_DEBUG() << "APM: getCustomModeText()";
     QString customModeString;
 
-    int systemType = getSystemType();
-            switch(systemType) {
-        case MAV_TYPE_FIXED_WING:
-            customModeString = ApmPlane::stringForMode(custom_mode);
-            break;
+    if (isFixedWing()){
+        customModeString = ApmPlane::stringForMode(custom_mode);
 
-        case MAV_TYPE_QUADROTOR:
-        case MAV_TYPE_OCTOROTOR:
-        case MAV_TYPE_HELICOPTER:
-        case MAV_TYPE_TRICOPTER:
-            customModeString = ApmCopter::stringForMode(custom_mode);
-            break;
+    } else if (isMultirotor()){
+        customModeString = ApmCopter::stringForMode(custom_mode);
 
-        case MAV_TYPE_GROUND_ROVER:
-            customModeString = ApmCopter::stringForMode(custom_mode);
-            break;
+    } else if (isGroundRover()){
+        customModeString = ApmRover::stringForMode(custom_mode);
 
-        default:
-            QLOG_WARN() << "APM: Unsupported System Type " << systemType;
+    } else {
+        QLOG_WARN() << "APM: Unsupported System Type " << getSystemType();
             customModeString = tr("APM UNKOWN");
-        }
+    }
     return customModeString;
 }
 

@@ -25,10 +25,24 @@ This file is part of the APM_PLANNER project
 APDoubleSpinBox::APDoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent)
 {
 }
+
 void APDoubleSpinBox::keyReleaseEvent(QKeyEvent *evt)
 {
     if (evt->key() == Qt::Key_Enter)
     {
         emit returnPressed();
     }
+    else if (evt->key() == Qt::Key_Escape)
+    {
+        this->setValue(m_savedValue);
+    }
+    else
+    {
+        QDoubleSpinBox::keyReleaseEvent(evt);
+    }
+}
+void APDoubleSpinBox::focusInEvent(QFocusEvent *evt)
+{
+    m_savedValue = this->value();
+    QDoubleSpinBox::focusInEvent(evt);
 }

@@ -8,11 +8,11 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     this->setLayout(layout);
     layout->setSpacing(0);
     layout->setMargin(0);
-    titleLabel = new QLabel(this);
+    titleLabel = new UASQuickViewTextLabel(this);
    //titleLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     titleLabel->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
     this->layout()->addWidget(titleLabel);
-    valueLabel = new QLabel(this);
+    valueLabel = new UASQuickViewTextLabel(this);
     //valueLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     valueLabel->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
     valueLabel->setText("0.00");
@@ -23,8 +23,11 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(this->height() / 2.0);
     titlefont.setPixelSize(this->height() / 4.0);
-    valueLabel->setFont(valuefont);
-    titleLabel->setFont(titlefont);
+    valueLabel->setFontSize(this->height() / 2.0);
+    titleLabel->setFontSize(this->height() / 4.0);
+    QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+    titleLabel->setFontColor(color);
+    valueLabel->setFontColor(color);
 }
 QString UASQuickViewTextItem::value()
 {
@@ -72,7 +75,7 @@ void UASQuickViewTextItem::setValue(double value)
 
 void UASQuickViewTextItem::setTitle(QString title)
 {
-    if (title.indexOf(".") != -1 && title.indexOf(":") != -1)
+    if (title.indexOf("."))
     {
         titleLabel->setText(title.mid(title.indexOf(".")+1));
     }
@@ -125,8 +128,8 @@ void UASQuickViewTextItem::setValuePixelSize(int size)
     QFont titlefont = titleLabel->font();
     valuefont.setPixelSize(size);
     titlefont.setPixelSize(valuefont.pixelSize() / 1.6);
-    valueLabel->setFont(valuefont);
-    titleLabel->setFont(titlefont);
+    valueLabel->setFontSize(size);
+    titleLabel->setFontSize(size / 1.6);
     update();
 }
 

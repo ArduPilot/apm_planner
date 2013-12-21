@@ -99,6 +99,8 @@ private slots:
     void flashFirmware(QString filename);
 
 private:
+    bool versionIsGreaterThan(QString verstr,double version);
+    bool m_throwPropSpinWarning;
     QProgressDialog *m_replugRequestMessageBox;
     QTimer *m_px4UnplugTimer;
     PX4FirmwareUploader *m_px4uploader;
@@ -123,6 +125,7 @@ private:
     bool m_betaFirmwareChecked;
     bool m_trunkFirmwareChecked;
     QMap<QPushButton*,QString> m_buttonToUrlMap;
+    QMap<QPushButton*,bool> m_buttonToWarning;
     Ui::ApmFirmwareConfig ui;
     class FirmwareDef
     {

@@ -1,29 +1,16 @@
 #include "QsLog.h"
 #include "ArduPilotMegaMAV.h"
+#include "ApmUiHelpers.h"
 #include "UASActionsWidget.h"
 #include "APMShortcutModesDialog.h"
 #include <QMessageBox>
 #include <UAS.h>
 #include <QSettings>
 
-void UASActionsWidget::setupApmPlaneComboBox(QComboBox *comboBox)
-{
-    comboBox->addItem("Manual", ApmPlane::MANUAL);
-    comboBox->addItem("Circle", ApmPlane::CIRCLE);
-    comboBox->addItem("Stabilize", ApmPlane::STABILIZE);
-    comboBox->addItem("Training", ApmPlane::TRAINING);
-    comboBox->addItem("FBW A", ApmPlane::FLY_BY_WIRE_A);
-    comboBox->addItem("FBW B", ApmPlane::FLY_BY_WIRE_B);
-    comboBox->addItem("Auto", ApmPlane::AUTO);
-    comboBox->addItem("RTL", ApmPlane::RTL);
-    comboBox->addItem("Loiter", ApmPlane::LOITER);
-    comboBox->addItem("Guided", ApmPlane::GUIDED);
-}
-
 void UASActionsWidget::setupApmPlaneModes()
 {
     QLOG_INFO() << "UASActionWidget: Set for Plane";
-    setupApmPlaneComboBox(ui.modeComboBox);
+    ApmUiHelpers::addPlaneModes(ui.modeComboBox);
 
     ui.armDisarmButton->setVisible(false);
     ui.armedStatuslabel->setVisible(false);
@@ -36,28 +23,10 @@ void UASActionsWidget::setupApmPlaneModes()
 
 }
 
-void UASActionsWidget::setupApmCopterComboBox(QComboBox *comboBox)
-{
-    comboBox->addItem("Stabilize", ApmCopter::STABILIZE);
-    comboBox->addItem("Acro", ApmCopter::ACRO);
-    comboBox->addItem("Alt Hold", ApmCopter::ALT_HOLD);
-    comboBox->addItem("Auto", ApmCopter::AUTO);
-    comboBox->addItem("Guided", ApmCopter::GUIDED);
-    comboBox->addItem("Loiter", ApmCopter::LOITER);
-    comboBox->addItem("RTL", ApmCopter::RTL);
-    comboBox->addItem("Circle", ApmCopter::CIRCLE);
-    comboBox->addItem("Position", ApmCopter::POSITION);
-    comboBox->addItem("Land", ApmCopter::LAND);
-    comboBox->addItem("Loiter", ApmCopter::OF_LOITER);
-    comboBox->addItem("Toy A", ApmCopter::TOY_A);
-    comboBox->addItem("Toy M", ApmCopter::TOY_M);
-    comboBox->addItem("Sport", ApmCopter::SPORT);
-}
-
 void UASActionsWidget::setupApmCopterModes()
 {
     QLOG_INFO() << "UASActionWidget: set for Copter";
-    setupApmCopterComboBox(ui.modeComboBox);
+    ApmUiHelpers::addCopterModes(ui.modeComboBox);
 
     ui.armDisarmButton->setVisible(true);
     ui.armedStatuslabel->setVisible(true);
@@ -70,22 +39,10 @@ void UASActionsWidget::setupApmCopterModes()
     configureModeButtonEnableDisable();
 }
 
-void UASActionsWidget::setupApmRoverComboBox(QComboBox *comboBox)
-{
-    comboBox->addItem("Manual", ApmRover::MANUAL);
-    comboBox->addItem("Learning", ApmRover::LEARNING);
-    comboBox->addItem("Steering", ApmRover::STEERING);
-    comboBox->addItem("Hold", ApmRover::HOLD);
-    comboBox->addItem("Auto", ApmRover::AUTO);
-    comboBox->addItem("RTL", ApmRover::RTL);
-    comboBox->addItem("Guided", ApmRover::GUIDED);
-    comboBox->addItem("Initializing", ApmRover::INITIALIZING);
-}
-
 void UASActionsWidget::setupApmRoverModes()
 {
-    QLOG_INFO() << "UASActionWidget: Setfor Rover";
-    setupApmRoverComboBox(ui.modeComboBox);
+    QLOG_INFO() << "UASActionWidget: Set for Rover";
+    ApmUiHelpers::addRoverModes(ui.modeComboBox);
 
     ui.armDisarmButton->setVisible(false);
     ui.armedStatuslabel->setVisible(false);
@@ -744,20 +701,20 @@ void UASActionsWidget::contextMenuEvent(QContextMenuEvent *event)
     APMShortcutModesDialog* dialog = new APMShortcutModesDialog();
 
     if(m_uas->isMultirotor()){
-        setupApmCopterComboBox(dialog->opt1ComboBox());
-        setupApmCopterComboBox(dialog->opt2ComboBox());
-        setupApmCopterComboBox(dialog->opt3ComboBox());
-        setupApmCopterComboBox(dialog->opt4ComboBox());
+        ApmUiHelpers::addCopterModes(dialog->opt1ComboBox());
+        ApmUiHelpers::addCopterModes(dialog->opt2ComboBox());
+        ApmUiHelpers::addCopterModes(dialog->opt3ComboBox());
+        ApmUiHelpers::addCopterModes(dialog->opt4ComboBox());
     } else if (m_uas->isFixedWing()) {
-        setupApmPlaneComboBox(dialog->opt1ComboBox());
-        setupApmPlaneComboBox(dialog->opt2ComboBox());
-        setupApmPlaneComboBox(dialog->opt3ComboBox());
-        setupApmPlaneComboBox(dialog->opt4ComboBox());
+        ApmUiHelpers::addPlaneModes(dialog->opt1ComboBox());
+        ApmUiHelpers::addPlaneModes(dialog->opt2ComboBox());
+        ApmUiHelpers::addPlaneModes(dialog->opt3ComboBox());
+        ApmUiHelpers::addPlaneModes(dialog->opt4ComboBox());
     } else if (m_uas->isGroundRover()){
-        setupApmRoverComboBox(dialog->opt1ComboBox());
-        setupApmRoverComboBox(dialog->opt2ComboBox());
-        setupApmRoverComboBox(dialog->opt3ComboBox());
-        setupApmRoverComboBox(dialog->opt4ComboBox());
+        ApmUiHelpers::addRoverModes(dialog->opt1ComboBox());
+        ApmUiHelpers::addRoverModes(dialog->opt2ComboBox());
+        ApmUiHelpers::addRoverModes(dialog->opt3ComboBox());
+        ApmUiHelpers::addRoverModes(dialog->opt4ComboBox());
     } else {
         // Do nothing.
         delete dialog;

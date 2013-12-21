@@ -44,6 +44,8 @@ private:
 
     void recalculateItemTextSizing();
 
+    void valueUpdate(const int uasId,const QString &name,const QString &unit,const double value,const quint64 msec);
+
     /** Column Count */
     int m_columnCount;
 

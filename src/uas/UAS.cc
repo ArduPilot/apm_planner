@@ -450,7 +450,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             bool customModeHasChanged = false;
 
             if ((state.system_status != static_cast<uint8_t>(this->status))) {
-                QLOG_DEBUG() << "UAS: new system_statuse " << state.system_status;
+                QLOG_DEBUG() << "UAS: new system_status" << state.system_status;
                 stateHasChanged = true;
                 this->status = static_cast<uint8_t>(state.system_status);
                 getStatusForCode((int)state.system_status, uasState, stateDescription);

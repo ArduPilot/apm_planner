@@ -154,6 +154,13 @@ Rectangle {
             onClicked: globalObj.triggerConfigTuningView()
         }
 
+        Button {
+            id: plotView
+            label: "GRAPHS"
+            image: "./resources/apmplanner/toolbar/simulation.png"
+            onClicked: globalObj.triggerPlotView()
+        }
+
 // [TODO] removed from toolbar until we have simulation working
 //        Button {
 //            id: simulationView

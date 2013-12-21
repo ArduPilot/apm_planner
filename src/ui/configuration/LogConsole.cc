@@ -338,7 +338,7 @@ void LogConsole::selectNoneClicked() {
 
 void LogConsole::pullSelectedClicked() {
     QDateTime now = QDateTime::currentDateTime();
-    QString parentDir = MainWindow::instance()->getLogDirectory();
+    QString parentDir = QGC::logDirectory();
     QString todayString = now.toString("yyyy-MM-dd hh-mm-ss");
 
     QList<FileData> files;
@@ -349,9 +349,14 @@ void LogConsole::pullSelectedClicked() {
     const int size = list.count();
     for(int i = 0; i < size; ++i) {
         QModelIndex idx = list.at(i);
-        int row = idx.row() + 1;
-        QString fn = QString("%1/%2 %3.log").arg(parentDir, todayString, QString::number(row));
-        files.append(FileData(fn, row));
+        QRegExp matchLogNumber("^Log (\\d+),");
+        QString logDetails = idx.data(Qt::DisplayRole).toString();
+        int pos = matchLogNumber.indexIn(logDetails);
+        if (pos > -1) {
+            int logNumber = matchLogNumber.cap(1).toInt();
+            QString fn = QString("%1/%2 %3.log").arg(parentDir, todayString, QString::number(logNumber));
+            files.append(FileData(fn, logNumber));
+        }
     }
 
     disconnect(m_serial, SIGNAL(readyRead()), this, SLOT(readData()));

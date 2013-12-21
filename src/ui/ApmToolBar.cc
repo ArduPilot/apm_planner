@@ -178,6 +178,11 @@ void APMToolBar::setConfigTuningViewAction(QAction *action)
     connect(this, SIGNAL(triggerConfigTuningView()), action, SIGNAL(triggered()));
 }
 
+void APMToolBar::setPlotViewAction(QAction *action)
+{
+    connect(this, SIGNAL(triggerPlotView()), action, SIGNAL(triggered()));
+}
+
 void APMToolBar::setSimulationViewAction(QAction *action)
 {
     connect(this, SIGNAL(triggerSimulationView()), action, SIGNAL(triggered()));
@@ -220,6 +225,11 @@ void APMToolBar::selectConfigTuningView()
 void APMToolBar::selectSimulationView()
 {
     QLOG_DEBUG() << "APMToolBar: selectSimulationView";
+}
+
+void APMToolBar::selectPlotView()
+{
+    QLOG_DEBUG() << "APMToolBar: selectPlotView";
 }
 
 void APMToolBar::selectTerminalView()

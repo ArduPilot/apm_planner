@@ -48,6 +48,9 @@ private slots:
     void valueSliderReleased();
     void valueSliderChanged();
 private:
+    QPalette doubleSpinBoxPalette;
+    QPalette intSpinBoxPalette;
+    bool m_valueChanged;
     QString m_param;
     enum VIEWTYPE
     {

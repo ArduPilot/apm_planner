@@ -74,21 +74,7 @@ int main(int argc, char *argv[])
     QsLogging::Logger& logger = QsLogging::Logger::instance();
     logger.setLoggingLevel(QsLogging::DebugLevel);
 
-
-#ifdef Q_OS_WIN
-    QString appDataDir = QString(getenv("USERPROFILE")).replace("\\","/");
-#else
-    QString appDataDir = getenv("HOME");
-#endif
-    QDir appDir(appDataDir);
-    if (appDir.exists())
-    {
-        if (!appDir.cd("apmplanner2"))
-        {
-            appDir.mkdir("apmplanner2");
-        }
-    }
-    const QString sLogPath(QDir(appDataDir + "/apmplanner2").filePath("log.txt"));
+    const QString sLogPath(QDir(QGC::appDataDirectory()).filePath("log.txt"));
 
     QsLogging::DestinationPtr fileDestination(
        QsLogging::DestinationFactory::MakeFileDestination(sLogPath, true, 0, 5) );

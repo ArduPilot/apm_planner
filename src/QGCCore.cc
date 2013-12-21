@@ -214,9 +214,8 @@ void QGCCore::initialize()
  **/
 QGCCore::~QGCCore()
 {
-    //mainWindow->storeSettings();
-    //mainWindow->close();
-    //mainWindow->deleteLater();
+    QGC::saveSettings();
+    QGC::close();
     // Delete singletons
     // First systems
     delete UASManager::instance();

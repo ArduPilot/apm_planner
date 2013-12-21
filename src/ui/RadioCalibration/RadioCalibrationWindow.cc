@@ -88,7 +88,7 @@ void RadioCalibrationWindow::saveFile()
 {
     QString fileName(QFileDialog::getSaveFileName(this,
                      tr("Save RC Calibration"),
-                     "settings/",
+                     QGC::parameterDirectory(),
                      tr("XML Files (*.xml)")));
     if (fileName.isEmpty())
         return;
@@ -164,7 +164,7 @@ void RadioCalibrationWindow::loadFile()
 {
     QString fileName(QFileDialog::getOpenFileName(this,
                      tr("Load RC Calibration"),
-                     "settings/",
+                     QGC::parameterDirectory(),
                      tr("XML Files (*.xml)")));
 
     if (fileName.isEmpty())

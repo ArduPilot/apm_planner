@@ -115,7 +115,7 @@ void QGCDataPlot2D::savePlot()
 {
     QString fileName = "plot.svg";
     fileName = QFileDialog::getSaveFileName(
-                   this, "Export File Name", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation),
+                   this, "Export File Name", QGC::appDataDirectory(),
                    "PDF Documents (*.pdf);;SVG Images (*.svg)");
 
     if (!fileName.contains(".")) {
@@ -133,7 +133,7 @@ void QGCDataPlot2D::savePlot()
         // Abort if cancelled
         if(msgBox.exec() == QMessageBox::Cancel) return;
         fileName = QFileDialog::getSaveFileName(
-                       this, "Export File Name", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation),
+                       this, "Export File Name", QGC::appDataDirectory(),
                        "PDF Documents (*.pdf);;SVG Images (*.svg)");
     }
 
@@ -250,11 +250,13 @@ void QGCDataPlot2D::selectFile()
 	// Open a file dialog prompting the user for the file to load.
 	// Note the special case for the Pixhawk.
     if (ui->inputFileType->currentText().contains("pxIMU") || ui->inputFileType->currentText().contains("RAW")) {
-        fileName = QFileDialog::getOpenFileName(this, tr("Specify log file name"), QString(), "Logfile (*.imu *.raw)");
+        fileName = QFileDialog::getOpenFileName(this, tr("Specify log file name"), QGC::appDataDirectory()
+                                                , "Logfile (*.imu *.raw)");
 	}
 	else
 	{
-        fileName = QFileDialog::getOpenFileName(this, tr("Specify log file name"), QString(), "Logfile (*.csv *.txt *.log)");
+        fileName = QFileDialog::getOpenFileName(this, tr("Specify log file name"), QGC::appDataDirectory()
+                                                , "Logfile (*.csv *.txt *.log)");
     }
 
 	// Check if the user hit cancel, which results in a Null string.
@@ -684,7 +686,7 @@ void QGCDataPlot2D::saveCsvLog()
 {
     QString fileName = "export.csv";
     fileName = QFileDialog::getSaveFileName(
-                   this, "Export CSV File Name", QDesktopServices::storageLocation(QDesktopServices::DesktopLocation),
+                   this, "Export CSV File Name", QGC::appDataDirectory(),
                    "CSV file (*.csv);;Text file (*.txt)");
 
     if (!fileName.contains(".")) {

@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1080</width>
     <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1024</width>
+    <width>1080</width>
     <height>576</height>
    </size>
   </property>
@@ -50,7 +50,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>1080</width>
      <height>22</height>
     </rect>
    </property>
@@ -101,6 +101,8 @@
     <addaction name="actionProject_Roadmap_2"/>
     <addaction name="actionDeveloper_Credits"/>
     <addaction name="actionDebug_Console"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_APM_Planner_2_0"/>
    </widget>
    <widget class="QMenu" name="menuPerspectives">
     <property name="title">
@@ -431,9 +433,6 @@
    <property name="text">
     <string>Normal</string>
    </property>
-   <property name="shortcut">
-    <string>Esc</string>
-   </property>
   </action>
   <action name="actionLoadCustomWidgetFile">
    <property name="icon">
@@ -548,6 +547,11 @@
    </property>
    <property name="text">
     <string>Show Debug Console</string>
+   </property>
+  </action>
+  <action name="actionAbout_APM_Planner_2_0">
+   <property name="text">
+    <string>About APM Planner 2.0</string>
    </property>
   </action>
  </widget>

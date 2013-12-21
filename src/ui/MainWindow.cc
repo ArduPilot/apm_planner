@@ -61,6 +61,8 @@ This file is part of the QGROUNDCONTROL project
 #include "Q3DWidgetFactory.h"
 #endif
 
+#include "AboutDialog.h"
+
 // FIXME Move
 #include "PxQuadMAV.h"
 #include "SlugsMAV.h"
@@ -92,6 +94,28 @@ MainWindow* MainWindow::instance(QSplashScreen* screen)
         //_instance->setParent(qApp);
     }
     return _instance;
+}
+
+// inline function definitions
+
+int MainWindow::getStyle()
+{
+    return currentStyle;
+}
+
+bool MainWindow::autoReconnectEnabled()
+{
+    return autoReconnect;
+}
+
+bool MainWindow::dockWidgetTitleBarsEnabled()
+{
+    return dockWidgetTitleBarEnabled;
+}
+
+bool MainWindow::lowPowerModeEnabled()
+{
+    return lowPowerMode;
 }
 
 /**
@@ -233,6 +257,7 @@ MainWindow::MainWindow(QWidget *parent):
     m_apmToolBar->setFlightPlanViewAction(ui.actionMissionView);
     m_apmToolBar->setInitialSetupViewAction(ui.actionHardwareConfig);
     m_apmToolBar->setConfigTuningViewAction(ui.actionSoftwareConfig);
+    m_apmToolBar->setPlotViewAction(ui.actionEngineersView);
     m_apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
     m_apmToolBar->setTerminalViewAction(ui.actionTerminalView);
 
@@ -594,14 +619,9 @@ void MainWindow::buildCommonWidgets()
     connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
 
     createDockWidget(simView,new UASControlWidget(this),tr("Control"),"UNMANNED_SYSTEM_CONTROL_DOCKWIDGET",VIEW_SIMULATION,Qt::LeftDockWidgetArea);
-
     createDockWidget(plannerView,new UASListWidget(this),tr("Unmanned Systems"),"UNMANNED_SYSTEM_LIST_DOCKWIDGET",VIEW_MISSION,Qt::LeftDockWidgetArea);
     createDockWidget(plannerView,new QGCWaypointListMulti(this),tr("Mission Plan"),"WAYPOINT_LIST_DOCKWIDGET",VIEW_MISSION,Qt::BottomDockWidgetArea);
-
     createDockWidget(simView,new QGCWaypointListMulti(this),tr("Mission Plan"),"WAYPOINT_LIST_DOCKWIDGET",VIEW_SIMULATION,Qt::BottomDockWidgetArea);
-    createDockWidget(engineeringView,new QGCMAVLinkInspector(mavlink,this),tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea);
-
-    createDockWidget(engineeringView,new ParameterInterface(this),tr("Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea);
     createDockWidget(simView,new ParameterInterface(this),tr("Parameters"),"PARAMETER_INTERFACE_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
 
 
@@ -633,6 +653,13 @@ void MainWindow::buildCommonWidgets()
         tempAction->setCheckable(true);
         connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
         menuToDockNameMap[tempAction] = "HEAD_DOWN_DISPLAY_1_DOCKWIDGET";
+    }
+
+    { //This is required since we disabled the only existing parent window for the MAVLink Inspector
+        QAction* tempAction = ui.menuTools->addAction(tr("MAVLink Inspector"));
+        tempAction->setCheckable(true);
+        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+        menuToDockNameMap[tempAction] = "MAVLINK_INSPECTOR_DOCKWIDGET";
     }
 
     /*{ //Actuator status disabled until such a point that we can ensure it's completly operational
@@ -1006,7 +1033,9 @@ void MainWindow::createCustomWidget()
 void MainWindow::loadCustomWidget()
 {
     QString widgetFileExtension(".qgw");
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Specify Widget File Name"), QDesktopServices::storageLocation(QDesktopServices::DesktopLocation), tr("QGroundControl Widget (*%1);;").arg(widgetFileExtension));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Specify Widget File Name"),
+                                                    QGC::appDataDirectory(),
+                                                    tr("QGroundControl Widget (*%1);;").arg(widgetFileExtension));
     if (fileName != "") loadCustomWidget(fileName);
 }
 void MainWindow::loadCustomWidget(const QString& fileName, int view)
@@ -1113,8 +1142,8 @@ void MainWindow::loadCustomWidget(const QString& fileName, bool singleinstance)
 
 void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const QString& autopilotType)
 {
-    QString defaultsDir = qApp->applicationDirPath() + "/files/" + autopilotType.toLower() + "/widgets/";
-    QString platformDir = qApp->applicationDirPath() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
+    QString defaultsDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/widgets/";
+    QString platformDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
 
     QDir widgets(defaultsDir);
     QStringList files = widgets.entryList();
@@ -1144,22 +1173,12 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 
 void MainWindow::loadSettings()
 {
-    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QString logHomeDir = homeDir + APP_DATA_DIRECTORY + LOG_DIRECTORY;
-
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     autoReconnect = settings.value("AUTO_RECONNECT", autoReconnect).toBool();
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
     lowPowerMode = settings.value("LOW_POWER_MODE", lowPowerMode).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS",dockWidgetTitleBarEnabled).toBool();
-    logDirectory = settings.value("LOG_DIRECTORY", logHomeDir).toString();
-
-    QDir logDir(logDirectory);
-    if (!logDir.cd(logHomeDir)){
-        logDir.mkdir(logHomeDir);
-    }
-
     settings.endGroup();
     enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 }
@@ -1170,7 +1189,6 @@ void MainWindow::storeSettings()
     settings.beginGroup("QGC_MAINWINDOW");
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
-    settings.setValue("LOG_DIRECTORY", logDirectory);
     settings.endGroup();
     if (!aboutToCloseFlag && isVisible())
     {
@@ -1218,7 +1236,7 @@ void MainWindow::configureWindowName()
 void MainWindow::startVideoCapture()
 {
     QString format = "bmp";
-    QString initialPath = QDir::currentPath() + tr("/untitled.") + format;
+    QString initialPath = QGC::appDataDirectory();
 
     QString screenFileName = QFileDialog::getSaveFileName(this, tr("Save As"),
                                                           initialPath,
@@ -1311,7 +1329,7 @@ void MainWindow::loadStyle(QGC_MAINWINDOW_STYLE style)
         if (style != currentStyle) {
             qApp->setStyleSheet("QMainWindow::separator { background: rgb(0, 0, 0); width: 5px; height: 5px;}");
             //qApp->setStyleSheet("");
-            showInfoMessage(tr("Please restart QGroundControl"), tr("Please restart QGroundControl to switch to fully native look and feel. Currently you have loaded Qt's plastique style."));
+            showInfoMessage(tr("Please restart APM Planner"), tr("Please restart APM Planner to switch to fully native look and feel. Currently you have loaded Qt's plastique style."));
         }
     }
         break;
@@ -1500,6 +1518,9 @@ void MainWindow::connectCommonActions()
     ui.actionEmergency_Kill->setEnabled(false);
     ui.actionEmergency_Land->setEnabled(false);
     ui.actionShutdownMAV->setEnabled(false);
+
+    // About
+    connect(ui.actionAbout_APM_Planner_2_0, SIGNAL(triggered()), this, SLOT(showAbout()));
 
     // Connect actions from ui
     connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
@@ -2292,3 +2313,12 @@ bool MainWindow::x11Event(XEvent *event)
     return false;
 }
 #endif // MOUSE_ENABLED_LINUX
+
+void MainWindow::showAbout()
+{
+    AboutDialog* dialog = new AboutDialog(this);
+    dialog->exec();
+    dialog->hide();
+    delete dialog;
+    dialog = NULL;
+}

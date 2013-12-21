@@ -53,13 +53,13 @@ void ParamCompareDialog::loadParameterFile()
     ui->compareTableWidget->setRowCount(0);
 
     QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    QDir parameterDir = QDir(homeDir + APP_DATA_DIRECTORY + PARAMETER_DIRECTORY);
+    QDir parameterDir = QDir(QGC::parameterDirectory());
 
     if(!parameterDir.exists())
         parameterDir.mkdir(parameterDir.path());
 
     QString filename = QFileDialog::getOpenFileName(this,tr("Open File To Compare"),
-                                                    parameterDir.path(), "*.param");
+                                                    QGC::parameterDirectory(), "*.param");
 
     if(filename.length() == 0) {
         return;

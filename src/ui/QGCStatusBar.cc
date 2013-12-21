@@ -33,7 +33,7 @@ QGCStatusBar::QGCStatusBar(QWidget *parent) :
     toggleLoggingButton(NULL),
     player(NULL),
     changed(true),
-    lastLogDirectory(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY)
+    lastLogDirectory(QGC::MAVLinkLogDirectory())
 {
     setObjectName("QGC_STATUSBAR");
 
@@ -41,8 +41,6 @@ QGCStatusBar::QGCStatusBar(QWidget *parent) :
     toggleLoggingButton->setCheckable(true);
 
     addPermanentWidget(toggleLoggingButton);
-
-    loadSettings();
 
     setStyleSheet("QStatusBar { border: 0px; border-bottom: 1px solid #101010; border-top: 1px solid #4F4F4F; background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #4B4B4B, stop:0.3 #404040, stop:0.34 #383838, stop:1 #181818); } ");
 }
@@ -77,7 +75,8 @@ void QGCStatusBar::logging(bool checked)
     if (checked)
     {
 		// Prompt the user for a filename/location to save to
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Specify MAVLink log file to save to"), lastLogDirectory, tr("MAVLink Logfile (*.mavlink *.log *.bin);;"));
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Specify MAVLink log file to save to"),
+                                                        lastLogDirectory, tr("MAVLink Logfile (*.mavlink *.log *.bin);;"));
 
 		// Check that they didn't cancel out
 		if (fileName.isNull())
@@ -113,21 +112,10 @@ void QGCStatusBar::logging(bool checked)
     }
 }
 
-void QGCStatusBar::loadSettings()
-{
-    QSettings settings;
-    settings.beginGroup("QGC_MAVLINKLOGPLAYER");
-    lastLogDirectory = settings.value("LAST_LOG_DIRECTORY", lastLogDirectory).toString();
-    settings.endGroup();
-}
 
 void QGCStatusBar::storeSettings()
 {
-    QSettings settings;
-    settings.beginGroup("QGC_MAVLINKLOGPLAYER");
-    settings.setValue("LAST_LOG_DIRECTORY", lastLogDirectory);
-    settings.endGroup();
-    settings.sync();
+    QGC::setMAVLinkLogDirectory(lastLogDirectory);
 }
 
 QGCStatusBar::~QGCStatusBar()

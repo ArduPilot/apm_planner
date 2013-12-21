@@ -28,7 +28,7 @@ QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
         }
     }
 
-    this->window()->setWindowTitle(tr("QGroundControl Settings"));
+    this->window()->setWindowTitle(tr("APM Planner 2 Settings"));
 
 
 }
@@ -54,8 +54,16 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         ui->titleBarCheckBox->setChecked(MainWindow::instance()->dockWidgetTitleBarsEnabled());
         connect(ui->titleBarCheckBox,SIGNAL(clicked(bool)),MainWindow::instance(),SLOT(enableDockWidgetTitleBars(bool)));
 
-        ui->logDirEdit->setText(MainWindow::instance()->getLogDirectory());
-        connect(ui->logDirBrowseButton, SIGNAL(clicked()), this, SLOT(browseButtonClicked()));
+        ui->logDirEdit->setText(QGC::logDirectory());
+
+        ui->appDataDirEdit->setText((QGC::appDataDirectory()));
+        ui->paramDirEdit->setText(QGC::parameterDirectory());
+        ui->mavlinkLogDirEdit->setText((QGC::MAVLinkLogDirectory()));
+
+        connect(ui->logDirSetButton, SIGNAL(clicked()), this, SLOT(setLogDir()));
+        connect(ui->appDirSetButton, SIGNAL(clicked()), this, SLOT(setAppDataDir()));
+        connect(ui->paramDirSetButton, SIGNAL(clicked()), this, SLOT(setParamDir()));
+        connect(ui->mavlinkDirSetButton, SIGNAL(clicked()), this, SLOT(setMAVLinkLogDir()));
 
         // Style
         MainWindow::QGC_MAINWINDOW_STYLE style = (MainWindow::QGC_MAINWINDOW_STYLE)MainWindow::instance()->getStyle();
@@ -73,12 +81,6 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         connect(ui->nativeStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadNativeStyle()));
         connect(ui->indoorStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadIndoorStyle()));
         connect(ui->outdoorStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadOutdoorStyle()));
-
-        // Close / destroy
-        //connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(deleteLater()));
-
-        // Set layout options
-        ui->generalPaneGridLayout->setAlignment(Qt::AlignTop);
     }
 }
 
@@ -87,15 +89,58 @@ QGCSettingsWidget::~QGCSettingsWidget()
     delete ui;
 }
 
-void QGCSettingsWidget::browseButtonClicked() {
+void QGCSettingsWidget::setLogDir()
+{
     QFileDialog dlg(this);
     dlg.setFileMode(QFileDialog::Directory);
-    dlg.setDirectory(MainWindow::instance()->getLogDirectory());
+    dlg.setDirectory(QGC::logDirectory());
 
-    if(dlg.exec()) {
+    if(dlg.exec() == QDialog::Accepted) {
         QDir dir = dlg.directory();
         QString name = dir.absolutePath();
-        MainWindow::instance()->setLogDirectory(name);
+        QGC::setLogDirectory(name);
         ui->logDirEdit->setText(name);
+    }
+}
+
+void QGCSettingsWidget::setMAVLinkLogDir()
+{
+    QFileDialog dlg(this);
+    dlg.setFileMode(QFileDialog::Directory);
+    dlg.setDirectory(QGC::MAVLinkLogDirectory());
+
+    if(dlg.exec() == QDialog::Accepted) {
+        QDir dir = dlg.directory();
+        QString name = dir.absolutePath();
+        QGC::setMAVLinkLogDirectory(name);
+        ui->mavlinkLogDirEdit->setText(name);
+    }
+}
+
+void QGCSettingsWidget::setParamDir()
+{
+    QFileDialog dlg(this);
+    dlg.setFileMode(QFileDialog::Directory);
+    dlg.setDirectory(QGC::parameterDirectory());
+
+    if(dlg.exec() == QDialog::Accepted) {
+        QDir dir = dlg.directory();
+        QString name = dir.absolutePath();
+        QGC::setParameterDirectory(name);
+        ui->paramDirEdit->setText(name);
+    }
+}
+
+void QGCSettingsWidget::setAppDataDir()
+{
+    QFileDialog dlg(this);
+    dlg.setFileMode(QFileDialog::Directory);
+    dlg.setDirectory(QGC::appDataDirectory());
+
+    if(dlg.exec() ==  QDialog::Accepted) {
+        QDir dir = dlg.directory();
+        QString name = dir.absolutePath();
+        QGC::setAppDataDirectory(name);
+        ui->appDataDirEdit->setText(name);
     }
 }
