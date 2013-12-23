@@ -569,16 +569,18 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group)
     }
     m_graphToGroupMap[name] = group;
     m_graphGrouping[group].append(name);
-    QCPAxis *firstaxis = m_axisList[m_graphGrouping[group][0]];
-    //firstaxis->range()
-    for (int i=0;i<m_graphGrouping[group].size();i++)
-    {
-        QCPAxis *axis = m_axisList[m_graphGrouping[group][i]];
-    }
 }
 
 void AP2DataPlot2D::graphRemovedFromGroup(QString name)
 {
+    if (!m_graphToGroupMap.contains(name))
+    {
+        //Not in a group
+        return;
+    }
+    QString group = m_graphToGroupMap[name];
+    m_graphGrouping[group].removeOne(name);
+    m_graphMap[name]->rescaleValueAxis();
 
 }
 
