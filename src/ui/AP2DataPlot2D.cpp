@@ -11,17 +11,16 @@
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
-    ui.setupUi(this);
-    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
-
     m_uas = 0;
     m_axisGroupingDialog = 0;
     m_logLoaderThread= 0;
     m_logLoaded = false;
     m_progressDialog=0;
     m_currentIndex=0;
-    connect(ui.pushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     m_graphCount=0;
+
+    ui.setupUi(this);
+
     m_plot = new QCustomPlot(ui.widget);
     m_plot->setInteraction(QCP::iRangeDrag, true);
     m_plot->setInteraction(QCP::iRangeZoom, true);
@@ -31,14 +30,14 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     ui.horizontalLayout_3->addWidget(m_plot);
 
     m_plot->show();
-    m_plot->plotLayout()->clear(); // clear default axis rect so we can start from scratch
+    m_plot->plotLayout()->clear();
 
     m_wideAxisRect = new QCPAxisRect(m_plot);
     m_wideAxisRect->setupFullAxesBox(true);
     m_wideAxisRect->axis(QCPAxis::atRight, 0)->setTickLabels(false);
     m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft,0));
 
-    m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect); // insert axis rect in first row
+    m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect);
 
     QCPMarginGroup *marginGroup = new QCPMarginGroup(m_plot);
     m_wideAxisRect->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
@@ -54,14 +53,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
-    QTimer *timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
-    timer->start(500);
-
-    connect(ui.autoScrollCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoScrollClicked(bool)));
-    connect(ui.hideExcelView,SIGNAL(clicked(bool)),ui.tableWidget,SLOT(setHidden(bool)));
-    connect(ui.tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(tableCellClicked(int,int)));
-
     ui.tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     m_addGraphAction = new QAction("Add To Graph",0);
@@ -70,6 +61,17 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     ui.tableWidget->setVisible(false);
     ui.hideExcelView->setVisible(false);
+
+    connect(ui.loadOfflineLogButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
+    connect(ui.autoScrollCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoScrollClicked(bool)));
+    connect(ui.hideExcelView,SIGNAL(clicked(bool)),ui.tableWidget,SLOT(setHidden(bool)));
+    connect(ui.tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(tableCellClicked(int,int)));
+
+    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+
+    QTimer *timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
+    timer->start(500);
 }
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
 {
@@ -374,7 +376,7 @@ void AP2DataPlot2D::loadButtonClicked()
     {
         //Unload the log.
         m_logLoaded = false;
-        ui.pushButton->setText("Load Log");
+        ui.loadOfflineLogButton->setText("Load Log");
         ui.tableWidget->setVisible(false);
         ui.hideExcelView->setVisible(false);
         //<html><head/><body><p align="center">asdf</p></body></html>
@@ -388,7 +390,7 @@ void AP2DataPlot2D::loadButtonClicked()
     ui.tableWidget->setVisible(true);
     ui.hideExcelView->setVisible(true);
     ui.autoScrollCheckBox->setChecked(false);
-    ui.pushButton->setText("Unload Log");
+    ui.loadOfflineLogButton->setText("Unload Log");
 
     m_logLoaded = true;
     m_logLoaderThread = new AP2DataPlotThread();
