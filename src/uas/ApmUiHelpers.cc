@@ -4,6 +4,7 @@
 
 void ApmUiHelpers::addRoverModes(QComboBox* comboBox)
 {
+    comboBox->clear();
     for (int count = 0; count < ApmRover::modeCount; count++){
         QString mode = ApmRover::stringForMode(count);
         if (!(mode.contains("Undefined", Qt::CaseInsensitive)
@@ -16,6 +17,7 @@ void ApmUiHelpers::addRoverModes(QComboBox* comboBox)
 
 void ApmUiHelpers::addPlaneModes(QComboBox* comboBox)
 {
+    comboBox->clear();
     for (int count = 0; count < ApmPlane::modeCount; count++){
         QString mode = ApmPlane::stringForMode(count);
         if (!(mode.contains("Undefined", Qt::CaseInsensitive)
@@ -28,6 +30,7 @@ void ApmUiHelpers::addPlaneModes(QComboBox* comboBox)
 
 void ApmUiHelpers::addCopterModes(QComboBox* comboBox)
 {
+    comboBox->clear();
     for (int count = 0; count < ApmCopter::modeCount; count++){
         QString mode = ApmCopter::stringForMode(count);
         if (!(mode.contains("Undefined", Qt::CaseInsensitive)

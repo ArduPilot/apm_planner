@@ -14,13 +14,22 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
     <number>6</number>
    </property>
    <item>
     <widget class="QGroupBox" name="missionGroupBox">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="minimumSize">
       <size>
@@ -118,7 +127,7 @@
    <item>
     <widget class="QGroupBox" name="actionsGroupBox">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -142,7 +151,16 @@
       <string>Actions</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>6</number>
+      </property>
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
        <number>6</number>
       </property>
       <item row="2" column="2" colspan="2">
@@ -239,7 +257,7 @@
    <item>
     <widget class="QGroupBox" name="shortcutGroupBox">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="minimumSize">
       <size>
@@ -280,13 +298,10 @@
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
 
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
-
 QPushButton:pressed {
-	background-color: rgb(0,255,0);
-}</string>
+	background-color: rgb(100, 216, 100);
+}
+</string>
         </property>
         <property name="text">
          <string>Auto</string>
@@ -322,13 +337,10 @@ QPushButton:pressed {
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
 
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
-
 QPushButton:pressed {
-	background-color: rgb(0,255,0);
-}</string>
+	background-color: rgb(100, 216, 100);
+}
+</string>
         </property>
         <property name="text">
          <string>Stabilize</string>
@@ -363,22 +375,11 @@ QPushButton:pressed {
 	padding-right: 10px;
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
-
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
-
 QPushButton:pressed {
-	background-color: rgb(0,255,0);
+	background-color: rgb(100, 216, 100);
 }
 
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
 
-QPushButton:pressed {
-	background-color: rgb(0,255,0);
-}
 </string>
         </property>
         <property name="text">
@@ -415,12 +416,8 @@ QPushButton:pressed {
 	background-color: qlineargradient(spread:pad, x1:0.507813, y1:1, x2:0.517, y2:0, stop:0 rgba(255, 0, 0, 255), stop:1 rgba(203, 205, 205, 124))
 }
 
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
-
 QPushButton:pressed {
-	background-color: rgb(0,255,0);
+	background-color: rgb(100, 216, 100);
 }
 
 </string>
@@ -459,12 +456,8 @@ QPushButton:pressed {
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
 
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
-
 QPushButton:pressed {
-	background-color: rgb(0,255,0);
+	background-color: rgb(100, 216, 100);
 }
 </string>
         </property>
@@ -501,15 +494,9 @@ QPushButton:pressed {
 	padding-right: 10px;
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
-
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
-
 QPushButton:pressed {
-	background-color: rgb(0,255,0);
-}
-</string>
+	background-color: rgb(100, 216, 100);
+}</string>
         </property>
         <property name="text">
          <string>...</string>
@@ -544,13 +531,8 @@ QPushButton:pressed {
 	padding-right: 10px;
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
-
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
-
 QPushButton:pressed {
-	background-color: rgb(0,255,0);
+	background-color: rgb(100, 216, 100);
 }
 </string>
         </property>
@@ -587,13 +569,8 @@ QPushButton:pressed {
 	padding-right: 10px;
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
 }
-
-QPushButton:checked {
-	background-color: rgb(0,255,0);
-}
-
 QPushButton:pressed {
-	background-color: rgb(0,255,0);
+	background-color: rgb(100, 216, 100);
 }
 </string>
         </property>
