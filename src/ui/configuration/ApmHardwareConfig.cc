@@ -177,7 +177,7 @@ void ApmHardwareConfig::paramButtonClicked()
         QLOG_DEBUG() << "Remote File Downloaded";
         QLOG_DEBUG() << "TODO: Trigger auto load or compare of the downloaded file";
         QString filename = dialog->getDownloadedFileName();
-        m_uas->getParamManager()->loadParamsFromFile(filename);
+        m_uas->getParamManager()->loadParamsFromFile(filename,QGCUASParamManager::CommaSeperatedValues);
 
     }
     delete dialog;

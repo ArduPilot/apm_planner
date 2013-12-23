@@ -47,6 +47,7 @@ class QGCParamWidget : public QGCUASParamManager
 {
     Q_OBJECT
 public:
+
     QGCParamWidget(UASInterface* uas, QWidget *parent = 0);
     /** @brief Get the UAS of this widget */
     UASInterface* getUAS();
@@ -60,7 +61,8 @@ public:
     QString getParamInfo(const QString& param) { return paramToolTips.value(param, ""); }
     void setParamInfo(const QMap<QString,QString>& param) { paramToolTips = param; }
 
-    void loadParamsFromFile(const QString &filename);
+    void loadParamsFromFile(const QString &filename,ParamFileType type);
+    void saveParamsToFile(const QString &filename,ParamFileType type);
 
 signals:
     /** @brief A parameter was changed in the widget, NOT onboard */
@@ -94,9 +96,9 @@ public slots:
     void parameterItemChanged(QTreeWidgetItem* prev, int column);
 
     /** @brief Store parameters to a file */
-    void saveParameters();
+    void saveParametersButtonClicked();
     /** @brief Load parameters from a file */
-    void loadParameters();
+    void loadParametersButtonClicked();
 
     /** @brief Check for missing parameters */
     void retransmissionGuardTick();

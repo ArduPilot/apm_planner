@@ -426,7 +426,7 @@ void AP2DataPlot2D::logLine(QString line)
 void AP2DataPlot2D::threadTerminated()
 {
     m_logLoaderThread->deleteLater();
-    m_logLoaderThread = 0;
+    m_logLoaderThread = NULL;
 }
 
 AP2DataPlot2D::~AP2DataPlot2D()
@@ -435,12 +435,13 @@ AP2DataPlot2D::~AP2DataPlot2D()
     {
         m_logLoaderThread->stopLoad();
         m_logLoaderThread->deleteLater();
-        m_logLoaderThread = 0;
+        m_logLoaderThread = NULL;
     }
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->close();
         delete m_axisGroupingDialog;
+        m_axisGroupingDialog = NULL;
     }
 }
 void AP2DataPlot2D::itemEnabled(QString name)

@@ -33,8 +33,12 @@ signals:
     void graphAddedToGroup(QString name,QString group);
     void graphRemovedFromGroup(QString name);
 private:
+    //Map of ranges for individual graphs
     QMap<QString,QPair<double,double> > m_rangeMap;
-    QMap<QString,QString > m_groupMap;
+
+    //Graph name to Group name map, for graphs that are in a group
+    QMap<QString,QString > m_graphToGroupNameMap;
+
     Ui::AP2DataPlotAxisDialog *ui;
 };
 

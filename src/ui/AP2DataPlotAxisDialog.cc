@@ -25,9 +25,9 @@ void AP2DataPlotAxisDialog::autoButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
-    if (m_groupMap.contains(graphname))
+    if (m_graphToGroupNameMap.contains(graphname))
     {
-        m_groupMap.remove(graphname);
+        m_graphToGroupNameMap.remove(graphname);
     }
     emit graphRemovedFromGroup(graphname);
 }
@@ -44,11 +44,11 @@ void AP2DataPlotAxisDialog::groupAButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
-    if (m_groupMap[graphname] == "GROUPA")
+    if (m_graphToGroupNameMap[graphname] == "GROUPA")
     {
         return;
     }
-    m_groupMap[graphname] = "GROUPA";
+    m_graphToGroupNameMap[graphname] = "GROUPA";
     emit graphAddedToGroup(graphname,"GROUPA");
 }
 
@@ -59,11 +59,11 @@ void AP2DataPlotAxisDialog::groupBButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
-    if (m_groupMap[graphname] == "GROUPB")
+    if (m_graphToGroupNameMap[graphname] == "GROUPB")
     {
         return;
     }
-    m_groupMap[graphname] = "GROUPB";
+    m_graphToGroupNameMap[graphname] = "GROUPB";
     emit graphAddedToGroup(graphname,"GROUPB");
 }
 
@@ -74,11 +74,11 @@ void AP2DataPlotAxisDialog::groupCButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
-    if (m_groupMap[graphname] == "GROUPC")
+    if (m_graphToGroupNameMap[graphname] == "GROUPC")
     {
         return;
     }
-    m_groupMap[graphname] = "GROUPC";
+    m_graphToGroupNameMap[graphname] = "GROUPC";
     emit graphAddedToGroup(graphname,"GROUPC");
 }
 
@@ -89,11 +89,11 @@ void AP2DataPlotAxisDialog::groupDButtonClicked(bool checked)
         return;
     }
     QString graphname = ui->listWidget->selectedItems()[0]->text();
-    if (m_groupMap[graphname] == "GROUPD")
+    if (m_graphToGroupNameMap[graphname] == "GROUPD")
     {
         return;
     }
-    m_groupMap[graphname] = "GROUPD";
+    m_graphToGroupNameMap[graphname] = "GROUPD";
     emit graphAddedToGroup(graphname,"GROUPD");
 }
 
@@ -109,21 +109,21 @@ void AP2DataPlotAxisDialog::listCurrentChanged(int index)
         return;
     }
     QString itemtext = ui->listWidget->item(index)->text();
-    if (m_groupMap.contains(itemtext))
+    if (m_graphToGroupNameMap.contains(itemtext))
     {
-        if (m_groupMap[itemtext] == "GROUPA")
+        if (m_graphToGroupNameMap[itemtext] == "GROUPA")
         {
             ui->groupARadioButton->setChecked(true);
         }
-        else if (m_groupMap[itemtext] == "GROUPB")
+        else if (m_graphToGroupNameMap[itemtext] == "GROUPB")
         {
             ui->groupBRadioButton->setChecked(true);
         }
-        else if (m_groupMap[itemtext] == "GROUPC")
+        else if (m_graphToGroupNameMap[itemtext] == "GROUPC")
         {
             ui->groupCRadioButton->setChecked(true);
         }
-        else if (m_groupMap[itemtext] == "GROUPD")
+        else if (m_graphToGroupNameMap[itemtext] == "GROUPD")
         {
             ui->groupDRadioButton->setChecked(true);
         }
