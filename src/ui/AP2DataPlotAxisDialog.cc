@@ -10,7 +10,8 @@ AP2DataPlotAxisDialog::AP2DataPlotAxisDialog(QWidget *parent) :
     ui(new Ui::AP2DataPlotAxisDialog)
 {
     ui->setupUi(this);
-    connect(ui->listWidget,SIGNAL(currentRowChanged(int)),this,SLOT(listCurrentChanged(int)));
+    //connect(ui->listWidget,SIGNAL(currentRowChanged(int)),this,SLOT(listCurrentChanged(int)));
+    connect(ui->graphTableWidget,SIGNAL(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)),this,SLOT(graphTableCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
     connect(ui->setMinMaxPushButton,SIGNAL(clicked()),this,SLOT(setMinMaxButtonClicked()));
     connect(ui->autoRadioButton,SIGNAL(clicked(bool)),this,SLOT(autoButtonClicked(bool)));
     connect(ui->groupARadioButton,SIGNAL(clicked(bool)),this,SLOT(groupAButtonClicked(bool)));
@@ -18,19 +19,27 @@ AP2DataPlotAxisDialog::AP2DataPlotAxisDialog(QWidget *parent) :
     connect(ui->groupCRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupCButtonClicked(bool)));
     connect(ui->groupDRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupDButtonClicked(bool)));
     ui->minMaxGroupBox->setVisible(false);
+
+    ui->graphTableWidget->setColumnCount(2);
+    ui->graphTableWidget->setColumnWidth(0,100);
+    ui->graphTableWidget->setColumnWidth(1,100);
+    ui->graphTableWidget->setHorizontalHeaderLabels(QStringList() << "Graph Name" << "Graph Group");
+    ui->graphTableWidget->verticalHeader()->hide();
+
+    connect(ui->applyPushButton,SIGNAL(clicked()),this,SLOT(applyButtonClicked()));
+    connect(ui->cancelPushButton,SIGNAL(clicked()),this,SLOT(cancelButtonClicked()));
 }
 void AP2DataPlotAxisDialog::autoButtonClicked(bool checked)
 {
-    if (ui->listWidget->selectedItems().size() == 0)
+    if (ui->graphTableWidget->selectedItems().size() == 0)
     {
         return;
     }
-    QString graphname = ui->listWidget->selectedItems()[0]->text();
-    if (m_graphToGroupNameMap.contains(graphname))
-    {
-        m_graphToGroupNameMap.remove(graphname);
-    }
-    emit graphRemovedFromGroup(graphname);
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("None");
+    m_graphToGroupNameMap[graphname] = "NONE";
+//    emit graphRemovedFromGroup(graphname);
 }
 void AP2DataPlotAxisDialog::closeEvent(QCloseEvent *evt)
 {
@@ -40,62 +49,89 @@ void AP2DataPlotAxisDialog::closeEvent(QCloseEvent *evt)
 
 void AP2DataPlotAxisDialog::groupAButtonClicked(bool checked)
 {
-    if (ui->listWidget->selectedItems().size() == 0)
+    if (ui->graphTableWidget->selectedItems().size() == 0)
     {
         return;
     }
-    QString graphname = ui->listWidget->selectedItems()[0]->text();
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPA");
     if (m_graphToGroupNameMap[graphname] == "GROUPA")
     {
         return;
     }
     m_graphToGroupNameMap[graphname] = "GROUPA";
-    emit graphAddedToGroup(graphname,"GROUPA");
+   // emit graphAddedToGroup(graphname,"GROUPA");
 }
 
 void AP2DataPlotAxisDialog::groupBButtonClicked(bool checked)
 {
-    if (ui->listWidget->selectedItems().size() == 0)
+    if (ui->graphTableWidget->selectedItems().size() == 0)
     {
         return;
     }
-    QString graphname = ui->listWidget->selectedItems()[0]->text();
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPB");
     if (m_graphToGroupNameMap[graphname] == "GROUPB")
     {
         return;
     }
     m_graphToGroupNameMap[graphname] = "GROUPB";
-    emit graphAddedToGroup(graphname,"GROUPB");
+    //emit graphAddedToGroup(graphname,"GROUPB");
 }
 
 void AP2DataPlotAxisDialog::groupCButtonClicked(bool checked)
 {
-    if (ui->listWidget->selectedItems().size() == 0)
+    if (ui->graphTableWidget->selectedItems().size() == 0)
     {
         return;
     }
-    QString graphname = ui->listWidget->selectedItems()[0]->text();
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPC");
     if (m_graphToGroupNameMap[graphname] == "GROUPC")
     {
         return;
     }
     m_graphToGroupNameMap[graphname] = "GROUPC";
-    emit graphAddedToGroup(graphname,"GROUPC");
+    //emit graphAddedToGroup(graphname,"GROUPC");
 }
 
 void AP2DataPlotAxisDialog::groupDButtonClicked(bool checked)
 {
-    if (ui->listWidget->selectedItems().size() == 0)
+    if (ui->graphTableWidget->selectedItems().size() == 0)
     {
         return;
     }
-    QString graphname = ui->listWidget->selectedItems()[0]->text();
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPD");
     if (m_graphToGroupNameMap[graphname] == "GROUPD")
     {
         return;
     }
     m_graphToGroupNameMap[graphname] = "GROUPD";
-    emit graphAddedToGroup(graphname,"GROUPD");
+    //emit graphAddedToGroup(graphname,"GROUPD");
+}
+void AP2DataPlotAxisDialog::applyButtonClicked()
+{
+    for (QMap<QString,QString>::const_iterator i=m_graphToGroupNameMap.constBegin();i!=m_graphToGroupNameMap.constEnd();i++)
+    {
+        if (i.value() == "NONE")
+        {
+            emit graphRemovedFromGroup(i.key());
+        }
+        else
+        {
+            emit graphAddedToGroup(i.key(),i.value());
+        }
+    }
+}
+
+void AP2DataPlotAxisDialog::cancelButtonClicked()
+{
+
 }
 
 AP2DataPlotAxisDialog::~AP2DataPlotAxisDialog()
@@ -104,7 +140,7 @@ AP2DataPlotAxisDialog::~AP2DataPlotAxisDialog()
 }
 void AP2DataPlotAxisDialog::listCurrentChanged(int index)
 {
-    if (index < 0 || index > ui->listWidget->count())
+    /*if (index < 0 || index > ui->listWidget->count())
     {
         //Invalid index
         return;
@@ -138,15 +174,60 @@ void AP2DataPlotAxisDialog::listCurrentChanged(int index)
     {
         ui->minDoubleSpinBox->setValue(m_rangeMap[itemtext].first);
         ui->maxDoubleSpinBox->setValue(m_rangeMap[itemtext].second);
+    }*/
+}
+void AP2DataPlotAxisDialog::graphTableCurrentItemChanged(QTableWidgetItem *current,QTableWidgetItem *previous)
+{
+    if (!current)
+    {
+        return;
+    }
+    QString graphname = ui->graphTableWidget->item(current->row(),0)->text();
+    QString groupname = ui->graphTableWidget->item(current->row(),1)->text();
+    if (m_graphToGroupNameMap.contains(graphname))
+    {
+        if (m_graphToGroupNameMap[graphname] == "GROUPA")
+        {
+            ui->groupARadioButton->setChecked(true);
+        }
+        else if (m_graphToGroupNameMap[graphname] == "GROUPB")
+        {
+            ui->groupBRadioButton->setChecked(true);
+        }
+        else if (m_graphToGroupNameMap[graphname] == "GROUPC")
+        {
+            ui->groupCRadioButton->setChecked(true);
+        }
+        else if (m_graphToGroupNameMap[graphname] == "GROUPD")
+        {
+            ui->groupDRadioButton->setChecked(true);
+        }
 
     }
+    else
+    {
+        ui->autoRadioButton->setChecked(true);
+    }
+
 }
 
 void AP2DataPlotAxisDialog::addAxis(QString name,double lower, double upper)
 {
     m_rangeMap[name] = QPair<double,double>(lower,upper);
-    ui->listWidget->addItem(name);
+    ui->graphTableWidget->setRowCount(ui->graphTableWidget->rowCount()+1);
+    ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,0,new QTableWidgetItem(name));
+    ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,1,new QTableWidgetItem(""));
 }
+void AP2DataPlotAxisDialog::removeAxis(QString name)
+{
+    m_rangeMap.remove(name);
+    QList<QTableWidgetItem*> items = ui->graphTableWidget->findItems(name,Qt::MatchExactly);
+    if (items.size() > 0)
+    {
+        ui->graphTableWidget->removeRow(items[0]->row());
+    }
+}
+
 void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
 {
     if (m_rangeMap.contains(name))

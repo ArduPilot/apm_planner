@@ -6,28 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
-    <height>285</height>
+    <width>889</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Graph Scale Control</string>
   </property>
-  <widget class="QListWidget" name="listWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>10</y>
+     <y>160</y>
      <width>131</width>
      <height>201</height>
     </rect>
@@ -105,7 +95,7 @@
    <property name="geometry">
     <rect>
      <x>420</x>
-     <y>20</y>
+     <y>170</y>
      <width>231</width>
      <height>181</height>
     </rect>
@@ -184,6 +174,59 @@
      <string>Minimum</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>20</y>
+     <width>481</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;h1&gt;Axis Range Grouping&lt;/h1&gt;
+This Dialog is used for grouping multiple graphs with a single value range (the axis on the left hand side). Select a graph name from the list, then click on the Axis group you wish it to be in. Multiple graphs in the same group will all have the same range, which will be automatically calculated to constrain every graph in the group</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="graphTableWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>150</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="applyPushButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>370</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Apply</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="cancelPushButton">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>370</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
   </widget>
  </widget>
  <resources/>

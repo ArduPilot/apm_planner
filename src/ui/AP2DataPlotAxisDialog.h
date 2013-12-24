@@ -9,7 +9,7 @@ class QCloseEvent;
 namespace Ui {
 class AP2DataPlotAxisDialog;
 }
-
+class QTableWidgetItem;
 class AP2DataPlotAxisDialog : public QWidget
 {
     Q_OBJECT
@@ -19,16 +19,21 @@ public:
     ~AP2DataPlotAxisDialog();
     void addAxis(QString name,double lower, double upper);
     void updateAxis(QString name,double lower, double upper);
+    void removeAxis(QString name);
 protected:
     void closeEvent(QCloseEvent *evt);
 public slots:
     void listCurrentChanged(int index);
+    void graphTableCurrentItemChanged(QTableWidgetItem *current,QTableWidgetItem *previous);
     void setMinMaxButtonClicked();
     void autoButtonClicked(bool checked);
     void groupAButtonClicked(bool checked);
     void groupBButtonClicked(bool checked);
     void groupCButtonClicked(bool checked);
     void groupDButtonClicked(bool checked);
+private slots:
+    void applyButtonClicked();
+    void cancelButtonClicked();
 signals:
     void graphAddedToGroup(QString name,QString group);
     void graphRemovedFromGroup(QString name);
