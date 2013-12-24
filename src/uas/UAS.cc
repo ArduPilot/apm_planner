@@ -1,4 +1,4 @@
-/*===================================================================
+ /*===================================================================
 ======================================================================*/
 
 /**
@@ -782,6 +782,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             }
             emit localizationChanged(this, loc_type);
             setSatelliteCount(pos.satellites_visible);
+            setGpsHdop(pos.eph/100.0f);
 
             if (pos.fix_type > 2)
             {
