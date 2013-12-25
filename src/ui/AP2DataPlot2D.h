@@ -9,6 +9,7 @@
 #include "qcustomplot.h"
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
+#include "AP2DataPlotAxisDialog.h"
 class AP2DataPlot2D : public QWidget
 {
     Q_OBJECT
@@ -18,17 +19,34 @@ public:
     ~AP2DataPlot2D();
     void addSource(MAVLinkDecoder *decoder);
 private slots:
-    void loadButtonClicked();
-    void threadDone();
-    void payloadDecoded(int index,QString name,QVariantMap map);
-    void itemDisabled(QString name);
-    void itemEnabled(QString name);
-    void threadTerminated();
-    void threadError(QString errorstr);
-    void loadStarted();
-    void loadProgress(qint64 pos,qint64 size);
-    void progressDialogCanceled();
+    //New Active UAS set
     void activeUASSet(UASInterface* uas);
+
+    //Load a graph from a file
+    void loadButtonClicked();
+
+    //Graph loading thread started
+    void loadStarted();
+    //Progress of graph loading thread
+    void loadProgress(qint64 pos,qint64 size);
+    //Cancel clicked on the graph loading thread progress dialog
+    void progressDialogCanceled();
+    //Graph loading thread finished
+    void threadDone();
+    //Graph loading thread actually exited
+    void threadTerminated();
+    //Graph loading thread error
+    void threadError(QString errorstr);
+
+    //Payload decoded from the graph loading thread
+    void payloadDecoded(int index,QString name,QVariantMap map);
+
+    //Called to remove an item from the graph
+    void itemDisabled(QString name);
+    //Called to add an item to the graph
+    void itemEnabled(QString name);
+
+    //ValueChanged functions for getting mavlink values
     void valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec);
     void valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec);
     void valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec);
@@ -38,8 +56,8 @@ private slots:
     void valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec);
     void valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec);
     void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
-
     void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs);
+    //Called by every valueChanged function to actually save the value/graph it.
     void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
 
     void autoScrollClicked(bool checked);
@@ -48,25 +66,45 @@ private slots:
     void addGraphRight();
     void addGraphLeft();
     void removeGraphLeft();
+    void axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt);
+    void graphAddedToGroup(QString name,QString group);
+    void graphRemovedFromGroup(QString name);
 private:
-    QAction *m_addGraphAction;
+    //Map of group name to a list of graph titles
+    QMap<QString,QList<QString> > m_graphGrouping;
+    //Map from group titles to the value axis range.
+    QMap<QString,QCPRange> m_graphGroupRanges;
+    //Reverse of m_graphGrouping
+    QMap<QString,QString> m_graphToGroupMap;
+    //Graph name to axis index in m_wideAxisRect
     QMap<QString,int> m_nameToAxisIndex;
+    //Map from the spreadsheet view row name (ATT,GPS,etc), to the header names (roll,pitch,yaw or long,lat,alt)
     QMap<QString,QString> m_tableHeaderNameMap;
-    int m_currentIndex;
-    QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
-    UASInterface *m_uas;
-    QProgressDialog *m_progressDialog;
+    //Graph name to value axis
     QMap<QString,QCPAxis*> m_axisList;
+    //Graph name to actual QCustomPlot graph.
     QMap<QString,QCPGraph*> m_graphMap;
+    //Graph name to list of values for "online" mode
+    QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
+    //Map from graph name to list of values for "offline" mode
+    QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
+
+    //List of graph names, used in m_axisList, m_graphMap,m_graphToGroupMap and the like as the graph name
     QList<QString> m_graphNameList;
     int m_graphCount;
     QCustomPlot *m_plot;
     QCPAxisRect *m_wideAxisRect;
-    QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
     Ui::AP2DataPlot2D ui;
     AP2DataPlotThread *m_logLoaderThread;
     DataSelectionScreen *m_dataSelectionScreen;
     bool m_logLoaded;
+    //Current "index", X axis on graph. Used to keep all the graphs lined up.
+    int m_currentIndex;
+    QAction *m_addGraphAction;
+    UASInterface *m_uas;
+    QProgressDialog *m_progressDialog;
+    AP2DataPlotAxisDialog *m_axisGroupingDialog;
+
 };
 
 #endif // AP2DATAPLOT2D_H

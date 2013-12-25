@@ -20,6 +20,8 @@ public:
     void startFileDownloadRequest(QUrl url);
 
     void setStatusText(QString text);
+
+    QString getDownloadedFileName();
 public slots:
     void refreshParamList();
     void okButtonClicked();
@@ -42,6 +44,7 @@ private:
     bool m_httpRequestAborted;
     QByteArray m_paramListResponse;
     QStringList m_paramUrls;
+    QString m_downloadedFileName;
 };
 
 #endif // DOWNLOADREMOTEPARAMSDIALOG_H

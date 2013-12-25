@@ -1,4 +1,4 @@
-/*===================================================================
+ /*===================================================================
 ======================================================================*/
 
 /**
@@ -782,6 +782,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             }
             emit localizationChanged(this, loc_type);
             setSatelliteCount(pos.satellites_visible);
+            setGpsHdop(pos.eph/100.0f);
 
             if (pos.fix_type > 2)
             {
@@ -1019,7 +1020,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             }
                 break;
             default:
-                qCritical() << "INVALID DATA TYPE USED AS PARAMETER VALUE: " << value.param_type;
+                QLOG_ERROR() << "INVALID DATA TYPE USED AS PARAMETER VALUE: " << value.param_type;
             } //switch (value.param_type)
         }
             break;
@@ -2408,7 +2409,7 @@ void UAS::setParameter(const int component, const QString& id, const QVariant& v
                 p.param_type = MAV_PARAM_TYPE_REAL32;
                 break;
             default:
-                qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE";
+                QLOG_ERROR() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE:" << id << "TYPE IS:" << value.type();
                 return;
             }
         }
@@ -2433,7 +2434,7 @@ void UAS::setParameter(const int component, const QString& id, const QVariant& v
                 p.param_type = MAV_PARAM_TYPE_REAL32;
                 break;
             default:
-                qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE";
+                QLOG_ERROR() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE:" << id << "TYPE IS:" << value.type();
                 return;
             }
         }

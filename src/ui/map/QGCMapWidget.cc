@@ -52,6 +52,9 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     cameraaction->setText("Point Camera Here");
     connect(cameraaction,SIGNAL(triggered()),this,SLOT(cameraActionTriggered()));
     this->addAction(cameraaction);
+
+    QLabel latitudeLabel;
+    QLabel longitudeLabel;
 }
 void QGCMapWidget::guidedActionTriggered()
 {
@@ -836,7 +839,7 @@ void QGCMapWidget::updateWaypointList(int uas)
         // Update all potentially new waypoints
         foreach (Waypoint* wp, wps)
         {
-            QLOG_DEBUG() << "UPDATING NEW WP" << wp->getId();
+            QLOG_TRACE() << "UPDATING NEW WP" << wp->getId();
             // Update / add only if new
             if (!waypointsToIcons.contains(wp)) updateWaypoint(uas, wp);
         }

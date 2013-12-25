@@ -12,6 +12,11 @@ class QGCUASParamManager : public QWidget
 {
     Q_OBJECT
 public:
+    enum ParamFileType
+    {
+        TabSeperatedValues,
+        CommaSeperatedValues
+    };
     QGCUASParamManager(UASInterface* uas, QWidget *parent = 0);
 
     QList<QString> getParameterNames(int component) const {
@@ -49,6 +54,8 @@ public:
     virtual double getParamDefault(const QString& param) = 0;
     virtual QString getParamInfo(const QString& param) = 0;
     virtual void setParamInfo(const QMap<QString,QString>& param) = 0;
+
+    virtual void loadParamsFromFile(const QString &filename,ParamFileType type) = 0;
 
     /** @brief Request an update for the parameter list */
     void requestParameterListUpdate(int component = 0);

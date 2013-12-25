@@ -319,7 +319,8 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/configuration/ParamCompareDialog.ui \
     src/ui/AP2DataPlot2D.ui \
     src/ui/dataselectionscreen.ui \
-    src/ui/AboutDialog.ui
+    src/ui/AboutDialog.ui \
+    src/ui/AP2DataPlotAxisDialog.ui
 
 INCLUDEPATH += src \
     src/ui \
@@ -535,7 +536,8 @@ HEADERS += src/MG.h \
     src/globalobject.h \
     src/ui/AboutDialog.h \
     src/ui/uas/UASQuickViewTextLabel.h \
-    src/uas/ApmUiHelpers.h
+    src/uas/ApmUiHelpers.h \
+    src/ui/AP2DataPlotAxisDialog.h
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -769,7 +771,8 @@ SOURCES += src/main.cc \
     src/globalobject.cc \
     src/ui/AboutDialog.cc \
     src/ui/uas/UASQuickViewTextLabel.cc \
-    src/uas/ApmUiHelpers.cc
+    src/uas/ApmUiHelpers.cc \
+    src/ui/AP2DataPlotAxisDialog.cc
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc

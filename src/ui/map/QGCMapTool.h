@@ -1,8 +1,10 @@
 #ifndef QGCMAPTOOL_H
 #define QGCMAPTOOL_H
 
+class UASInterface;
 #include <QWidget>
 #include <QMenu>
+#include <QTimer>
 
 namespace Ui {
     class QGCMapTool;
@@ -23,21 +25,19 @@ public slots:
 signals:
     void visibilityChanged(bool visible);
 
-protected:
-    void showEvent(QShowEvent* event)
-    {
-        QWidget::showEvent(event);
-        emit visibilityChanged(true);
-    }
+private slots:
+    void activeUASSet(UASInterface *uas);
+    void updateOverlay();
 
-    void hideEvent(QHideEvent* event)
-    {
-        QWidget::hideEvent(event);
-        emit visibilityChanged(false);
-    }
+private:
+    void showEvent(QShowEvent* event);
+    void hideEvent(QHideEvent* event);
 
 private:
     Ui::QGCMapTool *ui;
+
+    UASInterface* m_uas;
+    QTimer m_timer;
 };
 
 #endif // QGCMAPTOOL_H
