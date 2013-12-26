@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Move and Upload
 COMMIT_SHA=$(git rev-parse HEAD)
 TARGET_DIR=/var/www/wordpress/APMPlanner2/daily
