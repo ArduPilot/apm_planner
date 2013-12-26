@@ -75,6 +75,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 }
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
 {
+    //This is disabled for the time being. TODO: Fix this so it works properly.
+    return;
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->show();
@@ -497,6 +499,10 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     {
                         mainGraph1->rescaleKeyAxis();
                     }
+                    if (m_axisGroupingDialog)
+                    {
+                        m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper);
+                    }
 
                    // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
                     mainGraph1->setPen(QPen(color, 2));
@@ -551,6 +557,10 @@ void AP2DataPlot2D::itemEnabled(QString name)
             {
                 mainGraph1->rescaleKeyAxis();
             }
+            if (m_axisGroupingDialog)
+            {
+                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper);
+            }
 
            // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
             mainGraph1->setPen(QPen(color, 2));
@@ -565,10 +575,28 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group)
     if (!m_graphGrouping.contains(group))
     {
         m_graphGrouping[group] = QList<QString>();
-        m_graphGroupRanges[group] = QCPRange();
+        m_graphGroupRanges[group] = m_axisList[name]->range();
+    }
+    if (m_graphGrouping[group].contains(name))
+    {
+        return;
     }
     m_graphToGroupMap[name] = group;
     m_graphGrouping[group].append(name);
+    if (m_axisList[name]->range().upper > m_graphGroupRanges[group].upper)
+    {
+        m_graphGroupRanges[group].upper = m_axisList[name]->range().upper;
+    }
+    if (m_axisList[name]->range().lower < m_graphGroupRanges[group].lower)
+    {
+        m_graphGroupRanges[group].lower = m_axisList[name]->range().lower;
+    }
+    for (int i=0;i<m_graphGrouping[group].size();i++)
+    {
+        m_axisList[m_graphGrouping[group][i]]->setRange(m_graphGroupRanges[group]);
+        qDebug() << "resizing graph:" << m_graphGrouping[group][i] << "in group" << group << "min:" << m_graphGroupRanges[group].lower << "max:" << m_graphGroupRanges[group].upper;
+    }
+    m_plot->replot();
 }
 
 void AP2DataPlot2D::graphRemovedFromGroup(QString name)
@@ -580,8 +608,30 @@ void AP2DataPlot2D::graphRemovedFromGroup(QString name)
     }
     QString group = m_graphToGroupMap[name];
     m_graphGrouping[group].removeOne(name);
+    m_graphToGroupMap.remove(name);
     m_graphMap[name]->rescaleValueAxis();
-
+    if (m_graphGrouping[group].size() > 0)
+    {
+        m_graphMap[m_graphGrouping[group][0]]->rescaleValueAxis();
+        m_graphGroupRanges[group] = m_axisList[m_graphGrouping[group][0]]->range();
+    }
+    for (int i=0;i<m_graphGrouping[group].size();i++)
+    {
+        qDebug() << "resizing graph:" << m_graphGrouping[group][i] << "in group" << group;
+        if (m_axisList[m_graphGrouping[group][i]]->range().upper > m_graphGroupRanges[group].upper)
+        {
+            m_graphGroupRanges[group].upper = m_axisList[m_graphGrouping[group][i]]->range().upper;
+        }
+        if (m_axisList[m_graphGrouping[group][i]]->range().lower < m_graphGroupRanges[group].lower)
+        {
+            m_graphGroupRanges[group].lower = m_axisList[m_graphGrouping[group][i]]->range().lower;
+        }
+    }
+    for (int i=0;i<m_graphGrouping[group].size();i++)
+    {
+        m_axisList[m_graphGrouping[group][i]]->setRange(m_graphGroupRanges[group]);
+    }
+    m_plot->replot();
 }
 
 void AP2DataPlot2D::itemDisabled(QString name)
@@ -597,6 +647,10 @@ void AP2DataPlot2D::itemDisabled(QString name)
     m_axisList.remove(name);
     m_graphNameList.removeOne(name);
     m_graphCount--;
+    if (m_axisGroupingDialog)
+    {
+        m_axisGroupingDialog->removeAxis(name);
+    }
 
 }
 void AP2DataPlot2D::progressDialogCanceled()
