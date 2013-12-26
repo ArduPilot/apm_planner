@@ -75,6 +75,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 }
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
 {
+    //This is disabled for the time being. TODO: Fix this so it works properly.
+    return;
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->show();
