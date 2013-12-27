@@ -183,6 +183,11 @@ message(BASEDIR $$BASEDIR)
 # GNU/Linux
 linux-g++|linux-g++-64{
 
+        #VARIABLES
+        isEmpty(PREFIX) {
+                PREFIX = /usr
+        }
+
 	CONFIG -= console
 	DEFINES += __STDC_LIMIT_MACROS
 
@@ -255,18 +260,43 @@ linux-g++|linux-g++-64{
 	DESTDIR = $$TARGETDIR
 	QMAKE_POST_LINK += && cp -rf $$BASEDIR/files $$TARGETDIR
 	QMAKE_POST_LINK += && cp -rf $$BASEDIR/data $$TARGETDIR
-	QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/files/images
-	QMAKE_POST_LINK += && cp -rf $$BASEDIR/files/styles/Vera.ttf $$TARGETDIR/files/styles/Vera.ttf
-        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml
-        QMAKE_POST_LINK += && cp -rf $$BASEDIR/qml/*.qml $$TARGETDIR/qml
+        QMAKE_POST_LINK += && cp -rf $$BASEDIR/qml $$TARGETDIR
 
-        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml/components/
-        QMAKE_POST_LINK += && cp -rf $$BASEDIR/qml/components/*.qml $$TARGETDIR/qml/components
+        #Installer section
+        BINDIR = $$PREFIX/bin
+        DATADIR =$$PREFIX/share
 
-        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml/resources
-        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml/resources/apmplanner
-        QMAKE_POST_LINK += && mkdir -p $$TARGETDIR/qml/resources/apmplanner/toolbar
-        QMAKE_POST_LINK += && cp -rf $$BASEDIR/qml/resources/apmplanner/toolbar/*.png $$TARGETDIR/qml/resources/apmplanner/toolbar
+        DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
+
+        #MAKE INSTALL - copy files
+        INSTALLS += target datafiles linkFiles linkData linkQML desktopLink menuLink permFolders permFiles
+
+        target.path =$$BINDIR
+
+        datafiles.path = $$DATADIR/APMPlanner2
+        datafiles.files += $$BASEDIR/files
+        datafiles.files += $$BASEDIR/data
+        datafiles.files += $$BASEDIR/qml
+
+        #fix up file permissions. Bit of a hack job
+        permFolders.path = $$DATADIR/APMPlanner2
+        permFolders.commands += find $$DATADIR -type d -exec chmod 755 {} \;
+        permFiles.path = $$DATADIR/APMPlanner2
+        permFiles.commands += find $$DATADIR -type f -exec chmod 644 {} \;
+
+        #create file/folder links
+        linkFiles.path = $$BINDIR
+        linkFiles.commands += ln -s -f -t $$BINDIR $$DATADIR/APMPlanner2/files
+        linkData.path = $$BINDIR
+        linkData.commands += ln -s -f -t $$BINDIR $$DATADIR/APMPlanner2/data
+        linkQML.path = $$BINDIR
+        linkQML.commands += ln -s -f -t $$BINDIR $$DATADIR/APMPlanner2/qml
+
+        #create menu links
+        desktopLink.path = $$DATADIR/menu
+        desktopLink.files += $$BASEDIR/scripts/debian/apmplanner2
+        menuLink.path = $$DATADIR/applications
+        menuLink.files += $$BASEDIR/scripts/debian/apmplanner2.desktop
 
 	# osg/osgEarth dynamic casts might fail without this compiler option.
 	# see http://osgearth.org/wiki/FAQ for details.
