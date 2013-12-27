@@ -368,7 +368,7 @@ void APMToolBar::newLinkCreated(LinkInterface* newLink)
 {
     SerialLink* sLink = dynamic_cast<SerialLink*>(newLink);
     if(sLink) {
-        QLOG_DEBUG() << "APMToolBar: new Srial Link Created" << newLink;
+        QLOG_DEBUG() << "APMToolBar: new Serial Link Created" << newLink;
         m_currentLink = sLink;
         updateLinkDisplay(m_currentLink);
         connect(m_currentLink,SIGNAL(updateLink(LinkInterface*)),this,SLOT(updateLinkDisplay(LinkInterface*)));

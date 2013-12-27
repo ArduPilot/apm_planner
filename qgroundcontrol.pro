@@ -538,6 +538,9 @@ HEADERS += src/MG.h \
     src/ui/uas/UASQuickViewTextLabel.h \
     src/uas/ApmUiHelpers.h \
     src/ui/AP2DataPlotAxisDialog.h
+#    libs/sik_uploader/qsikuploader.h \
+#    libs/sik_uploader/sikuploader.h \
+
 
 # Google Earth is only supported on Mac OS and Windows with Visual Studio Compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::HEADERS += src/ui/map3D/QGCGoogleEarthView.h
@@ -773,6 +776,9 @@ SOURCES += src/main.cc \
     src/ui/uas/UASQuickViewTextLabel.cc \
     src/uas/ApmUiHelpers.cc \
     src/ui/AP2DataPlotAxisDialog.cc
+#    libs/sik_uploader/qsikuploader.cpp \
+#    libs/sik_uploader/sikuploader.cpp \
+
 
 # Enable Google Earth only on Mac OS and Windows with Visual Studio compiler
 macx|macx-g++|macx-g++42|win32-msvc2008|win32-msvc2010|win32-msvc2012::SOURCES += src/ui/map3D/QGCGoogleEarthView.cc
@@ -926,6 +932,10 @@ OTHER_FILES += \
     qml/resources/apmplanner/toolbar/flightdata.png \
     qml/resources/apmplanner/toolbar/disconnect.png \
     qml/resources/apmplanner/toolbar/donate.png \
+
+# Command Line Tools
+OTHER_FILES += \
+    libs/sik_uploader/sik_uploader.py
 
 
 #qmlcomponents.path    += $${DESTDIR}$${TARGET}/components
