@@ -177,8 +177,10 @@ void ApmHardwareConfig::paramButtonClicked()
         QLOG_DEBUG() << "Remote File Downloaded";
         QLOG_DEBUG() << "TODO: Trigger auto load or compare of the downloaded file";
         QString filename = dialog->getDownloadedFileName();
-        m_uas->getParamManager()->loadParamsFromFile(filename,QGCUASParamManager::CommaSeperatedValues);
-
+        if (m_uas->getParamManager()->loadParamsFromFile(filename,QGCUASParamManager::CommaSeperatedValues))
+        {
+            QMessageBox::information(0,"Success","Params have been written to the MAV");
+        }
     }
     delete dialog;
     dialog = NULL;

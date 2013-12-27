@@ -61,7 +61,7 @@ public:
     QString getParamInfo(const QString& param) { return paramToolTips.value(param, ""); }
     void setParamInfo(const QMap<QString,QString>& param) { paramToolTips = param; }
 
-    void loadParamsFromFile(const QString &filename,ParamFileType type);
+    bool loadParamsFromFile(const QString &filename,ParamFileType type);
     void saveParamsToFile(const QString &filename,ParamFileType type);
 
 signals:

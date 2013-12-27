@@ -152,13 +152,16 @@ QGCParamWidget::QGCParamWidget(UASInterface* uas, QWidget *parent) :
     if (uas) requestParameterList();
 }
 
-void QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType type)
+bool QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType type)
 {
     if (type == CommaSeperatedValues)
     {
         //Load the filename, it will be a CSV of PARAM,VALUE\n
         QFile paramfile(filename);
-        paramfile.open(QIODevice::ReadOnly);
+        if (!paramfile.open(QIODevice::ReadOnly))
+        {
+            return false;
+        }
         while (!paramfile.atEnd())
         {
             QString line = paramfile.readLine();
@@ -176,7 +179,7 @@ void QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType ty
     {
         QFile file(filename);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-            return;
+            return false;
 
         bool userWarned = false;
 
@@ -251,6 +254,7 @@ void QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType ty
         }
         file.close();
     }
+    return true;
 }
 void QGCParamWidget::saveParamsToFile(const QString &filename,ParamFileType type)
 {
