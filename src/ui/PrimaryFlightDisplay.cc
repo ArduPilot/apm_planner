@@ -1549,18 +1549,17 @@ void PrimaryFlightDisplay::doPaint() {
     {
         //Paint it across the whole screen
         QPen pen = p2.pen();
-        pen.setColor(QColor::fromRgb(255,0,0));
+        pen.setColor(QColor::fromRgb(200,0,0));
         pen.setWidth(5);
         p2.setPen(pen);
         p2.drawRect(0,0,width(),height());
-        //pen.setColor(QColor::fromRgb(255,255,255));
         QFont penfont = p2.font();
         penfont.setPixelSize(20);
         p2.setFont(penfont);
         pen.setWidth(2);
         p2.setPen(pen);
         int textwidth = p2.fontMetrics().width(preArmCheckMessage);
-        p2.drawText((this->width()/2.0) - (textwidth/2.0),this->height()/2.0,preArmCheckMessage);
+        p2.drawText((this->width()/2.0) - (textwidth/2.0),this->height()/4.0,preArmCheckMessage);
     }
     p2.end();
 }
