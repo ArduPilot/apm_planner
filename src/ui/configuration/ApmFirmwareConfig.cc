@@ -684,6 +684,30 @@ void ApmFirmwareConfig::downloadFinished()
                                    << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
                                    << QString("-Uflash:w:").append(filename).append(":i");
 #endif
+#ifdef Q_OS_LINUX
+
+        // Check for avrdude in the PATH
+        QFile avrdude;
+
+        QByteArray path_array = qgetenv("PATH");
+        QString path_string = QString::fromUtf8(path_array.constData(),path_array.length());
+        QStringList path_list = path_string.split(":");
+        for (QStringList::iterator it = path_list.begin();it != path_list.end(); ++it){
+            QString current = *it;
+            current.append("/avrdude");
+            if (avrdude.exists(current.toAscii())){
+                avrdudeExecutable = current;
+                break;
+            }
+            else {
+                avrdudeExecutable = "";
+            }
+        }
+
+        stringList = QStringList() << "-v" << "-pm2560"
+                                   << "-cstk500" << QString("-P/dev/").append(m_settings.name)
+                                   << QString("-Uflash:w:").append(filename).append(":i");
+#endif
 
     // Start the Flashing
 
