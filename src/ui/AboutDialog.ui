@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>393</width>
-    <height>158</height>
+    <width>447</width>
+    <height>160</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>About</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>16</x>
      <y>13</y>
-     <width>354</width>
+     <width>414</width>
      <height>130</height>
     </rect>
    </property>
@@ -60,7 +60,7 @@
       <item>
        <widget class="QLabel" name="linkLabel">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;more info at &lt;a href=&quot;http://www.ardupilot.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://www.ardupilot.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;more info at &lt;a href=&quot;http://planner2.ardupilot.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://planner2.ardupilot.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
