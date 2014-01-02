@@ -351,6 +351,32 @@ MainWindow::MainWindow(QWidget *parent):
     //Disable firmware update and unconnected view buttons, as they aren't required for the moment.
     ui.actionFirmwareUpdateView->setVisible(false);
     ui.actionUnconnectedView->setVisible(false);
+
+    //in Linux, query if we have the correct permissions to
+    //access USB serial devices
+#ifdef Q_OS_LINUX
+    QFile permFile("/etc/group");
+    if(permFile.open(QIODevice::ReadOnly))
+    {
+        while(!permFile.atEnd())
+        {
+            QString line = permFile.readLine();
+            if(line.contains("dialout") && !line.contains(getenv("USER")))
+            {
+                QMessageBox msgBox;
+                msgBox.setIcon(QMessageBox::Information);
+                msgBox.setInformativeText(tr("The current user does not have the correct permissions to access serial devices. Use \"sudo adduser <username> dialout\" and then log out and in again"));
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                QLOG_INFO() << "User does not have permissions to serial devices";
+                break;
+            }
+        }
+        permFile.close();
+    }
+#endif
+
 }
 
 MainWindow::~MainWindow()
