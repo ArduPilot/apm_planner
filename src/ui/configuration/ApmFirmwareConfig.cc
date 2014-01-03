@@ -683,14 +683,17 @@ void ApmFirmwareConfig::downloadFinished()
         } else {
             avrdudeExecutable = "";
         }
-
+#endif
+#ifdef Q_OS_MAC
         stringList = QStringList() << "-v" << "-pm2560"
                                    << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
                                    << QString("-Uflash:w:").append(filename).append(":i");
 #endif
-
-
-
+#ifdef Q_OS_LINUX
+        stringList = QStringList() << "-v" << "-pm2560"
+                                   << "-cstk500" << QString("-P/dev/").append(m_settings.name)
+                                   << QString("-Uflash:w:").append(filename).append(":i");
+#endif
     // Start the Flashing
 
         QLOG_DEBUG() << avrdudeExecutable << stringList;

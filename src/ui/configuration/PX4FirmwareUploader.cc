@@ -342,6 +342,12 @@ void PX4FirmwareUploader::run()
     if (!m_port->open(QIODevice::ReadWrite))
     {
         QLOG_ERROR() << "Unable to open port" << m_port->errorString() << m_port->portName();
+#ifdef Q_OS_LINUX
+        if(m_port->errorString().contains("busy"))
+        {
+            emit statusUpdate("ERROR: Port " + m_port->portName() + " is locked by an external process. Run: \"sudo lsof /dev/" + m_port->portName() + "\" to determine the associated programs. They can usually be uninstalled.");
+        }
+#endif
         return;
     }
     m_port->setBaudRate(QSerialPort::Baud115200);

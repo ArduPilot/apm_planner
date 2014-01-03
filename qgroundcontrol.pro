@@ -52,11 +52,11 @@ QMAKE_INFO_PLIST = APMPlanner.plist   # Sets the pretty name for the build
 
 BASEDIR = $${IN_PWD}
 linux-g++|linux-g++-64{
-    debug {
+    CONFIG(debug, debug|release) {
         TARGETDIR = $${OUT_PWD}/debug
         BUILDDIR = $${OUT_PWD}/build-debug
     }
-    release {
+    else {
         TARGETDIR = $${OUT_PWD}/release
         BUILDDIR = $${OUT_PWD}/build-release
     }
