@@ -75,8 +75,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 }
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
 {
-    //This is disabled for the time being. TODO: Fix this so it works properly.
-    return;
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->show();
@@ -85,10 +83,9 @@ void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,Q
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
     connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString)),this,SLOT(graphAddedToGroup(QString,QString)));
     connect(m_axisGroupingDialog,SIGNAL(graphRemovedFromGroup(QString)),this,SLOT(graphRemovedFromGroup(QString)));
-    //QMap<QString,QCPAxis*> m_axisList;
     for(QMap<QString,QCPAxis*>::const_iterator i=m_axisList.constBegin();i!=m_axisList.constEnd();i++)
     {
-        m_axisGroupingDialog->addAxis(i.key(),i.value()->range().lower,i.value()->range().upper);
+        m_axisGroupingDialog->addAxis(i.key(),i.value()->range().lower,i.value()->range().upper,i.value()->labelColor());
     }
     m_axisGroupingDialog->show();
 }
@@ -501,10 +498,8 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     }
                     if (m_axisGroupingDialog)
                     {
-                        m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper);
+                        m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
                     }
-
-                   // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
                     mainGraph1->setPen(QPen(color, 2));
                     m_plot->replot();
                     return;
@@ -559,7 +554,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             }
             if (m_axisGroupingDialog)
             {
-                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper);
+                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
             }
 
            // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
@@ -577,9 +572,20 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group)
         m_graphGrouping[group] = QList<QString>();
         m_graphGroupRanges[group] = m_axisList[name]->range();
     }
-    if (m_graphGrouping[group].contains(name))
+    if (m_graphToGroupMap.contains(name))
     {
-        return;
+        if (m_graphToGroupMap.value(name) == group)
+        {
+            return;
+        }
+        else if (m_graphGrouping[group].contains(name))
+        {
+            return;
+        }
+        else
+        {
+            graphRemovedFromGroup(name);
+        }
     }
     m_graphToGroupMap[name] = group;
     m_graphGrouping[group].append(name);
@@ -594,7 +600,6 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group)
     for (int i=0;i<m_graphGrouping[group].size();i++)
     {
         m_axisList[m_graphGrouping[group][i]]->setRange(m_graphGroupRanges[group]);
-        qDebug() << "resizing graph:" << m_graphGrouping[group][i] << "in group" << group << "min:" << m_graphGroupRanges[group].lower << "max:" << m_graphGroupRanges[group].upper;
     }
     m_plot->replot();
 }
@@ -617,7 +622,6 @@ void AP2DataPlot2D::graphRemovedFromGroup(QString name)
     }
     for (int i=0;i<m_graphGrouping[group].size();i++)
     {
-        qDebug() << "resizing graph:" << m_graphGrouping[group][i] << "in group" << group;
         if (m_axisList[m_graphGrouping[group][i]]->range().upper > m_graphGroupRanges[group].upper)
         {
             m_graphGroupRanges[group].upper = m_axisList[m_graphGrouping[group][i]]->range().upper;

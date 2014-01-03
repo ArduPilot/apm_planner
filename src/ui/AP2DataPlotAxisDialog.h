@@ -17,13 +17,12 @@ class AP2DataPlotAxisDialog : public QWidget
 public:
     explicit AP2DataPlotAxisDialog(QWidget *parent = 0);
     ~AP2DataPlotAxisDialog();
-    void addAxis(QString name,double lower, double upper);
+    void addAxis(QString name,double lower, double upper,QColor color);
     void updateAxis(QString name,double lower, double upper);
     void removeAxis(QString name);
 protected:
     void closeEvent(QCloseEvent *evt);
 public slots:
-    void listCurrentChanged(int index);
     void graphTableCurrentItemChanged(QTableWidgetItem *current,QTableWidgetItem *previous);
     void setMinMaxButtonClicked();
     void autoButtonClicked(bool checked);
@@ -31,6 +30,7 @@ public slots:
     void groupBButtonClicked(bool checked);
     void groupCButtonClicked(bool checked);
     void groupDButtonClicked(bool checked);
+    void manualButtonClicked(bool checked);
 private slots:
     void applyButtonClicked();
     void cancelButtonClicked();
