@@ -662,7 +662,7 @@ void ApmFirmwareConfig::downloadFinished()
 
         avrdudeExecutable = "avrdude/avrdude.exe";
 #endif
-#ifdef Q_OS_MAC
+#if defined (Q_OS_MAC)||(Q_OS_LINUX)
 
         // Check for avrdude in the /usr/local/bin
         // This could be that a user install this via brew etc..
@@ -672,8 +672,12 @@ void ApmFirmwareConfig::downloadFinished()
             // Use the copy in /user/local/bin
             avrdudeExecutable = "/usr/local/bin/avrdude";
 
+        } else if (avrdude.exists("/usr/bin/avrdude")){
+            // Use the linux version
+            avrdudeExecutable = "/usr/bin/avrdude";
+
         } else if (avrdude.exists("/usr/local/CrossPack-AVR/bin/avrdude")){
-            // Use the installed Cross Pack Version
+            // Use the installed Cross Pack Version (OSX)
             avrdudeExecutable = "/usr/local/CrossPack-AVR/bin/avrdude";
 
         } else {
@@ -684,6 +688,8 @@ void ApmFirmwareConfig::downloadFinished()
                                    << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
                                    << QString("-Uflash:w:").append(filename).append(":i");
 #endif
+
+
 
     // Start the Flashing
 

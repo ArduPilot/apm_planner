@@ -166,6 +166,11 @@ PrimaryFlightDisplay::PrimaryFlightDisplay(int width, int height, QWidget *paren
     Q_UNUSED(width);
     Q_UNUSED(height);
 
+    preArmCheckFailure = false;
+    preArmCheckMessage = "";
+    preArmMessageTimer = new QTimer(this);
+    connect(preArmMessageTimer,SIGNAL(timeout()),this,SLOT(preArmMessageTimeout()));
+
     setMinimumSize(120, 80);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -327,9 +332,24 @@ void PrimaryFlightDisplay::setActiveUAS(UASInterface* uas)
         connect(uas, SIGNAL(primaryAltitudeChanged(UASInterface*, double, quint64)), this, SLOT(updatePrimaryAltitude(UASInterface*, double, quint64)));
         connect(uas, SIGNAL(gpsAltitudeChanged(UASInterface*, double, quint64)), this, SLOT(updateGPSAltitude(UASInterface*, double, quint64)));
         connect(uas, SIGNAL(navigationControllerErrorsChanged(UASInterface*, double, double, double)), this, SLOT(updateNavigationControllerErrors(UASInterface*, double, double, double)));
+        connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessage(int,int,int,QString)));
 
         // Set new UAS
         this->uas = uas;
+    }
+}
+void PrimaryFlightDisplay::uasTextMessage(int uasid, int componentid, int severity, QString text)
+{
+//Pre
+    if (text.contains("PreArm") || severity == 3)
+    {
+        if (preArmMessageTimer->isActive())
+        {
+            preArmMessageTimer->stop();
+        }
+        preArmCheckMessage = text;
+        preArmCheckFailure = true;
+        preArmMessageTimer->start(4000);
     }
 }
 
@@ -1521,7 +1541,33 @@ void PrimaryFlightDisplay::doPaint() {
     }
     */
 
+
+
     painter.end();
+    QPainter p2(this);
+    if (preArmCheckFailure)
+    {
+        //Paint it across the whole screen
+        QPen pen = p2.pen();
+        pen.setColor(QColor::fromRgb(200,0,0));
+        pen.setWidth(5);
+        p2.setPen(pen);
+        p2.drawRect(0,0,width(),height());
+        QFont penfont = p2.font();
+        penfont.setPixelSize(20);
+        p2.setFont(penfont);
+        pen.setWidth(2);
+        p2.setPen(pen);
+        int textwidth = p2.fontMetrics().width(preArmCheckMessage);
+        p2.drawText((this->width()/2.0) - (textwidth/2.0),this->height()/4.0,preArmCheckMessage);
+    }
+    p2.end();
+}
+void PrimaryFlightDisplay::preArmMessageTimeout()
+{
+    preArmMessageTimer->stop();
+    preArmCheckFailure = false;
+
 }
 
 void PrimaryFlightDisplay:: createActions() {}

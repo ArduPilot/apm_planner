@@ -52,6 +52,9 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     cameraaction->setText("Point Camera Here");
     connect(cameraaction,SIGNAL(triggered()),this,SLOT(cameraActionTriggered()));
     this->addAction(cameraaction);
+
+    QLabel latitudeLabel;
+    QLabel longitudeLabel;
 }
 void QGCMapWidget::guidedActionTriggered()
 {

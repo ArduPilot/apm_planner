@@ -29,7 +29,7 @@ This file is part of the APM_PLANNER project
  */
 #include "QsLog.h"
 #include "ApmHardwareConfig.h"
-
+#include "DownloadRemoteParamsDialog.h"
 ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
@@ -42,6 +42,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.optionalHardwareButton->setVisible(false);
     ui.frameTypeButton->setVisible(false);
     ui.compassButton->setVisible(false);
+    ui.paramButton->setVisible(false);
     ui.accelCalibrateButton->setVisible(false);
     ui.failSafeButton->setVisible(false);
     ui.flightModesButton->setVisible(false);
@@ -162,7 +163,29 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     // Set start up WarningMessageView view
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
     ui.hiddenPushButton->setChecked(true);
+
+
+    connect(ui.paramButton,SIGNAL(clicked()),this,SLOT(paramButtonClicked()));
 }
+void ApmHardwareConfig::paramButtonClicked()
+{
+    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog();
+
+    if(dialog->exec() == QDialog::Accepted) {
+        // Pull the selected file and
+        // modify the parameters on the adv param list.
+        QLOG_DEBUG() << "Remote File Downloaded";
+        QLOG_DEBUG() << "TODO: Trigger auto load or compare of the downloaded file";
+        QString filename = dialog->getDownloadedFileName();
+        if (m_uas->getParamManager()->loadParamsFromFile(filename,QGCUASParamManager::CommaSeperatedValues))
+        {
+            QMessageBox::information(0,"Success","Params have been written to the MAV");
+        }
+    }
+    delete dialog;
+    dialog = NULL;
+}
+
 void ApmHardwareConfig::activateBlankingScreen()
 {
         ui.stackedWidget->setCurrentWidget(m_setupWarningMessage);
@@ -233,6 +256,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.frameTypeButton->setShown(false);
     ui.sonarButton->setShown(false);
     ui.compassButton->setShown(false);
+    ui.paramButton->setShown(false);
     ui.accelCalibrateButton->setShown(false);
     ui.radioCalibrateButton->setShown(false);
 
@@ -325,6 +349,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         // Mandatory Options to show
         ui.frameTypeButton->setShown(show);
         ui.compassButton->setShown(show);
+        ui.paramButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -345,6 +370,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
         // Mandatory Options to show
         ui.compassButton->setShown(show);
+        ui.paramButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -367,6 +393,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
         // Mandatory Options to show
         ui.compassButton->setShown(show);
+        ui.paramButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);

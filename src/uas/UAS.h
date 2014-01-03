@@ -128,7 +128,7 @@ public:
     {
         localX = val;
         emit localXChanged(val,"localX");
-        emit valueChanged(this->uasId,"localX","M",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,"localX","m",QVariant(val),getUnixTime());
     }
 
     double getLocalX() const
@@ -140,7 +140,7 @@ public:
     {
         localY = val;
         emit localYChanged(val,"localY");
-        emit valueChanged(this->uasId,"localY","M",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,"localY","m",QVariant(val),getUnixTime());
     }
     double getLocalY() const
     {
@@ -151,7 +151,7 @@ public:
     {
         localZ = val;
         emit localZChanged(val,"localZ");
-        emit valueChanged(this->uasId,"localZ","M",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,"localZ","m",QVariant(val),getUnixTime());
     }
     double getLocalZ() const
     {
@@ -186,7 +186,7 @@ public:
     {
         altitude = val;
         emit altitudeChanged(val, "altitude");
-        emit valueChanged(this->uasId,"altitude","M",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,"altitude","m",QVariant(val),getUnixTime());
     }
 
     double getAltitude() const
@@ -194,16 +194,28 @@ public:
         return altitude;
     }
 
-    void setSatelliteCount(double val)
+    void setSatelliteCount(int val)
     {
-        satelliteCount = val;
+        m_satelliteCount = val;
         emit satelliteCountChanged(val,"satelliteCount");
-        emit valueChanged(this->uasId,"satelliteCount","M",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,"satelliteCount","m",QVariant(val),getUnixTime());
     }
 
-    double getSatelliteCount() const
+    int getSatelliteCount() const
     {
-        return satelliteCount;
+        return m_satelliteCount;
+    }
+
+    void setGpsHdop(double val)
+    {
+        m_gps_hdop = val;
+        emit gpsHdopChanged(val,"GPS HDOP");
+        emit valueChanged(this->uasId,"GPS HDOP","m",QVariant(val),getUnixTime());
+    }
+
+    double getGpsHdop() const
+    {
+        return m_gps_hdop;
     }
 
     virtual bool localPositionKnown() const
@@ -220,7 +232,7 @@ public:
     {
         distToWaypoint = val;
         emit distToWaypointChanged(val,"distToWaypoint");
-        emit valueChanged(this->uasId,"distToWaypoint","M",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,"distToWaypoint","m",QVariant(val),getUnixTime());
     }
 
     double getDistToWaypoint() const
@@ -232,7 +244,7 @@ public:
     {
         bearingToWaypoint = val;
         emit bearingToWaypointChanged(val,"bearingToWaypoint");
-        emit valueChanged(this->uasId,"bearingToWaypoint","M",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,"bearingToWaypoint","m",QVariant(val),getUnixTime());
     }
 
     double getBearingToWaypoint() const
@@ -428,7 +440,8 @@ protected: //COMMENTS FOR TEST UNIT
     double longitude;           ///< Global longitude as estimated by position estimator
     double altitude;            ///< Global altitude as estimated by position estimator
 
-    double satelliteCount;      ///< Number of satellites visible to raw GPS
+    int m_satelliteCount;      ///< Number of satellites visible to raw GPS
+    double m_gps_hdop;      ///< GPS HDOP
     bool globalEstimatorActive; ///< Global position estimator present, do not fall back to GPS raw for position
     double latitude_gps;        ///< Global latitude as estimated by raw GPS
     double longitude_gps;       ///< Global longitude as estimated by raw GPS
@@ -883,7 +896,8 @@ signals:
     void rollChanged(double val,QString name);
     void pitchChanged(double val,QString name);
     void yawChanged(double val,QString name);
-    void satelliteCountChanged(double val,QString name);
+    void satelliteCountChanged(int val,QString name);
+    void gpsHdopChanged(double val, QString name);
     void distToWaypointChanged(double val,QString name);
     void groundSpeedChanged(double val, QString name);
     void bearingToWaypointChanged(double val,QString name);

@@ -390,7 +390,7 @@ qint64 SerialLink::bytesAvailable()
  **/
 bool SerialLink::disconnect()
 {
-    QLOG_INFO() << "disconnect";
+    QLOG_INFO() << "SerialLink::disconnect";
     if (m_port) {
         QLOG_INFO() << m_port->portName();
     }
@@ -413,7 +413,7 @@ bool SerialLink::disconnect()
     // Should we emit the disconncted signals to keep the states
     // in order. ie. if disconned is called the UI maybe out of sync
     // and a emit disconnect here could rectify this
-    QLOG_INFO() << "already disconnected";
+    QLOG_INFO() << "SerialLink already disconnected";
     return true;
 }
 
@@ -665,6 +665,10 @@ bool SerialLink::setPortName(QString portName)
 {
     QLOG_INFO() << "current portName " << m_portName;
     QLOG_INFO() << "setPortName to " << portName;
+
+    if(portName.length() == 0)
+        return false; // [TODO] temporary fox to stop wiping out retreived serial portname.
+
     if (portName != m_portName) {
         m_portName = portName;
         emit nameChanged(m_portName); // [TODO] maybe we can eliminate this

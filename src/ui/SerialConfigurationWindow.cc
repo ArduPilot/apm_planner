@@ -248,7 +248,7 @@ void SerialConfigurationWindow::setupPortList()
 {
     if (!link) return;
 
-    QLOG_DEBUG() << "Link is " << link->isConnected();
+    QLOG_DEBUG() << "SCW: Link is connected " << link->isConnected();
 
     // Get the ports available on this system
     QList<QString> ports = link->getCurrentPorts();
@@ -257,7 +257,12 @@ void SerialConfigurationWindow::setupPortList()
     bool storedFound = false;
 
     // Add the ports in reverse order, because we prepend them to the list
+    disconnect(ui.portName, SIGNAL(editTextChanged(QString)), this, SLOT(setPortName(QString)));
+    disconnect(ui.portName, SIGNAL(currentIndexChanged(QString)), this, SLOT(setPortName(QString)));
     ui.portName->clear();
+    connect(ui.portName, SIGNAL(editTextChanged(QString)), this, SLOT(setPortName(QString)));
+    connect(ui.portName, SIGNAL(currentIndexChanged(QString)), this, SLOT(setPortName(QString)));
+
     for (int i = ports.count() - 1; i >= 0; --i)
     {
         // Prepend newly found port to the list

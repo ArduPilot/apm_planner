@@ -127,6 +127,10 @@ void DownloadRemoteParamsDialog::startFileDownloadRequest(QUrl url)
 
 
 }
+QString DownloadRemoteParamsDialog::getDownloadedFileName()
+{
+    return m_downloadedFileName;
+}
 
 void DownloadRemoteParamsDialog::downloadParamFile()
 {
@@ -152,6 +156,7 @@ void DownloadRemoteParamsDialog::downloadParamFile()
             return;
         QFile::remove(fileName);
     }
+    m_downloadedFileName = fileName;
 
     m_downloadedParamFile = new QFile(fileName);
     if (!m_downloadedParamFile->open(QIODevice::WriteOnly)) {
@@ -215,7 +220,8 @@ void DownloadRemoteParamsDialog::cancelDownload()
      m_networkReply->deleteLater();
      m_networkReply = NULL;
      delete m_downloadedParamFile;
-     m_downloadedParamFile = NULL;    
+     m_downloadedParamFile = NULL;
+     this->accept();
  }
 
  void DownloadRemoteParamsDialog::httpReadyRead()

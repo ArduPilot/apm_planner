@@ -180,10 +180,6 @@ MainWindow::MainWindow(QWidget *parent):
 
     ui.actionSimulate->setVisible(false);
 
-
-
-
-
     // We only need this menu if we have more than one system
     //    ui.menuConnected_Systems->setEnabled(false);
 
@@ -364,11 +360,7 @@ MainWindow::~MainWindow()
         delete mavlink;
         mavlink = NULL;
     }
-    //    if (simulationLink)
-    //    {
-    //        simulationLink->deleteLater();
-    //        simulationLink = NULL;
-    //    }
+
     if (joystick)
     {
         joystick->shutdown();
@@ -1596,9 +1588,10 @@ void MainWindow::connectCommonActions()
     }
 
     connect(ui.actionDebug_Console,SIGNAL(triggered()),debugOutput,SLOT(show()));
-
+    connect(ui.actionSimulate, SIGNAL(triggered(bool)), this, SLOT(simulateLink(bool)));
 
     //Disable simulation view until we ensure it's operational.
+    ui.actionSimulate->setVisible(false);
     ui.actionSimulationView->setVisible(false);
 }
 
@@ -1737,10 +1730,8 @@ void MainWindow::addLink(LinkInterface *link)
         }
     }
 
-    //UDPLink* udp = dynamic_cast<UDPLink*>(link);
-
     if (!found)
-    {  //  || udp
+    {
         CommConfigurationWindow* commWidget = new CommConfigurationWindow(link, mavlink, NULL);
         commsWidgetList.append(commWidget);
         connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
@@ -1749,13 +1740,13 @@ void MainWindow::addLink(LinkInterface *link)
 
         // Error handling
         connect(link, SIGNAL(communicationError(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);
-        // Special case for simulationlink
-        MAVLinkSimulationLink* sim = dynamic_cast<MAVLinkSimulationLink*>(link);
-        if (sim)
-        {
-            connect(ui.actionSimulate, SIGNAL(triggered(bool)), sim, SLOT(connectLink(bool)));
-        }
     }
+}
+
+void MainWindow::simulateLink(bool simulate) {
+    if (!simulationLink.isNull())
+        simulationLink = new MAVLinkSimulationLink(":/demo-log.txt");
+    simulationLink->connectLink(simulate);
 }
 
 //void MainWindow::configLink(LinkInterface *link)

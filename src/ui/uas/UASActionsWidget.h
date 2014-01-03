@@ -34,6 +34,7 @@ private slots:
 
     void parameterChanged(int uas, int component, int parameterCount,
                           int parameterId, QString parameterName, QVariant value);
+    void heartbeatReceived(UASInterface*);
 
 private:
     void setupApmCopterModes();
@@ -47,6 +48,7 @@ private:
     bool activeUas();
 
     int preFlightWarningBox();
+    int modeChangeWarningBox(const QString& modeString);
 
     void configureModeButtonEnableDisable();
 

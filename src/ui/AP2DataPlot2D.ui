@@ -46,7 +46,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="loadOfflineLogButton">
          <property name="text">
           <string>Load Log</string>
          </property>

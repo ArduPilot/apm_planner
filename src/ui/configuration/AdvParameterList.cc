@@ -80,8 +80,10 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     }
     m_origBrushList.append(ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text());
     QBrush brush = QBrush(QColor::fromRgb(132,181,132));
-    item->setBackground(brush);
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->setBackground(brush);
+    ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_VALUE)->setBackground(brush);
+    ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_UNIT)->setBackground(brush);
+    ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_DESCRIPTION)->setBackground(brush);
     m_modifiedParamMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = item->text().toDouble();
 
     int itemsChanged = m_modifiedParamMap.size();
@@ -169,29 +171,23 @@ void AdvParameterList::loadButtonClicked()
 
     QString filestr = file.readAll();
     file.close();
-    QStringList filesplit = filestr.split("\r\n");
 
-    ui.progressLabel->setText("File loaded");
+    ParamCompareDialog::populateParamListFromString(filestr, &m_parameterList);
 
-    foreach (QString fileline,filesplit)
-    {
-        if (fileline.startsWith("#"))
-        {
-            //Comment
-        }
-        else
-        {
-            QStringList linesplit = fileline.split(",");
-            if (linesplit.size() == 2)
-            {
-                if (m_paramValueMap.contains(linesplit[0]))
-                {
-                    m_paramValueMap[linesplit[0]]->setText(linesplit[1]);
+    foreach(UASParameter* param, m_parameterList){
+        // Modify the elements in the table widget.
+        if (param->isModified()){
+            // Update the local table widget
+            QTableWidgetItem* item = m_paramValueMap.value(param->name());
+            if (item){
+                if (param->value() != item->data(Qt::DisplayRole)){
+                    item->setData(Qt::DisplayRole, param->value());
+                    tableWidgetItemChanged(item);
                 }
-
             }
         }
     }
+
 }
 
 void AdvParameterList::saveButtonClicked()
@@ -301,7 +297,10 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
     if (m_origBrushList.contains(parameterName))
     {
         m_paramValueMap[parameterName]->setBackground(QBrush());
-        ui.tableWidget->item(m_paramValueMap[parameterName]->row(),0)->setBackground(QBrush());
+        ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_PARAM)->setBackground(QBrush());
+        ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_VALUE)->setBackground(QBrush());
+        ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_UNIT)->setBackground(QBrush());
+        ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_DESCRIPTION)->setBackground(QBrush());
         m_origBrushList.removeAll(parameterName);
     }
 

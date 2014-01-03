@@ -21,6 +21,14 @@ void UASActionsWidget::setupApmPlaneModes()
     ui.opt3ModeButton->setText("Circle");
     ui.opt4ModeButton->setText("Manual");
 
+    // Setup Action Combo Box
+    ui.actionComboBox->clear();
+    ui.actionComboBox->addItem("Loiter Unlimited", MAV_CMD_NAV_LOITER_UNLIM);
+    ui.actionComboBox->addItem("Return To Launch", MAV_CMD_NAV_RETURN_TO_LAUNCH);
+    ui.actionComboBox->addItem("Preflight Calibration", MAV_CMD_PREFLIGHT_CALIBRATION);
+    ui.actionComboBox->addItem("Mission Start", MAV_CMD_MISSION_START);
+    ui.actionComboBox->addItem("Preflight Reboot", MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
+
 }
 
 void UASActionsWidget::setupApmCopterModes()
@@ -37,6 +45,14 @@ void UASActionsWidget::setupApmCopterModes()
     ui.opt3ModeButton->setText("Alt Hold");
     ui.opt4ModeButton->setText("Land");
     configureModeButtonEnableDisable();
+
+    // Setup Action Combo Box
+    ui.actionComboBox->clear();
+    ui.actionComboBox->addItem("Loiter Unlimited", MAV_CMD_NAV_LOITER_UNLIM);
+    ui.actionComboBox->addItem("Return To Launch", MAV_CMD_NAV_RETURN_TO_LAUNCH);
+    ui.actionComboBox->addItem("Preflight Calibration", MAV_CMD_PREFLIGHT_CALIBRATION);
+    ui.actionComboBox->addItem("Mission Start", MAV_CMD_MISSION_START);
+    ui.actionComboBox->addItem("Preflight Reboot", MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
 }
 
 void UASActionsWidget::setupApmRoverModes()
@@ -53,6 +69,14 @@ void UASActionsWidget::setupApmRoverModes()
     ui.opt3ModeButton->setText("Hold");
     ui.opt4ModeButton->setText("none");
     configureModeButtonEnableDisable();
+
+    // Setup Action Combo Box
+    ui.actionComboBox->clear();
+    ui.actionComboBox->addItem("Loiter Unlimited", MAV_CMD_NAV_LOITER_UNLIM);
+    ui.actionComboBox->addItem("Return To Launch", MAV_CMD_NAV_RETURN_TO_LAUNCH);
+    ui.actionComboBox->addItem("Preflight Calibration", MAV_CMD_PREFLIGHT_CALIBRATION);
+    ui.actionComboBox->addItem("Mission Start", MAV_CMD_MISSION_START);
+    ui.actionComboBox->addItem("Preflight Reboot", MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
 
 }
 
@@ -72,12 +96,9 @@ UASActionsWidget::UASActionsWidget(QWidget *parent) : QWidget(parent)
         activeUASSet(UASManager::instance()->getActiveUAS());
     }
 
-    // Setup Action Combo Box
-    ui.actionComboBox->addItem("Loiter Unlimited", MAV_CMD_NAV_LOITER_UNLIM);
-    ui.actionComboBox->addItem("Return To Launch", MAV_CMD_NAV_RETURN_TO_LAUNCH);
-    ui.actionComboBox->addItem("Preflight Calibration", MAV_CMD_PREFLIGHT_CALIBRATION);
-    ui.actionComboBox->addItem("Mission Start", MAV_CMD_MISSION_START);
-    ui.actionComboBox->addItem("Preflight Reboot", MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
+    ui.missionGroupBox->setDisabled(true);
+    ui.actionsGroupBox->setDisabled(true);
+    ui.shortcutGroupBox->setDisabled(true);
 
     connect(ui.exeActionButton, SIGNAL(clicked()),
             this, SLOT(setAction()));
@@ -123,6 +144,8 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
 
         disconnect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
                 this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
+        disconnect(m_uas, SIGNAL(heartbeat(UASInterface*)),
+                   this, SLOT(heartbeatReceived(UASInterface*)));
     }
 
     // enable the controls
@@ -146,6 +169,8 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
 
     connect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
             this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
+    connect(m_uas, SIGNAL(heartbeat(UASInterface*)),
+               this, SLOT(heartbeatReceived(UASInterface*)));
 
     armingChanged(m_uas->isArmed());
     updateWaypointList();
@@ -235,6 +260,32 @@ void UASActionsWidget::armingChanged(bool state)
         ui.armDisarmButton->setText("ARM");
         ui.armedStatuslabel->setText("<html><head/><body><p><span style=color:#00AA00>DISARMED</span></p></body></html>");
     }
+
+}
+
+void UASActionsWidget::heartbeatReceived(UASInterface* uas)
+{
+    if (uas != m_uas)
+        return; // Only deal with the Active UAS
+// [TODO] Update the shortcut button to show cuurent mode
+// Also requires an update to the style sheet
+//    foreach(ui.shortcutButtonGroup, QAbstractButton* button){
+//        if(m_uas->isFixedWing()){
+//            if(button->text() == ApmPlane::stringForMode(m_uas->getCustomMode())){
+//                button->setChecked(true);
+//                break;
+//            }
+//        } else if (m_uas->isMultirotor()){
+//            if(button->text() == ApmCopter::stringForMode(m_uas->getCustomMode())){
+//                button->setChecked(true);
+//                break;
+//            }
+//        } else if(button->text() == ApmRover::stringForMode(m_uas->getCustomMode())){
+//            button->setChecked(true);
+//            break;
+//        }
+
+//    }
 
 }
 
@@ -353,9 +404,16 @@ void UASActionsWidget::setShortcutMode()
 
     QLOG_INFO() << "Set Mode to "
                 << ui.shortcutButtonGroup->checkedButton()->text();
-    int index = ui.modeComboBox->findText(ui.shortcutButtonGroup->checkedButton()->text());
+    QString modeString;
+    modeString = ui.shortcutButtonGroup->checkedButton()->text();
+    int index = ui.modeComboBox->findText(modeString);
     QLOG_DEBUG() << "index: "
                 << index;
+
+    if (modeChangeWarningBox(modeString) == QMessageBox::Abort){
+        return;
+    }
+
     ui.modeComboBox->setCurrentIndex(index);
     m_uas->setMode(MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
                    ui.modeComboBox->itemData(ui.modeComboBox->currentIndex()).toInt());
@@ -405,8 +463,23 @@ void UASActionsWidget::setAction()
 
 int UASActionsWidget::preFlightWarningBox()
 {
-    QLOG_INFO() << "Display Pre-Flight Warning Check";
+    QLOG_INFO() << "Display Pre-Flight Warning Box";
     return QMessageBox::critical(this,tr("Warning"),tr("This action must be done when on the gorund. If vehicle is in the air the this action will result in a crash!"),
+                         QMessageBox::Ok,QMessageBox::Abort);
+}
+
+int UASActionsWidget::modeChangeWarningBox(const QString& modeString)
+{
+    QLOG_INFO() << "Display Mode Chnage Warning Box";
+
+    QStringList warnList;
+    warnList << "Auto";
+
+    if (!warnList.contains(modeString)){
+        return QMessageBox::Ok; // Only warn for modes in the list
+    }
+
+    return QMessageBox::critical(this,tr("Warning"),tr("Please confirm you want to enter\n %1 mode").arg(modeString),
                          QMessageBox::Ok,QMessageBox::Abort);
 }
 
@@ -479,6 +552,9 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         // start running a mission last_item:
         Q_ASSERT(command == MAV_CMD_MISSION_START);
         QLOG_INFO() << "MAV_CMD_MISSION_START";
+
+        if (modeChangeWarningBox("Mission Start") == QMessageBox::Abort)
+            return;
 
         int confirm = 1;
         float param1 = 1.0; // first_item: the first mission item to run
@@ -593,6 +669,9 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
         Q_ASSERT(command == MAV_CMD_MISSION_START);
         QLOG_INFO() << "MAV_CMD_MISSION_START";
 
+        if (modeChangeWarningBox("Mission Start") == QMessageBox::Abort)
+            return;
+
         int confirm = 1;
         float param1 = 1.0; // first_item: the first mission item to run
         float param2 = 0.0; // the last mission item to run (after this item is run, the mission ends)|
@@ -638,9 +717,100 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
 
 void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
 {
-    // [TODO] :(
     QLOG_INFO() << "UASActionWidget::sendApmRoverCommand";
-    QLOG_INFO() << "to be implemented";
+    switch(command) {
+
+    case MAV_CMD_NAV_RETURN_TO_LAUNCH: {
+        /* Return to launch location |Empty| Empty| Empty| Empty| Empty| Empty| Empty|  */
+        Q_ASSERT(command == MAV_CMD_NAV_RETURN_TO_LAUNCH);
+        QLOG_INFO() << "MAV_CMD_NAV_RETURN_TO_LAUNCH";
+
+        int confirm = 1;    // [TODO] Verify This is what ArduRover Does.
+        float param1 = 0.0; // Empty
+        float param2 = 0.0; // Empty
+        float param3 = 0.0; // [NOT USED] Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise
+        float param4 = 0.0; // Desired yaw angle.|
+        float param5 = 0.0; // Latitude
+        float param6 = 0.0; // Longitude
+        float param7 = 0.0; // Altitude
+        int component = MAV_COMP_ID_ALL;
+        m_uas->executeCommand(command,
+                              confirm, param1, param2, param3,
+                              param4, param5, param6, param7, component);
+
+    } break;
+
+    case MAV_CMD_PREFLIGHT_CALIBRATION: {
+        // Trigger calibration. This command will be only accepted if in pre-flight mode.
+        Q_ASSERT(command == MAV_CMD_PREFLIGHT_CALIBRATION);
+        QLOG_INFO() << "MAV_CMD_PREFLIGHT_CALIBRATION";
+
+        if (preFlightWarningBox() == QMessageBox::Abort)
+            return;
+
+        int confirm = 1;
+        float param1 = 1.0; // Gyro calibration: 0: no, 1: yes
+        float param2 = 0.0; // Magnetometer calibration: 0: no, 1: yes
+        float param3 = 0.0; // Ground pressure: 0: no, 1: yes
+        float param4 = 0.0; // Radio calibration: 0: no, 1: yes
+        float param5 = 0.0; // Accelerometer calibration: 0: no, 1: yes
+        float param6 = 0.0; // | Empty|
+        float param7 = 0.0; // | Empty|
+        int component = MAV_COMP_ID_ALL;
+        m_uas->executeCommand(command,
+                              confirm, param1, param2, param3,
+                              param4, param5, param6, param7, component);
+    } break;
+
+    case MAV_CMD_MISSION_START: {
+        // start running a mission last_item:
+        Q_ASSERT(command == MAV_CMD_MISSION_START);
+        QLOG_INFO() << "MAV_CMD_MISSION_START";
+
+        if (modeChangeWarningBox("Mission Start") == QMessageBox::Abort)
+            return;
+
+        int confirm = 1;
+        float param1 = 1.0; // first_item: the first mission item to run
+        float param2 = 0.0; // the last mission item to run (after this item is run, the mission ends)|
+        float param3 = 0.0; // | Empty|
+        float param4 = 0.0; // | Empty|
+        float param5 = 0.0; // | Empty|
+        float param6 = 0.0; // | Empty|
+        float param7 = 0.0; // | Empty|
+        int component = MAV_COMP_ID_ALL;
+        m_uas->executeCommand(command,
+                              confirm, param1, param2, param3,
+                              param4, param5, param6, param7, component);
+
+    } break;
+
+    case MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN: {
+        // Request the reboot or shutdown of system components.
+        Q_ASSERT(command == MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
+        QLOG_INFO() << "MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN";
+
+        if (preFlightWarningBox() == QMessageBox::Abort)
+            return;
+
+        int confirm = 1;
+        float param1 = 1.0; // | 0: Do nothing for autopilot 1: Reboot autopilot, 2: Shutdown autopilot.
+        float param2 = 1.0; // | 0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer.
+        float param3 = 0.0; // | Reserved|
+        float param4 = 0.0; // | Reserved|
+        float param5 = 0.0; // | Empty|
+        float param6 = 0.0; // | Empty|
+        float param7 = 0.0; // | Empty|
+        int component = MAV_COMP_ID_ALL;
+        m_uas->executeCommand(command,
+                              confirm, param1, param2, param3,
+                              param4, param5, param6, param7, component);
+
+    } break;
+
+    default:
+        QLOG_INFO() << "sendApmRoverCommand: Unknown Command " << command;
+    }
 }
 
 void UASActionsWidget::setRTLMode()
@@ -841,4 +1011,6 @@ void UASActionsWidget::loadApmSettings()
        }
      }
 }
+
+
 

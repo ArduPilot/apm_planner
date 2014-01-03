@@ -25,6 +25,10 @@ public slots:
     void updateGPSAltitude(UASInterface* uas, double altitude, quint64 timestamp);
     void updateNavigationControllerErrors(UASInterface* uas, double altitudeError, double speedError, double xtrackError);
 
+    void uasTextMessage(int uasid, int componentid, int severity, QString text);
+
+    void preArmMessageTimeout();
+
     /** @brief Set the currently monitored UAS */
     //void addUAS(UASInterface* uas);
     void forgetUAS(UASInterface* uas);
@@ -124,6 +128,10 @@ private:
     AltimeterFrame altimeterFrame;
     SpeedMode speedMode;
     */
+
+    bool preArmCheckFailure;
+    QString preArmCheckMessage;
+    QTimer *preArmMessageTimer;
 
     bool didReceivePrimaryAltitude;
     bool didReceivePrimarySpeed;

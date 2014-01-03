@@ -140,7 +140,7 @@ QString ApmCopter::stringForMode(int aMode) {
         return "Acro";
         break;
     case ALT_HOLD:
-        return "Altitude Hold";
+        return "Alt Hold";
         break;
     case AUTO:
         return "Auto";
