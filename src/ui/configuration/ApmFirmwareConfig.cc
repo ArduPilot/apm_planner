@@ -662,7 +662,7 @@ void ApmFirmwareConfig::downloadFinished()
 
         avrdudeExecutable = "avrdude/avrdude.exe";
 #endif
-#if defined (Q_OS_MAC)||(Q_OS_LINUX)
+#if defined(Q_OS_MAC)||defined(Q_OS_LINUX)
 
         // Check for avrdude in the /usr/local/bin
         // This could be that a user install this via brew etc..
