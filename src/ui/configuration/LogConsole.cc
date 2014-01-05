@@ -349,7 +349,7 @@ void LogConsole::pullSelectedClicked() {
     const int size = list.count();
     for(int i = 0; i < size; ++i) {
         QModelIndex idx = list.at(i);
-        QRegExp matchLogNumber("^Log (\\d+),");
+        QRegExp matchLogNumber("^Log (\\d+)");
         QString logDetails = idx.data(Qt::DisplayRole).toString();
         int pos = matchLogNumber.indexIn(logDetails);
         if (pos > -1) {
