@@ -789,12 +789,15 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             setSatelliteCount(pos.satellites_visible);
             setGpsHdop(pos.eph/100.0f);
 
+            // emit raw GPS message
+            latitude_gps = pos.lat/(double)1E7;
+            longitude_gps = pos.lon/(double)1E7;
+            altitude_gps = pos.alt/1000.0;
+            emit gpsRawChanged(this, latitude_gps, longitude_gps, altitude_gps,
+                               pos.satellites_visible, getGpsHdop(),time);
+
             if (pos.fix_type > 2)
             {
-                latitude_gps = pos.lat/(double)1E7;
-                longitude_gps = pos.lon/(double)1E7;
-                altitude_gps = pos.alt/1000.0;
-
                 // If no GLOBAL_POSITION_INT messages ever received, use these raw GPS values instead.
                 if (!globalEstimatorActive) {
                     setLatitude(latitude_gps);

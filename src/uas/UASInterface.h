@@ -544,6 +544,7 @@ signals:
     void localPositionChanged(UASInterface*, double x, double y, double z, quint64 usec);
     void localPositionChanged(UASInterface*, int component, double x, double y, double z, quint64 usec);
     void globalPositionChanged(UASInterface*, double lat, double lon, double alt, quint64 usec);
+    void gpsRawChanged(UASInterface*, double lat, double lon, double alt, double hdop, int sat_count, quint64 usec);
     void primaryAltitudeChanged(UASInterface*, double altitude, quint64 usec);
     void gpsAltitudeChanged(UASInterface*, double altitude, quint64 usec);
     /** @brief Update the status of one satellite used for localization */
