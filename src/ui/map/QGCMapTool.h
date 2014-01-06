@@ -27,7 +27,8 @@ signals:
 
 private slots:
     void activeUASSet(UASInterface *uas);
-    void updateOverlay();
+    void globalPositionUpdate();
+    void gpsRawUpdate();
 
 private:
     void showEvent(QShowEvent* event);
@@ -37,7 +38,6 @@ private:
     Ui::QGCMapTool *ui;
 
     UASInterface* m_uas;
-    QTimer m_timer;
 };
 
 #endif // QGCMAPTOOL_H

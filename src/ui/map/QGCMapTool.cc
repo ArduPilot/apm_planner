@@ -10,7 +10,8 @@
 
 QGCMapTool::QGCMapTool(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::QGCMapTool)
+    ui(new Ui::QGCMapTool),
+    m_uas(NULL)
 {
     ui->setupUi(this);
 
@@ -65,21 +66,32 @@ void QGCMapTool::activeUASSet(UASInterface *uas)
     }
 
     if (m_uas){
-        disconnect(&m_timer, SIGNAL(timeout()), this, SLOT(updateOverlay()));
+        disconnect(m_uas, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)),
+                this, SLOT(globalPositionUpdate(UASInterface*,double,double,double,quint64)));
+        disconnect(m_uas, SIGNAL(gpsRawChanged(UASInterface*,double,double,double,double,int,quint64)),
+                this, SLOT(gpsRawUpate()));
     }
     m_uas = uas;
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(updateOverlay()));
-    m_timer.start();
+
+    connect(m_uas, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)),
+            this, SLOT(globalPositionUpdate()));
+    connect(m_uas, SIGNAL(gpsRawChanged(UASInterface*,double,double,double,double,int,quint64)),
+            this, SLOT(gpsRawUpdate()));
 }
 
-void QGCMapTool::updateOverlay()
+void QGCMapTool::globalPositionUpdate()
 {
-    UAS* uas = dynamic_cast<UAS*>(m_uas);
     ui->latitudeLabel->setText(tr("LAT: %1").arg(m_uas->getLatitude()));
     ui->longitudeLabel->setText(tr("LON: %1").arg(m_uas->getLongitude()));
+}
+
+void QGCMapTool::gpsRawUpdate()
+{
+    UAS* uas = dynamic_cast<UAS*>(m_uas);
     ui->satsLabel->setText(tr("SATS: %1").arg(uas->getSatelliteCount()));
 
     double hdop = uas->getGpsHdop();
     QString stringHdop = QString::number(hdop,'g',2);
     ui->hdopLabel->setText(tr("HDOP: %1").arg(stringHdop));
 }
+
