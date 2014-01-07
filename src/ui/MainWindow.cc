@@ -721,7 +721,7 @@ void MainWindow::buildCommonWidgets()
     }
 #endif
 
-#if (defined _MSC_VER) /*| (defined Q_OS_MAC_OFF)*/
+#if defined(GOOGLE_EARTH_VIEW)/*(defined _MSC_VER) | (defined Q_OS_MAC)*/
     if (!earthWidget)
     {
         earthWidget = new QGCGoogleEarthView(this);
