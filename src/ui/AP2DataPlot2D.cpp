@@ -12,6 +12,7 @@
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
     m_uas = 0;
+    m_startIndex = 0;
     m_axisGroupingDialog = 0;
     m_logLoaderThread= 0;
     m_logLoaded = false;
@@ -36,6 +37,11 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     m_wideAxisRect->setupFullAxesBox(true);
     m_wideAxisRect->axis(QCPAxis::atRight, 0)->setTickLabels(false);
     m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft,0));
+
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(18000,18100); //Default range of 0-100 milliseconds?
+
 
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect);
 
@@ -181,9 +187,18 @@ void AP2DataPlot2D::autoScrollClicked(bool checked)
     {
         if (m_graphCount > 0)
         {
+            double msec_current = ((QDateTime::currentMSecsSinceEpoch()- m_startIndex) + 18000000) / 1000.0;
+
+            ////m_currentIndex = msec_current;
+            //qint64 newmsec = (msec_current - m_startIndex) + 18000000;
+            //    qint64 diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
+            //    m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower + diff);
+            //    m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper((newmsec / 1000.0));
+
+
             double difference = m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower;
-            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_currentIndex - difference);
-            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(m_currentIndex);
+            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(msec_current - difference);
+            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(msec_current);
             m_plot->replot();
         }
     }
@@ -208,6 +223,8 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
     }
+    m_currentIndex = QDateTime::currentMSecsSinceEpoch();
+    m_startIndex = m_currentIndex;
     m_uas = uas;
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
@@ -251,8 +268,8 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     {
         //Also doesn't exist on the data select screen
         m_dataSelectionScreen->addItem(propername);
-        m_nameToAxisIndex[propername] = m_currentIndex;
-    }
+        m_nameToAxisIndex[propername] = msec;
+    }/*
     else
     {
         if (m_nameToAxisIndex[propername] == m_currentIndex)
@@ -264,11 +281,37 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
                 m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(m_currentIndex);
             }
         }
+    }*/
+    qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
+    m_currentIndex = msec_current;
+    qint64 newmsec = (msec_current - m_startIndex) + 18000000;
+    if (m_graphCount > 0 && ui.autoScrollCheckBox->isChecked())
+    {
+        double diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
+        m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower + diff);
+        m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper((newmsec / 1000.0));
     }
-    m_nameToAxisIndex[propername] = m_currentIndex;
+    //qDebug() << "Time:" << QDateTime::fromMSecsSinceEpoch(msec).toString();
+    //qDebug() << "Time:" << QDateTime::fromMSecsSinceEpoch(m_startIndex).toString();
+    //qDebug() << "Time:" << msec_current;//(int)(newmsec / 1000.0);
+    m_nameToAxisIndex[propername] = newmsec / 1000.0;// + 18000000;
     if (m_graphMap.contains(propername))
     {
         m_graphMap[propername]->addData(m_nameToAxisIndex[propername],value);
+        //Set a timeout for 30 minutes from now, 1800 seconds.
+        qint64 current = QDateTime::currentMSecsSinceEpoch();
+        //This is 30 minutes
+        m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 1800000,msec));
+        //This is 1 minute
+        //m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 60000,m_currentIndex));
+        if (m_onlineValueTimeoutList[0].first <= current)
+        {
+            for (QMap<QString,QCPGraph*>::const_iterator i=m_graphMap.constBegin();i!=m_graphMap.constEnd();i++)
+            {
+                i.value()->removeData(0,m_onlineValueTimeoutList[0].second);
+            }
+            m_onlineValueTimeoutList.removeAt(0);
+        }
         if (m_graphToGroupMap.contains(propername))
         {
             //It's in a group
@@ -289,7 +332,6 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
                     //m_axisList[
                    m_axisList[m_graphGrouping[m_graphToGroupMap[propername]][i]]->setRange(m_graphGroupRanges[m_graphToGroupMap[propername]]);
                 }
-
             }
         }
         else if (!m_graphMap[propername]->keyAxis()->range().contains(value))
@@ -380,11 +422,20 @@ void AP2DataPlot2D::loadButtonClicked()
         ui.hideExcelView->setVisible(false);
         //<html><head/><body><p align="center">asdf</p></body></html>
         ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(18000,18100); //Default range of 0-100 milliseconds?
+        m_currentIndex = QDateTime::currentMSecsSinceEpoch();
+        m_startIndex = m_currentIndex;
         return;
     }
     else
     {
         ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded</span></p>");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
+        //m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+        //m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(18000,18100); //Default range of 0-100 milliseconds?
     }
     ui.tableWidget->setVisible(true);
     ui.hideExcelView->setVisible(true);
