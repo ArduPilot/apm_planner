@@ -399,6 +399,7 @@ void AdvParameterList::downloadRemoteFiles()
     QLOG_DEBUG() << "DownloadRemoteFiles";
 
     DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog();
+    dialog->hideLoadFromFileButton();
 
     if(dialog->exec() == QDialog::Accepted) {
         // Pull the selected file and

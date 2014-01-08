@@ -2,6 +2,9 @@
 #include "configuration.h"
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QFile>
+#include <QFileDialog>
+#include <QTimer>
 #include "DownloadRemoteParamsDialog.h"
 #include "ui_DownloadRemoteParamsDialog.h"
 
@@ -13,7 +16,8 @@ DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent) :
     ui->setupUi(this);
 
     connect(this, SIGNAL(canceled()), this, SLOT(cancelDownload()));
-    connect(ui->okButton, SIGNAL(clicked()), this, SLOT(okButtonClicked()));
+    connect(ui->downloadButton, SIGNAL(clicked()), this, SLOT(downloadButtonClicked()));
+    connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(loadFileButtonClicked()));
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(closeButtonClicked()));
     connect(ui->refreshButton, SIGNAL(clicked()), this, SLOT(refreshParamList()));
 
@@ -38,17 +42,37 @@ void DownloadRemoteParamsDialog::setStatusText(QString text)
     ui->statusLabel->setText(message);
 }
 
-void DownloadRemoteParamsDialog::okButtonClicked()
+void DownloadRemoteParamsDialog::downloadButtonClicked()
 {
-    QLOG_DEBUG() << "okButtonClicked";
+    QLOG_DEBUG() << "loadButtonClicked";
 
     m_url = m_paramUrls.at(ui->listWidget->currentRow());
 
     setStatusText(tr("Downloading %1").arg(m_url.toString()));
 
-    downloadParamFile();
+    if (downloadParamFile()) {
+        startFileDownloadRequest(m_url);
+    } else {
+        setStatusText(tr("Cancelled"));
+    }
+}
 
-    startFileDownloadRequest(m_url);
+void DownloadRemoteParamsDialog::loadFileButtonClicked()
+{
+    QLOG_DEBUG() << "loadButtonClicked";
+
+    QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory());
+    QFile file(filename);
+
+    if((filename.length() == 0)||!file.exists())
+    {
+        m_downloadedFileName = "";
+        ui->statusLabel->setText(tr("File Not Found!"));
+        return;
+    }
+    ui->statusLabel->setText(tr("Sucess"));
+    m_downloadedFileName = filename;
+    QTimer::singleShot(300, this, SLOT(accept()));
 }
 
 void DownloadRemoteParamsDialog::closeButtonClicked()
@@ -132,10 +156,8 @@ QString DownloadRemoteParamsDialog::getDownloadedFileName()
     return m_downloadedFileName;
 }
 
-void DownloadRemoteParamsDialog::downloadParamFile()
+bool DownloadRemoteParamsDialog::downloadParamFile()
 {
-    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-
     QDir parameterDir = QDir(QGC::parameterDirectory());
 
     if (!parameterDir.exists())
@@ -145,15 +167,17 @@ void DownloadRemoteParamsDialog::downloadParamFile()
                           ui->listWidget->currentItem()->text()));
 
     if (fileName.isEmpty())
-        return;
+        return false;
 
     if (QFile::exists(fileName)) {
-        if (QMessageBox::question(this, tr("HTTP"),
-              tr("There already exists a file called %1 in "
-                 "the current directory. Overwrite?").arg(fileName),
-              QMessageBox::Yes|QMessageBox::No, QMessageBox::No)
-                == QMessageBox::No)
-            return;
+        int result = QMessageBox::question(this, tr("HTTP"),
+                      tr("There already exists a file called %1 in "
+                         "the current directory. Overwrite?").arg(fileName),
+                      QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
+
+        if (result == QMessageBox::No){
+            return false;
+        }
         QFile::remove(fileName);
     }
     m_downloadedFileName = fileName;
@@ -165,7 +189,15 @@ void DownloadRemoteParamsDialog::downloadParamFile()
                                  .arg(fileName).arg(m_downloadedParamFile->errorString()));
         delete m_downloadedParamFile;
         m_downloadedParamFile = NULL;
-        return;
+        return false;
+    }
+    return true;
+}
+
+void DownloadRemoteParamsDialog::hideLoadFromFileButton()
+{
+    if (ui){
+        ui->loadButton->hide();
     }
 }
 
