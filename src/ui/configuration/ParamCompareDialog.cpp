@@ -52,7 +52,6 @@ void ParamCompareDialog::loadParameterFile()
 {
     ui->compareTableWidget->setRowCount(0);
 
-    QString homeDir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
     QDir parameterDir = QDir(QGC::parameterDirectory());
 
     if(!parameterDir.exists())
@@ -65,6 +64,11 @@ void ParamCompareDialog::loadParameterFile()
         return;
     }
 
+    loadParameterFile(filename);
+}
+
+void ParamCompareDialog::loadParameterFile(const QString &filename)
+{
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
@@ -75,7 +79,7 @@ void ParamCompareDialog::loadParameterFile()
     QString filestring = file.readAll();
     file.close();
 
-    populateParamListFromString(filestring, m_newList);
+    populateParamListFromString(filestring, m_newList, this);
 
     compareLists();
 }
@@ -85,12 +89,17 @@ void ParamCompareDialog::setCurrentList(QMap<QString, UASParameter *> &aParamate
     m_currentList = &aParamaterList;
 }
 
-void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<QString, UASParameter*>* list)
+void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<QString, UASParameter*>* list,
+                                                     QWidget* widget = NULL)
 {
     QStringList paramSplit = paramString.split("\n");
+    bool summaryComplete = false;
+    bool summaryShown = false;
+    QString summaryText;
 
     foreach (QString paramLine, paramSplit) {
         if (!paramLine.startsWith("#")) {
+            summaryComplete = true;
             QStringList lineSplit = paramLine.split(",");
             if (lineSplit.size() == 2)
             {
@@ -112,6 +121,15 @@ void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<Q
             }
         } else {
             QLOG_DEBUG() << "Comment: " << paramLine;
+            if (!summaryShown && !summaryComplete){
+                // removes the '#' and any whites space before or after
+                summaryText.append(paramLine.remove(0,1).trimmed() + "\n");
+            }
+        }
+        if (!summaryShown && summaryComplete){
+            QLOG_DEBUG() << "Show Summary: " << summaryText;
+            QMessageBox::information(widget,tr("Param File Summary"),summaryText,QMessageBox::Ok);
+            summaryShown = true;
         }
     }
 }

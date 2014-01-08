@@ -167,9 +167,10 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
 
     connect(ui.paramButton,SIGNAL(clicked()),this,SLOT(paramButtonClicked()));
 }
+
 void ApmHardwareConfig::paramButtonClicked()
 {
-    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog();
+    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog(this->parentWidget());
 
     if(dialog->exec() == QDialog::Accepted) {
         // Pull the selected file and
@@ -177,9 +178,25 @@ void ApmHardwareConfig::paramButtonClicked()
         QLOG_DEBUG() << "Remote File Downloaded";
         QLOG_DEBUG() << "TODO: Trigger auto load or compare of the downloaded file";
         QString filename = dialog->getDownloadedFileName();
-        if (m_uas->getParamManager()->loadParamsFromFile(filename,QGCUASParamManager::CommaSeperatedValues))
+        QString summaryInfo = m_uas->getParamManager()->summaryInfoFromFile(filename);
+
+        if (summaryInfo.length() > 0){
+            summaryInfo = "Summary:\n" + summaryInfo;
+        } else {
+            summaryInfo = "Parameter file downloaded\n";
+        }
+            summaryInfo = summaryInfo + "\n Apply Changes";
+
+        int result = QMessageBox::question(this->parentWidget(),"Frame Parameters",summaryInfo,
+                                              QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
+
+        if(result == QMessageBox::Yes)
         {
-            QMessageBox::information(0,"Success","Params have been written to the MAV");
+            // Apply Changes to Vehicle on Yes only
+            if (!m_uas->getParamManager()->loadParamsFromFile(filename,QGCUASParamManager::CommaSeperatedValues))
+            {
+                QMessageBox::critical(this->parentWidget(),"Failure","An error occured during write please try again.");
+            }
         }
     }
     delete dialog;
