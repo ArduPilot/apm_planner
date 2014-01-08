@@ -153,17 +153,13 @@ WindowsCrossBuild {
     # Windows version cross compiled on linux using
     DEFINES += __STDC_LIMIT_MACROS
 
-    # Specify multi-process compilation within Visual Studio.
-    # (drastically improves compilation times for multi-core computers)
-    QMAKE_CXXFLAGS_DEBUG += -MP
-    QMAKE_CXXFLAGS_RELEASE += -MP
-
     # QWebkit is not needed on MS-Windows compilation environment
     CONFIG -= webkit
 
     RC_FILE = $$BASEDIR/qgroundcontrol.rc
 
-    LIBS += -lz.dll
+    INCLUDEPATH += libs/lib/sdl/include
+    LIBS += -lz.dll -Llibs/lib/sdl/win32 -LSDL.dll
     CONFIG += exceptions rtti
 
     DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
