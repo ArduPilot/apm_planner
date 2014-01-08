@@ -365,6 +365,9 @@ WindowsBuild | LinuxBuild {
     LinuxBuild {
         LIBS += -lxbee
     }
+} else:WindowsCrossBuild {
+    #LIBS += -llibs/thirdParty/libxbee/lib/libxbee
+    message(Skipping support for XBee)
 } else {
     message(Skipping support for XBee)
 }
@@ -378,7 +381,7 @@ LinuxBuild : exists(/usr/local/lib/libxdrvlib.so) {
 
     DEFINES +=
         MOUSE_ENABLED_LINUX \
-        ParameterCheck# Hack: Has to be defined for magellan usage
+        ParameterCheck # Hack: Has to be defined for magellan usage
 
     INCLUDEPATH *= /usr/local/include
     HEADERS += src/input/Mouse6dofInput.h
@@ -470,6 +473,15 @@ WindowsBuild {
         -L$$BASEDIR/libs/lib/sdl/msvc/lib \
         -lSDLmain \
         -lSDL
+}
+
+WindowsCrossBuild {
+        INCLUDEPATH += \
+        $$BASEDIR/libs/lib/sdl/include \
+
+        LIBS += \
+        -Llibs/lib/sdl/win32 \
+        -lSDL.dll
 }
 
 #
