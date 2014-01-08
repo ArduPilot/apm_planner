@@ -38,7 +38,7 @@ linux-g++ | linux-g++-64 {
 }  else : win32-x-g++|win64-x-g++ {
     message(Windows Cross Build)
     CONFIG += WindowsCrossBuild
-} else : macx-clang {
+} else : macx-clang | macx-g++ {
     message(Mac build)
     CONFIG += MacBuild
 } else {

@@ -215,7 +215,7 @@ OSGDependency {
 # Google Earth
 #
 
-MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) {
+MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
     message(Including support for Google Earth)
 
     HEADERS += src/ui/map3D/QGCGoogleEarthView.h
