@@ -159,7 +159,7 @@ WindowsCrossBuild {
     RC_FILE = $$BASEDIR/qgroundcontrol.rc
 
     INCLUDEPATH += libs/lib/sdl/include
-    LIBS += -lz.dll -Llibs/lib/sdl/win32 -LSDL.dll
+    LIBS += -lz.dll -Llibs/lib/sdl/win32 -lSDL.dll
     CONFIG += exceptions rtti
 
     DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
