@@ -116,7 +116,7 @@ protected:
     QGCMissionOther* MissionOtherWidget;
 
 private:
-    void disableMouseScrollWheel(QWidget &parentWidget);
+    void disableMouseScrollWheel(const QWidget *parentWidget);
 
 private:
     Ui::WaypointEditableView *m_ui;

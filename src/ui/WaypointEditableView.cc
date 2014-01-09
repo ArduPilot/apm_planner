@@ -234,9 +234,9 @@ void WaypointEditableView::changedAction(int index)
     updateActionView(actionID);
 }
 
-void WaypointEditableView::disableMouseScrollWheel(QWidget& parentWidget)
+void WaypointEditableView::disableMouseScrollWheel(const QWidget *parentWidget)
 {
-    QList<QWidget*> widgetList = parentWidget.findChildren<QWidget*>();
+    QList<QWidget*> widgetList = parentWidget->findChildren<QWidget*>();
 
     foreach (QWidget *widget, widgetList)
     {
@@ -350,7 +350,7 @@ void WaypointEditableView::initializeActionView(int actionID)
 
     // Make sure the mouse or trackpad scrolling doesn't
     // change a value when you hover over it
-    disableMouseScrollWheel(*m_ui->customActionWidget);
+    disableMouseScrollWheel(this);
 }
 
 void WaypointEditableView::deleted(QObject* waypoint)
