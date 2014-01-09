@@ -162,6 +162,16 @@ void ApmFirmwareConfig::populateSerialPorts()
     {
         setLink(ui.linkComboBox->currentIndex());
     }
+    if (ui.linkComboBox->count() == 0)
+    {
+        //no ports found
+        ui.linkComboBox->setEnabled(false);
+        ui.comPortNameLabel->setText("No valid device found. \nCheck to be sure your APM2.5+ \n or Pixhawk/PX4 device is plugged in, and \ndrivers are installed.");
+    }
+    else
+    {
+        ui.linkComboBox->setEnabled(true);
+    }
 }
 
 void ApmFirmwareConfig::showEvent(QShowEvent *)

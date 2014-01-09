@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>515</width>
-    <height>379</height>
+    <width>683</width>
+    <height>405</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -116,6 +116,35 @@ This Dialog is used for grouping multiple graphs with a single value range (the 
          <string>Manual</string>
         </property>
        </widget>
+       <widget class="QWidget" name="horizontalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>200</y>
+          <width>161</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Scale Graph:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="graphScaleDoubleSpinBox">
+           <property name="decimals">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <double>100000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
      <item>
@@ -210,7 +239,7 @@ This Dialog is used for grouping multiple graphs with a single value range (the 
      <item>
       <widget class="QPushButton" name="cancelPushButton">
        <property name="text">
-        <string>Cancel</string>
+        <string>Done</string>
        </property>
       </widget>
      </item>

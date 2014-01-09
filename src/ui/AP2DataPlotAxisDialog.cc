@@ -20,14 +20,21 @@ AP2DataPlotAxisDialog::AP2DataPlotAxisDialog(QWidget *parent) :
     ui->minMaxGroupBox->setVisible(false);
     ui->manualRadioButton->setVisible(false);
 
-    ui->graphTableWidget->setColumnCount(2);
-    ui->graphTableWidget->setColumnWidth(0,100);
+    ui->graphTableWidget->setColumnCount(3);
+    ui->graphTableWidget->setColumnWidth(0,25);
     ui->graphTableWidget->setColumnWidth(1,100);
-    ui->graphTableWidget->setHorizontalHeaderLabels(QStringList() << "Graph Name" << "Graph Group");
+    ui->graphTableWidget->setColumnWidth(2,100);
+    ui->graphTableWidget->setHorizontalHeaderLabels(QStringList() << "Graph Name" << "Graph Group" << "C");
     ui->graphTableWidget->verticalHeader()->hide();
 
     connect(ui->applyPushButton,SIGNAL(clicked()),this,SLOT(applyButtonClicked()));
     connect(ui->cancelPushButton,SIGNAL(clicked()),this,SLOT(cancelButtonClicked()));
+
+
+    ui->label_4->setVisible(false);
+    ui->graphScaleDoubleSpinBox->setVisible(false);
+
+    ui->graphTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 void AP2DataPlotAxisDialog::autoButtonClicked(bool checked)
 {
@@ -35,9 +42,9 @@ void AP2DataPlotAxisDialog::autoButtonClicked(bool checked)
     {
         return;
     }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("NONE");
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("NONE");
     m_graphToGroupNameMap[graphname] = "NONE";
 //    emit graphRemovedFromGroup(graphname);
 }
@@ -47,9 +54,9 @@ void AP2DataPlotAxisDialog::manualButtonClicked(bool checked)
     {
         return;
     }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPA");
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPA");
     if (m_graphToGroupNameMap[graphname] == "MANUAL")
     {
         return;
@@ -70,9 +77,9 @@ void AP2DataPlotAxisDialog::groupAButtonClicked(bool checked)
     {
         return;
     }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPA");
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPA");
     if (m_graphToGroupNameMap[graphname] == "GROUPA")
     {
         return;
@@ -86,9 +93,9 @@ void AP2DataPlotAxisDialog::groupBButtonClicked(bool checked)
     {
         return;
     }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPB");
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPB");
     if (m_graphToGroupNameMap[graphname] == "GROUPB")
     {
         return;
@@ -102,9 +109,9 @@ void AP2DataPlotAxisDialog::groupCButtonClicked(bool checked)
     {
         return;
     }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPC");
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPC");
     if (m_graphToGroupNameMap[graphname] == "GROUPC")
     {
         return;
@@ -118,9 +125,9 @@ void AP2DataPlotAxisDialog::groupDButtonClicked(bool checked)
     {
         return;
     }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),0)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->setText("GROUPD");
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPD");
     if (m_graphToGroupNameMap[graphname] == "GROUPD")
     {
         return;
@@ -137,14 +144,14 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
         }
         else
         {
-            emit graphAddedToGroup(i.key(),i.value());
+            emit graphAddedToGroup(i.key(),i.value(),m_graphScaleMap.value(i.key()));
         }
     }
 }
 
 void AP2DataPlotAxisDialog::cancelButtonClicked()
 {
-
+    this->hide();
 }
 
 AP2DataPlotAxisDialog::~AP2DataPlotAxisDialog()
@@ -157,8 +164,8 @@ void AP2DataPlotAxisDialog::graphTableCurrentItemChanged(QTableWidgetItem *curre
     {
         return;
     }
-    QString graphname = ui->graphTableWidget->item(current->row(),0)->text();
-    QString groupname = ui->graphTableWidget->item(current->row(),1)->text();
+    QString graphname = ui->graphTableWidget->item(current->row(),1)->text();
+    QString groupname = ui->graphTableWidget->item(current->row(),2)->text();
     if (m_graphToGroupNameMap.contains(graphname))
     {
         if (m_graphToGroupNameMap[graphname] == "GROUPA")
@@ -190,11 +197,14 @@ void AP2DataPlotAxisDialog::graphTableCurrentItemChanged(QTableWidgetItem *curre
         {
             ui->minMaxGroupBox->setEnabled(true);
         }
-
     }
     else
     {
         ui->autoRadioButton->setChecked(true);
+    }
+    if (m_graphScaleMap.contains(graphname))
+    {
+        ui->graphScaleDoubleSpinBox->setValue(m_graphScaleMap.value(graphname));
     }
 
 }
@@ -203,14 +213,23 @@ void AP2DataPlotAxisDialog::addAxis(QString name,double lower, double upper,QCol
 {
     m_rangeMap[name] = QPair<double,double>(lower,upper);
     ui->graphTableWidget->setRowCount(ui->graphTableWidget->rowCount()+1);
-    ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,0,new QTableWidgetItem(name));
-    ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,1,new QTableWidgetItem(""));
+    QTableWidgetItem *nameitem = new QTableWidgetItem(name);
+    nameitem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    QTableWidgetItem *groupitem = new QTableWidgetItem("");
+    groupitem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    QTableWidgetItem *coloritem = new QTableWidgetItem("");
+    coloritem->setFlags(Qt::ItemIsEnabled);
+    ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,0,coloritem);
+    ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,1,nameitem);
+    ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,2,groupitem);
+    m_graphScaleMap[name] = 1.0;
+
     ui->graphTableWidget->item(ui->graphTableWidget->rowCount()-1,0)->setBackgroundColor(color);
-    ui->graphTableWidget->item(ui->graphTableWidget->rowCount()-1,1)->setBackgroundColor(color);
 }
 void AP2DataPlotAxisDialog::removeAxis(QString name)
 {
     m_rangeMap.remove(name);
+    m_graphScaleMap.remove(name);
     QList<QTableWidgetItem*> items = ui->graphTableWidget->findItems(name,Qt::MatchExactly);
     if (items.size() > 0)
     {

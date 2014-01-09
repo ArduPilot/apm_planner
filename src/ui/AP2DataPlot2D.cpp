@@ -19,6 +19,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     m_progressDialog=0;
     m_currentIndex=0;
     m_graphCount=0;
+    m_showOnlyActive = false;
 
     ui.setupUi(this);
 
@@ -78,8 +79,14 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     QTimer *timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
     timer->start(500);
+
+    connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
 }
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
+{
+    graphControlsButtonClicked();
+}
+void AP2DataPlot2D::graphControlsButtonClicked()
 {
     if (m_axisGroupingDialog)
     {
@@ -87,7 +94,7 @@ void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,Q
         return;
     }
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
-    connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString)),this,SLOT(graphAddedToGroup(QString,QString)));
+    connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString,double)),this,SLOT(graphAddedToGroup(QString,QString,double)));
     connect(m_axisGroupingDialog,SIGNAL(graphRemovedFromGroup(QString)),this,SLOT(graphRemovedFromGroup(QString)));
     for(QMap<QString,QCPAxis*>::const_iterator i=m_axisList.constBegin();i!=m_axisList.constEnd();i++)
     {
@@ -141,6 +148,39 @@ void AP2DataPlot2D::removeGraphLeft()
         m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
     }
 }
+void AP2DataPlot2D::showOnlyClicked()
+{
+    if (ui.tableWidget->selectedItems().size() == 0)
+    {
+        return;
+    }
+    QString name = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
+    for (int i=0;i<ui.tableWidget->rowCount();i++)
+    {
+        if (ui.tableWidget->item(i,0))
+        {
+            if (ui.tableWidget->item(i,0)->text() != name)
+            {
+                ui.tableWidget->hideRow(i);
+            }
+        }
+        else
+        {
+            ui.tableWidget->hideRow(i);
+        }
+    }
+    m_showOnlyActive = true;
+
+
+}
+void AP2DataPlot2D::showAllClicked()
+{
+    for (int i=0;i<ui.tableWidget->rowCount();i++)
+    {
+        ui.tableWidget->showRow(i);
+    }
+    m_showOnlyActive = false;
+}
 
 void AP2DataPlot2D::tableCellClicked(int row,int column)
 {
@@ -152,13 +192,17 @@ void AP2DataPlot2D::tableCellClicked(int row,int column)
             QStringList split = formatstr.split(",");
             for (int i=0;i<split.size();i++)
             {
-                ui.tableWidget->setHorizontalHeaderItem(i+1,new QTableWidgetItem(split[i]));
+                QTableWidgetItem *item = new QTableWidgetItem(split[i]);
+                item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+                ui.tableWidget->setHorizontalHeaderItem(i+1,item);
             }
             for (int i=split.size();i<ui.tableWidget->columnCount()-1;i++)
             {
-                ui.tableWidget->setHorizontalHeaderItem(i+1,new QTableWidgetItem(""));
+                QTableWidgetItem *item = new QTableWidgetItem();
+                item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+                ui.tableWidget->setHorizontalHeaderItem(i+1,item);
             }
-            if (ui.tableWidget->horizontalHeaderItem(column))
+            if (ui.tableWidget->horizontalHeaderItem(column) && column != 0)
             {
                 if (m_axisList.contains(ui.tableWidget->item(row,0)->text() + "." + ui.tableWidget->horizontalHeaderItem(column)->text()))
                 {
@@ -166,6 +210,8 @@ void AP2DataPlot2D::tableCellClicked(int row,int column)
                     m_addGraphAction->setText("Remove From Graph");
                     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
                     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
                     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft()));
                 }
                 else
@@ -173,8 +219,33 @@ void AP2DataPlot2D::tableCellClicked(int row,int column)
                     m_addGraphAction->setText("Add To Graph");
                     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
                     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
                     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
                 }
+            }
+            else
+            {
+                //This is column 0
+                if (m_showOnlyActive)
+                {
+                    m_addGraphAction->setText("Show All");
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+                }
+                else
+                {
+                    m_addGraphAction->setText("Show only these rows");
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                }
+
             }
         }
     }
@@ -616,7 +687,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
 
     }
 }
-void AP2DataPlot2D::graphAddedToGroup(QString name,QString group)
+void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
 {
     if (!m_graphGrouping.contains(group))
     {
@@ -652,6 +723,7 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group)
     {
         m_axisList[m_graphGrouping[group][i]]->setRange(m_graphGroupRanges[group]);
     }
+    //m_axisList[m_graphGrouping[group][i]]->scaleRange(scale,m_axisList[m_graphGrouping[group][i]]->range().center);
     m_plot->replot();
 }
 
