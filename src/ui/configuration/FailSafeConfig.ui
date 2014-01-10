@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>20</y>
+     <y>10</y>
      <width>141</width>
      <height>31</height>
     </rect>
@@ -455,6 +455,32 @@
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>40</y>
+     <width>62</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Radio IN</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>40</y>
+     <width>110</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Servo/Motor OUT</string>
+   </property>
   </widget>
  </widget>
  <customwidgets>
