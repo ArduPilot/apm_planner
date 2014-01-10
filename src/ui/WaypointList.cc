@@ -279,7 +279,7 @@ void WaypointList::addEditable(bool onCurrentPosition)
     }
     else
     {
-        // [TODO] for APM should trigger a read if no WPe exist.
+        // [TODO] for APM should trigger a read if no WP0 exists.
         if (uas)
         {
             // Create first waypoint at current MAV position
