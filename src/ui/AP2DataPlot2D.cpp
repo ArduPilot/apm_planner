@@ -259,18 +259,9 @@ void AP2DataPlot2D::autoScrollClicked(bool checked)
         if (m_graphCount > 0)
         {
             double msec_current = ((QDateTime::currentMSecsSinceEpoch()- m_startIndex) + 18000000) / 1000.0;
-
-            ////m_currentIndex = msec_current;
-            //qint64 newmsec = (msec_current - m_startIndex) + 18000000;
-            //    qint64 diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
-            //    m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower + diff);
-            //    m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper((newmsec / 1000.0));
-
-
             double difference = m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower;
             m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(msec_current - difference);
             m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(msec_current);
-            m_plot->replot();
         }
     }
 }
@@ -623,7 +614,6 @@ void AP2DataPlot2D::itemEnabled(QString name)
                         m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
                     }
                     mainGraph1->setPen(QPen(color, 2));
-                    m_plot->replot();
                     return;
                 }
             }
@@ -681,10 +671,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
 
            // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
             mainGraph1->setPen(QPen(color, 2));
-            m_plot->replot();
-
         }
-
     }
 }
 void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
