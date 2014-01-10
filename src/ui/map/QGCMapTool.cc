@@ -90,6 +90,8 @@ void QGCMapTool::gpsRawUpdate()
     UAS* uas = dynamic_cast<UAS*>(m_uas);
     ui->satsLabel->setText(tr("SATS: %1").arg(uas->getSatelliteCount()));
 
+    ui->fixLabel->setText(tr("FIX: %1").arg(uas->getGpsFixString()));
+
     double hdop = uas->getGpsHdop();
     QString stringHdop = QString::number(hdop,'g',2);
     ui->hdopLabel->setText(tr("HDOP: %1").arg(stringHdop));

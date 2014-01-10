@@ -50,9 +50,9 @@
      <widget class="QLabel" name="longitudeLabel">
       <property name="geometry">
        <rect>
-        <x>230</x>
+        <x>210</x>
         <y>10</y>
-        <width>131</width>
+        <width>111</width>
         <height>21</height>
        </rect>
       </property>
@@ -73,7 +73,7 @@
        <rect>
         <x>90</x>
         <y>10</y>
-        <width>131</width>
+        <width>111</width>
         <height>21</height>
        </rect>
       </property>
@@ -92,9 +92,9 @@
      <widget class="QLabel" name="satsLabel">
       <property name="geometry">
        <rect>
-        <x>370</x>
+        <x>390</x>
         <y>10</y>
-        <width>81</width>
+        <width>61</width>
         <height>21</height>
        </rect>
       </property>
@@ -115,7 +115,7 @@
        <rect>
         <x>460</x>
         <y>10</y>
-        <width>81</width>
+        <width>71</width>
         <height>21</height>
        </rect>
       </property>
@@ -129,6 +129,27 @@
       </property>
       <property name="text">
        <string>HDOP:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="fixLabel">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>10</y>
+        <width>51</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>17</pointsize>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="text">
+       <string>FIX:</string>
       </property>
      </widget>
     </widget>

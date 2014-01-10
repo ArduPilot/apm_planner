@@ -788,6 +788,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit localizationChanged(this, loc_type);
             setSatelliteCount(pos.satellites_visible);
             setGpsHdop(pos.eph/100.0f);
+            setGpsFix(pos.fix_type);
 
             // emit raw GPS message
             latitude_gps = pos.lat/(double)1E7;
