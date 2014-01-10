@@ -394,7 +394,6 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
     updateSelectedSystem(uas->getUASID());
     followUAVID = uas->getUASID();
     updateWaypointList(uas->getUASID());
-    SetZoom(15); // zoom map to newly aquired activeUAS
 
     // Connect the waypoint manager / data storage to the UI
     connect(currWPManager, SIGNAL(waypointEditableListChanged(int)), this, SLOT(updateWaypointList(int)));
