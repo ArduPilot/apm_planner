@@ -887,6 +887,10 @@ signals:
     /** @brief HIL actuator outputs have changed */
     void hilActuatorsChanged(uint64_t time, float act1, float act2, float act3, float act4, float act5, float act6, float act7, float act8);
 
+    /** @brief Raw servo output values */
+    void servoRawOutputChanged(uint64_t time, float act1, float act2, float act3, float act4, float act5, float act6, float act7, float act8);
+
+
     void localXChanged(double val,QString name);
     void localYChanged(double val,QString name);
     void localZChanged(double val,QString name);
