@@ -339,7 +339,7 @@ include (libs/thirdParty/quazip/quazip.pri)
 # XBee wireless
 #
 
-WindowsBuild | LinuxBuild {
+WindowsBuild {
     message(Including support for XBee)
 
     DEFINES += XBEELINK
