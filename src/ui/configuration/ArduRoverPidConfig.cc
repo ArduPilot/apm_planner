@@ -43,18 +43,13 @@ ArduRoverPidConfig::ArduRoverPidConfig(QWidget *parent) : AP2ConfigWidget(parent
     nameToBoxMap["STEER2SRV_D"] = ui.steer2ServoDSpinBox;
     nameToBoxMap["STEER2SRV_IMAX"] = ui.steer2ServoIMAXSpinBox;
 
-    nameToBoxMap["XTRK_ANGLE_CD"] = ui.xtrackEntryAngleSpinBox;
-    nameToBoxMap["XTRK_GAIN_SC"] = ui.xtrackGainSpinBox;
+    nameToBoxMap["NAVL1_PERIOD"] = ui.L1PeriodSpinBox;
+    nameToBoxMap["NAVL1_DAMPING"] = ui.L1DampeningSpinBox;
 
     nameToBoxMap["CRUISE_THROTTLE"] = ui.throttleCruiseSpinBox;
     nameToBoxMap["THR_MIN"] = ui.throttleMinSpinBox;
     nameToBoxMap["THR_MAX"] = ui.throttleMaxSpinBox;
     nameToBoxMap["FS_THR_VALUE"] = ui.throttleFSSpinBox;
-
-    nameToBoxMap["HDNG2STEER_P"] = ui.heading2SteerPSpinBox;
-    nameToBoxMap["HDNG2STEER_I"] = ui.heading2SteerISpinBox;
-    nameToBoxMap["HDNG2STEER_D"] = ui.heading2SteerDSpinBox;
-    nameToBoxMap["HDNG2STEER_IMAX"] = ui.heading2SteerIMAXSpinBox;
 
     nameToBoxMap["SPEED2THR_P"] = ui.speed2ThrottlePSpinBox;
     nameToBoxMap["SPEED2THR_I"] = ui.speed2ThrottleISpinBox;
