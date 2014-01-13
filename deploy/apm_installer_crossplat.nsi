@@ -49,9 +49,9 @@ SectionEnd
 
 Section "JIT Debugger"
   SetOutPath $INSTDIR
-  File "drmingw.exe"
-  File "exchndl.dll"
-  File "mgwhelp.dll"
+  File "../drmingw.exe"
+  File "../exchndl.dll"
+  File "../mgwhelp.dll"
   nsExec::Exec "$INSTDIR\drmingw.exe -i -a"
 SectionEnd 
 
