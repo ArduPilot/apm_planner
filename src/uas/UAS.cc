@@ -1414,9 +1414,10 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             if (!unknownPackets.contains(message.msgid))
             {
                 unknownPackets.append(message.msgid);
+#ifdef QT_DEBUG // Remove these messages from the release build
                 QString errString = tr("UNABLE TO DECODE MESSAGE NUMBER %1").arg(message.msgid);
-                //GAudioOutput::instance()->say(errString+tr(", please check console for details."));
                 emit textMessageReceived(uasId, message.compid, 255, errString);
+#endif
                 QLOG_INFO() << "Unable to decode message from system " << message.sysid
                             << " with message id:" << message.msgid;
             }
