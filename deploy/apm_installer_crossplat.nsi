@@ -47,6 +47,14 @@ Section "APM Planner 2 files"
   WriteUninstaller $INSTDIR\APMPlanner2_uninstall.exe
 SectionEnd 
 
+Section "JIT Debugger"
+  SetOutPath $INSTDIR
+  File "drmingw.exe"
+  File "exchndl.dll"
+  File "mgwhelp.dll"
+  nsExec::Exec "$INSTDIR\drmingw.exe -i -a"
+SectionEnd 
+
 Section "Qt components"
   !include qt_install.list
   SetOutPath $INSTDIR
@@ -94,6 +102,10 @@ Section "Uninstall"
   Delete $INSTDIR\QtXml4.dll
   Delete $INSTDIR\QtXmlPatterns4.dll
   Delete $INSTDIR\zlib1.dll
+  nsExec::Exec "$INSTDIR\drmingw.exe -u"
+  Delete $INSTDIR\drmingw.exe"
+  Delete $INSTDIR\exchndl.dll"
+  Delete $INSTDIR\mgwhelp.dll"
   Delete $APPDATA\diydrones\*.*
   RMDir $APPDATA\diydrones
 
