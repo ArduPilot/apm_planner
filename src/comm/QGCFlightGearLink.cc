@@ -395,7 +395,7 @@ bool QGCFlightGearLink::connectSimulation()
     terraSyncScenery = QDir::homePath() + "/.terrasync/Scenery"; //according to http://wiki.flightgear.org/TerraSync a separate directory is used
 #endif
 
-    fgAircraft = QApplication::applicationDirPath() + "/files/flightgear/Aircraft";
+    fgAircraft = QGC::shareDirectory() + "/files/flightgear/Aircraft";
 
     // Sanity checks
     bool sane = true;

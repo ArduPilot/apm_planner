@@ -37,9 +37,7 @@ ParameterList::ParameterList()
      reqdServoParams(new QStringList())
 {
 
-    QDir settingsDir = QDir(qApp->applicationDirPath());
-    if (settingsDir.dirName() == "bin")
-        settingsDir.cdUp();
+    QDir settingsDir = QDir(QGC::shareDirectory());
     settingsDir.cd("data");
 
     // Enforce a list of parameters which are necessary for flight

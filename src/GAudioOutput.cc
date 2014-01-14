@@ -30,6 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "QsLog.h"
+#include "configuration.h"
 #include "GAudioOutput.h"
 #include "MG.h"
 
@@ -246,7 +247,7 @@ void GAudioOutput::notifyPositive()
     if (!muted)
     {
         // Use QFile to transform path for all OS
-        QFile f(QCoreApplication::applicationDirPath()+QString("/files/audio/double_notify.wav"));
+        QFile f(QGC::shareDirectory()+QString("/files/audio/double_notify.wav"));
         //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
         //m_media->play();
     }
@@ -257,7 +258,7 @@ void GAudioOutput::notifyNegative()
     if (!muted)
     {
         // Use QFile to transform path for all OS
-        QFile f(QCoreApplication::applicationDirPath()+QString("/files/audio/flat_notify.wav"));
+        QFile f(QGC::shareDirectory()+QString("/files/audio/flat_notify.wav"));
         //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
         //m_media->play();
     }
@@ -303,7 +304,7 @@ void GAudioOutput::beep()
     if (!muted)
     {
         // Use QFile to transform path for all OS
-        QFile f(QCoreApplication::applicationDirPath()+QString("/files/audio/alert.wav"));
+        QFile f(QGC::shareDirectory()+QString("/files/audio/alert.wav"));
         QLOG_INFO() << "FILE:" << f.fileName();
         //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
         //m_media->play();

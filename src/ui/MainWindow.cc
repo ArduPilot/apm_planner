@@ -1160,8 +1160,8 @@ void MainWindow::loadCustomWidget(const QString& fileName, bool singleinstance)
 
 void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const QString& autopilotType)
 {
-    QString defaultsDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/widgets/";
-    QString platformDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
+    QString defaultsDir = QGC::shareDirectory() + "/files/" + autopilotType.toLower() + "/widgets/";
+    QString platformDir = QGC::shareDirectory() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
 
     QDir widgets(defaultsDir);
     QStringList files = widgets.entryList();
@@ -1397,7 +1397,7 @@ void MainWindow::reloadStylesheet()
     if (styleSheet->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QString style = QString(styleSheet->readAll());
-        style.replace("ICONDIR", QCoreApplication::applicationDirPath()+ "files/styles/");
+        style.replace("ICONDIR", QGC::shareDirectory() + "/files/styles/");
         qApp->setStyleSheet(style);
     }
     else
@@ -1944,7 +1944,7 @@ void MainWindow::UASCreated(UASInterface* uas)
         if (!detectionDockWidget)
         {
             detectionDockWidget = new QDockWidget(tr("Object Recognition"), this);
-            detectionDockWidget->setWidget( new ObjectDetectionView("files/images/patterns", this) );
+            detectionDockWidget->setWidget( new ObjectDetectionView("/files/images/patterns", this) );
             detectionDockWidget->setObjectName("OBJECT_DETECTION_DOCK_WIDGET");
             //addTool(detectionDockWidget, tr("Object Recognition"), Qt::RightDockWidgetArea);
         }
