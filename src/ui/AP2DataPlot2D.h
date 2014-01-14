@@ -69,11 +69,13 @@ private slots:
     void axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt);
     void graphAddedToGroup(QString name,QString group,double scale);
     void graphRemovedFromGroup(QString name);
+    void graphManualRange(QString name, double min, double max);
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
 private:
     bool m_showOnlyActive;
+    QMap<QString,bool> m_graphManualRange;
     //Map of group name to a list of graph titles
     QMap<QString,QList<QString> > m_graphGrouping;
     //Map from group titles to the value axis range.

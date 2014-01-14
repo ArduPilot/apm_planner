@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>683</width>
+    <width>962</width>
     <height>405</height>
    </rect>
   </property>
@@ -26,7 +26,7 @@ This Dialog is used for grouping multiple graphs with a single value range (the 
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,2,3">
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,2,2">
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>

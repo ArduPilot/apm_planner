@@ -17,8 +17,9 @@ AP2DataPlotAxisDialog::AP2DataPlotAxisDialog(QWidget *parent) :
     connect(ui->groupBRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupBButtonClicked(bool)));
     connect(ui->groupCRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupCButtonClicked(bool)));
     connect(ui->groupDRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupDButtonClicked(bool)));
-    ui->minMaxGroupBox->setVisible(false);
-    ui->manualRadioButton->setVisible(false);
+    connect(ui->manualRadioButton,SIGNAL(clicked(bool)),this,SLOT(manualButtonClicked(bool)));
+    //ui->minMaxGroupBox->setVisible(false);
+    //ui->manualRadioButton->setVisible(false);
 
     ui->graphTableWidget->setColumnCount(3);
     ui->graphTableWidget->setColumnWidth(0,25);
@@ -56,7 +57,7 @@ void AP2DataPlotAxisDialog::manualButtonClicked(bool checked)
     }
     QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
     QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPA");
+    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("MANUAL");
     if (m_graphToGroupNameMap[graphname] == "MANUAL")
     {
         return;
@@ -141,6 +142,10 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
         if (i.value() == "NONE")
         {
             emit graphRemovedFromGroup(i.key());
+        }
+        else if (i.value() == "MANUAL")
+        {
+            emit graphManualRange(i.key(),m_graphRangeMap.value(i.key()).first,m_graphRangeMap.value(i.key()).second);
         }
         else
         {
@@ -230,6 +235,7 @@ void AP2DataPlotAxisDialog::removeAxis(QString name)
 {
     m_rangeMap.remove(name);
     m_graphScaleMap.remove(name);
+    m_graphRangeMap.remove(name);
     QList<QTableWidgetItem*> items = ui->graphTableWidget->findItems(name,Qt::MatchExactly);
     if (items.size() > 0)
     {
@@ -251,7 +257,7 @@ void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
 }
 void AP2DataPlotAxisDialog::setMinMaxButtonClicked()
 {
-    ui->autoRadioButton->setAutoExclusive(false);
+    /*ui->autoRadioButton->setAutoExclusive(false);
     ui->autoRadioButton->setChecked(false);
     ui->autoRadioButton->setAutoExclusive(true);
 
@@ -269,6 +275,14 @@ void AP2DataPlotAxisDialog::setMinMaxButtonClicked()
 
     ui->groupDRadioButton->setAutoExclusive(false);
     ui->groupDRadioButton->setChecked(false);
-    ui->groupDRadioButton->setAutoExclusive(true);
+    ui->groupDRadioButton->setAutoExclusive(true);*/
+    if (ui->graphTableWidget->selectedItems().size() == 0)
+    {
+        return;
+    }
+    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
+    m_graphRangeMap[graphname].first = ui->minDoubleSpinBox->value();
+    m_graphRangeMap[graphname].second = ui->maxDoubleSpinBox->value();
 
 }

@@ -96,6 +96,7 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
     connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString,double)),this,SLOT(graphAddedToGroup(QString,QString,double)));
     connect(m_axisGroupingDialog,SIGNAL(graphRemovedFromGroup(QString)),this,SLOT(graphRemovedFromGroup(QString)));
+    connect(m_axisGroupingDialog,SIGNAL(graphManualRange(QString,double,double)),this,SLOT(graphManualRange(QString,double,double)));
     for(QMap<QString,QCPAxis*>::const_iterator i=m_axisList.constBegin();i!=m_axisList.constEnd();i++)
     {
         m_axisGroupingDialog->addAxis(i.key(),i.value()->range().lower,i.value()->range().upper,i.value()->labelColor());
@@ -396,7 +397,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
                 }
             }
         }
-        else if (!m_graphMap[propername]->keyAxis()->range().contains(value))
+        else if (!m_graphMap[propername]->keyAxis()->range().contains(value) && !m_graphManualRange.value(propername,false))
         {
             m_graphMap[propername]->rescaleValueAxis();
             if (m_axisGroupingDialog)
@@ -676,6 +677,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
 }
 void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
 {
+    m_graphManualRange[name] = false;
     if (!m_graphGrouping.contains(group))
     {
         m_graphGrouping[group] = QList<QString>();
@@ -713,7 +715,12 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
     //m_axisList[m_graphGrouping[group][i]]->scaleRange(scale,m_axisList[m_graphGrouping[group][i]]->range().center);
     m_plot->replot();
 }
-
+void AP2DataPlot2D::graphManualRange(QString name, double min, double max)
+{
+    graphRemovedFromGroup(name);
+    m_graphManualRange[name] = true;
+    m_axisList[name]->setRange(min,max);
+}
 void AP2DataPlot2D::graphRemovedFromGroup(QString name)
 {
     if (!m_graphToGroupMap.contains(name))
