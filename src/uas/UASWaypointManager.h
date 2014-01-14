@@ -114,10 +114,9 @@ public:
     /*@}*/
 
     UAS* getUAS();
-    float getAltitudeRecommendation();
+    double getAltitudeRecommendation(MAV_FRAME frame);
     int getFrameRecommendation();
-    float getAcceptanceRadiusRecommendation();
-    float getHomeAltitudeOffsetDefault();
+    double getAcceptanceRadiusRecommendation();
 
 private:
     /** @name Message send functions */
@@ -180,8 +179,8 @@ private:
     bool standalone;                                ///< If standalone is set, do not write to UAS
     quint16 uasid;
 
-    // XXX export to settings
-    static const float defaultAltitudeHomeOffset;    ///< Altitude offset in meters from home for new waypoints
+    double m_defaultAcceptanceRadius;                 ///< Default Acceptance Radius in meters
+    double m_defaultRelativeAlt;                      ///< Default relative alt in meters
 };
 
 #endif // UASWAYPOINTMANAGER_H

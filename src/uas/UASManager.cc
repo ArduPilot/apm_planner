@@ -233,9 +233,9 @@ void UASManager::uavChangedHomePosition(int uav, double lat, double lon, double 
 UASManager::UASManager() :
         activeUAS(NULL),
         offlineUASWaypointManager(NULL),
-        homeLat(47.3769),
-        homeLon(8.549444),
-        homeAlt(470.0),
+        homeLat(32.835354),
+        homeLon(-117.162774),
+        homeAlt(25.0),
         homeFrame(MAV_FRAME_GLOBAL)
 {
     loadSettings();

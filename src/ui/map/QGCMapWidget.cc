@@ -345,8 +345,6 @@ void QGCMapWidget::mouseDoubleClickEvent(QMouseEvent* event)
         //            wp->setFrame(MAV_FRAME_GLOBAL_RELATIVE_ALT);
         wp->setLatitude(pos.Lat());
         wp->setLongitude(pos.Lng());
-        wp->setFrame((MAV_FRAME)currWPManager->getFrameRecommendation());
-        wp->setAltitude(currWPManager->getAltitudeRecommendation());
         //            wp->blockSignals(false);
         //            currWPManager->notifyOfChangeEditable(wp);
     }
