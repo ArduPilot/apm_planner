@@ -244,7 +244,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml");
     if (!QFile::exists(m_apmPdefFilename))
     {
-        QDir autopilotdir(qApp->applicationDirPath() + "/files/" + uas->getAutopilotTypeName().toLower());
+        QDir autopilotdir(QGC::shareDirectory() + "/files/" + uas->getAutopilotTypeName().toLower());
         m_apmPdefFilename = autopilotdir.absolutePath() + "/arduplane.pdef.xml";
     }
 

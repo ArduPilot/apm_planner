@@ -245,7 +245,7 @@ void QGCVehicleConfig::stopCalibrationRC()
 void QGCVehicleConfig::loadQgcConfig(bool primary)
 {
     Q_UNUSED(primary);
-    QDir autopilotdir(qApp->applicationDirPath() + "/files/" + mav->getAutopilotTypeName().toLower());
+    QDir autopilotdir(QGC::shareDirectory() + "/files/" + mav->getAutopilotTypeName().toLower());
     QDir generaldir = QDir(autopilotdir.absolutePath() + "/general/widgets");
     QDir vehicledir = QDir(autopilotdir.absolutePath() + "/" + mav->getSystemTypeName().toLower() + "/widgets");
     if (!autopilotdir.exists("general"))
@@ -468,7 +468,7 @@ void QGCVehicleConfig::loadConfig()
 {
     QGCToolWidget* tool;
 
-    QDir autopilotdir(qApp->applicationDirPath() + "/files/" + mav->getAutopilotTypeName().toLower());
+    QDir autopilotdir(QGC::shareDirectory() + "/files/" + mav->getAutopilotTypeName().toLower());
     QDir generaldir = QDir(autopilotdir.absolutePath() + "/general/widgets");
     QDir vehicledir = QDir(autopilotdir.absolutePath() + "/" + mav->getSystemTypeName().toLower() + "/widgets");
     if (!autopilotdir.exists("general"))

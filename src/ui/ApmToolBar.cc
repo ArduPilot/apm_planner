@@ -45,9 +45,9 @@ APMToolBar::APMToolBar(QWidget *parent):
 
     QDir qmlBaseDir = QDir(qApp->applicationDirPath());
     QLOG_DEBUG() << "qmlBaseDir" << qmlBaseDir;
-    QUrl url = QUrl::fromLocalFile(qmlBaseDir.absolutePath() + "/qml/ApmToolBar.qml");
+    QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/ApmToolBar.qml");
     QLOG_DEBUG() << url;
-    if (!QFile::exists(qmlBaseDir.absolutePath() + "/qml/ApmToolBar.qml"))
+    if (!QFile::exists(QGC::shareDirectory() + "/qml/ApmToolBar.qml"))
     {
          QMessageBox::information(0,"Error","ApmToolBar.qml not found. Please reinstall the application and try again");
         exit(-1);
