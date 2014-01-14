@@ -97,9 +97,9 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString,double)),this,SLOT(graphAddedToGroup(QString,QString,double)));
     connect(m_axisGroupingDialog,SIGNAL(graphRemovedFromGroup(QString)),this,SLOT(graphRemovedFromGroup(QString)));
     connect(m_axisGroupingDialog,SIGNAL(graphManualRange(QString,double,double)),this,SLOT(graphManualRange(QString,double,double)));
-    for(QMap<QString,QCPAxis*>::const_iterator i=m_axisList.constBegin();i!=m_axisList.constEnd();i++)
+    for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
     {
-        m_axisGroupingDialog->addAxis(i.key(),i.value()->range().lower,i.value()->range().upper,i.value()->labelColor());
+        m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
     }
     m_axisGroupingDialog->show();
 }
@@ -205,7 +205,8 @@ void AP2DataPlot2D::tableCellClicked(int row,int column)
             }
             if (ui.tableWidget->horizontalHeaderItem(column) && column != 0)
             {
-                if (m_axisList.contains(ui.tableWidget->item(row,0)->text() + "." + ui.tableWidget->horizontalHeaderItem(column)->text()))
+                QString label = ui.tableWidget->item(row,0)->text() + "." + ui.tableWidget->horizontalHeaderItem(column)->text();
+                if (m_graphClassMap.contains(label))
                 {
                     //It's an enabled
                     m_addGraphAction->setText("Remove From Graph");
@@ -327,12 +328,19 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         return;
     }
     QString propername  = name.mid(name.indexOf(":")+1);
-    if (!m_nameToAxisIndex.contains(propername))
+    if (!m_onlineValueMap.contains(propername))
+    {
+        m_dataSelectionScreen->addItem(propername);
+        //m_graphClassMap[propername] = Graph();
+        //m_graphClassMap[propername].axisIndex = msec;
+    }
+
+    /*if (!m_nameToAxisIndex.contains(propername))
     {
         //Also doesn't exist on the data select screen
         m_dataSelectionScreen->addItem(propername);
         m_nameToAxisIndex[propername] = msec;
-    }/*
+    }*//*
     else
     {
         if (m_nameToAxisIndex[propername] == m_currentIndex)
@@ -357,10 +365,12 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     //qDebug() << "Time:" << QDateTime::fromMSecsSinceEpoch(msec).toString();
     //qDebug() << "Time:" << QDateTime::fromMSecsSinceEpoch(m_startIndex).toString();
     //qDebug() << "Time:" << msec_current;//(int)(newmsec / 1000.0);
-    m_nameToAxisIndex[propername] = newmsec / 1000.0;// + 18000000;
-    if (m_graphMap.contains(propername))
+
+    if (m_graphClassMap.contains(propername))
     {
-        m_graphMap[propername]->addData(m_nameToAxisIndex[propername],value);
+        m_graphClassMap[propername].axisIndex = newmsec / 1000.0;// + 18000000;
+        m_graphClassMap.value(propername).graph->addData(m_graphClassMap.value(propername).axisIndex,value);
+        qDebug() << "Printing value:" << value << "For index" << m_graphClassMap.value(propername).axisIndex;
         //Set a timeout for 30 minutes from now, 1800 seconds.
         qint64 current = QDateTime::currentMSecsSinceEpoch();
         //This is 30 minutes
@@ -369,44 +379,49 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         //m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 60000,m_currentIndex));
         if (m_onlineValueTimeoutList[0].first <= current)
         {
-            for (QMap<QString,QCPGraph*>::const_iterator i=m_graphMap.constBegin();i!=m_graphMap.constEnd();i++)
+            for (QMap<QString,Graph>::const_iterator i = m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
+            {
+                i.value().graph->removeData(0,m_onlineValueTimeoutList[0].second);
+            }
+            /*for (QMap<QString,QCPGraph*>::const_iterator i=m_graphMap.constBegin();i!=m_graphMap.constEnd();i++)
             {
                 i.value()->removeData(0,m_onlineValueTimeoutList[0].second);
-            }
+            }*/
             m_onlineValueTimeoutList.removeAt(0);
         }
-        if (m_graphToGroupMap.contains(propername))
+        if (m_graphClassMap.value(propername).groupName != "" && m_graphClassMap.value(propername).groupName != "MANUAL")
         {
             //It's in a group
-            if (!m_graphGroupRanges[m_graphToGroupMap[propername]].contains(value))
+
+            if (!m_graphGroupRanges[m_graphClassMap.value(propername).groupName].contains(value))
             {
                 //It's out of scale for the group, expand it.
-                if (m_graphGroupRanges[m_graphToGroupMap[propername]].lower > value)
+                if (m_graphGroupRanges[m_graphClassMap.value(propername).groupName].lower > value)
                 {
-                    m_graphGroupRanges[m_graphToGroupMap[propername]].lower = value;
+                    m_graphGroupRanges[m_graphClassMap.value(propername).groupName].lower = value;
                 }
-                else if (m_graphGroupRanges[m_graphToGroupMap[propername]].upper < value)
+                else if (m_graphGroupRanges[m_graphClassMap.value(propername).groupName].upper < value)
                 {
-                    m_graphGroupRanges[m_graphToGroupMap[propername]].upper = value;
+                    m_graphGroupRanges[m_graphClassMap.value(propername).groupName].upper = value;
                 }
-                for (int i=0;i<m_graphGrouping[m_graphToGroupMap[propername]].size();i++)
+                for (int i=0;i<m_graphGrouping[m_graphClassMap.value(propername).groupName].size();i++)
                 {
                     //m_graphMap[m_graphGrouping[m_graphToGroupName[name]][i]]->getA
                     //m_axisList[
-                   m_axisList[m_graphGrouping[m_graphToGroupMap[propername]][i]]->setRange(m_graphGroupRanges[m_graphToGroupMap[propername]]);
+                    m_graphClassMap.value(m_graphGrouping[m_graphClassMap.value(propername).groupName][i]).axis->setRange(m_graphGroupRanges[m_graphClassMap.value(propername).groupName]);
                 }
             }
         }
-        else if (!m_graphMap[propername]->keyAxis()->range().contains(value) && !m_graphManualRange.value(propername,false))
+        else if (!m_graphClassMap.value(propername).graph->keyAxis()->range().contains(value) && !m_graphClassMap.value(propername).isManualRange)
         {
-            m_graphMap[propername]->rescaleValueAxis();
+            m_graphClassMap.value(propername).graph->rescaleValueAxis();
             if (m_axisGroupingDialog)
             {
-                m_axisGroupingDialog->updateAxis(propername,m_axisList[propername]->range().lower,m_axisList[propername]->range().upper);
+                m_axisGroupingDialog->updateAxis(propername,m_graphClassMap.value(propername).axis->range().lower,m_graphClassMap.value(propername).axis->range().upper);
             }
         }
     }
-    m_onlineValueMap[propername].append(QPair<double,double>(m_nameToAxisIndex[propername],value));
+    m_onlineValueMap[propername].append(QPair<double,double>(m_graphClassMap.value(propername).axisIndex,value));
 }
 
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
@@ -464,16 +479,18 @@ void AP2DataPlot2D::loadButtonClicked()
     //Clear the graph
     for (int i=0;i<m_graphNameList.size();i++)
     {
-        m_wideAxisRect->removeAxis(m_axisList[m_graphNameList[i]]);
-        m_plot->removeGraph(m_graphMap[m_graphNameList[i]]);
-        m_graphMap.remove(m_graphNameList[i]);
-        m_axisList.remove(m_graphNameList[i]);
+
+        m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
+        m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
+       // m_graphMap.remove(m_graphNameList[i]);
+       // m_axisList.remove(m_graphNameList[i]);
     }
     m_dataSelectionScreen->clear();
-    m_nameToAxisIndex.clear();
-    m_dataList.clear();
-    m_onlineValueMap.clear();
+    //m_nameToAxisIndex.clear();
+    //m_dataList.clear();
+    //m_onlineValueMap.clear();
     m_plot->replot();
+    m_graphClassMap.clear();
     m_graphCount=0;
 
     if (m_logLoaded)
@@ -564,6 +581,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
     if (m_logLoaded)
     {
         name = name.mid(name.indexOf(":")+1);
+       // m_graphClassMap.value(name).offlineValuesList
         for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
         {
             if (i.value().size() > 0)
@@ -600,9 +618,9 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     axis->setLabelColor(color);
                     axis->setTickLabelColor(color);
                     axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
-                    m_axisList[name] = axis;
+                    //m_axisList[name] = axis;
                     QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
-                    m_graphMap[name] = mainGraph1;
+                    //m_graphMap[name] = mainGraph1;
                     m_graphNameList.append(name);
                     mainGraph1->setData(xlist, ylist);
                     mainGraph1->rescaleValueAxis();
@@ -615,6 +633,11 @@ void AP2DataPlot2D::itemEnabled(QString name)
                         m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
                     }
                     mainGraph1->setPen(QPen(color, 2));
+                    Graph graph;
+                    graph.axis = axis;
+                    graph.groupName = "";
+                    graph.graph=  mainGraph1;
+                    m_graphClassMap[name] = graph;
                     return;
                 }
             }
@@ -655,9 +678,9 @@ void AP2DataPlot2D::itemEnabled(QString name)
             axis->setLabelColor(color);
             axis->setTickLabelColor(color);
             axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
-            m_axisList[name] = axis;
+            //m_axisList[name] = axis;
             QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
-            m_graphMap[name] = mainGraph1;
+            //m_graphMap[name] = mainGraph1;
             m_graphNameList.append(name);
             mainGraph1->setData(xlist, ylist);
             mainGraph1->rescaleValueAxis();
@@ -669,6 +692,11 @@ void AP2DataPlot2D::itemEnabled(QString name)
             {
                 m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
             }
+            Graph graph;
+            graph.axis = axis;
+            graph.groupName = "";
+            graph.graph=  mainGraph1;
+            m_graphClassMap[name] = graph;
 
            // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
             mainGraph1->setPen(QPen(color, 2));
@@ -677,40 +705,39 @@ void AP2DataPlot2D::itemEnabled(QString name)
 }
 void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
 {
-    m_graphManualRange[name] = false;
+    m_graphClassMap[name].isManualRange = false;
     if (!m_graphGrouping.contains(group))
     {
         m_graphGrouping[group] = QList<QString>();
-        m_graphGroupRanges[group] = m_axisList[name]->range();
+        m_graphGroupRanges[group] = m_graphClassMap.value(name).axis->range();
     }
-    if (m_graphToGroupMap.contains(name))
+    if (m_graphClassMap.value(name).groupName == group)
     {
-        if (m_graphToGroupMap.value(name) == group)
-        {
-            return;
-        }
-        else if (m_graphGrouping[group].contains(name))
-        {
-            return;
-        }
-        else
-        {
-            graphRemovedFromGroup(name);
-        }
+        return;
     }
-    m_graphToGroupMap[name] = group;
+    else if (m_graphGrouping[group].contains(name))
+    {
+        return;
+    }
+    else
+    {
+        graphRemovedFromGroup(name);
+    }
+    m_graphClassMap[name].groupName = group;
+
+    //m_graphToGroupMap[name] = group;
     m_graphGrouping[group].append(name);
-    if (m_axisList[name]->range().upper > m_graphGroupRanges[group].upper)
+    if (m_graphClassMap.value(name).axis->range().upper > m_graphGroupRanges[group].upper)
     {
-        m_graphGroupRanges[group].upper = m_axisList[name]->range().upper;
+        m_graphGroupRanges[group].upper = m_graphClassMap.value(name).axis->range().upper;
     }
-    if (m_axisList[name]->range().lower < m_graphGroupRanges[group].lower)
+    if (m_graphClassMap.value(name).axis->range().lower < m_graphGroupRanges[group].lower)
     {
-        m_graphGroupRanges[group].lower = m_axisList[name]->range().lower;
+        m_graphGroupRanges[group].lower = m_graphClassMap.value(name).axis->range().lower;
     }
     for (int i=0;i<m_graphGrouping[group].size();i++)
     {
-        m_axisList[m_graphGrouping[group][i]]->setRange(m_graphGroupRanges[group]);
+        m_graphClassMap.value(m_graphGrouping[group][i]).axis->setRange(m_graphGroupRanges[group]);
     }
     //m_axisList[m_graphGrouping[group][i]]->scaleRange(scale,m_axisList[m_graphGrouping[group][i]]->range().center);
     m_plot->replot();
@@ -718,39 +745,40 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
 void AP2DataPlot2D::graphManualRange(QString name, double min, double max)
 {
     graphRemovedFromGroup(name);
-    m_graphManualRange[name] = true;
-    m_axisList[name]->setRange(min,max);
+    m_graphClassMap[name].isManualRange = true;
+    m_graphClassMap.value(name).axis->setRange(min,max);
 }
 void AP2DataPlot2D::graphRemovedFromGroup(QString name)
 {
-    if (!m_graphToGroupMap.contains(name))
+    if (!m_graphClassMap.value(name).isInGroup)
     {
         //Not in a group
         return;
     }
-    QString group = m_graphToGroupMap[name];
+    QString group = m_graphClassMap.value(name).groupName;
     m_graphGrouping[group].removeOne(name);
-    m_graphToGroupMap.remove(name);
-    m_graphMap[name]->rescaleValueAxis();
+    //m_graphToGroupMap.remove(name);
+    m_graphClassMap[name].isInGroup = false;
+    m_graphClassMap.value(name).graph->rescaleValueAxis();
     if (m_graphGrouping[group].size() > 0)
     {
-        m_graphMap[m_graphGrouping[group][0]]->rescaleValueAxis();
-        m_graphGroupRanges[group] = m_axisList[m_graphGrouping[group][0]]->range();
+        m_graphClassMap.value(m_graphGrouping[group][0]).graph->rescaleValueAxis();
+        m_graphGroupRanges[group] = m_graphClassMap.value(m_graphGrouping[group][0]).axis->range();
     }
     for (int i=0;i<m_graphGrouping[group].size();i++)
     {
-        if (m_axisList[m_graphGrouping[group][i]]->range().upper > m_graphGroupRanges[group].upper)
+        if (m_graphClassMap.value(m_graphGrouping[group][i]).axis->range().upper > m_graphGroupRanges[group].upper)
         {
-            m_graphGroupRanges[group].upper = m_axisList[m_graphGrouping[group][i]]->range().upper;
+            m_graphGroupRanges[group].upper = m_graphClassMap.value(m_graphGrouping[group][i]).axis->range().upper;
         }
-        if (m_axisList[m_graphGrouping[group][i]]->range().lower < m_graphGroupRanges[group].lower)
+        if (m_graphClassMap.value(m_graphGrouping[group][i]).axis->range().lower < m_graphGroupRanges[group].lower)
         {
-            m_graphGroupRanges[group].lower = m_axisList[m_graphGrouping[group][i]]->range().lower;
+            m_graphGroupRanges[group].lower = m_graphClassMap.value(m_graphGrouping[group][i]).axis->range().lower;
         }
     }
     for (int i=0;i<m_graphGrouping[group].size();i++)
     {
-        m_axisList[m_graphGrouping[group][i]]->setRange(m_graphGroupRanges[group]);
+        m_graphClassMap.value(m_graphGrouping[group][i]).axis->setRange(m_graphGroupRanges[group]);
     }
     m_plot->replot();
 }
@@ -761,11 +789,12 @@ void AP2DataPlot2D::itemDisabled(QString name)
     {
         name = name.mid(name.indexOf(":")+1);
     }
-    m_wideAxisRect->removeAxis(m_axisList[name]);
-    m_plot->removeGraph(m_graphMap[name]);
+    m_wideAxisRect->removeAxis(m_graphClassMap.value(name).axis);
+    m_plot->removeGraph(m_graphClassMap.value(name).graph);
     m_plot->replot();
-    m_graphMap.remove(name);
-    m_axisList.remove(name);
+    //m_graphMap.remove(name);
+    //m_axisList.remove(name);
+    m_graphClassMap.remove(name);
     m_graphNameList.removeOne(name);
     m_graphCount--;
     if (m_axisGroupingDialog)
