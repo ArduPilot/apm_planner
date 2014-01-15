@@ -596,6 +596,8 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     graph.axis = axis;
                     graph.groupName = "";
                     graph.graph=  mainGraph1;
+                    graph.isInGroup = false;
+                    graph.isManualRange = false;
                     m_graphClassMap[name] = graph;
                     return;
                 }
@@ -648,6 +650,8 @@ void AP2DataPlot2D::itemEnabled(QString name)
             graph.axis = axis;
             graph.groupName = "";
             graph.graph=  mainGraph1;
+            graph.isInGroup = false;
+            graph.isManualRange = false;
             m_graphClassMap[name] = graph;
 
             mainGraph1->setPen(QPen(color, 2));
@@ -699,6 +703,8 @@ void AP2DataPlot2D::graphManualRange(QString name, double min, double max)
 }
 void AP2DataPlot2D::graphRemovedFromGroup(QString name)
 {
+    //Always remove it from manual range
+    m_graphClassMap[name].isManualRange = false;
     if (!m_graphClassMap.value(name).isInGroup)
     {
         //Not in a group

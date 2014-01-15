@@ -26,7 +26,7 @@ This Dialog is used for grouping multiple graphs with a single value range (the 
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,2,2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,2,2">
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
@@ -34,7 +34,7 @@ This Dialog is used for grouping multiple graphs with a single value range (the 
       <widget class="QTableWidget" name="graphTableWidget"/>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox">
+      <widget class="QGroupBox" name="axisRangeGroupBox">
        <property name="title">
         <string>Axis Range Control</string>
        </property>
@@ -174,11 +174,12 @@ This Dialog is used for grouping multiple graphs with a single value range (the 
           <x>80</x>
           <y>90</y>
           <width>101</width>
-          <height>23</height>
+          <height>41</height>
          </rect>
         </property>
         <property name="text">
-         <string>Set New Min/Max</string>
+         <string>Set New
+Min/Max</string>
         </property>
        </widget>
        <widget class="QLabel" name="label">

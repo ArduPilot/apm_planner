@@ -24,6 +24,7 @@ protected:
     void closeEvent(QCloseEvent *evt);
 public slots:
     void graphTableCurrentItemChanged(QTableWidgetItem *current,QTableWidgetItem *previous);
+    void graphTableItemSelectionChanged();
     void setMinMaxButtonClicked();
     void autoButtonClicked(bool checked);
     void groupAButtonClicked(bool checked);

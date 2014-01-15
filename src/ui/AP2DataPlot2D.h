@@ -90,21 +90,12 @@ private:
     QMap<QString,Graph> m_graphClassMap;
 
     bool m_showOnlyActive;
-    //QMap<QString,bool> m_graphManualRange;
     //Map of group name to a list of graph titles
     QMap<QString,QList<QString> > m_graphGrouping;
     //Map from group titles to the value axis range.
     QMap<QString,QCPRange> m_graphGroupRanges;
-    //Reverse of m_graphGrouping
-    //QMap<QString,QString> m_graphToGroupMap;
-    //Graph name to axis index in m_wideAxisRect
-    //QMap<QString,double> m_nameToAxisIndex;
     //Map from the spreadsheet view row name (ATT,GPS,etc), to the header names (roll,pitch,yaw or long,lat,alt)
     QMap<QString,QString> m_tableHeaderNameMap;
-    //Graph name to value axis
-    //QMap<QString,QCPAxis*> m_axisList;
-    //Graph name to actual QCustomPlot graph.
-    //QMap<QString,QCPGraph*> m_graphMap;
     //Graph name to list of values for "online" mode
     QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
     //Map from graph name to list of values for "offline" mode
