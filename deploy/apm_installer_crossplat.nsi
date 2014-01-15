@@ -47,7 +47,7 @@ Section "APM Planner 2 files"
   WriteUninstaller $INSTDIR\APMPlanner2_uninstall.exe
 SectionEnd 
 
-Section "JIT Debugger"
+Section /o "JIT Debugger"
   SetOutPath $INSTDIR
   File "../drmingw.exe"
   File "../exchndl.dll"
