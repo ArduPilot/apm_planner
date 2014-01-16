@@ -11,4 +11,4 @@ fi
 mv apmplanner2-installer-win32.exe ${TARGET_DIR}/${TARGET_SUBDIR}/apm_planner2_${COMMIT_SHA:0:8}_win.exe
 
 #This will eventually contain my rsync line...
-rsync -avh --password-file=${RSYNC_PASSFILE} ${TARGET_DIR}/ ${WEBSITE_USER}@firmware.diydrones.com::APMPlanner/daily/
+rsync -avh --password-file=${RSYNC_PASSFILE} ${TARGET_DIR}/${TARGET_SUBDIR} ${WEBSITE_USER}@firmware.diydrones.com::APMPlanner/daily/
