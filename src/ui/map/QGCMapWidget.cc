@@ -12,7 +12,7 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     mapcontrol::OPMapWidget(parent),
     firingWaypointChange(NULL),
     maxUpdateInterval(2.1f), // 2 seconds
-    followUAVEnabled(true),
+    followUAVEnabled(false),
     trailType(mapcontrol::UAVTrailType::ByTimeElapsed),
     trailInterval(2.0f),
     followUAVID(0),
@@ -30,7 +30,9 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     // Widget is inactive until shown
     defaultGuidedRelativeAlt = 100.0; // Default set to 100m
     defaultGuidedAltFirstTimeSet = false;
-    loadSettings(false);
+    loadSettings();
+
+
 
     //handy for debugging:
     //this->SetShowTileGridLines(true);
@@ -52,9 +54,6 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     cameraaction->setText("Point Camera Here");
     connect(cameraaction,SIGNAL(triggered()),this,SLOT(cameraActionTriggered()));
     this->addAction(cameraaction);
-
-    QLabel latitudeLabel;
-    QLabel longitudeLabel;
 }
 void QGCMapWidget::guidedActionTriggered()
 {
@@ -270,21 +269,14 @@ void QGCMapWidget::hideEvent(QHideEvent* event)
 /**
  * @param changePosition Load also the last position from settings and update the map position.
  */
-void QGCMapWidget::loadSettings(bool changePosition)
+void QGCMapWidget::loadSettings()
 {
-    // Atlantic Ocean near Africa, coordinate origin
-    double lastZoom = 1;
-    double lastLat = 0;
-    double lastLon = 0;
-
     QSettings settings;
     settings.beginGroup("QGC_MAPWIDGET");
-    if (changePosition)
-    {
-        lastLat = settings.value("LAST_LATITUDE", lastLat).toDouble();
-        lastLon = settings.value("LAST_LONGITUDE", lastLon).toDouble();
-        lastZoom = settings.value("LAST_ZOOM", lastZoom).toDouble();
-    }
+    m_lastLat = settings.value("LAST_LATITUDE", 0.0f).toDouble();
+    m_lastLon = settings.value("LAST_LONGITUDE", 0.0f).toDouble();
+    m_lastZoom = settings.value("LAST_ZOOM", 1.0f).toDouble();
+
     trailType = static_cast<mapcontrol::UAVTrailType::Types>(settings.value("TRAIL_TYPE", trailType).toInt());
     trailInterval = settings.value("TRAIL_INTERVAL", trailInterval).toFloat();
     settings.endGroup();
@@ -322,9 +314,9 @@ void QGCMapWidget::loadSettings(bool changePosition)
     }
 
     // SET INITIAL POSITION AND ZOOM
-    internals::PointLatLng pos_lat_lon = internals::PointLatLng(lastLat, lastLon);
+    internals::PointLatLng pos_lat_lon = internals::PointLatLng(m_lastLat, m_lastLon);
     SetCurrentPosition(pos_lat_lon);        // set the map position
-    SetZoom(lastZoom); // set map zoom level
+    SetZoom(m_lastZoom); // set map zoom level
 }
 
 void QGCMapWidget::storeSettings()
@@ -353,8 +345,6 @@ void QGCMapWidget::mouseDoubleClickEvent(QMouseEvent* event)
         //            wp->setFrame(MAV_FRAME_GLOBAL_RELATIVE_ALT);
         wp->setLatitude(pos.Lat());
         wp->setLongitude(pos.Lng());
-        wp->setFrame((MAV_FRAME)currWPManager->getFrameRecommendation());
-        wp->setAltitude(currWPManager->getAltitudeRecommendation());
         //            wp->blockSignals(false);
         //            currWPManager->notifyOfChangeEditable(wp);
     }
@@ -402,7 +392,6 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
     updateSelectedSystem(uas->getUASID());
     followUAVID = uas->getUASID();
     updateWaypointList(uas->getUASID());
-    SetZoom(15); // zoom map to newly aquired activeUAS
 
     // Connect the waypoint manager / data storage to the UI
     connect(currWPManager, SIGNAL(waypointEditableListChanged(int)), this, SLOT(updateWaypointList(int)));
@@ -459,6 +448,15 @@ void QGCMapWidget::updateGlobalPosition(UASInterface* uas, double lat, double lo
     }
 }
 
+bool QGCMapWidget::isValidGpsLocation(UASInterface* system) const
+{
+    if ((system->getLatitude() == 0.0f)
+            ||(system->getLongitude() == 0.0f)){
+        return false;
+    }
+    return true;
+}
+
 /**
  * Pulls in the positions of all UAVs from the UAS manager
  */
@@ -484,7 +482,10 @@ void QGCMapWidget::updateGlobalPosition()
         internals::PointLatLng pos_lat_lon = internals::PointLatLng(system->getLatitude(), system->getLongitude());
         uav->SetUAVPos(pos_lat_lon, system->getAltitude());
         // Follow status
-        if (followUAVEnabled && system->getUASID() == followUAVID) SetCurrentPosition(pos_lat_lon);
+        if (followUAVEnabled && (system->getUASID() == followUAVID)
+                && isValidGpsLocation(system)) {
+            SetCurrentPosition(pos_lat_lon);
+        }
         // Convert from radians to degrees and apply
         uav->SetUAVHeading((system->getYaw()/M_PI)*180.0f);
     }
@@ -512,7 +513,10 @@ void QGCMapWidget::updateLocalPosition()
         internals::PointLatLng pos_lat_lon = internals::PointLatLng(system->getLatitude(), system->getLongitude());
         uav->SetUAVPos(pos_lat_lon, system->getAltitude());
         // Follow status
-        if (followUAVEnabled && system->getUASID() == followUAVID) SetCurrentPosition(pos_lat_lon);
+        if (followUAVEnabled && (system->getUASID() == followUAVID)
+                && isValidGpsLocation(system)) {
+            SetCurrentPosition(pos_lat_lon);
+        }
         // Convert from radians to degrees and apply
         uav->SetUAVHeading((system->getYaw()/M_PI)*180.0f);
     }

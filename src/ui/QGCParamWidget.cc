@@ -27,6 +27,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "QsLog.h"
+#include "DownloadRemoteParamsDialog.h"
 #include "QGCParamWidget.h"
 #include "UASInterface.h"
 #include "MainWindow.h"
@@ -152,13 +153,52 @@ QGCParamWidget::QGCParamWidget(UASInterface* uas, QWidget *parent) :
     if (uas) requestParameterList();
 }
 
-void QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType type)
+QString QGCParamWidget::summaryInfoFromFile(const QString &filename)
+{
+    QString summaryText;
+
+    if(filename.length() == 0) {
+        return QString();
+    }
+
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        return QString();
+    }
+
+    QString paramString = file.readAll();
+    file.close();
+
+    QStringList paramSplit = paramString.split("\n");
+
+    foreach (QString paramLine, paramSplit) {
+        if (paramLine.startsWith("#")) {
+            QLOG_DEBUG() << "Comment: " << paramLine;
+            // removes the '#' and any whites space before or after
+            summaryText.append(paramLine.remove(0,1).trimmed() + "\n");
+
+        } else {
+            break; // Summary Complete
+        }
+
+    }
+    QLOG_DEBUG() << "param file summary: " << summaryText;
+    return summaryText;
+}
+
+bool QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType type)
 {
     if (type == CommaSeperatedValues)
     {
         //Load the filename, it will be a CSV of PARAM,VALUE\n
+        // APM Param file support (doesn't support extra fields of TAB version)
         QFile paramfile(filename);
-        paramfile.open(QIODevice::ReadOnly);
+        if (!paramfile.open(QIODevice::ReadOnly))
+        {
+            return false;
+        }
+
         while (!paramfile.atEnd())
         {
             QString line = paramfile.readLine();
@@ -174,9 +214,10 @@ void QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType ty
     }
     else if (type == TabSeperatedValues)
     {
+        // Pixhawk Param file support
         QFile file(filename);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-            return;
+            return false;
 
         bool userWarned = false;
 
@@ -251,6 +292,7 @@ void QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType ty
         }
         file.close();
     }
+    return true;
 }
 void QGCParamWidget::saveParamsToFile(const QString &filename,ParamFileType type)
 {

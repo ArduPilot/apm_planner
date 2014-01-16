@@ -53,7 +53,7 @@
        <property name="geometry">
         <rect>
          <x>600</x>
-         <y>440</y>
+         <y>470</y>
          <width>107</width>
          <height>20</height>
         </rect>
@@ -65,8 +65,8 @@
       <widget class="QTextBrowser" name="textBrowser">
        <property name="geometry">
         <rect>
-         <x>24</x>
-         <y>464</y>
+         <x>30</x>
+         <y>490</y>
          <width>681</width>
          <height>151</height>
         </rect>
@@ -97,7 +97,7 @@
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>442</y>
+         <y>470</y>
          <width>561</width>
          <height>16</height>
         </rect>
@@ -721,31 +721,18 @@
         </size>
        </property>
       </widget>
-      <widget class="QLabel" name="comPortNameLabel">
-       <property name="geometry">
-        <rect>
-         <x>800</x>
-         <y>360</y>
-         <width>91</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
       <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
-         <x>23</x>
-         <y>353</y>
-         <width>681</width>
-         <height>84</height>
+         <x>30</x>
+         <y>360</y>
+         <width>856</width>
+         <height>111</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0,0">
           <item>
            <widget class="QPushButton" name="betaFirmwareButton">
             <property name="minimumSize">
@@ -863,6 +850,13 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLabel" name="comPortNameLabel">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -931,7 +925,6 @@
       <zorder>layoutWidget</zorder>
       <zorder>textBrowser</zorder>
       <zorder>showOutputCheckBox</zorder>
-      <zorder>comPortNameLabel</zorder>
       <zorder>statusLabel</zorder>
       <zorder>label_4</zorder>
      </widget>

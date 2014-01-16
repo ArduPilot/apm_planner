@@ -67,28 +67,35 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
 
 
     // add actions
-    m_ui->comboBox_action->addItem(tr("NAV: Waypoint"),MAV_CMD_NAV_WAYPOINT);
-    m_ui->comboBox_action->addItem(tr("NAV: TakeOff"),MAV_CMD_NAV_TAKEOFF);
-    m_ui->comboBox_action->addItem(tr("NAV: Loiter Unlim."),MAV_CMD_NAV_LOITER_UNLIM);
-    m_ui->comboBox_action->addItem(tr("NAV: Loiter Time"),MAV_CMD_NAV_LOITER_TIME);
-    m_ui->comboBox_action->addItem(tr("NAV: Loiter Turns"),MAV_CMD_NAV_LOITER_TURNS);
-    m_ui->comboBox_action->addItem(tr("NAV: Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
-    m_ui->comboBox_action->addItem(tr("NAV: Land"),MAV_CMD_NAV_LAND);
-    //m_ui->comboBox_action->addItem(tr("NAV: Target"),MAV_CMD_NAV_TARGET);
-    m_ui->comboBox_action->addItem(tr("IF: Delay over"),MAV_CMD_CONDITION_DELAY);
-    //m_ui->comboBox_action->addItem(tr("IF: Yaw angle is"),MAV_CMD_CONDITION_YAW);
-    m_ui->comboBox_action->addItem(tr("DO: Jump to Index"),MAV_CMD_DO_JUMP);    
-#ifdef MAVLINK_ENABLED_PIXHAWK
-    m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
-    m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
-    m_ui->comboBox_action->addItem(tr("Do: Finish Search"),MAV_CMD_DO_FINISH_SEARCH);
-#endif
-    m_ui->comboBox_action->addItem(tr("Other"), MAV_CMD_ENUM_END);
+    if(wp->getId() == 0){
+        // For APM WP0 is the home location
+        m_ui->comboBox_action->addItem(tr("NAV: HOME"),MAV_CMD_NAV_WAYPOINT);
+        this->setEnabled(false);
+
+    } else {
+        m_ui->comboBox_action->addItem(tr("NAV: Waypoint"),MAV_CMD_NAV_WAYPOINT);
+        m_ui->comboBox_action->addItem(tr("NAV: TakeOff"),MAV_CMD_NAV_TAKEOFF);
+        m_ui->comboBox_action->addItem(tr("NAV: Loiter Unlim."),MAV_CMD_NAV_LOITER_UNLIM);
+        m_ui->comboBox_action->addItem(tr("NAV: Loiter Time"),MAV_CMD_NAV_LOITER_TIME);
+        m_ui->comboBox_action->addItem(tr("NAV: Loiter Turns"),MAV_CMD_NAV_LOITER_TURNS);
+        m_ui->comboBox_action->addItem(tr("NAV: Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
+        m_ui->comboBox_action->addItem(tr("NAV: Land"),MAV_CMD_NAV_LAND);
+        //m_ui->comboBox_action->addItem(tr("NAV: Target"),MAV_CMD_NAV_TARGET);
+        m_ui->comboBox_action->addItem(tr("IF: Delay over"),MAV_CMD_CONDITION_DELAY);
+        //m_ui->comboBox_action->addItem(tr("IF: Yaw angle is"),MAV_CMD_CONDITION_YAW);
+        m_ui->comboBox_action->addItem(tr("DO: Jump to Index"),MAV_CMD_DO_JUMP);
+    #ifdef MAVLINK_ENABLED_PIXHAWK
+        m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
+        m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
+        m_ui->comboBox_action->addItem(tr("Do: Finish Search"),MAV_CMD_DO_FINISH_SEARCH);
+    #endif
+        m_ui->comboBox_action->addItem(tr("Other"), MAV_CMD_ENUM_END);
+    }
 
     // add frames
-    m_ui->comboBox_frame->addItem("Global/Abs. Alt",MAV_FRAME_GLOBAL);
-    m_ui->comboBox_frame->addItem("Global/Rel. Alt", MAV_FRAME_GLOBAL_RELATIVE_ALT);
-    m_ui->comboBox_frame->addItem("Local(NED)",MAV_FRAME_LOCAL_NED);
+    m_ui->comboBox_frame->addItem("Abs.Alt",MAV_FRAME_GLOBAL);
+    m_ui->comboBox_frame->addItem("Rel.Alt", MAV_FRAME_GLOBAL_RELATIVE_ALT);
+//    m_ui->comboBox_frame->addItem("Local(NED)",MAV_FRAME_LOCAL_NED); // [TODO] Not supported on APM
     m_ui->comboBox_frame->addItem("Mission",MAV_FRAME_MISSION);
 
     // Initialize view correctly
@@ -100,6 +107,8 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     // Check for mission frame
     if (wp->getFrame() == MAV_FRAME_MISSION)
     {
+        // [ToDo] APM does not set the MAV_FRAME_MISSION, so should check a dictionary
+        // of mission commands and mark them up in the GCS.
         m_ui->comboBox_action->setCurrentIndex(m_ui->comboBox_action->count()-1);
     }
 
@@ -234,9 +243,9 @@ void WaypointEditableView::changedAction(int index)
     updateActionView(actionID);
 }
 
-void WaypointEditableView::disableMouseScrollWheel(QWidget& parentWidget)
+void WaypointEditableView::disableMouseScrollWheel(const QWidget *parentWidget)
 {
-    QList<QWidget*> widgetList = parentWidget.findChildren<QWidget*>();
+    QList<QWidget*> widgetList = parentWidget->findChildren<QWidget*>();
 
     foreach (QWidget *widget, widgetList)
     {
@@ -350,7 +359,7 @@ void WaypointEditableView::initializeActionView(int actionID)
 
     // Make sure the mouse or trackpad scrolling doesn't
     // change a value when you hover over it
-    disableMouseScrollWheel(*m_ui->customActionWidget);
+    disableMouseScrollWheel(this);
 }
 
 void WaypointEditableView::deleted(QObject* waypoint)

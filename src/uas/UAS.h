@@ -218,6 +218,32 @@ public:
         return m_gps_hdop;
     }
 
+    void setGpsFix(int val)
+    {
+        m_gps_fix = val;
+        emit gpsFixChanged(val,"GPS FIX");
+        emit valueChanged(this->uasId,"GPS FIX","",QVariant(val),getUnixTime());
+    }
+
+    double getGpsFix() const
+    {
+        return m_gps_fix;
+    }
+
+    QString getGpsFixString()
+    {
+        switch(m_gps_fix){
+        case 3:
+            return "3D";
+        case 2:
+            return "2D";
+        case 1:
+            return "1";
+        default:
+            return ".";
+        }
+    }
+
     virtual bool localPositionKnown() const
     {
         return isLocalPositionKnown;
@@ -440,8 +466,9 @@ protected: //COMMENTS FOR TEST UNIT
     double longitude;           ///< Global longitude as estimated by position estimator
     double altitude;            ///< Global altitude as estimated by position estimator
 
-    int m_satelliteCount;      ///< Number of satellites visible to raw GPS
-    double m_gps_hdop;      ///< GPS HDOP
+    int m_satelliteCount;       ///< Number of satellites visible to raw GPS
+    double m_gps_hdop;          ///< GPS HDOP
+    int m_gps_fix;              ///< GPS FIX type 1, 2 = 2D, 3 = 3D
     bool globalEstimatorActive; ///< Global position estimator present, do not fall back to GPS raw for position
     double latitude_gps;        ///< Global latitude as estimated by raw GPS
     double longitude_gps;       ///< Global longitude as estimated by raw GPS
@@ -887,6 +914,10 @@ signals:
     /** @brief HIL actuator outputs have changed */
     void hilActuatorsChanged(uint64_t time, float act1, float act2, float act3, float act4, float act5, float act6, float act7, float act8);
 
+    /** @brief Raw servo output values */
+    void servoRawOutputChanged(uint64_t time, float act1, float act2, float act3, float act4, float act5, float act6, float act7, float act8);
+
+
     void localXChanged(double val,QString name);
     void localYChanged(double val,QString name);
     void localZChanged(double val,QString name);
@@ -898,6 +929,7 @@ signals:
     void yawChanged(double val,QString name);
     void satelliteCountChanged(int val,QString name);
     void gpsHdopChanged(double val, QString name);
+    void gpsFixChanged(int val, QString name);
     void distToWaypointChanged(double val,QString name);
     void groundSpeedChanged(double val, QString name);
     void bearingToWaypointChanged(double val,QString name);

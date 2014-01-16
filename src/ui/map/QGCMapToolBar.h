@@ -32,6 +32,10 @@ public slots:
     void goHome();
 
 private:
+    void loadSettings();
+    void storeSettings();
+
+private:
     Ui::QGCMapToolBar *ui;
 
 protected:

@@ -21,11 +21,12 @@ public:
     // const QMap<QString, UASParameter*>& aParamaterList should be a global
     // Parameter Manager
     void setCurrentList(QMap<QString, UASParameter*>& aParamaterList);
-    void populateParamListFromString(QString paramString, QMap<QString, UASParameter *> *list);
+    static void populateParamListFromString(QString paramString, QMap<QString, UASParameter *> *list, QWidget *widget);
     void compareLists();
 
 private slots:
     void loadParameterFile();
+    void loadParameterFile(const QString& filename);
     void saveNewParameters();
     void checkAll();
 

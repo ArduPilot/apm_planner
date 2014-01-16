@@ -25,6 +25,10 @@ public slots:
     void updateGPSAltitude(UASInterface* uas, double altitude, quint64 timestamp);
     void updateNavigationControllerErrors(UASInterface* uas, double altitudeError, double speedError, double xtrackError);
 
+    void uasTextMessage(int uasid, int componentid, int severity, QString text);
+
+    void preArmMessageTimeout();
+
     /** @brief Set the currently monitored UAS */
     //void addUAS(UASInterface* uas);
     void forgetUAS(UASInterface* uas);
@@ -125,6 +129,10 @@ private:
     SpeedMode speedMode;
     */
 
+    bool preArmCheckFailure;
+    QString preArmCheckMessage;
+    QTimer *preArmMessageTimer;
+
     bool didReceivePrimaryAltitude;
     bool didReceivePrimarySpeed;
 
@@ -176,7 +184,7 @@ private:
     static const int tickValues[];
     static const QString compassWindNames[];
 
-    static const int updateInterval = 40;   
+    static const int updateInterval = 250;
 };
 
 #endif // PRIMARYFLIGHTDISPLAY_H

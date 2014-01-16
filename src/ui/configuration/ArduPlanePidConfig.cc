@@ -52,21 +52,6 @@ ArduPlanePidConfig::ArduPlanePidConfig(QWidget *parent) : AP2ConfigWidget(parent
     m_nameToBoxMap["YW2SRV_D"] = ui.servoYawDSpinBox;
     m_nameToBoxMap["YW2SRV_IMAX"] = ui.servoYawIMAXSpinBox;
 
-    m_nameToBoxMap["ALT2PTCH_P"] = ui.navAltPSpinBox;
-    m_nameToBoxMap["ALT2PTCH_I"] = ui.navAltISpinBox;
-    m_nameToBoxMap["ALT2PTCH_D"] = ui.navAltDSpinBox;
-    m_nameToBoxMap["ALT2PTCH_IMAX"] = ui.navAltIMAXSpinBox;
-
-    m_nameToBoxMap["ARSP2PTCH_P"] = ui.navASPSpinBox;
-    m_nameToBoxMap["ARSP2PTCH_I"] = ui.navASISpinBox;
-    m_nameToBoxMap["ARSP2PTCH_D"] = ui.navASDSpinBox;
-    m_nameToBoxMap["ARSP2PTCH_IMAX"] = ui.navASIMAXSpinBox;
-
-    m_nameToBoxMap["ENRGY2THR_P"] = ui.energyPSpinBox;
-    m_nameToBoxMap["ENRGY2THR_I"] = ui.energyISpinBox;
-    m_nameToBoxMap["ENRGY2THR_D"] = ui.energyDSpinBox;
-    m_nameToBoxMap["ENRGY2THR_IMAX"] = ui.energyIMAXSpinBox;
-
     m_nameToBoxMap["KFF_PTCH2THR"] = ui.otherPitchCompSpinBox;
     m_nameToBoxMap["KFF_PTCHCOMP"] = ui.otherPtTSpinBox;
     m_nameToBoxMap["KFF_RDDRMIX"] = ui.otherRudderMixSpinBox;
@@ -88,6 +73,12 @@ ArduPlanePidConfig::ArduPlanePidConfig(QWidget *parent) : AP2ConfigWidget(parent
     m_nameToBoxMap["LIM_PITCH_MAX"] = ui.navPitchMaxSpinBox;
     m_nameToBoxMap["LIM_PITCH_MIN"] = ui.navPitchMinSpinBox;
 
+    m_nameToBoxMap["TECS_CLMB_MAX"] = ui.climbMaxSpinBox;
+    m_nameToBoxMap["TECS_SINK_MIN"] = ui.sinkMinSpinBox;
+    m_nameToBoxMap["TECS_SINK_MAX"] = ui.sinkMaxSpinBox;
+    m_nameToBoxMap["TECS_PTCH_DAMP"] = ui.pitchDampSpinBox;
+    m_nameToBoxMap["TECS_TIME_CONST"] = ui.timeConstSpinBox;
+
     connect(ui.writePushButton,SIGNAL(clicked()),this,SLOT(writeButtonClicked()));
     connect(ui.refreshPushButton,SIGNAL(clicked()),this,SLOT(refreshButtonClicked()));
     initConnections();
@@ -96,6 +87,7 @@ ArduPlanePidConfig::ArduPlanePidConfig(QWidget *parent) : AP2ConfigWidget(parent
 ArduPlanePidConfig::~ArduPlanePidConfig()
 {
 }
+
 void ArduPlanePidConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
     if (m_nameToBoxMap.contains(parameterName))

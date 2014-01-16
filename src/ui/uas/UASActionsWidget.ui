@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>417</width>
-    <height>376</height>
+    <height>315</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,13 +34,13 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>150</height>
+       <height>112</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>150</height>
+       <height>125</height>
       </size>
      </property>
      <property name="title">
@@ -138,13 +138,13 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>125</height>
+       <height>95</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>125</height>
+       <height>100</height>
       </size>
      </property>
      <property name="title">
@@ -262,7 +262,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>96</height>
+       <height>82</height>
       </size>
      </property>
      <property name="maximumSize">
@@ -280,7 +280,7 @@
         <property name="minimumSize">
          <size>
           <width>75</width>
-          <height>30</height>
+          <height>22</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -319,7 +319,7 @@ QPushButton:pressed {
         <property name="minimumSize">
          <size>
           <width>75</width>
-          <height>30</height>
+          <height>22</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -358,13 +358,13 @@ QPushButton:pressed {
         <property name="minimumSize">
          <size>
           <width>75</width>
-          <height>30</height>
+          <height>22</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>75</width>
-          <height>16777215</height>
+          <height>30</height>
          </size>
         </property>
         <property name="styleSheet">
@@ -398,7 +398,7 @@ QPushButton:pressed {
         <property name="minimumSize">
          <size>
           <width>75</width>
-          <height>30</height>
+          <height>22</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -438,7 +438,7 @@ QPushButton:pressed {
         <property name="minimumSize">
          <size>
           <width>75</width>
-          <height>30</height>
+          <height>22</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -477,7 +477,7 @@ QPushButton:pressed {
         <property name="minimumSize">
          <size>
           <width>75</width>
-          <height>30</height>
+          <height>22</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -514,7 +514,7 @@ QPushButton:pressed {
         <property name="minimumSize">
          <size>
           <width>75</width>
-          <height>30</height>
+          <height>22</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -552,7 +552,7 @@ QPushButton:pressed {
         <property name="minimumSize">
          <size>
           <width>75</width>
-          <height>30</height>
+          <height>22</height>
          </size>
         </property>
         <property name="maximumSize">

@@ -111,6 +111,11 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     localX(0.0),
     localY(0.0),
     localZ(0.0),
+    latitude(0.0),
+    longitude(0.0),
+    altitude(0.0),
+    m_satelliteCount(0),
+    m_gps_hdop(0.0f),
     globalEstimatorActive(false),
     latitude_gps(0.0),
     longitude_gps(0.0),
@@ -783,13 +788,17 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit localizationChanged(this, loc_type);
             setSatelliteCount(pos.satellites_visible);
             setGpsHdop(pos.eph/100.0f);
+            setGpsFix(pos.fix_type);
+
+            // emit raw GPS message
+            latitude_gps = pos.lat/(double)1E7;
+            longitude_gps = pos.lon/(double)1E7;
+            altitude_gps = pos.alt/1000.0;
+            emit gpsRawChanged(this, latitude_gps, longitude_gps, altitude_gps,
+                               pos.satellites_visible, getGpsHdop(),time);
 
             if (pos.fix_type > 2)
             {
-                latitude_gps = pos.lat/(double)1E7;
-                longitude_gps = pos.lon/(double)1E7;
-                altitude_gps = pos.alt/1000.0;
-
                 // If no GLOBAL_POSITION_INT messages ever received, use these raw GPS values instead.
                 if (!globalEstimatorActive) {
                     setLatitude(latitude_gps);
@@ -1194,6 +1203,10 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                                      static_cast<float>(raw.servo4_raw), static_cast<float>(raw.servo5_raw), static_cast<float>(raw.servo6_raw),
                                      static_cast<float>(raw.servo7_raw), static_cast<float>(raw.servo8_raw));
             }
+            emit servoRawOutputChanged(static_cast<uint64_t>(getUnixTimeFromMs(raw.time_usec)), static_cast<float>(raw.servo1_raw),
+                                 static_cast<float>(raw.servo2_raw), static_cast<float>(raw.servo3_raw),
+                                 static_cast<float>(raw.servo4_raw), static_cast<float>(raw.servo5_raw), static_cast<float>(raw.servo6_raw),
+                                 static_cast<float>(raw.servo7_raw), static_cast<float>(raw.servo8_raw));
         }
         break;
 #ifdef MAVLINK_ENABLED_PIXHAWK
@@ -1401,9 +1414,10 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             if (!unknownPackets.contains(message.msgid))
             {
                 unknownPackets.append(message.msgid);
+#ifdef QT_DEBUG // Remove these messages from the release build
                 QString errString = tr("UNABLE TO DECODE MESSAGE NUMBER %1").arg(message.msgid);
-                //GAudioOutput::instance()->say(errString+tr(", please check console for details."));
                 emit textMessageReceived(uasId, message.compid, 255, errString);
+#endif
                 QLOG_INFO() << "Unable to decode message from system " << message.sysid
                             << " with message id:" << message.msgid;
             }

@@ -12,12 +12,14 @@
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
     m_uas = 0;
+    m_startIndex = 0;
     m_axisGroupingDialog = 0;
     m_logLoaderThread= 0;
     m_logLoaded = false;
     m_progressDialog=0;
     m_currentIndex=0;
     m_graphCount=0;
+    m_showOnlyActive = false;
 
     ui.setupUi(this);
 
@@ -36,6 +38,11 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     m_wideAxisRect->setupFullAxesBox(true);
     m_wideAxisRect->axis(QCPAxis::atRight, 0)->setTickLabels(false);
     m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft,0));
+
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(18000,18100); //Default range of 0-100 milliseconds?
+
 
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect);
 
@@ -72,23 +79,26 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     QTimer *timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
     timer->start(500);
+
+    connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
 }
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
 {
-    //This is disabled for the time being. TODO: Fix this so it works properly.
-    return;
+    graphControlsButtonClicked();
+}
+void AP2DataPlot2D::graphControlsButtonClicked()
+{
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->show();
         return;
     }
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
-    connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString)),this,SLOT(graphAddedToGroup(QString,QString)));
+    connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString,double)),this,SLOT(graphAddedToGroup(QString,QString,double)));
     connect(m_axisGroupingDialog,SIGNAL(graphRemovedFromGroup(QString)),this,SLOT(graphRemovedFromGroup(QString)));
-    //QMap<QString,QCPAxis*> m_axisList;
     for(QMap<QString,QCPAxis*>::const_iterator i=m_axisList.constBegin();i!=m_axisList.constEnd();i++)
     {
-        m_axisGroupingDialog->addAxis(i.key(),i.value()->range().lower,i.value()->range().upper);
+        m_axisGroupingDialog->addAxis(i.key(),i.value()->range().lower,i.value()->range().upper,i.value()->labelColor());
     }
     m_axisGroupingDialog->show();
 }
@@ -138,6 +148,39 @@ void AP2DataPlot2D::removeGraphLeft()
         m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
     }
 }
+void AP2DataPlot2D::showOnlyClicked()
+{
+    if (ui.tableWidget->selectedItems().size() == 0)
+    {
+        return;
+    }
+    QString name = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
+    for (int i=0;i<ui.tableWidget->rowCount();i++)
+    {
+        if (ui.tableWidget->item(i,0))
+        {
+            if (ui.tableWidget->item(i,0)->text() != name)
+            {
+                ui.tableWidget->hideRow(i);
+            }
+        }
+        else
+        {
+            ui.tableWidget->hideRow(i);
+        }
+    }
+    m_showOnlyActive = true;
+
+
+}
+void AP2DataPlot2D::showAllClicked()
+{
+    for (int i=0;i<ui.tableWidget->rowCount();i++)
+    {
+        ui.tableWidget->showRow(i);
+    }
+    m_showOnlyActive = false;
+}
 
 void AP2DataPlot2D::tableCellClicked(int row,int column)
 {
@@ -149,13 +192,17 @@ void AP2DataPlot2D::tableCellClicked(int row,int column)
             QStringList split = formatstr.split(",");
             for (int i=0;i<split.size();i++)
             {
-                ui.tableWidget->setHorizontalHeaderItem(i+1,new QTableWidgetItem(split[i]));
+                QTableWidgetItem *item = new QTableWidgetItem(split[i]);
+                item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+                ui.tableWidget->setHorizontalHeaderItem(i+1,item);
             }
             for (int i=split.size();i<ui.tableWidget->columnCount()-1;i++)
             {
-                ui.tableWidget->setHorizontalHeaderItem(i+1,new QTableWidgetItem(""));
+                QTableWidgetItem *item = new QTableWidgetItem();
+                item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+                ui.tableWidget->setHorizontalHeaderItem(i+1,item);
             }
-            if (ui.tableWidget->horizontalHeaderItem(column))
+            if (ui.tableWidget->horizontalHeaderItem(column) && column != 0)
             {
                 if (m_axisList.contains(ui.tableWidget->item(row,0)->text() + "." + ui.tableWidget->horizontalHeaderItem(column)->text()))
                 {
@@ -163,6 +210,8 @@ void AP2DataPlot2D::tableCellClicked(int row,int column)
                     m_addGraphAction->setText("Remove From Graph");
                     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
                     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
                     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft()));
                 }
                 else
@@ -170,8 +219,33 @@ void AP2DataPlot2D::tableCellClicked(int row,int column)
                     m_addGraphAction->setText("Add To Graph");
                     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
                     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
                     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
                 }
+            }
+            else
+            {
+                //This is column 0
+                if (m_showOnlyActive)
+                {
+                    m_addGraphAction->setText("Show All");
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+                }
+                else
+                {
+                    m_addGraphAction->setText("Show only these rows");
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+                }
+
             }
         }
     }
@@ -184,10 +258,10 @@ void AP2DataPlot2D::autoScrollClicked(bool checked)
     {
         if (m_graphCount > 0)
         {
+            double msec_current = ((QDateTime::currentMSecsSinceEpoch()- m_startIndex) + 18000000) / 1000.0;
             double difference = m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower;
-            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_currentIndex - difference);
-            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(m_currentIndex);
-            m_plot->replot();
+            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(msec_current - difference);
+            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(msec_current);
         }
     }
 }
@@ -211,6 +285,8 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
     }
+    m_currentIndex = QDateTime::currentMSecsSinceEpoch();
+    m_startIndex = m_currentIndex;
     m_uas = uas;
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
@@ -254,8 +330,8 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     {
         //Also doesn't exist on the data select screen
         m_dataSelectionScreen->addItem(propername);
-        m_nameToAxisIndex[propername] = m_currentIndex;
-    }
+        m_nameToAxisIndex[propername] = msec;
+    }/*
     else
     {
         if (m_nameToAxisIndex[propername] == m_currentIndex)
@@ -267,11 +343,37 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
                 m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(m_currentIndex);
             }
         }
+    }*/
+    qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
+    m_currentIndex = msec_current;
+    qint64 newmsec = (msec_current - m_startIndex) + 18000000;
+    if (m_graphCount > 0 && ui.autoScrollCheckBox->isChecked())
+    {
+        double diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
+        m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower + diff);
+        m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper((newmsec / 1000.0));
     }
-    m_nameToAxisIndex[propername] = m_currentIndex;
+    //qDebug() << "Time:" << QDateTime::fromMSecsSinceEpoch(msec).toString();
+    //qDebug() << "Time:" << QDateTime::fromMSecsSinceEpoch(m_startIndex).toString();
+    //qDebug() << "Time:" << msec_current;//(int)(newmsec / 1000.0);
+    m_nameToAxisIndex[propername] = newmsec / 1000.0;// + 18000000;
     if (m_graphMap.contains(propername))
     {
         m_graphMap[propername]->addData(m_nameToAxisIndex[propername],value);
+        //Set a timeout for 30 minutes from now, 1800 seconds.
+        qint64 current = QDateTime::currentMSecsSinceEpoch();
+        //This is 30 minutes
+        m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 1800000,msec));
+        //This is 1 minute
+        //m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 60000,m_currentIndex));
+        if (m_onlineValueTimeoutList[0].first <= current)
+        {
+            for (QMap<QString,QCPGraph*>::const_iterator i=m_graphMap.constBegin();i!=m_graphMap.constEnd();i++)
+            {
+                i.value()->removeData(0,m_onlineValueTimeoutList[0].second);
+            }
+            m_onlineValueTimeoutList.removeAt(0);
+        }
         if (m_graphToGroupMap.contains(propername))
         {
             //It's in a group
@@ -292,7 +394,6 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
                     //m_axisList[
                    m_axisList[m_graphGrouping[m_graphToGroupMap[propername]][i]]->setRange(m_graphGroupRanges[m_graphToGroupMap[propername]]);
                 }
-
             }
         }
         else if (!m_graphMap[propername]->keyAxis()->range().contains(value))
@@ -383,11 +484,20 @@ void AP2DataPlot2D::loadButtonClicked()
         ui.hideExcelView->setVisible(false);
         //<html><head/><body><p align="center">asdf</p></body></html>
         ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(18000,18100); //Default range of 0-100 milliseconds?
+        m_currentIndex = QDateTime::currentMSecsSinceEpoch();
+        m_startIndex = m_currentIndex;
         return;
     }
     else
     {
         ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded</span></p>");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
+        //m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+        //m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(18000,18100); //Default range of 0-100 milliseconds?
     }
     ui.tableWidget->setVisible(true);
     ui.hideExcelView->setVisible(true);
@@ -501,12 +611,9 @@ void AP2DataPlot2D::itemEnabled(QString name)
                     }
                     if (m_axisGroupingDialog)
                     {
-                        m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper);
+                        m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
                     }
-
-                   // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
                     mainGraph1->setPen(QPen(color, 2));
-                    m_plot->replot();
                     return;
                 }
             }
@@ -559,27 +666,35 @@ void AP2DataPlot2D::itemEnabled(QString name)
             }
             if (m_axisGroupingDialog)
             {
-                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper);
+                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
             }
 
            // mainGraph1->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QPen(Qt::black), QBrush(Qt::white), 6));
             mainGraph1->setPen(QPen(color, 2));
-            m_plot->replot();
-
         }
-
     }
 }
-void AP2DataPlot2D::graphAddedToGroup(QString name,QString group)
+void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
 {
     if (!m_graphGrouping.contains(group))
     {
         m_graphGrouping[group] = QList<QString>();
         m_graphGroupRanges[group] = m_axisList[name]->range();
     }
-    if (m_graphGrouping[group].contains(name))
+    if (m_graphToGroupMap.contains(name))
     {
-        return;
+        if (m_graphToGroupMap.value(name) == group)
+        {
+            return;
+        }
+        else if (m_graphGrouping[group].contains(name))
+        {
+            return;
+        }
+        else
+        {
+            graphRemovedFromGroup(name);
+        }
     }
     m_graphToGroupMap[name] = group;
     m_graphGrouping[group].append(name);
@@ -594,8 +709,8 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group)
     for (int i=0;i<m_graphGrouping[group].size();i++)
     {
         m_axisList[m_graphGrouping[group][i]]->setRange(m_graphGroupRanges[group]);
-        qDebug() << "resizing graph:" << m_graphGrouping[group][i] << "in group" << group << "min:" << m_graphGroupRanges[group].lower << "max:" << m_graphGroupRanges[group].upper;
     }
+    //m_axisList[m_graphGrouping[group][i]]->scaleRange(scale,m_axisList[m_graphGrouping[group][i]]->range().center);
     m_plot->replot();
 }
 
@@ -617,7 +732,6 @@ void AP2DataPlot2D::graphRemovedFromGroup(QString name)
     }
     for (int i=0;i<m_graphGrouping[group].size();i++)
     {
-        qDebug() << "resizing graph:" << m_graphGrouping[group][i] << "in group" << group;
         if (m_axisList[m_graphGrouping[group][i]]->range().upper > m_graphGroupRanges[group].upper)
         {
             m_graphGroupRanges[group].upper = m_axisList[m_graphGrouping[group][i]]->range().upper;

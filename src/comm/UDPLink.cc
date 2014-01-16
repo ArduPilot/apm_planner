@@ -297,7 +297,7 @@ bool UDPLink::connect()
 		this->wait();
 	}
     bool connected = this->hardwareConnect();
-    start(HighPriority);
+    start(LowPriority);
     return connected;
 }
 

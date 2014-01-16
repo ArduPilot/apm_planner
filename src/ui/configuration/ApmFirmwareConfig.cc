@@ -162,6 +162,16 @@ void ApmFirmwareConfig::populateSerialPorts()
     {
         setLink(ui.linkComboBox->currentIndex());
     }
+    if (ui.linkComboBox->count() == 0)
+    {
+        //no ports found
+        ui.linkComboBox->setEnabled(false);
+        ui.comPortNameLabel->setText("No valid device found. \nCheck to be sure your APM2.5+ \n or Pixhawk/PX4 device is plugged in, and \ndrivers are installed.");
+    }
+    else
+    {
+        ui.linkComboBox->setEnabled(true);
+    }
 }
 
 void ApmFirmwareConfig::showEvent(QShowEvent *)
@@ -662,7 +672,7 @@ void ApmFirmwareConfig::downloadFinished()
 
         avrdudeExecutable = "avrdude/avrdude.exe";
 #endif
-#ifdef Q_OS_MAC
+#if defined(Q_OS_MAC)||defined(Q_OS_LINUX)
 
         // Check for avrdude in the /usr/local/bin
         // This could be that a user install this via brew etc..
@@ -672,19 +682,28 @@ void ApmFirmwareConfig::downloadFinished()
             // Use the copy in /user/local/bin
             avrdudeExecutable = "/usr/local/bin/avrdude";
 
+        } else if (avrdude.exists("/usr/bin/avrdude")){
+            // Use the linux version
+            avrdudeExecutable = "/usr/bin/avrdude";
+
         } else if (avrdude.exists("/usr/local/CrossPack-AVR/bin/avrdude")){
-            // Use the installed Cross Pack Version
+            // Use the installed Cross Pack Version (OSX)
             avrdudeExecutable = "/usr/local/CrossPack-AVR/bin/avrdude";
 
         } else {
             avrdudeExecutable = "";
         }
-
+#endif
+#ifdef Q_OS_MAC
         stringList = QStringList() << "-v" << "-pm2560"
                                    << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
                                    << QString("-Uflash:w:").append(filename).append(":i");
 #endif
-
+#ifdef Q_OS_LINUX
+        stringList = QStringList() << "-v" << "-pm2560"
+                                   << "-cstk500" << QString("-P/dev/").append(m_settings.name)
+                                   << QString("-Uflash:w:").append(filename).append(":i");
+#endif
     // Start the Flashing
 
         QLOG_DEBUG() << avrdudeExecutable << stringList;

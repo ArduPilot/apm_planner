@@ -180,10 +180,6 @@ MainWindow::MainWindow(QWidget *parent):
 
     ui.actionSimulate->setVisible(false);
 
-
-
-
-
     // We only need this menu if we have more than one system
     //    ui.menuConnected_Systems->setEnabled(false);
 
@@ -355,6 +351,32 @@ MainWindow::MainWindow(QWidget *parent):
     //Disable firmware update and unconnected view buttons, as they aren't required for the moment.
     ui.actionFirmwareUpdateView->setVisible(false);
     ui.actionUnconnectedView->setVisible(false);
+
+    //in Linux, query if we have the correct permissions to
+    //access USB serial devices
+#ifdef Q_OS_LINUX
+    QFile permFile("/etc/group");
+    if(permFile.open(QIODevice::ReadOnly))
+    {
+        while(!permFile.atEnd())
+        {
+            QString line = permFile.readLine();
+            if(line.contains("dialout") && !line.contains(getenv("USER")))
+            {
+                QMessageBox msgBox;
+                msgBox.setIcon(QMessageBox::Information);
+                msgBox.setInformativeText(tr("The current user does not have the correct permissions to access serial devices. Use \"sudo adduser <username> dialout\" and then log out and in again"));
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                msgBox.exec();
+                QLOG_INFO() << "User does not have permissions to serial devices";
+                break;
+            }
+        }
+        permFile.close();
+    }
+#endif
+
 }
 
 MainWindow::~MainWindow()
@@ -364,11 +386,7 @@ MainWindow::~MainWindow()
         delete mavlink;
         mavlink = NULL;
     }
-    //    if (simulationLink)
-    //    {
-    //        simulationLink->deleteLater();
-    //        simulationLink = NULL;
-    //    }
+
     if (joystick)
     {
         joystick->shutdown();
@@ -703,7 +721,7 @@ void MainWindow::buildCommonWidgets()
     }
 #endif
 
-#if (defined _MSC_VER) /*| (defined Q_OS_MAC_OFF)*/
+#if defined(GOOGLE_EARTH_VIEW)/*(defined _MSC_VER) | (defined Q_OS_MAC)*/
     if (!earthWidget)
     {
         earthWidget = new QGCGoogleEarthView(this);
@@ -1596,9 +1614,10 @@ void MainWindow::connectCommonActions()
     }
 
     connect(ui.actionDebug_Console,SIGNAL(triggered()),debugOutput,SLOT(show()));
-
+    connect(ui.actionSimulate, SIGNAL(triggered(bool)), this, SLOT(simulateLink(bool)));
 
     //Disable simulation view until we ensure it's operational.
+    ui.actionSimulate->setVisible(false);
     ui.actionSimulationView->setVisible(false);
 }
 
@@ -1737,10 +1756,8 @@ void MainWindow::addLink(LinkInterface *link)
         }
     }
 
-    //UDPLink* udp = dynamic_cast<UDPLink*>(link);
-
     if (!found)
-    {  //  || udp
+    {
         CommConfigurationWindow* commWidget = new CommConfigurationWindow(link, mavlink, NULL);
         commsWidgetList.append(commWidget);
         connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
@@ -1749,13 +1766,13 @@ void MainWindow::addLink(LinkInterface *link)
 
         // Error handling
         connect(link, SIGNAL(communicationError(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);
-        // Special case for simulationlink
-        MAVLinkSimulationLink* sim = dynamic_cast<MAVLinkSimulationLink*>(link);
-        if (sim)
-        {
-            connect(ui.actionSimulate, SIGNAL(triggered(bool)), sim, SLOT(connectLink(bool)));
-        }
     }
+}
+
+void MainWindow::simulateLink(bool simulate) {
+    if (!simulationLink.isNull())
+        simulationLink = new MAVLinkSimulationLink(":/demo-log.txt");
+    simulationLink->connectLink(simulate);
 }
 
 //void MainWindow::configLink(LinkInterface *link)

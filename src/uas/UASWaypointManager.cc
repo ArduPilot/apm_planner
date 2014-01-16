@@ -39,7 +39,7 @@ This file is part of the QGROUNDCONTROL project
 #define PROTOCOL_TIMEOUT_MS 2000    ///< maximum time to wait for pending messages until timeout
 #define PROTOCOL_DELAY_MS 20        ///< minimum delay between sent messages
 #define PROTOCOL_MAX_RETRIES 5      ///< maximum number of send retries (after timeout)
-const float UASWaypointManager::defaultAltitudeHomeOffset   = 30.0f;
+
 UASWaypointManager::UASWaypointManager(UAS* _uas)
     : uas(_uas),
       current_retries(0),
@@ -49,7 +49,9 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
       current_partner_systemid(0),
       current_partner_compid(0),
       currentWaypointEditable(NULL),
-      protocol_timer(this)
+      protocol_timer(this),
+      m_defaultAcceptanceRadius(5.0f),
+      m_defaultRelativeAlt(25.0f)
 {
     if (uas)
     {
@@ -418,7 +420,7 @@ Waypoint* UASWaypointManager::createWaypoint(bool enforceFirstActive)
     Waypoint* wp = new Waypoint();
     wp->setId(waypointsEditable.count());
     wp->setFrame((MAV_FRAME)getFrameRecommendation());
-    wp->setAltitude(getAltitudeRecommendation());
+    wp->setAltitude(getAltitudeRecommendation(wp->getFrame()));
     wp->setAcceptanceRadius(getAcceptanceRadiusRecommendation());
     if (enforceFirstActive && waypointsEditable.count() == 0)
     {
@@ -1062,54 +1064,59 @@ UAS* UASWaypointManager::getUAS() {
     return this->uas;    ///< Returns the owning UAS
 }
 
-float UASWaypointManager::getAltitudeRecommendation()
+double UASWaypointManager::getAltitudeRecommendation(MAV_FRAME frame)
 {
-    if (waypointsEditable.count() > 0) {
-        return waypointsEditable.last()->getAltitude();
-    } else {
-        return UASManager::instance()->getHomeAltitude() + getHomeAltitudeOffsetDefault();
+    if (frame == MAV_FRAME_GLOBAL) {
+        if (waypointsEditable.count() == 1)
+            return waypointsEditable.last()->getAltitude() + m_defaultRelativeAlt;
+        else if (waypointsEditable.count() > 1)
+            return waypointsEditable.last()->getAltitude();
+        else
+            return 0.0f; // This returns 0.0m for NAV: Home
+
+    } else { // working in the relative frame
+        if (waypointsEditable.count() == 1)
+            return m_defaultRelativeAlt;
+        else if (waypointsEditable.count() > 1)
+            return waypointsEditable.last()->getAltitude();
+        else
+            return 0.0f; // This returns 0.0m for NAV: Home
     }
 }
 
 int UASWaypointManager::getFrameRecommendation()
 {
-    if (!uas)
+    // APM always uses waypoint 0 as HOME location (ie. it's MAV_FRAME_GLOBAL)
+    if (!uas) {
         // Offline Edit mode.
-        return MAV_FRAME_GLOBAL_RELATIVE_ALT;
-
-    switch(uas->getAutopilotType()){
-    case MAV_AUTOPILOT_ARDUPILOTMEGA: {
-        // APM always uses waypoint 0 as HOME location (ie. it's MAV_FRAME_GLOBAL)
-        if (waypointsEditable.count() > 1) {
+        if (waypointsEditable.count() == 0){ // Home is always ABS ALT.
+            return MAV_FRAME_GLOBAL;
+        } else if (waypointsEditable.count() > 1) {
             // new waypoints adopt the last waypoint setting by default.
             return static_cast<int>(waypointsEditable.last()->getFrame());
         } else {
+            // Always make WP1 in offline mode relative
             return MAV_FRAME_GLOBAL_RELATIVE_ALT;
-        }
-
-    }break;
-    default:
-        if (waypointsEditable.count() > 0) {
-            return static_cast<int>(waypointsEditable.last()->getFrame());
-        } else {
-            return MAV_FRAME_GLOBAL;
         }
     }
 
+    // Online edit rules
+    if (waypointsEditable.count() > 1) {
+        // new waypoints adopt the last waypoint setting by default.
+        return static_cast<int>(waypointsEditable.last()->getFrame());
+    } else {
+        // Always make WP1 relative
+        return MAV_FRAME_GLOBAL_RELATIVE_ALT;
+    }
 }
 
-float UASWaypointManager::getAcceptanceRadiusRecommendation()
+double UASWaypointManager::getAcceptanceRadiusRecommendation()
 {
     if (waypointsEditable.count() > 0) {
         return waypointsEditable.last()->getAcceptanceRadius();
     } else {
-        return 10.0f;
+        return m_defaultAcceptanceRadius;
     }
-}
-
-float UASWaypointManager::getHomeAltitudeOffsetDefault()
-{
-    return defaultAltitudeHomeOffset;
 }
 
 const Waypoint *UASWaypointManager::getWaypoint(int index)

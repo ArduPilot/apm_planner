@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>535</width>
-    <height>427</height>
+    <width>694</width>
+    <height>459</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,8 +28,8 @@
         <rect>
          <x>18</x>
          <y>51</y>
-         <width>164</width>
-         <height>18</height>
+         <width>175</width>
+         <height>20</height>
         </rect>
        </property>
        <property name="toolTip">
@@ -39,25 +39,12 @@
         <string>Enable low power mode</string>
        </property>
       </widget>
-      <widget class="QRadioButton" name="outdoorStyle">
-       <property name="geometry">
-        <rect>
-         <x>18</x>
-         <y>107</y>
-         <width>282</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Use outdoor mission style (light background)</string>
-       </property>
-      </widget>
       <widget class="QCheckBox" name="audioMuteCheckBox">
        <property name="geometry">
         <rect>
          <x>18</x>
          <y>9</y>
-         <width>166</width>
+         <width>181</width>
          <height>20</height>
         </rect>
        </property>
@@ -69,26 +56,13 @@
          <normaloff>:/files/images/status/audio-volume-muted.svg</normaloff>:/files/images/status/audio-volume-muted.svg</iconset>
        </property>
       </widget>
-      <widget class="QRadioButton" name="indoorStyle">
-       <property name="geometry">
-        <rect>
-         <x>18</x>
-         <y>124</y>
-         <width>280</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Use indoor mission style (black background)</string>
-       </property>
-      </widget>
       <widget class="QCheckBox" name="titleBarCheckBox">
        <property name="geometry">
         <rect>
          <x>18</x>
          <y>70</y>
-         <width>381</width>
-         <height>18</height>
+         <width>409</width>
+         <height>20</height>
         </rect>
        </property>
        <property name="text">
@@ -103,7 +77,7 @@
         <rect>
          <x>18</x>
          <y>30</y>
-         <width>357</width>
+         <width>394</width>
          <height>20</height>
         </rect>
        </property>
@@ -115,27 +89,11 @@
          <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
        </property>
       </widget>
-      <widget class="QRadioButton" name="nativeStyle">
-       <property name="geometry">
-        <rect>
-         <x>18</x>
-         <y>90</y>
-         <width>365</width>
-         <height>18</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Use native platform look and feel (Windows/Linux/Mac OS)</string>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
       <widget class="QGroupBox" name="groupBox">
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>150</y>
+         <y>190</y>
          <width>471</width>
          <height>221</height>
         </rect>
@@ -143,7 +101,7 @@
        <property name="title">
         <string>File Locations</string>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -224,14 +182,80 @@
         </layout>
        </widget>
       </widget>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>90</y>
+         <width>471</width>
+         <height>101</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Themes</string>
+       </property>
+       <widget class="QRadioButton" name="nativeStyle">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>235</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use native platform look and feel</string>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="indoorStyle">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>305</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use indoor mission style (black background)</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="outdoorStyle">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>310</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use outdoor mission style (light background)</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>80</y>
+          <width>254</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>(Windows/Linux/Mac OS) (Experimental)</string>
+        </property>
+       </widget>
+      </widget>
       <zorder>groupBox</zorder>
       <zorder>lowPowerCheckBox</zorder>
-      <zorder>outdoorStyle</zorder>
       <zorder>audioMuteCheckBox</zorder>
-      <zorder>indoorStyle</zorder>
       <zorder>titleBarCheckBox</zorder>
       <zorder>reconnectCheckBox</zorder>
-      <zorder>nativeStyle</zorder>
+      <zorder>groupBox_2</zorder>
      </widget>
     </widget>
    </item>

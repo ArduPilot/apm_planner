@@ -168,8 +168,10 @@ void QGCCore::initialize()
     OpalLink* opalLink = new OpalLink();
     MainWindow::instance()->addLink(opalLink);
 #endif
+#ifdef SIMULATION_LINK
     MAVLinkSimulationLink* simulationLink = new MAVLinkSimulationLink(":/demo-log.txt");
     simulationLink->disconnect();
+#endif
 
 
     //We want to have a default serial link available for "quick" connecting.

@@ -127,7 +127,7 @@ void WaypointViewOnlyView::updateValues()
     {
     case MAV_FRAME_GLOBAL:
     {
-        m_ui->frameLabel->setText(QString("GAA"));
+        m_ui->frameLabel->setText(QString("Abs.Alt"));
         break;
     }
     case MAV_FRAME_LOCAL_NED:
@@ -142,7 +142,7 @@ void WaypointViewOnlyView::updateValues()
     }
     case MAV_FRAME_GLOBAL_RELATIVE_ALT:
     {
-        m_ui->frameLabel->setText(QString("GRA"));
+        m_ui->frameLabel->setText(QString("Rel.Alt"));
         break;
     }
     case MAV_FRAME_LOCAL_ENU:
@@ -180,7 +180,11 @@ void WaypointViewOnlyView::updateValues()
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
-            if (wp->getParam1()>0)
+            if (wp->getId() == 0) // Home Waypoint
+            {
+                m_ui->displayBar->setText(QString("HOME <b>(</b>lat <b>%1<sup>o</sup></b>, lon <b>%2<sup>o</sup></b>, alt <b>%3)</b> yaw: %4;").arg(wp->getX(),0, 'f', 7).arg(wp->getY(),0, 'f', 7).arg(wp->getZ(),0, 'f', 2).arg(wp->getYaw()));
+            }
+            else if (wp->getParam1()>0)
             {
                 m_ui->displayBar->setText(QString("Go to <b>(</b>lat <b>%1<sup>o</sup></b>, lon <b>%2<sup>o</sup></b>, alt <b>%3)</b> and wait there for %4 sec; yaw: %5; rad: %6").arg(wp->getX(),0, 'f', 7).arg(wp->getY(),0, 'f', 7).arg(wp->getZ(),0, 'f', 2).arg(wp->getParam1()).arg(wp->getParam4()).arg(wp->getParam2()));
             }

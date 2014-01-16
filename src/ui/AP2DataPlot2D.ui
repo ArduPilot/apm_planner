@@ -53,6 +53,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="graphControlsPushButton">
+         <property name="text">
+          <string>Graph Controls</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="autoScrollCheckBox">
          <property name="text">
           <string>Auto Scroll With Data</string>

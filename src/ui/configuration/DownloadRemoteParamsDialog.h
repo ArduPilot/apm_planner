@@ -18,17 +18,18 @@ public:
     ~DownloadRemoteParamsDialog();
 
     void startFileDownloadRequest(QUrl url);
-
     void setStatusText(QString text);
-
     QString getDownloadedFileName();
+    void hideLoadFromFileButton();
+
 public slots:
     void refreshParamList();
-    void okButtonClicked();
+    void downloadButtonClicked();
+    void loadFileButtonClicked();
     void closeButtonClicked();
     void httpParamListFinished();
 
-    void downloadParamFile();
+    bool downloadParamFile();
     void cancelDownload();
     void httpFinished();
     void httpReadyRead();

@@ -23,6 +23,8 @@ void QGCMapToolBar::setMap(QGCMapWidget* map)
 {
     this->map = map;
 
+    loadSettings();
+
     if (map)
     {
         connect(ui->goToButton, SIGNAL(clicked()), map, SLOT(showGoToDialog()));
@@ -34,7 +36,7 @@ void QGCMapToolBar::setMap(QGCMapWidget* map)
         connect(map, SIGNAL(OnTilesStillToLoad(int)), this, SLOT(tileLoadProgress(int)));
         connect(ui->ripMapButton, SIGNAL(clicked()), map, SLOT(cacheVisibleRegion()));
 
-        ui->followPushButton->setChecked(map->getFollowUAVEnabled());
+        map->setFollowUAVEnabled(ui->followPushButton->isChecked());
         connect(ui->followPushButton, SIGNAL(clicked(bool)), map, SLOT(setFollowUAVEnabled(bool)));
 
         // Edit mode handling
@@ -261,9 +263,26 @@ void QGCMapToolBar::goHome()
     }
 }
 
+void QGCMapToolBar::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup("QGC_MAPTOOL");
+    bool follow = settings.value("FOLLOW_UAV", false).toBool();
+    ui->followPushButton->setChecked(follow);
+}
+
+void QGCMapToolBar::storeSettings()
+{
+    QSettings settings;
+    settings.beginGroup("QGC_MAPTOOL");
+    settings.setValue("FOLLOW_UAV", ui->followPushButton->isChecked());
+    settings.endGroup();
+    settings.sync();
+}
 
 QGCMapToolBar::~QGCMapToolBar()
 {
+    storeSettings();
     delete ui;
     delete trailSettingsGroup;
     delete updateTimesGroup;

@@ -39,6 +39,7 @@ FrameTypeConfig::FrameTypeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.xRadioButton->setEnabled(false);
     ui.vRadioButton->setEnabled(false);
     ui.plusRadioButton->setEnabled(false);
+    ui.hRadioButton->setEnabled(false);
 
     connect(ui.plusRadioButton,SIGNAL(clicked()),this,SLOT(plusFrameSelected()));
     connect(ui.xRadioButton,SIGNAL(clicked()),this,SLOT(xFrameSelected()));
@@ -57,6 +58,8 @@ void FrameTypeConfig::parameterChanged(int uas, int component, QString parameter
         ui.xRadioButton->setEnabled(true);
         ui.vRadioButton->setEnabled(true);
         ui.plusRadioButton->setEnabled(true);
+        ui.hRadioButton->setEnabled(true);
+
         if (value.toInt() == 0)
         {
             ui.plusRadioButton->setChecked(true);
@@ -68,6 +71,10 @@ void FrameTypeConfig::parameterChanged(int uas, int component, QString parameter
         else if (value.toInt() == 2)
         {
             ui.vRadioButton->setChecked(true);
+        }
+        else if (value.toInt() == 3)
+        {
+            ui.hRadioButton->setChecked(true);
         }
     }
 }
