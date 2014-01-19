@@ -5,6 +5,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QDir>
+#include <QCoreApplication>
 
 /** @brief Polling interval in ms */
 #define SERIAL_POLL_INTERVAL 100
@@ -86,9 +87,11 @@ const int APPLICATIONVERSION = 200; // 2.0.0
     //Returns the absolute parth to the files, data, qml support directories
     //It could be in 1 of 2 places under Linux
     static QString shareDirectory(){
-#ifdef Q_OS_WIN || Q_OS_MAC
+#ifdef Q_OS_WIN
         QDir settingsDir = QDir(QDir::currentPath());
         return  settingsDir.absolutePath();
+#elif defined(Q_OS_MAC)
+        return QCoreApplication::applicationDirPath();
 #else
         QDir settingsDir = QDir(QDir::currentPath());
         if(settingsDir.exists("data") && settingsDir.exists("qml"))

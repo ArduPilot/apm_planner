@@ -42,9 +42,7 @@ APMToolBar::APMToolBar(QWidget *parent):
     QDeclarativeView(parent), m_uas(NULL), m_currentLink(NULL)
 {
     // Configure our QML object
-
-    QDir qmlBaseDir = QDir(qApp->applicationDirPath());
-    QLOG_DEBUG() << "qmlBaseDir" << qmlBaseDir;
+    QLOG_DEBUG() << "qmlBaseDir" << QGC::shareDirectory();
     QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/ApmToolBar.qml");
     QLOG_DEBUG() << url;
     if (!QFile::exists(QGC::shareDirectory() + "/qml/ApmToolBar.qml"))
