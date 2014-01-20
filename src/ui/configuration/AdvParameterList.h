@@ -58,8 +58,12 @@ private slots:
     void saveButtonClicked();
     void downloadRemoteFiles();
     void compareButtonClicked();
+    void findStringInTable(const QString& searchString);
+    void nextItemInSearch();
+    void previousItemInSearch();
 
 private:
+    Ui::AdvParameterList ui;
     QMap<QString, UASParameter*> m_parameterList;
 
     QMap<QString,QTableWidgetItem*> m_paramValueMap;
@@ -69,7 +73,9 @@ private:
     QMap<QString,QString> m_paramToDescriptionMap;
     QMap<QString,double> m_modifiedParamMap;
     QMap<QString,QString> m_paramToUnitMap;
-    Ui::AdvParameterList ui;
+
+    QList<QTableWidgetItem *> m_searchItemList;
+    int m_searchIndex;
 
     ParamDownloadState m_paramDownloadState;
     int m_paramDownloadCount;

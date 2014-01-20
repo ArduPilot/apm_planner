@@ -42,17 +42,23 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     m_paramDownloadCount(0),
     m_writingParams(false),
     m_paramsWritten(0),
-    m_paramsToWrite(0)
+    m_paramsToWrite(0),
+    m_searchIndex(0)
 {
     ui.setupUi(this);
-    connect(ui.refreshPushButton,SIGNAL(clicked()),this,SLOT(refreshButtonClicked()));
-    connect(ui.writePushButton,SIGNAL(clicked()),this,SLOT(writeButtonClicked()));
-    connect(ui.loadPushButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
-    connect(ui.savePushButton,SIGNAL(clicked()),this,SLOT(saveButtonClicked()));
-    connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),
-            this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
-    connect(ui.downloadRemoteButton, SIGNAL(clicked()),this,SLOT(downloadRemoteFiles()));
+    connect(ui.refreshPushButton, SIGNAL(clicked()),this, SLOT(refreshButtonClicked()));
+    connect(ui.writePushButton, SIGNAL(clicked()),this, SLOT(writeButtonClicked()));
+    connect(ui.loadPushButton, SIGNAL(clicked()),this, SLOT(loadButtonClicked()));
+    connect(ui.savePushButton, SIGNAL(clicked()),this, SLOT(saveButtonClicked()));
+    connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),
+            this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+    connect(ui.downloadRemoteButton, SIGNAL(clicked()),this, SLOT(downloadRemoteFiles()));
     connect(ui.compareButton,SIGNAL(clicked()),this, SLOT(compareButtonClicked()));
+
+    connect(ui.searchLineEdit, SIGNAL(textEdited(QString)), this, SLOT(findStringInTable(QString)));
+    connect(ui.nextItemButton, SIGNAL(clicked()), this, SLOT(nextItemInSearch()));
+    connect(ui.previousItemButton, SIGNAL(clicked()), this, SLOT(previousItemInSearch()));
+
 
     ui.tableWidget->setColumnCount(4);
     ui.tableWidget->verticalHeader()->hide();
@@ -435,4 +441,65 @@ void AdvParameterList::compareButtonClicked()
     }
     delete dialog;
     dialog = NULL;
+}
+
+void AdvParameterList::findStringInTable(const QString &searchString)
+{
+    QLOG_DEBUG() << "Find String in table: " << searchString;
+
+    // Don't want the items to be considered changed
+    disconnect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),
+            this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+
+    if (m_searchItemList.count() > 0){
+       foreach(QTableWidgetItem *item, m_searchItemList){
+            item->setBackground(QBrush());
+            item->setSelected(false);
+       }
+    }
+
+    m_searchItemList.clear();
+    if (searchString.length() > 2){ //need at least three characters to search
+        m_searchItemList = ui.tableWidget->findItems(searchString, Qt::MatchContains);
+    }
+
+    if (m_searchItemList.count() > 0){
+        foreach(QTableWidgetItem *item, m_searchItemList){
+            item->setBackgroundColor(QColor(255,255,160));
+        }
+        m_searchIndex = m_searchIndex < m_searchItemList.count()? m_searchIndex
+                                                                : m_searchItemList.count() - 1;
+        ui.tableWidget->scrollToItem(m_searchItemList[m_searchIndex],QAbstractItemView::PositionAtCenter);
+        m_searchItemList[m_searchIndex]->setSelected(true);
+    }
+
+    // Reconnect changed signal
+    connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),
+            this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+}
+
+void AdvParameterList::nextItemInSearch()
+{
+    QLOG_DEBUG() << "Find Next Item in table: ";
+    m_searchItemList[m_searchIndex]->setSelected(false);
+    m_searchIndex++;
+    if(m_searchIndex < m_searchItemList.count()){
+        ui.tableWidget->scrollToItem(m_searchItemList[m_searchIndex],QAbstractItemView::PositionAtCenter);
+        m_searchItemList[m_searchIndex]->setSelected(true);
+    } else {
+        m_searchIndex = 0; // loop around
+    }
+}
+
+void AdvParameterList::previousItemInSearch()
+{
+    QLOG_DEBUG() << "Find Previous Item in table: ";
+    m_searchItemList[m_searchIndex]->setSelected(false);
+    m_searchIndex--;
+    if(m_searchIndex >= 0){
+        ui.tableWidget->scrollToItem(m_searchItemList[m_searchIndex],QAbstractItemView::PositionAtCenter);
+        m_searchItemList[m_searchIndex]->setSelected(true);
+    } else {
+        m_searchIndex = m_searchItemList.count() - 1; // loops around
+    }
 }
