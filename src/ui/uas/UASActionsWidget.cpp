@@ -470,7 +470,7 @@ int UASActionsWidget::preFlightWarningBox()
 
 int UASActionsWidget::modeChangeWarningBox(const QString& modeString)
 {
-    QLOG_INFO() << "Display Mode Chnage Warning Box";
+    QLOG_INFO() << "UASActionsWidget:Display Mode Change Warning Box?";
 
     QStringList warnList;
     warnList << "Auto";
