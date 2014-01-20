@@ -61,21 +61,26 @@ void QGCMapToolBar::setMap(QGCMapWidget* map)
 
         //setup the mapTypesMenu
         QAction* action;
+        MapType::Types mapType = map->GetMapType();
+
         action =  mapTypesMenu.addAction(tr("Bing Hybrid"),this,SLOT(setMapType()));
         action->setData(MapType::BingHybrid);
         action->setCheckable(true);
         mapTypesGroup->addAction(action);
+        if(mapType == MapType::BingHybrid) action->setChecked(true);
 
         action =  mapTypesMenu.addAction(tr("Google Hybrid"),this,SLOT(setMapType()));
         action->setData(MapType::GoogleHybrid);
         action->setCheckable(true);
         mapTypesGroup->addAction(action);
+        if(mapType == MapType::GoogleHybrid) action->setChecked(true);
 
         action =  mapTypesMenu.addAction(tr("OpenStreetMap"),this,SLOT(setMapType()));
         action->setData(MapType::OpenStreetMap);
         action->setCheckable(true);
         mapTypesGroup->addAction(action);
-        //TODO check current item
+        if(mapType == MapType::OpenStreetMap) action->setChecked(true);
+
         optionsMenu.addMenu(&mapTypesMenu);
 
 
