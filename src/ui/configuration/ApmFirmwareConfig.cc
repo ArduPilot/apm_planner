@@ -140,7 +140,10 @@ void ApmFirmwareConfig::populateSerialPorts()
             // Don't add bluetooth ports to be less confusing to the user
             // on windows, the friendly name is annoyingly identical between devices. On OSX it's different
             // We also want to only display COM ports for PX4/Pixhawk, or arduino mega 2560's.
-            if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega"))
+            // We also want to show FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
+            if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega") || \
+                    info.productIdentifier() == 0x6001 || info.productIdentifier() == 0x6010 || \
+                    info.productIdentifier() == 0x6014)
             {
                 ui.linkComboBox->insertItem(0,list[0], list);
             }
@@ -875,7 +878,9 @@ void ApmFirmwareConfig::setLink(int index)
         {
             if (info.portName() == m_settings.name)
             {
-                if (info.description().toLower().contains("mega") && info.description().contains("2560"))
+                // Include FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
+                if ((info.description().toLower().contains("mega") && info.description().contains("2560")) \
+                        || info.productIdentifier() == 0x6001 || info.productIdentifier() == 0x6010 || info.productIdentifier() == 0x6014 )
                 {
                     //APM
                     if (m_autopilotType != "apm" || blank)
