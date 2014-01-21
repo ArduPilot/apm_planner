@@ -404,42 +404,52 @@ void AdvParameterList::downloadRemoteFiles()
 {
     QLOG_DEBUG() << "DownloadRemoteFiles";
 
-    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog();
-    dialog->hideLoadFromFileButton();
+    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog(this, true);
 
     if(dialog->exec() == QDialog::Accepted) {
         // Pull the selected file and
         // modify the parameters on the adv param list.
         QLOG_DEBUG() << "Remote File Downloaded";
         QLOG_DEBUG() << "TODO: Trigger auto load or compare of the downloaded file";
+
+        // Bring up the compare dialog
+        m_paramFileToCompare = dialog->getDownloadedFileName();
+        QTimer::singleShot(300, this, SLOT(compareButtonClicked()));
     }
-    delete dialog;
+    dialog->deleteLater();
     dialog = NULL;
+}
+
+void AdvParameterList::updateTableWidgetElements(QMap<QString, UASParameter *> &parameterList)
+{
+    foreach(UASParameter* param, parameterList){
+        // Modify the elements in the table widget.
+        if (param->isModified()){
+            // Update the local table widget
+            QTableWidgetItem* item = m_paramValueMap.value(param->name());
+            if (item){
+                if(param->value() != item->data(Qt::DisplayRole)){
+                    item->setData(Qt::DisplayRole, param->value());
+                    tableWidgetItemChanged(item);
+                }
+            }
+        }
+    }
 }
 
 void AdvParameterList::compareButtonClicked()
 {
     QLOG_DEBUG() << "Compare Params to File";
 
-    ParamCompareDialog* dialog = new ParamCompareDialog();
-    dialog->setCurrentList(m_parameterList);
+    ParamCompareDialog* dialog = new ParamCompareDialog(m_parameterList, m_paramFileToCompare, this);
 
     if(dialog->exec() == QDialog::Accepted) {
         // Apply the selected parameters
         // [TODO] For now just scan the returned new list and update the advanced tableview
-
-        foreach(UASParameter* param, m_parameterList){
-            // Modify the elements in the table widget.
-            if (param->isModified()){
-                // Update the local table widget
-                QTableWidgetItem* item = m_paramValueMap.value(param->name());
-                item->setData(Qt::DisplayRole, param->value());
-                tableWidgetItemChanged(item);
-            }
-        }
-
+        updateTableWidgetElements(m_parameterList);
     }
-    delete dialog;
+    m_paramFileToCompare = ""; // clear any previous filenames
+    dialog->deleteLater();
     dialog = NULL;
 }
 

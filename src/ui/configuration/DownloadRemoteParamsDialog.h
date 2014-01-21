@@ -14,13 +14,12 @@ class DownloadRemoteParamsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit DownloadRemoteParamsDialog(QWidget *parent = 0);
+    explicit DownloadRemoteParamsDialog(QWidget *parent = 0, bool overwriteFile = false);
     ~DownloadRemoteParamsDialog();
 
     void startFileDownloadRequest(QUrl url);
     void setStatusText(QString text);
     QString getDownloadedFileName();
-    void hideLoadFromFileButton();
 
 public slots:
     void refreshParamList();
@@ -50,6 +49,7 @@ private:
     QByteArray m_paramListResponse;
     QStringList m_paramUrls;
     QString m_downloadedFileName;
+    bool m_overwriteFile;
 };
 
 #endif // DOWNLOADREMOTEPARAMSDIALOG_H

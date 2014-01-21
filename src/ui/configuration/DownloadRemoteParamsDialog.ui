@@ -49,13 +49,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="loadButton">
-        <property name="text">
-         <string>Load File</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="closeButton">
         <property name="text">
          <string>Close</string>
