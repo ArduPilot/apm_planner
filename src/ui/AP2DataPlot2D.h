@@ -10,6 +10,7 @@
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlotAxisDialog.h"
+#include <QTextBrowser>
 class AP2DataPlot2D : public QWidget
 {
     Q_OBJECT
@@ -73,7 +74,9 @@ private slots:
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
+    void plotMouseMove(QMouseEvent *evt);
 private:
+    QTextBrowser *shower;
     class Graph
     {
     public:

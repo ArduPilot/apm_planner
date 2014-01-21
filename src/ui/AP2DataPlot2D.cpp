@@ -29,6 +29,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     connect(m_plot,SIGNAL(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)),this,SLOT(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)));
 
+    connect(m_plot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(plotMouseMove(QMouseEvent*)));
+
     ui.horizontalLayout_3->addWidget(m_plot);
 
     m_plot->show();
@@ -81,7 +83,58 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     timer->start(500);
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
+    shower = new QTextBrowser();
+    shower->show();
 }
+void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
+{
+    QString result = "";
+    for (int i=0;i<m_graphClassMap.keys().size();i++)
+    {
+        double key=0;
+        double val=0;
+        m_graphClassMap.value(m_graphClassMap.keys()[i]).graph->pixelsToCoords(evt->x(),evt->y(),key,val);
+        //Key is where the mouse is... abouts
+        //val = m_graphClassMap.value(m_graphClassMap.keys()[i]).axis->pixelToCoord(evt->x() - m_plot->x());
+        result.append("Key: " + QString::number(key,'f',4) + "\n");
+        //result.append("Val: " + QString::number(val,'f',4) + "\n");
+        //m_graphClassMap.value(m_graphClassMap.keys()[i]).graph->
+        QCPAxis *axis;
+        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
+        //QMap<double, QCPData>::const_iterator dataiterator = qUpperBound(graph->data()->constBegin(),graph->data()->constEnd(),key);
+        QList<double> keys = graph->data()->keys();
+        double foundkey = -1;
+        for (int j=0;j<keys.size();j++)
+        {
+            if (keys[j] >= key)
+            {
+                if (j == 0)
+                {
+                    foundkey = keys[j];
+                    j = keys.size();
+                }
+                else
+                {
+                    foundkey = keys[j-1];
+                    j = keys.size();
+                }
+            }
+        }
+        result.append("Key: " + QString::number(foundkey,'f',4) + "\n");
+        if (foundkey > 0)
+        {
+            result.append("Val: " + QString::number(graph->data()->value(foundkey).value,'f',4) + "\n");
+        }
+
+        //graph->data()->lowerBound()
+
+        //QCPGraph *graph;
+        //graph->data()->value();
+        //axis->coordToPixel()
+    }
+    shower->setText(result);
+}
+
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
 {
     graphControlsButtonClicked();
