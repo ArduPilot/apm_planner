@@ -11,6 +11,9 @@
 DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DownloadRemoteParamsDialog),
+    m_locationOfFrameParams("https://raw.github.com/diydrones/ardupilot/master/Tools/Frame_params/"),
+    m_extension(".param"),
+    m_version("?ref=master"),
     m_networkReply(NULL)
 {
     ui->setupUi(this);
@@ -21,10 +24,16 @@ DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent) :
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(closeButtonClicked()));
     connect(ui->refreshButton, SIGNAL(clicked()), this, SLOT(refreshParamList()));
 
-    // [ToDo] For now just add a deafult item for Iris.
-    QListWidgetItem *item = new QListWidgetItem("Iris.param", ui->listWidget);
-    ui->listWidget->addItem(item);
-    m_paramUrls.append("https://raw.github.com/diydrones/ardupilot/master/Tools/Frame_params/Iris.param?ref=master");
+    // [ToDo] For now just add a default list of parameter filenames
+    // In future need to add a github rest API request.
+    QStringList paramFiles;
+    paramFiles << "Iris" << "Beginner" << "Intermediate" << "Advanced" << "CameraPlatform";
+
+    foreach(QString paramFile, paramFiles){
+    QListWidgetItem *item = new QListWidgetItem( paramFile, ui->listWidget);
+        ui->listWidget->addItem(item);
+        m_paramUrls.append( m_locationOfFrameParams + paramFile + m_extension + m_version );
+    }
 
     // [TODO] stop hiding the refresh button
     ui->refreshButton->setVisible(false);
@@ -164,7 +173,7 @@ bool DownloadRemoteParamsDialog::downloadParamFile()
         parameterDir.mkdir(parameterDir.filePath(""));
 
     QString fileName(parameterDir.filePath(
-                          ui->listWidget->currentItem()->text()));
+                          ui->listWidget->currentItem()->text()+ m_extension));
 
     if (fileName.isEmpty())
         return false;
@@ -211,6 +220,7 @@ void DownloadRemoteParamsDialog::cancelDownload()
 
  void DownloadRemoteParamsDialog::httpFinished()
  {
+     bool result = false;
      if (m_httpRequestAborted) {
          if (m_downloadedParamFile) {
              m_downloadedParamFile->close();
@@ -247,13 +257,19 @@ void DownloadRemoteParamsDialog::cancelDownload()
      } else {
          QString fileName = m_downloadedParamFile->fileName();
          ui->statusLabel->setText(tr("Downloaded to %2.").arg(fileName));
+         result = true;
      }
 
      m_networkReply->deleteLater();
      m_networkReply = NULL;
      delete m_downloadedParamFile;
      m_downloadedParamFile = NULL;
-     this->accept();
+
+     if (result){
+         this->accept();
+     } else {
+         this->reject();
+     }
  }
 
  void DownloadRemoteParamsDialog::httpReadyRead()

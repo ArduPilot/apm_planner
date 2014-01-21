@@ -176,7 +176,7 @@ void Radio3DRConfig::initConnections()
     // Ui Connections
     connect(ui.loadSettingsButton, SIGNAL(clicked()), this, SLOT(readRadioSettings()));
     connect(ui.saveSettingsButton, SIGNAL(clicked()), this, SLOT(writeRemoteRadioSettings()));
-    connect(ui.resetDefaultsButton, SIGNAL(clicked()), this, SLOT(resetRadioSettingsToDefaults()));
+    connect(ui.resetDefaultsButton, SIGNAL(clicked()), this, SLOT(resetRemoteRadioSettingsToDefaults()));
     connect(ui.copyToRemoteButton, SIGNAL(clicked()), this, SLOT(copyLocalSettingsToRemote()));
 
     connect(ui.settingsButton, SIGNAL(released()), m_settingsDialog, SLOT(show()));
@@ -582,7 +582,7 @@ void Radio3DRConfig::resetRemoteRadioSettingsToDefaults()
 {
     if(m_radioSettings) {
 
-        if (QMessageBox::warning(this, tr("Reset Radios"), tr("You are about to reset your local radio to its factory settings!"),
+        if (QMessageBox::warning(this, tr("Reset Radios"), tr("You are about to reset your radios to their factory settings!"),
                              QMessageBox::Ok, QMessageBox::Cancel) == QMessageBox::Ok){
             m_radioSettings->resetRemoteRadioToDefaults();
             m_state = resetRadioSettings;

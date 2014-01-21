@@ -38,6 +38,10 @@ public slots:
 private:
     Ui::DownloadRemoteParamsDialog *ui;
 
+    QString m_locationOfFrameParams;
+    QString m_extension;
+    QString m_version;
+
     QUrl m_url;
     QNetworkAccessManager m_networkAccessManager;
     QNetworkReply* m_networkReply;

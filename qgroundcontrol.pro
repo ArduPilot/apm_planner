@@ -103,6 +103,11 @@ POST_TARGETDEPS += gittouch
 DEFINES += _TTY_NOWARN_
 
 #
+# Logging Library
+#
+include (QsLog/QsLog.pri)
+
+#
 # OS Specific settings
 #
 

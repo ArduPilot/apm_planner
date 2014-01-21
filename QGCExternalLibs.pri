@@ -326,11 +326,6 @@ WindowsBuild {
 }
 
 #
-# Logging Library
-#
-include (QsLog/QsLog.pri)
-
-#
 # Zip Access Tool (http://quazip.sourceforge.net)
 #
 include (libs/thirdParty/quazip/quazip.pri)

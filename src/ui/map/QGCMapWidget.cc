@@ -32,13 +32,8 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     defaultGuidedAltFirstTimeSet = false;
     loadSettings();
 
-
-
     //handy for debugging:
     //this->SetShowTileGridLines(true);
-
-    //default appears to be Google Hybrid, and is broken currently
-    this->SetMapType(MapType::BingHybrid);
 
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
@@ -224,7 +219,7 @@ void QGCMapWidget::showEvent(QShowEvent* event)
 
     if (!mapInitialized)
     {
-        internals::PointLatLng pos_lat_lon = internals::PointLatLng(0, 0);
+        internals::PointLatLng pos_lat_lon = internals::PointLatLng(m_lastLat, m_lastLon);
 
         SetMouseWheelZoomType(internals::MouseWheelZoomType::MousePositionWithoutCenter);	    // set how the mouse wheel zoom functions
         SetFollowMouse(true);				    // we want a contiuous mouse position reading
@@ -276,6 +271,8 @@ void QGCMapWidget::loadSettings()
     m_lastLat = settings.value("LAST_LATITUDE", 0.0f).toDouble();
     m_lastLon = settings.value("LAST_LONGITUDE", 0.0f).toDouble();
     m_lastZoom = settings.value("LAST_ZOOM", 1.0f).toDouble();
+
+    SetMapType(static_cast<MapType::Types>(settings.value("MAP_TYPE", MapType::BingHybrid).toInt()));
 
     trailType = static_cast<mapcontrol::UAVTrailType::Types>(settings.value("TRAIL_TYPE", trailType).toInt());
     trailInterval = settings.value("TRAIL_INTERVAL", trailInterval).toFloat();
@@ -329,6 +326,7 @@ void QGCMapWidget::storeSettings()
     settings.setValue("LAST_ZOOM", ZoomReal());
     settings.setValue("TRAIL_TYPE", static_cast<int>(trailType));
     settings.setValue("TRAIL_INTERVAL", trailInterval);
+    settings.setValue("MAP_TYPE", static_cast<int>(GetMapType()));
     settings.endGroup();
     settings.sync();
 }
