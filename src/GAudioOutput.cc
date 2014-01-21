@@ -38,7 +38,6 @@ This file is part of the QGROUNDCONTROL project
 #include <QSettings>
 #include <QTemporaryFile>
 
-
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h>
 #endif
@@ -63,7 +62,7 @@ extern CComModule _Module;
 #ifdef Q_OS_LINUX
 extern "C" {
 #include <flite/flite.h>
-    cst_voice* register_cmu_us_kal(const char* voxdir);
+    cst_voice *register_cmu_us_kal(const char *voxdir);
 };
 #endif
 
@@ -76,7 +75,7 @@ extern "C" {
  * the call can occur at any place in the code, no reference to the
  * GAudioOutput object has to be passed.
  */
-GAudioOutput* GAudioOutput::instance()
+GAudioOutput *GAudioOutput::instance()
 {
     static GAudioOutput* _instance = 0;
     if(_instance == 0)
@@ -91,7 +90,7 @@ GAudioOutput* GAudioOutput::instance()
 
 #define QGC_GAUDIOOUTPUT_KEY QString("QGC_AUDIOOUTPUT_")
 
-GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
+GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
     voiceIndex(0),
     emergency(false),
     muted(false)
@@ -126,9 +125,11 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
     }
 #endif
     // Initialize audio output
-    //m_media = new Phonon::MediaObject(this);
-    //Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-    //createPath(m_media, audioOutput);
+    // currently Phonon::AudioOutput crash on destroy :(. but audio work.
+    // settings not saved because this crash
+    m_media = new Phonon::MediaObject(this);
+    m_audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+    Phonon::createPath(m_media, m_audioOutput);
 
     // Prepare regular emergency signal, will be fired off on calling startEmergency()
     emergencyTimer = new QTimer();
@@ -144,12 +145,13 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
     }
 }
 
-//GAudioOutput::~GAudioOutput()
-//{
+GAudioOutput::~GAudioOutput()
+{
+    QLOG_INFO() << "~GAudioOutput()";
 //#ifdef _MSC_VER2
 //    ::CoUninitialize();
 //#endif
-//}
+}
 
 void GAudioOutput::mute(bool mute)
 {
@@ -193,13 +195,16 @@ bool GAudioOutput::say(QString text, int severity)
 #ifdef Q_OS_LINUX
             QTemporaryFile file;
             file.setFileTemplate("XXXXXX.wav");
-            if (file.open()) {
-                cst_voice* v = register_cmu_us_kal(NULL);
-                cst_wave* wav = flite_text_to_wave(text.toStdString().c_str(), v);
+
+            if (file.open())
+            {
+                cst_voice *v = register_cmu_us_kal(NULL);
+                cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
                 // file.fileName() returns the unique file name
+
                 cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
-                //m_media->setCurrentSource(Phonon::MediaSource(file.fileName().toStdString().c_str()));
-                //m_media->play();
+                m_media->setCurrentSource(Phonon::MediaSource(file.fileName().toStdString().c_str()));
+                m_media->play();
                 res = true;
             }
 #endif
@@ -306,8 +311,8 @@ void GAudioOutput::beep()
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/alert.wav"));
         QLOG_INFO() << "FILE:" << f.fileName();
-        //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
-        //m_media->play();
+        m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
+        m_media->play();
     }
 }
 
@@ -339,8 +344,6 @@ QStringList GAudioOutput::listVoices(void)
 #ifdef Q_OS_LINUX2
     cst_voice *voice;
     const cst_val *v;
-
-
 
     printf("Voices available: ");
     for (v=flite_voice_list; v; v=val_cdr(v)) {
