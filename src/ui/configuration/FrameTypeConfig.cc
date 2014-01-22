@@ -28,8 +28,14 @@ This file is part of the APM_PLANNER project
  *
  */
 
+#include "QsLog.h"
 #include "FrameTypeConfig.h"
 
+static const int FRAME_TYPE_PLUS = 0;
+static const int FRAME_TYPE_X = 1;
+static const int FRAME_TYPE_V = 2;
+static const int FRAME_TYPE_H = 3;
+static const int FRAME_TYPE_NEWY6 = 10;
 
 FrameTypeConfig::FrameTypeConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
@@ -45,6 +51,7 @@ FrameTypeConfig::FrameTypeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     connect(ui.xRadioButton,SIGNAL(clicked()),this,SLOT(xFrameSelected()));
     connect(ui.vRadioButton,SIGNAL(clicked()),this,SLOT(vFrameSelected()));
     connect(ui.hRadioButton,SIGNAL(clicked()),this,SLOT(hFrameSelected()));
+    connect(ui.newY6radioButton,SIGNAL(clicked()),this,SLOT(newY6FrameSelected()));
     initConnections();
 }
 
@@ -53,28 +60,36 @@ FrameTypeConfig::~FrameTypeConfig()
 }
 void FrameTypeConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+
     if (parameterName == "FRAME")
     {
         ui.xRadioButton->setEnabled(true);
         ui.vRadioButton->setEnabled(true);
         ui.plusRadioButton->setEnabled(true);
         ui.hRadioButton->setEnabled(true);
+        ui.newY6radioButton->setEnabled(true);
 
-        if (value.toInt() == 0)
-        {
+        switch(value.toInt()){
+        case FRAME_TYPE_PLUS:
             ui.plusRadioButton->setChecked(true);
-        }
-        else if (value.toInt() == 1)
-        {
+        break;
+        case FRAME_TYPE_X:
             ui.xRadioButton->setChecked(true);
-        }
-        else if (value.toInt() == 2)
-        {
+        break;
+        case FRAME_TYPE_V:
             ui.vRadioButton->setChecked(true);
-        }
-        else if (value.toInt() == 3)
-        {
+        break;
+        case FRAME_TYPE_H:
             ui.hRadioButton->setChecked(true);
+            break;
+        break;
+        case FRAME_TYPE_NEWY6:
+            ui.hRadioButton->setChecked(true);
+        break;
+        default:
+            QLOG_ERROR() << "Unknown Frame Type" << value.toInt();
         }
     }
 }
@@ -86,8 +101,9 @@ void FrameTypeConfig::xFrameSelected()
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(1));
+    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(FRAME_TYPE_X));
 }
+
 void FrameTypeConfig::hFrameSelected()
 {
     if (!m_uas)
@@ -95,7 +111,7 @@ void FrameTypeConfig::hFrameSelected()
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(3));
+    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(FRAME_TYPE_H));
 }
 
 void FrameTypeConfig::plusFrameSelected()
@@ -105,7 +121,7 @@ void FrameTypeConfig::plusFrameSelected()
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(0));
+    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(FRAME_TYPE_PLUS));
 }
 
 void FrameTypeConfig::vFrameSelected()
@@ -115,5 +131,15 @@ void FrameTypeConfig::vFrameSelected()
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(2));
+    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(FRAME_TYPE_V));
+}
+
+void FrameTypeConfig::newY6FrameSelected()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(FRAME_TYPE_NEWY6));
 }
