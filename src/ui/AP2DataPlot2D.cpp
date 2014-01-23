@@ -5,10 +5,9 @@
 #include <QDesktopServices>
 #include <QTimer>
 #include <QStringList>
-
 #include "UAS.h"
 #include "UASManager.h"
-
+#include <QToolTip>
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
     m_uas = 0;
@@ -23,6 +22,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     ui.setupUi(this);
 
+    QDateTime utc = QDateTime::currentDateTimeUtc();
+    utc.setTimeSpec(Qt::LocalTime);
+    m_timeDiff = QDateTime::currentDateTime().msecsTo(utc);
     m_plot = new QCustomPlot(ui.widget);
     m_plot->setInteraction(QCP::iRangeDrag, true);
     m_plot->setInteraction(QCP::iRangeZoom, true);
@@ -43,7 +45,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(18000,18100); //Default range of 0-100 milliseconds?
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(m_timeDiff / 1000,(m_timeDiff / 1000) + 100); //Default range of 0-100 milliseconds?
 
 
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect);
@@ -83,27 +85,25 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     timer->start(500);
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
-    shower = new QTextBrowser();
-    shower->show();
 }
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 {
+    if (!ui.showValuesCheckBox->isChecked())
+    {
+        return;
+    }
     QString result = "";
-    for (int i=0;i<m_graphClassMap.keys().size();i++)
+    QString newresult = "";
+    double foundkey = -1;
+    if (m_graphClassMap.keys().size() > 0)
     {
         double key=0;
         double val=0;
-        m_graphClassMap.value(m_graphClassMap.keys()[i]).graph->pixelsToCoords(evt->x(),evt->y(),key,val);
-        //Key is where the mouse is... abouts
-        //val = m_graphClassMap.value(m_graphClassMap.keys()[i]).axis->pixelToCoord(evt->x() - m_plot->x());
-        result.append("Key: " + QString::number(key,'f',4) + "\n");
-        //result.append("Val: " + QString::number(val,'f',4) + "\n");
-        //m_graphClassMap.value(m_graphClassMap.keys()[i]).graph->
-        QCPAxis *axis;
-        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
+        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[0]).graph;
+        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
+
         //QMap<double, QCPData>::const_iterator dataiterator = qUpperBound(graph->data()->constBegin(),graph->data()->constEnd(),key);
         QList<double> keys = graph->data()->keys();
-        double foundkey = -1;
         for (int j=0;j<keys.size();j++)
         {
             if (keys[j] >= key)
@@ -120,19 +120,22 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
                 }
             }
         }
-        result.append("Key: " + QString::number(foundkey,'f',4) + "\n");
+        //result.append("Key: " + QString::number(foundkey,'f',4) + "\n");
+        newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(foundkey * 1000.0).toString("hh:mm:ss") + "\n");
+    }
+    for (int i=0;i<m_graphClassMap.keys().size();i++)
+    {
+        double key=0;
+        double val=0;
+        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
+        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
         if (foundkey > 0)
         {
-            result.append("Val: " + QString::number(graph->data()->value(foundkey).value,'f',4) + "\n");
+            //result.append("Val: " + QString::number(graph->data()->value(foundkey).value,'f',4) + "\n");
+            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(foundkey).value,'f',4) + ((i == m_graphClassMap.keys().size() - 1) ? "" : "\n"));
         }
-
-        //graph->data()->lowerBound()
-
-        //QCPGraph *graph;
-        //graph->data()->value();
-        //axis->coordToPixel()
     }
-    shower->setText(result);
+    QToolTip::showText(QPoint(evt->pos().x() + m_plot->x(),evt->pos().y()+m_plot->y()),newresult);
 }
 
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
@@ -144,6 +147,8 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->show();
+        QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::Show));
+        QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::WindowActivate));
         return;
     }
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
@@ -155,6 +160,8 @@ void AP2DataPlot2D::graphControlsButtonClicked()
         m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
     }
     m_axisGroupingDialog->show();
+    QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::Show));
+    QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::WindowActivate));
 }
 
 void AP2DataPlot2D::addGraphRight()
@@ -313,7 +320,7 @@ void AP2DataPlot2D::autoScrollClicked(bool checked)
     {
         if (m_graphCount > 0)
         {
-            double msec_current = ((QDateTime::currentMSecsSinceEpoch()- m_startIndex) + 18000000) / 1000.0;
+            double msec_current = ((QDateTime::currentMSecsSinceEpoch()- m_startIndex) + m_timeDiff) / 1000.0;
             double difference = m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower;
             m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(msec_current - difference);
             m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(msec_current);
@@ -389,7 +396,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
 
     qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
     m_currentIndex = msec_current;
-    qint64 newmsec = (msec_current - m_startIndex) + 18000000;
+    qint64 newmsec = (msec_current - m_startIndex) + m_timeDiff;
     if (m_graphCount > 0 && ui.autoScrollCheckBox->isChecked())
     {
         double diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
@@ -404,7 +411,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         //Set a timeout for 30 minutes from now, 1800 seconds.
         qint64 current = QDateTime::currentMSecsSinceEpoch();
         //This is 30 minutes
-        m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 1800000,msec));
+        m_onlineValueTimeoutList.append(QPair<qint64,double>(current + m_timeDiff,msec));
         //This is 1 minute
         //m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 60000,m_currentIndex));
         if (m_onlineValueTimeoutList[0].first <= current)
@@ -521,7 +528,7 @@ void AP2DataPlot2D::loadButtonClicked()
         ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(18000,18100); //Default range of 0-100 milliseconds?
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(m_timeDiff / 1000,(m_timeDiff / 1000) + 100); //Default range of 0-100 milliseconds?
         m_currentIndex = QDateTime::currentMSecsSinceEpoch();
         m_startIndex = m_currentIndex;
         return;
