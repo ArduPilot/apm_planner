@@ -66,6 +66,7 @@ public:
     ~CompassConfig();
 
     static void sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj);
+    void updateCompassSelection();
 
 private:
     enum CompassType {none, APM, ExternalCompass, PX4};

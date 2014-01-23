@@ -25,6 +25,9 @@ This file is part of the APM_PLANNER project
 #include <qmath.h>
 #include "QGCCore.h"
 
+static const int COMPASS_ORIENT_NONE = 0;
+static const int COMPASS_ORIENT_ROLL_180 = 8;
+
 CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_progressDialog(NULL),
     m_timer(NULL),
@@ -137,6 +140,12 @@ CompassConfig::~CompassConfig()
     m_rawImuList.clear();
 }
 
+void CompassConfig::updateCompassSelection()
+{
+    ui.savedLabel->setText(tr("UPDATED"));
+    QTimer::singleShot(2000,ui.savedLabel,SLOT(clear()));
+}
+
 void CompassConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
     if (parameterName == "MAG_ENABLE")
@@ -183,9 +192,10 @@ void CompassConfig::parameterChanged(int uas, int component, QString parameterNa
     }
     else if (parameterName == "COMPASS_ORIENT")
     {
-        disconnect(ui.orientationComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(orientationComboChanged(int)));
+        ui.orientationComboBox->blockSignals(true);
         ui.orientationComboBox->setCurrentIndex(value.toInt());
-        connect(ui.orientationComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(orientationComboChanged(int)));
+        ui.orientationComboBox->blockSignals(false);
+        updateCompassSelection();
 
     } else if (parameterName.contains("COMPASS_OFS")) {
         QLOG_DEBUG() << "Clearing " << parameterName;
@@ -263,7 +273,12 @@ void CompassConfig::setCompassAPMOnBoard()
         return;
     // ROTATION_NONE
     QLOG_DEBUG() << "setCompassAPMOnBoard ROTATION_NONE";
-    m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",0);
+    QGCUASParamManager* pm = m_uas->getParamManager();
+    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_NONE){
+        pm->setParameter(1,"COMPASS_ORIENT",COMPASS_ORIENT_NONE);
+    } else {
+        updateCompassSelection();
+    }
 
 }
 
@@ -273,7 +288,12 @@ void CompassConfig::setCompassPX4OnBoard()
         return;
     // FMUv1 & FMUv2 is None
     QLOG_DEBUG() << "setCompassPX4OnBoard None 0Deg";
-    m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",0);
+    QGCUASParamManager* pm = m_uas->getParamManager();
+    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_NONE){
+        pm->setParameter(1,"COMPASS_ORIENT", COMPASS_ORIENT_NONE);
+    } else {
+        updateCompassSelection();
+    }
 
 }
 
@@ -283,7 +303,12 @@ void CompassConfig::setCompass3DRGPS()
         return;
     // ROTATION_ROLL_180
     QLOG_DEBUG() << "setCompass3DRGPS ROLL_180";
-    m_uas->getParamManager()->setParameter(1,"COMPASS_ORIENT",8);
+    QGCUASParamManager* pm = m_uas->getParamManager();
+    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_ROLL_180){
+        pm->setParameter(1,"COMPASS_ORIENT", COMPASS_ORIENT_ROLL_180);
+    } else {
+        updateCompassSelection();
+    }
 
 }
 
