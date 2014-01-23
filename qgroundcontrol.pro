@@ -575,7 +575,9 @@ HEADERS += \
     src/ui/AboutDialog.h \
     src/ui/uas/UASQuickViewTextLabel.h \
     src/uas/ApmUiHelpers.h \
-    src/ui/AP2DataPlotAxisDialog.h
+    src/ui/AP2DataPlotAxisDialog.h \
+    src/AlsaAudio.h \
+    src/AudioWorker.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -767,7 +769,9 @@ SOURCES += src/main.cc \
     src/ui/AboutDialog.cc \
     src/ui/uas/UASQuickViewTextLabel.cc \
     src/uas/ApmUiHelpers.cc \
-    src/ui/AP2DataPlotAxisDialog.cc
+    src/ui/AP2DataPlotAxisDialog.cc \
+    src/AlsaAudio.cc \
+    src/AudioWorker.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

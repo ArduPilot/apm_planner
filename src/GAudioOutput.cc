@@ -60,10 +60,11 @@ extern CComModule _Module;
 #endif
 
 #ifdef Q_OS_LINUX
+//#include <AlsaAudioWorker.h>
 extern "C" {
 #include <flite/flite.h>
     cst_voice *register_cmu_us_kal(const char *voxdir);
-};
+}
 #endif
 
 
@@ -124,12 +125,11 @@ GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
         }
     }
 #endif
-    // Initialize audio output
-    // currently Phonon::AudioOutput crash on destroy :(. but audio work.
-    // settings not saved because this crash
-    m_media = new Phonon::MediaObject(this);
-    m_audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-    Phonon::createPath(m_media, m_audioOutput);
+#ifdef Q_OS_LINUX
+
+    // Remove Phonon Audio for linux and use alsa
+    QLOG_INFO() << "Using Alsa Audio driver";
+#endif
 
     // Prepare regular emergency signal, will be fired off on calling startEmergency()
     emergencyTimer = new QTimer();
@@ -203,8 +203,14 @@ bool GAudioOutput::say(QString text, int severity)
                 // file.fileName() returns the unique file name
 
                 cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
-                m_media->setCurrentSource(Phonon::MediaSource(file.fileName().toStdString().c_str()));
-                m_media->play();
+               //QThread *AlsaThread = new QThread();
+               //AlsaAudioWorker *SimpleAlsaWorker = AlsaAudioWorker::instance();
+               //SimpleAlsaWorker->setFilename(file.fileName());
+               //QObject::connect( AlsaThread, SIGNAL( started() ), SimpleAlsaWorker, SLOT( run() ) );
+               //QObject::connect( AlsaThread, SIGNAL( finished() ), this, SLOT( quit() ) );
+               //SimpleAlsaWorker->moveToThread(AlsaThread);
+               //AlsaThread->start();
+
                 res = true;
             }
 #endif
@@ -253,8 +259,7 @@ void GAudioOutput::notifyPositive()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/double_notify.wav"));
-        //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
-        //m_media->play();
+        //AlsaAudio::instance()->alsa_play(f.fileName());
     }
 }
 
@@ -264,8 +269,7 @@ void GAudioOutput::notifyNegative()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/flat_notify.wav"));
-        //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
-        //m_media->play();
+        //AlsaAudio::instance()->alsa_play(f.fileName());
     }
 }
 
@@ -311,8 +315,7 @@ void GAudioOutput::beep()
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/alert.wav"));
         QLOG_INFO() << "FILE:" << f.fileName();
-        m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
-        m_media->play();
+        //AlsaAudio::instance()->alsa_play( f.fileName() );
     }
 }
 
