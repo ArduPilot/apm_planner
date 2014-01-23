@@ -30,7 +30,7 @@ Rectangle {
     property bool connected: false
     property bool armed: false
     property string armedstr: "status"
-    property bool disableStatusDisplay: false
+    property bool enableStatusDisplay: true
 
     property alias modeText: modeTextId.modeText
     property alias modeTextColor: modeTextId.modeTextColor
@@ -87,13 +87,13 @@ Rectangle {
         }
     }
 
-    onDisableStatusDisplayChanged: {
-        if (disableStatusDisplay) {
-            statusSpacerId.visible = false
-            statusDisplayId.visible = false
-        } else {
+    onEnableStatusDisplayChanged: {
+        if (enableStatusDisplay) {
             statusSpacerId.visible = true
             statusDisplayId.visible = true
+        } else {
+            statusSpacerId.visible = false
+            statusDisplayId.visible = false
         }
     }
 
