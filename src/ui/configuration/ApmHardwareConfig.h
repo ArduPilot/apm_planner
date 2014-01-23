@@ -25,12 +25,14 @@ This file is part of the APM_PLANNER project
  *   @brief APM Hardware Configuration widget header.
  *
  *   @author Michael Carpenter <malcom2073@gmail.com>
+ *   @author Bill Bonney <billbonney@communistech.com>
  *
  */
 
 #ifndef APMHARDWARECONFIG_H
 #define APMHARDWARECONFIG_H
 
+#include "UASParameter.h"
 #include <QWidget>
 #include "ui_ApmHardwareConfig.h"
 #include <UASInterface.h>
@@ -66,8 +68,6 @@ public:
 
 public slots:
     void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
-//    void writeParameter(int component, QString parameterName, QVariant value);
-//    void readParameter(int component, QString parameterName, QVariant value);
 
     void optionalClicked();
     void mandatoryClicked();
@@ -104,6 +104,8 @@ private slots:
     void uasDisconnected();
     void activateBlankingScreen();
     void paramButtonClicked();
+    void activateCompareDialog();
+
 private:
     Ui::ApmHardwareConfig ui;
     UASInterface *m_uas;
@@ -115,6 +117,9 @@ private:
     int m_paramDownloadCount;
     int m_paramTotalCount;
     bool m_mandatory;
+
+    QMap<QString, UASParameter*> m_parameterList;
+    QString m_paramFileToCompare;
 };
 
 #endif // APMHARDWARECONFIG_H

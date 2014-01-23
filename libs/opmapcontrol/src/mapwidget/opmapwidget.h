@@ -377,7 +377,8 @@ namespace mapcontrol
         bool ShowHome()const{return showhome;}
         void SetShowDiagnostics(bool const& value);
         void SetUavPic(QString UAVPic);
-                QMap<int, UAVItem*> UAVS;
+        QMap<int, UAVItem*> UAVS;
+
     private:
         internals::Core *core;
         QGraphicsScene mscene;

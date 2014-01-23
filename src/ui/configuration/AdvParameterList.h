@@ -47,6 +47,7 @@ public:
     explicit AdvParameterList(QWidget *parent = 0);
     void setParameterMetaData(QString name,QString humanname,QString description,QString unit);
     ~AdvParameterList();
+    void updateTableWidgetElements(QMap<QString, UASParameter*> &parameterList);
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void parameterChanged(int uas, int component, int parameterCount, int parameterId,
@@ -84,6 +85,8 @@ private:
     bool m_writingParams;
     int m_paramsWritten;
     int m_paramsToWrite;
+
+    QString m_paramFileToCompare;
 };
 
 #endif // ADVPARAMETERLIST_H

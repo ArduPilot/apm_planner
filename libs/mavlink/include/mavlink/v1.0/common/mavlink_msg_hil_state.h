@@ -8,9 +8,9 @@ typedef struct __mavlink_hil_state_t
  float roll; ///< Roll angle (rad)
  float pitch; ///< Pitch angle (rad)
  float yaw; ///< Yaw angle (rad)
- float rollspeed; ///< Roll angular speed (rad/s)
- float pitchspeed; ///< Pitch angular speed (rad/s)
- float yawspeed; ///< Yaw angular speed (rad/s)
+ float rollspeed; ///< Body frame roll / phi angular speed (rad/s)
+ float pitchspeed; ///< Body frame pitch / theta angular speed (rad/s)
+ float yawspeed; ///< Body frame yaw / psi angular speed (rad/s)
  int32_t lat; ///< Latitude, expressed as * 1E7
  int32_t lon; ///< Longitude, expressed as * 1E7
  int32_t alt; ///< Altitude in meters, expressed as * 1000 (millimeters)
@@ -63,9 +63,9 @@ typedef struct __mavlink_hil_state_t
  * @param roll Roll angle (rad)
  * @param pitch Pitch angle (rad)
  * @param yaw Yaw angle (rad)
- * @param rollspeed Roll angular speed (rad/s)
- * @param pitchspeed Pitch angular speed (rad/s)
- * @param yawspeed Yaw angular speed (rad/s)
+ * @param rollspeed Body frame roll / phi angular speed (rad/s)
+ * @param pitchspeed Body frame pitch / theta angular speed (rad/s)
+ * @param yawspeed Body frame yaw / psi angular speed (rad/s)
  * @param lat Latitude, expressed as * 1E7
  * @param lon Longitude, expressed as * 1E7
  * @param alt Altitude in meters, expressed as * 1000 (millimeters)
@@ -134,15 +134,15 @@ static inline uint16_t mavlink_msg_hil_state_pack(uint8_t system_id, uint8_t com
  * @brief Pack a hil_state message on a channel
  * @param system_id ID of this system
  * @param component_id ID of this component (e.g. 200 for IMU)
- * @param chan The MAVLink channel this message was sent over
+ * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
  * @param time_usec Timestamp (microseconds since UNIX epoch or microseconds since system boot)
  * @param roll Roll angle (rad)
  * @param pitch Pitch angle (rad)
  * @param yaw Yaw angle (rad)
- * @param rollspeed Roll angular speed (rad/s)
- * @param pitchspeed Pitch angular speed (rad/s)
- * @param yawspeed Yaw angular speed (rad/s)
+ * @param rollspeed Body frame roll / phi angular speed (rad/s)
+ * @param pitchspeed Body frame pitch / theta angular speed (rad/s)
+ * @param yawspeed Body frame yaw / psi angular speed (rad/s)
  * @param lat Latitude, expressed as * 1E7
  * @param lon Longitude, expressed as * 1E7
  * @param alt Altitude in meters, expressed as * 1000 (millimeters)
@@ -209,7 +209,7 @@ static inline uint16_t mavlink_msg_hil_state_pack_chan(uint8_t system_id, uint8_
 }
 
 /**
- * @brief Encode a hil_state struct into a message
+ * @brief Encode a hil_state struct
  *
  * @param system_id ID of this system
  * @param component_id ID of this component (e.g. 200 for IMU)
@@ -222,6 +222,20 @@ static inline uint16_t mavlink_msg_hil_state_encode(uint8_t system_id, uint8_t c
 }
 
 /**
+ * @brief Encode a hil_state struct on a channel
+ *
+ * @param system_id ID of this system
+ * @param component_id ID of this component (e.g. 200 for IMU)
+ * @param chan The MAVLink channel this message will be sent over
+ * @param msg The MAVLink message to compress the data into
+ * @param hil_state C-struct to read the message contents from
+ */
+static inline uint16_t mavlink_msg_hil_state_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_hil_state_t* hil_state)
+{
+	return mavlink_msg_hil_state_pack_chan(system_id, component_id, chan, msg, hil_state->time_usec, hil_state->roll, hil_state->pitch, hil_state->yaw, hil_state->rollspeed, hil_state->pitchspeed, hil_state->yawspeed, hil_state->lat, hil_state->lon, hil_state->alt, hil_state->vx, hil_state->vy, hil_state->vz, hil_state->xacc, hil_state->yacc, hil_state->zacc);
+}
+
+/**
  * @brief Send a hil_state message
  * @param chan MAVLink channel to send the message
  *
@@ -229,9 +243,9 @@ static inline uint16_t mavlink_msg_hil_state_encode(uint8_t system_id, uint8_t c
  * @param roll Roll angle (rad)
  * @param pitch Pitch angle (rad)
  * @param yaw Yaw angle (rad)
- * @param rollspeed Roll angular speed (rad/s)
- * @param pitchspeed Pitch angular speed (rad/s)
- * @param yawspeed Yaw angular speed (rad/s)
+ * @param rollspeed Body frame roll / phi angular speed (rad/s)
+ * @param pitchspeed Body frame pitch / theta angular speed (rad/s)
+ * @param yawspeed Body frame yaw / psi angular speed (rad/s)
  * @param lat Latitude, expressed as * 1E7
  * @param lon Longitude, expressed as * 1E7
  * @param alt Altitude in meters, expressed as * 1000 (millimeters)
@@ -345,7 +359,7 @@ static inline float mavlink_msg_hil_state_get_yaw(const mavlink_message_t* msg)
 /**
  * @brief Get field rollspeed from hil_state message
  *
- * @return Roll angular speed (rad/s)
+ * @return Body frame roll / phi angular speed (rad/s)
  */
 static inline float mavlink_msg_hil_state_get_rollspeed(const mavlink_message_t* msg)
 {
@@ -355,7 +369,7 @@ static inline float mavlink_msg_hil_state_get_rollspeed(const mavlink_message_t*
 /**
  * @brief Get field pitchspeed from hil_state message
  *
- * @return Pitch angular speed (rad/s)
+ * @return Body frame pitch / theta angular speed (rad/s)
  */
 static inline float mavlink_msg_hil_state_get_pitchspeed(const mavlink_message_t* msg)
 {
@@ -365,7 +379,7 @@ static inline float mavlink_msg_hil_state_get_pitchspeed(const mavlink_message_t
 /**
  * @brief Get field yawspeed from hil_state message
  *
- * @return Yaw angular speed (rad/s)
+ * @return Body frame yaw / psi angular speed (rad/s)
  */
 static inline float mavlink_msg_hil_state_get_yawspeed(const mavlink_message_t* msg)
 {

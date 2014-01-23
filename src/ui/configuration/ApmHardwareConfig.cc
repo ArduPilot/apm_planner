@@ -30,6 +30,8 @@ This file is part of the APM_PLANNER project
 #include "QsLog.h"
 #include "ApmHardwareConfig.h"
 #include "DownloadRemoteParamsDialog.h"
+#include "ParamCompareDialog.h"
+
 ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
@@ -170,32 +172,34 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
 
 void ApmHardwareConfig::paramButtonClicked()
 {
-    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog(this->parentWidget());
+    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog(this->parentWidget(), true);
 
     if(dialog->exec() == QDialog::Accepted) {
         // Pull the selected file and
         // modify the parameters on the adv param list.
         QLOG_DEBUG() << "Remote File Downloaded";
-        QLOG_DEBUG() << "TODO: Trigger auto load or compare of the downloaded file";
-        QString filename = dialog->getDownloadedFileName();
-        QString summaryInfo = m_uas->getParamManager()->summaryInfoFromFile(filename);
+        QLOG_DEBUG() << "Trigger auto load or compare of the downloaded file";
 
-        if (summaryInfo.length() > 0){
-            summaryInfo = "Summary:\n" + summaryInfo;
-        } else {
-            summaryInfo = "Parameter file downloaded\n";
-        }
-            summaryInfo = summaryInfo + "\n Apply Changes";
+        // Bring up the compare dialog
+        m_paramFileToCompare = dialog->getDownloadedFileName();
+        QTimer::singleShot(300, this, SLOT(activateCompareDialog()));
+    }
+    delete dialog;
+    dialog = NULL;
+}
 
-        int result = QMessageBox::question(this->parentWidget(),"Frame Parameters",summaryInfo,
-                                              QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
+void ApmHardwareConfig::activateCompareDialog()
+{
+    QLOG_DEBUG() << "Compare Params to File";
 
-        if(result == QMessageBox::Yes)
-        {
-            // Apply Changes to Vehicle on Yes only
-            if (!m_uas->getParamManager()->loadParamsFromFile(filename,QGCUASParamManager::CommaSeperatedValues))
-            {
-                QMessageBox::critical(this->parentWidget(),"Failure","An error occured during write please try again.");
+    ParamCompareDialog* dialog = new ParamCompareDialog(m_parameterList, m_paramFileToCompare, this);
+
+    if(dialog->exec() == QDialog::Accepted) {
+        // Apply the selected parameters
+        foreach(UASParameter* param, m_parameterList){
+            // Apply changes to ParamManager
+            if(param->isModified()){
+                m_uas->getParamManager()->setParameter(param->component(),param->name(),param->value());
             }
         }
     }
@@ -429,6 +433,19 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
 void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
 {
+    // Create a parameter list model for comparison feature
+    // [TODO] This needs to move to the global parameter model.
+
+    if (m_parameterList.contains(parameterName)){
+        UASParameter* param = m_parameterList.value(parameterName);
+        param->setValue(value); // This also sets the modified bit
+    } else {
+        // create a new entry
+        UASParameter* param = new UASParameter(parameterName,component,value,parameterId);
+        m_parameterList.insert(parameterName, param);
+    }
+
+
     QString countString;
     // Create progress of downloading all parameters for UI
     switch (m_paramDownloadState){

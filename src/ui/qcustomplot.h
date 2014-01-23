@@ -1258,6 +1258,12 @@ public:
   void rescaleAxes(bool onlyEnlarge=false) const;
   void rescaleKeyAxis(bool onlyEnlarge=false) const;
   void rescaleValueAxis(bool onlyEnlarge=false) const;
+
+  // non-virtual methods:
+  void coordsToPixels(double key, double value, double &x, double &y) const;
+  const QPointF coordsToPixels(double key, double value) const;
+  void pixelsToCoords(double x, double y, double &key, double &value) const;
+  void pixelsToCoords(const QPointF &pixelPos, double &key, double &value) const;
   
 signals:
   void selectionChanged(bool selected);
@@ -1293,11 +1299,7 @@ protected:
   virtual QCPRange getKeyRange(bool &validRange, SignDomain inSignDomain=sdBoth) const = 0;
   virtual QCPRange getValueRange(bool &validRange, SignDomain inSignDomain=sdBoth) const = 0;
   
-  // non-virtual methods:
-  void coordsToPixels(double key, double value, double &x, double &y) const;
-  const QPointF coordsToPixels(double key, double value) const;
-  void pixelsToCoords(double x, double y, double &key, double &value) const;
-  void pixelsToCoords(const QPointF &pixelPos, double &key, double &value) const;
+
   QPen mainPen() const;
   QBrush mainBrush() const;
   void applyFillAntialiasingHint(QCPPainter *painter) const;

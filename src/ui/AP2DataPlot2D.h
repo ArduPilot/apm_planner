@@ -10,6 +10,10 @@
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlotAxisDialog.h"
+#include <QTextBrowser>
+
+
+
 class AP2DataPlot2D : public QWidget
 {
     Q_OBJECT
@@ -73,6 +77,7 @@ private slots:
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
+    void plotMouseMove(QMouseEvent *evt);
 private:
     class Graph
     {
@@ -83,8 +88,6 @@ private:
         double axisIndex;
         QCPAxis *axis;
         QCPGraph *graph;
-        //QList<QPair<double,double> > onlineValuesList;
-        //QList<QPair<int,QVariantMap> > offlineValuesList;
     };
 
     QMap<QString,Graph> m_graphClassMap;
@@ -119,6 +122,7 @@ private:
     UASInterface *m_uas;
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
+    qint64 m_timeDiff;
 
 };
 

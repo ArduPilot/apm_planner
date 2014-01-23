@@ -247,8 +247,9 @@ void Waypoint2DIcon::drawIcon()
 void Waypoint2DIcon::SetShowNumber(const bool &value)
 {
     shownumber=value;
-    if((numberI==0) && value)
+    if((numberI == NULL) && value)
     {
+        Q_ASSERT(numberIBG == NULL);
         numberI=new QGraphicsSimpleTextItem(this);
         numberIBG=new QGraphicsRectItem(this);
         numberIBG->setBrush(Qt::black);
@@ -263,7 +264,9 @@ void Waypoint2DIcon::SetShowNumber(const bool &value)
     else if (!value && numberI)
     {
         delete numberI;
+        numberI = NULL;
         delete numberIBG;
+        numberIBG = NULL;
     }
     this->update();
 }

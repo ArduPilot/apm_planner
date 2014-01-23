@@ -217,7 +217,9 @@ void FlightModeConfig::remoteControlChannelRawChanged(int chan,float val)
 
 void FlightModeConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
-    QLOG_DEBUG() << "FlightModeConfig:: name:" << parameterName << " value:" << value;
+    // Filter Log based on parameters we are interested in.
+    if (parameterName.startsWith("FLTMODE")||parameterName.startsWith("MODE"))
+         QLOG_DEBUG() << "FlightModeConfig:: name:" << parameterName << " value:" << value;
 
     if ((parameterName == "FLTMODE1") || (parameterName == "MODE1"))
     {
