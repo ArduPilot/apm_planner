@@ -357,6 +357,7 @@ void AP2DataPlotAxisDialog::removeAxis(QString name)
     m_rangeMap.remove(name);
     m_graphScaleMap.remove(name);
     m_graphRangeMap.remove(name);
+    m_graphToGroupNameMap.remove(name);
     QList<QTableWidgetItem*> items = ui->graphTableWidget->findItems(name,Qt::MatchExactly);
     if (items.size() > 0)
     {
