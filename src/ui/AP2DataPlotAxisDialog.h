@@ -23,22 +23,20 @@ public:
 protected:
     void closeEvent(QCloseEvent *evt);
 public slots:
-    void graphTableCurrentItemChanged(QTableWidgetItem *current,QTableWidgetItem *previous);
-    void graphTableItemSelectionChanged();
     void setMinMaxButtonClicked();
     void autoButtonClicked(bool checked);
-    void groupAButtonClicked(bool checked);
-    void groupBButtonClicked(bool checked);
-    void groupCButtonClicked(bool checked);
-    void groupDButtonClicked(bool checked);
     void manualButtonClicked(bool checked);
 private slots:
     void applyButtonClicked();
     void cancelButtonClicked();
+    void groupComboChanged(int name);
+    void cellDoubleClicked(int row,int col);
+    void cellChanged(int row,int col);
 signals:
     void graphAddedToGroup(QString name,QString group,double scale);
     void graphRemovedFromGroup(QString name);
     void graphManualRange(QString name, double min, double max);
+    void graphAutoRange(QString name);
 private:
     //Map of ranges for individual graphs
     QMap<QString,QPair<double,double> > m_rangeMap;

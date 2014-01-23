@@ -1,6 +1,8 @@
 #include <QCloseEvent>
 #include <QWidget>
 #include <QMap>
+#include <QComboBox>
+#include <QCheckBox>
 
 #include "AP2DataPlotAxisDialog.h"
 #include "ui_AP2DataPlotAxisDialog.h"
@@ -12,35 +14,77 @@ AP2DataPlotAxisDialog::AP2DataPlotAxisDialog(QWidget *parent) :
     ui->setupUi(this);
     //connect(ui->graphTableWidget,SIGNAL(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)),this,SLOT(graphTableCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
     connect(ui->graphTableWidget,SIGNAL(itemSelectionChanged()),this,SLOT(graphTableItemSelectionChanged()));
-    connect(ui->setMinMaxPushButton,SIGNAL(clicked()),this,SLOT(setMinMaxButtonClicked()));
-    connect(ui->autoRadioButton,SIGNAL(clicked(bool)),this,SLOT(autoButtonClicked(bool)));
-    connect(ui->groupARadioButton,SIGNAL(clicked(bool)),this,SLOT(groupAButtonClicked(bool)));
-    connect(ui->groupBRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupBButtonClicked(bool)));
-    connect(ui->groupCRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupCButtonClicked(bool)));
-    connect(ui->groupDRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupDButtonClicked(bool)));
-    connect(ui->manualRadioButton,SIGNAL(clicked(bool)),this,SLOT(manualButtonClicked(bool)));
+    connect(ui->graphTableWidget,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(cellDoubleClicked(int,int)));
+    connect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
+    //connect(ui->graphTableWidget,SIGNAL(cellActivated(int,int))
+    //connect(ui->setMinMaxPushButton,SIGNAL(clicked()),this,SLOT(setMinMaxButtonClicked()));
+    //connect(ui->autoRadioButton,SIGNAL(clicked(bool)),this,SLOT(autoButtonClicked(bool)));
+    //connect(ui->groupARadioButton,SIGNAL(clicked(bool)),this,SLOT(groupAButtonClicked(bool)));
+    //connect(ui->groupBRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupBButtonClicked(bool)));
+    //connect(ui->groupCRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupCButtonClicked(bool)));
+    //connect(ui->groupDRadioButton,SIGNAL(clicked(bool)),this,SLOT(groupDButtonClicked(bool)));
+    //connect(ui->manualRadioButton,SIGNAL(clicked(bool)),this,SLOT(manualButtonClicked(bool)));
 
-    ui->minMaxGroupBox->setEnabled(false);
-    ui->axisRangeGroupBox->setEnabled(false);
+    //ui->minMaxGroupBox->setEnabled(false);
+    //ui->axisRangeGroupBox->setEnabled(false);
 
-    ui->graphTableWidget->setColumnCount(5);
+    ui->graphTableWidget->setColumnCount(6);
     ui->graphTableWidget->setColumnWidth(0,25);
     ui->graphTableWidget->setColumnWidth(1,100);
     ui->graphTableWidget->setColumnWidth(2,100);
     ui->graphTableWidget->setColumnWidth(3,60);
     ui->graphTableWidget->setColumnWidth(4,60);
-    ui->graphTableWidget->setHorizontalHeaderLabels(QStringList() << "C" << "Graph Name" << "Graph Group" << "Min" << "Max");
+    ui->graphTableWidget->setColumnWidth(5,60);
+    ui->graphTableWidget->setHorizontalHeaderLabels(QStringList() << "C" << "Graph Name" << "Graph Group" << "Min" << "Max" << "Auto Axis");
     ui->graphTableWidget->verticalHeader()->hide();
 
     connect(ui->applyPushButton,SIGNAL(clicked()),this,SLOT(applyButtonClicked()));
     connect(ui->cancelPushButton,SIGNAL(clicked()),this,SLOT(cancelButtonClicked()));
 
 
-    ui->label_4->setVisible(false);
-    ui->graphScaleDoubleSpinBox->setVisible(false);
+    //ui->label_4->setVisible(false);
+    //ui->graphScaleDoubleSpinBox->setVisible(false);
 
     ui->graphTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 }
+void AP2DataPlotAxisDialog::cellDoubleClicked(int row,int col)
+{
+    if (col != 3 && col != 4)
+    {
+        //Not a min/max cell
+        return;
+    }
+    if (!ui->graphTableWidget->item(row,col))
+    {
+        //Error condition, double clicked on a bad cell somehow?
+        return;
+    }
+    QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(row,5));
+    if (checkbox)
+    {
+        checkbox->setChecked(false);
+    }
+}
+
+void AP2DataPlotAxisDialog::cellChanged(int row,int col)
+{
+    if (col != 3 && col != 4)
+    {
+        //Not a min/max cell
+        return;
+    }
+    if (!ui->graphTableWidget->item(row,col))
+    {
+        //Error condition, invalid cell changed
+        return;
+    }
+    QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(row,5));
+    if (checkbox)
+    {
+        checkbox->setChecked(false);
+    }
+}
+
 void AP2DataPlotAxisDialog::autoButtonClicked(bool checked)
 {
     if (ui->graphTableWidget->selectedItems().size() == 0)
@@ -71,13 +115,13 @@ void AP2DataPlotAxisDialog::manualButtonClicked(bool checked)
         return;
     }
     m_graphToGroupNameMap[graphname] = "MANUAL";
-    ui->minMaxGroupBox->setEnabled(true);
+    //ui->minMaxGroupBox->setEnabled(true);
     if (!m_graphRangeMap.contains(graphname))
     {
         //m_graphRangeMap.remove(graphname);
         m_graphRangeMap[graphname] = QPair<double,double>(m_rangeMap[graphname].first,m_rangeMap[graphname].second);
-        ui->minDoubleSpinBox->setValue(m_rangeMap[graphname].first);
-        ui->maxDoubleSpinBox->setValue(m_rangeMap[graphname].second);
+    //    ui->minDoubleSpinBox->setValue(m_rangeMap[graphname].first);
+    //    ui->maxDoubleSpinBox->setValue(m_rangeMap[graphname].second);
     }
 }
 
@@ -87,88 +131,9 @@ void AP2DataPlotAxisDialog::closeEvent(QCloseEvent *evt)
     this->hide();
 }
 
-void AP2DataPlotAxisDialog::groupAButtonClicked(bool checked)
-{
-    if (ui->graphTableWidget->selectedItems().size() == 0)
-    {
-        return;
-    }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPA");
-    if (m_graphToGroupNameMap[graphname] == "GROUPA")
-    {
-        return;
-    }
-    m_graphToGroupNameMap[graphname] = "GROUPA";
-    if (m_graphRangeMap.contains(graphname))
-    {
-        m_graphRangeMap.remove(graphname);
-    }
-}
-
-void AP2DataPlotAxisDialog::groupBButtonClicked(bool checked)
-{
-    if (ui->graphTableWidget->selectedItems().size() == 0)
-    {
-        return;
-    }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPB");
-    if (m_graphToGroupNameMap[graphname] == "GROUPB")
-    {
-        return;
-    }
-    m_graphToGroupNameMap[graphname] = "GROUPB";
-    if (m_graphRangeMap.contains(graphname))
-    {
-        m_graphRangeMap.remove(graphname);
-    }
-}
-
-void AP2DataPlotAxisDialog::groupCButtonClicked(bool checked)
-{
-    if (ui->graphTableWidget->selectedItems().size() == 0)
-    {
-        return;
-    }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPC");
-    if (m_graphToGroupNameMap[graphname] == "GROUPC")
-    {
-        return;
-    }
-    m_graphToGroupNameMap[graphname] = "GROUPC";
-    if (m_graphRangeMap.contains(graphname))
-    {
-        m_graphRangeMap.remove(graphname);
-    }
-}
-
-void AP2DataPlotAxisDialog::groupDButtonClicked(bool checked)
-{
-    if (ui->graphTableWidget->selectedItems().size() == 0)
-    {
-        return;
-    }
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
-    ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPD");
-    if (m_graphToGroupNameMap[graphname] == "GROUPD")
-    {
-        return;
-    }
-    m_graphToGroupNameMap[graphname] = "GROUPD";
-    if (m_graphRangeMap.contains(graphname))
-    {
-        m_graphRangeMap.remove(graphname);
-    }
-}
 void AP2DataPlotAxisDialog::applyButtonClicked()
 {
-    for (QMap<QString,QString>::const_iterator i=m_graphToGroupNameMap.constBegin();i!=m_graphToGroupNameMap.constEnd();i++)
+    /*for (QMap<QString,QString>::const_iterator i=m_graphToGroupNameMap.constBegin();i!=m_graphToGroupNameMap.constEnd();i++)
     {
         if (i.value() == "NONE")
         {
@@ -176,17 +141,52 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
         }
         else if (i.value() == "MANUAL")
         {
-            emit graphManualRange(i.key(),m_graphRangeMap.value(i.key()).first,m_graphRangeMap.value(i.key()).second);
+            //emit graphManualRange(i.key(),m_graphRangeMap.value(i.key()).first,m_graphRangeMap.value(i.key()).second);
         }
         else
         {
             emit graphAddedToGroup(i.key(),i.value(),m_graphScaleMap.value(i.key()));
+        }
+    }*/
+    for (int i=0;i<ui->graphTableWidget->rowCount();i++)
+    {
+        QString name = ui->graphTableWidget->item(i,1)->text();
+        QComboBox *combobox = qobject_cast<QComboBox*>(ui->graphTableWidget->cellWidget(i,2));
+        QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(i,5));
+        if (!checkbox || !combobox)
+        {
+            //error of some sort? Apply failed.
+            return;
+        }
+        QString group = combobox->currentText();
+        if (group == "NONE")
+        {
+            emit graphRemovedFromGroup(group);
+            if (!checkbox->isChecked())
+            {
+                //ui->graphTableWidget->item(i,1)->text(); // name
+                //ui->graphTableWidget->item(i,3)->text(); // min
+                //ui->graphTableWidget->item(i,4)->text(); // max
+                emit graphManualRange(ui->graphTableWidget->item(i,1)->text(),ui->graphTableWidget->item(i,3)->text().toDouble(),ui->graphTableWidget->item(i,4)->text().toDouble());
+            }
+            else
+            {
+                emit graphAutoRange(ui->graphTableWidget->item(i,1)->text());
+            }
+        }
+        else
+        {
+            checkbox->setChecked(true);
+            emit graphAutoRange(name);
+            emit graphAddedToGroup(name,group,m_graphScaleMap.value(name));
+
         }
     }
 }
 
 void AP2DataPlotAxisDialog::cancelButtonClicked()
 {
+    applyButtonClicked();
     this->hide();
 }
 
@@ -194,164 +194,66 @@ AP2DataPlotAxisDialog::~AP2DataPlotAxisDialog()
 {
     delete ui;
 }
-void AP2DataPlotAxisDialog::graphTableItemSelectionChanged()
-{
-    if (ui->graphTableWidget->selectedItems().size() == 0)
-    {
-        ui->axisRangeGroupBox->setEnabled(false);
-        return;
-    }
-    ui->axisRangeGroupBox->setEnabled(true);
-    QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
-    QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
-    if (m_graphToGroupNameMap.contains(graphname))
-    {
-        if (m_graphToGroupNameMap[graphname] == "GROUPA")
-        {
-            ui->groupARadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "GROUPB")
-        {
-            ui->groupBRadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "GROUPC")
-        {
-            ui->groupCRadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "GROUPD")
-        {
-            ui->groupDRadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "NONE")
-        {
-            ui->autoRadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "MANUAL")
-        {
-            ui->minMaxGroupBox->setEnabled(true);
-            if (m_graphRangeMap.contains(graphname))
-            {
-                ui->minDoubleSpinBox->setValue(m_graphRangeMap.value(graphname).first);
-                ui->maxDoubleSpinBox->setValue(m_graphRangeMap.value(graphname).second);
-            }
-            else if (m_rangeMap.contains(graphname))
-            {
-                ui->minDoubleSpinBox->setValue(m_rangeMap.value(graphname).first);
-                ui->maxDoubleSpinBox->setValue(m_rangeMap.value(graphname).second);
-            }
-        }
-        else
-        {
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-    }
-    else
-    {
-        ui->autoRadioButton->setChecked(true);
-    }
-    if (m_graphScaleMap.contains(graphname))
-    {
-        ui->graphScaleDoubleSpinBox->setValue(m_graphScaleMap.value(graphname));
-    }
-}
-
-void AP2DataPlotAxisDialog::graphTableCurrentItemChanged(QTableWidgetItem *current,QTableWidgetItem *previous)
-{
-    if (!current || ui->graphTableWidget->selectedItems().size() == 0)
-    {
-        ui->axisRangeGroupBox->setEnabled(false);
-        return;
-    }
-    ui->axisRangeGroupBox->setEnabled(true);
-    QString graphname = ui->graphTableWidget->item(current->row(),1)->text();
-    QString groupname = ui->graphTableWidget->item(current->row(),2)->text();
-    if (m_graphToGroupNameMap.contains(graphname))
-    {
-        if (m_graphToGroupNameMap[graphname] == "GROUPA")
-        {
-            ui->groupARadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "GROUPB")
-        {
-            ui->groupBRadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "GROUPC")
-        {
-            ui->groupCRadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "GROUPD")
-        {
-            ui->groupDRadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "NONE")
-        {
-            ui->autoRadioButton->setChecked(true);
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-        else if (m_graphToGroupNameMap[graphname] == "MANUAL")
-        {
-            ui->minMaxGroupBox->setEnabled(true);
-            if (m_graphRangeMap.contains(graphname))
-            {
-                ui->minDoubleSpinBox->setValue(m_graphRangeMap.value(graphname).first);
-                ui->maxDoubleSpinBox->setValue(m_graphRangeMap.value(graphname).second);
-            }
-            else if (m_rangeMap.contains(graphname))
-            {
-                ui->minDoubleSpinBox->setValue(m_rangeMap.value(graphname).first);
-                ui->maxDoubleSpinBox->setValue(m_rangeMap.value(graphname).second);
-            }
-        }
-        else
-        {
-            ui->minMaxGroupBox->setEnabled(false);
-        }
-    }
-    else
-    {
-        ui->autoRadioButton->setChecked(true);
-    }
-    if (m_graphScaleMap.contains(graphname))
-    {
-        ui->graphScaleDoubleSpinBox->setValue(m_graphScaleMap.value(graphname));
-    }
-
-}
 
 void AP2DataPlotAxisDialog::addAxis(QString name,double lower, double upper,QColor color)
 {
+    disconnect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
     m_rangeMap[name] = QPair<double,double>(lower,upper);
     ui->graphTableWidget->setRowCount(ui->graphTableWidget->rowCount()+1);
     QTableWidgetItem *nameitem = new QTableWidgetItem(name);
     nameitem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     QTableWidgetItem *groupitem = new QTableWidgetItem("");
-    groupitem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     QTableWidgetItem *coloritem = new QTableWidgetItem("");
     coloritem->setFlags(Qt::ItemIsEnabled);
     QTableWidgetItem *minitem = new QTableWidgetItem(QString::number(lower));
-    minitem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    //minitem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     QTableWidgetItem *maxitem = new QTableWidgetItem(QString::number(upper));
-    maxitem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    //maxitem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,0,coloritem);
     ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,1,nameitem);
     ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,2,groupitem);
+    QComboBox *groupcombobox = new QComboBox(this);
+    groupcombobox->addItem("NONE",QVariant(name));
+    groupcombobox->addItem("GROUPA",QVariant(name));
+    groupcombobox->addItem("GROUPB",QVariant(name));
+    groupcombobox->addItem("GROUPC",QVariant(name));
+    groupcombobox->addItem("GROUPD",QVariant(name));
+    connect(groupcombobox,SIGNAL(currentIndexChanged(int)),this,SLOT(groupComboChanged(int)));
+    ui->graphTableWidget->setCellWidget(ui->graphTableWidget->rowCount()-1,2,groupcombobox);
     ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,3,minitem);
     ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,4,maxitem);
+    QTableWidgetItem *autoitem = new QTableWidgetItem();
+    ui->graphTableWidget->setItem(ui->graphTableWidget->rowCount()-1,5,autoitem);
+    QCheckBox *checkbox = new QCheckBox(this);
+    checkbox->setText("");
+    checkbox->setChecked(true);
+    ui->graphTableWidget->setCellWidget(ui->graphTableWidget->rowCount()-1,5,checkbox);
     m_graphScaleMap[name] = 1.0;
     m_rangeMap[name] = QPair<double,double>(lower,upper);
 
 
     ui->graphTableWidget->item(ui->graphTableWidget->rowCount()-1,0)->setBackgroundColor(color);
+    connect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
 }
+void AP2DataPlotAxisDialog::groupComboChanged(int index)
+{
+    QComboBox *combo = qobject_cast<QComboBox*>(sender());
+    QString graphname = combo->itemData(index).toString();
+    QString name = combo->itemText(index);
+    //QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
+    //QString name = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
+    //ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->setText("GROUPC");
+    //if (m_graphToGroupNameMap[graphname] == "GROUPC")
+    //{
+    //    return;
+    //}
+    m_graphToGroupNameMap[graphname] = name;
+    if (m_graphRangeMap.contains(graphname))
+    {
+        m_graphRangeMap.remove(graphname);
+    }
+}
+
 void AP2DataPlotAxisDialog::removeAxis(QString name)
 {
     m_rangeMap.remove(name);
@@ -379,6 +281,16 @@ void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
         {
             if (ui->graphTableWidget->item(i,1)->text() == name && ui->graphTableWidget->item(i,2)->text() != "MANUAL")
             {
+                QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(i,5));
+                if (checkbox)
+                {
+                    if (!checkbox->isChecked())
+                    {
+                        //Don't update the UI.
+                        return;
+                    }
+                }
+                disconnect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
                 QTableWidgetItem *minitem = ui->graphTableWidget->item(i,3);
                 QTableWidgetItem *maxitem = ui->graphTableWidget->item(i,4);
                 if (!minitem)
@@ -393,6 +305,7 @@ void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
                 }
                 minitem->setText(QString::number(lower));
                 maxitem->setText(QString::number(upper));
+                connect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
                 return;
             }
         }
@@ -400,33 +313,14 @@ void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
 }
 void AP2DataPlotAxisDialog::setMinMaxButtonClicked()
 {
-    /*ui->autoRadioButton->setAutoExclusive(false);
-    ui->autoRadioButton->setChecked(false);
-    ui->autoRadioButton->setAutoExclusive(true);
-
-    ui->groupARadioButton->setAutoExclusive(false);
-    ui->groupARadioButton->setChecked(false);
-    ui->groupARadioButton->setAutoExclusive(true);
-
-    ui->groupBRadioButton->setAutoExclusive(false);
-    ui->groupBRadioButton->setChecked(false);
-    ui->groupBRadioButton->setAutoExclusive(true);
-
-    ui->groupCRadioButton->setAutoExclusive(false);
-    ui->groupCRadioButton->setChecked(false);
-    ui->groupCRadioButton->setAutoExclusive(true);
-
-    ui->groupDRadioButton->setAutoExclusive(false);
-    ui->groupDRadioButton->setChecked(false);
-    ui->groupDRadioButton->setAutoExclusive(true);*/
     if (ui->graphTableWidget->selectedItems().size() == 0)
     {
         return;
     }
     QString graphname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),1)->text();
     QString groupname = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),2)->text();
-    m_graphRangeMap[graphname].first = ui->minDoubleSpinBox->value();
-    m_graphRangeMap[graphname].second = ui->maxDoubleSpinBox->value();
+    //m_graphRangeMap[graphname].first = ui->minDoubleSpinBox->value();
+    //m_graphRangeMap[graphname].second = ui->maxDoubleSpinBox->value();
     QTableWidgetItem *minitem = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),3);
     QTableWidgetItem *maxitem = ui->graphTableWidget->item(ui->graphTableWidget->selectedItems()[0]->row(),4);
     if (!minitem)

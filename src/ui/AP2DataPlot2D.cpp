@@ -147,14 +147,17 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->show();
-        QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::Show));
-        QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::WindowActivate));
+        m_axisGroupingDialog->activateWindow();
+        m_axisGroupingDialog->raise();
+        //QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::Show));
+        //QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::WindowActivate));
         return;
     }
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
     connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString,double)),this,SLOT(graphAddedToGroup(QString,QString,double)));
     connect(m_axisGroupingDialog,SIGNAL(graphRemovedFromGroup(QString)),this,SLOT(graphRemovedFromGroup(QString)));
     connect(m_axisGroupingDialog,SIGNAL(graphManualRange(QString,double,double)),this,SLOT(graphManualRange(QString,double,double)));
+    connect(m_axisGroupingDialog,SIGNAL(graphAutoRange(QString)),this,SLOT(graphAutoRange(QString)));
     for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
     {
         m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
@@ -439,6 +442,10 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
                 for (int i=0;i<m_graphGrouping[m_graphClassMap.value(propername).groupName].size();i++)
                 {
                     m_graphClassMap.value(m_graphGrouping[m_graphClassMap.value(propername).groupName][i]).axis->setRange(m_graphGroupRanges[m_graphClassMap.value(propername).groupName]);
+                }
+                if (m_axisGroupingDialog)
+                {
+                    m_axisGroupingDialog->updateAxis(propername,m_graphClassMap.value(propername).axis->range().lower,m_graphClassMap.value(propername).axis->range().upper);
                 }
             }
         }
@@ -739,7 +746,7 @@ void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
         graphRemovedFromGroup(name);
     }
     m_graphClassMap[name].groupName = group;
-
+    m_graphClassMap[name].isInGroup = true;
     m_graphGrouping[group].append(name);
     if (m_graphClassMap.value(name).axis->range().upper > m_graphGroupRanges[group].upper)
     {
@@ -761,6 +768,16 @@ void AP2DataPlot2D::graphManualRange(QString name, double min, double max)
     m_graphClassMap[name].isManualRange = true;
     m_graphClassMap.value(name).axis->setRange(min,max);
 }
+void AP2DataPlot2D::graphAutoRange(QString name)
+{
+    m_graphClassMap[name].isManualRange = true;
+    m_graphClassMap.value(name).graph->rescaleValueAxis();
+    if (m_axisGroupingDialog)
+    {
+        m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
+    }
+}
+
 void AP2DataPlot2D::graphRemovedFromGroup(QString name)
 {
     //Always remove it from manual range
@@ -773,10 +790,19 @@ void AP2DataPlot2D::graphRemovedFromGroup(QString name)
     QString group = m_graphClassMap.value(name).groupName;
     m_graphGrouping[group].removeOne(name);
     m_graphClassMap[name].isInGroup = false;
+    //m_graphClassMap.value(name).graph->valueAxis()->setRange;
     m_graphClassMap.value(name).graph->rescaleValueAxis();
+    if (m_axisGroupingDialog)
+    {
+        m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
+    }
     if (m_graphGrouping[group].size() > 0)
     {
         m_graphClassMap.value(m_graphGrouping[group][0]).graph->rescaleValueAxis();
+        if (m_axisGroupingDialog)
+        {
+            m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
+        }
         m_graphGroupRanges[group] = m_graphClassMap.value(m_graphGrouping[group][0]).axis->range();
     }
     for (int i=0;i<m_graphGrouping[group].size();i++)
