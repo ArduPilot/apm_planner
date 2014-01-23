@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Download Parameters</string>
   </property>
   <widget class="QLabel" name="statusLabel">
    <property name="geometry">

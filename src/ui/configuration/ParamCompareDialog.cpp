@@ -58,6 +58,11 @@ void ParamCompareDialog::initConnections()
 
 }
 
+void ParamCompareDialog::setAcceptButtonLabel(const QString &label)
+{
+    if (ui) ui->continueButton->setText(label);
+}
+
 void ParamCompareDialog::loadParameterFile()
 {
     ui->compareTableWidget->setRowCount(0);

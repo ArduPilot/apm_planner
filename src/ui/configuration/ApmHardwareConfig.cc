@@ -193,6 +193,7 @@ void ApmHardwareConfig::activateCompareDialog()
     QLOG_DEBUG() << "Compare Params to File";
 
     ParamCompareDialog* dialog = new ParamCompareDialog(m_parameterList, m_paramFileToCompare, this);
+    dialog->setAcceptButtonLabel(tr("Write Params"));
 
     if(dialog->exec() == QDialog::Accepted) {
         // Apply the selected parameters

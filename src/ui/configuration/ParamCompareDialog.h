@@ -19,6 +19,8 @@ public:
                                 const QString& filename, QWidget *parent = 0);
     ~ParamCompareDialog();
 
+    void setAcceptButtonLabel(const QString& label);
+
     static void populateParamListFromString(QString paramString, QMap<QString, UASParameter *> *list, QWidget *widget);
     void compareLists();
 
