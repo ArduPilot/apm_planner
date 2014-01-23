@@ -117,55 +117,65 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     alsa_buffer_frames = 3 * alsa_period_size ;
 
     if ((err = snd_pcm_open (&alsa_dev, device, SND_PCM_STREAM_PLAYBACK, 0)) < 0)
-    {     fprintf (stderr, "cannot open audio device \"%s\" (%s)\n", device, snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot open audio device " << device << snd_strerror(err);
         return NULL ;
     } ;
 
     snd_pcm_nonblock (alsa_dev, 0) ;
 
     if ((err = snd_pcm_hw_params_malloc (&hw_params)) < 0)
-    {     fprintf (stderr, "cannot allocate hardware parameter structure (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot allocate hardware parameter structure "<< snd_strerror (err);
         return NULL ;
     } ;
 
     if ((err = snd_pcm_hw_params_any (alsa_dev, hw_params)) < 0)
-    {     fprintf (stderr, "cannot initialize hardware parameter structure (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot initialize hardware parameter structure " << snd_strerror (err);
         return NULL ;
     } ;
 
     if ((err = snd_pcm_hw_params_set_access (alsa_dev, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
-    {     fprintf (stderr, "cannot set access type (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot set access type ", snd_strerror (err) ;
         return NULL ;
     } ;
 
     if ((err = snd_pcm_hw_params_set_format (alsa_dev, hw_params, SND_PCM_FORMAT_FLOAT)) < 0)
-    {     fprintf (stderr, "cannot set sample format (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot set sample format " << snd_strerror (err);
         return NULL ;
     } ;
 
     if ((err = snd_pcm_hw_params_set_rate_near (alsa_dev, hw_params, (uint*)&samplerate, 0)) < 0)
-    {     fprintf (stderr, "cannot set sample rate (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot set sample rate " << snd_strerror (err);
         return NULL ;
     } ;
 
     if ((err = snd_pcm_hw_params_set_channels (alsa_dev, hw_params, channels)) < 0)
-    {     fprintf (stderr, "cannot set channel count (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot set channel count " << snd_strerror (err);
         return NULL ;
     } ;
 
     if ((err = snd_pcm_hw_params_set_buffer_size_near (alsa_dev, hw_params, &alsa_buffer_frames)) < 0)
-    {     fprintf (stderr, "cannot set buffer size (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot set buffer size " << snd_strerror (err);
         return NULL ;
     } ;
 
 
     if ((err = snd_pcm_hw_params_set_period_size_near (alsa_dev, hw_params, &alsa_period_size, 0)) < 0)
-    {     fprintf (stderr, "cannot set period size (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot set period size " << snd_strerror (err);
         return NULL ;
     } ;
 
     if ((err = snd_pcm_hw_params (alsa_dev, hw_params)) < 0)
-    {     fprintf (stderr, "cannot set parameters (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot set parameters " << snd_strerror (err);
         return NULL ;
     } ;
 
@@ -173,26 +183,30 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     snd_pcm_hw_params_get_period_size (hw_params, &alsa_period_size, 0) ;
     snd_pcm_hw_params_get_buffer_size (hw_params, &buffer_size) ;
     if (alsa_period_size == buffer_size)
-    {     fprintf (stderr, "Can't use period equal to buffer size (%lu == %lu)", alsa_period_size, buffer_size) ;
+    {
+        QLOG_INFO() << "Can't use period equal to buffer size " << alsa_period_size << buffer_size;
         return NULL ;
     } ;
 
     snd_pcm_hw_params_free (hw_params) ;
 
     if ((err = snd_pcm_sw_params_malloc (&sw_params)) != 0)
-    {     fprintf (stderr, "%s: snd_pcm_sw_params_malloc: %s", __func__, snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "%s: snd_pcm_sw_params_malloc: " << __func__<< snd_strerror (err);
         return NULL ;
     } ;
 
     if ((err = snd_pcm_sw_params_current (alsa_dev, sw_params)) != 0)
-    {     fprintf (stderr, "%s: snd_pcm_sw_params_current: %s", __func__, snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "%s: snd_pcm_sw_params_current: " << __func__ << snd_strerror (err);
         return NULL ;
     } ;
 
     /* note: set start threshold to delay start until the ring buffer is full */
     snd_pcm_sw_params_current (alsa_dev, sw_params) ;
     if ((err = snd_pcm_sw_params_get_xfer_align (sw_params, &xfer_align)) < 0)
-    {     fprintf (stderr, "cannot get xfer align (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot get xfer align " << snd_strerror (err);
         return NULL ;
     } ;
 
@@ -201,12 +215,14 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     if (start_threshold < 1)
         start_threshold = 1 ;
     if ((err = snd_pcm_sw_params_set_start_threshold (alsa_dev, sw_params, start_threshold)) < 0)
-    {     fprintf (stderr, "cannot set start threshold (%s)\n", snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "cannot set start threshold " << snd_strerror (err);
         return NULL ;
     } ;
 
     if ((err = snd_pcm_sw_params (alsa_dev, sw_params)) != 0)
-    {     fprintf (stderr, "%s: snd_pcm_sw_params: %s", __func__, snd_strerror (err)) ;
+    {
+        QLOG_INFO() << "%s: snd_pcm_sw_params: " << __func__ << snd_strerror (err);
         return NULL ;
     } ;
     snd_pcm_sw_params_free (sw_params) ;
@@ -254,8 +270,9 @@ int AlsaAudio::alsa_write_float(snd_pcm_t *alsa_dev, float *data, int frames, in
 
             if (0)
             {     snd_pcm_status_alloca (&status) ;
-                if ((retval = snd_pcm_status (alsa_dev, status)) < 0)
-                    fprintf (stderr, "alsa_out: xrun. can't determine length\n") ;
+                if ((retval = snd_pcm_status (alsa_dev, status)) < 0){
+                    QLOG_INFO() << "alsa_out: xrun. can't determine length";
+                }
                 else if (snd_pcm_status_get_state (status) == SND_PCM_STATE_XRUN)
                 {     struct timeval now, diff, tstamp ;
 
@@ -263,32 +280,31 @@ int AlsaAudio::alsa_write_float(snd_pcm_t *alsa_dev, float *data, int frames, in
                     snd_pcm_status_get_trigger_tstamp (status, &tstamp) ;
                     timersub (&now, &tstamp, &diff) ;
 
-                    fprintf (stderr, "alsa_write_float xrun: of at least %.3f msecs. resetting stream\n",
-                             diff.tv_sec * 1000 + diff.tv_usec / 1000.0) ;
+                    QLOG_INFO() << "alsa_write_float xrun: of at least " << (diff.tv_sec * 1000 + diff.tv_usec / 1000.0) << " msecs. resetting stream";
                 }
                 else
-                    fprintf (stderr, "alsa_write_float: xrun. can't determine length\n") ;
+                    QLOG_INFO() << "alsa_write_float: xrun. can't determine length";
             } ;
 
             snd_pcm_prepare (alsa_dev) ;
             break ;
 
         case -EBADFD :
-            fprintf (stderr, "alsa_write_float: Bad PCM state.n") ;
+            QLOG_INFO() << "alsa_write_float: Bad PCM state.n";
             return 0 ;
             break ;
 
         case -ESTRPIPE :
-            fprintf (stderr, "alsa_write_float: Suspend event.n") ;
+            QLOG_INFO() << "alsa_write_float: Suspend event.n";
             return 0 ;
             break ;
 
         case -EIO :
-            puts ("alsa_write_float: EIO") ;
+            QLOG_INFO() << "alsa_write_float: EIO";
             return 0 ;
 
         default :
-            fprintf (stderr, "alsa_write_float: retval = %d\n", retval) ;
+            QLOG_INFO() << "alsa_write_float: retval = " << retval;
             return 0 ;
             break ;
         } ; /* switch */
