@@ -108,7 +108,7 @@ GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
 
     QLOG_INFO() << "Using Alsa Audio driver";
 
-    // Create sharedirectora tmp_audio
+    // Create shared dir tmp_audio
     // we create new spoken audio files here. we don't delete them as befor.
     // we save audiofiles like message inside.
     // if new messages will create in code this new messages will saved as audio file on first call
@@ -168,8 +168,6 @@ GAudioOutput::~GAudioOutput()
 
 void GAudioOutput::mute(bool mute)
 {
-    AlsaAudio::instance(this)->setFilname(QGC::shareDirectory()+QString("/files/audio/alert.wav"));
-    AlsaAudio::instance(NULL)->start();
     if (mute != muted)
     {
         this->muted = mute;
@@ -213,12 +211,9 @@ bool GAudioOutput::say(QString text, int severity)
             QString spokenFilename = text;
             spokenFilename.replace(QRegExp(" "), "_");
             spokenFilename = QGC::appDataDirectory() + "/tmp_audio/" + spokenFilename + ".wav";
-            QLOG_INFO() << spokenFilename;
-
 
             // alsadriver is a qthread. temp. files dont work here
             QFile file( spokenFilename );
-            QLOG_INFO() << file.fileName();
             if (!file.exists(spokenFilename)){ // if file not exist we create a new one
                 if (file.open(QIODevice::ReadWrite))
                 {
