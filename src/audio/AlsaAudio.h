@@ -9,6 +9,7 @@
 #include <alsa/asoundlib.h>
 #include <sys/time.h>
 #include <sndfile.h>
+#include <QQueue>
 
 #define BUFFER_LEN (2048)
 #endif // Q_OS_LINUX
@@ -20,7 +21,7 @@ public:
     AlsaAudio(QObject *parent=NULL);
     /** @brief Get the singleton instance */
     static AlsaAudio* instance(QObject *par);
-    void setFilname(QString name);
+    void enqueueFilname(QString name);
 
 #ifdef Q_OS_LINUX
 
@@ -29,7 +30,8 @@ public:
 
 private:
 
-    QString a_fileName;
+    QQueue<QString> aa_fileNameQueue;
+
 #ifdef Q_OS_LINUX
     snd_pcm_t * alsa_open( int channels, int srate );
     int alsa_write_float( snd_pcm_t *alsa_dev, float *data, int frames, int channels );

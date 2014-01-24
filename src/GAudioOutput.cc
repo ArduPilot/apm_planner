@@ -224,15 +224,17 @@ bool GAudioOutput::say(QString text, int severity)
 
                     cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
                     file.close();
-                    AlsaAudio::instance(this)->setFilname(file.fileName());
-                    AlsaAudio::instance(this)->start();
+                    AlsaAudio::instance(this)->enqueueFilname(file.fileName());
+                    if(!AlsaAudio::instance(this)->isRunning())
+                        AlsaAudio::instance(this)->start();
                     res = true;
                 }
             }else // we open existing file
             {
                 QLOG_INFO() << file.fileName() << " file exist playing file";
-                AlsaAudio::instance(this)->setFilname(file.fileName());
-                AlsaAudio::instance(this)->start();
+                AlsaAudio::instance(this)->enqueueFilname(file.fileName());
+                if(!AlsaAudio::instance(this)->isRunning())
+                    AlsaAudio::instance(this)->start();
                 res = true;
             }
 

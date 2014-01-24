@@ -21,6 +21,7 @@
 #include <QApplication>
 #include <QSettings>
 #include "AlsaAudio.h"
+#include <QMutex>
 
 AlsaAudio::AlsaAudio(QObject *parent) :
     QThread(parent)
@@ -40,9 +41,19 @@ AlsaAudio* AlsaAudio::instance(QObject *par)
     return _instance;
 }
 
-void AlsaAudio::setFilname(QString name)
+void AlsaAudio::enqueueFilname(QString name)
 {
-    a_fileName = name;
+    aa_fileNameQueue.enqueue(name);
+}
+
+// main qthread
+void AlsaAudio::run()
+{
+    while (!aa_fileNameQueue.isEmpty()){
+        QString filetoplay = aa_fileNameQueue.dequeue();
+        alsa_play( filetoplay );
+    }
+
 }
 
 #ifdef Q_OS_LINUX
@@ -318,12 +329,6 @@ int AlsaAudio::alsa_write_float(snd_pcm_t *alsa_dev, float *data, int frames, in
     } ; /* while */
 
     return total ;
-}
-
-void AlsaAudio::run()
-{
-    alsa_play( a_fileName );
-
 }
 
 #endif // Q_OS_LINUX
