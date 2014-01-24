@@ -4,10 +4,10 @@
 #include "ui_LogConsole.h"
 #include "kmlcreator.h"
 
-#include <qfile.h>
-#include <qdatetime.h>
+#include <QFile>
+#include <QDateTime>
 #include <qserialport.h>
-#include <qregexp.h>
+#include <QRegExp>
 
 using namespace kml;
 
@@ -339,7 +339,6 @@ void LogConsole::selectNoneClicked() {
 void LogConsole::pullSelectedClicked() {
     QDateTime now = QDateTime::currentDateTime();
     QString parentDir = QGC::logDirectory();
-    QString todayString = now.toString("yyyy-MM-dd hh-mm-ss");
 
     QList<FileData> files;
 
@@ -353,9 +352,23 @@ void LogConsole::pullSelectedClicked() {
         QString logDetails = idx.data(Qt::DisplayRole).toString();
         int pos = matchLogNumber.indexIn(logDetails);
         if (pos > -1) {
-            int logNumber = matchLogNumber.cap(1).toInt();
-            QString fn = QString("%1/%2 %3.log").arg(parentDir, todayString, QString::number(logNumber));
-            files.append(FileData(fn, logNumber));
+            QRegExp matchDate("\\d+/\\d+/\\d+ \\d+:\\d+$");
+            int pos = matchDate.indexIn(logDetails);
+            if (pos > -1) {
+                QString dateString(logDetails);
+                dateString = dateString.remove(0, pos);
+                dateString = dateString.replace("/","-");
+                dateString = dateString.replace(" ","_");
+                dateString = dateString.replace(":","-");
+                int logNumber = matchLogNumber.cap(1).toInt();
+                QString fn = QString("%1/%2_%3.log").arg(parentDir, dateString, QString::number(logNumber));
+                files.append(FileData(fn, logNumber));
+            } else {
+                QString todayString = now.toString("yyyy-MM-dd hh-mm-ss");
+                int logNumber = matchLogNumber.cap(1).toInt();
+                QString fn = QString("%1/%2_%3.log").arg(parentDir, todayString, QString::number(logNumber));
+                files.append(FileData(fn, logNumber));
+            }
         }
     }
 
