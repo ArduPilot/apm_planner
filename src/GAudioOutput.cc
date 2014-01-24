@@ -343,8 +343,9 @@ void GAudioOutput::beep()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/alert.wav"));
-        QLOG_INFO() << "FILE:" << f.fileName();
-        //AlsaAudio::instance()->alsa_play( f.fileName() );
+        AlsaAudio::instance(this)->enqueueFilname(f.fileName());
+        if(!AlsaAudio::instance(this)->isRunning())
+            AlsaAudio::instance(this)->start();
     }
 }
 
