@@ -161,7 +161,7 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
         QString group = combobox->currentText();
         if (group == "NONE")
         {
-            emit graphRemovedFromGroup(group);
+            emit graphRemovedFromGroup(name);
             if (!checkbox->isChecked())
             {
                 //ui->graphTableWidget->item(i,1)->text(); // name
@@ -266,7 +266,6 @@ void AP2DataPlotAxisDialog::removeAxis(QString name)
         ui->graphTableWidget->removeRow(items[0]->row());
     }
 }
-
 void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
 {
     if (!m_rangeMap.contains(name))
@@ -279,16 +278,83 @@ void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
     {
         if (ui->graphTableWidget->item(i,1))
         {
-            if (ui->graphTableWidget->item(i,1)->text() == name && ui->graphTableWidget->item(i,2)->text() != "MANUAL")
+            if (ui->graphTableWidget->item(i,1)->text() == name)
             {
                 QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(i,5));
                 if (checkbox)
                 {
                     if (!checkbox->isChecked())
                     {
-                        //Don't update the UI.
                         return;
                     }
+                }
+
+                disconnect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
+                QTableWidgetItem *minitem = ui->graphTableWidget->item(i,3);
+                QTableWidgetItem *maxitem = ui->graphTableWidget->item(i,4);
+                if (!minitem)
+                {
+                    minitem = new QTableWidgetItem();
+                    ui->graphTableWidget->setItem(i,3,minitem);
+                }
+                if (!maxitem)
+                {
+                    maxitem = new QTableWidgetItem();
+                    ui->graphTableWidget->setItem(i,3,maxitem);
+                }
+                minitem->setText(QString::number(lower));
+                maxitem->setText(QString::number(upper));
+                connect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
+                return;
+            }
+        }
+    }
+}
+
+void AP2DataPlotAxisDialog::fullAxisUpdate(QString name,double lower, double upper,bool ismanual, bool isingroup, QString groupname)
+{
+    if (!m_rangeMap.contains(name))
+    {
+        m_rangeMap[name] = QPair<double,double>();
+    }
+    m_rangeMap[name].first = lower;
+    m_rangeMap[name].second = upper;
+    for (int i=0;i<ui->graphTableWidget->rowCount();i++)
+    {
+        if (ui->graphTableWidget->item(i,1))
+        {
+            if (ui->graphTableWidget->item(i,1)->text() == name)
+            {
+                QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(i,5));
+                if (checkbox)
+                {
+                    if (ismanual)
+                    {
+                        checkbox->setChecked(false);
+                        return;
+                    }
+                    else
+                    {
+                        checkbox->setChecked(true);
+                    }
+                }
+                QComboBox *combobox = qobject_cast<QComboBox*>(ui->graphTableWidget->cellWidget(i,2));
+                if (combobox)
+                {
+                    disconnect(combobox,SIGNAL(currentIndexChanged(int)),this,SLOT(groupComboChanged(int)));
+                    if (isingroup)
+                    {
+                        if (combobox->currentText() != groupname)
+                        {
+                            combobox->setCurrentIndex(combobox->findText(groupname));
+
+                        }
+                    }
+                    else
+                    {
+                        combobox->setCurrentIndex(combobox->findText("NONE"));
+                    }
+                    connect(combobox,SIGNAL(currentIndexChanged(int)),this,SLOT(groupComboChanged(int)));
                 }
                 disconnect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
                 QTableWidgetItem *minitem = ui->graphTableWidget->item(i,3);

@@ -151,6 +151,11 @@ void AP2DataPlot2D::graphControlsButtonClicked()
         m_axisGroupingDialog->raise();
         //QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::Show));
         //QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::WindowActivate));
+        for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
+        {
+            //m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
+            m_axisGroupingDialog->fullAxisUpdate(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().isManualRange,i.value().isInGroup,i.value().groupName);
+        }
         return;
     }
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
@@ -781,6 +786,10 @@ void AP2DataPlot2D::graphAutoRange(QString name)
 void AP2DataPlot2D::graphRemovedFromGroup(QString name)
 {
     //Always remove it from manual range
+    if (!m_graphClassMap.contains(name))
+    {
+        return;
+    }
     m_graphClassMap[name].isManualRange = false;
     if (!m_graphClassMap.value(name).isInGroup)
     {
