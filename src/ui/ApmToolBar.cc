@@ -92,6 +92,8 @@ void APMToolBar::activeUasSet(UASInterface *uas)
                 this, SLOT(navModeChanged(int,int,QString)));
         disconnect(m_uas, SIGNAL(heartbeat(UASInterface*)),
                    this, SLOT(heartbeat(UASInterface*)));
+        disconnect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+                this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
 
         // disconnect signals from the active serial links
         QList<SerialLink*> sList = SerialLink::getSerialLinks(uas);
@@ -120,11 +122,13 @@ void APMToolBar::activeUasSet(UASInterface *uas)
             this, SLOT(navModeChanged(int,int,QString)));
     connect(m_uas, SIGNAL(heartbeat(UASInterface*)),
                this, SLOT(heartbeat(UASInterface*)));
+    connect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
+            this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
 
     if (m_uas->isFixedWing()||m_uas->isGroundRover()) {
-        rootObject()->setProperty("disableStatusDisplay", QVariant(true));
+        rootObject()->setProperty("enableStatusDisplay", QVariant(false));
     } else {
-        rootObject()->setProperty("disableStatusDisplay", QVariant(false));
+        rootObject()->setProperty("enableStatusDisplay", QVariant(true));
         rootObject()->setProperty("armed", QVariant(m_uas->isArmed()));
     }
 
@@ -461,4 +465,22 @@ void APMToolBar::stopAnimation()
 void APMToolBar::disableConnectWidget(bool disable)
 {
     rootObject()->setProperty("disableConnectWidget",QVariant(disable));
+}
+
+void APMToolBar::parameterChanged(int uas, int component, int parameterCount,
+                                        int parameterId, QString parameterName, QVariant value)
+{
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+    Q_UNUSED(parameterCount);
+    Q_UNUSED(parameterId);
+
+    if (parameterName.contains("ARMING_REQUIRE")){
+        // Shows Display of ARM status, if enabled
+        int arming_required = value.toBool();
+        rootObject()->setProperty("armed", QVariant(m_uas->isArmed()));
+        rootObject()->setProperty("enableStatusDisplay",
+                                  QVariant(arming_required));
+    }
+
 }

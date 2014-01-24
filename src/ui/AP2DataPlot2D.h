@@ -74,6 +74,7 @@ private slots:
     void graphAddedToGroup(QString name,QString group,double scale);
     void graphRemovedFromGroup(QString name);
     void graphManualRange(QString name, double min, double max);
+    void graphAutoRange(QString name);
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();

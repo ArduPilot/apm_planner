@@ -97,6 +97,9 @@ public slots:
 
     void disableConnectWidget(bool disable);
 
+    void parameterChanged(int uas, int component, int parameterCount,
+                          int parameterId, QString parameterName, QVariant value);
+
 private:
     QPointer<UASInterface> m_uas;
     QTimer m_heartbeatTimer;

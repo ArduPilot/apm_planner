@@ -12,6 +12,7 @@ void UASActionsWidget::setupApmPlaneModes()
     QLOG_INFO() << "UASActionWidget: Set for Plane";
     ApmUiHelpers::addPlaneModes(ui.modeComboBox);
 
+    // Hide arming buttons unless we the the ARM_REQUIRE parameter
     ui.armDisarmButton->setVisible(false);
     ui.armedStatuslabel->setVisible(false);
 
@@ -853,12 +854,24 @@ bool UASActionsWidget::activeUas()
 void UASActionsWidget::parameterChanged(int uas, int component, int parameterCount,
                                         int parameterId, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+    Q_UNUSED(parameterCount);
+    Q_UNUSED(parameterId);
+
     if((parameterName == "WPNAV_SPEED")|| (parameterName == "TRIM_ARSPD_CN")
         || (parameterName == "CRUISE_SPEED")){
         QLOG_DEBUG() << "UASAction setting speed spin box from " << parameterName;
         ui.speedDoubleSpinBox->setValue(value.toDouble()/100.0f);
 
+    } else if (parameterName.contains("ARMING_REQUIRE")){
+        // Hides Display ARM button based setting
+        int arming_required = value.toBool();
+
+        ui.armDisarmButton->setVisible(static_cast<bool>(arming_required));
+        ui.armedStatuslabel->setVisible(static_cast<bool>(arming_required));
     }
+
 }
 
 void UASActionsWidget::contextMenuEvent(QContextMenuEvent *event)
