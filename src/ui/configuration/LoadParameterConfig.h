@@ -1,7 +1,7 @@
 /*===================================================================
 APM_PLANNER Open Source Ground Control Station
 
-(c) 2013 APM_PLANNER PROJECT <http://www.diydrones.com>
+(c) 2014 APM_PLANNER PROJECT <http://www.diydrones.com>
 
 This file is part of the APM_PLANNER project
 
@@ -22,34 +22,46 @@ This file is part of the APM_PLANNER project
 
 /**
  * @file
- *   @brief PID configuration for ArduPlane (Fixed-wing air vehicle)
+ *   @brief Load Parameters configuration widget.
  *
- *   @author Michael Carpenter <malcom2073@gmail.com>
+ *   @author Bill Bonney <billbonney@communistech.com>
+ *
  */
-#ifndef ARDUPLANEPIDCONFIG_H
-#define ARDUPLANEPIDCONFIG_H
 
-#include <QWidget>
-#include "ui_ArduPlanePidConfig.h"
+#ifndef LOADPARAMETERCONFIG_H
+#define LOADPARAMETERCONFIG_H
+
+#include "UASParameter.h"
 #include "AP2ConfigWidget.h"
+#include <QWidget>
 
-class ArduPlanePidConfig : public AP2ConfigWidget
+namespace Ui {
+class LoadParameterConfig;
+}
+
+class LoadParameterConfig : public AP2ConfigWidget
 {
     Q_OBJECT
-    
+
 public:
-    explicit ArduPlanePidConfig(QWidget *parent = 0);
-    ~ArduPlanePidConfig();
-private slots:
-    void parameterChanged(int uas, int component, QString parameterName, QVariant value);
-    void writeButtonClicked();
-    void refreshButtonClicked();
+    explicit LoadParameterConfig(QWidget *parent = 0);
+    ~LoadParameterConfig();
+
+    void showEvent(QShowEvent *);
+    void hideEvent(QHideEvent *);
+
+public slots:
+    void paramButtonClicked();
+    void activateCompareDialog();
+
+    void parameterChanged(int uas, int component, int parameterCount, int parameterId,
+                                             QString parameterName, QVariant value);
 
 private:
-    void addParamToMap(const QString& paramName, QDoubleSpinBox *spinBox, double scalar);
-private:
-    QMap<QString, QPair<QDoubleSpinBox* ,double> > m_nameToBoxMap; // Param = comboxBox + scalar
-    Ui::ArduPlanePidConfig ui;
+    Ui::LoadParameterConfig *ui;
+
+    QMap<QString, UASParameter*> m_parameterList;
+    QString m_paramFileToCompare;
 };
 
-#endif // ARDUPLANEPIDCONFIG_H
+#endif // LOADPARAMETERCONFIG_H

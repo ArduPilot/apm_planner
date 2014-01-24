@@ -29,8 +29,6 @@ This file is part of the APM_PLANNER project
  */
 #include "QsLog.h"
 #include "ApmHardwareConfig.h"
-#include "DownloadRemoteParamsDialog.h"
-#include "ParamCompareDialog.h"
 
 ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
@@ -44,7 +42,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.optionalHardwareButton->setVisible(false);
     ui.frameTypeButton->setVisible(false);
     ui.compassButton->setVisible(false);
-    ui.paramButton->setVisible(false);
+    ui.loadParamButton->setVisible(false);
     ui.accelCalibrateButton->setVisible(false);
     ui.failSafeButton->setVisible(false);
     ui.flightModesButton->setVisible(false);
@@ -77,6 +75,13 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.stackedWidget->addWidget(m_frameConfig);
     m_buttonToConfigWidgetMap[ui.frameTypeButton] = m_frameConfig;
     connect(ui.frameTypeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
+    m_loadParameterConfig = new LoadParameterConfig(this);
+    ui.stackedWidget->addWidget(m_loadParameterConfig);
+    m_buttonToConfigWidgetMap[ui.loadParamButton] = m_loadParameterConfig;
+    connect(ui.loadParamButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.loadParamButton, SIGNAL(clicked()),
+            m_loadParameterConfig, SLOT(paramButtonClicked()));
 
     m_compassConfig = new CompassConfig(this);
     ui.stackedWidget->addWidget(m_compassConfig);
@@ -165,48 +170,8 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     // Set start up WarningMessageView view
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
     ui.hiddenPushButton->setChecked(true);
-
-
-    connect(ui.paramButton,SIGNAL(clicked()),this,SLOT(paramButtonClicked()));
 }
 
-void ApmHardwareConfig::paramButtonClicked()
-{
-    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog(this->parentWidget(), true);
-
-    if(dialog->exec() == QDialog::Accepted) {
-        // Pull the selected file and
-        // modify the parameters on the adv param list.
-        QLOG_DEBUG() << "Remote File Downloaded";
-        QLOG_DEBUG() << "Trigger auto load or compare of the downloaded file";
-
-        // Bring up the compare dialog
-        m_paramFileToCompare = dialog->getDownloadedFileName();
-        QTimer::singleShot(300, this, SLOT(activateCompareDialog()));
-    }
-    delete dialog;
-    dialog = NULL;
-}
-
-void ApmHardwareConfig::activateCompareDialog()
-{
-    QLOG_DEBUG() << "Compare Params to File";
-
-    ParamCompareDialog* dialog = new ParamCompareDialog(m_parameterList, m_paramFileToCompare, this);
-    dialog->setAcceptButtonLabel(tr("Write Params"));
-
-    if(dialog->exec() == QDialog::Accepted) {
-        // Apply the selected parameters
-        foreach(UASParameter* param, m_parameterList){
-            // Apply changes to ParamManager
-            if(param->isModified()){
-                m_uas->getParamManager()->setParameter(param->component(),param->name(),param->value());
-            }
-        }
-    }
-    delete dialog;
-    dialog = NULL;
-}
 
 void ApmHardwareConfig::activateBlankingScreen()
 {
@@ -278,7 +243,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.frameTypeButton->setShown(false);
     ui.sonarButton->setShown(false);
     ui.compassButton->setShown(false);
-    ui.paramButton->setShown(false);
+    ui.loadParamButton->setShown(false);
     ui.accelCalibrateButton->setShown(false);
     ui.radioCalibrateButton->setShown(false);
 
@@ -371,7 +336,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         // Mandatory Options to show
         ui.frameTypeButton->setShown(show);
         ui.compassButton->setShown(show);
-        ui.paramButton->setShown(show);
+        ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -392,7 +357,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
         // Mandatory Options to show
         ui.compassButton->setShown(show);
-        ui.paramButton->setShown(show);
+        ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -415,7 +380,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
         // Mandatory Options to show
         ui.compassButton->setShown(show);
-        ui.paramButton->setShown(show);
+        ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -432,20 +397,9 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
     }
 }
 
-void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
+void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId,
+                                         QString parameterName, QVariant value)
 {
-    // Create a parameter list model for comparison feature
-    // [TODO] This needs to move to the global parameter model.
-
-    if (m_parameterList.contains(parameterName)){
-        UASParameter* param = m_parameterList.value(parameterName);
-        param->setValue(value); // This also sets the modified bit
-    } else {
-        // create a new entry
-        UASParameter* param = new UASParameter(parameterName,component,value,parameterId);
-        m_parameterList.insert(parameterName, param);
-    }
-
 
     QString countString;
     // Create progress of downloading all parameters for UI
