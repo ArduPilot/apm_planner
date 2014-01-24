@@ -40,7 +40,7 @@ This file is part of the PIXHAWK project
 #include <AudioOutput>
 #endif
 #ifdef Q_OS_LINUX
-//#include <AlsaAudioWorker.h>
+#include <audio/AudioWorker.h>
 #include <QThread>
 #endif
 #ifdef Q_OS_WIN
@@ -114,6 +114,9 @@ protected:
 #endif
 #ifdef Q_OS_LINUX
     //cst_voice* voice; ///< The flite voice object
+    //QThread *audioWorkerThread; //need c++11
+    //AudioWorker *audioWorker; //need c++11
+
 #endif
     int voiceIndex;   ///< The index of the flite voice to use (awb, slt, rms)
     bool emergency;   ///< Emergency status flag

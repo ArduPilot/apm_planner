@@ -1,3 +1,4 @@
+
 #include <QSettings>
 
 #ifndef AUDIOWORKER_H
@@ -17,22 +18,23 @@ public:
 
     AudioWorker(QObject *parent = 0);
 
-#ifdef Q_OS_LINUX
     void setFilename(QString filename);
     bool isPlaying();
-#endif // Q_OS_LINUX
 
 signals:
 
 public slots:
-    #ifdef Q_OS_LINUX
+
     void play();
-    #endif // Q_OS_LINUX
 
 private:
-    #ifdef Q_OS_LINUX
+
     QString aw_Filename;
-    #endif // Q_OS_LINUX
+#ifdef Q_OS_LINUX
+
+    //AlsaAudio *localAlsaAudio;
+#endif // Q_OS_LINUX
+
 };
 
 #endif // AUDIOWORKER_H

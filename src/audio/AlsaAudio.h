@@ -1,41 +1,46 @@
 #include <QApplication>
 #include <QSettings>
 #include "QsLog.h"
-#ifdef Q_OS_LINUX
+#include <QThread>
 #ifndef ALSAAUDIO_H
 #define ALSAAUDIO_H
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <unistd.h>
-
+#ifdef Q_OS_LINUX
 #include <alsa/asoundlib.h>
 #include <sys/time.h>
-#include    <sndfile.h>
+#include <sndfile.h>
 
-#define ALSA_PCM_NEW_HW_PARAMS_API
-#define ALSA_PCM_NEW_SW_PARAMS_API
-#define SIGNED_SIZEOF(x)  ((int) sizeof (x))
 #define BUFFER_LEN (2048)
+#endif // Q_OS_LINUX
 
-class AlsaAudio : public QObject
+class AlsaAudio : public QThread
 {
-public:
-    AlsaAudio();
-    /** @brief Get the singleton instance */
-    static AlsaAudio* instance();
 
-    void alsa_play( QString filename );
+public:
+    AlsaAudio(QObject *parent=NULL);
+    /** @brief Get the singleton instance */
+    static AlsaAudio* instance(QObject *par);
+    void setFilname(QString name);
+
+#ifdef Q_OS_LINUX
+
+    bool alsa_play( QString filename );
+#endif // Q_OS_LINUX
 
 private:
+
+    QString a_fileName;
+#ifdef Q_OS_LINUX
     snd_pcm_t * alsa_open( int channels, int srate );
     int alsa_write_float( snd_pcm_t *alsa_dev, float *data, int frames, int channels );
-};
 
-#endif // ALSAAUDIO_H
 #endif // Q_OS_LINUX
 
 
+public slots:
+
+    void run();
+
+};
+
+#endif // ALSAAUDIO_H

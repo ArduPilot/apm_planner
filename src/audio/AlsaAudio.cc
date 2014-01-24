@@ -20,15 +20,14 @@
 
 #include <QApplication>
 #include <QSettings>
-
-#ifdef Q_OS_LINUX
 #include "AlsaAudio.h"
 
-AlsaAudio::AlsaAudio()
+AlsaAudio::AlsaAudio(QObject *parent) :
+    QThread(parent)
 {
 }
 
-AlsaAudio* AlsaAudio::instance()
+AlsaAudio* AlsaAudio::instance(QObject *par)
 {
     static AlsaAudio* _instance = 0;
     if(_instance == 0)
@@ -36,34 +35,42 @@ AlsaAudio* AlsaAudio::instance()
         _instance = new AlsaAudio();
         // Set the application as parent to ensure that this object
         // will be destroyed when the main application exits
-        _instance->setParent(qApp);
+        _instance->setParent(par);
     }
     return _instance;
 }
 
-void AlsaAudio::alsa_play( QString filename )
+void AlsaAudio::setFilname(QString name)
+{
+    a_fileName = name;
+}
+
+#ifdef Q_OS_LINUX
+bool AlsaAudio::alsa_play( QString filename )
 {
 
     static float buffer [BUFFER_LEN] ;
     SNDFILE *sndfile ;
     SF_INFO sfinfo ;
     snd_pcm_t * alsa_dev ;
-    int k, readcount, subformat ;
-
-    //puts (__func__) ;
-
+    int readcount, subformat ;
 
     memset (&sfinfo, 0, sizeof (sfinfo)) ;
 
-    QLOG_INFO() << "Playing:" << filename;
+
+    //QLOG_INFO() << "Playing:" << filename;
     if (! (sndfile = sf_open (filename.toLocal8Bit(), SFM_READ, &sfinfo)))
     {
-        QLOG_INFO() << sf_strerror;
+        //QLOG_INFO() << sf_strerror;
+        QLOG_INFO() << " ERROR OPEN FILE: " << filename;
+        return false;
     }
+
 
     if (sfinfo.channels < 1 || sfinfo.channels > 2)
     {
         QLOG_INFO() << "Error : channels = " << sfinfo.channels;
+        return false;
 
     }
 
@@ -99,7 +106,7 @@ void AlsaAudio::alsa_play( QString filename )
     sf_close (sndfile) ;
 
 
-    return ;
+    return true;
 } /* alsa_play */
 
 snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
@@ -311,6 +318,12 @@ int AlsaAudio::alsa_write_float(snd_pcm_t *alsa_dev, float *data, int frames, in
     } ; /* while */
 
     return total ;
+}
+
+void AlsaAudio::run()
+{
+    alsa_play( a_fileName );
+
 }
 
 #endif // Q_OS_LINUX

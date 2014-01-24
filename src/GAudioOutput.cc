@@ -37,6 +37,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QApplication>
 #include <QSettings>
 #include <QTemporaryFile>
+#include <QFile>
 
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h>
@@ -60,7 +61,6 @@ extern CComModule _Module;
 #endif
 
 #ifdef Q_OS_LINUX
-//#include <AlsaAudioWorker.h>
 extern "C" {
 #include <flite/flite.h>
     cst_voice *register_cmu_us_kal(const char *voxdir);
@@ -103,7 +103,24 @@ GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
 
 
 #ifdef Q_OS_LINUX
+    // Remove Phonon Audio for linux and use alsa
     flite_init();
+
+    QLOG_INFO() << "Using Alsa Audio driver";
+
+    // Create sharedirectora tmp_audio
+    // we create new spoken audio files here. we don't delete them as befor.
+    // we save audiofiles like message inside.
+    // if new messages will create in code this new messages will saved as audio file on first call
+    // this save time and also it will possible to queue audio messages later because the are not temporary
+    QDir dir(QString("%1/%2").arg( QGC::appDataDirectory() ).arg( "tmp_audio" ));
+    if (!dir.exists()) {
+        QLOG_WARN() << "Create directory tmp_audio";
+        dir.mkpath(".");
+    }else
+    {
+        QLOG_WARN() << "Dir directory tmp_audio exists";
+    }
 #endif
 
 #if _MSC_VER2
@@ -124,11 +141,6 @@ GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
             pVoice = NULL;
         }
     }
-#endif
-#ifdef Q_OS_LINUX
-
-    // Remove Phonon Audio for linux and use alsa
-    QLOG_INFO() << "Using Alsa Audio driver";
 #endif
 
     // Prepare regular emergency signal, will be fired off on calling startEmergency()
@@ -155,6 +167,8 @@ GAudioOutput::~GAudioOutput()
 
 void GAudioOutput::mute(bool mute)
 {
+    AlsaAudio::instance(this)->setFilname(QGC::shareDirectory()+QString("/files/audio/alert.wav"));
+    AlsaAudio::instance(NULL)->start();
     if (mute != muted)
     {
         this->muted = mute;
@@ -193,24 +207,19 @@ bool GAudioOutput::say(QString text, int severity)
 #endif
 
 #ifdef Q_OS_LINUX
-            QTemporaryFile file;
-            file.setFileTemplate("XXXXXX.wav");
-
-            if (file.open())
+            // alsadriver is a qthread. temp. files dont work here
+            QFile file( QString("%1/%2").arg(QGC::appDataDirectory()).arg("XXXXXX.wav"));
+            QLOG_INFO() << file.fileName();
+            if (file.open(QIODevice::ReadWrite))
             {
                 cst_voice *v = register_cmu_us_kal(NULL);
                 cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
                 // file.fileName() returns the unique file name
 
                 cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
-               //QThread *AlsaThread = new QThread();
-               //AlsaAudioWorker *SimpleAlsaWorker = AlsaAudioWorker::instance();
-               //SimpleAlsaWorker->setFilename(file.fileName());
-               //QObject::connect( AlsaThread, SIGNAL( started() ), SimpleAlsaWorker, SLOT( run() ) );
-               //QObject::connect( AlsaThread, SIGNAL( finished() ), this, SLOT( quit() ) );
-               //SimpleAlsaWorker->moveToThread(AlsaThread);
-               //AlsaThread->start();
-
+                file.close();
+                AlsaAudio::instance(this)->setFilname(file.fileName());
+                AlsaAudio::instance(this)->start();
                 res = true;
             }
 #endif
