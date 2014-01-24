@@ -121,6 +121,7 @@ GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
     {
         QLOG_WARN() << "Dir directory tmp_audio exists";
     }
+
 #endif
 
 #if _MSC_VER2
@@ -207,21 +208,39 @@ bool GAudioOutput::say(QString text, int severity)
 #endif
 
 #ifdef Q_OS_LINUX
-            // alsadriver is a qthread. temp. files dont work here
-            QFile file( QString("%1/%2").arg(QGC::appDataDirectory()).arg("XXXXXX.wav"));
-            QLOG_INFO() << file.fileName();
-            if (file.open(QIODevice::ReadWrite))
-            {
-                cst_voice *v = register_cmu_us_kal(NULL);
-                cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
-                // file.fileName() returns the unique file name
 
-                cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
-                file.close();
+            // spokenfilename is the filename created from spoken text
+            QString spokenFilename = text;
+            spokenFilename.replace(QRegExp(" "), "_");
+            spokenFilename = QGC::appDataDirectory() + "/tmp_audio/" + spokenFilename + ".wav";
+            QLOG_INFO() << spokenFilename;
+
+
+            // alsadriver is a qthread. temp. files dont work here
+            QFile file( spokenFilename );
+            QLOG_INFO() << file.fileName();
+            if (!file.exists(spokenFilename)){ // if file not exist we create a new one
+                if (file.open(QIODevice::ReadWrite))
+                {
+                    QLOG_INFO() << file.fileName() << " file not exist create a new one";
+                    cst_voice *v = register_cmu_us_kal(NULL);
+                    cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
+                    // file.fileName() returns the unique file name
+
+                    cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
+                    file.close();
+                    AlsaAudio::instance(this)->setFilname(file.fileName());
+                    AlsaAudio::instance(this)->start();
+                    res = true;
+                }
+            }else // we open existing file
+            {
+                QLOG_INFO() << file.fileName() << " file exist playing file";
                 AlsaAudio::instance(this)->setFilname(file.fileName());
                 AlsaAudio::instance(this)->start();
                 res = true;
             }
+
 #endif
 
 #ifdef Q_OS_MAC
