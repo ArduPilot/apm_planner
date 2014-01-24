@@ -44,8 +44,11 @@ private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void writeButtonClicked();
     void refreshButtonClicked();
+
 private:
-    QMap<QString,QDoubleSpinBox*> m_nameToBoxMap;
+    void addParamToMap(const QString& paramName, QDoubleSpinBox *spinBox, double scalar);
+private:
+    QMap<QString, QPair<QDoubleSpinBox* ,double> > m_nameToBoxMap; // Param = comboxBox + scalar
     Ui::ArduPlanePidConfig ui;
 };
 
