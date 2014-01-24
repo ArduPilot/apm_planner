@@ -126,7 +126,7 @@
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
-          <widget class="QPushButton" name="paramButton">
+          <widget class="QPushButton" name="loadParamButton">
            <property name="minimumSize">
             <size>
              <width>150</width>
