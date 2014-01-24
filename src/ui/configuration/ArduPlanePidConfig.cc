@@ -47,10 +47,10 @@ ArduPlanePidConfig::ArduPlanePidConfig(QWidget *parent) : AP2ConfigWidget(parent
     addParamToMap("PTCH2SRV_D", ui.servoPitchDSpinBox, 1.0);
     addParamToMap("PTCH2SRV_IMAX", ui.servoPitchIMAXSpinBox, 0.01); // centi-degrees -> degrees
 
-    addParamToMap("YW2SRV_P", ui.servoYawPSpinBox, 1.0);
-    addParamToMap("YW2SRV_I", ui.servoYawISpinBox, 1.0);
-    addParamToMap("YW2SRV_D", ui.servoYawDSpinBox, 1.0);
-    addParamToMap("YW2SRV_IMAX", ui.servoYawIMAXSpinBox, 0.01); // centi-degrees -> degrees
+    addParamToMap("YAW2SRV_RLL", ui.servoYawPSpinBox, 1.0);
+    addParamToMap("YAW2SRV_INT", ui.servoYawISpinBox, 1.0);
+    addParamToMap("YAW2SRV_DAMP", ui.servoYawDSpinBox, 1.0);
+    addParamToMap("YAW2SRV_IMAX", ui.servoYawIMAXSpinBox, 0.01); // centi-degrees -> degrees
 
     addParamToMap("KFF_PTCH2THR", ui.otherPitchCompSpinBox, 1.0);
     addParamToMap("KFF_PTCHCOMP", ui.otherPtTSpinBox, 1.0);

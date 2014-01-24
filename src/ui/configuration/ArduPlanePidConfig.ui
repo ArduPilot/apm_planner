@@ -155,28 +155,28 @@
             <item>
              <widget class="QLabel" name="label_9">
               <property name="text">
-               <string>P</string>
+               <string>Yaw 2 Roll</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_10">
               <property name="text">
-               <string>I</string>
+               <string>Integral</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_11">
               <property name="text">
-               <string>D</string>
+               <string>Dampening</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_12">
               <property name="text">
-               <string>INT_MAX</string>
+               <string>Integrator Max</string>
               </property>
              </widget>
             </item>
