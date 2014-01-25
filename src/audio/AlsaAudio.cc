@@ -15,7 +15,7 @@
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 **
-**  aufruf von alsaplayer alsa_play (argc, argv) ;
+**  aufruf von alsaplayer alsa_play (argc, argv);
 */
 
 #include <QApplication>
@@ -24,7 +24,8 @@
 #include <QMutex>
 
 AlsaAudio::AlsaAudio(QObject *parent) :
-    QThread(parent)
+    QThread(parent),
+    aa_volume(1.0f)
 {
 }
 
@@ -60,13 +61,13 @@ void AlsaAudio::run()
 bool AlsaAudio::alsa_play( QString filename )
 {
 
-    static float buffer [BUFFER_LEN] ;
-    SNDFILE *sndfile ;
-    SF_INFO sfinfo ;
-    snd_pcm_t * alsa_dev ;
-    int readcount, subformat ;
+    static float buffer [BUFFER_LEN];
+    SNDFILE *sndfile;
+    SF_INFO sfinfo;
+    snd_pcm_t * alsa_dev;
+    int readcount, subformat;
 
-    memset (&sfinfo, 0, sizeof (sfinfo)) ;
+    memset (&sfinfo, 0, sizeof (sfinfo));
 
 
     //QLOG_INFO() << "Playing:" << filename;
@@ -85,36 +86,42 @@ bool AlsaAudio::alsa_play( QString filename )
 
     }
 
-    alsa_dev = alsa_open (sfinfo.channels, sfinfo.samplerate) ;
+    alsa_dev = alsa_open (sfinfo.channels, sfinfo.samplerate);
 
-    subformat = sfinfo.format & SF_FORMAT_SUBMASK ;
+    subformat = sfinfo.format & SF_FORMAT_SUBMASK;
 
     if (subformat == SF_FORMAT_FLOAT || subformat == SF_FORMAT_DOUBLE)
     {
         double scale;
         int m;
 
-        sf_command (sndfile, SFC_CALC_SIGNAL_MAX, &scale, sizeof (scale)) ;
+        sf_command (sndfile, SFC_CALC_SIGNAL_MAX, &scale, sizeof (scale));
         if (scale < 1e-10)
-            scale = 1.0 ;
+            scale = 1.0;
         else
-            scale = 32700.0 / scale ;
+            scale = 32700.0 / scale;
 
         while ((readcount = sf_read_float (sndfile, buffer, BUFFER_LEN)))
         {
-            for (m = 0 ; m < readcount ; m++)
-                buffer [m] *= scale ;
-            alsa_write_float (alsa_dev, buffer, BUFFER_LEN / sfinfo.channels, sfinfo.channels) ;
+            for (m = 0; m < readcount; m++)
+                buffer [m] *= scale * aa_volume;
+            alsa_write_float (alsa_dev, buffer, BUFFER_LEN / sfinfo.channels, sfinfo.channels);
         }
     }
     else
-    {     while ((readcount = sf_read_float (sndfile, buffer, BUFFER_LEN)))
-            alsa_write_float (alsa_dev, buffer, BUFFER_LEN / sfinfo.channels, sfinfo.channels) ;
+    {
+        int m;
+        while ((readcount = sf_read_float (sndfile, buffer, BUFFER_LEN)))
+        {
+            for (m = 0; m < readcount; m++)
+                buffer [m] *= aa_volume;
+            alsa_write_float (alsa_dev, buffer, BUFFER_LEN / sfinfo.channels, sfinfo.channels);
+        }
     }
 
-    snd_pcm_close (alsa_dev) ;
+    snd_pcm_close (alsa_dev);
 
-    sf_close (sndfile) ;
+    sf_close (sndfile);
 
 
     return true;
@@ -122,213 +129,218 @@ bool AlsaAudio::alsa_play( QString filename )
 
 snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
 {
-    const char * device = "plughw:0" ;
-    snd_pcm_t *alsa_dev ;
-    snd_pcm_hw_params_t *hw_params ;
-    snd_pcm_uframes_t buffer_size, xfer_align, start_threshold ;
-    snd_pcm_uframes_t alsa_period_size, alsa_buffer_frames ;
-    snd_pcm_sw_params_t *sw_params ;
+    const char * device = "plughw:0";
+    snd_pcm_t *alsa_dev;
+    snd_pcm_hw_params_t *hw_params;
+    snd_pcm_uframes_t buffer_size, xfer_align, start_threshold;
+    snd_pcm_uframes_t alsa_period_size, alsa_buffer_frames;
+    snd_pcm_sw_params_t *sw_params;
 
-    int err ;
+    int err;
 
-    alsa_period_size = 512 ;
-    alsa_buffer_frames = 3 * alsa_period_size ;
+    alsa_period_size = 512;
+    alsa_buffer_frames = 3 * alsa_period_size;
 
     if ((err = snd_pcm_open (&alsa_dev, device, SND_PCM_STREAM_PLAYBACK, 0)) < 0)
     {
         QLOG_INFO() << "cannot open audio device " << device << snd_strerror(err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
-    snd_pcm_nonblock (alsa_dev, 0) ;
+    snd_pcm_nonblock (alsa_dev, 0);
 
     if ((err = snd_pcm_hw_params_malloc (&hw_params)) < 0)
     {
         QLOG_INFO() << "cannot allocate hardware parameter structure "<< snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     if ((err = snd_pcm_hw_params_any (alsa_dev, hw_params)) < 0)
     {
         QLOG_INFO() << "cannot initialize hardware parameter structure " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     if ((err = snd_pcm_hw_params_set_access (alsa_dev, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
     {
-        QLOG_INFO() << "cannot set access type ", snd_strerror (err) ;
-        return NULL ;
-    } ;
+        QLOG_INFO() << "cannot set access type ", snd_strerror (err);
+        return NULL;
+    }
 
     if ((err = snd_pcm_hw_params_set_format (alsa_dev, hw_params, SND_PCM_FORMAT_FLOAT)) < 0)
     {
         QLOG_INFO() << "cannot set sample format " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     if ((err = snd_pcm_hw_params_set_rate_near (alsa_dev, hw_params, (uint*)&samplerate, 0)) < 0)
     {
         QLOG_INFO() << "cannot set sample rate " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     if ((err = snd_pcm_hw_params_set_channels (alsa_dev, hw_params, channels)) < 0)
     {
         QLOG_INFO() << "cannot set channel count " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     if ((err = snd_pcm_hw_params_set_buffer_size_near (alsa_dev, hw_params, &alsa_buffer_frames)) < 0)
     {
         QLOG_INFO() << "cannot set buffer size " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
 
     if ((err = snd_pcm_hw_params_set_period_size_near (alsa_dev, hw_params, &alsa_period_size, 0)) < 0)
     {
         QLOG_INFO() << "cannot set period size " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     if ((err = snd_pcm_hw_params (alsa_dev, hw_params)) < 0)
     {
         QLOG_INFO() << "cannot set parameters " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     /* extra check: if we have only one period, this code won't work */
-    snd_pcm_hw_params_get_period_size (hw_params, &alsa_period_size, 0) ;
-    snd_pcm_hw_params_get_buffer_size (hw_params, &buffer_size) ;
+    snd_pcm_hw_params_get_period_size (hw_params, &alsa_period_size, 0);
+    snd_pcm_hw_params_get_buffer_size (hw_params, &buffer_size);
     if (alsa_period_size == buffer_size)
     {
         QLOG_INFO() << "Can't use period equal to buffer size " << alsa_period_size << buffer_size;
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
-    snd_pcm_hw_params_free (hw_params) ;
+    snd_pcm_hw_params_free (hw_params);
 
     if ((err = snd_pcm_sw_params_malloc (&sw_params)) != 0)
     {
         QLOG_INFO() << "%s: snd_pcm_sw_params_malloc: " << __func__<< snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     if ((err = snd_pcm_sw_params_current (alsa_dev, sw_params)) != 0)
     {
         QLOG_INFO() << "%s: snd_pcm_sw_params_current: " << __func__ << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     /* note: set start threshold to delay start until the ring buffer is full */
-    snd_pcm_sw_params_current (alsa_dev, sw_params) ;
+    snd_pcm_sw_params_current (alsa_dev, sw_params);
     if ((err = snd_pcm_sw_params_get_xfer_align (sw_params, &xfer_align)) < 0)
     {
         QLOG_INFO() << "cannot get xfer align " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     /* round up to closest transfer boundary */
-    start_threshold = (buffer_size / xfer_align) * xfer_align ;
+    start_threshold = (buffer_size / xfer_align) * xfer_align;
     if (start_threshold < 1)
-        start_threshold = 1 ;
+        start_threshold = 1;
     if ((err = snd_pcm_sw_params_set_start_threshold (alsa_dev, sw_params, start_threshold)) < 0)
     {
         QLOG_INFO() << "cannot set start threshold " << snd_strerror (err);
-        return NULL ;
-    } ;
+        return NULL;
+    }
 
     if ((err = snd_pcm_sw_params (alsa_dev, sw_params)) != 0)
     {
         QLOG_INFO() << "%s: snd_pcm_sw_params: " << __func__ << snd_strerror (err);
-        return NULL ;
-    } ;
-    snd_pcm_sw_params_free (sw_params) ;
+        return NULL;
+    }
+    snd_pcm_sw_params_free (sw_params);
 
-    snd_pcm_reset (alsa_dev) ;
+    snd_pcm_reset (alsa_dev);
 
-    return alsa_dev ;
+    return alsa_dev;
 } /* alsa_open */
 
 int AlsaAudio::alsa_write_float(snd_pcm_t *alsa_dev, float *data, int frames, int channels)
 {
-    static int epipe_count = 0 ;
+    static int epipe_count = 0;
 
-    snd_pcm_status_t *status ;
-    int total = 0 ;
-    int retval ;
+    snd_pcm_status_t *status;
+    int total = 0;
+    int retval;
 
     if (epipe_count > 0)
-        epipe_count -- ;
+        epipe_count --;
 
     while (total < frames)
-    {     retval = snd_pcm_writei (alsa_dev, data + total * channels, frames - total) ;
+    {
+        retval = snd_pcm_writei (alsa_dev, data + total * channels, frames - total);
 
         if (retval >= 0)
-        {     total += retval ;
+        {     total += retval;
             if (total == frames)
-                return total ;
+                return total;
 
-            continue ;
-        } ;
+            continue;
+        }
 
         switch (retval)
-        {     case -EAGAIN :
-            puts ("alsa_write_float: EAGAIN") ;
-            continue ;
-            break ;
+        {
+        case -EAGAIN :
+            puts ("alsa_write_float: EAGAIN");
+            continue;
+            break;
 
         case -EPIPE :
             if (epipe_count > 0)
-            {     printf ("alsa_write_float: EPIPE %d\n", epipe_count) ;
+            {
+                QLOG_INFO() << "alsa_write_float: EPIPE " << epipe_count;
                 if (epipe_count > 140)
-                    return retval ;
-            } ;
-            epipe_count += 100 ;
+                    return retval;
+            }
+            epipe_count += 100;
 
             if (0)
-            {     snd_pcm_status_alloca (&status) ;
+            {
+                snd_pcm_status_alloca (&status);
                 if ((retval = snd_pcm_status (alsa_dev, status)) < 0){
                     QLOG_INFO() << "alsa_out: xrun. can't determine length";
                 }
                 else if (snd_pcm_status_get_state (status) == SND_PCM_STATE_XRUN)
-                {     struct timeval now, diff, tstamp ;
+                {
+                    struct timeval now, diff, tstamp;
 
-                    gettimeofday (&now, 0) ;
-                    snd_pcm_status_get_trigger_tstamp (status, &tstamp) ;
-                    timersub (&now, &tstamp, &diff) ;
+                    gettimeofday (&now, 0);
+                    snd_pcm_status_get_trigger_tstamp (status, &tstamp);
+                    timersub (&now, &tstamp, &diff);
 
                     QLOG_INFO() << "alsa_write_float xrun: of at least " << (diff.tv_sec * 1000 + diff.tv_usec / 1000.0) << " msecs. resetting stream";
                 }
                 else
                     QLOG_INFO() << "alsa_write_float: xrun. can't determine length";
-            } ;
+            }
 
-            snd_pcm_prepare (alsa_dev) ;
-            break ;
+            snd_pcm_prepare (alsa_dev);
+            break;
 
         case -EBADFD :
             QLOG_INFO() << "alsa_write_float: Bad PCM state.n";
-            return 0 ;
-            break ;
+            return 0;
+            break;
 
         case -ESTRPIPE :
             QLOG_INFO() << "alsa_write_float: Suspend event.n";
-            return 0 ;
-            break ;
+            return 0;
+            break;
 
         case -EIO :
             QLOG_INFO() << "alsa_write_float: EIO";
-            return 0 ;
+            return 0;
 
         default :
             QLOG_INFO() << "alsa_write_float: retval = " << retval;
-            return 0 ;
-            break ;
-        } ; /* switch */
-    } ; /* while */
+            return 0;
+            break;
+        } /* switch */
+    } /* while */
 
-    return total ;
+    return total;
 }
 
 #endif // Q_OS_LINUX

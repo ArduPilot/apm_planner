@@ -288,7 +288,6 @@ void GAudioOutput::notifyPositive()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/double_notify.wav"));
-        //AlsaAudio::instance()->alsa_play(f.fileName());
     }
 }
 
@@ -298,7 +297,6 @@ void GAudioOutput::notifyNegative()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/flat_notify.wav"));
-        //AlsaAudio::instance()->alsa_play(f.fileName());
     }
 }
 
