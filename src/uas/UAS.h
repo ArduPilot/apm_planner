@@ -429,6 +429,7 @@ protected: //COMMENTS FOR TEST UNIT
     float tickLowpassVoltage;   ///< Lowpass-filtered voltage for the tick announcement
     float warnVoltage;          ///< Voltage where QGC will start to warn about low battery
     float warnLevelPercent;     ///< Warning level, in percent
+    float alertLevelPercent;    ///< Allert level, in percent
     double currentVoltage;      ///< Voltage currently measured
     float lpVoltage;            ///< Low-pass filtered voltage
     double currentCurrent;      ///< Battery current currently measured
@@ -719,7 +720,7 @@ public slots:
           this->airframe = airframe;
           emit systemSpecsChanged(uasId);
         }
-        
+
     }
     /** @brief Set a new name **/
     void setUASName(const QString& name);
@@ -797,6 +798,7 @@ public slots:
 
     void startLowBattAlarm();
     void stopLowBattAlarm();
+    void setAudioBatteryCurrentMessage(float charge);
 
     /** @brief Arm system */
     virtual void armSystem();
