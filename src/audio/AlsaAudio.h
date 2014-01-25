@@ -32,9 +32,12 @@ public:
     }
 
     /** @brief return volume float 0.0f - 1.0f */
-    float setAAVolume( float volume){
+    void setAAVolume( float volume){
         aa_volume = volume;
     }
+
+public slots:
+    void run();
 
 private:
     QQueue<QString> aa_fileNameQueue;
@@ -46,10 +49,6 @@ protected:
     snd_pcm_t * alsa_open( int channels, int srate );
     int alsa_write_float( snd_pcm_t *alsa_dev, float *data, int frames, int channels );
 #endif // Q_OS_LINUX
-
-
-public slots:
-    void run();
 
 };
 
