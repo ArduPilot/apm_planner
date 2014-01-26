@@ -269,7 +269,7 @@ linux-g++|linux-g++-64{
         DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
 
         #MAKE INSTALL - copy files
-        INSTALLS += target datafiles linkFiles linkData linkQML desktopLink menuLink permFolders permFiles
+        INSTALLS += target datafiles desktopLink menuLink permFolders permFiles
 
         target.path =$$BINDIR
 
@@ -283,14 +283,6 @@ linux-g++|linux-g++-64{
         permFolders.commands += find $$DATADIR -type d -exec chmod 755 {} \;
         permFiles.path = $$DATADIR/APMPlanner2
         permFiles.commands += find $$DATADIR -type f -exec chmod 644 {} \;
-
-        #create file/folder links
-        linkFiles.path = $$BINDIR
-        linkFiles.commands += ln -s -f -t $$BINDIR $$DATADIR/APMPlanner2/files
-        linkData.path = $$BINDIR
-        linkData.commands += ln -s -f -t $$BINDIR $$DATADIR/APMPlanner2/data
-        linkQML.path = $$BINDIR
-        linkQML.commands += ln -s -f -t $$BINDIR $$DATADIR/APMPlanner2/qml
 
         #create menu links
         desktopLink.path = $$DATADIR/menu
