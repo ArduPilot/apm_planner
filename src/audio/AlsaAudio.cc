@@ -1,3 +1,31 @@
+/*=====================================================================
+
+QGroundControl Open Source Ground Control Station
+
+(c) 2009, 2010 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+
+This file is part of the QGROUNDCONTROL project
+
+    QGROUNDCONTROL is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    QGROUNDCONTROL is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+
+////////////////////////////////// INFO ////////////////////////////////////////
+/// some driver parts are copied from mega-nerd.com(libsndfile) example page ///
+///                                                                          ///
+////////////////////////////////////////////////////////////////////////////////
+
 /*
 ** Copyright (C) 1999-2004 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
@@ -14,13 +42,11 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-**
-**  aufruf von alsaplayer alsa_play (argc, argv);
 */
 
+#include "AlsaAudio.h"
 #include <QApplication>
 #include <QSettings>
-#include "AlsaAudio.h"
 #include <QMutex>
 
 AlsaAudio::AlsaAudio(QObject *parent) :

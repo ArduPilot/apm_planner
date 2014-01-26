@@ -221,7 +221,7 @@ bool GAudioOutput::say(QString text, int severity)
             if (!file.exists(spokenFilename)){ // if file not exist we create a new one
                 if (file.open(QIODevice::ReadWrite))
                 {
-                    QLOG_INFO() << file.fileName() << " file not exist create a new one";
+                    QLOG_INFO() << file.fileName() << " file not exist, create a new one";
                     cst_voice *v = register_cmu_us_kal(NULL);
                     cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
                     // file.fileName() returns the unique file name
@@ -235,7 +235,7 @@ bool GAudioOutput::say(QString text, int severity)
                 }
             }else // we open existing file
             {
-                QLOG_INFO() << file.fileName() << " file exist playing file";
+                QLOG_INFO() << file.fileName() << " file exist, playing this file";
                 AlsaAudio::instance(this)->enqueueFilname(file.fileName());
                 if(!AlsaAudio::instance(this)->isRunning())
                     AlsaAudio::instance(this)->start();
