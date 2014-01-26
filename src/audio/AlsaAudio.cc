@@ -48,14 +48,22 @@ This file is part of the QGROUNDCONTROL project
 //                                                                            //
 ///////////////////////////////// ~INFO ////////////////////////////////////////
 
+/**
+ * @file
+ *   @brief Definition of audio output
+ *
+ *   @author Michael Wolkstein
+ *
+ */
+
 #include "AlsaAudio.h"
-#include <QApplication>
-#include <QSettings>
-#include <QMutex>
+//#include <QApplication>
+//#include <QSettings>
+//#include <QMutex>
 
 AlsaAudio::AlsaAudio(QObject *parent) :
     QThread(parent),
-    aa_volume(1.0f)
+    aa_Volume(1.0d)
 {
 }
 
@@ -134,7 +142,7 @@ bool AlsaAudio::alsa_play( QString filename )
         while ((readcount = sf_read_float (sndfile, buffer, BUFFER_LEN)))
         {
             for (m = 0; m < readcount; m++)
-                buffer [m] *= scale * aa_volume;
+                buffer [m] *= scale * aa_Volume;
             alsa_write_float (alsa_dev, buffer, BUFFER_LEN / sfinfo.channels, sfinfo.channels);
         }
     }
@@ -144,7 +152,7 @@ bool AlsaAudio::alsa_play( QString filename )
         while ((readcount = sf_read_float (sndfile, buffer, BUFFER_LEN)))
         {
             for (m = 0; m < readcount; m++)
-                buffer [m] *= aa_volume;
+                buffer [m] *= aa_Volume;
             alsa_write_float (alsa_dev, buffer, BUFFER_LEN / sfinfo.channels, sfinfo.channels);
         }
     }

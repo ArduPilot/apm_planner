@@ -21,14 +21,20 @@ This file is part of the QGROUNDCONTROL project
 
 ======================================================================*/
 
+/**
+ * @file
+ *   @brief Definition of audio output
+ *
+ *   @author Michael Wolkstein
+ *
+ */
+
 #ifndef ALSAAUDIO_H
 #define ALSAAUDIO_H
-#include <QApplication>
 #include <QSettings>
-#include "QsLog.h"
 #include <QThread>
-
 #include <QQueue>
+#include "QsLog.h"
 
 #ifdef Q_OS_LINUX
 #include <alsa/asoundlib.h>
@@ -39,7 +45,7 @@ This file is part of the QGROUNDCONTROL project
 
 class AlsaAudio : public QThread
 {
-//   Q_OBJECT
+//    Q_OBJECT
 public:
     AlsaAudio(QObject *parent=NULL);
 
@@ -49,14 +55,14 @@ public:
     /** @brief enqueue new filename */
     void enqueueFilname(QString name);
 
-    /** @brief set volume float 0.0f - 1.0f */
-    float getAAVolume(){
-        return aa_volume;
+    /** @brief set volume double 0.0f - 1.0f */
+    double getAAVolume(){
+        return aa_Volume;
     }
 
     /** @brief return volume float 0.0f - 1.0f */
-    void setAAVolume( float volume){
-        aa_volume = volume;
+    void setAAVolume( double volume){
+        aa_Volume = volume;
     }
 
 public slots:
@@ -64,9 +70,10 @@ public slots:
 
 private:
     QQueue<QString> aa_fileNameQueue;
-    float aa_volume;
+    double aa_Volume;
 
 protected:
+
 #ifdef Q_OS_LINUX
     bool alsa_play( QString filename );
     snd_pcm_t * alsa_open( int channels, int srate );
