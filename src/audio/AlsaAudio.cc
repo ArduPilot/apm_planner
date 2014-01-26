@@ -22,9 +22,9 @@ This file is part of the QGROUNDCONTROL project
 ======================================================================*/
 
 ////////////////////////////////// INFO ////////////////////////////////////////
+//                                                                            //
 /// some driver parts are copied from mega-nerd.com(libsndfile) example page ///
-///                                                                          ///
-////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
 
 /*
 ** Copyright (C) 1999-2004 Erik de Castro Lopo <erikd@mega-nerd.com>
@@ -43,6 +43,10 @@ This file is part of the QGROUNDCONTROL project
 ** along with this program; if not, write to the Free Software
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
+
+//                                                                            //
+//                                                                            //
+///////////////////////////////// ~INFO ////////////////////////////////////////
 
 #include "AlsaAudio.h"
 #include <QApplication>
