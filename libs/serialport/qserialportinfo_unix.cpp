@@ -49,14 +49,11 @@
 
 #ifndef Q_OS_MAC
 
-#if defined (Q_OS_LINUX) && defined (HAVE_LIBUDEV)
+#if defined (Q_OS_LINUX)
 extern "C"
 {
 #include <libudev.h>
 }
-#else
-#include <QtCore/qdir.h>
-#include <QtCore/qstringlist.h>
 #endif
 
 #endif // Q_OS_MAC
@@ -65,7 +62,7 @@ QT_BEGIN_NAMESPACE
 
 #ifndef Q_OS_MAC
 
-#if !(defined (Q_OS_LINUX) && defined (HAVE_LIBUDEV))
+#if !(defined (Q_OS_LINUX))
 
 static inline const QStringList& filtersOfDevices()
 {
@@ -95,7 +92,7 @@ QList<QSerialPortInfo> QSerialPortInfo::availablePorts()
 {
     QList<QSerialPortInfo> serialPortInfoList;
 
-#if defined (Q_OS_LINUX) && defined (HAVE_LIBUDEV)
+#if defined (Q_OS_LINUX)
 
     // White list for devices without a parent
     static const QString rfcommDeviceName(QLatin1String("rfcomm"));

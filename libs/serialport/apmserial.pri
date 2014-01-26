@@ -3,9 +3,16 @@ INCLUDEPATH += $$PWD
 unix {
     CONFIG += link_pkgconfig
 
-    packagesExist(libudev) {
-        DEFINES += HAVE_LIBUDEV
-        PKGCONFIG += libudev
+    macx {
+        packagesExist(libudev) {
+            DEFINES += HAVE_LIBUDEV
+            PKGCONFIG += libudev
+        }
+    }
+
+    linux* {
+    DEFINES += HAVE_LIBUDEV
+    PKGCONFIG += libudev
     }
 }
 
@@ -49,7 +56,7 @@ unix:!symbian {
 
         LIBS += -framework IOKit -framework CoreFoundation
     } else {
-        linux*:contains( DEFINES, HAVE_LIBUDEV ) {
+        linux*{
             LIBS += -ludev
         }
     }
