@@ -35,14 +35,13 @@ This file is part of the PIXHAWK project
 #include <QObject>
 #include <QTimer>
 #include <QStringList>
+#include <audio/AlsaAudio.h>
+
 #ifdef Q_OS_MAC
 #include <MediaObject>
 #include <AudioOutput>
 #endif
-#ifdef Q_OS_LINUX
-#include <QThread>
-#include <audio/AlsaAudio.h>
-#endif
+
 #ifdef Q_OS_WIN
 #include <Phonon/MediaObject>
 #include <Phonon/AudioOutput>

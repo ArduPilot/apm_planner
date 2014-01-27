@@ -57,9 +57,6 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "AlsaAudio.h"
-//#include <QApplication>
-//#include <QSettings>
-//#include <QMutex>
 
 AlsaAudio::AlsaAudio(QObject *parent) :
     QThread(parent),
