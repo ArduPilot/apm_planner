@@ -32,7 +32,8 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_progressDialog(NULL),
     m_timer(NULL),
     m_rawImuList(),
-    m_allOffsetsSet(0)
+    m_allOffsetsSet(0),
+    m_validSensorOffsets(false)
 {
     ui.setupUi(this);
 
@@ -379,6 +380,7 @@ void CompassConfig::cleanup()
     delete m_timer;
     m_rawImuList.clear();
     delete m_progressDialog;
+    m_validSensorOffsets = false;
 }
 
 void CompassConfig::finishCompassCalibration()
@@ -431,7 +433,7 @@ void CompassConfig::saveOffsets(alglib::real_1d_array& ofs)
 
 void CompassConfig::rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu)
 {
-    if (m_uas == uas){
+    if (m_uas == uas && m_validSensorOffsets){
         QLOG_DEBUG() << "RAW IMU x:" << rawImu.xmag << " y:" << rawImu.ymag << " z:" << rawImu.zmag;
 
         if (m_oldxmag != rawImu.xmag &&
@@ -456,6 +458,7 @@ void CompassConfig::sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offset
 {
     if (m_uas == uas){
         m_sensorOffsets = sensorOffsets;
+        m_validSensorOffsets = true;
     }
 }
 

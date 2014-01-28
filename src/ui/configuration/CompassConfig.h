@@ -99,6 +99,7 @@ private:
     void cleanup();
 
 private:
+    bool m_validSensorOffsets;
     Ui::CompassConfig ui;
     QPointer<QProgressDialog> m_progressDialog;
     QPointer<QTimer> m_timer;
