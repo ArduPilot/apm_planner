@@ -36,13 +36,13 @@ BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
     m_rollPitchRateWidget = new ParamWidget("RollPitchRateControl",this);
     ui.verticalLayout->insertWidget(1,m_rollPitchRateWidget);
     connect(m_rollPitchRateWidget,SIGNAL(doubleValueChanged(QString,double)),this,SLOT(rPRCValueChanged(QString,double)));
-    m_rollPitchRateWidget->setupDouble(QString("Roll/Pitch Rate Control"),"How much thrust is applied to rotate the compter at the desired speed",0.15,0.08,0.4,0.01);
+    m_rollPitchRateWidget->setupDouble(QString("Roll/Pitch Rate Control"),"Slide to the right if the copter is sluggish or slide to the left if the copter is twitchy",0.15,0.08,0.4,0.01);
     m_rollPitchRateWidget->show();
 
     m_throttleAccelWidget = new ParamWidget("ThrottleAccel",this);
     ui.verticalLayout->insertWidget(2,m_throttleAccelWidget);
     connect(m_throttleAccelWidget,SIGNAL(doubleValueChanged(QString,double)),this,SLOT(tAValueChanged(QString,double)));
-    m_throttleAccelWidget->setupDouble(QString("Throttle Accel"),"How much thrust to give us the desired Accel. This will change depending on the weight and thrust of your copter.",0.75,0.3,1.0,0.05);
+    m_throttleAccelWidget->setupDouble(QString("Throttle Accel"),"Slide to the right to climb more aggressively or slide to the left to climb more gently",0.75,0.3,1.0,0.05);
     m_throttleAccelWidget->show();
 
 

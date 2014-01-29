@@ -6,7 +6,7 @@
 # Based of QGroundControl by Lorenz Meier <lm@inf.ethz.ch>
 #
 # (c) 2009-2011 QGroundControl Developers
-# (c) 2013 Bill Bonney <billbonney@communitech.com>
+# (c) 2013 Bill Bonney <billbonney@communistech.com>
 # (c) 2013 Michael Carpenter <malcom2073@gmail.com>
 #
 # This file is part of the open groundstation project
