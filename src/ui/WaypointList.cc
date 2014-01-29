@@ -601,8 +601,11 @@ void WaypointList::on_clearWPListButton_clicked()
     if (uas) {
         emit clearPathclicked();
         const QList<Waypoint *> &waypoints = WPM->getWaypointEditableList();
-        while(!waypoints.isEmpty()) {
-            WaypointEditableView* widget = wpEditableViews.find(waypoints[0]).value();
+
+        //Remove all but 1 waypoint, since the first is "home" on APM
+        //Also, remove from the END first, work your way back to the first
+        while (waypoints.size() > 1) {
+            WaypointEditableView *widget = wpEditableViews.find(waypoints[waypoints.size()-1]).value();
             widget->remove();
         }
     }
@@ -617,8 +620,10 @@ void WaypointList::clearWPWidget()
         // XXX delete wps as well
 
         // Clear UI elements
-        while(!waypoints.isEmpty()) {
-            WaypointEditableView* widget = wpEditableViews.find(waypoints[0]).value();
+        //Remove all but 1 waypoint, since the first is "home" on APM
+        //Also, remove from the END first, work your way back to the first
+        while(waypoints.size() > 1) {
+            WaypointEditableView* widget = wpEditableViews.find(waypoints[waypoints.size()-1]).value();
             widget->remove();
         }
 }
