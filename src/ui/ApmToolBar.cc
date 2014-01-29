@@ -263,7 +263,7 @@ void APMToolBar::connected(LinkInterface *linkInterface)
 
 void APMToolBar::disconnected(LinkInterface *linkInterface)
 {
-    QLOG_DEBUG() << "APMToolBar: connecting to link" << linkInterface;
+    QLOG_DEBUG() << "APMToolBar: disconnected from link" << linkInterface;
 
     if (m_uas) {
         // With an active UAS use the list of serial ports from that UAS
@@ -281,9 +281,7 @@ void APMToolBar::disconnected(LinkInterface *linkInterface)
         // the last one disconnected properties.
         QList<SerialLink*> sList = SerialLink::getSerialLinks(LinkManager::instance());
         foreach (SerialLink* sLink, sList) {
-            if (sLink->isConnected()){
-                updateLinkDisplay(sLink);
-            }
+            updateLinkDisplay(sLink);
         }
     }
 }
