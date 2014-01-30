@@ -38,18 +38,10 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
     QColor pwmColor = QColor::fromRgb(255,255,255);
     QColor borderColor = QColor::fromRgb(50,255,50);
 
-    m_style = static_cast<int>(MainWindow::instance()->getStyle());
-
     int fontHeight = painter.fontMetrics().height();
     int twiceFontHeight = fontHeight * 2;
 
-    if (m_style == outdoor){
-        pwmColor = QColor::fromRgb(0,0,0);;
-    } else if (m_style == indoor) {
-        pwmColor = QColor::fromRgb(255,255,255);;
-    } else { // native and all others (Currently set mid-point)
-        pwmColor = QColor::fromRgb(128,128,128);
-    }
+    pwmColor = palette().color(QPalette::Text);
 
     painter.setBrush(Qt::SolidPattern);
     painter.setPen(QColor::fromRgb(128,128,64));
