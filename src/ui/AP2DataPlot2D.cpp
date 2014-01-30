@@ -382,7 +382,7 @@ void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
 }
-void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
+void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer)
 {
     Q_UNUSED(msec)
     Q_UNUSED(unit)
@@ -462,6 +462,10 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
                 m_axisGroupingDialog->updateAxis(propername,m_graphClassMap.value(propername).axis->range().lower,m_graphClassMap.value(propername).axis->range().upper);
             }
         }
+        if (integer)
+        {
+            m_graphClassMap.value(propername).axis->setNumberPrecision(0);
+        }
     }
     m_onlineValueMap[propername].append(QPair<double,double>(newmsec / 1000.0,value));
 }
@@ -500,11 +504,11 @@ void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QSt
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
 {
-    updateValue(uasId,name,unit,value,msec);
+    updateValue(uasId,name,unit,value,msec,false);
 }
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value,const quint64 msec)
 {
-    updateValue(uasId,name,unit,value.toDouble(),msec);
+    updateValue(uasId,name,unit,value.toDouble(),msec,false);
 }
 
 void AP2DataPlot2D::loadButtonClicked()

@@ -62,7 +62,7 @@ private slots:
     void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
     void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs);
     //Called by every valueChanged function to actually save the value/graph it.
-    void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
+    void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer = true);
 
     void autoScrollClicked(bool checked);
     void tableCellClicked(int row,int column);
