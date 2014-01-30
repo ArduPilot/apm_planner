@@ -460,3 +460,7 @@ QLabel#toolBarMessageLabel {
 	color: #3C7B9E;
 }
 
+QTableWidget {
+background-color: #222224;
+alternate-background-color: #444444;
+}
