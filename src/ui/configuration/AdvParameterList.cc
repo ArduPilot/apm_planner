@@ -72,7 +72,9 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_DESCRIPTION,new QTableWidgetItem("Description"));
     ui.tableWidget->horizontalHeaderItem(ADV_TABLE_COLUMN_DESCRIPTION)->setTextAlignment(Qt::AlignLeft);
 
-    ui.paramProgressBar->setRange(0,100);
+    ui.paramProgressBar->setRange(0,0);
+    ui.paramProgressBar->hide();
+    ui.progressLabel->hide();
 
     initConnections();
 }
@@ -97,6 +99,9 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     QString str;
     str.sprintf("%d %s changed", itemsChanged, (itemsChanged == 1)? "param": "params");
     ui.progressLabel->setText(str);
+    ui.paramProgressBar->setMaximum(itemsChanged);
+    ui.progressLabel->show();
+    ui.paramProgressBar->show();
 }
 
 void AdvParameterList::writeButtonClicked()
@@ -120,8 +125,10 @@ void AdvParameterList::writeButtonClicked()
     m_paramsWritten = 0;
 
     if(m_paramsToWrite == 0) {
-        ui.paramProgressBar->setValue(100);
+        ui.paramProgressBar->setValue(0);
         ui.progressLabel->setText("No params to write");
+        ui.progressLabel->show();
+        QTimer::singleShot(700,ui.progressLabel, SLOT(hide()));
     }
 
     m_modifiedParamMap.clear();
@@ -324,22 +331,21 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
 
     if(m_writingParams) {
         ++m_paramsWritten;
-        float written = static_cast<float>(m_paramsWritten);
-        float toWrite = static_cast<float>(m_paramsToWrite);
-        float pct = ((written / toWrite) * 100.0f);
 
         QString str;
 
-        if(written >= toWrite) {
+        if(m_paramsWritten >= m_paramsToWrite) {
             str.sprintf("%d params written", m_paramsWritten);
             m_writingParams = false;
+            QTimer::singleShot(500,ui.progressLabel, SLOT(hide()));
+            QTimer::singleShot(500,ui.paramProgressBar, SLOT(hide()));
         }
         else {
             str.sprintf("%d of %d", m_paramsWritten, m_paramsToWrite);
         }
 
         ui.progressLabel->setText(str);
-        ui.paramProgressBar->setValue((int)pct);
+        ui.paramProgressBar->setValue(m_paramsWritten);
     }
 }
 
@@ -357,47 +363,47 @@ void AdvParameterList::parameterChanged(int uas, int component, int parameterCou
         m_parameterList.insert(parameterName, param);
     }
 
-    QString countString;
-    // Create progress of downloading of all parameters for the UI
-    switch (m_paramDownloadState){
-    case starting:
-        QLOG_INFO() << "Starting Param Progress Bar Updating sys:" << uas;
-        m_paramDownloadCount = 1;
+//    QString countString;
+//    // Create progress of downloading of all parameters for the UI
+//    switch (m_paramDownloadState){
+//    case starting:
+//        QLOG_INFO() << "Starting Param Progress Bar Updating sys:" << uas;
+//        m_paramDownloadCount = 1;
 
-        countString = QString::number(m_paramDownloadCount) + "/"
-                        + QString::number(parameterCount);
-        QLOG_INFO() << "Param Progress Bar: " << countString
-                     << "paramId:" << parameterId << "name:" << parameterName
-                     << "paramValue:" << value;
-        ui.progressLabel->setText(countString);
-        ui.paramProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
+//        countString = QString::number(m_paramDownloadCount) + "/"
+//                        + QString::number(parameterCount);
+//        QLOG_INFO() << "Param Progress Bar: " << countString
+//                     << "paramId:" << parameterId << "name:" << parameterName
+//                     << "paramValue:" << value;
+//        ui.progressLabel->setText(countString);
+//        ui.paramProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
 
-        m_paramDownloadState = refreshing;
-        break;
+//        m_paramDownloadState = refreshing;
+//        break;
 
-    case refreshing:
-        m_paramDownloadCount++;
-        countString = QString::number(m_paramDownloadCount) + "/"
-                        + QString::number(parameterCount);
-        QLOG_INFO() << "Param Progress Bar: " << countString
-                     << "paramId:" << parameterId << "name:" << parameterName
-                     << "paramValue:" << value;
-        ui.progressLabel->setText(countString);
-        ui.paramProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
+//    case refreshing:
+//        m_paramDownloadCount++;
+//        countString = QString::number(m_paramDownloadCount) + "/"
+//                        + QString::number(parameterCount);
+//        QLOG_INFO() << "Param Progress Bar: " << countString
+//                     << "paramId:" << parameterId << "name:" << parameterName
+//                     << "paramValue:" << value;
+//        ui.progressLabel->setText(countString);
+//        ui.paramProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
 
-        if (m_paramDownloadCount == parameterCount)
-            m_paramDownloadState = completed;
-        break;
+//        if (m_paramDownloadCount == parameterCount)
+//            m_paramDownloadState = completed;
+//        break;
 
-    case completed:
-        QLOG_INFO() << "Finished Downloading Params" << m_paramDownloadCount;
-        m_paramDownloadState = none;
-        break;
+//    case completed:
+//        QLOG_INFO() << "Finished Downloading Params" << m_paramDownloadCount;
+//        m_paramDownloadState = none;
+//        break;
 
-    case none:
-    default:
-        ; // Do Nothing
-    }
+//    case none:
+//    default:
+//        ; // Do Nothing
+//    }
 }
 
 void AdvParameterList::downloadRemoteFiles()

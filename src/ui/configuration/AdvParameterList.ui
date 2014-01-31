@@ -187,8 +187,17 @@
            <property name="toolTip">
             <string comment="Download Progress"/>
            </property>
+           <property name="minimum">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <number>0</number>
+           </property>
            <property name="value">
             <number>0</number>
+           </property>
+           <property name="format">
+            <string>%v/%m</string>
            </property>
           </widget>
          </item>
