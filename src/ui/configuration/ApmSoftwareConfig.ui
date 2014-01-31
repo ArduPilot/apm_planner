@@ -37,7 +37,7 @@
         <x>0</x>
         <y>0</y>
         <width>199</width>
-        <height>577</height>
+        <height>592</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -86,7 +86,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Basic Tuning (PIDs)</string>
+            <string>Basic Tuning</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
