@@ -28,7 +28,9 @@ DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent, bool ove
     // [ToDo] For now just add a default list of parameter filenames
     // In future need to add a github rest API request.
     QStringList paramFiles;
-    paramFiles << "Iris" << "Beginner" << "Intermediate" << "Advanced" << "CameraPlatform";
+    paramFiles << "Iris" << "Beginner" << "Intermediate" << "Advanced" << "CameraPlatform"
+               << "3DR_Y6B_RTF" << "3DR_X8_RTF" << "3DR_QUAD_X4_RTF" << "3DR_Y6A_RTF";
+    paramFiles.sort();
 
     foreach(QString paramFile, paramFiles){
     QListWidgetItem *item = new QListWidgetItem( paramFile, ui->listWidget);
