@@ -33,6 +33,7 @@ This file is part of the APM_PLANNER project
 #define APMHARDWARECONFIG_H
 
 #include <QWidget>
+#include "AP2ConfigWidget.h"
 #include "ui_ApmHardwareConfig.h"
 #include <UASInterface.h>
 #include <UASManager.h>
@@ -55,7 +56,7 @@ This file is part of the APM_PLANNER project
 #include "FailSafeConfig.h"
 #include "SetupWarningMessage.h"
 
-class ApmHardwareConfig : public QWidget
+class ApmHardwareConfig : public AP2ConfigWidget
 {
     Q_OBJECT
 

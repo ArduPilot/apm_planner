@@ -30,6 +30,7 @@ This file is part of the APM_PLANNER project
 #ifndef APMFIRMWARECONFIG_H
 #define APMFIRMWARECONFIG_H
 
+#include "AP2ConfigWidget.h"
 #include <QWidget>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -52,7 +53,7 @@ This file is part of the APM_PLANNER project
 #include "ui_ApmFirmwareConfig.h"
 #include "PX4FirmwareUploader.h"
 
-class ApmFirmwareConfig : public QWidget
+class ApmFirmwareConfig : public AP2ConfigWidget
 {
     Q_OBJECT
     
@@ -64,6 +65,9 @@ signals:
 protected:
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
+
+public slots:
+    void checkForUpdates(const QString &versionString);
 
 private slots:
     void firmwareListFinished();
@@ -77,7 +81,7 @@ private slots:
     void firmwareProcessReadyRead();
     void firmwareProcessError(QProcess::ProcessError error);
     void firmwareDownloadProgress(qint64 received,qint64 total);
-    void requestFirmwares(QString type,QString autopilot);
+    void requestFirmwares(QString type, QString autopilot, bool notification);
     void connectButtonClicked();
     void disconnectButtonClicked();
     void setLink(int index);
@@ -97,6 +101,16 @@ private slots:
 
     void flashCustomFirmware();
     void flashFirmware(QString filename);
+
+    void parameterChanged(int uas, int component, QString parameterName, QVariant value);
+
+private:
+    void loadSettings();
+    void storeSettings();
+
+    QString processPortInfo(const QSerialPortInfo &info);
+    bool compareVersionStrings(const QString& newVersion, const QString& currentVersion);
+    void compareVersionsForNotification(const QString &apmPlatform, const QString &newFwVersion);
 
 private:
     bool versionIsGreaterThan(QString verstr,double version);
@@ -141,6 +155,12 @@ private:
     };
     QList<FirmwareDef> m_firmwareList;
     QPointer<QTimer> m_timer;
+
+    bool m_enableUpdateCheck;
+    bool m_notificationOfUpdate;
+    bool m_updateCheckInitiated;
+    QString m_currentVersionString;
+    QString m_lastVersionSkipped;
 };
 
 #endif // APMFIRMWARECONFIG_H

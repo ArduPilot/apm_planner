@@ -351,6 +351,24 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             //QLOG_DEBUG() << "ARDUPILOT RECEIVED HEARTBEAT";
             break;
         }
+        case MAVLINK_MSG_ID_STATUSTEXT:
+        {
+            QByteArray b;
+            b.resize(MAVLINK_MSG_STATUSTEXT_FIELD_TEXT_LEN+1);
+            mavlink_msg_statustext_get_text(&message, b.data());
+            // Ensure NUL-termination
+            b[b.length()-1] = '\0';
+            QString text = QString(b);
+            int severity = mavlink_msg_statustext_get_severity(&message);
+            QLOG_INFO() << "STATUS TEXT:" << severity << ":" << text;
+
+            if (text.startsWith("ArduCopter") || text.startsWith("ArduPlane")
+                    || text.startsWith("ArduRover")) {
+                QLOG_DEBUG() << "APM Version String detected:" << text;
+                emit versionDetected(text);
+            }
+
+        } break;
         default:
             //QLOG_DEBUG() << "\nARDUPILOT RECEIVED MESSAGE WITH ID" << message.msgid;
             break;

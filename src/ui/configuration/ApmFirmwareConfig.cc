@@ -20,6 +20,7 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 
+#include "ArduPilotMegaMAV.h"
 #include "ApmFirmwareConfig.h"
 #include "QsLog.h"
 #include "LinkManager.h"
@@ -30,8 +31,10 @@ This file is part of the APM_PLANNER project
 #include "MainWindow.h"
 #include "PX4FirmwareUploader.h"
 #include <QTimer>
+#include <QSettings>
 
-ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
+ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_notificationOfUpdate(false)
 {
     ui.setupUi(this);
     m_timeoutCounter=0;
@@ -53,11 +56,9 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     m_autopilotType = "apm";
     m_px4uploader = 0;
     m_isPx4 = false;
-    //
 
+    loadSettings();
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
-
-
 
     m_networkManager = new QNetworkAccessManager(this);
 
@@ -72,8 +73,6 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     connect(ui.y6PushButton,SIGNAL(clicked()),this,SLOT(flashButtonClicked()));
 
     connect(ui.flashCustomFWButton,SIGNAL(clicked()),this,SLOT(flashCustomFirmware()));
-
-    QTimer::singleShot(10000,this,SLOT(requestFirmwares()));
 
     connect(ui.betaFirmwareButton,SIGNAL(clicked()),this,SLOT(betaFirmwareButtonClicked()));
     connect(ui.stableFirmwareButton,SIGNAL(clicked()),this,SLOT(stableFirmwareButtonClicked()));
@@ -103,22 +102,35 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : QWidget(parent)
     addBetaLabel(ui.triPushButton);
     addBetaLabel(ui.y6PushButton);*/
     populateSerialPorts();
-    if (ui.linkComboBox->count() > 0)
-    {
-        QLOG_DEBUG() << "Setting ApmFirmware link to 0";
-        requestFirmwares(m_firmwareType,"apm");
-        setLink(0);
-    }
-    else
-    {
-        QLOG_DEBUG() << "No Links found for ApmFirmware";
-    }
 
-    m_uas = 0;
-    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
-    activeUASSet(UASManager::instance()->getActiveUAS());
+    initConnections();
+
     m_timer = new QTimer(this);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+}
+
+void ApmFirmwareConfig::loadSettings()
+{
+    // Load defaults from settings
+    QSettings settings;
+    settings.sync();
+    settings.beginGroup("APM_FIRMWARE_CONFIG");
+    m_enableUpdateCheck = settings.value("ENABLE_UPDATE_CHECK",true).toBool();
+    m_lastVersionSkipped = settings.value("VERSION_LAST_SKIPPED", "0.0.0" ).toString();
+
+    settings.endGroup();
+}
+
+void ApmFirmwareConfig::storeSettings()
+{
+    // Store settings
+    QSettings settings;
+    settings.beginGroup("APM_FIRMWARE_CONFIG");
+    settings.setValue("ENABLE_UPDATE_CHECK", m_enableUpdateCheck);
+    settings.setValue("VERSION_LAST_SKIPPED", m_lastVersionSkipped);
+    settings.endGroup();
+    settings.sync();
+    QLOG_DEBUG() << "Storing settings!";
 }
 
 void ApmFirmwareConfig::populateSerialPorts()
@@ -254,6 +266,8 @@ void ApmFirmwareConfig::activeUASSet(UASInterface *uas)
 {
     if (m_uas)
     {
+        disconnect(m_uas,SIGNAL(parameterChanged(int,int,QString,QVariant)),
+                   this,SLOT(parameterChanged(int,int,QString,QVariant)));
         disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
         disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
         m_uas = 0;
@@ -265,9 +279,16 @@ void ApmFirmwareConfig::activeUASSet(UASInterface *uas)
     else
     {
         m_uas = uas;
+        connect(m_uas,SIGNAL(parameterChanged(int,int,QString,QVariant)),
+                   this,SLOT(parameterChanged(int,int,QString,QVariant)));
         connect(uas,SIGNAL(connected()),this,SLOT(uasConnected()));
         connect(uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
         uasConnected();
+
+        ArduPilotMegaMAV* apm = dynamic_cast<ArduPilotMegaMAV*>(uas);
+        if (apm)
+            connect(apm,SIGNAL(versionDetected(QString)), this, SLOT(checkForUpdates(QString)));
+
     }
 }
 
@@ -310,13 +331,14 @@ void ApmFirmwareConfig::addBetaLabel(QWidget *parent)
     m_betaButtonLabelList.append(label);
 }
 
-void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot)
+void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool notification = false)
 {
     //type can be "stable" "beta" or "latest"
     //autopilot can be "apm" "px4" or "pixhawk"
     QLOG_DEBUG() << "Requesting firmware:" << type << autopilot;
     m_betaFirmwareChecked = false;
     m_trunkFirmwareChecked = false;
+    m_notificationOfUpdate = notification;
     hideBetaLabels();
     QString prestring = "apm2";
     if (autopilot == "apm")
@@ -878,47 +900,43 @@ void ApmFirmwareConfig::setLink(int index)
         {
             if (info.portName() == m_settings.name)
             {
-                // Include FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
-                if ((info.description().toLower().contains("mega") && info.description().contains("2560")) \
-                        || info.productIdentifier() == 0x6001 || info.productIdentifier() == 0x6010 || info.productIdentifier() == 0x6014 )
-                {
-                    //APM
-                    if (m_autopilotType != "apm" || blank)
-                    {
-                        requestFirmwares(m_firmwareType,"apm");
-                        QLOG_DEBUG() << "APM Detected";
-                    }
-                }
-                else if (info.description().toLower().contains("px4"))
-                {
-                    //PX4
-                    if (info.productIdentifier() == 0x0010) //Both PX4 and PX4 bootloader are 0x0010.
-                    {
-                        if (m_autopilotType != "px4" || blank)
-                        {
-                            requestFirmwares(m_firmwareType,"px4");
-                            QLOG_DEBUG() << "PX4 Detected";
-                        }
-                    }
-                    else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001 || info.productIdentifier() == 0x0016) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
-                    {
-                        if (m_autopilotType != "pixhawk" || blank)
-                        {
-                            requestFirmwares(m_firmwareType,"pixhawk");
-                            QLOG_DEBUG() << "Pixhawk Detected";
-                        }
-                    }
-                }
-                else
-                {
-                    //Unknown
-                    QLOG_DEBUG() << "Unknown detected:" << info.productIdentifier() << info.description();
+                QString platform = processPortInfo(info);
+                if (platform != "Unknown" && (m_autopilotType != platform || blank)){
+                    requestFirmwares(m_firmwareType, platform);
+                    QLOG_DEBUG() << platform << " Detected";
                 }
             }
         }
+    }
+}
 
-
-        //QLOG_INFO() << "Changed Link to:" << m_settings.name;
+QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
+{
+    // Include FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
+    if ((info.description().toLower().contains("mega") && info.description().contains("2560")) \
+            || info.productIdentifier() == 0x6001 || info.productIdentifier() == 0x6010 || info.productIdentifier() == 0x6014 )
+    {
+        //APM
+        return "apm";
+    }
+    else if (info.description().toLower().contains("px4"))
+    {
+        //PX4
+        if (info.productIdentifier() == 0x0010) //Both PX4 and PX4 bootloader are 0x0010.
+        {
+            return "px4";
+        }
+        else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001
+                 || info.productIdentifier() == 0x0016) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
+        {
+            return "pixhawk";
+        }
+    }
+    else
+    {
+        //Unknown
+        QLOG_DEBUG() << "Unknown detected:" << info.productIdentifier() << info.description();
+        return "Unkown";
     }
 }
 
@@ -927,6 +945,7 @@ void ApmFirmwareConfig::firmwareListError(QNetworkReply::NetworkError error)
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     QLOG_ERROR() << "Error!" << reply->errorString();
 }
+
 bool ApmFirmwareConfig::stripVersionFromGitReply(QString url, QString reply,QString type,QString stable,QString *out)
 {
     if (url.contains(type) && url.contains("git-version.txt") && url.contains(stable))
@@ -936,7 +955,6 @@ bool ApmFirmwareConfig::stripVersionFromGitReply(QString url, QString reply,QStr
         return true;
     }
     return false;
-
 }
 
 void ApmFirmwareConfig::firmwareListFinished()
@@ -982,7 +1000,8 @@ void ApmFirmwareConfig::firmwareListFinished()
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,apmver + "-quad",cmpstr,&outstr))
     {
-        //Version checking
+        //Update version checkin
+        compareVersionsForNotification("ArduCopter", outstr); // We only check one of the copter frame types
         m_buttonToWarning[ui.quadPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.quadLabel->setText(labelstr + outstr);
         return;
@@ -1024,23 +1043,20 @@ void ApmFirmwareConfig::firmwareListFinished()
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,"Plane",cmpstr,&outstr))
     {
-        //Version checking
+        //Update version checkin
+        compareVersionsForNotification("ArduPlane", outstr);
         m_buttonToWarning[ui.planePushButton] = versionIsGreaterThan(outstr,3.1);
         ui.planeLabel->setText(labelstr + outstr);
         return;
     }
     if (stripVersionFromGitReply(reply->url().toString(),replystr,"Rover",cmpstr,&outstr))
     {
-        //Version checking
+        //Update version checkin
+        compareVersionsForNotification("ArduRover", outstr);
         m_buttonToWarning[ui.roverPushButton] = versionIsGreaterThan(outstr,3.1);
         ui.roverLabel->setText(labelstr + outstr);
         return;
     }
-
-
-
-
-
 
     //QLOG_DEBUG() << "Match not found for:" << reply->url();
     //QLOG_DEBUG() << "Git version line:" <<  replystr;
@@ -1056,6 +1072,102 @@ bool ApmFirmwareConfig::versionIsGreaterThan(QString verstr,double version)
     }
     float versionfloat = versionstr.toFloat();
     return ((versionfloat+0.005) > (version));
+}
+
+bool ApmFirmwareConfig::compareVersionStrings(const QString& newVersion, const QString& currentVersion)
+{
+    int newMajor,newMinor,newBuild = 0;
+    int currentMajor, currentMinor,currentBuild = 0;
+
+    QString newBuildSubMoniker, oldBuildSubMoniker; // holds if the build is a rc or dev build
+
+    QRegExp versionEx("(\\d*\\.\\d+\\.?\\d?)-?(rc\\d)?");
+    QString versionstr = "";
+    int pos = versionEx.indexIn(newVersion);
+    if (pos > -1) {
+        // Split first sub-element to get numercal major.minor.build version
+        QLOG_DEBUG() << "Detected newVersion:" << versionEx.capturedTexts()<< " count:"
+                     << versionEx.captureCount();
+        versionstr = versionEx.cap(1);
+        QStringList versionList = versionstr.split(".");
+        newMajor = versionList[0].toInt();
+        newMinor = versionList[1].toInt();
+        if (versionList.size() > 2){
+            newBuild = versionList[2].toInt();
+        }
+        // second subelement is either rcX candidate or developement build
+        if (versionEx.captureCount() == 2)
+            newBuildSubMoniker = versionEx.cap(2);
+    }
+
+    QRegExp versionEx2("(\\d*\\.\\d+\\.?\\d?)-?(rc\\d)?");
+    versionstr = "";
+    pos = versionEx2.indexIn(currentVersion);
+    if (pos > -1) {
+        QLOG_DEBUG() << "Detected currentVersion:" << versionEx2.capturedTexts() << " count:"
+                     << versionEx2.captureCount();
+        versionstr = versionEx2.cap(1);
+        QStringList versionList = versionstr.split(".");
+        currentMajor = versionList[0].toInt();
+         currentMinor = versionList[1].toInt();
+        if (versionList.size() > 2){
+            currentBuild = versionList[2].toInt();
+        }
+        // second subelement is either rcX candidate or developement build
+        if (versionEx2.captureCount() == 2)
+            oldBuildSubMoniker = versionEx2.cap(2);
+    }
+
+    QLOG_DEBUG() << "Verison Compare:" <<QString().sprintf(" New Version %d.%d.%d > Old Version %d.%d.%d",
+                                                 newMajor,newMinor,newBuild,currentMajor, currentMinor,currentBuild);
+    if (newMajor>currentMajor){
+        // A Major release
+        return true;
+    } else if (newMajor == currentMajor){
+        if (newMinor >  currentMinor){
+            // A minor release
+            return true;
+        } else if (newMinor ==  currentMinor){
+            if (newBuild > currentBuild)
+                // new build (or tiny release)
+                return true;
+            else if (newBuild == currentBuild) {
+                // Check if RC is newer
+                // If the version isn't newer, it might be a new release candidate
+                int newRc = 0, oldRc = 0;
+
+                if (newBuildSubMoniker.startsWith("RC", Qt::CaseInsensitive)
+                        && oldBuildSubMoniker.startsWith("RC", Qt::CaseInsensitive)) {
+                    QRegExp releaseNumber("\\d+");
+                    pos = releaseNumber.indexIn(newBuildSubMoniker);
+                    if (pos > -1) {
+                        QLOG_DEBUG() << "Detected newRc:" << versionEx.capturedTexts();
+                        newRc = releaseNumber.cap(0).toInt();
+                    }
+
+                    QRegExp releaseNumber2("\\d+");
+                    pos = releaseNumber2.indexIn(oldBuildSubMoniker);
+                    if (pos > -1) {
+                        QLOG_DEBUG() << "Detected oldRc:" << versionEx.capturedTexts();
+                        oldRc = releaseNumber.cap(0).toInt();
+                    }
+
+                    if (newRc > oldRc)
+                        return true;
+                }
+
+                if (newBuildSubMoniker.length() == 0
+                        && oldBuildSubMoniker.startsWith("RC", Qt::CaseInsensitive)) {
+                    QLOG_DEBUG() << "Stable build newer that last unstable release candidate ";
+                    return true; // this means a new stable build of the unstable rc is available
+                }
+            }
+        }
+    }
+
+
+
+    return false;
 }
 
 void ApmFirmwareConfig::flashCustomFirmware()
@@ -1077,6 +1189,69 @@ void ApmFirmwareConfig::flashCustomFirmware()
         return;
     }
 
+}
+
+void ApmFirmwareConfig::checkForUpdates(const QString &versionString)
+{
+    if (m_enableUpdateCheck){
+        QLOG_DEBUG() << "APM Version Check For Updates";
+
+        // Wait for signal about the INS_PRODUCT_ID then tigger FW version fetch.
+        m_currentVersionString = versionString;
+        m_updateCheckInitiated = true;
+    }
+}
+
+void ApmFirmwareConfig::compareVersionsForNotification(const QString &apmPlatform, const QString& newFwVersion)
+{
+    if (m_currentVersionString.contains(apmPlatform)) {
+        QStringList list = m_currentVersionString.split(" ");
+        if (compareVersionStrings(newFwVersion, list[1])){
+            // Show Update fwVersion
+            if(m_lastVersionSkipped.contains(newFwVersion)){
+                    QLOG_DEBUG() << " Version Skipped: " << newFwVersion;
+                    return; // need to skip this one
+            }
+            QLOG_INFO() << "Update Avaiable for " << apmPlatform << " Ver: " << newFwVersion;
+            if (QMessageBox::Ignore == QMessageBox::information(this, tr("Update Status"),
+                                     tr("New %1 firmware %2 is available for %3")
+                                     .arg(m_firmwareType).arg(newFwVersion).arg(apmPlatform)
+                                     ,QMessageBox::Ignore, QMessageBox::Ok)){
+                    m_lastVersionSkipped = newFwVersion;
+                    storeSettings();
+            }
+        }
+    }
+}
+
+
+void ApmFirmwareConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
+{
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+
+    if(m_updateCheckInitiated){
+        if (parameterName.contains("INS_PRODUCT_ID")){
+            m_updateCheckInitiated = false;
+            // determine board type for firmware update
+            switch(value.toInt()){
+            // @Values: 0:Unknown,1:APM1-1280,2:APM1-2560,88:APM2,3:SITL,4:PX4v1,5:PX4v2,Flymaple:256,Linux:257
+
+            case 88:{ //APM2
+                requestFirmwares(m_firmwareType,"apm",true);
+            }break;
+            case 4:{ //PX4v1
+                requestFirmwares(m_firmwareType,"px4",true);
+            }break;
+            case 5:{ //PX4v2
+                requestFirmwares(m_firmwareType,"pixhawk",true);
+            }break;
+
+            default:
+                ;// do nothing.
+            }
+        }
+    }
 }
 
 ApmFirmwareConfig::~ApmFirmwareConfig()

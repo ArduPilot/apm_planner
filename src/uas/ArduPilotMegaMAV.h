@@ -151,6 +151,9 @@ public:
     void playCustomModeChangedAudioMessage();
     void playArmStateChangedAudioMessage(bool armedState) ;
 
+signals:
+    void versionDetected(QString versionString);
+
 public slots:
     /** @brief Receive a MAVLink message from this MAV */
     void receiveMessage(LinkInterface* link, mavlink_message_t message);

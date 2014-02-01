@@ -30,7 +30,7 @@ This file is part of the APM_PLANNER project
 #include "QsLog.h"
 #include "ApmHardwareConfig.h"
 
-ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
+ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
     m_uas(NULL),
