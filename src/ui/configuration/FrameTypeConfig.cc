@@ -84,9 +84,8 @@ void FrameTypeConfig::parameterChanged(int uas, int component, QString parameter
         case FRAME_TYPE_H:
             ui.hRadioButton->setChecked(true);
             break;
-        break;
         case FRAME_TYPE_NEWY6:
-            ui.hRadioButton->setChecked(true);
+            ui.newY6radioButton->setChecked(true);
         break;
         default:
             QLOG_ERROR() << "Unknown Frame Type" << value.toInt();
