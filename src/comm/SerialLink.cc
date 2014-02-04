@@ -210,7 +210,7 @@ void SerialLink::run()
             }
             m_transmitBuffer =  m_transmitBuffer.remove(0, numWritten);
         } else {
-            QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
+            //QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
         }
 
         bool error = m_port->waitForReadyRead(10);
@@ -221,13 +221,13 @@ void SerialLink::run()
                 readData += m_port->readAll();
             if (readData.length() > 0) {
                 emit bytesReceived(this, readData);
-                QLOG_TRACE() << "rx of length " << QString::number(readData.length());
+                //QLOG_TRACE() << "rx of length " << QString::number(readData.length());
 
                 m_bytesRead += readData.length();
                 m_bitsReceivedTotal += readData.length() * 8;
             }
         } else {
-            QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
+            //QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
         }
 
         if (bytes != m_bytesRead) // i.e things are good and data is being read.
@@ -401,6 +401,11 @@ bool SerialLink::disconnect()
         {
             QMutexLocker locker(&m_stoppMutex);
             m_stopp = true;
+        }
+        this->wait(1000);
+        if (this->isRunning())
+        {
+            this->terminate();
         }
         // [TODO] these signals are also emitted from RUN()
         // are these even required?
