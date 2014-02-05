@@ -297,7 +297,7 @@
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
-          <widget class="QPushButton" name="flightModesButton">
+          <widget class="QPushButton" name="fwFlightModesButton">
            <property name="minimumSize">
             <size>
              <width>150</width>

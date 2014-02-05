@@ -379,7 +379,8 @@ FORMS += \
     src/ui/dataselectionscreen.ui \
     src/ui/AboutDialog.ui \
     src/ui/AP2DataPlotAxisDialog.ui \
-    src/ui/configuration/LoadParameterConfig.ui
+    src/ui/configuration/LoadParameterConfig.ui \
+    src/ui/configuration/ApmAssistant.ui
 
 HEADERS += \
     src/MG.h \
@@ -580,7 +581,8 @@ HEADERS += \
     src/ui/uas/UASQuickViewTextLabel.h \
     src/uas/ApmUiHelpers.h \
     src/ui/AP2DataPlotAxisDialog.h \
-    src/ui/configuration/LoadParameterConfig.h
+    src/ui/configuration/LoadParameterConfig.h \
+    src/ui/configuration/ApmAssistant.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -775,7 +777,8 @@ SOURCES += src/main.cc \
     src/ui/uas/UASQuickViewTextLabel.cc \
     src/uas/ApmUiHelpers.cc \
     src/ui/AP2DataPlotAxisDialog.cc \
-    src/ui/configuration/LoadParameterConfig.cc
+    src/ui/configuration/LoadParameterConfig.cc \
+    src/ui/configuration/ApmAssistant.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

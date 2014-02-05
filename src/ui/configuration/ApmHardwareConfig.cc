@@ -45,7 +45,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.loadParamButton->setVisible(false);
     ui.accelCalibrateButton->setVisible(false);
     ui.failSafeButton->setVisible(false);
-    ui.flightModesButton->setVisible(false);
+    ui.fwFlightModesButton->setVisible(false);
     ui.arduPlaneLevelButton->setVisible(false);
     ui.radioCalibrateButton->setVisible(false);
     ui.batteryMonitorButton->setVisible(false);
@@ -68,87 +68,68 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     m_flightConfig = new FlightModeConfig(this);
     ui.stackedWidget->addWidget(m_flightConfig);
-    m_buttonToConfigWidgetMap[ui.flightModesButton] = m_flightConfig;
-    connect(ui.flightModesButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    m_buttonToConfigWidgetMap[ui.fwFlightModesButton] = m_flightConfig;
 
     m_frameConfig = new FrameTypeConfig(this);
     ui.stackedWidget->addWidget(m_frameConfig);
     m_buttonToConfigWidgetMap[ui.frameTypeButton] = m_frameConfig;
-    connect(ui.frameTypeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_loadParameterConfig = new LoadParameterConfig(this);
     ui.stackedWidget->addWidget(m_loadParameterConfig);
     m_buttonToConfigWidgetMap[ui.loadParamButton] = m_loadParameterConfig;
-    connect(ui.loadParamButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-    connect(ui.loadParamButton, SIGNAL(clicked()),
-            m_loadParameterConfig, SLOT(paramButtonClicked()));
 
     m_compassConfig = new CompassConfig(this);
     ui.stackedWidget->addWidget(m_compassConfig);
     m_buttonToConfigWidgetMap[ui.compassButton] = m_compassConfig;
-    connect(ui.compassButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_failSafeConfig = new FailSafeConfig(this);
     ui.stackedWidget->addWidget(m_failSafeConfig);
     m_buttonToConfigWidgetMap[ui.failSafeButton] = m_failSafeConfig;
-    connect(ui.failSafeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_accelConfig = new AccelCalibrationConfig(this);
     ui.stackedWidget->addWidget(m_accelConfig);
     m_buttonToConfigWidgetMap[ui.accelCalibrateButton] = m_accelConfig;
-    connect(ui.accelCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_planeLevel = new ApmPlaneLevel(this);
     ui.stackedWidget->addWidget(m_planeLevel);
     m_buttonToConfigWidgetMap[ui.arduPlaneLevelButton] = m_planeLevel;
-    connect(ui.arduPlaneLevelButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_radioConfig = new RadioCalibrationConfig(this);
     ui.stackedWidget->addWidget(m_radioConfig);
     m_buttonToConfigWidgetMap[ui.radioCalibrateButton] = m_radioConfig;
-    connect(ui.radioCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_radio3drConfig = new Radio3DRConfig(this);
     ui.stackedWidget->addWidget(m_radio3drConfig);
     m_buttonToConfigWidgetMap[ui.radio3DRLargeButton] = m_radio3drConfig;
-    connect(ui.radio3DRLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_batteryConfig = new BatteryMonitorConfig(this);
     ui.stackedWidget->addWidget(m_batteryConfig);
     m_buttonToConfigWidgetMap[ui.batteryMonitorButton] = m_batteryConfig;
-    connect(ui.batteryMonitorButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_sonarConfig = new SonarConfig(this);
     ui.stackedWidget->addWidget(m_sonarConfig);
     m_buttonToConfigWidgetMap[ui.sonarButton] = m_sonarConfig;
-    connect(ui.sonarButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_airspeedConfig = new AirspeedConfig(this);
     ui.stackedWidget->addWidget(m_airspeedConfig);
     m_buttonToConfigWidgetMap[ui.airspeedButton] = m_airspeedConfig;
-    connect(ui.airspeedButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_opticalFlowConfig = new OpticalFlowConfig(this);
     ui.stackedWidget->addWidget(m_opticalFlowConfig);
     m_buttonToConfigWidgetMap[ui.opticalFlowButton] = m_opticalFlowConfig;
-    connect(ui.opticalFlowButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_osdConfig = new OsdConfig(this);
     ui.stackedWidget->addWidget(m_osdConfig);
     m_buttonToConfigWidgetMap[ui.osdButton] = m_osdConfig;
-    connect(ui.osdButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_cameraGimbalConfig = new CameraGimbalConfig(this);
     ui.stackedWidget->addWidget(m_cameraGimbalConfig);
     m_buttonToConfigWidgetMap[ui.cameraGimbalButton] = m_cameraGimbalConfig;
-    connect(ui.cameraGimbalButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_antennaTrackerConfig = new AntennaTrackerConfig(this);
     ui.stackedWidget->addWidget(m_antennaTrackerConfig);
     m_buttonToConfigWidgetMap[ui.antennaTrackerButton] = m_antennaTrackerConfig;
     m_buttonToConfigWidgetMap[ui.antennaTrackerLargeButton] = m_antennaTrackerConfig;
-    connect(ui.antennaTrackerButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-    connect(ui.antennaTrackerLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_setupWarningMessage = new SetupWarningMessage(this);
     ui.stackedWidget->addWidget(m_setupWarningMessage);
@@ -217,6 +198,24 @@ void ApmHardwareConfig::uasConnected()
     toggleButtonsShown(m_mandatory);
     ui.mandatoryHardware->setChecked(true);
 
+    connect(ui.fwFlightModesButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.frameTypeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.loadParamButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.loadParamButton, SIGNAL(clicked()), m_loadParameterConfig, SLOT(paramButtonClicked()));
+    connect(ui.compassButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.failSafeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.accelCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.arduPlaneLevelButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.radioCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.radio3DRLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.batteryMonitorButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.sonarButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.airspeedButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.opticalFlowButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.osdButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.cameraGimbalButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.antennaTrackerButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(ui.antennaTrackerLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 }
 
 void ApmHardwareConfig::uasDisconnected()
@@ -247,7 +246,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.accelCalibrateButton->setShown(false);
     ui.radioCalibrateButton->setShown(false);
 
-    ui.flightModesButton->setShown(false);
+    ui.fwFlightModesButton->setShown(false);
     ui.failSafeButton->setShown(false);
 
     ui.batteryMonitorButton->setShown(false);
@@ -261,6 +260,26 @@ void ApmHardwareConfig::uasDisconnected()
 
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
     ui.hiddenPushButton->setChecked(true);
+
+    disconnect(ui.fwFlightModesButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.frameTypeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.loadParamButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.loadParamButton, SIGNAL(clicked()), m_loadParameterConfig, SLOT(paramButtonClicked()));
+    disconnect(ui.compassButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.failSafeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.accelCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.arduPlaneLevelButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.radioCalibrateButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.radio3DRLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.batteryMonitorButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.sonarButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.airspeedButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.opticalFlowButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.osdButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.cameraGimbalButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.antennaTrackerButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    disconnect(ui.antennaTrackerLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+
 }
 void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 {
@@ -339,7 +358,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
-        ui.flightModesButton->setShown(show);
+        ui.fwFlightModesButton->setShown(show);
         ui.failSafeButton->setShown(show);
 
         // Optional Options to Hide
@@ -360,7 +379,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
-        ui.flightModesButton->setShown(show);
+        ui.fwFlightModesButton->setShown(show);
         ui.failSafeButton->setShown(show);
 
         // Optional Options to Hide
@@ -383,7 +402,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
-        ui.flightModesButton->setShown(show);
+        ui.fwFlightModesButton->setShown(show);
         ui.failSafeButton->setShown(show);
 
         // Optional Options to Hide

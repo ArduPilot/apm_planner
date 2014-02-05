@@ -85,6 +85,7 @@ This file is part of the QGROUNDCONTROL project
 #include "ApmSoftwareConfig.h"
 #include "ApmToolBar.h"
 #include "DebugOutput.h"
+#include "ApmAssistant.h"
 
 class QGCMapTool;
 class QGCMAVLinkMessageSender;
@@ -257,6 +258,7 @@ signals:
     /** @brief Forward X11Event to catch 3DMouse inputs */
     void x11EventOccured(XEvent *event);
 #endif //MOUSE_ENABLED_LINUX
+    void viewChanged(QWidget* view);
 
 public:
     QGCMAVLinkLogPlayer* getLogPlayer()
@@ -268,6 +270,8 @@ public:
     {
         return mavlink;
     }
+
+    ApmAssistant* m_apmAssistant; // [TODO] make private
 
 protected:
 
@@ -454,6 +458,9 @@ protected:
     bool lowPowerMode; ///< If enabled, QGC reduces the update rates of all widgets
     QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
+
+private:
+    void setCurrentWidget(QWidget* widget);
 
 private:
     QList<QObject*> commsWidgetList;

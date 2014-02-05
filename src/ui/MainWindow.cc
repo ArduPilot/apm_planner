@@ -127,6 +127,7 @@ bool MainWindow::lowPowerModeEnabled()
 **/
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
+    m_apmAssistant(NULL),
     currentView(VIEW_FLIGHT),
     currentStyle(QGC_MAINWINDOW_STYLE_OUTDOOR),
     aboutToCloseFlag(false),
@@ -680,6 +681,13 @@ void MainWindow::buildCommonWidgets()
         menuToDockNameMap[tempAction] = "MAVLINK_INSPECTOR_DOCKWIDGET";
     }
 
+    {
+        QAction* tempAction = ui.menuHelp->addAction(tr("Assistant"));
+        tempAction->setCheckable(true);
+        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+        menuToDockNameMap[tempAction] = "APM_ASSISTANT_DOCKWIDGET";
+    }
+
     /*{ //Actuator status disabled until such a point that we can ensure it's completly operational
         QAction* tempAction = ui.menuTools->addAction(tr("Actuator Status"));
         tempAction->setCheckable(true);
@@ -895,6 +903,12 @@ void MainWindow::loadDockWidget(QString name)
     {
         createDockWidget(centerStack->currentWidget(),new UASQuickView(this),tr("Quick View"),"UAS_INFO_QUICKVIEW_DOCKWIDGET",currentView,Qt::LeftDockWidgetArea);
     }
+    else if (name == "APM_ASSISTANT_DOCKWIDGET")
+    {
+        if (m_apmAssistant == NULL) // Only create the one
+            m_apmAssistant = new ApmAssistant(this);
+        createDockWidget(centerStack->currentWidget(),m_apmAssistant ,tr("APM Assistant"),"APM_ASSISTANT_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+    }
     else
     {
         if (customWidgetNameToFilenameMap.contains(name))
@@ -968,7 +982,7 @@ void MainWindow::showCentralWidget()
 {
     QAction* act = qobject_cast<QAction *>(sender());
     QWidget* widget = qVariantValue<QWidget *>(act->data());
-    centerStack->setCurrentWidget(widget);
+    setCurrentWidget(widget);
 }
 
 void MainWindow::showHILConfigurationWidget(UASInterface* uas)
@@ -2082,39 +2096,39 @@ void MainWindow::loadViewState()
         switch (currentView)
         {
         case VIEW_HARDWARE_CONFIG:
-            centerStack->setCurrentWidget(configView);
+            setCurrentWidget(configView);
             break;
         case VIEW_SOFTWARE_CONFIG:
-            centerStack->setCurrentWidget(softwareConfigView);
+            setCurrentWidget(softwareConfigView);
             break;
         case VIEW_ENGINEER:
-            centerStack->setCurrentWidget(engineeringView);
+            setCurrentWidget(engineeringView);
             break;
         case VIEW_FLIGHT:
-            centerStack->setCurrentWidget(pilotView);
+            setCurrentWidget(pilotView);
             break;
         case VIEW_MAVLINK:
-            centerStack->setCurrentWidget(mavlinkView);
+            setCurrentWidget(mavlinkView);
             break;
         case VIEW_FIRMWAREUPDATE:
-            centerStack->setCurrentWidget(firmwareUpdateWidget);
+            setCurrentWidget(firmwareUpdateWidget);
             break;
         case VIEW_MISSION:
-            centerStack->setCurrentWidget(plannerView);
+            setCurrentWidget(plannerView);
             break;
 
         case VIEW_SIMULATION:
-            centerStack->setCurrentWidget(simView);
+            setCurrentWidget(simView);
             break;
 
         case VIEW_TERMINAL:
-            centerStack->setCurrentWidget(terminalView);
+            setCurrentWidget(terminalView);
             break;
 
         case VIEW_UNCONNECTED:
         case VIEW_FULL:
         default:
-            //centerStack->setCurrentWidget(mapWidget);
+            //setCurrentWidget(mapWidget);
             if (controlDockWidget)
             {
                 controlDockWidget->hide();
@@ -2148,6 +2162,13 @@ void MainWindow::loadViewState()
         win->restoreState(settings.value(getWindowStateKey()).toByteArray(), QGC::applicationVersion());
     }
 }
+
+void MainWindow::setCurrentWidget(QWidget* widget)
+{
+    centerStack->setCurrentWidget(widget);
+    emit viewChanged(widget);
+}
+
 void MainWindow::setAdvancedMode()
 {
     if (!isAdvancedMode)
@@ -2311,7 +2332,7 @@ void MainWindow::loadFirmwareUpdateView()
 //    /*QStackedWidget *centerStack = dynamic_cast<QStackedWidget*>(centralWidget());
 //    if (centerStack)
 //    {
-//        centerStack->setCurrentWidget(dataView);
+//        setCurrentWidget(dataView);
 //        dataplotWidget->loadFile(fileName);
 //    }*/
 //}
