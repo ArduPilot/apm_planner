@@ -497,6 +497,9 @@ void AdvParameterList::findStringInTable(const QString &searchString)
 void AdvParameterList::nextItemInSearch()
 {
     QLOG_DEBUG() << "Find Next Item in table: ";
+    if (m_searchItemList.count()==0)
+        return;
+
     m_searchItemList[m_searchIndex]->setSelected(false);
     m_searchIndex++;
     if(m_searchIndex < m_searchItemList.count()){
@@ -510,6 +513,10 @@ void AdvParameterList::nextItemInSearch()
 void AdvParameterList::previousItemInSearch()
 {
     QLOG_DEBUG() << "Find Previous Item in table: ";
+
+    if (m_searchItemList.count()==0)
+        return;
+
     m_searchItemList[m_searchIndex]->setSelected(false);
     m_searchIndex--;
     if(m_searchIndex >= 0){
