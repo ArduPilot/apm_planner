@@ -541,7 +541,19 @@ void WaypointEditableView::updateValues()
         // Update color based on id
         QString groupBoxStyle = QString("QGroupBox {padding: 0px; margin: 0px; border: 0px; background-color: %1; }").arg(backGroundColor.name());
         QString labelStyle = QString("QWidget {background-color: %1; color: #DDDDDF; border-color: #EEEEEE; }").arg(backGroundColor.name());
-        QString checkBoxStyle = QString("QCheckBox {background-color: %1; color: #454545; border-color: #EEEEEE; }").arg(backGroundColor.name());
+        QString checkBoxStyle = QString("QCheckBox {background-color: %1; color: #454545; border-color: #EEEEEE; }"
+                                        "QCheckBox::indicator:checked {"
+                                            "background-color: #00BB00;}"
+                                        "QCheckBox::indicator:checked:hover{"
+                                            "background-color: #00FF00;}"
+                                        "QCheckBox::indicator:checked:pressed {"
+                                        "background-color: #005500;}"
+//                                        "QCheckBox::indicator:unchecked {"
+//                                            "background-color: #00BB00;}"
+                                        "QCheckBox::indicator:unchecked:hover{"
+                                            "background-color: #AAAAAA;}"
+                                        "QCheckBox::indicator:unchecked:pressed {"
+                                        "background-color: #00FF00;}").arg(backGroundColor.name());
         QString widgetSlotStyle = QString("QWidget {background-color: %1; color: #DDDDDF; border-color: #EEEEEE; } QSpinBox {background-color: #252528 } QDoubleSpinBox {background-color: #252528 } QComboBox {background-color: #252528 }").arg(backGroundColor.name()); //FIXME There should be a way to declare background color for widgetSlot without letting the children inherit this color. Here, background color for every widget-type (QSpinBox, etc.) has to be declared separately to overrule the coloring of QWidget.
 
         m_ui->autoContinue->setStyleSheet(checkBoxStyle);
