@@ -245,7 +245,7 @@ void ArduCopterPidConfig::parameterChanged(int uas, int component, QString param
     }
     else if (parameterName == "TUNE_LOW")
     {
-        ui.ch6MaxSpinBox->setValue(value.toDouble() / 1000.0);
+        ui.ch6MinSpinBox->setValue(value.toDouble() / 1000.0);
     }
     else if (parameterName == "TUNE")
     {
