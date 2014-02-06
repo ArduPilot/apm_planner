@@ -1,6 +1,11 @@
 * { font-family: "Bitstream Vera Sans"; font: "Roman"; font-size: 12px; }
 QWidget#colorIcon {}
 
+QToolTip {
+	background-color: #F6F6F6;
+	color: #000000;
+}
+
 QWidget {
 background-color: #F6F6F6;
 color: #000000;
