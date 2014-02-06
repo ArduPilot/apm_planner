@@ -35,15 +35,13 @@ This file is part of the PIXHAWK project
 #include <QObject>
 #include <QTimer>
 #include <QStringList>
+#include <audio/AlsaAudio.h>
+
 #ifdef Q_OS_MAC
 #include <MediaObject>
 #include <AudioOutput>
 #endif
-#ifdef Q_OS_LINUX
-//#include <flite/flite.h>
-#include <phonon/MediaObject>
-#include <phonon/AudioOutput>
-#endif
+
 #ifdef Q_OS_WIN
 #include <Phonon/MediaObject>
 #include <Phonon/AudioOutput>
@@ -73,7 +71,7 @@ class GAudioOutput : public QObject
     Q_OBJECT
 public:
     /** @brief Get the singleton instance */
-    static GAudioOutput* instance();
+    static GAudioOutput *instance();
     /** @brief List available voices */
     QStringList listVoices(void);
     enum {
@@ -115,16 +113,17 @@ protected:
 #endif
 #ifdef Q_OS_LINUX
     //cst_voice* voice; ///< The flite voice object
+    //QThread *audioWorkerThread; //need c++11
+    //AudioWorker *audioWorker; //need c++11
+
 #endif
     int voiceIndex;   ///< The index of the flite voice to use (awb, slt, rms)
-    Phonon::MediaObject* m_media; ///< The output object for audio
-    Phonon::AudioOutput* m_audioOutput;
     bool emergency;   ///< Emergency status flag
-    QTimer* emergencyTimer;
+    QTimer *emergencyTimer;
     bool muted;
 private:
-    GAudioOutput(QObject* parent=NULL);
-//    ~GAudioOutput();
+    GAudioOutput(QObject *parent=NULL);
+    ~GAudioOutput();
 };
 
 #endif // AUDIOOUTPUT_H

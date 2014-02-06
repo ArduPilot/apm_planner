@@ -37,7 +37,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QApplication>
 #include <QSettings>
 #include <QTemporaryFile>
-
+#include <QFile>
 
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h>
@@ -63,8 +63,8 @@ extern CComModule _Module;
 #ifdef Q_OS_LINUX
 extern "C" {
 #include <flite/flite.h>
-    cst_voice* register_cmu_us_kal(const char* voxdir);
-};
+    cst_voice *register_cmu_us_kal(const char *voxdir);
+}
 #endif
 
 
@@ -76,7 +76,7 @@ extern "C" {
  * the call can occur at any place in the code, no reference to the
  * GAudioOutput object has to be passed.
  */
-GAudioOutput* GAudioOutput::instance()
+GAudioOutput *GAudioOutput::instance()
 {
     static GAudioOutput* _instance = 0;
     if(_instance == 0)
@@ -91,7 +91,7 @@ GAudioOutput* GAudioOutput::instance()
 
 #define QGC_GAUDIOOUTPUT_KEY QString("QGC_AUDIOOUTPUT_")
 
-GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
+GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
     voiceIndex(0),
     emergency(false),
     muted(false)
@@ -103,7 +103,25 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
 
 
 #ifdef Q_OS_LINUX
+    // Remove Phonon Audio for linux and use alsa
     flite_init();
+
+    QLOG_INFO() << "Using Alsa Audio driver";
+
+    // Create shared dir tmp_audio
+    // we create new spoken audio files here. we don't delete them as befor.
+    // we save audiofiles like message inside.
+    // if new messages will create in code this new messages will saved as audio file on first call
+    // this save time and also it will possible to queue audio messages later because the are not temporary
+    QDir dir(QString("%1/%2").arg( QGC::appDataDirectory() ).arg( "tmp_audio" ));
+    if (!dir.exists()) {
+        QLOG_WARN() << "Create directory tmp_audio";
+        dir.mkpath(".");
+    }else
+    {
+        QLOG_WARN() << "Dir directory tmp_audio exists";
+    }
+
 #endif
 
 #if _MSC_VER2
@@ -125,10 +143,6 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
         }
     }
 #endif
-    // Initialize audio output
-    //m_media = new Phonon::MediaObject(this);
-    //Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-    //createPath(m_media, audioOutput);
 
     // Prepare regular emergency signal, will be fired off on calling startEmergency()
     emergencyTimer = new QTimer();
@@ -144,12 +158,17 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
     }
 }
 
-//GAudioOutput::~GAudioOutput()
-//{
+GAudioOutput::~GAudioOutput()
+{
+    QLOG_INFO() << "~GAudioOutput()";
+#ifdef Q_OS_LINUX
+    // wait until thread is running before terminate AlsaAudio thread
+    AlsaAudio::instance(this)->wait();
+#endif
 //#ifdef _MSC_VER2
 //    ::CoUninitialize();
 //#endif
-//}
+}
 
 void GAudioOutput::mute(bool mute)
 {
@@ -191,17 +210,38 @@ bool GAudioOutput::say(QString text, int severity)
 #endif
 
 #ifdef Q_OS_LINUX
-            QTemporaryFile file;
-            file.setFileTemplate("XXXXXX.wav");
-            if (file.open()) {
-                cst_voice* v = register_cmu_us_kal(NULL);
-                cst_wave* wav = flite_text_to_wave(text.toStdString().c_str(), v);
-                // file.fileName() returns the unique file name
-                cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
-                //m_media->setCurrentSource(Phonon::MediaSource(file.fileName().toStdString().c_str()));
-                //m_media->play();
+
+            // spokenfilename is the filename created from spoken text
+            QString spokenFilename = text;
+            spokenFilename.replace(QRegExp(" "), "_");
+            spokenFilename = QGC::appDataDirectory() + "/tmp_audio/" + spokenFilename + ".wav";
+
+            // alsadriver is a qthread. temp. files dont work here
+            QFile file( spokenFilename );
+            if (!file.exists(spokenFilename)){ // if file not exist we create a new one
+                if (file.open(QIODevice::ReadWrite))
+                {
+                    QLOG_INFO() << file.fileName() << " file not exist, create a new one";
+                    cst_voice *v = register_cmu_us_kal(NULL);
+                    cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
+                    // file.fileName() returns the unique file name
+
+                    cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
+                    file.close();
+                    AlsaAudio::instance(this)->enqueueFilname(file.fileName());
+                    if(!AlsaAudio::instance(this)->isRunning())
+                        AlsaAudio::instance(this)->start();
+                    res = true;
+                }
+            }else // we open existing file
+            {
+                QLOG_INFO() << file.fileName() << " file exist, playing this file";
+                AlsaAudio::instance(this)->enqueueFilname(file.fileName());
+                if(!AlsaAudio::instance(this)->isRunning())
+                    AlsaAudio::instance(this)->start();
                 res = true;
             }
+
 #endif
 
 #ifdef Q_OS_MAC
@@ -248,8 +288,6 @@ void GAudioOutput::notifyPositive()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/double_notify.wav"));
-        //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
-        //m_media->play();
     }
 }
 
@@ -259,8 +297,6 @@ void GAudioOutput::notifyNegative()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/flat_notify.wav"));
-        //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
-        //m_media->play();
     }
 }
 
@@ -305,9 +341,9 @@ void GAudioOutput::beep()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/alert.wav"));
-        QLOG_INFO() << "FILE:" << f.fileName();
-        //m_media->setCurrentSource(Phonon::MediaSource(f.fileName().toStdString().c_str()));
-        //m_media->play();
+        AlsaAudio::instance(this)->enqueueFilname(f.fileName());
+        if(!AlsaAudio::instance(this)->isRunning())
+            AlsaAudio::instance(this)->start();
     }
 }
 
@@ -340,8 +376,6 @@ QStringList GAudioOutput::listVoices(void)
     cst_voice *voice;
     const cst_val *v;
 
-
-
     printf("Voices available: ");
     for (v=flite_voice_list; v; v=val_cdr(v)) {
         voice = val_voice(val_car(v));
@@ -356,3 +390,4 @@ QStringList GAudioOutput::listVoices(void)
     return l;
 
 }
+

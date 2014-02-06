@@ -273,7 +273,7 @@ FORMS += \
     src/ui/Linechart.ui \
     src/ui/UASView.ui \
     src/ui/ParameterInterface.ui \
-    src/ui/WaypointList.ui \    
+    src/ui/WaypointList.ui \
     src/ui/ObjectDetectionView.ui \
     src/ui/JoystickWidget.ui \
     src/ui/DebugConsole.ui \
@@ -306,8 +306,8 @@ FORMS += \
     src/ui/map/QGCMapTool.ui \
     src/ui/map/QGCMapToolBar.ui \
     src/ui/QGCMAVLinkInspector.ui \
-    src/ui/WaypointViewOnlyView.ui \    
-    src/ui/WaypointEditableView.ui \    
+    src/ui/WaypointViewOnlyView.ui \
+    src/ui/WaypointEditableView.ui \
     src/ui/UnconnectedUASInfoWidget.ui \
     src/ui/mavlink/QGCMAVLinkMessageSender.ui \
     src/ui/firmwareupdate/QGCFirmwareUpdateWidget.ui \
@@ -413,7 +413,7 @@ HEADERS += \
     src/comm/UDPLink.h \
     src/ui/ParameterInterface.h \
     src/ui/WaypointList.h \
-    src/Waypoint.h \   
+    src/Waypoint.h \
     src/ui/ObjectDetectionView.h \
     src/input/JoystickInput.h \
     src/ui/JoystickWidget.h \
@@ -480,7 +480,7 @@ HEADERS += \
     src/ui/QGCMAVLinkInspector.h \
     src/ui/MAVLinkDecoder.h \
     src/ui/WaypointViewOnlyView.h \
-    src/ui/WaypointEditableView.h \    
+    src/ui/WaypointEditableView.h \
     src/ui/UnconnectedUASInfoWidget.h \
     src/ui/QGCRGBDView.h \
     src/ui/mavlink/QGCMAVLinkMessageSender.h \
@@ -577,6 +577,7 @@ HEADERS += \
     src/ui/uas/UASQuickViewTextLabel.h \
     src/uas/ApmUiHelpers.h \
     src/ui/AP2DataPlotAxisDialog.h \
+    src/audio/AlsaAudio.h \
     src/ui/configuration/LoadParameterConfig.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
@@ -770,6 +771,7 @@ SOURCES += src/main.cc \
     src/ui/uas/UASQuickViewTextLabel.cc \
     src/uas/ApmUiHelpers.cc \
     src/ui/AP2DataPlotAxisDialog.cc \
+    src/audio/AlsaAudio.cc \
     src/ui/configuration/LoadParameterConfig.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
