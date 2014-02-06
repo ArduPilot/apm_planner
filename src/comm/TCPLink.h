@@ -52,39 +52,39 @@ public:
     
     void requestReset() { }
     
-    bool isConnected() const;
+    bool isConnected() ;
     qint64 bytesAvailable();
-    int getPort() const {
+    int getPort()  {
         return port;
     }
-    QHostAddress getHostAddress() const {
+    QHostAddress getHostAddress()  {
         return host;
     }
     
-    QString getName() const;
-    int getBaudRate() const;
-    int getBaudRateType() const;
-    int getFlowType() const;
-    int getParityType() const;
-    int getDataBitsType() const;
-    int getStopBitsType() const;
+    QString getName() ;
+    int getBaudRate() ;
+    int getBaudRateType() ;
+    int getFlowType() ;
+    int getParityType() ;
+    int getDataBitsType() ;
+    int getStopBitsType() ;
     
     /* Extensive statistics for scientific purposes */
-    qint64 getNominalDataRate() const;
+    qint64 getNominalDataRate() ;
     qint64 getTotalUpstream();
     qint64 getCurrentUpstream();
     qint64 getMaxUpstream();
     qint64 getTotalDownstream();
     qint64 getCurrentDownstream();
     qint64 getMaxDownstream();
-    qint64 getBitsSent() const;
-    qint64 getBitsReceived() const;
+    qint64 getBitsSent() ;
+    qint64 getBitsReceived() ;
     
     void run();
     
-    int getLinkQuality() const;
-    bool isFullDuplex() const;
-    int getId() const;
+    int getLinkQuality() ;
+    bool isFullDuplex() ;
+    int getId() ;
     
 public slots:
     void setAddress(QHostAddress host);

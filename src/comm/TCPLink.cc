@@ -240,17 +240,17 @@ void TCPLink::socketError(QAbstractSocket::SocketError socketError)
  *
  * @return True if link is connected, false otherwise.
  **/
-bool TCPLink::isConnected() const
+bool TCPLink::isConnected()
 {
     return socketIsConnected;
 }
 
-int TCPLink::getId() const
+int TCPLink::getId()
 {
     return id;
 }
 
-QString TCPLink::getName() const
+QString TCPLink::getName()
 {
     return name;
 }
@@ -262,7 +262,7 @@ void TCPLink::setName(QString name)
 }
 
 
-qint64 TCPLink::getNominalDataRate() const
+qint64 TCPLink::getNominalDataRate()
 {
     return 54000000; // 54 Mbit
 }
@@ -285,12 +285,12 @@ qint64 TCPLink::getMaxUpstream()
     return 0; // TODO
 }
 
-qint64 TCPLink::getBitsSent() const
+qint64 TCPLink::getBitsSent()
 {
     return bitsSentTotal;
 }
 
-qint64 TCPLink::getBitsReceived() const
+qint64 TCPLink::getBitsReceived()
 {
     return bitsReceivedTotal;
 }
@@ -313,12 +313,12 @@ qint64 TCPLink::getMaxDownstream()
     return 0; // TODO
 }
 
-bool TCPLink::isFullDuplex() const
+bool TCPLink::isFullDuplex()
 {
     return true;
 }
 
-int TCPLink::getLinkQuality() const
+int TCPLink::getLinkQuality()
 {
     /* This feature is not supported with this interface */
     return -1;
