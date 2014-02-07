@@ -49,10 +49,10 @@ Building on Linux (tested against Ubuntu 13.10):
 1) Install the required packages:
 
 ```
-sudo apt-get install phonon libqt4-dev \
+sudo apt-get install phonon libqt4-dev libqt4-opengl-dev \
  libphonon-dev libphonon4 phonon-backend-gstreamer \
  qtcreator libsdl1.2-dev libflite1 flite1-dev build-essential \
- libopenscenegraph-dev libssl-dev
+ libopenscenegraph-dev libssl-dev 
 ```
 
 2) Clone the repository in your workspace:
