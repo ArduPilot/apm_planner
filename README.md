@@ -66,7 +66,7 @@ git clone https://github.com/diydrones/apm_planner
 
 ```
 cd ~/workspace/apm_planner
-qtmake-qt4 qgroundcontrol.pro
+qmake-qt4 qgroundcontrol.pro
 make
 ```
 
