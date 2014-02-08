@@ -174,6 +174,9 @@ QString ApmCopter::stringForMode(int aMode) {
         break;
     case RESERVED_12:
         return "Reserved";
+    case HYBRID:
+        return "Hybrid Loiter";
+        break;
     default:
         return "Undefined";
     }
