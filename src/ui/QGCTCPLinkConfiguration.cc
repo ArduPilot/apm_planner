@@ -2,6 +2,7 @@
 
 #include "QGCTCPLinkConfiguration.h"
 #include "ui_QGCTCPLinkConfiguration.h"
+#include <stdint.h>
 
 QGCTCPLinkConfiguration::QGCTCPLinkConfiguration(TCPLink* link, QWidget *parent) :
     QWidget(parent),
