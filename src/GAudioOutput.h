@@ -35,14 +35,10 @@ This file is part of the PIXHAWK project
 #include <QObject>
 #include <QTimer>
 #include <QStringList>
+#include <audio/AlsaAudio.h>
 #ifdef Q_OS_MAC
 #include <MediaObject>
 #include <AudioOutput>
-#endif
-#ifdef Q_OS_LINUX
-//#include <flite/flite.h>
-#include <phonon/MediaObject>
-#include <phonon/AudioOutput>
 #endif
 #ifdef Q_OS_WIN
 #include <Phonon/MediaObject>
@@ -117,14 +113,14 @@ protected:
     //cst_voice* voice; ///< The flite voice object
 #endif
     int voiceIndex;   ///< The index of the flite voice to use (awb, slt, rms)
-    Phonon::MediaObject* m_media; ///< The output object for audio
-    Phonon::AudioOutput* m_audioOutput;
+    // Phonon::MediaObject* m_media; ///< The output object for audio
+    // Phonon::AudioOutput* m_audioOutput;
     bool emergency;   ///< Emergency status flag
     QTimer* emergencyTimer;
     bool muted;
 private:
     GAudioOutput(QObject* parent=NULL);
-//    ~GAudioOutput();
+    ~GAudioOutput();
 };
 
 #endif // AUDIOOUTPUT_H
