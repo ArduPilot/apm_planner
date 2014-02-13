@@ -45,6 +45,10 @@ private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void useCheckBoxClicked(bool checked);
     void enableCheckBoxClicked(bool checked);
+    void hardwareSelectComboBoxChanged(int index);
+    void sensorSelectComboBoxChanged(int index);
+    void pinSelectComboBoxChanged(int index);
+    void pinSpinBoxValueChanged(int value);
 private:
     Ui::AirspeedConfig ui;
 };
