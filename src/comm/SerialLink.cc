@@ -304,6 +304,7 @@ void SerialLink::run()
     emit disconnected();
     emit connected(false);
     emit disconnected(this);
+    QLOG_DEBUG() << "Serial link ended, closing out";
 
 }
 
@@ -450,14 +451,15 @@ bool SerialLink::connect()
  **/
 bool SerialLink::hardwareConnect()
 {
+    QLOG_INFO() << "SerialLink: hardwareConnect to " << m_portName;
     if(m_port)
     {
-        QLOG_INFO() << "SerialLink:" << QString::number((long)this, 16) << "closing port";
+        QLOG_INFO() << "SerialLink:" << QString::number((long)this, 16) << "closing port before connecting";
         m_port->close();
         delete m_port;
         m_port = NULL;
     }
-    QLOG_INFO() << "SerialLink: hardwareConnect to " << m_portName;
+
     m_port = new QSerialPort(m_portName);
 
     if (m_port == NULL)
@@ -479,27 +481,36 @@ bool SerialLink::hardwareConnect()
     emit communicationUpdate(getName(),"Opened port!");
 
     // Need to configure the port
+    QLOG_DEBUG() << "Setting baud rate to:" << m_baud;
     if (!m_port->setBaudRate(m_baud)){
         QLOG_ERROR() << "Failed to set Baud Rate" << m_baud;
         disconnect();
         return false;
 
-    } else if(!m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits))){
+    }
+    QLOG_DEBUG() << "Setting data bits to:" << m_dataBits;
+    if(!m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits))){
         QLOG_ERROR() << "Failed to set data bits Rate:" << m_dataBits;
         disconnect();
         return false;
 
-    } else if(!m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(m_flowControl))){
+    }
+    QLOG_DEBUG() << "Setting flow control to:" << m_flowControl;
+    if(!m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(m_flowControl))){
         QLOG_ERROR() << "Failed to set flow control:" << m_flowControl;
         disconnect();
         return false;
 
-    } else if(!m_port->setStopBits(static_cast<QSerialPort::StopBits>(m_stopBits))){
+    }
+    QLOG_DEBUG() << "Setting stop bits to:" << m_stopBits;
+    if(!m_port->setStopBits(static_cast<QSerialPort::StopBits>(m_stopBits))){
         QLOG_ERROR() << "Failed to set stop bits" << m_stopBits;
         disconnect();
         return false;
 
-    } else if(!m_port->setParity(static_cast<QSerialPort::Parity>(m_parity))){
+    }
+    QLOG_DEBUG() << "Setting parity to :" << m_parity;
+    if(!m_port->setParity(static_cast<QSerialPort::Parity>(m_parity))){
         QLOG_ERROR() << "Failed to set parity" << m_parity;
         disconnect();
         return false;
