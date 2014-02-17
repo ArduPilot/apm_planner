@@ -43,6 +43,11 @@ void AdvancedParamConfig::addRange(QString title,QString description,QString par
     ui.verticalLayout->addWidget(widget);
     widget->installEventFilter(QGCMouseWheelEventFilter::getFilter());
     widget->show();
+    if (m_paramToValueMap.contains(param))
+    {
+        widget->setValue(m_paramToValueMap.value(param).toDouble());
+        m_paramToValueMap.remove(param);
+    }
 }
 
 void AdvancedParamConfig::addCombo(QString title,QString description,QString param,QList<QPair<int,QString> > valuelist)
@@ -55,6 +60,11 @@ void AdvancedParamConfig::addCombo(QString title,QString description,QString par
     ui.verticalLayout->addWidget(widget);
     widget->installEventFilter(QGCMouseWheelEventFilter::getFilter());
     widget->show();
+    if (m_paramToValueMap.contains(param))
+    {
+        widget->setValue(m_paramToValueMap.value(param).toDouble());
+        m_paramToValueMap.remove(param);
+    }
 }
 void AdvancedParamConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
@@ -68,6 +78,10 @@ void AdvancedParamConfig::parameterChanged(int uas, int component, QString param
         {
             m_paramToWidgetMap[parameterName]->setValue(value.toInt());
         }
+    }
+    else
+    {
+        m_paramToValueMap[parameterName] = value;
     }
 }
 void AdvancedParamConfig::doubleValueChanged(QString param,double value)

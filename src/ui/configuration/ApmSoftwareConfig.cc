@@ -373,11 +373,25 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                         {
                                             if (tab == "Standard")
                                             {
-                                                m_standardParamConfig->addCombo(humanname,docs,name,valuelist);
+                                                ParamConfig c;
+                                                c.name = humanname;
+                                                c.docs = docs;
+                                                c.param = name;
+                                                c.valuelist = valuelist;
+                                                c.isAdvanced = false;
+                                                c.isRange = false;
+                                                paramConfigList.append(c);
                                             }
                                             else if (tab == "Advanced")
                                             {
-                                                m_advancedParamConfig->addCombo(humanname,docs,name,valuelist);
+                                                ParamConfig c;
+                                                c.name = humanname;
+                                                c.docs = docs;
+                                                c.param = name;
+                                                c.valuelist = valuelist;
+                                                c.isAdvanced = true;
+                                                c.isRange = false;
+                                                paramConfigList.append(c);
                                             }
                                             m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }
@@ -406,11 +420,29 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                         {
                                             if (tab == "Standard")
                                             {
-                                                m_standardParamConfig->addRange(humanname,docs,name,min,max,increment);
+                                                ParamConfig c;
+                                                c.name = humanname;
+                                                c.docs = docs;
+                                                c.param = name;
+                                                c.min = min;
+                                                c.max = max;
+                                                c.increment = increment;
+                                                c.isAdvanced = false;
+                                                c.isRange = true;
+                                                paramConfigList.append(c);
                                             }
                                             else if (tab == "Advanced")
                                             {
-                                                m_advancedParamConfig->addRange(humanname,docs,name,min,max,increment);
+                                                ParamConfig c;
+                                                c.name = humanname;
+                                                c.docs = docs;
+                                                c.param = name;
+                                                c.min = min;
+                                                c.max = max;
+                                                c.increment = increment;
+                                                c.isAdvanced = true;
+                                                c.isRange = true;
+                                                paramConfigList.append(c);
                                             }
                                             m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }
@@ -429,6 +461,44 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         }
         xml.readNext();
     }
+    populateTimer = new QTimer(this);
+    connect(populateTimer,SIGNAL(timeout()),this,SLOT(populateTimerTick()));
+    populateTimer->start(1);
+
+}
+void ApmSoftwareConfig::populateTimerTick()
+{
+    if (paramConfigList.size() == 0)
+    {
+        populateTimer->stop();
+        populateTimer->deleteLater();
+        populateTimer = 0;
+        return;
+    }
+    if (paramConfigList.at(0).isRange)
+    {
+        if (paramConfigList.at(0).isAdvanced)
+        {
+            m_advancedParamConfig->addRange(paramConfigList.at(0).name,paramConfigList.at(0).docs,paramConfigList.at(0).param,paramConfigList.at(0).min,paramConfigList.at(0).max,paramConfigList.at(0).increment);
+        }
+        else
+        {
+            m_standardParamConfig->addRange(paramConfigList.at(0).name,paramConfigList.at(0).docs,paramConfigList.at(0).param,paramConfigList.at(0).min,paramConfigList.at(0).max,paramConfigList.at(0).increment);
+        }
+    }
+    else
+    {
+        if (paramConfigList.at(0).isAdvanced)
+        {
+            m_advancedParamConfig->addCombo(paramConfigList.at(0).name,paramConfigList.at(0).docs,paramConfigList.at(0).param,paramConfigList.at(0).valuelist);
+        }
+        else
+        {
+            m_standardParamConfig->addCombo(paramConfigList.at(0).name,paramConfigList.at(0).docs,paramConfigList.at(0).param,paramConfigList.at(0).valuelist);
+
+        }
+    }
+    paramConfigList.removeAt(0);
 
 }
 

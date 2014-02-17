@@ -68,7 +68,23 @@ private slots:
     void uasConnected();
     void uasDisconnected();
     void apmParamNetworkReplyFinished();
+    void populateTimerTick();
 private:
+    QTimer *populateTimer;
+    class ParamConfig
+    {
+    public:
+        QString name;
+        QString docs;
+        QString param;
+        double min;
+        double max;
+        double increment;
+        QList<QPair<int,QString> > valuelist;
+        bool isAdvanced;
+        bool isRange;
+    };
+    QList<ParamConfig> paramConfigList;
     QString m_apmPdefFilename;
     UASInterface *m_uas;
     Ui::ApmSoftwareConfig ui;
