@@ -42,7 +42,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.optionalHardwareButton->setVisible(false);
     ui.frameTypeButton->setVisible(false);
     ui.compassButton->setVisible(false);
-    ui.loadParamButton->setVisible(false);
     ui.accelCalibrateButton->setVisible(false);
     ui.failSafeButton->setVisible(false);
     ui.flightModesButton->setVisible(false);
@@ -75,13 +74,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.stackedWidget->addWidget(m_frameConfig);
     m_buttonToConfigWidgetMap[ui.frameTypeButton] = m_frameConfig;
     connect(ui.frameTypeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-
-    m_loadParameterConfig = new LoadParameterConfig(this);
-    ui.stackedWidget->addWidget(m_loadParameterConfig);
-    m_buttonToConfigWidgetMap[ui.loadParamButton] = m_loadParameterConfig;
-    connect(ui.loadParamButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-    connect(ui.loadParamButton, SIGNAL(clicked()),
-            m_loadParameterConfig, SLOT(paramButtonClicked()));
 
     m_compassConfig = new CompassConfig(this);
     ui.stackedWidget->addWidget(m_compassConfig);
@@ -243,7 +235,6 @@ void ApmHardwareConfig::uasDisconnected()
     ui.frameTypeButton->setShown(false);
     ui.sonarButton->setShown(false);
     ui.compassButton->setShown(false);
-    ui.loadParamButton->setShown(false);
     ui.accelCalibrateButton->setShown(false);
     ui.radioCalibrateButton->setShown(false);
 
@@ -336,7 +327,6 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         // Mandatory Options to show
         ui.frameTypeButton->setShown(show);
         ui.compassButton->setShown(show);
-        ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -357,7 +347,6 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
         // Mandatory Options to show
         ui.compassButton->setShown(show);
-        ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -380,7 +369,6 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
         // Mandatory Options to show
         ui.compassButton->setShown(show);
-        ui.loadParamButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);

@@ -30,6 +30,8 @@ This file is part of the APM_PLANNER project
 
 #include "QsLog.h"
 #include "FrameTypeConfig.h"
+#include "DownloadRemoteParamsDialog.h"
+#include "ParamCompareDialog.h"
 
 static const int FRAME_TYPE_PLUS = 0;
 static const int FRAME_TYPE_X = 1;
@@ -40,6 +42,8 @@ static const int FRAME_TYPE_NEWY6 = 10;
 FrameTypeConfig::FrameTypeConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
+
+    connect(ui.LoadParametersButton, SIGNAL(clicked()), this, SLOT(paramButtonClicked()));
 
     //Disable until we get a FRAME parameter.
     ui.xRadioButton->setEnabled(false);
@@ -93,6 +97,22 @@ void FrameTypeConfig::parameterChanged(int uas, int component, QString parameter
     }
 }
 
+void FrameTypeConfig::parameterChanged(int uas, int component, int parameterCount,
+                                       int parameterId, QString parameterName, QVariant value)
+{
+    // Create a parameter list model for comparison feature
+    // [TODO] This needs to move to the global parameter model.
+
+    if (m_parameterList.contains(parameterName)){
+        UASParameter* param = m_parameterList.value(parameterName);
+        param->setValue(value); // This also sets the modified bit
+    } else {
+        // create a new entry
+        UASParameter* param = new UASParameter(parameterName,component,value,parameterId);
+        m_parameterList.insert(parameterName, param);
+    }
+}
+
 void FrameTypeConfig::xFrameSelected()
 {
     if (!m_uas)
@@ -141,4 +161,43 @@ void FrameTypeConfig::newY6FrameSelected()
         return;
     }
     m_uas->getParamManager()->setParameter(1,"FRAME",QVariant(FRAME_TYPE_NEWY6));
+}
+
+
+void FrameTypeConfig::paramButtonClicked()
+{
+    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog(this->parentWidget(), true);
+
+    if(dialog->exec() == QDialog::Accepted) {
+        // Pull the selected file and
+        // modify the parameters on the adv param list.
+        QLOG_DEBUG() << "Remote File Downloaded";
+        QLOG_DEBUG() << "Trigger auto load or compare of the downloaded file";
+
+        // Bring up the compare dialog
+        m_paramFileToCompare = dialog->getDownloadedFileName();
+        QTimer::singleShot(300, this, SLOT(activateCompareDialog()));
+    }
+    delete dialog;
+    dialog = NULL;
+}
+
+void FrameTypeConfig::activateCompareDialog()
+{
+    QLOG_DEBUG() << "Compare Params to File";
+
+    ParamCompareDialog* dialog = new ParamCompareDialog(m_parameterList, m_paramFileToCompare, this);
+    dialog->setAcceptButtonLabel(tr("Write Params"));
+
+    if(dialog->exec() == QDialog::Accepted) {
+        // Apply the selected parameters
+        foreach(UASParameter* param, m_parameterList){
+            // Apply changes to ParamManager
+            if(param->isModified()){
+                m_uas->getParamManager()->setParameter(param->component(),param->name(),param->value());
+            }
+        }
+    }
+    delete dialog;
+    dialog = NULL;
 }

@@ -37,7 +37,6 @@ This file is part of the APM_PLANNER project
 #include "ui_ApmHardwareConfig.h"
 #include <UASInterface.h>
 #include <UASManager.h>
-#include "LoadParameterConfig.h"
 #include "FrameTypeConfig.h"
 #include "CompassConfig.h"
 #include "AccelCalibrationConfig.h"
@@ -78,7 +77,6 @@ private:
     QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;
 
     //Mandatory
-    QPointer<LoadParameterConfig> m_loadParameterConfig;
     QPointer<FrameTypeConfig> m_frameConfig;
     QPointer<CompassConfig> m_compassConfig;
     QPointer<AccelCalibrationConfig> m_accelConfig;

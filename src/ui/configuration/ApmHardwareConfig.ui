@@ -126,31 +126,6 @@
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
-          <widget class="QPushButton" name="loadParamButton">
-           <property name="minimumSize">
-            <size>
-             <width>150</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>150</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Load Parameters</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignRight">
           <widget class="QPushButton" name="frameTypeButton">
            <property name="minimumSize">
             <size>

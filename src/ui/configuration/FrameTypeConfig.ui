@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
-    <height>550</height>
+    <width>697</width>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,7 +43,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>551</width>
+         <width>521</width>
          <height>491</height>
         </rect>
        </property>
@@ -234,7 +234,7 @@
            <enum>Qt::RightToLeft</enum>
           </property>
           <property name="text">
-           <string>New 'Y6' </string>
+           <string>Y6B</string>
           </property>
           <property name="iconSize">
            <size>
@@ -324,6 +324,20 @@ QPushButton:pressed {
          </widget>
         </item>
        </layout>
+      </widget>
+      <widget class="QPushButton" name="LoadParametersButton">
+       <property name="geometry">
+        <rect>
+         <x>520</x>
+         <y>20</y>
+         <width>151</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Load Paramters for 
+Standard Frame Types</string>
+       </property>
       </widget>
      </widget>
     </widget>
