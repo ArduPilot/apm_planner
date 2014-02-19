@@ -70,7 +70,8 @@ private slots:
     void apmParamNetworkReplyFinished();
     void populateTimerTick();
 private:
-    QTimer *populateTimer;
+
+    //Parameter from XML
     class ParamConfig
     {
     public:
@@ -84,7 +85,13 @@ private:
         bool isAdvanced;
         bool isRange;
     };
-    QList<ParamConfig> paramConfigList;
+
+    //List of parameters from XML file, to be loaded on a timer
+    QList<ParamConfig> m_paramConfigList;
+
+    //Parameter loading timer
+    QPointer<QTimer> populateTimer;
+
     QString m_apmPdefFilename;
     UASInterface *m_uas;
     Ui::ApmSoftwareConfig ui;

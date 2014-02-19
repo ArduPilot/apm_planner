@@ -380,7 +380,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 c.valuelist = valuelist;
                                                 c.isAdvanced = false;
                                                 c.isRange = false;
-                                                paramConfigList.append(c);
+                                                m_paramConfigList.append(c);
                                             }
                                             else if (tab == "Advanced")
                                             {
@@ -391,7 +391,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 c.valuelist = valuelist;
                                                 c.isAdvanced = true;
                                                 c.isRange = false;
-                                                paramConfigList.append(c);
+                                                m_paramConfigList.append(c);
                                             }
                                             m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }
@@ -429,7 +429,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 c.increment = increment;
                                                 c.isAdvanced = false;
                                                 c.isRange = true;
-                                                paramConfigList.append(c);
+                                                m_paramConfigList.append(c);
                                             }
                                             else if (tab == "Advanced")
                                             {
@@ -442,7 +442,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 c.increment = increment;
                                                 c.isAdvanced = true;
                                                 c.isRange = true;
-                                                paramConfigList.append(c);
+                                                m_paramConfigList.append(c);
                                             }
                                             m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }
@@ -468,37 +468,37 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
 }
 void ApmSoftwareConfig::populateTimerTick()
 {
-    if (paramConfigList.size() == 0)
+    if (m_paramConfigList.size() == 0)
     {
         populateTimer->stop();
         populateTimer->deleteLater();
         populateTimer = 0;
         return;
     }
-    if (paramConfigList.at(0).isRange)
+    if (m_paramConfigList.at(0).isRange)
     {
-        if (paramConfigList.at(0).isAdvanced)
+        if (m_paramConfigList.at(0).isAdvanced)
         {
-            m_advancedParamConfig->addRange(paramConfigList.at(0).name,paramConfigList.at(0).docs,paramConfigList.at(0).param,paramConfigList.at(0).min,paramConfigList.at(0).max,paramConfigList.at(0).increment);
+            m_advancedParamConfig->addRange(m_paramConfigList.at(0).name,m_paramConfigList.at(0).docs,m_paramConfigList.at(0).param,m_paramConfigList.at(0).min,m_paramConfigList.at(0).max,m_paramConfigList.at(0).increment);
         }
         else
         {
-            m_standardParamConfig->addRange(paramConfigList.at(0).name,paramConfigList.at(0).docs,paramConfigList.at(0).param,paramConfigList.at(0).min,paramConfigList.at(0).max,paramConfigList.at(0).increment);
+            m_standardParamConfig->addRange(m_paramConfigList.at(0).name,m_paramConfigList.at(0).docs,m_paramConfigList.at(0).param,m_paramConfigList.at(0).min,m_paramConfigList.at(0).max,m_paramConfigList.at(0).increment);
         }
     }
     else
     {
-        if (paramConfigList.at(0).isAdvanced)
+        if (m_paramConfigList.at(0).isAdvanced)
         {
-            m_advancedParamConfig->addCombo(paramConfigList.at(0).name,paramConfigList.at(0).docs,paramConfigList.at(0).param,paramConfigList.at(0).valuelist);
+            m_advancedParamConfig->addCombo(m_paramConfigList.at(0).name,m_paramConfigList.at(0).docs,m_paramConfigList.at(0).param,m_paramConfigList.at(0).valuelist);
         }
         else
         {
-            m_standardParamConfig->addCombo(paramConfigList.at(0).name,paramConfigList.at(0).docs,paramConfigList.at(0).param,paramConfigList.at(0).valuelist);
+            m_standardParamConfig->addCombo(m_paramConfigList.at(0).name,m_paramConfigList.at(0).docs,m_paramConfigList.at(0).param,m_paramConfigList.at(0).valuelist);
 
         }
     }
-    paramConfigList.removeAt(0);
+    m_paramConfigList.removeAt(0);
 
 }
 
