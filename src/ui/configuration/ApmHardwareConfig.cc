@@ -64,6 +64,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.stackedWidget->addWidget(m_apmFirmwareConfig); //Firmware placeholder.
     m_buttonToConfigWidgetMap[ui.firmwareButton] = m_apmFirmwareConfig;
     connect(ui.firmwareButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(this, SIGNAL(advancedModeChanged(bool)), m_apmFirmwareConfig, SLOT(advancedModeChanged(bool)));
 
     m_flightConfig = new FlightModeConfig(this);
     ui.stackedWidget->addWidget(m_flightConfig);
@@ -164,10 +165,14 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.hiddenPushButton->setChecked(true);
 }
 
+void ApmHardwareConfig::advModeChanged(bool state)
+{
+    emit advancedModeChanged(state);
+}
 
 void ApmHardwareConfig::activateBlankingScreen()
 {
-        ui.stackedWidget->setCurrentWidget(m_setupWarningMessage);
+    ui.stackedWidget->setCurrentWidget(m_setupWarningMessage);
 }
 
 void ApmHardwareConfig::activateStackedWidget()

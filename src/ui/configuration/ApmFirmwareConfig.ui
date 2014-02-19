@@ -726,7 +726,7 @@
         <rect>
          <x>30</x>
          <y>360</y>
-         <width>856</width>
+         <width>672</width>
          <height>111</height>
         </rect>
        </property>
@@ -863,6 +863,12 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QProgressBar" name="progressBar">
+            <property name="maximumSize">
+             <size>
+              <width>680</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="value">
              <number>24</number>
             </property>

@@ -576,8 +576,10 @@ void MainWindow::buildCommonWidgets()
     {
         configView = new SubMainWindow(this);
         configView->setObjectName("VIEW_HARDWARE_CONFIG");
-        configView->setCentralWidget(new ApmHardwareConfig(this));
+        ApmHardwareConfig* aphw = new ApmHardwareConfig(this);
+        configView->setCentralWidget(aphw);
         addToCentralStackedWidget(configView,VIEW_HARDWARE_CONFIG, tr("Hardware"));
+        connect(ui.actionAdvanced_Mode, SIGNAL(toggled(bool)), aphw, SLOT(advModeChanged(bool)));
     }
 
     if (!softwareConfigView)

@@ -56,9 +56,15 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_autopilotType = "apm";
     m_px4uploader = 0;
     m_isPx4 = false;
+    m_isAdvancedMode = false;
 
     loadSettings();
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
+    QSettings settings;
+    if (settings.contains("ADVANCED_MODE"))
+    {
+        m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
+    }
 
     m_networkManager = new QNetworkAccessManager(this);
 
@@ -107,6 +113,21 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     m_timer = new QTimer(this);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+
+    updateFirmwareButtons();
+}
+
+void ApmFirmwareConfig::advancedModeChanged(bool state)
+{
+    m_isAdvancedMode = state;
+    updateFirmwareButtons();
+}
+
+void ApmFirmwareConfig::updateFirmwareButtons()
+{
+    ui.betaFirmwareButton->setVisible(m_isAdvancedMode);
+    ui.flashCustomFWButton->setVisible(m_isAdvancedMode);
+    ui.stableFirmwareButton->setVisible(m_isAdvancedMode);
 }
 
 void ApmFirmwareConfig::loadSettings()
@@ -195,6 +216,12 @@ void ApmFirmwareConfig::showEvent(QShowEvent *)
     m_timer->start(2000);
     if(ui.stackedWidget->currentIndex() == 0)
         MainWindow::instance()->toolBar().disableConnectWidget(true);
+    QSettings settings;
+    if (settings.contains("ADVANCED_MODE"))
+    {
+        m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
+    }
+    updateFirmwareButtons();
 }
 
 void ApmFirmwareConfig::hideEvent(QHideEvent *)

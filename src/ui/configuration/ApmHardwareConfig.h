@@ -66,12 +66,16 @@ public:
     explicit ApmHardwareConfig(QWidget *parent = 0);
     ~ApmHardwareConfig();
 
+signals:
+    void advancedModeChanged(bool stateupdateFirmwareButtons);
+
 public slots:
     void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
 
     void optionalClicked();
     void mandatoryClicked();
     void toggleButtonsShown(bool show);
+    void advModeChanged(bool state);
 
 private:
     QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;

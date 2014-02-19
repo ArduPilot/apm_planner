@@ -60,14 +60,17 @@ class ApmFirmwareConfig : public AP2ConfigWidget
 public:
     explicit ApmFirmwareConfig(QWidget *parent = 0);
     ~ApmFirmwareConfig();
+    void updateFirmwareButtons();
 signals:
     void showBlankingScreen();
+
 protected:
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
 
 public slots:
     void checkForUpdates(const QString &versionString);
+    void advancedModeChanged(bool state);
 
 private slots:
     void firmwareListFinished();
@@ -161,6 +164,7 @@ private:
     bool m_updateCheckInitiated;
     QString m_currentVersionString;
     QString m_lastVersionSkipped;
+    bool m_isAdvancedMode;
 };
 
 #endif // APMFIRMWARECONFIG_H
