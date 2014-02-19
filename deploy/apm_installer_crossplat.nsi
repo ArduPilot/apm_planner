@@ -1,5 +1,8 @@
 !include "MUI2.nsh"
 !define MUI_ICON "..\files\APMIcons\ap_rc.ico"
+
+!include x64.nsh
+
 Name "APM Planner 2"
 
 !ifndef QTDIR
@@ -23,7 +26,7 @@ UninstPage instfiles
 
 LicenseData ..\license.txt
 
-Section "APM Planner 2 files"
+Section "APM Planner 2 files" APM_FILES
 
   SetOutPath $INSTDIR
   File ../release/apmplanner2.exe
@@ -47,15 +50,44 @@ Section "APM Planner 2 files"
   WriteUninstaller $INSTDIR\APMPlanner2_uninstall.exe
 SectionEnd 
 
-Section /o "JIT Debugger"
+Section "JIT Debugger" JIT_DEBUGGER
   SetOutPath $INSTDIR
   File "../drmingw.exe"
   File "../exchndl.dll"
   File "../mgwhelp.dll"
-  nsExec::Exec "$INSTDIR\drmingw.exe -i -a"
+  ExecWait "$INSTDIR\drmingw.exe -i -a"
 SectionEnd 
 
-Section "Qt components"
+Section "OpenSSL" OPENSSL
+  NSISdl::download http://slproweb.com/download/Win32OpenSSL_Light-1_0_0l.exe Win32OpenSSL_Light-1_0_0l.exe
+  ExecWait "Win32OpenSSL_Light-1_0_0l.exe /verysilent /sp-"
+SectionEnd
+
+section "64-bit Drivers" DRIVERS_64
+  SetOutPath $INSTDIR\Drivers
+  File "../Drivers/Arduino MEGA 2560.cat"
+  File "../Drivers/Arduino MEGA 2560.inf"
+  File ../Drivers/dpinst.xml
+  File ../Drivers/DPInstx64.exe
+  File ../Drivers/DPInstx86.exe
+  File ../Drivers/px4fmu_2.0.0.3.cat
+  File ../Drivers/px4fmu_2.0.0.3.inf
+  ExecWait "$INSTDIR\Drivers\DPInstx64.exe /LM /SW"
+sectionEND
+
+section "32-bit Drivers" DRIVERS_32
+  SetOutPath $INSTDIR\Drivers
+  File "../Drivers/Arduino MEGA 2560.cat"
+  File "../Drivers/Arduino MEGA 2560.inf"
+  File ../Drivers/dpinst.xml
+  File ../Drivers/DPInstx64.exe
+  File ../Drivers/DPInstx86.exe
+  File ../Drivers/px4fmu_2.0.0.3.cat
+  File ../Drivers/px4fmu_2.0.0.3.inf
+  ExecWait "$INSTDIR\Drivers\DPInstx86.exe /LM /SW"
+sectionEND
+
+Section "Qt components" QT_FILES
   !include qt_install.list
   SetOutPath $INSTDIR
   File /home/michael/QtWin32/lib/zlib1.dll
@@ -122,3 +154,18 @@ Section "Create Start Menu Shortcuts"
   CreateShortCut "$SMPROGRAMS\APMPlanner2\uninstall.lnk" "$INSTDIR\APMPlanner2_uninstall.exe" "" "$INSTDIR\APMPlanner2_uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\APMPlanner2\APMPlanner2.lnk" "$INSTDIR\apmplanner2.exe" "" "$INSTDIR\apmplanner2.exe" 0
 SectionEnd
+
+Function .onInit
+  #Enable the proper sections, and set selection for JIT to off
+  ${If} ${RunningX64}
+    SectionSetFlags ${DRIVERS_32}  ${SF_RO}
+    SectionSetFlags ${DRIVERS_64} ${SF_SELECTED}
+  ${Else}
+    SectionSetFlags ${DRIVERS_64} ${SF_RO}
+    SectionSetFlags ${DRIVERS_32}  ${SF_SELECTED}
+  ${EndIf}
+  SectionSetFlags ${APM_FILES} ${SF_SELECTED}
+  SectionSetFlags ${JIT_DEBUGGER} 0
+  SectionSetFlags ${QT_FILES} ${SF_SELECTED}
+  SectionSetFlags ${OPENSSL} ${SF_SELECTED}
+FunctionEnd
