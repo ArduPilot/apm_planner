@@ -191,7 +191,7 @@ void QsLogging::LaunchRotationStrategy::rotate()
 
 QIODevice::OpenMode QsLogging::LaunchRotationStrategy::recommendedOpenModeFlag()
 {
-    return QIODevice::Append;
+    return QIODevice::Truncate;
 }
 
 void QsLogging::LaunchRotationStrategy::setMaximumSizeInBytes(qint64 size)
