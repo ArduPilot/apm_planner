@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>697</width>
+    <width>719</width>
     <height>551</height>
    </rect>
   </property>
@@ -44,7 +44,7 @@
          <x>0</x>
          <y>0</y>
          <width>521</width>
-         <height>491</height>
+         <height>552</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout">
@@ -330,13 +330,13 @@ QPushButton:pressed {
         <rect>
          <x>520</x>
          <y>20</y>
-         <width>151</width>
+         <width>171</width>
          <height>51</height>
         </rect>
        </property>
        <property name="text">
-        <string>Load Paramters for 
-Standard Frame Types</string>
+        <string>Load Parameters for 
+Common Frame Types</string>
        </property>
       </widget>
      </widget>
