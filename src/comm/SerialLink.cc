@@ -465,6 +465,7 @@ bool SerialLink::hardwareConnect()
         emit communicationError(getName(),"Error opening port: " + m_port->errorString());
         return false; // couldn't create serial port.
     }
+    m_port->setSettingsRestoredOnClose(false);
 
     QObject::connect(m_port,SIGNAL(aboutToClose()),this,SIGNAL(disconnected()));
     m_connectionStartTime = MG::TIME::getGroundTimeNow();
