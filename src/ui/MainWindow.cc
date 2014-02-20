@@ -1439,13 +1439,14 @@ void MainWindow::showStatusMessage(const QString& status)
 
 void MainWindow::showCriticalMessage(const QString& title, const QString& message)
 {
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Critical);
-    msgBox.setText(title);
-    msgBox.setInformativeText(message);
-    msgBox.setStandardButtons(QMessageBox::Ok);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    msgBox.exec();
+//    QMessageBox msgBox(this);
+    QMessageBox::information(this,title,message);
+//    msgBox.setIcon(QMessageBox::Critical);
+//    msgBox.setText(title);
+//    msgBox.setInformativeText(message);
+//    msgBox.setStandardButtons(QMessageBox::Ok);
+//    msgBox.setDefaultButton(QMessageBox::Ok);
+//    msgBox.show();
 }
 
 void MainWindow::showInfoMessage(const QString& title, const QString& message)
