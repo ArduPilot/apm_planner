@@ -121,7 +121,14 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
             }
         }
         //result.append("Key: " + QString::number(foundkey,'f',4) + "\n");
-        newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(foundkey * 1000.0).toString("hh:mm:ss") + "\n");
+        if (m_logLoaded)
+        {
+            newresult.append("Log Line: " + QString::number(foundkey,'f',0) + "\n");
+        }
+        else
+        {
+            newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(foundkey * 1000.0).toString("hh:mm:ss") + "\n");
+        }
     }
     for (int i=0;i<m_graphClassMap.keys().size();i++)
     {
