@@ -59,7 +59,7 @@ Section "JIT Debugger" JIT_DEBUGGER
 SectionEnd 
 
 Section "OpenSSL" OPENSSL
-  NSISdl::download http://slproweb.com/download/Win32OpenSSL_Light-1_0_0l.exe Win32OpenSSL_Light-1_0_0l.exe
+  NSISdl::download http://firmware.diydrones.com/Tools/APMPlanner/supportinstalls/Win32OpenSSL_Light-1_0_0l.exe Win32OpenSSL_Light-1_0_0l.exe
   ExecWait "Win32OpenSSL_Light-1_0_0l.exe /verysilent /sp-"
 SectionEnd
 
@@ -111,6 +111,7 @@ Section "Qt components" QT_FILES
 SectionEnd
 
 Section "Uninstall"
+  SetShellVarContext all
   !include apm_uninstall.list
   !include qml_uninstall.list
   !include qt_uninstall.list
@@ -133,19 +134,29 @@ Section "Uninstall"
   Delete $INSTDIR\QtWebkit4.dll
   Delete $INSTDIR\QtXml4.dll
   Delete $INSTDIR\QtXmlPatterns4.dll
+  Delete $INSTDIR\QtScript4.dll
+  Delete $INSTDIR\QtDeclarative4.dll
   Delete $INSTDIR\zlib1.dll
-  nsExec::Exec "$INSTDIR\drmingw.exe -u"
+  ExecWait "$INSTDIR\drmingw.exe -u"
   Delete $INSTDIR\drmingw.exe"
   Delete $INSTDIR\exchndl.dll"
   Delete $INSTDIR\mgwhelp.dll"
   Delete $APPDATA\diydrones\*.*
   RMDir $APPDATA\diydrones
+  Delete $INSTDIR\avrdude\*.*
+  RMDir $INSTDIR\avrdude
+  Delete $INSTDIR\Drivers\*.*
+  RMDir $INSTDIR\Drivers
+  Delete $INSTDIR\mavlink\*.*
+  RMDir /R $INSTDIR\mavlink
+  Delete $INSTDIR\uploader\*.*
+  RMDir $INSTDIR\uploader
+  Delete $INSTDIR\Win32OpenSSL_Light-1_0_0l.exe
 
-  ;Delete $INSTDIR\*.*
   RMDir $INSTDIR
   SetShellVarContext all
   Delete "$SMPROGRAMS\APMPlanner2\*.*"
-  RMDir "$SMPROGRAMS\APMPlanner2\"
+  RMDir "$SMPROGRAMS\APMPlanner2"
 SectionEnd
 
 Section "Create Start Menu Shortcuts"
