@@ -470,7 +470,16 @@ bool SerialLink::hardwareConnect()
     QObject::connect(m_port,SIGNAL(aboutToClose()),this,SIGNAL(disconnected()));
     m_connectionStartTime = MG::TIME::getGroundTimeNow();
 
-    if (!m_port->open(QIODevice::ReadWrite))
+    int tries = 0;
+    while (tries++ < 3 && !m_port->isOpen())
+    {
+        if (!m_port->open(QIODevice::ReadWrite))
+        {
+            QLOG_DEBUG() << "Failed in attempt to open port, trying again...";
+            QLOG_DEBUG() << "Error:" << m_port->errorString();
+        }
+    }
+    if (!m_port->isOpen())
     {
         QLOG_DEBUG() << "Unable to open port:" << m_port->errorString();
         emit communicationUpdate(getName(),"Error opening port: " + m_port->errorString());
@@ -483,8 +492,8 @@ bool SerialLink::hardwareConnect()
     emit communicationUpdate(getName(),"Opened port!");
 
     // Need to configure the port
-    QLOG_DEBUG() << "Setting baud rate to:" << m_baud;
-    if (!m_port->setBaudRate(m_baud)){
+    //QLOG_DEBUG() << "Setting baud rate to:" << m_baud;
+    /*if (!m_port->setBaudRate(m_baud)){
         QLOG_ERROR() << "Failed to set Baud Rate" << m_baud;
         emit communicationError(getName(),"Error setting baud rate to: " + QString::number(m_baud) + " :" + m_port->errorString());
         m_port->close();
@@ -492,8 +501,8 @@ bool SerialLink::hardwareConnect()
         m_port = NULL;
         return false;
 
-    }
-    QLOG_DEBUG() << "Setting data bits to:" << m_dataBits;
+    }*/
+    /*QLOG_DEBUG() << "Setting data bits to:" << m_dataBits;
     if(!m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits))){
         QLOG_ERROR() << "Failed to set data bits Rate:" << m_dataBits;
         emit communicationError(getName(),"Error setting data bits to: " + QString::number(m_dataBits) + " :" + m_port->errorString());
@@ -532,7 +541,7 @@ bool SerialLink::hardwareConnect()
         m_port = NULL;
         return false;
 
-    }
+    }*/
 
 
 

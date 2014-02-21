@@ -248,6 +248,10 @@ bool QSerialPortPrivate::open(QIODevice::OpenMode mode)
     //QLOG_DEBUG() << "QSerialPortPrivate::open() GetCommState";
     //if (!::GetCommState(descriptor, &restoredDcb)) {
     //    q_ptr->setError(decodeSystemError());
+    //    DWORD errors;
+     //   ::ClearCommError(descriptor,&errors,0);
+     //   ::CloseHandle(descriptor);
+
     //    return false;
     //}
     //QLOG_DEBUG() << "QSerialPortPrivate::open() DCB::BaudRate: " << QString::number(restoredDcb.BaudRate);
@@ -258,13 +262,28 @@ bool QSerialPortPrivate::open(QIODevice::OpenMode mode)
 
     //currentDcb = restoredDcb;
     BuildCommDCB(L"baud=115200 parity=N data=8 stop=1",&currentDcb);
+    currentDcb.BaudRate = 115200;
+    currentDcb.ByteSize = 8;
+    currentDcb.StopBits = 0;
+    currentDcb.Parity = 0;
+    currentDcb.DCBlength = sizeof(currentDcb);
+
 
     QLOG_DEBUG() << "QSerialPortPrivate::open() SetCommState";
     if (!updateDcb())
+    {
+        q_ptr->setError(decodeSystemError());
+        DWORD errors;
+        ::ClearCommError(descriptor,&errors,0);
+        ::CloseHandle(descriptor);
         return false;
+    }
     QLOG_DEBUG() << "QSerialPortPrivate::open() GetCommTimeouts";
     if (!::GetCommTimeouts(descriptor, &restoredCommTimeouts)) {
         q_ptr->setError(decodeSystemError());
+        DWORD errors;
+        ::ClearCommError(descriptor,&errors,0);
+        ::CloseHandle(descriptor);
         return false;
     }
 
@@ -273,7 +292,10 @@ bool QSerialPortPrivate::open(QIODevice::OpenMode mode)
 
     QLOG_DEBUG() << "QSerialPortPrivate::open() SetCommTimeouts";
     if (!updateCommTimeouts())
+    {
+        ::CloseHandle(descriptor);
         return false;
+    }
 
     if (originalEventMask & EV_RXCHAR) {
         QWinEventNotifier *n = new ReadOverlappedCompletionNotifier(this, q_ptr);
