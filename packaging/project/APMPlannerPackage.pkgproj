@@ -20,9 +20,9 @@
 									<key>CHILDREN</key>
 									<array/>
 									<key>GID</key>
-									<integer>0</integer>
+									<integer>80</integer>
 									<key>PATH</key>
-									<string>../resources/APM Planner 2.0.app</string>
+									<string>../../../resources/APM Planner 2.0.app</string>
 									<key>PATH_TYPE</key>
 									<integer>1</integer>
 									<key>PERMISSIONS</key>
@@ -466,6 +466,8 @@
 				</dict>
 				<key>PAYLOAD_TYPE</key>
 				<integer>0</integer>
+				<key>SPLIT_FORKS</key>
+				<true/>
 				<key>VERSION</key>
 				<integer>2</integer>
 			</dict>
@@ -964,7 +966,7 @@
 						<key>GID</key>
 						<integer>0</integer>
 						<key>PATH</key>
-						<string>../resources/FTDIUSBSerialDriver_10_4_10_5_10_6_10_7.mpkg</string>
+						<string>../../../resources/FTDIUSBSerialDriver_10_4_10_5_10_6_10_7.mpkg</string>
 						<key>PATH_TYPE</key>
 						<integer>1</integer>
 						<key>PERMISSIONS</key>
@@ -1466,7 +1468,7 @@
 						<key>GID</key>
 						<integer>0</integer>
 						<key>PATH</key>
-						<string>../resources/CrossPack-AVR.pkg</string>
+						<string>../../../resources/CrossPack-AVR.pkg</string>
 						<key>PATH_TYPE</key>
 						<integer>1</integer>
 						<key>PERMISSIONS</key>

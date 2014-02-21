@@ -1,4 +1,4 @@
-- To build a installer manally
+- To build a installer manually
 
 1. Download the Packages Application & install
 	http://s.sudre.free.fr/Software/Packages/about.html
@@ -11,6 +11,6 @@
 	
 4. Open the APMPlannerPackage project in packaging
 
-5. Excute a BUILD & RUN to build and test your package
+5. Execute a BUILD & RUN to build and test your package
 
-6. the build subfolder will have the newloy built package
+6. the build subfolder will have the new built package
