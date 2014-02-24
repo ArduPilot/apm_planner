@@ -21,6 +21,7 @@ public:
     void fullAxisUpdate(QString name,double lower, double upper,bool ismanual, bool isingroup, QString groupname);
     void updateAxis(QString name,double lower, double upper);
     void removeAxis(QString name);
+    void clear();
 protected:
     void closeEvent(QCloseEvent *evt);
 public slots:

@@ -538,6 +538,10 @@ void AP2DataPlot2D::loadButtonClicked()
         m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
     }
     m_dataSelectionScreen->clear();
+    if (m_axisGroupingDialog)
+    {
+        m_axisGroupingDialog->clear();
+    }
     m_plot->replot();
     m_graphClassMap.clear();
     m_graphCount=0;

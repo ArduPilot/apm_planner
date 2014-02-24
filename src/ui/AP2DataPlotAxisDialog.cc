@@ -253,6 +253,14 @@ void AP2DataPlotAxisDialog::groupComboChanged(int index)
         m_graphRangeMap.remove(graphname);
     }
 }
+void AP2DataPlotAxisDialog::clear()
+{
+    m_rangeMap.clear();
+    m_graphScaleMap.clear();
+    m_graphRangeMap.clear();
+    m_graphToGroupNameMap.clear();
+    ui->graphTableWidget->setRowCount(0);
+}
 
 void AP2DataPlotAxisDialog::removeAxis(QString name)
 {
