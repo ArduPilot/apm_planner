@@ -545,6 +545,7 @@ void AP2DataPlot2D::loadButtonClicked()
     m_plot->replot();
     m_graphClassMap.clear();
     m_graphCount=0;
+    m_dataList.clear();
 
     if (m_logLoaded)
     {
