@@ -97,7 +97,8 @@ bool Radio3DREeprom::setVersion(const QString &versionString)
 {
     QLOG_DEBUG() << "Radio3DREeprom Ver:" << versionString;
     QStringList values = versionString.split(" ", QString::SkipEmptyParts);
-    if(values[0].contains("SiK")){
+
+    if(values.count()>0 && values[0].contains("SiK")){
 //        QRegExp versionEx("\\d\\*.\\d+");
 //        int pos = versionEx.indexIn(versionString);
 //        if (pos > -1) {
