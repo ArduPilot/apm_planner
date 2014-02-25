@@ -52,6 +52,8 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
     addRadioAirBaudComboBoxConfig(*ui.airBaudComboBox_remote);
     addTxPowerComboBoxConfig(*ui.txPowerComboBox);
     addTxPowerComboBoxConfig(*ui.txPowerComboBox_remote);
+    addRtsCtsComboBoxConfig(*ui.rtsCtsComboBox);
+    addRtsCtsComboBoxConfig(*ui.rtsCtsComboBox_remote);
 
     addMavLinkComboBoxConfig(*ui.mavLinkComboBox_remote);
 
@@ -412,7 +414,7 @@ void Radio3DRConfig::writeLocalRadioSettings()
     m_newRadioSettings.dutyCyle(ui.dutyCycleSpinBox->value());
     m_newRadioSettings.lbtRssi(ui.lbtRssiSpinBox->value());
     m_newRadioSettings.manchester(0);
-    m_newRadioSettings.rtsCts(0);
+    m_newRadioSettings.rtsCts(ui.rtsCtsComboBox->itemData(ui.rtsCtsComboBox->currentIndex()).toInt());
     m_newRadioSettings.maxWindow(ui.maxWindowSpinBox->value());
 
     m_radioSettings->writeLocalSettings(m_newRadioSettings);
@@ -449,7 +451,7 @@ void Radio3DRConfig::writeRemoteRadioSettings()
     m_newRadioSettings.dutyCyle(ui.dutyCycleSpinBox_remote->value());
     m_newRadioSettings.lbtRssi(ui.lbtRssiSpinBox_remote->value());
     m_newRadioSettings.manchester(0);
-    m_newRadioSettings.rtsCts(0);
+    m_newRadioSettings.rtsCts(ui.rtsCtsComboBox_remote->itemData(ui.rtsCtsComboBox_remote->currentIndex()).toInt());
     m_newRadioSettings.maxWindow(ui.maxWindowSpinBox_remote->value());
 
     m_radioSettings->writeRemoteSettings(m_newRadioSettings);
@@ -481,6 +483,7 @@ void Radio3DRConfig::copyLocalSettingsToRemote()
     ui.maxFreqComboBox_remote->setCurrentIndex(ui.maxFreqComboBox->currentIndex());
 
     ui.maxWindowSpinBox_remote->setValue(ui.maxWindowSpinBox->value());
+    ui.rtsCtsComboBox_remote->setCurrentIndex(ui.rtsCtsComboBox->currentIndex());
 }
 
 void Radio3DRConfig::updateLocalRssi(QString status)
@@ -530,6 +533,12 @@ void Radio3DRConfig::addTxPowerComboBoxConfig(QComboBox &comboBox)
     comboBox.addItem(QLatin1String("14dBm"), 14); //  (25mW)
     comboBox.addItem(QLatin1String("17dBm"), 17); // (50mW)
     comboBox.addItem(QLatin1String("20dBm"), 20); //  (100mW)
+}
+
+void Radio3DRConfig::addRtsCtsComboBoxConfig(QComboBox &comboBox)
+{
+    comboBox.addItem(QLatin1String("Off"), 0);
+    comboBox.addItem(QLatin1String("On"), 1);
 }
 
 void Radio3DRConfig::addMavLinkComboBoxConfig(QComboBox &comboBox)

@@ -369,6 +369,16 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
+    <item row="10" column="4">
+     <widget class="QComboBox" name="rtsCtsComboBox"/>
+    </item>
+    <item row="10" column="3">
+     <widget class="QLabel" name="label_38">
+      <property name="text">
+       <string>HW Flow</string>
+      </property>
+     </widget>
+    </item>
    </layout>
    <zorder>label_1</zorder>
    <zorder>label_2</zorder>
@@ -406,6 +416,8 @@ p, li { white-space: pre-wrap; }
    <zorder>mavLinkComboBox</zorder>
    <zorder>maxWindowSpinBox</zorder>
    <zorder>label_34</zorder>
+   <zorder>rtsCtsComboBox</zorder>
+   <zorder>label_38</zorder>
   </widget>
   <widget class="QProgressBar" name="progressBar">
    <property name="geometry">
@@ -716,6 +728,16 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_35">
       <property name="text">
        <string>Max Win</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="4">
+     <widget class="QComboBox" name="rtsCtsComboBox_remote"/>
+    </item>
+    <item row="10" column="3">
+     <widget class="QLabel" name="label_37">
+      <property name="text">
+       <string>HW Flow</string>
       </property>
      </widget>
     </item>
