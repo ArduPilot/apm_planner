@@ -205,6 +205,7 @@ void WaypointList::saveWaypoints()
 {
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QGC::appDataDirectory(), tr("Waypoint File (*.txt)"));
+    QApplication::processEvents(); // Removes the dialog from screen
     WPM->saveWaypoints(fileName);
 
 }
@@ -212,6 +213,7 @@ void WaypointList::saveWaypoints()
 void WaypointList::loadWaypoints()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load File"), QGC::appDataDirectory(), tr("Waypoint File (*.txt)"));
+    QApplication::processEvents(); // Removes the dialog from screen
     WPM->loadWaypoints(fileName);
 }
 

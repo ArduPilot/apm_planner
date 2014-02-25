@@ -78,7 +78,13 @@ void Waypoint::save(QTextStream &saveStream)
 
 bool Waypoint::load(QTextStream &loadStream)
 {
-    const QStringList &wpParams = loadStream.readLine().split("\t");
+    QString readLine;
+    do {
+        readLine = loadStream.readLine();
+    } while(readLine.startsWith("#"));
+
+    const QStringList& wpParams = readLine.split("\t");
+
     if (wpParams.size() == 12) {
         this->id = wpParams[0].toInt();
         this->current = (wpParams[1].toInt() == 1 ? true : false);
