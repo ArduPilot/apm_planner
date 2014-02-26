@@ -22,6 +22,7 @@ This file is part of the APM_PLANNER project
 
 #include "BatteryMonitorConfig.h"
 #include <QMessageBox>
+#include <QPushButton>
 #include "QsLog.h"
 
 BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(parent),
@@ -46,9 +47,6 @@ BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(pa
     ui.apmVerComboBox->addItem(tr("4: Pixhawk - 3DR 4in1 ESC"));
     ui.apmVerComboBox->addItem(tr("5: Pixhawk - 3DR Power Module"));
 
-    ui.alertOnLowCheckBox->setVisible(false); //Unimpelemented, but TODO.
-
-
     connect(ui.monitorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(monitorCurrentIndexChanged(int)));
     connect(ui.sensorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(sensorCurrentIndexChanged(int)));
     connect(ui.apmVerComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(apmVerCurrentIndexChanged(int)));
@@ -59,9 +57,103 @@ BatteryMonitorConfig::BatteryMonitorConfig(QWidget *parent) : AP2ConfigWidget(pa
     connect(ui.battCapacityLineEdit,SIGNAL(editingFinished()),this,SLOT(batteryCapacitySet()));
     connect(ui.measuredCurrentLineEdit,SIGNAL(editingFinished()),this,SLOT(measuredCurrentSet()));
 
-
     initConnections();
+
+    setupPresetSelectionTable();
 }
+
+void BatteryMonitorConfig::setupPresetSelectionTable()
+{
+    // Setup preset manually in code for now
+    // but this would be good ot read from a file
+    QPushButton *button = new QPushButton("3DR Iris\n4 in 1 ESC");
+    ui.presetsGridLayout->addWidget(button,0,0);
+    connect(button,SIGNAL(clicked()), this, SLOT(setIrisPreset()));
+
+    button = new QPushButton("APM 2.5/6\nPower Module");
+    ui.presetsGridLayout->addWidget(button,0,1);
+    connect(button,SIGNAL(clicked()), this, SLOT(setApm25PowerModule()));
+
+    button = new QPushButton("APM2.5/6\nAttoPilot 90A");
+    ui.presetsGridLayout->addWidget(button,0,2);
+    connect(button,SIGNAL(clicked()), this, SLOT(setApm25AttoPilot90()));
+
+    button = new QPushButton("APM2.5/6\nAttoPilot 180A");
+    ui.presetsGridLayout->addWidget(button,1,0);
+    connect(button,SIGNAL(clicked()), this, SLOT(setApm25AttoPilot180()));
+
+    button = new QPushButton("PX4\nAttoPilot 90A");
+    ui.presetsGridLayout->addWidget(button,1,1);
+    connect(button,SIGNAL(clicked()), this, SLOT(setPX4AttoPilot90()));
+
+    button = new QPushButton("PX4\nAttoPilot 180A");
+    ui.presetsGridLayout->addWidget(button,1,2);
+    connect(button,SIGNAL(clicked()), this, SLOT(setPX4AttoPilot180()));
+
+}
+
+void BatteryMonitorConfig::setIrisPreset()
+{
+    m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
+    m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",2);
+    m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",3);
+
+    m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,17.0f);
+    m_uas->getParamManager()->setParameter(1,m_voltDividerParam,12.02f);
+
+}
+
+void BatteryMonitorConfig::setApm25PowerModule()
+{
+    m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
+    m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",13);
+    m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",12);
+
+    m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,18.0f);
+    m_uas->getParamManager()->setParameter(1,m_voltDividerParam,10.1f);
+}
+
+void BatteryMonitorConfig::setApm25AttoPilot90()
+{
+    m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
+    m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",1);
+    m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",2);
+
+    m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,89.4f/3.3f);
+    m_uas->getParamManager()->setParameter(1,m_voltDividerParam,51.8f/3.3f);
+}
+
+void BatteryMonitorConfig::setApm25AttoPilot180()
+{
+    m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
+    m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",1);
+    m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",2);
+
+    m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,178.8f/3.3f);
+    m_uas->getParamManager()->setParameter(1,m_voltDividerParam,51.8f/3.3f);
+}
+
+void BatteryMonitorConfig::setPX4AttoPilot90()
+{
+    m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
+    m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",100);
+    m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",101);
+
+    m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,89.4f/3.3f);
+    m_uas->getParamManager()->setParameter(1,m_voltDividerParam,51.8f/3.3f);
+}
+
+void BatteryMonitorConfig::setPX4AttoPilot180()
+{
+    m_uas->getParamManager()->setParameter(1,"BATT_MONITOR",4);
+    m_uas->getParamManager()->setParameter(1,"BATT_VOLT_PIN",100);
+    m_uas->getParamManager()->setParameter(1,"BATT_CURR_PIN",101);
+
+    m_uas->getParamManager()->setParameter(1,m_ampPerVoltParam,178.8f/3.3f);
+    m_uas->getParamManager()->setParameter(1,m_voltDividerParam,51.8f/3.3f);
+}
+
+
 void BatteryMonitorConfig::measuredVoltsSet()
 {
     if (!m_uas)
@@ -375,6 +467,15 @@ BatteryMonitorConfig::~BatteryMonitorConfig()
 }
 void BatteryMonitorConfig::batteryChanged(UASInterface* uas, double voltage, double current, double percent, int seconds)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(percent);
+    Q_UNUSED(seconds);
+
+    // Update Basic Battery Tab
+    ui.battVoltageLineEdit->setText(QString::number(voltage,'f',2));
+    ui.battCurrentLineEdit->setText(QString::number(current,'f',2));
+
+    // Update Advanced Tab
     ui.calcVoltsLineEdit->setText(QString::number(voltage,'f',2));
     if (ui.measuredVoltsLineEdit->text() == "")
     {
@@ -419,6 +520,9 @@ void BatteryMonitorConfig::checkSensorType()
 
 void BatteryMonitorConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+
     if (parameterName == "VOLT_DIVIDER")
     {
         QLOG_DEBUG() << "Received VOLT_DIVIDER parameter";
@@ -502,10 +606,14 @@ void BatteryMonitorConfig::parameterChanged(int uas, int component, QString para
             ui.apmVerComboBox->setCurrentIndex(3);
         }
         connect(ui.apmVerComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(apmVerCurrentIndexChanged(int)));
+
+        ui.voltPinLineEdit->setText(QString::number(ivalue));
     }
     else if (parameterName == "BATT_CURR_PIN")
     {
         QLOG_DEBUG() << "Received paramter BATT_CURR_PIN";
         //Unused at the moment, everything is off BATT_VOLT_PIN
+        int ivalue = value.toInt();
+        ui.currPinLineEdit->setText(QString::number(ivalue));
     }
 }

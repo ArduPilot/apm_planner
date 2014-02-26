@@ -54,6 +54,17 @@ private slots:
     void alertOnLowClicked(bool checked);
     void activeUASSet(UASInterface *uas);
     void batteryChanged(UASInterface* uas, double voltage, double current, double percent, int seconds);
+
+//Temporary Slots
+    void setIrisPreset();
+    void setApm25PowerModule();
+    void setApm25AttoPilot90();
+    void setApm25AttoPilot180();
+    void setPX4AttoPilot90();
+    void setPX4AttoPilot180();
+
+private:
+    void setupPresetSelectionTable();
 private:
     QString m_voltDividerParam;
     QString m_ampPerVoltParam;
