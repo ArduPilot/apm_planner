@@ -74,10 +74,12 @@ void ParamCompareDialog::loadParameterFile()
 
     QString filename = QFileDialog::getOpenFileName(this,tr("Open File To Compare"),
                                                     QGC::parameterDirectory(), "*.param");
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     if(filename.length() == 0) {
         return;
     }
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     loadParameterFile(filename);
 }

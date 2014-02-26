@@ -1203,6 +1203,7 @@ void ApmFirmwareConfig::flashCustomFirmware()
 
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QGC::appDataDirectory(),
                                                      tr("bin (*.hex *.px4)"));
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     if (filename.length() > 0){
         QLOG_DEBUG() << "Selected File to flash: " << filename;

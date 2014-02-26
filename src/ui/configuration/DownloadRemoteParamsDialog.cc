@@ -75,6 +75,7 @@ void DownloadRemoteParamsDialog::loadFileButtonClicked()
 
     QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory());
     QFile file(filename);
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     if((filename.length() == 0)||!file.exists())
     {

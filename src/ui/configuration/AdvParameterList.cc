@@ -169,6 +169,7 @@ void AdvParameterList::loadButtonClicked()
     }
 
     QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory());
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     if(filename.length() == 0)
     {
@@ -206,6 +207,7 @@ void AdvParameterList::loadButtonClicked()
 void AdvParameterList::saveButtonClicked()
 {
     QString filename = QFileDialog::getSaveFileName(this,"Save File", QGC::parameterDirectory());
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     if(filename.length() == 0)
     {
