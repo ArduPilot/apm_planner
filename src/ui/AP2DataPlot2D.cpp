@@ -529,6 +529,7 @@ void AP2DataPlot2D::loadButtonClicked()
             return;
         }
     }
+    QApplication::processEvents();
     //Clear the graph
     for (int i=0;i<m_graphNameList.size();i++)
     {
