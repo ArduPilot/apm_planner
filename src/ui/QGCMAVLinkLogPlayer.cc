@@ -180,7 +180,7 @@ bool QGCMAVLinkLogPlayer::reset(int packetIndex)
 
 void QGCMAVLinkLogPlayer::storeSettings()
 {
-    QGC::setMAVLinkLogDirectory(lastLogDirectory);
+    // Nothing to store
 }
 
 /**
@@ -190,7 +190,7 @@ void QGCMAVLinkLogPlayer::storeSettings()
  */
 bool QGCMAVLinkLogPlayer::selectLogFile()
 {
-    return selectLogFile(lastLogDirectory);
+    return selectLogFile(QGC::MAVLinkLogDirectory());
 }
 
 /**
