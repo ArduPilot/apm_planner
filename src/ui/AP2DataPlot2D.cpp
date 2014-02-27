@@ -568,8 +568,6 @@ void AP2DataPlot2D::loadButtonClicked()
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     }
-    ui.tableWidget->setVisible(true);
-    ui.hideExcelView->setVisible(true);
     ui.autoScrollCheckBox->setChecked(false);
     ui.loadOfflineLogButton->setText("Unload Log");
 
@@ -899,6 +897,8 @@ void AP2DataPlot2D::threadDone()
     m_progressDialog->hide();
     delete m_progressDialog;
     m_progressDialog=0;
+    ui.tableWidget->setVisible(true);
+    ui.hideExcelView->setVisible(true);
 }
 void AP2DataPlot2D::threadError(QString errorstr)
 {
