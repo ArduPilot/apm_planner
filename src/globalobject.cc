@@ -161,3 +161,30 @@ void GlobalObject::setParameterDirectory(const QString &dir)
     QLOG_DEBUG() << "Set param dir to:" << dir;
     m_parameterDirectory = dir;
 }
+
+QString GlobalObject::shareDirectory()
+{
+#ifdef Q_OS_WIN
+    QDir settingsDir = QDir(QDir::currentPath());
+    return  settingsDir.absolutePath();
+#elif defined(Q_OS_MAC)
+    return QCoreApplication::applicationDirPath();
+#else
+    QDir settingsDir = QDir(QDir::currentPath());
+    if(settingsDir.exists("data") && settingsDir.exists("qml"))
+    {
+        return  settingsDir.absolutePath();
+    }
+    settingsDir.cdUp();
+    settingsDir.cd("./share/APMPlanner2");
+    if(settingsDir.exists("data") && settingsDir.exists("qml"))
+    {
+        QString tmp = settingsDir.absolutePath();
+        return  settingsDir.absolutePath();
+    }
+
+    //else
+    return QDir(QDir::currentPath()).absolutePath();
+
+#endif
+}

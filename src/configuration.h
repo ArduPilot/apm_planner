@@ -29,87 +29,64 @@ const QString APPNAME = "APMPLANNER2";
 const QString COMPANYNAME = "DIYDRONES";
 const int APPLICATIONVERSION = 200; // 2.0.0
 
-    static void close(){
+    inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();
         delete global;
         global = NULL;
     }
 
-    static void loadSettings(){
+    inline void loadSettings(){
         GlobalObject::sharedInstance()->loadSettings();
     }
 
-    static void saveSettings(){
+    inline void saveSettings(){
         GlobalObject::sharedInstance()->saveSettings();
     }
 
-    static QString fileNameAsTime(){
+    inline QString fileNameAsTime(){
         return GlobalObject::sharedInstance()->fileNameAsTime();
     }
 
-    static bool makeDirectory(const QString& dir){
+    inline bool makeDirectory(const QString& dir){
         return GlobalObject::sharedInstance()->makeDirectory(dir);
     }
 
-    static QString appDataDirectory(){
+    inline QString appDataDirectory(){
         return GlobalObject::sharedInstance()->appDataDirectory();
     }
 
-    static void setAppDataDirectory(const QString& dir){
+    inline void setAppDataDirectory(const QString& dir){
         GlobalObject::sharedInstance()->setAppDataDirectory(dir);
     }
 
-    static QString MAVLinkLogDirectory(){
+    inline QString MAVLinkLogDirectory(){
         return GlobalObject::sharedInstance()->MAVLinkLogDirectory();
     }
 
-    static void setMAVLinkLogDirectory(const QString& dir){
+    inline void setMAVLinkLogDirectory(const QString& dir){
         GlobalObject::sharedInstance()->setMAVLinkLogDirectory(dir);
     }
 
-    static QString logDirectory(){
+    inline QString logDirectory(){
         return GlobalObject::sharedInstance()->logDirectory();
     }
 
-    static void setLogDirectory(const QString& dir){
+    inline void setLogDirectory(const QString& dir){
         GlobalObject::sharedInstance()->setLogDirectory(dir);
     }
 
-    static QString parameterDirectory(){
+    inline QString parameterDirectory(){
         return GlobalObject::sharedInstance()->parameterDirectory();
     }
 
-    static void setParameterDirectory(const QString& dir){
+    inline void setParameterDirectory(const QString& dir){
         GlobalObject::sharedInstance()->setParameterDirectory(dir);
     }
 
-
     //Returns the absolute parth to the files, data, qml support directories
     //It could be in 1 of 2 places under Linux
-    static QString shareDirectory(){
-#ifdef Q_OS_WIN
-        QDir settingsDir = QDir(QDir::currentPath());
-        return  settingsDir.absolutePath();
-#elif defined(Q_OS_MAC)
-        return QCoreApplication::applicationDirPath();
-#else
-        QDir settingsDir = QDir(QDir::currentPath());
-        if(settingsDir.exists("data") && settingsDir.exists("qml"))
-        {
-            return  settingsDir.absolutePath();
-        }
-        settingsDir.cdUp();
-        settingsDir.cd("./share/APMPlanner2");
-        if(settingsDir.exists("data") && settingsDir.exists("qml"))
-        {
-            QString tmp = settingsDir.absolutePath();
-            return  settingsDir.absolutePath();
-        }
-
-        //else
-        return QDir(QDir::currentPath()).absolutePath();
-
-#endif
+    inline QString shareDirectory(){
+        return GlobalObject::sharedInstance()->shareDirectory();
     }
 
 }
