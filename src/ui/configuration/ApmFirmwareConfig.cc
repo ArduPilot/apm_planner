@@ -32,7 +32,8 @@ This file is part of the APM_PLANNER project
 #include "PX4FirmwareUploader.h"
 #include <QTimer>
 #include <QSettings>
-
+#include "arduino_intelhex.h"
+#define ATMEGA2560CHIPID QByteArray().append(0x1E).append(0x98).append(0x01)
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_notificationOfUpdate(false)
 {
@@ -280,6 +281,16 @@ void ApmFirmwareConfig::px4StatusUpdate(QString update)
     ui.textBrowser->append(update);
 }
 void ApmFirmwareConfig::px4DebugUpdate(QString update)
+{
+    ui.textBrowser->append(update);
+}
+void ApmFirmwareConfig::arduinoStatusUpdate(QString update)
+{
+    ui.statusLabel->setText(update);
+    ui.textBrowser->append(update);
+}
+
+void ApmFirmwareConfig::arduinoDebugUpdate(QString update)
 {
     ui.textBrowser->append(update);
 }
@@ -660,6 +671,7 @@ void ApmFirmwareConfig::downloadFinished()
     m_tempFirmwareFile->close();
 
     QLOG_DEBUG() << "Temp file to flash is: " << m_tempFirmwareFile->fileName();
+    ui.textBrowser->append("Finished downloading " + m_tempFirmwareFile->fileName());
     flashFirmware(m_tempFirmwareFile->fileName());
 }
 
@@ -694,31 +706,42 @@ void ApmFirmwareConfig::downloadFinished()
         QLOG_DEBUG() << "Attempting to Open port";
 
 
-        m_port= new QSerialPort(this);
+       /* m_port= new QSerialPort(this);
         m_port->setPortName(m_settings.name);
         if (m_port->open(QIODevice::ReadWrite)) {
-            if (m_port->setBaudRate(m_settings.baudRate)
-                    && m_port->setDataBits(m_settings.dataBits)
-                    && m_port->setParity(m_settings.parity)
-                    && m_port->setStopBits(m_settings.stopBits)
-                    && m_port->setFlowControl(m_settings.flowControl)) {
                 QLOG_INFO() << "Open Terminal Console Serial Port";
                 m_port->setDataTerminalReady(true);
                 m_port->waitForBytesWritten(250);
                 m_port->setDataTerminalReady(false);
                 m_port->close();
-            } else {
-                m_port->close();
-                QMessageBox::critical(this, tr("Error"), m_port->errorString());
-                m_port->deleteLater();
-                return;
-            }
+                delete m_port;
         } else {
-            QMessageBox::critical(this, tr("Error"), m_port->errorString());
+            QMessageBox::critical(this, tr("Error Opening Port"), m_port->errorString());
             m_port->deleteLater();
+            return;
+        }*/
+        m_arduinoUploader = new ArduinoFlash();
+        connect(m_arduinoUploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(arduinoFlashProgress(qint64,qint64)));
+        connect(m_arduinoUploader,SIGNAL(verifyProgress(qint64,qint64)),this,SLOT(arduinoVerifyProgress(qint64,qint64)));
+        connect(m_arduinoUploader,SIGNAL(firmwareUploadStarted()),this,SLOT(arduinoUploadStarted()));
+        connect(m_arduinoUploader,SIGNAL(firmwareUploadError(QString)),this,SLOT(arduinoError(QString)));
+        connect(m_arduinoUploader,SIGNAL(statusUpdate(QString)),this,SLOT(arduinoStatusUpdate(QString)));
+        connect(m_arduinoUploader,SIGNAL(debugUpdate(QString)),this,SLOT(arduinoDebugUpdate(QString)));
+        connect(m_arduinoUploader,SIGNAL(firmwareUploadComplete()),this,SLOT(arduinoUploadComplete()));
+        m_arduinoUploader->loadFirmware(m_settings.name,filename);
+
+
+        ArduinoIntelHex filehex;
+        filehex.loadIntelHex(filename);
+        if (filehex.length() == 0)
+        {
+            QMessageBox::information(0,"Error","Error loading the file");
             return;
         }
         QLOG_INFO() << "Port Open for FW Upload";
+        return;
+
+
         QString avrdudeExecutable;
         QStringList stringList;
 
@@ -888,15 +911,23 @@ void ApmFirmwareConfig::flashButtonClicked()
                 }
             }
         }
+        if (QMessageBox::question(0,"Confirm","You are about to install " + m_buttonToUrlMap[senderbtn].mid(m_buttonToUrlMap[senderbtn].lastIndexOf("/")+1),QMessageBox::Ok,QMessageBox::Abort) == QMessageBox::Abort)
+        {
+            //aborted.
+            return;
+        }
 
         QLOG_DEBUG() << "Go download:" << m_buttonToUrlMap[senderbtn];
         QNetworkReply *reply = m_networkManager->get(QNetworkRequest(QUrl(m_buttonToUrlMap[senderbtn])));
         //http://firmware.diydrones.com/Plane/stable/apm2/ArduPlane.hex
+        ui.textBrowser->append("Started downloading " + m_buttonToUrlMap[senderbtn]);
         connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
 
         connect(reply,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
         connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
         ui.statusLabel->setText("Downloading");
+        ui.progressBar->setVisible(true);
+        ui.progressBar->setMaximum(100);
         if (m_buttonToWarning.contains(senderbtn))
         {
             if (m_buttonToWarning[senderbtn])
@@ -1291,4 +1322,64 @@ void ApmFirmwareConfig::parameterChanged(int uas, int component, QString paramet
 ApmFirmwareConfig::~ApmFirmwareConfig()
 {
 }
+void ApmFirmwareConfig::arduinoUploadStarted()
+{
+    ui.progressBar->setValue(0);
+    ui.progressBar->setMaximum(200);
+}
 
+void ApmFirmwareConfig::arduinoError(QString error)
+{
+    QMessageBox::information(0,"Error",error);
+    m_arduinoUploader->deleteLater();
+}
+
+void ApmFirmwareConfig::arduinoFlashProgress(qint64 pos,qint64 total)
+{
+    ui.progressBar->setValue(((double)pos / (double)total) * 100.0);
+}
+
+void ApmFirmwareConfig::arduinoVerifyProgress(qint64 pos,qint64 total)
+{
+    ui.progressBar->setValue((((double)pos / (double)total) * 100.0) + 100);
+}
+
+void ApmFirmwareConfig::arduinoVerifyComplete()
+{
+
+}
+
+void ApmFirmwareConfig::arduinoVerifyFailed()
+{
+
+}
+
+void ApmFirmwareConfig::arduinoFlashComplete()
+{
+
+}
+
+void ApmFirmwareConfig::arduinoFlashFailed()
+{
+
+}
+
+void ApmFirmwareConfig::arduinoUploadComplete()
+{
+    //Ensure we're reading 100%
+    ui.progressBar->setMaximum(100);
+    ui.progressBar->setValue(100);
+    QMessageBox::information(this,"Complete","APM Flashing is complete!");
+    ui.statusLabel->setText(tr("Flashing complete"));
+    emit showBlankingScreen();
+    if (m_throwPropSpinWarning)
+    {
+        QMessageBox::information(this,"Warning","As of AC 3.1, motors will spin when armed. This is configurable through the MOT_SPIN_ARMED parameter");
+        m_throwPropSpinWarning = false;
+    }
+    //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
+    if (m_tempFirmwareFile) m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
+    m_tempFirmwareFile = NULL;
+    ui.progressBar->setVisible(false);
+    ui.cancelPushButton->setVisible(false);
+}

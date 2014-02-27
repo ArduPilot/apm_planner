@@ -52,6 +52,7 @@ This file is part of the APM_PLANNER project
 #include "SerialSettingsDialog.h"
 #include "ui_ApmFirmwareConfig.h"
 #include "PX4FirmwareUploader.h"
+#include "arduinoflash.h"
 
 class ApmFirmwareConfig : public AP2ConfigWidget
 {
@@ -101,6 +102,17 @@ private slots:
     void px4StatusUpdate(QString update);
     void px4DebugUpdate(QString update);
     void px4UnplugTimerTick();
+    void arduinoError(QString error);
+    void arduinoUploadStarted();
+    void arduinoFlashProgress(qint64 pos,qint64 total);
+    void arduinoVerifyProgress(qint64 pos,qint64 total);
+    void arduinoStatusUpdate(QString update);
+    void arduinoDebugUpdate(QString update);
+    void arduinoVerifyComplete();
+    void arduinoVerifyFailed();
+    void arduinoFlashComplete();
+    void arduinoFlashFailed();
+    void arduinoUploadComplete();
 
     void flashCustomFirmware();
     void flashFirmware(QString filename);
@@ -121,6 +133,7 @@ private:
     QProgressDialog *m_replugRequestMessageBox;
     QTimer *m_px4UnplugTimer;
     PX4FirmwareUploader *m_px4uploader;
+    ArduinoFlash *m_arduinoUploader;
     QString m_firmwareType;
     QString m_autopilotType;
     bool m_isPx4;

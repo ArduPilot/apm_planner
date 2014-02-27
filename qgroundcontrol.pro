@@ -578,7 +578,10 @@ HEADERS += \
     src/ui/AboutDialog.h \
     src/ui/uas/UASQuickViewTextLabel.h \
     src/uas/ApmUiHelpers.h \
-    src/ui/AP2DataPlotAxisDialog.h
+    src/ui/AP2DataPlotAxisDialog.h \
+    src/comm/arduino_intelhex.h \
+    src/comm/arduino_stk500v2.h \
+    src/comm/arduinoflash.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -772,7 +775,10 @@ SOURCES += src/main.cc \
     src/ui/AboutDialog.cc \
     src/ui/uas/UASQuickViewTextLabel.cc \
     src/uas/ApmUiHelpers.cc \
-    src/ui/AP2DataPlotAxisDialog.cc
+    src/ui/AP2DataPlotAxisDialog.cc \
+    src/comm/arduino_intelhex.cpp \
+    src/comm/arduino_stk500v2.cpp \
+    src/comm/arduinoflash.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
