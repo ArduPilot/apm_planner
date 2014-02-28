@@ -31,8 +31,40 @@ This file is part of the APM_PLANNER project
 #define BATTERYMONITORCONFIG_H
 
 #include <QWidget>
+#include <QSignalMapper>
 #include "AP2ConfigWidget.h"
 #include "ui_BatteryMonitorConfig.h"
+
+class BatteryPreset: public QObject
+{
+    Q_OBJECT
+
+public:
+    enum BatteryMonitor { Disabled = 0,
+                          Voltage = 3,
+                          Both = 4 };
+
+public:
+    explicit BatteryPreset(const QString& buttonName, BatteryMonitor batteryMonitor,
+                           int voltPin, float voltDivider,
+                           int currPin, float ampsPerVolt);
+
+    QString title() const;
+    BatteryMonitor batteryMonitor();
+    int voltagePin();
+    float voltageDivider();
+    int currentPin();
+    float ampsPerVolt();
+
+private:
+    QString m_title;
+    BatteryMonitor m_battMonitorType;
+    int m_voltPin;
+    float m_voltageDivider;
+    int m_currentPin;
+    float m_ampsPerVolt;
+
+};
 
 class BatteryMonitorConfig : public AP2ConfigWidget
 {
@@ -55,13 +87,7 @@ private slots:
     void activeUASSet(UASInterface *uas);
     void batteryChanged(UASInterface* uas, double voltage, double current, double percent, int seconds);
 
-//Temporary Slots
-    void setIrisPreset();
-    void setApm25PowerModule();
-    void setApm25AttoPilot90();
-    void setApm25AttoPilot180();
-    void setPX4AttoPilot90();
-    void setPX4AttoPilot180();
+    void setNewParameters(QObject *object);
 
 private:
     void setupPresetSelectionTable();
@@ -75,6 +101,8 @@ private:
     void checkSensorType();
     inline float calculatemVPerAmp(float maxvoltsout,float maxamps);
     inline float calculatemVPerVolt(float maxvoltsout,float maxvolts);
+    QList<BatteryPreset*> m_presetList;
+    QSignalMapper *m_signalMapper;
 };
 
 #endif // BATTERYMONITORCONFIG_H

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>612</width>
+    <width>614</width>
     <height>377</height>
    </rect>
   </property>
@@ -52,7 +52,7 @@
      <item>
       <widget class="QTabWidget" name="basicTab">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -107,13 +107,13 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>496</width>
+                   <width>498</width>
                    <height>77</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_2">
                   <item>
-                   <layout class="QGridLayout" name="presetsGridLayout"/>
+                   <layout class="QGridLayout" name="presetGridLayout"/>
                   </item>
                  </layout>
                 </widget>
