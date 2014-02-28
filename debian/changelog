@@ -1,0 +1,4798 @@
+apmplanner2 (2.0.0.RC5-21-gcd98d) UNRELEASED; urgency=low
+
+  ** SNAPSHOT build @cd98d0fc2dc6bf8c93c6e6c2d53c3ff77e388584 **
+
+  [ stephen ]
+  * Initial release.
+
+  [ pixhawk ]
+  * Initial import
+  * Major stability improvements
+  * Minor UI improvements, pushed implementation of some UI elements
+  * Added true audio output
+  * Removed Vicon tarsus interface until it is finished
+
+  [ Hugo Vincent ]
+  * Switched from flite for speech on the Mac to built-in MacOSX speech synthesizer. Fixed build system for 64-bit builds (using official SDL.framework, and Qt frameworks).
+
+  [ pixhawk ]
+  * Added patch from Hugo which fixes some OS X issues
+  * Fixed compile issues on non-64bit OS X systems
+  * Minor cleanup in the build files
+  * Minor changes
+  * Fixed windows compile error
+
+  [ lm ]
+  * Stability changes
+
+  [ pixhawk ]
+  * Fixed Linux compatibility of Linux Qt Phonon support
+
+  [ lm ]
+  * Fixed some issues in HUD and Head down display
+
+  [ pixhawk ]
+  * Fixed audio issue on windows
+  * Added windows audio
+  * Splashscreen fixes
+  * Fixes for audio on Linux
+
+  [ Hugo Vincent ]
+  * Tidy up .pri file slightly
+  * This commit and the previous merge attempts to align my tree with upstream changes. It works for me but apologies in advance if i break anything
+
+  [ pixhawk ]
+  * Added new splash image
+  * Finally fixed the Mac OS 32bit/64bit chaos
+  * Added windows options
+  * Fixed audio alarm
+
+  [ Hugo Vincent ]
+  * Lorenz, try this 64-bit detection method please :-)
+
+  [ pixhawk ]
+  * Removed static linkage
+  * Added version check for OS X
+
+  [ Hugo Vincent ]
+  * Move Saturn build-dep into 32-bit
+
+  [ pixhawk ]
+  * Cleaned up directory structure, re-enabled Linux audio output
+  * Removed unused flite voices to save some space
+  * Minor improvements
+
+  [ lm ]
+  * Removed strange HUD issues
+  * Working on HUD
+  * Fixed a HUD bug due to antialiasing
+
+  [ pixhawk ]
+  * Fixed HUD
+  * Cleaned up some merge mistakes, compiles now
+  * Working on windows audio
+  * Minor improvements in UAS display
+  * Windows Speech API (SAPI) is now only supported with MSVC compiler.
+  * Last project file fixes for MSVC compatibility
+  * Fixed windows compile error
+  * added debug message
+  * Fixed Windows HUD issues
+
+  [ lm ]
+  * Updated sensor read pool
+  * Fixed minor bug in UAS
+  * Fixed temp and baro mixup
+  * Added support for array data types in MAVLink
+
+  [ pixhawk ]
+  * Added option to connect Simulation via UI
+
+  [ lm ]
+  * Testing mail commit hook
+  * Improved general documentation
+
+  [ pixhawk ]
+  * Added executable and doc directory to gitignore
+  * Added hint to MAVLink dependency to README
+
+  [ lm ]
+  * Adjusted HUD settings for asctec data
+
+  [ pixhawk ]
+  * Improved XML generation, now has 64bit support
+  * Minor MAVLink update
+  * Fixed finally HUD offset! Now working on antialiasing / flickering.
+  * Improved runtime performance, currently hunting down a bug where the whole application gets repainted although only parts of it are refreshed
+  * Fixed performance problems in simulation
+  * Pushed implementation of parameter settings, almost done. Added many new MAVLink messages needed for interaction with IMU
+
+  [ lm ]
+  * Added support for text messages from robot to operator
+
+  [ Mariano Lizarraga ]
+  * Improved the install instructions for OSX
+
+  [ lm ]
+  * Added display for comm errors
+
+  [ pixhawk ]
+  * Added Parameter interface
+
+  [ lm ]
+  * Working on new parameter view and interface
+
+  [ pixhawk ]
+  * Pushed parameter interface forward, now receiving of onboard params works, working on display and writing
+
+  [ lm ]
+  * Onboard params work on console
+  * Quick fix for flite in linux
+
+  [ pixhawk ]
+  * Fixed crash in tree view, needs further inspection
+  * Temporarily removed flite, fixed crash caused by tree view
+
+  [ lm ]
+  * Switched to QTreeWidget for parameter view, receiving data works already
+
+  [ pixhawk ]
+  * Parameter view works with components now
+  * Fixing the parameter view
+  * Currently testing parameter write, close to completely working, created beta release binary from this state
+
+  [ lm ]
+  * Made settings work
+  * Added minor fixes to simulation and parameter view
+
+  [ pixhawk ]
+  * Finished commenting new parameter widget.
+
+  [ lm ]
+  * Added loss information;
+  * Drop rate view works
+  * Fixed issues with loss counting, added support for usec timestamps
+  * Added PNGs for mac icon, moved UAS timestamps to microseconds instead of milliseconds
+  * Removed unneeded graphic
+
+  [ pixhawk ]
+  * Fixed small compile error with module bit mask
+  * Fixed issue in Simulation link introduced by change to usec
+
+  [ lm ]
+  * Added Windows icon and NSIS script from Hendrik
+
+  [ pixhawk ]
+  * msec2usec
+  * Fixed a bug in MAVLink generation
+  * Fixing the timestamps currently, should work now with IMU and UNIX timestamps
+
+  [ lm ]
+  * Minor timestamp fix/hack until QGroundControl is completely moved to usecs from msecs
+  * Minor timestamp adjustment
+
+  [ pixhawk ]
+  * fixed phonon inclusion
+  * minor waypoint comments
+  * Fixed bug in parameter interface, finished channel selection on IMU
+  * Finished communication settings widget
+  * Finished up waypoint interface on ground control side, now is working again
+  * Fixed path dependency in audio output, added settings for main window
+
+  [ lm ]
+  * Fixed icon and audio paths, added "all" view which contains almost all widgets
+  * Minor fixes
+  * Added rotation matrix to plot
+  * Improved log compressor to write out NaN for unknown values
+  * Mainwindow fix
+  * Param fixes
+  * Param fixes
+  * Fixed parameter interface, now transmits minimum data
+  * Param interface fully working now
+  * Final fixes for parameterinterface
+
+  [ pixhawk ]
+  * Fixed MAV selection bug in parameter view
+  * Fixed Parameter view, made linechart feasible for multiple systems
+  * Fixed small compile error
+
+  [ lm ]
+  * Fixed Audio output on Linux, works now with systems flite version. Introduced two new alarm/notify sounds
+
+  [ Bryant Mairs ]
+  * Added build instructions for Windows to the README.
+
+  [ pixhawk ]
+  * Added NAV MODE field
+  * Added skeletons for other MAV projects
+
+  [ lm ]
+  * Cleaned up old parameter interface, added initial support for other autopilots
+
+  [ pixhawk ]
+  * minor fixes
+
+  [ landauf ]
+  * fixed build
+
+  [ pixhawk ]
+  * Working on speed improvements
+
+  [ lm ]
+  * Improved speed by preventing update of UASView on every vehicle state change, view is now bound to 10 Hz update timer
+
+  [ pixhawk ]
+  * Added support for MAVLink XML inclusion, added support for multiple Autopilots, improved protocol generation
+  * Improved MAVLink generator widget, added watchdog control data structures (UI work in progress)
+  * Fixed compile error for MAVLink
+
+  [ lm ]
+  * Fixed minor compile errors
+
+  [ pixhawk ]
+  * Added complete Watchdog comm methods, testing code
+  * Fixed a bug introduced by watchdog view which deactivated the main window
+  * Minor improvements
+  * Added Extra Message Checkboxes
+  * current status of the waypoints is transmitted, crashes due to a bug in waypointplanner - the crash has to be fixed
+  * deactivated waypoint management
+  * Added watchdog views
+
+  [ lm ]
+  * Fixed packet drop counting / handling
+  * Added time to vision position output
+
+  [ pixhawk ]
+  * Working on Qt watchdog control
+
+  [ git version control ]
+  * Removed ghost file
+
+  [ pixhawk ]
+  * Minor cleanups
+  * Minor improvements and fixes, added a few new MAVLink packets
+  * Adaptions to slight MAVLink changes
+
+  [ lm ]
+  * Added support for new debug vect type
+
+  [ pixhawk ]
+  * Added GPS support
+
+  [ lm ]
+  * Added map view, fixed audio output
+  * GPS MAV visualization and moving map tested and working
+
+  [ pixhawk ]
+  * Working on second linechartplot time mode
+
+  [ lm ]
+  * Added support to set ground time as linechart time
+
+  [ pixhawk ]
+  * working on waypointplanner interface
+  * Working MAV tracking
+  * Improved GPS, added UAS trails, improved error reporting
+
+  [ lm ]
+  * Adapted to new MAVLink messages
+
+  [ pixhawk ]
+  * waypoint changes
+  * waypoint changes
+
+  [ lm ]
+  * Added error counters
+
+  [ pixhawk ]
+  * Working on plugin system to simplify build dependencies between QGroundControl and MAVLink
+  * Cleaned up pattern recognition UI element
+  * Prepared horizontal situation indicator display
+  * Working on horizontal situation indicator
+
+  [ lm ]
+  * GPS updates
+
+  [ pixhawk ]
+  * merged. Added Waypoint changes, only retrieving waypoints works at the moment
+
+  [ lm ]
+  * Cleanups in GCS
+
+  [ pixhawk ]
+  * Added packet logging
+  * Working on real log replay in simulation link
+  * Working on text in HSI display
+
+  [ lm ]
+  * Cleaned up compile environment
+  * Added GPS satellite timeout
+
+  [ pixhawk ]
+  * Fixed runtime bug in HSI Widget
+
+  [ lm ]
+  * Commit
+
+  [ pixhawk ]
+  * merged
+  * Added initialization and safety checks to remove clutter from UAS view
+
+  [ lm ]
+  * Fixed setting modes
+  * Update UI control elements from vehicle, allows multi-operator mode
+  * Update UI control elements from vehicle, allows multi-operator mode
+  * Added checked style for tool buttons
+  * Debug vector changes
+
+  [ pixhawk ]
+  * waypoints
+  * Working on setpoint visualization
+  * Working on setpoint visualization
+
+  [ lm ]
+  * Fixed compile warnings, moved MAVLink ids
+  * Attitude controller and waypoint vis changes
+  * Removed warnings
+
+  [ pixhawk ]
+  * worked on waypoints, removed waypoint names
+  * cleaned up arguments and members
+
+  [ lm ]
+  * Many improvements to HSI
+
+  [ pixhawk ]
+  * still working on waypoints
+  * Implemented setpoint changes for HSI widget
+  * Latest HSI changes
+  * Added setpoint to UAS
+  * pushed setpoint visualization forward
+
+  [ lm ]
+  * Minor commit error
+
+  [ pixhawk ]
+  * changed behaviour of the waypoint read button
+  * Added coordinate transform
+
+  [ lm ]
+  * Changes
+
+  [ pixhawk ]
+  * worked on waypoints
+
+  [ lm ]
+  * Added HSI improvements
+
+  [ pixhawk ]
+  * removed debug messages
+  * Added a few new transformations
+  * waypoints working
+
+  [ lm ]
+  * Updated Engineer view
+
+  [ pixhawk ]
+  * Working on parameter groups
+
+  [ lm ]
+  * Added auto-grouping of parameters by first underscore
+  * Fixed minor compile error
+  * Verified parameter interface, sends now only changed parameters back to MAV, auto-grouping supported
+
+  [ pixhawk ]
+  * Working on watchdog control
+
+  [ lm ]
+  * Fixed minor compile error
+  * Added test 1 and 2 modes
+
+  [ pixhawk ]
+  * Fixed local global transform
+  * changed standard values for new waypoints
+  * Non-working transfer commit
+
+  [ lm ]
+  * Working
+
+  [ pixhawk ]
+  * expanded waypoint view
+  * new waypoint fields included
+
+  [ lm ]
+  * Added support for saving onboard parameters to a file
+  * write read eeprom added, actions updated
+
+  [ pixhawk ]
+  * Added controller and position status indicators
+  * Fixed object instantiation bug, started to implement QGroundControl-Server for online MAV visualization and control
+  * fixed waypoint loading
+  * fixed waypoint loading even more
+  * Added position control status
+  * parameters_alpha and waypoints_8_L1 added
+  * Added support for IR/Ultrasound and waypoints in HSI
+  * local_position now with angles, waypointlists added
+
+  [ lm ]
+  * load parameters work maybe
+
+  [ pixhawk ]
+  * testing params not working
+  * Revert "test"
+  * mergeconflict solved
+  * merge conflict
+  * parameters from alpha updated
+  * bravo parameters added
+  * bravo gyros updated
+
+  [ lm ]
+  * updated IMU packet structure
+
+  [ pixhawk ]
+  * parameter bravo update
+  * bravo parameters updated
+
+  [ lm ]
+  * Adjusted engineer view to daily use
+
+  [ pixhawk ]
+  * optimized waypointization
+  * waypoits A0 circle added
+  * fixed waypoint interface
+  * show detected letters
+  * Added waypoint visualization
+
+  [ lm ]
+  * Added option to add local waypoints, added waypoint visualization
+
+  [ pixhawk ]
+  * parameters bravo and waypoints
+
+  [ lm ]
+  * Minor improvements
+  * Added update of current waypoint indicator
+
+  [ pixhawk ]
+  * parameter alpha and waypoints updated
+  * moved the local waypoint list into waypoint manager
+  * parameters alpha updated
+  * parameters alpha updated
+  * bravo parameters saved
+  * parameters bravo updated
+  * [landauf] added new list for letters and updated the pattern list (confidence and count are updated)
+  * [landauf] added pattern images for all letters and numbers
+
+  [ lm ]
+  * Finished 2D HSI widget, now displays waypoints, satellites and critical system states
+
+  [ pixhawk ]
+  * added rounding
+  * alpha parameters updated
+  * [landauf] added button to clear the pattern and letter lists
+  * Removed a bug where a line split ruined the serial interfacing of modems on Mac platform
+  * better waypoints
+  * Added required waypoint configs for IMAV 2010
+  * pattern/letter recognition: clear button also resets text and image labels
+
+  [ lm ]
+  * parameters updated for bravo
+
+  [ pixhawk ]
+  * waypointfiles
+  * parameter for alpha updated
+
+  [ lm ]
+  * parameters bravo updated
+  * name now in config
+  * parameter optimized
+  * way points braunschweig, parameters
+
+  [ unknown ]
+  * add slugs messages
+
+  [ pixhawk ]
+  * Fixed a small bug in the HSI widget leading to wrong compass drawing
+  * Removed spurious logfiles
+  * Removed more logfiles
+  * Added SDL to ease deployment, fixed deploy script
+  * Cleaned up log files
+
+  [ Mariano Lizarraga ]
+  * Changes made to try to compile with bugs introduced when addign non standard messages to UAS.cc
+  * Removed comments on the SDL _main protection
+  * Shortened the signal names being emitted by SlugsMav.cc for the engineer view. Added translation macros tr() for the engineer view plots
+
+  [ lm ]
+  * Added config files, will be moved
+
+  [ pixhawk ]
+  * Fixed compile errors and warnings
+
+  [ lm ]
+  * Minor fixes
+  * Cleaned up directory structure, removed/cleaned up last IMAV 2010 files
+  * Adjusted to most recent MAVLink
+
+  [ pixhawk ]
+  * Removed last warning, fixed Mac auto-configuration for 32/64bit environments
+  * adapted UASWaypointManager to waypoint message changes
+  * changed the handler of WAYPOINT_SET_CURRENT to handle WAYPOINT_CURRENT messages as it was meant to
+  * UASWaypointManager now implements the protocol described in http://qgroundcontrol.org/waypoint_protocol
+
+  [ lm ]
+  * Cleanups
+
+  [ Mariano Lizarraga ]
+  * Major cleanup of MainWindow constructor. All widgets have now the visible property set to false on its constructor
+
+  [ pixhawk ]
+  * Started to add support for autopilot firmware updates, added Linux compile instructions, fixed date in mavlink.h to english independent of OS language settings
+  * Made generator --pedantic GCC flag compatible/C89 compatible, fixed a bug where heartbeats where only sent to first link
+
+  [ Bryan Godbolt ]
+  * changed error message when the udp link cannot be connected
+  * Added opal-rt info to project file
+  * Added define for opal-rt to project file
+  * Added source files for OpalLink class
+  * fixed syntax problem with qgroundcontrol.pro
+  * fixed syntax problem with qgroundcontrol.pro
+  * added scope to usleep calls to allow compilation on windows
+  * working on opal link
+  * added scope to usleep calls to allow compilation on windows (cherry picked from commit ed0fd7c10be0dc54aa8981ef7f8ce94ea7d545aa)
+
+  [ pixhawk ]
+  * better comments
+
+  [ Bryan Godbolt ]
+  * fixed mutex usage in getTotalUpstream and getTotalDownstream and added initialization to connectionStartTime
+  * housekeeping
+  * fixed mutex usage in getTotalUpstream and getTotalDownstream and added initialization to connectionStartTime (cherry picked from commit 15161eec808674a20f4bd7aa192da442f1c530b0)
+  * filling in virtual functions
+  * added OpalLink to core.  protected with ifdef OPAL_RT
+  * working on opal link
+  * set groupbox title for opallink, protected by ifdef OPAL_RT
+  * changed groupbox title for udp link from udp link to UDP Link (more professional)
+  * general opal link work
+  * changed groupbox title for udp link from udp link to UDP Link (more professional) (cherry picked from commit c3194971ca96e5f143be58c2365b4f58ab153471)
+  * successfully connecting to model
+
+  [ pixhawk ]
+  * Added MAVLinkLight as an example how to add new protocols, it is currently not an actual implemented protocol
+  * Added NEW data plot view, fixed zoom issue in linechart
+  * Major refactoring of the waypoint code. The new design fits the model-view-controller pattern better.
+  * cleaned up the code
+  * Testing data plot iew
+  * Almost finished flexible data view, only minor improvements needed
+
+  [ lm ]
+  * Fixed stupid compile error
+
+  [ Bryan Godbolt ]
+  * Heartbeats working, but uas not created
+
+  [ Mariano Lizarraga ]
+  * Finished scaffolding the graphical addition of WP via the MapWidget. Added the possibility to display the latitude and longitude of the cursor as a property of QMapControl. Major reorganization of the MapWidget constructor
+
+  [ Bryan Godbolt ]
+  * getSignals() seems to work, but causes crash
+
+  [ pixhawk ]
+  * Documentation improvements
+  * Working on printing
+  * Cleaned up communication structure significantly, should now be easier to add new links. Signal bytesReceived(link, QByteArray) is now only way to pass on newly received data
+
+  [ Mariano Lizarraga ]
+  * Continue the scaffoldinf for the WP click creation. Now the waypoints are graphically shown in the MapControl. Ready to start interacting with the Waypoint widget
+
+  [ pixhawk ]
+  * Removed auto-connection of OpalLink
+  * Commented/cleaned up code
+  * Significantly improved plotting, now capturing data in linechart allows limmediate processing / analysis of the whole flight
+  * Cleaned up and commented major code parts. Refactoring HDD and HSI widgets to support QGraphicsView drag-and-drop, tested multi-MAV support more intensely, currently adding the system coloring to all widgets
+  * Working on QGraphicsView-based local waypoints interface supporting drag-and-drop, commented code, fixed Google Maps interface, added mouse and SpinBox zoom to HSIWidget, fixed MAV-based coloring and stylesheets - MEGA COMMIT
+
+  [ lm ]
+  * Added menu for multiple map sources
+  * Improved map widget documentation
+
+  [ Mariano Lizarraga ]
+  * Started scaffolding the drag and drop of waypoints
+
+  [ pixhawk ]
+  * Added icons for map providers, fixed a minor bug during map provider change
+
+  [ Bryan Godbolt ]
+  * working for test
+
+  [ lm ]
+  * Fixed minor newline issue in protocol generation
+
+  [ Bryan Godbolt ]
+  * added setsignal() for nav filter init
+  * added opalrt namespace file
+  * fixed parameter set issue where parameter name was becoming corrupted
+  * working on params
+  * fixed parameter set issue where parameter name was becoming corrupted
+
+  [ Mariano Lizarraga ]
+  * Dragging of waypoints now working in the map control
+
+  [ lm ]
+  * Added remote widget, commented code
+
+  [ Bryan Godbolt ]
+  * Began skeleton of parameter interface between opalrt and qgc
+
+  [ pixhawk ]
+  * Improved simulation, shows off newest features
+  * Added global position
+
+  [ Bryan Godbolt ]
+  * working on parameter interface
+  * able to read opal parameters into a map.  ready to rewrite parameter sending
+  * need to implement custom iterator on ParameterList
+
+  [ Michael Schulz ]
+  * Moved global font settings from app to stylesheet
+  * Fixed memory leak with dock widgets in MainWindow
+
+  [ pixhawk ]
+  * Added new calibration actions
+
+  [ Bryan Godbolt ]
+  * working on itertator in paramlist
+
+  [ pixhawk ]
+  * MODES fixed
+
+  [ lm ]
+  * Changed dialog box
+
+  [ Bryan Godbolt ]
+  * successfully reading parameters from model
+  * First version of OpalLink working.  Signals can be read, and parameters can be set via qgc
+  * removed some debugging output
+  * added source file OpalRT.cc (accidentally omitted in prior commit)
+
+  [ Mariano Lizarraga ]
+  * Change the way waypoints are named
+
+  [ tecnosapiens ]
+  * changes added in widget WaypointList.ui: clear path button was added
+
+  [ pixhawk ]
+  * alpha parameters updated. Only IMU parameters.
+
+  [ Mariano Lizarraga ]
+  * Changed stylesheet to better show when a button is pressed down
+
+  [ Bryan Godbolt ]
+  * added disconnect to OpalLink
+
+  [ pixhawk ]
+  * added temp bravo parameters
+
+  [ tecnosapiens ]
+  * add WaypointGlobal class to create Waypoints with earth cordinate. add widget WaypointView to widget WaypointList when create a waypoint with mouse over the map
+
+  [ Bryan Godbolt ]
+  * added ability to configure the instance id for the opal-rt link
+  * Added angular velocities.
+
+  [ tecnosapiens ]
+  * add the functionality to erase the list of Waypoint widget (WaypointView) from the button of the WaypointList widget
+
+  [ Mariano Lizarraga ]
+  * Minor comments on the WP Manager
+
+  [ tecnosapiens ]
+  * functionalities to widget  of WaypointGlobalView.cpp were added
+  * added functions to create global waypoinst, modifying the WaypointList class, MapWidget and MainWindows.
+  * add WaypointGlobalView file
+
+  [ pixhawk ]
+  * Minor adjustments to increase execution speed
+  * Added vehicle parameters - will be moved / cleaned up
+  * Added support for 3D view, ready for integration
+
+  [ Bryan Godbolt ]
+  * skeleton xml file for parameters
+
+  [ tecnosapiens ]
+  * separation of the view of the local operator of the view of the global operator adding the view of global operator. add the functionality to draw a waypoints on the map when they are generated from widget waypointlist.
+
+  [ Bryan Godbolt ]
+  * Parameter List for Opal-RT is now read from an XML file
+
+  [ pixhawk ]
+  * Re-added debug_and_release
+
+  [ Bryan Godbolt ]
+  * added console back into qgroundcontrol.pro
+  * fixed error with adding console (newline)
+  * fixed error with adding console (newline) (cherry picked from commit bd8e5bf58bd0b7d576ca0feb84bce9b1221bfd38)
+  * added radio to engineer view
+  * now sending rc values
+  * fixed enum for rc values
+  * changed output of norm rc values
+  * changed number of signals to read from opal-rt
+  * added class for radio calibration window
+  * rest of files for radio calibration class
+
+  [ tecnosapiens ]
+  * add new Widget for global waypoint  whit functionalities for edition of waypoints created
+
+  [ Bryan Godbolt ]
+  * laid out all widgets needed for radio calibration window
+
+  [ Mariano Lizarraga ]
+  * Minor changes to account for new XML file for SLUGS
+
+  [ tecnosapiens ]
+  * add functionalities for change direction of Latitude and Longitude in WaypointGlobalView.h when user editing it
+  * add functionalities for change direction of Latitude and Longitude in Waypoint.h when user editing it
+  * modify by delete of non necessary own class
+
+  [ pixhawk ]
+  * Visual improvements
+  * Fixed compile error in windows if OpalLink libs are not present
+
+  [ Bryan Godbolt ]
+  * Filled in functions for airfoils and switch
+  * filled in curve calibrator functions
+  * fixed replot of curve calibrator
+  * modified mavlink xml parser to allow any array type
+  * modified mavlink xml parser to allow any array type
+
+  [ lm ]
+  * Added 3D visualization from Lionel
+
+  [ Bryan Godbolt ]
+  * working on radio calibration
+
+  [ Lionel Heng ]
+  * Added box displaying pose information to 3D View widget --Lionel
+
+  [ Bryan Godbolt ]
+  * got uas to cast properly. in radio calibrator
+
+  [ lm ]
+  * Fixed boost dependency
+
+  [ Lionel Heng ]
+  * Added some functionality to 3D View --Lionel
+
+  [ Bryan Godbolt ]
+  * radio calibration data is now being sent to the uas
+  * radio cal data now passed properly via mavlink
+  * added connects for rest of channels
+
+  [ pixhawk ]
+  * Added 3D view
+  * Added Qt text painting to 3D widget, removed thus the dependency to FTGL
+  * WIndows compile adjustments
+  * Performance improvements to widgets, added coordinate frame to 3D widget
+
+  [ lm ]
+  * Ignoring GPS messages without fix
+
+  [ Laurens Mackay ]
+  * pos.alt fix
+
+  [ lm ]
+  * Re-added plot of unknown GPS coords
+  * Added safety checks for map clicks
+  * Added support for custom waypoint and MAV icons, please extend and adapt to your own use
+  * Cleaned up unused files
+
+  [ hengli ]
+  * Added command to select target position for robot - command can be accessed via a right-click in the 3D View perspective --Lionel
+
+  [ lm ]
+  * Fixed null-pointer issue for remote target if no MAV is connected
+
+  [ pixhawk ]
+  * Fixed compilation under MacOS, windows check next step
+  * now compiles with qt 4.7 and 64-bit linux, fixed a bug in SerialLink
+  * Removing GLUT dependency
+  * Removed GLUT
+  * Removed dependency from GLUT
+
+  [ lm ]
+  * Removed map widget signal-slot error, removed Q3DWidget compile error
+
+  [ pixhawk ]
+  * Minor adjustments
+
+  [ Bryan Godbolt ]
+  * commit before pulling upstream
+  * added file load to radio calibration
+  * added Radio Calibration settings file
+  * working on plots for loading rc data
+
+  [ lm ]
+  * Added waypoint 3D vis
+
+  [ pixhawk ]
+  * Ensured Ubuntu 10.10 compatibility
+
+  [ Bryan Godbolt ]
+  * ready to test load save and transmit for rc calibration
+
+  [ pixhawk ]
+  * Used red as waypoint color in 3D view
+
+  [ Bryan Godbolt ]
+  * fixed error in parameter list
+
+  [ pixhawk ]
+  * Fixed wrong pitch visualization
+
+  [ lm ]
+  * Fixing HUD
+  * Eventually fixed HUD directions
+  * Added data recording controls
+  * Increased possible zoom level
+
+  [ hengli ]
+  * Added working files for imagery overlay in 3D view perspective
+
+  [ Lionel Heng ]
+  * Minor changes to 3D imagery code
+
+  [ lm ]
+  * Minor compile fixes for Linux and Mac platforms
+
+  [ hengli ]
+  * Updated 3D imagery code. Non-working version.
+  * Updated .pro file to include new files for imagery implementation.
+  * Latest working version of 3D imagery overlay. Unresolved errors with Google URLs for satellite imagery.
+  * Fixed bugs in 3D imagery. Still more unresolved bugs related to tile resolution.
+
+  [ Lionel Heng ]
+  * Fixed all known bugs in 3D imagery.
+
+  [ hengli ]
+  * Minor clean-ups to imagery code.
+
+  [ Bryan Godbolt ]
+  * test setting aileron channel
+
+  [ Lionel Heng ]
+  * Cleaned up 3D imagery code.
+
+  [ hengli ]
+  * Fixed image cache bug: when a cache is full, a new image replaces the first cached image instead of the oldest cached image.
+
+  [ pixhawk ]
+  * Change Tooltip-Color
+
+  [ unknown ]
+  * Calibration parameters set successfully for input channels
+
+  [ pixhawk ]
+  * Redesigned MAVLink folder structure, suits now better multiple projects
+  * Major MAVLink cleanup
+  * Removed annoying debug output
+  * Fixed compile errors
+
+  [ hengli ]
+  * Fixed improper z-height rendering when camera is unlocked.
+
+  [ lm ]
+  * Improved simulation output to change all coordinates
+
+  [ Bryan Godbolt ]
+  * removed some debugging comments
+
+  [ pixhawk ]
+  * Temporary fix for 64bit Qt error
+
+  [ lm ]
+  * Fixed some minor wrong define names
+
+  [ Bryan Godbolt ]
+  * added some comments to radio calibration widgets
+
+  [ lm ]
+  * Ensured that a default-configured QGroundControl src repo compiles
+
+  [ Bryan Godbolt ]
+  * fixed qmake warnings about deprecated use of unescaped backslashes
+
+  [ pixhawk ]
+  * nothing changed
+
+  [ hengli ]
+  * Added support to read in imagery data from disk storage.
+
+  [ Lionel Heng ]
+  * Fixed coordinate bug in imagery.
+
+  [ Bryan Godbolt ]
+  * Completed code for interface to basic attitude controller
+  * fixed an issue with integration of latest pixhawk changes
+  * fixed sending radio calibration with new defines
+
+  [ hengli ]
+  * Added new 3D terrain model feature to 3D view perspective.
+
+  [ pixhawk ]
+  * Added ENUMs to MAVLink generator. Try with message_definitions/pixhawk.xml
+  * Minor spacing fix
+  * Last fixes on comments handling
+
+  [ Mariano Lizarraga ]
+  * Added technosapiens' Slugs View. Need to create a new menu entry and a SLUGS icon for the menu
+
+  [ pixhawk ]
+  * Updated commit style to be C89 compiliant
+  * Added hotfix to remote control view
+  * Working on new point of interest (P(POI) visualization in 3D and 2D views
+
+  [ Mariano Lizarraga ]
+  * Added the SLUGS icon and asigned it to the Menu entry related to the SLUGS view
+  * Minor changes to Slugs signals
+
+  [ pixhawk ]
+  * Fixed unneccesary header in UDPLink.cc
+
+  [ Mariano Lizarraga ]
+  * Corrected minor bugs in Map Control
+
+  [ pixhawk ]
+  * Support for 64bit windows
+
+  [ tecnosapiens ]
+  * add widget to SlugsDataSensorView.ui
+  * add widget to slugsdatasensorview
+
+  [ Mariano Lizarraga ]
+  * Fixed layout issues in SlugsView UI form
+
+  [ tecnosapiens ]
+  * working on Slugs layout
+  * add messages to slugsView
+
+  [ lm ]
+  * Training support
+
+  [ Mariano Lizarraga ]
+  * Started workin on SLUGS HIL Sim
+
+  [ tecnosapiens ]
+  * add slugs message to slugsview
+
+  [ Mariano Lizarraga ]
+  * Working on slugs HIL Sim
+
+  [ tecnosapiens ]
+  * changed global view
+  * add message to slugs data sensor view
+
+  [ Mariano Lizarraga ]
+  * Started populating the Combobox in HIL sim with the available Links
+
+  [ tecnosapiens ]
+  * deleted qDebug indication in SlugDataSensorView
+
+  [ Mariano Lizarraga ]
+  * Continuing work in HIL Sim for Slugs
+
+  [ tecnosapiens ]
+  * Add new widget: "SlugsPIDControl"
+  * connect signal of line edit widget to slot for change color when change edition in line edit in SlugsPIDControl.ui
+
+  [ James Goppert ]
+  * Updated gui for system status message load
+
+  [ Lionel Heng ]
+  * 3D View perspective now uses the OpenSceneGraph framework. Imagery feature is based on osgEarth.
+  * Removed now redundant files for 3D view perspective.
+
+  [ James Goppert ]
+  * Added waypoint types.
+
+  [ hengli ]
+  * Fixed issue with transform from screen to world coordinates.
+
+  [ pixhawk ]
+  * Enabled trail by default
+  * Removed spurious file
+
+  [ James Goppert ]
+  * Merged global/local waypoints into one.
+
+  [ hengli ]
+  * Fixed all outstanding issues with 3D view perspective except one issue: camera control.
+  * Partially fixed follow camera issue.
+  * Fixed camera control issue. No known outstanding issues.
+
+  [ Mariano Lizarraga ]
+  * First succesful test of HIL Sim. Getting ready to add the remaining messages
+
+  [ tecnosapiens ]
+  * add mavlink message a fuctions to send PDI values
+
+  [ Mariano Lizarraga ]
+  * Getting ready to send a packet to the HIL Sim
+
+  [ Lionel Heng ]
+  * Improved implementation of follow camera feature.
+
+  [ James Goppert ]
+  * Split scaled and raw rc packets to match mavlink
+
+  [ Mariano Lizarraga ]
+  * Trying to find memory leak bug
+
+  [ hengli ]
+  * Forgot to check in updated header file.
+
+  [ tecnosapiens ]
+  * add global wp draw on a map when load file
+
+  [ Mariano Lizarraga ]
+  * Working on new messages and gui updates which are time based instead of reception based
+  * Trying to find serial performance issue
+
+  [ tecnosapiens ]
+  * working on camera interface
+  * added slugs camera control
+
+  [ Mariano Lizarraga ]
+  * Changed the dragging frame for a QWidget in the slugs camera control
+  * Added dragging capabilities to slugs camera control
+
+  [ pixhawk ]
+  *  Merge
+  * Unified dev branches, enabled building of QGroundControl without OSG
+  * Enabled osgEarth support on Linux systems
+
+  [ James Goppert ]
+  * Added a more generic osgqtwidget for map3d.
+
+  [ hengli ]
+  * Fixed bug in check for osg/osgEarth dependencies for QGC. The Q3DWidget instance runs if OpenSceneGraph libraries are installed. The terrain feature is enabled if osgEarth libraries are installed.
+
+  [ pixhawk ]
+  * Ardupilot support, builds now cleanly on Windows. Fixed a bug where the application could crash if no system was connected.
+  * Fixed QMapControl, added SDL
+  * Fixed MSVC2008 compilation issues
+  * Adjusted project files for MSVC
+  * Added Windows Speech SDK / SAPI support
+  * Fixed a bug introduced by adaptions to windows platform
+  * Adjustments to QGroundControl to suit small displays
+
+  [ hengli ]
+  * Added 2D visualization of Kinect data. 3D visualization to follow soon.
+
+  [ James Goppert ]
+  * Enabled data streams for common interface.
+  * Fixed type in project file.
+  * Hooked up map/vehicle buttons for osgearth.
+
+  [ pixhawk ]
+  * added libusb include path to linux configuration
+
+  [ lm ]
+  * Removed support for very outdated Qt3, relying only on Qt4.0 now
+  * Added missing library
+
+  [ hengli ]
+  * Added vehicle model selection to 3D view perspective.
+
+  [ Lionel Heng ]
+  * Fixed error in Cessna model.
+  * Restored imagery feature. Not yet running.
+
+  [ James Goppert ]
+  * Added datarate spin box's
+  * Changed interface for enable data streams.
+
+  [ pixhawk ]
+  * Changed status message in qgroundcontrol.pro, fixed compile error in class Freenect (void* did not work)
+
+  [ lm ]
+  * Merging
+  * Working on adding generic 3D models
+  * Added option to have 2D and 3D view in parallel
+
+  [ pixhawk ]
+  * cleaned up build config
+
+  [ tecnosapiens ]
+  * not working send messages in SlugsPIDControl
+
+  [ James Goppert ]
+  * Fixed linux flags to also look in /usr/local
+  * Fixed build file for osg dep
+
+  [ pixhawk ]
+  * Working on Windows OSG support
+  * Integrating OSG
+  * Added curl and expat binaries
+
+  [ lm ]
+  * Fixed mac header inclusion
+
+  [ Lionel Heng ]
+  * Fixed build errors in latest revision.
+
+  [ Mariano Lizarraga ]
+  * Trying to get the waypoint protocol to work inside SlugsMav so not to call UAS::receiveMessage()
+
+  [ pixhawk ]
+  * corrected a compile warning in Wayppoint.cc, made adaptions to Freenect for the current revision of the code (update libfreenect repository!), commented out pixhawk poi mavlink code - needs fixing
+  * changed short int to double
+
+  [ hengli ]
+  * Added visualization of point cloud data from Kinect camera. Colorized point cloud visualization to follow soon.
+  * Added QVector declaration to avoid build error.
+
+  [ pixhawk ]
+  * Fixed compilation of OSG earth 2.9.9 on Mac OS X
+
+  [ hengli ]
+  * Added visualization of colored 3D point clouds from Kinect camera.
+
+  [ tecnosapiens ]
+  * add and test camera control widget
+
+  [ pixhawk ]
+  * m
+
+  [ tecnosapiens ]
+  * change view when add Slugs Link
+
+  [ James Goppert ]
+  * Fixed disabling of freenect.
+
+  [ lm ]
+  * Adjusted generator, fixed Linux compile issue
+  * Added updating of loss counter
+
+  [ Lionel Heng ]
+  * Re-implemented 3D imagery feature in OSG. Still a few outstanding issues to resolve.
+
+  [ pixhawk ]
+  * Fixed typo
+  * Working MSVC build
+  * Added support for Google Earth
+
+  [ hengli ]
+  * Fixed outstanding imagery issues except for one: OSG is unexpectedly culling tiles.
+
+  [ Mariano Lizarraga ]
+  * Working on having Slugs comply with the WP protocol
+
+  [ Lionel Heng ]
+  * Fixed imagery rendering issues. Robot position in Pixhawk3DWidget is now derived from the global pose (lat/lon/alt) instead of the local pose.
+
+  [ tecnosapiens ]
+  * add SlugsPadCameraWidget
+  * add SlugsPadCameraControl widget
+
+  [ Lionel Heng ]
+  * Added initial waypoint management to 3D view.
+  * Fixed bugs in waypoint management for 3D view.
+
+  [ pixhawk ]
+  * Added Google Earth support for Mac platform
+
+  [ Lionel Heng ]
+  * Added feature to 3D view to display current scale.
+
+  [ pixhawk ]
+  * Removed all sorts of menu entries and widgets not available on the various platforms
+
+  [ Lionel Heng ]
+  * Fixed coordinate system issue in waypoint management for 3D view.
+
+  [ pixhawk ]
+  * Added proper icon for Google Earth view
+  * Menu change
+
+  [ Lionel Heng ]
+  * Added to 3D view user switching between local and global coordinate system. Fixed bug in WaypointView: new instance used to assume frame is global.
+
+  [ pixhawk ]
+  * Slight improved to Google Earth widget
+
+  [ hengli ]
+  * Changed code in order to compile with latest libfreenect release.
+
+  [ lm ]
+  * Adjusted drop rate
+  * Fixed Linux compile error
+  * Moved debug message to common message set
+
+  [ Lionel Heng ]
+  * Kinect parameters are now read from a calibration file.
+
+  [ hengli ]
+  * Improved rendering performance for Kinect data.
+
+  [ lm ]
+  * Adding Button for Mode control
+  * Cleanup, moved output files, added set home button
+
+  [ pixhawk ]
+  * fixed some waypoint initialization problems (action and frame were not updated correctly in the waypoint list when read from the waypointplanner
+
+  [ Bryan Godbolt ]
+  * changed sim source to ahrs test
+
+  [ lm ]
+  * Minor cleanups
+
+  [ pixhawk ]
+  * Fixed Mac compile error
+
+  [ Mariano Lizarraga ]
+  * Fixed bug in collecting global waypoints from the autopilot
+
+  [ tecnosapiens ]
+  * change and connect signal from SlugPadCameraControl to SlugsVideoCamControl
+  * clean class SlugsVideoCamControl
+  * connect signal for get all values pid from UAS
+
+  [ pixhawk ]
+  * Fixed build command for Windows 32bit GNU
+  * Added MSVC2008 build instructions
+
+  [ Lionel Heng ]
+  * Fixed incorrect osg flags.
+
+  [ tecnosapiens ]
+  * draw camera orientation over mouse pad in SLugsPadCameraControl
+
+  [ Mariano Lizarraga ]
+  * Finished making changes to use new GoogleEarth and OSG views. None of them yet working
+
+  [ hengli ]
+  * Added additional parameters for Kinect distance estimation.
+
+  [ Mariano Lizarraga ]
+  * Changed the position of the /head tag to eliminate warning in safari developer tools
+
+  [ pixhawk ]
+  * Fixed compile errors introduced by missing ifdefs
+  * Fixed compile errors, stabilizing master branch
+  * Fixed MINGW compile errors
+  * Fixed compile errors on MINGW Windows
+
+  [ lm ]
+  * Fixed compile errors and file copy errors
+  * Changed user config default options to maintainer-safe mode
+  * Fixed Linux compile error
+
+  [ tecnosapiens ]
+  * add new function to SlugsDataSensorView
+
+  [ lm ]
+  * Fixed compile warnings
+  * Fixed compile warnings
+
+  [ tecnosapiens ]
+  * ready to merge new brach architecture
+
+  [ lm ]
+  * Fixed Linux compile dir settings to include all support files in the correct directory
+
+  [ Mariano Lizarraga ]
+  * Added support for Slugs to use the common Remote Control window
+
+  [ tecnosapiens ]
+  * connect mavlink_msg_air_data signal to SlugsDataSensorView widget
+
+  [ Lionel Heng ]
+  * Fixed transform bug in Freenect.
+
+  [ tecnosapiens ]
+  * finished the connection of signal of the slugs data in SlugsDataSensorView
+
+  [ Mariano Lizarraga ]
+  * VERY UNSTABLE. Working on changing the way widgets are constructed and shown now based on the Detected autopilot. The basic scaffolding is in place still needs a lot of work.
+  * VERY EXPERIMENTAL. Saving of location for the common widgets now working and persisted across sessions. Needs to be extended to the individual autopilot widgets
+
+  [ pixhawk ]
+  * Added widget menu
+  * Enabled selection of individual widgets in menu, persistence pending
+  * Improved application persistence
+
+  [ tecnosapiens ]
+  * clean code
+  * change slugs camera control
+
+  [ Mariano Lizarraga ]
+  * Still working on having independent builds for each MAV, most of the work is done, only Central Widgets remain to be instantiated and menu-controlled based on the autopilot
+
+  [ lm ]
+  * Fixed compile error on Linux
+  * Fixed minor bugs, fixed object detection issues
+
+  [ pixhawk ]
+  * Added detection images
+
+  [ James Goppert ]
+  * Fixed build for linux.
+
+  [ tecnosapiens ]
+  * tracking read waypoint errors
+
+  [ Mariano Lizarraga ]
+  * First semi-usable version with new menu layout based on autopilot. Still very experimental. Current Bug: Linecharts do not work. Need to find out why
+  * Fixed issue where central menus where not updated correctly
+
+  [ tecnosapiens ]
+  * tracking read waypoint from autopilot bug
+
+  [ Mariano Lizarraga ]
+  * Ready to merge to Technosapien's experimental
+
+  [ James Goppert ]
+  * Fixed build errors for linux.
+
+  [ Brandon Wampler ]
+  * implemented delete for communication links
+
+  [ Mariano Lizarraga ]
+  * Added the Raw IMU message to the SLUGS data view display
+
+  [ lm ]
+  * Minor bugfixes and compile fixes
+  * Fixed issue with serial port
+  * Added additional sanity checks to MAV2DIcon
+
+  [ hengli ]
+  * Added sphere to list of models
+
+  [ Mariano Lizarraga ]
+  * Fixed an issue with not checking the existance of SlugsDataView before calling it
+
+  [ Lionel Heng ]
+  * Added colored sphere to list of vehicle models.
+
+  [ James Goppert ]
+  * Added orbit radius to navigation waypoints.
+
+  [ Brandon Wampler ]
+  * hacked a forwarding function for patch antennas
+
+  [ pixhawk ]
+  * Simulating swarms
+  * Working on 3D view with google maps
+  * QGroundControl now compiles under Visual Studio 9 / 2008. Google Earth support for Windows close to work.
+
+  [ lm ]
+  * Fixed Windows build options to support both CP and COPY/XCOPY
+
+  [ pixhawk ]
+  * Windows Google Earth support works! Also cleaned up some unwanted project files.
+  * Minor debug output change
+
+  [ lm ]
+  * Fixed window persistence
+  * Improved and bugfixed window persistence
+  * Significantly bugfixed persistence and link adding/removal. Not yet fully there, but getting closer to release
+  * Fixed windows dependency copy nightmare - tested and works.
+  * Fixed initial startup bugs, cleaned up the activation-deactivation of update timers. Added initial instructions for new users.
+
+  [ pixhawk ]
+  * Improving Google Earth support
+  * -
+  * Substantially bugfixed and improved deactivation/activation and persistence of widgets. A lot of testing of Google Earth view, only minor improvements
+  * Update settings fix
+
+  [ lm ]
+  * Completely deactivated Google Earth plugin on systems not supporting it
+  * Fixed logging time base
+  * Added variance calculation to plot window
+  * Improved documentation and linechart
+  * Fixed minor issue with log file name
+  * Minor fix to simulation
+  * Added decent movement pattern to simulation
+
+  [ Mariano Lizarraga ]
+  * Minor changes. Looking for extreme processor overload on OSX
+
+  [ pixhawk ]
+  * Working on better param interface, improving/fixing simulation link
+  * Fixed compile error, reverted HTML file to clean state
+
+  [ lm ]
+  * YEEHAY! First working version of Google Earth direct interface - initialization is not perfect yet, current the user first has to ignore a number of script errors.
+
+  [ pixhawk ]
+  * Fixed mac compile error
+
+  [ lm ]
+  * Fixed initialization of Google Earth, works now flawlessly. Further improvements needed on simulation link and Google Earth JavaScript.
+
+  [ pixhawk ]
+  * Cleaned up line indendation, validated Google Earth on Mac
+  * Changed MAVLink packet format, working on Google Earth visualization
+
+  [ lm ]
+  * Working on new interactive control widget building, fixed timer bug in global position message
+
+  [ pixhawk ]
+  * Google earth working, ready for last fixes and performance testing.
+  * Added MAVLink version check
+  * Fixed a whole bunch of compile warnings
+  * Fixed QMapControl bug
+  * Minor improvements and bugfixes
+  * Removed unneeded DLL call.
+
+  [ Lionel Heng ]
+  * Fixed error in kinect calibration file.
+
+  [ pixhawk ]
+  * Corrected path
+  * Added new options for windows serial port, fixed a number of bugs, added customizing options to instrument widgets
+  * Fixed windows compile errors
+  * Speeded up logfile compression from quadratic to near-linear complexity
+
+  [ lm ]
+  * Added position interpolation
+
+  [ pixhawk ]
+  * Fixed multi-thread message window bug, mainwindow should not hang any more on message windows from comm threads
+
+  [ lm ]
+  * Fixed logging of large datasets
+
+  [ Mariano Lizarraga ]
+  * Minor comments
+
+  [ pixhawk ]
+  * Fixed version check to not brick application any more
+
+  [ lm ]
+  * Fixed data plot and log compressor
+  * Added VICON position message
+  * Added smoothing of Google Earth positions
+
+  [ hengli ]
+  * Added selection of target for path planner.
+
+  [ Laurens Mackay ]
+  * Variance now displayed as exponential, as it is often very big or small.
+
+  [ Lionel Heng ]
+  * Improved custom widget functionality.
+
+  [ Mariano Lizarraga ]
+  * Fixed SLUGS related warnings. Commented the visibilityChanged connection (MainWindow.cc 535) because it does not take into account when the widget is hidden when changing perspective. Will work on a fix
+
+  [ lm ]
+  * Improved performance of 2D map, trails need further debugging
+
+  [ Bryan Godbolt ]
+  * addressed fixmes and some issues from cppcheck
+  * fixed yaw offset
+
+  [ Lionel Heng ]
+  * Fixed bugs in custom widget and 3D view.
+
+  [ lm ]
+  * A lot of bugfixing of window positions, plots, buttons, initialization values
+  * Cleaned up
+  * Fixed ground time button YEEHAY!
+  * Fixed logging, added initialization for custom action widget
+  * Fixed control widget, made QGCToolWidgets more general, preparing the parameter interface widget
+
+  [ Mariano Lizarraga ]
+  * Cleaned up the MainWindow constructor
+
+  [ pixhawk ]
+  * Fixed linechartwidget alignment of data dimensions
+  * Fixed many, many small visual issues
+
+  [ Bryan Godbolt ]
+  * fixed directions on airfoil calibrator
+
+  [ lm ]
+  * Improved line chart, brought back movement on HUD (but still looks somewhat wrong on the dials). Fixed logging for ground time mode
+  * osg earth support will only activated when osg is found
+
+  [ Alejandro ]
+  * send and receive datagram
+  * HILSIM ready to test
+
+  [ lm ]
+  * Improved line plots and gauges
+
+  [ Alejandro ]
+  * HILSIM hilLink to addCombo
+
+  [ pixhawk ]
+  * Added not yet working version of logging / log replay, fixed ALL bugs in main window, enabled full persistence in main window and serial link.
+  * Minor fixes and improvements
+  * Fixed HSI, back to operational
+  * Minor cleanups, major: MAVLink logging 100% implemented
+  * Fixed broken slider, adjusted info widget font size
+  * Visual improvements and minor usability bugfixes
+  * Added version check for settings to prevent application crashes because of old, incompatible settings
+  * Added version check for settings to prevent application crashes because of old, incompatible settings
+  * Fixed settings reset function, now tested and works.
+
+  [ lm ]
+  * Added application version check
+  * Made customized widgets work
+  * Added safety check for log player
+  * Fixed minor bug in QGCToolWidget
+
+  [ Mariano Lizarraga ]
+  * Removed some warning from QGCParamSlider. Fixed some merge issues in Slugs HIL Sim
+
+  [ lm ]
+  * Cleaned up Unmanned systems list widget, reduced size requirements of the widget
+  * Adjusted to small screens
+
+  [ pixhawk ]
+  * Working on param slider
+
+  [ lm ]
+  * Fixed low-altitude google maps support, reconfigured map widget to maximize map visibility
+
+  [ Lionel Heng ]
+  * Added plan reset to list of available actions for custom widget.
+
+  [ Mariano Lizarraga ]
+  * Commented an unnecessary MainWindow.h include in MavlinkProtocol
+  * Started the scaffold for unit testing UAS class
+
+  [ lm ]
+  * Fixed MSVC compile error
+  * Working on better simulation implementation, fixed a bug where the port handle was not fully released
+
+  [ INIDETAM ]
+  * Changes in TestUnit
+
+  [ Mariano Lizarraga ]
+  * Some initial unit tests in place for UAS class
+
+  [ INIDETAM ]
+  * Adding methods to test unit
+
+  [ pixhawk ]
+  * Experimental support for larger map tile buffer
+
+  [ lm ]
+  * Cleaned up serial link handling, eliminated double menu entries and safeguarded the link list. Did intentionally not improve the object dependency issue, will work on that on a global scope
+  * Fixed a couple of serial link bugs only showing in windows
+  * Fixed last comm port config error
+  * Allowed the removal of UAS objects, added aggressive disconnect warning
+  * Fixed include guard fails for SLUGS message set
+
+  [ Mariano Lizarraga ]
+  * Minor changes to unit tests
+
+  [ lm ]
+  * Fixed include guard
+
+  [ Mariano Lizarraga ]
+  * Removed duplicated declaration of method in SlugsMAV.h
+  *  Changed for a simpler way unit tests can be set up and run. Now tests can be simple classes which implement the tests
+
+  [ pixhawk ]
+  * Changed waypoint list file format (old files are not compatible anymore!), added file version check, now all waypoint entries should have an entry in the waypoint list file - although qgc does not use/read the orbit_direction and param1 fields. QGC writes the value of orbit into param1 and 0 to orbit_direction (this should and will be changed later!)
+  * Minor compile fixed, added permanent storage of UAS name
+  * Resolved unit test compile errors
+  * Line endings fix, changed simulation type.
+  * Enabled waypoints in simulation, implemented factory class for UAS objects
+  * Fixed map double waypoint issue
+  * Partly fixed map issues, updated joystick interface
+  * Bugfixed log replaying, still working on it
+  * Adjusted minor paths and destructors
+
+  [ Mariano Lizarraga ]
+  * Commented out SLUGS widgets for debugging
+
+  [ pixhawk ]
+  * Fixed 2D map regarding waypoints (almost done), added option to replay image logs in HUD view
+  * One step closer to fulle rewritten WP interface
+  * Fixed bugs
+  * Brought 2d map widget back to life. Not perfect yet, but with support for most important features
+  * Additional minor fixes to WP interface
+  * Fixed minor compile errors
+  * Added further video widgets
+  * Working on final main window version
+  * Fixed all known issues in application persistence
+  * Bugfixes to waypoint interface,  added UAS icons
+  * Added binary format option to MAVLink log player
+  * Added status progress message to log player
+  * Fixed last nasty wp management bugs, now first time 2D map is fully synced with WPManager
+  * Fixed line plots error
+  * Fixed last wp issue
+  * Improving simulation
+  * Fully working waypoint interface, thoroughly tested. Active waypoint setting has to be debugged in the simulator, but works fine on real hardware
+  * Added named value packet
+  * Fixed issue in simulation link
+  * Removed spurious references to global waypoint files
+  * Added right-click option to select MAV, ensured that waypoints get updated properly on switching MAV
+
+  [ lm ]
+  * Added more map icon customization options, added serial link debugging
+  * Fixed CRLF, fixed some graphic issues, improved other minor things
+
+  [ pixhawk ]
+  * Added full support for multi-MAV wp handling, cleaned up simulation
+
+  [ lm ]
+  * Fixed support for CRLF and other special symbol handling
+
+  [ Alejandro ]
+  * check code UAS
+
+  [ lm ]
+  * Improved UI
+  * Fixed line end handling in communication console, allowed to use enter for sending
+  * Added command history
+  * Supported now CR, LF, and CR+LF line breaks
+  * Added persistence to debug console
+  * Added option to clear Google Earth trails
+
+  [ pixhawk ]
+  * Fixed google earth runtime issues
+
+  [ Mariano Lizarraga ]
+  * Added a qDebug() message handler for windows installs that have no debug helpers. Hunting bug in Mode change in UASView
+
+  [ Alejandro ]
+  * white space
+
+  [ pixhawk ]
+  * fixed live stream position
+
+  [ hengli ]
+  * Fixed typo in Linux header declarations for Phonon.
+
+  [ Andrew Tridgell ]
+  * added decoding for MAVLINK_MSG_ID_GLOBAL_POSITION
+  * fixed build
+
+  [ pixhawk ]
+  * Added angle conversion testing, added battery settings option, added option to set MAVLink ID of groundstation
+  * Added warning voltage
+  * Cleaned up debug output and fixed logging using settings
+  * Fixed minor visual issues in multiple views
+  * Minor improvements throughout the application to improve usability
+  * Last fixes to yaw angle displaying / representation
+  * Minor visual improvements
+  * Minor layout adjustments in HSI
+
+  [ Bryan Godbolt ]
+  * reconnected set channel for radio calibration window
+
+  [ pixhawk ]
+  * Added support for more generic waypoints / mission items
+
+  [ James Goppert ]
+  * Fixed some build errors.
+
+  [ pixhawk ]
+  * Made map widget aware of non-global frame waypoints
+  * Updated commented in map widget
+  * Added proper support for loading / updating different stylesheets
+  * Fixed windows visual studio compile warnings.
+  * Fixed minor issues in HUD
+  * Added link to credits
+  * Updated Linux build instructions
+  * Added missing update call, renamed Waypoint List to Mission Plan
+  * Added initial waypoint support
+  * Made MAVLink parser aware of line breaks in comments, added new servo output packet to QGC and simulation, enabled servo output display in new Actuator View (previous Payload view)
+  * Added link multiplexing, added several new packets
+  * Cleaning up WP interface
+  * Refactoring WP interface, somewhat brittle and untested at this point - use the master branch if you need stable code right now
+  * Fixed windows MSC compile warnings (Visual Studio)
+
+  [ lm ]
+  * Fixed master branch
+  * Cleaned up minor things, small bugfixes
+  * Adjusted to updated MAVLink packets
+  * Last adjustments to new mission structure
+  * Last minor fixes
+  * Last minor fixes
+  * Made param7 accessible as well
+
+  [ pixhawk ]
+  * Fixed win compile error
+
+  [ Alejandro ]
+  * Working in SLUGS widgets for debug
+
+  [ lm ]
+  * A number of bugfixes for various MAVLink messages
+  * Minor naming changes to MAVLink enum end
+  * Added a number of fixes
+  * Made param interface more chatty with a status label. No retransmission active yet, but no silent drops any more
+  * Cleaned up WP storage format
+  * Decoupled WP frame from custom command fields
+  * Fixed waypoint interface to adhere to specs, fixed param name length
+  * Fixed battery voltage setting, fixed mean in linechart
+  * Finishing refactoring for today, added persistence to map position and zoom level
+  * Working on proper battery status reading
+  * Fixed stupid logging bug
+
+  [ Alejandro ]
+  * Working on UASUnitTest
+
+  [ lm ]
+  * Added checkbox to enable / disable all curves at once
+  * Added settings dialog for QGroundControl, holds for now only MAVLink preferences
+  * Working on debug console auto hold feature, added param retransmission
+  * Changed param re-request timeouts
+  * Changed timeout scheme for params
+  * Added parameter timeout setting options to MAVLink protocol
+  * Added setting for action retransmission, implementation of actual retransmission pending
+  * Fixed debug console, fixed nav mode, fixed WP interface
+  * Fixed orientation calculation in simulation and several widgets
+  * Fixed waypoint reading
+  * Fixed bug where Yahoo maps did not show waypoints
+  * Added debug output for QMapControl library, added GPS_RAW_INT message
+  * Minor changes
+
+  [ pixhawk ]
+  * Fixed windows build errors/warnings
+
+  [ lm ]
+  * Added style to preferences menu, added option to auto-reconnect link on startup
+  * Added write retransmission
+  * Minor fix to simulation link
+  * Minor text change
+  * Minor changes
+
+  [ pixhawk ]
+  * preparation to display images in HUD
+
+  [ lm ]
+  * Minor adjustments
+  * Fixed a small bug where param values in GPS RAW packets were not correctly updating the GCS state
+  * Fixed waypoint in Google Earth
+  * Waypoint creation and drag-and-drop working in Google Earth
+  * Fully working drag and drop for Google Earth
+  * Optimized WP view layout
+
+  [ pixhawk ]
+  * removed unnecessary list element operations when updating waypoint list view. There is still some crazy updating going on - most probably in the wp widgets
+
+  [ lm ]
+  * Fixes to Google Earth, guarded a PIXHAWK message with correct include guards
+  * Fixed minor bugs introduced in last commit
+  * Fixed WP interface
+
+  [ pixhawk ]
+  * Adding full google maps support to windows
+
+  [ lm ]
+  * Fixed initialization order of map widget
+
+  [ pixhawk ]
+  * fixed wrong sequence numbers when saving waypoint list
+
+  [ lm ]
+  * Temporary fix to map widget issue
+
+  [ Alejandro ]
+  * Update files test unit
+
+  [ lm ]
+  * Improved Google Earth interface, clearing trails works, switching views works (but is not yet perfect), switching editing mode on/off works
+  * Small usability fixes for the Google Earth view, is now more convenient to use. Editing now only possible in edit mode, prevents false edits
+  * Reading out heading from VFR_HUD
+
+  [ pixhawk ]
+  * Improved windows google earth support. Very close to full closed loop.
+  * GOOGLE EARTH WORKS ON WINDOWS! FULL SUPPORT NOW!
+
+  [ lm ]
+  * Fixed typo
+  * Implemented moving the home location
+  * Last final visual tweaks
+
+  [ James Goppert ]
+  * Fixed linux build.
+  * Added cmake build system. Almost working.
+  * Further progress on cmake build system.
+  * Few link errors left on cmake.
+  * Cmake project building on debian.
+  * Fixed resource problem with cmake.
+  * Packaging fixes.
+
+  [ lm ]
+  * Started parameter interface refactoring to adhere to MVC design pattern. Working on getting custom widgets completely up and running
+
+  [ James Goppert ]
+  * Working on cmake file compat.
+  * Some minor cmake fixes.
+  * Flite fixed for unix and cmake.
+
+  [ Mariano Lizarraga ]
+  * Fixed some missing curly braces that were removed by the conflict resolution tool
+
+  [ lm ]
+  * Fixed dynamic param widget! Now ready to use!
+  * Finished param slider implementation, quite usable by now. No guarantees yet on read requests
+
+  [ James Goppert ]
+  * Fixed lib flag error.
+  * Fixed typo.
+  * Added path fo FindPhonon script.
+
+  [ Alejandro ]
+  * Add widget UASControlParameters
+
+  [ James Goppert ]
+  * Working on cmake osg bug.
+  * Fixed osg cmake error.
+
+  [ lm ]
+  * Fixed last waypoint widget issues
+  * Added command button
+  * Allowed to transmit parameters with actions
+  * Slight persistence adaptions. Now improving UI before taking video
+
+  [ James Goppert ]
+  * osg cmake fix, 2nd try
+
+  [ lm ]
+  * Working on usuability improvements in the parameter interface
+  * Last usability fixes for param interface
+
+  [ James Goppert ]
+  * Updated mavlink version.
+  * Adding new sources.
+  * Cmake bug fix.
+  * Cmake bug fix.
+
+  [ lm ]
+  * Fixed minor javascript console output error
+
+  [ Alejandro ]
+  * Update send message CMDS and CTRL
+
+  [ Mariano Lizarraga ]
+  * Added Line Chart and Google Earth to Slugs build process. Added HIL naming of mode Test3
+
+  [ Alejandro ]
+  * Add button setHome to MapWidget
+  * Remove SlugsVideoCamControl and modification of SlugsPadCameraControl
+
+  [ Mariano Lizarraga ]
+  * Added support for parameter interface to SLUGS
+
+  [ James Goppert ]
+  * Changed package name not to conflict with debian package.
+
+  [ Alejandro ]
+  * Update MapWidget, delete layer camera
+
+  [ Mariano Lizarraga ]
+  * Added support for parameter interface to SLUGS
+
+  [ Alejandro ]
+  * Save configuration layer view in MapWidget
+
+  [ Mariano Lizarraga ]
+  * Fixed merge issues
+  * Removed SLUGS' PID form to give way to the parameter interface. Replaced Old SLUGS messages for their common equivalents. Hunting bug in Home Position in MapControl
+
+  [ Alejandro ]
+  * Add drag to home position
+
+  [ lm ]
+  * Updated QGC
+  * Added option for fullscreen
+  * Added proper support for fullscreen mode, fixed issue with window state update on perspective change
+
+  [ Alejandro ]
+  * Change slugs_messages to common_messages
+
+  [ Mariano Lizarraga ]
+  * Added support for scaled and raw pressure messages
+
+  [ pixhawk ]
+  * fixed infinite loop when reading empty wp list
+
+  [ Mariano Lizarraga ]
+  * Added support for HIL SIM state. Changed the labels that are show for certain modes that SLUGS uses
+
+  [ pixhawk ]
+  * fixed a bug where z-value of a waypoint was unintentionally changed to old y-value
+  * Fixed a bug where it was possible to "write" a waypoint list without any "current" waypoint. Now the last waypoint is set as "current" in this case.
+
+  [ lm ]
+  * Added support for Drone OS forwarding, MAVLink auth
+  * Cleanup
+  * Reverted buggy changes
+  * Fixed all SLUGS issues, fixed 2D map
+  * Added opmapcontrol
+
+  [ James Goppert ]
+  * Updated mavlink submodule.
+  * Fixed cmake build.
+
+  [ lm ]
+  * Added opmapcontrol
+
+  [ James Goppert ]
+  * Added qserial library.
+  * Finished abstracting serial port.
+  * K/R formatting, debugging serialport.
+  * Added qserialport to qmake build.
+  * Fixed cmake link issue with qserial.
+  * Serial tx/ rx working again, currently hardcoded settings
+  * Fixed serial lag issues.
+  * Fixed git build order issue.
+  * Moved git submodule stuff out of cmake file.
+
+  [ lm ]
+  * Fixed opmapcontrol build issues
+
+  [ James Goppert ]
+  * Added local qserial.
+  * Added local mavlink.
+  * Updated mavlink.
+  * Added new messagess.
+  * Some formatting.
+
+  [ lm ]
+  * Fixed UDP multiplexer bug, fixed serial compile errors
+
+  [ James Goppert ]
+  * Fixed lat/lon precision in logging.
+
+  [ lm ]
+  * Working on new map support
+  * Improved debug output
+
+  [ Andrew Tridgell ]
+  * mavlink: generate a MAVLINK_MESSAGE_LENGTHS define
+  * mavlink: report bad message lengths to the console
+
+  [ lm ]
+  * Working on 2D map
+  * Added baudrate 921600, made uart in basic mode operational
+  * Getting 2D OPMapControl to work
+
+  [ James Goppert ]
+  * Updated autobuild script.
+
+  [ lm ]
+  * Working on map
+
+  [ LM ]
+  * Moved sim to SF
+  * Updated qserialport
+  * Minor compile fixes
+  * Fixed NULL pointer issue if no MAV is connected
+  * Fixed logging
+
+  [ pixhawk ]
+  * displaying live images from uas in groundcontrol (merged)
+  * bugfixes for image transmission
+
+  [ lm ]
+  * Adjusted splash screen
+
+  [ pixhawk ]
+  * bmp_22x22_8bit sometimes showing from bmp_22x22_8bit_greyscale.mavlink with random pixels
+
+  [ LM ]
+  * Fixed image transmission code
+  * Fixed lower/uppercase writing of files
+  * Fixed filename error
+  * Fixed small Eigen-related execution error
+  * Tested and validated parameter transmission
+  * Minor fixed to simulation
+
+  [ lm ]
+  * Minor compile time fixes.
+
+  [ LM ]
+  * Minor compile fixes for v1.0
+
+  [ pixhawk ]
+  * Cleaned up serial port libs, activated mav visualization on map (still debugging), fixed standalone MAVLink generator
+  * Improving DOM view of messages
+  * Made protocol generator much more usable, more UI tweaks needed to improve usability
+  * Made OPMapControl work with multiple UAVs - more polishing and waypoint support needed
+  * Working multi-MAV visualization with trails and icons
+  * Working WP manager -> map waypoint updates. List reordering does not work yet. Next steps: List reordering, map -> WP manager updates, better waypoint graphs
+  * Updating WP coordinates from map via drag and drop works. Working now on list enumeration changes
+  * Renumbering works, need clear plan on naming / numbers, but this is conceptual only
+  * Added full-fledged multi-wp type interaction. WP-connecting line still missing.
+
+  [ lm ]
+  * Added patches from Paul G.
+  * Working towards working maps without runtime issues
+  * Re-enabled settings and state of the art tool widgets
+  * enabled instrumentation
+  * Fixed a bug where non-auto hold in the debug console induced 100% CPU load even when the widget was hidden
+  * Added serial support for /dev/ttyACM devices on LINUX
+  * Added ttyACM devices for MAC OS as well
+  * Runtime issues resolved, quick application startup and good runtime stats: 0.3% load in idle mode, 15% load showing map and UAS list. Map has a zooming issue, but should be resolvable
+  * Added opmapcontrol library in local configuration
+  * Minor tweaks on waypoint interaction. Suspected bug in OPMapControl mouse position handling.
+  * Stable waypoint drag-and-drop, fixed a number of funky waypoint update methods.
+  * Working 2d map use, needs more testing though
+  * Map caching works now, uav following as well. Waypoint lines and some graphical tweaks needed, but its very close to an alpha release now
+  * Added waypoint connecting lines
+  * Improved map caching, waypoints and lines now colored with UAV colors, debugging map drag / zoom issue with waypoint lines
+  * Fixed bogus gitignore file
+
+  [ LM ]
+  * Working towards windows build of clean maps branch
+
+  [ lm ]
+  * Working towards correct line updates - not tested yet, might create runtime issues
+
+  [ LM ]
+  * 2D map now fully operational
+  * Working on 3D lines in Google Earth
+  * Adjusted a large number of files to work with VS2008 compiler
+
+  [ lm ]
+  * Cleaning up compile
+
+  [ LM ]
+  * Fixed last compile issues on Windows 7 / VS2008
+
+  [ lm ]
+  * Added video application, not working yet
+
+  [ LM ]
+  * Working on starting version of video streamer
+  * Finished early video streaming prototype
+
+  [ Bryan Godbolt ]
+  * got data streaming into radio calibration window again
+  * updated define macro for ualberta messages
+  * converting pulse widths to uint16_t from float
+
+  [ fattony ]
+  * fixed windows build
+
+  [ LM ]
+  * Fixed small bug in XML generation error handling
+
+  [ pixhawk ]
+  * added vision speed estimate parsing (pixhawk specific)
+
+  [ Bryan Godbolt ]
+  * working on radio calibration window
+  * radio calibraion working
+
+  [ lm ]
+  * Removed MAVLinkGen from main QGC codebase-readding it now as standalone app
+  * Re-enabled MAVLinkgen as included widget, but now cleanly separated codebase
+  * Updated to latest MAVLinkGen version
+  * Changes to MAVLinkGen, now a standalone generator included in QGC
+  * Minor compile fixes and cleanups
+  * Minor cleanup
+  * Fixed readme to better reflect windows build process
+  * Cleaned up MAV icon, made it easier to spot non-selected MAVs on map
+  * Fixed initialization bug for joystick, thanks to bluescreen10 on GitHub for pointing this out
+  * Fixed issue with wrong MAVLinkGen configuration
+  * Fixed compile warning
+
+  [ LM ]
+  * Working on user-loadable custom widgets
+  * Significantly improved logging precision, added hole filling for missing data points (user-preferences for this still pending)
+  * Added option to zero-order hold for logging
+  * Improved user hint for zero order hold
+
+  [ fattony ]
+  * increased buffersize to 2^16 bytes
+
+  [ LM ]
+  * Fixed data stream interface widgets - now transmitting after 400 ms user timeout. No more data stream request flooding
+  * Increased interval to 800 ms
+
+  [ fattony ]
+  * added byte decoding for current image stream
+
+  [ Bryan Godbolt ]
+  * fixed some stability issues with qgcremotecontrol view
+
+  [ LM ]
+  * Added the option to set the HOME position from the UAV
+  * Working
+  * Added coordinate conversion for global / local conversion
+  * Working on home location improvements
+  * Fixed file filter for MAVLink log files
+  * Fixed very bad plot bugs preventing correct plotting, made QGC suspectible to plot crashes
+  * Fixed trail plotting
+  * Fixed installer script to include recursive directories
+  * Fixed compile errors and warnings for Windows.
+  * Working on map menu, fixing plot
+  * Fixed a few odd things
+
+  [ lm ]
+  * Disabled bogus calibration buttons
+  * Substantially improved map menu, allows now to set update rate and trail distance / time
+
+  [ LM ]
+  * Windows build adjustments
+
+  [ lm ]
+  * Made map settings persistent with respect to UAV trail setup
+  * Minor fixes, settings store / load not working yet as expected for map trail options.
+
+  [ Franz ]
+  * Adapted for use with vc2010
+  * added libxbee library
+
+  [ LM ]
+  * Fixed another plot scaling bug
+
+  [ lm ]
+  * Added trail clear button
+
+  [ LM ]
+  * Removed old libraries
+  * Added double opmapcontrol library
+  * Fixed a compile error occuring on *nix systems due to VS2010 changes
+
+  [ Franz ]
+  * added additional xbeefiles
+
+  [ oberion ]
+  * Xbee communication can be opened
+
+  [ LM ]
+  * Added status bar as general user summary, very early on still
+
+  [ oberion ]
+  * changed Xbee pop up
+
+  [ LM ]
+  * Fixed generator bug
+  * Commented out a lot of debug output, silencing the debug console mostly
+  * Commented out more debug statements
+  * More debug output removed, trying to fix some threading issues on application shutdown
+
+  [ oberion ]
+  * added copystatement to have all dll in right folder
+
+  [ LM ]
+  * Fixed file copy commands
+
+  [ oberion ]
+  * Xbee window fixes
+  * Working Xbeelink + DebugConsole ComboBox bugfix
+  * Debug console bugfix
+
+  [ LM ]
+  * Auto-deleting unwanted build files from release directory, build script now perfectly creates a distribution-ready folder structure.
+
+  [ fattony ]
+  * enabled all four video streams with image id check
+
+  [ LM ]
+  * Added most recent MAVLink
+  * Replaced this time really the up-to-date MAVLink version;
+
+  [ oberion ]
+  * Updated README for Xbee use
+
+  [ lm ]
+  * Cleaned up, removed K&R from two files before merge (QGC SHOULD use GNU, NOT K&R!)
+  * Added v0.9 and v1.0 parser options, working towards V1.0 MAVLink release candidate
+  * Working towards MAVLink v1.0 code generation
+  * Updated to MAVLink v1.0
+  * Updated to v1.0
+  * Finished porting, successfully tested with UDP MAVLink v1.0 client
+  * Cleanup of code generator, working towards field hashes
+
+  [ oberion ]
+  * Added makefiles
+  * changed Xbee disconnection
+  * updated gitignore list
+  * added SenseSoar Mavlink Messages
+
+  [ lm ]
+  * Removed bogus AS4 proto place holders
+  * Added FlightGear interface framework, not yet compiled and not yet fully operational
+  * Added ports for FlightGear in/out
+  * Removed last includes to AS4Protocol
+
+  [ LM ]
+  * Tested FlightGear interface
+  * Slightly updated models
+  * Updated MAVLink v1.0 release candidate sources
+  * Updated to latest MAVLink
+  * Updated packed MAVLink sources
+  * Minor MAVLink cleanups, might compile now - but not guaranteed
+  * Last changes
+  * Updated a few messages
+  * Updated MAVLink
+  * Added controller output support
+  * Minor compile fixes
+
+  [ oberion ]
+  * SenseSoar messages included
+  * first working version with the senseSoar
+  * Serial commmunication bug fix
+
+  [ LM ]
+  * Deactivated libxbee
+
+  [ lm ]
+  * Updated embedded MAVLink
+  * Updated MAVLink code generator
+  * Updated MAVlink
+  * Adjusted release version
+  * Ported a larger portion to MAVLink v1.0
+  * Pushed HIL further
+  * Working on HIL
+
+  [ pixhawk ]
+  * readded vision speed estimate display in realtime graph view, pixhawk specific
+
+  [ LM ]
+  * Flightgear sim running
+  * Minor improvements on FG link
+  * Working on video streaming
+
+  [ oberion ]
+  * changed position message
+  * Google earth bug fixed
+
+  [ lm ]
+  * Improved HIL slightly
+
+  [ pixhawk ]
+  * wrongly named field in roll/pitch/yaw/thrust setpoint message
+  * added optical flow message display to realtime plot
+  * added distance to optical flow
+
+  [ lm ]
+  * Updated to most recent MAVLink v10 draft
+  * Added param tooltips
+  * Folder structure cleanup, added APM tooltips
+
+  [ LM ]
+  * Fixed a few v10 porting issues with PIXHAWK messages, improved GPS display
+  * Fixed long-standing issues with HSI display and load logging
+  * Fixed timing steps
+  * Minor cleanups
+  * Added detected face function
+
+  [ lm ]
+  * Working on MAVLink inspector
+  * Added MAVLink inspector
+  * Prepping merge
+
+  [ LM ]
+  * Updated MAVLink to latest draft
+  * Updated to latest MAVLink v1.0 draft, ported app to API changes
+  * Updated packaged files
+
+  [ lm ]
+  * Enabled generic message decoding
+
+  [ LM ]
+  * Fixed a bug in the default options
+  * Fixed wrong timing values of control outputs
+
+  [ oberion ]
+  * Minor senseSoar message changes
+
+  [ lm ]
+  * Ported to final MAVLink v1.0 draft
+  * Fixed Google Earth
+  * Added correct MAVLink version to thirdparty directory
+  * Fixed Google Earth bug
+  * Fixed wrong message timings in simulated waypoint planner
+  * Removed old comments
+  * Minor compile fixes, added velocities to simulation
+  * Made Flight Gear link multi-system aware
+  * Working on main window cleanup
+
+  [ oberion ]
+  * Added libxbee library
+
+  [ LM ]
+  * Cleaned up MainWindow init dramatically, relying now on Qts persistence capabilities. Fixed a number of view persistence issues this way
+
+  [ oberion ]
+  * Model in google earth is now rolling and pitching
+
+  [ pixhawk ]
+  * Fixed logging on logging abort bug
+
+  [ oberion ]
+  * Added senseSoar model for google earth with rolling and pitching
+
+  [ LM ]
+  * Fixed window state initialization
+
+  [ pixhawk ]
+  * Solved bugs for large angles
+  * Fixed custom widgets, now working as expected with default config
+
+  [ LM ]
+  * Fixed a number of small persistence bugs, made color assignment on click only;
+  * Working on plot speed improvements
+
+  [ lm ]
+  * Fixed a few waypoint and persistence issues
+
+  [ pixhawk ]
+  * Added files
+  * Persistence fixes
+  * Cleaned up coordinate frame of HSI
+
+  [ lm ]
+  * Improved default initialization
+  * Fixed Log replay
+
+  [ LM ]
+  * Fixed status view
+
+  [ pixhawk ]
+  * Fixed plot variable naming
+
+  [ oberion ]
+  * Changed project file. Project can be included in VC with QTaddin such that moccing is not always performed
+
+  [ pixhawk ]
+  * Cleaned up folder structure, finished toolbar
+  * Improved log replaying substantially
+  * Fixed a number of small bugs and issues, WP handling makes more sense now
+  * Added global localization plotting
+  * added custom commands 0-15 to the dropdown field in the widget designer
+
+  [ LM ]
+  * Fixing Line chart
+  * Fixed earlier merge error, linechart operational again
+
+  [ lm ]
+  * Fix for win compile environment
+
+  [ pixhawk ]
+  * Plot recoloring, substantial fixes to HSI widget
+
+  [ oberion ]
+  * CLosing UASManager properly, first changes to better UDP port integration
+
+  [ pixhawk ]
+  * Fixed simulation link, cleaned up setpoint setup
+
+  [ oberion ]
+  * Corrected Bug with a few UAS.h signals which where defined twice.
+  * Cleaned some more signal bugs
+
+  [ pixhawk ]
+  * Implemented setpoint limitation, fixed user interaction initialization for HSI
+  * More state checking on user interaction, catching corner cases
+  * Last setpoint fixes
+  * Made HSI a little more robust in interaction
+  * changed setpoint acceptance criteria
+
+  [ LM ]
+  * Fixed compile errors
+
+  [ oberion ]
+  * Changed UDP link
+
+  [ lm ]
+  * Mainwindow cleanup, fixed short value filter in Linechart, working on Python XML parser support
+  * Mainwindow cleanup, fixed short value filter in Linechart, working on Python XML parser support
+
+  [ oberion ]
+  * Changed Xbeelink configuration
+
+  [ lm ]
+  * Cleaning up auto-config files, working on toolbar usability
+  * MAVLink generator works as python call now on *nix systems
+  * Minor edits
+  * improved toolbar updates
+  * improved toolbar updates
+  * Re-enabled custom widget loading
+
+  [ LM ]
+  * Updated MAVLink, working on fixing custom widgets
+  * Fixed roll angle in Google earth, still not smooth. Fixed a number of threading issues. Fixed all custom widget related bugs. Improved MAVLink decoder. Reduced CPU usage substantially across all views
+  * Substantially improved runtime speed, fixed a few more bugs
+  * Working on auto params
+
+  [ lm ]
+  * Improved parameter slider, reads now correctly initial value
+  * Changed braces
+
+  [ LM ]
+  * Fixed and thoroughly tested custom widgets
+  * Fixed all known waypoint-editing related issues
+  * Working on fixing last interaction issues with Google Earth view
+  * Discovered source of imprecision of wp map updates, can be solved, on track
+
+  [ pixhawk ]
+  * Hiding setpoint once timed out
+
+  [ LM ]
+  * Finally resolved waypoint positioning issues, 2D and 3D map work now nicely together with less flicker
+  * Added MAVLink examples
+
+  [ lm ]
+  * Updated splash screen
+  * Fixed bug in RC view
+
+  [ LM ]
+  * Added auto-loading APM heading widget
+
+  [ pixhawk ]
+  * fixed compile errors on linux
+
+  [ lm ]
+  * Fixed strange OpenPilot startup bug - needs more investigation though.
+
+  [ LM ]
+  * Fixed wrong serial speed
+
+  [ pixhawk ]
+  * implemented GUI for the future "View" tab
+  * renamed "WaypointViewViewOnly" class to "WaypointViewOnlyView" class. Some other minor changes
+  * renamed "WaypointView" to "WaypointEditableView", as a counterpart to "WaypointViewOnlyView".
+  * Added "editable" keyword to the name of functions, that are relevant for view-edit separation.
+  * Added a lot of " view only" functions and renamed some of the old functions. This version compiles, but has a lot of bugs.
+
+  [ LM ]
+  * Minor cleanup, fixed a bug where the serial port would not connect on first application launch on Linux
+
+  [ pixhawk ]
+  * View-Edit waypoint list separation implemented. Working, but still has come bugs.
+
+  [ lm ]
+  * Improved visual style of waypoint editing component, freed up space
+  * Minor edits
+  * Minor tweaks
+
+  [ pixhawk ]
+  * Fixed changing "current" bugs. Should now work as intended.
+
+  [ lm ]
+  * Merged in WP changes from Trof, implemented standalone mode
+  * Final implementation, pure pointers
+
+  [ pixhawk ]
+  * Preparation for offline WaypointList. Does not compile!!!
+
+  [ LM ]
+  * Removed nasty paper hack
+  * Added debug vects
+  * Cleaned up debug vects, fixed a few bugs in radio control widget
+  * Concluded last real messages in porting to V10
+  * Minor include fix
+  * Updated bundled MAVLink version to latest v10 draft
+  * Working on HIL
+
+  [ lm ]
+  * Fixed flightgear HIL
+  * No nice scenery yet, but dynamics work
+  * Cleaned up FG files
+  * Working HIL!
+
+  [ LM ]
+  * Added conversion functions
+  * Fixed command long compile issues, fixed bug in PI wrapping, improved stability
+
+  [ pixhawk ]
+  * Fixed v10 compile errors;\
+
+  [ oberion ]
+  * Intermediate step
+
+  [ pixhawk ]
+  * Flight fixes
+
+  [ Lorenz Meier ]
+  * Switched to 64 bit for Mac as default, fixed various compile warnings, now down to < 10 warnings
+
+  [ LM ]
+  * Fixed errorneous win-only qt tools defines, merged serial port fixes from Konrad Rudin and libxbee
+
+  [ Lorenz Meier ]
+  * Fixed compile warnings, fixed a windows-specific compile error
+  * Temporarily deactivated libxbee due to missing files
+  * Re-enabled automatic gauges, now again user-configurable
+  * Enabled persistence on custom gauges
+
+  [ oberion ]
+  * Added HexSpinBox files
+  * include libxbee again
+  * wrong statement in .pro file
+
+  [ pixhawk ]
+  * Fixed audio error on Linux, added Hz rate to MAVLink inspector, fixed logging for 0 timestamps
+  * Added update rate calculation for incoming messages
+
+  [ LM ]
+  * Compiling 32bit on Mac OS again to re-gain Google Earth support, fixed MAP API KEY to re-enable Google Maps support, added Asctec Hex rotor and SenseSoar models
+  * Improving state updates for multiple MAVs, fixed Google Maps and Google Earth
+  * Added up-to-date sfly hexrotor
+  * Fixed Asctec Firefly model, ready to incorporate 3D models
+  * Unstable multi-vehicle support
+
+  [ pixhawk ]
+  * updated the looks of Onboard Waypoints window, when no UAV is present. Updated mission Save and Load to use version 120
+
+  [ oberion ]
+  * Working mavlink generator under windows
+  * Solved bug with QSqlDataBase
+
+  [ LM ]
+  * Minor fixes
+  * Added support for multiple components emitting the same message
+
+  [ oberion ]
+  * Deleting the MainWindow instance after closing application
+  * Small changes for senseSoar Messages
+
+  [ pixhawk ]
+  * changed takeOffAngleSpinBox values
+  * changed takeOffAngleSpinBox values
+
+  [ hengli ]
+  * Added more lib search paths.
+
+  [ LM ]
+  * Re-enabled OSG support for Mac OS, for the 32bit build (64bit does not support Google Earth) the local 3D map is now enabled per default
+
+  [ pixhawk ]
+  * Added 921600 and two other useful win baud rates
+
+  [ hengli ]
+  * Added support for Google Protocol Buffers.
+
+  [ Lionel Heng ]
+  * Enabled visualization of point cloud data via Protocol Buffers serialization and extended_mavlink_message.
+  * Slightly improved handling of incoming UDP data.
+  * Improved extended message handling.
+
+  [ Lorenz Meier ]
+  * Removed CMake files as support for CMake was largely unmaintained
+  * Removed special instructions for Linux leading to qt creator not finding executable
+  * Added slightly adapted OSG 3.0.1 headers (changed std::isnan to std::fpclassify= FP_NAN)
+
+  [ Lionel Heng ]
+  * QGC now receives and displays RGBD images via extended MAVLINK messages over UDP.
+
+  [ pixhawk ]
+  * Added widgets to display RGBD data.
+
+  [ Lorenz Meier ]
+  * Working towards full 64bit support
+  * Added 64bit OSG for Mac OS
+
+  [ pixhawk ]
+  * Changed labels
+  * Fixed resize bug in HUD.
+
+  [ LM ]
+  * Fixed message counting
+
+  [ pixhawk ]
+  * Fixes to Linux build
+  * Fixed logging
+
+  [ Lorenz Meier ]
+  * Removed debug vect from UAS
+  * Partial fix to ground time issue
+
+  [ jschall ]
+  * Fix building on 64-bit linux target
+  * Fix build on 64-bit linux target
+
+  [ Lorenz Meier ]
+  * Fixed 64/32bit OS detection on Mac OS issue
+
+  [ LM ]
+  * Temporarily fixed application closedown crash, needs further work to become clean
+
+  [ Lorenz Meier ]
+  * Added auto-fixing of OpenSceneGraph library dependencies on Mac OS X
+
+  [ pixhawk ]
+  * Removed bogus debug output
+
+  [ Lorenz Meier ]
+  * Many minor improvements
+  * Many minor improvements
+
+  [ LM ]
+  * Fixed log buttons, replay pausing does not work yet properly, but issue / solution is now known
+
+  [ pixhawk ]
+  * Added a popup warning about using the offline mission editor
+  * small cleanup
+  * Fixed a bug in moving mission elements up/down, that used to crash the QGC
+  * Improved the offline missionplan warning
+
+  [ LM ]
+  * Excluded data stream messages and handshake messages
+  * Excluded data stream messages and handshake messages
+
+  [ pixhawk ]
+  * Fixed some bugs that allowed to have multiple or no "current" mission elements in Edit list
+  * Improved the visuals of the "Onboard Waypoints"-tab contents. Not yet complete.
+
+  [ LM ]
+  * Cleaned up support files and libraries, updated MAVLink
+  * Fixed generator to output proper console information
+  * Reverted to 32bit for OS X to re-enable Google Earth, fixed persistence of command button
+  * Fixed Ubuntu 64bit build error
+  * Made Doxygen verbose, made sure the initialization of control widget is correct
+
+  [ pixhawk ]
+  * Fixed some display bugs in editable waypoints
+
+  [ LM ]
+  * Updated to latest MAVLink
+
+  [ oberion ]
+  * Solved Windows threading problem with joystick and signal slot bug in WaypointList.cc
+  * Fixed windows build bug and div. compile warnings
+
+  [ LM ]
+  * Updated sensesoar to MAVLink 1.0, updated APM
+
+  [ pixhawk ]
+  * Added "Onboard Waypoints"-support for all loiter commands
+
+  [ hengli ]
+  * Added visualization of obstacles. Fixed relative font path issue in 3D widgets by using QFont within osgText::Font instead of using static font filename.
+  * Fixed module display issues in 3D widgets.
+
+  [ LM ]
+  * Minor cleanups in various places
+  * Not-so-clean threading fix, needs further inspection
+
+  [ pixhawk ]
+  * Some more bugfixes and improvements for the Mission Plan widget. The "current"-checkbox in "Onboard"-waypoints can no longer be changed by clicking directly, but it is handled internally by QGC. Now there should be one and only one checked checkbox, which shows the last KNOWN "current" waypoint on MAV. The white border around an unchecked checkbox means, that the user is requesting the change of current waypoint, but QGC has not received MISSION_CURRENT message as a confirmation yet. Also,if there is no response from UAV after pushing "Read" or "Refresh", the "Onboard" list will be deleted to indicate, that there is no information available.
+
+  [ LM ]
+  * Updated paths
+  * Corrected include locations
+
+  [ hengli ]
+  * Added yaw selection into target selection.
+
+  [ Bryant Mairs ]
+  * Fixed unused variable warning in WaypointList.cc
+
+  [ hengli ]
+  * Enabled real-time mouse-based selection of target and waypoint headings.
+  * Fixed long command bug: sends the required 7 parameters instead of 4 parameters.
+
+  [ Lorenz Meier ]
+  * Added fixes to MAVLink headers
+
+  [ pixhawk ]
+  * Fixed include path
+
+  [ Bryant Mairs ]
+  * Added tooltip to all the appropriate labels on the toolbar. Also reorganized the code to be more readable.
+
+  [ LM ]
+  * Small compile fixes, fixed image copy calls for non-visible Huds
+
+  [ pixhawk ]
+  * Backup. Do not use
+
+  [ Lionel Heng ]
+  * QGC now visualizes planned paths in local 3D view.
+
+  [ Bryant Mairs ]
+  * Added support for reading uint8 values from an autopilot via QGC. Still need to add support for writing them.
+
+  [ hengli ]
+  * Fixed bug in showEvent/hideEvent for Pixhawk3DWidget.
+
+  [ Bryan Godbolt ]
+  * fixed build on ubuntu x64
+
+  [ Bryant Mairs ]
+  * Removed some sources for warnings. Also removed redundant code in QGCMapWidget.cc.
+  * Fixed problems copying support files during Windows compilation.
+
+  [ pixhawk ]
+  * Next step towards the new design of "Editable Waypoint" widget. Back-up only. Do not use!
+
+  [ Bryant Mairs ]
+  * Compilation on Windows VS2010 now properly copies necessary support libraries to the /debug and /release directories based on which is currently building. These copies are also only done if they are necessary. I removed copying of the plugins folder from Qt to the executable directory as I don't believe it's necessary anymore.
+
+  [ pixhawk ]
+  * Fixed axis colors and added world grid.
+  * Made Ubuntu 64 compilation work
+  * Remake of "editable" mission elements is now complete and usable. Missing widgets for Takeoff and Land will be added soon.
+  * Final version of the "editable"-mission redesign.
+
+  [ hengli ]
+  * Code changes to reflect new header information (sysid, compid, timestamp) in protobuf messages. Added protobuf message timeout; old messages will not be visualized. Fixed getParameterValue in ParamManager; the method can segfault if the component id or parameter id is not valid.
+
+  [ LM ]
+  * Minor fixes
+
+  [ pixhawk ]
+  * Added multi-UAS support to QGCRGBDView. Fixed display timeout issue on computer for which data source is not time-synchronized.
+  * Use colorbar images to indicate offline image stream.
+
+  [ LM ]
+  * Renamed folder to match MAVLink naming scheme
+
+  [ hengli ]
+  * Added mutexes to prevent malformed protobuf data.
+
+  [ pixhawk ]
+  * Small bugfixes, removes some warnings
+  * Mission plan: now possible to delete remote list by "write"-ing an empty list
+  * Working on multi-component, multi-path visualization
+  * Visualize orientation for each pose source in local 3D view.
+  * Mission plan: support for pixhawk MAV_CMD_NAV_SWEEP
+
+  [ hengli ]
+  * Updated MAVLINK source code.
+  * Disable references to pixhawk protoc files if pixhawk is not included in MAVLINK_CONF.
+
+  [ pixhawk ]
+  * Mission Plan Widget: Added support for MAV_CMD_DO_SEARCH custom pixhawk commands, fixed some tooltip bugs.
+
+  [ PIXHAWK Team ]
+  * Arrow key control
+
+  [ LM ]
+  * Formatting, fixing audio alarms
+
+  [ Bryant Mairs ]
+  * Refactored part of MAVLinkProtocol::receiveBytes() as I was trying to debug within it. Nothing major, though I did remove an unnecessary loop.
+  * Added a workaround to the mission management code where it would only accept messages addressed to the MAV_ID_MISSIONPLANNER component. This was causing problems with the send-loss value being calculated, so I decided to add this until a proper solution can be developed.
+
+  [ LM ]
+  * Re-enabled double UDP port usage, substantially improved setpoint sending
+
+  [ pixhawk ]
+  * Mission Plan: "autocontinue"-checkbox in view-tab is no longer interactive, because MAVLINK protocol does not support online "autocontinue" switching yet.
+
+  [ hengli ]
+  * Major overhaul of local 3D view: now supports multi-MAV visualization.
+
+  [ Bryant Mairs ]
+  * Expanded documentation for UASInfoWidget::update*Loss. Changed the drop rate from a SYS_STATUS message to follow the MAVLink specs along with some extra range checking.
+  * Removed redundant boolean comparison.
+  * Fixed unused variable warning during compilation.
+  * Re-add copying of /models directory that was accidentally removed during last merge.
+  * Fixed borked Windows compilation introduced with mavlink/qgroundcontrol:864e6ae8.
+
+  [ LM ]
+  * Prevented accidental direct sending
+
+  [ TobiasSimon ]
+  * fixed dropRateChanged: it was impossible to represent a drop rate > 1%
+
+  [ hengli ]
+  * Fixed bug in bird's eye view in 3D view.
+  * Minor GUI flaws fixed. Visualize links between poses from different component sources for each MAV.
+  * Disabled mouse-based throwing movement of camera in 3D view.
+
+  [ Tobias Simon ]
+  * increased GPS sat timeout from 1 second to 10 seconds sending GPS sat information via a low-bandwidth link like the UM96 @ 9600 baud should also work at low frequencies like 0.2 Hz
+
+  [ Bryant Mairs ]
+  * Exposed HEARTBEAT.system_status and HEARTBEAT.base_mode to the realtime plotter widget via the valueChanged signal.
+
+  [ TobiasSimon ]
+  * fixes segfault when starting QGC without having a UAS selected
+
+  [ Bryant Mairs ]
+  * Added logging of useful values from the HEARTBEAT and SYS_STATUS messages to the realtime plotter. Removed some dead code. Added more valueChanged() signals to account for every data type. This moves the conversion over into the valueChanged receivers, which while it will require more slot-functions, makes it easier to add more code as any necessary conversion is done internally to the slot and so the signaler doesn't need to know the details. I also added some more details on the types of units expected by valueChanged().
+
+  [ TobiasSimon ]
+  * fixed out-of-order bug in packet loss calculation
+  * fixed debug output and removed tab indents
+  * symptom: heartbeat Hz value was always 0 cause: check for null pointer had no effect (static memory) solution: fill mavlink messages (and thus) message type with 0xff. this patch assumes that message ID 0xff is never used positiv side effect: qgroundcontrol uses 2% less cpu on my machine (eeepc)
+  * Added emits for gps and controller flags in HSI window
+
+  [ Bryant Mairs ]
+  * Forgot to add the custom mode part of the heartbeat message. Also updated all the units for the heartbeat values that are exposed to the realtime plotter to follow the suggestions laid out by the documentation for valueChanged().
+
+  [ LM ]
+  * Runtime fixes for multi-IMU systems
+
+  [ hengli ]
+  * Added setpoint visualization to 3D view.
+  * Visualize orientation of last trail pose in 3D view.
+  * Made trail colors brighter.
+  * Fixed parameter value error in path planning commands.
+
+  [ Lorenz Meier ]
+  * Completed MAV_CMD enum in button, allowed to directly enter numbers into the form
+  * Made QtOSG truly optional
+
+  [ James Goppert ]
+  * Updated third party directory.
+  * Using official tarball for mavlink.
+
+  [ hengli ]
+  * Added button to clear data in 3D view.
+
+  [ James Goppert ]
+  * Cleaned up linux qmake files.
+
+  [ hengli ]
+  * Removed outdated MAVLINK v0.9 version as QGC does not work with this version. Added feature to import COLLADA terrain model and visualize model in 3D view.
+
+  [ LM ]
+  * Introduced persistence in RGBDview, needs debugging, fixed a bug in param reading in the simulator, pushed message sender a bit forward, not working yet
+
+  [ hengli ]
+  * Added parameter dialog to modify terrain offset parameters.
+
+  [ LM ]
+  * Fixed QSerialPort baud rate selection, fixed target dir for build
+  * Re-added accidentally deleted SenseSoar message set
+
+  [ Bryant Mairs ]
+  * Don't use hard-coded magic numbers, use the predefined MAV_TYPE enum values.
+  * Modified SerialLink.cc so that it follows the same cross-platform restrictions as the QSerialPort library it relies on. Windows compilation was broken during 94e91013c2c70ada433d50ae8b87615e09359fd5, which is what prompted this refactoring.
+  * Reverted qportsettings.h changes. Instead we duplicate the OS-specific baud rate settings here within SerialLink.cc.
+  * Fixed error (in VS2010) about lacking a return value introduced in 6a55b6cd4903cf6c2dc02f07f5a684df405770e7.
+  * Removed unused variable/code from HSIDisplay::sendBodySetPointCoordinates().
+  * Match the listed supported serial ports in the UI to those supported by QSerialPort. This commit unifies the supported baud rates completely across QGC and OSes.
+  * Added OpenSceneGraph dependency checking for some files.
+
+  [ LM ]
+  * Fixed serial port for mac os
+
+  [ hengli ]
+  * Added remote OpenGL drawing in 3D view. Any external application can draw to the 3D view via the protobuf implementation of GLOverlay messages.
+  * Fixed merge conflict in qgroundcontrol.pro.
+  * Fixed coordinate frame issue in overlay. Outstanding issue of slow rendering of large overlays.
+
+  [ Bryant Mairs ]
+  * Corrected the Windows Visual Studio compilation so that release builds no longer have a console or debugging macros while the debug builds have both. Fixed indentation across all build scripts (.pro/.pri) to be 4-spaces and consistent. Updated the README with proper Visual Studio compilation instructions for both VS2010 and VS2008.
+
+  [ Lionel Heng ]
+  * Added timeout to overlay visualization.
+
+  [ LM ]
+  * Made sure UART rate reporting is correct even if baud rate defines do not exist
+  * Cleaned up baud rates further, now consistent for all platforms, should compile and run on all
+
+  [ Pixhawk ]
+  * Updated MAVLink
+
+  [ pixhawk ]
+  * Supported multiple attitude estimates in HUD
+
+  [ hengli ]
+  * Added additional roll/pitch parameters to terrain offset dialog.
+  * Fixed bug in global view params.
+  * Disabled display lists in overlay geode for better rendering performance.
+  * Disabled lighting for overlay.
+
+  [ Lionel Heng ]
+  * Made imagery feature working again in 3D view.
+  * Disabled culling of imagery tiles.
+
+  [ LM ]
+  * Enabled offset message, fixed line charts for swarm use
+  * Re-generated to make sure set is compatible
+  * Regenerated all required files
+
+  [ Lionel Heng ]
+  * Fixed terrain coordinate bug.
+  * Unified all object selections in 3D view via right-mouse-click, and added mouse-based terrain translation/rotation.
+  * Added separators to pop-up menus in 3D view for better viewing clarity.
+
+  [ Lorenz Meier ]
+  * Fixed code style / braces
+  * Minor cleanups
+  * Enabled support for ARM / disarm action on component level
+
+  [ Lionel Heng ]
+  * Added text (component id) to cone/circle symbol symbolizing pose data from that component in 3D view.
+
+  [ hengli ]
+  * Modified Pixhawk3DWidget.cc to remove compiler warnings about unused variables.
+
+  [ Friedrich Fraundorfer ]
+  * Fixed lat/lon scaling error.
+
+  [ Lorenz Meier ]
+  * Added check for old MAVLink versions in decoding routine
+
+  [ LM ]
+  * Enabled 921600 and other high baud rates on all platforms
+
+  [ hengli ]
+  * Enabled blending in overlay rendering, and fixed bug in individual setting of overlay visibility.
+
+  [ Lionel ]
+  * Fixed bug in clearing of trail data.
+
+  [ Lionel Heng ]
+  * Color obstacle cells based on height for more intuitive visualization.
+  * Disabled active culling of overlay geode.
+
+  [ pixhawk ]
+  * Fixed bugs in HSI/HUD.
+
+  [ Lionel ]
+  * Disabled display lists for obstacle nodes.
+
+  [ Bryant Mairs ]
+  * Fixed canceling the Logging function through the button on the main toolbar.
+  * Modified the Linechart widget so that the "Show units" button is under the "Curve Selection" frame, which is what it actually modifies. Also moved all of the UI that was under the "Curve Selection" to inside of it at the bottom so that the grouping of UI elements is more coherent.
+  * Canceling out of file selection in the logfile plotter no longer triggers a warning.
+  * Added a check for a division by zero in AbstractCalibrator::logAverage(). This was causing a crash when attempting a calibration when there's no RC data being received.
+
+  [ Lorenz Meier ]
+  * Adding waypoints also works without position
+
+  [ Bryant Mairs ]
+  * Fixed a stack overflow bug when using the regression fitting command in logfile plot. Solution involved just allocating on the heap instead of the stack.
+  * Needed to remove debugging/test code before committing. Whoops. Also changed calculateRegression(...) to return a bool, as that's all it needs.
+
+  [ LM ]
+  * Removed 0.9 protocol specs, updated remaining protocol to most recent reference implementation
+  * Updated bundled generator for 1.0
+  * Updated MAVLink to most recent
+
+  [ Bryant Mairs ]
+  * Replaced the autopilot-specific inclusion of MAVLink to be more generic. Now if you have no actual QGC modifications to make and just want your messages to be available for viewing/logging you can just create the user_config.pri file and override MAVLINK_CONF.
+  * Fixed a couple of uninitialized arrays within the MAVLinkDecoder. It would result in weird time values in some data logging instances.
+  * Fixed improper capitalization in UI.
+  * Refactored the LogCompressor. It wasn't properly handling certain message logging files that mixed messages (Issue #70). One note is that this logger should work correctly as I've tested it, but could have some edge cases. It is pickier about the file format that it will sparse, but I don't know if the error-checking stuff from the old code would have actually worked. This can also be easily re-added.
+  * Fixed the qgcunittest.pro build process. TODO: This should be altered to reuse stuff from qgroundcontrol.pro by including it instead of copy/paste.
+  * Updated QGC unit testing build script. It now builds properly (on Windows at least). I had to update some method calls in UASUnitTest.cc. I'd bet that some of the tests are wrong now because of it.
+  * Removed unnecessary test files.
+  * Removed some dead/unnecessary code from UASUnitTest.h.
+
+  [ James Goppert ]
+  * Updated to mavlink, need to update qgc project.
+  * Updated to MAVLink 1.0.6 release.
+
+  [ LM ]
+  * Changed back to standard mavlink directory, fixed extended message size
+  * Fixed src directory for protobuf implementation
+  * Fixed accidentally commited hacks
+  * Fixed wrong cast in command message
+  * Updated to most recent python generator for MAVLink
+  * Fixed minor compile error
+
+  [ Lorenz Meier ]
+  * Updated to MAVLink v1.0.8
+  * Updated to most recent MAVLink v1.0.8
+  * Added missing cmd enum
+
+  [ pixhawk ]
+  * Replaced home command with land command.
+
+  [ LM ]
+  * Fixed displaying of empty satinfo messages, fixed custom dialect includes
+
+  [ pixhawk ]
+  * fixed wrong brackets, now waypoint list clearing works again
+  * Fixed scaling factor of Pixhawk Cheetah model.
+
+  [ hengli ]
+  * Changed minimum resolution of offline imagery tiles.
+
+  [ Andrew Tridgell ]
+  * don't reject waypoints based on component ID
+
+  [ Lorenz Meier ]
+  * Updated MAVLink version
+  * Minor tweaks and improvements
+  * Preferred master version of MAVLink
+
+  [ Jessica ]
+  * Fix bug 31. Removed redundant uas check in UASWaypointManager.
+  * Removed second test of uas in UASWaypointManager::send functions.
+  * Removed unneccessary check of uas in UASWaypointManger.
+  * Issue #68. Took out the check of component id == 200 in MAVLinkDecoder.cc line 56.
+  * NMEA library and all references to NMEA have been removed.
+  * Added a README to doc on how to generate documentation with doxygen. In main README, added a mention to check the REAME in doc.
+  * qgcunittest.pro now compiles and runs as long as run in terminal in projcts->Run Settings is unchecked.
+  * Colors list in UASInterface.h corrected which got rid of segfault in unit tests.
+  * Unit tests compile and run but still fail 4 tests. Segfault fixed which was caused by colors list in UASInterface.h.
+  * README was added to doc directory with inforamtion on how to run doxygen. A mention to read the README in /doc for information was added to the main README in qgroundcontrol.
+  * Added repository layout in README. It needs more details.
+  * Repo layout in README. Could be more detailed.
+  * Airframe unit test now passes. In UAS.cc, the airframe was set to generic.
+  * Added a setAirframe test. Took the code from getAirframe test and made another test.
+  * Added a unit test, setAirframeTest. Changed setAirframe function. Added an end_of_enum to the airframe enum.
+
+  [ David Goodman ]
+  * QAx build automated in qgroundcontrol.pro
+
+  [ Jessica ]
+  * getWaypoint_test() now passes.
+  * getWaypoint_test passes.
+
+  [ pixhawk ]
+  * added ifdef case for pixhawk mavlink definition
+
+  [ Jessica ]
+  * System type is set to generic in constructor of UAS.
+  * Signal waypoint test passes.
+  * Signal waypoint test passes.
+  * Deleted all but one file in settings. I kept the ParameterList.xml because that is referenced in ParameterList.cc. Though having the ParameterList.xml does not affect it anything, it is probably good to keep it.
+  * In data, deleted all but the kinect.cal file because that one is used in Freenect.cc.
+
+  [ Lorenz Meier ]
+  * Removed visibility / instance of message sender widget for now, fixed transmission of param widget
+  * Not auto-overwriting links, ignoring carriage return in console
+
+  [ Jessica ]
+  * Moved the images folder to the files directory. Changed all of the paths to images to files/images.
+  * Put libraries into one libs directory under qgroundcontrol. Changed the neccessary files with references to those libraries.
+  * Put qgcunittest into src. Left the .pro file in the root directory.
+
+  [ Lorenz Meier ]
+  * Improved parameter updating, added SLAB devices to mac list
+  * Made USB serial modem detection more generic on Mac OS
+  * Some VT100 hacks, fixed MAVLink inclusion path
+
+  [ unknown ]
+  * Added a line in qgroundcontrol.pri to include QtTestd4.dll so that the unit tests will run on windows.
+
+  [ Jessica ]
+  * Test
+  * ParameterList.xml in data.
+
+  [ Lorenz Meier ]
+  * Fixed misleading comments in README about proper way to obtain a MAVLink copy
+
+  [ Jessica ]
+  * Fixed memory leaks in the unit tests.
+  * ClModified unit test.
+  * Memory leaks fixed in unit tests.
+  * Erros casused by all of the mergedd branches are now fixed for qgroundcontrol.pro. Working on fixing the errors that now appeare in qgcunittest.pro.
+  * Moved the images folder to the files directory. Changed all of the paths to images to files/images.
+
+  [ unknown ]
+  * Took out the deletion of the QGCUASParamManager for now from the destructor of UAS.cc
+
+  [ Lorenz Meier ]
+  * Visual cleanups in various places, fits now better small screens
+
+  [ Jessica ]
+  * Issue #126. Used Get/Set.
+  * Issue #126.
+  * Added some documentaiton to UAS.
+  * Replaced MAVLINK_TYPE with MAV_PARAM_TYPE where neccessary.
+  * Addressed issue #26. Select System, Plugins and System are disabled when neccessary. Removed style-outdoor-dark.css. Moved the other two .css files and Vera.ttf into files/styles.
+  * Made slight changes to the .css files nad MainWindow.ui.
+  * Added some documentation to UAS.cc
+
+  [ Lorenz Meier ]
+  * Updated MAVLink to v1.0.9
+
+  [ Jessica ]
+  * Fixed errors in the unit tests which were caused by other changes.
+
+  [ unknown ]
+  * Added some comments to UASUnitTest.cc
+
+  [ Jessica ]
+  * Added some doxygen comments to UAS.cc
+  * Extreneous qgcunittest.pro file removed from src directory.
+
+  [ Lorenz Meier ]
+  * Fixed a number of compile warnings
+  * Fixed yaw-related HUD clamping
+  * Fixed a number of bad bugs in the HUD, will need a bit more write / SVG rewrite to make it pretty, but is substantially more accurate and reliable now
+  * Fixed completely bogus arming logic, adheres now to MAVLink standards
+  * Catched the last frickin compile warning
+  * Fixed a bug preventing loading the correct descriptive string for param buttons
+  * Adding vehicle configuration widget, fixed link disconnected logic for serial links
+  * Added PX4 calibration widget, switched HIL from FlightGear to XPlane, bringing up HIL
+  * Added editable link forwarding
+  * Updated MAVLink
+  * Minor comment polishing
+  * Updated MAVLink, fixed typo there, fixed missing header in HIL
+  * Persistence and audio fixes increasing work convenience
+  * Minor polishing on error messages and fixed link outage time announcement
+  * Fixed a long-lasting issue with confusing ground time / non ground time
+  * Minor state machine fixes to reboot / timestamp detection
+  * Fixed a series of minor bugs ruining restarting behaviour when rebooting MAV
+  * More timing fixes for a few special messages
+  * Make splash screen less annoying
+  * Better text for standby
+  * Fixed colon typo
+  * Removed a bit more of old cruft
+  * Fixed a typo leading to wrong int decoding
+  * Added clear button to MSG inspector
+  * Removed a lot of verbose debug output, added connection indication to main menu bar to improve situational awareness of operator
+  * Auto-requesting WPs on system connect
+  * Added last param / wp update time
+  * Updated MAVLink version
+  * Improvements across application
+  * Fixed painting of waypoints to better perform in overlapping cases
+  * Increased link timeout
+
+  [ barthess ]
+  * Fixed reporting of command execution status
+
+  [ Lorenz Meier ]
+  * Fixed link forwarding
+  * Catching NaNs and Inf in HUD
+  * Start emergency only once
+  * Added RC calibration stub, ready for testing and fine-tuning
+
+  [ barthess ]
+  * added image for ground rover
+  * added stubs for other MAV types
+  * some polishing on icons
+  * support of new icons added to program
+
+  [ Lorenz Meier ]
+  * Pushed HIL with X-plane to being close to operational. Receiving from X-Plane  implemented, sending to it is prepared. Needs an iteration of onboard SW first
+  * X-Plane HIL proven both ways, data conversion and controls feedback set up correctly, needs actual HIL flights tests now
+
+  [ pixhawk ]
+  * removed temporarily hardcoded value
+
+  [ Lorenz Meier ]
+  * Fully hooked up HIL and vehicle config, time to flesh it out
+  * Logging in a more compact, more reasonable file format
+  * Adjusted sanity check
+  * Attempting to improve logging behaviour
+  * Minor comments on RC cal
+  * Updated MAVLink
+  * Fixed Logging, MAVLink API adjustments
+
+  [ barthess ]
+  * mapscache moved to user`s home directory to prevent polition of filesystem root
+
+  [ Lorenz Meier ]
+  * Fixed compilation on Mac OS 10.8 / Mountain Lion
+  * Fixed windows compilation
+  * Fixed buffer overflow with auth key
+  * Updated deployment script, disabled unfinished windows
+
+  [ barthess ]
+  * Fixed yaw indication in HUD
+
+  [ Lorenz Meier ]
+  * Disabled firebug, fixed beachballing in Debug console
+  * HIL working both ways with X-Plane, adding convenience functions now
+  * Cleaned up SDL framework inclusion, removed dependency to system-wide installed SDL
+  * Fixed SDL include path
+  * Fix a minor bug on program shutdown with link deletion
+  * Fixed bug in named value decoding, added additional functionality to HIL config widget
+  * A few HIL related fixes, still working
+  * Fixed Google Earth loading path
+  * HIL and Joystick input
+  * Fixed HIL startup crash, fixed yaw offset
+  * Substantial cleanup in joystick interface, operational now
+  * Minor cleanups
+  * Get X-Plane 9 supported
+  * HIL fixes
+
+  [ Thomas Gubler ]
+  * Flightgear HIL working on Ubuntu
+  * added Rascal airplane model for flightgear which also includes a 3D model (from http://flightgear.org/legacy-Downloads/aircraft-2.0.0/)
+  * (re)enabled xplane hil (flightgear hil and xplane hil should both work)
+
+  [ Bryant Mairs ]
+  * Cleaned up the qgroundcontrol.pri build file for win32-vs20**. Some extra stuff was copied that didn't need to be and some things were missing. For example, the release build couldn't be copied and run on another computer because the Visual Studio runtime DLLs weren't copied. Their license allows them to be distributed, so this is fine to do.
+
+  [ Lorenz Meier ]
+  * Added missing initialization
+
+  [ Thomas Gubler ]
+  * terrasync support on ubuntu, fixes #1
+  * re-enabled terrasync for all operating systems, might produce (non severe) errors on Windows or OS X
+
+  [ Lorenz Meier ]
+  * Fixed roll / pitch / yaw rates outputs for XPlane 9
+
+  [ Thomas Gubler ]
+  * HIL: reorganization of UI
+  * HIL Flightgear Configuration: added aircraft option
+
+  [ Jonathan ]
+  * Quick add of joystick buttons values in Mavlink manual control messages
+  * Fix a forgetting in precedent commit adding joystick buttons management
+
+  [ Lorenz Meier ]
+  * Updated MAVLink
+  * Fixed param loading
+  * Huge step towards usability goals: Graphic vehicle configuration in a first (ugly) sketch
+  * First working version of tooltips, look and feel horrible, but functionality is there
+  * Minor visual tweak to param slider
+  * Fix stupid compile error
+
+  [ Thomas Gubler ]
+  * HIL: small ui tweaking
+  * FG HIL: loading aircraft from qgroundcontrol folder
+  * added more airplanes
+
+  [ Lorenz Meier ]
+  * Hil tests
+
+  [ Thomas Gubler ]
+  * corrected flightgear configuration
+
+  [ Lorenz Meier ]
+  * Fixed incorrect parameter key/name length termination, was one char too early
+  * Minor visual style fixes
+  * Made HUD a bit more readable for cell phone tests
+
+  [ Bryant ]
+  * Fixed transmission of MANUAL_CONTROL message so that pitch and roll are transmit properly.
+  * Replaced joystick buttons UI with QLabels. Added an 11th button display.
+  * Added some details on VS2010 requirements to the readme.
+  * Enabled multi-core compilation of QGC within Visual Studio.
+  * Fixed the signal/slot pairing for joystick messages. They were throwing an error otherwise.
+
+  [ Stefano Probst ]
+  * Add unistd.h in libs/thirdParty/qserialport/src/posix/qserialportnative_posix.cpp. Without this change, the program can not be built on Linux.
+
+  [ Lorenz Meier ]
+  * Minor system switch issue resolved
+  * Cleaning up statement without effect
+  * Added PX4 firmware uploader skeleton, operational on all levels, needs full protocol implementation
+
+  [ Bryant ]
+  * Fixed the Clear button in the MAVLink inspector window to actually clear previous messages.
+
+  [ Lorenz Meier ]
+  * Fixed logging
+  * Fixed another logging bug
+  * Fixed last remaining bugs in logging, now reliable with Unix and non-Unix timestamps
+  * Fixed zero order hold for logging
+  * Fixed XPlane 9
+  * Improved HSI display, hooking up next to UAS object
+
+  [ Thomas Gubler ]
+  * Flightgear HIL: Flightgear does not like NaN values, added a check before the output to Flightgear
+
+  [ Lorenz Meier ]
+  * Fixes to X Plane HIL
+
+  [ Matthias Krebs ]
+  * gitignore windows shell temp file and .opensdf
+  * Add 3DMouse SDK for Windows
+  * Implementation of 6DOF 3DMouse input (Windows only)
+  * Send out mavlink setpoint 6dof messages for manual control
+  * 3DMouse Implementation for Windows completed (tested on win8 (and ubuntu 12.04))
+  * Adding 3DMouse Support for LINUX (not completed)
+  * 3DMouse button mapping to separate translations and rotations (Both WINDOWS and LINUX)
+  * Fixed syntax for Windows. Fertig!
+
+  [ Lorenz Meier ]
+  * Auto-requesting telemetry on APM connection
+  * Added support for fine-granularity sensor status
+  * Additional support files
+  * Firmware upgrade app, XPlane link improvements, better RC calibration
+  * Improved and validated RC calibration
+  * Upgraded MAVLink, added additional setpoint messages
+  * Added rates setpoints, improved vehicle config UI
+  * Fixed sign of actuator output
+  * Potential fix for HIL state machine issue
+
+  [ James Goppert ]
+  * Minor compile fixes.
+
+  [ Lorenz Meier ]
+  * Fixed yaw representation when translating from XPlane
+  * Updated MAVLink version
+
+  [ Thomas Gubler ]
+  * FG HIL: removed setting of fg-root
+  * FG HIL: usage of correct protocol files, simplifies installation, thanks to James Goppert
+
+  [ Bryant ]
+  * Fixed compilation in Windows.
+
+  [ James Goppert ]
+  * Added stop button for flightgear hil.
+
+  [ Bryant ]
+  * Fixed compilation warnings with regards to unused variables and uninitialized variables.
+  * Fixed most -Wreorder warnings from GCC.
+  * Reverting change that just made things work (need to wait for GCC4.7 for this).
+
+  [ Lorenz Meier ]
+  * Added flying wing support
+  * Removed annoying compile message
+
+  [ jgoppert ]
+  * Fixed accel conversion for flightgear.
+
+  [ Lorenz Meier ]
+  * Clarifications on mode display
+
+  [ Kevin Hester ]
+  * Fixes needed to make ubuntu build work again (at least for me)
+
+  [ Thomas Gubler ]
+  * flightgear hil: removing notrim argument for compatibility with fg 2.6
+  * HIL UI: cleanup on simComboBox change
+
+  [ Lorenz Meier ]
+  * Updated MAVLink version
+  * Fixed voice output
+  * Added image logging functionality
+  * Added fix for serial config window
+  * Fix stupid local variable bug
+  * Updated home position handling, should get waypoints right now
+  * Fixed initialization of custom widgets, not shown per default
+  * Increased rev number, better default view
+
+  [ Thomas Gubler ]
+  * Flightgear Easystar model
+  * re-adding the easystar in the ui
+
+  [ Erwin José López Pulgarín ]
+  * Update src/GAudioOutput.h
+
+  [ Lorenz Meier ]
+  * Fixed debug vector and array linechart issues
+  * Bumping up version to 1.0.4 due to important realtime plot window fix
+
+  [ samuezih ]
+  * fix receive image datastream bug
+
+  [ barthess ]
+  * Fixed mistype in file name.
+
+  [ Bryant ]
+  * The HSIDisplay widget now displays all types of waypoints, not just those of type LOCAL_NED.
+  * Removed default "pixhawk" message setting for MAVLink.
+
+  [ Julian Oes ]
+  * Arming flag is now included when flight mode is changed in the ControlWidget
+
+  [ Lorenz Meier ]
+  * Toolbar and calibration improvements
+
+  [ Bryant ]
+  * Added support for uint8s to the parameter widget.
+
+  [ Lorenz Meier ]
+  * Added connect button, added 15 seconds timeout on system messages
+  * removed redundant timeout
+  * Fixed calibration
+
+  [ Thomas Gubler ]
+  * archlinux compatibility
+
+  [ Lorenz Meier ]
+  * First, stupid, naive version of PX4 uploader, needs testing and cross-platform fixes. Compiles, ready for testing
+  * Hacking on uploader
+  * PX4 RC calibration (trim offsets) support
+
+  [ Thomas Gubler ]
+  * fix hardcoded start of fgfs and terrasync, use system environment variables for linux distro independence
+
+  [ Lorenz Meier ]
+  * First stab at JSBSim interface, compiling, operational, but needs the correct startup folders and arguments
+  * Working on sensor HIL
+  * Potential Linux start fix
+  * Finished sensor HIL, pending testing
+  * Tiny typo fixes in HIL
+  * Expanded fields changed flags
+
+  [ Christopher Hrabia ]
+  * Revert last change on new logfile structure and added nulling of buffer.
+
+  [ Lorenz Meier ]
+  * Better differentiation between estimator position and raw GPS
+  * silenced settings load
+  * Build fix
+  * Icon fixes, HSI shows satellites correctly rotated
+  * Ask mavlink app to start on PX4 boards if connected via NSH
+
+  [ Christopher Hrabia ]
+  * Store directory where the last log file was stored and reuse it when loading or saving new log files
+
+  [ Lorenz Meier ]
+  * Fixed typo
+  * Fixed up logplayer button
+  * Simplified link creation / connection a bit
+  * Fixed up first version of sensor level HIL, needs more validation, but operational
+  * Minor modifications to sim value display, not optimal yet
+  * Small code/docs cleanup in XPlane sim link
+  * Fixed a bunch of smaller HIL issues, GPS COG is now correct
+  * Overhauled activity selection and logfile replay options
+  * Made sensor HIL configurable, fixed runtime warnings, WIP
+  * Small runtime fixes
+  * Small settings loading fix
+  * Cleanup on state HIL
+  * Bugfixed HIL
+  * Fixed reference to invalid pointer
+  * Attempt to preven RC widget issues
+
+  [ Thomas Gubler ]
+  * hotfix: fix small compilation error
+
+  [ Lorenz Meier ]
+  * Fixed state HIL, fixed sensor HIL XPlane x direction velocity vector
+
+  [ Bryant ]
+  * Fixed crash in QGCRemoteControlView.cc when a UAV is connected, but not RADIO_CONTROL packet has been received.
+
+  [ Lorenz Meier ]
+  * Improved visual quality
+  * Readability fixes
+  * More usability improvements
+  * More usability improvements
+  * Lots of usability improvements
+  * Commented out old menu items, maybe useful later
+
+  [ Michael Carpenter ]
+  * Addition of INT8 and INT16 MAV_PARAM_TYPE handling of incoming messages
+  * Changes to allow for new configuration parameters
+  * Change so QGCParamSlider is shown disabled until a parameter is received from the autopilot.
+  * Handling of QVariant::Char display type in QGCParamWidget::addParameter
+  * New config windows, dynamically generated based on ANY qgw files in the configuration directories
+  * New ComboBox param configuration UI element, and qgw widgets for general APM configuration, battery and extra sensors
+  * Disabled union conversions of incoming/outgoing parameters when connected to an APM. This will be removed once APM updates to support MAVLink parameters properly.
+  * Default disabled QGCComboBox until a parameter is recieved from the AP
+  * Added a bunch more configurations, and a general APM calibration file
+  * Fix for uint8/int8 params not populating config sliders correctly
+  * Addition of APM guided mode via right-click context menu in map view. The right click menu will only show up when connected to an APM autopilot, since this feature is APM only.
+  * Major change to configuration, to allow for loading from APM generated xml
+  * Fix for incorrectly positioned tooltips on QGCToolWidgetItems
+  * Addition of advanced parameters, for anything not defined in the .xml file
+  * Fixed valueChanged bug in QGCParamSlider and added in automatic min/max slider values based on param QVariant type
+  * Change so only matching system_type xml parameter meta data is loaded
+  * Removal of some comments, and fix for JoystickInput not exiting cleanly
+  * Fix for a typo, resulting in XML APM metadata being mis-parsed.
+  * Fix for settings not persisting, a bug introduced with the new configuration windows
+  * Code cleanup and additional error checking in QGCVehicleConfig.cc
+  * Changed PX4 qgw file structure to match new search patterns for config widgets
+  * More changes to the config system, addition of more calibration preferences Variable calibration procedure text based on the autopilot, stored in files/%autopilot%/general/calibration/description.txt. Added a new QGCTextLabel type for QGW files, which can display MAV text or hardcoded text. Added tabular configuration screens based on folder structure inside the files/autopilot/airframe folders
+  * Moved failsafes configuration window to vehicle specific config
+  * Fix for bug involving min/max slider values from metadata
+  * Addition of new "User" param for apm.pdef.xml file, allowing for sorting config entries between general and advanced tabs
+  * Addition of Configuration View as a new , with toolbar button
+  * Change for conditionally displayed config items (based on other params), and fix for layout of some config items
+  * Addition of Camera Mount parameter files
+  * Change for W/R on config params to be Set/Get for consistancy with the rest of the GUI
+  * Disabled movement of dock widges, unless in "Advanced Mode" (File->Advanced Mode)
+  * Addition of new "view" based navigation, and moved DockWidgets inside each view, rather than having universal dock widgets.
+  * Changes for the new "View" navigation, and fixes to get most of the dockwidgets working with the new view system
+  * Additions for View navigation, including saving dockwidget locations and status. Also added remembering of "Advanced Mode" between restarts of QGC
+  * Addition of new "Point Camera" action on the Map for APM
+  * Changes to allow for compiling with MSVC2012
+  * Change so mission view is default instead of unconnected, fixing a bug causing misloading of tool widgets
+
+  [ Lorenz Meier ]
+  * Removed frame artifacts, but needs additional sweep
+  * Usability fixes on status bar
+
+  [ Michael Carpenter ]
+  * New titlebar widgets to give dock windows titles when not in advanced mode
+  * Fix for dock widget titlebars moving around when in advanced mode
+
+  [ Lorenz Meier ]
+  * Re-enabled resizing
+
+  [ Michael Carpenter ]
+  * Change so custom widgets load properly, and realtime plot displays when connected to a MAV
+
+  [ Lorenz Meier ]
+  * Re-enabled resizing
+  * Merged cherry-pick
+  * Lots of usability improvements
+  * Usability fixes on status bar
+
+  [ Michael Carpenter ]
+  * Fix for stock tool dockwidget locations not being saved properly after fix for custom dockwidgets
+  * Temp commit of new UAS properties and UASQuickView for viewing UAS Properties
+  * Addition of more Q_PROPERTIES to UAS.cc, including visible GPS satellite count
+  * Added satelliteCount to the QuickView, and made quickview a default display on the mission planner view.
+  * Added support for MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT for Distance to waypoint property
+  * Fix for bad file name extensions. Should stick to the standard cc, not cpp
+  * Fix for crash when removing item from QuickView, and addition of more generic signal/slot combonation for property updates
+  * Change so Pilot view is default when opening QGC
+  * Change of the "look" of the pilot screen for ease of use
+  * Started adding numbers to QGC_APPLICATION_VERSION for development builds, since dev builds need the config file wiped out for UI changes to be visible
+  * Change so Waypoints are the same across maps, and offline waypoints get appeneded to the end of the MAV's waypoint list on connect
+  * Tabified horizontal indication behind QuickView in the Pilot View
+
+  [ Lorenz Meier ]
+  * Rearranged action bar, saved screen state
+  * Minor visual style fixes
+  * Fixed visual state, fixed check state indication of main menu
+  * Fixed visual bug on status bar
+  * Fixed tool widget instantiation
+  * Main widget menu redundancy removed
+
+  [ Michael Carpenter ]
+  * Fix for initial "View" toolbar item not being checked as active
+  * Change so MAV specific DockWidgets don't appear on connection, but show up in the main menu
+  * Slight changes to the HUD per Craig, to make it a bit friendlier
+  * New XML file for arduparams
+  * Addition of requesting status updates from APM, if APM is in a state with no status updates, this will request them
+  * On no serial data, now attempts both a "reboot" reset, and then a DTR reset of the autopilot
+  * Change in how APM requests data updates on connect
+  * Changes for new calibration in APM 3.0 (Re: https://github.com/diydrones/MissionPlanner/issues/38), and change in some of the serial timeouts
+  * Change so dock widget preferences are saved depending on which autopilot is currently active
+
+  [ Lorenz Meier ]
+  * Bumped version number to safeguard against settings
+
+  [ dongfang ]
+  * experiment
+  * First PrimaryFlightDisplay integration that will even compile. Non functionalgit status
+
+  [ Bryant ]
+  * Added missing separater to Tool Widgets menu.
+
+  [ dongfang ]
+  * Undone the HUD_old renaming and fixed public slots in PrimaryFlightDisply that were not.
+
+  [ Lorenz Meier ]
+  * Hotfix: Fixed widget / UAS initialization order which led to text messages (and other updates) being ignored if the widget was not open when the UAS was created
+  * Fixed another init bug
+  * Fixed a bunch of instantiation-order issues
+
+  [ dongfang ]
+  * experiment
+  * First PrimaryFlightDisplay integration that will even compile. Non functionalgit status
+  * Undone the HUD_old renaming and fixed public slots in PrimaryFlightDisply that were not.
+
+  [ Michael Carpenter ]
+  * Changes for compiling in windows and getting the AHRS working
+  * Increment version number, since the new AHRS would break setting loading
+  * Change to how configuration view operates, menu on the left side rather than top
+  * Fix for HIL dock widget
+  * Fix for layout glitch when using HIL Configuration, and added checks to see if there is an active UAS before attempting to connect HSIDisplay signals
+  * Change for new arduplane.pdef.xml, and some small visual fixes on the Configuration page
+
+  [ dongfang ]
+  * more PFD integration
+
+  [ Lorenz Meier ]
+  * HIL config improvements, fixed confusion about which dock widget is part of which view, main window behaving now
+
+  [ dongfang ]
+  * more PFD integration
+
+  [ Lorenz Meier ]
+  * Allowed offline editing of waypoints
+
+  [ dongfang ]
+  *  merge
+  *  merge
+
+  [ Lorenz Meier ]
+  * Checkpoint: Cleaned up a lot withint the WP management infrastructure
+  * Checkpoint WPs issue-free in operation
+  * Compile fixes, added warning for log replay
+  * Cleaned up version number
+  * Fixed minor compile error
+  * Only loading port names which still are available, fixed more compile errors
+  * Made vehicle config robust against unknown system types
+  * Fix initial acceptance radius, warn user about offline mode
+
+  [ Bryant ]
+  * Simplified switch statement.
+  * Removed unused code causing compilation warnings.
+  * Fixed setting the slider position based on parameter values for variables that don't have a range specified.
+  * Small code cleanup. If statement was removed because at this point 'mav' has already been assumed to be non-null for a while.
+  * Fixed warning comparing ints of different signed-ness. Everything should just be unsigned here.
+  * Set most UI to disabled by default with it only enabled on the addition of an active UAS. Added all missing parameter control buttons to the Vehicle Config widget.
+  * Removed extraneous debug statement that just cluttered the console. Hard to debug anything else with this active.
+  * Accidently disabled one of the config panes by default; restoring it.
+
+  [ Michael Carpenter ]
+  * Fix for bug where displaying WaypointList after adding offline waypoints resulted in an empty waypoint list, until the next waypoint was manually added
+  * Fix for static const float cannot be initialized within a class definition, and other windows compile errors.
+
+  [ dongfang ]
+  * PFD changes
+
+  [ Michael Carpenter ]
+  * Fix for crash involving serial links not being removed from QGCToolBar properly.
+
+  [ dongfang ]
+  * PFD layout simplification (no corner panels)
+  * dongfang notes added
+  * PFD rework
+  * Multiple altitudes and speeds signals. Simplified PFD
+
+  [ Michael Carpenter ]
+  * Addition of QuickView selection dialog for add/remove of display items
+  * Change so UASQuickViewItemSelect widget no longer has extra buttons
+  * Addition of saving UASQuickViewItem's on closing, and reloading them on open
+  * Added save/load settings to UASQuickView, and commented header file
+  * Abstraction of UASQuickViewItem, and addition of new Text item to use the abstraction
+  * Changes go UASQuickView handles resizing better, and doesn't "clip" text when the window is too small.
+  * Change to how configuration view operates, menu on the left side rather than top
+  * Change for new arduplane.pdef.xml, and some small visual fixes on the Configuration page
+  * Addition of groundSpeed property to UAS
+  * Addition of "Actions" widget. Similar to the Control dock widget, but APM specific.
+  * Addition of new Raw Status display, and tabbed widget container for QuickView
+
+  [ pigeonhunter ]
+  * Update README
+
+  [ Michael Carpenter ]
+  * Additional functionaltiy of Actions view, including setwaypoint,change speed, and ARM/DISARM
+  * Addition of new RadioChannel displays for radio calibration
+  * Change for the new RC calibration widget, still needs an if/else to load the old one for unsupported systems
+  * Fixed some some graphical glitches in the new RC calibration screen
+  * Fix for RC mappings in the configuration, and added a case so px4 mappings would still be editable
+  * Added UASRawView to the tabbed quick view
+  * Addition of extra debug output to comms console during Serial Comms issues
+  * Change so MainWindow handles its own deletion, and deletion of other UI objects to allow for closing when the MainWindow is closed, regardless of if other windows are open.
+  * Made communications console output window read only to avoid accidently typing in it.
+  * Fix for a couple of floating windows that shouldn't have been shown
+
+  [ dongfang ]
+  * Impl. Lorenz suggestions wrt one velocityChanged, altitudeChanged, speedChanged signal per reference frame. Impl. CDI on compass disk.
+
+  [ Michael Carpenter ]
+  * Fix for min/max values of radio configuration sliders not being scaled appropriatly
+  * Test merge of Soren's PFD into mp_merge
+
+  [ Lorenz Meier ]
+  * MAVLink update
+  * MAVLink update
+  * Revert "MAVLink update"
+  * Fixed PFD to behave, no global defines any more
+  * Fixed PFD to behave, no global defines any more
+  * Fixed up style sheet
+  * Removed OpenGL dependency in HUD, merged in HUD from Soren Kuula and config changes from Michael Carpenter
+  * Placed connect button better, added simple message console
+  * Default to APM message set if no user config is provided
+  * Fixed include hack
+  * Fixed null pointer issue
+  * Fixed issue when custom message set is enabled
+  * Fixed HUD / Video widget to be useful
+  * Fixed windows build errors.
+  * Potential fixes for ActiveQt
+
+  [ Michael Carpenter ]
+  * Change for an initial SeriaLink, and QGCToolBar having a selection menu next to the connect button
+  * Changed radio calibration min/max to 800/2200 for APM connected RC units
+  * Change for InfoView's QuickView text sizing, and reenabling of RawStatusView
+  * Fix for a crash involving RawStatusView
+  * Addition of requestReset to LinkInterface, to allow MavLinkProtocol to detect when connected, but at the wrong baud rate, request a reset.
+  * Change of name for diydrones fork of QGroundControl to APM Planner 2.0, per Chris Anderson and Craig Elder
+  * Change for new APM2.0 logo
+  * Change of Text sizing in QuickView, to allow for smoother resizing
+  * QuickView selection dialog now sorts items by category and lists them in an easier to read format
+  * Some comment cleanup, and fix so when closing the main window, it also closes the item select window
+  * Fix for category values not being updated in QuickView properly
+  * New configuration menu setup. Placeholders for now, waiting for functionality
+  * Change for layout of configuration widgets, and start of implmentation of RadioCalibration Widget
+  * Implementation of FrameTypeConfig completed, now reads and sets Frame Type
+  * CompassConfig implementation
+  * Working accelerometer calibation for APM3.0 and greater
+  * Changes so radio configuration widgets are now the proper orientation
+  * Fix for apm_planner issue #3, Serial port handling of '-' characters, since OSX can have a '-' in the port name
+  * Another change for issue #3, SerialLink::getCurrentPortS() should now return consistant results on Windows to match linux and OSX
+  * Initial implementation of Flight Mode Config screen
+  * Fixes for Radio Calibration to work with proper min/max values
+  * Additional functionality for Flight Mode config, including highlighting of current PWM value on channel 5
+  * Implementation of Battery Monitor configuration, and addition of AP2ConfigWidget, which automatically handles UAS connections to allow for simpler configuration window code.
+  * Added in checks for being connected to a MAV before attempting edits of configuration in Battery Monitor Config
+  * Implemented Sonar Config
+  * Implemented Airspeed configuration
+  * Implementation of Optical Flow config
+  * Implementation of OSD Configuration
+
+  [ Bill Bonney ]
+  * First Commit with new changes to support new QtSerialPort (not yet working)
+  * adds missing files
+
+  [ Michael Carpenter ]
+  * Fix for erronious error message due to connecting a signal in the wrong order on SonarConfig
+  * Implementation of Camera Gimbal configuration
+  * Change for all config widgets to use the Parameter Manager for setting parameters
+  * Addition of baud rate combo box on the toolbar
+
+  [ Bill Bonney ]
+  * Stability improvements and error fixes
+  * removed unused code and fixed disconnect problem
+  * adds back in mutex for stop flag changes
+
+  [ Michael Carpenter ]
+  * Change in implementation details for Camera Gimbal Config, usable now, but needs more error checking.
+  * UI for Antenna Tracker config, no backend.
+  * Addition of Software configuraion pages
+  * UI for a bunch of software configuration pages
+  * ArduPlane level configuration widget
+
+  [ Bill Bonney ]
+  * First commit of the new APM Toolbar
+
+  [ Michael Carpenter ]
+  * Changes for ArduPlane level to be shown when ArduPlane firmware is loaded
+  * Standard and Advanced param pages, auto-generated from xml file
+  * Initial implementation of FailSafe configuration
+  * More implementation of FailSafe configuration
+  * ArduPlane pid screen visuals
+  * Implementation of ArduPlanePid configuration write/refresh, and value ranges
+  * Implementation of ArduCoptor configuration screen
+  * Implementation of Advanced Parameter List, with descriptions and names from the XML file
+  * Implementation of ArduRover pid configuration screen
+  * Connected write/refresh buttons to their proper slots
+
+  [ Bill Bonney ]
+  * APMToolBar as a docking widget [complete]
+  * APMToolbar as a docking widget [complete] + missing files
+  * Fixed APM Tool Bar not being populated with link info when switching perspectives
+
+  [ Michael Carpenter ]
+  * Some comment and general code cleanup tasks
+  * Added forgotten ParamWidget
+  * Addition of orientation combo box for compass config
+  * Change so airspeed config is only displayed when Arduplane firmware is loaded
+  * Change so battery monitor config screen properly reads battery voltage now
+
+  [ Bill Bonney ]
+  * Fix to toolbar size, and to remove QGCToolbar (compile time option)
+  * Fixed APM Tool Bar connect button not changing images when connected
+
+  [ Michael Carpenter ]
+  * Change for label sizes so text is not clipped
+  * Change in Organization Domain of application
+  * Changes for AdvParameterList number display, and proper handling of CH6/7/8 options in ArduCopter pids
+  * Typo fix, missed a bracket
+  * Changes for compiling QSerialPort based communications library in windows
+  * Change in how Flight modes are read for APMCopter
+
+  [ Bill Bonney ]
+  * APM ToolBar chnages
+  * Fixed two warnings.
+  * APM Tool Bar: connected coonect(bool) signal to connect button.
+  * APM Tool Bar: connected connect(bool) signal to connect button.
+
+  [ Michael Carpenter ]
+  * Fix for compile error on windows
+  * Removed DESTDIR from .pro file to allow for OS to decide where to place binaries
+
+  [ Bill Bonney ]
+  * Fix to make Baud and PortName update when changed
+
+  [ Michael Carpenter ]
+  * First round of fixes per Bill's git commit comments
+  * Fix for crash involving improperly setting m_uas to 0 in some Config Widgets
+  * Addition of Retract/Neutral/Control angles to CameraGimbal config screen
+  * More changes based on code comments by Bill.
+
+  [ Bill Bonney ]
+  * Fix to improve QSerialPort integration & stability.
+  * Fixed: APM Tool Bar showing Connect/Disconnect labels in reverse
+
+  [ Michael Carpenter ]
+  * Change so OsdConfig only sends requests to start telemetry on a single serial port
+  * Change for user configurable column count in UASQuickView
+  * Fix for compile error from missing header
+
+  [ Bill Bonney ]
+  * FIX: Added the use of waitForBytesWritten to enable sending data
+  * Fixes #22 add init to lists to fix out-of-bounds issue
+  * First commit of Terminal Console View
+  * Terminal View: Store settings on successful connect
+  * Fix: mispelt include in SerialSettingsDialog.cc
+
+  [ Michael Carpenter ]
+  * Initial commit of APM2.5 Firmware loading config screen via Avrdude
+  * More changes for a better looking and functioning ApmFirmwareConfig screen
+  * Slight change for compile error
+
+  [ Bill Bonney ]
+  * Fixes firmware flashing on OSX
+  * Terminal Console: Added APM mode to send reset and send the break to enable the CLI on connect
+
+  [ Michael Carpenter ]
+  * Changes for proper min/max values of radio calibration
+  * More changes for ApmFirmware, to better identify when Beta is selected
+  * Change for duplicate header file
+  * Change for "burn" to "flash" for firmware config flashing
+
+  [ Bill Bonney ]
+  * Fixes component alignments and small improvements to Firmware View
+
+  [ Michael Carpenter ]
+  * Simplified Serial port selection window
+  * Fix for potential race condition where UI is not finished configuring when parameters start coming in
+  * Fix for QuickView being unable to add items. Bug introduced with the new multi-column changes
+  * Change for console mode, allows for console window and qDebug() output in release mode
+  * Change so firmware information requests happen 10 seconds after startup instead of 0.5seconds, to avoid a race condition
+  * Changed to increase spacing between QML toolbar items to make text more readable
+  * Reordered InfoView tabs, so Messages is at the end
+  * Removed "BETA" tag from firmware button images until they can be done properly
+  * Fix for accelerometer config failure leading to inability to recalibrate. Also changing screen will void calibration and require recalibration.
+  * Changed "Adv Parameter List" to "Full Parameter List"
+
+  [ tstellanova ]
+  * Workaround google maps breakage
+
+  [ Michael Carpenter ]
+  * Fix for saving and reloading QuickView column count
+  * Addition of Armed/Disarmed indicator on ApmToolbar
+  * Changed RadioCalibration to have solid green boxes rather than green outlines
+  * Added 250ms delay between sending data requests to increase probability of it working.
+  * Fix for Standard and Advanced param views not displaying or accepting edits properly
+  * Addition of pitch/roll/yaw P value locking in ArduCopter Pid Config
+  * Changed name in UI from Adv Parameter List to Full Parameter List
+
+  [ Bill Bonney ]
+  * Updated layout of APM Toolbar Status Display for ARM/DISARM
+  * Added the use of QPointer guard wrapper to help fix stability issues
+  * Fixed the accidental removal of UDP listening of startup
+
+  [ Michael Carpenter ]
+  * Change of Serial settings window size and baud/port combobox sizes
+  * Change for Failsafe config to correctly display GPS status and Disarmed on start
+
+  [ Bill Bonney ]
+  * add /GeneratedFiles to .gitignore
+
+  [ Michael Carpenter ]
+  * Change so UASQuickView font sizes are now identical, and change properly based on window size and column count
+
+  [ Bill Bonney ]
+  * Changes to support new toolbar layout with 'Initial Setup' and 'Config Tuning' replacing Hardware & Software naming
+  * Optimize font size in ToolBar
+
+  [ Michael Carpenter ]
+  * Change so Tool Widgets and Perspective menus are hidden unless in advanced mode, and native style is default.
+  * Additional features for Full Param list, refresh/write button, and coloring based on edits.
+  * Changes so QDockWidget drag bars are slightly thicker and easier to click in native mode
+  * Change so uploading firmware is done without being connected to a vehicle, and COM port selection is independant of telemetry port selection
+  * Addition of Load and Save buttons for Full ParameterList to load/save from/to CSV file, and addition of "Units" field to list
+  * Change for progress bar not being visible on load until flashing firmware.
+  * Change to fix PX4 serial driver instabilities
+  * Change so Initial setup window buttons are collapsed by default
+  * Added H frame type to frame-selection screen
+  * Changes for dynamic layout of firmware config
+  * Change so communication menu is hidden in standard mode, and toolbar only acts on serial links
+
+  [ Bill Bonney ]
+  * Fixes to clean up SerialLink creation. Either saved settings are used or a default set.
+  * Added QsLog: Threaded File and Console Logger (as basis of in the field log creation and debugging solution)
+
+  [ Michael Carpenter ]
+  * Connected connected/disconnected signals for UAS
+  * Added capability to resend message request frequenices on reconnection of a disconnected MAV
+  * Addition of proper layout and show/hide of firmware config when connected/disconnected
+  * Typographical error corrections
+  * Fix for background color on edited items not reverting to the correct color
+  * Hide logging toolbar
+  * Compile for for new logging facilities
+  * Changed layout of Comm window to look nicer when not in advanced mode
+  * Addition of swappable UASQuickView items on double click
+
+  [ Bill Bonney ]
+  * Fix to incorrectly decoding RAW and SCALED IMU messages as NAV Controller Output messages.
+  * Fix malformed debug message
+  * Added qualifiers to APM Toolbar logging for clarity.
+  * Added second phase construction to QGCCore to support QsLog better
+  * Debug Logging to monitor the creation and destruction of serial links
+  * Addition of custom mode objects to support APM:Plane APM:Copter & APM:Rover
+  * Extra Debugging commands and fixes to debug logging
+  * Changes to support 'Execute Action' button in UASActionWidget
+
+  [ Michael Carpenter ]
+  * Change to disable mouse wheel movements on combo boxes, sliders, and spinboxes. Resolves #18
+  * Fix for compile error
+  * Fix #19, now fixed column order, and background color of Full Param List
+  * Change in UASQuickView text item value and title sizes to make them more readable.
+  * Change so both Firmware and Terminal screens use serial port name information to make it easier to identify the proper port
+  * Change to add layout to APMHardwareConfig, allows for proper resizing of the window
+  * Added missing files for MouseWheelEventFilter
+
+  [ Bill Bonney ]
+  * Addition of nav audio for custom mode announcements to support APM devices.
+  * Further updates to Audio announcements per UAS type
+
+  [ Michael Carpenter ]
+  * Addition of DebugOutput window, Help->Show Debug Output
+  * Change so DebugOutput properly closes on exiting of application
+  * Change for UASQuickView to swap items correctly when not connected to APM
+
+  [ Bill Bonney ]
+  * Changes to support different custom_modes per UAS, to improve Audio aannoucememnts
+  * Audio: Pre-Arm Checks announced using audio
+  * Added setMode with mode and custom_mode to UASInterface and UAS implementation
+  * Added Set Mode and Quick Mode Change buttons
+  * Fixes the incorrect showing of Horizontal scroll bar for config buttons
+  * Added extra warning message and detail for when connecting in Terminal Mode
+  * Support added for Mode and Heartbeat status display on APM ToolBar
+
+  [ Michael Carpenter ]
+  * Fix for stylesheets to include a wider dockwidget border, and proper colored group box titles
+  * Default style is now outdoor, not native
+  * Change to show/hide buttons as appropriate in ApmSoftwareConfig, based on UAS connect state
+  * Change for decimal precision of UASQuickView and RawStatusView, for more readability
+  * Fix for stylesheet setting being overridden in QGCCore
+  * Addition of firmware update cancel button, and com port "name" in the drop-down box, rather than the system identifier
+  * Fix for Full Param list cell background color being incorrect on stylesheet changes
+  * Change so ApmSoftwareConfig displays proper buttons on reconnect after disconnection
+  * Change in stylesheets to make checkboxes more legible, and groupbox title text readable in outdoor mode
+  * Fix for float values not being properly displayed on Adv/Standard param config pages
+  * Change so double and integer spin boxes in Adv/Standard config accept the return key as an accept input
+  * Addition of extra error checking and reporting in firmware config, as well as timeout checks
+  * Fix for lower case parameter names in arduplane.pdef.xml not being read correctly
+
+  [ Bill Bonney ]
+  * Fix to avoid crashes when no active UAS connected
+  * Fixed APM Toolbar to stop showing Heartbeat on disconnect
+  * Fixed APM Toolbar to remove ARM/DISARM Status Display for APM:Plane
+  * Fixed "Initializing" spelling mistake
+  * Quick Fix for Audio announcements for PixHawk, APM:Plane, APM:Copter
+  * Fix to allow running outside of the debugger
+
+  [ Michael Carpenter ]
+  * Standard and Adv param screen changes to make ParamWidgets signficantly easier to use
+
+  [ Andrew Tridgell ]
+  * fixed build on Linux
+
+  [ Michael Carpenter ]
+  * Change so toolbar button text is sized properly on both OSX and windows
+  * Resized RadioCalibrationConfig "calibrate" button to not clip "Done calibrating" text
+  * Changed RadioChannel bars to use proper Palette colors, so text is always visible
+  * Change for saving baud rates on a per-com port basis
+  * Addition of hash/commit ID in DebugOutput view
+  * Changed default baud rate from 57600 to 115200
+  * Changed order of Serial port baud rates in config screens to be ordered properly
+  * Change for accelerometer calibration button width
+  * Rearranging of config pages, per Craig Elder's instruction to match MP
+
+  [ Bill Bonney ]
+  * Fixes NULL pointer reference when uploading FW fails
+
+  [ Michael Carpenter ]
+  * Change to prevent "crazy comboboxes", where UI events were overlapping and causing ComboBoxes to become unusable.
+  * Change from 3drobotics to diydrones for COMPANYNAME
+  * Change to QsLog to allow for files to roll over once per application restart
+  * Fix for crash on computers with zero serial ports when application is started
+  * Change for warning screen when connected to UAS, and updating serial portlist when a new device is plugged in
+  * Fix for buttons causing scrollbars in the hardware and software config screens
+  * Fix for serial port of firmware window not updating properly
+
+  [ Bill Bonney ]
+  * Fixes to make serial link work with no devices attached
+  * readme.rtf file to be included in Mac OSX disk image on deployment
+  * Support for ProgressBar when downloading Parameter List
+  * Fix to improve the Full Parameter List layout
+
+  [ Michael Carpenter ]
+  * Change so Firmware "cancel" button is only displayed when flashing firmware
+  * Change for indoor style to have larger push buttons
+  * Fix for UAS not handling doubles as floats for outgoing parameters
+  * Change so failsafe configuration works with low battery voltage
+  * Fix for crash in terinalconsole when there are no serial ports on the host PC.
+  * Finishing failsafe configuration for APMPlane, as well as display of the current mode
+  * Change for display of COM port name on windows, and descriptor on *nix
+  * Addition of copyright notices and file briefs to configuration views.
+  * Change so "load" in Full Parameter list doesn't write to the UAS
+  * Fix for better handling of file export->import, and coloring of values changed
+  * Change for better description of firmware upload com port displayed
+
+  [ Bill Bonney ]
+  * Removed delays since new serial port handles multiple request better.
+  * Fixed conversion issues from float to int/unit by using natural uint/int instead on QChar
+  * Added extra logging for Parameter Handling
+
+  [ Michael Carpenter ]
+  * Change to only display supported baud rates
+  * UI changes to make the UI more smooth for Compass and Full Parameter List
+  * Fix for failsafe config UI label and sizing issues
+  * Added warning box on failsafe screen, warning user to remove props
+  * Change to remove sonar button from plane, and adjust button sizes
+  * Changes for ArduCopter pid config to look better, and handle some values better
+
+  [ Bill Bonney ]
+  * Fixed the layout and button sizes of the APM:Plane Tuning View
+  * Improvements to the APM:Copter PID layout Screen.
+  * Changes to the spacing in APM ToolBar to make sure that the HB indicator does not disappear.
+  * Fixes APM Toolbar to show activeUAS's serial port on the right hand side
+  * Fixes APM Toolbar to show 'status' and 'mode' descriptive labels when activeUAS is disconnected
+  * Fixed the layout for the Compass Config View
+  * Further changes to support correct mode/status/serialport display in ToolBar
+
+  [ Michael Carpenter ]
+  * Implementation of Simple flight modes
+  * UASQuickView roll/pitch will now update properly
+
+  [ Bill Bonney ]
+  * Mute Audio when doing Accelerometer Calibration to avoid Connection Lost messages.
+  * Removed errant call to setMode in APMToolBar
+  * OSX to show 'device name' when selecting devices. Description is shown once device is connected below as verification you have the correct one.
+  * Rename Perspectives to Views Rename Views to reflect APM ToolBar
+
+  [ Michael Carpenter ]
+  * Added new valueChanged category, "GCS Status" with human readable names
+  * BatteryConfig now handles measured calculations properly
+  * Fixed values being 0.00 if they are over 10,000 in UASQuickView text items
+  * Added new category of text items
+
+  [ Bill Bonney ]
+  * Disable Mouse Wheel/Trackpad movements from randomly effect the mission waypoints when scrolling
+  * Addition of new connected/disconnected signals that identify the LinkInterface to better reflect status in the APM Tool Bar
+
+  [ Stephen Dade ]
+  * Modified Project file to copy across qml folder in Linux build
+
+  [ Michael Carpenter ]
+  * Resetting of non-mavlink packet detection
+  * Addition of warning box for ApmToolbar if QML file is not located, to avoid a crash.
+  * New accel calibration config, with 3 axis for all vehicles, and 1 axis leveling for plane
+  * Added change so proper accel config page displays for all vehicles
+  * Moved settings widget from file->settings to Setup/Config->AP 2.0 Planner Config
+  * Addition of right-click on beta firmware button to load trunk firmware capability
+  * Extra log information included in the beginning of log, including GIT hash information
+  * Fix for bad default bits per byte in serial settings (was 5, now 8)
+  * Change to hide QGC related help items to avoid confusion
+  * Changes for cross compiling
+  * Addition of installer generation scripts
+  * Addition of BasicPidConfig, per MissionPlanner's basic pid config screen
+
+  [ Bill Bonney ]
+  * Fix to stop port scanning when Firmware Update View not visible
+  * Fix to update Serial Ports when Terminal View shown
+  * Renaming to the newer APM:Xxxx format + Addition of GeoFence button in Config View
+  * Addition of GeoFenceConfig View
+  * 3rd Party Library to support LeastSq calculations
+  * Addition of Compass Calibration Feature in Compass Config View
+  * Changes in project file to compile new features
+  * Additional logging to support debugging of Go To Here mode in SITL
+
+  [ Michael Carpenter ]
+  * Changes for UI text sizing
+  * Change for com ports not being read properly
+  * SerialLink no logner uses the registry in windows for saving settings
+  * Change to crossplat installer script
+  * More changes for proper build of AP2 cross platform
+  * Change so ApmToolbar updates com port properly, and SerialConfig window removes com ports that no long exist
+  * MinMax labels weren't showing up for Integer ParamWidgets, fixed
+
+  [ Bill Bonney ]
+  * Cleanup of new Compass Calibration code and fix for calculation error
+  * Completion of APM:Copter GeoFence Config View.
+  * Fixed missing RTL_ALT_FINAL parameter and add conversion from cm to m where needed
+  * Fix text protruding from View Buttons in ToolBar
+
+  [ Michael Carpenter ]
+  * Changes for retrieving apm.pdef.xml from the web if available
+  * Calling uasConnect in AccelConfig to ensure proper config screen is displayed
+  * Changed Battery Monitor config to have Pixhawk settings
+  * Extra tr() calls, and added items to .gitignore
+  * Added "Keep Window On Top" checkbox for DebugOutput window
+  * Change for alpha-RC1 version name
+  * Fix for some of the apm pdef XML file not being parsed properly
+  * Fix for compass offset zeroing and scaling issues.
+  * Fix for typos in GeoFence config, using QObject::connect instead of QObject::disconnect
+  * Change for cross-compiling properly on systems without copy
+  * Change in CompassConfig for seperate Degrees and Minutes text boxes
+
+  [ Bill Bonney ]
+  * Changes to zero offsets before compass calibration
+  * Fix to clean up serial port when closing Terminal View
+  * Fix to update toolbar correctly when disconnecting
+  * Support for Easy Config of compass for known configs
+
+  [ Stephen Dade ]
+  * Fixed Q_OS_UNIX definition. Required for Linux build
+
+  [ Michael Carpenter ]
+  * Moved trad-heli from X frames to Plus frames image for frame selection config
+  * Changes for battery monitor config
+  * Changes for BatteryMonitorConfig to work properly
+  * Addition of APMPlanner2 icon
+  * Changes for installer generator to use the proper icon
+  * Fix for installer generator
+  * Changes for moving frame images around properly
+  * Change for mouse wheel blocking on controls, and proper double spinbox increment sizes
+
+  [ Bill Bonney ]
+  * Fix to initialize m_allOffsetsSet to zero
+  * Fix naming to APM:Copter and APM:Rover PIDs
+  * Fix to stop Config/Tuning to be automatically moved to preferences on OSX
+  * Fixes to APM:Copter PIDs layout
+  * Fix to hide Basic PIDs view when not in APM:Copter mode
+  * Remove erroneous 'z' appended to status string in Terminal view
+  * Increase the buffer size for the Terminal View
+  * Rename 'onboard parameters' to 'Parameters' in Tool Widgets
+
+  [ Michael Carpenter ]
+  * Changes in .pro to clean it up a bit
+  * Full Parameter list now highlights the param name as well as the value when an edit is made
+  * Checkboxes are now a bit more visible in indoor mode
+
+  [ Bill Bonney ]
+  * Added Parameter Download Progress Bar to Initial Setup & Config/Tuning Views
+  * Code tidy up: removal of commented out code
+  * Addition of new test methods to group Multirotor vehicle types together, and further ground and fixed wing vehicles
+  * Fixes #44: Changes to support new Multiple Vehicle definitions from APM:Copter.
+  * Polish to the 'Initial Setup' & 'Config/Tuning' Views Menu Options
+  * Fix to add in Optional Sonar Button
+
+  [ Michael Carpenter ]
+  * Disabled a bunch of unused and untested views for simplicities sake, to be re-enabled at a later point
+
+  [ Bill Bonney ]
+  * First layout of 3DR Radio Configuration View
+  * Added Feature to Select 3DR Radio Comm Port
+  * Fixed naming and removed PX4/APM specialization for connection in terminal (not required)
+  * Fixed Compass View to fit smaller screen size
+  * Fix 'change speed' action of Quick Actions view to correctly take the value from the speed spin box
+  * Support for smaller sub-option buttons and + sign for group buttons
+  * Changes to the colouring of the Radio Calibration Bars
+
+  [ Michael Carpenter ]
+  * Changes for serial port, fixing the "Disconnect" showing when not connected, and baud rate -1 display issue
+  * Change to add 3DR 4 in 1 ESC to battery monitor config screen
+  * Change for Accelerometer Calibration layout, and proper reading of "leveling" txt messages
+  * Terminal Console now properly reflects "current" COM port in combo box
+
+  [ Bill Bonney ]
+  * Fixes issue with Optional Button clicked would show unavailable options when disconnected
+  * Fixes compass layout to accommodate PX4/Pixhawk auto detection on compass orientation
+  * Fixes Primary Flight Display sizing problem
+  * Changes to Compass View to support Pixhawk quick config
+
+  [ Michael Carpenter ]
+  * Disabled COMM timeout reset of APM and PX4 boards
+  * Change for layout of Accelerometer Calibration config window
+
+  [ Bill Bonney ]
+  * Changes to support highlighting of buttons when selected in Initial Setup and Tuning/Config Views
+  * Updated readme.rtf
+  * Adjustments to ConfigView layout
+  * Adjustments to FailSafeConfig View
+  * More changes to support Clickable and Highlightable Buttons
+  * Change to have Radio3DRConfig and default View
+  * Remove APM/PX4 mode combo box from Terminal View
+  * Set Radio3DRButton checked on default activation
+  * Move Go To Waypoint Button in QuickView for clarity
+  * Replace QGroundControl with APM Planner in Warning/Error messages
+  * Reworking of "Initial Setup" Mandatory and Optional Buttons.
+  * New Setup Warning View to guide users on initial setup of their APMs
+  * Changes to remove Connection Widget from ToolBar when disconnected and Firmware Upload View is selected.
+  * Remove duplicate 'Onboard Parameters' entry for Tool Widgets
+  * Changes to support file naming based on the coding convention
+  * New APM Planner Icons for OSX & WIN
+  * Changes to support dynamic serial port update
+
+  [ Michael Carpenter ]
+  * Addition of PX4FirmwareUploader for uploading firmware to PX4 boards
+  * Reeneabled reset capabilities, but only for APM, not PX4 boards
+  * Changes for improved progress and error reporting for PX4FirmwareUploader
+  * Changes for PX4Firmwareuploader to work in linux
+  * Changed .cpp file extension to .cc
+  * Changes for error checking and reporting of PX4FirmwareUploader
+  * Change icon for the application, and also changed what serial port name shows up in the firmware screen below the combo box
+  * Fix for duplicate .cc in .pro file
+
+  [ Bill Bonney ]
+  * Change to build x86_64 version only OSX to reduce distro size by 40-50%
+  * Improvement in Serial Port handling to reduce the number of erroneous states in the UI
+  * Fix for connecting to the wrong signals for slots
+  * Removal of First Time Users message
+  * Fix to update incorrect reference to old arc file
+  * Fix build issue due to file renaming
+
+  [ Michael Carpenter ]
+  * Changes for serial port reads
+  * More PX4 firmware uploader changes
+  * Fix for beta labels, and small changes for PX4 uploader usability
+  * More changes for error reporting, and CRC check on firmware upload
+  * Added a change for reporting error in CRC
+  * Fix for accidental comment
+  * Fix for FW loading of APM hardware
+  * Change to only display APM or PX4/Pixhawk com port in the firmware upload list
+  * Removed "safe" hack for starting NSH on PX4-ETH firmware, causing both PX4 and APM to boot into terminal mode every time due to lack of version detection
+  * Addition of extra output after flashing PX4 for error console
+  * Code cleanup and additional debug information for COM port detection in the firmware config
+  * Fixes for OSX and Linux to use openssh for PX4 OTP verification
+  * Fix for connect->disconnect->connect causing Initial config button confusion
+  * Fix for new battery parameters, and better handling of battery sensor detection
+  * Changes for OTP verification to compile and work in OSX
+  * Addition of windows px4uploader.exe usage for loading PX4/Pixhawk firmware
+  * Fix for including px4uploader in the win32 installer
+  * Fix for px4uploader.exe to properly run, this time in the temp directory for write-rights
+
+  [ Bill Bonney ]
+  * Implementation of 3DR Radio Config View
+  * Fixes to Battery Monitor Config to set correct values for 3DR Power Module on APM2.5
+  * Fixed channel numbering on Radio Calibration confirmation dialog
+  * Temporary hiding of views not complete
+
+  [ Michael Carpenter ]
+  * Added a confirmation box after flashing of firmware, and the popup telling the user to power cycle the PX4 before flashing now auto-dissapears
+
+  [ Bill Bonney ]
+  * Fixes the VOLTS_PER_AMP param not being set on older APM FW builds
+  * Final working version of 3DR Radio Config View
+
+  [ Michael Carpenter ]
+  * Change so "unplug and replug" message for PX4 firmware uploading has a cancel button
+  * Incrementing RC number for settings reset
+
+  [ Bill Bonney ]
+  * Addition of RSSI reporting in 3DR Radio Config View
+
+  [ Michael Carpenter ]
+  * Change to remove progress bar from "unplug/replug" dialog, and fix a crash
+
+  [ Bill Bonney ]
+  * Remove setting of m_baud to -1. Defaults now to 115200 baud on no settings found
+  * Remove 3DR Radio Button from Optional View when connected
+  * Fix removal of 3DR Radio button on non-connected screen
+  * Temporary fix to battery monitor to set the correct voltage and divider levels for Pixhawk
+
+  [ Michael Carpenter ]
+  * Change to add new pixhawk bootloader product ID to the "version" detector in ApmFirmwareConfig
+
+  [ Bill Bonney ]
+  * Renamed readme.rtf to Installation Instructions.rtf and added step to install FTDI drivers for telemetry radios.
+  * Added scripts to support auto builds for OSX
+  * Improvements to the build scripts
+  * Fix so on first run screen size fits within desktop space
+  * Improvements to the Quick Action View. Added Shortcut Action buttons that are easy to click and discover.
+  * Fix issue #46: Guided Mode activated from MAP View causes APMPlane to crash. Guided mode will show default altitude type (ASL/AGL) in title bar. It's based on the mission entries. If you have the last entry in the mission set as ASL, it will be ASL. If AGL, it will be AGL. Default is always AGL.
+  * Enable follow me as the default behaviour for Map View
+  * New script to upload builds from OSX build server
+  * Remove Notes from user dongfang
+  * Update script to remove failing command
+  * Added Flash Custom Firmware button to Install Firmware View
+
+  [ Kelly Schrock ]
+  * Load From File message
+
+  [ Michael Carpenter ]
+  * Changes so UASQuickView item selection dialog now uses a list for selecting item categories to add/remove from the view
+
+  [ Bill Bonney ]
+  * Updates to the layout of Install Firmware view. Provision for new reboot button. Some improvements to error handling.
+  * Minor visual improvements to the Radio Calibration Screen
+
+  [ Kelly Schrock ]
+  * Update README
+  * Param Write UI confirmation
+  * Use C++ style cast instead of C-style
+  * CH6 Tune segfault fix
+
+  [ Bill Bonney ]
+  * Fix to Radio Channels PWM values to use a dark colour when 'outdoor' style is selected.
+  * Added warning dialogs to pre flight commands that can cause a vehicle to crash if not on the ground.
+
+  [ Michael Carpenter ]
+  * Fix for selecting trunk firmware changing the name of the beta firmware button
+  * Fix for #52, where PX4 upload thread didn't exit properly on an error condition involving unplugging the device in the middle of flashing
+
+  [ Bill Bonney ]
+  * Fix to Waypoint Edit Widget being to small
+  * Updated Action View to allow altitude changes (ASL & AGL)
+  * Start & Stop Port scanning based on connection state in Terminal View
+  * Adds the ability to use avrdude that has been installed to usr/local/bin This is on systems that use brew install avrdude
+
+  [ Michael Carpenter ]
+  * Fix for #elif in ApmFirmwareConfig, which should be #else to compile
+
+  [ Kelly Schrock ]
+  * CH7 Additional modes
+
+  [ Bill Bonney ]
+  * Add in the CH7/8 Land Option
+
+  [ Stephen Dade ]
+  * Linux Installer - first commit of auto-build and packager for Linux
+  * Linux Installer - Fixed up permissions and menu entry
+  * Linux Installer - Add entry to main menu
+  * Linux Installer - removed en_au language specifier
+  * Linux Installer - Added readme
+
+  [ Bill Bonney ]
+  * Added extra install instructions for OSX on how to run an unsigned binary
+  * Resolves #59: Quick Actions still disabled after reconnect
+  * Added Context Menu to modify the lower four shortcut modes.
+  * Dialog added to AdvParamView to download parameters for Iris - Part 1 (fixed list)
+  * Fix to URL to download the file, not the HTML page for Iris.param
+
+  [ Michael Carpenter ]
+  * Addition of new GCS Status messages for UAS Quick View, including scaling for lon/lat and for gps altitude
+  * Addition of a few new UAS messages for the UASQuickView
+  * Change for default values displayed on UASQuickView
+  * Fix for font size of QuickView item title text
+
+  [ Kelly Schrock ]
+  * Dataflash Logs
+
+  [ Bill Bonney ]
+  * Added default log directory to be users $HOME/apmplanner2/dataflashLogs/
+  * Fixes issue if directory for parameters does not exist
+  * Added support to be able to compare saved parameter files with the current vehicles settings
+  * Fix to rename the BETA label to Beta
+  * Use defines to setup directory to save parameters
+  * Fix missing includes from new Download Remote Params dialog
+
+  [ Kelly Schrock ]
+  * KML Creation
+
+  [ Bill Bonney ]
+  * When activeUAS changes force update armed state
+  * Removes changes to Radio Channel Display for calibration rendering
+  * Fix to re-requestAllDataStreams after a power cycle on the vehicle
+  * Increase time constant before audio alarm of connection loss
+  * Add newer LAND on Throttle Failsafe to Failsafe Config Veiw
+  * Updates QuickView for more informative standard readouts
+  * Changes required to build the new KMZ export feature
+  * Disable KML generation (temp) and some poor layout changes
+
+  [ Kelly Schrock ]
+  * Log to KML button
+
+  [ Bill Bonney ]
+  * Fix 3DR Radio Config View not saving current params to EEPROM
+
+  [ Kelly Schrock ]
+  * Move Quazip to libs/ subdirectory
+
+  [ Michael Carpenter ]
+  * Change to use AP2DataPlot2D for the Plot view, uses QCustomPlot for graphing
+  * Code and functionality cleanup for the new Plot view, much quicker log loading and display
+  * New zoom and scroll bars for 2d plot
+  * Cleaned up plot code, so it can now reload logs properly, and zoom and scroll with the mouse
+  * Fix for text browser not being selectable for copy/paste
+  * Fix for compiling quazip on windows
+  * Fix for compilation after inclusion of quazip, since zlib is statically compiled into Qt, no need to link it in Win32/64
+  * Another compiling fix for quazip on win32
+  * Last bit of cleanup and error checking in AP2DatPlot2D
+  * Removal of unused QGraph class, which fixes a compile error
+
+  [ Bill Bonney ]
+  * Fixes to Compare feature in AdvParameterList
+  * Fix logging message to report a corrected debug string
+  * Update the request data rates to 10s, to improve GCS behaviour during setup.
+  * Part#1 changes to support tlogs
+  * Added Voltage and HDOP to Quick View on first start
+  * changes to the way audio is handled
+  * Fix Build Issue
+
+  [ Kelly Schrock ]
+  * Fixes #70, issue with crashes in KML creator
+
+  [ Stephen Dade ]
+  * Linux Build: Updates to scripts
+
+  [ Bill Bonney ]
+  * Reduce APM:RequestAllDataRates logging
+  * Fix float to int conversion error
+
+  [ Michael Carpenter ]
+  * Fix for cross platform building on build server, and including zlib1.dll
+  * Change for units to be added to UASQuickView items
+  * More standard QuickView labeling of units
+  * Change so any value in UASQuickView shows and uses units
+  * Implementation of AP2DataPlot2D live data view while connected to a MAV
+  * Changes to greatly reduce CPU required for AP2DataPlot2D
+  * Fix for compiler error C2864, only static int's may be initialized in a class header, floats must be defined in the class source
+  * Change to remove more files on uninstall, appdata folder files and zlib dll
+
+  [ Bill Bonney ]
+  * Change the H-frame icon to look like an I
+  * Added shortcut keys Ctrl+1 to CTRL+6 for views
+  * MAVLink tlog logging part #2. now logs to vehicle specific folder
+  * Changes to move alglib library into its own build file
+  * Slight re-arrangement of default QuickView readouts
+  * Added new helpers to locate users data (part 1)
+  * Changes to add new About box
+  * Added link in install instructions to issues list
+  * Fixed deploy script to add .app extension to app package
+  * Updates to .pro file to support QGC::helpers and About Box
+  * Fixed typo in log message
+  * Update to Settings Widget to set data directories
+  * Fix to space added by error to the .pro file
+  * Fix parameter directory method returning incorrect data
+  * Clean up some old commented out code
+  * Fix global directory accessors to create the directory if it does not exist
+  * Shorten SHA in About Box to 8 characters
+  * Update configuration to file to Beta-RC1
+  * Update to use mkpath instead mkdir, as it creates directories recursively
+
+  [ Michael Carpenter ]
+  * Change in installer generation script to remove start menu items
+  * Cleanup in QuickView, and fix so valueChanged signals from the non-active UAS are ignored
+  * Subclassed QLabels on UASQuickViewTextItem, to allow for stylesheet changes for text color
+  * Fix for log directories not being created on first run if they do not exist
+  * Int and double ParamWidget spinboxes now change to red when their value is changed by the user, then green once the value is accepted by the MAV, and clear the next time the value is returned from the MAV
+  * Removed extra debug output
+
+  [ Bill Bonney ]
+  * Fixed extra '/' added after roll back of log directory changes
+  * Remove unnecessary code for HOME directory resolution
+
+  [ Kelly Schrock ]
+  * KML Summary
+
+  [ Bill Bonney ]
+  * Re-enabled and reworked Camera Gimbal Config UI
+
+  [ Michael Carpenter ]
+  * Fix for GlobalObject settings not being loaded before QsLogging was initialized
+  * Change so int and double spinboxes now revert to their previous value when "escape" key is pressed
+  * Code cleanup and fixed crash caused by changing active UAS in AP2DataPlot2D
+  * Change so .pro file is parsed, and git hash is updated at every build
+  * Fix for compile error due to a missing an unused "models" directory
+  * Addition of "Auto Scroll" in AP2DataPlot, allowing the data to automatically scroll while retaining zoom functionality.
+  * Reduced the number of warnings sent by qcustomplot for invalid font pont sizes
+  * Added the ability to load an unload a graphed data flash log, even when connected to an autopilot
+  * Changes for AP2DataPlot to have a table view for log data, and a treeview for variable/graph selection
+  * Removal of unneccesary dock widgets from the Plot view
+  * Addition of "Clear Selection" button for AP2DataPlot, for clearing out all graphs and blanking the plot
+  * Code cleanup and readability fixes
+  * Fix for bug, where the AP2Plot widget would not work if a MAV changed sysid (M1 became M4 for instance)
+  * UASQuickView now ignores the MX parameter of an incoming datapoint, and checks activeUAS against the uasid field, so it can handle UASID's other than 1
+
+  [ Kelly Schrock ]
+  * Drift Mode support
+
+  [ Bill Bonney ]
+  * Typo for Fly-By-Wire A reported as B for APM:Plane
+  * Fix outdoor style to grey widgets when disabled
+  * Enable http link in about box to launch system web browser
+  * Fix issue with Cam Gimbal View Tilt Input channel changing incorrectly, on Roll change
+  * Fix issue when editing waypoints in 'Offline Edit Mode' that it would crash.
+  * Python SiK Uploader script
+
+  [ Michael Carpenter ]
+  * Changes for display of "live" vs "log" label on AP2DataPlot, as well as some bugfixes to prevent crashes when switching between log and live plot viewing
+  * Fix for compile error due to a bad header
+  * Throw a warning for AC 3.1+, that the props will spin when rearmed
+
+  [ Bill Bonney ]
+  * Changes to support the new MAVLink low latency options
+  * Fix to display APM Planner 2 instead on QGC in warning message
+  * Fix to allow Mission Planner created missions files to be loaded in Flight Plan Widget
+  * Fix to add Drift mode as a definition in ArduPilotMegaMAV object
+  * Fix missing DRIFT conversion in UAS Action Widget
+  * Fix corrupt packet detection in 2D Plot View
+  * Beta-RC2
+  * Created new ApmUiHelper class to populate comboBoxes with modes This give greater consistency across the application. Fixes issue with modes incorrectly displayed with APM:Rover
+  * Add Plot View Button to toolbar
+  * Hide connection button for UAS when 3DR Radio Config view selected
+  * Fix GPS Sats and GPS Fix not showing in default setup
+
+  [ Michael Carpenter ]
+  * Fix for bug #87, where if you added a graph via the table view, and then removed it with the tree view it would cause duplicate graphs
+  * Added mavlink inspector to the tools menu, as it had disappeared when it was removed from the Plot view
+
+  [ Bill Bonney ]
+  * Fix tool tips background color in Outdoor style-sheet
+  * Improve MapToolBar Go Home and Follow Vehicle options Follow Vehicle button is now more visible when enabled Go Home will centre map on WP0 for APM (i.e. Home Position)
+
+  [ dragonbrains ]
+  * Fix #89: Fix log download when log number != line entry in table
+
+  [ Michael Carpenter ]
+  * Initial commit of AP2DataPlot axis grouping, allowing multiple graphs to be tied to the same Y (value) axis
+  * Changes for AP2DataPlot axis grouping to work properly, Axis's value ranges can now be paired and unpaired
+  * Fix for crash on closing AP2 due to AP2DataPlot axis selection dialog not being removed
+  * New "Load Param" button in hardware configuration, to display and allow downloading of param files, then applying them to a connected UAS
+  * Change to use QLOG_ERROR instead of qCritical for some Param related errors
+  * Code fixes, and change so parameters are loaded and saved from a single place in the ParamManager, handling tabs and CSV
+  * Source code and comment cleanup
+  * Fix for graphs not rescaling properly after being removed from a group
+  * Hide non functioning min/max graph axis controls for now
+
+  [ Bill Bonney ]
+  * Fixes to add Rover controls modes into Quick Actions View Also removed highlighting of mode buttons as it was not working and could be misleading
+  * Added link to settings for countries on 3DR Radio View
+  * Script to move and upload daily builds
+  * Add Lat/Lon Sats/HDOP to mapview
+  * Updated to Beta-RC3
+
+  [ Michael Carpenter ]
+  * Fixes for graph axis range grouping in AP2DataPlot, and a better Graph Scale Control window
+  * Windows daily upload script, and disabling of AP2Plot axis grouping for release
+  * Change to make upload_daily_win.sh executable
+  * Fix for shell usage, needs to be bash, not sh
+  * Addition of message in PFD showing PreArm failures when tryign to arm MAV
+  * Change so a popup lets the user know when parameters have been loaded via Load Parameter button
+
+  [ Bill Bonney ]
+  * Initialize variables to zero
+  * Make the CommsConfig view a ontop modal dialog
+  * Disable the Simulation view until its tested and works as expected
+  * Update version to V2.0.0 (RC1)
+  * Fix #95 When Loading Params AdvParamterList does not show changes.
+  * Visual adjustment of PreArm check message
+  * Update to About Box link
+
+  [ stephendade ]
+  * qmake install now working under Linux
+
+  [ Bill Bonney ]
+  * Update APM:Plane PIDs to reflect the new TECS system
+  * Fixed Rover PID layout
+  * Fix #96 so Linux users will pick up avrdude in usr/bin install avrdude using 'sudo apt-get install avrdude'
+
+  [ Michael Carpenter ]
+  * Changes to the windows upload script file to rsync directly to firmware.diydrones.com
+  * Fix for script rsyncing from the wrong place
+
+  [ stephendade ]
+  * Linux: Firmware uploading now works. Minor build directory fixes too
+
+  [ Michael Carpenter ]
+  * Re-enabled and fixed AP2DataPlot axis grouping so it works properly now.
+
+  [ Bill Bonney ]
+  * Fix bad define, that led to an incorrect fix to apmserialport.pri on linux
+  * Change to reduce CPU Usage by 10% in foreground
+  * Fixes issue #108: Not able to download logs from PixHawk
+  * Added GPS RAW Message
+  * Fixed QGCMapTool to only update overlay on new messages
+  * Cleaned up build files (inline with QGC changes 34c2c3d980) see https://github.com/mavlink/qgroundcontrol/commit/34c2c3d9801d0b811835e4d47197b84b4245a282
+
+  [ Michael Carpenter ]
+  * Fixes for cross platform builds
+  * Change so plot removes data after 30 minutes, and time values are shown as time since graphing started
+  * Fix for wrong SDL library linked in cross platform windows build
+
+  [ Bill Bonney ]
+  * Added macx-g++ target for autobuild system
+  * Fixed README to say Qt4.8.x as the build requirement
+  * Added Parameter Summary Display The first few lines of any parameter file marked with a '#' comment symbols will be shown as a summary for the user to accept or decline.
+  * Added 'Load From File' button as helper on initial setup. You no longer need to download a param file on initial setup but can apply one you have saved previously
+  * Marked 'Native Theme', as experimental
+  * Update About Box (credits and info)
+
+  [ Michael Carpenter ]
+  * Disabling XBee control for cross platform builds, and enabling SDL and zlib properly
+  * Change so graph grouping box shows properly now with a button, and the table view when loading an offline log file allows you to filter by message type with "Show only this"
+
+  [ Bill Bonney ]
+  * Fixes #114: H Frame radio button not highlighted on startup
+  * Disable scroll wheel changes in mission editing
+  * Fix to mark WP0 as NAV: HOME for APM
+  * Update configuration to RC2
+
+  [ Michael Carpenter ]
+  * Fix for #119, failsafe outputs not being displayed due to the wrong signal being connected to the UASInterface
+  * Change so AP2DataPlot UI updates faster, since it doesn't force replots
+
+  [ Bill Bonney ]
+  * Update to OSX build scripts
+  * Update App Info for OSX
+  * Fixes #117: Missing labels in Failsafe view
+  * Adjustments to InfoView to improve sizing
+  * Fixes #118: Follow Vehicle now off by default This feature now disables follow feature by default Also if enabled, will not follow until a valid GPS Location is returned. Also renamed 'Follow Vehicle' as 'Centre on UAV'
+  * Added Fix Type to GPS Overlay on MapWidget
+  * Fix Typo in comment
+  * Fix: remove fixed zoom setting
+
+  [ Michael Carpenter ]
+  * Disabled XBee for Linux builds, until we get auto-building of the XBee library working
+
+  [ Bill Bonney ]
+  * Stop warning about ignored MAVLink messages in release builds
+  * Fixes #126: APM:Rover PIDs view not showing L1NAV Period and Dampening controls
+  * Fix #141 for a waypoint being set to 500m as default. This is now a default of 25m
+
+  [ Michael Carpenter ]
+  * Changes to include drmingw JIT debugger for assisting with debugging potential crashes
+  * Fix for bad file locations
+  * Graphs now have a manual mode, for setting a specific min/max, rather than auto-scaling
+  * Refactoring of AP2DataPlot, to make the code much cleaner
+  * Fix for issue causing the start values of each graph to be invalid and some comment cleanup
+  * Change so JIT debugger is unselected by default for windows installer
+  * Fix for min/max display in Axis Change Dialog so they update properly, and some comment cleanup
+
+  [ Stephen Dade ]
+  * Changed the way APMPlanner2 handles looking for support files to be more flexible
+
+  [ Bill Bonney ]
+  * Fix #148: QML not loading on OSX
+  * Saves Map Type in preferences And highlight the selected type on startup
+  * Fixes problem with 3DR Radio reset not working
+  * Fix spelling mistake in log
+  * Fixes #152: Adds Full Text Search to Full Parameter List
+  * Added more parameter files to the list from Github Now it includes: Iris, Beginner, Intermediate, Advanced & CameraPlatform
+  * Fixes #154: Map Widget will now start at last known location and zoom level
+  * Fixes QsLog shown as not being found in QtC IDE
+  * Fix #155: MapWidget causing a crash when adding a WaypointItem
+  * Fixes #82: Updated to MAVLink 1.0 version dated DEC 15th 2013
+  * Fixes Map writing 0.0f,0.0f into Lat/Lon saved settings Fixes Map Tool Bar 'Last Pos' button to go to last saved coords from an activeUAS
+  * Reduces the number of warnings by fixing file encoding
+  * Update to support showing the compare dialog always on download.
+  * New Y6 motor config added and Frame Type selection rework
+  * Fix to reduce redundant logging
+
+  [ Michael Carpenter ]
+  * Fix in Widnows daily upload script, to only send installer updates to the current daily day folder.
+  * Fix for issue #157, allowing APM2 to upload firmware via FTDI, for older APM devices
+  * Initial commit of mouse-over graph numbers for AP2DataPlot
+  * Fixed AP2DataPlot mouse-over issues, and changed text to display in a tooltip
+  * Fix for crash involving trying to set range on a graph that had been removed
+
+  [ Sunil Shah ]
+  * Updated README with better Linux instructions and moved to .md.
+
+  [ Bill Bonney ]
+  * Support for APM:Plane 2.77 Arming Support
+  * Change 'continue' to 'write param' when load parameters in Initial Setup
+  * Updates Compass Config Orientation UI to be easier to use
+
+  [ Michael Carpenter ]
+  * Changes to fix manual axis control for AP2DataPlot, and tidying up the UI
+
+  [ Bill Bonney ]
+  * Fixes #165: APM:Plane PIDs not read correctly Fixes some minor layout issues
+  * Fix layout issues with the Log Download Widget
+  * Dataflash logs saved with DateTime when supported by APM
+  * Update Load Param in Initial Config to show blank background
+  * Fix YAW2SRV Parameters in Plane PIDs view
+
+  [ Michael Carpenter ]
+  * Fix for crash involving sending the wrong graph name to the remove function, and added some update functionality to keep the Graph Control window in-sync.
+  * Fix for ParamWidget so it operates properly when actuated with the mouse
+  * Fix for #166, updating the screen to the new look
+
+  [ Bill Bonney ]
+  * Fixes #170: Build instructions for OSX
+
+  [ Michael Carpenter ]
+  * Fix for issue #175, where new compass offsets were being calculated before receiving the old offsets from the UAS, to cancel them out
+
+  [ Bill Bonney ]
+  * Update to RC3
+  * Fixes #166: Reword copter basic PID screen
+
+  [ Michael Carpenter ]
+  * Fix for #177, where WP0 was being removed, which it should not for APM since WP0 is home
+  * Change to decrease probability of APMToolBar getting out of sync with SerialLink connect/disconnect status
+  * Addition of enhancement request #150, making graphed integer values display the axis as integers
+  * Fix for #146, Radio Calibration widgets not following the style for font color
+  * Fix for #164, Full Parameter List was unreadable in indoor mode, changed alternate color to be better suited for readability
+
+  [ Bill Bonney ]
+  * Fix #167: Incorrect comparison leading to params appearing not written in UI
+  * Removed Extra Download Params Progress Bar
+  * Remove the PIDs part from Basic Tuning view
+  * Fixes #179: Check for new firmware versions and notifies the user. Currently only checks stable releases, but if you install a beta release it will notify when a beta is release is finalized. ie. V3.1.1-rc7 to V3.1.1 stable. A user can skip a release, by selecting ignore.
+  * Added new 3DR RTF default params to list
+
+  [ Michael Carpenter ]
+  * Change to avoid QSerialPort reading a invalid DCB structure from the serial driver
+  * Removed debug that would cause the debugoutput to crash, and added a wait timer on closing serial link to ensure it actually closes.
+  * Fix for a typo causing #187, frame type not being set in the UI properly on startup
+
+  [ Bill Bonney ]
+  * Fixes #188: Continue box appears as a 'green square' instead of X
+  * Fixes #185: Crash when clicking "<" of ">" in Full Parameter List
+  * Fixed #191: TUNE_LOW parameter being set incorrectly
+  * Fixes #195: Tooltips not showing on the Linux build
+
+  [ Don Gagne ]
+  * Initial TCP support
+  * Final TCP link support
+
+  [ Bill Bonney ]
+  * Changes to TCP interface to remove const'ness for now.
+
+  [ John Leach ]
+  * Added libqt4-opengl-dev to install instructions
+  * Suggest qmake command in README
+  * Added libudev-dev package to install instructions
+
+  [ scenkov ]
+  * fix 'qmake-qt4 qgroundcontrol.pro' error '/QGCSetup.pri:217: Unescaped backslashes are deprecated.'
+  * COPTER: add 'Hybrid Loiter' (14) in Flight Mode list
+
+  [ Daniel Bradby ]
+  * widen firmware version labels to fix cutoff text
+
+  [ John Leach ]
+  * Add in a missing stdint.h include
+
+  [ Bill Bonney ]
+  * Fixes #212: Incorrect Frame Type Classification
+
+  [ Michael Carpenter ]
+  * Addition of new Airspeed pin configuration interface, including new sensor types
+  * Addition of more debug output in the SerialLink
+  * Change so on connection, parameter widgets are loaded in a timer, to prevent the UI from locking up when loading standard and advanced parameter pages. Also a fix for #216, where params weren't being updated if they were created after the initial fetch of parameters
+
+  [ Bill Bonney ]
+  * Add Frame Parameter Loading to Frame Type View Remove Load Parameter View
+  * Remove Firmware Option Buttons unless advanced mode selected
+  * Update to RC4
+
+  [ Michael Carpenter ]
+  * Code and comment cleanup
+  * Fix for application log files getting corrupt once a full cycle of files exists
+  * Commit of APM/Pixhawk drivers, as well as OpenSSL installer downloader in the NSIS installer package
+  * Fix for #220, changed AP2DataPlot axis and mouseover to match actual log lines, instead of data line count
+  * Addition of missing files to windows installer script, to properly uninstall, and download for OpenSSL
+  * Changes in how SerialLink handles disconnects, to improve reliability
+
+  [ stephen ]
+
+  [ Bill Bonney ]
+  * Fixes #219: Fixes problem with directory settings not being remembered across restarts
+  * Fix to align Load Parameters button in Frames Types View
+  * Updated to Release Candidate 5
+
+  [ Michael Carpenter ]
+  * Change so QMessageBox on serial comm errors doesn't lock up the UI to show itself
+  * QSerialPort no longer attempts to save settings on closing the port, which was causing lockups in windows
+  * Changes to allow for cleaner connection of COM port in windows
+
+  [ Bill Bonney ]
+  * Files required to create an APM Planner Installer package
+  * Moved the resources subfolder to be outside the project folder
+  * Cleanup commented out code
+  * Fixes defect where MAVProxy mission would crash waypoint loading
+  * Add Hardware Flow Control setting to 3DR Radio Config View
+  * Fix issue where we sent the wrong command to set factory default
+  * Fix crash when Version Parse failed with zero elements
+
+  [ Stephen Dade ]
+  * Terminal Console: Added error message if device is busy under Linux
+  * Linux: Forced usage of libudev for serial ports. Also minor build fixes
+
+  [ Bill Bonney ]
+  * Fixes #234: Filedialog not disapearing when loading log file
+  * Fixes issue with FileDialogs not disappearing when expected
+  * Update Install Instructions
+  * Adjusted Battery Monitor Config to reflect Mission Planners layout
+  * Fixes #219: Tlog directory settings not being saved over restarts
+  * Fixes warning message about unused functions due to wring use of the word static
+  * Update to CCS to improve outdoor LAF
+  * Implementation of Battery Monitor Presets for easier configuration - part 1
+
+  [ stephen ]
+
+  [ Bill Bonney ]
+  * Fixes #219: Fixes problem with directory settings not being remembered across restarts
+  * Fix to align Load Parameters button in Frames Types View
+  * Updated to Release Candidate 5
+
+  [ Michael Carpenter ]
+  * Change so QMessageBox on serial comm errors doesn't lock up the UI to show itself
+  * QSerialPort no longer attempts to save settings on closing the port, which was causing lockups in windows
+  * Changes to allow for cleaner connection of COM port in windows
+
+  [ Bill Bonney ]
+  * Files required to create an APM Planner Installer package
+  * Moved the resources subfolder to be outside the project folder
+  * Cleanup commented out code
+  * Fixes defect where MAVProxy mission would crash waypoint loading
+  * Add Hardware Flow Control setting to 3DR Radio Config View
+  * Fix issue where we sent the wrong command to set factory default
+  * Fix crash when Version Parse failed with zero elements
+
+  [ Stephen Dade ]
+  * Terminal Console: Added error message if device is busy under Linux
+  * Linux: Forced usage of libudev for serial ports. Also minor build fixes
+
+  [ Bill Bonney ]
+  * Fixes #234: Filedialog not disapearing when loading log file
+  * Fixes issue with FileDialogs not disappearing when expected
+  * Update Install Instructions
+  * Adjusted Battery Monitor Config to reflect Mission Planners layout
+  * Fixes #219: Tlog directory settings not being saved over restarts
+  * Fixes warning message about unused functions due to wring use of the word static
+  * Update to CCS to improve outdoor LAF
+  * Implementation of Battery Monitor Presets for easier configuration - part 1
+
+  [ Stephen Dade ]
+  * Linux: Autobuild now working via pbuilder
+
+  [ stephen ]
+  * UNRELEASED
+  * UNRELEASED
+
+ -- stephen <stephen@stephen-VirtualBox>  Sat, 01 Mar 2014 11:39:42 +1100

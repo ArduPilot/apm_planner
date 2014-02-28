@@ -1,0 +1,20 @@
+Source: apmplanner2
+Section: science
+Priority: extra
+Maintainer: APM Planner Developers <stephen_dade@hotmail.com>
+Vcs-Git: git://git.github.org/diydrones/apm_planner.git
+Build-Depends: git-buildpackage, debhelper, phonon, libqt4-dev, libqt4-opengl-dev, libphonon-dev, libphonon4, phonon-backend-gstreamer, qtcreator, libsdl1.2-dev, libflite1, flite1-dev, build-essential, libopenscenegraph-dev, libssl-dev, libqt4-opengl-dev, libudev-dev, libc6, libqtwebkit-dev, git, libsndfile1-dev
+Homepage: https://github.com/diydrones/apm_planner
+Standards-Version: 3.9.4
+
+Package: apmplanner2
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Ground station software for autonomous vehicles.
+ A GUI ground control station for autonomous vehicles 
+ using the MAVLink protocol.
+ Includes support for the APM and PX4 based controllers.
+ If installing for the first time use "sudo dpkg -i apmplanner-XXX.deb", then "sudo apt-get install -f" and "sudo dpkg -i apmplanner-XXX.deb".
+ If upgrading use "sudo dpkg -i apmplanner-XXX.deb".
+ If uninstalling use "sudo dpkg -r apmplanner2".
+
