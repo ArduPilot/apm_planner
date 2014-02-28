@@ -54,6 +54,12 @@
         </property>
         <item row="0" column="2">
          <widget class="QPushButton" name="restartMissionButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>14</height>
+           </size>
+          </property>
           <property name="text">
            <string>Restart Mission</string>
           </property>
@@ -74,6 +80,12 @@
         </item>
         <item row="1" column="2">
          <widget class="QPushButton" name="goToWaypointButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>14</height>
+           </size>
+          </property>
           <property name="text">
            <string>Go To Waypoint</string>
           </property>
@@ -97,6 +109,12 @@
         </item>
         <item row="2" column="2">
          <widget class="QPushButton" name="changeAltitudeButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>14</height>
+           </size>
+          </property>
           <property name="text">
            <string>Change Altitude</string>
           </property>
@@ -114,6 +132,12 @@
         </item>
         <item row="3" column="2">
          <widget class="QPushButton" name="changeSpeedButton">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>14</height>
+           </size>
+          </property>
           <property name="text">
            <string>Change Speed</string>
           </property>
@@ -290,15 +314,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton {
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-
-QPushButton:pressed {
+         <string notr="true">QPushButton:pressed {
 	background-color: rgb(100, 216, 100);
 }
 </string>
@@ -329,15 +345,7 @@ QPushButton:pressed {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton {
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-
-QPushButton:pressed {
+         <string notr="true">QPushButton:pressed {
 	background-color: rgb(100, 216, 100);
 }
 </string>
@@ -368,14 +376,7 @@ QPushButton:pressed {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton {
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-QPushButton:pressed {
+         <string notr="true">QPushButton:pressed {
 	background-color: rgb(100, 216, 100);
 }
 
@@ -408,15 +409,7 @@ QPushButton:pressed {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton {
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(spread:pad, x1:0.507813, y1:1, x2:0.517, y2:0, stop:0 rgba(255, 0, 0, 255), stop:1 rgba(203, 205, 205, 124))
-}
-
-QPushButton:pressed {
+         <string notr="true">QPushButton:pressed {
 	background-color: rgb(100, 216, 100);
 }
 
@@ -448,15 +441,7 @@ QPushButton:pressed {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton {
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-
-QPushButton:pressed {
+         <string notr="true">QPushButton:pressed {
 	background-color: rgb(100, 216, 100);
 }
 </string>
@@ -487,14 +472,7 @@ QPushButton:pressed {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton {
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-QPushButton:pressed {
+         <string notr="true">QPushButton:pressed {
 	background-color: rgb(100, 216, 100);
 }</string>
         </property>
@@ -524,14 +502,7 @@ QPushButton:pressed {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton {
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-QPushButton:pressed {
+         <string notr="true">QPushButton:pressed {
 	background-color: rgb(100, 216, 100);
 }
 </string>
@@ -562,14 +533,7 @@ QPushButton:pressed {
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">QPushButton {
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
-}
-QPushButton:pressed {
+         <string notr="true">QPushButton:pressed {
 	background-color: rgb(100, 216, 100);
 }
 </string>

@@ -98,7 +98,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
 
-    /*addBetaLabel(ui.roverPushButton);
+    addBetaLabel(ui.roverPushButton);
     addBetaLabel(ui.planePushButton);
     addBetaLabel(ui.copterPushButton);
     addBetaLabel(ui.quadPushButton);
@@ -106,7 +106,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     addBetaLabel(ui.octaQuadPushButton);
     addBetaLabel(ui.octaPushButton);
     addBetaLabel(ui.triPushButton);
-    addBetaLabel(ui.y6PushButton);*/
+    addBetaLabel(ui.y6PushButton);
     populateSerialPorts();
 
     initConnections();
@@ -349,13 +349,19 @@ void ApmFirmwareConfig::showBetaLabels()
 
 void ApmFirmwareConfig::addBetaLabel(QWidget *parent)
 {
-    QLabel *label = new QLabel(parent);
-    QVBoxLayout *layout = new QVBoxLayout();
-    parent->setLayout(layout);
-    label->setAlignment(Qt::AlignRight | Qt::AlignBottom);
-    label->setText("<h1><font color=#FFAA00>BETA</font></h1>");
-    layout->addWidget(label);
-    m_betaButtonLabelList.append(label);
+//    QLabel *label = new QLabel(parent);
+//    QVBoxLayout *layout = new QVBoxLayout();
+//    parent->setLayout(layout);
+//    label->setAlignment(Qt::AlignRight | Qt::AlignBottom);
+//    label->setText("<h1><font color=#FFAA00>BETA</font></h1>");
+//    layout->addWidget(label);
+//    m_betaButtonLabelList.append(label);
+    parent->setStyleSheet("QPushButton{\
+                          background-color: rgb(62, 62, 62);\
+                          }\
+                          QPushButton:pressed{\
+                          background-color: rgb(100, 100, 100);\
+                          }");
 }
 
 void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool notification = false)
