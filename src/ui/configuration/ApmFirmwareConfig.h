@@ -120,6 +120,7 @@ private:
     QString processPortInfo(const QSerialPortInfo &info);
     bool compareVersionStrings(const QString& newVersion, const QString& currentVersion);
     void compareVersionsForNotification(const QString &apmPlatform, const QString &newFwVersion);
+    void addButtonStyleSheet(QWidget *parent);
 
 private:
     bool versionIsGreaterThan(QString verstr,double version);
