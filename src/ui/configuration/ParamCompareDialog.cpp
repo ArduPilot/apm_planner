@@ -166,7 +166,7 @@ void ParamCompareDialog::compareLists()
         if (currentParam != NULL){
             UASParameter* newParam = m_newList->value(keys[count]);
 
-            if (currentParam->value() != newParam->value() ){
+            if (currentParam->value().toDouble() != newParam->value().toDouble() ){
                 QLOG_DEBUG() << "Difference : " << currentParam->name()
                              << " current: " << currentParam->value() << " new:" << newParam->value();
 
