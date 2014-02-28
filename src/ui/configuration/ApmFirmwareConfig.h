@@ -37,7 +37,6 @@ This file is part of the APM_PLANNER project
 #include <QNetworkReply>
 
 #include <QTemporaryFile>
-#include <QProcess>
 #include <QXmlStreamReader>
 #include <QMessageBox>
 #include <QProcess>
@@ -81,13 +80,8 @@ private slots:
     void stableFirmwareButtonClicked();
     void downloadFinished();
     void trunkFirmwareButtonClicked();
-    void firmwareProcessFinished(int status);
-    void firmwareProcessReadyRead();
-    void firmwareProcessError(QProcess::ProcessError error);
     void firmwareDownloadProgress(qint64 received,qint64 total);
     void requestFirmwares(QString type, QString autopilot, bool notification);
-    void connectButtonClicked();
-    void disconnectButtonClicked();
     void setLink(int index);
     void activeUASSet(UASInterface *uas);
     void uasConnected();
@@ -139,7 +133,6 @@ private:
     bool m_isPx4;
     int m_timeoutCounter;
     bool m_hasError;
-    QPointer<QProcess> m_burnProcess;
     QPointer<UASInterface> m_uas;
     SerialSettings m_settings;
     QPointer<QSerialPort> m_port;

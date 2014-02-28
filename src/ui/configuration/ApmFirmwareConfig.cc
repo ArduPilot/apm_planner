@@ -25,7 +25,6 @@ This file is part of the APM_PLANNER project
 #include "QsLog.h"
 #include "LinkManager.h"
 #include "LinkInterface.h"
-#include "qserialport.h"
 #include "qserialportinfo.h"
 #include "SerialLink.h"
 #include "MainWindow.h"
@@ -94,20 +93,10 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(0);
 
-    //ui.textBrowser->setEnabled(false);
     connect(ui.showOutputCheckBox,SIGNAL(clicked(bool)),ui.textBrowser,SLOT(setShown(bool)));
 
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
 
-    addBetaLabel(ui.roverPushButton);
-    addBetaLabel(ui.planePushButton);
-    addBetaLabel(ui.copterPushButton);
-    addBetaLabel(ui.quadPushButton);
-    addBetaLabel(ui.hexaPushButton);
-    addBetaLabel(ui.octaQuadPushButton);
-    addBetaLabel(ui.octaPushButton);
-    addBetaLabel(ui.triPushButton);
-    addBetaLabel(ui.y6PushButton);
     populateSerialPorts();
 
     initConnections();
@@ -268,12 +257,10 @@ void ApmFirmwareConfig::cancelButtonClicked()
         }
         return;
     }
-    if (m_burnProcess){
-        QLOG_DEBUG() << "Closing Flashing Process";
-        m_burnProcess->terminate();
-        m_burnProcess->deleteLater();
+    else
+    {
+        m_arduinoUploader->abortLoading();
     }
-
 }
 void ApmFirmwareConfig::px4StatusUpdate(QString update)
 {
@@ -328,16 +315,6 @@ void ApmFirmwareConfig::activeUASSet(UASInterface *uas)
             connect(apm,SIGNAL(versionDetected(QString)), this, SLOT(checkForUpdates(QString)));
 
     }
-}
-
-void ApmFirmwareConfig::connectButtonClicked()
-{
-
-}
-
-void ApmFirmwareConfig::disconnectButtonClicked()
-{
-
 }
 
 void ApmFirmwareConfig::hideBetaLabels()
@@ -504,54 +481,7 @@ void ApmFirmwareConfig::trunkFirmwareButtonClicked()
     requestFirmwares("latest",m_autopilotType);
 }
 
-void ApmFirmwareConfig::firmwareProcessFinished(int status)
-{
-    QLOG_DEBUG() << "firmwareProcessFinished: " << status;
-    QProcess *proc = qobject_cast<QProcess*>(sender());
-    if (!proc)
-    {
-        return;
-    }
-    if (status != 0)
-    {
-        //Error of some kind
-        QMessageBox::information(0,tr("Error"),tr("An error has occured during the upload process. See window for details"));
-        ui.textBrowser->setVisible(true);
-        ui.showOutputCheckBox->setChecked(true);
-        ui.textBrowser->setPlainText(ui.textBrowser->toPlainText().append("\n\nERROR!!\n" + proc->errorString()));
-        QScrollBar *sb = ui.textBrowser->verticalScrollBar();
-        if (sb)
-        {
-            sb->setValue(sb->maximum());
-        }
-        ui.statusLabel->setText(tr("Error during upload"));
-    }
-    else
-    {
-        //Ensure we're reading 100%
-        ui.progressBar->setValue(100);
-        if (!m_hasError)
-        {
-            QMessageBox::information(this,"Complete","APM Flashing is complete!");
-            ui.statusLabel->setText(tr("Flashing complete"));
-            emit showBlankingScreen();
-            if (m_throwPropSpinWarning)
-            {
-                QMessageBox::information(this,"Warning","As of AC 3.1, motors will spin when armed. This is configurable through the MOT_SPIN_ARMED parameter");
-                m_throwPropSpinWarning = false;
-            }
-        } else {
-            QMessageBox::critical(this,"FAILED","APM Flashing FAILED!");
-            ui.statusLabel->setText(tr("Flashing FAILED!"));
-        }
-    }
-    //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
-    if (m_tempFirmwareFile) m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
-    m_tempFirmwareFile = NULL;
-    ui.progressBar->setVisible(false);
-    ui.cancelPushButton->setVisible(false);
 
-}
 void ApmFirmwareConfig::px4Error(QString error)
 {
     QMessageBox::information(0,tr("Error"),tr("Error during upload:") + error);
@@ -582,68 +512,6 @@ void ApmFirmwareConfig::px4Finished()
     emit showBlankingScreen();
     ui.progressBar->setVisible(false);
     ui.cancelPushButton->setVisible(false);
-}
-
-void ApmFirmwareConfig::firmwareProcessReadyRead()
-{
-    QProcess *proc = qobject_cast<QProcess*>(sender());
-    QLOG_DEBUG() << "firmwareProcessReadyRead: " << proc;
-
-    if (!proc)
-    {
-        return;
-    }
-
-    QString output = proc->readAllStandardError() + proc->readAllStandardOutput();
-    if (output.contains("Writing"))
-    {
-        //firmwareStatus->resetProgress();
-        ui.progressBar->setValue(0);
-        ui.statusLabel->setText("Flashing");
-    }
-    else if (output.contains("Reading"))
-    {
-        ui.progressBar->setValue(50);
-        ui.statusLabel->setText("Verifying");
-    }
-    if (output.startsWith("#"))
-    {
-        ui.progressBar->setValue(ui.progressBar->value()+1);
-
-        ui.textBrowser->setPlainText(ui.textBrowser->toPlainText().append(output));
-        QScrollBar *sb = ui.textBrowser->verticalScrollBar();
-        if (sb)
-        {
-            sb->setValue(sb->maximum());
-        }
-    }
-    else
-    {
-        if (output.contains("timeout"))
-        {
-            //Timeout, increment timeout timer.
-            m_timeoutCounter++;
-            if (m_timeoutCounter > 3)
-            {
-                //We've reached timeout
-                QMessageBox::information(0,tr("Error"),tr("An error has occured during the upload process. Check to make sure you are connected to the correct serial port"));
-                ui.statusLabel->setText(tr("Error during upload"));
-                proc->terminate();
-                proc->deleteLater();
-                m_hasError = true;
-            }
-        }
-        ui.textBrowser->setPlainText(ui.textBrowser->toPlainText().append(output + "\n"));
-        QScrollBar *sb = ui.textBrowser->verticalScrollBar();
-        if (sb)
-        {
-            sb->setValue(sb->maximum());
-        }
-    }
-
-    QLOG_DEBUG() << "E:" << output;
-    //QLOG_DEBUG() << "AVR Output:" << proc->readAllStandardOutput();
-    //QLOG_DEBUG() << "AVR Output:" << proc->readAllStandardError();
 }
 
 void ApmFirmwareConfig::downloadFinished()
@@ -680,46 +548,19 @@ void ApmFirmwareConfig::downloadFinished()
  {
     ui.cancelPushButton->setVisible(true);
     ui.progressBar->setVisible(true);
-    m_burnProcess = new QProcess(this);
-    connect(m_burnProcess,SIGNAL(finished(int)),this,SLOT(firmwareProcessFinished(int)));
-    connect(m_burnProcess,SIGNAL(readyReadStandardOutput()),this,SLOT(firmwareProcessReadyRead()));
-    connect(m_burnProcess,SIGNAL(readyReadStandardError()),this,SLOT(firmwareProcessReadyRead()));
-    connect(m_burnProcess,SIGNAL(error(QProcess::ProcessError)),this,SLOT(firmwareProcessError(QProcess::ProcessError)));
     QList<QSerialPortInfo> portList =  QSerialPortInfo::availablePorts();
-
 
     foreach (const QSerialPortInfo &info, portList)
     {
         QLOG_DEBUG() << "PortName    : " << info.portName()
                << "Description : " << info.description();
         QLOG_DEBUG() << "Manufacturer: " << info.manufacturer();
-
-
     }
-
-    //info.manufacturer() == "Arduino LLC (www.arduino.cc)"
-    //info.description() == "%mega2560.name%"
 
     if (m_autopilotType == "apm")
     {
-
         QLOG_DEBUG() << "Attempting to Open port";
 
-
-       /* m_port= new QSerialPort(this);
-        m_port->setPortName(m_settings.name);
-        if (m_port->open(QIODevice::ReadWrite)) {
-                QLOG_INFO() << "Open Terminal Console Serial Port";
-                m_port->setDataTerminalReady(true);
-                m_port->waitForBytesWritten(250);
-                m_port->setDataTerminalReady(false);
-                m_port->close();
-                delete m_port;
-        } else {
-            QMessageBox::critical(this, tr("Error Opening Port"), m_port->errorString());
-            m_port->deleteLater();
-            return;
-        }*/
         m_arduinoUploader = new ArduinoFlash();
         connect(m_arduinoUploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(arduinoFlashProgress(qint64,qint64)));
         connect(m_arduinoUploader,SIGNAL(verifyProgress(qint64,qint64)),this,SLOT(arduinoVerifyProgress(qint64,qint64)));
@@ -728,83 +569,12 @@ void ApmFirmwareConfig::downloadFinished()
         connect(m_arduinoUploader,SIGNAL(statusUpdate(QString)),this,SLOT(arduinoStatusUpdate(QString)));
         connect(m_arduinoUploader,SIGNAL(debugUpdate(QString)),this,SLOT(arduinoDebugUpdate(QString)));
         connect(m_arduinoUploader,SIGNAL(firmwareUploadComplete()),this,SLOT(arduinoUploadComplete()));
+
         m_arduinoUploader->loadFirmware(m_settings.name,filename);
 
-
-        ArduinoIntelHex filehex;
-        filehex.loadIntelHex(filename);
-        if (filehex.length() == 0)
-        {
-            QMessageBox::information(0,"Error","Error loading the file");
-            return;
-        }
-        QLOG_INFO() << "Port Open for FW Upload";
-        return;
-
-
-        QString avrdudeExecutable;
-        QStringList stringList;
-
-        ui.statusLabel->setText(tr("Flashing"));
-#ifdef Q_OS_WIN
-        stringList = QStringList() << "-Cavrdude/avrdude.conf" << "-pm2560"
-                                   << "-cstk500" << QString("-P").append(m_settings.name)
-                                   << QString("-Uflash:w:").append(filename).append(":i");
-
-        avrdudeExecutable = "avrdude/avrdude.exe";
-#endif
-#if defined(Q_OS_MAC)||defined(Q_OS_LINUX)
-
-        // Check for avrdude in the /usr/local/bin
-        // This could be that a user install this via brew etc..
-        QFile avrdude;
-
-        if (avrdude.exists("/usr/local/bin/avrdude")){
-            // Use the copy in /user/local/bin
-            avrdudeExecutable = "/usr/local/bin/avrdude";
-
-        } else if (avrdude.exists("/usr/bin/avrdude")){
-            // Use the linux version
-            avrdudeExecutable = "/usr/bin/avrdude";
-
-        } else if (avrdude.exists("/usr/local/CrossPack-AVR/bin/avrdude")){
-            // Use the installed Cross Pack Version (OSX)
-            avrdudeExecutable = "/usr/local/CrossPack-AVR/bin/avrdude";
-
-        } else {
-            avrdudeExecutable = "";
-        }
-#endif
-#ifdef Q_OS_MAC
-        stringList = QStringList() << "-v" << "-pm2560"
-                                   << "-cstk500" << QString("-P/dev/cu.").append(m_settings.name)
-                                   << QString("-Uflash:w:").append(filename).append(":i");
-#endif
-#ifdef Q_OS_LINUX
-        stringList = QStringList() << "-v" << "-pm2560"
-                                   << "-cstk500" << QString("-P/dev/").append(m_settings.name)
-                                   << QString("-Uflash:w:").append(filename).append(":i");
-#endif
-    // Start the Flashing
-
-        QLOG_DEBUG() << avrdudeExecutable << stringList;
-        if (avrdudeExecutable.length()>0){
-             m_burnProcess->start(avrdudeExecutable,stringList);
-             m_timeoutCounter=0;
-             m_hasError=false;
-             ui.progressBar->setValue(0);
-
-        } else {
-            // no avrdude installed, write status
-            QLOG_ERROR() << " No avrdude on the system. please install one using Brew or CrossPack-Avr";
-#ifdef Q_OS_MAC
-            ui.statusLabel->setText("Status: ERROR No avrdude installed! Please install CrossPack-AVR or use Brew");
-#else
-            ui.statusLabel->setText("Status: ERROR: No avrdude installed!");
-#endif
-        }
-
-    } else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4") {
+    }
+    else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4")
+    {
         if (m_px4uploader)
         {
             QLOG_FATAL() << "Tried to load PX4 Firmware when it was already started!";
@@ -824,7 +594,7 @@ void ApmFirmwareConfig::downloadFinished()
         m_timeoutCounter=0;
         m_hasError=false;
         ui.progressBar->setValue(0);
-        }
+    }
 }
 void ApmFirmwareConfig::requestDeviceReplug()
 {
@@ -877,10 +647,6 @@ void ApmFirmwareConfig::devicePlugDetected()
     }
 }
 
-void ApmFirmwareConfig::firmwareProcessError(QProcess::ProcessError error)
-{
-    QLOG_DEBUG() << "Error:" << error;
-}
 void ApmFirmwareConfig::firmwareDownloadProgress(qint64 received,qint64 total)
 {
     ui.progressBar->setValue( 100.0 * ((double)received/(double)total));
@@ -995,12 +761,16 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
         {
             return "pixhawk";
         }
+        else
+        {
+            return "Unknown";
+        }
     }
     else
     {
         //Unknown
         QLOG_DEBUG() << "Unknown detected:" << info.productIdentifier() << info.description();
-        return "Unkown";
+        return "Unknown";
     }
 }
 
@@ -1330,8 +1100,11 @@ void ApmFirmwareConfig::arduinoUploadStarted()
 
 void ApmFirmwareConfig::arduinoError(QString error)
 {
+    ui.statusLabel->setText(error);
+    ui.textBrowser->append(error);
     QMessageBox::information(0,"Error",error);
     m_arduinoUploader->deleteLater();
+    m_arduinoUploader = 0;
 }
 
 void ApmFirmwareConfig::arduinoFlashProgress(qint64 pos,qint64 total)

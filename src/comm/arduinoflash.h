@@ -35,6 +35,7 @@ This file is part of the APM_PLANNER project
 
 #include <QThread>
 #include <qserialport.h>
+#include <QMutex>
 #include <QByteArray>
 class ArduinoFlash : public QThread
 {
@@ -42,7 +43,10 @@ class ArduinoFlash : public QThread
 public:
     explicit ArduinoFlash(QObject *parent = 0);
     void loadFirmware(QString comport,QString filename);
+    void abortLoading();
 private:
+    bool m_running;
+    QMutex m_runningMutex;
     void start(Priority = InheritPriority);
     void run();
     unsigned char m_sequenceNumber;

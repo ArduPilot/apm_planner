@@ -53,7 +53,14 @@ void ArduinoFlash::loadFirmware(QString comport,QString filename)
 }
 void ArduinoFlash::start(Priority priority)
 {
+    m_running = true;
     QThread::start(priority);
+}
+void ArduinoFlash::abortLoading()
+{
+    m_runningMutex.lock();
+    m_running = false;
+    m_runningMutex.unlock();
 }
 
 void ArduinoFlash::run()
@@ -89,6 +96,15 @@ void ArduinoFlash::run()
     QByteArray packet;
     while (!success && retries++ < 5)
     {
+        m_runningMutex.lock();
+        if (!m_running)
+        {
+            m_port->close();
+            delete m_port;
+            emit firmwareUploadError("Canceled by user");
+            return;
+        }
+        m_runningMutex.unlock();
         m_port->flush();
         m_port->setDataTerminalReady(true);
         msleep(500);
@@ -170,6 +186,16 @@ void ArduinoFlash::run()
     QByteArray response;
     emit debugUpdate("0x100 Split block count: " + QString::number(blocks));
     emit statusUpdate("Flashing firmware...");
+
+    m_runningMutex.lock();
+    if (!m_running)
+    {
+        m_port->close();
+        delete m_port;
+        emit firmwareUploadError("Canceled by user");
+        return;
+    }
+    m_runningMutex.unlock();
     for (int i=0;i<=blocks;i++)
     {
         if (bytesremaining > 0x100)
@@ -196,6 +222,15 @@ void ArduinoFlash::run()
         pos += blocksize;
         bytesremaining -= blocksize;
         emit flashProgress(i * blocksize,blocks*blocksize);
+        m_runningMutex.lock();
+        if (!m_running)
+        {
+            m_port->close();
+            delete m_port;
+            emit firmwareUploadError("Canceled by user");
+            return;
+        }
+        m_runningMutex.unlock();
     }
     emit flashComplete();
 
@@ -224,6 +259,15 @@ void ArduinoFlash::run()
         emit verifyProgress(i * blocksize,blocks*blocksize);
         pos += blocksize;
         bytesremaining-= reqsize;
+        m_runningMutex.lock();
+        if (!m_running)
+        {
+            m_port->close();
+            delete m_port;
+            emit firmwareUploadError("Canceled by user");
+            return;
+        }
+        m_runningMutex.unlock();
 
     }
     if (verifyvalue != hex)
