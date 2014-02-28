@@ -394,7 +394,7 @@ void AdvParameterList::updateTableWidgetElements(QMap<QString, UASParameter *> &
             // Update the local table widget
             QTableWidgetItem* item = m_paramValueMap.value(param->name());
             if (item){
-                if(param->value() != item->data(Qt::DisplayRole)){
+                if(param->value().toDouble() != item->data(Qt::DisplayRole).toDouble()){
                     item->setData(Qt::DisplayRole, param->value());
                     tableWidgetItemChanged(item);
                 }
