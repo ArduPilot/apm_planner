@@ -1,6 +1,14 @@
 /** { font-family: "Bitstream Vera Sans"; font: "Roman"; font-size: 12px; }*/
 QWidget#colorIcon {}
 
+QToolTip {
+    background-color: #3D5368;
+    border: 0px solid #379AC3;
+    margin: 3px;
+    border-radius: 3px;
+    color: #DDDDDF;
+}
+
 QWidget {
     background-color: #222224;
     color: #FFFFFF;
@@ -221,14 +229,6 @@ QToolButton:checked {
 
 QToolButton:pressed {
 	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #bbbbbb, stop: 1 #b0b0b0);
-}
-
-QToolTip {
-    background-color: #3D5368;
-    border: 0px solid #379AC3;
-    margin: 3px;
-	border-radius: 3px;
-    color: #DDDDDF;
 }
 
 QMenu {
@@ -460,3 +460,7 @@ QLabel#toolBarMessageLabel {
 	color: #3C7B9E;
 }
 
+QTableWidget {
+background-color: #222224;
+alternate-background-color: #444444;
+}

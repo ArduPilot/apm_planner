@@ -36,7 +36,7 @@ Build APM Planner
 --------------------
 1) From the terminal go to the `apm_planner` directory created when you cloned the repository.
 
-2) Run `qmake -spec macx-g++`
+2) Run `qmake -spec macx-g++ qgroundcontrol.pro`
 
 3) Run `make -j8`
 
@@ -44,32 +44,46 @@ Build APM Planner
 Linux 
 =====
 
+Building on Linux (tested against Ubuntu 13.10):
 
-To build on Linux:
+1) Install the required packages:
 
-sudo apt-get install phonon libqt4-dev \
+```
+sudo apt-get install phonon libqt4-dev libqt4-opengl-dev \
  libphonon-dev libphonon4 phonon-backend-gstreamer \
  qtcreator libsdl1.2-dev libflite1 flite1-dev build-essential \
- libopenscenegraph-dev
+ libopenscenegraph-dev libssl-dev libqt4-opengl-dev libudev-dev 
+```
 
-cd directory
+2) Clone the repository in your workspace:
 
+```
+cd ~/workspace
 git clone https://github.com/diydrones/apm_planner
+```
 
-go to libs/thirdParty -> libxbee 
+3) Build APM Planner:
 
-Create Library -> Readme file in folder
+```
+cd ~/workspace/apm_planner
+qtmake-qt4 qgroundcontrol.pro
+make
+```
 
-Ubuntu Application Menu -> Development -> Qt Creator
+Or try `qmake qgroundcontrol.pro` if the `qtmake-qt4` command doesn't exist on your version of Ubuntu.
 
-QtCreator Menu File -> Open File or Project..
+4) Run APM Planner:
 
-Open directory/apm_planner/qgroundcontrol.pro
+```
+./release/apmplanner2
+```
 
-Hit the green play button to compile and launch it
+5) Permanent installation (optional, if you'd like to install APM Planner in a fixed location)
+ 
+There are two ways to do this:
+a) You can build a .deb using ```scripts/LinuxBuildPackage.sh```, and then install the deb via ```dpkg -i ~/Documents/APMPlanner2-$NOW.deb``` (where $NOW is today's date). This should add it to your launcher too.
 
-Done.
-
+b) Alternatively, run ```sudo make install```. This will place the binary in your /bin/ folder and corresponding files in /share/.
 
 Windows
 =======
@@ -93,12 +107,12 @@ Windows XP/7:
 
 5) Now start Visual Studio and load the qgroundcontrol.vcproj if using Visual Studio 2008 or qgroundcontrol.vcxproj if using Visual Studio 2010
 
-6) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro and re-run `qmake -tp vc qgroundcontrol.pro
+6) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro and re-run `qmake -tp vc qgroundcontrol.pro`
 
 
 Repository Layout
 =================
-
+```
 qgroundcontrol:
 	demo-log.txt
 	license.txt 
@@ -169,4 +183,4 @@ src:
 thirdParty: 
 	Library called lxbee.
 	Library called QSerialPort.
-
+```

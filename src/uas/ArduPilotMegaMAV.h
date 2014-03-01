@@ -82,7 +82,7 @@ public:
 
 class ApmCopter: public CustomMode {
 public:
-    static const int modeCount = 14;
+    static const int modeCount = 15;
     enum copterMode {
     STABILIZE   = 0,   // hold level position
     ACRO        = 1,   // rate control
@@ -98,7 +98,8 @@ public:
                        // sensor
     DRIFT       = 11,  // Drift 'Car Like' mode
     RESERVED_12 = 12,  // RESERVED FOR FUTURE USE
-    SPORT       = 13   // [TODO] Verify this is correct.
+    SPORT       = 13,  // [TODO] Verify this is correct.
+    HYBRID      = 14   // HYBRID LOITER.
     };
 
 public:
@@ -150,6 +151,9 @@ public:
     QString getCustomModeAudioText();
     void playCustomModeChangedAudioMessage();
     void playArmStateChangedAudioMessage(bool armedState) ;
+
+signals:
+    void versionDetected(QString versionString);
 
 public slots:
     /** @brief Receive a MAVLink message from this MAV */

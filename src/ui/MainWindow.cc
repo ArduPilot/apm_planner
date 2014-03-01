@@ -576,8 +576,10 @@ void MainWindow::buildCommonWidgets()
     {
         configView = new SubMainWindow(this);
         configView->setObjectName("VIEW_HARDWARE_CONFIG");
-        configView->setCentralWidget(new ApmHardwareConfig(this));
+        ApmHardwareConfig* aphw = new ApmHardwareConfig(this);
+        configView->setCentralWidget(aphw);
         addToCentralStackedWidget(configView,VIEW_HARDWARE_CONFIG, tr("Hardware"));
+        connect(ui.actionAdvanced_Mode, SIGNAL(toggled(bool)), aphw, SLOT(advModeChanged(bool)));
     }
 
     if (!softwareConfigView)
@@ -1160,8 +1162,8 @@ void MainWindow::loadCustomWidget(const QString& fileName, bool singleinstance)
 
 void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const QString& autopilotType)
 {
-    QString defaultsDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/widgets/";
-    QString platformDir = QGC::appDataDirectory() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
+    QString defaultsDir = QGC::shareDirectory() + "/files/" + autopilotType.toLower() + "/widgets/";
+    QString platformDir = QGC::shareDirectory() + "/files/" + autopilotType.toLower() + "/" + systemType.toLower() + "/widgets/";
 
     QDir widgets(defaultsDir);
     QStringList files = widgets.entryList();
@@ -1397,7 +1399,7 @@ void MainWindow::reloadStylesheet()
     if (styleSheet->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QString style = QString(styleSheet->readAll());
-        style.replace("ICONDIR", QCoreApplication::applicationDirPath()+ "files/styles/");
+        style.replace("ICONDIR", QGC::shareDirectory() + "/files/styles/");
         qApp->setStyleSheet(style);
     }
     else
@@ -1437,13 +1439,14 @@ void MainWindow::showStatusMessage(const QString& status)
 
 void MainWindow::showCriticalMessage(const QString& title, const QString& message)
 {
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Critical);
-    msgBox.setText(title);
-    msgBox.setInformativeText(message);
-    msgBox.setStandardButtons(QMessageBox::Ok);
-    msgBox.setDefaultButton(QMessageBox::Ok);
-    msgBox.exec();
+//    QMessageBox msgBox(this);
+    QMessageBox::information(this,title,message);
+//    msgBox.setIcon(QMessageBox::Critical);
+//    msgBox.setText(title);
+//    msgBox.setInformativeText(message);
+//    msgBox.setStandardButtons(QMessageBox::Ok);
+//    msgBox.setDefaultButton(QMessageBox::Ok);
+//    msgBox.show();
 }
 
 void MainWindow::showInfoMessage(const QString& title, const QString& message)
@@ -1944,7 +1947,7 @@ void MainWindow::UASCreated(UASInterface* uas)
         if (!detectionDockWidget)
         {
             detectionDockWidget = new QDockWidget(tr("Object Recognition"), this);
-            detectionDockWidget->setWidget( new ObjectDetectionView("files/images/patterns", this) );
+            detectionDockWidget->setWidget( new ObjectDetectionView("/files/images/patterns", this) );
             detectionDockWidget->setObjectName("OBJECT_DETECTION_DOCK_WIDGET");
             //addTool(detectionDockWidget, tr("Object Recognition"), Qt::RightDockWidgetArea);
         }

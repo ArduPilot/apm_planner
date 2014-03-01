@@ -49,6 +49,7 @@ private slots:
     void intValueChanged(QString param,int value);
 private:
     QMap<QString,ParamWidget*> m_paramToWidgetMap;
+    QMap<QString,QVariant> m_paramToValueMap;
     Ui::AdvancedParamConfig ui;
 };
 

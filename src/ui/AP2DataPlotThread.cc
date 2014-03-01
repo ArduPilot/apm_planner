@@ -38,6 +38,7 @@ void AP2DataPlotThread::run()
         QStringList linesplit = line.replace("\r","").replace("\n","").split(",");
         if (linesplit.size() > 0)
         {
+            index++;
             if (line.startsWith("FMT"))
             {
                 //Format line
@@ -76,7 +77,7 @@ void AP2DataPlotThread::run()
                     {
                         currentmap[linesplit[0].trimmed() + "." + list[i]] = linesplit[i+1].trimmed().toDouble();
                     }
-                    emit payloadDecoded(index++,linesplit[0].trimmed(),currentmap);
+                    emit payloadDecoded(index,linesplit[0].trimmed(),currentmap);
                 }
                 currentmap.clear();
             }

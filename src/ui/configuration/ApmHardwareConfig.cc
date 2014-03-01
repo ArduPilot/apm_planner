@@ -29,8 +29,8 @@ This file is part of the APM_PLANNER project
  */
 #include "QsLog.h"
 #include "ApmHardwareConfig.h"
-#include "DownloadRemoteParamsDialog.h"
-ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
+
+ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
     m_uas(NULL),
@@ -42,7 +42,6 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.optionalHardwareButton->setVisible(false);
     ui.frameTypeButton->setVisible(false);
     ui.compassButton->setVisible(false);
-    ui.paramButton->setVisible(false);
     ui.accelCalibrateButton->setVisible(false);
     ui.failSafeButton->setVisible(false);
     ui.flightModesButton->setVisible(false);
@@ -65,6 +64,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     ui.stackedWidget->addWidget(m_apmFirmwareConfig); //Firmware placeholder.
     m_buttonToConfigWidgetMap[ui.firmwareButton] = m_apmFirmwareConfig;
     connect(ui.firmwareButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    connect(this, SIGNAL(advancedModeChanged(bool)), m_apmFirmwareConfig, SLOT(advancedModeChanged(bool)));
 
     m_flightConfig = new FlightModeConfig(this);
     ui.stackedWidget->addWidget(m_flightConfig);
@@ -163,49 +163,16 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent),
     // Set start up WarningMessageView view
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
     ui.hiddenPushButton->setChecked(true);
-
-
-    connect(ui.paramButton,SIGNAL(clicked()),this,SLOT(paramButtonClicked()));
 }
 
-void ApmHardwareConfig::paramButtonClicked()
+void ApmHardwareConfig::advModeChanged(bool state)
 {
-    DownloadRemoteParamsDialog* dialog = new DownloadRemoteParamsDialog(this->parentWidget());
-
-    if(dialog->exec() == QDialog::Accepted) {
-        // Pull the selected file and
-        // modify the parameters on the adv param list.
-        QLOG_DEBUG() << "Remote File Downloaded";
-        QLOG_DEBUG() << "TODO: Trigger auto load or compare of the downloaded file";
-        QString filename = dialog->getDownloadedFileName();
-        QString summaryInfo = m_uas->getParamManager()->summaryInfoFromFile(filename);
-
-        if (summaryInfo.length() > 0){
-            summaryInfo = "Summary:\n" + summaryInfo;
-        } else {
-            summaryInfo = "Parameter file downloaded\n";
-        }
-            summaryInfo = summaryInfo + "\n Apply Changes";
-
-        int result = QMessageBox::question(this->parentWidget(),"Frame Parameters",summaryInfo,
-                                              QMessageBox::Yes|QMessageBox::No, QMessageBox::No);
-
-        if(result == QMessageBox::Yes)
-        {
-            // Apply Changes to Vehicle on Yes only
-            if (!m_uas->getParamManager()->loadParamsFromFile(filename,QGCUASParamManager::CommaSeperatedValues))
-            {
-                QMessageBox::critical(this->parentWidget(),"Failure","An error occured during write please try again.");
-            }
-        }
-    }
-    delete dialog;
-    dialog = NULL;
+    emit advancedModeChanged(state);
 }
 
 void ApmHardwareConfig::activateBlankingScreen()
 {
-        ui.stackedWidget->setCurrentWidget(m_setupWarningMessage);
+    ui.stackedWidget->setCurrentWidget(m_setupWarningMessage);
 }
 
 void ApmHardwareConfig::activateStackedWidget()
@@ -273,7 +240,6 @@ void ApmHardwareConfig::uasDisconnected()
     ui.frameTypeButton->setShown(false);
     ui.sonarButton->setShown(false);
     ui.compassButton->setShown(false);
-    ui.paramButton->setShown(false);
     ui.accelCalibrateButton->setShown(false);
     ui.radioCalibrateButton->setShown(false);
 
@@ -366,7 +332,6 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         // Mandatory Options to show
         ui.frameTypeButton->setShown(show);
         ui.compassButton->setShown(show);
-        ui.paramButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -387,7 +352,6 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
         // Mandatory Options to show
         ui.compassButton->setShown(show);
-        ui.paramButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -410,7 +374,6 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 
         // Mandatory Options to show
         ui.compassButton->setShown(show);
-        ui.paramButton->setShown(show);
         ui.accelCalibrateButton->setShown(show);
         ui.radioCalibrateButton->setShown(show);
         ui.flightModesButton->setShown(show);
@@ -427,8 +390,10 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
     }
 }
 
-void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
+void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId,
+                                         QString parameterName, QVariant value)
 {
+
     QString countString;
     // Create progress of downloading all parameters for UI
     switch (m_paramDownloadState){

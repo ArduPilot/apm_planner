@@ -2,6 +2,7 @@
 #define LOGCONSOLE_H
 
 #include <QWidget>
+#include <QPointer>
 
 namespace Ui {
 class LogConsole;
@@ -114,7 +115,7 @@ private:
 
     bool m_generateKml;
     state m_state;
-    QSerialPort* m_port;
+    QPointer<QSerialPort> m_port;
     QList<LogConsole::FileData> m_files;
     QStringList m_logLines;
     long m_totalBytesRead;

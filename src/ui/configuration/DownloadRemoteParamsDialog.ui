@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Download Parameters</string>
   </property>
   <widget class="QLabel" name="statusLabel">
    <property name="geometry">
@@ -45,13 +45,6 @@
        <widget class="QPushButton" name="downloadButton">
         <property name="text">
          <string>Download</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="loadButton">
-        <property name="text">
-         <string>Load File</string>
         </property>
        </widget>
       </item>

@@ -32,13 +32,8 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     defaultGuidedAltFirstTimeSet = false;
     loadSettings();
 
-
-
     //handy for debugging:
     //this->SetShowTileGridLines(true);
-
-    //default appears to be Google Hybrid, and is broken currently
-    this->SetMapType(MapType::BingHybrid);
 
     this->setContextMenuPolicy(Qt::ActionsContextMenu);
 
@@ -208,6 +203,7 @@ void QGCMapWidget::showEvent(QShowEvent* event)
 {
     // Disable OP's standard UAV, we have more than one
     SetShowUAV(false);
+    loadSettings();
 
     // Pass on to parent widget
     OPMapWidget::showEvent(event);
@@ -221,11 +217,10 @@ void QGCMapWidget::showEvent(QShowEvent* event)
         addUAS(uas);
     }
 
+    internals::PointLatLng pos_lat_lon = internals::PointLatLng(m_lastLat, m_lastLon);
 
     if (!mapInitialized)
     {
-        internals::PointLatLng pos_lat_lon = internals::PointLatLng(0, 0);
-
         SetMouseWheelZoomType(internals::MouseWheelZoomType::MousePositionWithoutCenter);	    // set how the mouse wheel zoom functions
         SetFollowMouse(true);				    // we want a contiuous mouse position reading
 
@@ -246,14 +241,13 @@ void QGCMapWidget::showEvent(QShowEvent* event)
         // Connect map updates to the adapter slots
         connect(this, SIGNAL(WPValuesChanged(WayPointItem*)), this, SLOT(handleMapWaypointEdit(WayPointItem*)));
 
-        SetCurrentPosition(pos_lat_lon);         // set the map position
-        setFocus();
-
         // Start timer
         connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateGlobalPosition()));
         mapInitialized = true;
         //QTimer::singleShot(800, this, SLOT(loadSettings()));
     }
+    SetCurrentPosition(pos_lat_lon);         // set the map position
+    setFocus();
     updateTimer.start(maxUpdateInterval*1000);
     // Update all UAV positions
     updateGlobalPosition();
@@ -276,6 +270,8 @@ void QGCMapWidget::loadSettings()
     m_lastLat = settings.value("LAST_LATITUDE", 0.0f).toDouble();
     m_lastLon = settings.value("LAST_LONGITUDE", 0.0f).toDouble();
     m_lastZoom = settings.value("LAST_ZOOM", 1.0f).toDouble();
+
+    SetMapType(static_cast<MapType::Types>(settings.value("MAP_TYPE", MapType::BingHybrid).toInt()));
 
     trailType = static_cast<mapcontrol::UAVTrailType::Types>(settings.value("TRAIL_TYPE", trailType).toInt());
     trailInterval = settings.value("TRAIL_INTERVAL", trailInterval).toFloat();
@@ -324,11 +320,14 @@ void QGCMapWidget::storeSettings()
     QSettings settings;
     settings.beginGroup("QGC_MAPWIDGET");
     internals::PointLatLng pos = CurrentPosition();
-    settings.setValue("LAST_LATITUDE", pos.Lat());
-    settings.setValue("LAST_LONGITUDE", pos.Lng());
+    if ((pos.Lat() != 0.0f)&&(pos.Lng()!=0.0f)){
+        settings.setValue("LAST_LATITUDE", pos.Lat());
+        settings.setValue("LAST_LONGITUDE", pos.Lng());
+    }
     settings.setValue("LAST_ZOOM", ZoomReal());
     settings.setValue("TRAIL_TYPE", static_cast<int>(trailType));
     settings.setValue("TRAIL_INTERVAL", trailInterval);
+    settings.setValue("MAP_TYPE", static_cast<int>(GetMapType()));
     settings.endGroup();
     settings.sync();
 }
@@ -441,8 +440,17 @@ void QGCMapWidget::updateGlobalPosition(UASInterface* uas, double lat, double lo
         // Set new lat/lon position of UAV icon
         internals::PointLatLng pos_lat_lon = internals::PointLatLng(lat, lon);
         uav->SetUAVPos(pos_lat_lon, alt);
+
+        if(this->uas == uas){
+            // save the last know postion
+            m_lastLat = uas->getLatitude();
+            m_lastLon = uas->getLongitude();
+        }
+
         // Follow status
-        if (followUAVEnabled && uas->getUASID() == followUAVID) SetCurrentPosition(pos_lat_lon);
+        if (followUAVEnabled && (uas->getUASID() == followUAVID) && isValidGpsLocation(uas)){
+            SetCurrentPosition(pos_lat_lon);
+        }
         // Convert from radians to degrees and apply
         uav->SetUAVHeading((uas->getYaw()/M_PI)*180.0f);
     }
@@ -473,17 +481,23 @@ void QGCMapWidget::updateGlobalPosition()
             MAV2DIcon* newUAV = new MAV2DIcon(map, this, system);
             AddUAV(system->getUASID(), newUAV);
             uav = newUAV;
-            uav->SetTrailTime(1);
-            uav->SetTrailDistance(5);
+            uav->SetTrailTime(1);       // [TODO] This should be based on a user setting
+            uav->SetTrailDistance(5);    // [TODO] This should be based on a user setting
             uav->SetTrailType(mapcontrol::UAVTrailType::ByTimeElapsed);
         }
 
         // Set new lat/lon position of UAV icon
         internals::PointLatLng pos_lat_lon = internals::PointLatLng(system->getLatitude(), system->getLongitude());
         uav->SetUAVPos(pos_lat_lon, system->getAltitude());
+
+        if(uas == system){
+            // save the last know postion
+            m_lastLat = system->getLatitude();
+            m_lastLon = system->getLongitude();
+        }
+
         // Follow status
-        if (followUAVEnabled && (system->getUASID() == followUAVID)
-                && isValidGpsLocation(system)) {
+        if (followUAVEnabled && (system->getUASID() == followUAVID) && isValidGpsLocation(system)) {
             SetCurrentPosition(pos_lat_lon);
         }
         // Convert from radians to degrees and apply
@@ -512,9 +526,15 @@ void QGCMapWidget::updateLocalPosition()
         // Set new lat/lon position of UAV icon
         internals::PointLatLng pos_lat_lon = internals::PointLatLng(system->getLatitude(), system->getLongitude());
         uav->SetUAVPos(pos_lat_lon, system->getAltitude());
+
+        if(uas == system){
+            // save the last know postion
+            m_lastLat = system->getLatitude();
+            m_lastLon = system->getLongitude();
+        }
+
         // Follow status
-        if (followUAVEnabled && (system->getUASID() == followUAVID)
-                && isValidGpsLocation(system)) {
+        if (followUAVEnabled && (system->getUASID() == followUAVID) && isValidGpsLocation(system)) {
             SetCurrentPosition(pos_lat_lon);
         }
         // Convert from radians to degrees and apply
@@ -599,6 +619,13 @@ void QGCMapWidget::goHome()
 {
     SetCurrentPosition(Home->Coord());
     SetZoom(18); //zoom to "large RC park" size
+}
+
+void QGCMapWidget::lastPosition()
+{
+    internals::PointLatLng pos_lat_lon = internals::PointLatLng(m_lastLat, m_lastLon);
+    SetCurrentPosition(pos_lat_lon);
+    SetZoom(m_lastZoom); //zoom to "large RC park" size
 }
 
 /**

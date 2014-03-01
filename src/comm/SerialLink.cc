@@ -64,6 +64,11 @@ void SerialLink::requestReset()
 SerialLink::~SerialLink()
 {
     disconnect();
+    this->wait(1000);
+    if (this->isRunning())
+    {
+        this->terminate();
+    }
     writeSettings();
     QLOG_INFO() << "Serial Link destroyed";
     if(m_port) delete m_port;
@@ -150,11 +155,11 @@ void SerialLink::run()
     // Initialize the connection
     if (!hardwareConnect())
     {
-        //Need to error out here.
-        emit communicationError(getName(),"Error connecting: " + m_port->errorString());
-        disconnect(); // This tidies up and sends the necessary signals
         return;
     }
+    emit connected();
+    emit connected(true);
+    emit connected(this);
 
     // Qt way to make clear what a while(1) loop does
     qint64 msecs = QDateTime::currentMSecsSinceEpoch();
@@ -210,7 +215,7 @@ void SerialLink::run()
             }
             m_transmitBuffer =  m_transmitBuffer.remove(0, numWritten);
         } else {
-            QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
+            //QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
         }
 
         bool error = m_port->waitForReadyRead(10);
@@ -221,13 +226,19 @@ void SerialLink::run()
                 readData += m_port->readAll();
             if (readData.length() > 0) {
                 emit bytesReceived(this, readData);
-                QLOG_TRACE() << "rx of length " << QString::number(readData.length());
+                //QLOG_TRACE() << "rx of length " << QString::number(readData.length());
 
                 m_bytesRead += readData.length();
                 m_bitsReceivedTotal += readData.length() * 8;
             }
         } else {
-            QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
+            //QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
+        }
+        if (m_port->error() != QSerialPort::NoError && m_port->error() != QSerialPort::UnknownError)
+        {
+            //Serial port has gone bad???
+            QLOG_DEBUG() << "Serial port has bad things happening!!!" << m_port->errorString();
+            break;
         }
 
         if (bytes != m_bytesRead) // i.e things are good and data is being read.
@@ -304,6 +315,7 @@ void SerialLink::run()
     emit disconnected();
     emit connected(false);
     emit disconnected(this);
+    QLOG_DEBUG() << "Serial link ended, closing out";
 
 }
 
@@ -402,17 +414,8 @@ bool SerialLink::disconnect()
             QMutexLocker locker(&m_stoppMutex);
             m_stopp = true;
         }
-        // [TODO] these signals are also emitted from RUN()
-        // are these even required?
-        emit disconnected();
-        emit connected(false);
-        emit disconnected(this);
         return true;
     }
-    // [TODO]
-    // Should we emit the disconncted signals to keep the states
-    // in order. ie. if disconned is called the UI maybe out of sync
-    // and a emit disconnect here could rectify this
     QLOG_INFO() << "SerialLink already disconnected";
     return true;
 }
@@ -445,65 +448,102 @@ bool SerialLink::connect()
  **/
 bool SerialLink::hardwareConnect()
 {
+    QLOG_INFO() << "SerialLink: hardwareConnect to " << m_portName;
     if(m_port)
     {
-        QLOG_INFO() << "SerialLink:" << QString::number((long)this, 16) << "closing port";
+        QLOG_INFO() << "SerialLink:" << QString::number((long)this, 16) << "closing port before connecting";
         m_port->close();
         delete m_port;
         m_port = NULL;
     }
-    QLOG_INFO() << "SerialLink: hardwareConnect to " << m_portName;
+
     m_port = new QSerialPort(m_portName);
 
     if (m_port == NULL)
     {
         emit communicationUpdate(getName(),"Error opening port: " + m_port->errorString());
+        emit communicationError(getName(),"Error opening port: " + m_port->errorString());
         return false; // couldn't create serial port.
     }
+    m_port->setSettingsRestoredOnClose(false);
 
     QObject::connect(m_port,SIGNAL(aboutToClose()),this,SIGNAL(disconnected()));
     m_connectionStartTime = MG::TIME::getGroundTimeNow();
 
-    if (!m_port->open(QIODevice::ReadWrite))
+    int tries = 0;
+    while (tries++ < 3 && !m_port->isOpen())
     {
+        if (!m_port->open(QIODevice::ReadWrite))
+        {
+            QLOG_DEBUG() << "Failed in attempt to open port, trying again...";
+            QLOG_DEBUG() << "Error:" << m_port->errorString();
+        }
+    }
+    if (!m_port->isOpen())
+    {
+        QLOG_DEBUG() << "Unable to open port:" << m_port->errorString();
         emit communicationUpdate(getName(),"Error opening port: " + m_port->errorString());
-        m_port->close();
+        emit communicationError(getName(),"Error opening port: " + m_port->errorString());
+        delete m_port;
+        m_port = NULL;
         return false; // couldn't open serial port
     }
 
     emit communicationUpdate(getName(),"Opened port!");
 
     // Need to configure the port
-    if (!m_port->setBaudRate(m_baud)){
+    //QLOG_DEBUG() << "Setting baud rate to:" << m_baud;
+    /*if (!m_port->setBaudRate(m_baud)){
         QLOG_ERROR() << "Failed to set Baud Rate" << m_baud;
-        disconnect();
+        emit communicationError(getName(),"Error setting baud rate to: " + QString::number(m_baud) + " :" + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = NULL;
         return false;
 
-    } else if(!m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits))){
+    }*/
+    /*QLOG_DEBUG() << "Setting data bits to:" << m_dataBits;
+    if(!m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits))){
         QLOG_ERROR() << "Failed to set data bits Rate:" << m_dataBits;
-        disconnect();
-        return false;
-
-    } else if(!m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(m_flowControl))){
-        QLOG_ERROR() << "Failed to set flow control:" << m_flowControl;
-        disconnect();
-        return false;
-
-    } else if(!m_port->setStopBits(static_cast<QSerialPort::StopBits>(m_stopBits))){
-        QLOG_ERROR() << "Failed to set stop bits" << m_stopBits;
-        disconnect();
-        return false;
-
-    } else if(!m_port->setParity(static_cast<QSerialPort::Parity>(m_parity))){
-        QLOG_ERROR() << "Failed to set parity" << m_parity;
-        disconnect();
+        emit communicationError(getName(),"Error setting data bits to: " + QString::number(m_dataBits) + " :" + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = NULL;
         return false;
 
     }
+    QLOG_DEBUG() << "Setting flow control to:" << m_flowControl;
+    if(!m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(m_flowControl))){
+        QLOG_ERROR() << "Failed to set flow control:" << m_flowControl;
+        emit communicationError(getName(),"Error setting flow control to: " + QString::number(m_flowControl) + " :" + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = NULL;
+        return false;
 
-    emit connected();
-    emit connected(true);
-    emit connected(this);
+    }
+    QLOG_DEBUG() << "Setting stop bits to:" << m_stopBits;
+    if(!m_port->setStopBits(static_cast<QSerialPort::StopBits>(m_stopBits))){
+        QLOG_ERROR() << "Failed to set stop bits" << m_stopBits;
+        emit communicationError(getName(),"Error setting stop bits to: " + QString::number(m_stopBits) + " :" + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = NULL;
+        return false;
+
+    }
+    QLOG_DEBUG() << "Setting parity to :" << m_parity;
+    if(!m_port->setParity(static_cast<QSerialPort::Parity>(m_parity))){
+        QLOG_ERROR() << "Failed to set parity" << m_parity;
+        emit communicationError(getName(),"Error setting parity to: " + QString::number(m_parity) + " :" + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = NULL;
+        return false;
+
+    }*/
+
+
 
     QLOG_DEBUG() << "CONNECTING LINK: "<< m_portName << "with settings" << m_port->portName()
              << getBaudRate() << getDataBits() << getParityType() << getStopBits();

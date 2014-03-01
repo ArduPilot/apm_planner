@@ -47,6 +47,7 @@ public:
     explicit AdvParameterList(QWidget *parent = 0);
     void setParameterMetaData(QString name,QString humanname,QString description,QString unit);
     ~AdvParameterList();
+    void updateTableWidgetElements(QMap<QString, UASParameter*> &parameterList);
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void parameterChanged(int uas, int component, int parameterCount, int parameterId,
@@ -58,8 +59,12 @@ private slots:
     void saveButtonClicked();
     void downloadRemoteFiles();
     void compareButtonClicked();
+    void findStringInTable(const QString& searchString);
+    void nextItemInSearch();
+    void previousItemInSearch();
 
 private:
+    Ui::AdvParameterList ui;
     QMap<QString, UASParameter*> m_parameterList;
 
     QMap<QString,QTableWidgetItem*> m_paramValueMap;
@@ -69,7 +74,9 @@ private:
     QMap<QString,QString> m_paramToDescriptionMap;
     QMap<QString,double> m_modifiedParamMap;
     QMap<QString,QString> m_paramToUnitMap;
-    Ui::AdvParameterList ui;
+
+    QList<QTableWidgetItem *> m_searchItemList;
+    int m_searchIndex;
 
     ParamDownloadState m_paramDownloadState;
     int m_paramDownloadCount;
@@ -78,6 +85,8 @@ private:
     bool m_writingParams;
     int m_paramsWritten;
     int m_paramsToWrite;
+
+    QString m_paramFileToCompare;
 };
 
 #endif // ADVPARAMETERLIST_H

@@ -9,16 +9,20 @@
 #include <QFileDialog>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QTimer>
 
 #define PCD_COLUMN_PARAM_NAME 0
 #define PCD_COLUMN_VALUE 1
 #define PCD_COLUMN_NEW_VALUE 2
 #define PCD_COLUMN_CHECKBOX 3
 
-ParamCompareDialog::ParamCompareDialog(QWidget *parent) :
+ParamCompareDialog::ParamCompareDialog(QMap<QString, UASParameter* >& paramaterList,
+                                       const QString& filename, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ParamCompareDialog),
-    m_newList(new QMap<QString, UASParameter*>())
+    m_currentList(&paramaterList),
+    m_newList(new QMap<QString, UASParameter*>()),
+    m_fileToCompare(filename)
 {
     ui->setupUi(this);
 
@@ -33,6 +37,11 @@ ParamCompareDialog::ParamCompareDialog(QWidget *parent) :
     table->setColumnWidth(PCD_COLUMN_CHECKBOX, 40);
 
     initConnections();
+
+    if(filename.count()>0){
+        QTimer::singleShot(200, this, SLOT(loadParameterWithFile()));
+    }
+
 }
 
 ParamCompareDialog::~ParamCompareDialog()
@@ -46,6 +55,12 @@ void ParamCompareDialog::initConnections()
     connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(loadParameterFile()));
     connect(ui->continueButton, SIGNAL(clicked()), this, SLOT(saveNewParameters()));
     connect(ui->checkAllBox, SIGNAL(clicked()), this, SLOT(checkAll()));
+
+}
+
+void ParamCompareDialog::setAcceptButtonLabel(const QString &label)
+{
+    if (ui) ui->continueButton->setText(label);
 }
 
 void ParamCompareDialog::loadParameterFile()
@@ -59,12 +74,20 @@ void ParamCompareDialog::loadParameterFile()
 
     QString filename = QFileDialog::getOpenFileName(this,tr("Open File To Compare"),
                                                     QGC::parameterDirectory(), "*.param");
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     if(filename.length() == 0) {
         return;
     }
+    QApplication::processEvents(); // Helps clear dialog from screen
 
     loadParameterFile(filename);
+}
+
+void ParamCompareDialog::loadParameterWithFile()
+{
+    ui->loadButton->hide();
+    loadParameterFile(m_fileToCompare);
 }
 
 void ParamCompareDialog::loadParameterFile(const QString &filename)
@@ -72,7 +95,7 @@ void ParamCompareDialog::loadParameterFile(const QString &filename)
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly))
     {
-        QMessageBox::information(this,"Error","Unable to open the file.");
+        QMessageBox::information(this,"Error",tr("Unable to open the file.").arg(filename));
         return;
     }
 
@@ -82,11 +105,6 @@ void ParamCompareDialog::loadParameterFile(const QString &filename)
     populateParamListFromString(filestring, m_newList, this);
 
     compareLists();
-}
-
-void ParamCompareDialog::setCurrentList(QMap<QString, UASParameter *> &aParamaterList)
-{
-    m_currentList = &aParamaterList;
 }
 
 void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<QString, UASParameter*>* list,
@@ -128,7 +146,9 @@ void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<Q
         }
         if (!summaryShown && summaryComplete){
             QLOG_DEBUG() << "Show Summary: " << summaryText;
-            QMessageBox::information(widget,tr("Param File Summary"),summaryText,QMessageBox::Ok);
+            if (summaryText.count()>0){
+                QMessageBox::information(widget,tr("Param File Summary"),summaryText,QMessageBox::Ok);
+            }
             summaryShown = true;
         }
     }
@@ -146,7 +166,7 @@ void ParamCompareDialog::compareLists()
         if (currentParam != NULL){
             UASParameter* newParam = m_newList->value(keys[count]);
 
-            if (currentParam->value() != newParam->value() ){
+            if (currentParam->value().toDouble() != newParam->value().toDouble() ){
                 QLOG_DEBUG() << "Difference : " << currentParam->name()
                              << " current: " << currentParam->value() << " new:" << newParam->value();
 
@@ -173,8 +193,6 @@ void ParamCompareDialog::compareLists()
                 ui->compareTableWidget->setItem(rowCount, PCD_COLUMN_CHECKBOX, widgetItemCheckbox);
 
             }
-        } else {
-            // [TODO] add in a blanck entry?
         }
     }
 }

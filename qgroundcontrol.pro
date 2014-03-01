@@ -6,7 +6,7 @@
 # Based of QGroundControl by Lorenz Meier <lm@inf.ethz.ch>
 #
 # (c) 2009-2011 QGroundControl Developers
-# (c) 2013 Bill Bonney <billbonney@communitech.com>
+# (c) 2013 Bill Bonney <billbonney@communistech.com>
 # (c) 2013 Michael Carpenter <malcom2073@gmail.com>
 #
 # This file is part of the open groundstation project
@@ -101,6 +101,11 @@ POST_TARGETDEPS += gittouch
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
+
+#
+# Logging Library
+#
+include (QsLog/QsLog.pri)
 
 #
 # OS Specific settings
@@ -296,6 +301,7 @@ FORMS += \
     src/ui/QGCMAVLinkLogPlayer.ui \
     src/ui/QGCWaypointListMulti.ui \
     src/ui/QGCUDPLinkConfiguration.ui \
+    src/ui/QGCTCPLinkConfiguration.ui \
     src/ui/QGCSettingsWidget.ui \
     src/ui/UASControlParameters.ui \
     src/ui/map/QGCMapTool.ui \
@@ -405,6 +411,7 @@ HEADERS += \
     src/ui/CameraView.h \
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
+    src/comm/TCPLink.h \
     src/ui/ParameterInterface.h \
     src/ui/WaypointList.h \
     src/Waypoint.h \   
@@ -460,6 +467,7 @@ HEADERS += \
     src/uas/QGCMAVLinkUASFactory.h \
     src/ui/QGCWaypointListMulti.h \
     src/ui/QGCUDPLinkConfiguration.h \
+    src/ui/QGCTCPLinkConfiguration.h \
     src/ui/QGCSettingsWidget.h \
     src/ui/uas/UASControlParameters.h \
     src/uas/QGCUASParamManager.h \
@@ -570,7 +578,10 @@ HEADERS += \
     src/ui/AboutDialog.h \
     src/ui/uas/UASQuickViewTextLabel.h \
     src/uas/ApmUiHelpers.h \
-    src/ui/AP2DataPlotAxisDialog.h
+    src/ui/AP2DataPlotAxisDialog.h \
+    src/comm/arduino_intelhex.h \
+    src/comm/arduinoflash.h \
+    src/audio/AlsaAudio.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -600,6 +611,7 @@ SOURCES += src/main.cc \
     src/ui/CameraView.cc \
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
+    src/comm/TCPLink.cc \
     src/ui/ParameterInterface.cc \
     src/ui/WaypointList.cc \
     src/Waypoint.cc \
@@ -654,6 +666,7 @@ SOURCES += src/main.cc \
     src/uas/QGCMAVLinkUASFactory.cc \
     src/ui/QGCWaypointListMulti.cc \
     src/ui/QGCUDPLinkConfiguration.cc \
+    src/ui/QGCTCPLinkConfiguration.cc \
     src/ui/QGCSettingsWidget.cc \
     src/ui/uas/UASControlParameters.cpp \
     src/uas/QGCUASParamManager.cc \
@@ -762,7 +775,10 @@ SOURCES += src/main.cc \
     src/ui/AboutDialog.cc \
     src/ui/uas/UASQuickViewTextLabel.cc \
     src/uas/ApmUiHelpers.cc \
-    src/ui/AP2DataPlotAxisDialog.cc
+    src/ui/AP2DataPlotAxisDialog.cc \
+    src/comm/arduino_intelhex.cpp \
+    src/comm/arduinoflash.cc \
+    src/audio/AlsaAudio.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

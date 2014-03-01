@@ -25,6 +25,7 @@ This file is part of the APM_PLANNER project
  *   @brief APM Hardware Configuration widget header.
  *
  *   @author Michael Carpenter <malcom2073@gmail.com>
+ *   @author Bill Bonney <billbonney@communistech.com>
  *
  */
 
@@ -32,6 +33,7 @@ This file is part of the APM_PLANNER project
 #define APMHARDWARECONFIG_H
 
 #include <QWidget>
+#include "AP2ConfigWidget.h"
 #include "ui_ApmHardwareConfig.h"
 #include <UASInterface.h>
 #include <UASManager.h>
@@ -53,7 +55,7 @@ This file is part of the APM_PLANNER project
 #include "FailSafeConfig.h"
 #include "SetupWarningMessage.h"
 
-class ApmHardwareConfig : public QWidget
+class ApmHardwareConfig : public AP2ConfigWidget
 {
     Q_OBJECT
 
@@ -64,14 +66,16 @@ public:
     explicit ApmHardwareConfig(QWidget *parent = 0);
     ~ApmHardwareConfig();
 
+signals:
+    void advancedModeChanged(bool stateupdateFirmwareButtons);
+
 public slots:
     void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
-//    void writeParameter(int component, QString parameterName, QVariant value);
-//    void readParameter(int component, QString parameterName, QVariant value);
 
     void optionalClicked();
     void mandatoryClicked();
     void toggleButtonsShown(bool show);
+    void advModeChanged(bool state);
 
 private:
     QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;
@@ -103,7 +107,7 @@ private slots:
     void uasConnected();
     void uasDisconnected();
     void activateBlankingScreen();
-    void paramButtonClicked();
+
 private:
     Ui::ApmHardwareConfig ui;
     UASInterface *m_uas;
@@ -115,6 +119,9 @@ private:
     int m_paramDownloadCount;
     int m_paramTotalCount;
     bool m_mandatory;
+
+    QMap<QString, UASParameter*> m_parameterList;
+    QString m_paramFileToCompare;
 };
 
 #endif // APMHARDWARECONFIG_H

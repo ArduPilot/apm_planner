@@ -30,16 +30,19 @@ namespace mapcontrol
     WayPointItem::WayPointItem(const internals::PointLatLng &coord,double const& altitude, MapGraphicItem *map) :
         map(map),
         autoreachedEnabled(true),
+        text(NULL),
+        textBG(NULL),
+        numberI(NULL),
+        numberIBG(NULL),
         coord(coord),
         reached(false),
         description(""),
         shownumber(true),
         isDragging(false),
-        altitude(altitude),
-        heading(0)
+        altitude(altitude), // sets a 10m default just in case
+        heading(0),
+        number(0)
     {
-        text=0;
-        numberI=0;
         picture.load(QString::fromUtf8(":/markers/images/marker.png"));
         number=WayPointItem::snumber;
         ++WayPointItem::snumber;
@@ -54,16 +57,20 @@ namespace mapcontrol
     }
     WayPointItem::WayPointItem(const internals::PointLatLng &coord,double const& altitude, const QString &description, MapGraphicItem *map) :
         map(map),
+        autoreachedEnabled(true),
+        text(NULL),
+        textBG(NULL),
+        numberI(NULL),
+        numberIBG(NULL),
         coord(coord),
         reached(false),
         description(description),
         shownumber(true),
         isDragging(false),
-        altitude(altitude),
-        heading(0)
+        altitude(altitude), // sets a 10m default just in case
+        heading(0),
+        number(0)
     {
-        text=0;
-        numberI=0;
         picture.load(QString::fromUtf8(":/markers/images/marker.png"));
         number=WayPointItem::snumber;
         ++WayPointItem::snumber;
@@ -96,21 +103,22 @@ namespace mapcontrol
     {
         if(event->button()==Qt::LeftButton)
         {
-	    text=new QGraphicsSimpleTextItem(this);
+            Q_ASSERT(text == NULL);
+            Q_ASSERT(textBG == NULL);
+
+            text=new QGraphicsSimpleTextItem(this);
             textBG=new QGraphicsRectItem(this);
 
-//	    textBG->setBrush(Qt::white);
-//	    textBG->setOpacity(0.5);
+            textBG->setBrush(QColor(255, 255, 255, 128));
+            textBG->setOpacity(0.5);
 
-	    textBG->setBrush(QColor(255, 255, 255, 128));
-
-	    text->setPen(QPen(Qt::red));
-	    text->setPos(10,-picture.height());
-	    textBG->setPos(10,-picture.height());
-	    text->setZValue(3);
-	    RefreshToolTip();
-	    isDragging=true;
-	}
+            text->setPen(QPen(Qt::red));
+            text->setPos(10,-picture.height());
+            textBG->setPos(10,-picture.height());
+            text->setZValue(3);
+            RefreshToolTip();
+            isDragging=true;
+        }
         QGraphicsItem::mousePressEvent(event);
     }
     void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -118,7 +126,9 @@ namespace mapcontrol
         if(event->button()==Qt::LeftButton)
         {
             delete text;
+            text = NULL;
             delete textBG;
+            textBG = NULL;
             coord=map->FromLocalToLatLng(this->pos().x(),this->pos().y());
             QString coord_str = " " + QString::number(coord.Lat(), 'f', 6) + "   " + QString::number(coord.Lng(), 'f', 6);
             // qDebug() << "WP MOVE:" << coord_str << __FILE__ << __LINE__;
@@ -223,8 +233,10 @@ namespace mapcontrol
 
 
         shownumber=value;
-        if((numberI==0) && value)
+        if((numberI==NULL) && value)
         {
+            Q_ASSERT(numberI == NULL);
+            Q_ASSERT(numberIBG == NULL);
             numberI=new QGraphicsSimpleTextItem(this);
             numberIBG=new QGraphicsRectItem(this);
             numberIBG->setBrush(Qt::black);
@@ -239,11 +251,11 @@ namespace mapcontrol
         else if (!value && numberI)
         {
             delete numberI;
+            numberI = NULL;
             delete numberIBG;
+            numberIBG = NULL;
         }
         this->update();
-
-
 
     }
     void WayPointItem::WPDeleted(const int &onumber)

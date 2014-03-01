@@ -144,9 +144,9 @@
       <widget class="QLabel" name="y6Label">
        <property name="geometry">
         <rect>
-         <x>439</x>
-         <y>311</y>
-         <width>113</width>
+         <x>430</x>
+         <y>310</y>
+         <width>131</width>
          <height>30</height>
         </rect>
        </property>
@@ -178,9 +178,9 @@
       <widget class="QLabel" name="planeLabel">
        <property name="geometry">
         <rect>
-         <x>164</x>
-         <y>146</y>
-         <width>113</width>
+         <x>150</x>
+         <y>140</y>
+         <width>131</width>
          <height>30</height>
         </rect>
        </property>
@@ -282,9 +282,9 @@
       <widget class="QLabel" name="octaLabel">
        <property name="geometry">
         <rect>
-         <x>577</x>
-         <y>311</y>
-         <width>113</width>
+         <x>570</x>
+         <y>310</y>
+         <width>131</width>
          <height>30</height>
         </rect>
        </property>
@@ -316,9 +316,9 @@
       <widget class="QLabel" name="quadLabel">
        <property name="geometry">
         <rect>
-         <x>302</x>
-         <y>146</y>
-         <width>113</width>
+         <x>280</x>
+         <y>140</y>
+         <width>151</width>
          <height>30</height>
         </rect>
        </property>
@@ -385,9 +385,9 @@
       <widget class="QLabel" name="octaQuadLabel">
        <property name="geometry">
         <rect>
-         <x>577</x>
-         <y>146</y>
-         <width>113</width>
+         <x>572</x>
+         <y>140</y>
+         <width>131</width>
          <height>30</height>
         </rect>
        </property>
@@ -454,9 +454,9 @@
       <widget class="QLabel" name="triLabel">
        <property name="geometry">
         <rect>
-         <x>302</x>
-         <y>311</y>
-         <width>113</width>
+         <x>290</x>
+         <y>310</y>
+         <width>131</width>
          <height>30</height>
         </rect>
        </property>
@@ -523,9 +523,9 @@
       <widget class="QLabel" name="hexaLabel">
        <property name="geometry">
         <rect>
-         <x>439</x>
-         <y>146</y>
-         <width>113</width>
+         <x>432</x>
+         <y>140</y>
+         <width>131</width>
          <height>30</height>
         </rect>
        </property>
@@ -592,9 +592,9 @@
       <widget class="QLabel" name="copterLabel">
        <property name="geometry">
         <rect>
-         <x>164</x>
-         <y>311</y>
-         <width>113</width>
+         <x>160</x>
+         <y>310</y>
+         <width>131</width>
          <height>30</height>
         </rect>
        </property>
@@ -655,9 +655,9 @@
       <widget class="QLabel" name="roverLabel">
        <property name="geometry">
         <rect>
-         <x>26</x>
-         <y>146</y>
-         <width>113</width>
+         <x>20</x>
+         <y>140</y>
+         <width>131</width>
          <height>30</height>
         </rect>
        </property>
@@ -726,7 +726,7 @@
         <rect>
          <x>30</x>
          <y>360</y>
-         <width>856</width>
+         <width>672</width>
          <height>111</height>
         </rect>
        </property>
@@ -863,6 +863,12 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QProgressBar" name="progressBar">
+            <property name="maximumSize">
+             <size>
+              <width>680</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="value">
              <number>24</number>
             </property>

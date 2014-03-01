@@ -68,7 +68,16 @@ This file is part of the QGROUNDCONTROL project
 
 QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
 {
-        m_mouseWheelFilter = new QGCMouseWheelEventFilter(this);
+    // Set settings format
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
+    // Set application name
+    this->setApplicationName(QGC_APPLICATION_NAME);
+    this->setApplicationVersion(QGC_APPLICATION_VERSION);
+    this->setOrganizationName(QLatin1String("diydrones"));
+    this->setOrganizationDomain("com.diydrones");
+
+    m_mouseWheelFilter = new QGCMouseWheelEventFilter(this);
 }
 
 void QGCCore::initialize()
@@ -79,15 +88,6 @@ void QGCCore::initialize()
     QLOG_INFO() << "Git Commit:" << define2string(GIT_COMMIT);
     QLOG_INFO() << "APPLICATION_NAME:" << define2string(QGC_APPLICATION_NAME);
     QLOG_INFO() << "APPLICATION_VERSION:" << define2string(QGC_APPLICATION_VERSION);
-
-    // Set application name
-    this->setApplicationName(QGC_APPLICATION_NAME);
-    this->setApplicationVersion(QGC_APPLICATION_VERSION);
-    this->setOrganizationName(QLatin1String("diydrones"));
-    this->setOrganizationDomain("com.diydrones");
-
-    // Set settings format
-    QSettings::setDefaultFormat(QSettings::IniFormat);
 
     // Check application settings
     // clear them if they mismatch

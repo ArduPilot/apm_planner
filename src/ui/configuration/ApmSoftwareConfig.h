@@ -68,7 +68,30 @@ private slots:
     void uasConnected();
     void uasDisconnected();
     void apmParamNetworkReplyFinished();
+    void populateTimerTick();
 private:
+
+    //Parameter from XML
+    class ParamConfig
+    {
+    public:
+        QString name;
+        QString docs;
+        QString param;
+        double min;
+        double max;
+        double increment;
+        QList<QPair<int,QString> > valuelist;
+        bool isAdvanced;
+        bool isRange;
+    };
+
+    //List of parameters from XML file, to be loaded on a timer
+    QList<ParamConfig> m_paramConfigList;
+
+    //Parameter loading timer
+    QPointer<QTimer> populateTimer;
+
     QString m_apmPdefFilename;
     UASInterface *m_uas;
     Ui::ApmSoftwareConfig ui;

@@ -97,7 +97,8 @@ bool Radio3DREeprom::setVersion(const QString &versionString)
 {
     QLOG_DEBUG() << "Radio3DREeprom Ver:" << versionString;
     QStringList values = versionString.split(" ", QString::SkipEmptyParts);
-    if(values[0].contains("SiK")){
+
+    if(values.count()>0 && values[0].contains("SiK")){
 //        QRegExp versionEx("\\d\\*.\\d+");
 //        int pos = versionEx.indexIn(versionString);
 //        if (pos > -1) {
@@ -432,7 +433,7 @@ void Radio3DRSettings::readData()
     case writeRemoteFactorySettings: {
         if (currentLine.contains("OK")){
             emit updateRemoteStatus(tr("Reset to factory Settings"));
-            m_serialPort->write("RT&W\r\n"); // Write eeprom settings
+            m_serialPort->write("RT&F\r\n"); // Write eeprom settings
             m_state = writeRemoteEepromValues;
         } else {
             emit updateRemoteStatus(tr("Failed to reset to factory settings"));
@@ -454,7 +455,7 @@ void Radio3DRSettings::readData()
     case writeLocalFactorySettings: {
         if (currentLine.contains("OK")){
             emit updateLocalStatus(tr("Reset to factory Settings"));
-            m_serialPort->write("AT&W\r\n"); // Write eeprom settings
+            m_serialPort->write("AT&F\r\n"); // Write eeprom settings
             m_state = writeLocalEepromValues;
         } else {
             emit updateLocalStatus(tr("Failed to reset to factory settings"));

@@ -67,6 +67,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="showValuesCheckBox">
+         <property name="text">
+          <string>Show Values Under Mouse</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="hideExcelView">
          <property name="text">
           <string>Hide Grid View</string>

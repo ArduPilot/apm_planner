@@ -31,6 +31,7 @@ This file is part of the APM_PLANNER project
 #ifndef FRAMETYPECONFIG_H
 #define FRAMETYPECONFIG_H
 
+#include "UASParameter.h"
 #include <QWidget>
 #include "ui_FrameTypeConfig.h"
 #include "UASInterface.h"
@@ -44,14 +45,26 @@ class FrameTypeConfig : public AP2ConfigWidget
 public:
     explicit FrameTypeConfig(QWidget *parent = 0);
     ~FrameTypeConfig();
+
+public slots:
+    void paramButtonClicked();
+    void activateCompareDialog();
+
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
+    void parameterChanged(int uas, int component, int parameterCount, int parameterId,
+                           QString parameterName, QVariant value);
     void xFrameSelected();
     void plusFrameSelected();
     void vFrameSelected();
     void hFrameSelected();
+    void newY6FrameSelected();
+
 private:
     Ui::FrameTypeConfig ui;
+
+    QMap<QString, UASParameter*> m_parameterList;
+    QString m_paramFileToCompare;
 };
 
 #endif // FRAMETYPECONFIG_H

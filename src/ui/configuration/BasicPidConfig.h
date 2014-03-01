@@ -35,18 +35,14 @@ public:
     ~BasicPidConfig();
 private slots:
     void rPRCValueChanged(QString name,double value);
-    void rPRDValueChanged(QString name,double value);
-    void yARCValueChanged(QString name,double value);
     void tAValueChanged(QString name,double value);
     void tHValueChanged(QString name,int value);
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
 private:
     Ui::BasicPidConfig ui;
-    ParamWidget *m_rPRCWidget;
-    ParamWidget *m_rPRDWidget;
-    ParamWidget *m_yARCWidget;
-    ParamWidget *m_tAWidget;
-    ParamWidget *m_tHWidget;
+    ParamWidget *m_throttleHoverWidget;
+    ParamWidget *m_rollPitchRateWidget;
+    ParamWidget *m_throttleAccelWidget;
 };
 
 #endif // BASICPIDCONFIG_H

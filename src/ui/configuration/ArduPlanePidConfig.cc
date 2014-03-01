@@ -37,52 +37,61 @@ ArduPlanePidConfig::ArduPlanePidConfig(QWidget *parent) : AP2ConfigWidget(parent
         }
     }
 
-    m_nameToBoxMap["RLL2SRV_P"] = ui.servoRollPSpinBox;
-    m_nameToBoxMap["RLL2SRV_I"] = ui.servoRollISpinBox;
-    m_nameToBoxMap["RLL2SRV_D"] = ui.servoRollDSpinBox;
-    m_nameToBoxMap["RLL2SRV_IMAX"] = ui.servoRollIMAXSpinBox;
+    addParamToMap("RLL2SRV_P", ui.servoRollPSpinBox, 1.0);
+    addParamToMap("RLL2SRV_I", ui.servoRollISpinBox, 1.0);
+    addParamToMap("RLL2SRV_D", ui.servoRollDSpinBox, 1.0);
+    addParamToMap("RLL2SRV_IMAX", ui.servoRollIMAXSpinBox, 0.01); // centi-degrees -> degrees
 
-    m_nameToBoxMap["PTCH2SRV_P"] = ui.servoPitchPSpinBox;
-    m_nameToBoxMap["PTCH2SRV_I"] = ui.servoPitchISpinBox;
-    m_nameToBoxMap["PTCH2SRV_D"] = ui.servoPitchDSpinBox;
-    m_nameToBoxMap["PTCH2SRV_IMAX"] = ui.servoPitchIMAXSpinBox;
+    addParamToMap("PTCH2SRV_P", ui.servoPitchPSpinBox, 1.0);
+    addParamToMap("PTCH2SRV_I", ui.servoPitchISpinBox, 1.0);
+    addParamToMap("PTCH2SRV_D", ui.servoPitchDSpinBox, 1.0);
+    addParamToMap("PTCH2SRV_IMAX", ui.servoPitchIMAXSpinBox, 0.01); // centi-degrees -> degrees
 
-    m_nameToBoxMap["YW2SRV_P"] = ui.servoYawPSpinBox;
-    m_nameToBoxMap["YW2SRV_I"] = ui.servoYawISpinBox;
-    m_nameToBoxMap["YW2SRV_D"] = ui.servoYawDSpinBox;
-    m_nameToBoxMap["YW2SRV_IMAX"] = ui.servoYawIMAXSpinBox;
+    addParamToMap("YAW2SRV_RLL", ui.servoYawPSpinBox, 1.0);
+    addParamToMap("YAW2SRV_INT", ui.servoYawISpinBox, 1.0);
+    addParamToMap("YAW2SRV_DAMP", ui.servoYawDSpinBox, 1.0);
+    addParamToMap("YAW2SRV_IMAX", ui.servoYawIMAXSpinBox, 0.01); // centi-degrees -> degrees
 
-    m_nameToBoxMap["KFF_PTCH2THR"] = ui.otherPitchCompSpinBox;
-    m_nameToBoxMap["KFF_PTCHCOMP"] = ui.otherPtTSpinBox;
-    m_nameToBoxMap["KFF_RDDRMIX"] = ui.otherRudderMixSpinBox;
+    addParamToMap("KFF_PTCH2THR", ui.otherPitchCompSpinBox, 1.0);
+    addParamToMap("KFF_PTCHCOMP", ui.otherPtTSpinBox, 1.0);
+    addParamToMap("KFF_RDDRMIX", ui.otherRudderMixSpinBox, 1.0);
 
-    m_nameToBoxMap["TRIM_THROTTLE"] = ui.throttleCruiseSpinBox;
-    m_nameToBoxMap["THR_FS_VALUE"] = ui.throttleFSSpinBox;
-    m_nameToBoxMap["THR_MAX"] = ui.throttleMaxSpinBox;
-    m_nameToBoxMap["THR_MIN"] = ui.throttleMinSpinBox;
+    addParamToMap("TRIM_THROTTLE", ui.throttleCruiseSpinBox, 1.0);
+    addParamToMap("THR_FS_VALUE", ui.throttleFSSpinBox, 1.0);
+    addParamToMap("THR_MAX", ui.throttleMaxSpinBox, 1.0);
+    addParamToMap("THR_MIN", ui.throttleMinSpinBox, 1.0);
 
-    m_nameToBoxMap["TRIM_ARSPD_CM"] = ui.airspeedCruiseSpinBox;
-    m_nameToBoxMap["ARSPD_FBW_MAX"] = ui.airspeedFBWMaxSpinBox;
-    m_nameToBoxMap["ARSPD_FBW_MIN"] = ui.airspeedFBWMinSpinBox;
-    m_nameToBoxMap["ARSPD_RATIO"] = ui.airspeedRatioSpinBox;
+    addParamToMap("TRIM_ARSPD_CM", ui.airspeedCruiseSpinBox, 0.01); // cm/s -> m/s
+    addParamToMap("ARSPD_FBW_MAX", ui.airspeedFBWMaxSpinBox, 1.0);
+    addParamToMap("ARSPD_FBW_MIN", ui.airspeedFBWMinSpinBox, 1.0);
+    addParamToMap("ARSPD_RATIO", ui.airspeedRatioSpinBox, 1.0);
 
-    m_nameToBoxMap["NAVL1_DAMPING"] = ui.l1DampingSpinBox;
-    m_nameToBoxMap["NAVL1_PERIOD"] = ui.l1PeriodSpinBox;
+    addParamToMap("NAVL1_DAMPING", ui.l1DampingSpinBox, 1.0);
+    addParamToMap("NAVL1_PERIOD", ui.l1PeriodSpinBox, 1.0);
 
-    m_nameToBoxMap["LIM_ROLL_CD"] = ui.navBankMaxSpinBox;
-    m_nameToBoxMap["LIM_PITCH_MAX"] = ui.navPitchMaxSpinBox;
-    m_nameToBoxMap["LIM_PITCH_MIN"] = ui.navPitchMinSpinBox;
+    addParamToMap("LIM_ROLL_CD", ui.navBankMaxSpinBox, 0.01);    // centi-degrees -> degrees
+    addParamToMap("LIM_PITCH_MAX", ui.navPitchMaxSpinBox, 0.01); // centi-degrees -> degrees
+    addParamToMap("LIM_PITCH_MIN", ui.navPitchMinSpinBox, 0.01); // centi-degrees -> degrees
 
-    m_nameToBoxMap["TECS_CLMB_MAX"] = ui.climbMaxSpinBox;
-    m_nameToBoxMap["TECS_SINK_MIN"] = ui.sinkMinSpinBox;
-    m_nameToBoxMap["TECS_SINK_MAX"] = ui.sinkMaxSpinBox;
-    m_nameToBoxMap["TECS_PTCH_DAMP"] = ui.pitchDampSpinBox;
-    m_nameToBoxMap["TECS_TIME_CONST"] = ui.timeConstSpinBox;
+    addParamToMap("TECS_CLMB_MAX", ui.climbMaxSpinBox, 1.0);
+    addParamToMap("TECS_SINK_MIN", ui.sinkMinSpinBox, 1.0);
+    addParamToMap("TECS_SINK_MAX", ui.sinkMaxSpinBox, 1.0);
+    addParamToMap("TECS_PTCH_DAMP", ui.pitchDampSpinBox, 1.0);
+    addParamToMap("TECS_TIME_CONST", ui.timeConstSpinBox, 1.0);
 
     connect(ui.writePushButton,SIGNAL(clicked()),this,SLOT(writeButtonClicked()));
     connect(ui.refreshPushButton,SIGNAL(clicked()),this,SLOT(refreshButtonClicked()));
     initConnections();
 }
+
+void ArduPlanePidConfig::addParamToMap(const QString& paramName, QDoubleSpinBox* spinBox, double scalar)
+{
+    QPair<QDoubleSpinBox*, double> tuple;
+    tuple.first = spinBox;
+    tuple.second = scalar;
+    m_nameToBoxMap.insert(paramName, tuple);
+}
+
 
 ArduPlanePidConfig::~ArduPlanePidConfig()
 {
@@ -90,9 +99,14 @@ ArduPlanePidConfig::~ArduPlanePidConfig()
 
 void ArduPlanePidConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+
     if (m_nameToBoxMap.contains(parameterName))
     {
-        m_nameToBoxMap[parameterName]->setValue(value.toDouble());
+        QDoubleSpinBox* spinBox = m_nameToBoxMap[parameterName].first;
+        double scalar = m_nameToBoxMap[parameterName].second;
+        spinBox->setValue(value.toDouble()*scalar);
     }
 }
 void ArduPlanePidConfig::writeButtonClicked()
@@ -102,9 +116,13 @@ void ArduPlanePidConfig::writeButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
-    for (QMap<QString,QDoubleSpinBox*>::const_iterator i=m_nameToBoxMap.constBegin();i!=m_nameToBoxMap.constEnd();i++)
-    {
-        m_uas->getParamManager()->setParameter(1,i.key(),i.value()->value());
+
+    QMap<QString, QPair<QDoubleSpinBox*, double> >::const_iterator i = m_nameToBoxMap.constBegin();
+    while(i != m_nameToBoxMap.constEnd()) {
+        QDoubleSpinBox* spinBox = i.value().first;
+        double scalar = i.value().second;
+        m_uas->getParamManager()->setParameter(1,i.key(),spinBox->value()/scalar);
+        ++i;
     }
 }
 
@@ -115,9 +133,9 @@ void ArduPlanePidConfig::refreshButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
-    for (QMap<QString,QDoubleSpinBox*>::const_iterator i=m_nameToBoxMap.constBegin();i!=m_nameToBoxMap.constEnd();i++)
-    {
+    QMap<QString, QPair<QDoubleSpinBox*, double> >::const_iterator i = m_nameToBoxMap.constBegin();
+    while(i != m_nameToBoxMap.constEnd()) {
         m_uas->getParamManager()->requestParameterUpdate(1,i.key());
+        ++i;
     }
-
 }

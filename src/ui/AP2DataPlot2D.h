@@ -10,6 +10,10 @@
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlotAxisDialog.h"
+#include <QTextBrowser>
+
+
+
 class AP2DataPlot2D : public QWidget
 {
     Q_OBJECT
@@ -58,7 +62,7 @@ private slots:
     void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
     void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs);
     //Called by every valueChanged function to actually save the value/graph it.
-    void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
+    void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer = true);
 
     void autoScrollClicked(bool checked);
     void tableCellClicked(int row,int column);
@@ -69,25 +73,33 @@ private slots:
     void axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt);
     void graphAddedToGroup(QString name,QString group,double scale);
     void graphRemovedFromGroup(QString name);
+    void graphManualRange(QString name, double min, double max);
+    void graphAutoRange(QString name);
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
+    void plotMouseMove(QMouseEvent *evt);
 private:
+    class Graph
+    {
+    public:
+        bool isManualRange;
+        QString groupName;
+        bool isInGroup;
+        double axisIndex;
+        QCPAxis *axis;
+        QCPGraph *graph;
+    };
+
+    QMap<QString,Graph> m_graphClassMap;
+
     bool m_showOnlyActive;
     //Map of group name to a list of graph titles
     QMap<QString,QList<QString> > m_graphGrouping;
     //Map from group titles to the value axis range.
     QMap<QString,QCPRange> m_graphGroupRanges;
-    //Reverse of m_graphGrouping
-    QMap<QString,QString> m_graphToGroupMap;
-    //Graph name to axis index in m_wideAxisRect
-    QMap<QString,double> m_nameToAxisIndex;
     //Map from the spreadsheet view row name (ATT,GPS,etc), to the header names (roll,pitch,yaw or long,lat,alt)
     QMap<QString,QString> m_tableHeaderNameMap;
-    //Graph name to value axis
-    QMap<QString,QCPAxis*> m_axisList;
-    //Graph name to actual QCustomPlot graph.
-    QMap<QString,QCPGraph*> m_graphMap;
     //Graph name to list of values for "online" mode
     QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
     //Map from graph name to list of values for "offline" mode
@@ -111,6 +123,7 @@ private:
     UASInterface *m_uas;
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
+    qint64 m_timeDiff;
 
 };
 

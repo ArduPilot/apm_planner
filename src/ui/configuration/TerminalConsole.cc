@@ -234,6 +234,14 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
     } else {
         QString errorMessage = m_serial->errorString()
                 + tr("\nPlease ensure you have disconnected from the UAS, before connecting using terminal mode.");
+
+#ifdef Q_OS_LINUX
+        if(m_serial->errorString().contains("busy"))
+        {
+            errorMessage = tr("ERROR: Port ") + m_serial->portName() + tr(" is locked by an external process. Run: \"sudo lsof /dev/") + m_serial->portName() + tr("\" to determine the associated programs. They can usually be uninstalled.");
+        }
+#endif
+
         QMessageBox::critical(this, tr("Error"), errorMessage);
 
         m_statusBar->showMessage(tr("Configure error: ") + errorMessage);
@@ -316,6 +324,8 @@ void TerminalConsole::initConnections()
 
 void TerminalConsole::logToKmlClicked() {
     QString filename = QFileDialog::getOpenFileName(this, "Open Log File", QGC::logDirectory(), tr("Log Files (*.log)"));
+    QApplication::processEvents(); // Helps clear dialog from screen
+
     if(filename.length() > 0) {
         QFile file(filename);
         if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {

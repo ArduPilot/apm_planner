@@ -194,3 +194,33 @@ WindowsBuild {
 		}
 	}
 }
+
+LinuxBuild {
+        #Installer section
+        BINDIR = $$PREFIX/bin
+        DATADIR =$$PREFIX/share
+
+        DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
+
+        #MAKE INSTALL - copy files
+        INSTALLS += target datafiles desktopLink menuLink permFolders permFiles
+
+        target.path =$$BINDIR
+
+        datafiles.path = $$DATADIR/APMPlanner2
+        datafiles.files += $$BASEDIR/files
+        datafiles.files += $$BASEDIR/data
+        datafiles.files += $$BASEDIR/qml
+
+        #fix up file permissions. Bit of a hack job
+        permFolders.path = $$DATADIR/APMPlanner2
+        permFolders.commands += find $$DATADIR -type d -exec chmod 755 {} ;
+        permFiles.path = $$DATADIR/APMPlanner2
+        permFiles.commands += find $$DATADIR -type f -exec chmod 644 {} ;
+
+        #create menu links
+        desktopLink.path = $$DATADIR/menu
+        desktopLink.files += $$BASEDIR/scripts/debian/apmplanner2
+        menuLink.path = $$DATADIR/applications
+        menuLink.files += $$BASEDIR/scripts/debian/apmplanner2.desktop
+}

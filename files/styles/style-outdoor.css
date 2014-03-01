@@ -1,6 +1,11 @@
 * { font-family: "Bitstream Vera Sans"; font: "Roman"; font-size: 12px; }
 QWidget#colorIcon {}
 
+QToolTip {
+	background-color: #F6F6F6;
+	color: #000000;
+}
+
 QWidget {
 background-color: #F6F6F6;
 color: #000000;
@@ -48,9 +53,9 @@ border: 1px solid #111111;
 }
 
 QComboBox {
-border: 1px solid #111111;
-    border-radius: 2px;
-    }
+	border: 1px solid #111111;
+    	border-radius: 2px;
+}
 
 /* QCheckBox::indicator:checked {
      background-color: #333333;
@@ -147,7 +152,7 @@ QSpinBox {
 	min-height: 14px;
 	max-height: 18px;
      border: 1px solid #4A4A4F;
-	border-radius: 5px;
+	border-radius: 3px;
 }
 
 QSpinBox::up-button {
@@ -166,8 +171,8 @@ QSpinBox::down-button {
 QDoubleSpinBox {
 	min-height: 14px;
 	max-height: 18px;
-    border: 1px solid #4A4A4F;
-	border-radius: 5px;
+     border: 1px solid #4A4A4F;
+	border-radius: 3px;
 }
 
 QDoubleSpinBox::up-button {
@@ -187,17 +192,20 @@ QDoubleSpinBox::down-button {
 
 QPushButton {
 	font-weight: bold;
-	/*min-height: 18px;*/
+	/*min-height: 14px;*/
 	/*max-height: 18px;*/
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+	border: 2px solid #6A6A6F;
+	border-radius: 3px;
+	padding-left: 7px;
+	padding-right: 7px;
+/*	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);*/
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(220, 219, 222), stop: 1 rgb(189, 188, 192));
 }
 
 QPushButton:checked {
-	background-color: qlineargradient(spread:pad, x1:0.507, y1:0.0340909, x2:0.522167, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(123, 123, 123, 255))
+/*	background-color: qlineargradient(spread:pad, x1:0.507, y1:0.0340909, x2:0.522167, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(123, 123, 123, 255))*/
+	background-color: qlineargradient(spread:pad, x1:0.507, y1:0.0340909, x2:0.522167, y2:1, stop:0 rgb(189, 188, 192), stop:1 rgb(220, 219, 222));
+	border: 2px solid #AAAAAF;
 }
 
 QPushButton:pressed {
@@ -209,9 +217,10 @@ QToolButton {
 	min-height: 16px;
 	min-width: 24px;
 	max-height: 18px;
-	border: 2px solid #4A4A4F;
-	border-radius: 5px;
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);
+	border: 2px solid #AAAAAF;
+	border-radius: 3px;
+/*	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);*/
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(220, 219, 222), stop: 1 rgb(189, 188, 192));
 }
 
 QToolButton:checked {
@@ -236,7 +245,6 @@ QPushButton#forceLandButton {
 	background-clip: border;
 	border-width: 1px;
 	border-color: #222222;
-	border-radius: 5px;
 }
 
 QPushButton:pressed#forceLandButton {
@@ -248,7 +256,6 @@ QPushButton:pressed#forceLandButton {
 	background-clip: border;
 	border-width: 1px;
 	border-color: #222222;
-	border-radius: 5px;
 }
 
 QPushButton#killButton {
@@ -260,7 +267,6 @@ QPushButton#killButton {
 	background-clip: border;
 	border-width: 1px;
 	border-color: #222222;
-	border-radius: 5px;
 }
 
 QPushButton:pressed#killButton {
@@ -272,7 +278,6 @@ QPushButton:pressed#killButton {
 	background-clip: border;
 	border-width: 1px;
 	border-color: #222222;
-	border-radius: 5px;
 }
 
 QPushButton#controlButton {
@@ -286,7 +291,7 @@ QPushButton:checked#controlButton {
 
 QProgressBar {
 	border: 1px solid #4A4A4F;
-	border-radius: 4px;
+	border-radius: 3px;
 	text-align: center;
 	padding: 2px;
 	color: #DDDDDF;

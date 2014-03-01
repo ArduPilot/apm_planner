@@ -244,7 +244,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml");
     if (!QFile::exists(m_apmPdefFilename))
     {
-        QDir autopilotdir(qApp->applicationDirPath() + "/files/" + uas->getAutopilotTypeName().toLower());
+        QDir autopilotdir(QGC::shareDirectory() + "/files/" + uas->getAutopilotTypeName().toLower());
         m_apmPdefFilename = autopilotdir.absolutePath() + "/arduplane.pdef.xml";
     }
 
@@ -373,11 +373,25 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                         {
                                             if (tab == "Standard")
                                             {
-                                                m_standardParamConfig->addCombo(humanname,docs,name,valuelist);
+                                                ParamConfig c;
+                                                c.name = humanname;
+                                                c.docs = docs;
+                                                c.param = name;
+                                                c.valuelist = valuelist;
+                                                c.isAdvanced = false;
+                                                c.isRange = false;
+                                                m_paramConfigList.append(c);
                                             }
                                             else if (tab == "Advanced")
                                             {
-                                                m_advancedParamConfig->addCombo(humanname,docs,name,valuelist);
+                                                ParamConfig c;
+                                                c.name = humanname;
+                                                c.docs = docs;
+                                                c.param = name;
+                                                c.valuelist = valuelist;
+                                                c.isAdvanced = true;
+                                                c.isRange = false;
+                                                m_paramConfigList.append(c);
                                             }
                                             m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }
@@ -406,11 +420,29 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                         {
                                             if (tab == "Standard")
                                             {
-                                                m_standardParamConfig->addRange(humanname,docs,name,min,max,increment);
+                                                ParamConfig c;
+                                                c.name = humanname;
+                                                c.docs = docs;
+                                                c.param = name;
+                                                c.min = min;
+                                                c.max = max;
+                                                c.increment = increment;
+                                                c.isAdvanced = false;
+                                                c.isRange = true;
+                                                m_paramConfigList.append(c);
                                             }
                                             else if (tab == "Advanced")
                                             {
-                                                m_advancedParamConfig->addRange(humanname,docs,name,min,max,increment);
+                                                ParamConfig c;
+                                                c.name = humanname;
+                                                c.docs = docs;
+                                                c.param = name;
+                                                c.min = min;
+                                                c.max = max;
+                                                c.increment = increment;
+                                                c.isAdvanced = true;
+                                                c.isRange = true;
+                                                m_paramConfigList.append(c);
                                             }
                                             m_advParameterList->setParameterMetaData(name,humanname,docs,units);
                                         }
@@ -429,6 +461,44 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         }
         xml.readNext();
     }
+    populateTimer = new QTimer(this);
+    connect(populateTimer,SIGNAL(timeout()),this,SLOT(populateTimerTick()));
+    populateTimer->start(1);
+
+}
+void ApmSoftwareConfig::populateTimerTick()
+{
+    if (m_paramConfigList.size() == 0)
+    {
+        populateTimer->stop();
+        populateTimer->deleteLater();
+        populateTimer = 0;
+        return;
+    }
+    if (m_paramConfigList.at(0).isRange)
+    {
+        if (m_paramConfigList.at(0).isAdvanced)
+        {
+            m_advancedParamConfig->addRange(m_paramConfigList.at(0).name,m_paramConfigList.at(0).docs,m_paramConfigList.at(0).param,m_paramConfigList.at(0).min,m_paramConfigList.at(0).max,m_paramConfigList.at(0).increment);
+        }
+        else
+        {
+            m_standardParamConfig->addRange(m_paramConfigList.at(0).name,m_paramConfigList.at(0).docs,m_paramConfigList.at(0).param,m_paramConfigList.at(0).min,m_paramConfigList.at(0).max,m_paramConfigList.at(0).increment);
+        }
+    }
+    else
+    {
+        if (m_paramConfigList.at(0).isAdvanced)
+        {
+            m_advancedParamConfig->addCombo(m_paramConfigList.at(0).name,m_paramConfigList.at(0).docs,m_paramConfigList.at(0).param,m_paramConfigList.at(0).valuelist);
+        }
+        else
+        {
+            m_standardParamConfig->addCombo(m_paramConfigList.at(0).name,m_paramConfigList.at(0).docs,m_paramConfigList.at(0).param,m_paramConfigList.at(0).valuelist);
+
+        }
+    }
+    m_paramConfigList.removeAt(0);
 
 }
 

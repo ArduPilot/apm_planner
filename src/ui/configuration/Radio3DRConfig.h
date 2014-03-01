@@ -87,6 +87,7 @@ private:
     void addMavLinkComboBoxConfig(QComboBox &comboBox);
     void addMavLinkLowLatencyComboBoxConfig(QComboBox &comboBox);
     void setupFrequencyComboBox(QComboBox& comboBox, int freqCode);
+    void addRtsCtsComboBoxConfig(QComboBox &comboBox);
 
 private:
     Ui::Radio3DRConfig ui;

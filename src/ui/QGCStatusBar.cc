@@ -107,7 +107,6 @@ void QGCStatusBar::logging(bool checked)
         else
         {
             MainWindow::instance()->getMAVLink()->startLogging(fileName);
-            lastLogDirectory = file.absoluteDir().absolutePath(); //save last log directory
         }
     }
 }
@@ -115,7 +114,6 @@ void QGCStatusBar::logging(bool checked)
 
 void QGCStatusBar::storeSettings()
 {
-    QGC::setMAVLinkLogDirectory(lastLogDirectory);
 }
 
 QGCStatusBar::~QGCStatusBar()

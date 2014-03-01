@@ -109,11 +109,12 @@ void ParamWidget::valueSliderChanged()
     //Set the spin box, and emit a signal.
     if (type == INT)
     {
-        if (ui.intSpinBox->value() == m_ivalue)
+        if (ui.valueSlider->value() == m_ivalue)
         {
             return;
         }
         m_ivalue = ui.intSpinBox->value();
+
         ui.intSpinBox->setStyleSheet("APSpinBox { background-color: #FF0000; }");
         m_valueChanged = true;
         ui.intSpinBox->setValue((((double)ui.valueSlider->value() / (double)ui.valueSlider->maximum()) * (m_max - m_min)) + m_min);
@@ -124,7 +125,7 @@ void ParamWidget::valueSliderChanged()
     }
     else if (type == DOUBLE)
     {
-        if (ui.doubleSpinBox->value() == m_dvalue)
+        if (ui.valueSlider->value() == m_dvalue)
         {
             return;
         }

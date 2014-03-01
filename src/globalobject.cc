@@ -1,3 +1,4 @@
+#include "QsLog.h"
 #include "configuration.h"
 #include "globalobject.h"
 #include <QSettings>
@@ -34,10 +35,6 @@ void GlobalObject::loadSettings()
     m_MAVLinklogDirectory = settings.value("MAVLINK_LOG_DIRECTORY", defaultMAVLinkLogDirectory()).toString();
     m_parameterDirectory = settings.value("PARAMETER_DIRECTORY", defaultParameterDirectory()).toString();
 
-    //    autoReconnect = settings.value("AUTO_RECONNECT", autoReconnect).toBool();
-    //    currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
-    //    lowPowerMode = settings.value("LOW_POWER_MODE", lowPowerMode).toBool();
-
     settings.endGroup();
 }
 
@@ -48,11 +45,8 @@ void GlobalObject::saveSettings()
     settings.setValue("APP_DATA_DIRECTORY", m_appDataDirectory);
     settings.setValue("LOG_DIRECTORY", m_logDirectory);
     settings.setValue("MAVLINK_LOG_DIRECTORY", m_MAVLinklogDirectory);
+    QLOG_DEBUG() << "save tlog dir to:" << m_MAVLinklogDirectory;
     settings.setValue("PARAMETER_DIRECTORY", m_parameterDirectory);
-
-    //    settings.setValue("AUTO_RECONNECT", autoReconnect);
-    //    settings.setValue("CURRENT_STYLE", currentStyle);
-    //    settings.setValue("LOW_POWER_MODE", lowPowerMode);
 
     settings.sync();
 }
@@ -93,6 +87,7 @@ QString GlobalObject::appDataDirectory()
 
 void GlobalObject::setAppDataDirectory(const QString &dir)
 {
+    QLOG_DEBUG() << "Set app dir to:" << dir;
     m_appDataDirectory = dir;
 }
 
@@ -116,6 +111,7 @@ QString GlobalObject::logDirectory()
 
 void GlobalObject::setLogDirectory(const QString &dir)
 {
+    QLOG_DEBUG() << "Set dataflash dir to:" << dir;
     m_logDirectory = dir;
 }
 
@@ -139,6 +135,7 @@ QString GlobalObject::MAVLinkLogDirectory()
 
 void GlobalObject::setMAVLinkLogDirectory(const QString &dir)
 {
+    QLOG_DEBUG() << "Set tlog dir to:" << dir;
     m_MAVLinklogDirectory = dir;
 }
 
@@ -161,5 +158,33 @@ QString GlobalObject::parameterDirectory()
 
 void GlobalObject::setParameterDirectory(const QString &dir)
 {
+    QLOG_DEBUG() << "Set param dir to:" << dir;
     m_parameterDirectory = dir;
+}
+
+QString GlobalObject::shareDirectory()
+{
+#ifdef Q_OS_WIN
+    QDir settingsDir = QDir(QDir::currentPath());
+    return  settingsDir.absolutePath();
+#elif defined(Q_OS_MAC)
+    return QCoreApplication::applicationDirPath();
+#else
+    QDir settingsDir = QDir(QDir::currentPath());
+    if(settingsDir.exists("data") && settingsDir.exists("qml"))
+    {
+        return  settingsDir.absolutePath();
+    }
+    settingsDir.cdUp();
+    settingsDir.cd("./share/APMPlanner2");
+    if(settingsDir.exists("data") && settingsDir.exists("qml"))
+    {
+        QString tmp = settingsDir.absolutePath();
+        return  settingsDir.absolutePath();
+    }
+
+    //else
+    return QDir(QDir::currentPath()).absolutePath();
+
+#endif
 }

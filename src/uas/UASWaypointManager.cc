@@ -532,6 +532,11 @@ void UASWaypointManager::loadWaypoints(const QString &loadFile)
 
     const QStringList &version = in.readLine().split(" ");
 
+    if (version.length() < 2){
+        emit updateStatusString(tr("Waypoint file is corrupt. Version not detectable"));
+        return;
+    }
+
     int versionInt = version[2].toInt();
 
     if (!(version.size() == 3 && version[0] == "QGC" && version[1] == "WPL" && versionInt >= 110))

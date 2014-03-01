@@ -64,6 +64,8 @@ public:
     QString parameterDirectory();
     void setParameterDirectory(const QString &dir);
 
+    QString shareDirectory();
+
 private:
     GlobalObject();
 private:
