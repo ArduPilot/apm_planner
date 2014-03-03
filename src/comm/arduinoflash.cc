@@ -213,11 +213,19 @@ void ArduinoFlash::run()
             {
                 //Failure
                 emit debugUpdate("Failed writing block " + QString::number(i));
+                m_port->close();
+                delete m_port;
+                emit firmwareUploadError("Failed while writing block " + QString::number(i));
+                return;
             }
         }
         else
         {
             emit debugUpdate("Failed writing block " + QString::number(i));
+            m_port->close();
+            delete m_port;
+            emit firmwareUploadError("Failed while writing block " + QString::number(i));
+            return;
         }
         pos += blocksize;
         bytesremaining -= blocksize;
@@ -255,6 +263,13 @@ void ArduinoFlash::run()
             reqsize = bytesremaining;
         }
         packet = readFlash(reqsize);
+        if (packet.size() != reqsize)
+        {
+            m_port->close();
+            delete m_port;
+            emit firmwareUploadError("Failed while verifying block " + QString::number(i));
+            return;
+        }
         verifyvalue.append(packet);
         emit verifyProgress(i * blocksize,blocks*blocksize);
         pos += blocksize;

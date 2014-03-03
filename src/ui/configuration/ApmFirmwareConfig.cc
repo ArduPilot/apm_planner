@@ -269,7 +269,10 @@ void ApmFirmwareConfig::cancelButtonClicked()
     }
     else
     {
-        m_arduinoUploader->abortLoading();
+        if (m_arduinoUploader)
+        {
+            m_arduinoUploader->abortLoading();
+        }
     }
 }
 void ApmFirmwareConfig::px4StatusUpdate(QString update)
@@ -1118,7 +1121,11 @@ void ApmFirmwareConfig::arduinoError(QString error)
     ui.textBrowser->append(error);
     QMessageBox::information(0,"Error",error);
     m_arduinoUploader->deleteLater();
-    m_arduinoUploader = 0;
+    m_arduinoUploader = NULL;
+    if (m_tempFirmwareFile) m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
+    m_tempFirmwareFile = NULL;
+    ui.progressBar->setVisible(false);
+    ui.cancelPushButton->setVisible(false);
 }
 
 void ApmFirmwareConfig::arduinoFlashProgress(qint64 pos,qint64 total)
