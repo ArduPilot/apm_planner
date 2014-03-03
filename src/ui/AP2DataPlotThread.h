@@ -3,17 +3,20 @@
 
 #include <QThread>
 #include <QVariantMap>
+#include <QSqlDatabase>
+
 class AP2DataPlotThread : public QThread
 {
     Q_OBJECT
 public:
     explicit AP2DataPlotThread(QObject *parent = 0);
-    void loadFile(QString file);
+    void loadFile(QString file,QSqlDatabase *db);
     void stopLoad() { m_stop = true; }
 private:
     void loadDataFieldsFromValues();
     QString m_fileName;
     bool m_stop;
+    QSqlDatabase *m_db;
 protected:
     void run();
 signals:

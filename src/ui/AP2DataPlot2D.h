@@ -11,7 +11,7 @@
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlotAxisDialog.h"
 #include <QTextBrowser>
-
+#include <QSqlDatabase>
 
 
 class AP2DataPlot2D : public QWidget
@@ -104,6 +104,8 @@ private:
     QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
     //Map from graph name to list of values for "offline" mode
     QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
+    QList<QString> loglines;
+    QSqlDatabase m_sharedDb;
 
     QList<QPair<qint64,double> > m_onlineValueTimeoutList;
 

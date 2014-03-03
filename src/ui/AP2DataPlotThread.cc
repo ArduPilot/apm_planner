@@ -15,9 +15,10 @@ AP2DataPlotThread::AP2DataPlotThread(QObject *parent) :
 {
 
 }
-void AP2DataPlotThread::loadFile(QString file)
+void AP2DataPlotThread::loadFile(QString file,QSqlDatabase *db)
 {
     m_fileName = file;
+    m_db = db;
     start();
 }
 void AP2DataPlotThread::run()
@@ -35,48 +36,57 @@ void AP2DataPlotThread::run()
     QList<QString> typelist;
     QVariantMap currentmap;
     int index = 0;
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(":memory:");
-    if (!db.open())
-    {
-        emit error("Unable to open database: " + db.lastError().text());
-        return;
-    }
-    if (!db.transaction())
+
+    if (!m_db->transaction())
     {
         emit error("Unable to start database transaction");
         return;
     }
 
-    QSqlQuery fmttablecreate(db);
-    fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
+    QSqlQuery fmttablecreate(*m_db);
+    fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000),val varchar(6000));");
     if (!fmttablecreate.exec())
     {
-        emit error("Error creating FMT table: " + db.lastError().text());
+        emit error("Error creating FMT table: " + m_db->lastError().text());
         return;
     }
     /*if (!db.exec("CREATE TABLE 'FMT';"))
     {
         emit error("Error creating FMT table: " + db.lastError().text());
     }*/
-    QSqlQuery query;
-    if (!query.prepare("INSERT INTO 'FMT' (typeID,length,name,format) values(?,?,?,?);"))
+    QSqlQuery fmtinsertquery;
+    if (!fmtinsertquery.prepare("INSERT INTO 'FMT' (typeID,length,name,format,val) values (?,?,?,?,?);"))
     {
-        emit error("Error preparing FMT insert statement: " + query.lastError().text());
+        emit error("Error preparing FMT insert statement: " + fmtinsertquery.lastError().text());
         return;
     }
     QMap<QString,QSqlQuery*> nameToInsertQuery;
     QMap<QString,QString> nameToTypeString;
 //"insert or replace into 'invTypes' (typeID,groupID,typeName,description,mass,volume,capacity,portionSize,raceID,basePrice,published,marketGroupID,chanceOfDuplicating) values(?,?,?,?,?,?,?,?,?,?,?,?,?);");
 //"create table 'invTypes' (typeID integer PRIMARY KEY,groupID integer,typeName varchar(200),description varchar(6000),mass double,volume double,capacity double,portionSize integer,raceID integer,basePrice decimal(19,4),published integer,marketGroupID integer,chanceOfDuplicating double);"
+    if (!m_db->commit())
+    {
+        emit error("Unable to commit database transaction 1");
+        return;
+    }
+    bool firstactual = true;
     while (!logfile.atEnd() && !m_stop)
     {
         emit loadProgress(logfile.pos(),logfile.size());
         QString line = logfile.readLine();
-        //emit lineRead(line);
+        emit lineRead(line);
         QStringList linesplit = line.replace("\r","").replace("\n","").split(",");
         if (linesplit.size() > 0)
         {
+            if (index == 0)
+            {
+                //First record
+                if (!m_db->transaction())
+                {
+                    emit error("Unable to start database transaction");
+                    return;
+                }
+            }
             index++;
             if (line.startsWith("FMT"))
             {
@@ -92,6 +102,7 @@ void AP2DataPlotThread::run()
                         {
                             continue;
                         }
+                        QString valuestr = "";
                         QString inserttable = "insert or replace into '" + type + "' (idx";
                         QString insertvalues = "(?";
                         QString mktable = "CREATE TABLE '" + type + "' (idx integer PRIMARY KEY";
@@ -99,6 +110,7 @@ void AP2DataPlotThread::run()
                         {
                             QString name = linesplit[i].trimmed();
                             char type = descstr.at(i-5).toAscii();
+                            valuestr += name + ",";
                             qDebug() << name << type;
                             if (type == 'I') //uint32_t
                             {
@@ -135,23 +147,31 @@ void AP2DataPlotThread::run()
                         }
                         inserttable.append(")");
                         insertvalues.append(")");
+                        valuestr = valuestr.mid(0,valuestr.length()-1);
                         QString final = inserttable + " values " + insertvalues + ";";
 
 
                         mktable.append(");");
-                        QSqlQuery mktablequery(db);
+                        QSqlQuery mktablequery(*m_db);
                         mktablequery.prepare(mktable);
                         if (!mktablequery.exec())
                         {
-                            emit error("Error creating table for: " + type + " : " + db.lastError().text());
+                            emit error("Error creating table for: " + type + " : " + m_db->lastError().text());
                             return;
                         }
-                        QSqlQuery *query = new QSqlQuery(db);
+                        QSqlQuery *query = new QSqlQuery(*m_db);
                         if (!query->prepare(final))
                         {
                             emit error("Error preparing inserttable: " + final + " Error is: " + query->lastError().text());
                             return;
                         }
+                        //typeID,length,name,format
+                        fmtinsertquery.bindValue(0,index);
+                        fmtinsertquery.bindValue(1,0);
+                        fmtinsertquery.bindValue(2,type);
+                        fmtinsertquery.bindValue(3,descstr);
+                        fmtinsertquery.bindValue(4,valuestr);
+                        fmtinsertquery.exec();
                         nameToInsertQuery[type] = query;
                     }
                     else
@@ -183,6 +203,20 @@ void AP2DataPlotThread::run()
                     QString name = linesplit[0].trimmed();
                     if (nameToInsertQuery.contains(name))
                     {
+                        if (firstactual)
+                        {
+                            if (!m_db->commit())
+                            {
+                                emit error("Unable to commit database transaction 2");
+                                return;
+                            }
+                            if (!m_db->transaction())
+                            {
+                                emit error("Unable to start database transaction 3");
+                                return;
+                            }
+                            firstactual = false;
+                        }
                         QString typestr = nameToTypeString[name];
                         nameToInsertQuery[name]->bindValue(0,index);
                         for (int i=1;i<linesplit.size();i++)
@@ -258,6 +292,11 @@ void AP2DataPlotThread::run()
                 currentmap.clear();
             }*/
         }
+    }
+    if (!m_db->commit())
+    {
+        emit error("Unable to commit database transaction 2");
+        return;
     }
     qDebug() << logfile.pos() << logfile.size() << logfile.atEnd();
     if (m_stop)
