@@ -164,7 +164,7 @@ void RadioCalibrationConfig::calibrateButtonClicked()
     if (!m_calibrationEnabled)
     {
         ui.calibrateButton->setText("End Calibration");
-        QMessageBox::information(0,"Warning!","You are about to start radio calibration.\nPlease ensure all motor power is disconnected AND all props are removed from the vehicle.\nAlso ensure transmitter and reciever are powered and connected\n\nClick OK to confirm");
+        QMessageBox::information(this,"Warning!","You are about to start radio calibration.\nPlease ensure all motor power is disconnected AND all props are removed from the vehicle.\nAlso ensure transmitter and reciever are powered and connected\n\nClick OK to confirm");
         m_calibrationEnabled = true;
         for (int i=0;i<8;i++)
         {
@@ -179,12 +179,12 @@ void RadioCalibrationConfig::calibrateButtonClicked()
         ui.radio7Widget->showMinMax();
         ui.throttleWidget->showMinMax();
         ui.radio8Widget->showMinMax();
-        QMessageBox::information(0,"Information","Click OK, then move all sticks to their extreme positions, watching the min/max values to ensure you get the most range from your controller. This includes all switches");
+        QMessageBox::information(this,"Information","Click OK, then move all sticks to their extreme positions, watching the min/max values to ensure you get the most range from your controller. This includes all switches");
     }
     else
     {
         ui.calibrateButton->setText("Calibrate");
-        QMessageBox::information(0,"Trims","Ensure all sticks are centered and throttle is in the downmost position, click OK to continue");
+        QMessageBox::information(this,"Trims","Ensure all sticks are centered and throttle is in the downmost position, click OK to continue");
         ///TODO: Set trims!
         m_calibrationEnabled = false;
         ui.rollWidget->hideMinMax();
@@ -204,7 +204,7 @@ void RadioCalibrationConfig::calibrateButtonClicked()
         {
             statusstr += QString::number(i+1) + "\t" + QString::number(rcMin[i]) + "\t" + QString::number(rcValue[i]) + "\t" + QString::number(rcMax[i]) + "\n";
         }
-        QMessageBox::information(0,"Status",statusstr);
+        QMessageBox::information(this,"Status",statusstr);
         //Send calibrations.
         QString minTpl("RC%1_MIN");
         QString maxTpl("RC%1_MAX");
