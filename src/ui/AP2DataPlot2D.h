@@ -12,7 +12,7 @@
 #include "AP2DataPlotAxisDialog.h"
 #include <QTextBrowser>
 #include <QSqlDatabase>
-
+#include <QStandardItemModel>
 
 class AP2DataPlot2D : public QWidget
 {
@@ -106,6 +106,7 @@ private:
     QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
     QList<QString> loglines;
     QSqlDatabase m_sharedDb;
+    int currentIndex;
 
     QList<QPair<qint64,double> > m_onlineValueTimeoutList;
 
@@ -117,6 +118,7 @@ private:
     Ui::AP2DataPlot2D ui;
     AP2DataPlotThread *m_logLoaderThread;
     DataSelectionScreen *m_dataSelectionScreen;
+    QStandardItemModel *model;
     bool m_logLoaded;
     //Current "index", X axis on graph. Used to keep all the graphs lined up.
     qint64 m_currentIndex;

@@ -13,6 +13,7 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <QsLog.h>
+#include <QStandardItemModel>
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 {
     m_uas = 0;
@@ -69,7 +70,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
-    ui.tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+    //ui.tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     m_addGraphAction = new QAction("Add To Graph",0);
     ui.tableWidget->addAction(m_addGraphAction);
@@ -81,7 +82,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect(ui.loadOfflineLogButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     connect(ui.autoScrollCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoScrollClicked(bool)));
     connect(ui.hideExcelView,SIGNAL(clicked(bool)),ui.tableWidget,SLOT(setHidden(bool)));
-    connect(ui.tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(tableCellClicked(int,int)));
+    //connect(ui.tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(tableCellClicked(int,int)));
 
     ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
 
@@ -90,6 +91,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     timer->start(500);
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
+    model = new QStandardItemModel();
 }
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 {
@@ -251,8 +253,6 @@ void AP2DataPlot2D::showOnlyClicked()
         }
     }
     m_showOnlyActive = true;
-
-
 }
 void AP2DataPlot2D::showAllClicked()
 {
@@ -265,6 +265,7 @@ void AP2DataPlot2D::showAllClicked()
 
 void AP2DataPlot2D::tableCellClicked(int row,int column)
 {
+
     if (ui.tableWidget->item(row,0))
     {
         if (m_tableHeaderNameMap.contains(ui.tableWidget->item(row,0)->text()))
@@ -594,11 +595,46 @@ void AP2DataPlot2D::loadButtonClicked()
     connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     connect(m_logLoaderThread,SIGNAL(lineRead(QString)),this,SLOT(logLine(QString)));
+    currentIndex=0;
     m_logLoaderThread->loadFile(filename,&m_sharedDb);
 }
 void AP2DataPlot2D::logLine(QString line)
 {
-    loglines.append(line);
+    /*QList<QStandardItem*> rowlist;
+    //for (int i=0;i<loglines.size();i++)
+    //{
+        QStringList linesplit = line.split(",");
+        for (int j=0;j<linesplit.size();j++)
+        {
+            QStandardItem *item = new QStandardItem(linesplit.at(j));
+            rowlist.append(item);
+        }
+        model->appendRow(rowlist);
+        //rowlist.clear();
+    //}
+    //loglines.append(line);*/
+    //loglines.append(line);
+    if (ui.tableWidget->rowCount() <= currentIndex)
+    {
+        ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1000);
+    }
+        QStringList linesplit = line.split(",");
+        if (ui.tableWidget->columnCount() < linesplit.size())
+        {
+            ui.tableWidget->setColumnCount(linesplit.size());
+        }
+        for (int j=0;j<linesplit.size();j++)
+        {
+            ui.tableWidget->setItem(currentIndex,j,new QTableWidgetItem(linesplit[j].trimmed()));
+        }
+        if (line.startsWith("FMT"))
+        {
+            //Format line
+            QString linename = linesplit[3].trimmed();
+            QString lastformat = line.mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
+            m_tableHeaderNameMap[linename] = lastformat.trimmed();
+        }
+        currentIndex++;
 }
 
 void AP2DataPlot2D::threadTerminated()
@@ -1002,6 +1038,8 @@ void AP2DataPlot2D::threadDone()
         return;
 
     }
+    //QSqlQuery itemquery(m_sharedDb);
+
     while (fmtquery.next())
     {
         QSqlRecord record = fmtquery.record();
@@ -1013,7 +1051,22 @@ void AP2DataPlot2D::threadDone()
             m_dataSelectionScreen->addItem(name + "." + varssplit.at(i));
         }
         QLOG_DEBUG() << record.value(0) << record.value(1) << record.value(2) << record.value(3) << record.value(4);
+        //rowlist.clear();
+        //itemquery.prepare("SELECT * FROM '" + name + "';");
+        //itemquery.exec();
+        //while (itemquery.next())
+        //{
+
+        //}
     }
+    ui.tableWidget->setRowCount(currentIndex);
+
+
+
+
+    //QStandardItem *item = new QStandardItem();
+
+    //ui.tableWidget->setModel(model);
 
     /*for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
     {
@@ -1025,6 +1078,8 @@ void AP2DataPlot2D::threadDone()
             }
         }
     }*/
+
+
     /*ui.tableWidget->setRowCount(loglines.size());
     for (int i=0;i<loglines.size();i++)
     {
