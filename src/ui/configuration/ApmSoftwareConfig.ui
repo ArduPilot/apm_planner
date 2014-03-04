@@ -72,31 +72,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="basicPidButton">
-           <property name="minimumSize">
-            <size>
-             <width>175</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>175</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Basic Tuning</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="geoFenceButton">
            <property name="minimumSize">
             <size>
@@ -112,6 +87,31 @@
            </property>
            <property name="text">
             <string>Geo Fence</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="basicPidButton">
+           <property name="minimumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Basic Tuning</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
