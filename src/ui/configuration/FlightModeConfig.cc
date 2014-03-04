@@ -342,23 +342,23 @@ void FlightModeConfig::parameterChanged(int uas, int component, QString paramete
     {
         updateModeComboBox(ui.mode1ComboBox, value, m_changedModes[0]);
     }
-    else if ((parameterName == "FLTMODE2") || (parameterName == "MODE2"))
+    else if ((parameterName == m_modeString + "MODE2"))
     {
         updateModeComboBox(ui.mode2ComboBox, value, m_changedModes[1]);
     }
-    else if ((parameterName == "FLTMODE3") || (parameterName == "MODE3"))
+    else if ((parameterName == m_modeString + "MODE3"))
     {
         updateModeComboBox(ui.mode3ComboBox, value, m_changedModes[2]);
     }
-    else if ((parameterName == "FLTMODE4") || (parameterName == "MODE4"))
+    else if ((parameterName == m_modeString + "MODE4"))
     {
         updateModeComboBox(ui.mode4ComboBox, value, m_changedModes[3]);
     }
-    else if ((parameterName == "FLTMODE5") || (parameterName == "MODE5"))
+    else if ((parameterName == m_modeString + "MODE5"))
     {
         updateModeComboBox(ui.mode5ComboBox, value, m_changedModes[4]);
     }
-    else if ((parameterName == "FLTMODE6") || (parameterName == "MODE6"))
+    else if ((parameterName == m_modeString + "MODE6"))
     {
         updateModeComboBox(ui.mode6ComboBox, value, m_changedModes[5]);
     }
