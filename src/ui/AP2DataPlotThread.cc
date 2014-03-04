@@ -251,7 +251,7 @@ void AP2DataPlotThread::run()
                             }
                             else if (typestr.at(i-1).toAscii() == 'L')
                             {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toLong());
+                                nameToInsertQuery[name]->bindValue(i,(qlonglong)linesplit[i].toLong());
                             }
                             else
                             {
