@@ -45,9 +45,9 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     ui.arduCopterPidButton->setVisible(false);
     ui.arduCopterPidButton->setText(tr("Extended Tuning"));
     ui.arduRoverPidButton->setVisible(false);
-    ui.arduRoverPidButton->setText(tr("Extended Tuning"));
+    ui.arduRoverPidButton->setText(tr("Tuning"));
     ui.arduPlanePidButton->setVisible(false);
-    ui.arduPlanePidButton->setText(tr("Extended Tuning"));
+    ui.arduPlanePidButton->setText(tr("Tuning"));
     ui.basicPidButton->setVisible(false);
 
     m_flightConfig = new FlightModeConfig(this);
@@ -177,7 +177,7 @@ void ApmSoftwareConfig::uasConnected()
     if (m_uas->isFixedWing())
     {
         ui.geoFenceButton->setVisible(false); // TODO - enable when plane geo fence implemented
-        ui.arduPlanePidButton->setVisible(m_isAdvancedMode);
+        ui.arduPlanePidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
         ui.basicPidButton->setVisible(false);
@@ -197,7 +197,7 @@ void ApmSoftwareConfig::uasConnected()
     else if (m_uas->isGroundRover())
     {
         ui.geoFenceButton->setVisible(false);
-        ui.arduRoverPidButton->setVisible(m_isAdvancedMode);
+        ui.arduRoverPidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
         ui.arduPlanePidButton->setVisible(false);
         ui.basicPidButton->setVisible(false);
