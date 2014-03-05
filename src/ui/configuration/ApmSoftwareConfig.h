@@ -61,6 +61,7 @@ public slots:
     void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
     void writeParameter(int component, QString parameterName, QVariant value);
     void readParameter(int component, QString parameterName, QVariant value);
+    void advModeChanged(bool state);
 
 private slots:
     void activateStackedWidget();
@@ -110,6 +111,8 @@ private:
     ParamReadWriteState m_paramDownloadState;
     int m_paramDownloadCount;
     int m_paramTotalCount;
+
+    bool m_isAdvancedMode;
 };
 
 #endif // APMSOFTWARECONFIG_H

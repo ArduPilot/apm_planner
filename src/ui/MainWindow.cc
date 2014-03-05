@@ -586,8 +586,10 @@ void MainWindow::buildCommonWidgets()
     {
         softwareConfigView = new SubMainWindow(this);
         softwareConfigView->setObjectName("VIEW_SOFTWARE_CONFIG");
-        softwareConfigView->setCentralWidget(new ApmSoftwareConfig(this));
+        ApmSoftwareConfig* apsw = new ApmSoftwareConfig(this);
+        softwareConfigView->setCentralWidget(apsw);
         addToCentralStackedWidget(softwareConfigView, VIEW_SOFTWARE_CONFIG, tr("Software"));
+        connect(ui.actionAdvanced_Mode, SIGNAL(toggled(bool)), apsw, SLOT(advModeChanged(bool)));
     }
 
     if (!engineeringView)
