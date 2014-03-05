@@ -15,7 +15,7 @@
 #define WITH_TEXT_TO_SPEECH 1
 
 #define QGC_APPLICATION_NAME "APM Planner"
-#define QGC_APPLICATION_VERSION "v2.0.0 (RC5)"
+#define QGC_APPLICATION_VERSION "v2.0.6"
 #define APP_DATA_DIRECTORY "/apmplanner2"
 #define LOG_DIRECTORY "/dataflashLogs"
 #define PARAMETER_DIRECTORY "/parameters"
@@ -27,7 +27,7 @@ namespace QGC
 {
 const QString APPNAME = "APMPLANNER2";
 const QString COMPANYNAME = "DIYDRONES";
-const int APPLICATIONVERSION = 200; // 2.0.0
+const int APPLICATIONVERSION = 206; // 2.0.0
 
     inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();
