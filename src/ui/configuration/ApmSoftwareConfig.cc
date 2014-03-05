@@ -42,8 +42,11 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     ui.advancedParamButton->setVisible(false);
     ui.advParamListButton->setVisible(false);
     ui.arduCopterPidButton->setVisible(false);
+    ui.arduCopterPidButton->setText(tr("Extended Tuning"));
     ui.arduRoverPidButton->setVisible(false);
+    ui.arduRoverPidButton->setText(tr("Extended Tuning"));
     ui.arduPlanePidButton->setVisible(false);
+    ui.arduPlanePidButton->setText(tr("Extended Tuning"));
     ui.basicPidButton->setVisible(false);
 
     m_flightConfig = new FlightModeConfig(this);
