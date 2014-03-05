@@ -377,6 +377,11 @@ MainWindow::MainWindow(QWidget *parent):
     }
 #endif
 
+    // Trigger Auto Update Check
+    QTimer::singleShot(5000, &m_autoUpdateCheck, SLOT(autoUpdateCheck()));
+    connect(&m_autoUpdateCheck, SIGNAL(updateAvailable(QString,QString,QString)),
+            this, SLOT(showAutoUpdateDownloadDialog(QString,QString,QString)));
+
 }
 
 MainWindow::~MainWindow()
@@ -2343,4 +2348,10 @@ void MainWindow::showAbout()
     dialog->hide();
     delete dialog;
     dialog = NULL;
+}
+
+void MainWindow::showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url)
+{
+    QLOG_DEBUG() << "Update Available! Show Update Dialog";
+    QLOG_DEBUG() << "Ver:" << version << "type:" << releaseType;
 }

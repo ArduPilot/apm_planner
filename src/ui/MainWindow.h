@@ -30,6 +30,8 @@ This file is part of the QGROUNDCONTROL project
 
 #ifndef _MAINWINDOW_H_
 #define _MAINWINDOW_H_
+
+#include "AutoUpdateCheck.h"
 #include <QtGui/QMainWindow>
 #include <QStatusBar>
 #include <QStackedWidget>
@@ -455,6 +457,9 @@ protected:
     QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
 
+private slots:
+    void showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url);
+
 private:
     QList<QObject*> commsWidgetList;
     QMap<QString,QString> customWidgetNameToFilenameMap;
@@ -467,6 +472,8 @@ private:
 
     QString getWindowStateKey();
     QString getWindowGeometryKey();
+
+    AutoUpdateCheck m_autoUpdateCheck;
 
 };
 

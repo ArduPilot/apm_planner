@@ -207,7 +207,6 @@ void QGCCore::initialize()
             QTimer::singleShot(200, mainWindow, SLOT(close()));
         }
     }
-
 }
 
 /**
