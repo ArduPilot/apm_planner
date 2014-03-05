@@ -106,13 +106,18 @@ void AutoUpdateCheck::processDownloadedVersionObject(const QString &versionObjec
         QString platform = entry.property("platform").toString();
         QString type = entry.property("type").toString();
         QString version = entry.property("version").toString();
+        QString name = entry.property("name").toString();
         QString locationUrl = entry.property("url").toString();
 
         if ((platform == APP_PLATFORM) && (type == APP_TYPE)
             && (compareVersionStrings(version,QGC_APPLICATION_VERSION))){
             QLOG_DEBUG() << "Found New Version: " << platform << " "
                         << type << " " << version << " " << locationUrl;
-            emit updateAvailable(version, type, locationUrl);
+            if(m_skipVerison != version){
+                emit updateAvailable(version, type, locationUrl, name);
+            } else {
+                QLOG_DEBUG() << "Version Skipped at user request";
+            }
             break;
         }
     }

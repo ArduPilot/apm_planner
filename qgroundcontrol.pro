@@ -378,7 +378,8 @@ FORMS += \
     src/ui/AP2DataPlot2D.ui \
     src/ui/dataselectionscreen.ui \
     src/ui/AboutDialog.ui \
-    src/ui/AP2DataPlotAxisDialog.ui
+    src/ui/AP2DataPlotAxisDialog.ui \
+    src/ui/AutoUpdateDialog.ui
 
 HEADERS += \
     src/MG.h \
@@ -582,7 +583,8 @@ HEADERS += \
     src/comm/arduino_intelhex.h \
     src/comm/arduinoflash.h \
     src/audio/AlsaAudio.h \
-    src/ui/AutoUpdateCheck.h
+    src/ui/AutoUpdateCheck.h \
+    src/ui/AutoUpdateDialog.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -780,7 +782,8 @@ SOURCES += src/main.cc \
     src/comm/arduino_intelhex.cpp \
     src/comm/arduinoflash.cc \
     src/audio/AlsaAudio.cc \
-    src/ui/AutoUpdateCheck.cc
+    src/ui/AutoUpdateCheck.cc \
+    src/ui/AutoUpdateDialog.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

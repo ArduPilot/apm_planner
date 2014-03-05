@@ -15,7 +15,7 @@ public:
     explicit AutoUpdateCheck(QObject *parent = 0);
 
 signals:
-    void updateAvailable(QString version, QString releaseType, QString url);
+    void updateAvailable(QString version, QString releaseType, QString url, QString name);
 
 public slots:
     void autoUpdateCheck();
