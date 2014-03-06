@@ -164,9 +164,17 @@ void AutoUpdateDialog::cancelDownload()
      } else {
 #ifdef Q_OS_MACX
          // [TODO] need to check the extension for .dmg or .pkg
-        QString program = m_targetFile->fileName();
+        QString filelocation = m_targetFile->fileName();
         QProcess *process = new QProcess();
-        process->start(program);
+        QLOG_INFO() << "LAUNCHING: hdiutil attach " << filelocation;
+        QStringList args;
+        args.append("attach");
+        args.append(filelocation);
+        process->start("hdiutil", args);
+        connect(process, SIGNAL(finished(int,QProcess::ExitStatus)),
+                this, SLOT(dmgMounted(int,QProcess::ExitStatus)));
+        process->waitForStarted();
+
 #elif defined(Q_OS_UNIX)
          QLOG_ERROR() << "TODO: Launch deb installer";
 #else
@@ -180,27 +188,38 @@ void AutoUpdateDialog::cancelDownload()
      this->raise();
      delete m_targetFile;
      m_targetFile = NULL;
+}
 
-     QTimer::singleShot(20000,this, SLOT(deleteLater()));
- }
+void AutoUpdateDialog::dmgMounted(int result, QProcess::ExitStatus exitStatus)
+{
+    QLOG_DEBUG() << "dmgMounted:" << result << "exitStatus:" << exitStatus;
+    this->raise();
+    ui->statusLabel->setText("<a href='file:/Volumes/APM Planner 2.0/'>Click to show\nAPM Planner 2.0\ninstall location</a>");
+    ui->skipPushButton->setEnabled(false);
+    ui->yesPushButton->setEnabled(false);
+    ui->noPushButton->setEnabled(false);
+    QTimer::singleShot(3000, ui->noPushButton, SLOT(show()));
+    this->exec();
+    accept();
+}
 
- void AutoUpdateDialog::httpReadyRead()
- {
-     // this slot gets called every time the QNetworkReply has new data.
-     // We read all of its new data and write it into the file.
-     // That way we use less RAM than when reading it at the finished()
-     // signal of the QNetworkReply
-     if (m_targetFile){
-         m_targetFile->write(m_networkReply->readAll());
-     }
- }
+void AutoUpdateDialog::httpReadyRead()
+{
+    // this slot gets called every time the QNetworkReply has new data.
+    // We read all of its new data and write it into the file.
+    // That way we use less RAM than when reading it at the finished()
+    // signal of the QNetworkReply
+    if (m_targetFile){
+        m_targetFile->write(m_networkReply->readAll());
+    }
+}
 
- void AutoUpdateDialog::updateDataReadProgress(qint64 bytesRead, qint64 totalBytes)
- {
-     if (m_httpRequestAborted)
-         return;
-     ui->progressBar->setMaximum(totalBytes);
-     ui->progressBar->setValue(bytesRead);
- }
+void AutoUpdateDialog::updateDataReadProgress(qint64 bytesRead, qint64 totalBytes)
+{
+    if (m_httpRequestAborted)
+        return;
+    ui->progressBar->setMaximum(totalBytes);
+    ui->progressBar->setValue(bytesRead);
+}
 
 

@@ -33,6 +33,8 @@ public slots:
     void httpReadyRead();
     void updateDataReadProgress(qint64 bytesRead, qint64 totalBytes);
 
+    void dmgMounted(int result, QProcess::ExitStatus exitStatus);
+
 private:
     Ui::AutoUpdateDialog *ui;
 
