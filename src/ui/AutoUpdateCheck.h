@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QtNetwork>
 
-const QString AUTOUPDATE_VERSION_OBJECT_LOCATION = "http://10.0.1.210/apm_planner/";
+const QString AUTOUPDATE_VERSION_OBJECT_LOCATION = "http://firmware.diydrones.com/Tools/APMPlanner/";
 const QString AUTOUPDATE_VERSION_OBJECT_NAME = "apm_planner_version.json";
 
 class AutoUpdateCheck : public QObject

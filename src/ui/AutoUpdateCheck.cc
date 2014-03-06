@@ -46,32 +46,18 @@ void AutoUpdateCheck::httpFinished()
 {
     QLOG_DEBUG() << "AutoUpdateCheck::httpFinished()";
     if (m_httpRequestAborted) {
-        // [TODO] cleanup any resources
-
         m_networkReply->deleteLater();
         return;
     }
 
-    // [TODO] Finished donwloading the version information
-
-    QVariant redirectionTarget = m_networkReply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    // Finished donwloading the version information
     if (m_networkReply->error()) {
         // [TODO] cleanup download failed
+#ifdef QT_DEBUG
         QMessageBox::information(NULL, tr("HTTP"),
                                  tr("Download failed: %1.")
                                  .arg(m_networkReply->errorString()));
-
-    } else if (!redirectionTarget.isNull()) {
-        // Handle redirection to another location
-        QUrl newUrl = m_url.resolved(redirectionTarget.toUrl());
-        // [TODO] Should this be automatic?
-        if (QMessageBox::question(NULL, tr("HTTP"),
-                                  tr("Redirect to %1 ?").arg(newUrl.toString()),
-                                  QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
-            m_networkReply->deleteLater();
-            autoUpdateCheck(newUrl);
-            return;
-        }
+#endif
     } else {
         // Process downloadeed object
         processDownloadedVersionObject(QString(m_networkReply->readAll()));
