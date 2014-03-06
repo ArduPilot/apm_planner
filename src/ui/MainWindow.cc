@@ -597,12 +597,13 @@ void MainWindow::buildCommonWidgets()
         connect(ui.actionAdvanced_Mode, SIGNAL(toggled(bool)), apsw, SLOT(advModeChanged(bool)));
     }
 
+     AP2DataPlot2D *plot = NULL;
     if (!engineeringView)
     {
         engineeringView = new SubMainWindow(this);
         engineeringView->setObjectName("VIEW_ENGINEER");
         //engineeringView->setCentralWidget(new QGCDataPlot2D(this));
-        AP2DataPlot2D *plot = new AP2DataPlot2D(this);
+        plot = new AP2DataPlot2D(this);
         plot->addSource(mavlinkDecoder);
         engineeringView->setCentralWidget(plot);
 
@@ -632,6 +633,7 @@ void MainWindow::buildCommonWidgets()
         TerminalConsole *terminalConsole = new TerminalConsole(this);
         terminalView->setCentralWidget(terminalConsole);
         addToCentralStackedWidget(terminalView, VIEW_TERMINAL, tr("Terminal View"));
+        connect(plot, SIGNAL(toKMLClicked()), terminalConsole, SLOT(logToKmlClicked()));
     }
 
     if (!debugOutput)

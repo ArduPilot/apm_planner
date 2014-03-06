@@ -60,7 +60,7 @@ public:
     explicit TerminalConsole(QWidget *parent = 0);
     ~TerminalConsole();
 
-private slots:
+public slots:
     void openSerialPort();
     void openSerialPort(const SerialSettings &settings);
     void closeSerialPort();

@@ -22,6 +22,10 @@ public:
     explicit AP2DataPlot2D(QWidget *parent = 0);
     ~AP2DataPlot2D();
     void addSource(MAVLinkDecoder *decoder);
+
+signals:
+    void toKMLClicked();
+
 private slots:
     //New Active UAS set
     void activeUASSet(UASInterface* uas);

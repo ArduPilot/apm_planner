@@ -92,7 +92,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
     model = new QStandardItemModel();
+    connect(ui.toKMLPushButton, SIGNAL(clicked()), this, SIGNAL(toKMLClicked()));
 }
+
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 {
     if (!ui.showValuesCheckBox->isChecked())
