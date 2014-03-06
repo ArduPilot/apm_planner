@@ -3,25 +3,31 @@
     "encoding": "UTF-8",
     "releases": [
         {
-             "platform": "osx",
-             "type": "stable",
-             "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner2_latest_osx.dmg",
-             "name" : "apm_planner2_latest_osx.dmg",
-             "version": "2.0.6"
+            "platform": "osx",
+            "type": "stable",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner2_latest_osx.dmg",
+            "name" : "apm_planner2_latest_osx.dmg",
+            "version" : "2.0.6",
+            "sha" : "c9f18e7aaa",
+            "date" : "2014-02-06"
         },
         {
             "platform": "win",
             "type": "stable",
             "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner2_latest_win.exe",
             "name" : "apm_planner2_latest_win.exe",
-            "version": "2.0.6"
+            "version": "2.0.6",
+            "sha" : "c9f18e7aaa",
+            "date" : "2014-02-06"
         },
         {
             "platform": "debian",
             "type": "stable",
             "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner2_latest_debian.deb",
             "name" : "apm_planner2_latest_debian.deb",
-            "version": "2.0.6"
+            "version": "2.0.6",
+            "sha" : "c9f18e7aaa",
+            "date" : "2014-02-06"
         }
     ]
 }
