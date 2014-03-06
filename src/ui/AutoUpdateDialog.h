@@ -34,6 +34,7 @@ public slots:
     void updateDataReadProgress(qint64 bytesRead, qint64 totalBytes);
 
     void dmgMounted(int result, QProcess::ExitStatus exitStatus);
+    void executeDownloadedFile();
 
 private:
     Ui::AutoUpdateDialog *ui;

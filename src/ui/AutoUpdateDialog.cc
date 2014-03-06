@@ -93,6 +93,8 @@ void AutoUpdateDialog::startFileDownloadRequest(QUrl url)
     ui->noPushButton->setText(tr("Cancel"));
     ui->yesPushButton->setEnabled(false);
 
+    ui->titleLabel->setText(tr("<html><head/><body><p><span style=\" font-size:18pt; font-weight:600;\">Downloading</span></p></body></html>"));
+    ui->questionLabel->setText(tr(""));
     ui->statusLabel->setText(tr("Downloading %1").arg(m_targetFilename));
     m_httpRequestAborted = false;
     if (m_networkReply != NULL){
@@ -114,7 +116,7 @@ void AutoUpdateDialog::cancelDownload()
 
 }
 
- void AutoUpdateDialog::httpFinished()
+void AutoUpdateDialog::httpFinished()
  {
      bool result = false;
      if (m_httpRequestAborted) {
@@ -160,28 +162,14 @@ void AutoUpdateDialog::cancelDownload()
      m_networkReply = NULL;
 
      if (!result){
-        ui->statusLabel->setText(tr("Download Failed"));
+         ui->titleLabel->setText(tr("<html><head/><body><p><span style=\" font-size:18pt; font-weight:600;\">Download Failed</span></p></body></html>"));
+         ui->statusLabel->setText(tr("ERROR: Download Failed!"));
      } else {
-#ifdef Q_OS_MACX
-         // [TODO] need to check the extension for .dmg or .pkg
-        QString filelocation = m_targetFile->fileName();
-        QProcess *process = new QProcess();
-        QLOG_INFO() << "LAUNCHING: hdiutil attach " << filelocation;
-        QStringList args;
-        args.append("attach");
-        args.append(filelocation);
-        process->start("hdiutil", args);
-        connect(process, SIGNAL(finished(int,QProcess::ExitStatus)),
-                this, SLOT(dmgMounted(int,QProcess::ExitStatus)));
-        process->waitForStarted();
+         ui->titleLabel->setText(tr("<html><head/><body><p><span style=\" font-size:18pt; font-weight:600;\">Download Complete</span></p></body></html>"));
+         ui->questionLabel->setText(tr(""));
+         ui->statusLabel->setText(tr("Mounting Disk Image"));
+         executeDownloadedFile();
 
-#elif defined(Q_OS_UNIX)
-         QLOG_ERROR() << "TODO: Launch deb installer";
-#else
-         QString program = m_targetFile->fileName();
-         QProcess *process = new QProcess();
-         process->start(program);
-#endif
      }
      ui->noPushButton->setText(tr("OK"));
 
@@ -190,16 +178,39 @@ void AutoUpdateDialog::cancelDownload()
      m_targetFile = NULL;
 }
 
+void AutoUpdateDialog::executeDownloadedFile()
+{
+// [TODO] need to check the extension for .dmg or .pkg
+#ifdef Q_OS_MACX
+    QString filelocation = m_targetFile->fileName();
+    QProcess *process = new QProcess();
+    QLOG_INFO() << "LAUNCHING: DiskImageMounter" << filelocation;
+    QStringList args;
+    args.append(filelocation);
+    process->start("/System/Library/CoreServices/DiskImageMounter.app/Contents/MacOS/DiskImageMounter", args);
+    connect(process, SIGNAL(finished(int,QProcess::ExitStatus)),
+            this, SLOT(dmgMounted(int,QProcess::ExitStatus)));
+    process->waitForStarted();
+#elif defined(Q_OS_UNIX)
+         QLOG_ERROR() << "TODO: Launch deb installer";
+#else
+         QString program = m_targetFile->fileName();
+         QProcess *process = new QProcess();
+         process->start(program);
+#endif
+}
+
 void AutoUpdateDialog::dmgMounted(int result, QProcess::ExitStatus exitStatus)
 {
     QLOG_DEBUG() << "dmgMounted:" << result << "exitStatus:" << exitStatus;
     this->raise();
-    ui->statusLabel->setText("<a href='file:/Volumes/APM Planner 2.0/'>Click to show\nAPM Planner 2.0\ninstall location</a>");
     ui->skipPushButton->setEnabled(false);
     ui->yesPushButton->setEnabled(false);
-    ui->noPushButton->setEnabled(false);
-    QTimer::singleShot(3000, ui->noPushButton, SLOT(show()));
-    this->exec();
+    if (result != 0){
+        ui->statusLabel->setText(tr("ERROR:Failed to mount Disk Image!"));
+        this->exec();
+    }
+    ui->statusLabel->setText(tr("Complete"));
     accept();
 }
 
