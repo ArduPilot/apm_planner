@@ -158,15 +158,28 @@ void AutoUpdateDialog::cancelDownload()
 
      m_networkReply->deleteLater();
      m_networkReply = NULL;
-     delete m_targetFile;
-     m_targetFile = NULL;
 
      if (!result){
         ui->statusLabel->setText(tr("Download Failed"));
+     } else {
+#ifdef Q_OS_MACX
+         // [TODO] need to check the extension for .dmg or .pkg
+        QString program = m_targetFile->fileName();
+        QProcess *process = new QProcess();
+        process->start(program);
+#elif defined(Q_OS_UNIX)
+         QLOG_ERROR() << "TODO: Launch deb installer";
+#else
+         QString program = m_targetFile->fileName();
+         QProcess *process = new QProcess();
+         process->start(program);
+#endif
      }
      ui->noPushButton->setText(tr("OK"));
 
      this->raise();
+     delete m_targetFile;
+     m_targetFile = NULL;
 
      QTimer::singleShot(20000,this, SLOT(deleteLater()));
  }
