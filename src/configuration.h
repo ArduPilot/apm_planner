@@ -22,7 +22,11 @@
 #define MAVLINK_LOG_DIRECTORY "/tlogs"
 #define MAVLINK_LOGFILE_EXT ".tlog"
 
+#ifndef APP_TYPE
 #define APP_TYPE "stable" // or "daily" for master branch builds
+#endif
+
+#ifndef APP_PLATFORM
 
 #ifdef Q_OS_MACX
 #define APP_PLATFORM "osx"
@@ -30,6 +34,8 @@
 #define APP_PLATFORM "debian"
 #else
 #define APP_PLATFORM "win"
+#endif
+
 #endif
 
 namespace QGC
