@@ -374,8 +374,7 @@ WindowsBuild {
 LinuxBuild : exists(/usr/local/lib/libxdrvlib.so) {
     message("Including support for Magellan 3DxWare")
 
-    DEFINES +=
-        MOUSE_ENABLED_LINUX \
+    DEFINES += MOUSE_ENABLED_LINUX \
         ParameterCheck # Hack: Has to be defined for magellan usage
 
     INCLUDEPATH *= /usr/local/include

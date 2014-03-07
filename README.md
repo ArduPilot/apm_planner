@@ -9,14 +9,12 @@ https://github.com/diydrones/apm_planner
 Credits:
 http://planner2.ardupilot.com/credits-and-contributors/
 
-
-Documentation
-=============
+Documentation:
 see http://planner2.ardupilot.com
 
 
 Mac OS X
-========
+===============================================================================
 
 To build on Mac OS X (10.6 or later):
 
@@ -24,7 +22,8 @@ Install SDL
 -----------
 1) Download SDL from:  <http://www.libsdl.org/release/SDL-1.2.14.dmg>
 
-2) From the SDL disk image, copy the `sdl.framework` bundle to `/Library/Frameworks` directory (if you are not an admin copy to `~/Library/Framewroks`)
+2) From the SDL disk image, copy the `sdl.framework` bundle to `/Library/Frameworks`
+   directory (if you are not an admin copy to `~/Library/Framewroks`)
 
 Install QT
 -----------
@@ -33,7 +32,7 @@ Install QT
 2) Double click the package installer
 
 Build APM Planner
---------------------
+-----------------
 1) From the terminal go to the `apm_planner` directory created when you cloned the repository.
 
 2) Run `qmake -spec macx-g++ qgroundcontrol.pro`
@@ -42,7 +41,7 @@ Build APM Planner
 
 
 Linux 
-=====
+===============================================================================
 
 Building on Linux (tested against Ubuntu 13.10):
 
@@ -81,37 +80,53 @@ Or try `qmake qgroundcontrol.pro` if the `qtmake-qt4` command doesn't exist on y
 5) Permanent installation (optional, if you'd like to install APM Planner in a fixed location)
  
 There are two ways to do this:
-a) You can build a .deb using ```scripts/LinuxBuildPackage.sh```, and then install the deb via ```dpkg -i ~/Documents/APMPlanner2-$NOW.deb``` (where $NOW is today's date). This should add it to your launcher too.
+a) You can build a .deb using ```scripts/LinuxBuildPackage.sh```, and then install the deb via
+   ```dpkg -i ~/Documents/APMPlanner2-$NOW.deb``` (where $NOW is today's date). This should add it to
+   your launcher too.
 
-b) Alternatively, run ```sudo make install```. This will place the binary in your /bin/ folder and corresponding files in /share/.
+b) Alternatively, run ```sudo make install```. This will place the binary in your /bin/ folder and
+   corresponding files in /share/.
+
 
 Windows
-=======
+===============================================================================
 
 GNU GCC / MINGW IS UNTESTED, COULD WORK
-VISUAL STUDIO 2008 / 2010 EXPRESS EDITION IS FREE!
+VISUAL STUDIO 2008 / 2010 / 2013
 
-Steps for Visual Studio 2008 / 2010:
+Steps for Visual Studio 2008 / 2010 / 2013:
 
 Windows XP/7:
 
-1) Download and install the Qt libraries for Windows from https://qt.nokia.com/downloads/ (the Visual Studio 2008 or 2010 version as appropriate)
+1) Download and install Visual Studio from http://www.visualstudio.com/downloads/download-visual-studio-vs
+   - select "Visual Studio Express 2013 for Windows Desktop"
+   - or
+   - select "Visual C++ 2010 Express", then make sure you install SP1
 
-2) Download and install Visual Studio 2008 or 2010 Express Edition (free) from https://www.microsoft.com/visualstudio. If using Visual Studio 2010, make sure you are running at least SP1. There is a linking error you'll encounter otherwise that will prevent compilation.
+2) Download and install Qt from http://qt-project.org/downloads
+   - Select "Qt Online Installer for Windows"
+   - On the "Select Components" page, click the checked "Qt->Qt 5.x.x" to open it
+TODO then click to select "msvc2010 32-bit"
+     (or "msvc2010 32-bit OpenGL" or "msvc2012 32-bit") TODO
 
-3) Go to the QGroundControl folder and then to thirdParty/libxbee and build it following the instructions in win32.README
+3) Go to the apm_planner/libs/thirdParty/libxbee and build it following the instructions in win32.README
+   This step may be skipped
 
-4) Open the Qt Command Prompt program (should be in the Start Menu), navigate to the source folder of QGroundControl and create the Visual Studio project by typing:
+4) Install external dependencies
+   - ?
+   
+5) Open the Qt Command Prompt program (should be in the Start Menu)
+   - navigate to the source folder of apm_planner
+   - ```qmake -tp vc qgroundcontrol.pro``` to create the Visual Studio project
+   
+6) Start Visual Studio and load the generated qgroundcontrol.vcproj or qgroundcontrol.vcxproj
 
-`qmake -tp vc qgroundcontrol.pro`
-
-5) Now start Visual Studio and load the qgroundcontrol.vcproj if using Visual Studio 2008 or qgroundcontrol.vcxproj if using Visual Studio 2010
-
-6) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro and re-run `qmake -tp vc qgroundcontrol.pro`
+7) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro
+   and re-run 5)
 
 
 Repository Layout
-=================
+===============================================================================
 ```
 qgroundcontrol:
 	demo-log.txt
@@ -183,4 +198,4 @@ src:
 thirdParty: 
 	Library called lxbee.
 	Library called QSerialPort.
-```
+
