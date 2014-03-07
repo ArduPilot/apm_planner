@@ -167,7 +167,12 @@ void AutoUpdateDialog::httpFinished()
      } else {
          ui->titleLabel->setText(tr("<html><head/><body><p><span style=\" font-size:18pt; font-weight:600;\">Download Complete</span></p></body></html>"));
          ui->questionLabel->setText(tr(""));
+
+#ifdef Q_OS_MACX
          ui->statusLabel->setText(tr("Mounting Disk Image"));
+#else
+         ui->statusLabel->setText(tr("Start Installation"));
+#endif
          executeDownloadedFile();
 
      }
