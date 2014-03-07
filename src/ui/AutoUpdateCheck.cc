@@ -254,6 +254,6 @@ void AutoUpdateCheck::writeSettings()
     settings.setValue("ENABLED", m_isAutoUpdateEnabled);
     settings.setValue("SKIP_VERSION", m_skipVerison);
     settings.setValue("RELEASE_TYPE", m_releaseType);
-    settings.sync();
     settings.endGroup();
+    settings.sync();
 }

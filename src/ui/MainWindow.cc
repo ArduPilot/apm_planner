@@ -2365,9 +2365,7 @@ void MainWindow::showAutoUpdateDownloadDialog(QString version, QString releaseTy
 void MainWindow::autoUpdateCancelled(QString version)
 {
     QLOG_DEBUG() << "autoUpdateCancelled";
-        if(m_dialog->skipVersion()){
-            m_autoUpdateCheck.setSkipVersion(version);
-        }
+    m_autoUpdateCheck.setSkipVersion(version);
 
     delete m_dialog;
     m_dialog = NULL;
