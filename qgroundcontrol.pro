@@ -138,6 +138,7 @@ LinuxBuild {
 }
 
 WindowsBuild {
+    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     # Specify multi-process compilation within Visual Studio.
@@ -155,6 +156,7 @@ WindowsBuild {
 }
 
 WindowsCrossBuild {
+    QT += script
     # Windows version cross compiled on linux using
     DEFINES += __STDC_LIMIT_MACROS
 
