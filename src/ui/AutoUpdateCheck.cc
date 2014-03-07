@@ -14,6 +14,12 @@ AutoUpdateCheck::AutoUpdateCheck(QObject *parent) :
     loadSettings();
 }
 
+void AutoUpdateCheck::forcedAutoUpdateCheck()
+{
+    setSkipVersion("0.0.0");
+    autoUpdateCheck();
+}
+
 void AutoUpdateCheck::autoUpdateCheck()
 {
     autoUpdateCheck(QUrl(AUTOUPDATE_VERSION_OBJECT_LOCATION

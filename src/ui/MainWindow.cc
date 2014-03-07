@@ -1552,6 +1552,9 @@ void MainWindow::connectCommonActions()
     // About
     connect(ui.actionAbout_APM_Planner_2_0, SIGNAL(triggered()), this, SLOT(showAbout()));
 
+    // Check for updates
+    connect(ui.actionCheck_For_Updates, SIGNAL(triggered()), &m_autoUpdateCheck, SLOT(forcedAutoUpdateCheck()));
+
     // Connect actions from ui
     connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
     connect(ui.actionAdvanced_Mode,SIGNAL(triggered()),this,SLOT(setAdvancedMode()));

@@ -101,6 +101,7 @@
     <addaction name="actionProject_Roadmap_2"/>
     <addaction name="actionDeveloper_Credits"/>
     <addaction name="actionDebug_Console"/>
+    <addaction name="actionCheck_For_Updates"/>
     <addaction name="separator"/>
     <addaction name="actionAbout_APM_Planner_2_0"/>
    </widget>
@@ -552,6 +553,11 @@
   <action name="actionAbout_APM_Planner_2_0">
    <property name="text">
     <string>About APM Planner 2.0</string>
+   </property>
+  </action>
+  <action name="actionCheck_For_Updates">
+   <property name="text">
+    <string>Check For Updates</string>
    </property>
   </action>
  </widget>

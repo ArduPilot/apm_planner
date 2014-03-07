@@ -18,6 +18,7 @@ signals:
     void updateAvailable(QString version, QString releaseType, QString url, QString name);
 
 public slots:
+    void forcedAutoUpdateCheck();
     void autoUpdateCheck();
     void autoUpdateCheck(const QUrl& url);
     void cancelDownload();
