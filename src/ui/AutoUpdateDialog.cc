@@ -194,9 +194,10 @@ void AutoUpdateDialog::executeDownloadedFile()
 #elif defined(Q_OS_UNIX)
          QLOG_ERROR() << "TODO: Launch deb installer";
 #else
-         QString program = m_targetFile->fileName();
-         QProcess *process = new QProcess();
-         process->start(program);
+    QLOG_INFO() << "Launching" << m_targetFile->fileName();
+    QDesktopServices::openUrl(QUrl(m_targetFile->fileName(), QUrl::TolerantMode));
+    QTimer::singleShot(3000,this,SLOT(raise()));
+    exit(0);
 #endif
 }
 
