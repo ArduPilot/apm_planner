@@ -12216,7 +12216,6 @@ void QCPGraph::drawLinePlot(QCPPainter *painter, QVector<QPointF> *lineData) con
     {
       painter->drawPolyline(QPolygonF(*lineData));
     }
-    qDebug() << "Painting took:" << QDateTime::currentMSecsSinceEpoch() - msecs << "msecs";
   }
 }
 
