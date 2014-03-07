@@ -93,6 +93,38 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
     model = new QStandardItemModel();
     connect(ui.toKMLPushButton, SIGNAL(clicked()), this, SIGNAL(toKMLClicked()));
+    connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
+    connect(ui.verticalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(verticalScrollMoved(int)));
+
+    connect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
+    connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
+    connect(m_wideAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
+    m_plot->setPlottingHint(QCP::phFastPolylines,true);
+}
+void AP2DataPlot2D::xAxisChanged(QCPRange range)
+{
+    ui.horizontalScrollBar->setValue(qRound(range.center())); // adjust position of scroll bar slider
+    ui.horizontalScrollBar->setPageStep(qRound(range.size())); // adjust size of scroll bar slider
+}
+
+void AP2DataPlot2D::horizontalScrollMoved(int value)
+{
+    if (qAbs(m_wideAxisRect->axis(QCPAxis::atBottom)->range().center()-value) > 0.01) // if user is dragging plot, we don't want to replot twice
+    {
+      m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(value,m_wideAxisRect->axis(QCPAxis::atBottom)->range().size(), Qt::AlignCenter);
+      m_plot->replot();
+    }
+    return;
+}
+
+void AP2DataPlot2D::verticalScrollMoved(int value)
+{
+    double percent = value / 100.0;
+    double center = m_wideAxisRect->axis(QCPAxis::atBottom)->range().center();
+    double requestedrange = (m_endIndex - m_startIndex) * percent;
+    m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(center + (requestedrange/2.0));
+    m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(center - (requestedrange/2.0));
+    m_plot->replot();
 }
 
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
@@ -1061,6 +1093,10 @@ void AP2DataPlot2D::threadDone()
 
         //}
     }
+    m_startIndex = 0;
+    m_endIndex = currentIndex;
+    ui.horizontalScrollBar->setMinimum(m_startIndex);
+    ui.horizontalScrollBar->setMaximum(m_endIndex);
     ui.tableWidget->setRowCount(currentIndex);
 
 

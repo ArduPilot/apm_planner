@@ -83,6 +83,9 @@ private slots:
     void showAllClicked();
     void graphControlsButtonClicked();
     void plotMouseMove(QMouseEvent *evt);
+    void horizontalScrollMoved(int value);
+    void verticalScrollMoved(int value);
+    void xAxisChanged(QCPRange range);
 private:
     class Graph
     {
@@ -132,6 +135,8 @@ private:
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
     qint64 m_timeDiff;
+    int m_endIndex;
+
 
 };
 
