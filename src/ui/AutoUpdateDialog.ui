@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>411</width>
+    <width>422</width>
     <height>185</height>
    </rect>
   </property>
@@ -111,21 +111,21 @@
          <item>
           <widget class="QPushButton" name="skipPushButton">
            <property name="text">
-            <string>Skip Version</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="yesPushButton">
-           <property name="text">
-            <string>Yes</string>
+            <string>Skip This Version</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="noPushButton">
            <property name="text">
-            <string>No</string>
+            <string>Remind Me Later</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="yesPushButton">
+           <property name="text">
+            <string>Install</string>
            </property>
           </widget>
          </item>
