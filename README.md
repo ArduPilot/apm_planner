@@ -91,38 +91,48 @@ b) Alternatively, run ```sudo make install```. This will place the binary in you
 Windows
 ===============================================================================
 
-GNU GCC / MINGW IS UNTESTED, COULD WORK
-VISUAL STUDIO 2008 / 2010 / 2013
+MinGW 4.8
+Visual Studio 2008 / 2010 / 2013
 
-Steps for Visual Studio 2008 / 2010 / 2013:
+Windows XP/7
 
-Windows XP/7:
-
-1) Download and install Visual Studio from http://www.visualstudio.com/downloads/download-visual-studio-vs
-   - select "Visual Studio Express 2013 for Windows Desktop"
-   - or
-   - select "Visual C++ 2010 Express", then make sure you install SP1
+1) Download and install compiler
+   a) Visual Studio from http://www.visualstudio.com/downloads/download-visual-studio-vs
+     - select "Visual Studio Express 2013 for Windows Desktop"
+     - or select "Visual C++ 2010 Express", then make sure you install SP1
+   b) MinGW from http://sourceforge.net/projects/mingw/files/Installer/
+     - select "mingw-get-setup.exe"
+     - Click "Basic Setup"
+     - Select all but ada fortran objc
+     - Click "All Packages"
+     - Select msys-w32api
+     - Menu Installation->Apply Changes
 
 2) Download and install Qt from http://qt-project.org/downloads
    - Select "Qt Online Installer for Windows"
-   - On the "Select Components" page, click the checked "Qt->Qt 5.x.x" to open it
-TODO then click to select "msvc2010 32-bit"
-     (or "msvc2010 32-bit OpenGL" or "msvc2012 32-bit") TODO
+   - On the "Select Components" page, click the checked "Qt->Qt 5.x.x" to expand it
+     then click to select
+   a) "msvc2010 32-bit" or "msvc2012 32-bit"
+   b) "MinGW 4.8 32-bit"
 
-3) Go to the apm_planner/libs/thirdParty/libxbee and build it following the instructions in win32.README
+3) Go to the apm_planner/libs/thirdParty/libxbee and build it following the instructions in win32.README.
    This step may be skipped
 
-4) Install external dependencies
-   - ?
-   
-5) Open the Qt Command Prompt program (should be in the Start Menu)
-   - navigate to the source folder of apm_planner
+4) Open the Qt Command Prompt program (should be in the Start Menu)
+   - Navigate to the source folder of apm_planner
+   - Run ```...\VC\bin\vcvars32.bat``` first if you have more than one VC installed
    - ```qmake -tp vc qgroundcontrol.pro``` to create the Visual Studio project
    
-6) Start Visual Studio and load the generated qgroundcontrol.vcproj or qgroundcontrol.vcxproj
+5) Compile
+   a) Visual Studio
+     - Start and load the generated apmplanner2.vcproj or apmplanner2.vcxproj
+     - Compile and edit in Visual Studio. 
+     - ?
+   b) MinGW
+     - Compile and edit in Eclipse?
+     - ?
 
-7) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro
-   and re-run 5)
+6) If you need to add new files, add them to qgroundcontrol.pro and re-run 4)
 
 
 Repository Layout
