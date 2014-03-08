@@ -80,6 +80,7 @@ Or try `qmake qgroundcontrol.pro` if the `qtmake-qt4` command doesn't exist on y
 5) Permanent installation (optional, if you'd like to install APM Planner in a fixed location)
  
 There are two ways to do this:
+
 a) You can build a .deb using ```scripts/LinuxBuildPackage.sh```, and then install the deb via
    ```dpkg -i ~/Documents/APMPlanner2-$NOW.deb``` (where $NOW is today's date). This should add it to
    your launcher too.
@@ -97,23 +98,24 @@ Visual Studio 2008 / 2010 / 2013
 Windows XP/7
 
 1) Download and install compiler
-   a) Visual Studio from http://www.visualstudio.com/downloads/download-visual-studio-vs
-     - select "Visual Studio Express 2013 for Windows Desktop"
-     - or select "Visual C++ 2010 Express", then make sure you install SP1
-   b) MinGW from http://sourceforge.net/projects/mingw/files/Installer/
-     - select "mingw-get-setup.exe"
-     - Click "Basic Setup"
-     - Select all but ada fortran objc
-     - Click "All Packages"
-     - Select msys-w32api
-     - Menu Installation->Apply Changes
+   - a) Visual Studio from http://www.visualstudio.com/downloads/download-visual-studio-vs
+   - select "Visual Studio Express 2013 for Windows Desktop"
+   - or select "Visual C++ 2010 Express", then make sure you install SP1
+   
+   - b) MinGW from http://sourceforge.net/projects/mingw/files/Installer/
+   - select "mingw-get-setup.exe"
+   - Click "Basic Setup"
+   - Select all but ada fortran objc
+   - Click "All Packages"
+   - Select msys-w32api
+   - Menu Installation->Apply Changes
 
 2) Download and install Qt from http://qt-project.org/downloads
    - Select "Qt Online Installer for Windows"
    - On the "Select Components" page, click the checked "Qt->Qt 5.x.x" to expand it
      then click to select
-   a) "msvc2010 32-bit" or "msvc2012 32-bit"
-   b) "MinGW 4.8 32-bit"
+   - a) "msvc2010 32-bit" or "msvc2012 32-bit"
+   - b) "MinGW 4.8 32-bit"
 
 3) Go to the apm_planner/libs/thirdParty/libxbee and build it following the instructions in win32.README.
    This step may be skipped
@@ -124,13 +126,14 @@ Windows XP/7
    - ```qmake -tp vc qgroundcontrol.pro``` to create the Visual Studio project
    
 5) Compile
-   a) Visual Studio
-     - Start and load the generated apmplanner2.vcproj or apmplanner2.vcxproj
-     - Compile and edit in Visual Studio. 
-     - ?
-   b) MinGW
-     - Compile and edit in Eclipse?
-     - ?
+   - a) Visual Studio
+   - Start and load the generated apmplanner2.vcproj or apmplanner2.vcxproj
+   - Compile and edit in Visual Studio. 
+   - ?
+
+   - b) MinGW
+   - Compile and edit in Eclipse?
+   - ?
 
 6) If you need to add new files, add them to qgroundcontrol.pro and re-run 4)
 
