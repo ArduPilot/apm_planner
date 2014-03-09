@@ -128,11 +128,13 @@ MacBuild {
 }
 
 LinuxBuild {
+    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
     DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 
+    LIBS += -lsndfile -lasound
     LIBS += -lz
     LIBS += -lssl -lcrypto
 }
