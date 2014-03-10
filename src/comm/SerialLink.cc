@@ -178,7 +178,7 @@ void SerialLink::run()
             break;
         }
     }
-    if (description.contains("mega") && description.contains("2560"))
+    if (description.contains("Mega") && description.contains("2560"))
     {
         QLOG_DEBUG() << "Connected to an APM, with description:" << description;
     }
