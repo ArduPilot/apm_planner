@@ -147,6 +147,7 @@ public slots:
     void writeBytes(const char* data, qint64 length);
     bool connect();
     bool disconnect();
+    void portReadyRead();
 
     void linkError(QSerialPort::SerialPortError error);
 

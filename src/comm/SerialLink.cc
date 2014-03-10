@@ -396,10 +396,11 @@ void SerialLink::writeBytes(const char* data, qint64 size)
         QLOG_TRACE() << "writeBytes" << m_portName << "attempting to tx " << size << "bytes.";
 
         QByteArray byteArray(data, size);
-        {
+        m_port->write(byteArray);
+        /*{
             QMutexLocker writeLocker(&m_writeMutex);
             m_transmitBuffer.append(byteArray);
-        }
+        }*/
 
         // Increase write counter
         m_bitsSentTotal += size * 8;
@@ -476,7 +477,14 @@ bool SerialLink::disconnect()
     QLOG_INFO() << "SerialLink::disconnect";
     if (m_port) {
         QLOG_INFO() << m_port->portName();
+        m_port->close();
+        delete m_port;
+        m_port = 0;
     }
+    emit disconnected();
+    emit connected(false);
+    emit disconnected(this);
+    return true;
 
     if (isRunning())
     {
@@ -505,8 +513,50 @@ bool SerialLink::connect()
         m_stopp = false;
     }
 
-    start(LowPriority);
+    //start(LowPriority);
+    QString description = "X";
+    QString type;
+    foreach (QSerialPortInfo info,QSerialPortInfo::availablePorts())
+    {
+        if (m_portName == info.portName())
+        {
+            description = info.description();
+            break;
+        }
+    }
+    if (description.toLower().contains("mega") && description.contains("2560"))
+    {
+        type = "apm";
+        QLOG_DEBUG() << "Attempting connection to an APM, with description:" << description;
+    }
+    else if (description.toLower().contains("px4"))
+    {
+        type = "px4";
+        QLOG_DEBUG() << "Attempting connection to a PX4/pixhawk with description:" << description;
+    }
+    else
+    {
+        type = "other";
+        QLOG_DEBUG() << "Attempting connection to a NON-APM or 3DR Radio with description:" << description;
+    }
+    if (!hardwareConnect(type))
+    {
+        return false;
+    }
+    QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()));
+    emit connected();
+    emit connected(true);
+    emit connected(this);
     return true;
+}
+void SerialLink::portReadyRead()
+{
+    QByteArray readData = m_port->readAll();
+    if (readData.length() > 0) {
+        emit bytesReceived(this, readData);
+        m_bytesRead += readData.length();
+        m_bitsReceivedTotal += readData.length() * 8;
+    }
 }
 
 /**
