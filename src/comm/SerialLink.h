@@ -183,7 +183,7 @@ private:
     QByteArray m_transmitBuffer;
     QMap<QString,int> m_portBaudMap;
 
-    bool hardwareConnect();
+    bool hardwareConnect(QString type);
 
 signals:
     void aboutToCloseFlag();

@@ -153,7 +153,33 @@ void SerialLink::writeSettings()
 void SerialLink::run()
 {
     // Initialize the connection
-    if (!hardwareConnect())
+    //
+    QString description = "X";
+    QString type;
+    foreach (QSerialPortInfo info,QSerialPortInfo::availablePorts())
+    {
+        if (m_portName == info.portName())
+        {
+            description = info.description();
+            break;
+        }
+    }
+    if (description.toLower().contains("mega") && description.contains("2560"))
+    {
+        type = "apm";
+        QLOG_DEBUG() << "Attempting connection to an APM, with description:" << description;
+    }
+    else if (description.toLower().contains("px4"))
+    {
+        type = "px4";
+        QLOG_DEBUG() << "Attempting connection to a PX4/pixhawk with description:" << description;
+    }
+    else
+    {
+        type = "other";
+        QLOG_DEBUG() << "Attempting connection to a NON-APM or 3DR Radio with description:" << description;
+    }
+    if (!hardwareConnect(type))
     {
         return;
     }
@@ -169,23 +195,7 @@ void SerialLink::run()
     bool triedDTR = false;
     qint64 timeout = 5000;
     //While we're connected, find the serial port info we're on
-    QString description = "X";
-    foreach (QSerialPortInfo info,QSerialPortInfo::availablePorts())
-    {
-        if (m_port->portName() == info.portName())
-        {
-            description = info.description();
-            break;
-        }
-    }
-    if (description.contains("mega") && description.contains("2560"))
-    {
-        QLOG_DEBUG() << "Connected to an APM, with description:" << description;
-    }
-    else
-    {
-        QLOG_DEBUG() << "Connected to a NON-APM or 3DR Radio with description:" << description;
-    }
+
     forever
     {
         {
@@ -446,7 +456,7 @@ bool SerialLink::connect()
  * @return True if the connection could be established, false otherwise
  * @see connect() For the right function to establish the connection.
  **/
-bool SerialLink::hardwareConnect()
+bool SerialLink::hardwareConnect(QString type)
 {
     QLOG_INFO() << "SerialLink: hardwareConnect to " << m_portName;
     if(m_port)
@@ -492,60 +502,61 @@ bool SerialLink::hardwareConnect()
     emit communicationUpdate(getName(),"Opened port!");
 
     // Need to configure the port
-    //QLOG_DEBUG() << "Setting baud rate to:" << m_baud;
-    /*if (!m_port->setBaudRate(m_baud)){
-        QLOG_ERROR() << "Failed to set Baud Rate" << m_baud;
-        emit communicationError(getName(),"Error setting baud rate to: " + QString::number(m_baud) + " :" + m_port->errorString());
-        m_port->close();
-        delete m_port;
-        m_port = NULL;
-        return false;
 
-    }*/
-    /*QLOG_DEBUG() << "Setting data bits to:" << m_dataBits;
-    if(!m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits))){
-        QLOG_ERROR() << "Failed to set data bits Rate:" << m_dataBits;
-        emit communicationError(getName(),"Error setting data bits to: " + QString::number(m_dataBits) + " :" + m_port->errorString());
-        m_port->close();
-        delete m_port;
-        m_port = NULL;
-        return false;
 
+
+    //Don't set baud rate/bits on PX4, it ignores the message anyway, and can potentially cause lockups
+    if (type.contains("px4"))
+    {
+        QLOG_DEBUG() << "Setting baud rate to:" << m_baud;
+        if (!m_port->setBaudRate(m_baud)){
+            QLOG_ERROR() << "Failed to set Baud Rate" << m_baud;
+            emit communicationError(getName(),"Error setting baud rate to: " + QString::number(m_baud) + " :" + m_port->errorString());
+            m_port->close();
+            delete m_port;
+            m_port = NULL;
+            return false;
+        }
+        QLOG_DEBUG() << "Setting data bits to:" << m_dataBits;
+        if(!m_port->setDataBits(static_cast<QSerialPort::DataBits>(m_dataBits))){
+            QLOG_ERROR() << "Failed to set data bits Rate:" << m_dataBits;
+            emit communicationError(getName(),"Error setting data bits to: " + QString::number(m_dataBits) + " :" + m_port->errorString());
+            m_port->close();
+            delete m_port;
+            m_port = NULL;
+            return false;
+        }
+        QLOG_DEBUG() << "Setting flow control to:" << m_flowControl;
+        if(!m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(m_flowControl))){
+            QLOG_ERROR() << "Failed to set flow control:" << m_flowControl;
+            emit communicationError(getName(),"Error setting flow control to: " + QString::number(m_flowControl) + " :" + m_port->errorString());
+            m_port->close();
+            delete m_port;
+            m_port = NULL;
+            return false;
+        }
+        QLOG_DEBUG() << "Setting stop bits to:" << m_stopBits;
+        if(!m_port->setStopBits(static_cast<QSerialPort::StopBits>(m_stopBits))){
+            QLOG_ERROR() << "Failed to set stop bits" << m_stopBits;
+            emit communicationError(getName(),"Error setting stop bits to: " + QString::number(m_stopBits) + " :" + m_port->errorString());
+            m_port->close();
+            delete m_port;
+            m_port = NULL;
+            return false;
+        }
+        QLOG_DEBUG() << "Setting parity to :" << m_parity;
+        if(!m_port->setParity(static_cast<QSerialPort::Parity>(m_parity))){
+            QLOG_ERROR() << "Failed to set parity" << m_parity;
+            emit communicationError(getName(),"Error setting parity to: " + QString::number(m_parity) + " :" + m_port->errorString());
+            m_port->close();
+            delete m_port;
+            m_port = NULL;
+            return false;
+        }
     }
-    QLOG_DEBUG() << "Setting flow control to:" << m_flowControl;
-    if(!m_port->setFlowControl(static_cast<QSerialPort::FlowControl>(m_flowControl))){
-        QLOG_ERROR() << "Failed to set flow control:" << m_flowControl;
-        emit communicationError(getName(),"Error setting flow control to: " + QString::number(m_flowControl) + " :" + m_port->errorString());
-        m_port->close();
-        delete m_port;
-        m_port = NULL;
-        return false;
-
-    }
-    QLOG_DEBUG() << "Setting stop bits to:" << m_stopBits;
-    if(!m_port->setStopBits(static_cast<QSerialPort::StopBits>(m_stopBits))){
-        QLOG_ERROR() << "Failed to set stop bits" << m_stopBits;
-        emit communicationError(getName(),"Error setting stop bits to: " + QString::number(m_stopBits) + " :" + m_port->errorString());
-        m_port->close();
-        delete m_port;
-        m_port = NULL;
-        return false;
-
-    }
-    QLOG_DEBUG() << "Setting parity to :" << m_parity;
-    if(!m_port->setParity(static_cast<QSerialPort::Parity>(m_parity))){
-        QLOG_ERROR() << "Failed to set parity" << m_parity;
-        emit communicationError(getName(),"Error setting parity to: " + QString::number(m_parity) + " :" + m_port->errorString());
-        m_port->close();
-        delete m_port;
-        m_port = NULL;
-        return false;
-
-    }*/
 
 
-
-    QLOG_DEBUG() << "CONNECTING LINK: "<< m_portName << "with settings" << m_port->portName()
+    QLOG_DEBUG() << "CONNECTED LINK: "<< m_portName << "with settings" << m_port->portName()
              << getBaudRate() << getDataBits() << getParityType() << getStopBits();
 
     writeSettings();
