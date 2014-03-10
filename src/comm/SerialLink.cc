@@ -506,7 +506,7 @@ bool SerialLink::hardwareConnect(QString type)
 
 
     //Don't set baud rate/bits on PX4, it ignores the message anyway, and can potentially cause lockups
-    if (type.contains("px4"))
+    if (!type.contains("px4"))
     {
         QLOG_DEBUG() << "Setting baud rate to:" << m_baud;
         if (!m_port->setBaudRate(m_baud)){
