@@ -244,12 +244,14 @@ void SerialLink::run()
         } else {
             //QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
         }
+#ifndef Q_OS_WIN
         if (m_port->error() != QSerialPort::NoError && m_port->error() != QSerialPort::UnknownError)
         {
             //Serial port has gone bad???
             QLOG_DEBUG() << "Serial port has bad things happening!!!" << m_port->errorString();
             break;
         }
+#endif
 
         if (bytes != m_bytesRead) // i.e things are good and data is being read.
         {
