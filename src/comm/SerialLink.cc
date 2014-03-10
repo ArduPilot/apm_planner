@@ -145,6 +145,35 @@ void SerialLink::writeSettings()
     settings.sync();
 }
 
+bool SerialLink::waitForPort(QString name,int timeoutmilliseconds,bool toexist)
+{
+    int timeout = 0;
+    while (timeout < timeoutmilliseconds)
+    {
+        bool here = false;
+        foreach (QSerialPortInfo info,QSerialPortInfo::availablePorts())
+        {
+            if (name == info.portName())
+            {
+                if (toexist)
+                {
+                    return true;
+                }
+                else
+                {
+                    here = true;
+                }
+            }
+        }
+        if (!toexist && !here)
+        {
+            return true;
+        }
+        msleep(100);
+        timeout += 100;
+    }
+    return false;
+}
 
 /**
  * @brief Runs the thread
@@ -248,6 +277,7 @@ void SerialLink::run()
         if (m_port->error() != QSerialPort::NoError && m_port->error() != QSerialPort::UnknownError)
         {
             //Serial port has gone bad???
+            qDebug() << "Serial port error:" << m_port->errorString();
             QLOG_DEBUG() << "Serial port has bad things happening!!!" << m_port->errorString();
             break;
         }
@@ -283,7 +313,7 @@ void SerialLink::run()
                 }
                 if (!triedDTR && triedreset)
                 {
-                    if (description.contains("mega") && description.contains("2560"))
+                    if (description.toLower().contains("mega") && description.contains("2560"))
                     {
                         triedDTR = true;
                         communicationUpdate(getName(),"No data to receive on COM port. Attempting to reset via DTR signal");
@@ -292,15 +322,44 @@ void SerialLink::run()
                         msleep(250);
                         m_port->setDataTerminalReady(false);
                     }
+                    triedDTR = true;
                 }
                 else if (!triedreset)
                 {
-                    if (description.contains("mega") && description.contains("2560"))
+                    if (description.toLower().contains("mega") && description.contains("2560"))
                     {
                         QLOG_DEBUG() << "No data!!! Attempting reset via reboot command.";
                         communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
                         m_port->write("reboot\r\n",8);
                         triedreset = true;
+                    }
+                    else if (description.toLower().contains("px4"))
+                    {
+                        QLOG_DEBUG() << "No Data!!! Attempting reboot via reboot command";
+                        communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
+                        m_port->write("reboot\r\n",8);
+                        m_port->waitForBytesWritten(1);
+                        m_port->close();
+                        delete m_port;
+                        waitForPort(m_portName,10000,false);
+                        QLOG_DEBUG() << "Waiting for device" << m_portName;
+                        if (!waitForPort(m_portName,10000,true))
+                        {
+                            //Timeout waiting for device
+                            QLOG_DEBUG() << "Timout Waiting for device";
+
+                        }
+                        QLOG_DEBUG() << "Attempting connection to " << m_portName;
+                        if (!hardwareConnect(type))
+                        {
+                            QLOG_DEBUG() << "Failure to connect on reboot";
+                            //Bad
+                        }
+                        QLOG_DEBUG() << "Succesfully reconected";
+                        msleep(500);
+
+                        triedreset = true;
+
                     }
                 }
                 else

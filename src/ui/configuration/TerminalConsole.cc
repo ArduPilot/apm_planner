@@ -287,6 +287,12 @@ void TerminalConsole::readData()
         m_serial->waitForBytesWritten(10);
         m_serial->write("HELP\r");
     }
+    if (m_serial->error() != QSerialPort::NoError && m_serial->error() != QSerialPort::UnknownError)
+    {
+        //Serial port has gone bad???
+        QLOG_DEBUG() << "Serial port has bad things happening!!!" << m_serial->errorString();
+       // break;
+    }
 }
 
 void TerminalConsole::handleError(QSerialPort::SerialPortError error)

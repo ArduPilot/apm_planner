@@ -151,6 +151,15 @@ public slots:
     void linkError(QSerialPort::SerialPortError error);
 
 protected:
+    /**
+     * @brief Wait for a port "name" to either exist, or not exist
+     *
+     * @param name Name of the port to look for
+     * @param size timeoutmilliseconds timeout in milliseconds before returning false
+     * @param toexist True means it scans for the port to appear, false means it scans for it to disappear.
+     **/
+    bool waitForPort(QString name,int timeoutmilliseconds,bool toexist);
+
     quint64 m_bytesRead;
     QPointer<QSerialPort> m_port;
     int m_baud;

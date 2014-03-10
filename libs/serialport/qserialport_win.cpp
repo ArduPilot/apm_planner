@@ -261,15 +261,16 @@ bool QSerialPortPrivate::open(QIODevice::OpenMode mode)
     //QLOG_DEBUG() << "QSerialPortPrivate::open() DCB::DCBlength: " << QString::number(restoredDcb.DCBlength);
 
     //currentDcb = restoredDcb;
-    BuildCommDCB(L"baud=115200 parity=N data=8 stop=1",&currentDcb);
-    currentDcb.BaudRate = 115200;
-    currentDcb.ByteSize = 8;
-    currentDcb.StopBits = 0;
-    currentDcb.Parity = 0;
-    currentDcb.DCBlength = sizeof(currentDcb);
+    GetCommState(descriptor,&currentDcb);
+    //BuildCommDCB(L"baud=115200 parity=N data=8 stop=1",&currentDcb);
+    //currentDcb.BaudRate = 115200;
+    //currentDcb.ByteSize = 8;
+    //currentDcb.StopBits = 0;
+    //currentDcb.Parity = 0;
+    //currentDcb.DCBlength = sizeof(currentDcb);
 
 
-    QLOG_DEBUG() << "QSerialPortPrivate::open() SetCommState";
+    /*QLOG_DEBUG() << "QSerialPortPrivate::open() SetCommState";
     if (!updateDcb())
     {
         q_ptr->setError(decodeSystemError());
@@ -277,7 +278,7 @@ bool QSerialPortPrivate::open(QIODevice::OpenMode mode)
         ::ClearCommError(descriptor,&errors,0);
         ::CloseHandle(descriptor);
         return false;
-    }
+    }*/
     QLOG_DEBUG() << "QSerialPortPrivate::open() GetCommTimeouts";
     if (!::GetCommTimeouts(descriptor, &restoredCommTimeouts)) {
         q_ptr->setError(decodeSystemError());
@@ -306,6 +307,8 @@ bool QSerialPortPrivate::open(QIODevice::OpenMode mode)
     n->setEnabled(true);
     detectDefaultSettings();
     QLOG_DEBUG() << "QSerialPortPrivate::open() Done";
+    DWORD errors = 0;
+    ::ClearCommError(descriptor,&errors,0);
     return true;
 }
 
