@@ -47,7 +47,7 @@ APMToolBar::APMToolBar(QWidget *parent):
     QLOG_DEBUG() << url;
     if (!QFile::exists(QGC::shareDirectory() + "/qml/ApmToolBar.qml"))
     {
-         QMessageBox::information(0,"Error","ApmToolBar.qml not found. Please reinstall the application and try again");
+        QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/ApmToolBar.qml" + " not found. Please reinstall the application and try again");
         exit(-1);
     }
     setSource(url);
