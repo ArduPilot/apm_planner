@@ -474,6 +474,12 @@ qint64 SerialLink::bytesAvailable()
  **/
 bool SerialLink::disconnect()
 {
+    if (m_timeoutTimer)
+    {
+        m_timeoutTimer->stop();
+        delete m_timeoutTimer;\
+        m_timeoutTimer =0;
+    }
     QLOG_INFO() << "SerialLink::disconnect";
     if (m_port) {
         QLOG_INFO() << m_port->portName();
@@ -526,20 +532,20 @@ bool SerialLink::connect()
     }
     if (description.toLower().contains("mega") && description.contains("2560"))
     {
-        type = "apm";
+        m_connectedType = "apm";
         QLOG_DEBUG() << "Attempting connection to an APM, with description:" << description;
     }
     else if (description.toLower().contains("px4"))
     {
-        type = "px4";
+        m_connectedType = "px4";
         QLOG_DEBUG() << "Attempting connection to a PX4/pixhawk with description:" << description;
     }
     else
     {
-        type = "other";
+        m_connectedType = "other";
         QLOG_DEBUG() << "Attempting connection to a NON-APM or 3DR Radio with description:" << description;
     }
-    if (!hardwareConnect(type))
+    if (!hardwareConnect(m_connectedType))
     {
         return false;
     }
@@ -547,10 +553,95 @@ bool SerialLink::connect()
     emit connected();
     emit connected(true);
     emit connected(this);
+    m_triedDtrReset = false;
+    m_triedRebootReset = false;
+    m_timeoutCounter = 0;
+    m_timeoutExtendCounter = 0;
+    m_timeoutTimer = new QTimer(this);
+    QObject::connect(m_timeoutTimer,SIGNAL(timeout()),this,SLOT(timeoutTimerTimeout()));
+    m_timeoutTimer->start(500);
     return true;
 }
+void SerialLink::timeoutTimerTimeout()
+{
+    m_timeoutCounter++;
+    m_timeoutExtendCounter++;
+    if (m_timeoutExtendCounter == 40) //20 seconds initially
+    {
+        m_timeoutTimer->stop();
+        m_timeoutTimer->start(1500); //Increase to every 1.5 seconds, increasing the timeout to 30 seconds
+    }
+    if (m_timeoutCounter > 10) //5 seconds
+    {
+        m_timeoutCounter = 0;
+        if (!m_triedDtrReset && !m_triedRebootReset)
+        {
+            m_triedRebootReset = true;
+            if (m_connectedType == "px4")
+            {
+                QLOG_DEBUG() << "No Data!!! Attempting reboot via reboot command";
+                m_timeoutTimer->stop();
+                communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
+                m_port->write("reboot\r\n",8);
+                m_port->waitForBytesWritten(1);
+                m_port->close();
+                delete m_port;
+                emit disconnected();
+                emit connected(false);
+                emit disconnected(this);
+                waitForPort(m_portName,10000,false);
+                QLOG_DEBUG() << "Waiting for device" << m_portName;
+                if (!waitForPort(m_portName,10000,true))
+                {
+                    //Timeout waiting for device
+                    QLOG_DEBUG() << "Timout Waiting for device";
+
+                }
+                QLOG_DEBUG() << "Attempting connection to " << m_portName;
+                if (!hardwareConnect(m_connectedType))
+                {
+                    QLOG_DEBUG() << "Failure to connect on reboot";
+                    //Bad
+                }
+                QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()));
+                QLOG_DEBUG() << "Succesfully reconected";
+                emit connected();
+                emit connected(true);
+                emit connected(this);
+                m_timeoutExtendCounter = 0;
+
+                m_timeoutTimer->start(500);
+            }
+            else
+            {
+                QLOG_DEBUG() << "No data!!! Attempting reset via reboot command.";
+                communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
+                m_port->write("reboot\r\n",8);
+            }
+            //See if it's
+        }
+        else if (!m_triedDtrReset)
+        {
+            m_triedDtrReset = true;
+            if (m_connectedType != "px4")
+            {
+                communicationUpdate(getName(),"No data to receive on COM port. Attempting to reset via DTR signal");
+                QLOG_DEBUG() << "No data!!! Attempting reset via DTR.";
+                m_port->setDataTerminalReady(true);
+                msleep(250);
+                m_port->setDataTerminalReady(false);
+            }
+        }
+        else
+        {
+            QLOG_DEBUG() << "No Data!! Tried reboot and DTR to no avail";
+        }
+    }
+}
+
 void SerialLink::portReadyRead()
 {
+    m_timeoutCounter = 0;
     QByteArray readData = m_port->readAll();
     if (readData.length() > 0) {
         emit bytesReceived(this, readData);

@@ -39,6 +39,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QMutex>
 #include <QString>
 #include <QMap>
+#include <QTimer>
 #include <qserialport.h>
 #include <configuration.h>
 
@@ -150,6 +151,7 @@ public slots:
     void portReadyRead();
 
     void linkError(QSerialPort::SerialPortError error);
+    void timeoutTimerTimeout();
 
 protected:
     /**
@@ -187,11 +189,17 @@ protected:
     QList<QString> m_ports;
 
 private:
+    bool m_triedDtrReset;
+    bool m_triedRebootReset;
     volatile bool m_stopp;
     volatile bool m_reqReset;
 	QMutex m_stoppMutex;
     QByteArray m_transmitBuffer;
     QMap<QString,int> m_portBaudMap;
+    QTimer *m_timeoutTimer;
+    int m_timeoutCounter;
+    int m_timeoutExtendCounter;
+    QString m_connectedType;
 
     bool hardwareConnect(QString type);
 
