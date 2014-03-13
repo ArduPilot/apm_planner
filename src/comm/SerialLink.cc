@@ -51,7 +51,7 @@ SerialLink::SerialLink() :
     m_portName(""),
     m_stopp(false),
     m_reqReset(false),
-    m_isRunning(false)
+    m_isConnected(false)
 {
     QLOG_INFO() << "create SerialLink: Load Previous Settings ";
     qRegisterMetaType<QSerialPort::SerialPortError>("QSerialPort::SerialPortError");
@@ -224,17 +224,26 @@ void SerialLink::run()
 {
     // Initialize the connection
     //
-    QString type = findTypeFromPort(m_portName);
-    if (!hardwareConnect(type))
+    m_connectedType = findTypeFromPort(m_portName);
+    if (!hardwareConnect(m_connectedType))
     {
         return;
     }
-    m_isRunning = true;
+    m_isConnected = true;
     emit connected();
     emit connected(true);
     emit connected(this);
     if (m_useEventLoop)
     {
+        m_timeoutTimer = new QTimer();
+        QObject::connect(m_timeoutTimer,SIGNAL(timeout()),this,SLOT(timeoutTimerTimeout()),Qt::DirectConnection);
+        //m_timeoutTimer->moveToThread(this); //This allows the timeoutTimerTimeout() to create/destroy m_port as needed.
+        m_triedDtrReset = false;
+        m_triedRebootReset = false;
+        m_timeoutCounter = 0;
+        m_timeoutExtendCounter = 0;
+        m_timeoutTimer->start(500);
+
         QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()),Qt::DirectConnection);
         QObject::connect(this,SIGNAL(terminated()),m_port,SLOT(deleteLater()));
         exec();
@@ -339,7 +348,7 @@ void SerialLink::run()
                 }
                 if (!triedDTR && triedreset)
                 {
-                    if (type.contains("apm"))
+                    if (m_connectedType.contains("apm"))
                     {
                         triedDTR = true;
                         communicationUpdate(getName(),"No data to receive on COM port. Attempting to reset via DTR signal");
@@ -352,14 +361,14 @@ void SerialLink::run()
                 }
                 else if (!triedreset)
                 {
-                    if (type.contains("apm"))
+                    if (m_connectedType.contains("apm"))
                     {
                         QLOG_DEBUG() << "No data!!! Attempting reset via reboot command.";
                         communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
                         m_port->write("reboot\r\n",8);
                         triedreset = true;
                     }
-                    else if (type.contains("px4"))
+                    else if (m_connectedType.contains("px4"))
                     {
                         QLOG_DEBUG() << "No Data!!! Attempting reboot via reboot command";
                         communicationUpdate(getName(),"No data to receive on COM port. Assuming possible terminal mode, attempting to reset via \"reboot\" command");
@@ -376,7 +385,7 @@ void SerialLink::run()
 
                         }
                         QLOG_DEBUG() << "Attempting connection to " << m_portName;
-                        if (!hardwareConnect(type))
+                        if (!hardwareConnect(m_connectedType))
                         {
                             QLOG_DEBUG() << "Failure to connect on reboot";
                             //Bad
@@ -408,7 +417,7 @@ void SerialLink::run()
             m_port = NULL;
         }
     }
-    m_isRunning = false;
+    m_isConnected = false;
     emit disconnected();
     emit connected(false);
     emit disconnected(this);
@@ -530,10 +539,6 @@ bool SerialLink::connectPureThreaded()
 bool SerialLink::connectPartialThreaded()
 {
     m_useEventLoop = true;
-    m_timeoutTimer = new QTimer(this);
-    QObject::connect(m_timeoutTimer,SIGNAL(timeout()),this,SLOT(timeoutTimerTimeout()),Qt::DirectConnection);
-    m_timeoutTimer->moveToThread(this); //This allows the timeoutTimerTimeout() to create/destroy m_port as needed.
-    m_timeoutTimer->start(500);
     start(LowPriority);
     return true;
 }
@@ -546,7 +551,7 @@ bool SerialLink::connectNoThreaded()
     }
     QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()));
     QObject::connect(m_port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(linkError(QSerialPort::SerialPortError)));
-    m_isRunning = true;
+    m_isConnected = true;
     emit connected();
     emit connected(true);
     emit connected(this);
@@ -575,7 +580,7 @@ bool SerialLink::disconnectNoThreaded()
         delete m_port;
         m_port = NULL;
     }
-    m_isRunning = false;
+    m_isConnected = false;
     emit disconnected();
     emit connected(false);
     emit disconnected(this);
@@ -597,7 +602,7 @@ bool SerialLink::disconnectPartialThreaded()
         delete m_timeoutTimer;
         m_timeoutTimer=NULL;
     }
-    m_isRunning = false;
+    m_isConnected = false;
     emit disconnected();
     emit connected(false);
     emit disconnected(this);
@@ -858,7 +863,7 @@ void SerialLink::linkError(QSerialPort::SerialPortError error)
  **/
 bool SerialLink::isConnected()
 {
-    return m_isRunning;
+    return m_isConnected;
     if (m_port) {
         bool isConnected = m_port->isOpen();
         QLOG_TRACE() << "SerialLink #" << __LINE__ << ":"<<  m_port->portName()

@@ -158,7 +158,7 @@ protected:
 
     quint64 m_bytesRead;
     QPointer<QSerialPort> m_port;
-    bool m_isRunning;
+    bool m_isConnected;
     int m_baud;
     int m_dataBits;
     int m_flowControl;
