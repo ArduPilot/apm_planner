@@ -52,7 +52,8 @@ Building on Linux (tested against Ubuntu 13.10):
 sudo apt-get install phonon libqt4-dev libqt4-opengl-dev \
  libphonon-dev libphonon4 phonon-backend-gstreamer \
  qtcreator libsdl1.2-dev libflite1 flite1-dev build-essential \
- libopenscenegraph-dev libssl-dev libqt4-opengl-dev libudev-dev 
+ libopenscenegraph-dev libssl-dev libqt4-opengl-dev libudev-dev \
+ libsndfile1-dev  
 ```
 
 2) Clone the repository in your workspace:
