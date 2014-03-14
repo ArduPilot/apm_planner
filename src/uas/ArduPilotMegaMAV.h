@@ -58,10 +58,10 @@ public:
     CIRCLE        = 1,
     STABILIZE     = 2,
     TRAINING      = 3,
-    RESERVED_4    = 4,  // RESERVED FOR FUTURE USE
+    ACRO          = 4,
     FLY_BY_WIRE_A = 5,
     FLY_BY_WIRE_B = 6,
-    RESERVED_7    = 7,  // RESERVED FOR FUTURE USE
+    CRUISE        = 7,
     RESERVED_8    = 8,  // RESERVED FOR FUTURE USE
     RESERVED_9    = 9,  // RESERVED FOR FUTURE USE
     AUTO          = 10,

@@ -109,8 +109,12 @@ QString ApmPlane::stringForMode(int aMode)
     case INITIALIZING:
         return "Initializing";
         break;
-    case RESERVED_4:
-    case RESERVED_7:
+    case ACRO:
+        return "Acro";
+        break;
+    case CRUISE:
+        return "Cruise";
+        break;
     case RESERVED_8:
     case RESERVED_9:
     case RESERVED_13:
