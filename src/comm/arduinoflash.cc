@@ -109,7 +109,7 @@ void ArduinoFlash::run()
         m_port->setDataTerminalReady(true);
         msleep(500);
         m_port->setDataTerminalReady(false);
-        msleep(500);
+        msleep(200);
         m_sequenceNumber = 0;
 
         m_port->write(generateMessage(GET_SIG_ONE));
@@ -343,7 +343,7 @@ QByteArray ArduinoFlash::readMessage()
         count = readBytes(retbuf,messagelength);
         if (count != messagelength)
         {
-            QLOG_ERROR() << "ArduinoFlash::readMessage(): Error reading message" << messagelength;
+            QLOG_ERROR() << "ArduinoFlash::readMessage(): Error reading message" << messagelength << retbuf.toHex();
             return QByteArray();
         }
         packet.append(retbuf);
@@ -357,7 +357,7 @@ QByteArray ArduinoFlash::readMessage()
         //qDebug() << "<<" << packet.toHex();
         return packet.mid(5,packet.length()-6);
     }
-    QLOG_ERROR() << "ArduinoFlash::readMessage(): Bad packet start";
+    QLOG_ERROR() << "ArduinoFlash::readMessage(): Bad packet start:" << retbuf.toHex();
     return QByteArray();
 }
 
