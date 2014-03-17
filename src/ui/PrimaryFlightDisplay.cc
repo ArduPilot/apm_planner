@@ -340,14 +340,14 @@ void PrimaryFlightDisplay::setActiveUAS(UASInterface* uas)
 }
 void PrimaryFlightDisplay::uasTextMessage(int uasid, int componentid, int severity, QString text)
 {
-//Pre
+    Q_UNUSED(componentid);
     if (text.contains("PreArm") || severity == 3)
     {
         if (preArmMessageTimer->isActive())
         {
             preArmMessageTimer->stop();
         }
-        preArmCheckMessage = text;
+        preArmCheckMessage =  QString("M%1:%2").arg(uasid).arg(text);
         preArmCheckFailure = true;
         preArmMessageTimer->start(4000);
     }
