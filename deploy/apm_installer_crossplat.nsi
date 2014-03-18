@@ -90,24 +90,25 @@ sectionEND
 Section "Qt components" QT_FILES
   !include qt_install.list
   SetOutPath $INSTDIR
-  File /home/michael/QtWin32/lib/zlib1.dll
-  File /home/michael/QtWin32/lib/libgcc_s_sjlj-1.dll
-  File /home/michael/QtWin32/lib/libstdc++-6.dll
-  File /home/michael/QtWin32/lib/libwinpthread-1.dll
-  File /home/michael/QtWin32/lib/QtCore4.dll
-  File /home/michael/QtWin32/lib/QtGui4.dll
-  File /home/michael/QtWin32/lib/QtScript4.dll
-  File /home/michael/QtWin32/lib/QtMultimedia4.dll
-  File /home/michael/QtWin32/lib/QtDeclarative4.dll
-  File /home/michael/QtWin32/lib/phonon4.dll
-  File /home/michael/QtWin32/lib/QtNetwork4.dll
-  File /home/michael/QtWin32/lib/QtOpenGL4.dll
-  File /home/michael/QtWin32/lib/QtSql4.dll
-  File /home/michael/QtWin32/lib/QtSvg4.dll
-  File /home/michael/QtWin32/lib/QtTest4.dll
-  File /home/michael/QtWin32/lib/QtWebkit4.dll
-  File /home/michael/QtWin32/lib/QtXml4.dll
-  File /home/michael/QtWin32/lib/QtXmlPatterns4.dll
+  File ${QTDIR}\lib\zlib1.dll
+  File ${QTDIR}\lib\libgcc_s_sjlj-1.dll
+  File ${QTDIR}\lib\libstdc++-6.dll
+  File ${QTDIR}\lib\libwinpthread-1.dll
+  File ${QTDIR}\lib\QtCore4.dll
+  File ${QTDIR}\lib\QtGui4.dll
+  File ${QTDIR}\lib\QtScript4.dll
+  File ${QTDIR}\lib\QtMultimedia4.dll
+  File ${QTDIR}\lib\QtDeclarative4.dll
+  File ${QTDIR}\lib\phonon4.dll
+  File ${QTDIR}\lib\QtNetwork4.dll
+  File ${QTDIR}\lib\QtOpenGL4.dll
+  File ${QTDIR}\lib\QtSql4.dll
+  File ${QTDIR}\lib\QtSvg4.dll
+  File ${QTDIR}\lib\QtTest4.dll
+  File ${QTDIR}\lib\QtWebkit4.dll
+  File ${QTDIR}\lib\QtXml4.dll
+  File ${QTDIR}\lib\QtXmlPatterns4.dll
+
 SectionEnd
 
 Section "Uninstall"
