@@ -29,7 +29,8 @@ DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent, bool ove
     // In future need to add a github rest API request.
     QStringList paramFiles;
     paramFiles << "Iris" << "Beginner" << "Intermediate" << "Advanced" << "CameraPlatform"
-               << "3DR_Y6B_RTF" << "3DR_X8_RTF" << "3DR_QUAD_X4_RTF" << "3DR_Y6A_RTF";
+               << "3DR_Y6B_RTF" << "3DR_X8_RTF" << "3DR_QUAD_X4_RTF" << "3DR_Y6A_RTF"
+               << "3DR_Rover" << "3DR_Skywalker_RTF";
     paramFiles.sort();
 
     foreach(QString paramFile, paramFiles){
