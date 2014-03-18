@@ -1397,6 +1397,18 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit sensorOffsetsMessageUpdate(this, sensorOffsets);
         }
             break;
+        case MAVLINK_MSG_ID_RADIO:
+        {
+            quint64 time = getUnixTime();
+            mavlink_radio_t radio;
+            mavlink_msg_radio_decode(&message, &radio);
+            emit radioMessageUpdate(this, radio);
+            emit valueChanged(uasId, name.arg("Radio RSSI"), "", radio.rssi, time);
+            emit valueChanged(uasId, name.arg("Radio REM RSSI"), "", radio.remrssi, time);
+            emit valueChanged(uasId, name.arg("Radio noise"), "", radio.noise, time);
+            emit valueChanged(uasId, name.arg("Radio REM noise"), "", radio.remnoise, time);
+        }
+            break;
         // Messages to ignore
         case MAVLINK_MSG_ID_SCALED_IMU:
         case MAVLINK_MSG_ID_RAW_PRESSURE:

@@ -661,6 +661,8 @@ signals:
     void rawImuMessageUpdate(UASInterface *uas, mavlink_raw_imu_t rawImu);
     /** @brief Sensor Offset update message*/
     void sensorOffsetsMessageUpdate(UASInterface *uas, mavlink_sensor_offsets_t sensorOffsets);
+    /** @brief Radio Status update message*/
+    void radioMessageUpdate(UASInterface *uas, mavlink_radio_t radioMessage);
 protected:
 
     // TIMEOUT CONSTANTS
