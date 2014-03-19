@@ -631,7 +631,7 @@ void AP2DataPlot2D::loadButtonClicked()
     connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
     connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
-    connect(m_logLoaderThread,SIGNAL(done()),this,SLOT(threadDone()));
+    connect(m_logLoaderThread,SIGNAL(done(int)),this,SLOT(threadDone(int)));
     connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     connect(m_logLoaderThread,SIGNAL(lineRead(QString)),this,SLOT(logLine(QString)));
@@ -1060,7 +1060,7 @@ void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
     m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
 }
 
-void AP2DataPlot2D::threadDone()
+void AP2DataPlot2D::threadDone(int errors)
 {
     if (!m_sharedDb.isOpen())
     {
@@ -1070,6 +1070,10 @@ void AP2DataPlot2D::threadDone()
             QMessageBox::information(0,"Error","Error opening DB");
             return;
         }
+    }
+    if (errors != 0)
+    {
+        QMessageBox::information(this,"Warning","There were errors countered with " + QString::number(errors) + " lines in the log file. The data is potentially corrupt and incorrect");
     }
     //fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
     QSqlQuery fmtquery(m_sharedDb);

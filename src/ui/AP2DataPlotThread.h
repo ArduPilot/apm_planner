@@ -23,7 +23,7 @@ signals:
     void startLoad();
     void loadProgress(qint64 pos,qint64 size);
     void payloadDecoded(int index,QString name,QVariantMap map);
-    void done();
+    void done(int errors);
     void error(QString errorstr);
     void lineRead(QString line);
 public slots:

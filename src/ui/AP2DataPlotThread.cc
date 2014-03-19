@@ -23,6 +23,7 @@ void AP2DataPlotThread::loadFile(QString file,QSqlDatabase *db)
 }
 void AP2DataPlotThread::run()
 {
+    int errorcount = 0;
     m_stop = false;
     emit startLoad();
     qint64 msecs = QDateTime::currentMSecsSinceEpoch();
@@ -32,9 +33,6 @@ void AP2DataPlotThread::run()
         emit error("Unable to open log file");
         return;
     }
-    QMap<QString,QList<QString> > typeToFieldnameMap;
-    QList<QString> typelist;
-    QVariantMap currentmap;
     int index = 0;
 
     if (!m_db->transaction())
@@ -50,10 +48,6 @@ void AP2DataPlotThread::run()
         emit error("Error creating FMT table: " + m_db->lastError().text());
         return;
     }
-    /*if (!db.exec("CREATE TABLE 'FMT';"))
-    {
-        emit error("Error creating FMT table: " + db.lastError().text());
-    }*/
     QSqlQuery fmtinsertquery;
     if (!fmtinsertquery.prepare("INSERT INTO 'FMT' (typeID,length,name,format,val) values (?,?,?,?,?);"))
     {
@@ -62,8 +56,6 @@ void AP2DataPlotThread::run()
     }
     QMap<QString,QSqlQuery*> nameToInsertQuery;
     QMap<QString,QString> nameToTypeString;
-//"insert or replace into 'invTypes' (typeID,groupID,typeName,description,mass,volume,capacity,portionSize,raceID,basePrice,published,marketGroupID,chanceOfDuplicating) values(?,?,?,?,?,?,?,?,?,?,?,?,?);");
-//"create table 'invTypes' (typeID integer PRIMARY KEY,groupID integer,typeName varchar(200),description varchar(6000),mass double,volume double,capacity double,portionSize integer,raceID integer,basePrice decimal(19,4),published integer,marketGroupID integer,chanceOfDuplicating double);"
     if (!m_db->commit())
     {
         emit error("Unable to commit database transaction 1");
@@ -174,22 +166,6 @@ void AP2DataPlotThread::run()
                         fmtinsertquery.exec();
                         nameToInsertQuery[type] = query;
                     }
-                    else
-                    {
-
-                    }
-                    /*
-                    QString descstr = linesplit[4].trimmed();
-                    QList<QString> fieldnames;
-                    for (int i=5;i<linesplit.size();i++)
-                    {
-                        fieldnames.append(linesplit[i].trimmed());
-                    }
-                    if (!typelist.contains(type))
-                    {
-                        typelist.append(type);
-                    }
-                    typeToFieldnameMap[type] = fieldnames;*/
                 }
                 else
                 {
@@ -219,78 +195,63 @@ void AP2DataPlotThread::run()
                         }
                         QString typestr = nameToTypeString[name];
                         nameToInsertQuery[name]->bindValue(0,index);
-                        for (int i=1;i<linesplit.size();i++)
+                        if (typestr.size() != linesplit.size() - 1)
                         {
-                            if (typestr.at(i-1).toAscii() == 'I')
+                            QLOG_DEBUG() << "Bound values for" << name << "count:" << nameToInsertQuery[name]->boundValues().values().size() << "actual" << linesplit.size() << typestr.size();
+                            QLOG_DEBUG() << "Error in line:" << index << "param" << name << "parameter mismatch";
+                            errorcount++;
+                        }
+                        else
+                        {
+                            for (int i=1;i<linesplit.size();i++)
                             {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt());
+                                if (typestr.at(i-1).toAscii() == 'I')
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt());
+                                }
+                                else if (typestr.at(i-1).toAscii() == 'f')
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,linesplit[i].toFloat());
+                                }
+                                else if (typestr.at(i-1).toAscii() == 'h')
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt());
+                                }
+                                else if (typestr.at(i-1).toAscii() == 'c')
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() * 100);
+                                }
+                                else if (typestr.at(i-1).toAscii() == 'C')
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() * 100);
+                                }
+                                else if (typestr.at(i-1).toAscii() == 'e')
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() * 100);
+                                }
+                                else if (typestr.at(i-1).toAscii() == 'E')
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() * 100);
+                                }
+                                else if (typestr.at(i-1).toAscii() == 'L')
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,(qlonglong)linesplit[i].toLong());
+                                }
+                                else
+                                {
+                                    nameToInsertQuery[name]->bindValue(i,linesplit[i].toFloat());
+                                }
                             }
-                            else if (typestr.at(i-1).toAscii() == 'f')
+                            if (!nameToInsertQuery[name]->exec())
                             {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toFloat());
-                            }
-                            else if (typestr.at(i-1).toAscii() == 'h')
-                            {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt());
-                            }
-                            else if (typestr.at(i-1).toAscii() == 'c')
-                            {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() * 100);
-                            }
-                            else if (typestr.at(i-1).toAscii() == 'C')
-                            {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() * 100);
-                            }
-                            else if (typestr.at(i-1).toAscii() == 'e')
-                            {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() * 100);
-                            }
-                            else if (typestr.at(i-1).toAscii() == 'E')
-                            {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() * 100);
-                            }
-                            else if (typestr.at(i-1).toAscii() == 'L')
-                            {
-                                nameToInsertQuery[name]->bindValue(i,(qlonglong)linesplit[i].toLong());
-                            }
-                            else
-                            {
-                                nameToInsertQuery[name]->bindValue(i,linesplit[i].toFloat());
+                                emit error("Error execing:" + nameToInsertQuery[name]->executedQuery() + " error was " + nameToInsertQuery[name]->lastError().text());
+                                return;
                             }
                         }
-                        if (!nameToInsertQuery[name]->exec())
-                        {
-                            emit error("Error execing:" + nameToInsertQuery[name]->executedQuery() + " error was " + nameToInsertQuery[name]->lastError().text());
-                            return;
-                        }
-                        //QList<QVariant> list = nameToInsertQuery.value(name)->boundValues().values();
-                        //for (int i=0;i<list.size();i++)
-                        //{
-                        //    qDebug() << "Bound value:" << list.at(i).typeName();
-                        //}
                     }
                 }
 
             }
-            /*else if (typelist.contains(linesplit[0].trimmed()) && linesplit[0].trimmed() != "PARM")
-            {
-
-                QList<QString> list = typeToFieldnameMap[linesplit[0].trimmed()];
-                if (linesplit.size() != list.size() + 1)
-                {
-                    QLOG_ERROR() << "Error with line in plot log file:" << line;
-                    // [TODO] may want to log the valid values, and show some
-                    // kind of error with the frame in the viewer, instead of just
-                    // dropping the frame (will impact timing)
-                } else {
-                    for (int i=0;i<list.size();i++)
-                    {
-                        currentmap[linesplit[0].trimmed() + "." + list[i]] = linesplit[i+1].trimmed().toDouble();
-                    }
-                    emit payloadDecoded(index,linesplit[0].trimmed(),currentmap);
-                }
-                currentmap.clear();
-            }*/
         }
     }
     if (!m_db->commit())
@@ -307,6 +268,6 @@ void AP2DataPlotThread::run()
     else
     {
         QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
-        emit done();
+        emit done(errorcount);
     }
 }

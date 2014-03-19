@@ -40,7 +40,7 @@ private slots:
     //Cancel clicked on the graph loading thread progress dialog
     void progressDialogCanceled();
     //Graph loading thread finished
-    void threadDone();
+    void threadDone(int errors);
     //Graph loading thread actually exited
     void threadTerminated();
     //Graph loading thread error
