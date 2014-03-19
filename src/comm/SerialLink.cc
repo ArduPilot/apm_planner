@@ -51,7 +51,8 @@ SerialLink::SerialLink() :
     m_portName(""),
     m_stopp(false),
     m_reqReset(false),
-    m_isConnected(false)
+    m_isConnected(false),
+    m_timeoutTimer(NULL)
 {
     QLOG_INFO() << "create SerialLink: Load Previous Settings ";
     qRegisterMetaType<QSerialPort::SerialPortError>("QSerialPort::SerialPortError");
