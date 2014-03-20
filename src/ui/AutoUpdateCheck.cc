@@ -53,6 +53,7 @@ void AutoUpdateCheck::httpFinished()
     QLOG_DEBUG() << "AutoUpdateCheck::httpFinished()";
     if (m_httpRequestAborted) {
         m_networkReply->deleteLater();
+        m_networkReply = NULL;
         return;
     }
 
@@ -89,7 +90,7 @@ void AutoUpdateCheck::processDownloadedVersionObject(const QString &versionObjec
         return;
     }
 
-    QScriptValue entries = result.property("releases")/*.property("version")*/;
+    QScriptValue entries = result.property("releases");
     QScriptValueIterator it(entries);
     while (it.hasNext()){
         it.next();
