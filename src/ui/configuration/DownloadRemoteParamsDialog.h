@@ -17,7 +17,6 @@ public:
     explicit DownloadRemoteParamsDialog(QWidget *parent = 0, bool overwriteFile = false);
     ~DownloadRemoteParamsDialog();
 
-    void startFileDownloadRequest(QUrl url);
     void setStatusText(QString text);
     QString getDownloadedFileName();
 
@@ -33,6 +32,12 @@ public slots:
     void httpFinished();
     void httpReadyRead();
     void updateDataReadProgress(qint64 bytesRead, qint64 totalBytes);
+
+private:
+    void startFileDownloadRequest(QUrl url);
+    void startParamListDownloadRequest(QUrl url);
+    void manualListSetup();
+    void processDownloadedVersionObject(const QString& listObject);
 
 private:
     Ui::DownloadRemoteParamsDialog *ui;
