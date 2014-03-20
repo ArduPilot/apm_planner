@@ -134,55 +134,26 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
     {
         return;
     }
-    QString result = "";
     QString newresult = "";
-    double foundkey = -1;
-    if (m_graphClassMap.keys().size() > 0)
-    {
-        double key=0;
-        double val=0;
-        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[0]).graph;
-        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
-
-        //QMap<double, QCPData>::const_iterator dataiterator = qUpperBound(graph->data()->constBegin(),graph->data()->constEnd(),key);
-        QList<double> keys = graph->data()->keys();
-        for (int j=0;j<keys.size();j++)
-        {
-            if (keys[j] >= key)
-            {
-                if (j == 0)
-                {
-                    foundkey = keys[j];
-                    j = keys.size();
-                }
-                else
-                {
-                    foundkey = keys[j-1];
-                    j = keys.size();
-                }
-            }
-        }
-        //result.append("Key: " + QString::number(foundkey,'f',4) + "\n");
-        if (m_logLoaded)
-        {
-            newresult.append("Log Line: " + QString::number(foundkey,'f',0) + "\n");
-        }
-        else
-        {
-            newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(foundkey * 1000.0).toString("hh:mm:ss") + "\n");
-        }
-    }
     for (int i=0;i<m_graphClassMap.keys().size();i++)
     {
+
         double key=0;
         double val=0;
         QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
         graph->pixelsToCoords(evt->x(),evt->y(),key,val);
-        if (foundkey > 0)
+        if (i == 0)
         {
-            //result.append("Val: " + QString::number(graph->data()->value(foundkey).value,'f',4) + "\n");
-            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(foundkey).value,'f',4) + ((i == m_graphClassMap.keys().size() - 1) ? "" : "\n"));
+            if (m_logLoaded)
+            {
+                newresult.append("Log Line: " + QString::number(key,'f',0) + "\n");
+            }
+            else
+            {
+                newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
+            }
         }
+        newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(val,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
     }
     QToolTip::showText(QPoint(evt->pos().x() + m_plot->x(),evt->pos().y()+m_plot->y()),newresult);
 }
