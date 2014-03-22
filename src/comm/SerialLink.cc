@@ -246,12 +246,14 @@ void SerialLink::run()
         m_timeoutTimer->start(500);
 
         QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()),Qt::DirectConnection);
-        //QObject::connect(this,SIGNAL(terminated()),m_port,SLOT(deleteLater()));
         exec();
         QLOG_DEBUG() << "Closing out of serial link thread";
-        if (m_port->isOpen())
+        if (m_port)
         {
-            m_port->close();
+            if (m_port->isOpen())
+            {
+                m_port->close();
+            }
             delete m_port;
             m_port = NULL;
         }
