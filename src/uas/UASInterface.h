@@ -400,6 +400,11 @@ public slots:
     /** @brief Send raw GPS for sensor HIL */
     virtual void sendHilGps(quint64 time_us, double lat, double lon, double alt, int fix_type, float eph, float epv, float vel, float cog, int satellites) = 0;
 
+    // Donwload Log Files over MAVLink.
+    virtual void logRequestList(uint16_t start, uint16_t end) = 0;
+    virtual void logRequestData(uint16_t id, uint32_t ofs, uint32_t count) = 0;
+    virtual void logEraseAll() = 0;
+    virtual void logRequestEnd() = 0;
 
 protected:
     QColor color;
@@ -663,6 +668,11 @@ signals:
     void sensorOffsetsMessageUpdate(UASInterface *uas, mavlink_sensor_offsets_t sensorOffsets);
     /** @brief Radio Status update message*/
     void radioMessageUpdate(UASInterface *uas, mavlink_radio_t radioMessage);
+
+    // Log Download Signals
+    void logEntry(int uasId, uint32_t time_utc, uint32_t size, uint16_t id, uint16_t num_logs, uint16_t last_log_num);
+    void logData(uint32_t uasId, uint32_t ofs, uint16_t id, uint8_t count, uint8_t data[]);
+
 protected:
 
     // TIMEOUT CONSTANTS

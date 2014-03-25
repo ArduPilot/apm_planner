@@ -1409,6 +1409,23 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit valueChanged(uasId, name.arg("Radio REM noise"), "", radio.remnoise, time);
         }
             break;
+        // MAVLink Log donwload messages
+        case MAVLINK_MSG_ID_LOG_ENTRY:
+        {
+            // we have revceived a log entry from the MAV
+            mavlink_log_entry_t log_entry;
+            mavlink_msg_log_entry_decode(&message, &log_entry);
+            emit logEntry(uasId, log_entry.time_utc, log_entry.size, log_entry.id, log_entry.num_logs, log_entry.last_log_num);
+        }
+            break;
+        case MAVLINK_MSG_ID_LOG_DATA:
+        {
+            //data that is part of a paticular log
+            mavlink_log_data_t log_data;
+            mavlink_msg_log_data_decode(&message, &log_data);
+            emit logData(uasId, log_data.ofs, log_data.id, log_data.count, log_data.data);
+        }
+            break;
         // Messages to ignore
         case MAVLINK_MSG_ID_SCALED_IMU:
         case MAVLINK_MSG_ID_RAW_PRESSURE:
@@ -2709,6 +2726,41 @@ void UAS::setManual6DOFControlCommands(double x, double y, double z, double roll
     }
 }
 
+void UAS::logRequestList(uint16_t start, uint16_t end)
+{
+    mavlink_message_t msg;
+    mavlink_msg_log_request_list_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+                                      getUASID(), MAV_COMP_ID_ALL,
+                                      start, end);
+    sendMessage(msg);
+}
+
+void UAS::logRequestData(uint16_t id, uint32_t ofs, uint32_t count)
+{
+    QLOG_DEBUG() << "send logRequestData id:" << id << " ofs:" << ofs << " count:" << count;
+    mavlink_message_t msg;
+    mavlink_msg_log_request_data_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+                                      getUASID(), MAV_COMP_ID_ALL,
+                                      id, ofs, count);
+    sendMessage(msg);
+}
+
+void UAS::logEraseAll()
+{
+    mavlink_message_t msg;
+    mavlink_msg_log_erase_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+                                   getUASID(), MAV_COMP_ID_ALL);
+    sendMessage(msg);
+}
+
+void UAS::logRequestEnd()
+{
+    mavlink_message_t msg;
+    mavlink_msg_log_request_end_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+                                      getUASID(), MAV_COMP_ID_ALL);
+    sendMessage(msg);
+}
+
 /**
 * @return the type of the system
 */
@@ -3482,3 +3534,4 @@ void UAS::playArmStateChangedAudioMessage(bool armedState)
         GAudioOutput::instance()->say("disarmed");
     }
 }
+
