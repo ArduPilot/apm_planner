@@ -28,9 +28,9 @@
 
 #include "fancymainwindow.h"
 
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <QtCore/QSettings>
-#include <QtGui/QDockWidget>
+#include <QtWidgets/QDockWidget>
 #include <QtCore/QSettings>
 
 

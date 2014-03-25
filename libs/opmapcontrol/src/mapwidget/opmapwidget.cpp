@@ -26,7 +26,7 @@
 */
 
 #include "opmapwidget.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <QMetaObject>
 #include "waypointitem.h"
 
@@ -269,7 +269,7 @@ namespace mapcontrol
     void OPMapWidget::mouseMoveEvent(QMouseEvent *event)
     {
         QGraphicsView::mouseMoveEvent(event);
-        QPointF p=event->posF();
+        QPointF p=event->localPos();
         p=map->mapFromParent(p);
         currentmouseposition=map->FromLocalToLatLng(p.x(),p.y());
     }

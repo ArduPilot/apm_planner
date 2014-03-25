@@ -1,7 +1,7 @@
 #ifndef MAVLINKSETTINGSWIDGET_H
 #define MAVLINKSETTINGSWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 
 #include "MAVLinkProtocol.h"
 

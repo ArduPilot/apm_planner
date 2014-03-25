@@ -424,9 +424,9 @@ void QwtPlot::updateLayout()
             if ( axisId == xBottom || axisId == xTop ) {
                 QRegion r(d_data->layout->scaleRect(axisId));
                 if ( axisEnabled(yLeft) )
-                    r = r.subtract(QRegion(d_data->layout->scaleRect(yLeft)));
+                    r = r.subtracted(QRegion(d_data->layout->scaleRect(yLeft)));
                 if ( axisEnabled(yRight) )
-                    r = r.subtract(QRegion(d_data->layout->scaleRect(yRight)));
+                    r = r.subtracted(QRegion(d_data->layout->scaleRect(yRight)));
                 r.translate(-d_data->layout->scaleRect(axisId).x(),
                             -d_data->layout->scaleRect(axisId).y());
 

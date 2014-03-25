@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include <QtXml>
 
 #include "DomItem.h"

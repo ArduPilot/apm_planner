@@ -35,7 +35,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QList>
 
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 
 QT_BEGIN_NAMESPACE
 class QSettings;

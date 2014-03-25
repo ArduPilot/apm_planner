@@ -37,8 +37,7 @@ This file is part of the PIXHAWK project
 #include <QStringList>
 #include <audio/AlsaAudio.h>
 #ifdef Q_OS_MAC
-#include <MediaObject>
-#include <AudioOutput>
+#include <QMultimedia>
 #endif
 #ifdef Q_OS_WIN
 #include <Phonon/MediaObject>

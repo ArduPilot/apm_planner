@@ -32,7 +32,7 @@ This file is part of the QGROUNDCONTROL project
 #ifndef HDDISPLAY_H
 #define HDDISPLAY_H
 
-#include <QtGui/QGraphicsView>
+#include <QtWidgets/QGraphicsView>
 #include <QColor>
 #include <QTimer>
 #include <QFontDatabase>
@@ -82,12 +82,12 @@ public slots:
     void updateValue(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec);
     /** @brief Update the HDD with new double data */
     void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
-	
+
     virtual void setActiveUAS(UASInterface* uas);
-	
-	/** @brief Connects a source to the updateValue() signals */
+
+    /** @brief Connects a source to the updateValue() signals */
     void addSource(QObject* obj);
-	/** @brief Disconnects a source to the updateValue() signals */
+    /** @brief Disconnects a source to the updateValue() signals */
     void removeSource(QObject* obj);
 
     /** @brief Removes a plot item by the action data */

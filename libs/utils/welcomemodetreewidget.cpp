@@ -28,10 +28,10 @@
 
 #include "welcomemodetreewidget.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QAction>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QHeaderView>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QBoxLayout>
+#include <QtWidgets/QHeaderView>
 
 namespace Utils {
 

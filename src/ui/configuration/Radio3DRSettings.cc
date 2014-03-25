@@ -395,7 +395,7 @@ void Radio3DRSettings::readData()
 
             QLOG_INFO() << "Writing Local Param:"
                         << m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend);
-            m_serialPort->write(m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toAscii());
+            m_serialPort->write(m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toLatin1());
 
         } else {
             emit updateLocalStatus(tr("param %1 failed write").arg(m_paramIndexSend));
@@ -420,7 +420,7 @@ void Radio3DRSettings::readData()
 
             QLOG_INFO() << "Writing Remote Param:"
                         << m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend);
-            m_serialPort->write(m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toAscii());
+            m_serialPort->write(m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toLatin1());
 
         } else {
             emit updateRemoteStatus(tr("param %1 failed write").arg(m_paramIndexSend));
@@ -754,8 +754,8 @@ void Radio3DRSettings::writeLocalSettings(Radio3DREeprom eepromSettings)
     }
     m_newLocalRadio = eepromSettings;
     m_paramIndexSend = 1; // start of the first parameter
-    QLOG_DEBUG() << " Sending" << m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toAscii();
-    m_serialPort->write(m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toAscii());
+    QLOG_DEBUG() << " Sending" << m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toLatin1();
+    m_serialPort->write(m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toLatin1());
     m_state = writeLocalParams;
 }
 
@@ -769,8 +769,8 @@ void Radio3DRSettings::writeRemoteSettings(Radio3DREeprom eepromSettings)
     }
     m_newRemoteRadio = eepromSettings;
     m_paramIndexSend = 1; // start of the first parameter
-    QLOG_DEBUG() << " Sending" << m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toAscii();
-    m_serialPort->write(m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toAscii());
+    QLOG_DEBUG() << " Sending" << m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toLatin1();
+    m_serialPort->write(m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toLatin1());
     m_state = writeRemoteParams;
 }
 

@@ -237,20 +237,20 @@ void ApmHardwareConfig::uasDisconnected()
     ui.mandatoryHardware->setVisible(false);
     ui.mandatoryHardware->setChecked(false);
 
-    ui.frameTypeButton->setShown(false);
-    ui.sonarButton->setShown(false);
-    ui.compassButton->setShown(false);
-    ui.accelCalibrateButton->setShown(false);
-    ui.radioCalibrateButton->setShown(false);
+    ui.frameTypeButton->setVisible(false);
+    ui.sonarButton->setVisible(false);
+    ui.compassButton->setVisible(false);
+    ui.accelCalibrateButton->setVisible(false);
+    ui.radioCalibrateButton->setVisible(false);
 
-    ui.flightModesButton->setShown(false);
-    ui.failSafeButton->setShown(false);
+    ui.flightModesButton->setVisible(false);
+    ui.failSafeButton->setVisible(false);
 
-    ui.batteryMonitorButton->setShown(false);
-    ui.airspeedButton->setShown(false);
-    ui.opticalFlowButton->setShown(false);
-    ui.osdButton->setShown(false);
-    ui.cameraGimbalButton->setShown(false);
+    ui.batteryMonitorButton->setVisible(false);
+    ui.airspeedButton->setVisible(false);
+    ui.opticalFlowButton->setVisible(false);
+    ui.osdButton->setVisible(false);
+    ui.cameraGimbalButton->setVisible(false);
 
     ui.radio3DRLargeButton->setVisible(true); // [SHOW 3DR RADIO]
     ui.antennaTrackerLargeButton->setVisible(false); // [HIDE Antenna Tracking]
@@ -327,66 +327,66 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
     if (m_uas->isMultirotor()){
         QLOG_DEBUG() << "Multirotor";
         // Buttons to disable
-        ui.airspeedButton->setShown(false);
+        ui.airspeedButton->setVisible(false);
 
         // Mandatory Options to show
-        ui.frameTypeButton->setShown(show);
-        ui.compassButton->setShown(show);
-        ui.accelCalibrateButton->setShown(show);
-        ui.radioCalibrateButton->setShown(show);
-        ui.flightModesButton->setShown(show);
-        ui.failSafeButton->setShown(show);
+        ui.frameTypeButton->setVisible(show);
+        ui.compassButton->setVisible(show);
+        ui.accelCalibrateButton->setVisible(show);
+        ui.radioCalibrateButton->setVisible(show);
+        ui.flightModesButton->setVisible(show);
+        ui.failSafeButton->setVisible(show);
 
         // Optional Options to Hide
-        ui.batteryMonitorButton->setShown(!show);
-        ui.opticalFlowButton->setShown(!show);
-        ui.osdButton->setShown(!show);
-        ui.cameraGimbalButton->setShown(!show);// [SHOW Camera Gimbal]
-//        ui.antennaTrackerButton->setShown(!show);// [HIDE Antenna Tracking]
-        ui.sonarButton->setShown(!show);
+        ui.batteryMonitorButton->setVisible(!show);
+        ui.opticalFlowButton->setVisible(!show);
+        ui.osdButton->setVisible(!show);
+        ui.cameraGimbalButton->setVisible(!show);// [SHOW Camera Gimbal]
+//        ui.antennaTrackerButton->setVisible(!show);// [HIDE Antenna Tracking]
+        ui.sonarButton->setVisible(!show);
 
     } else if (m_uas->isFixedWing()){
         QLOG_DEBUG() << "FixedWing";
         // Buttons to disable
-        ui.frameTypeButton->setShown(false);
+        ui.frameTypeButton->setVisible(false);
 
         // Mandatory Options to show
-        ui.compassButton->setShown(show);
-        ui.accelCalibrateButton->setShown(show);
-        ui.radioCalibrateButton->setShown(show);
-        ui.flightModesButton->setShown(show);
-        ui.failSafeButton->setShown(show);
+        ui.compassButton->setVisible(show);
+        ui.accelCalibrateButton->setVisible(show);
+        ui.radioCalibrateButton->setVisible(show);
+        ui.flightModesButton->setVisible(show);
+        ui.failSafeButton->setVisible(show);
 
         // Optional Options to Hide
-        ui.batteryMonitorButton->setShown(!show);
-        ui.opticalFlowButton->setShown(!show);
-        ui.osdButton->setShown(!show);
-        ui.cameraGimbalButton->setShown(!show); // [SHOW Camera Gimbal]
-//        ui.antennaTrackerButton->setShown(!show); // [HIDE Antenna Tracking]
-        ui.airspeedButton->setShown(!show);
+        ui.batteryMonitorButton->setVisible(!show);
+        ui.opticalFlowButton->setVisible(!show);
+        ui.osdButton->setVisible(!show);
+        ui.cameraGimbalButton->setVisible(!show); // [SHOW Camera Gimbal]
+//        ui.antennaTrackerButton->setVisible(!show); // [HIDE Antenna Tracking]
+        ui.airspeedButton->setVisible(!show);
 
     } else {
         // Assume Ground Vehicle et al.
         QLOG_DEBUG() << "Ground Vehicle & Other";
         // Butons to disable
-        ui.frameTypeButton->setShown(false);
-        ui.airspeedButton->setShown(false);
+        ui.frameTypeButton->setVisible(false);
+        ui.airspeedButton->setVisible(false);
 
         // Mandatory Options to show
-        ui.compassButton->setShown(show);
-        ui.accelCalibrateButton->setShown(show);
-        ui.radioCalibrateButton->setShown(show);
-        ui.flightModesButton->setShown(show);
-        ui.failSafeButton->setShown(show);
+        ui.compassButton->setVisible(show);
+        ui.accelCalibrateButton->setVisible(show);
+        ui.radioCalibrateButton->setVisible(show);
+        ui.flightModesButton->setVisible(show);
+        ui.failSafeButton->setVisible(show);
 
         // Optional Options to Hide
-//        ui.radio3DRButton->setShown(!show); [HIDE 3DR RADIO]
-        ui.batteryMonitorButton->setShown(!show);
-        ui.opticalFlowButton->setShown(!show);
-        ui.osdButton->setShown(!show);
-        ui.cameraGimbalButton->setShown(!show); // [SHOW Camera Gimbal]
-//        ui.antennaTrackerButton->setShown(!show); // [HIDE Antenna Tracking]
-        ui.sonarButton->setShown(!show);
+//        ui.radio3DRButton->setVisible(!show); [HIDE 3DR RADIO]
+        ui.batteryMonitorButton->setVisible(!show);
+        ui.opticalFlowButton->setVisible(!show);
+        ui.osdButton->setVisible(!show);
+        ui.cameraGimbalButton->setVisible(!show); // [SHOW Camera Gimbal]
+//        ui.antennaTrackerButton->setVisible(!show); // [HIDE Antenna Tracking]
+        ui.sonarButton->setVisible(!show);
     }
 }
 

@@ -52,7 +52,7 @@ bool AutoUpdateDialog::skipVersion()
 
 bool AutoUpdateDialog::startDownload(const QString& url, const QString& filename)
 {
-    QString targetDir = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
+    QString targetDir = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
 
     if (filename.isEmpty())
         return false;

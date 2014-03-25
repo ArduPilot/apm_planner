@@ -669,7 +669,7 @@ void MainWindow::buildCommonWidgets()
             QAction* tempAction = ui.menuTools->addAction(tr("Communication Console"));
             //menuToDockNameMap[tempAction] = "COMMUNICATION_DEBUG_CONSOLE_DOCKWIDGET";
             tempAction->setCheckable(true);
-            connect(tempAction,SIGNAL(triggered(bool)),debugConsole,SLOT(setShown(bool)));
+            connect(tempAction,SIGNAL(triggered(bool)),debugConsole,SLOT(setVisible(bool)));
 
         }
     }
@@ -978,7 +978,7 @@ void MainWindow::addToCentralStackedWidget(QWidget* widget, VIEW_SECTIONS viewSe
 void MainWindow::showCentralWidget()
 {
     QAction* act = qobject_cast<QAction *>(sender());
-    QWidget* widget = qVariantValue<QWidget *>(act->data());
+    QWidget* widget = act->data().value<QWidget *>();
     centerStack->setCurrentWidget(widget);
 }
 
@@ -1293,7 +1293,7 @@ void MainWindow::saveScreen()
 
     if (!screenFileName.isEmpty())
     {
-        window.save(screenFileName, format.toAscii());
+        window.save(screenFileName, format.toLatin1());
     }
 }
 void MainWindow::enableDockWidgetTitleBars(bool enabled)

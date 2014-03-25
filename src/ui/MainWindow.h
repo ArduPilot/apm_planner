@@ -33,7 +33,7 @@ This file is part of the QGROUNDCONTROL project
 
 #include "AutoUpdateCheck.h"
 #include "AutoUpdateDialog.h"
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QStatusBar>
 #include <QStackedWidget>
 #include <QSettings>
@@ -336,7 +336,7 @@ protected:
     void buildCommonWidgets();
     void connectCommonWidgets();
     void connectCommonActions();
-	void connectSenseSoarActions();
+    void connectSenseSoarActions();
 
     void loadSettings();
     void storeSettings();

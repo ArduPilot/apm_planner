@@ -110,7 +110,7 @@ QGCVehicleConfig::QGCVehicleConfig(QWidget *parent) :
     updateTimer.start();
 
     ui->advancedGroupBox->hide();
-    connect(ui->advancedCheckBox,SIGNAL(toggled(bool)),ui->advancedGroupBox,SLOT(setShown(bool)));
+    connect(ui->advancedCheckBox,SIGNAL(toggled(bool)),ui->advancedGroupBox,SLOT(setVisible(bool)));
 }
 void QGCVehicleConfig::rcMenuButtonClicked()
 {

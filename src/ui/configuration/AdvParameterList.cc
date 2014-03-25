@@ -224,7 +224,7 @@ void AdvParameterList::saveButtonClicked()
     QString fileheader = QInputDialog::getText(this,"Input file header","Header at beginning of file:");
 
     file.write(QString("#NOTE: " + QDateTime::currentDateTime().toString("M/d/yyyy h:m:s AP")
-                       + ": " + fileheader + "\r\n").toAscii());
+                       + ": " + fileheader + "\r\n").toLatin1());
 
     QList<QString> paramnamelist = m_uas->getParamManager()->getParameterNames(1);
     for (int i=0;i<paramnamelist.size();i++)
@@ -233,11 +233,11 @@ void AdvParameterList::saveButtonClicked()
         m_uas->getParamManager()->getParameterValue(1,paramnamelist[i],value);
         if (value.type() == QVariant::Double || value.type() == QMetaType::Float)
         {
-            file.write(paramnamelist[i].append(",").append(QString::number(value.toFloat(),'f',8)).append("\r\n").toAscii());
+            file.write(paramnamelist[i].append(",").append(QString::number(value.toFloat(),'f',8)).append("\r\n").toLatin1());
         }
         else
         {
-            file.write(paramnamelist[i].append(",").append(QString::number(value.toInt())).append("\r\n").toAscii());
+            file.write(paramnamelist[i].append(",").append(QString::number(value.toInt())).append("\r\n").toLatin1());
         }
     }
     file.flush();

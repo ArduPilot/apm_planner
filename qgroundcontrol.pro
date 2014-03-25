@@ -87,8 +87,8 @@ QT += network \
     opengl \
     svg \
     xml \
-    phonon \
-    webkit \
+    webkitwidgets \
+    multimedia \
     sql \
     declarative
 

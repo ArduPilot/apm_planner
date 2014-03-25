@@ -2,7 +2,7 @@
 #define ARDUINO_INTELHEX_H
 
 #include <QByteArray>
-#include <QtGui>
+#include <QtWidgets>
 #include <QTextStream>
 
 class ArduinoIntelHex : public QByteArray
