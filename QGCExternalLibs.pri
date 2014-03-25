@@ -96,14 +96,6 @@ isEmpty(MAVLINK_CONF) {
 # MAVLink generator (deprecated)
 #
 
-DEPENDPATH += \
-    src/apps/mavlinkgen
-
-INCLUDEPATH += \
-    src/apps/mavlinkgen \
-    src/apps/mavlinkgen/ui \
-    src/apps/mavlinkgen/generator
-
 include(src/apps/mavlinkgen/mavlinkgen.pri)
 
 #
