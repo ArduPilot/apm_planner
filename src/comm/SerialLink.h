@@ -63,7 +63,7 @@ public:
     SerialLink();
     ~SerialLink();
 
-    static const int poll_interval = SERIAL_POLL_INTERVAL; ///< Polling interval, defined in configuration.h
+    static const int poll_interval = SERIAL_POLL_INTERVAL; ///< Polling interval, defined in apmconfiguration.h
 
     /** @brief Get a list of the currently available ports */
     QList<QString> getCurrentPorts();
@@ -204,7 +204,7 @@ private:
 
     volatile bool m_stopp;
     volatile bool m_reqReset;
-	QMutex m_stoppMutex;
+    QMutex m_stoppMutex;
     QByteArray m_transmitBuffer;
     QMap<QString,int> m_portBaudMap;
     QTimer *m_timeoutTimer;

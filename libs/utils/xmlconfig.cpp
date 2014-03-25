@@ -245,7 +245,7 @@ QString XmlConfig::variantToString(const QVariant &v)
         result = QLatin1String("@Variant(");
         result += QString::fromLatin1(a.toBase64().constData());
         result += QLatin1Char(')');
-	// These were being much too noisy!!
+    // These were being much too noisy!!
         //qDebug() << "Variant Type: " << v.type();
         //qDebug()<< "Variant: " << result;
 #else

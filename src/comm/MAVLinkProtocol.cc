@@ -388,7 +388,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 if (message.seq != expectedIndex)
                 {
                     // Determine how many messages were skipped accounting for 0-wraparound
-                    int16_t lostMessages = message.seq - expectedIndex; 
+                    int16_t lostMessages = message.seq - expectedIndex;
                     if (lostMessages < 0)
                     {
                         // Usually, this happens in the case of an out-of order packet

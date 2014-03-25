@@ -1030,7 +1030,7 @@ void HSIDisplay::updateAttitude(UASInterface* uas, double roll, double pitch, do
 
 void HSIDisplay::updateUserPositionSetpoints(int uasid, float xDesired, float yDesired, float zDesired, float yawDesired)
 {
-	Q_UNUSED(uasid);
+    Q_UNUSED(uasid);
     uiXSetCoordinate = xDesired;
     uiYSetCoordinate = yDesired;
     uiZSetCoordinate = zDesired;

@@ -18,12 +18,12 @@ XMLCommProtocolWidget::XMLCommProtocolWidget(QWidget *parent) :
 m_ui(new Ui::XMLCommProtocolWidget)
 {
     m_ui->setupUi(this);
-	
+
     connect(m_ui->selectFileButton, SIGNAL(clicked()), this, SLOT(selectXMLFile()));
     connect(m_ui->selectOutputButton, SIGNAL(clicked()), this, SLOT(selectOutputDirectory()));
     connect(m_ui->generateButton, SIGNAL(clicked()), this, SLOT(generate()));
     connect(m_ui->saveButton, SIGNAL(clicked()), this, SLOT(save()));
-	
+
     // Make sure text background is white
     m_ui->xmlTextView->setStyleSheet("QGCMAVLinkTextEdit { background-color: #FFFFFF; }");
 }
@@ -44,12 +44,12 @@ void XMLCommProtocolWidget::selectXMLFile()
     {
         fileNames = dialog.selectedFiles();
     }
-	
+
     if (fileNames.size() > 0)
     {
         QFile file(fileNames.first());
         m_ui->fileNameLabel->setText(file.fileName());
-		
+
         if (file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             const QString instanceText(QString::fromUtf8(file.readAll()));
@@ -71,7 +71,7 @@ void XMLCommProtocolWidget::setXML(const QString& xml)
 {
     m_ui->xmlTextView->setText(xml);
     QDomDocument doc;
-	
+
     if (doc.setContent(xml))
     {
         m_ui->validXMLLabel->setText(tr("<font color=\"green\">Valid XML file</font>"));
@@ -96,7 +96,7 @@ void XMLCommProtocolWidget::selectOutputDirectory()
     {
         fileNames = dialog.selectedFiles();
     }
-	
+
     if (fileNames.size() > 0)
     {
         m_ui->outputDirNameLabel->setText(fileNames.first());
@@ -115,19 +115,19 @@ void XMLCommProtocolWidget::generate()
         QMessageBox::critical(this, tr("Please select an XML input file first"), tr("You have to select an input XML file before generating C files."), QMessageBox::Ok);
         return;
     }
-	
+
     // Check if output dir is selected
     if (!QFileInfo(m_ui->outputDirNameLabel->text().trimmed()).isDir())
     {
         QMessageBox::critical(this, tr("Please select output directory first"), tr("You have to select an output directory before generating C files."), QMessageBox::Ok);
         return;
     }
-	
+
     // First save file
     save();
     // Clean log
     m_ui->compileLog->clear();
-	
+
     // Check XML validity
     if (!m_ui->xmlTextView->syntaxcheck())
     {
@@ -185,10 +185,10 @@ void XMLCommProtocolWidget::changeEvent(QEvent *e)
 {
     QWidget::changeEvent(e);
     switch (e->type()) {
-		case QEvent::LanguageChange:
-			m_ui->retranslateUi(this);
-			break;
-		default:
-			break;
+        case QEvent::LanguageChange:
+            m_ui->retranslateUi(this);
+            break;
+        default:
+            break;
     }
 }

@@ -3,18 +3,18 @@
 #
 
 LinuxBuild {
-	INCLUDEPATH += \
+    INCLUDEPATH += \
         /usr/include \
         /usr/local/include
 
-	LIBS += \
-		-L/usr/lib
+    LIBS += \
+        -L/usr/lib
 
     linux-g++-64 {
         LIBS += \
             -L/usr/local/lib64 \
             -L/usr/lib64
-	}
+    }
 }
 
 #
@@ -112,18 +112,18 @@ include(src/apps/mavlinkgen/mavlinkgen.pri)
 
 MacBuild {
     # GLUT and OpenSceneGraph are part of standard install on Mac
-	CONFIG += OSGDependency
+    CONFIG += OSGDependency
 
     INCLUDEPATH += \
         $$BASEDIR/libs/lib/mac64/include
 
-	LIBS += \
+    LIBS += \
         -L$$BASEDIR/libs/lib/mac64/lib \
         -losgWidget
 }
 
 LinuxBuild {
-	exists(/usr/include/osg) | exists(/usr/local/include/osg) {
+    exists(/usr/include/osg) | exists(/usr/local/include/osg) {
         CONFIG += OSGDependency
         exists(/usr/include/osg/osgQt) | exists(/usr/include/osgQt) | exists(/usr/local/include/osg/osgQt) | exists(/usr/local/include/osgQt) {
             message("Including support for Linux OpenSceneGraph Qt")
@@ -132,26 +132,26 @@ LinuxBuild {
         } else {
             message("Skipping support for Linux OpenSceneGraph Qt")
         }
-	}
+    }
 }
 
 WindowsBuild {
-	exists($$BASEDIR/libs/lib/osg123) {
+    exists($$BASEDIR/libs/lib/osg123) {
         CONFIG += OSGDependency
 
-		INCLUDEPATH += \
+        INCLUDEPATH += \
             $$BASEDIR/libs/lib/osgEarth/win32/include \
-			$$BASEDIR/libs/lib/osgEarth_3rdparty/win32/OpenSceneGraph-2.8.2/include
+            $$BASEDIR/libs/lib/osgEarth_3rdparty/win32/OpenSceneGraph-2.8.2/include
 
-		LIBS += -L$$BASEDIR/libs/lib/osgEarth_3rdparty/win32/OpenSceneGraph-2.8.2/lib
-	}
+        LIBS += -L$$BASEDIR/libs/lib/osgEarth_3rdparty/win32/OpenSceneGraph-2.8.2/lib
+    }
 }
 
 OSGDependency {
     message("Including support for OpenSceneGraph")
 
-	DEFINES += QGC_OSG_ENABLED
-    
+    DEFINES += QGC_OSG_ENABLED
+
     LIBS += \
         -losg \
         -losgViewer \
@@ -183,7 +183,7 @@ OSGDependency {
         src/ui/map3D/WaypointGroupNode.h \
         src/ui/map3D/TerrainParamDialog.h \
         src/ui/map3D/ImageryParamDialog.h
-        
+
     SOURCES += \
         src/ui/map3D/gpl.cc \
         src/ui/map3D/CameraParams.cc \
@@ -322,7 +322,7 @@ include(libs/serialport/apmserial.pri)
 
 WindowsBuild {
     # Used to enumerate serial ports by QSerialPort
-	LIBS += -lsetupapi
+    LIBS += -lsetupapi
 }
 
 #
@@ -412,7 +412,7 @@ WindowsBuild : win32 : exists(src/lib/opalrt/OpalApi.h) : exists(C:/OPAL-RT/RT-L
 
     DEFINES += OPAL_RT
 
-    INCLUDEPATH += 
+    INCLUDEPATH +=
         src/lib/opalrt
         libs/lib/opal/include \
 
@@ -455,26 +455,26 @@ MacBuild {
 }
 
 LinuxBuild {
-	LIBS += \
-		-lSDL \
-		-lSDLmain
+    LIBS += \
+        -lSDL \
+        -lSDLmain
 }
 
 WindowsBuild {
-	INCLUDEPATH += \
+    INCLUDEPATH += \
         $$BASEDIR/libs/lib/sdl/msvc/include \
 
-	LIBS += \
+    LIBS += \
         -L$$BASEDIR/libs/lib/sdl/msvc/lib \
         -lSDLmain \
         -lSDL
 }
 
 WindowsCrossBuild {
-        INCLUDEPATH += \
+    INCLUDEPATH += \
         $$BASEDIR/libs/lib/sdl/include \
 
-        LIBS += \
+    LIBS += \
         -Llibs/lib/sdl/win32 \
         -lSDL.dll
 }
@@ -484,10 +484,9 @@ WindowsCrossBuild {
 #
 
 LinuxBuild {
-	LIBS += \
-		-lflite_cmu_us_kal \
-		-lflite_usenglish \
-		-lflite_cmulex \
-		-lflite
+    LIBS += \
+        -lflite_cmu_us_kal \
+        -lflite_usenglish \
+        -lflite_cmulex \
+        -lflite
 }
-

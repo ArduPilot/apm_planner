@@ -699,9 +699,9 @@ void MainWindow::buildCommonWidgets()
     }*/
 
     /*{ //Radio Control disabled until such a point that we can ensure it's completly operational
-	QAction* tempAction = ui.menuTools->addAction(tr("Radio Control"));
+    QAction* tempAction = ui.menuTools->addAction(tr("Radio Control"));
         tempAction->setCheckable(true);
-	connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+    connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
     }*/
 
     //HUD disabled until such a point that we can ensure it's completly operational

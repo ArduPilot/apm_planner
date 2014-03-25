@@ -435,11 +435,11 @@ namespace mapcontrol
             //    compass->setTransformOriginPoint(compass->boundingRect().width(),compass->boundingRect().height());
             compass->setFlag(QGraphicsItem::ItemIsMovable,true);
             mscene.addItem(compass);
-            compass->setTransformOriginPoint(compass->boundingRect().width()/2,compass->boundingRect().height()/2);            
+            compass->setTransformOriginPoint(compass->boundingRect().width()/2,compass->boundingRect().height()/2);
             compass->setPos(55-compass->boundingRect().width()/2,55-compass->boundingRect().height()/2);
             compass->setZValue(3);
             compass->setOpacity(0.7);
-            
+
         }
         if(!value && compass)
         {
