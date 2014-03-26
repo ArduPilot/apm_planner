@@ -17,6 +17,8 @@ private:
     QString m_fileName;
     bool m_stop;
     QSqlDatabase *m_db;
+    QString makeInsertTableString(QString tablename, QString variablestr);
+    QString makeCreateTableString(QString tablename, QString formatstr,QString variablestr);
 protected:
     void run();
 signals:

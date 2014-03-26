@@ -153,7 +153,19 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
                 newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
             }
         }
-        newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(val,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+        if (graph->data()->contains(key))
+        {
+            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(key).value,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+        }
+        else if (graph->data()->lowerBound(key) != graph->data()->constEnd())
+        {
+            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number((graph->data()->lowerBound(key).value().value),'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+        }
+        else
+        {
+            newresult.append(m_graphClassMap.keys()[i] + ": " + "ERR" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+
+        }
     }
     QToolTip::showText(QPoint(evt->pos().x() + m_plot->x(),evt->pos().y()+m_plot->y()),newresult);
 }
@@ -638,6 +650,13 @@ void AP2DataPlot2D::logLine(QString line)
         {
             ui.tableWidget->setItem(currentIndex,j,new QTableWidgetItem(linesplit[j].trimmed()));
         }
+        for (int j=linesplit.size();j<ui.tableWidget->columnCount();j++)
+        {
+            if (ui.tableWidget->item(currentIndex,j))
+            {
+                ui.tableWidget->item(currentIndex,j)->setText("");
+            }
+        }
         if (line.startsWith("FMT"))
         {
             //Format line
@@ -1024,6 +1043,9 @@ void AP2DataPlot2D::loadStarted()
     m_progressDialog = new QProgressDialog("Loading File","Cancel",0,100);
     connect(m_progressDialog,SIGNAL(canceled()),this,SLOT(progressDialogCanceled()));
     m_progressDialog->show();
+    QApplication::processEvents();
+    //ui.tableWidget->clear();
+    //ui.tableWidget->setRowCount(0);
 }
 
 void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
@@ -1075,6 +1097,9 @@ void AP2DataPlot2D::threadDone(int errors)
         //{
 
         //}
+        QString linename = name;
+        QString lastformat = vars;
+        m_tableHeaderNameMap[linename] = lastformat.trimmed();
     }
     m_scrollStartIndex = 0;
     m_scrollEndIndex = currentIndex;
