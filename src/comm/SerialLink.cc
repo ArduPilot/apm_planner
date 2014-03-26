@@ -247,7 +247,7 @@ void SerialLink::run()
 
         QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()),Qt::DirectConnection);
         exec();
-        QLOG_DEBUG() << "Closing out of serial link thread";
+        QLOG_DEBUG() << "Closing out of syeaherial link thread";
         if (m_port)
         {
             if (m_port->isOpen())
@@ -601,7 +601,10 @@ bool SerialLink::disconnectPartialThreaded()
 {
     if (isRunning())
     {
-        QLOG_INFO() << "running so disconnect" << m_port->portName();
+        if (m_port)
+        {
+            QLOG_INFO() << "running so disconnect" << m_port->portName();
+        }
         quit();
         wait(500); //TODO: May not be required, more testing.
     }
