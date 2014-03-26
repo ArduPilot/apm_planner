@@ -1,4 +1,6 @@
+#include "QsLog.h"
 #include "AP2DataPlot2D.h"
+#include "LogDownloadDialog.h"
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
@@ -14,9 +16,10 @@
 #include <QSqlError>
 #include <QsLog.h>
 #include <QStandardItemModel>
-AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
+AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
+    m_uas(NULL),
+    m_logDownloadDialog(NULL)
 {
-    m_uas = 0;
     m_startIndex = 0;
     m_axisGroupingDialog = 0;
     m_logLoaderThread= 0;
@@ -101,6 +104,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
     connect(m_wideAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
     m_plot->setPlottingHint(QCP::phFastPolylines,true);
+
+    connect(ui.downloadPushButton, SIGNAL(clicked()), this, SLOT(showLogDownloadDialog()));
 }
 void AP2DataPlot2D::xAxisChanged(QCPRange range)
 {
@@ -1171,4 +1176,12 @@ void AP2DataPlot2D::payloadDecoded(int index,QString name,QVariantMap map)
         m_dataList[name] = QList<QPair<int,QVariantMap> >();
     }
     m_dataList[name].append(QPair<int,QVariantMap>(index,map));
+}
+
+void AP2DataPlot2D::showLogDownloadDialog()
+{
+    QLOG_DEBUG() << "showLogDownloadDialog";
+    if (m_logDownloadDialog == NULL)
+        m_logDownloadDialog = new LogDownloadDialog(this);
+    m_logDownloadDialog->show();
 }

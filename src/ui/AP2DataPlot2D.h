@@ -14,6 +14,8 @@
 #include <QSqlDatabase>
 #include <QStandardItemModel>
 
+class LogDownloadDialog;
+
 class AP2DataPlot2D : public QWidget
 {
     Q_OBJECT
@@ -25,6 +27,9 @@ public:
 
 signals:
     void toKMLClicked();
+
+public slots:
+    void showLogDownloadDialog();
 
 private slots:
     //New Active UAS set
@@ -86,6 +91,7 @@ private slots:
     void horizontalScrollMoved(int value);
     void verticalScrollMoved(int value);
     void xAxisChanged(QCPRange range);
+
 private:
     class Graph
     {
@@ -139,6 +145,8 @@ private:
 
     qint64 m_scrollStartIndex; //Actual graph start
     qint64 m_scrollEndIndex; //Actual graph end
+
+    LogDownloadDialog *m_logDownloadDialog;
 
 
 };

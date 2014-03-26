@@ -107,6 +107,13 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <widget class="QPushButton" name="downloadPushButton">
+         <property name="text">
+          <string>Download Log</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="loadOfflineLogButton">
          <property name="text">
           <string>Load Log</string>
