@@ -310,7 +310,8 @@ include(libs/qwt/qwt.pri)
 #
 # QSerialPort - serial port library
 #
-include(libs/serialport/apmserial.pri)
+
+QT += serialport
 
 WindowsBuild {
     # Used to enumerate serial ports by QSerialPort
