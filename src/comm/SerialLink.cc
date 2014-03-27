@@ -549,6 +549,7 @@ bool SerialLink::connectPureThreaded()
 bool SerialLink::connectPartialThreaded()
 {
     m_useEventLoop = true;
+    m_stopp = false;
     start(LowPriority);
     return true;
 }
@@ -601,6 +602,7 @@ bool SerialLink::disconnectPartialThreaded()
 {
     if (isRunning())
     {
+        m_stopp = true;
         if (m_port)
         {
             QLOG_INFO() << "running so disconnect" << m_port->portName();
@@ -661,6 +663,10 @@ bool SerialLink::connect()
 }
 void SerialLink::timeoutTimerTimeout()
 {
+    if (m_stopp)
+    {
+        return;
+    }
     m_timeoutCounter++;
     m_timeoutExtendCounter++;
     if (m_timeoutExtendCounter == 40) //20 seconds initially
@@ -687,6 +693,10 @@ void SerialLink::timeoutTimerTimeout()
                 emit connected(false);
                 emit disconnected(this);
                 waitForPort(m_portName,10000,false);
+                if (m_stopp)
+                {
+                    return;
+                }
                 QLOG_DEBUG() << "Waiting for device" << m_portName;
                 if (!waitForPort(m_portName,10000,true))
                 {
@@ -694,11 +704,19 @@ void SerialLink::timeoutTimerTimeout()
                     QLOG_DEBUG() << "Timout Waiting for device";
 
                 }
+                if (m_stopp)
+                {
+                    return;
+                }
                 QLOG_DEBUG() << "Attempting connection to " << m_portName;
                 if (!hardwareConnect(m_connectedType))
                 {
                     QLOG_DEBUG() << "Failure to connect on reboot";
                     //Bad
+                }
+                if (m_stopp)
+                {
+                    return;
                 }
                 QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()),Qt::DirectConnection);
                 QObject::connect(m_port,SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(linkError(QSerialPort::SerialPortError)));
