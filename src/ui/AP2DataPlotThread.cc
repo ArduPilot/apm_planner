@@ -91,7 +91,7 @@ QString AP2DataPlotThread::makeCreateTableString(QString tablename, QString form
         }
         else
         {
-            qDebug() << "ERROR NEW UNKNOWN VALUE" << type;
+            QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << type;
         }
     }
     mktable.append(");");
@@ -189,7 +189,6 @@ void AP2DataPlotThread::run()
             int nonpacketcounter = 0;
             emit loadProgress(logfile.pos(),logfile.size());
             block.append(logfile.read(8192));
-            qDebug() << logfile.pos() << logfile.size() << block.size();
             for (int i=0;i<block.size();i++)
             {
                 if (i+3 < block.size()) //Enough room for a header
@@ -206,10 +205,11 @@ void AP2DataPlotThread::run()
                                 //Not enough data in the block
                                 break; //Break out of the for loop to let the file load more
                             }
+
                             QByteArray packet = block.mid(i+3,86);
                             block = block.remove(i,89); //Remove both the 3 byte header and the packet
                             i--;
-                            //   MSG_FORMAT_STRUCT = "BB4s16s64s"
+
                             unsigned char msg_type = packet.at(0); //Message type defined in the format struct
                             unsigned char msg_length = packet.at(1);  //Message length
                             QString name = packet.mid(2,4); //Name of the message
@@ -222,12 +222,12 @@ void AP2DataPlotThread::run()
 
                             if (msg_type == 0x80)
                             {
-                                //qDebug() << "Message is format type, don't enter it.";
+                                //Mesage is a format type, we don't want to include it
                                 continue;
                             }
                             if (format == "" || labels == "")
                             {
-                                qDebug() << "Format or label is empty, don't enter it.";
+                                QLOG_DEBUG() << "AP2DataPlotThread::run(): empty format string or labels string for type" << msg_type << name;
                                 continue;
                             }
                             QSqlQuery mktablequery(*m_db);
@@ -263,23 +263,18 @@ void AP2DataPlotThread::run()
                             //Data packet
                             if (!typeToLengthMap.contains(type))
                             {
-                                qDebug() << "No entry in typeToLengthMap for type:" << type;
+                                QLOG_DEBUG() << "AP2DataPlotThread::run(): No entry in typeToLengthMap for type:" << type;
                                 break;
                             }
                             if (i+3+typeToLengthMap.value(type) >= block.size())
                             {
                                 //Not enough data yet.
-                                qDebug() << "Not enough data yet..." << i - block.size();
-                                qDebug() << "Expected length:" << typeToLengthMap.value(type);
-                                qDebug() << "For type:" << typeToNameMap.value(type);
+                                QLOG_DEBUG() << "AP2DataPlotThread::run(): Not enough data from file, reading more...." << i-block.size() << typeToLengthMap.value(type);
                                 break;
                             }
                             QByteArray packet = block.mid(i+3,typeToLengthMap.value(type)-3);
                             block.remove(i,packet.size()+3); //Remove both the 3 byte header and the packet
                             i--;
-
-                            //qDebug() << "Got packet for ID" << type << typeToNameMap.value(type) << "of size" << packet.size();
-
 
                             QString name = typeToNameMap.value(type);
                             if (nameToInsertQuery.contains(name))
@@ -451,14 +446,10 @@ void AP2DataPlotThread::run()
                                     else
                                     {
                                         //Unknown!
-                                        qDebug() << "ERROR UNKNOWN DATA TYPE";
+                                        QLOG_DEBUG() << "AP2DataPlotThread::run(): ERROR UNKNOWN DATA TYPE" << formatstr.at(j).toAscii();
                                     }
                                 }
-                                qDebug() << name << formatstr << packet.size() << formatpos << type << i;
-                                //if (name.toLower() != "parm")
-                                //{
-                                    emit lineRead(linetoemit);
-                                //}
+                                emit lineRead(linetoemit);
 
                                 if (!nameToInsertQuery[name]->exec())
                                 {
@@ -468,7 +459,7 @@ void AP2DataPlotThread::run()
                             }
                             else
                             {
-                                qDebug() << name << "does not have a query available!";
+                                QLOG_DEBUG() << "AP2DataPlotThread::run(): No query available for param category" << name;
                             }
                         }
 
@@ -480,7 +471,10 @@ void AP2DataPlotThread::run()
                     }
                 }
             }
-            qDebug() << "non packet bytes this loop:" << nonpacketcounter;
+            if (nonpacketcounter > 0)
+            {
+                QLOG_DEBUG() << "AP2DataPlotThread::run(): Non packet bytes found in log file" << nonpacketcounter << "bytes filtered out. This may be a corrupt log";
+            }
         }
     } // if (type == 1) //binary datalog file
     else if (type == 2) //ascii datalog file
@@ -492,18 +486,8 @@ void AP2DataPlotThread::run()
             QString line = logfile.readLine();
             emit lineRead(line);
             QStringList linesplit = line.replace("\r","").replace("\n","").split(",");
-            //qDebug() << logfile.pos() << logfile.size();
             if (linesplit.size() > 0)
             {
-                if (index == 0)
-                {
-                    //First record
-                    //if (!m_db->transaction())
-                   // {
-                        //emit error("Unable to start database transaction 3");
-                        //return;
-                    //}
-                }
                 index++;
                 if (line.startsWith("FMT"))
                 {
@@ -614,7 +598,7 @@ void AP2DataPlotThread::run()
                                     }
                                     else
                                     {
-                                        qDebug() << "Unknown data value found " << typestr.at(i-1).toAscii();
+                                        QLOG_DEBUG() << "AP2DataPlotThread::run(): Unknown data value found" << typestr.at(i-1).toAscii();
                                         emit error("Unknown data value found " + typestr.at(i-1).toAscii());
                                         return;
 
@@ -642,7 +626,7 @@ void AP2DataPlotThread::run()
         emit error("Unable to commit database transaction 4");
         return;
     }
-    qDebug() << logfile.pos() << logfile.size() << logfile.atEnd();
+    QLOG_DEBUG() << "AP2DataPlotThread::run(): Log loading finished, pos:" << logfile.pos() << "filesize:" << logfile.size();
     if (m_stop)
     {
         QLOG_ERROR() << "Plot Log loading was canceled after" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
@@ -653,51 +637,4 @@ void AP2DataPlotThread::run()
         QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
         emit done(errorcount);
     }
-
-    //Old stuff for ascii logs
-    /*int index = 0;
-
-    if (!m_db->transaction())
-    {
-        emit error("Unable to start database transaction");
-        return;
-    }
-
-    QSqlQuery fmttablecreate(*m_db);
-    fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000),val varchar(6000));");
-    if (!fmttablecreate.exec())
-    {
-        emit error("Error creating FMT table: " + m_db->lastError().text());
-        return;
-    }
-    QSqlQuery fmtinsertquery;
-    if (!fmtinsertquery.prepare("INSERT INTO 'FMT' (typeID,length,name,format,val) values (?,?,?,?,?);"))
-    {
-        emit error("Error preparing FMT insert statement: " + fmtinsertquery.lastError().text());
-        return;
-    }
-    QMap<QString,QSqlQuery*> nameToInsertQuery;
-    QMap<QString,QString> nameToTypeString;
-    if (!m_db->commit())
-    {
-        emit error("Unable to commit database transaction 1");
-        return;
-    }
-
-    if (!m_db->commit())
-    {
-        emit error("Unable to commit database transaction 2");
-        return;
-    }
-    qDebug() << logfile.pos() << logfile.size() << logfile.atEnd();
-    if (m_stop)
-    {
-        QLOG_ERROR() << "Plot Log loading was canceled after" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
-        emit error("Log loading Canceled");
-    }
-    else
-    {
-        QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
-        emit done(errorcount);
-    }*/
 }
