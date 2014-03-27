@@ -1423,7 +1423,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             //data that is part of a paticular log
             mavlink_log_data_t log_data;
             mavlink_msg_log_data_decode(&message, &log_data);
-            emit logData(uasId, log_data.ofs, log_data.id, log_data.count, log_data.data);
+            emit logData(uasId, log_data.ofs, log_data.id, log_data.count, (const char*)log_data.data);
         }
             break;
         // Messages to ignore

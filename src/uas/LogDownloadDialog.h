@@ -11,16 +11,18 @@ class LogDownloadDialog;
 class LogDownloadDescriptor
 {
 public:
-    explicit LogDownloadDescriptor(uint logID, const QString& filename,
+    explicit LogDownloadDescriptor(uint logID, uint time_utc,
                                    uint size);
-    QString logFilename();
+    const QString &logFilename();
+    const QDateTime &logTimeUTC();
     uint logID();
     uint logSize();
 
 private:
     uint m_logID;
-    QString m_filename;
+    QDateTime m_logTimeUTC;
     uint m_logSize;
+    QString m_filename;
 };
 
 class LogDownloadDialog : public QDialog
@@ -39,7 +41,7 @@ public slots:
 
     // Log Download Signals
     void logEntry(int uasId, uint32_t time_utc, uint32_t size, uint16_t id, uint16_t num_logs, uint16_t last_log_num);
-    void logData(uint32_t uasId, uint32_t ofs, uint16_t id, uint8_t count, uint8_t data[]);
+    void logData(uint32_t uasId, uint32_t ofs, uint16_t id, uint8_t count, const char* data);
 
 private slots:
     void checkAll();
@@ -55,13 +57,14 @@ private:
 private:
     Ui::LogDownloadDialog *ui;
     UASInterface *m_uas;
-    QList<LogDownloadDescriptor> m_fileSaveList; // id & filename to save data to.
+    QList<LogDownloadDescriptor*> m_logEntriesList; // id & filename to save data to.
+    QList<LogDownloadDescriptor*> m_fileSaveList; // id & filename to save data to.
 
     QSet<uint> *m_downloadSet;
     QFile* m_downloadFile;
     uint m_downloadID;
     QString m_downloadFilename;
-    uint m_downloadStart;
+    QTime m_downloadStart;
     uint m_downloadLastTimestamp;
     uint m_downloadOffset;
     QTimer m_timer;

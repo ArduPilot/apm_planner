@@ -7,26 +7,38 @@
 #define LDD_COLUMN_TIME 1
 #define LDD_COLUMN_SIZE 2
 #define LDD_COLUMN_CHECKBOX 3
+#define LOG_EXT QString(".bin")
 
 static const uint LOG_PACKET_SIZE = 90;
 static const int LOG_RETRY_TIMER = 700; //msecs
 
-LogDownloadDescriptor::LogDownloadDescriptor(unsigned int logID, const QString& filename,
-                                             unsigned int logSize)
+LogDownloadDescriptor::LogDownloadDescriptor(uint logID, uint time_utc,
+                                             uint logSize)
 {
     m_logID = logID;
-    m_filename = filename;
+    m_logTimeUTC = QDateTime::fromMSecsSinceEpoch(time_utc);
     m_logSize = logSize;
 }
 
-QString LogDownloadDescriptor::logFilename()
+const QString& LogDownloadDescriptor::logFilename()
 {
+    m_filename = m_logTimeUTC.toString("yy-MM-dd_hh-mm-ss") + LOG_EXT;
     return m_filename;
 }
 
-unsigned int LogDownloadDescriptor::logID()
+const QDateTime &LogDownloadDescriptor::logTimeUTC()
+{
+    return m_logTimeUTC;
+}
+
+uint LogDownloadDescriptor::logID()
 {
     return m_logID;
+}
+
+uint LogDownloadDescriptor::logSize()
+{
+    return m_logSize;
 }
 
 LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
@@ -36,7 +48,6 @@ LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
     m_downloadSet(NULL),
     m_downloadFile(NULL),
     m_downloadID(0),
-    m_downloadStart(0),
     m_downloadLastTimestamp(0),
     m_downloadOffset(0)
 {
@@ -51,6 +62,9 @@ LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
     connect(ui->refreshPushButton, SIGNAL(clicked()), this, SLOT(refreshList()));
     connect(ui->getPushButton, SIGNAL(clicked()), this, SLOT(getSelectedLogs()));
     connect(ui->checkAllBox, SIGNAL(clicked()), this, SLOT(checkAll()));
+
+    // configure retransimission timer.
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(processDownloadedLogData()));
 
     QStringList headerList;
     headerList << tr("ID") << tr("Time") << tr("Size") << tr("Download?");
@@ -80,7 +94,7 @@ void LogDownloadDialog::resetDownload()
 
     m_downloadID = 0;
     m_downloadFilename.clear();
-    m_downloadStart = 0;
+    m_downloadStart = QTime();
     m_downloadLastTimestamp = 0;
     m_downloadOffset = 0;
 }
@@ -112,8 +126,8 @@ void LogDownloadDialog::makeConnections(UASInterface *uas)
     Q_UNUSED(uas);
     connect(m_uas, SIGNAL(logEntry(int,uint32_t,uint32_t,uint16_t,uint16_t,uint16_t)),
             this, SLOT(logEntry(int,uint32_t,uint32_t,uint16_t,uint16_t,uint16_t)));
-    connect(m_uas, SIGNAL(logData(uint32_t,uint32_t,uint16_t,uint8_t,uint8_t[])),
-            this, SLOT(logData(uint32_t,uint32_t,uint16_t,uint8_t,uint8_t[])));
+    connect(m_uas, SIGNAL(logData(uint32_t,uint32_t,uint16_t,uint8_t,const char*)),
+            this, SLOT(logData(uint32_t,uint32_t,uint16_t,uint8_t,const char*)));
 }
 
 void LogDownloadDialog::removeConnections(UASInterface *uas)
@@ -121,8 +135,8 @@ void LogDownloadDialog::removeConnections(UASInterface *uas)
     Q_UNUSED(uas);
     disconnect(m_uas, SIGNAL(logEntry(int,uint32_t,uint32_t,uint16_t,uint16_t,uint16_t)),
             this, SLOT(logEntry(int,uint32_t,uint32_t,uint16_t,uint16_t,uint16_t)));
-    disconnect(m_uas, SIGNAL(logData(uint32_t,uint32_t,uint16_t,uint16_t,uint8_t[])),
-            this, SLOT(logData(uint32_t,uint32_t,uint16_t,uint8_t,uint8_t[])));
+    disconnect(m_uas, SIGNAL(logData(uint32_t,uint32_t,uint16_t,uint16_t,const char*)),
+            this, SLOT(logData(uint32_t,uint32_t,uint16_t,uint8_t,const char*)));
     ui->refreshPushButton->setEnabled(false);
     ui->getPushButton->setEnabled(false);
 }
@@ -132,6 +146,7 @@ void LogDownloadDialog::refreshList()
     QLOG_DEBUG() << "Start Log List Download";
     if (m_uas){
         ui->tableWidget->setRowCount(0);
+        m_logEntriesList.clear();
         m_uas->logRequestList(0,0xffff); // Currently list all available logs
     }
 }
@@ -140,18 +155,15 @@ void LogDownloadDialog::getSelectedLogs()
 {
     QLOG_DEBUG() << "Start Retrieving selected logs";
     QTableWidget* table = ui->tableWidget;
+    m_fileSaveList.clear();
 
     for(int rowCount = 0; rowCount < table->rowCount(); ++rowCount){
-
-        QTableWidgetItem* timeItem = table->item(rowCount, LDD_COLUMN_TIME);
         QTableWidgetItem* paramCheck= table->item(rowCount, LDD_COLUMN_CHECKBOX);
-        if (timeItem && (paramCheck->checkState() == Qt::Checked)){
-            QString filename = timeItem->data(Qt::DisplayRole).toString().replace(' ','_');
-            uint logID = table->item(rowCount, LDD_COLUMN_ID)->data(Qt::DisplayRole).toUInt();
-            uint size = table->item(rowCount, LDD_COLUMN_SIZE)->data(Qt::DisplayRole).toUInt();
-            LogDownloadDescriptor descriptor(logID,filename,size);
-            m_fileSaveList.append(descriptor);
-            QLOG_DEBUG() << "Adding id:" << descriptor.logID() << " " << descriptor.logFilename() << " to download list";
+
+        if (paramCheck->checkState() == Qt::Checked){
+            m_fileSaveList.append(m_logEntriesList[rowCount]);
+            QLOG_DEBUG() << "Adding id:" << m_fileSaveList.last()->logID() << " "
+                         << m_fileSaveList.last()->logFilename()  << " to download list";
         }
     }
     startNextDownloadRequest();
@@ -162,17 +174,16 @@ void LogDownloadDialog::startNextDownloadRequest()
     QLOG_DEBUG() << "Start next log download";
     if (m_uas && !m_fileSaveList.isEmpty()){
         resetDownload();
-        LogDownloadDescriptor descriptor = m_fileSaveList.takeLast();
-        m_downloadID = descriptor.logID();
-        m_downloadFilename = descriptor.logFilename();
+        LogDownloadDescriptor *descriptor = m_fileSaveList.takeLast();
+        m_downloadID = descriptor->logID();
+        m_downloadFilename = descriptor->logFilename();
 
         // Open a file for the log to be downloaded
-        m_downloadFile = new QFile(QGC::logDirectory() + m_downloadFilename);
+        m_downloadFile = new QFile(QGC::logDirectory() +"/" + m_downloadFilename);
         if(m_downloadFile && m_downloadFile->open(QIODevice::WriteOnly)){
-            QLOG_INFO() << "Log file reading for writing:" << m_downloadFilename;
+            QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename;
             m_uas->logRequestData(m_downloadID, m_downloadOffset, LOG_PACKET_SIZE);
-            connect(&m_timer, SIGNAL(timeout()), this, SLOT(processDownloadedLogData()));
-            m_timer.setSingleShot(true);
+            m_downloadStart.start();
             m_timer.start(LOG_RETRY_TIMER);
             m_downloadSet = new QSet<uint>();
         } else {
@@ -192,19 +203,23 @@ void LogDownloadDialog::logEntry(int uasId, uint32_t time_utc, uint32_t size, ui
     if (m_uas == NULL)
         return;
 
-    int rowCount = ui->tableWidget->rowCount(); // append a new row.
-    ui->tableWidget->setRowCount(rowCount + 1);
+    LogDownloadDescriptor *logItem = new LogDownloadDescriptor(id, time_utc, size);
+    m_logEntriesList.append(logItem);
 
-    QTableWidgetItem *item = new QTableWidgetItem( QString::number(id) );
+    // append a new row.
+    ui->tableWidget->setRowCount(m_logEntriesList.size());
+    int rowCount = m_logEntriesList.size() - 1; // index starts at 0
+
+    QTableWidgetItem *item = new QTableWidgetItem( QString::number(logItem->logID()));
     item->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled );
     ui->tableWidget->setItem(rowCount, LDD_COLUMN_ID, item);
 
     item = new QTableWidgetItem();
-    item->setData(Qt::DisplayRole, time.toString());
+    item->setData(Qt::DisplayRole, logItem->logTimeUTC().toString());
     item->setFlags(Qt::NoItemFlags  | Qt::ItemIsEnabled);
     ui->tableWidget->setItem(rowCount, LDD_COLUMN_TIME, item);
 
-    item = new QTableWidgetItem(QString::number(size));
+    item = new QTableWidgetItem(QString::number(logItem->logSize()));
     item->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     ui->tableWidget->setItem(rowCount, LDD_COLUMN_SIZE, item);
 
@@ -215,10 +230,10 @@ void LogDownloadDialog::logEntry(int uasId, uint32_t time_utc, uint32_t size, ui
 }
 
 void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
-                                     uint8_t count, uint8_t data[])
+                                     uint8_t count, const char *data)
 {
     QLOG_DEBUG() << "ofs:" << ofs << " id:" << id << " count:" << count
-                 << " data:" << data;
+                 /*<< " data:" << data*/;
     if (m_uas == NULL || m_downloadSet == NULL)
         return;
     if (m_uas->getUASID() != static_cast<int>(uasId))
@@ -227,23 +242,33 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
         QLOG_ERROR() << "No file open to save log info";
         return;
     }
-
+#ifdef QT_DEBUG
+    //Simulate packet loss for testing in debug mode
+    if ((rand() % 100) < 20){
+        QLOG_DEBUG() << "Dropping Packet id=" << id << " ofs=" << ofs << " setId=" << (int)ofs/90;
+        return;
+    }
+#endif
     if (ofs != m_downloadOffset){
         m_downloadFile->seek(ofs);
         m_downloadOffset = ofs;
     }
     if (count != 0){
-        m_downloadFile->write((const char*)data, count);
+        int error = m_downloadFile->write(data, count);
+        if (error == -1){
+            QLOG_ERROR() << "Log File write error:" << error;
+        }
         m_downloadSet->insert(ofs / LOG_PACKET_SIZE);
         m_downloadOffset += count;
     }
     m_downloadLastTimestamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
     if ( count==0 || (count<LOG_PACKET_SIZE && (m_downloadSet->size() == 1+(ofs/LOG_PACKET_SIZE))) ){
-        uint dt = QDateTime::currentDateTime().toMSecsSinceEpoch() - m_downloadStart;
-        uint speed = m_downloadFile->size()/(1000.0 * dt);
+        int dt = m_downloadStart.elapsed();
+        float speed = m_downloadFile->size()/ dt;
         QLOG_INFO() << "Finished downloading "<< m_downloadFilename
-                    << "(" << dt << " seconds, "<< speed <<"kbyte/sec)";
+                    << "(" << (dt/1000.0f) << " seconds, "<< speed <<"kbyte/sec)";
         m_downloadFile->close();
+        m_timer.stop();
         resetDownload();
     }
 }
@@ -251,7 +276,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
 void LogDownloadDialog::processDownloadedLogData()
 {
     // Process incoming log data and trigger next request for more
-    if (m_downloadSet->size() == 0)
+    if (m_downloadSet==NULL || m_downloadSet->size() == 0)
         return;
 
     uint highest = 0;
@@ -266,11 +291,11 @@ void LogDownloadDialog::processDownloadedLogData()
     }
 
     QList<uint> diff;
-    for( uint count = 0; count < highest; highest++){
+    for( uint count = 0; count < highest; count++){
         if(!m_downloadSet->contains(count))
             diff.append(count);
     }
-
+    QLOG_DEBUG() << "Diff size:" << diff.size();
     if(diff.size() == 0){
         m_uas->logRequestData(m_downloadID, (highest+1)*LOG_PACKET_SIZE, 0xFFFFFFFF);
         m_timer.start(LOG_RETRY_TIMER);
@@ -285,7 +310,6 @@ void LogDownloadDialog::processDownloadedLogData()
                 diff.removeAt(end);
             }
             m_uas->logRequestData(m_downloadID, (start*LOG_PACKET_SIZE), (end+1-start)*LOG_PACKET_SIZE);
-            m_timer.start(LOG_RETRY_TIMER);
             num_requests +=1;
             if(diff.size() == 0)
                 break;

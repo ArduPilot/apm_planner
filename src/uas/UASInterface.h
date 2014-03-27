@@ -671,7 +671,7 @@ signals:
 
     // Log Download Signals
     void logEntry(int uasId, uint32_t time_utc, uint32_t size, uint16_t id, uint16_t num_logs, uint16_t last_log_num);
-    void logData(uint32_t uasId, uint32_t ofs, uint16_t id, uint8_t count, uint8_t data[]);
+    void logData(uint32_t uasId, uint32_t ofs, uint16_t id, uint8_t count, const char* data);
 
 protected:
 
