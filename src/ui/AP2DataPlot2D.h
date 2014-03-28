@@ -36,6 +36,9 @@ private slots:
     //New Active UAS set
     void activeUASSet(UASInterface* uas);
 
+    void connected();
+    void disconnected();
+
     //Load a graph from a file
     void loadButtonClicked();
 

@@ -106,6 +106,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_plot->setPlottingHint(QCP::phFastPolylines,true);
 
     connect(ui.downloadPushButton, SIGNAL(clicked()), this, SLOT(showLogDownloadDialog()));
+    ui.downloadPushButton->setEnabled(false);
 }
 void AP2DataPlot2D::xAxisChanged(QCPRange range)
 {
@@ -390,6 +391,8 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+        disconnect(m_uas,SIGNAL(connected()),this,SLOT(connected()));
+        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(disconnected()));
     }
     m_currentIndex = QDateTime::currentMSecsSinceEpoch();
     m_startIndex = m_currentIndex;
@@ -407,7 +410,22 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 
+    connect(m_uas,SIGNAL(connected()),this,SLOT(connected()));
+    connect(m_uas,SIGNAL(disconnected()),this,SLOT(disconnected()));
+    connected();
+
 }
+
+void AP2DataPlot2D::connected()
+{
+    ui.downloadPushButton->setEnabled(true);
+}
+
+void AP2DataPlot2D::disconnected()
+{
+     ui.downloadPushButton->setEnabled(false);
+}
+
 void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
 {
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
