@@ -28,7 +28,8 @@ Install SDL
 
 Install QT
 -----------
-1) Download Qt 4.8.x (Does not current work with Qt5.x)
+1) Download Qt 4.8.x (Does not currently work with Qt5.x)
+   - you can verify the version by typing 'qmake -v' and it should report Qt 4.8.x as the version. 
 
 2) Double click the package installer
 
@@ -67,11 +68,11 @@ git clone https://github.com/diydrones/apm_planner
 
 ```
 cd ~/workspace/apm_planner
-qtmake-qt4 qgroundcontrol.pro
+qmake-qt4 qgroundcontrol.pro
 make
 ```
 
-Or try `qmake qgroundcontrol.pro` if the `qtmake-qt4` command doesn't exist on your version of Ubuntu.
+Or try `qmake qgroundcontrol.pro` if the `qmake-qt4` command doesn't exist on your version of Ubuntu. This will only work if the Qt version install on your machine is Qt4.8.x, this can be checked using `qmake -v'
 
 4) Run APM Planner:
 
@@ -111,7 +112,7 @@ Windows XP/7:
 6) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro and re-run `qmake -tp vc qgroundcontrol.pro`
 
 
-Repository Layout
+Repository Layout (2014-3-28: out-of-date, needs to be fixed)
 =================
 ```
 qgroundcontrol:
