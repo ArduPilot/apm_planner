@@ -30,6 +30,7 @@ signals:
 
 public slots:
     void showLogDownloadDialog();
+    void closeLogDownloadDialog();
 
 private slots:
     //New Active UAS set

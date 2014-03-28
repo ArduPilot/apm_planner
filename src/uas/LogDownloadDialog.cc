@@ -58,7 +58,8 @@ LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(setActiveUAS(UASInterface*)));
 
-    connect(ui->donePushButton, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(ui->donePushButton, SIGNAL(clicked()), this, SLOT(doneButtonClicked()));
+    connect(ui->cancelPushButton, SIGNAL(clicked()), this, SLOT(cancelButtonClicked()));
     connect(ui->refreshPushButton, SIGNAL(clicked()), this, SLOT(refreshList()));
     connect(ui->getPushButton, SIGNAL(clicked()), this, SLOT(getSelectedLogs()));
     connect(ui->checkAllBox, SIGNAL(clicked()), this, SLOT(checkAll()));
@@ -97,6 +98,20 @@ void LogDownloadDialog::resetDownload()
     m_downloadStart = QTime();
     m_downloadLastTimestamp = 0;
     m_downloadOffset = 0;
+}
+
+void LogDownloadDialog::cancelButtonClicked()
+{
+    if(m_uas){
+        m_uas->logRequestEnd();
+    }
+    resetDownload();
+    accept();
+}
+
+void LogDownloadDialog::doneButtonClicked()
+{
+    lower();
 }
 
 LogDownloadDialog::~LogDownloadDialog()

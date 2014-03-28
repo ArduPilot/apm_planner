@@ -1181,7 +1181,19 @@ void AP2DataPlot2D::payloadDecoded(int index,QString name,QVariantMap map)
 void AP2DataPlot2D::showLogDownloadDialog()
 {
     QLOG_DEBUG() << "showLogDownloadDialog";
-    if (m_logDownloadDialog == NULL)
+    if (m_logDownloadDialog == NULL){
         m_logDownloadDialog = new LogDownloadDialog(this);
+        connect(m_logDownloadDialog, SIGNAL(accepted()), this, SLOT(closeLogDownloadDialog()));
+    }
     m_logDownloadDialog->show();
+    m_logDownloadDialog->raise();
+}
+
+void AP2DataPlot2D::closeLogDownloadDialog()
+{
+    if (m_logDownloadDialog){
+        m_logDownloadDialog->hide();
+        m_logDownloadDialog->deleteLater();
+        m_logDownloadDialog = NULL;
+    }
 }
