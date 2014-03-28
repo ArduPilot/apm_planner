@@ -308,8 +308,8 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
         int bytesWritten = m_downloadFile->write(data, count);
         if ((bytesWritten == -1)||(bytesWritten != count)){
             QLOG_ERROR() << "Log File write bytesWritten:" << bytesWritten << "out of: count=" << count;
-            QMessageBox::critical(this,tr("Corrupt File")
-                                  ,tr("Error saving %1.\n file save is corupt."),QMessageBox::Ok);
+//            QMessageBox::critical(this,tr("Corrupt File")
+//                                  ,tr("Error saving %1.\n file save is corupt."),QMessageBox::Ok);
             // [TODO] Abort.
         }
         m_downloadFile->flush();
@@ -393,6 +393,7 @@ void LogDownloadDialog::processDownloadedLogData()
                 end+=1;
                 diff.removeAt(end);
             }
+            ui->statusLabel->setText(tr("Retransmitting %1").arg(start));
             m_uas->logRequestData(m_downloadID, (start*LOG_PACKET_SIZE), (end+1-start)*LOG_PACKET_SIZE);
             num_requests +=1;
             if(diff.size() == 0)
