@@ -2728,6 +2728,7 @@ void UAS::setManual6DOFControlCommands(double x, double y, double z, double roll
 
 void UAS::logRequestList(uint16_t start, uint16_t end)
 {
+    QLOG_DEBUG() << "send logRequestList start:" << start << " end:" << end;
     mavlink_message_t msg;
     mavlink_msg_log_request_list_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
                                       getUASID(), MAV_COMP_ID_ALL,
