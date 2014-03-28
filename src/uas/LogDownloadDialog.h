@@ -49,6 +49,7 @@ private slots:
     void doneButtonClicked();
     void cancelButtonClicked();
     void triggerNextDownloadRequest();
+    void eraseAllLogs();
 
 private:
     void removeConnections(UASInterface* uas);

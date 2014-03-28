@@ -45,6 +45,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="erasePushButton">
+           <property name="text">
+            <string>Erase Logs</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="cancelPushButton">
            <property name="text">
             <string>Cancel</string>

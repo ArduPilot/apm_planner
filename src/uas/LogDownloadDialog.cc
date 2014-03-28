@@ -64,6 +64,7 @@ LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
     connect(ui->cancelPushButton, SIGNAL(clicked()), this, SLOT(cancelButtonClicked()));
     connect(ui->refreshPushButton, SIGNAL(clicked()), this, SLOT(refreshList()));
     connect(ui->getPushButton, SIGNAL(clicked()), this, SLOT(getSelectedLogs()));
+    connect(ui->erasePushButton, SIGNAL(clicked()), this, SLOT(eraseAllLogs()));
     connect(ui->checkAllBox, SIGNAL(clicked()), this, SLOT(checkAll()));
 
     // configure retransimission timer.
@@ -188,6 +189,19 @@ void LogDownloadDialog::getSelectedLogs()
     startNextDownloadRequest();
 }
 
+void LogDownloadDialog::eraseAllLogs()
+{
+   if (m_uas == NULL)
+       return;
+
+   int button = QMessageBox::critical(this, tr("Erase All Logs"),
+                                 tr("Are you sure you want to earse all logs?")
+                                 ,QMessageBox::Ok,QMessageBox::Cancel);
+   if(button == QMessageBox::Ok){
+       m_uas->logEraseAll();
+   }
+}
+
 void LogDownloadDialog::startNextDownloadRequest()
 {
     QTimer::singleShot(500, this, SLOT(triggerNextDownloadRequest()));
@@ -265,7 +279,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
                                      uint8_t count, const char *data)
 {
 //#define SIMULATE_PACKET_LOSS
-#ifndef SIMULATE_PACKET_LOSS
+#ifdef SIMULATE_PACKET_LOSS
     QLOG_DEBUG() << "logData ofs:" << ofs << " id:" << id << " count:" << count
                  /*<< " data:" << data*/;
 #endif
@@ -291,7 +305,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
     }
     if (count != 0){
         int bytesWritten = m_downloadFile->write(data, count);
-        if ((bytesWritten == -1)|| (bytesWritten != count)){
+        if ((bytesWritten == -1)||(bytesWritten != count)){
             QLOG_ERROR() << "Log File write bytesWritten:" << bytesWritten << "out of: count=" << count;
             QMessageBox::critical(this,tr("Corrupt File")
                                   ,tr("Error saving %1.\n file save is corupt."),QMessageBox::Ok);
