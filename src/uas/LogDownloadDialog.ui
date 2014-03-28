@@ -40,7 +40,7 @@
          <item>
           <widget class="QPushButton" name="getPushButton">
            <property name="text">
-            <string>Get Log(s)</string>
+            <string>Download Log(s)</string>
            </property>
           </widget>
          </item>
