@@ -48,12 +48,15 @@ private slots:
     void processDownloadedLogData();
     void doneButtonClicked();
     void cancelButtonClicked();
+    void triggerNextDownloadRequest();
 
 private:
     void removeConnections(UASInterface* uas);
     void makeConnections(UASInterface* uas);
     void startNextDownloadRequest();
+    void issueDownloadRequest();
 
+    void updateProgress();
     void resetDownload();
 
 private:
@@ -69,6 +72,9 @@ private:
     QTime m_downloadStart;
     uint m_downloadLastTimestamp;
     uint m_downloadOffset;
+    uint m_downloadMaxSize;
+    int m_downloadCount;
+    int m_downloadCountMax;
     QTimer m_timer;
 };
 

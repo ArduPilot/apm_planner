@@ -2,6 +2,7 @@
 #include "LogDownloadDialog.h"
 #include "ui_LogDownloadDialog.h"
 #include "UASManager.h"
+#include <QMessageBox>
 
 #define LDD_COLUMN_ID 0
 #define LDD_COLUMN_TIME 1
@@ -49,7 +50,8 @@ LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
     m_downloadFile(NULL),
     m_downloadID(0),
     m_downloadLastTimestamp(0),
-    m_downloadOffset(0)
+    m_downloadOffset(0),
+    m_downloadMaxSize(100)
 {
     ui->setupUi(this); 
 
@@ -89,7 +91,7 @@ void LogDownloadDialog::resetDownload()
 
     if (m_downloadFile){
         m_downloadFile->close();
-        delete m_downloadFile;
+        m_downloadFile->deleteLater();
         m_downloadFile = NULL;
     }
 
@@ -181,31 +183,46 @@ void LogDownloadDialog::getSelectedLogs()
                          << m_fileSaveList.last()->logFilename()  << " to download list";
         }
     }
+    m_downloadCount = 1;//st
+    m_downloadCountMax = m_fileSaveList.count();
     startNextDownloadRequest();
 }
 
 void LogDownloadDialog::startNextDownloadRequest()
 {
+    QTimer::singleShot(500, this, SLOT(triggerNextDownloadRequest()));
+}
+
+void LogDownloadDialog::triggerNextDownloadRequest()
+{
     QLOG_DEBUG() << "Start next log download";
     if (m_uas && !m_fileSaveList.isEmpty()){
         resetDownload();
-        LogDownloadDescriptor *descriptor = m_fileSaveList.takeLast();
+        LogDownloadDescriptor *descriptor = m_fileSaveList.takeFirst();
         m_downloadID = descriptor->logID();
         m_downloadFilename = descriptor->logFilename();
+        m_downloadMaxSize = descriptor->logSize();
+        issueDownloadRequest();
+    }
+}
 
+void LogDownloadDialog::issueDownloadRequest()
+{
         // Open a file for the log to be downloaded
         m_downloadFile = new QFile(QGC::logDirectory() +"/" + m_downloadFilename);
         if(m_downloadFile && m_downloadFile->open(QIODevice::WriteOnly)){
-            QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename;
+            QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename << " size:" << m_downloadMaxSize;
+            Q_ASSERT(m_downloadOffset == 0);
             m_uas->logRequestData(m_downloadID, m_downloadOffset, LOG_PACKET_SIZE);
+            updateProgress();
             m_downloadStart.start();
             m_timer.start(LOG_RETRY_TIMER);
             m_downloadSet = new QSet<uint>();
         } else {
             QLOG_ERROR() << "failed to open file to save log:" << m_downloadFilename;
         }
-    }
 }
+
 
 void LogDownloadDialog::logEntry(int uasId, uint32_t time_utc, uint32_t size, uint16_t id,
                                  uint16_t num_logs, uint16_t last_log_num)
@@ -247,8 +264,11 @@ void LogDownloadDialog::logEntry(int uasId, uint32_t time_utc, uint32_t size, ui
 void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
                                      uint8_t count, const char *data)
 {
-    QLOG_DEBUG() << "ofs:" << ofs << " id:" << id << " count:" << count
+//#define SIMULATE_PACKET_LOSS
+#ifndef SIMULATE_PACKET_LOSS
+    QLOG_DEBUG() << "logData ofs:" << ofs << " id:" << id << " count:" << count
                  /*<< " data:" << data*/;
+#endif
     if (m_uas == NULL || m_downloadSet == NULL)
         return;
     if (m_uas->getUASID() != static_cast<int>(uasId))
@@ -257,34 +277,68 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
         QLOG_ERROR() << "No file open to save log info";
         return;
     }
-#ifdef QT_DEBUG
+#ifdef SIMULATE_PACKET_LOSS
     //Simulate packet loss for testing in debug mode
     if ((rand() % 100) < 20){
-        QLOG_DEBUG() << "Dropping Packet id=" << id << " ofs=" << ofs << " setId=" << (int)ofs/90;
+        QLOG_DEBUG() << "Dropping Packet logId=" << id << " packetId=" << (int)ofs/90 << " ofs=" << ofs;
         return;
     }
 #endif
     if (ofs != m_downloadOffset){
         m_downloadFile->seek(ofs);
         m_downloadOffset = ofs;
+        updateProgress();
     }
     if (count != 0){
-        int error = m_downloadFile->write(data, count);
-        if (error == -1){
-            QLOG_ERROR() << "Log File write error:" << error;
+        int bytesWritten = m_downloadFile->write(data, count);
+        if ((bytesWritten == -1)|| (bytesWritten != count)){
+            QLOG_ERROR() << "Log File write bytesWritten:" << bytesWritten << "out of: count=" << count;
+            QMessageBox::critical(this,tr("Corrupt File")
+                                  ,tr("Error saving %1.\n file save is corupt."),QMessageBox::Ok);
+            // [TODO] Abort.
         }
+        m_downloadFile->flush();
         m_downloadSet->insert(ofs / LOG_PACKET_SIZE);
         m_downloadOffset += count;
+        updateProgress();
     }
     m_downloadLastTimestamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
-    if ( count==0 || (count<LOG_PACKET_SIZE && (m_downloadSet->size() == 1+(ofs/LOG_PACKET_SIZE))) ){
-        int dt = m_downloadStart.elapsed();
-        float speed = m_downloadFile->size()/ dt;
+    if ( count==0 || (count<LOG_PACKET_SIZE && (m_downloadSet->count() == 1+(ofs/LOG_PACKET_SIZE))) ){
+        double dt = m_downloadStart.elapsed()/1000.0;
+        double speed = (static_cast<double>(m_downloadFile->size())/dt)/1000.0;
         QLOG_INFO() << "Finished downloading "<< m_downloadFilename
-                    << "(" << (dt/1000.0f) << " seconds, "<< speed <<"kbyte/sec)";
-        m_downloadFile->close();
+                    << "(" << dt << " seconds, "<< speed <<"kbyte/sec)";
+        m_downloadFile->flush();
         m_timer.stop();
-        resetDownload();
+        updateProgress();
+        m_uas->logRequestEnd();
+        QCoreApplication::processEvents();
+
+        if (m_downloadFile->size() == 0) {
+            // If the file size is zero, retry
+            QLOG_DEBUG() << "File Size is zero, retry";
+            m_downloadOffset = 0;
+            delete m_downloadSet;
+            m_downloadSet = new QSet<uint>();
+            m_timer.start(LOG_RETRY_TIMER);
+            m_downloadStart.start();
+            m_downloadFile->close();
+            delete m_downloadFile;
+            m_downloadFile = NULL;
+            issueDownloadRequest();
+            return;
+        }
+        m_downloadFile->close();
+        ui->progressBar->setValue(m_downloadMaxSize);
+        if (!(m_downloadCount == m_downloadCountMax)){
+            m_downloadCount++;
+            startNextDownloadRequest();
+        } else {
+            ui->statusLabel->setText("Finished");
+            QTimer::singleShot(500, ui->progressBar, SLOT(hide()));
+            QTimer::singleShot(500, ui->statusLabel, SLOT(hide()));
+            resetDownload();
+        }
     }
 }
 
@@ -310,7 +364,7 @@ void LogDownloadDialog::processDownloadedLogData()
         if(!m_downloadSet->contains(count))
             diff.append(count);
     }
-    QLOG_DEBUG() << "Diff size:" << diff.size();
+    QLOG_DEBUG() << "highest:"<< highest << "Diff size:" << diff.size();
     if(diff.size() == 0){
         m_uas->logRequestData(m_downloadID, (highest+1)*LOG_PACKET_SIZE, 0xFFFFFFFF);
         m_timer.start(LOG_RETRY_TIMER);
@@ -330,6 +384,16 @@ void LogDownloadDialog::processDownloadedLogData()
                 break;
         }
     }
+}
+
+void LogDownloadDialog::updateProgress()
+{
+    QString status =  QString("Downloading %1/%2").arg(m_downloadCount).arg(m_downloadCountMax);
+    ui->statusLabel->setText(status);
+    ui->statusLabel->show();
+    ui->progressBar->setMaximum(m_downloadMaxSize);
+    ui->progressBar->setValue(m_downloadOffset);
+    ui->progressBar->show();
 }
 
 void LogDownloadDialog::checkAll()
