@@ -228,6 +228,7 @@ void LogDownloadDialog::issueDownloadRequest()
         if(m_downloadFile && m_downloadFile->open(QIODevice::WriteOnly)){
             QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename << " size:" << m_downloadMaxSize;
             Q_ASSERT(m_downloadOffset == 0);
+            m_lastDownloadOffset = 0;
             m_uas->logRequestData(m_downloadID, m_downloadOffset, LOG_PACKET_SIZE);
             updateProgress();
             m_downloadStart.start();
@@ -333,6 +334,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
             // If the file size is zero, retry
             QLOG_DEBUG() << "File Size is zero, retry";
             m_downloadOffset = 0;
+            m_lastDownloadOffset = 0;
             delete m_downloadSet;
             m_downloadSet = new QSet<uint>();
             m_timer.start(LOG_RETRY_TIMER);
