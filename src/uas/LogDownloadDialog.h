@@ -73,6 +73,7 @@ private:
     QTime m_downloadStart;
     uint m_downloadLastTimestamp;
     uint m_downloadOffset;
+    uint m_lastDownloadOffset;
     uint m_downloadMaxSize;
     int m_downloadCount;
     int m_downloadCountMax;

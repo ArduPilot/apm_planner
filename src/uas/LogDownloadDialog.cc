@@ -51,6 +51,7 @@ LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
     m_downloadID(0),
     m_downloadLastTimestamp(0),
     m_downloadOffset(0),
+    m_lastDownloadOffset(0),
     m_downloadMaxSize(100)
 {
     ui->setupUi(this); 
@@ -153,7 +154,7 @@ void LogDownloadDialog::removeConnections(UASInterface *uas)
     Q_UNUSED(uas);
     disconnect(m_uas, SIGNAL(logEntry(int,uint32_t,uint32_t,uint16_t,uint16_t,uint16_t)),
             this, SLOT(logEntry(int,uint32_t,uint32_t,uint16_t,uint16_t,uint16_t)));
-    disconnect(m_uas, SIGNAL(logData(uint32_t,uint32_t,uint16_t,uint16_t,const char*)),
+    disconnect(m_uas, SIGNAL(logData(uint32_t,uint32_t,uint16_t,uint8_t,const char*)),
             this, SLOT(logData(uint32_t,uint32_t,uint16_t,uint8_t,const char*)));
     ui->refreshPushButton->setEnabled(false);
     ui->getPushButton->setEnabled(false);
@@ -402,12 +403,15 @@ void LogDownloadDialog::processDownloadedLogData()
 
 void LogDownloadDialog::updateProgress()
 {
-    QString status =  QString("Downloading %1/%2").arg(m_downloadCount).arg(m_downloadCountMax);
-    ui->statusLabel->setText(status);
-    ui->statusLabel->show();
-    ui->progressBar->setMaximum(m_downloadMaxSize);
-    ui->progressBar->setValue(m_downloadOffset);
-    ui->progressBar->show();
+    if ( m_downloadOffset > m_lastDownloadOffset + 720){
+        m_lastDownloadOffset = m_downloadOffset;
+        QString status =  QString("Downloading %1/%2").arg(m_downloadCount).arg(m_downloadCountMax);
+        ui->statusLabel->setText(status);
+        ui->statusLabel->show();
+        ui->progressBar->setMaximum(m_downloadMaxSize);
+        ui->progressBar->setValue(m_downloadOffset);
+        ui->progressBar->show();
+    }
 }
 
 void LogDownloadDialog::checkAll()
