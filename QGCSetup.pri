@@ -220,7 +220,7 @@ LinuxBuild {
 
         #create menu links
         desktopLink.path = $$DATADIR/menu
-        desktopLink.files += $$BASEDIR/scripts/debian/apmplanner2
+        desktopLink.files += $$BASEDIR/debian/apmplanner2
         menuLink.path = $$DATADIR/applications
-        menuLink.files += $$BASEDIR/scripts/debian/apmplanner2.desktop
+        menuLink.files += $$BASEDIR/debian/apmplanner2.desktop
 }
