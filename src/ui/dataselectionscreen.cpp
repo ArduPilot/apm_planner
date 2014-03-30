@@ -5,7 +5,7 @@
 DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
 {
 	ui.setupUi(this);
-    connect(ui.treeWidget,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(treeDoubleClicked(QTreeWidgetItem*,int)));
+    connect(ui.treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(onItemChanged(QTreeWidgetItem*,int)));
     connect(ui.clearPushButton,SIGNAL(clicked()),this,SLOT(clearSelectionButtonClicked()));
 }
 
@@ -22,9 +22,7 @@ void DataSelectionScreen::clearSelectionButtonClicked()
             if (items[i]->checkState(0) == Qt::Checked)
             {
                 items[i]->setCheckState(0,Qt::Unchecked);
-                QString name = items[i]->parent()->text(0) + "." + items[i]->text(0);
-                m_enabledList.removeOne(name);
-                emit itemDisabled(name);
+                // ^^ this will trigger the disabling of the graph automatically
             }
         }
     }
@@ -110,7 +108,7 @@ void DataSelectionScreen::addItem(QString name)
 
     }
 }
-void DataSelectionScreen::treeDoubleClicked(QTreeWidgetItem* item,int column)
+void DataSelectionScreen::onItemChanged(QTreeWidgetItem* item,int column)
 {
     if (!item->parent())
     {
