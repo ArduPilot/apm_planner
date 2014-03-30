@@ -19,7 +19,7 @@ signals:
 	void itemEnabled(QString name);
 	void itemDisabled(QString name);
 private slots:
-    void treeDoubleClicked(QTreeWidgetItem* item,int column);
+    void onItemChanged(QTreeWidgetItem* item,int column);
     void clearSelectionButtonClicked();
 private:
     QMap<QString,QString> m_nameToSysId;
