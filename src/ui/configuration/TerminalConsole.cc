@@ -38,7 +38,7 @@ This file is part of the APM_PLANNER project
 #include "SerialSettingsDialog.h"
 #include "ui_TerminalConsole.h"
 #include "Console.h"
-#include "configuration.h"
+#include "./src/configuration.h"
 #include "LogConsole.h"
 #include "MainWindow.h"
 

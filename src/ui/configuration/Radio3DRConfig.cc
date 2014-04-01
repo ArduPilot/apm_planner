@@ -26,7 +26,7 @@ This file is part of the APM_PLANNER project
 #include "Radio3DRConfig.h"
 #include "Radio3DRSettings.h"
 
-#include "configuration.h"
+#include "./src/configuration.h"
 
 #include <QSettings>
 #include <qserialportinfo.h>

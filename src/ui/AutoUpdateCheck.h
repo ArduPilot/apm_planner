@@ -1,7 +1,7 @@
 #ifndef AUTOUPDATECHECK_H
 #define AUTOUPDATECHECK_H
 
-#include "configuration.h"
+#include "./src/configuration.h"
 #include <QObject>
 #include <QtNetwork>
 

@@ -720,7 +720,7 @@ void LinechartPlot::paintRealtime()
         windowLock.unlock();
 
         // Defined both on windows 32- and 64 bit
-#if !(defined Q_OS_WIN)
+#if !(defined Q_OS_WIN) && !(defined Q_OS_MACX)
 
         //    const bool cacheMode =
         //            canvas()->testPaintAttribute(QwtPlotCanvas::PaintCached);
@@ -746,7 +746,7 @@ void LinechartPlot::paintRealtime()
             replot();
         }
 
-#if !(defined Q_OS_WIN)
+#if !(defined Q_OS_WIN)  && !(defined Q_OS_MACX)
         canvas()->setAttribute(Qt::WA_PaintOutsidePaintEvent, oldDirectPaint);
 #endif
 

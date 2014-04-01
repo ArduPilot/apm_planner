@@ -307,11 +307,6 @@ INCLUDEPATH += \
 
 include(libs/qwt/qwt.pri)
 
-#
-# QSerialPort - serial port library
-#
-
-QT += serialport
 
 WindowsBuild {
     # Used to enumerate serial ports by QSerialPort
@@ -369,7 +364,7 @@ LinuxBuild : exists(/usr/local/lib/libxdrvlib.so) {
 
     DEFINES +=
         MOUSE_ENABLED_LINUX \
-        ParameterCheck # Hack: Has to be defined for magellan usage
+        #ParameterCheck # Hack: Has to be defined for magellan usage
 
     INCLUDEPATH *= /usr/local/include
     HEADERS += src/input/Mouse6dofInput.h

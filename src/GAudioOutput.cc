@@ -30,7 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "QsLog.h"
-#include "configuration.h"
+#include "./src/configuration.h"
 #include "GAudioOutput.h"
 #include "MG.h"
 

@@ -90,7 +90,9 @@ QT += network \
     webkitwidgets \
     multimedia \
     sql \
-    declarative
+    declarative \
+    serialport \
+    widgets
 
 ##  testlib is needed even in release flavor for QSignalSpy support
 #QT += testlib

@@ -12,7 +12,7 @@ AutoUpdateDialog::AutoUpdateDialog(const QString &version, const QString &target
     m_sourceUrl(url),
     m_targetFilename(targetFilename),
     m_networkReply(NULL),
-    m_skipVersion(FALSE),
+    m_skipVersion(false),
     m_skipVersionString(version)
 {
     ui->setupUi(this);

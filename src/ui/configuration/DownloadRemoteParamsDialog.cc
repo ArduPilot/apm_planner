@@ -1,5 +1,5 @@
 #include "QsLog.h"
-#include "configuration.h"
+#include "./src/configuration.h"
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QFile>

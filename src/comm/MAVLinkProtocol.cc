@@ -17,7 +17,7 @@
 #include "SlugsMAV.h"
 #include "PxQuadMAV.h"
 #include "ArduPilotMegaMAV.h"
-#include "configuration.h"
+#include "./src/configuration.h"
 #include "LinkManager.h"
 #include "QGCMAVLink.h"
 #include "QGCMAVLinkUASFactory.h"

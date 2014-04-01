@@ -1,5 +1,5 @@
 #include "QsLog.h"
-#include "configuration.h"
+#include "./src/configuration.h"
 #include "ParamCompareDialog.h"
 #include "ui_ParamCompareDialog.h"
 #include <QMessageBox>

@@ -39,7 +39,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QTimer>
 #include <QProcess>
 #include <LinkInterface.h>
-#include <configuration.h>
+#include <./src/configuration.h>
 #include "UASInterface.h"
 #include "QGCHilLink.h"
 

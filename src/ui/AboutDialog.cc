@@ -1,4 +1,4 @@
-#include "configuration.h"
+#include "./src/configuration.h"
 #include "AboutDialog.h"
 #include "ui_AboutDialog.h"
 

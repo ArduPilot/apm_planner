@@ -40,8 +40,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QString>
 #include <QMap>
 #include <QTimer>
-#include <qserialport.h>
-#include <configuration.h>
+#include <QSerialPort>
+#include <./src/configuration.h>
 
 class UASInterface;
 class LinkManager;

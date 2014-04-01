@@ -30,7 +30,7 @@ This file is part of the QGROUNDCONTROL project
 
 #include "QGCCore.h"
 #include "MainWindow.h"
-#include "configuration.h"
+#include "./src/configuration.h"
 #include "QsLog.h"
 #include <QtWidgets/QApplication>
 

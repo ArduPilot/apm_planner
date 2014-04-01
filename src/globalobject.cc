@@ -1,5 +1,5 @@
 #include "QsLog.h"
-#include "configuration.h"
+#include "./src/configuration.h"
 #include "globalobject.h"
 #include <QSettings>
 #include <QDateTime>

@@ -31,7 +31,7 @@ This file is part of the QGROUNDCONTROL project
 
 #include "QGCCore.h"
 #include "QsLog.h"
-#include "configuration.h"
+#include "./src/configuration.h"
 #include "QGC.h"
 #include "MainWindow.h"
 #include "GAudioOutput.h"
