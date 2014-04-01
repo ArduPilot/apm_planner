@@ -18,6 +18,9 @@ LogDownloadDescriptor::LogDownloadDescriptor(uint logID, uint time_utc,
 {
     m_logID = logID;
     m_logTimeUTC = QDateTime::fromMSecsSinceEpoch(time_utc);
+    // Set time to current UTC time if time is 1970 i.e. invalid.
+    if(m_logTimeUTC.date().year() == 1970)
+        m_logTimeUTC = QDateTime::currentDateTimeUtc();
     m_logSize = logSize;
 }
 
@@ -79,7 +82,6 @@ LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
     table->setHorizontalHeaderLabels(headerList);
     table->setSelectionBehavior(QAbstractItemView::SelectRows);
     table->setAlternatingRowColors(true);
-//    table->setColumnWidth(LDD_COLUMN_CHECKBOX, 40);
 
     setActiveUAS(UASManager::instance()->getActiveUAS());
 }
