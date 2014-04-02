@@ -26,7 +26,8 @@ This file is part of the APM_PLANNER project
 
 #include "QGCCore.h"
 
-FlightModeConfig::FlightModeConfig(QWidget *parent) : AP2ConfigWidget(parent)
+FlightModeConfig::FlightModeConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_modesUpdated(0)
 {
     ui.setupUi(this);
 
@@ -45,7 +46,17 @@ FlightModeConfig::FlightModeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.mode4SimpleCheckBox->setVisible(false);
     ui.mode5SimpleCheckBox->setVisible(false);
     ui.mode6SimpleCheckBox->setVisible(false);
+
+    for (int i = 0; i < 6; i++){
+        m_changedModes.append(false);
+    }
+
     connect(ui.savePushButton,SIGNAL(clicked()),this,SLOT(saveButtonClicked()));
+    ui.savePushButton->setEnabled(false);
+
+    ui.progressBar->setRange(0,5);
+    ui.progressBar->setValue(0);
+
     initConnections();
 }
 
@@ -77,6 +88,7 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
         ApmUiHelpers::addPlaneModes(ui.mode6ComboBox);
 
         ui.mode6ComboBox->setEnabled(false);
+        m_modeString = "FLT";
     }
     else if (m_uas->isGroundRover())
     {
@@ -88,6 +100,7 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
         ApmUiHelpers::addRoverModes(ui.mode4ComboBox);
         ApmUiHelpers::addRoverModes(ui.mode5ComboBox);
         ApmUiHelpers::addRoverModes(ui.mode6ComboBox);
+        m_modeString = "";
     }
     else if (m_uas->isMultirotor())
     {
@@ -105,16 +118,114 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
         ui.mode4SimpleCheckBox->setVisible(true);
         ui.mode5SimpleCheckBox->setVisible(true);
         ui.mode6SimpleCheckBox->setVisible(true);
+        m_modeString = "FLT";
+    }
+
+    connect(ui.mode1ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+    connect(ui.mode2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+    connect(ui.mode3ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+    connect(ui.mode4ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+    connect(ui.mode5ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+    connect(ui.mode6ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+
+    connect(ui.mode1ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+    connect(ui.mode2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+    connect(ui.mode3ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+    connect(ui.mode4ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+    connect(ui.mode5ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+    connect(ui.mode6ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+
+    connect(ui.mode1SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+    connect(ui.mode2SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+    connect(ui.mode3SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+    connect(ui.mode4SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+    connect(ui.mode5SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+    connect(ui.mode6SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+
+
+}
+
+void FlightModeConfig::enableSaveButton()
+{
+    if (isFlightModeChanged()){
+            ui.savePushButton->setEnabled(true);
     }
 }
+
+bool FlightModeConfig::isFlightModeChanged()
+{
+    QGCUASParamManager* pm = m_uas->getParamManager();
+    if((pm->getParameterValue(1, m_modeString + "MODE1") != ui.mode1ComboBox->itemData(ui.mode1ComboBox->currentIndex()))
+      ||(pm->getParameterValue(1, m_modeString + "MODE2") != ui.mode2ComboBox->itemData(ui.mode2ComboBox->currentIndex()))
+      ||(pm->getParameterValue(1, m_modeString + "MODE3") != ui.mode3ComboBox->itemData(ui.mode3ComboBox->currentIndex()))
+      ||(pm->getParameterValue(1, m_modeString + "MODE4") != ui.mode4ComboBox->itemData(ui.mode4ComboBox->currentIndex()))
+      ||(pm->getParameterValue(1, m_modeString + "MODE5") != ui.mode5ComboBox->itemData(ui.mode5ComboBox->currentIndex()))
+      ||(pm->getParameterValue(1, m_modeString + "MODE6") != ui.mode6ComboBox->itemData(ui.mode6ComboBox->currentIndex()))){
+
+        return true;
+    }
+
+    if(pm->getParameterValue(1, m_modeString + "MODE1").toInt() != getSimpleValue())
+        return true;
+
+    return false; // no changes
+
+}
+
 void FlightModeConfig::modeChanged(int sysId, QString status, QString description)
 {
     //Unused?
 }
+
+void FlightModeConfig::checkForComboxBoxChanged(QObject* sender, QComboBox *comboBox, int index,
+                                                bool& modeChanged, const QString& param)
+{
+    QComboBox *senderComboBox = dynamic_cast<QComboBox*>(sender);
+    QLOG_DEBUG() << "sender :" << senderComboBox;
+
+    QGCUASParamManager* pm = m_uas->getParamManager();
+    if ((senderComboBox == comboBox)&&(modeChanged == false)){
+        if (pm->getParameterValue(1,param).toInt() != comboBox->itemData(index).toInt()){
+            modeChanged = true;
+            m_modesUpdated++;
+            ui.progressBar->setMaximum(m_modesUpdated);
+        } else {
+            modeChanged = false;
+            m_modesUpdated--;
+            ui.progressBar->setMaximum(m_modesUpdated);
+        }
+    }
+}
+
+void FlightModeConfig::comboBoxChanged(int index)
+{
+    ui.progressBar->reset();
+
+    checkForComboxBoxChanged(sender(), ui.mode1ComboBox, index, m_changedModes[0], m_modeString+"MODE1");
+    checkForComboxBoxChanged(sender(), ui.mode2ComboBox, index, m_changedModes[1], m_modeString+"MODE2");
+    checkForComboxBoxChanged(sender(), ui.mode3ComboBox, index, m_changedModes[2], m_modeString+"MODE3");
+    checkForComboxBoxChanged(sender(), ui.mode4ComboBox, index, m_changedModes[3], m_modeString+"MODE4");
+    checkForComboxBoxChanged(sender(), ui.mode5ComboBox, index, m_changedModes[4], m_modeString+"MODE5");
+    checkForComboxBoxChanged(sender(), ui.mode6ComboBox, index, m_changedModes[5], m_modeString+"MODE6");
+}
+
+int FlightModeConfig::getSimpleValue()
+{
+    int value = 0;
+    value += (ui.mode1SimpleCheckBox->isChecked() ? 1 : 0);
+    value += (ui.mode2SimpleCheckBox->isChecked() ? 1 : 0) << 1;
+    value += (ui.mode3SimpleCheckBox->isChecked() ? 1 : 0) << 2;
+    value += (ui.mode4SimpleCheckBox->isChecked() ? 1 : 0) << 3;
+    value += (ui.mode5SimpleCheckBox->isChecked() ? 1 : 0) << 4;
+    value += (ui.mode6SimpleCheckBox->isChecked() ? 1 : 0) << 5;
+
+    return value;
+}
+
 void FlightModeConfig::saveButtonClicked()
 {
     QGCUASParamManager* pm = m_uas->getParamManager();
-    QString modeString;
+
     int mode1 = ui.mode1ComboBox->itemData(ui.mode1ComboBox->currentIndex()).toInt();
     int mode2 = ui.mode2ComboBox->itemData(ui.mode2ComboBox->currentIndex()).toInt();
     int mode3 = ui.mode3ComboBox->itemData(ui.mode3ComboBox->currentIndex()).toInt();
@@ -122,33 +233,20 @@ void FlightModeConfig::saveButtonClicked()
     int mode5 = ui.mode5ComboBox->itemData(ui.mode5ComboBox->currentIndex()).toInt();
     int mode6 = ui.mode6ComboBox->itemData(ui.mode6ComboBox->currentIndex()).toInt();
 
-    if (m_uas->isFixedWing() || m_uas->isMultirotor())
-    {
-        modeString = "FLTMODE";
-
-        if(m_uas->isMultirotor()){
-            int value = 0;
-            value += (ui.mode1SimpleCheckBox->isChecked() ? 1 : 0);
-            value += (ui.mode2SimpleCheckBox->isChecked() ? 1 : 0) << 1;
-            value += (ui.mode3SimpleCheckBox->isChecked() ? 1 : 0) << 2;
-            value += (ui.mode4SimpleCheckBox->isChecked() ? 1 : 0) << 3;
-            value += (ui.mode5SimpleCheckBox->isChecked() ? 1 : 0) << 4;
-            value += (ui.mode6SimpleCheckBox->isChecked() ? 1 : 0) << 5;
-            pm->setParameter(1,"SIMPLE",value);
-        }
-
-    }
-    else if (m_uas->isGroundRover())
-    {
-        modeString = "MODE";
+    if(m_uas->isMultirotor()){
+        int value = getSimpleValue();
+        pm->setParameter(1,"SIMPLE",value);
     }
 
-    pm->setParameter(1,modeString + "1",mode1);
-    pm->setParameter(1,modeString + "2",mode2);
-    pm->setParameter(1,modeString + "3",mode3);
-    pm->setParameter(1,modeString + "4",mode4);
-    pm->setParameter(1,modeString + "5",mode5);
-    pm->setParameter(1,modeString + "6",mode6);
+    ui.progressBar->setValue(0);
+    ui.progressBar->setMaximum(m_modesUpdated);
+
+    pm->setParameter(1,m_modeString + "MODE1",mode1);
+    pm->setParameter(1,m_modeString + "MODE2",mode2);
+    pm->setParameter(1,m_modeString + "MODE3",mode3);
+    pm->setParameter(1,m_modeString + "MODE4",mode4);
+    pm->setParameter(1,m_modeString + "MODE5",mode5);
+    pm->setParameter(1,m_modeString + "MODE6",mode6);
 
 }
 
@@ -215,43 +313,55 @@ void FlightModeConfig::remoteControlChannelRawChanged(int chan,float val)
     }
 }
 
+void FlightModeConfig::updateModeComboBox(QComboBox* modeComboBox, QVariant value, bool& modeChanged)
+{
+    int index = modeComboBox->findData(value.toInt());
+    modeComboBox->blockSignals(true);
+    modeComboBox->setCurrentIndex(index);
+    // stop progress bar
+    if ((m_modesUpdated != 0) && (modeChanged==true)){
+        ui.progressBar->setValue(ui.progressBar->value()+1);
+        m_modesUpdated--;
+        modeChanged = false;
+    }
+    modeComboBox->blockSignals(false);
+}
+
 void FlightModeConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+
     // Filter Log based on parameters we are interested in.
-    if (parameterName.startsWith("FLTMODE")||parameterName.startsWith("MODE"))
-         QLOG_DEBUG() << "FlightModeConfig:: name:" << parameterName << " value:" << value;
-
-    if ((parameterName == "FLTMODE1") || (parameterName == "MODE1"))
-    {
-        int index = ui.mode1ComboBox->findData(value.toInt());
-        ui.mode1ComboBox->setCurrentIndex(index);
-    }
-    else if ((parameterName == "FLTMODE2") || (parameterName == "MODE2"))
-    {
-        int index = ui.mode2ComboBox->findData(value.toInt());
-        ui.mode2ComboBox->setCurrentIndex(index);
-    }
-    else if ((parameterName == "FLTMODE3") || (parameterName == "MODE3"))
-    {
-        int index = ui.mode3ComboBox->findData(value.toInt());
-        ui.mode3ComboBox->setCurrentIndex(index);
-    }
-    else if ((parameterName == "FLTMODE4") || (parameterName == "MODE4"))
-    {
-        int index = ui.mode4ComboBox->findData(value.toInt());
-        ui.mode4ComboBox->setCurrentIndex(index);
-    }
-    else if ((parameterName == "FLTMODE5") || (parameterName == "MODE5"))
-    {
-        int index = ui.mode5ComboBox->findData(value.toInt());
-        ui.mode5ComboBox->setCurrentIndex(index);
-    }
-    else if ((parameterName == "FLTMODE6") || (parameterName == "MODE6"))
-    {
-        int index = ui.mode6ComboBox->findData(value.toInt());
-        ui.mode6ComboBox->setCurrentIndex(index);
+    if (parameterName.startsWith("FLTMODE")||parameterName.startsWith("MODE")){
+        QLOG_DEBUG() << "FlightModeConfig:: name:" << parameterName << " value:" << value;
+        ui.savePushButton->setEnabled(false);
     }
 
+    if (parameterName == m_modeString + "MODE1")
+    {
+        updateModeComboBox(ui.mode1ComboBox, value, m_changedModes[0]);
+    }
+    else if ((parameterName == m_modeString + "MODE2"))
+    {
+        updateModeComboBox(ui.mode2ComboBox, value, m_changedModes[1]);
+    }
+    else if ((parameterName == m_modeString + "MODE3"))
+    {
+        updateModeComboBox(ui.mode3ComboBox, value, m_changedModes[2]);
+    }
+    else if ((parameterName == m_modeString + "MODE4"))
+    {
+        updateModeComboBox(ui.mode4ComboBox, value, m_changedModes[3]);
+    }
+    else if ((parameterName == m_modeString + "MODE5"))
+    {
+        updateModeComboBox(ui.mode5ComboBox, value, m_changedModes[4]);
+    }
+    else if ((parameterName == m_modeString + "MODE6"))
+    {
+        updateModeComboBox(ui.mode6ComboBox, value, m_changedModes[5]);
+    }
 
     if (m_uas->isMultirotor())
     {
@@ -264,6 +374,14 @@ void FlightModeConfig::parameterChanged(int uas, int component, QString paramete
             ui.mode4SimpleCheckBox->setChecked(newval >> 3 & 1);
             ui.mode5SimpleCheckBox->setChecked(newval >> 4 & 1);
             ui.mode6SimpleCheckBox->setChecked(newval >> 5 & 1);
+            QTimer::singleShot(1000, this, SLOT(resetMaximum()));
+            ui.savePushButton->setEnabled(false);
         }
     }
+}
+
+void FlightModeConfig::resetMaximum()
+{
+    ui.progressBar->setMaximum(5);
+    ui.progressBar->setValue(5);
 }

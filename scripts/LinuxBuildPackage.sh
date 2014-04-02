@@ -16,11 +16,11 @@ mkdir ~/Documents/APMPlanner2_$GIT_VERSION/DEBIAN
 install -m 755 -d ~/Documents/APMPlanner2_$GIT_VERSION/usr/share/doc/APMPlanner2
 
 #copy deb support files
-cp -r -f ./scripts/debian/control ~/Documents/APMPlanner2_$GIT_VERSION/DEBIAN/control
+cp -r -f ./debian/control ~/Documents/APMPlanner2_$GIT_VERSION/DEBIAN/control
 install -m 644 ./license.txt ~/Documents/APMPlanner2_$GIT_VERSION/usr/share/doc/APMPlanner2/copyright
-install -m 644 ./scripts/debian/changelog ~/Documents/APMPlanner2_$GIT_VERSION/usr/share/doc/APMPlanner2/changelog
-install -m 755 ./scripts/debian/postinst ~/Documents/APMPlanner2_$GIT_VERSION/DEBIAN/postinst
-install -m 755 ./scripts/debian/postrm ~/Documents/APMPlanner2_$GIT_VERSION/DEBIAN/postrm
+install -m 644 ./debian/changelog ~/Documents/APMPlanner2_$GIT_VERSION/usr/share/doc/APMPlanner2/changelog
+install -m 755 ./debian/postinst ~/Documents/APMPlanner2_$GIT_VERSION/DEBIAN/postinst
+install -m 755 ./debian/postrm ~/Documents/APMPlanner2_$GIT_VERSION/DEBIAN/postrm
 gzip -9 ~/Documents/APMPlanner2_$GIT_VERSION/usr/share/doc/APMPlanner2/changelog
 
 #add version number to control file

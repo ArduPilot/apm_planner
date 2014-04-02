@@ -28,6 +28,7 @@ This file is part of the APM_PLANNER project
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QSettings>
 
 ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
@@ -42,8 +43,11 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     ui.advancedParamButton->setVisible(false);
     ui.advParamListButton->setVisible(false);
     ui.arduCopterPidButton->setVisible(false);
+    ui.arduCopterPidButton->setText(tr("Extended Tuning"));
     ui.arduRoverPidButton->setVisible(false);
+    ui.arduRoverPidButton->setText(tr("Tuning"));
     ui.arduPlanePidButton->setVisible(false);
+    ui.arduPlanePidButton->setText(tr("Tuning"));
     ui.basicPidButton->setVisible(false);
 
     m_flightConfig = new FlightModeConfig(this);
@@ -107,7 +111,22 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     // Setup Parameter Progress bars
     ui.globalParamProgressBar->setRange(0,100);
 
+    QSettings settings;
+    if (settings.contains("ADVANCED_MODE"))
+    {
+        m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
+    }
 }
+
+void ApmSoftwareConfig::advModeChanged(bool state)
+{
+    m_isAdvancedMode = state;
+    if(m_uas){
+        uasConnected();
+    }
+
+}
+
 void ApmSoftwareConfig::apmParamNetworkReplyFinished()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
@@ -162,14 +181,18 @@ void ApmSoftwareConfig::uasConnected()
         ui.arduCopterPidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
         ui.basicPidButton->setVisible(false);
+        ui.advParamListButton->setVisible(m_isAdvancedMode);
+        ui.advancedParamButton->setVisible(m_isAdvancedMode);
     }
     else if (m_uas->isMultirotor())
     {
         ui.geoFenceButton->setVisible(true);
-        ui.arduCopterPidButton->setVisible(true);
+        ui.arduCopterPidButton->setVisible(m_isAdvancedMode);
         ui.arduPlanePidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
         ui.basicPidButton->setVisible(true);
+        ui.advParamListButton->setVisible(m_isAdvancedMode);
+        ui.advancedParamButton->setVisible(m_isAdvancedMode);
     }
     else if (m_uas->isGroundRover())
     {
@@ -178,6 +201,8 @@ void ApmSoftwareConfig::uasConnected()
         ui.arduCopterPidButton->setVisible(false);
         ui.arduPlanePidButton->setVisible(false);
         ui.basicPidButton->setVisible(false);
+        ui.advParamListButton->setVisible(m_isAdvancedMode);
+        ui.advancedParamButton->setVisible(m_isAdvancedMode);
     }
 }
 
@@ -210,31 +235,18 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     QString compare = "";
     if (uas->isFixedWing())
     {
-        ui.geoFenceButton->setVisible(false); // [TODO] Ony support copter for now
-        ui.arduPlanePidButton->setVisible(true);
-        ui.arduCopterPidButton->setVisible(false);
-        ui.arduRoverPidButton->setVisible(false);
-        ui.basicPidButton->setVisible(false);
         compare = "ArduPlane";
     }
     else if (uas->isMultirotor())
     {
-        ui.geoFenceButton->setVisible(true);
-        ui.arduCopterPidButton->setVisible(true);
-        ui.arduPlanePidButton->setVisible(false);
-        ui.arduRoverPidButton->setVisible(false);
-        ui.basicPidButton->setVisible(true);
         compare = "ArduCopter";
     }
     else if (uas->isGroundRover())
     {
-        ui.geoFenceButton->setVisible(false);  // [TODO] Ony support copter for now
-        ui.arduRoverPidButton->setVisible(true);
-        ui.arduCopterPidButton->setVisible(false);
-        ui.arduPlanePidButton->setVisible(false);
-        ui.basicPidButton->setVisible(false);
         compare = "APMRover2";
     }
+
+    uasConnected();
 
 #ifdef Q_OS_WIN
     QString appDataDir = QString(getenv("USERPROFILE")).replace("\\","/");

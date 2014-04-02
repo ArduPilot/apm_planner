@@ -3,24 +3,29 @@
 
 #include <QThread>
 #include <QVariantMap>
+#include <QSqlDatabase>
+
 class AP2DataPlotThread : public QThread
 {
     Q_OBJECT
 public:
     explicit AP2DataPlotThread(QObject *parent = 0);
-    void loadFile(QString file);
+    void loadFile(QString file,QSqlDatabase *db);
     void stopLoad() { m_stop = true; }
 private:
     void loadDataFieldsFromValues();
     QString m_fileName;
     bool m_stop;
+    QSqlDatabase *m_db;
+    QString makeInsertTableString(QString tablename, QString variablestr);
+    QString makeCreateTableString(QString tablename, QString formatstr,QString variablestr);
 protected:
     void run();
 signals:
     void startLoad();
     void loadProgress(qint64 pos,qint64 size);
     void payloadDecoded(int index,QString name,QVariantMap map);
-    void done();
+    void done(int errors);
     void error(QString errorstr);
     void lineRead(QString line);
 public slots:

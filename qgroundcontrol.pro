@@ -128,16 +128,19 @@ MacBuild {
 }
 
 LinuxBuild {
+    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
     DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 
+    LIBS += -lsndfile -lasound
     LIBS += -lz
     LIBS += -lssl -lcrypto
 }
 
 WindowsBuild {
+    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     # Specify multi-process compilation within Visual Studio.
@@ -155,6 +158,7 @@ WindowsBuild {
 }
 
 WindowsCrossBuild {
+    QT += script
     # Windows version cross compiled on linux using
     DEFINES += __STDC_LIMIT_MACROS
 
@@ -378,7 +382,9 @@ FORMS += \
     src/ui/AP2DataPlot2D.ui \
     src/ui/dataselectionscreen.ui \
     src/ui/AboutDialog.ui \
-    src/ui/AP2DataPlotAxisDialog.ui
+    src/ui/AP2DataPlotAxisDialog.ui \
+    src/ui/AutoUpdateDialog.ui \
+    src/uas/LogDownloadDialog.ui
 
 HEADERS += \
     src/MG.h \
@@ -581,7 +587,10 @@ HEADERS += \
     src/ui/AP2DataPlotAxisDialog.h \
     src/comm/arduino_intelhex.h \
     src/comm/arduinoflash.h \
-    src/audio/AlsaAudio.h
+    src/audio/AlsaAudio.h \
+    src/ui/AutoUpdateCheck.h \
+    src/ui/AutoUpdateDialog.h \
+    src/uas/LogDownloadDialog.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -778,7 +787,10 @@ SOURCES += src/main.cc \
     src/ui/AP2DataPlotAxisDialog.cc \
     src/comm/arduino_intelhex.cpp \
     src/comm/arduinoflash.cc \
-    src/audio/AlsaAudio.cc
+    src/audio/AlsaAudio.cc \
+    src/ui/AutoUpdateCheck.cc \
+    src/ui/AutoUpdateDialog.cc \
+    src/uas/LogDownloadDialog.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

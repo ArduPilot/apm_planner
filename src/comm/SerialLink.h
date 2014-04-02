@@ -39,6 +39,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QMutex>
 #include <QString>
 #include <QMap>
+#include <QTimer>
 #include <qserialport.h>
 #include <configuration.h>
 
@@ -147,12 +148,17 @@ public slots:
     void writeBytes(const char* data, qint64 length);
     bool connect();
     bool disconnect();
+    void portReadyRead();
 
     void linkError(QSerialPort::SerialPortError error);
+    void timeoutTimerTimeout();
 
 protected:
+
+
     quint64 m_bytesRead;
     QPointer<QSerialPort> m_port;
+    bool m_isConnected;
     int m_baud;
     int m_dataBits;
     int m_flowControl;
@@ -177,13 +183,36 @@ protected:
     QList<QString> m_ports;
 
 private:
+    bool connectNoThreaded();
+    bool connectPartialThreaded();
+    bool connectPureThreaded();
+    bool disconnectNoThreaded();
+    bool disconnectPartialThreaded();
+    bool disconnectPureThreaded();
+    QString findTypeFromPort(QString portname);
+    /**
+     * @brief Wait for a port "name" to either exist, or not exist
+     *
+     * @param name Name of the port to look for
+     * @param size timeoutmilliseconds timeout in milliseconds before returning false
+     * @param toexist True means it scans for the port to appear, false means it scans for it to disappear.
+     **/
+    bool waitForPort(QString name,int timeoutmilliseconds,bool toexist);
+    bool m_triedDtrReset;
+    bool m_triedRebootReset;
+    bool m_useEventLoop;
+
     volatile bool m_stopp;
     volatile bool m_reqReset;
 	QMutex m_stoppMutex;
     QByteArray m_transmitBuffer;
     QMap<QString,int> m_portBaudMap;
+    QTimer *m_timeoutTimer;
+    int m_timeoutCounter;
+    int m_timeoutExtendCounter;
+    QString m_connectedType;
 
-    bool hardwareConnect();
+    bool hardwareConnect(QString type);
 
 signals:
     void aboutToCloseFlag();

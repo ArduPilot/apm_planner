@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>589</height>
+    <width>1007</width>
+    <height>545</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5">
+  <layout class="QVBoxLayout" name="verticalLayout_6">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
      <item>
@@ -31,7 +31,68 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_5">
+                <item>
+                 <widget class="QScrollBar" name="horizontalScrollBar">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <widget class="QLabel" name="label">
+                  <property name="maximumSize">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>&lt;h1&gt;+&lt;/h1&gt;</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QScrollBar" name="verticalScrollBar">
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="maximumSize">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>&lt;h1&gt;-&lt;/h1&gt;</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </item>
             <item>
              <widget class="QTableWidget" name="tableWidget"/>
@@ -45,6 +106,13 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="downloadPushButton">
+         <property name="text">
+          <string>Download Log</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QPushButton" name="loadOfflineLogButton">
          <property name="text">
@@ -77,6 +145,13 @@
         <widget class="QCheckBox" name="hideExcelView">
          <property name="text">
           <string>Hide Grid View</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="toKMLPushButton">
+         <property name="text">
+          <string>Log to Google Earth File</string>
          </property>
         </widget>
        </item>

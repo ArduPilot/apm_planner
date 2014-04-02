@@ -182,7 +182,18 @@ QString GlobalObject::shareDirectory()
         QString tmp = settingsDir.absolutePath();
         return  settingsDir.absolutePath();
     }
-
+    settingsDir = QDir("/usr/share/APMPlanner2");
+    if(settingsDir.exists("data") && settingsDir.exists("qml"))
+    {
+        QString tmp = settingsDir.absolutePath();
+        return  settingsDir.absolutePath();
+    }
+    settingsDir = QDir("/usr/local/share/APMPlanner2");
+    if(settingsDir.exists("data") && settingsDir.exists("qml"))
+    {
+        QString tmp = settingsDir.absolutePath();
+        return  settingsDir.absolutePath();
+    }
     //else
     return QDir(QDir::currentPath()).absolutePath();
 

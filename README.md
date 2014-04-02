@@ -24,11 +24,12 @@ Install SDL
 -----------
 1) Download SDL from:  <http://www.libsdl.org/release/SDL-1.2.14.dmg>
 
-2) From the SDL disk image, copy the `sdl.framework` bundle to `/Library/Frameworks` directory (if you are not an admin copy to `~/Library/Framewroks`)
+2) From the SDL disk image, copy the `sdl.framework` bundle to `/Library/Frameworks` directory (if you are not an admin copy to `~/Library/Frameworks`)
 
 Install QT
 -----------
-1) Download Qt 4.8.x (Does not current work with Qt5.x)
+1) Download Qt 4.8.x (Does not currently work with Qt5.x)
+   - you can verify the version by typing 'qmake -v' and it should report Qt 4.8.x as the version. 
 
 2) Double click the package installer
 
@@ -52,7 +53,8 @@ Building on Linux (tested against Ubuntu 13.10):
 sudo apt-get install phonon libqt4-dev libqt4-opengl-dev \
  libphonon-dev libphonon4 phonon-backend-gstreamer \
  qtcreator libsdl1.2-dev libflite1 flite1-dev build-essential \
- libopenscenegraph-dev libssl-dev libqt4-opengl-dev libudev-dev 
+ libopenscenegraph-dev libssl-dev libqt4-opengl-dev libudev-dev \
+ libsndfile1-dev  
 ```
 
 2) Clone the repository in your workspace:
@@ -66,11 +68,11 @@ git clone https://github.com/diydrones/apm_planner
 
 ```
 cd ~/workspace/apm_planner
-qtmake-qt4 qgroundcontrol.pro
+qmake-qt4 qgroundcontrol.pro
 make
 ```
 
-Or try `qmake qgroundcontrol.pro` if the `qtmake-qt4` command doesn't exist on your version of Ubuntu.
+Or try `qmake qgroundcontrol.pro` if the `qmake-qt4` command doesn't exist on your version of Ubuntu. This will only work if the Qt version install on your machine is Qt4.8.x, this can be checked using `qmake -v'
 
 4) Run APM Planner:
 
@@ -110,7 +112,7 @@ Windows XP/7:
 6) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro and re-run `qmake -tp vc qgroundcontrol.pro`
 
 
-Repository Layout
+Repository Layout (2014-3-28: out-of-date, needs to be fixed)
 =================
 ```
 qgroundcontrol:

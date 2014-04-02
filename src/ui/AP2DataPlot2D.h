@@ -11,8 +11,10 @@
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlotAxisDialog.h"
 #include <QTextBrowser>
+#include <QSqlDatabase>
+#include <QStandardItemModel>
 
-
+class LogDownloadDialog;
 
 class AP2DataPlot2D : public QWidget
 {
@@ -22,9 +24,20 @@ public:
     explicit AP2DataPlot2D(QWidget *parent = 0);
     ~AP2DataPlot2D();
     void addSource(MAVLinkDecoder *decoder);
+
+signals:
+    void toKMLClicked();
+
+public slots:
+    void showLogDownloadDialog();
+    void closeLogDownloadDialog();
+
 private slots:
     //New Active UAS set
     void activeUASSet(UASInterface* uas);
+
+    void connected();
+    void disconnected();
 
     //Load a graph from a file
     void loadButtonClicked();
@@ -36,7 +49,7 @@ private slots:
     //Cancel clicked on the graph loading thread progress dialog
     void progressDialogCanceled();
     //Graph loading thread finished
-    void threadDone();
+    void threadDone(int errors);
     //Graph loading thread actually exited
     void threadTerminated();
     //Graph loading thread error
@@ -79,6 +92,10 @@ private slots:
     void showAllClicked();
     void graphControlsButtonClicked();
     void plotMouseMove(QMouseEvent *evt);
+    void horizontalScrollMoved(int value);
+    void verticalScrollMoved(int value);
+    void xAxisChanged(QCPRange range);
+
 private:
     class Graph
     {
@@ -104,6 +121,9 @@ private:
     QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
     //Map from graph name to list of values for "offline" mode
     QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
+    QList<QString> loglines;
+    QSqlDatabase m_sharedDb;
+    int currentIndex;
 
     QList<QPair<qint64,double> > m_onlineValueTimeoutList;
 
@@ -115,6 +135,7 @@ private:
     Ui::AP2DataPlot2D ui;
     AP2DataPlotThread *m_logLoaderThread;
     DataSelectionScreen *m_dataSelectionScreen;
+    QStandardItemModel *model;
     bool m_logLoaded;
     //Current "index", X axis on graph. Used to keep all the graphs lined up.
     qint64 m_currentIndex;
@@ -124,6 +145,13 @@ private:
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
     qint64 m_timeDiff;
+
+
+    qint64 m_scrollStartIndex; //Actual graph start
+    qint64 m_scrollEndIndex; //Actual graph end
+
+    LogDownloadDialog *m_logDownloadDialog;
+
 
 };
 

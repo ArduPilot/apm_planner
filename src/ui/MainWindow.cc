@@ -377,6 +377,11 @@ MainWindow::MainWindow(QWidget *parent):
     }
 #endif
 
+    // Trigger Auto Update Check
+    QTimer::singleShot(5000, &m_autoUpdateCheck, SLOT(autoUpdateCheck()));
+    connect(&m_autoUpdateCheck, SIGNAL(updateAvailable(QString,QString,QString,QString)),
+            this, SLOT(showAutoUpdateDownloadDialog(QString,QString,QString,QString)));
+
 }
 
 MainWindow::~MainWindow()
@@ -586,16 +591,19 @@ void MainWindow::buildCommonWidgets()
     {
         softwareConfigView = new SubMainWindow(this);
         softwareConfigView->setObjectName("VIEW_SOFTWARE_CONFIG");
-        softwareConfigView->setCentralWidget(new ApmSoftwareConfig(this));
+        ApmSoftwareConfig* apsw = new ApmSoftwareConfig(this);
+        softwareConfigView->setCentralWidget(apsw);
         addToCentralStackedWidget(softwareConfigView, VIEW_SOFTWARE_CONFIG, tr("Software"));
+        connect(ui.actionAdvanced_Mode, SIGNAL(toggled(bool)), apsw, SLOT(advModeChanged(bool)));
     }
 
+     AP2DataPlot2D *plot = NULL;
     if (!engineeringView)
     {
         engineeringView = new SubMainWindow(this);
         engineeringView->setObjectName("VIEW_ENGINEER");
         //engineeringView->setCentralWidget(new QGCDataPlot2D(this));
-        AP2DataPlot2D *plot = new AP2DataPlot2D(this);
+        plot = new AP2DataPlot2D(this);
         plot->addSource(mavlinkDecoder);
         engineeringView->setCentralWidget(plot);
 
@@ -625,6 +633,7 @@ void MainWindow::buildCommonWidgets()
         TerminalConsole *terminalConsole = new TerminalConsole(this);
         terminalView->setCentralWidget(terminalConsole);
         addToCentralStackedWidget(terminalView, VIEW_TERMINAL, tr("Terminal View"));
+        connect(plot, SIGNAL(toKMLClicked()), terminalConsole, SLOT(logToKmlClicked()));
     }
 
     if (!debugOutput)
@@ -1543,6 +1552,9 @@ void MainWindow::connectCommonActions()
     // About
     connect(ui.actionAbout_APM_Planner_2_0, SIGNAL(triggered()), this, SLOT(showAbout()));
 
+    // Check for updates
+    connect(ui.actionCheck_For_Updates, SIGNAL(triggered()), &m_autoUpdateCheck, SLOT(forcedAutoUpdateCheck()));
+
     // Connect actions from ui
     connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
     connect(ui.actionAdvanced_Mode,SIGNAL(triggered()),this,SLOT(setAdvancedMode()));
@@ -2341,4 +2353,23 @@ void MainWindow::showAbout()
     dialog->hide();
     delete dialog;
     dialog = NULL;
+}
+
+void MainWindow::showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url, QString name)
+{
+    QLOG_DEBUG() << "Update Available! Show Update Dialog";
+    QLOG_DEBUG() << "Ver:" << version << "type:" << releaseType;
+
+    m_dialog = new AutoUpdateDialog(version, name, url, this);
+    connect(m_dialog, SIGNAL(autoUpdateCancelled(QString)), this, SLOT(autoUpdateCancelled(QString)));
+    m_dialog->show();
+}
+
+void MainWindow::autoUpdateCancelled(QString version)
+{
+    QLOG_DEBUG() << "autoUpdateCancelled";
+    m_autoUpdateCheck.setSkipVersion(version);
+
+    delete m_dialog;
+    m_dialog = NULL;
 }

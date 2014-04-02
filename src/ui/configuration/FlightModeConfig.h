@@ -51,13 +51,29 @@ private slots:
     void remoteControlChannelRawChanged(int chan,float val);
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
 
+    void resetMaximum();
+    void comboBoxChanged(int index);
+    void enableSaveButton();
+
 private:
     void addPlaneModes(QComboBox &comboBox);
     void addCopterModes(QComboBox &comboBox);
     void addRoverModes(QComboBox &comboBox);
 
+    bool isFlightModeChanged();
+
+    void updateModeComboBox(QComboBox *modeComboBox, QVariant value, bool &modeChanged);
+    int getSimpleValue();
+    void checkForComboxBoxChanged(QObject* sender, QComboBox *comboBox, int index,
+                                  bool &modeChanged, const QString& param);
+
 private:
     Ui::FlightModeConfig ui;
+
+    QList<bool> m_changedModes;
+    int m_modesUpdated;
+    QString m_modeString;  // Array to store if the flight mode has changed
+
 };
 
 #endif // FLIGHTMODECONFIG_H

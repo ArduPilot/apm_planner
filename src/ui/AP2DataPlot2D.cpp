@@ -1,4 +1,6 @@
+#include "QsLog.h"
 #include "AP2DataPlot2D.h"
+#include "LogDownloadDialog.h"
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
@@ -8,9 +10,16 @@
 #include "UAS.h"
 #include "UASManager.h"
 #include <QToolTip>
-AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlError>
+#include <QsLog.h>
+#include <QStandardItemModel>
+AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
+    m_uas(NULL),
+    m_logDownloadDialog(NULL)
 {
-    m_uas = 0;
     m_startIndex = 0;
     m_axisGroupingDialog = 0;
     m_logLoaderThread= 0;
@@ -33,7 +42,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
 
     connect(m_plot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(plotMouseMove(QMouseEvent*)));
 
-    ui.horizontalLayout_3->addWidget(m_plot);
+    //ui.horizontalLayout_3->addWidget(m_plot);
+    ui.verticalLayout_5->insertWidget(0,m_plot);
 
     m_plot->show();
     m_plot->plotLayout()->clear();
@@ -85,61 +95,82 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent)
     timer->start(500);
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
+    model = new QStandardItemModel();
+    connect(ui.toKMLPushButton, SIGNAL(clicked()), this, SIGNAL(toKMLClicked()));
+    connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
+    connect(ui.verticalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(verticalScrollMoved(int)));
+
+    connect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
+    connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
+    connect(m_wideAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
+    m_plot->setPlottingHint(QCP::phFastPolylines,true);
+
+    connect(ui.downloadPushButton, SIGNAL(clicked()), this, SLOT(showLogDownloadDialog()));
+    ui.downloadPushButton->setEnabled(false);
 }
+void AP2DataPlot2D::xAxisChanged(QCPRange range)
+{
+    ui.horizontalScrollBar->setValue(qRound(range.center())); // adjust position of scroll bar slider
+    ui.horizontalScrollBar->setPageStep(qRound(range.size())); // adjust size of scroll bar slider
+}
+
+void AP2DataPlot2D::horizontalScrollMoved(int value)
+{
+    if (qAbs(m_wideAxisRect->axis(QCPAxis::atBottom)->range().center()-value) > 0.01) // if user is dragging plot, we don't want to replot twice
+    {
+      m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(value,m_wideAxisRect->axis(QCPAxis::atBottom)->range().size(), Qt::AlignCenter);
+      m_plot->replot();
+    }
+    return;
+}
+
+void AP2DataPlot2D::verticalScrollMoved(int value)
+{
+    double percent = value / 100.0;
+    double center = m_wideAxisRect->axis(QCPAxis::atBottom)->range().center();
+    double requestedrange = ((m_scrollEndIndex - (m_timeDiff / 1000.0)) - m_scrollStartIndex) * percent;
+    m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(center + (requestedrange/2.0));
+    m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(center - (requestedrange/2.0));
+    m_plot->replot();
+}
+
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 {
     if (!ui.showValuesCheckBox->isChecked())
     {
         return;
     }
-    QString result = "";
     QString newresult = "";
-    double foundkey = -1;
-    if (m_graphClassMap.keys().size() > 0)
-    {
-        double key=0;
-        double val=0;
-        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[0]).graph;
-        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
-
-        //QMap<double, QCPData>::const_iterator dataiterator = qUpperBound(graph->data()->constBegin(),graph->data()->constEnd(),key);
-        QList<double> keys = graph->data()->keys();
-        for (int j=0;j<keys.size();j++)
-        {
-            if (keys[j] >= key)
-            {
-                if (j == 0)
-                {
-                    foundkey = keys[j];
-                    j = keys.size();
-                }
-                else
-                {
-                    foundkey = keys[j-1];
-                    j = keys.size();
-                }
-            }
-        }
-        //result.append("Key: " + QString::number(foundkey,'f',4) + "\n");
-        if (m_logLoaded)
-        {
-            newresult.append("Log Line: " + QString::number(foundkey,'f',0) + "\n");
-        }
-        else
-        {
-            newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(foundkey * 1000.0).toString("hh:mm:ss") + "\n");
-        }
-    }
     for (int i=0;i<m_graphClassMap.keys().size();i++)
     {
+
         double key=0;
         double val=0;
         QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
         graph->pixelsToCoords(evt->x(),evt->y(),key,val);
-        if (foundkey > 0)
+        if (i == 0)
         {
-            //result.append("Val: " + QString::number(graph->data()->value(foundkey).value,'f',4) + "\n");
-            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(foundkey).value,'f',4) + ((i == m_graphClassMap.keys().size() - 1) ? "" : "\n"));
+            if (m_logLoaded)
+            {
+                newresult.append("Log Line: " + QString::number(key,'f',0) + "\n");
+            }
+            else
+            {
+                newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
+            }
+        }
+        if (graph->data()->contains(key))
+        {
+            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(key).value,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+        }
+        else if (graph->data()->lowerBound(key) != graph->data()->constEnd())
+        {
+            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number((graph->data()->lowerBound(key).value().value),'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+        }
+        else
+        {
+            newresult.append(m_graphClassMap.keys()[i] + ": " + "ERR" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+
         }
     }
     QToolTip::showText(QPoint(evt->pos().x() + m_plot->x(),evt->pos().y()+m_plot->y()),newresult);
@@ -246,8 +277,6 @@ void AP2DataPlot2D::showOnlyClicked()
         }
     }
     m_showOnlyActive = true;
-
-
 }
 void AP2DataPlot2D::showAllClicked()
 {
@@ -260,6 +289,7 @@ void AP2DataPlot2D::showAllClicked()
 
 void AP2DataPlot2D::tableCellClicked(int row,int column)
 {
+
     if (ui.tableWidget->item(row,0))
     {
         if (m_tableHeaderNameMap.contains(ui.tableWidget->item(row,0)->text()))
@@ -361,9 +391,13 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+        disconnect(m_uas,SIGNAL(connected()),this,SLOT(connected()));
+        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(disconnected()));
     }
     m_currentIndex = QDateTime::currentMSecsSinceEpoch();
     m_startIndex = m_currentIndex;
+    m_scrollStartIndex = 0;
+    ui.horizontalScrollBar->setMinimum(m_scrollStartIndex + m_timeDiff);
     m_uas = uas;
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
@@ -376,7 +410,22 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 
+    connect(m_uas,SIGNAL(connected()),this,SLOT(connected()));
+    connect(m_uas,SIGNAL(disconnected()),this,SLOT(disconnected()));
+    connected();
+
 }
+
+void AP2DataPlot2D::connected()
+{
+    ui.downloadPushButton->setEnabled(true);
+}
+
+void AP2DataPlot2D::disconnected()
+{
+     ui.downloadPushButton->setEnabled(false);
+}
+
 void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
 {
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
@@ -423,6 +472,9 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     {
         m_graphClassMap[propername].axisIndex = newmsec / 1000.0;// + 18000000;
         m_graphClassMap.value(propername).graph->addData(m_graphClassMap.value(propername).axisIndex,value);
+        m_scrollEndIndex = newmsec /  1000.0;
+        //ui.horizontalScrollBar->setMinimum(m_startIndex);
+        ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
         //Set a timeout for 30 minutes from now, 1800 seconds.
         qint64 current = QDateTime::currentMSecsSinceEpoch();
         //This is 30 minutes
@@ -568,42 +620,74 @@ void AP2DataPlot2D::loadButtonClicked()
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     }
-    ui.tableWidget->setVisible(true);
-    ui.hideExcelView->setVisible(true);
     ui.autoScrollCheckBox->setChecked(false);
     ui.loadOfflineLogButton->setText("Unload Log");
 
     m_logLoaded = true;
+    //Create the in-memory database
+    m_sharedDb = QSqlDatabase::addDatabase("QSQLITE");
+    m_sharedDb.setDatabaseName(":memory:");
+    if (!m_sharedDb.open())
+    {
+        QMessageBox::information(0,"error","Error opening shared database " + m_sharedDb.lastError().text());
+        return;
+    }
+
     m_logLoaderThread = new AP2DataPlotThread();
     connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
     connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
-    connect(m_logLoaderThread,SIGNAL(done()),this,SLOT(threadDone()));
+    connect(m_logLoaderThread,SIGNAL(done(int)),this,SLOT(threadDone(int)));
     connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     connect(m_logLoaderThread,SIGNAL(lineRead(QString)),this,SLOT(logLine(QString)));
-    m_logLoaderThread->loadFile(filename);
+    currentIndex=0;
+    m_logLoaderThread->loadFile(filename,&m_sharedDb);
 }
 void AP2DataPlot2D::logLine(QString line)
 {
-    QStringList linesplit = line.split(",");
-    if (ui.tableWidget->columnCount() < linesplit.size())
+    /*QList<QStandardItem*> rowlist;
+    //for (int i=0;i<loglines.size();i++)
+    //{
+        QStringList linesplit = line.split(",");
+        for (int j=0;j<linesplit.size();j++)
+        {
+            QStandardItem *item = new QStandardItem(linesplit.at(j));
+            rowlist.append(item);
+        }
+        model->appendRow(rowlist);
+        //rowlist.clear();
+    //}
+    //loglines.append(line);*/
+    //loglines.append(line);
+    if (ui.tableWidget->rowCount() <= currentIndex)
     {
-        ui.tableWidget->setColumnCount(linesplit.size());
+        ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1000);
     }
-    ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1);
-    for (int i=0;i<linesplit.size();i++)
-    {
-        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,i,new QTableWidgetItem(linesplit[i].trimmed()));
-    }
-    if (line.startsWith("FMT"))
-    {
-        //Format line
-        QString linename = linesplit[3].trimmed();
-        QString lastformat = line.mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
-        m_tableHeaderNameMap[linename] = lastformat.trimmed();
-
-    }
+        QStringList linesplit = line.split(",");
+        if (ui.tableWidget->columnCount() < linesplit.size())
+        {
+            ui.tableWidget->setColumnCount(linesplit.size());
+        }
+        for (int j=0;j<linesplit.size();j++)
+        {
+            ui.tableWidget->setItem(currentIndex,j,new QTableWidgetItem(linesplit[j].trimmed()));
+        }
+        for (int j=linesplit.size();j<ui.tableWidget->columnCount();j++)
+        {
+            if (ui.tableWidget->item(currentIndex,j))
+            {
+                ui.tableWidget->item(currentIndex,j)->setText("");
+            }
+        }
+        if (line.startsWith("FMT"))
+        {
+            //Format line
+            QString linename = linesplit[3].trimmed();
+            QString lastformat = line.mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
+            m_tableHeaderNameMap[linename] = lastformat.trimmed();
+        }
+        currentIndex++;
 }
 
 void AP2DataPlot2D::threadTerminated()
@@ -631,6 +715,109 @@ void AP2DataPlot2D::itemEnabled(QString name)
 {
     if (m_logLoaded)
     {
+        QString parent = name.split(".")[0];
+        QString child = name.split(".")[1];
+        if (!m_sharedDb.isOpen())
+        {
+            if (!m_sharedDb.open())
+            {
+                //emit error("Unable to open database: " + m_sharedDb.lastError().text());
+                QMessageBox::information(0,"Error","Error opening DB");
+                return;
+            }
+        }
+        QSqlQuery tablequery(m_sharedDb);
+        //tablequery.prepare("SELECT * FROM '" + parent + "';");
+        tablequery.prepare("SELECT * FROM 'FMT' WHERE name == '" + parent + "';");
+        tablequery.exec();
+        if (!tablequery.next())
+        {
+            return;
+        }
+        QSqlRecord record = tablequery.record();
+        QStringList valuessplit = record.value(4).toString().split(","); //comma delimited list of names
+        bool found = false;
+        int index = 0;
+        for (int i=0;i<valuessplit.size();i++)
+        {
+            if (valuessplit.at(i) == child)
+            {
+                found = true;
+                index = i;
+                i = valuessplit.size();
+            }
+        }
+        if (!found)
+        {
+            return;
+        }
+        QSqlQuery itemquery(m_sharedDb);
+        itemquery.prepare("SELECT * FROM '" + parent + "';");
+        itemquery.exec();
+        QVector<double> xlist;
+        QVector<double> ylist;
+        while (itemquery.next())
+        {
+            QSqlRecord record = itemquery.record();
+            int graphindex = record.value(0).toInt();
+            double graphvalue = record.value(index+1).toDouble();
+            xlist.append(graphindex);
+            ylist.append(graphvalue);
+
+        }
+        QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+        axis->setLabel(name);
+
+        if (m_graphCount > 0)
+        {
+            connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+        }
+        QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+        axis->setLabelColor(color);
+        axis->setTickLabelColor(color);
+        axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+        QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+        m_graphNameList.append(name);
+        mainGraph1->setData(xlist, ylist);
+        mainGraph1->rescaleValueAxis();
+        if (m_graphCount == 1)
+        {
+            mainGraph1->rescaleKeyAxis();
+        }
+        if (m_axisGroupingDialog)
+        {
+            m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
+        }
+        mainGraph1->setPen(QPen(color, 2));
+        Graph graph;
+        graph.axis = axis;
+        graph.groupName = "";
+        graph.graph=  mainGraph1;
+        graph.isInGroup = false;
+        graph.isManualRange = false;
+        m_graphClassMap[name] = graph;
+        /*    if (!m_sharedDb.isOpen())
+    {
+        if (!m_sharedDb.open())
+        {
+            //emit error("Unable to open database: " + m_sharedDb.lastError().text());
+            QMessageBox::information(0,"Error","Error opening DB");
+            return;
+        }
+    }
+    //fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
+    QSqlQuery fmtquery(m_sharedDb);
+    fmtquery.prepare("SELECT * FROM 'FMT';");
+    if (!fmtquery.exec())
+    {
+        QMessageBox::information(0,"Error","Error selecting from table 'FMT' " + m_sharedDb.lastError().text());
+        return;
+
+    }
+    while (fmtquery.next())
+    {
+        QSqlRecord record = fmtquery.record();*/
+        return;
         name = name.mid(name.indexOf(":")+1);
         for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
         {
@@ -730,6 +917,8 @@ void AP2DataPlot2D::itemEnabled(QString name)
             if (m_graphCount == 1)
             {
                 mainGraph1->rescaleKeyAxis();
+                //m_scrollStartIndex = m_currentIndex;
+                //ui.horizontalScrollBar->setMinimum(m_timeDiff);
             }
             if (m_axisGroupingDialog)
             {
@@ -877,6 +1066,9 @@ void AP2DataPlot2D::loadStarted()
     m_progressDialog = new QProgressDialog("Loading File","Cancel",0,100);
     connect(m_progressDialog,SIGNAL(canceled()),this,SLOT(progressDialogCanceled()));
     m_progressDialog->show();
+    QApplication::processEvents();
+    //ui.tableWidget->clear();
+    //ui.tableWidget->setRowCount(0);
 }
 
 void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
@@ -884,9 +1076,68 @@ void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
     m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
 }
 
-void AP2DataPlot2D::threadDone()
+void AP2DataPlot2D::threadDone(int errors)
 {
-    for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
+    if (!m_sharedDb.isOpen())
+    {
+        if (!m_sharedDb.open())
+        {
+            //emit error("Unable to open database: " + m_sharedDb.lastError().text());
+            QMessageBox::information(0,"Error","Error opening DB");
+            return;
+        }
+    }
+    if (errors != 0)
+    {
+        QMessageBox::information(this,"Warning","There were errors countered with " + QString::number(errors) + " lines in the log file. The data is potentially corrupt and incorrect");
+    }
+    //fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
+    QSqlQuery fmtquery(m_sharedDb);
+    fmtquery.prepare("SELECT * FROM 'FMT';");
+    if (!fmtquery.exec())
+    {
+        QMessageBox::information(0,"Error","Error selecting from table 'FMT' " + m_sharedDb.lastError().text());
+        return;
+
+    }
+    //QSqlQuery itemquery(m_sharedDb);
+
+    while (fmtquery.next())
+    {
+        QSqlRecord record = fmtquery.record();
+        QString name = record.value(2).toString();
+        QString vars = record.value(4).toString();
+        QStringList varssplit = vars.split(",");
+        for (int i=0;i<varssplit.size();i++)
+        {
+            m_dataSelectionScreen->addItem(name + "." + varssplit.at(i));
+        }
+        QLOG_DEBUG() << record.value(0) << record.value(1) << record.value(2) << record.value(3) << record.value(4);
+        //rowlist.clear();
+        //itemquery.prepare("SELECT * FROM '" + name + "';");
+        //itemquery.exec();
+        //while (itemquery.next())
+        //{
+
+        //}
+        QString linename = name;
+        QString lastformat = vars;
+        m_tableHeaderNameMap[linename] = lastformat.trimmed();
+    }
+    m_scrollStartIndex = 0;
+    m_scrollEndIndex = currentIndex;
+    ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
+    ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
+    ui.tableWidget->setRowCount(currentIndex);
+
+
+
+
+    //QStandardItem *item = new QStandardItem();
+
+    //ui.tableWidget->setModel(model);
+
+    /*for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
     {
         if (i.value().size() > 0)
         {
@@ -895,10 +1146,36 @@ void AP2DataPlot2D::threadDone()
                 m_dataSelectionScreen->addItem(j.key());
             }
         }
-    }
+    }*/
+
+
+    /*ui.tableWidget->setRowCount(loglines.size());
+    for (int i=0;i<loglines.size();i++)
+    {
+        QStringList linesplit = loglines.at(i).split(",");
+        if (ui.tableWidget->columnCount() < linesplit.size())
+        {
+            ui.tableWidget->setColumnCount(linesplit.size());
+        }
+        //ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1);
+        for (int j=0;j<linesplit.size();j++)
+        {
+            ui.tableWidget->setItem(i,j,new QTableWidgetItem(linesplit[j].trimmed()));
+        }
+        if (loglines.at(i).startsWith("FMT"))
+        {
+            //Format line
+            QString linename = linesplit[3].trimmed();
+            QString lastformat = loglines.at(i).mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
+            m_tableHeaderNameMap[linename] = lastformat.trimmed();
+
+        }
+    }*/
     m_progressDialog->hide();
     delete m_progressDialog;
     m_progressDialog=0;
+    ui.tableWidget->setVisible(true);
+    ui.hideExcelView->setVisible(true);
 }
 void AP2DataPlot2D::threadError(QString errorstr)
 {
@@ -917,4 +1194,24 @@ void AP2DataPlot2D::payloadDecoded(int index,QString name,QVariantMap map)
         m_dataList[name] = QList<QPair<int,QVariantMap> >();
     }
     m_dataList[name].append(QPair<int,QVariantMap>(index,map));
+}
+
+void AP2DataPlot2D::showLogDownloadDialog()
+{
+    QLOG_DEBUG() << "showLogDownloadDialog";
+    if (m_logDownloadDialog == NULL){
+        m_logDownloadDialog = new LogDownloadDialog(this);
+        connect(m_logDownloadDialog, SIGNAL(accepted()), this, SLOT(closeLogDownloadDialog()));
+    }
+    m_logDownloadDialog->show();
+    m_logDownloadDialog->raise();
+}
+
+void AP2DataPlot2D::closeLogDownloadDialog()
+{
+    if (m_logDownloadDialog){
+        m_logDownloadDialog->hide();
+        m_logDownloadDialog->deleteLater();
+        m_logDownloadDialog = NULL;
+    }
 }

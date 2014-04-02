@@ -894,6 +894,13 @@ public slots:
     void startDataRecording();
     void stopDataRecording();
     void deleteSettings();
+
+    // Log Download
+    void logRequestList(uint16_t start, uint16_t end);
+    void logRequestData(uint16_t id, uint32_t ofs, uint32_t count);
+    void logEraseAll();
+    void logRequestEnd();
+
 signals:
     /** @brief The main/battery voltage has changed/was updated */
     //void voltageChanged(int uasId, double voltage); // Defined in UASInterface already

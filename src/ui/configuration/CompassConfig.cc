@@ -346,7 +346,8 @@ void CompassConfig::startDataCollection()
                 this, SLOT(sensorUpdateMessage(UASInterface*,mavlink_sensor_offsets_t)));
      m_uas->enableRawSensorDataTransmission(10);
 
-    m_progressDialog = new QProgressDialog(tr("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds."), tr("Cancel"), 0, 60);
+    m_progressDialog = new QProgressDialog(tr("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds."),
+                                           tr("Cancel"), 0, 60, this);
     connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(cancelCompassCalibration()));
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(progressCounter()));

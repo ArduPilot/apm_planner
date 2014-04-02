@@ -15,19 +15,35 @@
 #define WITH_TEXT_TO_SPEECH 1
 
 #define QGC_APPLICATION_NAME "APM Planner"
-#define QGC_APPLICATION_VERSION "v2.0.0 (RC5)"
+#define QGC_APPLICATION_VERSION "v2.0.8"
 #define APP_DATA_DIRECTORY "/apmplanner2"
 #define LOG_DIRECTORY "/dataflashLogs"
 #define PARAMETER_DIRECTORY "/parameters"
 #define MAVLINK_LOG_DIRECTORY "/tlogs"
 #define MAVLINK_LOGFILE_EXT ".tlog"
 
+#ifndef APP_TYPE
+#define APP_TYPE "stable" // or "daily" for master branch builds
+#endif
+
+#ifndef APP_PLATFORM
+
+#ifdef Q_OS_MACX
+#define APP_PLATFORM "osx"
+#elif defined(Q_OS_UNIX)
+#define APP_PLATFORM "debian"
+#else
+#define APP_PLATFORM "win"
+#endif
+
+#endif
+
 namespace QGC
 
 {
 const QString APPNAME = "APMPLANNER2";
 const QString COMPANYNAME = "DIYDRONES";
-const int APPLICATIONVERSION = 200; // 2.0.0
+const int APPLICATIONVERSION = 208; // 2.0.8 [TODO] we should deprecate this version definition
 
     inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();
