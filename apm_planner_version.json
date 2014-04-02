@@ -29,5 +29,32 @@
             "sha" : "cdfa55e9a3a53e59afa138a29b562121bd859ec4",
             "date" : "2014-03-28"
         }
+        {
+            "platform": "debian64",
+            "type": "stable",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner2_latest_debian64.deb",
+            "name" : "apm_planner2_latest_debian64.deb",
+            "version": "2.0.8",
+            "sha" : "cdfa55e9a3a53e59afa138a29b562121bd859ec4",
+            "date" : "2014-03-28"
+        }
+        {
+            "platform": "ubuntu",
+            "type": "stable",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner2_latest_ubuntu.deb",
+            "name" : "apm_planner2_latest_ubuntu.deb",
+            "version": "2.0.8",
+            "sha" : "cdfa55e9a3a53e59afa138a29b562121bd859ec4",
+            "date" : "2014-03-28"
+        }
+        {
+            "platform": "ubuntu64",
+            "type": "stable",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner2_latest_ubuntu64.deb",
+            "name" : "apm_planner2_latest_ubuntu64.deb",
+            "version": "2.0.8",
+            "sha" : "cdfa55e9a3a53e59afa138a29b562121bd859ec4",
+            "date" : "2014-03-28"
+        }
     ]
 }
