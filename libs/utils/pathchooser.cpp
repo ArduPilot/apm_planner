@@ -41,7 +41,8 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QPushButton>
-
+#include <QStandardPaths>
+#include <QsLog.h>
 /*static*/ const char * const Utils::PathChooser::browseButtonLabel =
 #ifdef Q_WS_MAC
                    QT_TRANSLATE_NOOP("Utils::PathChooser", "Choose...");
@@ -275,7 +276,14 @@ QString PathChooser::homePath()
     // Return 'users/<name>/Documents' on Windows, since Windows explorer
     // does not let people actually display the contents of their home
     // directory. Alternatively, create a QtCreator-specific directory?
-    return QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    QStringList pathlist = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation);
+    if (pathlist.size() > 0)
+    {
+        pathlist.at(0);
+    }
+    QLOG_FATAL() << "NO HOME PATH DEFINED FOR QStandardPaths::DocumentsLocation";
+    return "";
+
 #else
     return QDir::homePath();
 #endif

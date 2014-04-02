@@ -40,8 +40,7 @@ This file is part of the PIXHAWK project
 #include <QMultimedia>
 #endif
 #ifdef Q_OS_WIN
-#include <Phonon/MediaObject>
-#include <Phonon/AudioOutput>
+#include <QMultimedia>
 #endif
 
 /* For Snow leopard and later

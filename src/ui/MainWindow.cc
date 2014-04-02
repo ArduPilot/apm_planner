@@ -36,7 +36,7 @@ This file is part of the QGROUNDCONTROL project
 #include "CommConfigurationWindow.h"
 #include "QGCWaypointListMulti.h"
 #include "MainWindow.h"
-#include "JoystickWidget.h"
+//#include "JoystickWidget.h"
 #include "GAudioOutput.h"
 #include "QGCToolWidget.h"
 #include "QGCMAVLinkLogPlayer.h"
@@ -270,8 +270,8 @@ MainWindow::MainWindow(QWidget *parent):
 
     // Connect user interface devices
     emit initStatusChanged("Initializing joystick interface.");
-    joystickWidget = 0;
-    joystick = new JoystickInput();
+    //joystickWidget = 0;
+    //joystick = new JoystickInput();
 
 #ifdef MOUSE_ENABLED_WIN
     emit initStatusChanged("Initializing 3D mouse interface.");
@@ -392,13 +392,13 @@ MainWindow::~MainWindow()
         mavlink = NULL;
     }
 
-    if (joystick)
+    /*if (joystick)
     {
         joystick->shutdown();
         joystick->wait(5000);
         delete joystick;
         joystick = NULL;
-    }
+    }*/
 
     // Get and delete all dockwidgets and contained
     // widgets
@@ -1680,7 +1680,7 @@ void MainWindow::showRoadMap()
 
 void MainWindow::configure()
 {
-    if (!joystickWidget)
+    /*if (!joystickWidget)
     {
         if (!joystick->isRunning())
         {
@@ -1688,7 +1688,7 @@ void MainWindow::configure()
         }
         joystickWidget = new JoystickWidget(joystick);
     }
-    joystickWidget->show();
+    joystickWidget->show();*/
 }
 
 void MainWindow::showSettings()

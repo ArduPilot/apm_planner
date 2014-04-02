@@ -422,9 +422,9 @@ protected:
     QMap<int, QDockWidget*> hilDocks;
 
     // Popup widgets
-    QPointer<JoystickWidget> joystickWidget;
+    //QPointer<JoystickWidget> joystickWidget;
 
-    QPointer<JoystickInput> joystick;
+    //QPointer<JoystickInput> joystick;
 
 #ifdef MOUSE_ENABLED_WIN
     /** @brief 3d Mouse support (WIN only) */

@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 {
 // install the message handler
 #ifdef Q_OS_WIN
-    qInstallMsgHandler( msgHandler );
+   // qInstallMsgHandler( msgHandler );
 #endif
 
     QGCCore core(argc, argv);

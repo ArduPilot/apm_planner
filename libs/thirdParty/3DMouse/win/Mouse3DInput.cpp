@@ -2,6 +2,7 @@
 #include "Mouse3DInput.h"
 
 #include <QApplication>
+#include <QAbstractEventDispatcher>
 
 #define LOGITECH_VENDOR_ID 0x46d
 #define _CONSTANT_INPUT_PERIOD 0
@@ -143,10 +144,11 @@ Mouse3DInput::Mouse3DInput(QWidget* widget) :
 {
 	fLast3dmouseInputTime = 0;
 
-	InitializeRawInput(widget->winId());
+    InitializeRawInput((HWND)(widget->winId()));
 
 	gMouseInput = this;
 	qApp->setEventFilter(Mouse3DInput::RawInputEventFilter);
+    QAbstractEventDispatcher::instance()->installEventFilter(Mouse3DInput);
 }
 
 Mouse3DInput::~Mouse3DInput()
