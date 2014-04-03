@@ -23,15 +23,19 @@ This file is part of the APM_PLANNER project
 #include "StandardParamConfig.h"
 #include "ParamWidget.h"
 #include "QGCMouseWheelEventFilter.h"
+
+
 StandardParamConfig::StandardParamConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
     initConnections();
 }
+
 StandardParamConfig::~StandardParamConfig()
 {
 }
-void StandardParamConfig::addRange(QString title,QString description,QString param,double min,double max,double increment)
+
+void StandardParamConfig::addRange(QString title, QString description, QString param, double min, double max, double increment)
 {
     ParamWidget *widget = new ParamWidget(param,ui.scrollAreaWidgetContents);
     connect(widget,SIGNAL(doubleValueChanged(QString,double)),this,SLOT(doubleValueChanged(QString,double)));
@@ -43,7 +47,7 @@ void StandardParamConfig::addRange(QString title,QString description,QString par
     widget->show();
 }
 
-void StandardParamConfig::addCombo(QString title,QString description,QString param,QList<QPair<int,QString> > valuelist)
+void StandardParamConfig::addCombo(QString title, QString description, QString param, QList< QPair<int,QString> > valuelist)
 {
     ParamWidget *widget = new ParamWidget(param,ui.scrollAreaWidgetContents);
     connect(widget,SIGNAL(doubleValueChanged(QString,double)),this,SLOT(doubleValueChanged(QString,double)));
@@ -54,6 +58,7 @@ void StandardParamConfig::addCombo(QString title,QString description,QString par
     widget->installEventFilter(QGCMouseWheelEventFilter::getFilter());
     widget->show();
 }
+
 void StandardParamConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
     if (paramToWidgetMap.contains(parameterName))
@@ -68,7 +73,8 @@ void StandardParamConfig::parameterChanged(int uas, int component, QString param
         }
     }
 }
-void StandardParamConfig::doubleValueChanged(QString param,double value)
+
+void StandardParamConfig::doubleValueChanged(QString param, double value)
 {
     if (!m_uas)
     {
@@ -77,7 +83,7 @@ void StandardParamConfig::doubleValueChanged(QString param,double value)
     m_uas->getParamManager()->setParameter(1,param,value);
 }
 
-void StandardParamConfig::intValueChanged(QString param,int value)
+void StandardParamConfig::intValueChanged(QString param, int value)
 {
     if (!m_uas)
     {
