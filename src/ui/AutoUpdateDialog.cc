@@ -197,7 +197,10 @@ void AutoUpdateDialog::executeDownloadedFile()
             this, SLOT(dmgMounted(int,QProcess::ExitStatus)));
     process->waitForStarted();
 #elif defined(Q_OS_UNIX)
-         QLOG_ERROR() << "TODO: Launch deb installer";
+    QString url = m_targetFile->fileName().mid(0,m_targetFile->fileName().lastIndexOf("/"));
+    QLOG_INFO() << "Opening folder for display" << url;
+    QDesktopServices::openUrl(url);
+    exit(0);
 #else
     QLOG_INFO() << "Launching" << m_targetFile->fileName();
     QDesktopServices::openUrl(QUrl(m_targetFile->fileName(), QUrl::TolerantMode));
