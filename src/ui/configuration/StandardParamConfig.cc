@@ -29,10 +29,16 @@ StandardParamConfig::StandardParamConfig(QWidget *parent) : AP2ConfigWidget(pare
 {
     ui.setupUi(this);
     initConnections();
+    connect(ui.searchFilter, SIGNAL(textChanged(QString)), this, SLOT(onSearchFilterChanged(const QString &)));
 }
 
 StandardParamConfig::~StandardParamConfig()
 {
+}
+
+void StandardParamConfig::allParamsAdded(void)
+{
+    ui.verticalLayout->addStretch();
 }
 
 void StandardParamConfig::addRange(QString title, QString description, QString param, double min, double max, double increment)
@@ -90,5 +96,37 @@ void StandardParamConfig::intValueChanged(QString param, int value)
         this->showNullMAVErrorMessageBox();
     }
     m_uas->getParamManager()->setParameter(1,param,value);
+}
+
+void StandardParamConfig::onSearchFilterChanged(const QString &searchFilterText)
+{
+    if (searchFilterText.isEmpty())
+    {
+        for (int i = 0; i < ui.verticalLayout->count(); ++i)
+        {
+            QLayoutItem *item = ui.verticalLayout->itemAt(i);
+            if (item && item->widget())
+            {
+                item->widget()->setVisible(true);
+            }
+        }
+    }
+    else
+    {
+        QStringList filterList = searchFilterText.toLower().split(' ', QString::SkipEmptyParts);
+        for (int i = 0; i < ui.verticalLayout->count(); ++i)
+        {
+            ParamWidget *pw = qobject_cast<ParamWidget *>(ui.verticalLayout->itemAt(i)->widget());
+            if (pw)
+            {
+                bool shouldShow = true;
+                foreach (const QString &filterTerm, filterList)
+                {
+                    shouldShow = shouldShow && pw->matchesSearchFilter(filterTerm);
+                }
+                pw->setVisible(shouldShow);
+            }
+        }
+    }
 }
 

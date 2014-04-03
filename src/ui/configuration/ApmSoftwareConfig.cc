@@ -485,6 +485,8 @@ void ApmSoftwareConfig::populateTimerTick()
         populateTimer->stop();
         populateTimer->deleteLater();
         populateTimer = 0;
+        m_advancedParamConfig->allParamsAdded();
+        m_standardParamConfig->allParamsAdded();
         return;
     }
     if (m_paramConfigList.at(0).isRange)
