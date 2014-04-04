@@ -37,6 +37,7 @@ public:
     void setupDouble(QString title,QString description,double value,double min,double max,double increment);
     void setupCombo(QString title,QString description,QList<QPair<int,QString> > list);
     void setValue(double value);
+    bool matchesSearchFilter(const QString &searchFilter);
 signals:
     void doubleValueChanged(QString param,double value);
     void intValueChanged(QString param,int value);
@@ -52,6 +53,7 @@ private:
     QPalette intSpinBoxPalette;
     bool m_valueChanged;
     QString m_param;
+    QString m_searchableText;
     enum VIEWTYPE
     {
         INT,
