@@ -38,6 +38,7 @@ ParamWidget::ParamWidget(QString param,QWidget *parent) : QWidget(parent)
     }
 
     m_param = param;
+    m_searchableText = param;
 
     connect(ui.doubleSpinBox,SIGNAL(editingFinished()),this,SLOT(doubleSpinEditFinished()));
     connect(ui.doubleSpinBox,SIGNAL(returnPressed()),this,SLOT(doubleSpinEditFinished()));
@@ -169,6 +170,8 @@ void ParamWidget::setupInt(QString title,QString description,int value,int min,i
     ui.intSpinBox->setMaximum(m_max);
     ui.minLabel->setText(QString::number(m_min));
     ui.maxLabel->setText(QString::number(m_max));
+
+    m_searchableText.append(QString(" %1 %2").arg(title).arg(description));
 }
 
 void ParamWidget::setupDouble(QString title,QString description,double value,double min,double max,double increment)
@@ -223,6 +226,8 @@ void ParamWidget::setupDouble(QString title,QString description,double value,dou
     ui.doubleSpinBox->setSingleStep(increment);
     ui.doubleSpinBox->setMinimum(m_min);
     ui.doubleSpinBox->setMaximum(m_max);
+
+    m_searchableText.append(QString(" %1 %2").arg(title).arg(description));
 }
 
 void ParamWidget::setupCombo(QString title,QString description,QList<QPair<int,QString> > list)
@@ -244,6 +249,13 @@ void ParamWidget::setupCombo(QString title,QString description,QList<QPair<int,Q
         ui.valueComboBox->addItem(m_valueList[i].second);
     }
     connect(ui.valueComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(comboIndexChanged(int)));
+
+    m_searchableText.append(QString(" %1 %2").arg(title).arg(description));
+    for (int i = 0; i < m_valueList.size(); ++i)
+    {
+        // also add the combo values to be filtered against
+        m_searchableText.append(QString(" %1").arg(m_valueList[i].second));
+    }
 }
 
 void ParamWidget::setValue(double value)
@@ -304,4 +316,9 @@ void ParamWidget::setValue(double value)
             }
         }
     }
+}
+
+bool ParamWidget::matchesSearchFilter(const QString &searchFilter)
+{
+    return m_searchableText.toLower().contains(searchFilter);
 }
