@@ -301,6 +301,8 @@ void CameraGimbalConfig::updateTilt(int index)
     if(index == 0) {
         // Disable Tilt Controls
         ui.tiltGroupBox->setEnabled(false);
+    }else {
+        ui.tiltGroupBox->setEnabled(true);
     }
     updateTilt();
 }
@@ -311,6 +313,8 @@ void CameraGimbalConfig::updatePan(int index)
     if(index == 0) {
         // Disable Pan Controls
         ui.panGroupBox->setEnabled(false);
+    } else {
+        ui.panGroupBox->setEnabled(true);
     }
     updatePan();
 }
@@ -321,6 +325,8 @@ void CameraGimbalConfig::updateRoll(int index)
     if(index == 0) {
         // Disable Roll Controls
         ui.rollGroupBox->setEnabled(false);
+    } else {
+        ui.rollGroupBox->setEnabled(true);
     }
     updateRoll();
 
