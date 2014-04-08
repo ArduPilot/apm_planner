@@ -37,11 +37,12 @@ This file is part of the APM_PLANNER project
 #include "ApmHighlighter.h"
 
 #include <QScrollBar>
+#include <QKeyEvent>
 
 #include <QtCore/QDebug>
 
 Console::Console(QWidget *parent)
-    : QPlainTextEdit(parent)
+    : QTextBrowser(parent)
     , localEchoEnabled(false)
 {
     document()->setMaximumBlockCount(500);
@@ -52,6 +53,10 @@ Console::Console(QWidget *parent)
 
     m_highlighter = new APMHighlighter(document());
 
+    setTextInteractionFlags(Qt::TextSelectableByMouse |
+                            Qt::LinksAccessibleByMouse |
+                            Qt::LinksAccessibleByKeyboard);
+    setFocus();
 }
 
 void Console::putData(const QByteArray &data)
@@ -67,9 +72,9 @@ void Console::setLocalEchoEnabled(bool set)
     localEchoEnabled = set;
 }
 
-void Console::keyPressEvent(QKeyEvent *e)
+void Console::keyPressEvent(QKeyEvent *ev)
 {
-    switch (e->key()) {
+    switch (ev->key()) {
     case Qt::Key_Left:
     case Qt::Key_Right:
     case Qt::Key_Up:
@@ -80,23 +85,7 @@ void Console::keyPressEvent(QKeyEvent *e)
 //        break;
     default:
         if (localEchoEnabled)
-            QPlainTextEdit::keyPressEvent(e);
-        emit getData(e->text().toLocal8Bit());
+            QTextBrowser::keyPressEvent(ev);
+        emit getData(ev->text().toLocal8Bit());
     }
-}
-
-void Console::mousePressEvent(QMouseEvent *e)
-{
-    Q_UNUSED(e)
-    setFocus();
-}
-
-void Console::mouseDoubleClickEvent(QMouseEvent *e)
-{
-    Q_UNUSED(e)
-}
-
-void Console::contextMenuEvent(QContextMenuEvent *e)
-{
-    Q_UNUSED(e)
 }

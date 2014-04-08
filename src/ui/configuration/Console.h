@@ -36,11 +36,11 @@ This file is part of the APM_PLANNER project
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <QPlainTextEdit>
+#include <QTextBrowser>
 
 class APMHighlighter;
 
-class Console : public QPlainTextEdit
+class Console : public QTextBrowser
 {
     Q_OBJECT
 
@@ -56,9 +56,6 @@ public:
 
 protected:
     virtual void keyPressEvent(QKeyEvent *e);
-    virtual void mousePressEvent(QMouseEvent *e);
-    virtual void mouseDoubleClickEvent(QMouseEvent *e);
-    virtual void contextMenuEvent(QContextMenuEvent *e);
 
 private:
     bool localEchoEnabled;
