@@ -74,6 +74,11 @@ APMToolBar::APMToolBar(QWidget *parent):
     connect(&m_heartbeatTimer, SIGNAL(timeout()), this, SLOT(stopHeartbeat()));
 }
 
+void APMToolBar::checkAdvancedMode(bool checked)
+{
+    QMetaObject::invokeMethod(rootObject(),"setAdvancedMode", Q_ARG(QVariant, checked));
+}
+
 void APMToolBar::activeUasSet(UASInterface *uas)
 {
     QLOG_DEBUG() << "APMToolBar::ActiveUASSet " << uas;

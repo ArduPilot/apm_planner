@@ -257,6 +257,8 @@ MainWindow::MainWindow(QWidget *parent):
     m_apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
     m_apmToolBar->setTerminalViewAction(ui.actionTerminalView);
 
+    connect(ui.actionAdvanced_Mode, SIGNAL(triggered(bool)), m_apmToolBar, SLOT(checkAdvancedMode(bool)));
+
     QDockWidget *widget = new QDockWidget(tr("APM Tool Bar"),this);
     widget->setWidget(m_apmToolBar);
     widget->setMinimumHeight(72);

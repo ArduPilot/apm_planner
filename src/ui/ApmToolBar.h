@@ -75,6 +75,8 @@ public slots:
     void selectPlotView();
     void selectTerminalView();
 
+    void checkAdvancedMode(bool checked);
+
     void connectMAV();
     void showConnectionDialog();
     void setConnection(bool connection);
