@@ -383,8 +383,12 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
     pm->setParameter(1, "RC" + channel + "_FUNCTION", rcFunction);
     pm->setParameter(1, "RC" + channel + "_MIN", servoMin->value());
     pm->setParameter(1, "RC" + channel + "_MAX", servoMax->value());
-    pm->setParameter(1, "RC" + channel + "_REV", servoReverse->checkState());
 
+    if(servoReverse->checkState() == Qt::Checked){
+        pm->setParameter(1, "RC" + channel + "_REV", -1);
+    } else {
+        pm->setParameter(1, "RC" + channel + "_REV", 0);
+    }
 
     int inChannel = inputChCombo->itemData(inputChCombo->currentIndex()).toInt();
 
@@ -548,13 +552,13 @@ void CameraGimbalConfig::parameterChanged(int uas, int component, QString parame
         }
         else if (parameterName.endsWith("REV"))
         {
-            if (value.toInt() == 0)
+            if (value.toInt() == -1)
             {
-                ui.tiltReverseCheckBox->setChecked(false);
+                ui.tiltReverseCheckBox->setChecked(true);
             }
             else
             {
-                ui.tiltReverseCheckBox->setChecked(true);
+                ui.tiltReverseCheckBox->setChecked(false);
             }
         }
     } else if (parameterName.startsWith(m_rollPrefix) && !m_rollPrefix.isEmpty()) {
@@ -568,13 +572,13 @@ void CameraGimbalConfig::parameterChanged(int uas, int component, QString parame
         }
         else if (parameterName.endsWith("REV"))
         {
-            if (value.toInt() == 0)
+            if (value.toInt() == -1)
             {
-                ui.rollReverseCheckBox->setChecked(false);
+                ui.rollReverseCheckBox->setChecked(true);
             }
             else
             {
-                ui.rollReverseCheckBox->setChecked(true);
+                ui.rollReverseCheckBox->setChecked(false);
             }
         }
     } else if (parameterName.startsWith(m_panPrefix) && !m_panPrefix.isEmpty()) {
@@ -588,13 +592,13 @@ void CameraGimbalConfig::parameterChanged(int uas, int component, QString parame
         }
         else if (parameterName.endsWith("REV"))
         {
-            if (value.toInt() == 0)
+            if (value.toInt() == -1 )
             {
-                ui.panReverseCheckBox->setChecked(false);
+                ui.panReverseCheckBox->setChecked(true);
             }
             else
             {
-                ui.panReverseCheckBox->setChecked(true);
+                ui.panReverseCheckBox->setChecked(false);
             }
         }
     } else if (parameterName.startsWith(m_triggerPrefix) && !m_triggerPrefix.isEmpty()) {
