@@ -34,7 +34,7 @@ public:
     static const int Flap = 2;
     static const int Flap_auto = 3;
     static const int Aileron = 4;
-    static const int flaperon = 5;
+    static const int unused = 5;
     static const int mount_pan = 6;
     static const int mount_tilt = 7;
     static const int mount_roll = 8;
@@ -51,6 +51,11 @@ public:
     static const int Elevator = 19;
     static const int ElevatorWithInput = 20;
     static const int Rudder = 21;
+    static const int sprayer_pump = 22;
+    static const int sprayer_spinner = 23;
+    static const int flaperon1 = 24;
+    static const int flaperon2 = 25;
+    static const int steering = 26;
 };
 
 #define CAM_TRIGG_TYPE_SERVO 0
