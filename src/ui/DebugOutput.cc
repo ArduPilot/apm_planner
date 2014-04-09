@@ -8,6 +8,7 @@ DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent), QsLogging::Destinat
     ui.hashLineEdit->setText(define2string(GIT_HASH));
     ui.commitLineEdit->setText(define2string(GIT_COMMIT));
     connect(ui.onTopCheckBox,SIGNAL(clicked(bool)),this,SLOT(onTopCheckBoxChecked(bool)));
+    connect(ui.copyPushButton,SIGNAL(clicked()),this,SLOT(copyToClipboardButtonClicked()));
 }
 
 DebugOutput::~DebugOutput()
@@ -34,4 +35,10 @@ void DebugOutput::onTopCheckBoxChecked(bool checked)
         this->setWindowFlags(this->windowFlags() & ~Qt::WindowStaysOnTopHint);
         this->show();
     }
+}
+void DebugOutput::copyToClipboardButtonClicked()
+{
+    ui.textBrowser->selectAll();
+    ui.textBrowser->copy();
+
 }
