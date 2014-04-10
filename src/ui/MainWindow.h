@@ -160,7 +160,7 @@ public slots:
     void saveScreen();
 
     /** @brief Sets advanced mode, allowing for editing of tool widget locations */
-    void setAdvancedMode();
+    void setAdvancedMode(bool mode);
     /** @brief Load configuration views */
     void loadHardwareConfigView();
     void loadSoftwareConfigView();
