@@ -116,6 +116,8 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     {
         m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
     }
+
+    connect(&m_populateTimer,SIGNAL(timeout()),this,SLOT(populateTimerTick()));
 }
 
 void ApmSoftwareConfig::advModeChanged(bool state)
@@ -473,18 +475,15 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         }
         xml.readNext();
     }
-    populateTimer = new QTimer(this);
-    connect(populateTimer,SIGNAL(timeout()),this,SLOT(populateTimerTick()));
-    populateTimer->start(1);
+
+    m_populateTimer.start(1);
 
 }
 void ApmSoftwareConfig::populateTimerTick()
 {
     if (m_paramConfigList.size() == 0)
     {
-        populateTimer->stop();
-        populateTimer->deleteLater();
-        populateTimer = 0;
+        m_populateTimer.stop();
         m_advancedParamConfig->allParamsAdded();
         m_standardParamConfig->allParamsAdded();
         return;

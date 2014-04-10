@@ -91,7 +91,7 @@ private:
     QList<ParamConfig> m_paramConfigList;
 
     //Parameter loading timer
-    QPointer<QTimer> populateTimer;
+    QTimer m_populateTimer;
 
     QString m_apmPdefFilename;
     UASInterface *m_uas;
