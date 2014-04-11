@@ -16,11 +16,6 @@ QGCMessageView::QGCMessageView(QWidget *parent) :
     ui->setupUi(this);
     setStyleSheet("QScrollArea { border: 0px; } QPlainTextEdit { border: 0px }");
 
-    // Construct initial widget
-    connectWidget = new QGCUnconnectedInfoWidget(this);
-    ui->horizontalLayout->addWidget(connectWidget);
-    ui->plainTextEdit->hide();
-
     connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(setActiveUAS(UASInterface*)));
 }
 
@@ -40,8 +35,6 @@ void QGCMessageView::setActiveUAS(UASInterface* uas)
     } else {
 
         // First time UI setup, clear layout
-        ui->horizontalLayout->removeWidget(connectWidget);
-        connectWidget->deleteLater();
         ui->plainTextEdit->show();
 
         connect(clearAction, SIGNAL(triggered()), ui->plainTextEdit, SLOT(clear()));
