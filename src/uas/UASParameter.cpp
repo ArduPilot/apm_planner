@@ -39,8 +39,18 @@ int UASParameter::component()
 
 void UASParameter::setValue(const QVariant value)
 {
-    if (value.toDouble() != m_paramValue.toDouble()){
+    if (value.toDouble() != m_paramValue.toDouble() || !m_paramValue.isValid()){
         m_paramValue = value;
+        m_modified = true;
+    } else {
+        m_modified = false;
+    }
+}
+
+void UASParameter::setValue(double value)
+{
+    if (value != m_paramValue.toDouble() || !m_paramValue.isValid()) {
+        m_paramValue.setValue(value);
         m_modified = true;
     } else {
         m_modified = false;

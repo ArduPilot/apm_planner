@@ -126,9 +126,9 @@ void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<Q
                 UASParameter* param = new UASParameter();
                 param->setName(lineSplit[0]);
 
-                double value = lineSplit[1].toFloat(&ok);
+                double value = lineSplit[1].toDouble(&ok);
                 if (ok){
-                    param->setValue(QVariant(value));
+                    param->setValue(value);
                 } else {
                     QLOG_ERROR() << "Conversion Failure";
                     param->setValue(QVariant("NaN"));
