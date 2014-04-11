@@ -568,7 +568,7 @@ void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCo
         ui.globalParamProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
 
         if (m_paramDownloadCount == parameterCount){
-            m_paramDownloadState = completed;
+            m_paramDownloadState = none;
             ui.globalParamStateLabel->setText(tr("Params Downloaded"));
         }
         break;
