@@ -148,6 +148,7 @@ MainWindow::MainWindow(QWidget *parent):
     ui.setupUi(this);
     hide();
 
+    ui.actionAdvanced_Mode->setChecked(isAdvancedMode);
     ui.actionSimulate->setVisible(false);
 
     // We only need this menu if we have more than one system
