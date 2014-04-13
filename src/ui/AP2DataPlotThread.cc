@@ -357,7 +357,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val,'f',0);
                                         formatpos+=4;
                                     }
-                                    else if (typeCode == 'f') //float
+                                    else if (typeCode == 'f' || typeCode == 'c' || typeCode == 'C') //float, c and C are also transmitted as float!
                                     {
                                         unsigned long val = static_cast<unsigned char>(packet.at(formatpos));
                                         val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
@@ -389,23 +389,6 @@ void AP2DataPlotThread::run()
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
                                         formatpos += 64;
-                                    }
-                                    else if (typeCode == 'c') //int16_t * 100
-                                    {
-                                        //unsigned short
-                                        int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
-                                        linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=2;
-                                    }
-                                    else if (typeCode == 'C') //uint16_t * 100
-                                    {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
-                                        linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'e') //int32_t * 100
                                     {
@@ -566,8 +549,8 @@ void AP2DataPlotThread::run()
                             QString typestr = nameToTypeString[name];
                             nameToInsertQuery[name]->bindValue(0,index);
                             static QString intdef("bBhHiIM");
-                            static QString int100def("cC");
-                            static QString floatdef("eEf");
+                            static QString int100def("");
+                            static QString floatdef("eEfcC");
                             static QString chardef("nNZ");
                             if (typestr.size() != linesplit.size() - 1)
                             {
