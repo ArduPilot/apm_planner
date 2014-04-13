@@ -2534,12 +2534,22 @@ void UAS::requestParameter(int component, const QString& parameter)
     mavlink_param_request_read_t read;
     read.param_index = -1;
     // Copy full param name or maximum max field size
+    Q_ASSERT_X(sizeof(read.param_id) == MAVLINK_MSG_PARAM_REQUEST_READ_FIELD_PARAM_ID_LEN, "MavLink/UAS", "Mismatch between struct definition and #define of field size!");
     if (parameter.length() > MAVLINK_MSG_PARAM_REQUEST_READ_FIELD_PARAM_ID_LEN)
     {
         emit textMessageReceived(uasId, 0, 255, QString("QGC WARNING: Parameter name %1 is more than %2 bytes long. This might lead to errors and mishaps!").arg(parameter).arg(MAVLINK_MSG_PARAM_REQUEST_READ_FIELD_PARAM_ID_LEN-1));
     }
-    memcpy(read.param_id, parameter.toStdString().c_str(), qMax(parameter.length(), MAVLINK_MSG_PARAM_REQUEST_READ_FIELD_PARAM_ID_LEN));
-    read.param_id[15] = '\0'; // Enforce null termination
+
+    // clear the field to enforce a terminating \0.
+    memset(read.param_id, 0, sizeof(read.param_id));
+    // copy the name into it, making sure it won't exceed the target buffer size.
+    QByteArray paramUtf8 = parameter.toUtf8();
+    memcpy(read.param_id, paramUtf8.data(), qMin(paramUtf8.length(), MAVLINK_MSG_PARAM_REQUEST_READ_FIELD_PARAM_ID_LEN));
+
+    // If the string is exactly 16 bytes long, the terminating zero can be omitted, according to the comments near 'mavlink_param_request_read_t', but
+    // this is programming defensively... so lets leave it in (slightly updated to not use hardcoded values).
+    read.param_id[sizeof(read.param_id) - 1] = '\0'; // Enforce null termination
+
     read.target_system = uasId;
     read.target_component = component;
     mavlink_msg_param_request_read_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &read);
