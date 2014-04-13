@@ -37,25 +37,7 @@ This file is part of the APM_PLANNER project
 #include "AP2ConfigWidget.h"
 #include <QWidget>
 #include <QProgressDialog>
-// Using alglib for least squares calc (could migrate to Eigen Lib?)
-#include "libs/alglib/src/ap.h"
-#include "libs/alglib/src/optimization.h"
-#include "libs/alglib/src/interpolation.h"
-
-
-class RawImuTuple{
-public:
-    RawImuTuple():magX(0.0f),
-        magY(0.0f),
-        magZ(0.0f){}
-
-public:
-    float magX;
-    float magY;
-    float magZ;
-};
-
-using namespace alglib;
+#include "QGCGeo.h"
 
 class CompassConfig : public AP2ConfigWidget
 {
@@ -65,11 +47,10 @@ public:
     explicit CompassConfig(QWidget *parent = 0);
     ~CompassConfig();
 
-    static void sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj);
     void updateCompassSelection();
 
 private:
-    enum CompassType {none, APM, ExternalCompass, PX4};
+    enum CompassType { none, APM, ExternalCompass, PX4 };
 
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
@@ -87,8 +68,7 @@ private slots:
     void rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu);
     void sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets);
 
-    real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
-    void saveOffsets(real_1d_array &ofs);
+    void saveOffsets(const Vector3D &magOffset);
     void degreeEditFinished();
 
     void setCompassAPMOnBoard();
@@ -103,11 +83,9 @@ private:
     Ui::CompassConfig ui;
     QPointer<QProgressDialog> m_progressDialog;
     QPointer<QTimer> m_timer;
-    QVector<RawImuTuple> m_rawImuList;
+    Vector3DList m_rawImuList;
     mavlink_sensor_offsets_t m_sensorOffsets;
-    double m_oldxmag;
-    double m_oldymag;
-    double m_oldzmag;
+    Vector3D m_oldMag;
     int m_allOffsetsSet;
 };
 

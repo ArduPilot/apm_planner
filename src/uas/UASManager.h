@@ -34,8 +34,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QThread>
 #include <QList>
 #include <QMutex>
+#include <QQuaternion>
 #include <UASInterface.h>
-#include "../../libs/eigen/Eigen/Eigen"
 #include "QGCGeo.h"
 
 /**
@@ -97,9 +97,9 @@ public:
     }
 
     /** @brief Convert WGS84 coordinates to earth centric frame */
-    Eigen::Vector3d wgs84ToEcef(const double & latitude, const double & longitude, const double & altitude);
+    Vector3D wgs84ToEcef(const double &latitude, const double &longitude, const double &altitude);
     /** @brief Convert earth centric frame to EAST-NORTH-UP frame (x-y-z directions */
-    Eigen::Vector3d ecefToEnu(const Eigen::Vector3d & ecef);
+    Vector3D ecefToEnu(const Vector3D & ecef);
     /** @brief Convert WGS84 lat/lon coordinates to carthesian coordinates with home position as origin */
     void wgs84ToEnu(const double& lat, const double& lon, const double& alt, double* east, double* north, double* up);
     /** @brief Convert x,y,z coordinates to lat / lon / alt coordinates in east-north-up frame */
@@ -256,10 +256,10 @@ protected:
     double homeLon;
     double homeAlt;
     int homeFrame;
-    Eigen::Quaterniond ecef_ref_orientation_;
-    Eigen::Vector3d ecef_ref_point_;
-    Eigen::Vector3d nedSafetyLimitPosition1;
-    Eigen::Vector3d nedSafetyLimitPosition2;
+    QQuaternion ecef_ref_orientation_;
+    Vector3D ecef_ref_point_;
+    Vector3D nedSafetyLimitPosition1;
+    Vector3D nedSafetyLimitPosition2;
 
     void initReference(const double & latitude, const double & longitude, const double & altitude);
 
@@ -281,12 +281,6 @@ signals:
     void activeUASStatusChanged(int systemId, bool active);
     /** @brief Current home position changed */
     void homePositionChanged(double lat, double lon, double alt);
-public:
-    /* Need to align struct pointer to prevent a memory assertion:
-     * See http://eigen.tuxfamily.org/dox-devel/TopicUnalignedArrayAssert.html
-     * for details
-     */
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 #endif // _UASMANAGER_H_
