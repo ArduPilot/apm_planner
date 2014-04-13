@@ -28,75 +28,76 @@ QString AP2DataPlotThread::makeCreateTableString(QString tablename, QString form
     for (int j=0;j<varchar.size();j++)
     {
         QString name = varchar[j].trimmed();
-        char type = formatstr.at(j).toAscii();
-        if (type == 'b') //int8_t
+        QChar typeCode = formatstr.at(j);
+        if (typeCode == 'b') //int8_t
         {
             mktable.append("," + name + " integer");
         }
-        else if (type == 'B') //uint8_t
+        else if (typeCode == 'B') //uint8_t
         {
             mktable.append("," + name + " integer");
         }
-        else if (type == 'h') //int16_t
+        else if (typeCode == 'h') //int16_t
         {
             mktable.append("," + name + " integer");
         }
-        else if (type == 'H') //uint16_t
+        else if (typeCode == 'H') //uint16_t
         {
             mktable.append("," + name + " integer");
         }
-        else if (type == 'i') //int32_t
+        else if (typeCode == 'i') //int32_t
         {
             mktable.append("," + name + " integer");
         }
-        else if (type == 'I') //uint32_t
+        else if (typeCode == 'I') //uint32_t
         {
             mktable.append("," + name + " integer");
         }
-        else if (type == 'f') //float
+        else if (typeCode == 'f') //float
         {
             mktable.append("," + name + " real");
         }
-        else if (type == 'N') //char(16)
+        else if (typeCode == 'N') //char(16)
         {
             mktable.append("," + name + " text");
         }
-        else if (type == 'Z') //char(64)
+        else if (typeCode == 'Z') //char(64)
         {
             mktable.append("," + name + " text");
         }
-        else if (type == 'c') //int16_t * 100
+        else if (typeCode == 'c') //int16_t * 100
         {
             mktable.append("," + name + " real");
         }
-        else if (type == 'C') //uint16_t * 100
+        else if (typeCode == 'C') //uint16_t * 100
         {
             mktable.append("," + name + " real");
         }
-        else if (type == 'e') //int32_t * 100
+        else if (typeCode == 'e') //int32_t * 100
         {
             mktable.append("," + name + " real");
         }
-        else if (type == 'E') //uint32_t * 100
+        else if (typeCode == 'E') //uint32_t * 100
         {
             mktable.append("," + name + " real");
         }
-        else if (type == 'L') //uint32_t lon/lat
+        else if (typeCode == 'L') //uint32_t lon/lat
         {
             mktable.append("," + name + " integer");
         }
-        else if (type == 'M') //uint8_t
+        else if (typeCode == 'M') //uint8_t
         {
             mktable.append("," + name + " integer");
         }
         else
         {
-            QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << type;
+            QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << typeCode;
         }
     }
     mktable.append(");");
     return mktable;
 }
+
 QString AP2DataPlotThread::makeInsertTableString(QString tablename, QString variablestr)
 {
     QString inserttable = "insert or replace into '" + tablename + "' (idx";
@@ -302,14 +303,15 @@ void AP2DataPlotThread::run()
                                 int formatpos = 0;
                                 for (int j=0;j<formatstr.size();j++)
                                 {
-                                    if (formatstr.at(j).toAscii() == 'b') //int8_t
+                                    QChar typeCode = formatstr.at(j);
+                                    if (typeCode == 'b') //int8_t
                                     {
                                         char val = static_cast<char>(packet.at(formatpos));
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
                                         formatpos+=1;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'B') //uint8_t
+                                    else if (typeCode == 'B') //uint8_t
                                     {
                                         //unsigned char
                                         unsigned char val = static_cast<unsigned char>(packet.at(formatpos));
@@ -317,7 +319,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val,'f',0);
                                         formatpos+=1;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'h') //int16_t
+                                    else if (typeCode == 'h') //int16_t
                                     {
                                         //signed short
                                         short val = static_cast<unsigned char>(packet.at(formatpos));
@@ -326,7 +328,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val,'f',0);
                                         formatpos+=2;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'H') //uint16_t
+                                    else if (typeCode == 'H') //uint16_t
                                     {
                                         //unsigned short
                                         unsigned short val = static_cast<unsigned char>(packet.at(formatpos));
@@ -335,7 +337,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val,'f',0);
                                         formatpos+=2;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'i') //int32_t
+                                    else if (typeCode == 'i') //int32_t
                                     {
                                         int val = static_cast<unsigned char>(packet.at(formatpos));
                                         val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
@@ -345,7 +347,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val,'f',0);
                                         formatpos+=4;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'I') //uint32_t
+                                    else if (typeCode == 'I') //uint32_t
                                     {
                                         unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
                                         val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
@@ -355,7 +357,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val,'f',0);
                                         formatpos+=4;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'f') //float
+                                    else if (typeCode == 'f' || typeCode == 'c' || typeCode == 'C') //float, c and C are also transmitted as float!
                                     {
                                         unsigned long val = static_cast<unsigned char>(packet.at(formatpos));
                                         val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
@@ -367,45 +369,28 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(f,'f',4);
                                         formatpos+=4;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'n') //char(4)
+                                    else if (typeCode == 'n') //char(4)
                                     {
                                         QString val = packet.mid(formatpos,4);
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
                                         formatpos += 4;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'N') //char(16)
+                                    else if (typeCode == 'N') //char(16)
                                     {
                                         QString val = packet.mid(formatpos,16);
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
                                         formatpos += 16;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'Z') //char(64)
+                                    else if (typeCode == 'Z') //char(64)
                                     {
                                         QString val = packet.mid(formatpos,64);
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
                                         formatpos += 64;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'c') //int16_t * 100
-                                    {
-                                        //unsigned short
-                                        int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
-                                        linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=2;
-                                    }
-                                    else if (formatstr.at(j).toAscii() == 'C') //uint16_t * 100
-                                    {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
-                                        linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=2;
-                                    }
-                                    else if (formatstr.at(j).toAscii() == 'e') //int32_t * 100
+                                    else if (typeCode == 'e') //int32_t * 100
                                     {
                                         int val = static_cast<unsigned char>(packet.at(formatpos));
                                         val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
@@ -415,7 +400,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
                                         formatpos+=4;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'E') //uint32_t * 100
+                                    else if (typeCode == 'E') //uint32_t * 100
                                     {
                                         unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
                                         val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
@@ -425,7 +410,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
                                         formatpos+=4;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'L') //uint32_t GPS Lon/Lat * 10000000
+                                    else if (typeCode == 'L') //uint32_t GPS Lon/Lat * 10000000
                                     {
                                         unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
                                         val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
@@ -435,7 +420,7 @@ void AP2DataPlotThread::run()
                                         linetoemit += "," + QString::number(val / 10000000.0,'f',6);
                                         formatpos+=4;
                                     }
-                                    else if (formatstr.at(j).toAscii() == 'M')
+                                    else if (typeCode == 'M')
                                     {
                                         char val = static_cast<char>(packet.at(formatpos));
                                         nameToInsertQuery[name]->bindValue(j+1,val);
@@ -446,7 +431,7 @@ void AP2DataPlotThread::run()
                                     else
                                     {
                                         //Unknown!
-                                        QLOG_DEBUG() << "AP2DataPlotThread::run(): ERROR UNKNOWN DATA TYPE" << formatstr.at(j).toAscii();
+                                        QLOG_DEBUG() << "AP2DataPlotThread::run(): ERROR UNKNOWN DATA TYPE" << typeCode;
                                     }
                                 }
                                 emit lineRead(linetoemit);
@@ -563,9 +548,10 @@ void AP2DataPlotThread::run()
                             }
                             QString typestr = nameToTypeString[name];
                             nameToInsertQuery[name]->bindValue(0,index);
-                            QString intdef = "bBhHiIM";
-                            QString int100def = "cCeE";
-                            QString chardef = "nNZ";
+                            static QString intdef("bBhHiIM");
+                            static QString int100def("");
+                            static QString floatdef("eEfcC");
+                            static QString chardef("nNZ");
                             if (typestr.size() != linesplit.size() - 1)
                             {
                                 QLOG_DEBUG() << "Bound values for" << name << "count:" << nameToInsertQuery[name]->boundValues().values().size() << "actual" << linesplit.size() << typestr.size();
@@ -574,32 +560,33 @@ void AP2DataPlotThread::run()
                             }
                             else
                             {
-                                for (int i=1;i<linesplit.size();i++)
+                                for (int i = 1; i < linesplit.size(); i++)
                                 {
-                                    if (intdef.contains(typestr.at(i-1).toAscii()))
+                                    QChar typeCode = typestr.at(i - 1);
+                                    if (intdef.contains(typeCode))
                                     {
-                                        nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt());
+                                        nameToInsertQuery[name]->bindValue(i, linesplit[i].toInt());
                                     }
-                                    else if (int100def.contains(typestr.at(i-1).toAscii()))
+                                    else if (int100def.contains(typeCode))
                                     {
-                                        nameToInsertQuery[name]->bindValue(i,linesplit[i].toInt() / 100.0);
+                                        nameToInsertQuery[name]->bindValue(i, linesplit[i].toInt() / 100.0);
                                     }
-                                    else if (chardef.contains(typestr.at(i-1).toAscii()))
+                                    else if (chardef.contains(typeCode))
                                     {
-                                        nameToInsertQuery[name]->bindValue(i,linesplit[i]);
+                                        nameToInsertQuery[name]->bindValue(i, linesplit[i]);
                                     }
-                                    else if (typestr.at(i-1).toAscii() == 'L')
+                                    else if (typeCode == 'L')
                                     {
-                                        nameToInsertQuery[name]->bindValue(i,linesplit[i].toFloat());
+                                        nameToInsertQuery[name]->bindValue(i, linesplit[i].toFloat());
                                     }
-                                    else if (typestr.at(i-1).toAscii() == 'f')
+                                    else if (floatdef.contains(typeCode))
                                     {
-                                        nameToInsertQuery[name]->bindValue(i,linesplit[i].toFloat());
+                                        nameToInsertQuery[name]->bindValue(i, linesplit[i].toFloat());
                                     }
                                     else
                                     {
-                                        QLOG_DEBUG() << "AP2DataPlotThread::run(): Unknown data value found" << typestr.at(i-1).toAscii();
-                                        emit error("Unknown data value found " + typestr.at(i-1).toAscii());
+                                        QLOG_DEBUG() << "AP2DataPlotThread::run(): Unknown data value found" << typeCode;
+                                        emit error(QString("Unknown data value found: %1").arg(typeCode));
                                         return;
 
                                     }
