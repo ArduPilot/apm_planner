@@ -319,6 +319,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
             // before emitting the packetReceived signal
 
             UASInterface* uas = UASManager::instance()->getUASForId(message.sysid);
+            //qDebug() << "MAVLinkProtocol::receiveBytes" << uas;
 
             // Check and (if necessary) create UAS object
             if (uas == NULL && message.msgid == MAVLINK_MSG_ID_HEARTBEAT)

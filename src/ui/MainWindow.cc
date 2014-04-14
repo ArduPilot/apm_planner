@@ -57,6 +57,7 @@ This file is part of the QGROUNDCONTROL project
 #include "TerminalConsole.h"
 #include "AP2DataPlot2D.h"
 
+
 #ifdef QGC_OSG_ENABLED
 #include "Q3DWidgetFactory.h"
 #endif
@@ -215,6 +216,8 @@ MainWindow::MainWindow(QWidget *parent):
     }
 
     connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addLink(LinkInterface*)), Qt::QueuedConnection);
+
+
 
 #ifndef QGC_TOOLBAR_ENABLED
     // Add the APM 'toolbar'
@@ -418,6 +421,11 @@ MainWindow::~MainWindow()
         commsWidgetList[i]->deleteLater();
     }
 
+}
+void MainWindow::loadTlogMenuClicked()
+{
+    statusBar()->show();
+    customStatusBar->logPlayer()->loadLogButtonClicked();
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)
@@ -688,6 +696,8 @@ void MainWindow::buildCommonWidgets()
     QGCTabbedInfoView *infoview = new QGCTabbedInfoView(this);
     infoview->addSource(mavlinkDecoder);
     createDockWidget(pilotView,infoview,tr("Info View"),"UAS_INFO_INFOVIEW_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
+
+    connect(ui.actionLoad_tlog,SIGNAL(triggered()),this,SLOT(loadTlogMenuClicked()));
 
 
     // Custom widgets, added last to all menus and layouts
@@ -1424,7 +1434,8 @@ void MainWindow::showStatusMessage(const QString& status)
 void MainWindow::showCriticalMessage(const QString& title, const QString& message)
 {
 //    QMessageBox msgBox(this);
-    QMessageBox::information(this,title,message);
+    //QMessageBox::information(this,title,message);
+    qDebug() << "Critical message:" << title << message;
 //    msgBox.setIcon(QMessageBox::Critical);
 //    msgBox.setText(title);
 //    msgBox.setInformativeText(message);

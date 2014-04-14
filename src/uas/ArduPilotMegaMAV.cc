@@ -360,6 +360,7 @@ void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
 void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t message)
 {
     // Let UAS handle the default message set
+    //qDebug() << "Message type:" << message.sysid << message.msgid;
     UAS::receiveMessage(link, message);
 
     if (message.sysid == uasId) {

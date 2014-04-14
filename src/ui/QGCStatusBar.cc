@@ -68,7 +68,7 @@ void QGCStatusBar::logging(bool checked)
 
     if (!checked && player)
     {
-        player->setLastLogFile(lastLogDirectory);
+        //player->setLastLogFile(lastLogDirectory);
     }
 
 	// If the user is enabling logging

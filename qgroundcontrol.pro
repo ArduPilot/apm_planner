@@ -590,7 +590,8 @@ HEADERS += \
     src/audio/AlsaAudio.h \
     src/ui/AutoUpdateCheck.h \
     src/ui/AutoUpdateDialog.h \
-    src/uas/LogDownloadDialog.h
+    src/uas/LogDownloadDialog.h \
+    src/comm/TLogReplyLink.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -790,7 +791,8 @@ SOURCES += src/main.cc \
     src/audio/AlsaAudio.cc \
     src/ui/AutoUpdateCheck.cc \
     src/ui/AutoUpdateDialog.cc \
-    src/uas/LogDownloadDialog.cc
+    src/uas/LogDownloadDialog.cc \
+    src/comm/TLogReplyLink.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

@@ -461,6 +461,7 @@ protected:
 private slots:
     void showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url, QString name);
     void autoUpdateCancelled(QString version);
+    void loadTlogMenuClicked();
 
 private:
     QList<QObject*> commsWidgetList;

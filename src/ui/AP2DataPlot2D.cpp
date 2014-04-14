@@ -397,7 +397,9 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
     m_currentIndex = QDateTime::currentMSecsSinceEpoch();
     m_startIndex = m_currentIndex;
     m_scrollStartIndex = 0;
+    ui.horizontalScrollBar->blockSignals(true);
     ui.horizontalScrollBar->setMinimum(m_scrollStartIndex + m_timeDiff);
+    ui.horizontalScrollBar->blockSignals(false);
     m_uas = uas;
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
