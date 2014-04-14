@@ -694,7 +694,17 @@ void ApmFirmwareConfig::flashButtonClicked()
                 }
             }
         }
-        if (QMessageBox::question(0,"Confirm","You are about to install " + m_buttonToUrlMap[senderbtn].mid(m_buttonToUrlMap[senderbtn].lastIndexOf("/")+1),QMessageBox::Ok,QMessageBox::Abort) == QMessageBox::Abort)
+        QStringList pathsplit = m_buttonToUrlMap[senderbtn].split("/");
+        QString confirmmsg = "";
+        if (pathsplit.size() > 2)
+        {
+            confirmmsg = "You are about to install " + pathsplit[pathsplit.size()-1] + " for " + pathsplit[pathsplit.size()-2];
+        }
+        else
+        {
+            confirmmsg = "You are about to install " + m_buttonToUrlMap[senderbtn].mid(m_buttonToUrlMap[senderbtn].lastIndexOf("/")+1);
+        }
+        if (QMessageBox::question(0,"Confirm",confirmmsg,QMessageBox::Ok,QMessageBox::Abort) == QMessageBox::Abort)
         {
             //aborted.
             return;
