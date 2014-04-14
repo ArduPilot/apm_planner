@@ -112,6 +112,7 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     ui.globalParamProgressBar->setRange(0,100);
 
     QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
     if (settings.contains("ADVANCED_MODE"))
     {
         m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();

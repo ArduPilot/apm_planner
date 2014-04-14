@@ -72,6 +72,12 @@ APMToolBar::APMToolBar(QWidget *parent):
             this,SLOT(newLinkCreated(LinkInterface*)));
 
     connect(&m_heartbeatTimer, SIGNAL(timeout()), this, SLOT(stopHeartbeat()));
+    QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
+    if (settings.contains("ADVANCED_MODE"))
+    {
+       QMetaObject::invokeMethod(rootObject(),"setAdvancedMode", Q_ARG(QVariant, settings.value("ADVANCED_MODE").toBool()));
+    }
 }
 
 void APMToolBar::checkAdvancedMode(bool checked)
