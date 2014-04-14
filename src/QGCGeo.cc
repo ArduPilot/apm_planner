@@ -96,19 +96,13 @@ double Vector3D::lengthSquared(void) const
 static void sphereError(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj)
 {
     Vector3D offset(xi[0], xi[1], xi[2]);
-    double xofs = xi[0];
-    double yofs = xi[1];
-    double zofs = xi[2];
     double r = xi[3];
 
     Vector3DList &rawImuVector = *reinterpret_cast<Vector3DList*>(obj);
     for (int count = 0; count < rawImuVector.count(); ++count)
     {
-        Vector3D d = rawImuVector[count];
-        double x = d.x();
-        double y = d.y();
-        double z = d.z();
-        double err = r - sqrt(pow((x + xofs), 2) + pow((y + yofs), 2) + pow((z + zofs), 2));
+        Vector3D d = rawImuVector[count] + offset;
+        double err = r - d.length();
         fi[count] = err;
     }
 }
