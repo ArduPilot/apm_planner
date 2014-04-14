@@ -9,6 +9,7 @@
 #include <QSqlField>
 #include <QSqlError>
 #include "QsLog.h"
+#include "QGC.h"
 
 AP2DataPlotThread::AP2DataPlotThread(QObject *parent) :
     QThread(parent)
@@ -566,8 +567,7 @@ void AP2DataPlotThread::run()
                             QString typestr = nameToTypeString[name];
                             nameToInsertQuery[name]->bindValue(0,index);
                             static QString intdef("bBhHiIM");
-                            static QString int100def("cC");
-                            static QString floatdef("eEf");
+                            static QString floatdef("cCeEfL");
                             static QString chardef("nNZ");
                             if (typestr.size() != linesplit.size() - 1)
                             {
@@ -577,43 +577,64 @@ void AP2DataPlotThread::run()
                             }
                             else
                             {
+                                bool foundError = false;
                                 for (int i = 1; i < linesplit.size(); i++)
                                 {
+                                    bool ok;
                                     QChar typeCode = typestr.at(i - 1);
+                                    QString valStr = linesplit[i].trimmed();
                                     if (intdef.contains(typeCode))
                                     {
-                                        nameToInsertQuery[name]->bindValue(i, linesplit[i].toInt());
-                                    }
-                                    else if (int100def.contains(typeCode))
-                                    {
-                                        nameToInsertQuery[name]->bindValue(i, linesplit[i].toInt() / 100.0);
+                                        int val = valStr.toInt(&ok);
+                                        if (ok)
+                                        {
+                                            nameToInsertQuery[name]->bindValue(i, val);
+                                        }
+                                        else
+                                        {
+                                            QLOG_DEBUG() << "Failed to convert " << valStr << " to an integer number.";
+                                            foundError = true;
+                                        }
                                     }
                                     else if (chardef.contains(typeCode))
                                     {
-                                        nameToInsertQuery[name]->bindValue(i, linesplit[i]);
-                                    }
-                                    else if (typeCode == 'L')
-                                    {
-                                        nameToInsertQuery[name]->bindValue(i, linesplit[i].toFloat());
+                                        nameToInsertQuery[name]->bindValue(i, valStr);
                                     }
                                     else if (floatdef.contains(typeCode))
                                     {
-                                        nameToInsertQuery[name]->bindValue(i, linesplit[i].toFloat());
+                                        double val = valStr.toDouble(&ok);
+                                        if (ok && !isinf(val) && !isnan(val))
+                                        {
+                                            nameToInsertQuery[name]->bindValue(i, val);
+                                        }
+                                        else
+                                        {
+                                            QLOG_DEBUG() << "Failed to convert " << valStr << " to a floating point number.";
+                                            foundError = true;
+                                        }
                                     }
                                     else
                                     {
                                         QLOG_DEBUG() << "AP2DataPlotThread::run(): Unknown data value found" << typeCode;
                                         emit error(QString("Unknown data value found: %1").arg(typeCode));
                                         return;
-
                                     }
                                 }
-                                if (!nameToInsertQuery[name]->exec())
+                                if (foundError)
+                                {
+                                    QLOG_DEBUG() << "Found an error on line " << index << ", skipping it.";
+                                    ++errorcount;
+                                }
+                                else if (!nameToInsertQuery[name]->exec())
                                 {
                                     emit error("Error execing:" + nameToInsertQuery[name]->executedQuery() + " error was " + nameToInsertQuery[name]->lastError().text());
                                     return;
                                 }
                             }
+                        }
+                        else
+                        {
+                            QLOG_DEBUG() << "Found line " << index << " with unknown command " << name << ", skipping...";
                         }
                     }
 
