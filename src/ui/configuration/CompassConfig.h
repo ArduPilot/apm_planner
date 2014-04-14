@@ -30,13 +30,12 @@ This file is part of the APM_PLANNER project
 #ifndef COMPASSCONFIG_H
 #define COMPASSCONFIG_H
 
-
+#include <QFutureWatcher>
 #include "ui_CompassConfig.h"
 #include "UASManager.h"
 #include "UASInterface.h"
 #include "AP2ConfigWidget.h"
 #include <QWidget>
-#include <QProgressDialog>
 #include "QGCGeo.h"
 
 class CompassConfig : public AP2ConfigWidget
@@ -45,17 +44,32 @@ class CompassConfig : public AP2ConfigWidget
     
 public:
     explicit CompassConfig(QWidget *parent = 0);
-    ~CompassConfig();
 
     void updateCompassSelection();
 
 private:
     enum CompassType { none, APM, ExternalCompass, PX4 };
 
+    enum CalibrationState {
+        // not doing anything in particular
+        Idle,
+
+        // Calibration just started, we're clearing the offsets and are getting ready to
+        // collect data...
+        Clearing,
+
+        // We're in the middle of the collection phase.
+        Collecting,
+
+        // Collection is finished, we're in the process of writing the values to the APM
+        Finishing
+    };
+
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void enableClicked(bool enabled);
-    void autoDecClicked(bool enabled);
+    void autoDeclinationClicked(bool enabled);
+    void manualDeclinationClicked(bool enabled);
     void orientationComboChanged(int index);
     void liveCalibrationClicked();
     void startDataCollection();
@@ -75,18 +89,24 @@ private slots:
     void setCompassPX4OnBoard();
     void setCompass3DRGPS();
 
+    void finishedCalculatingOffsets(void);
+    void updateCalibratedOffsetsLabel(QVector3D *offsets);
+    void updateCalibrationStateLabel(void);
+
 private:
+    void requestNewOffsets(void);
     void cleanup();
 
 private:
     bool m_validSensorOffsets;
     Ui::CompassConfig ui;
-    QPointer<QProgressDialog> m_progressDialog;
     QPointer<QTimer> m_timer;
+    CalibrationState m_calibrationState;
     Vector3DList m_rawImuList;
     mavlink_sensor_offsets_t m_sensorOffsets;
     Vector3D m_oldMag;
     int m_allOffsetsSet;
+    QFutureWatcher<QVector3D> *m_offsetWatcher;
 };
 
 #endif // COMPASSCONFIG_H
