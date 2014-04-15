@@ -492,7 +492,7 @@ void SerialLink::readBytes()
             QByteArray b(data, numBytes);
             emit bytesReceived(this, b);
 
-            QLOG_TRACE() << "SerialLink::readBytes()" << &std::hex << data;
+            QLOG_TRACE() << "SerialLink::readBytes()" << &hex << data;
             //            int i;
             //            for (i=0; i<numBytes; i++){
             //                unsigned int v=data[i];
