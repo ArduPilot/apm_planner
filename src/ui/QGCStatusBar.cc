@@ -37,10 +37,10 @@ QGCStatusBar::QGCStatusBar(QWidget *parent) :
 {
     setObjectName("QGC_STATUSBAR");
 
-    toggleLoggingButton = new QPushButton("Logging", this);
-    toggleLoggingButton->setCheckable(true);
+    //toggleLoggingButton = new QPushButton("Logging", this);
+    //toggleLoggingButton->setCheckable(true);
 
-    addPermanentWidget(toggleLoggingButton);
+    //addPermanentWidget(toggleLoggingButton);
 
     setStyleSheet("QStatusBar { border: 0px; border-bottom: 1px solid #101010; border-top: 1px solid #4F4F4F; background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #4B4B4B, stop:0.3 #404040, stop:0.34 #383838, stop:1 #181818); } ");
 }
@@ -58,7 +58,7 @@ void QGCStatusBar::setLogPlayer(QGCMAVLinkLogPlayer* player)
 {
     this->player = player;
     addPermanentWidget(player);
-    connect(toggleLoggingButton, SIGNAL(clicked(bool)), this, SLOT(logging(bool)));
+    //connect(toggleLoggingButton, SIGNAL(clicked(bool)), this, SLOT(logging(bool)));
 }
 
 void QGCStatusBar::logging(bool checked)
@@ -81,7 +81,7 @@ void QGCStatusBar::logging(bool checked)
 		// Check that they didn't cancel out
 		if (fileName.isNull())
 		{
-            toggleLoggingButton->setChecked(false);
+            //toggleLoggingButton->setChecked(false);
 			return;
 		}
 
@@ -119,5 +119,5 @@ void QGCStatusBar::storeSettings()
 QGCStatusBar::~QGCStatusBar()
 {
     storeSettings();
-    if (toggleLoggingButton) toggleLoggingButton->deleteLater();
+    //if (toggleLoggingButton) toggleLoggingButton->deleteLater();
 }

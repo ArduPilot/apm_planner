@@ -57,18 +57,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QSlider" name="positionSlider">
-     <property name="maximum">
-      <number>100</number>
-     </property>
-     <property name="pageStep">
-      <number>10</number>
-     </property>
-     <property name="tracking">
-      <bool>false</bool>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+    <widget class="QProgressBar" name="positionProgressBar">
+     <property name="value">
+      <number>24</number>
      </property>
     </widget>
    </item>

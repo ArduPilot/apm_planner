@@ -95,8 +95,12 @@ private slots:
     void horizontalScrollMoved(int value);
     void verticalScrollMoved(int value);
     void xAxisChanged(QCPRange range);
+    void replyTLogButtonClicked();
 
 private:
+    void showEvent(QShowEvent *evt);
+    void hideEvent(QHideEvent *evt);
+    QTimer *m_updateTimer;
     class Graph
     {
     public:

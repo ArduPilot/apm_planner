@@ -9,6 +9,9 @@ class TLogReplyLink : public LinkInterface
     Q_OBJECT
 public:
     explicit TLogReplyLink(QObject *parent = 0);
+    void play();
+    void pause();
+    bool isPaused();
     int getId();
     QString getName();
     void requestReset();
@@ -53,6 +56,7 @@ private:
     bool m_threadRun;
     QMutex m_variableAccessMutex;
     int m_speedVar;
+    bool m_pause;
 };
 
 #endif // TLOGREPLYLINK_H

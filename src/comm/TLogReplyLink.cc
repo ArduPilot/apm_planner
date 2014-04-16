@@ -84,9 +84,23 @@ void TLogReplyLink::setSpeed(int speed)
     m_speedVar = speed;
     m_variableAccessMutex.unlock();
 }
+void TLogReplyLink::play()
+{
+    m_pause = false;
+}
+
+void TLogReplyLink::pause()
+{
+    m_pause = true;
+}
+bool TLogReplyLink::isPaused()
+{
+    return m_pause;
+}
 
 void TLogReplyLink::run()
 {
+    m_pause = false;
     m_threadRun = true;
     emit connected(this);
     emit connected(true);
@@ -104,16 +118,20 @@ void TLogReplyLink::run()
             msecs = QDateTime::currentMSecsSinceEpoch();
             m_variableAccessMutex.lock();
             //m_speedVar = speed;
-            qDebug() << "Old timing:" << privSpeedVar << "New timing:" << 25 - ((m_speedVar) / 6);
-            privSpeedVar = 25 - ((m_speedVar) / 6);
+            qDebug() << "Old timing:" << privSpeedVar << "New timing:" << 50 - ((m_speedVar) / 4);
+            privSpeedVar = 50 - ((m_speedVar) / 4);
             m_variableAccessMutex.unlock();
         }
         emit logProgress(file.pos(),file.size());
-        QByteArray bytes = file.read(64);
-        bytesize+=64;
+        QByteArray bytes = file.read(128);
+        bytesize+=128;
         //qDebug() << bytesize << "read";
         emit bytesReceived(this,bytes);
         msleep(privSpeedVar);
+        while (m_pause)
+        {
+            msleep(100);
+        }
     }
     emit disconnected(this);
     emit disconnected();

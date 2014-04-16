@@ -27,14 +27,16 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
 
     //setAccelerationFactorInt(49);
     ui->speedSlider->setValue(49);
-    ui->positionSlider->setValue(ui->positionSlider->minimum());
+    //ui->positionSlider->setValue(ui->positionSlider->minimum());
 
-    ui->playButton->setEnabled(false);
+    ui->playButton->setEnabled(true);
     ui->speedSlider->setEnabled(true);
-    ui->positionSlider->setEnabled(true);
+    //ui->positionSlider->setEnabled(true);
     ui->speedLabel->setEnabled(false);
-    ui->logFileNameLabel->setEnabled(false);
-    ui->logStatsLabel->setEnabled(false);
+    ui->logStatsLabel->setEnabled(true);
+    ui->playButton->setVisible(true);
+
+
 }
 
 QGCMAVLinkLogPlayer::~QGCMAVLinkLogPlayer()
@@ -87,15 +89,30 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
     connect(m_logLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlink,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(m_logLink,SIGNAL(terminated()),this,SLOT(logLinkTerminated()));
     m_logLink->connect();
+    ui->logStatsLabel->setText(fileName.mid(fileName.lastIndexOf("/")+1));
+    ui->playButton->setIcon(QIcon(":/files/images/actions/media-playback-stop.svg"));
 }
 void QGCMAVLinkLogPlayer::logProgress(qint64 pos,qint64 total)
 {
-    ui->positionSlider->setValue(((double)pos / (double)total) * 100);
+    //ui->positionSlider->setValue(((double)pos / (double)total) * 100);
+    ui->positionProgressBar->setValue(((double)pos / (double)total) * 100);
 }
 
 void QGCMAVLinkLogPlayer::playButtonClicked()
 {
-
+    if (m_logLink)
+    {
+        if (m_logLink->isPaused())
+        {
+            m_logLink->play();
+            ui->playButton->setIcon(QIcon(":/files/images/actions/media-playback-stop.svg"));
+        }
+        else
+        {
+            m_logLink->pause();
+            ui->playButton->setIcon(QIcon(":/files/images/actions/media-playback-start.svg"));
+        }
+    }
 }
 void QGCMAVLinkLogPlayer::logLinkTerminated()
 {

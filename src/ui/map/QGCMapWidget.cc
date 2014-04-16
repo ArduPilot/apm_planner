@@ -221,6 +221,7 @@ void QGCMapWidget::showEvent(QShowEvent* event)
 
     if (!mapInitialized)
     {
+        //this->SetUseOpenGL(true);
         SetMouseWheelZoomType(internals::MouseWheelZoomType::MousePositionWithoutCenter);	    // set how the mouse wheel zoom functions
         SetFollowMouse(true);				    // we want a contiuous mouse position reading
 

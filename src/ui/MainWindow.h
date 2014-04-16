@@ -126,6 +126,7 @@ public:
     QList<QAction*> listLinkMenuActions(void);
 
 public slots:
+    void loadTlogMenuClicked();
     /** @brief Shows a status message on the bottom status bar */
     void showStatusMessage(const QString& status, int timeout);
     /** @brief Shows a status message on the bottom status bar */
@@ -461,7 +462,6 @@ protected:
 private slots:
     void showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url, QString name);
     void autoUpdateCancelled(QString version);
-    void loadTlogMenuClicked();
 
 private:
     QList<QObject*> commsWidgetList;

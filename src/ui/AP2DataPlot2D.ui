@@ -121,6 +121,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="loadTLogButton">
+         <property name="text">
+          <string>Reply TLog</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="graphControlsPushButton">
          <property name="text">
           <string>Graph Controls</string>

@@ -68,7 +68,6 @@
     <addaction name="actionJoystick_Settings"/>
     <addaction name="actionSimulate"/>
     <addaction name="separator"/>
-    <addaction name="actionLoad_tlog"/>
     <addaction name="actionMuteAudioOutput"/>
     <addaction name="actionJoystickSettings"/>
     <addaction name="menuPreferences"/>
