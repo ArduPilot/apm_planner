@@ -52,7 +52,8 @@ SerialLink::SerialLink() :
     m_stopp(false),
     m_reqReset(false),
     m_isConnected(false),
-    m_timeoutTimer(NULL)
+    m_timeoutTimer(NULL),
+    m_timeoutsEnabled(true)
 {
     QLOG_INFO() << "create SerialLink: Load Previous Settings ";
     qRegisterMetaType<QSerialPort::SerialPortError>("QSerialPort::SerialPortError");
@@ -676,6 +677,10 @@ void SerialLink::timeoutTimerTimeout()
     }
     if (m_timeoutCounter > 10) //5 seconds
     {
+        if (!m_timeoutsEnabled)
+        {
+            return;
+        }
         m_timeoutCounter = 0;
         if (!m_triedDtrReset && !m_triedRebootReset)
         {
@@ -1177,4 +1182,13 @@ const QList<SerialLink*> SerialLink::getSerialLinks(UASInterface *uas)
         };
 
     return serialLinklist;
+}
+void SerialLink::disableTimeouts()
+{
+    m_timeoutsEnabled = false;
+}
+
+void SerialLink::enableTimeouts()
+{
+    m_timeoutsEnabled = true;
 }

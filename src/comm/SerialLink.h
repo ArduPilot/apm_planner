@@ -63,6 +63,9 @@ public:
     SerialLink();
     ~SerialLink();
 
+    void disableTimeouts();
+    void enableTimeouts();
+
     static const int poll_interval = SERIAL_POLL_INTERVAL; ///< Polling interval, defined in configuration.h
 
     /** @brief Get a list of the currently available ports */
@@ -213,6 +216,7 @@ private:
     QString m_connectedType;
 
     bool hardwareConnect(QString type);
+    bool m_timeoutsEnabled;
 
 signals:
     void aboutToCloseFlag();

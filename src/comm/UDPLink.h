@@ -48,6 +48,8 @@ public:
     UDPLink(QHostAddress host = QHostAddress::Any, quint16 port = 14550);
     //UDPLink(QHostAddress host = "239.255.76.67", quint16 port = 7667);
     ~UDPLink();
+    void disableTimeouts() { };
+    void enableTimeouts() { };
 
     void requestReset() { }
 

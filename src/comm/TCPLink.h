@@ -49,6 +49,9 @@ class TCPLink : public LinkInterface
 public:
     TCPLink(QHostAddress hostAddress = QHostAddress::LocalHost, quint16 socketPort = 5760);
     ~TCPLink();
+
+    void disableTimeouts() { }
+    void enableTimeouts() { }
     
     void requestReset() { }
     

@@ -48,6 +48,8 @@ public:
 
     /* Connection management */
 
+    virtual void disableTimeouts() = 0;
+    virtual void enableTimeouts() = 0;
     /**
      * @brief Get the ID of this link
      *

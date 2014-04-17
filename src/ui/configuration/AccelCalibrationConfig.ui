@@ -57,7 +57,14 @@
      <height>401</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="2,2,2,2,2,2,2,1">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,2,2,2,2,2,2,2,1">
+    <item>
+     <widget class="QLabel" name="coutdownLabel">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
     <item>
      <widget class="QLabel" name="accelDescLabel">
       <property name="text">

@@ -50,6 +50,9 @@ class MAVLinkSimulationLink : public LinkInterface
 public:
     MAVLinkSimulationLink(QString readFile="", QString writeFile="", int rate=5, QObject* parent = 0);
     ~MAVLinkSimulationLink();
+
+    void disableTimeouts() { }
+    void enableTimeouts() { }
     bool isConnected();
     qint64 bytesAvailable();
 

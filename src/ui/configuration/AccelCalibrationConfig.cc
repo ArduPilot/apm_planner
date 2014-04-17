@@ -34,18 +34,32 @@ AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     m_accelAckCount=0;
     m_isLeveling = false;
     initConnections();
+    //coutdownLabel
+    connect(&m_countdownTimer,SIGNAL(timeout()),this,SLOT(countdownTimerTick()));
 }
 
 AccelCalibrationConfig::~AccelCalibrationConfig()
 {
 }
+void AccelCalibrationConfig::countdownTimerTick()
+{
+    ui.coutdownLabel->setText("Time remaining until timeout: " + QString::number(m_countdownCount--));
+    if (m_countdownCount <= 0)
+    {
+        ui.coutdownLabel->setText("Command timed out, please try again");
+        m_countdownTimer.stop();
+        ui.calibrateAccelButton->setText("Calibrate\nAccelerometer");
+        m_accelAckCount = 0;
+    }
+}
+
 void AccelCalibrationConfig::activeUASSet(UASInterface *uas)
 {
     if (m_uas)
     {
         disconnect(m_uas,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessageReceived(int,int,int,QString)));
-    disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
-    disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+        disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
     }
     AP2ConfigWidget::activeUASSet(uas);
     if (!uas)
@@ -104,6 +118,7 @@ void AccelCalibrationConfig::levelButtonClicked()
         GAudioOutput::instance()->mute(true);
         m_muted = true;
     }
+    m_uas->getLinks()->at(0)->disableTimeouts();
 
     MainWindow::instance()->toolBar().stopAnimation();
 
@@ -137,6 +152,7 @@ void AccelCalibrationConfig::calibrateButtonClicked()
         GAudioOutput::instance()->mute(true);
         m_muted = true;
     }
+    m_uas->getLinks()->at(0)->disableTimeouts();
 
     MainWindow::instance()->toolBar().stopAnimation();
 
@@ -153,14 +169,20 @@ void AccelCalibrationConfig::calibrateButtonClicked()
         float param7 = 0.0;
         int component = 1;
         m_uas->executeCommand(command, confirm, param1, param2, param3, param4, param5, param6, param7, component);
+        m_countdownCount = 40;
+        ui.coutdownLabel->setText("Time remaining until timeout: 30");
+        m_countdownTimer.start(1000);
     }
-    else if (m_accelAckCount <= 5)
+    else if (m_accelAckCount <= 10)
     {
         m_uas->executeCommandAck(m_accelAckCount++,true);
+        m_countdownCount = 40;
     }
     else
     {
         m_uas->executeCommandAck(m_accelAckCount++,true);
+        ui.coutdownLabel->setText("");
+        m_countdownTimer.stop();
         ui.calibrateAccelButton->setText("Calibrate\nAccelerometer");
         if (m_accelAckCount > 8)
         {
@@ -172,6 +194,7 @@ void AccelCalibrationConfig::calibrateButtonClicked()
             m_accelAckCount = 0;
         }
     }
+
 
 }
 
@@ -192,6 +215,7 @@ void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
     {
         m_uas->executeCommandAck(i,true); //Clear out extra commands.
     }
+    m_uas->getLinks()->at(0)->enableTimeouts();
 }
 void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, int severity, QString text)
 {
@@ -208,46 +232,34 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
     if (severity == 5)
     {
         //This is a calibration instruction
-        if (m_accelAckCount == 0)
+        if (text.contains("Place") && text.contains ("and press any key"))
         {
-            //Calibration Sucessful\r"
-            ui.calibrateAccelButton->setText("Continue");
-            m_accelAckCount++;
-        }
-        if (m_accelAckCount == 7)
-        {
-            //All finished
-            //ui.outputLabel->setText(ui.outputLabel->text() + "\n" + text);
+            //Instruction
+            if (m_accelAckCount == 0)
+            {
+                //Calibration Sucessful\r"
+                ui.calibrateAccelButton->setText("Continue");
+            }
             ui.outputLabel->setText(text);
             m_accelAckCount++;
         }
-        if (m_accelAckCount == 8)
+        else if (text.contains("Calibration successful") || text.contains("FAILED"))
         {
-            if (m_muted) { // turns audio backon, when you complete fail or success
+            //Calibration complete success or failure
+            if (m_muted) { // turns audio back on, when you complete fail or success
                 GAudioOutput::instance()->mute(false);
                 m_muted = false;
             }
-
-            if (text.contains("Calibration") && text.contains("successful"))
-            {
-                m_accelAckCount = 0;
-            }
-            else if (text.contains("Calibration") && text.contains("FAILED")) //Failure
-            {
-                m_accelAckCount = 0;
-            }
             ui.outputLabel->setText(ui.outputLabel->text() + "\n" + text);
+            ui.coutdownLabel->setText("");
+            m_countdownTimer.stop();
             MainWindow::instance()->toolBar().startAnimation();
+            m_accelAckCount = 0;
+            ui.calibrateAccelButton->setText("Calibrate\nAccelerometer");
         }
         else
         {
-            ui.outputLabel->setText(text.replace("press any key","click Continue below"));
-            if (!this->isVisible())
-            {
-                //Clear out!
-                m_uas->executeCommandAck(m_accelAckCount++,true);
-                ui.calibrateAccelButton->setText("Calibrate\nAccelerometer");
-            }
+            ui.outputLabel->setText(ui.outputLabel->text() + "\n" + text);
         }
     }
 
