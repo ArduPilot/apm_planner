@@ -237,14 +237,14 @@ void CameraView::setPixels(int imgid, const unsigned char* imageData, int length
 
 void CameraView::paintGL()
 {
-    glDrawPixels(glImage.width(), glImage.height(), GL_RGBA, GL_UNSIGNED_BYTE, glImage.bits());
+/**///    glDrawPixels(glImage.width(), glImage.height(), GL_RGBA, GL_UNSIGNED_BYTE, glImage.bits());
 }
 
 void CameraView::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, w, 0, h, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
+/**///    glMatrixMode(GL_PROJECTION);
+/**///    glLoadIdentity();
+/**///    glOrtho(0, w, 0, h, -1, 1);
+/**///    glMatrixMode(GL_MODELVIEW);
 }

@@ -9,14 +9,12 @@ https://github.com/diydrones/apm_planner
 Credits:
 http://planner2.ardupilot.com/credits-and-contributors/
 
-
-Documentation
-=============
+Documentation:
 see http://planner2.ardupilot.com
 
 
 Mac OS X
-========
+===============================================================================
 
 To build on Mac OS X (10.6 or later):
 
@@ -43,7 +41,7 @@ Build APM Planner
 
 
 Linux 
-=====
+===============================================================================
 
 Building on Linux (tested against Ubuntu 13.10):
 
@@ -88,32 +86,56 @@ a) You can build a .deb using ```scripts/LinuxBuildPackage.sh```, and then insta
 b) Alternatively, run ```sudo make install```. This will place the binary in your /bin/ folder and corresponding files in /share/.
 
 Windows
-=======
+===============================================================================
 
-GNU GCC / MINGW IS UNTESTED, COULD WORK
-VISUAL STUDIO 2008 / 2010 EXPRESS EDITION IS FREE!
+MinGW 4.8 (not yet)
+Visual Studio 2010 / 2012
 
-Steps for Visual Studio 2008 / 2010:
+Windows XP/7
 
-Windows XP/7:
+1) Download and install compiler
+   - a1) Visual Studio 2012
+     http://www.microsoft.com/en-us/download/details.aspx?id=34673
+   - a2) Visual Studio 2010
+     http://www.visualstudio.com/downloads/download-visual-studio-vs
+     select "Visual C++ 2010 Express", then make sure you install SP1
+   
+   - b) MinGW from http://sourceforge.net/projects/mingw/files/Installer/
+   - select "mingw-get-setup.exe"
+   - Click "Basic Setup"
+   - Select all but ada fortran objc
+   - Click "All Packages"
+   - Select msys-w32api
+   - Menu Installation->Apply Changes
 
-1) Download and install the Qt libraries for Windows from https://qt.nokia.com/downloads/ (the Visual Studio 2008 or 2010 version as appropriate)
+2) Download and install Qt from http://qt-project.org/downloads
+   - Select "Qt Online Installer for Windows"
+   - On the "Select Components" page, click the checked "Qt->Qt 5.x.x" to expand it
+     then click to select
+   - a) "msvc2010 32-bit" or "msvc2012 32-bit"
+   - b) "MinGW 4.8 32-bit"
 
-2) Download and install Visual Studio 2008 or 2010 Express Edition (free) from https://www.microsoft.com/visualstudio. If using Visual Studio 2010, make sure you are running at least SP1. There is a linking error you'll encounter otherwise that will prevent compilation.
+3) Start Visual Studio command prompt (should be in the Start Menu)
+   - Navigate to the source folder of apm_planner
+   - a) Create project files for Visual Studio (replace pathes)
+   -   ```set QTDIR=D:\Program\Qt\5.2.1\msvc2012```
+   -   ```PATH=D:\Program\Qt\5.2.1\msvc2012\bin;%PATH%```
+   -   ```qmake -tp vc -spec win32-msvc2012 qgroundcontrol.pro```
+   - b) Create project files for MinGW
+   -   Not yet
+   
+4) Compile
+   - a) Visual Studio
+   - Start and load the generated apmplanner2.vcxproj
+   - Compile, edit and debug in Visual Studio. 
+   - b) MinGW
+   -   Not yet
 
-3) Go to the QGroundControl folder and then to thirdParty/libxbee and build it following the instructions in win32.README
-
-4) Open the Qt Command Prompt program (should be in the Start Menu), navigate to the source folder of QGroundControl and create the Visual Studio project by typing:
-
-`qmake -tp vc qgroundcontrol.pro`
-
-5) Now start Visual Studio and load the qgroundcontrol.vcproj if using Visual Studio 2008 or qgroundcontrol.vcxproj if using Visual Studio 2010
-
-6) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro and re-run `qmake -tp vc qgroundcontrol.pro`
+5) If you need to add new files, add them to qgroundcontrol.pro and re-run 3)
 
 
 Repository Layout (2014-3-28: out-of-date, needs to be fixed)
-=================
+===============================================================================
 ```
 qgroundcontrol:
 	demo-log.txt

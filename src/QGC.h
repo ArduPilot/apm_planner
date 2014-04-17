@@ -31,7 +31,7 @@
 
 
 /* Windows fixes */
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && _MSC_VER <= 1700
 /* Needed define for Eigen */
 //#define NOMINMAX
 #include <limits>
