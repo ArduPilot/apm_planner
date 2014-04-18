@@ -566,9 +566,9 @@ void AP2DataPlotThread::run()
                             }
                             QString typestr = nameToTypeString[name];
                             nameToInsertQuery[name]->bindValue(0,index);
-                            static QString intdef("bBhHiIM");
+                            static QString intdef("bBhHiI");
                             static QString floatdef("cCeEfL");
-                            static QString chardef("nNZ");
+                            static QString chardef("nNZM");
                             if (typestr.size() != linesplit.size() - 1)
                             {
                                 QLOG_DEBUG() << "Bound values for" << name << "count:" << nameToInsertQuery[name]->boundValues().values().size() << "actual" << linesplit.size() << typestr.size();
