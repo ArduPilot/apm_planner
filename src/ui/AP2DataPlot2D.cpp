@@ -140,37 +140,60 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
     {
         return;
     }
-    QString newresult = "";
-    for (int i=0;i<m_graphClassMap.keys().size();i++)
+    QString newresult;
+    double x = evt->x();
+    double y = evt->y();
+    for (int i = 0; i < m_graphClassMap.keys().size(); i++)
     {
-
-        double key=0;
-        double val=0;
         QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
-        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
-        if (i == 0)
+        if (!graph)
         {
-            if (m_logLoaded)
-            {
-                newresult.append("Log Line: " + QString::number(key,'f',0) + "\n");
-            }
-            else
-            {
-                newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
-            }
+            continue;
         }
-        if (graph->data()->contains(key))
+        QCPAxis *keyAxis = graph->keyAxis();
+        QCPAxis *valueAxis = graph->valueAxis();
+        if (!keyAxis || !valueAxis)
         {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(key).value,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-        }
-        else if (graph->data()->lowerBound(key) != graph->data()->constEnd())
-        {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number((graph->data()->lowerBound(key).value().value),'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            QLOG_INFO() << "invalid key or value axis";
         }
         else
         {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + "ERR" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            double key = 0;
+            double val = 0;
+            if (keyAxis->orientation() == Qt::Horizontal)
+            {
+                key = keyAxis->pixelToCoord(x);
+                val = valueAxis->pixelToCoord(y);
+            }
+            else
+            {
+                key = keyAxis->pixelToCoord(y);
+                val = valueAxis->pixelToCoord(x);
+            }
+            if (i == 0)
+            {
+                if (m_logLoaded)
+                {
+                    newresult.append("Log Line: " + QString::number(key,'f',0) + "\n");
+                }
+                else
+                {
+                    newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
+                }
+            }
+            if (graph->data()->contains(key))
+            {
+                newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(key).value,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            }
+            else if (graph->data()->lowerBound(key) != graph->data()->constEnd())
+            {
+                newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number((graph->data()->lowerBound(key).value().value),'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            }
+            else
+            {
+                newresult.append(m_graphClassMap.keys()[i] + ": " + "ERR" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
 
+            }
         }
     }
     QToolTip::showText(QPoint(evt->pos().x() + m_plot->x(),evt->pos().y()+m_plot->y()),newresult);
