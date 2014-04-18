@@ -16,6 +16,7 @@
 #include <QSqlError>
 #include <QsLog.h>
 #include <QStandardItemModel>
+
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_uas(NULL),
     m_logDownloadDialog(NULL)
@@ -24,9 +25,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_axisGroupingDialog = 0;
     m_logLoaderThread= 0;
     m_logLoaded = false;
-    m_progressDialog=0;
-    m_currentIndex=0;
-    m_graphCount=0;
+    m_progressDialog = 0;
+    m_currentIndex = 0;
+    m_graphCount = 0;
     m_showOnlyActive = false;
 
     ui.setupUi(this);
@@ -37,13 +38,16 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_plot = new QCustomPlot(ui.widget);
     m_plot->setInteraction(QCP::iRangeDrag, true);
     m_plot->setInteraction(QCP::iRangeZoom, true);
+    m_plot->setInteraction(QCP::iSelectPlottables, true);
+    m_plot->setInteraction(QCP::iSelectAxes, true);
 
-    connect(m_plot,SIGNAL(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)),this,SLOT(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)));
-
-    connect(m_plot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(plotMouseMove(QMouseEvent*)));
+    connect(m_plot, SIGNAL(axisDoubleClick(QCPAxis*, QCPAxis::SelectablePart, QMouseEvent*)), this, SLOT(axisDoubleClick(QCPAxis*, QCPAxis::SelectablePart, QMouseEvent*)));
+    connect(m_plot, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(plotMouseMove(QMouseEvent*)));
+    connect(m_plot, SIGNAL(plottableDoubleClick(QCPAbstractPlottable*, QMouseEvent*)), this, SLOT(plottableDoubleClick(QCPAbstractPlottable*, QMouseEvent*)));
+    connect(m_plot, SIGNAL(selectionChangedByUser()), this, SLOT(plotSelectionChanged()));
 
     //ui.horizontalLayout_3->addWidget(m_plot);
-    ui.verticalLayout_5->insertWidget(0,m_plot);
+    ui.verticalLayout_5->insertWidget(0, m_plot);
 
     m_plot->show();
     m_plot->plotLayout()->clear();
@@ -51,12 +55,11 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_wideAxisRect = new QCPAxisRect(m_plot);
     m_wideAxisRect->setupFullAxesBox(true);
     m_wideAxisRect->axis(QCPAxis::atRight, 0)->setTickLabels(false);
-    m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft,0));
+    m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft, 0));
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(m_timeDiff / 1000,(m_timeDiff / 1000) + 100); //Default range of 0-100 milliseconds?
-
 
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect);
 
@@ -64,21 +67,21 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_wideAxisRect->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
 
     m_dataSelectionScreen = new DataSelectionScreen(this);
-    connect( m_dataSelectionScreen,SIGNAL(itemEnabled(QString)),this,SLOT(itemEnabled(QString)));
-    connect( m_dataSelectionScreen,SIGNAL(itemDisabled(QString)),this,SLOT(itemDisabled(QString)));
+    connect(m_dataSelectionScreen, SIGNAL(itemEnabled(QString)), this, SLOT(itemEnabled(QString)));
+    connect(m_dataSelectionScreen, SIGNAL(itemDisabled(QString)), this, SLOT(itemDisabled(QString)));
     ui.horizontalLayout_3->addWidget(m_dataSelectionScreen);
 
-    ui.horizontalLayout_3->setStretch(0,5);
-    ui.horizontalLayout_3->setStretch(1,1);
+    ui.horizontalLayout_3->setStretch(0, 5);
+    ui.horizontalLayout_3->setStretch(1, 1);
 
-    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+    connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
     ui.tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     m_addGraphAction = new QAction("Add To Graph",0);
     ui.tableWidget->addAction(m_addGraphAction);
-    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft()));
+    connect(m_addGraphAction, SIGNAL(triggered()), this, SLOT(addGraphLeft()));
 
     ui.tableWidget->setVisible(false);
     ui.hideExcelView->setVisible(false);
@@ -90,9 +93,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
 
     ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
 
-    QTimer *timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),m_plot,SLOT(replot()));
-    timer->start(500);
+    QTimer::singleShot(500, m_plot, SLOT(replot()));
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
     model = new QStandardItemModel();
@@ -108,6 +109,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     connect(ui.downloadPushButton, SIGNAL(clicked()), this, SLOT(showLogDownloadDialog()));
     ui.downloadPushButton->setEnabled(false);
 }
+
 void AP2DataPlot2D::xAxisChanged(QCPRange range)
 {
     ui.horizontalScrollBar->setValue(qRound(range.center())); // adjust position of scroll bar slider
@@ -118,10 +120,9 @@ void AP2DataPlot2D::horizontalScrollMoved(int value)
 {
     if (qAbs(m_wideAxisRect->axis(QCPAxis::atBottom)->range().center()-value) > 0.01) // if user is dragging plot, we don't want to replot twice
     {
-      m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(value,m_wideAxisRect->axis(QCPAxis::atBottom)->range().size(), Qt::AlignCenter);
-      m_plot->replot();
+        m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(value,m_wideAxisRect->axis(QCPAxis::atBottom)->range().size(), Qt::AlignCenter);
+        m_plot->replot();
     }
-    return;
 }
 
 void AP2DataPlot2D::verticalScrollMoved(int value)
@@ -203,6 +204,133 @@ void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,Q
 {
     graphControlsButtonClicked();
 }
+
+void AP2DataPlot2D::plottableDoubleClick(QCPAbstractPlottable *plottable, QMouseEvent *evt)
+{
+    QCPGraph *graph = qobject_cast<QCPGraph *>(plottable);
+    if (!graph)
+    {
+        QLOG_ERROR() << "double clicked on something that isn't a graph...";
+        return;
+    }
+    if (!graph->keyAxis() || !graph->valueAxis() || !graph->data())
+    {
+        QLOG_ERROR() << "double clicked on a gimped graph...";
+        return;
+    }
+    QCPRange keyRange = graph->keyAxis()->range();
+    QString plotName = graph->valueAxis()->label();
+
+    QVector<double> dataVector;
+    QCPDataMap *dataMap = graph->data();
+    foreach(const QCPData &d, *dataMap)
+    {
+        if (keyRange.contains(d.key))
+        {
+            // keep track for doing some math
+            dataVector << d.value;
+        }
+    }
+
+    QString msgTitle(tr("Statistical Data for %1").arg(plotName));
+    QString info;
+    if (0 == dataVector.count())
+    {
+        info.append(tr("No data points visible!"));
+    }
+    else
+    {
+        info.append(tr("%1 values visible from %2 to %3\n")
+                    .arg(dataVector.count()).arg(keyRange.lower, 3, 'f', 0).arg(keyRange.upper, 3, 'f', 0));
+
+        // average, min, max
+        double arithMean = dataVector[0];
+        double minValue = dataVector[0];
+        double maxValue = dataVector[0];
+        for (int i = 1; i < dataVector.length(); ++i)
+        {
+            arithMean += dataVector[i];
+            minValue = qMin(minValue, dataVector[i]);
+            maxValue = qMax(maxValue, dataVector[i]);
+        }
+        arithMean /= (double) dataVector.count();
+        info.append(tr("Min/Max Value: %1/%2\n").arg(minValue, 4, 'f', 2).arg(maxValue, 4, 'f', 2));
+        info.append(tr("Average: %1\n").arg(arithMean, 4, 'f', 2));
+
+        // sample standard deviation
+        double stdDev = (dataVector[0] - arithMean) * (dataVector[0] - arithMean);
+        if (1 < dataVector.length())
+        {
+            for (int i = 1; i < dataVector.length(); ++i)
+            {
+                stdDev += (dataVector[i] - arithMean) * (dataVector[i] - arithMean);
+            }
+            // Sample Std Dev will divide by (N - 1), @link http://en.wikipedia.org/wiki/Standard_deviation
+            stdDev = sqrt(stdDev / (double)(dataVector.count() - 1));
+            info.append(tr("Standard Deviation: %1\n").arg(stdDev, 4, 'f', 2));
+
+            // some more info on the data displayed
+            QCPRange std1Range(arithMean - stdDev, arithMean + stdDev);
+            QCPRange std2Range(arithMean - 2 * stdDev, arithMean + 2 * stdDev);
+            int std1Count = 0, std2Count = 0;
+            for (int i = 0; i < dataVector.length(); ++i)
+            {
+                if (std1Range.contains(dataVector[i]))
+                {
+                    ++std1Count;
+                }
+                if (std2Range.contains(dataVector[i]))
+                {
+                    ++std2Count;
+                }
+            }
+            info.append(tr("1 StdDev Range: [%1/%2] (%3 samples, %4%%)\n")
+                        .arg(std1Range.lower, 3, 'f', 2).arg(std1Range.upper, 3, 'f', 2)
+                        .arg(std1Count).arg((100.0f * std1Count) / dataVector.length(), 1, 'f', 2));
+            info.append(tr("2 StdDevs Range: [%1/%2] (%3 samples, %4%%)")
+                        .arg(std2Range.lower, 3, 'f', 2).arg(std2Range.upper, 3, 'f', 2)
+                        .arg(std2Count).arg((100.0f * std2Count) / dataVector.length(), 1, 'f', 2));
+        }
+    }
+    QToolTip::showText(evt->screenPos().toPoint(), info);
+    // QMessageBox::information(this, msgTitle, info);
+}
+
+void AP2DataPlot2D::plotSelectionChanged(void)
+{
+    // switch to a vertical drag/zoom?
+    QList<QCPAxis *> selAxes = m_plot->selectedAxes();
+    if (1 == selAxes.count())
+    {
+        QCPAxis *verticalAxis = selAxes[0];
+        foreach (Graph g, m_graphClassMap.values())
+        {
+            if (g.axis == verticalAxis)
+            {
+                // found it, it's one of our valid displayed axes
+                m_wideAxisRect->setRangeDragAxes(NULL, verticalAxis);
+                m_wideAxisRect->setRangeZoomAxes(NULL, verticalAxis);
+                return;
+            }
+        }
+    }
+
+    // have both active for the selected graph?
+    QList<QCPGraph *> selGraphs = m_plot->selectedGraphs();
+    if (1 == selGraphs.count())
+    {
+        QCPGraph *graph = selGraphs.first();
+        m_wideAxisRect->setRangeDragAxes(graph->keyAxis(), graph->valueAxis());
+        m_wideAxisRect->setRangeZoomAxes(graph->keyAxis(), graph->valueAxis());
+        return;
+    }
+
+    // reset to just drag/zoom horizontally (classic behavior)
+    QCPAxis *horizontalAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+    m_wideAxisRect->setRangeDragAxes(horizontalAxis, NULL);
+    m_wideAxisRect->setRangeZoomAxes(horizontalAxis, NULL);
+}
+
 void AP2DataPlot2D::graphControlsButtonClicked()
 {
     if (m_axisGroupingDialog)
@@ -263,6 +391,7 @@ void AP2DataPlot2D::addGraphLeft()
         m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
     }
 }
+
 void AP2DataPlot2D::removeGraphLeft()
 {
     if (ui.tableWidget->selectedItems().size() == 0)
@@ -278,6 +407,7 @@ void AP2DataPlot2D::removeGraphLeft()
         m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
     }
 }
+
 void AP2DataPlot2D::showOnlyClicked()
 {
     if (ui.tableWidget->selectedItems().size() == 0)
@@ -301,6 +431,7 @@ void AP2DataPlot2D::showOnlyClicked()
     }
     m_showOnlyActive = true;
 }
+
 void AP2DataPlot2D::showAllClicked()
 {
     for (int i=0;i<ui.tableWidget->rowCount();i++)
@@ -312,7 +443,6 @@ void AP2DataPlot2D::showAllClicked()
 
 void AP2DataPlot2D::tableCellClicked(int row,int column)
 {
-
     if (ui.tableWidget->item(row,0))
     {
         if (m_tableHeaderNameMap.contains(ui.tableWidget->item(row,0)->text()))
@@ -461,6 +591,7 @@ void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
 }
+
 void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer)
 {
     Q_UNUSED(msec)
@@ -480,7 +611,6 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         m_dataSelectionScreen->addItem(propername);
     }
 
-
     qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
     m_currentIndex = msec_current;
     qint64 newmsec = (msec_current - m_startIndex) + m_timeDiff;
@@ -494,7 +624,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     if (m_graphClassMap.contains(propername))
     {
         m_graphClassMap[propername].axisIndex = newmsec / 1000.0;// + 18000000;
-        m_graphClassMap.value(propername).graph->addData(m_graphClassMap.value(propername).axisIndex,value);
+        m_graphClassMap.value(propername).graph->addData(m_graphClassMap.value(propername).axisIndex, value);
         m_scrollEndIndex = newmsec /  1000.0;
         //ui.horizontalScrollBar->setMinimum(m_startIndex);
         ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
@@ -554,8 +684,9 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
 
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
 {
-    updateValue(uasId,name,unit,value,msec);
+    updateValue(uasId, name, unit, value, msec);
 }
+
 void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
 {
     updateValue(uasId,name,unit,value,msec);
@@ -608,9 +739,16 @@ void AP2DataPlot2D::loadButtonClicked()
     //Clear the graph
     for (int i=0;i<m_graphNameList.size();i++)
     {
-
-        m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
-        m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
+        Graph g = m_graphClassMap.value(m_graphNameList[i]);
+        m_wideAxisRect->removeAxis(g.axis);
+        if (g.graph)
+        {
+            m_plot->removeGraph(g.graph);
+        }
+        foreach (QCPAbstractItem *item, g.items)
+        {
+            m_plot->removeItem(item);
+        }
     }
     m_dataSelectionScreen->clear();
     if (m_axisGroupingDialog)
@@ -667,6 +805,7 @@ void AP2DataPlot2D::loadButtonClicked()
     currentIndex=0;
     m_logLoaderThread->loadFile(filename,&m_sharedDb);
 }
+
 void AP2DataPlot2D::logLine(QString line)
 {
     /*QList<QStandardItem*> rowlist;
@@ -758,150 +897,117 @@ void AP2DataPlot2D::itemEnabled(QString name)
             return;
         }
         QSqlRecord record = tablequery.record();
+        QString typeCodeList = record.value(3).toString();
         QStringList valuessplit = record.value(4).toString().split(","); //comma delimited list of names
-        bool found = false;
-        int index = 0;
-        for (int i=0;i<valuessplit.size();i++)
+        int index = valuessplit.indexOf(child);
+        if (-1 == index)
         {
-            if (valuessplit.at(i) == child)
-            {
-                found = true;
-                index = i;
-                i = valuessplit.size();
-            }
-        }
-        if (!found)
-        {
+            QLOG_INFO() << "Requested field " << child << " not found";
             return;
         }
+        if (typeCodeList.length() <= index)
+        {
+            QLOG_INFO() << "Requested field " << child << " has not type specifier!";
+            return;
+        }
+        QChar typeCode = typeCodeList[index];
+
+        static QString numericTypeCodes("bBhHiIcCeEfL");
+        static QString stringTypeCodes("nNZM");
+
         QSqlQuery itemquery(m_sharedDb);
         itemquery.prepare("SELECT * FROM '" + parent + "';");
         itemquery.exec();
-        QVector<double> xlist;
-        QVector<double> ylist;
-        while (itemquery.next())
-        {
-            QSqlRecord record = itemquery.record();
-            int graphindex = record.value(0).toInt();
-            double graphvalue = record.value(index+1).toDouble();
-            xlist.append(graphindex);
-            ylist.append(graphvalue);
 
-        }
-        QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-        axis->setLabel(name);
-
-        if (m_graphCount > 0)
+        if (numericTypeCodes.contains(typeCode))
         {
-            connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
-        }
-        QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
-        axis->setLabelColor(color);
-        axis->setTickLabelColor(color);
-        axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
-        QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
-        m_graphNameList.append(name);
-        mainGraph1->setData(xlist, ylist);
-        mainGraph1->rescaleValueAxis();
-        if (m_graphCount == 1)
-        {
-            mainGraph1->rescaleKeyAxis();
-        }
-        if (m_axisGroupingDialog)
-        {
-            m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
-        }
-        mainGraph1->setPen(QPen(color, 2));
-        Graph graph;
-        graph.axis = axis;
-        graph.groupName = "";
-        graph.graph=  mainGraph1;
-        graph.isInGroup = false;
-        graph.isManualRange = false;
-        m_graphClassMap[name] = graph;
-        /*    if (!m_sharedDb.isOpen())
-    {
-        if (!m_sharedDb.open())
-        {
-            //emit error("Unable to open database: " + m_sharedDb.lastError().text());
-            QMessageBox::information(0,"Error","Error opening DB");
-            return;
-        }
-    }
-    //fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
-    QSqlQuery fmtquery(m_sharedDb);
-    fmtquery.prepare("SELECT * FROM 'FMT';");
-    if (!fmtquery.exec())
-    {
-        QMessageBox::information(0,"Error","Error selecting from table 'FMT' " + m_sharedDb.lastError().text());
-        return;
-
-    }
-    while (fmtquery.next())
-    {
-        QSqlRecord record = fmtquery.record();*/
-        return;
-        name = name.mid(name.indexOf(":")+1);
-        for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
-        {
-            if (i.value().size() > 0)
+            QVector<double> xlist;
+            QVector<double> ylist;
+            while (itemquery.next())
             {
-                if (i.value()[0].second.contains(name))
-                {
-                    //This is the one we want.
-                    QVector<double> xlist;
-                    QVector<double> ylist;
-                    float min = i.value()[0].second[name].toDouble();
-                    float max = i.value()[0].second[name].toDouble();
-                    for (int j=0;j<i.value().size();j++)
-                    {
-                        xlist.append(i.value()[j].first);
-                        double val = i.value()[j].second[name].toDouble();
-                        if (val > max)
-                        {
-                            max = val;
-                        }
-                        if (val < min)
-                        {
-                            min = val;
-                        }
-                        ylist.append(val);
-                    }
-                    QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-                    axis->setLabel(name);
-
-                    if (m_graphCount > 0)
-                    {
-                        connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
-                    }
-                    QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
-                    axis->setLabelColor(color);
-                    axis->setTickLabelColor(color);
-                    axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
-                    QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
-                    m_graphNameList.append(name);
-                    mainGraph1->setData(xlist, ylist);
-                    mainGraph1->rescaleValueAxis();
-                    if (m_graphCount == 1)
-                    {
-                        mainGraph1->rescaleKeyAxis();
-                    }
-                    if (m_axisGroupingDialog)
-                    {
-                        m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
-                    }
-                    mainGraph1->setPen(QPen(color, 2));
-                    Graph graph;
-                    graph.axis = axis;
-                    graph.groupName = "";
-                    graph.graph=  mainGraph1;
-                    graph.isInGroup = false;
-                    graph.isManualRange = false;
-                    m_graphClassMap[name] = graph;
-                    return;
-                }
+                QSqlRecord record = itemquery.record();
+                int graphindex = record.value(0).toInt();
+                double graphvalue = record.value(index+1).toDouble();
+                xlist.append(graphindex);
+                ylist.append(graphvalue);
+            }
+            QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+            axis->setLabel(name);
+            QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+            axis->setLabelColor(color);
+            axis->setTickLabelColor(color);
+            axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+            m_graphNameList.append(name);
+            mainGraph1->setData(xlist, ylist);
+            mainGraph1->rescaleValueAxis();
+            if (m_graphCount == 1)
+            {
+                mainGraph1->rescaleKeyAxis();
+            }
+            if (m_axisGroupingDialog)
+            {
+                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
+            }
+            mainGraph1->setPen(QPen(color, 2));
+            Graph graph;
+            graph.axis = axis;
+            graph.groupName = "";
+            graph.graph = mainGraph1;
+            graph.isInGroup = false;
+            graph.isManualRange = false;
+            m_graphClassMap[name] = graph;
+        }
+        else if (stringTypeCodes.contains(typeCode))
+        {
+            QVector<double> xlist;
+            QVector<QString> ylist;
+            while (itemquery.next())
+            {
+                QSqlRecord record = itemquery.record();
+                xlist.append(record.value(0).toDouble());
+                ylist.append(record.value(index + 1).toString());
             }
 
+            QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+            yAxis->setLabel(name);
+            ++m_graphCount;
+            QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+            yAxis->setLabelColor(color);
+            yAxis->setTickLabelColor(color);
+            yAxis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+            yAxis->setRange(-1.0, 3.0);
+
+            QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+
+            Graph g;
+            g.axis = yAxis;
+            g.isInGroup = false;
+            g.isManualRange = false;
+            for (int i = 0; i < xlist.count(); ++i)
+            {
+                QCPItemText *itemText = new QCPItemText(m_plot);
+                g.items.append(itemText);
+                itemText->setText(ylist[i]);
+                itemText->position->setAxes(xAxis, yAxis);
+                itemText->position->setCoords(xlist[i], 2.0);
+                m_plot->addItem(itemText);
+
+                QCPItemLine *itemLine = new QCPItemLine(m_plot);
+                g.items.append(itemLine);
+                itemLine->start->setParentAnchor(itemText->bottom);
+                itemLine->start->setAxes(xAxis, yAxis);
+                itemLine->start->setCoords(0.0, 0.0);
+                itemLine->end->setAxes(xAxis, yAxis);
+                itemLine->end->setCoords(xlist[i], 0.0);
+                itemLine->setTail(QCPLineEnding::esDisc);
+                itemLine->setHead(QCPLineEnding::esSpikeArrow);
+                m_plot->addItem(itemLine);
+            }
+            m_graphNameList.append(name);
+            m_graphClassMap[name] = g;
+            xAxis->setRange(xlist.first(), xlist.last());
+            xAxis->rescale();
         }
     } //if (m_logLoaded)
     else
@@ -950,7 +1056,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             Graph graph;
             graph.axis = axis;
             graph.groupName = "";
-            graph.graph=  mainGraph1;
+            graph.graph = mainGraph1;
             graph.isInGroup = false;
             graph.isManualRange = false;
             m_graphClassMap[name] = graph;
@@ -958,6 +1064,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             mainGraph1->setPen(QPen(color, 2));
         }
     }
+    m_plot->replot();
 }
 void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
 {
@@ -1000,12 +1107,15 @@ void AP2DataPlot2D::graphManualRange(QString name, double min, double max)
 {
     graphRemovedFromGroup(name);
     m_graphClassMap[name].isManualRange = true;
-    m_graphClassMap.value(name).axis->setRange(min,max);
+    m_graphClassMap.value(name).axis->setRange(min, max);
 }
 void AP2DataPlot2D::graphAutoRange(QString name)
 {
     m_graphClassMap[name].isManualRange = true;
-    m_graphClassMap.value(name).graph->rescaleValueAxis();
+    if (m_graphClassMap.value(name).graph)
+    {
+        m_graphClassMap.value(name).graph->rescaleValueAxis();
+    }
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
@@ -1029,14 +1139,21 @@ void AP2DataPlot2D::graphRemovedFromGroup(QString name)
     m_graphGrouping[group].removeOne(name);
     m_graphClassMap[name].isInGroup = false;
     //m_graphClassMap.value(name).graph->valueAxis()->setRange;
-    m_graphClassMap.value(name).graph->rescaleValueAxis();
+
+    if (m_graphClassMap.value(name).graph)
+    {
+        m_graphClassMap.value(name).graph->rescaleValueAxis();
+    }
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
     }
     if (m_graphGrouping[group].size() > 0)
     {
-        m_graphClassMap.value(m_graphGrouping[group][0]).graph->rescaleValueAxis();
+        if (m_graphClassMap.value(m_graphGrouping[group][0]).graph)
+        {
+            m_graphClassMap.value(m_graphGrouping[group][0]).graph->rescaleValueAxis();
+        }
         if (m_axisGroupingDialog)
         {
             m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
@@ -1067,8 +1184,16 @@ void AP2DataPlot2D::itemDisabled(QString name)
     {
         name = name.mid(name.indexOf(":")+1);
     }
-    m_wideAxisRect->removeAxis(m_graphClassMap.value(name).axis);
-    m_plot->removeGraph(m_graphClassMap.value(name).graph);
+    Graph g = m_graphClassMap.value(name);
+    m_wideAxisRect->removeAxis(g.axis);
+    if (g.graph)
+    {
+        m_plot->removeGraph(g.graph);
+    }
+    foreach (QCPAbstractItem *item, g.items)
+    {
+        m_plot->removeItem(item);
+    }
     m_plot->replot();
     m_graphClassMap.remove(name);
     m_graphNameList.removeOne(name);
@@ -1077,8 +1202,8 @@ void AP2DataPlot2D::itemDisabled(QString name)
     {
         m_axisGroupingDialog->removeAxis(name);
     }
-
 }
+
 void AP2DataPlot2D::progressDialogCanceled()
 {
     m_logLoaderThread->stopLoad();
