@@ -14,7 +14,7 @@ see http://planner2.ardupilot.com
 
 
 Mac OS X
-===============================================================================
+========
 
 To build on Mac OS X (10.6 or later):
 
@@ -41,7 +41,7 @@ Build APM Planner
 
 
 Linux 
-===============================================================================
+=====
 
 Building on Linux (tested against Ubuntu 13.10):
 
@@ -86,7 +86,7 @@ a) You can build a .deb using ```scripts/LinuxBuildPackage.sh```, and then insta
 b) Alternatively, run ```sudo make install```. This will place the binary in your /bin/ folder and corresponding files in /share/.
 
 Windows
-===============================================================================
+=======
 
 MinGW 4.8 (not yet)
 Visual Studio 2010 / 2012
@@ -117,11 +117,11 @@ Windows XP/7
 
 3) Start Visual Studio command prompt (should be in the Start Menu)
    - Navigate to the source folder of apm_planner
-   - a) Create project files for Visual Studio (replace pathes)
+   - a) Create project files for Visual Studio (replace paths)
    -   ```set QTDIR=D:\Program\Qt\5.2.1\msvc2012```
    -   ```PATH=D:\Program\Qt\5.2.1\msvc2012\bin;%PATH%```
    -   ```qmake -tp vc -spec win32-msvc2012 qgroundcontrol.pro```
-   - b) Create project files for MinGW
+   - b) Create project files for MinGW (replace paths)
    -   Not yet
    
 4) Compile
@@ -135,7 +135,7 @@ Windows XP/7
 
 
 Repository Layout (2014-3-28: out-of-date, needs to be fixed)
-===============================================================================
+=================
 ```
 qgroundcontrol:
 	demo-log.txt
