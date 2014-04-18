@@ -9,7 +9,7 @@
 # 
 # Modified for use with APMPlanner 2 by Stephen Dade
 
-package = APM Planner 2
+package = apmplanner2
 docdir = debian/tmp/usr/share/doc/$(package)
 
 CC = gcc
@@ -27,6 +27,7 @@ build:
 	$(checkdir)
 	#GIT_VERSION=$(git describe --abbrev=1)
 	#git-dch -a --ignore-branch --new-version="2.0.0.$GIT_VERSION"
+	./debian/gitlog-to-changelog.pl > ./debian/changelog
 	qmake-qt4 PREFIX=debian/tmp/usr qgroundcontrol.pro
 	#cmake -DCMAKE_INSTALL_PREFIX=/usr .
 	#$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" --jobs=3
@@ -56,7 +57,7 @@ binary-arch: checkroot build
 	#sed -i "s/VERSION/$GIT_VERSION/g" debian/tmp/DEBIAN/control
 	$(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" --jobs=3
 	#$(MAKE) DESTDIR=$(CURDIR)/debian/tmp $(INSTALL_PROGRAM)
-	cp -a ./license.txt "$(docdir)"
+	cp -a ./license.txt "$(docdir)/copyright"
 	cp -a debian/changelog "$(docdir)/changelog"
 	#cp -a ChangeLog "$(docdir)/changelog"
 	cd "$(docdir)" && gzip -9 changelog
