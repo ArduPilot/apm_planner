@@ -213,10 +213,10 @@ LinuxBuild {
         datafiles.files += $$BASEDIR/qml
 
         #fix up file permissions. Bit of a hack job
-        permFolders.path = $$DATADIR/APMPlanner2
-        permFolders.commands += find $$DATADIR -type d -exec chmod 755 {} \\;
-        permFiles.path = $$DATADIR/APMPlanner2
-        permFiles.commands += find $$DATADIR -type f -exec chmod 644 {} \\;
+        #permFolders.path = $$DATADIR/APMPlanner2
+        #permFolders.commands += find $$DATADIR -type d -exec chmod 755 {} \\;
+        #permFiles.path = $$DATADIR/APMPlanner2
+        #permFiles.commands += find $$DATADIR -type f -exec chmod 644 {} \\;
 
         #create menu links
         desktopLink.path = $$DATADIR/menu
