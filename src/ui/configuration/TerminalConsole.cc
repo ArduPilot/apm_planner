@@ -238,7 +238,7 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
 #ifdef Q_OS_LINUX
         if(m_serial->errorString().contains("busy"))
         {
-            errorMessage = tr("ERROR: Port ") + m_serial->portName() + tr(" is locked by an external process. Run: \"sudo lsof /dev/") + m_serial->portName() + tr("\" to determine the associated programs. They can usually be uninstalled.");
+            errorMessage = tr("ERROR: Port ") + m_serial->portName() + tr(" is locked by an external process. Try uninstalling \"modemmanager\" or run: \"sudo lsof /dev/") + m_serial->portName() + tr("\" to determine the interfering application.");
         }
 #endif
 
