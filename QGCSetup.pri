@@ -24,28 +24,32 @@ QMAKE_POST_LINK += $$quote(echo "Copying files")
 #
 
 COPY_RESOURCE_LIST = \
-    $$BASEDIR/files \
-    $$BASEDIR/qml \
-    $$BASEDIR/data
-    
+    files \
+    qml \
+    data
+
 WindowsBuild {
 	DESTDIR_COPY_RESOURCE_LIST = $$replace(DESTDIR,"/","\\")
-    COPY_RESOURCE_LIST = $$replace(COPY_RESOURCE_LIST, "/","\\")
+    BASEDIR_COPY = $$replace(BASEDIR,"/","\\")
     CONCATCMD = $$escape_expand(\\n)
+
+    for(COPY_DIR, COPY_RESOURCE_LIST):QMAKE_POST_LINK += $$CONCATCMD $$QMAKE_COPY_DIR $$BASEDIR_COPY\\$${COPY_DIR} $$DESTDIR_COPY_RESOURCE_LIST\\$$COPY_DIR
 }
 
 LinuxBuild {
     DESTDIR_COPY_RESOURCE_LIST = $$DESTDIR
     CONCATCMD = &&
+    
+    for(COPY_DIR, COPY_RESOURCE_LIST):QMAKE_POST_LINK += $$CONCATCMD $$QMAKE_COPY_DIR $$BASEDIR/$${COPY_DIR} $$DESTDIR_COPY_RESOURCE_LIST
 }
 
 MacBuild {
     DESTDIR_COPY_RESOURCE_LIST = $$DESTDIR/$${TARGET}.app/Contents/MacOS
     CONCATCMD = &&
+
+    for(COPY_DIR, COPY_RESOURCE_LIST):QMAKE_POST_LINK += $$CONCATCMD $$QMAKE_COPY_DIR $$BASEDIR/$${COPY_DIR} $$DESTDIR_COPY_RESOURCE_LIST
 }
     
-for(COPY_DIR, COPY_RESOURCE_LIST):QMAKE_POST_LINK += $$CONCATCMD $$QMAKE_COPY_DIR $${COPY_DIR} $$DESTDIR_COPY_RESOURCE_LIST
-
 #
 # Perform platform specific setup
 #
@@ -165,7 +169,6 @@ WindowsBuild {
     COPY_FILE_LIST = \
         $$BASEDIR_WIN\\libs\\lib\\sdl\\win32\\SDL.dll \
         $$BASEDIR_WIN\\libs\\thirdParty\\libxbee\\lib\\libxbee.dll \
-        #$$(QTDIR)\\bin\\phonon$${DLL_QT_DEBUGCHAR}4.dll \
         $$(QTDIR)\\bin\\Qt5Core$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Gui$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Multimedia$${DLL_QT_DEBUGCHAR}.dll \
@@ -178,7 +181,22 @@ WindowsBuild {
         $$(QTDIR)\\bin\\Qt5Xml$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5XmlPatterns$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Declarative$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5Script$${DLL_QT_DEBUGCHAR}.dll
+        $$(QTDIR)\\bin\\Qt5Positioning$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5PrintSupport$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5MultimediaWidgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Qml$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Quick$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Script$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Sensors$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5SerialPort$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5WebKitWidgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Widgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\libEGL$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\libGLESv2$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\icudt51.dll \
+        $$(QTDIR)\\bin\\icuin51.dll \
+        $$(QTDIR)\\bin\\icuuc51.dll
+        
     for(COPY_FILE, COPY_FILE_LIST) {
         QMAKE_POST_LINK += $$escape_expand(\\n) $$quote($$QMAKE_COPY "$$COPY_FILE" "$$COPY_FILE_DESTDIR")
     }
