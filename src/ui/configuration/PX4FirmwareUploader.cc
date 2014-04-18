@@ -345,7 +345,7 @@ void PX4FirmwareUploader::run()
 #ifdef Q_OS_LINUX
         if(m_port->errorString().contains("busy"))
         {
-            emit statusUpdate("ERROR: Port " + m_port->portName() + " is locked by an external process. Run: \"sudo lsof /dev/" + m_port->portName() + "\" to determine the associated programs. They can usually be uninstalled.");
+            emit statusUpdate("ERROR: Port " + m_port->portName() + " is locked by an external process. Try uninstalling \"modemmanager\" or run: \"sudo lsof /dev/" + m_port->portName() + "\" to determine the interfering application.");
         }
 #endif
         return;
