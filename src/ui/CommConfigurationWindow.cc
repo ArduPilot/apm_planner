@@ -255,13 +255,13 @@ void CommConfigurationWindow::setLinkType(qgc_link_t linktype)
 	switch(linktype)
 	{
 #ifdef XBEELINK
-/*        case QGC_LINK_XBEE:
+        case QGC_LINK_XBEE:
 			{
 				XbeeLink *xbee = new XbeeLink();
 				tmpLink = xbee;
 				MainWindow::instance()->addLink(tmpLink);
 				break;
-            }*/
+            }
 #endif // XBEELINK
         case QGC_LINK_UDP:
 			{
