@@ -123,7 +123,7 @@
        <item>
         <widget class="QPushButton" name="loadTLogButton">
          <property name="text">
-          <string>Reply TLog</string>
+          <string>Replay TLog</string>
          </property>
         </widget>
        </item>

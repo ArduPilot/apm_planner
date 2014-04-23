@@ -4,11 +4,11 @@
 #include "LinkInterface.h"
 #include <QMutex>
 
-class TLogReplyLink : public LinkInterface
+class TLogReplayLink : public LinkInterface
 {
     Q_OBJECT
 public:
-    explicit TLogReplyLink(QObject *parent = 0);
+    explicit TLogReplayLink(QObject *parent = 0);
     void play();
     void pause();
     bool isPaused();
@@ -34,6 +34,8 @@ public:
 
     //Speed is 1-100, being slowest to fastest
     void setSpeed(int speed);
+    void disableTimeouts() { }
+    void enableTimeouts() { }
 signals:
     /*void bytesReceived(LinkInterface* link, QByteArray data);
     void connected();

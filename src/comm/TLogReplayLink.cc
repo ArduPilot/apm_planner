@@ -1,104 +1,107 @@
-#include "TLogReplyLink.h"
+#include "TLogReplayLink.h"
 #include <QFile>
 #include <QDebug>
 #include <QDateTime>
-TLogReplyLink::TLogReplyLink(QObject *parent) :
+#include "UASManager.h"
+#include "UAS.h"
+#include "MainWindow.h"
+TLogReplayLink::TLogReplayLink(QObject *parent) :
     LinkInterface(parent),
     m_toBeDeleted(false),
     m_threadRun(false)
 {
     m_speedVar = 50;
 }
-int TLogReplyLink::getId()
+int TLogReplayLink::getId()
 {
     return 1;
 }
-QString TLogReplyLink::getName()
+QString TLogReplayLink::getName()
 {
     return "AP2SimulationLink";
 }
-void TLogReplyLink::requestReset()
+void TLogReplayLink::requestReset()
 {
 
 }
-bool TLogReplyLink::isConnected()
+bool TLogReplayLink::isConnected()
 {
     return false;
 }
-qint64 TLogReplyLink::getNominalDataRate()
+qint64 TLogReplayLink::getNominalDataRate()
 {
     return 115200;
 }
-bool TLogReplyLink::isFullDuplex()
+bool TLogReplayLink::isFullDuplex()
 {
     return true;
 }
-int TLogReplyLink::getLinkQuality()
+int TLogReplayLink::getLinkQuality()
 {
     return 100;
 }
-qint64 TLogReplyLink::getTotalUpstream()
+qint64 TLogReplayLink::getTotalUpstream()
 {
     return 0;
 }
-qint64 TLogReplyLink::getCurrentUpstream()
+qint64 TLogReplayLink::getCurrentUpstream()
 {
     return 0;
 }
-qint64 TLogReplyLink::getMaxUpstream()
+qint64 TLogReplayLink::getMaxUpstream()
 {
     return 0;
 }
-qint64 TLogReplyLink::getBitsSent()
+qint64 TLogReplayLink::getBitsSent()
 {
     return 0;
 }
-qint64 TLogReplyLink::getBitsReceived()
+qint64 TLogReplayLink::getBitsReceived()
 {
     return 0;
 }
-bool TLogReplyLink::connect()
+bool TLogReplayLink::connect()
 {
     start();
     return true;
 }
-bool TLogReplyLink::disconnect()
+bool TLogReplayLink::disconnect()
 {
     return false;
 }
-qint64 TLogReplyLink::bytesAvailable()
+qint64 TLogReplayLink::bytesAvailable()
 {
     return 0;
 }
-void TLogReplyLink::writeBytes(const char *bytes, qint64 length)
+void TLogReplayLink::writeBytes(const char *bytes, qint64 length)
 {
 
 }
-void TLogReplyLink::readBytes()
+void TLogReplayLink::readBytes()
 {
 
 }
-void TLogReplyLink::setSpeed(int speed)
+void TLogReplayLink::setSpeed(int speed)
 {
     m_variableAccessMutex.lock();
     m_speedVar = speed;
     m_variableAccessMutex.unlock();
 }
-void TLogReplyLink::play()
+void TLogReplayLink::play()
 {
     m_pause = false;
 }
 
-void TLogReplyLink::pause()
+void TLogReplayLink::pause()
 {
     m_pause = true;
 }
-bool TLogReplyLink::isPaused()
+bool TLogReplayLink::isPaused()
 {
     return m_pause;
 }
 
-void TLogReplyLink::run()
+void TLogReplayLink::run()
 {
     m_pause = false;
     m_threadRun = true;
@@ -110,6 +113,7 @@ void TLogReplyLink::run()
     int bytesize = 0;
     qint64 msecs = QDateTime::currentMSecsSinceEpoch();
     int privSpeedVar = 25;
+    MainWindow::instance()->toolBar().disableConnectWidget(true);
     while (!file.atEnd() && m_threadRun)
     {
         if (QDateTime::currentMSecsSinceEpoch() - msecs > 1000)
@@ -136,18 +140,20 @@ void TLogReplyLink::run()
     emit disconnected(this);
     emit disconnected();
     emit connected(false);
+    UASManager::instance()->removeUAS(UASManager::instance()->getActiveUAS());
+    MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
-void TLogReplyLink::setLog(QString logfile)
+void TLogReplayLink::setLog(QString logfile)
 {
     m_logFile = logfile;
 }
-void TLogReplyLink::stop()
+void TLogReplayLink::stop()
 {
     m_toBeDeleted = true;
     m_threadRun = false;
 }
 
-bool TLogReplyLink::toBeDeleted()
+bool TLogReplayLink::toBeDeleted()
 {
     return m_toBeDeleted;
 }

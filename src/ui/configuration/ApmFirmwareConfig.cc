@@ -215,7 +215,9 @@ void ApmFirmwareConfig::showEvent(QShowEvent *)
     // Start Port scanning
     m_timer->start(2000);
     if(ui.stackedWidget->currentIndex() == 0)
+    {
         MainWindow::instance()->toolBar().disableConnectWidget(true);
+    }
     QSettings settings;
     if (settings.contains("ADVANCED_MODE"))
     {
@@ -228,12 +230,16 @@ void ApmFirmwareConfig::hideEvent(QHideEvent *)
 {
     // Stop Port scanning
     m_timer->stop();
-    MainWindow::instance()->toolBar().disableConnectWidget(false);
+    if(ui.stackedWidget->currentIndex() == 0)
+    {
+        MainWindow::instance()->toolBar().disableConnectWidget(false);
+    }
+    //MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
 
 void ApmFirmwareConfig::uasConnected()
 {
-    MainWindow::instance()->toolBar().disableConnectWidget(false);
+   // MainWindow::instance()->toolBar().disableConnectWidget(false);
     ui.stackedWidget->setCurrentIndex(1);
 }
 void ApmFirmwareConfig::cancelButtonClicked()

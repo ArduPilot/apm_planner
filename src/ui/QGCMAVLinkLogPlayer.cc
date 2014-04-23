@@ -81,7 +81,7 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
         return;
     }
     m_logLoaded = true;
-    m_logLink = new TLogReplyLink(this);
+    m_logLink = new TLogReplayLink(this);
     connect(m_logLink,SIGNAL(logProgress(qint64,qint64)),this,SLOT(logProgress(qint64,qint64)));
 
 

@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QFile>
 #include "MAVLinkProtocol.h"
-#include "TLogReplyLink.h"
+#include "TLogReplayLink.h"
 
 namespace Ui
 {
@@ -77,7 +77,7 @@ protected:
 private:
     MAVLinkProtocol *m_mavlink;
     Ui::QGCMAVLinkLogPlayer *ui;
-    TLogReplyLink *m_logLink;
+    TLogReplayLink *m_logLink;
     bool m_logLoaded;
 };
 
