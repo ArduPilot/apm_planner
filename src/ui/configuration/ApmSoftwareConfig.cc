@@ -304,6 +304,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     QString humanname = xml.attributes().value("humanName").toString();
                                     QString name = xml.attributes().value("name").toString();
                                     QString tab= xml.attributes().value("user").toString();
+                                    QString range = "";
                                     if (name.contains(":"))
                                     {
                                         name = name.split(":")[1].toUpper();
@@ -368,6 +369,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 min = fieldmap["Range"].split("-")[0].trimmed().toFloat();
                                                 max = fieldmap["Range"].split("-")[1].trimmed().toFloat();
                                             }
+                                            range = QString("%1 to %2").arg(min).arg(max);
                                         }
                                     }
                                     QString units = "";
@@ -408,7 +410,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 c.isRange = false;
                                                 m_paramConfigList.append(c);
                                             }
-                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units);
+                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units,range);
                                         }
                                     }
                                     else if (fieldmap.size() > 0)
@@ -430,6 +432,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 max = fieldmap["Range"].split("-")[1].trimmed().toFloat();
                                             }
                                             increment = (max - min) / 100.0; //1% of total range increment
+                                            range = QString("%1 to %2").arg(min).arg(max);
                                         }
                                         if (compare == parametersname || valuetype == "libraries")
                                         {
@@ -459,7 +462,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 c.isRange = true;
                                                 m_paramConfigList.append(c);
                                             }
-                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units);
+                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units,range);
                                         }
                                     }
 

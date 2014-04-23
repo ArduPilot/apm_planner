@@ -45,7 +45,8 @@ class AdvParameterList : public AP2ConfigWidget
 
 public:
     explicit AdvParameterList(QWidget *parent = 0);
-    void setParameterMetaData(QString name,QString humanname,QString description,QString unit);
+    void setParameterMetaData(const QString& name, const QString& humanname, const QString& description,
+                              const QString& unit, const QString& range);
     ~AdvParameterList();
     void updateTableWidgetElements(QMap<QString, UASParameter*> &parameterList);
 private slots:
@@ -74,6 +75,7 @@ private:
     QMap<QString,QString> m_paramToDescriptionMap;
     QMap<QString,double> m_modifiedParamMap;
     QMap<QString,QString> m_paramToUnitMap;
+    QMap<QString,QString> m_paramToRangeMap;
 
     QList<QTableWidgetItem *> m_searchItemList;
     int m_searchIndex;
