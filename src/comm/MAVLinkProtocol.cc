@@ -33,6 +33,7 @@
 #include <QSettings>
 #include <QDesktopServices>
 #include <QDir>
+#include <QDataStream>
 
 
 #ifdef QGC_PROTOBUF_ENABLED
@@ -294,18 +295,20 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
             // Log data
             if (m_loggingEnabled && m_logfile)
             {
-                uint8_t buf[MAVLINK_MAX_PACKET_LEN+sizeof(quint64)] = {0};
                 quint64 time = QGC::groundTimeUsecs();
-                memcpy(buf, (void*)&time, sizeof(quint64));
-                // Write message to buffer
-                mavlink_msg_to_send_buffer(buf+sizeof(quint64), &message);
-                //we need to write the maximum package length for having a
-                //consistent file structure and beeing able to parse it again
-                int len = MAVLINK_MAX_PACKET_LEN + sizeof(quint64);
-                QByteArray b((const char*)buf, len);
-                if(m_logfile->write(b) != len)
+
+                QDataStream outStream(m_logfile);
+                outStream.setByteOrder(QDataStream::BigEndian);
+                outStream << time; // write time stamp
+                // write headers, payload (incs CRC)
+                int bytesWritten = outStream.writeRawData((const char*)&message.magic,
+                                     static_cast<uint>(MAVLINK_NUM_NON_PAYLOAD_BYTES + message.len));
+
+                if(bytesWritten != (MAVLINK_NUM_NON_PAYLOAD_BYTES + message.len))
                 {
-                    emit protocolStatusMessage(tr("MAVLink Logging failed"), tr("Could not write to file %1, disabling logging.").arg(m_logfile->fileName()));
+                    emit protocolStatusMessage(tr("MAVLink Logging failed"),
+                                               tr("Could not write to file %1, disabling logging.")
+                                               .arg(m_logfile->fileName()));
                     // Stop logging
                     stopLogging();
                 }

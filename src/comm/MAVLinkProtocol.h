@@ -195,6 +195,7 @@ protected:
     QString m_authKey;         ///< Authentication key
     bool m_loggingEnabled;     ///< Enable/disable packet logging
     QFile* m_logfile;           ///< Logfile
+    QDataStream m_outStream;    ///< output stream to handle endiness.
     bool m_enable_version_check; ///< Enable checking of version match of MAV and QGC
     int m_paramRetransmissionTimeout; ///< Timeout for parameter retransmission
     int m_paramRewriteTimeout;    ///< Timeout for sending re-write request
