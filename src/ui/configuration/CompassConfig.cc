@@ -24,18 +24,23 @@ This file is part of the APM_PLANNER project
 #include "CompassConfig.h"
 #include <qmath.h>
 #include "QGCCore.h"
+#include "QGC.h"
+#include <QtConcurrent>
 
 static const int COMPASS_ORIENT_NONE = 0;
 static const int COMPASS_ORIENT_ROLL_180 = 8;
 
 CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
-    m_progressDialog(NULL),
+    m_validSensorOffsets(false),
     m_timer(NULL),
-    m_rawImuList(),
+    m_calibrationState(Idle),
     m_allOffsetsSet(0),
-    m_validSensorOffsets(false)
+    m_offsetWatcher(NULL)
 {
     ui.setupUi(this);
+
+    m_timer = new QTimer(this);
+    m_timer->setSingleShot(false);
 
     QList<QWidget*> widgetList = this->findChildren<QWidget*>();
     for (int i=0;i<widgetList.size();i++)
@@ -46,16 +51,24 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
         }
     }
 
-    ui.autoDecCheckBox->setEnabled(false);
-    ui.enableCheckBox->setEnabled(false);
-    ui.orientationComboBox->setEnabled(false);
-    ui.degreesLineEdit->setEnabled(false);
-    ui.minutesLineEdit->setEnabled(false);
-    connect(ui.enableCheckBox,SIGNAL(clicked(bool)),this,SLOT(enableClicked(bool)));
-    connect(ui.autoDecCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoDecClicked(bool)));
-    connect(ui.orientationComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(orientationComboChanged(int)));
-    connect(ui.degreesLineEdit,SIGNAL(editingFinished()),this,SLOT(degreeEditFinished()));
-    connect(ui.minutesLineEdit,SIGNAL(editingFinished()),this,SLOT(degreeEditFinished()));
+    ui.enableBox->setEnabled(false);
+    ui.declinationBox->setEnabled(false);
+    ui.calibrationBox->setEnabled(false);
+    ui.orientationBox->setEnabled(false);
+
+    ui.calibrationProgressBar->setRange(0, 60);
+    ui.calibrationProgressBar->setValue(0);
+    ui.dataPointsCollectedLabel->setText(tr("n/a"));
+    ui.lastRawDataPointLabel->setText(tr("n/a"));
+    updateCalibratedOffsetsLabel(NULL);
+    updateCalibrationStateLabel();
+
+    connect(ui.enableCheckBox, SIGNAL(clicked(bool)), this, SLOT(enableClicked(bool)));
+    connect(ui.autoDeclinationRadioButton, SIGNAL(clicked(bool)), this, SLOT(autoDeclinationClicked(bool)));
+    connect(ui.manualDeclinationRadioButton, SIGNAL(clicked(bool)), this, SLOT(manualDeclinationClicked(bool)));
+    connect(ui.orientationComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(orientationComboChanged(int)));
+    connect(ui.degreesLineEdit, SIGNAL(editingFinished()), this, SLOT(degreeEditFinished()));
+    connect(ui.minutesLineEdit, SIGNAL(editingFinished()), this, SLOT(degreeEditFinished()));
 
     ui.orientationComboBox->addItem("None 0");
     ui.orientationComboBox->addItem("Yaw 45");
@@ -87,6 +100,8 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     initConnections();
 
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(progressCounter()));
+
     connect(ui.liveCalibrationButton, SIGNAL(clicked()),
             this, SLOT(liveCalibrationClicked()));
 
@@ -102,6 +117,14 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
 void CompassConfig::activeUASSet(UASInterface *uas)
 {
     AP2ConfigWidget::activeUASSet(uas);
+
+    if (!m_uas)
+    {
+        ui.enableBox->setEnabled(false);
+        ui.declinationBox->setEnabled(false);
+        ui.calibrationBox->setEnabled(false);
+        ui.orientationBox->setEnabled(false);
+    }
 }
 
 void CompassConfig::degreeEditFinished()
@@ -134,50 +157,50 @@ void CompassConfig::degreeEditFinished()
     }
 }
 
-CompassConfig::~CompassConfig()
-{
-    delete m_timer;
-    delete m_progressDialog;
-    m_rawImuList.clear();
-}
-
 void CompassConfig::updateCompassSelection()
 {
     ui.savedLabel->setText(tr("UPDATED"));
-    QTimer::singleShot(2000,ui.savedLabel,SLOT(clear()));
+    QTimer::singleShot(2000, ui.savedLabel, SLOT(clear()));
 }
 
 void CompassConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+
     if (parameterName == "MAG_ENABLE")
     {
         if (value.toInt() == 0)
         {
             ui.enableCheckBox->setChecked(false);
-            ui.autoDecCheckBox->setEnabled(false);
-            ui.degreesLineEdit->setEnabled(false);
-            ui.minutesLineEdit->setEnabled(false);
-            ui.orientationComboBox->setEnabled(false);
+            ui.declinationBox->setEnabled(false);
+            ui.calibrationBox->setEnabled(false);
+            ui.orientationBox->setEnabled(false);
         }
         else
         {
             ui.enableCheckBox->setChecked(true);
-            ui.autoDecCheckBox->setEnabled(true);
-            ui.degreesLineEdit->setEnabled(true);
-            ui.minutesLineEdit->setEnabled(true);
-            ui.orientationComboBox->setEnabled(true);
+            ui.declinationBox->setEnabled(true);
+            ui.calibrationBox->setEnabled(true);
+            ui.orientationBox->setEnabled(true);
         }
-        ui.enableCheckBox->setEnabled(true);
+        ui.enableBox->setEnabled(true);
     }
     else if (parameterName == "COMPASS_AUTODEC")
     {
         if (value.toInt() == 0)
         {
-            ui.autoDecCheckBox->setChecked(false);
+            ui.autoDeclinationRadioButton->setChecked(false);
+            ui.manualDeclinationRadioButton->setChecked(true);
+            ui.degreesLineEdit->setEnabled(true);
+            ui.minutesLineEdit->setEnabled(true);
         }
         else
         {
-            ui.autoDecCheckBox->setChecked(true);
+            ui.autoDeclinationRadioButton->setChecked(true);
+            ui.manualDeclinationRadioButton->setChecked(false);
+            ui.degreesLineEdit->setEnabled(false);
+            ui.minutesLineEdit->setEnabled(false);
         }
     }
     else if (parameterName == "COMPASS_DEC")
@@ -197,23 +220,29 @@ void CompassConfig::parameterChanged(int uas, int component, QString parameterNa
         ui.orientationComboBox->setCurrentIndex(value.toInt());
         ui.orientationComboBox->blockSignals(false);
         updateCompassSelection();
-
-    } else if (parameterName.contains("COMPASS_OFS")) {
+    }
+    else if (parameterName.contains("COMPASS_OFS"))
+    {
         QLOG_DEBUG() << "Clearing " << parameterName;
-        if (parameterName == "COMPASS_OFS_X") {
+        if (parameterName == "COMPASS_OFS_X")
+        {
             m_allOffsetsSet += 2;
-        } else if (parameterName == "COMPASS_OFS_Y") {
+        }
+        else if (parameterName == "COMPASS_OFS_Y")
+        {
             m_allOffsetsSet += 4;
-        } else if (parameterName == "COMPASS_OFS_Z") {
+        }
+        else if (parameterName == "COMPASS_OFS_Z")
+        {
             m_allOffsetsSet += 8;
         }
 
-        if (m_allOffsetsSet == 15) { // ie all offsets have been set
+        if (m_allOffsetsSet == 15)
+        {
+            // ie all offsets have been set
             QLOG_DEBUG() << "Start Data Collection";
             startDataCollection();
         }
-
-
     }
 }
 
@@ -223,9 +252,10 @@ void CompassConfig::enableClicked(bool enabled)
     {
         if (enabled)
         {
-            m_uas->getParamManager()->setParameter(1,"MAG_ENABLE",QVariant(1));
-            ui.autoDecCheckBox->setEnabled(true);
-            if (!ui.autoDecCheckBox->isChecked())
+            m_uas->getParamManager()->setParameter(1, "MAG_ENABLE", 1);
+            ui.autoDeclinationRadioButton->setEnabled(true);
+            ui.manualDeclinationRadioButton->setEnabled(true);
+            if (ui.manualDeclinationRadioButton->isChecked())
             {
                 ui.minutesLineEdit->setEnabled(true);
                 ui.degreesLineEdit->setEnabled(true);
@@ -233,15 +263,16 @@ void CompassConfig::enableClicked(bool enabled)
         }
         else
         {
-            m_uas->getParamManager()->setParameter(1,"MAG_ENABLE",QVariant(0));
-            ui.autoDecCheckBox->setEnabled(false);
+            m_uas->getParamManager()->setParameter(1, "MAG_ENABLE", 0);
+            ui.autoDeclinationRadioButton->setEnabled(false);
+            ui.manualDeclinationRadioButton->setEnabled(false);
             ui.degreesLineEdit->setEnabled(false);
             ui.minutesLineEdit->setEnabled(false);
         }
     }
 }
 
-void CompassConfig::autoDecClicked(bool enabled)
+void CompassConfig::autoDeclinationClicked(bool enabled)
 {
     if (m_uas)
     {
@@ -252,6 +283,21 @@ void CompassConfig::autoDecClicked(bool enabled)
         else
         {
             m_uas->getParamManager()->setParameter(1,"COMPASS_AUTODEC",QVariant(0));
+        }
+    }
+}
+
+void CompassConfig::manualDeclinationClicked(bool enabled)
+{
+    if (m_uas)
+    {
+        if (enabled)
+        {
+            m_uas->getParamManager()->setParameter(1, "COMPASS_AUTODEC", QVariant(0));
+        }
+        else
+        {
+            m_uas->getParamManager()->setParameter(1, "COMPASS_AUTODEC", QVariant(1));
         }
     }
 }
@@ -271,97 +317,133 @@ void CompassConfig::orientationComboChanged(int index)
 void CompassConfig::setCompassAPMOnBoard()
 {
     if (!m_uas)
+    {
         return;
+    }
     // ROTATION_NONE
     QLOG_DEBUG() << "setCompassAPMOnBoard ROTATION_NONE";
     QGCUASParamManager* pm = m_uas->getParamManager();
-    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_NONE){
+    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_NONE)
+    {
         pm->setParameter(1,"COMPASS_ORIENT",COMPASS_ORIENT_NONE);
-    } else {
+    }
+    else
+    {
         updateCompassSelection();
     }
-
 }
 
 void CompassConfig::setCompassPX4OnBoard()
 {
     if (!m_uas)
+    {
         return;
+    }
     // FMUv1 & FMUv2 is None
     QLOG_DEBUG() << "setCompassPX4OnBoard None 0Deg";
     QGCUASParamManager* pm = m_uas->getParamManager();
-    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_NONE){
+    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_NONE)
+    {
         pm->setParameter(1,"COMPASS_ORIENT", COMPASS_ORIENT_NONE);
-    } else {
+    }
+    else
+    {
         updateCompassSelection();
     }
-
 }
 
 void CompassConfig::setCompass3DRGPS()
 {
     if (!m_uas)
+    {
         return;
+    }
+
     // ROTATION_ROLL_180
     QLOG_DEBUG() << "setCompass3DRGPS ROLL_180";
     QGCUASParamManager* pm = m_uas->getParamManager();
-    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_ROLL_180){
+    if (pm->getParameterValue(1, "COMPASS_ORIENT").toInt() != COMPASS_ORIENT_ROLL_180)
+    {
         pm->setParameter(1,"COMPASS_ORIENT", COMPASS_ORIENT_ROLL_180);
-    } else {
+    }
+    else
+    {
         updateCompassSelection();
     }
-
 }
 
 void CompassConfig::liveCalibrationClicked()
 {
     QLOG_DEBUG() << "live Calibration Started";
-    if (!m_uas) {
+    if (!m_uas)
+    {
         showNullMAVErrorMessageBox();
+        cleanup();
         return;
     }
 
-    QMessageBox::information(this,tr("Live Compass calibration"),
-                             tr("Data will be collected for 60 seconds, Please click ok and move the apm around all axises"));
+    QGCUASParamManager *pm = m_uas->getParamManager();
 
-    QGCUASParamManager* pm = m_uas->getParamManager();
-    if ((pm->getParameterValue(1, "COMPASS_OFS_X") != 0.0f)
-       ||(pm->getParameterValue(1, "COMPASS_OFS_Y") != 0.0f)
-       || (pm->getParameterValue(1, "COMPASS_OFS_Z") != 0.0f)) {
-        // Initialiase to zero
-        pm->setParameter(1,"COMPASS_OFS_X", QVariant(static_cast<float>(0.0f)));
-        pm->setParameter(1,"COMPASS_OFS_Y", QVariant(static_cast<float>(0.0f)));
-        pm->setParameter(1,"COMPASS_OFS_Z", QVariant(static_cast<float>(0.0f)));
-        m_allOffsetsSet = 1; // Add 2 for X, 4 for Y, 8 for Z, add 1 means it's enabled.
-    } else {
-        startDataCollection();
+    switch (m_calibrationState)
+    {
+    case Idle:
+        QMessageBox::information(this, tr("Live Compass calibration"),
+                                 tr("Data will be collected for 60 seconds, Please click ok and move the apm around all axes."));
+
+        if ((pm->getParameterValue(1, "COMPASS_OFS_X") != 0.0f)
+                ||(pm->getParameterValue(1, "COMPASS_OFS_Y") != 0.0f)
+                || (pm->getParameterValue(1, "COMPASS_OFS_Z") != 0.0f))
+        {
+            m_calibrationState = Clearing;
+            updateCalibrationStateLabel();
+
+            // Initialiase to zero
+            pm->setParameter(1,"COMPASS_OFS_X", QVariant(static_cast<float>(0.0f)));
+            pm->setParameter(1,"COMPASS_OFS_Y", QVariant(static_cast<float>(0.0f)));
+            pm->setParameter(1,"COMPASS_OFS_Z", QVariant(static_cast<float>(0.0f)));
+            m_allOffsetsSet = 1; // Add 2 for X, 4 for Y, 8 for Z, add 1 means it's enabled.
+        }
+        else
+        {
+            startDataCollection();
+        }
+        break;
+
+    case Clearing:
+    case Collecting:
+    case Finishing:
+        cancelCompassCalibration();
+        break;
     }
 }
 
 void CompassConfig::startDataCollection()
 {
-    connect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
-                this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
-    connect(m_uas, SIGNAL(sensorOffsetsMessageUpdate(UASInterface*,mavlink_sensor_offsets_t)),
-                this, SLOT(sensorUpdateMessage(UASInterface*,mavlink_sensor_offsets_t)));
-     m_uas->enableRawSensorDataTransmission(10);
+    m_calibrationState = Collecting;
+    updateCalibrationStateLabel();
 
-    m_progressDialog = new QProgressDialog(tr("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds."),
-                                           tr("Cancel"), 0, 60, this);
-    connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(cancelCompassCalibration()));
-    m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(progressCounter()));
+    connect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
+            this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
+    connect(m_uas, SIGNAL(sensorOffsetsMessageUpdate(UASInterface*,mavlink_sensor_offsets_t)),
+            this, SLOT(sensorUpdateMessage(UASInterface*,mavlink_sensor_offsets_t)));
+    m_uas->enableRawSensorDataTransmission(10);
+
+    ui.liveCalibrationButton->setText(tr("Cancel Calibration"));
+    ui.calibrationProgressBar->setRange(0, 60);
+    ui.calibrationProgressBar->setValue(0);
     m_timer->start(1); // second counting progress timer
 }
 
 void CompassConfig::progressCounter()
 {
-
-    int newValue = m_progressDialog->value()+1;
-    m_progressDialog->setValue(newValue);
-    if (newValue < 60) {
+    int newValue = ui.calibrationProgressBar->value() + 1;
+    ui.calibrationProgressBar->setValue(newValue);
+    if (newValue < 60)
+    {
         m_timer->start(1000);
-    } else {
+    }
+    else
+    {
         finishCompassCalibration();
     }
 }
@@ -372,15 +454,99 @@ void CompassConfig::cancelCompassCalibration()
     m_uas->enableRawSensorDataTransmission(2);
     disconnect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
                 this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
+    m_rawImuList.clear();
+    ui.dataPointsCollectedLabel->setText(tr("n/a"));
+    ui.lastRawDataPointLabel->setText(tr("n/a"));
+    updateCalibratedOffsetsLabel(NULL);
     cleanup();
+}
+
+void CompassConfig::finishedCalculatingOffsets(void)
+{
+    if (m_offsetWatcher)
+    {
+        QVector3D result = m_offsetWatcher->result();
+        updateCalibratedOffsetsLabel(&result);
+        m_offsetWatcher->deleteLater();
+        m_offsetWatcher = NULL;
+    }
+}
+
+void CompassConfig::updateCalibratedOffsetsLabel(QVector3D *offsets)
+{
+    if (offsets)
+    {
+        ui.calibratedOffsetsLabel->setText(tr("X:%1 Y:%2 Z:%3").arg(offsets->x(), 3).arg(offsets->y(), 3).arg(offsets->z(), 3));
+    }
+    else
+    {
+        ui.calibratedOffsetsLabel->setText(tr("n/a"));
+    }
+}
+
+void CompassConfig::updateCalibrationStateLabel(void)
+{
+    switch (m_calibrationState)
+    {
+    case Idle:
+        ui.calibrationStateLabel->setText(tr("Not calibrating..."));
+        ui.calibrationDataBox->setEnabled(false);
+        break;
+
+    case Clearing:
+        ui.calibrationStateLabel->setText(tr("Clearing old offsets..."));
+        ui.calibrationDataBox->setEnabled(true);
+        break;
+
+    case Collecting:
+        ui.calibrationStateLabel->setText(tr("Collecting data..."));
+        ui.calibrationDataBox->setEnabled(true);
+        break;
+
+    case Finishing:
+        ui.calibrationStateLabel->setText(tr("Writing calibrated data..."));
+        ui.calibrationDataBox->setEnabled(true);
+        break;
+    }
+}
+
+static QVector3D calculateOffsets(Vector3DList dataList)
+{
+    QLOG_INFO() << "Calculating offset for " << dataList.count() << " elements.";
+    Vector3D center;
+    center.setToLeastSquaresSphericalCenter(dataList);
+    QLOG_INFO() << "Finished calculating offset for " << dataList.count() << " elements.";
+    return center.toQVector3D();
+}
+
+void CompassConfig::requestNewOffsets(void)
+{
+    if (m_offsetWatcher)
+    {
+        // a watcher is already pending to deliver results... come back later.
+        QLOG_INFO() << "request denied for " << m_rawImuList.count() << " elements...";
+        return;
+    }
+
+    m_offsetWatcher = new QFutureWatcher<QVector3D>(this);
+    connect(m_offsetWatcher, SIGNAL(finished()), this, SLOT(finishedCalculatingOffsets()));
+    m_offsetWatcher->setFuture(QtConcurrent::run(calculateOffsets, m_rawImuList));
 }
 
 void CompassConfig::cleanup()
 {
-    if (m_timer) m_timer->stop();
-    delete m_timer;
+    if (m_offsetWatcher)
+    {
+        m_offsetWatcher->cancel();
+        m_offsetWatcher->waitForFinished();
+        m_offsetWatcher->deleteLater();
+        m_offsetWatcher = NULL;
+    }
+    m_timer->stop();
+    ui.liveCalibrationButton->setText(tr("Live Calibration"));
     m_rawImuList.clear();
-    delete m_progressDialog;
+    m_calibrationState = Idle;
+    updateCalibrationStateLabel();
     m_validSensorOffsets = false;
 }
 
@@ -391,26 +557,27 @@ void CompassConfig::finishCompassCalibration()
                 this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
     m_uas->enableRawSensorDataTransmission(2);
     m_timer->stop();
+    m_calibrationState = Finishing;
 
     // Now calulate the offsets
-
-    if (m_rawImuList.count() < 10) {
+    if (m_rawImuList.count() < 10)
+    {
         QLOG_ERROR() << "Not enough data points for calculation:" ;
         QMessageBox::warning(this, tr("Compass Calibration Failed"), tr("Not enough data points to calibrate the compass."));
         return;
     }
 
     // Calculate and send the update message
-    alglib::real_1d_array* answer = leastSq(&m_rawImuList);
-    saveOffsets(*answer);
-    delete answer;
+    Vector3D center;
+    center.setToLeastSquaresSphericalCenter(m_rawImuList);
+    saveOffsets(center);
 }
 
-void CompassConfig::saveOffsets(alglib::real_1d_array& ofs)
+void CompassConfig::saveOffsets(const Vector3D &magOffset)
 {
-    float xOffset = static_cast<float>(ofs[0]);
-    float yOffset = static_cast<float>(ofs[1]);
-    float zOffset = static_cast<float>(ofs[2]);
+    float xOffset = static_cast<float>(magOffset.x());
+    float yOffset = static_cast<float>(magOffset.y());
+    float zOffset = static_cast<float>(magOffset.z());
 
     QLOG_INFO() << "New Mag Offset to be set are: " << xOffset
                 << ", " <<  yOffset
@@ -426,94 +593,41 @@ void CompassConfig::saveOffsets(alglib::real_1d_array& ofs)
 
     cleanup();
 
-    QMessageBox::information(this, tr("New Mag Offsets"), tr("New offsets are \n\nx:") + QString::number(xOffset,'f',3)
-                             + " y:" + QString::number(yOffset,'f',3) + " z:" + QString::number(zOffset,'f',3)
-                             + tr("\n\nThese have been saved for you."));
-}
+    QVector3D offset = magOffset.toQVector3D();
+    updateCalibratedOffsetsLabel(&offset);
 
+    ui.calibrationStateLabel->setText(tr("Saving Mag Offsets..."));
+    QTimer::singleShot(2000, this, SLOT(updateCalibrationStateLabel()));
+}
 
 void CompassConfig::rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu)
 {
-    if (m_uas == uas && m_validSensorOffsets){
+    if (m_uas == uas && m_validSensorOffsets)
+    {
         QLOG_DEBUG() << "RAW IMU x:" << rawImu.xmag << " y:" << rawImu.ymag << " z:" << rawImu.zmag;
 
-        if (m_oldxmag != rawImu.xmag &&
-            m_oldymag != rawImu.ymag &&
-            m_oldzmag != rawImu.zmag)
+        Vector3D mag(rawImu.xmag, rawImu.ymag, rawImu.zmag);
+        if (m_oldMag != mag)
         {
-            RawImuTuple value;
-            value.magX = rawImu.xmag - (float)m_sensorOffsets.mag_ofs_x;
-            value.magY = rawImu.ymag - (float)m_sensorOffsets.mag_ofs_y;
-            value.magZ = rawImu.zmag - (float)m_sensorOffsets.mag_ofs_z;
+            m_oldMag = mag;
 
-            m_rawImuList.append(value);
+            Vector3D magOffset(m_sensorOffsets.mag_ofs_x, m_sensorOffsets.mag_ofs_y, m_sensorOffsets.mag_ofs_z);
+            m_rawImuList.append(mag - magOffset);
 
-            m_oldxmag = rawImu.xmag;
-            m_oldymag = rawImu.ymag;
-            m_oldzmag = rawImu.zmag;
+            ui.dataPointsCollectedLabel->setText(tr("%1").arg(m_rawImuList.count()));
+            ui.lastRawDataPointLabel->setText(tr("X:%1 Y:%2 Z:%3").arg(rawImu.xmag).arg(rawImu.ymag).arg(rawImu.zmag));
+
+            // calculating the least squares takes considerable amount of time. Lets do that in the background...
+            requestNewOffsets();
         }
     }
 }
 
 void CompassConfig::sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets)
 {
-    if (m_uas == uas){
+    if (m_uas == uas)
+    {
         m_sensorOffsets = sensorOffsets;
         m_validSensorOffsets = true;
     }
-}
-
-/// <summary>
-/// Does the least sq adjustment to find the center of the sphere
-/// </summary>
-/// <param name="data">list of x,y,z data</param>
-/// <returns>offsets</returns>
-///
-
-alglib::real_1d_array* CompassConfig::leastSq(QVector<RawImuTuple> *data)
-{
-    {
-    using namespace alglib;
-
-        real_1d_array* x = new real_1d_array("[0.0 , 0.0 , 0.0 , 0.0]");
-        double epsg = 0.0000000001;
-        double epsf = 0;
-        double epsx = 0;
-        int maxits = 0;
-        alglib::minlmstate state;
-        alglib::minlmreport rep;
-
-        alglib::minlmcreatev(data->count(), *x, 100.0f,  state);
-        alglib::minlmsetcond(state, epsg, epsf, epsx, maxits);
-        alglib::minlmoptimize(state, &CompassConfig::sphere_error, NULL, data);
-        alglib::minlmresults(state, *x, rep);
-
-        QLOG_INFO() << "rep.terminationType" << rep.terminationtype;
-//        QLOG_DEBUG() << "alglib" << alglib::ap::format(x, 2));
-
-        return x;
-
-    }
-}
-
-void CompassConfig::sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj)
-{
-    double xofs = xi[0];
-    double yofs = xi[1];
-    double zofs = xi[2];
-    double r = xi[3];
-    int a = 0;
-
-    QVector<RawImuTuple>& rawImuVector = *reinterpret_cast<QVector<RawImuTuple>*>(obj);
-
-    for(int count = 0; count < rawImuVector.count() ; count ++)
-        {
-            RawImuTuple d = rawImuVector[count];
-            double x = d.magX;
-            double y = d.magY;
-            double z = d.magZ;
-            double err = r - sqrt(pow((x + xofs), 2) + pow((y + yofs), 2) + pow((z + zofs), 2));
-            fi[a] = err;
-            a++;
-        }
 }

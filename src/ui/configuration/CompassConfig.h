@@ -30,32 +30,13 @@ This file is part of the APM_PLANNER project
 #ifndef COMPASSCONFIG_H
 #define COMPASSCONFIG_H
 
-
+#include <QFutureWatcher>
 #include "ui_CompassConfig.h"
 #include "UASManager.h"
 #include "UASInterface.h"
 #include "AP2ConfigWidget.h"
 #include <QWidget>
-#include <QProgressDialog>
-// Using alglib for least squares calc (could migrate to Eigen Lib?)
-#include "libs/alglib/src/ap.h"
-#include "libs/alglib/src/optimization.h"
-#include "libs/alglib/src/interpolation.h"
-
-
-class RawImuTuple{
-public:
-    RawImuTuple():magX(0.0f),
-        magY(0.0f),
-        magZ(0.0f){}
-
-public:
-    float magX;
-    float magY;
-    float magZ;
-};
-
-using namespace alglib;
+#include "QGCGeo.h"
 
 class CompassConfig : public AP2ConfigWidget
 {
@@ -63,18 +44,32 @@ class CompassConfig : public AP2ConfigWidget
     
 public:
     explicit CompassConfig(QWidget *parent = 0);
-    ~CompassConfig();
 
-    static void sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj);
     void updateCompassSelection();
 
 private:
-    enum CompassType {none, APM, ExternalCompass, PX4};
+    enum CompassType { none, APM, ExternalCompass, PX4 };
+
+    enum CalibrationState {
+        // not doing anything in particular
+        Idle,
+
+        // Calibration just started, we're clearing the offsets and are getting ready to
+        // collect data...
+        Clearing,
+
+        // We're in the middle of the collection phase.
+        Collecting,
+
+        // Collection is finished, we're in the process of writing the values to the APM
+        Finishing
+    };
 
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void enableClicked(bool enabled);
-    void autoDecClicked(bool enabled);
+    void autoDeclinationClicked(bool enabled);
+    void manualDeclinationClicked(bool enabled);
     void orientationComboChanged(int index);
     void liveCalibrationClicked();
     void startDataCollection();
@@ -87,28 +82,31 @@ private slots:
     void rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu);
     void sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets);
 
-    real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
-    void saveOffsets(real_1d_array &ofs);
+    void saveOffsets(const Vector3D &magOffset);
     void degreeEditFinished();
 
     void setCompassAPMOnBoard();
     void setCompassPX4OnBoard();
     void setCompass3DRGPS();
 
+    void finishedCalculatingOffsets(void);
+    void updateCalibratedOffsetsLabel(QVector3D *offsets);
+    void updateCalibrationStateLabel(void);
+
 private:
+    void requestNewOffsets(void);
     void cleanup();
 
 private:
     bool m_validSensorOffsets;
     Ui::CompassConfig ui;
-    QPointer<QProgressDialog> m_progressDialog;
     QPointer<QTimer> m_timer;
-    QVector<RawImuTuple> m_rawImuList;
+    CalibrationState m_calibrationState;
+    Vector3DList m_rawImuList;
     mavlink_sensor_offsets_t m_sensorOffsets;
-    double m_oldxmag;
-    double m_oldymag;
-    double m_oldzmag;
+    Vector3D m_oldMag;
     int m_allOffsetsSet;
+    QFutureWatcher<QVector3D> *m_offsetWatcher;
 };
 
 #endif // COMPASSCONFIG_H

@@ -790,6 +790,7 @@ SOURCES += src/main.cc \
     src/audio/AlsaAudio.cc \
     src/ui/AutoUpdateCheck.cc \
     src/ui/AutoUpdateDialog.cc \
+    src/QGCGeo.cc \
     src/uas/LogDownloadDialog.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \

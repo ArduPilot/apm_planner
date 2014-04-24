@@ -2246,7 +2246,7 @@ Pixhawk3DWidget::updateTrails(double robotX, double robotY, double robotZ,
 
             for (double i = 0.1; i < length - 0.1; i += 0.3)
             {
-                QVector3D v = p * i;
+                QVector3D v = p * (float)i;
 
                 vertices->push_back(osg::Vec3d(v.y(), v.x(), -v.z()));
             }
