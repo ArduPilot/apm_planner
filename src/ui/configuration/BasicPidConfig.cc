@@ -20,6 +20,7 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 
+#include <QsLog.h>
 #include "BasicPidConfig.h"
 #include "ParamWidget.h"
 
@@ -27,30 +28,34 @@ BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
     ui.setupUi(this);
 
-    m_throttleHoverWidget = new ParamWidget("ThrottleHover",this);
-    ui.verticalLayout->insertWidget(0,m_throttleHoverWidget);
-    connect(m_throttleHoverWidget,SIGNAL(intValueChanged(QString,int)),this,SLOT(tHValueChanged(QString,int)));
-    m_throttleHoverWidget->setupInt(QString("Throttle Hover "),"How much throttle is needed to maintain a steady hover",480,300,700);
-    m_throttleHoverWidget->show();
-
     m_rollPitchRateWidget = new ParamWidget("RollPitchRateControl",this);
-    ui.verticalLayout->insertWidget(1,m_rollPitchRateWidget);
+    ui.verticalLayout->insertWidget(0,m_rollPitchRateWidget);
     connect(m_rollPitchRateWidget,SIGNAL(doubleValueChanged(QString,double)),this,SLOT(rPRCValueChanged(QString,double)));
-    m_rollPitchRateWidget->setupDouble(QString("Roll/Pitch Rate Control"),"Slide to the right if the copter is sluggish or slide to the left if the copter is twitchy",0.15,0.08,0.4,0.01);
+    m_rollPitchRateWidget->setupDouble(QString("Roll/Pitch Rate Control"),
+                                       "Slide to the right if the copter is sluggish or slide to the left if the copter is twitchy",0.15,0.08,0.4,0.01);
     m_rollPitchRateWidget->show();
+
+    m_throttleHoverWidget = new ParamWidget("ThrottleHover",this);
+    ui.verticalLayout->insertWidget(1,m_throttleHoverWidget);
+    connect(m_throttleHoverWidget,SIGNAL(intValueChanged(QString,int)),this,SLOT(tHValueChanged(QString,int)));
+    m_throttleHoverWidget->setupInt(QString("Throttle Hover "),
+                                    "How much throttle is needed to maintain a steady hover",480,300,700);
+    m_throttleHoverWidget->show();
 
     m_throttleAccelWidget = new ParamWidget("ThrottleAccel",this);
     ui.verticalLayout->insertWidget(2,m_throttleAccelWidget);
     connect(m_throttleAccelWidget,SIGNAL(doubleValueChanged(QString,double)),this,SLOT(tAValueChanged(QString,double)));
-    m_throttleAccelWidget->setupDouble(QString("Throttle Accel"),"Slide to the right to climb more aggressively or slide to the left to climb more gently",0.75,0.3,1.0,0.05);
+    m_throttleAccelWidget->setupDouble(QString("Throttle Accel"),
+                                       "Slide to the right to climb more aggressively or slide to the left to climb more gently",0.75,0.3,1.0,0.05);
     m_throttleAccelWidget->show();
-
 
     initConnections();
 }
 
 void BasicPidConfig::rPRCValueChanged(QString name,double value)
 {
+    Q_UNUSED(name);
+
     if (!m_uas)
     {
         showNullMAVErrorMessageBox();
@@ -64,6 +69,8 @@ void BasicPidConfig::rPRCValueChanged(QString name,double value)
 
 void BasicPidConfig::tAValueChanged(QString name,double value)
 {
+    Q_UNUSED(name);
+
     if (!m_uas)
     {
         showNullMAVErrorMessageBox();
@@ -75,6 +82,8 @@ void BasicPidConfig::tAValueChanged(QString name,double value)
 
 void BasicPidConfig::tHValueChanged(QString name,int value)
 {
+    Q_UNUSED(name);
+
     if (!m_uas)
     {
         showNullMAVErrorMessageBox();
@@ -89,20 +98,27 @@ BasicPidConfig::~BasicPidConfig()
 
 void BasicPidConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+
     if (parameterName == "RATE_RLL_P")
     {
+        QLOG_DEBUG() << "BasicPID: RATE_RLL_P:" << value.toDouble();
         m_rollPitchRateWidget->setValue(value.toDouble());
     }
     else if (parameterName == "RATE_RLL_D")
     {
+        QLOG_DEBUG() << "BasicPID: RATE_RLL_D:" << value.toDouble();
         m_rollPitchRateWidget->setValue(value.toDouble());
     }
     else if (parameterName == "THR_ACCEL_P")
     {
+         QLOG_DEBUG() << "BasicPID: THR_ACCEL_P:" << value.toDouble();
         m_throttleAccelWidget->setValue(value.toDouble());
     }
     else if (parameterName == "THR_MID")
     {
+         QLOG_DEBUG() << "BasicPID: THR_MID:" << value.toDouble();
         m_throttleHoverWidget->setValue(value.toInt());
     }
 }
