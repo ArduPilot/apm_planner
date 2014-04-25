@@ -48,6 +48,44 @@ void QGCMAVLinkLogPlayer::storeSettings()
 {
     // Nothing to store
 }
+void QGCMAVLinkLogPlayer::loadLog(QString filename)
+{
+    if (m_logLoaded)
+    {
+        if (m_logLink)
+        {
+            //Stop the mavlink, schedule for deletion
+            if (m_logLink->isRunning())
+            {
+                m_logLink->stop();
+            }
+            else
+            {
+                m_logLink->deleteLater();
+                m_logLink = 0;
+                m_logLoaded = false;
+            }
+        }
+        else
+        {
+            m_logLoaded = false;
+        }
+        return;
+    }
+    m_logLoaded = true;
+    m_mavlink->throwAwayGCSPackets(true);
+    m_logLink = new TLogReplayLink(this);
+    connect(m_logLink,SIGNAL(logProgress(qint64,qint64)),this,SLOT(logProgress(qint64,qint64)));
+
+
+    m_logLink->setLog(filename);
+    connect(m_logLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlink,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(m_logLink,SIGNAL(terminated()),this,SLOT(logLinkTerminated()));
+    m_logLink->connect();
+    ui->logStatsLabel->setText(filename.mid(filename.lastIndexOf("/")+1));
+    ui->playButton->setIcon(QIcon(":/files/images/actions/media-playback-stop.svg"));
+}
+
 void QGCMAVLinkLogPlayer::loadLogButtonClicked()
 {
     if (m_logLoaded)
@@ -81,6 +119,7 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
         return;
     }
     m_logLoaded = true;
+    m_mavlink->throwAwayGCSPackets(true);
     m_logLink = new TLogReplayLink(this);
     connect(m_logLink,SIGNAL(logProgress(qint64,qint64)),this,SLOT(logProgress(qint64,qint64)));
 
@@ -122,6 +161,7 @@ void QGCMAVLinkLogPlayer::logLinkTerminated()
         m_logLink->deleteLater();
         m_logLink = 0;
         m_logLoaded = false;
+        m_mavlink->throwAwayGCSPackets(false);
     }
 }
 

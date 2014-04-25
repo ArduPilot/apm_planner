@@ -25,6 +25,7 @@ class QGCMAVLinkLogPlayer : public QWidget
 public:
     explicit QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *parent = 0);
     ~QGCMAVLinkLogPlayer();
+    void loadLog(QString filename);
 /*    bool isPlayingLogFile()
     {
         return isPlaying;
