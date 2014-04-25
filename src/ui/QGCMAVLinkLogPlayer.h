@@ -80,6 +80,8 @@ private:
     Ui::QGCMAVLinkLogPlayer *ui;
     TLogReplayLink *m_logLink;
     bool m_logLoaded;
+signals:
+    void logFinished();
 };
 
 #endif // QGCMAVLINKLOGPLAYER_H

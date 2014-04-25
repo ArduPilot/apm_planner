@@ -112,8 +112,9 @@ void TLogReplayLink::run()
     file.open(QIODevice::ReadOnly);
     int bytesize = 0;
     qint64 msecs = QDateTime::currentMSecsSinceEpoch();
-    int privSpeedVar = 25;
     MainWindow::instance()->toolBar().disableConnectWidget(true);
+    MainWindow::instance()->toolBar().overrideDisableConnectWidget(true);
+    int privSpeedVar = 25;
     while (!file.atEnd() && m_threadRun)
     {
         if (QDateTime::currentMSecsSinceEpoch() - msecs > 1000)
@@ -137,11 +138,16 @@ void TLogReplayLink::run()
             msleep(100);
         }
     }
+    if (m_threadRun)
+    {
+        m_toBeDeleted = true;
+    }
+    MainWindow::instance()->toolBar().overrideDisableConnectWidget(false);
+    MainWindow::instance()->toolBar().disableConnectWidget(false);
     emit disconnected(this);
     emit disconnected();
     emit connected(false);
     UASManager::instance()->removeUAS(UASManager::instance()->getActiveUAS());
-    MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
 void TLogReplayLink::setLog(QString logfile)
 {
@@ -149,7 +155,7 @@ void TLogReplayLink::setLog(QString logfile)
 }
 void TLogReplayLink::stop()
 {
-    m_toBeDeleted = true;
+    m_toBeDeleted = false;
     m_threadRun = false;
 }
 

@@ -153,6 +153,7 @@ public slots:
 
     /** @brief Remove a system from the list */
     void removeUAS(UASInterface* uas);
+    void removeUAS(QObject* uas);
 
 
     /**

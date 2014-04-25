@@ -544,6 +544,7 @@ void MainWindow::buildCommonWidgets()
 
     // Log player
     logPlayer = new QGCMAVLinkLogPlayer(mavlink, customStatusBar);
+    connect(logPlayer,SIGNAL(logFinished()),statusBar(),SLOT(hide()));
     customStatusBar->setLogPlayer(logPlayer);
 
     // Center widgets
