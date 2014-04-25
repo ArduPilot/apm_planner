@@ -71,6 +71,26 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
     {
         disconnect(m_uas,SIGNAL(modeChanged(int,QString,QString)),this,SLOT(modeChanged(int,QString,QString)));
         disconnect(m_uas,SIGNAL(remoteControlChannelRawChanged(int,float)),this,SLOT(remoteControlChannelRawChanged(int,float)));
+        disconnect(ui.mode1ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        disconnect(ui.mode2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        disconnect(ui.mode3ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        disconnect(ui.mode4ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        disconnect(ui.mode5ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+        disconnect(ui.mode6ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
+
+        disconnect(ui.mode1ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode3ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode4ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode5ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode6ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(enableSaveButton()));
+
+        disconnect(ui.mode1SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode2SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode3SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode4SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode5SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
+        disconnect(ui.mode6SimpleCheckBox, SIGNAL(clicked()), this, SLOT(enableSaveButton()));
     }
     AP2ConfigWidget::activeUASSet(uas);
     if (!uas) return;
