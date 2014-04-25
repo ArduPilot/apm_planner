@@ -56,7 +56,8 @@ This file is part of the APM_PLANNER project
 
 TerminalConsole::TerminalConsole(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::TerminalConsole)
+    ui(new Ui::TerminalConsole),
+    m_windowVisible(false)
 {
     ui->setupUi(this);
 
@@ -116,7 +117,9 @@ void TerminalConsole::activeUASSet(UASInterface *uas)
 void TerminalConsole::uasConnected()
 {
     ui->connectButton->setEnabled(false);
-    MainWindow::instance()->toolBar().disableConnectWidget(false);
+    if(m_windowVisible){
+        MainWindow::instance()->toolBar().disableConnectWidget(false);
+    }
 }
 
 void TerminalConsole::uasDisconnected()
