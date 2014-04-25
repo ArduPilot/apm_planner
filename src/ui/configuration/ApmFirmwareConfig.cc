@@ -61,10 +61,12 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     loadSettings();
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
     QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
     if (settings.contains("ADVANCED_MODE"))
     {
         m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
     }
+    settings.endGroup();
 
     m_networkManager = new QNetworkAccessManager(this);
 
