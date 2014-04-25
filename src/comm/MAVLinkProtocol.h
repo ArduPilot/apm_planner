@@ -66,6 +66,8 @@ public:
     MAVLinkProtocol();
     ~MAVLinkProtocol();
 
+    void throwAwayGCSPackets(bool throwaway);
+
     /** @brief Get the human-friendly name of this protocol */
     QString getName();
     /** @brief Get the system id of this application */
@@ -209,6 +211,7 @@ protected:
     int currLossCounter;
     bool versionMismatchIgnore;
     int systemId;
+    bool m_throwAwayGCSPackets;
 #if defined(QGC_PROTOBUF_ENABLED) && defined(QGC_USE_PIXHAWK_MESSAGES)
     mavlink::ProtobufManager protobufManager;
 #endif

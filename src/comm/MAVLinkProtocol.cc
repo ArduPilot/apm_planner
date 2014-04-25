@@ -60,7 +60,8 @@ MAVLinkProtocol::MAVLinkProtocol() :
     m_actionGuardEnabled(false),
     m_actionRetransmissionTimeout(100),
     versionMismatchIgnore(false),
-    systemId(QGC::defaultSystemId)
+    systemId(QGC::defaultSystemId),
+    m_throwAwayGCSPackets(false)
 {
     m_authKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
     loadSettings();
@@ -81,6 +82,10 @@ MAVLinkProtocol::MAVLinkProtocol() :
     }
 
     emit versionCheckChanged(m_enable_version_check);
+}
+void MAVLinkProtocol::throwAwayGCSPackets(bool throwaway)
+{
+    m_throwAwayGCSPackets = throwaway;
 }
 
 void MAVLinkProtocol::loadSettings()
@@ -333,6 +338,11 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 // Check if the UAS has the same id like this system
                 if (message.sysid == getSystemId())
                 {
+                    if (m_throwAwayGCSPackets)
+                    {
+                        //If replaying, we have to assume that it's just hearing ground control traffic
+                        return;
+                    }
                     emit protocolStatusMessage(tr("SYSTEM ID CONFLICT!"), tr("Warning: A second system is using the same system id (%1)").arg(getSystemId()));
                 }
 
