@@ -247,7 +247,7 @@ void AP2DataPlot2D::plottableDoubleClick(QCPAbstractPlottable *plottable, QMouse
         double arithMean = dataVector[0];
         double minValue = dataVector[0];
         double maxValue = dataVector[0];
-        for (int i = 1; i < dataVector.length(); ++i)
+        for (int i = 1; i < dataVector.count(); ++i)
         {
             arithMean += dataVector[i];
             minValue = qMin(minValue, dataVector[i]);
@@ -259,9 +259,9 @@ void AP2DataPlot2D::plottableDoubleClick(QCPAbstractPlottable *plottable, QMouse
 
         // sample standard deviation
         double stdDev = (dataVector[0] - arithMean) * (dataVector[0] - arithMean);
-        if (1 < dataVector.length())
+        if (1 < dataVector.count())
         {
-            for (int i = 1; i < dataVector.length(); ++i)
+            for (int i = 1; i < dataVector.count(); ++i)
             {
                 stdDev += (dataVector[i] - arithMean) * (dataVector[i] - arithMean);
             }
@@ -273,7 +273,7 @@ void AP2DataPlot2D::plottableDoubleClick(QCPAbstractPlottable *plottable, QMouse
             QCPRange std1Range(arithMean - stdDev, arithMean + stdDev);
             QCPRange std2Range(arithMean - 2 * stdDev, arithMean + 2 * stdDev);
             int std1Count = 0, std2Count = 0;
-            for (int i = 0; i < dataVector.length(); ++i)
+            for (int i = 0; i < dataVector.count(); ++i)
             {
                 if (std1Range.contains(dataVector[i]))
                 {
@@ -286,13 +286,13 @@ void AP2DataPlot2D::plottableDoubleClick(QCPAbstractPlottable *plottable, QMouse
             }
             info.append(tr("1 StdDev Range: [%1/%2] (%3 samples, %4%%)\n")
                         .arg(std1Range.lower, 3, 'f', 2).arg(std1Range.upper, 3, 'f', 2)
-                        .arg(std1Count).arg((100.0f * std1Count) / dataVector.length(), 1, 'f', 2));
+                        .arg(std1Count).arg((100.0f * std1Count) / dataVector.count(), 1, 'f', 2));
             info.append(tr("2 StdDevs Range: [%1/%2] (%3 samples, %4%%)")
                         .arg(std2Range.lower, 3, 'f', 2).arg(std2Range.upper, 3, 'f', 2)
-                        .arg(std2Count).arg((100.0f * std2Count) / dataVector.length(), 1, 'f', 2));
+                        .arg(std2Count).arg((100.0f * std2Count) / dataVector.count(), 1, 'f', 2));
         }
     }
-    QToolTip::showText(evt->screenPos().toPoint(), info);
+    QToolTip::showText(evt->posF().toPoint(), info);
     // QMessageBox::information(this, msgTitle, info);
 }
 
