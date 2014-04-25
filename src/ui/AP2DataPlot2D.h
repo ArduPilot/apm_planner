@@ -84,6 +84,8 @@ private slots:
     void addGraphLeft();
     void removeGraphLeft();
     void axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt);
+    void plottableDoubleClick(QCPAbstractPlottable *plottable, QMouseEvent *evt);
+    void plotSelectionChanged(void);
     void graphAddedToGroup(QString name,QString group,double scale);
     void graphRemovedFromGroup(QString name);
     void graphManualRange(QString name, double min, double max);
@@ -106,6 +108,7 @@ private:
         double axisIndex;
         QCPAxis *axis;
         QCPGraph *graph;
+        QList<QCPAbstractItem *> items;
     };
 
     QMap<QString,Graph> m_graphClassMap;

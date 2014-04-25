@@ -13,7 +13,7 @@ AP2DataPlotAxisDialog::AP2DataPlotAxisDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     //connect(ui->graphTableWidget,SIGNAL(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)),this,SLOT(graphTableCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
-    connect(ui->graphTableWidget,SIGNAL(itemSelectionChanged()),this,SLOT(graphTableItemSelectionChanged()));
+    //connect(ui->graphTableWidget,SIGNAL(itemSelectionChanged()),this,SLOT(graphTableItemSelectionChanged()));
     connect(ui->graphTableWidget,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(cellDoubleClicked(int,int)));
     connect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
     //connect(ui->graphTableWidget,SIGNAL(cellActivated(int,int))
