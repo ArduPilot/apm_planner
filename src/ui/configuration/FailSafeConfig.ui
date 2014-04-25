@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>795</width>
-    <height>484</height>
+    <width>791</width>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -370,7 +370,7 @@
       <item>
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Failsafe PWM</string>
+         <string>Failsafe Throttle PWM</string>
         </property>
        </widget>
       </item>
@@ -412,18 +412,14 @@
      </widget>
     </item>
     <item>
-     <widget class="QCheckBox" name="batteryFailCheckBox">
-      <property name="text">
-       <string>Battery Failsafe</string>
-      </property>
-     </widget>
+     <widget class="QComboBox" name="batteryFailSafeComboBox"/>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>Low Battery</string>
+         <string>Low Battery (V)</string>
         </property>
        </widget>
       </item>
@@ -441,7 +437,7 @@
       <item>
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Low Capacity (mAh)</string>
+         <string>Low Battery (mAh)</string>
         </property>
        </widget>
       </item>
@@ -482,6 +478,14 @@
     <string>Servo/Motor OUT</string>
    </property>
   </widget>
+  <zorder>label</zorder>
+  <zorder>verticalLayoutWidget</zorder>
+  <zorder>verticalLayoutWidget_2</zorder>
+  <zorder>groupBox</zorder>
+  <zorder>groupBox_2</zorder>
+  <zorder>label_2</zorder>
+  <zorder>label_3</zorder>
+  <zorder>batteryFailSafeComboBox</zorder>
  </widget>
  <customwidgets>
   <customwidget>
