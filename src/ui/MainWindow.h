@@ -127,6 +127,8 @@ public:
 
 public slots:
     void loadTlogMenuClicked();
+    void disableTLogReplayBar();
+    void enableTLogReplayBar();
     /** @brief Shows a status message on the bottom status bar */
     void showStatusMessage(const QString& status, int timeout);
     /** @brief Shows a status message on the bottom status bar */

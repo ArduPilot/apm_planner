@@ -59,7 +59,7 @@
    <item>
     <widget class="QProgressBar" name="positionProgressBar">
      <property name="value">
-      <number>24</number>
+      <number>0</number>
      </property>
     </widget>
    </item>

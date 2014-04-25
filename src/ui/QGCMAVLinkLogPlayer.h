@@ -26,16 +26,11 @@ public:
     explicit QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *parent = 0);
     ~QGCMAVLinkLogPlayer();
     void loadLog(QString filename);
-/*    bool isPlayingLogFile()
+    bool isPlayingLogFile()
     {
-        return isPlaying;
+        return m_isPlaying;
     }
 
-    bool isLogFileSelected()
-    {
-        return logFile.isOpen();
-    }
-*/
     /**
      * @brief Set the last log file name
      * @param filename
@@ -52,25 +47,7 @@ public slots:
 private slots:
     void logProgress(qint64 pos,qint64 total);
 protected:
-    /*int lineCounter;
-    int totalLines;
-    quint64 startTime;
-    quint64 endTime;
-    quint64 currentStartTime;
-    float accelerationFactor;
-    MAVLinkProtocol* mavlink;
-    MAVLinkSimulationLink* logLink;
-    QFile logFile;
-    QTimer loopTimer;
-    int loopCounter;
-    bool mavlinkLogFormat;
-    int binaryBaudRate;
-    bool isPlaying;
-    unsigned int currPacketCount;
-    static const int packetLen = MAVLINK_MAX_PACKET_LEN;
-    static const int timeLen = sizeof(quint64);
-    QString lastLogDirectory;
-    */
+    bool m_isPlaying;
     void changeEvent(QEvent *e);
 
     void storeSettings();

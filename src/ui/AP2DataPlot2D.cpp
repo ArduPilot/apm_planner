@@ -20,7 +20,8 @@
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_uas(NULL),
     m_logDownloadDialog(NULL),
-    m_updateTimer(NULL)
+    m_updateTimer(NULL),
+    m_tlogReplayEnabled(false)
 {
     m_startIndex = 0;
     m_axisGroupingDialog = 0;
@@ -110,7 +111,20 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
 }
 void AP2DataPlot2D::replyTLogButtonClicked()
 {
-    MainWindow::instance()->loadTlogMenuClicked();
+    if (m_tlogReplayEnabled)
+    {
+        MainWindow::instance()->disableTLogReplayBar();
+        m_tlogReplayEnabled = false;
+        ui.loadTLogButton->setText("Enable Log Playback");
+    }
+    else
+    {
+        MainWindow::instance()->enableTLogReplayBar();
+        m_tlogReplayEnabled = true;
+        ui.loadTLogButton->setText("Disable Log Playback");
+    }
+
+
 }
 
 void AP2DataPlot2D::xAxisChanged(QCPRange range)

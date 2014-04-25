@@ -422,16 +422,26 @@ MainWindow::~MainWindow()
     }
 
 }
+void MainWindow::disableTLogReplayBar()
+{
+    statusBar()->hide();
+}
+
+void MainWindow::enableTLogReplayBar()
+{
+    statusBar()->show();
+}
+
 void MainWindow::loadTlogMenuClicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Specify MAVLink log file name to replay"), QGC::MAVLinkLogDirectory(), tr("MAVLink Telemetry log (*.tlog)"));
-    if (fileName == "")
-    {
+    //QString fileName = QFileDialog::getOpenFileName(this, tr("Specify MAVLink log file name to replay"), QGC::MAVLinkLogDirectory(), tr("MAVLink Telemetry log (*.tlog)"));
+    //if (fileName == "")
+    //{
         //No file selected/cancel clicked
         return;
-    }
-    statusBar()->show();
-    customStatusBar->logPlayer()->loadLog(fileName);
+    //}
+    //statusBar()->show();
+    //customStatusBar->logPlayer()->loadLog(fileName);
 }
 
 void MainWindow::resizeEvent(QResizeEvent * event)

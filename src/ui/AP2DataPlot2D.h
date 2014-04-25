@@ -149,6 +149,7 @@ private:
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
     qint64 m_timeDiff;
+    bool m_tlogReplayEnabled;
 
 
     qint64 m_scrollStartIndex; //Actual graph start

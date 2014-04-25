@@ -33,6 +33,7 @@ QGCStatusBar::QGCStatusBar(QWidget *parent) :
     toggleLoggingButton(NULL),
     player(NULL),
     changed(true),
+    m_uas(NULL),
     lastLogDirectory(QGC::MAVLinkLogDirectory())
 {
     setObjectName("QGC_STATUSBAR");
@@ -43,6 +44,69 @@ QGCStatusBar::QGCStatusBar(QWidget *parent) :
     //addPermanentWidget(toggleLoggingButton);
 
     setStyleSheet("QStatusBar { border: 0px; border-bottom: 1px solid #101010; border-top: 1px solid #4F4F4F; background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #4B4B4B, stop:0.3 #404040, stop:0.34 #383838, stop:1 #181818); } ");
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+}
+void QGCStatusBar::uasConnected()
+{
+    if (player)
+    {
+        if (!player->isPlayingLogFile())
+        {
+            this->setEnabled(false);
+        }
+    }
+    else
+    {
+        this->setEnabled(false);
+    }
+}
+
+void QGCStatusBar::uasDisconnected()
+{
+    if (player)
+    {
+        if (!player->isPlayingLogFile())
+        {
+            this->setEnabled(true);
+        }
+    }
+    else
+    {
+        this->setEnabled(true);
+    }
+}
+
+void QGCStatusBar::activeUASSet(UASInterface* uas)
+{
+    if (m_uas)
+    {
+        disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+    }
+    m_uas = uas;
+    if (!uas)
+    {
+        //No active UAS?
+        return;
+    }
+    connect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+    connect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+    if (player)
+    {
+        if (!player->isPlayingLogFile())
+        {
+            if (uas->getLinks()->at(0)->isConnected())
+            {
+                this->setEnabled(false);
+            }
+        }
+
+    }
+    else
+    {
+        //No player!
+        this->setEnabled(false);
+    }
 }
 
 void QGCStatusBar::paintEvent(QPaintEvent * event)

@@ -14,7 +14,8 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
     ui(new Ui::QGCMAVLinkLogPlayer),
     m_logLink(NULL),
     m_mavlink(mavlink),
-    m_logLoaded(false)
+    m_logLoaded(false),
+    m_isPlaying(false)
 {
     ui->setupUi(this);
     ui->horizontalLayout->setAlignment(Qt::AlignTop);
@@ -26,7 +27,6 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
     //connect(ui->positionSlider, SIGNAL(sliderPressed()), this, SLOT(pause()));
 
     //setAccelerationFactorInt(49);
-    ui->speedSlider->setValue(49);
     //ui->positionSlider->setValue(ui->positionSlider->minimum());
 
     ui->playButton->setEnabled(true);
@@ -35,6 +35,7 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
     ui->speedLabel->setEnabled(false);
     ui->logStatsLabel->setEnabled(true);
     ui->playButton->setVisible(true);
+
 
 
 }
@@ -83,6 +84,7 @@ void QGCMAVLinkLogPlayer::loadLog(QString filename)
     connect(m_logLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlink,SLOT(receiveBytes(LinkInterface*,QByteArray)));
    // connect(m_logLink,SIGNAL(terminated()),this,SLOT(logLinkTerminated()));
     m_logLink->connect();
+    m_isPlaying = true;
     ui->logStatsLabel->setText(filename.mid(filename.lastIndexOf("/")+1));
     ui->playButton->setIcon(QIcon(":/files/images/actions/media-playback-stop.svg"));
 }
@@ -157,6 +159,7 @@ void QGCMAVLinkLogPlayer::playButtonClicked()
 }
 void QGCMAVLinkLogPlayer::logLinkTerminated()
 {
+    m_isPlaying = false;
     if (m_logLink->toBeDeleted())
     {
         //Log loop has terminated with the intention of unloading the sim link
