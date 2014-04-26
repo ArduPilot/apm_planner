@@ -103,14 +103,14 @@ FailSafeConfig::FailSafeConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.radio8Out->setMax(2200);
     ui.radio8Out->setOrientation(Qt::Horizontal);
 
-    ui.throttleFailSafeComboBox->addItem("Throttle Disable");
-    ui.throttleFailSafeComboBox->addItem("Throttle Enabled - RTL");
-    ui.throttleFailSafeComboBox->addItem("Throttle Enabled - Continue in auto");
-    ui.throttleFailSafeComboBox->addItem("Throttle Enabled - LAND");
+    ui.throttleFailSafeComboBox->addItem("DISABLED");
+    ui.throttleFailSafeComboBox->addItem("RTL");
+    ui.throttleFailSafeComboBox->addItem("Continue in AUTO");
+    ui.throttleFailSafeComboBox->addItem("LAND");
 
-    ui.batteryFailSafeComboBox->addItem("Low Battery Disable");
-    ui.batteryFailSafeComboBox->addItem("Low Battery - LAND");
-    ui.batteryFailSafeComboBox->addItem("Low Battery - RTL");
+    ui.batteryFailSafeComboBox->addItem("DISABLED");
+    ui.batteryFailSafeComboBox->addItem("LAND");
+    ui.batteryFailSafeComboBox->addItem("RTL");
     
     connect(ui.fsLongCheckBox,SIGNAL(clicked(bool)),this,SLOT(fsLongClicked(bool)));
     connect(ui.fsShortCheckBox,SIGNAL(clicked(bool)),this,SLOT(fsShortClicked(bool)));
