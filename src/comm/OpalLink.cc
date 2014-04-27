@@ -244,7 +244,7 @@ void OpalLink::writeBytes(const char *bytes, qint64 length)
             case 9: // extra 3
                 break;
             default:
-                QLOG_DEBUG() << __FILE__ << __LINE__ << "Received Unknown Data Strem Request with ID" << stream.req_stream_id;
+                QLOG_DEBUG() << "Received Unknown Data Strem Request with ID" << stream.req_stream_id;
             }
         }
         break;

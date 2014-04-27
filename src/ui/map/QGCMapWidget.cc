@@ -680,9 +680,9 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
 
     internals::PointLatLng coord = waypoint->Coord();
     QString coord_str = " " + QString::number(coord.Lat(), 'f', 6) + "   " + QString::number(coord.Lng(), 'f', 6);
-    // // QLOG_DEBUG() << "MAP WP COORD (MAP):" << coord_str << __FILE__ << __LINE__;
+    // // QLOG_DEBUG() << "MAP WP COORD (MAP):" << coord_str;
     QString wp_str = QString::number(wp->getLatitude(), 'f', 6) + "   " + QString::number(wp->getLongitude(), 'f', 6);
-    // // QLOG_DEBUG() << "MAP WP COORD (WP):" << wp_str << __FILE__ << __LINE__;
+    // // QLOG_DEBUG() << "MAP WP COORD (WP):" << wp_str;
 
     firingWaypointChange = NULL;
 
@@ -697,7 +697,7 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
  */
 void QGCMapWidget::updateWaypoint(int uas, Waypoint* wp)
 {
-    QLOG_DEBUG() << __FILE__ << __LINE__ << "UPDATING WP FUNCTION CALLED";
+    QLOG_DEBUG() << "UPDATING WP FUNCTION CALLED";
     // Source of the event was in this widget, do nothing
     if (firingWaypointChange == wp) {
         return;

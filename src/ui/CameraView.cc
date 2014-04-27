@@ -108,7 +108,7 @@ void CameraView::setImageSize(int width, int height, int depth, int channels)
             image->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 image->setColor(i, qRgb(i, i, i));
-                //QLOG_DEBUG() << __FILE__ << __LINE__ << std::hex << i;
+                //QLOG_DEBUG() << std::hex << i;
             }
 
         }
@@ -121,7 +121,7 @@ void CameraView::setImageSize(int width, int height, int depth, int channels)
         image->fill(CameraView::initialColor);
         glImage = QGLWidget::convertToGLFormat(*image);
 
-        QLOG_DEBUG() << __FILE__ << __LINE__ << "Setting up image";
+        QLOG_DEBUG() << "Setting up image";
 
         // Set size once
         setFixedSize(receivedWidth, receivedHeight);
@@ -157,7 +157,7 @@ void CameraView::finishImage()
 
 void CameraView::commitRawDataToGL()
 {
-    //QLOG_DEBUG() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
+    //QLOG_DEBUG() << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
     if (image != NULL) {
         QImage::Format format = image->format();
         QImage* newImage = new QImage(rawImage, receivedWidth, receivedHeight, format);
@@ -166,7 +166,7 @@ void CameraView::commitRawDataToGL()
             newImage->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 newImage->setColor(i, qRgb(i, i, i));
-                //QLOG_DEBUG() << __FILE__ << __LINE__ << std::hex << i;
+                //QLOG_DEBUG() << std::hex << i;
             }
         }
 
@@ -203,7 +203,7 @@ void CameraView::setPixels(int imgid, const unsigned char* imageData, int length
     // the image buffer should be converted into a n image buffer.
     Q_UNUSED(imgid);
 
-    //    QLOG_DEBUG() << "at" << __FILE__ << __LINE__ << ": Received startindex" << startIndex << "and length" << length << "(" << startIndex+length << "of" << rawExpectedBytes << "bytes)";
+    //    QLOG_DEBUG() << "Received startindex" << startIndex << "and length" << length << "(" << startIndex+length << "of" << rawExpectedBytes << "bytes)";
 
     if (imageStarted) {
         //if (rawLastIndex != startIndex) QLOG_DEBUG() << "PACKET LOSS!";

@@ -266,7 +266,7 @@ void QGCToolBar::setPerspectiveChangeActions(const QList<QAction*> &actions)
         addWidget(advancedButton);
         group->addButton(advancedButton);
     } else {
-        QLOG_DEBUG() << __FILE__ << __LINE__ << "Not enough perspective change actions provided";
+        QLOG_DEBUG() << "Not enough perspective change actions provided";
     }
 
     // Add the "rest"
@@ -291,7 +291,7 @@ void QGCToolBar::setPerspectiveChangeAdvancedActions(const QList<QAction*> &acti
         connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(advancedActivityTriggered(QAction*)));
 
     } else {
-        QLOG_DEBUG() << __FILE__ << __LINE__ << "Not enough perspective change actions provided";
+        QLOG_DEBUG() << "Not enough perspective change actions provided";
     }
 }
 

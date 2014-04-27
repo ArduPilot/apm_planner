@@ -122,7 +122,7 @@ void PX4FirmwareUpgradeWorker::receiveBytes(LinkInterface* link, QByteArray b)
 
 void PX4FirmwareUpgradeWorker::loadFirmware(const QString &filename)
 {
-    qDebug() << __FILE__ << __LINE__ << "LOADING FW" << filename;
+    qDebug() << "LOADING FW" << filename;
 
     PX4_Uploader uploader;
     const char* filenames[2];

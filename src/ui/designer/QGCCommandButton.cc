@@ -152,7 +152,7 @@ void QGCCommandButton::sendCommand()
     }
     else
     {
-        QLOG_DEBUG() << __FILE__ << __LINE__ << "NO UAS SET, DOING NOTHING";
+        QLOG_DEBUG() << "NO UAS SET, DOING NOTHING";
     }
 }
 

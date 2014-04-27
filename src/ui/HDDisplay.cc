@@ -195,14 +195,14 @@ void HDDisplay::triggerUpdate()
 //        lastUpdate.insert(name, msec);
 //        //}
 
-//        //QLOG_DEBUG() << __FILE__ << __LINE__ << "VALUE:" << value << "MEAN:" << mean << "DOT:" << dot << "COUNT:" << meanCount;
+//        //QLOG_DEBUG() << "VALUE:" << value << "MEAN:" << mean << "DOT:" << dot << "COUNT:" << meanCount;
 //    }
 //}
 
 void HDDisplay::paintEvent(QPaintEvent * event)
 {
     Q_UNUSED(event);
-    //QLOG_DEBUG() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval << __FILE__ << __LINE__;
+    //QLOG_DEBUG() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval;
     renderOverlay();
 }
 
@@ -420,7 +420,7 @@ void HDDisplay::renderOverlay()
     if (!valuesChanged || !isVisible()) return;
 
 #if (QGC_EVENTLOOP_DEBUG)
-    QLOG_DEBUG() << "EVENTLOOP:" << __FILE__ << __LINE__;
+    QLOG_DEBUG() << "EVENTLOOP";
 #endif
     quint64 refreshInterval = 100;
     quint64 currTime = MG::TIME::getGroundTimeNow();

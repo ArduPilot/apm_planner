@@ -122,6 +122,6 @@ void CurveCalibrator::set(const QVector<uint16_t> &data)
         curve->setData(pos, set);
         plot->replot();
     } else {
-        QLOG_DEBUG() << __FILE__ << __LINE__ << ": wrong data vector size";
+        QLOG_DEBUG() << "wrong data vector size";
     }
 }
