@@ -28,7 +28,7 @@
             "version": "2.0.8",
             "sha" : "cdfa55e9a3a53e59afa138a29b562121bd859ec4",
             "date" : "2014-03-28"
-        }
+        },
         {
             "platform": "debian64",
             "type": "stable",
@@ -37,7 +37,7 @@
             "version": "2.0.8",
             "sha" : "cdfa55e9a3a53e59afa138a29b562121bd859ec4",
             "date" : "2014-03-28"
-        }
+        },
         {
             "platform": "ubuntu",
             "type": "stable",
@@ -46,7 +46,7 @@
             "version": "2.0.8",
             "sha" : "cdfa55e9a3a53e59afa138a29b562121bd859ec4",
             "date" : "2014-03-28"
-        }
+        },
         {
             "platform": "ubuntu64",
             "type": "stable",
