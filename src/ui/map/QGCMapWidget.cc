@@ -340,13 +340,13 @@ void QGCMapWidget::mouseDoubleClickEvent(QMouseEvent* event)
     {
         // Create new waypoint
         internals::PointLatLng pos = map->FromLocalToLatLng(event->pos().x(), event->pos().y());
+        currWPManager->blockSignals(true);
         Waypoint* wp = currWPManager->createWaypoint();
-        //            wp->blockSignals(true);
         //            wp->setFrame(MAV_FRAME_GLOBAL_RELATIVE_ALT);
         wp->setLatitude(pos.Lat());
         wp->setLongitude(pos.Lng());
-        //            wp->blockSignals(false);
-        //            currWPManager->notifyOfChangeEditable(wp);
+        currWPManager->blockSignals(false);
+        currWPManager->notifyOfChangeEditable(NULL); // yes: NULL to fire waypointEditableListChanged
     }
 
     OPMapWidget::mouseDoubleClickEvent(event);
