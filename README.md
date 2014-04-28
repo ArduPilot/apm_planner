@@ -90,26 +90,86 @@ b) Alternatively, run ```sudo make install```. This will place the binary in you
 Windows
 =======
 
-GNU GCC / MINGW IS UNTESTED, COULD WORK
-VISUAL STUDIO 2008 / 2010 EXPRESS EDITION IS FREE!
+You have three options in Windows. These are listed from easiest to most difficult
 
-Steps for Visual Studio 2008 / 2010:
+* Option 1: VS2010 should work with makefiles and nmake.
+* Option 2: Mingw: This should work, no guarantees.
+* Option 3: VS2012 requires a recompile of Qt, but otherwise should work with makefiles and nmake. This will not be described here.
 
-Windows XP/7:
 
-1) Download and install the Qt libraries for Windows from https://qt.nokia.com/downloads/ (the Visual Studio 2008 or 2010 version as appropriate)
+Option 1: VS2010
+-------
 
-2) Download and install Visual Studio 2008 or 2010 Express Edition (free) from https://www.microsoft.com/visualstudio. If using Visual Studio 2010, make sure you are running at least SP1. There is a linking error you'll encounter otherwise that will prevent compilation.
+1. Download MSVc2010 express edition. You can get it from the Microsoft website
+2. Download Qt libraries for windows (4.8.6, for MSVC2010) from http://qt-project.org/downloads
+3. Download and install QtCreator
+4. Download and install msysgit http://msysgit.github.io/
+    - Open up git bash
+    - git clone git://github.com/diydrones/apm_planner.git
+5. Start QtCreator and configure QtCreator:
+    - click on the Tools menu item then Options
+    - Select Build & Run on the left hand side
+    - Compilers tab
+        * Ensure Microsoft visual c++ Compiler 10.0 shows up under Auto-Detected
+        * click Add and select MinGW
+        * Find where you installed your compiler, inside the bin directory select g++.exe
+        * Click apply
+    - Qt Versions Tab:
+        * click Add
+        * Find qmake.exe (typically in c:\Qt\4.8.6\bin\qmake.exe)
+        * click Apply
+    - Kits tab:
+        * Click Add, name it Qt 4.8.6 - MSVC
+        * Select the MSVC compiler, and Qt version you just created.
+        * click Apply
+    - Click Ok
+6. QtCreator is now configured.
+7. Click on File then Open, find qgroundcontrol.pro
+    - It will ask you to configure project, you want to make sure Qt 4.8.6 - MSVC is selected, and click "Configure Project"
+8. Go to "Projects" tab on the left hand side, deselect "Shadow Build".
+9. Build->Build qgroundcontrol
+10. Run and enjoy!
 
-3) Go to the QGroundControl folder and then to thirdParty/libxbee and build it following the instructions in win32.README
 
-4) Open the Qt Command Prompt program (should be in the Start Menu), navigate to the source folder of QGroundControl and create the Visual Studio project by typing:
 
-`qmake -tp vc qgroundcontrol.pro`
+Option 2: MinGW
+-------
 
-5) Now start Visual Studio and load the qgroundcontrol.vcproj if using Visual Studio 2008 or qgroundcontrol.vcxproj if using Visual Studio 2010
+Install everything to a path where there are NO spaces. This is important.
 
-6) Compile and edit in Visual Studio. If you need to add new files, add them to qgroundcontrol.pro and re-run `qmake -tp vc qgroundcontrol.pro`
+1. Download Mingw 4.8.2 from http://sourceforge.net/projects/mingwbuilds/ (mingw-builds-install.exe)
+    - Install with options: x32 4.8.1 posix dwarf rev5
+2. Download and install Qt libraries for Windows (4.8.6, for MINGW 4.8.2) from http://qt-project.org/downloads
+3. Download and install QtCreator
+4. Download and install msysgit http://msysgit.github.io/
+    - Open up Git Bash
+    - git clone git://github.com/diydrones/apm_planner.git
+5. Start QtCreator and configure QtCreator:
+    - click on the Tools menu item then Options
+    - Select Build & Run on the left hand side
+    - Compilers tab
+        * click Add and select MinGW
+        * Find where you installed your compiler, inside the bin directory select g++.exe
+        * Click apply
+    - Debuggers Tab:
+        * Click Add
+        * Find gdb.exe, it will be in the same folder as g++.exe
+        * Click Apply
+    - Qt Versions Tab:
+        * click Add
+        * Find qmake.exe (typically in c:\Qt\4.8.6\bin\qmake.exe)
+        * click Apply
+    - Kits tab:
+        * Click Add, name it Qt 4.8.6 - MinGW
+        * Select the compiler, debugger, and Qt version you just created.
+        * click Apply
+        * Click Ok
+6. QtCreator is now configured.
+7. Click on File then Open, find qgroundcontrol.pro
+    - It will ask you to configure project, you want to make sure Qt 4.8.6 - MinGW is selected, and click "Configure Project"
+8. Go to "Projects" tab on the left hand side, deselect "Shadow Build".
+9. Build->Build qgroundcontrol
+10. Run and enjoy!
 
 
 Repository Layout (2014-3-28: out-of-date, needs to be fixed)
