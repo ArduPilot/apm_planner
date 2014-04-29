@@ -75,7 +75,7 @@ void QGCMAVLinkLogPlayer::loadLog(QString filename)
     }
     m_logLoaded = true;
     m_mavlink->throwAwayGCSPackets(true);
-    m_logLink = new TLogReplayLink(this);
+    m_logLink = new TLogReplayLink();
     connect(m_logLink,SIGNAL(logProgress(qint64,qint64)),this,SLOT(logProgress(qint64,qint64)));
     connect(m_logLink,SIGNAL(finished()),this,SLOT(logLinkTerminated()));
 
@@ -123,7 +123,7 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
     }
     m_logLoaded = true;
     m_mavlink->throwAwayGCSPackets(true);
-    m_logLink = new TLogReplayLink(this);
+    m_logLink = new TLogReplayLink();
     connect(m_logLink,SIGNAL(logProgress(qint64,qint64)),this,SLOT(logProgress(qint64,qint64)));
     connect(m_logLink,SIGNAL(finished()),this,SLOT(logLinkTerminated()));
 
