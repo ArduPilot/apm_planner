@@ -8,22 +8,16 @@ class TLogReplayLink : public LinkInterface
 {
     Q_OBJECT
 public:
-    explicit TLogReplayLink(QObject *parent = 0);
+    explicit TLogReplayLink();
     void play();
     void pause();
     bool isPaused();
-    int getId();
-    QString getName();
+    int getId() const;
+    QString getName() const;
     void requestReset();
-    bool isConnected();
-    qint64 getNominalDataRate();
-    bool isFullDuplex();
-    int getLinkQuality();
-    qint64 getTotalUpstream();
-    qint64 getCurrentUpstream();
-    qint64 getMaxUpstream();
-    qint64 getBitsSent();
-    qint64 getBitsReceived();
+    bool isConnected() const;
+    qint64 getConnectionSpeed() const;
+
     bool connect();
     bool disconnect();
     qint64 bytesAvailable();

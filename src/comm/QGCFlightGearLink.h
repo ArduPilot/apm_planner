@@ -42,6 +42,7 @@ This file is part of the QGROUNDCONTROL project
 #include <configuration.h>
 #include "UASInterface.h"
 #include "QGCHilLink.h"
+#include <QGCHilFlightGearConfiguration.h>
 
 class QGCFlightGearLink : public QGCHilLink
 {
@@ -81,6 +82,10 @@ public:
 
     bool sensorHilEnabled() {
         return _sensorHilEnabled;
+    }
+
+    void sensorHilEnabled(bool sensorHilEnabled) {
+        _sensorHilEnabled = sensorHilEnabled;
     }
 
     void run();
@@ -127,7 +132,10 @@ public slots:
 
     void printTerraSyncOutput();
     void printTerraSyncError();
+    void printFgfsOutput();
+    void printFgfsError();
     void setStartupArguments(QString startupArguments);
+    void setBarometerOffset(float barometerOffsetkPa);
 
 protected:
     QString name;
@@ -155,6 +163,7 @@ protected:
     unsigned int flightGearVersion;
     QString startupArguments;
     bool _sensorHilEnabled;
+    float barometerOffsetkPa;
 
     void setName(QString name);
 

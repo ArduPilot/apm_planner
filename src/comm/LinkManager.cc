@@ -99,10 +99,13 @@ void LinkManager::addProtocol(LinkInterface* link, ProtocolInterface* protocol)
     if (linkList.length() == 0 || !linkList.contains(link))
     {
         // Protocol is new, add
-        connect(link, SIGNAL(bytesReceived(LinkInterface*, QByteArray)),
-                protocol, SLOT(receiveBytes(LinkInterface*, QByteArray)), Qt::QueuedConnection);
+        connect(link, SIGNAL(bytesReceived(LinkInterface*, QByteArray)), protocol, SLOT(receiveBytes(LinkInterface*, QByteArray)));
+        // Add status
+        connect(link, SIGNAL(connected(bool)), protocol, SLOT(linkStatusChanged(bool)));
         // Store the connection information in the protocol links map
         protocolLinks.insertMulti(protocol, link);
+        // Make sure the protocol clears its metadata for this link.
+        protocol->resetMetadataForLink(link);
     }
     QLOG_INFO() << "ADDED LINK TO PROTOCOL" << link->getName() << protocol->getName() << "protocolLinks.size:"
                 << protocolLinks.size() << "Links.size:" << links.size();
@@ -113,6 +116,10 @@ QList<LinkInterface*> LinkManager::getLinksForProtocol(ProtocolInterface* protoc
     return protocolLinks.values(protocol);
 }
 
+ProtocolInterface* LinkManager::getProtocolForLink(LinkInterface* link)
+{
+    return protocolLinks.key(link);
+}
 
 bool LinkManager::connectAll()
 {
@@ -217,3 +224,4 @@ const QList<LinkInterface*> LinkManager::getLinks()
 {
     return QList<LinkInterface*>(links);
 }
+

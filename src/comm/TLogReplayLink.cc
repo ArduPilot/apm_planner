@@ -5,18 +5,17 @@
 #include "UASManager.h"
 #include "UAS.h"
 #include "MainWindow.h"
-TLogReplayLink::TLogReplayLink(QObject *parent) :
-    LinkInterface(parent),
+TLogReplayLink::TLogReplayLink() :
     m_toBeDeleted(false),
     m_threadRun(false)
 {
     m_speedVar = 50;
 }
-int TLogReplayLink::getId()
+int TLogReplayLink::getId() const
 {
     return 1;
 }
-QString TLogReplayLink::getName()
+QString TLogReplayLink::getName() const
 {
     return "AP2SimulationLink";
 }
@@ -24,42 +23,15 @@ void TLogReplayLink::requestReset()
 {
 
 }
-bool TLogReplayLink::isConnected()
+bool TLogReplayLink::isConnected() const
 {
     return false;
 }
-qint64 TLogReplayLink::getNominalDataRate()
+qint64 TLogReplayLink::getConnectionSpeed() const
 {
     return 115200;
 }
-bool TLogReplayLink::isFullDuplex()
-{
-    return true;
-}
-int TLogReplayLink::getLinkQuality()
-{
-    return 100;
-}
-qint64 TLogReplayLink::getTotalUpstream()
-{
-    return 0;
-}
-qint64 TLogReplayLink::getCurrentUpstream()
-{
-    return 0;
-}
-qint64 TLogReplayLink::getMaxUpstream()
-{
-    return 0;
-}
-qint64 TLogReplayLink::getBitsSent()
-{
-    return 0;
-}
-qint64 TLogReplayLink::getBitsReceived()
-{
-    return 0;
-}
+
 bool TLogReplayLink::connect()
 {
     start();
