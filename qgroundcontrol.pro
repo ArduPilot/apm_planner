@@ -93,7 +93,7 @@ QT += network \
     declarative
 
 ##  testlib is needed even in release flavor for QSignalSpy support
-#QT += testlib
+QT += testlib
 
 gittouch.commands = touch qgroundcontrol.pro
 QMAKE_EXTRA_TARGETS += gittouch
