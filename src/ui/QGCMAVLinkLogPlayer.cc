@@ -15,7 +15,8 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
     m_logLink(NULL),
     m_mavlink(mavlink),
     m_logLoaded(false),
-    m_isPlaying(false)
+    m_isPlaying(false),
+    m_sliderDown(false)
 {
     ui->setupUi(this);
     ui->horizontalLayout->setAlignment(Qt::AlignTop);
@@ -23,15 +24,12 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
     connect(ui->selectFileButton, SIGNAL(clicked()), this, SLOT(loadLogButtonClicked()));
     connect(ui->playButton, SIGNAL(clicked()), this, SLOT(playButtonClicked()));
     connect(ui->speedSlider, SIGNAL(valueChanged(int)), this, SLOT(speedSliderValueChanged(int)));
-    //connect(ui->positionSlider, SIGNAL(valueChanged(int)), this, SLOT(jumpToSliderVal(int)));
-    //connect(ui->positionSlider, SIGNAL(sliderPressed()), this, SLOT(pause()));
+    connect(ui->positionSlider,SIGNAL(sliderReleased()),this,SLOT(positionSliderReleased()));
+    connect(ui->positionSlider,SIGNAL(sliderPressed()),this,SLOT(positionSliderPressed()));
 
-    //setAccelerationFactorInt(49);
-    //ui->positionSlider->setValue(ui->positionSlider->minimum());
-
+    ui->positionSlider->setTracking(true);
     ui->playButton->setEnabled(true);
     ui->speedSlider->setEnabled(true);
-    //ui->positionSlider->setEnabled(true);
     ui->speedLabel->setEnabled(false);
     ui->logStatsLabel->setEnabled(true);
     ui->playButton->setVisible(true);
@@ -39,10 +37,35 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
 
 
 }
+void QGCMAVLinkLogPlayer::positionSliderReleased()
+{
+    m_sliderDown = false;
+    if (m_logLink)
+    {
+        m_logLink->setPosition(ui->positionSlider->value());
+
+    }
+}
+
+void QGCMAVLinkLogPlayer::positionSliderPressed()
+{
+    //Deactivate signals here
+    m_sliderDown = true;
+
+}
 
 QGCMAVLinkLogPlayer::~QGCMAVLinkLogPlayer()
 {
     storeSettings();
+    if (m_logLink)
+    {
+        if (m_logLink->isRunning())
+        {
+            m_logLink->stop();
+            m_logLink->wait(1000);
+            delete m_logLink;
+        }
+    }
     delete ui;
 }
 void QGCMAVLinkLogPlayer::storeSettings()
@@ -82,7 +105,6 @@ void QGCMAVLinkLogPlayer::loadLog(QString filename)
 
     m_logLink->setLog(filename);
     connect(m_logLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlink,SLOT(receiveBytes(LinkInterface*,QByteArray)));
-   // connect(m_logLink,SIGNAL(terminated()),this,SLOT(logLinkTerminated()));
     m_logLink->connect();
     m_isPlaying = true;
     ui->logStatsLabel->setText(filename.mid(filename.lastIndexOf("/")+1));
@@ -138,7 +160,12 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
 void QGCMAVLinkLogPlayer::logProgress(qint64 pos,qint64 total)
 {
     //ui->positionSlider->setValue(((double)pos / (double)total) * 100);
-    ui->positionProgressBar->setValue(((double)pos / (double)total) * 100);
+    if (!m_sliderDown)
+    {
+        //ui->positionProgressBar->setValue(((double)pos / (double)total) * 100);
+        ui->positionLabel->setText(QString::number(pos) + "/" + QString::number(total));
+        ui->positionSlider->setValue(((double)pos / (double)total) * 100);
+    }
 }
 
 void QGCMAVLinkLogPlayer::playButtonClicked()
@@ -187,6 +214,8 @@ void QGCMAVLinkLogPlayer::speedSliderValueChanged(int value)
 {
     if (m_logLink)
     {
-        m_logLink->setSpeed(value);
+        double newval = ((value / 100.0) * 130) + 70;
+        m_logLink->setSpeed(newval);
+        ui->speedLabel->setText(QString::number(newval) + "%");
     }
 }

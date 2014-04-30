@@ -420,6 +420,9 @@ public slots:
     virtual void logEraseAll() = 0;
     virtual void logRequestEnd() = 0;
 
+    /** @brief Receive a message from one of the communication links. */
+    virtual void receiveMessage(LinkInterface* link, mavlink_message_t message) = 0;
+
 protected:
     QColor color;
 

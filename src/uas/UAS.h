@@ -904,7 +904,7 @@ public slots:
     void removeLink(QObject* object);
 
     /** @brief Receive a message from one of the communication links. */
-    virtual void receiveMessage(LinkInterface* link, mavlink_message_t message);
+    void receiveMessage(LinkInterface* link, mavlink_message_t message);
 
 #ifdef QGC_PROTOBUF_ENABLED
     /** @brief Receive a message from one of the communication links. */

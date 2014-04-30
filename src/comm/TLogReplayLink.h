@@ -28,6 +28,7 @@ public:
 
     //Speed is 1-100, being slowest to fastest
     void setSpeed(int speed);
+    void setPosition(qint64 pos);
     void disableTimeouts() { }
     void enableTimeouts() { }
 signals:
@@ -52,6 +53,7 @@ private:
     bool m_threadRun;
     QMutex m_variableAccessMutex;
     int m_speedVar;
+    qint64 m_posVar;
     bool m_pause;
 };
 

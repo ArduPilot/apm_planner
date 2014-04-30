@@ -46,7 +46,10 @@ public slots:
     void speedSliderValueChanged(int value);
 private slots:
     void logProgress(qint64 pos,qint64 total);
+    void positionSliderReleased();
+    void positionSliderPressed();
 protected:
+    bool m_sliderDown;
     bool m_isPlaying;
     void changeEvent(QEvent *e);
 

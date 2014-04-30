@@ -151,7 +151,7 @@ void AP2DataPlot2D::showEvent(QShowEvent *evt)
         m_updateTimer = 0;
     }
     m_updateTimer = new QTimer(this);
-    connect(m_updateTimer,SIGNAL(timeout()),m_plot,SLOT(update()));
+    connect(m_updateTimer,SIGNAL(timeout()),m_plot,SLOT(repaint()));
     m_updateTimer->start(500);
 }
 
