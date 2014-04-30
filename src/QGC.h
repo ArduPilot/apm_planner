@@ -50,12 +50,6 @@ inline bool isinf(T value)
 }
 #else
 #include <cmath>
-#ifndef isnan
-#define isnan(x) std::isnan(x)
-#endif
-#ifndef isinf
-#define isinf(x) std::isinf(x)
-#endif
 #endif
 
 namespace QGC
