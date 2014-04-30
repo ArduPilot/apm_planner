@@ -95,9 +95,12 @@ void QGCStatusBar::activeUASSet(UASInterface* uas)
     {
         if (!player->isPlayingLogFile())
         {
-            if (uas->getLinks()->at(0)->isConnected())
+            if (uas->getLinks()->size() > 0)
             {
-                this->setEnabled(false);
+                if (uas->getLinks()->at(0)->isConnected())
+                {
+                    this->setEnabled(false);
+                }
             }
         }
 
