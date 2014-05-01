@@ -24,11 +24,10 @@ class QGCMAVLinkLogPlayer : public QWidget
     Q_OBJECT
 
 public:
-    explicit QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *parent = 0);
+    explicit QGCMAVLinkLogPlayer(QWidget *parent = 0);
     void setMavlinkDecoder(MAVLinkDecoder *decoder);
     void setMavlinkInspector(QGCMAVLinkInspector *inspector);
     ~QGCMAVLinkLogPlayer();
-    void loadLog(QString filename);
     bool isPlayingLogFile()
     {
         return m_isPlaying;
@@ -52,6 +51,7 @@ public slots:
     void speed150Clicked();
     void speed200Clicked();
     void speed500Clicked();
+    void speed1000Clicked();
 private slots:
     void logProgress(qint64 pos,qint64 total);
     void positionSliderReleased();
@@ -64,7 +64,6 @@ protected:
     void storeSettings();
 
 private:
-    MAVLinkProtocol *m_mavlink;
     Ui::QGCMAVLinkLogPlayer *ui;
     TLogReplayLink *m_logLink;
     bool m_logLoaded;

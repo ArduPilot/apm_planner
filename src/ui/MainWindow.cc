@@ -553,7 +553,7 @@ void MainWindow::buildCommonWidgets()
     mavlinkDecoder = new MAVLinkDecoder(mavlink, this);
 
     // Log player
-    logPlayer = new QGCMAVLinkLogPlayer(mavlink, customStatusBar);
+    logPlayer = new QGCMAVLinkLogPlayer(customStatusBar);
     logPlayer->setMavlinkDecoder(mavlinkDecoder);
     connect(logPlayer,SIGNAL(logFinished()),statusBar(),SLOT(hide()));
     customStatusBar->setLogPlayer(logPlayer);

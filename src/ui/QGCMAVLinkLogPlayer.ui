@@ -172,6 +172,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="speedButton1000">
+         <property name="text">
+          <string>10X</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
