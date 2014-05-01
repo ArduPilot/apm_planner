@@ -11,7 +11,9 @@ TLogReplayLink::TLogReplayLink(QObject *parent) :
     m_toBeDeleted(false),
     m_threadRun(false),
     m_speedVar(50),
-    m_posVar(0)
+    m_posVar(0),
+    m_mavlinkDecoder(NULL),
+    m_mavlinkInspector(NULL)
 {
 }
 int TLogReplayLink::getId() const
@@ -81,6 +83,14 @@ void TLogReplayLink::pause()
 bool TLogReplayLink::isPaused()
 {
     return m_pause;
+}
+void TLogReplayLink::setMavlinkDecoder(MAVLinkDecoder *decoder)
+{
+    m_mavlinkDecoder = decoder;
+}
+void TLogReplayLink::setMavlinkInspector(QGCMAVLinkInspector *inspector)
+{
+    m_mavlinkInspector = inspector;
 }
 
 void TLogReplayLink::run()
@@ -251,6 +261,11 @@ void TLogReplayLink::run()
                             msleep(1);
                         }
                         uas->receiveMessage(this,message);
+                        m_mavlinkDecoder->receiveMessage(this,message);
+                        if (m_mavlinkInspector)
+                        {
+                            m_mavlinkInspector->receiveMessage(this,message);
+                        }
                     }
                     else
                     {

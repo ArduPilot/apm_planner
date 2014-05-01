@@ -5,7 +5,8 @@
 #include <QFile>
 #include "MAVLinkProtocol.h"
 #include "TLogReplayLink.h"
-
+#include "MAVLinkDecoder.h"
+#include "QGCMAVLinkInspector.h"
 namespace Ui
 {
 class QGCMAVLinkLogPlayer;
@@ -24,6 +25,8 @@ class QGCMAVLinkLogPlayer : public QWidget
 
 public:
     explicit QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *parent = 0);
+    void setMavlinkDecoder(MAVLinkDecoder *decoder);
+    void setMavlinkInspector(QGCMAVLinkInspector *inspector);
     ~QGCMAVLinkLogPlayer();
     void loadLog(QString filename);
     bool isPlayingLogFile()
@@ -44,6 +47,11 @@ public slots:
     void playButtonClicked();
     void logLinkTerminated();
     void speedSliderValueChanged(int value);
+    void speed75Clicked();
+    void speed100Clicked();
+    void speed150Clicked();
+    void speed200Clicked();
+    void speed500Clicked();
 private slots:
     void logProgress(qint64 pos,qint64 total);
     void positionSliderReleased();
@@ -60,6 +68,8 @@ private:
     Ui::QGCMAVLinkLogPlayer *ui;
     TLogReplayLink *m_logLink;
     bool m_logLoaded;
+    MAVLinkDecoder *m_mavlinkDecoder;
+    QGCMAVLinkInspector *m_mavlinkInspector;
 signals:
     void logFinished();
 };

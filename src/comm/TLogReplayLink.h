@@ -2,13 +2,17 @@
 #define TLOGREPLYLINK_H
 
 #include "LinkInterface.h"
+#include "MAVLinkDecoder.h"
+#include "QGCMAVLinkInspector.h"
 #include <QMutex>
 
 class TLogReplayLink : public LinkInterface
 {
     Q_OBJECT
 public:
-    explicit TLogReplayLink();
+    explicit TLogReplayLink(QObject *parent = 0);
+    void setMavlinkDecoder(MAVLinkDecoder *decoder);
+    void setMavlinkInspector(QGCMAVLinkInspector *inspector);
     void play();
     void pause();
     bool isPaused();
@@ -55,6 +59,8 @@ private:
     int m_speedVar;
     qint64 m_posVar;
     bool m_pause;
+    MAVLinkDecoder *m_mavlinkDecoder;
+    QGCMAVLinkInspector *m_mavlinkInspector;
 };
 
 #endif // TLOGREPLYLINK_H

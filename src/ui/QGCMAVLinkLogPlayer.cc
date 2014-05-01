@@ -16,27 +16,81 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *pare
     m_mavlink(mavlink),
     m_logLoaded(false),
     m_isPlaying(false),
-    m_sliderDown(false)
+    m_sliderDown(false),
+    m_mavlinkDecoder(NULL)
 {
     ui->setupUi(this);
     ui->horizontalLayout->setAlignment(Qt::AlignTop);
     // Setup buttons
     connect(ui->selectFileButton, SIGNAL(clicked()), this, SLOT(loadLogButtonClicked()));
     connect(ui->playButton, SIGNAL(clicked()), this, SLOT(playButtonClicked()));
-    connect(ui->speedSlider, SIGNAL(valueChanged(int)), this, SLOT(speedSliderValueChanged(int)));
+    //connect(ui->speedSlider, SIGNAL(valueChanged(int)), this, SLOT(speedSliderValueChanged(int)));
+
     connect(ui->positionSlider,SIGNAL(sliderReleased()),this,SLOT(positionSliderReleased()));
     connect(ui->positionSlider,SIGNAL(sliderPressed()),this,SLOT(positionSliderPressed()));
 
     ui->positionSlider->setTracking(true);
     ui->playButton->setEnabled(true);
-    ui->speedSlider->setEnabled(true);
-    ui->speedLabel->setEnabled(false);
+    //ui->speedSlider->setEnabled(true);
+    //ui->speedLabel->setEnabled(false);
     ui->logStatsLabel->setEnabled(true);
     ui->playButton->setVisible(true);
-
-
-
+    connect(ui->speedButton75,SIGNAL(clicked()),this,SLOT(speed75Clicked()));
+    connect(ui->speedButton100,SIGNAL(clicked()),this,SLOT(speed100Clicked()));
+    connect(ui->speedButton150,SIGNAL(clicked()),this,SLOT(speed150Clicked()));
+    connect(ui->speedButton200,SIGNAL(clicked()),this,SLOT(speed200Clicked()));
+    connect(ui->speedButton500,SIGNAL(clicked()),this,SLOT(speed500Clicked()));
+    ui->speedButton75->setEnabled(false);
+    ui->speedButton100->setEnabled(false);
+    ui->speedButton150->setEnabled(false);
+    ui->speedButton200->setEnabled(false);
+    ui->speedButton500->setEnabled(false);
 }
+void QGCMAVLinkLogPlayer::speed75Clicked()
+{
+    m_logLink->setSpeed(75);
+    ui->speedButton100->setChecked(false);
+    ui->speedButton150->setChecked(false);
+    ui->speedButton200->setChecked(false);
+    ui->speedButton500->setChecked(false);
+}
+
+void QGCMAVLinkLogPlayer::speed100Clicked()
+{
+    ui->speedButton75->setChecked(false);
+    m_logLink->setSpeed(100);
+    ui->speedButton150->setChecked(false);
+    ui->speedButton200->setChecked(false);
+    ui->speedButton500->setChecked(false);
+}
+
+void QGCMAVLinkLogPlayer::speed150Clicked()
+{
+    ui->speedButton75->setChecked(false);
+    ui->speedButton100->setChecked(false);
+    m_logLink->setSpeed(150);
+    ui->speedButton200->setChecked(false);
+    ui->speedButton500->setChecked(false);
+}
+
+void QGCMAVLinkLogPlayer::speed200Clicked()
+{
+    ui->speedButton75->setChecked(false);
+    ui->speedButton100->setChecked(false);
+    ui->speedButton150->setChecked(false);
+    m_logLink->setSpeed(200);
+    ui->speedButton500->setChecked(false);
+}
+
+void QGCMAVLinkLogPlayer::speed500Clicked()
+{
+    ui->speedButton75->setChecked(false);
+    ui->speedButton100->setChecked(false);
+    ui->speedButton150->setChecked(false);
+    ui->speedButton200->setChecked(false);
+    m_logLink->setSpeed(500);
+}
+
 void QGCMAVLinkLogPlayer::positionSliderReleased()
 {
     m_sliderDown = false;
@@ -88,6 +142,11 @@ void QGCMAVLinkLogPlayer::loadLog(QString filename)
                 m_logLink->deleteLater();
                 m_logLink = 0;
                 m_logLoaded = false;
+                ui->speedButton75->setEnabled(false);
+                ui->speedButton100->setEnabled(false);
+                ui->speedButton150->setEnabled(false);
+                ui->speedButton200->setEnabled(false);
+                ui->speedButton500->setEnabled(false);
             }
         }
         else
@@ -109,6 +168,11 @@ void QGCMAVLinkLogPlayer::loadLog(QString filename)
     m_isPlaying = true;
     ui->logStatsLabel->setText(filename.mid(filename.lastIndexOf("/")+1));
     ui->playButton->setIcon(QIcon(":/files/images/actions/media-playback-stop.svg"));
+    ui->speedButton75->setEnabled(true);
+    ui->speedButton100->setEnabled(true);
+    ui->speedButton150->setEnabled(true);
+    ui->speedButton200->setEnabled(true);
+    ui->speedButton500->setEnabled(true);
 }
 
 void QGCMAVLinkLogPlayer::loadLogButtonClicked()
@@ -127,6 +191,11 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
                 m_logLink->deleteLater();
                 m_logLink = 0;
                 m_logLoaded = false;
+                ui->speedButton75->setEnabled(false);
+                ui->speedButton100->setEnabled(false);
+                ui->speedButton150->setEnabled(false);
+                ui->speedButton200->setEnabled(false);
+                ui->speedButton500->setEnabled(false);
             }
         }
         else
@@ -145,7 +214,9 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
     }
     m_logLoaded = true;
     m_mavlink->throwAwayGCSPackets(true);
-    m_logLink = new TLogReplayLink();
+    m_logLink = new TLogReplayLink(this);
+    m_logLink->setMavlinkDecoder(m_mavlinkDecoder);
+    m_logLink->setMavlinkInspector(m_mavlinkInspector);
     connect(m_logLink,SIGNAL(logProgress(qint64,qint64)),this,SLOT(logProgress(qint64,qint64)));
     connect(m_logLink,SIGNAL(finished()),this,SLOT(logLinkTerminated()));
 
@@ -156,6 +227,11 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
     m_logLink->connect();
     ui->logStatsLabel->setText(fileName.mid(fileName.lastIndexOf("/")+1));
     ui->playButton->setIcon(QIcon(":/files/images/actions/media-playback-stop.svg"));
+    ui->speedButton75->setEnabled(true);
+    ui->speedButton100->setEnabled(true);
+    ui->speedButton150->setEnabled(true);
+    ui->speedButton200->setEnabled(true);
+    ui->speedButton500->setEnabled(true);
 }
 void QGCMAVLinkLogPlayer::logProgress(qint64 pos,qint64 total)
 {
@@ -166,6 +242,14 @@ void QGCMAVLinkLogPlayer::logProgress(qint64 pos,qint64 total)
         ui->positionLabel->setText(QString::number(pos) + "/" + QString::number(total));
         ui->positionSlider->setValue(((double)pos / (double)total) * 100);
     }
+}
+void QGCMAVLinkLogPlayer::setMavlinkDecoder(MAVLinkDecoder *decoder)
+{
+    m_mavlinkDecoder = decoder;
+}
+void QGCMAVLinkLogPlayer::setMavlinkInspector(QGCMAVLinkInspector *inspector)
+{
+    m_mavlinkInspector = inspector;
 }
 
 void QGCMAVLinkLogPlayer::playButtonClicked()
@@ -194,6 +278,11 @@ void QGCMAVLinkLogPlayer::logLinkTerminated()
         m_logLink = 0;
         m_logLoaded = false;
         m_mavlink->throwAwayGCSPackets(false);
+        ui->speedButton75->setEnabled(false);
+        ui->speedButton100->setEnabled(false);
+        ui->speedButton150->setEnabled(false);
+        ui->speedButton200->setEnabled(false);
+        ui->speedButton500->setEnabled(false);
         emit logFinished();
     }
 }
@@ -216,6 +305,6 @@ void QGCMAVLinkLogPlayer::speedSliderValueChanged(int value)
     {
         double newval = ((value / 100.0) * 130) + 70;
         m_logLink->setSpeed(newval);
-        ui->speedLabel->setText(QString::number(newval) + "%");
+        //ui->speedLabel->setText(QString::number(newval) + "%");
     }
 }

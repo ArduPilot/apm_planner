@@ -40,6 +40,7 @@ QGCStatusBar::QGCStatusBar(QWidget *parent) :
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
 }
+
 void QGCStatusBar::uasConnected()
 {
     if (player)
