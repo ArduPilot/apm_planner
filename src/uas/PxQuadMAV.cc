@@ -233,9 +233,9 @@ void PxQuadMAV::sendProcessCommand(int watchdogId, int processId, unsigned int c
 #endif
 }
 
-QString PxQuadMAV::getCustomModeText(int mode)
+QString PxQuadMAV::getCustomModeText()
 {
-    switch (mode)
+    switch (custom_mode)
         {
         case 0:
             return QString("PREFLIGHT");
@@ -245,8 +245,8 @@ QString PxQuadMAV::getCustomModeText(int mode)
         }
 }
 
-QString PxQuadMAV::getCustomModeAudioText(int mode)
+QString PxQuadMAV::getCustomModeAudioText()
 {
     QString navModeString = tr("changed nav mode to ");
-    return navModeString + getCustomModeText(mode);
+    return navModeString + getCustomModeText();
 }
