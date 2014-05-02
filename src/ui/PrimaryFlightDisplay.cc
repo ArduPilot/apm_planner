@@ -135,13 +135,13 @@ PrimaryFlightDisplay::PrimaryFlightDisplay(int width, int height, QWidget *paren
     pitch(UNKNOWN_ATTITUDE),
     heading(UNKNOWN_ATTITUDE),
 
-    primaryAltitude(UNKNOWN_ALTITUDE),
-    GPSAltitude(UNKNOWN_ALTITUDE),
+    m_altitudeRelative(UNKNOWN_ALTITUDE),
+    m_altitudeAMSL(UNKNOWN_ALTITUDE),
     aboveHomeAltitude(UNKNOWN_ALTITUDE),
 
-    primarySpeed(UNKNOWN_SPEED),
-    groundspeed(UNKNOWN_SPEED),
-    verticalVelocity(UNKNOWN_ALTITUDE),
+    m_groundspeed(UNKNOWN_SPEED),
+    m_airspeed(UNKNOWN_SPEED),
+    m_climbRate(UNKNOWN_ALTITUDE),
 
     navigationCrosstrackError(0),
     navigationTargetBearing(UNKNOWN_ATTITUDE),
@@ -273,14 +273,10 @@ void PrimaryFlightDisplay::forgetUAS(UASInterface* uas)
                    this, SLOT(updateAttitude(UASInterface*,int,double, double, double, quint64)));
         //disconnect(this->uas, SIGNAL(waypointSelected(int,int)),
         //           this, SLOT(selectWaypoint(int, int)));
-        disconnect(this->uas, SIGNAL(primarySpeedChanged(UASInterface*, double, quint64)),
-                   this, SLOT(updatePrimarySpeed(UASInterface*,double,quint64)));
-        disconnect(this->uas, SIGNAL(gpsSpeedChanged(UASInterface*, double, quint64)),
-                   this, SLOT(updateGPSSpeed(UASInterface*,double,quint64)));
-        disconnect(this->uas, SIGNAL(climbRateChanged(UASInterface*, double, quint64)),
-                   this,SLOT(updateClimbRate(UASInterface*, double, quint64)));
-        disconnect(this->uas, SIGNAL(primaryAltitudeChanged(UASInterface*, double, quint64)),
-                   this, SLOT(updatePrimaryAltitude(UASInterface*, double, quint64)));
+        disconnect(this->uas, SIGNAL(speedChanged(UASInterface*,double,double,quint64)),
+                this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
+        disconnect(this->uas, SIGNAL(altitudeChanged(UASInterface*,double,double,double,quint64)),
+                   this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
         disconnect(this->uas, SIGNAL(gpsAltitudeChanged(UASInterface*, double, quint64)),
                    this, SLOT(updateGPSAltitude(UASInterface*, double, quint64)));
         disconnect(this->uas, SIGNAL(navigationControllerErrorsChanged(UASInterface*, double, double, double)),
@@ -325,14 +321,14 @@ void PrimaryFlightDisplay::setActiveUAS(UASInterface* uas)
         //connect(uas, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(updateGlobalPosition(UASInterface*,double,double,double,quint64)));
         //connect(uas, SIGNAL(waypointSelected(int,int)), this,
         //        SLOT(selectWaypoint(int, int)));
-        connect(uas, SIGNAL(primarySpeedChanged(UASInterface*, double, quint64)), this, SLOT(updatePrimarySpeed(UASInterface*,double,quint64)));
-        connect(uas, SIGNAL(gpsSpeedChanged(UASInterface*, double, quint64)), this, SLOT(updateGPSSpeed(UASInterface*,double,quint64)));
-        connect(uas, SIGNAL(climbRateChanged(UASInterface*, double, quint64)), this,
-                SLOT(updateClimbRate(UASInterface*, double, quint64)));
-        connect(uas, SIGNAL(primaryAltitudeChanged(UASInterface*, double, quint64)), this, SLOT(updatePrimaryAltitude(UASInterface*, double, quint64)));
-        connect(uas, SIGNAL(gpsAltitudeChanged(UASInterface*, double, quint64)), this, SLOT(updateGPSAltitude(UASInterface*, double, quint64)));
-        connect(uas, SIGNAL(navigationControllerErrorsChanged(UASInterface*, double, double, double)), this, SLOT(updateNavigationControllerErrors(UASInterface*, double, double, double)));
-        connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessage(int,int,int,QString)));
+        connect(uas, SIGNAL(altitudeChanged(UASInterface*,double,double,double,quint64)),
+                           this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
+        connect(uas, SIGNAL(speedChanged(UASInterface*,double,double,quint64)),
+                this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
+        connect(uas, SIGNAL(navigationControllerErrorsChanged(UASInterface*, double, double, double)),
+                this, SLOT(updateNavigationControllerErrors(UASInterface*, double, double, double)));
+        connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
+                this,SLOT(uasTextMessage(int,int,int,QString)));
 
         // Set new UAS
         this->uas = uas;
@@ -380,50 +376,30 @@ void PrimaryFlightDisplay::updateAttitude(UASInterface* uas, double roll, double
 
 }
 
-void PrimaryFlightDisplay::updateAttitude(UASInterface* uas, int component, double roll, double pitch, double yaw, quint64 timestamp)
+void PrimaryFlightDisplay::updateAttitude(UASInterface* uas, int component, double roll, double pitch,
+                                          double yaw, quint64 timestamp)
 {
     Q_UNUSED(component);
     this->updateAttitude(uas, roll, pitch, yaw, timestamp);
 }
 
-void PrimaryFlightDisplay::updatePrimarySpeed(UASInterface* uas, double speed, quint64 timestamp)
+void PrimaryFlightDisplay::speedChanged(UASInterface* uas, double groundspeed, double airspeed,
+                                        quint64 timestamp)
 {
     Q_UNUSED(uas);
     Q_UNUSED(timestamp);
-
-    primarySpeed = speed;
-    didReceivePrimarySpeed = true;
+    m_groundspeed = groundspeed;
+    m_airspeed = airspeed;
 }
 
-void PrimaryFlightDisplay::updateGPSSpeed(UASInterface* uas, double speed, quint64 timestamp)
+void PrimaryFlightDisplay::altitudeChanged(UASInterface* uas, double altitudeAMSL,
+                                           double altitudeRelative, double climbRate, quint64 timestamp)
 {
     Q_UNUSED(uas);
     Q_UNUSED(timestamp);
-
-    groundspeed = speed;
-    if (!didReceivePrimarySpeed)
-        primarySpeed = speed;
-}
-
-void PrimaryFlightDisplay::updateClimbRate(UASInterface* uas, double climbRate, quint64 timestamp) {
-    Q_UNUSED(uas);
-    Q_UNUSED(timestamp);
-    verticalVelocity = climbRate;
-}
-
-void PrimaryFlightDisplay::updatePrimaryAltitude(UASInterface* uas, double altitude, quint64 timestamp) {
-    Q_UNUSED(uas);
-    Q_UNUSED(timestamp);
-    primaryAltitude = altitude;
-    didReceivePrimaryAltitude = true;
-}
-
-void PrimaryFlightDisplay::updateGPSAltitude(UASInterface* uas, double altitude, quint64 timestamp) {
-    Q_UNUSED(uas);
-    Q_UNUSED(timestamp);
-    GPSAltitude = altitude;
-    if (!didReceivePrimaryAltitude)
-        primaryAltitude = altitude;
+    m_altitudeAMSL = altitudeAMSL;
+    m_altitudeRelative = altitudeRelative;;
+    m_climbRate = climbRate/10.0f;
 }
 
 void PrimaryFlightDisplay::updateNavigationControllerErrors(UASInterface* uas, double altitudeError, double speedError, double xtrackError) {
@@ -438,20 +414,20 @@ void PrimaryFlightDisplay::updateNavigationControllerErrors(UASInterface* uas, d
  * Private and such
  */
 
-// TODO: Move to UAS. Real working implementation.
-bool PrimaryFlightDisplay::isAirplane() {
-    if (!this->uas)
-        return false;
-    switch(this->uas->getSystemType()) {
-    case MAV_TYPE_GENERIC:
-    case MAV_TYPE_FIXED_WING:
-    case MAV_TYPE_AIRSHIP:
-    case MAV_TYPE_FLAPPING_WING:
-        return true;
-    default:
-        return false;
-    }
-}
+//// TODO: Move to UAS. Real working implementation.
+//bool PrimaryFlightDisplay::isAirplane() {
+//    if (!this->uas)
+//        return false;
+//    switch(this->uas->getSystemType()) {
+//    case MAV_TYPE_GENERIC:
+//    case MAV_TYPE_FIXED_WING:
+//    case MAV_TYPE_AIRSHIP:
+//    case MAV_TYPE_FLAPPING_WING:
+//        return true;
+//    default:
+//        return false;
+//    }
+//}
 
 // TODO: Implement. Should return true when navigating.
 // That would be (APM) in AUTO and RTL modes.
@@ -985,8 +961,8 @@ void PrimaryFlightDisplay::drawAICompassDisk(QPainter& painter, QRectF area, flo
 void PrimaryFlightDisplay::drawAltimeter(
         QPainter& painter,
         QRectF area, // the area where to draw the tape.
-        float primaryAltitude,
-        float secondaryAltitude,
+        float altitudeRelative,
+        float altitudeAMSL,
         float vv
     ) {
 
@@ -1006,7 +982,7 @@ void PrimaryFlightDisplay::drawAltimeter(
     float effectiveHalfHeight = h*0.45;
 
     // not yet implemented: Display of secondary altitude.
-    if (secondaryAltitude != UNKNOWN_ALTITUDE) {
+    if (altitudeAMSL != UNKNOWN_ALTITUDE) {
         effectiveHalfHeight-= secondaryAltitudeBoxHeight;
     }
 
@@ -1018,7 +994,7 @@ void PrimaryFlightDisplay::drawAltimeter(
     float tickmarkRightMinor = tickmarkLeft+TAPE_GAUGES_TICKWIDTH_MINOR*w;
     float numbersLeft = 0.42*w;
     float markerTip = (tickmarkLeft*2+tickmarkRightMajor)/3;
-    float scaleCenterAltitude = primaryAltitude == UNKNOWN_ALTITUDE ? 0 : primaryAltitude;
+    float scaleCenterAltitude = altitudeRelative == UNKNOWN_ALTITUDE ? 0 : altitudeRelative;
 
     // altitude scale
     float start = scaleCenterAltitude - ALTIMETER_LINEAR_SPAN/2;
@@ -1065,15 +1041,16 @@ void PrimaryFlightDisplay::drawAltimeter(
     painter.setPen(pen);
 
     QString s_alt;
-    if(primaryAltitude == UNKNOWN_ALTITUDE)
+    if(altitudeRelative == UNKNOWN_ALTITUDE)
         s_alt.sprintf("---");
     else
-        s_alt.sprintf("%3.0f", primaryAltitude);
+        s_alt.sprintf("%3.0f", altitudeRelative);
 
     float xCenter = (markerTip+rightEdge)/2;
     drawTextCenter(painter, s_alt, mediumTextSize, xCenter, 0);
 
     // draw simple in-tape VVI.
+    vv = vv/4;
     if (vv != UNKNOWN_ALTITUDE) {
     float vvPixHeight = -vv/ALTIMETER_VVI_SPAN * effectiveHalfHeight;
     if (abs (vvPixHeight)<markerHalfHeight) return; // hidden behind marker.
@@ -1099,12 +1076,12 @@ void PrimaryFlightDisplay::drawAltimeter(
     }
 
     // print secondary altitude
-    if (secondaryAltitude != UNKNOWN_ALTITUDE) {
+    if (altitudeAMSL != UNKNOWN_ALTITUDE) {
         QRectF saBox(area.x(), area.y()-secondaryAltitudeBoxHeight, w, secondaryAltitudeBoxHeight);
         painter.resetTransform();
         painter.translate(saBox.center());
         QString s_salt;
-        s_salt.sprintf("%3.0f", secondaryAltitude);
+        s_salt.sprintf("%3.0f", altitudeAMSL);
         drawTextCenter(painter, s_salt, mediumTextSize, 0, 0);
     }
 
@@ -1114,9 +1091,10 @@ void PrimaryFlightDisplay::drawAltimeter(
 void PrimaryFlightDisplay::drawVelocityMeter(
         QPainter& painter,
         QRectF area,
-        float speed,
-        float secondarySpeed
-        ) {
+        float groundspeed,
+        float airspeed
+        )
+{
 
     painter.resetTransform();
     fillInstrumentBackground(painter, area);
@@ -1137,8 +1115,11 @@ void PrimaryFlightDisplay::drawVelocityMeter(
 
     // Select between air and ground speed:
 
-    float centerScaleSpeed =
-            speed == UNKNOWN_SPEED ? 0 : speed;
+    // Airspeed is always populated on APM
+    // if it Rover or Copter is always set to groundspeed
+    // if it is Plane it is either real airspeed or estimated airspeed.
+    float centerScaleSpeed = airspeed == UNKNOWN_SPEED ? groundspeed : airspeed;
+    QString speedType;// = airspeed == UNKNOWN_SPEED ? "GND" : "AIR"; // [TODO] Fix to show air or gnd based on vehicle type
 
     float start = centerScaleSpeed - AIRSPEED_LINEAR_SPAN/2;
     float end = centerScaleSpeed + AIRSPEED_LINEAR_SPAN/2;
@@ -1186,12 +1167,12 @@ void PrimaryFlightDisplay::drawVelocityMeter(
     pen.setColor(Qt::white);
     painter.setPen(pen);
     QString s_alt;
-    if (speed == UNKNOWN_SPEED)
+    if (groundspeed == UNKNOWN_SPEED)
         s_alt.sprintf("---");
     else
-        s_alt.sprintf("%3.1f", speed);
+        s_alt.sprintf("%3.1f", groundspeed);
     float xCenter = (markerTip+leftEdge)/2;
-    drawTextCenter(painter, s_alt, /* TAPES_TEXT_SIZE*width()*/ mediumTextSize, xCenter, 0);
+    drawTextCenter(painter, s_alt + speedType, /* TAPES_TEXT_SIZE*width()*/ mediumTextSize, xCenter, 0);
 }
 
 static const int TOP = (1<<0);
@@ -1525,9 +1506,9 @@ void PrimaryFlightDisplay::doPaint() {
 
     painter.setClipping(hadClip);
 
-    drawAltimeter(painter, altimeterArea, primaryAltitude, GPSAltitude, verticalVelocity);
+    drawAltimeter(painter, altimeterArea, m_altitudeRelative, m_altitudeAMSL, m_climbRate);
 
-    drawVelocityMeter(painter, velocityMeterArea, primarySpeed, groundspeed);
+    drawVelocityMeter(painter, velocityMeterArea, m_groundspeed, m_airspeed);
 
     /*
     drawSensorsStatsPanel(painter, sensorsStatsArea);
