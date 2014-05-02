@@ -62,7 +62,7 @@ inline bool isinf(T value)
 
 namespace QGC
 {
-const static int defaultSystemId = 255;
+const static int defaultSystemId = 253; // Using 253 to 'crudely' identify a log created by APM Planner 2
 const static int defaultComponentId = 0;
 
 const QColor colorCyan(55, 154, 195);
