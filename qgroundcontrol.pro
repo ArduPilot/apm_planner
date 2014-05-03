@@ -398,7 +398,8 @@ FORMS += \
     src/ui/AboutDialog.ui \
     src/ui/AP2DataPlotAxisDialog.ui \
     src/ui/AutoUpdateDialog.ui \
-    src/uas/LogDownloadDialog.ui
+    src/uas/LogDownloadDialog.ui \
+    src/ui/PrimaryFlightDisplayQML.ui
 
 HEADERS += \
     src/MG.h \
@@ -605,7 +606,8 @@ HEADERS += \
     src/ui/AutoUpdateCheck.h \
     src/ui/AutoUpdateDialog.h \
     src/uas/LogDownloadDialog.h \
-    src/comm/TLogReplayLink.h
+    src/comm/TLogReplayLink.h \
+    src/ui/PrimaryFlightDisplayQML.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -806,7 +808,8 @@ SOURCES += src/main.cc \
     src/ui/AutoUpdateCheck.cc \
     src/ui/AutoUpdateDialog.cc \
     src/uas/LogDownloadDialog.cc \
-    src/comm/TLogReplayLink.cc
+    src/comm/TLogReplayLink.cc \
+    src/ui/PrimaryFlightDisplayQML.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
@@ -814,7 +817,9 @@ OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
     qml/components/StatusDisplay.qml \
     qml/components/ModeDisplay.qml \
-    qml/components/HeartbeatDisplay.qml
+    qml/components/HeartbeatDisplay.qml \
+    qml/PrimaryFlightDisplayQML.qml \
+    qml/components/RollPitchIndicator.qml
 
 OTHER_FILES += \
     qml/ApmToolBar.qml \
