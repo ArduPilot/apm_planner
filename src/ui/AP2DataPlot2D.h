@@ -110,6 +110,7 @@ private:
         double axisIndex;
         QCPAxis *axis;
         QCPGraph *graph;
+        QList<QCPAbstractItem*> itemList;
     };
 
     QMap<QString,Graph> m_graphClassMap;

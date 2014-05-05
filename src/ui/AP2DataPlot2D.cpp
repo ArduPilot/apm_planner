@@ -151,7 +151,7 @@ void AP2DataPlot2D::showEvent(QShowEvent *evt)
         m_updateTimer = 0;
     }
     m_updateTimer = new QTimer(this);
-    connect(m_updateTimer,SIGNAL(timeout()),m_plot,SLOT(repaint()));
+    connect(m_updateTimer,SIGNAL(timeout()),m_plot,SLOT(replot()));
     m_updateTimer->start(500);
 }
 
@@ -799,14 +799,24 @@ void AP2DataPlot2D::itemEnabled(QString name)
         itemquery.exec();
         QVector<double> xlist;
         QVector<double> ylist;
+        QList<QPair<double,QString> > strlist;
+        bool isstr = false;
         while (itemquery.next())
         {
             QSqlRecord record = itemquery.record();
             int graphindex = record.value(0).toInt();
-            double graphvalue = record.value(index+1).toDouble();
+            if (record.value(index+1).type() == QVariant::String)
+            {
+                QString graphvaluestr = record.value(index+1).toString();
+                strlist.append(QPair<double,QString>(graphindex,graphvaluestr));
+                isstr = true;
+            }
+            else
+            {
+                double graphvalue = record.value(index+1).toDouble();
+                ylist.append(graphvalue);
+            }
             xlist.append(graphindex);
-            ylist.append(graphvalue);
-
         }
         QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
         axis->setLabel(name);
@@ -821,12 +831,9 @@ void AP2DataPlot2D::itemEnabled(QString name)
         axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
         m_graphNameList.append(name);
-        mainGraph1->setData(xlist, ylist);
-        mainGraph1->rescaleValueAxis();
-        if (m_graphCount == 1)
-        {
-            mainGraph1->rescaleKeyAxis();
-        }
+        QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+
+
         if (m_axisGroupingDialog)
         {
             m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
@@ -839,6 +846,40 @@ void AP2DataPlot2D::itemEnabled(QString name)
         graph.isInGroup = false;
         graph.isManualRange = false;
         m_graphClassMap[name] = graph;
+        if (isstr)
+        {
+            for (int i=0;i<strlist.size();i++)
+            {
+                QCPItemText *itemtext = new QCPItemText(m_plot);
+                itemtext->setText(strlist.at(i).second);
+                itemtext->position->setAxes(xAxis,axis);
+                itemtext->position->setCoords(strlist.at(i).first,2.0);
+                m_plot->addItem(itemtext);
+                graph.itemList.append(itemtext);
+
+                QCPItemLine *itemline = new QCPItemLine(m_plot);
+                graph.itemList.append(itemline);
+                itemline->start->setParentAnchor(itemtext->bottom);
+                itemline->start->setAxes(xAxis, axis);
+                itemline->start->setCoords(0.0, 0.0);
+                itemline->end->setAxes(xAxis, axis);
+                itemline->end->setCoords(strlist.at(i).first, 0.0);
+                itemline->setTail(QCPLineEnding::esDisc);
+                itemline->setHead(QCPLineEnding::esSpikeArrow);
+                m_plot->addItem(itemline);
+
+            }
+        }
+        else
+        {
+            mainGraph1->setData(xlist, ylist);
+        }
+        mainGraph1->rescaleValueAxis();
+        if (m_graphCount == 1)
+        {
+            mainGraph1->rescaleKeyAxis();
+        }
+
         /*    if (!m_sharedDb.isOpen())
     {
         if (!m_sharedDb.open())
@@ -1086,6 +1127,10 @@ void AP2DataPlot2D::itemDisabled(QString name)
     if (m_logLoaded)
     {
         name = name.mid(name.indexOf(":")+1);
+    }
+    for (int i=0;i<m_graphClassMap.value(name).itemList.size();i++)
+    {
+        m_plot->removeItem(m_graphClassMap.value(name).itemList.at(i));
     }
     m_wideAxisRect->removeAxis(m_graphClassMap.value(name).axis);
     m_plot->removeGraph(m_graphClassMap.value(name).graph);
