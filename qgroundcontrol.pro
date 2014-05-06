@@ -29,9 +29,23 @@ message(Qt version $$[QT_VERSION])
 # to allow us to easily modify suported build types in one place instead of duplicated throughout
 # the project file.
 
-linux-g++ | linux-g++-64 {
-    message(Linux build)
+linux-g++-64 {
+    message(Linux build x64_86)
     CONFIG += LinuxBuild
+    DEFINES += Q_LINUX_64
+    DISTRO = $$system(lsb_release -i)
+    contains( DISTRO, "Ubuntu" ) {
+         DEFINES += Q_UBUNTU
+    }
+} else: linux-g++ {
+    message(Linux build x86)
+    CONFIG += LinuxBuild
+    DEFINES += Q_LINUX_32
+    DISTRO = $$system(lsb_release -i)
+    contains( DISTRO, "Ubuntu" ) {
+         DEFINES += Q_UBUNTU
+    }
+
 } else : win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
     message(Windows build)
     CONFIG += WindowsBuild
