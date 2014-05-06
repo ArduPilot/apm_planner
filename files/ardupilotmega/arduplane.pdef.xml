@@ -240,8 +240,11 @@
 <value code="1">CIRCLE</value>
 <value code="2">STABILIZE</value>
 <value code="3">TRAINING</value>
+<value code="4">ACRO</value>
 <value code="5">FBWA</value>
 <value code="6">FBWB</value>
+<value code="7">CRUISE</value>
+<value code="8">AUTOTUNE</value>
 <value code="10">Auto</value>
 <value code="11">RTL</value>
 <value code="12">Loiter</value>
@@ -254,13 +257,17 @@
 <value code="1">CIRCLE</value>
 <value code="2">STABILIZE</value>
 <value code="3">TRAINING</value>
+<value code="4">ACRO</value>
 <value code="5">FBWA</value>
 <value code="6">FBWB</value>
+<value code="7">CRUISE</value>
+<value code="8">AUTOTUNE</value>
 <value code="10">Auto</value>
 <value code="11">RTL</value>
 <value code="12">Loiter</value>
 <value code="15">Guided</value>
 </values>
+
 </param>
 <param humanName="FlightMode3" name="ArduPlane:FLTMODE3" documentation="Flight mode for switch position 3 (1361 to 1490)" user="Standard">
 <values>
@@ -268,13 +275,17 @@
 <value code="1">CIRCLE</value>
 <value code="2">STABILIZE</value>
 <value code="3">TRAINING</value>
+<value code="4">ACRO</value>
 <value code="5">FBWA</value>
 <value code="6">FBWB</value>
+<value code="7">CRUISE</value>
+<value code="8">AUTOTUNE</value>
 <value code="10">Auto</value>
 <value code="11">RTL</value>
 <value code="12">Loiter</value>
 <value code="15">Guided</value>
 </values>
+
 </param>
 <param humanName="FlightMode4" name="ArduPlane:FLTMODE4" documentation="Flight mode for switch position 4 (1491 to 1620)" user="Standard">
 <values>
@@ -282,13 +293,17 @@
 <value code="1">CIRCLE</value>
 <value code="2">STABILIZE</value>
 <value code="3">TRAINING</value>
+<value code="4">ACRO</value>
 <value code="5">FBWA</value>
 <value code="6">FBWB</value>
+<value code="7">CRUISE</value>
+<value code="8">AUTOTUNE</value>
 <value code="10">Auto</value>
 <value code="11">RTL</value>
 <value code="12">Loiter</value>
 <value code="15">Guided</value>
 </values>
+
 </param>
 <param humanName="FlightMode5" name="ArduPlane:FLTMODE5" documentation="Flight mode for switch position 5 (1621 to 1749)" user="Standard">
 <values>
@@ -296,13 +311,17 @@
 <value code="1">CIRCLE</value>
 <value code="2">STABILIZE</value>
 <value code="3">TRAINING</value>
+<value code="4">ACRO</value>
 <value code="5">FBWA</value>
 <value code="6">FBWB</value>
+<value code="7">CRUISE</value>
+<value code="8">AUTOTUNE</value>
 <value code="10">Auto</value>
 <value code="11">RTL</value>
 <value code="12">Loiter</value>
 <value code="15">Guided</value>
 </values>
+
 </param>
 <param humanName="FlightMode6" name="ArduPlane:FLTMODE6" documentation="Flight mode for switch position 6 (1750 to 2049)" user="Standard">
 <values>
@@ -310,13 +329,17 @@
 <value code="1">CIRCLE</value>
 <value code="2">STABILIZE</value>
 <value code="3">TRAINING</value>
+<value code="4">ACRO</value>
 <value code="5">FBWA</value>
 <value code="6">FBWB</value>
+<value code="7">CRUISE</value>
+<value code="8">AUTOTUNE</value>
 <value code="10">Auto</value>
 <value code="11">RTL</value>
 <value code="12">Loiter</value>
 <value code="15">Guided</value>
 </values>
+
 </param>
 <param humanName="Maximum Bank Angle" name="ArduPlane:LIM_ROLL_CD" documentation="The maximum commanded bank angle in either direction" user="Standard">
 <field name="Range">0 9000</field>
@@ -685,11 +708,11 @@
 <value code="5">Loiter</value>
 <value code="6">RTL</value>
 <value code="7">Circle</value>
-<value code="8">Position</value>
 <value code="9">Land</value>
 <value code="10">OF_Loiter</value>
-<value code="11">ToyA</value>
-<value code="12">ToyM</value>
+<value code="11">Drift</value>
+<value code="13">Sport</value>
+<value code="16">Hybrid</value>
 </values>
 </param>
 <param humanName="Flight Mode 2" name="ArduCopter:FLTMODE2" documentation="Flight mode when Channel 5 pwm is &gt;1230, &lt;= 1360" user="Standard">
@@ -702,12 +725,13 @@
 <value code="5">Loiter</value>
 <value code="6">RTL</value>
 <value code="7">Circle</value>
-<value code="8">Position</value>
 <value code="9">Land</value>
 <value code="10">OF_Loiter</value>
-<value code="11">ToyA</value>
-<value code="12">ToyM</value>
+<value code="11">Drift</value>
+<value code="13">Sport</value>
+<value code="16">Hybrid</value>
 </values>
+
 </param>
 <param humanName="Flight Mode 3" name="ArduCopter:FLTMODE3" documentation="Flight mode when Channel 5 pwm is &gt;1360, &lt;= 1490" user="Standard">
 <values>
@@ -719,12 +743,13 @@
 <value code="5">Loiter</value>
 <value code="6">RTL</value>
 <value code="7">Circle</value>
-<value code="8">Position</value>
 <value code="9">Land</value>
 <value code="10">OF_Loiter</value>
-<value code="11">ToyA</value>
-<value code="12">ToyM</value>
+<value code="11">Drift</value>
+<value code="13">Sport</value>
+<value code="16">Hybrid</value>
 </values>
+
 </param>
 <param humanName="Flight Mode 4" name="ArduCopter:FLTMODE4" documentation="Flight mode when Channel 5 pwm is &gt;1490, &lt;= 1620" user="Standard">
 <values>
@@ -736,12 +761,13 @@
 <value code="5">Loiter</value>
 <value code="6">RTL</value>
 <value code="7">Circle</value>
-<value code="8">Position</value>
 <value code="9">Land</value>
 <value code="10">OF_Loiter</value>
-<value code="11">ToyA</value>
-<value code="12">ToyM</value>
+<value code="11">Drift</value>
+<value code="13">Sport</value>
+<value code="16">Hybrid</value>
 </values>
+
 </param>
 <param humanName="Flight Mode 5" name="ArduCopter:FLTMODE5" documentation="Flight mode when Channel 5 pwm is &gt;1620, &lt;= 1749" user="Standard">
 <values>
@@ -753,14 +779,16 @@
 <value code="5">Loiter</value>
 <value code="6">RTL</value>
 <value code="7">Circle</value>
-<value code="8">Position</value>
 <value code="9">Land</value>
 <value code="10">OF_Loiter</value>
-<value code="11">ToyA</value>
-<value code="12">ToyM</value>
+<value code="11">Drift</value>
+<value code="13">Sport</value>
+<value code="16">Hybrid</value>
 </values>
+
 </param>
 <param humanName="Flight Mode 6" name="ArduCopter:FLTMODE6" documentation="Flight mode when Channel 5 pwm is &gt;=1750" user="Standard">
+<values>
 <values>
 <value code="0">Stabilize</value>
 <value code="1">Acro</value>
@@ -770,12 +798,13 @@
 <value code="5">Loiter</value>
 <value code="6">RTL</value>
 <value code="7">Circle</value>
-<value code="8">Position</value>
 <value code="9">Land</value>
 <value code="10">OF_Loiter</value>
-<value code="11">ToyA</value>
-<value code="12">ToyM</value>
+<value code="11">Drift</value>
+<value code="13">Sport</value>
+<value code="16">Hybrid</value>
 </values>
+
 </param>
 <param humanName="Simple mode bitmask" name="ArduCopter:SIMPLE" documentation="Bitmask which holds which flight modes use simple heading mode (eg bit 0 = 1 means Flight Mode 0 uses simple mode)" user="Advanced">
 </param>
