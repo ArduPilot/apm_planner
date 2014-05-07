@@ -101,13 +101,19 @@ Item {
         z: 1
         source: "../resources/components/rollPitchIndicator/rollGraticule.svg"
         smooth: true
+        transform: Rotation {
+            origin.x: 157.5
+            origin.y: 200
+            //horizon angle
+            angle: -rollAngle
+        }
         Image {
             source: "../resources/components/rollPitchIndicator/rollPointer.svg"
             transform: Rotation {
                 origin.x: 157.5
                 origin.y: 200
                 //horizon angle
-                angle: -rollAngle
+                angle: rollAngle
             }
         }
     }
