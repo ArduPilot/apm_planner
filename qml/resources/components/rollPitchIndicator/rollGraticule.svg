@@ -41,7 +41,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3"
-     inkscape:cx="148.07496"
+     inkscape:cx="201.4083"
      inkscape:cy="49.166667"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
@@ -81,7 +81,8 @@
      id="layer3"
      inkscape:label="hiddenLayer"
      style="display:inline;opacity:0"
-     transform="translate(30.110626,77.89978)">
+     transform="translate(30.110626,77.89978)"
+     sodipodi:insensitive="true">
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:0.87401578000000002;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
@@ -109,7 +110,7 @@
        y="-0.25"
        transform="translate(-30.110626,-77.89978)" />
     <rect
-       style="opacity:1;fill:#ff0000;fill-opacity:0.87401578000000002;fill-rule:nonzero;stroke:none"
+       style="fill:#ff0000;fill-opacity:0.87401578000000002;fill-rule:nonzero;stroke:none"
        id="rect5769"
        width="9.5"
        height="9"
@@ -117,10 +118,18 @@
        y="112.76688" />
     <path
        transform="translate(0,-1002.3622)"
-       style="enable-background:new;display:inline;fill:none;stroke:#000000;stroke-width:1.45953523999999990px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:1.45953523999999990px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline;enable-background:new"
        d="m 129.36914,1124.2327 c 0,-148.54053 0.54047,-148.54053 0.54047,-148.54053"
        id="path6296"
        inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#999999;fill-opacity:0.87401578000000002;fill-rule:nonzero;stroke:#ffffff;stroke-width:0.80000000999999998;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect7376"
+       width="315.33334"
+       height="200"
+       x="-0.33333334"
+       y="5.6843419e-14"
+       transform="translate(-30.110626,-77.89978)" />
   </g>
   <g
      inkscape:label="Arc"
@@ -162,14 +171,14 @@
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#f2f2f2;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="-2.4361439"
-       y="118.33041"
+       x="-0.76947719"
+       y="116.99707"
        id="text5481"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan5483"
-         x="-2.4361439"
-         y="118.33041"
+         x="-0.76947719"
+         y="116.99707"
          style="fill:#f2f2f2">60</tspan></text>
     <text
        xml:space="preserve"

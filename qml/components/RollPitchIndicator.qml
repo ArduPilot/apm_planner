@@ -20,6 +20,8 @@ Item {
     id: root
     property real rollAngle : 0
     property real pitchAngle: 0
+    property bool enableBackgroundVideo: false
+
     width: parent.width * 1.4
     height: parent.width * 1.4
 
@@ -34,13 +36,14 @@ Item {
             anchors { fill: parent; centerIn: parent }
             source: "../resources/components/rollPitchIndicator/artGroundSky.svg"
             smooth: true
+            visible: !enableBackgroundVideo
         }
 
         Rectangle {
             id: videoImage // Just for testing
             anchors { fill: parent; centerIn: parent }
             color: "darkgrey"
-            visible: false
+            visible: enableBackgroundVideo
         }
 
         transform: [ Translate {
@@ -107,19 +110,10 @@ Item {
         }
     }
 
-    Item { // Cross Hairs
-        anchors { top: parent.top; left: parent.left
-                  bottom: parent.bottom; right: parent.right}
+    Image { // Cross Hairs
+        anchors.centerIn: parent
         z:3
-        Rectangle { id: crossHair; anchors.centerIn: parent; width: 8; height: width; radius: width*0.5; color: "red"
-                    opacity: 0.7}
-        Rectangle { anchors.centerIn: parent; width: 12; height: width; radius: width*0.5
-                    border.color: "red"; border.width: 2; opacity: 0.7}
-        Rectangle { anchors.horizontalCenter: parent.horizontalCenter
-                    x: crossHair.x +75; width: 60; height: 3; color: "red"; opacity: 0.7}
-        Rectangle { anchors.horizontalCenter: parent.horizontalCenter
-                    x: crossHair -75; width: 60; height: 3; color: "red"; opacity: 0.7}
+        source: "../resources/components/rollPitchIndicator/crossHair.svg"
+
     }
-
-
 }
