@@ -92,12 +92,19 @@ Item {
 
     Image { // Roll Graticule
         id: rollGraticule
+        anchors { bottom: parent.verticalCenter; horizontalCenter: parent.horizontalCenter}
         z: 1
-//        width: parent.width /3
-//        height: parent.width /6
-        anchors.centerIn: parent
         source: "../resources/components/rollPitchIndicator/rollGraticule.svg"
         smooth: true
+        Image {
+            source: "../resources/components/rollPitchIndicator/rollPointer.svg"
+            transform: Rotation {
+                origin.x: 157.5
+                origin.y: 200
+                //horizon angle
+                angle: -rollAngle
+            }
+        }
     }
 
     Item { // Cross Hairs
