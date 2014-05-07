@@ -5,7 +5,7 @@
 #include <QtScript/QScriptValueIterator>
 #include <QMessageBox>
 #include <QSettings>
-
+#include "QGC.h"
 AutoUpdateCheck::AutoUpdateCheck(QObject *parent) :
     QObject(parent),
     m_networkReply(NULL),
@@ -102,7 +102,7 @@ void AutoUpdateCheck::processDownloadedVersionObject(const QString &versionObjec
         QString name = entry.property("name").toString();
         QString locationUrl = entry.property("url").toString();
 
-        if ((platform == APP_PLATFORM) && (type == APP_TYPE)
+        if ((platform == define2string(APP_PLATFORM)) && (type == define2string(APP_TYPE))
             && (compareVersionStrings(version,QGC_APPLICATION_VERSION))){
             QLOG_DEBUG() << "Found New Version: " << platform << " "
                         << type << " " << version << " " << locationUrl;

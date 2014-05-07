@@ -30,6 +30,10 @@
 #include <QThread>
 
 
+
+#define define2string_p(x) #x
+#define define2string(x) define2string_p(x)
+
 /* Windows fixes */
 #ifdef _MSC_VER
 /* Needed define for Eigen */
