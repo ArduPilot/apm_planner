@@ -63,8 +63,8 @@ Item {
             anchors.horizontalCenter: artificialHorizon.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             height: parent.height/2
-            width: parent.width/2
-            z:2
+            width: parent.width
+            z:3
             clip: true
             smooth: true
             Column{
@@ -81,9 +81,11 @@ Item {
                         color: "white"
                         smooth: true
                         Text {
+                            anchors.verticalCenterOffset: -10
                             anchors.verticalCenter: parent.verticalCenter
                             smooth: true
                             text: modelData
+                            color: "white"
                         }
                     }
                 }
