@@ -819,7 +819,8 @@ OTHER_FILES += \
     qml/components/ModeDisplay.qml \
     qml/components/HeartbeatDisplay.qml \
     qml/PrimaryFlightDisplayQML.qml \
-    qml/components/RollPitchIndicator.qml
+    qml/components/RollPitchIndicator.qml \
+    qml/components/AltitudeIndicator.qml
 
 OTHER_FILES += \
     qml/ApmToolBar.qml \

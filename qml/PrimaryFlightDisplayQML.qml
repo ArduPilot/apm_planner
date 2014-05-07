@@ -23,6 +23,8 @@ Rectangle {
     property real pitch: 0
     property real yaw: 0
 
+    property real alt: 0
+
 //    width: parent.width; height: parent.height
 
     // Dial with a slider to adjust it
@@ -31,6 +33,12 @@ Rectangle {
         anchors.centerIn: parent
         rollAngle: parent.roll//(sliderRoll.x * 100 / (containerRoll.width - 34)) - 75
         pitchAngle: parent.pitch//(sliderPitch.y * 100 / (containerPitch.height - 34)) - 75
+    }
+
+    AltitudeIndicator {
+        id: altIndicator
+        anchors.right: parent.right
+        alt: parent.alt
     }
 
 //    Rectangle {

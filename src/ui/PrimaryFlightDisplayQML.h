@@ -43,6 +43,8 @@ private slots:
     void setActiveUAS(UASInterface *uas);
 
     void attitudeChanged(UASInterface*, double roll, double pitch, double yaw, quint64 usec);
+    void altitudeChanged(UASInterface*, double altitudeAMSL, double altitudeRelative,
+                         double climbRate, quint64 usec);
 
 private:
     Ui::PrimaryFlightDisplayQML *ui;

@@ -70,6 +70,8 @@ void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
     if (m_uasInterface) {
         connect(uas, SIGNAL(attitudeChanged(UASInterface*,double,double,double,quint64)),
                 this, SLOT(attitudeChanged(UASInterface*, double, double, double, quint64)));
+        connect(uas, SIGNAL(altitudeChanged(UASInterface*,double,double,double,quint64)),
+                this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
     }
 }
 
@@ -80,6 +82,14 @@ void PrimaryFlightDisplayQML::attitudeChanged(UASInterface *, double roll, doubl
     root->setProperty("roll", ToDeg(roll));
     root->setProperty("pitch", ToDeg(pitch));
     root->setProperty("yaw", ToDeg(yaw));
+}
+
+void PrimaryFlightDisplayQML::altitudeChanged(UASInterface *, double altitudeAMSL, double altitudeRelative,
+                                              double climbRate, quint64 usec)
+{
+    Q_UNUSED(usec);
+    QObject *root = m_declarativeView->rootObject();
+    root->setProperty("alt", altitudeRelative);
 }
 
 PrimaryFlightDisplayQML::~PrimaryFlightDisplayQML()
