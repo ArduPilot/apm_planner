@@ -16,7 +16,8 @@ QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(QWidget *parent):
     m_logLoaded(false),
     m_isPlaying(false),
     m_sliderDown(false),
-    m_mavlinkDecoder(NULL)
+    m_mavlinkDecoder(NULL),
+    m_mavlinkInspector(NULL)
 {
     ui->setupUi(this);
     ui->horizontalLayout->setAlignment(Qt::AlignTop);

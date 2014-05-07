@@ -432,6 +432,7 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
         disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+        disconnect(m_uas,SIGNAL(navModeChanged(int,int,QString)),this,SLOT(navModeChanged(int,int,QString)));
         disconnect(m_uas,SIGNAL(connected()),this,SLOT(connected()));
         disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(disconnected()));
     }
@@ -452,6 +453,7 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+    connect(m_uas,SIGNAL(navModeChanged(int,int,QString)),this,SLOT(navModeChanged(int,int,QString)));
 
     connect(m_uas,SIGNAL(connected()),this,SLOT(connected()));
     connect(m_uas,SIGNAL(disconnected()),this,SLOT(disconnected()));
@@ -481,6 +483,77 @@ void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
 }
+void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
+{
+    if (m_uas->getUASID() != uasid)
+    {
+        return;
+    }
+    if (m_logLoaded)
+    {
+        //If a log is currently loaded, we don't care about incoming data.
+        return;
+    }
+    qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
+    m_currentIndex = msec_current;
+    qint64 newmsec = (msec_current - m_startIndex) + m_timeDiff;
+    if (m_graphCount > 0 && ui.autoScrollCheckBox->isChecked())
+    {
+        double diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
+        m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower + diff);
+        m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper((newmsec / 1000.0));
+    }
+    if (!m_graphClassMap.contains("MODE"))
+    {
+        QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+        axis->setLabel("MODE");
+
+        if (m_graphCount > 0)
+        {
+            connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+        }
+        QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+        axis->setLabelColor(color);
+        axis->setTickLabelColor(color);
+        axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+        QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+        m_graphNameList.append("MODE");
+
+        mainGraph1->setPen(QPen(color, 2));
+        Graph graph;
+        graph.axis = axis;
+        graph.groupName = "";
+        graph.graph=  mainGraph1;
+        graph.isInGroup = false;
+        graph.isManualRange = false;
+        m_graphClassMap["MODE"] = graph;
+
+        mainGraph1->rescaleValueAxis();
+        if (m_graphCount == 1)
+        {
+            mainGraph1->rescaleKeyAxis();
+        }
+    }
+    QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+    QCPItemText *itemtext = new QCPItemText(m_plot);
+    itemtext->setText(text);
+    itemtext->position->setAxes(xAxis,m_graphClassMap["MODE"].axis);
+    itemtext->position->setCoords((newmsec / 1000.0),2.0);
+    m_plot->addItem(itemtext);
+    m_graphClassMap["MODE"].itemList.append(itemtext);
+
+    QCPItemLine *itemline = new QCPItemLine(m_plot);
+    m_graphClassMap["MODE"].itemList.append(itemline);
+    itemline->start->setParentAnchor(itemtext->bottom);
+    itemline->start->setAxes(xAxis, m_graphClassMap["MODE"].axis);
+    itemline->start->setCoords(0.0, 0.0);
+    itemline->end->setAxes(xAxis, m_graphClassMap["MODE"].axis);
+    itemline->end->setCoords((newmsec / 1000.0), 0.0);
+    itemline->setTail(QCPLineEnding::esDisc);
+    itemline->setHead(QCPLineEnding::esSpikeArrow);
+    m_plot->addItem(itemline);
+}
+
 void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer)
 {
     Q_UNUSED(msec)
@@ -689,20 +762,6 @@ void AP2DataPlot2D::loadButtonClicked()
 }
 void AP2DataPlot2D::logLine(QString line)
 {
-    /*QList<QStandardItem*> rowlist;
-    //for (int i=0;i<loglines.size();i++)
-    //{
-        QStringList linesplit = line.split(",");
-        for (int j=0;j<linesplit.size();j++)
-        {
-            QStandardItem *item = new QStandardItem(linesplit.at(j));
-            rowlist.append(item);
-        }
-        model->appendRow(rowlist);
-        //rowlist.clear();
-    //}
-    //loglines.append(line);*/
-    //loglines.append(line);
     if (ui.tableWidget->rowCount() <= currentIndex)
     {
         ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1000);
@@ -879,91 +938,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         {
             mainGraph1->rescaleKeyAxis();
         }
-
-        /*    if (!m_sharedDb.isOpen())
-    {
-        if (!m_sharedDb.open())
-        {
-            //emit error("Unable to open database: " + m_sharedDb.lastError().text());
-            QMessageBox::information(0,"Error","Error opening DB");
-            return;
-        }
-    }
-    //fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
-    QSqlQuery fmtquery(m_sharedDb);
-    fmtquery.prepare("SELECT * FROM 'FMT';");
-    if (!fmtquery.exec())
-    {
-        QMessageBox::information(0,"Error","Error selecting from table 'FMT' " + m_sharedDb.lastError().text());
         return;
-
-    }
-    while (fmtquery.next())
-    {
-        QSqlRecord record = fmtquery.record();*/
-        return;
-        name = name.mid(name.indexOf(":")+1);
-        for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
-        {
-            if (i.value().size() > 0)
-            {
-                if (i.value()[0].second.contains(name))
-                {
-                    //This is the one we want.
-                    QVector<double> xlist;
-                    QVector<double> ylist;
-                    float min = i.value()[0].second[name].toDouble();
-                    float max = i.value()[0].second[name].toDouble();
-                    for (int j=0;j<i.value().size();j++)
-                    {
-                        xlist.append(i.value()[j].first);
-                        double val = i.value()[j].second[name].toDouble();
-                        if (val > max)
-                        {
-                            max = val;
-                        }
-                        if (val < min)
-                        {
-                            min = val;
-                        }
-                        ylist.append(val);
-                    }
-                    QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-                    axis->setLabel(name);
-
-                    if (m_graphCount > 0)
-                    {
-                        connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
-                    }
-                    QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
-                    axis->setLabelColor(color);
-                    axis->setTickLabelColor(color);
-                    axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
-                    QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
-                    m_graphNameList.append(name);
-                    mainGraph1->setData(xlist, ylist);
-                    mainGraph1->rescaleValueAxis();
-                    if (m_graphCount == 1)
-                    {
-                        mainGraph1->rescaleKeyAxis();
-                    }
-                    if (m_axisGroupingDialog)
-                    {
-                        m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
-                    }
-                    mainGraph1->setPen(QPen(color, 2));
-                    Graph graph;
-                    graph.axis = axis;
-                    graph.groupName = "";
-                    graph.graph=  mainGraph1;
-                    graph.isInGroup = false;
-                    graph.isManualRange = false;
-                    m_graphClassMap[name] = graph;
-                    return;
-                }
-            }
-
-        }
     } //if (m_logLoaded)
     else
     {
@@ -1218,47 +1193,6 @@ void AP2DataPlot2D::threadDone(int errors)
     ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
     ui.tableWidget->setRowCount(currentIndex);
 
-
-
-
-    //QStandardItem *item = new QStandardItem();
-
-    //ui.tableWidget->setModel(model);
-
-    /*for (QMap<QString,QList<QPair<int,QVariantMap> > >::const_iterator i=m_dataList.constBegin();i!=m_dataList.constEnd();i++)
-    {
-        if (i.value().size() > 0)
-        {
-            for (QVariantMap::const_iterator j=i.value()[0].second.constBegin();j!=i.value()[0].second.constEnd();j++)
-            {
-                m_dataSelectionScreen->addItem(j.key());
-            }
-        }
-    }*/
-
-
-    /*ui.tableWidget->setRowCount(loglines.size());
-    for (int i=0;i<loglines.size();i++)
-    {
-        QStringList linesplit = loglines.at(i).split(",");
-        if (ui.tableWidget->columnCount() < linesplit.size())
-        {
-            ui.tableWidget->setColumnCount(linesplit.size());
-        }
-        //ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1);
-        for (int j=0;j<linesplit.size();j++)
-        {
-            ui.tableWidget->setItem(i,j,new QTableWidgetItem(linesplit[j].trimmed()));
-        }
-        if (loglines.at(i).startsWith("FMT"))
-        {
-            //Format line
-            QString linename = linesplit[3].trimmed();
-            QString lastformat = loglines.at(i).mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
-            m_tableHeaderNameMap[linename] = lastformat.trimmed();
-
-        }
-    }*/
     m_progressDialog->hide();
     delete m_progressDialog;
     m_progressDialog=0;

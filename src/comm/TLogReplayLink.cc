@@ -291,6 +291,7 @@ void TLogReplayLink::run()
     emit connected(false);
     UASManager::instance()->removeUAS(UASManager::instance()->getActiveUAS());
 }
+
 void TLogReplayLink::setLog(QString logfile)
 {
     m_logFile = logfile;

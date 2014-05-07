@@ -77,6 +77,8 @@ private slots:
     //Called by every valueChanged function to actually save the value/graph it.
     void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer = true);
 
+    void navModeChanged(int uasid, int mode, const QString& text);
+
     void autoScrollClicked(bool checked);
     void tableCellClicked(int row,int column);
     void logLine(QString line);
