@@ -27,7 +27,7 @@ Rectangle {
     property real airspeed: 0
     property real groundspeed: 0
 
-    property bool enableBackgroundVideo: true
+    property bool enableBackgroundVideo: false
 
     // Dial with a slider to adjust it
     RollPitchIndicator {
@@ -35,6 +35,7 @@ Rectangle {
         anchors.centerIn: parent
         rollAngle: parent.roll
         pitchAngle: parent.pitch
+        enableBackgroundVideo: parent.enableBackgroundVideo
     }
 
     AltitudeIndicator {
