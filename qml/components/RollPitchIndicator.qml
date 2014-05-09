@@ -81,7 +81,8 @@ Item {
                         color: "white"
                         smooth: true
                         Text {
-                            anchors.verticalCenterOffset: -10
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.horizontalCenterOffset: -40
                             anchors.verticalCenter: parent.verticalCenter
                             smooth: true
                             text: modelData

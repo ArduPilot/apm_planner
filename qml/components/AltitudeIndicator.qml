@@ -19,7 +19,7 @@ import QtQuick 1.1
 Rectangle {
     property real alt: 0
 
-    anchors.verticalCenter: parent.verticalCenter
+    anchors.top: parent.top
 
     width: 50
     height: parent.height*0.8
@@ -34,9 +34,10 @@ Rectangle {
         spacing: 45
 
         Repeater {
-            model: ["200", "190", "180", "170", "160", "150", "140","130","120",
+            model: [ "200", "190", "180", "170", "160", "150", "140","130","120",
                     "110", "100", "90", "80", "70", "60", "50", "40", "30", "20", "10", "0",
-                    "-10", "-20", "-30", "-40", "-50" , "-60", "-70", "-80", "-90" , "-100"]
+                    "-10", "-20", "-30", "-40", "-50" , "-60", "-70", "-80", "-90" , "-100",
+                    "-110", "-120", "-130", "-140", "-150" , "-160", "-170", "-180", "-190", "-200"]
             Rectangle { // Graticule Light
                 id:graticuleLight
                 width: 35
@@ -54,7 +55,7 @@ Rectangle {
             }
         }
         transform: Translate {
-            y: (alt*4.5) - 45
+            y: (alt*4.5) +22.5
         }
     }
 
@@ -65,10 +66,12 @@ Rectangle {
         height: 17
         color: "black"
         border.color: "white"
+        opacity: 0.75
         Text {
             anchors.centerIn: parent
             text: alt.toFixed(1)
             color: "white"
+            z: 2
         }
     }
 
@@ -79,5 +82,6 @@ Rectangle {
         height: 2
         color: "red"
         opacity: 0.4
+        z:1
     }
 }
