@@ -93,7 +93,10 @@ void PrimaryFlightDisplayQML::attitudeChanged(UASInterface *uas, double roll, do
     QObject *root = m_declarativeView->rootObject();
     root->setProperty("roll", ToDeg(roll));
     root->setProperty("pitch", ToDeg(pitch));
-    root->setProperty("yaw", ToDeg(yaw));
+    double heading = ToDeg(yaw);
+    if (heading<0)
+        heading+=360;
+    root->setProperty("heading", heading);
 }
 
 void PrimaryFlightDisplayQML::altitudeChanged(UASInterface *uas, double altitudeAMSL, double altitudeRelative,

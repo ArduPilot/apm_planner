@@ -21,13 +21,13 @@ Rectangle {
     // Property Defintions
     property real roll: 0
     property real pitch: 0
-    property real yaw: 0
+    property real heading: 0
 
     property real alt: 0
     property real airspeed: 0
     property real groundspeed: 0
 
-    property real bearing: 0
+    property bool enableBackgroundVideo: true
 
     // Dial with a slider to adjust it
     RollPitchIndicator {
@@ -48,6 +48,12 @@ Rectangle {
         anchors.left: parent.left
         airspeed: parent.airspeed
         groundspeed: parent.groundspeed
+    }
+
+    CompassIndicator {
+        id: compassIndicator
+        anchors.horizontalCenter: parent.horizontalCenter
+        heading: parent.heading
     }
 }
 
