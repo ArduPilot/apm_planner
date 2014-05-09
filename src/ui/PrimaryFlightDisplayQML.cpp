@@ -59,11 +59,20 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
 
 }
 
+PrimaryFlightDisplayQML::~PrimaryFlightDisplayQML()
+{
+//    delete ui;
+}
+
 void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
 {
     if (m_uasInterface) {
         disconnect(uas, SIGNAL(attitudeChanged(UASInterface*,double,double,double,quint64)),
                 this, SLOT(attitudeChanged(UASInterface*, double, double, double, quint64)));
+        disconnect(uas, SIGNAL(altitudeChanged(UASInterface*,double,double,double,quint64)),
+                this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
+        disconnect(uas, SIGNAL(speedChanged(UASInterface*,double,double,quint64)),
+                this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
     }
     m_uasInterface = uas;
 
@@ -72,11 +81,14 @@ void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
                 this, SLOT(attitudeChanged(UASInterface*, double, double, double, quint64)));
         connect(uas, SIGNAL(altitudeChanged(UASInterface*,double,double,double,quint64)),
                 this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
+        connect(uas, SIGNAL(speedChanged(UASInterface*,double,double,quint64)),
+                this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
     }
 }
 
-void PrimaryFlightDisplayQML::attitudeChanged(UASInterface *, double roll, double pitch, double yaw, quint64 usec)
+void PrimaryFlightDisplayQML::attitudeChanged(UASInterface *uas, double roll, double pitch, double yaw, quint64 usec)
 {
+    Q_UNUSED(uas);
     Q_UNUSED(usec);
     QObject *root = m_declarativeView->rootObject();
     root->setProperty("roll", ToDeg(roll));
@@ -84,15 +96,20 @@ void PrimaryFlightDisplayQML::attitudeChanged(UASInterface *, double roll, doubl
     root->setProperty("yaw", ToDeg(yaw));
 }
 
-void PrimaryFlightDisplayQML::altitudeChanged(UASInterface *, double altitudeAMSL, double altitudeRelative,
+void PrimaryFlightDisplayQML::altitudeChanged(UASInterface *uas, double altitudeAMSL, double altitudeRelative,
                                               double climbRate, quint64 usec)
 {
+    Q_UNUSED(uas);
     Q_UNUSED(usec);
     QObject *root = m_declarativeView->rootObject();
     root->setProperty("alt", altitudeRelative);
 }
 
-PrimaryFlightDisplayQML::~PrimaryFlightDisplayQML()
+void PrimaryFlightDisplayQML::speedChanged(UASInterface *uas, double groundSpeed, double airSpeed, quint64 usec)
 {
-//    delete ui;
+    Q_UNUSED(uas);
+    Q_UNUSED(usec);
+    QObject *root = m_declarativeView->rootObject();
+    root->setProperty("airspeed", airSpeed);
+    root->setProperty("groundspeed", airSpeed);
 }
