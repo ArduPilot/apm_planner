@@ -18,6 +18,9 @@ import QtQuick 1.1
 
 Rectangle {
     property real alt: 0
+    property real graticuleSpacing: 45
+    property real graticuleAlt: 10
+
 
     anchors.top: parent.top
 
@@ -29,9 +32,10 @@ Rectangle {
     border.color: "black"
     color: Qt.rgba(0,0,0,0.25)
     Column{
+        id: altColumn
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 45
+        spacing: graticuleSpacing
 
         Repeater {
             model: [ "200", "190", "180", "170", "160", "150", "140","130","120",
@@ -55,7 +59,7 @@ Rectangle {
             }
         }
         transform: Translate {
-            y: (alt*4.5) +22.5
+            y: alt*(altColumn.spacing/graticuleAlt)
         }
     }
 

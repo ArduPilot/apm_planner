@@ -25,10 +25,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="85.575784"
-     inkscape:cy="85.2741"
+     inkscape:cx="115.57578"
+     inkscape:cy="105.2741"
      inkscape:document-units="px"
-     inkscape:current-layer="layer7"
+     inkscape:current-layer="layer8"
      showgrid="true"
      inkscape:showpageshadow="false"
      inkscape:snap-global="false"
@@ -65,16 +65,17 @@
      inkscape:groupmode="layer"
      id="layer7"
      inkscape:label="Hidden"
-     transform="translate(1,1)">
+     transform="translate(1,1)"
+     sodipodi:insensitive="true">
     <path
        transform="matrix(1.01,0,0,1.01,-1,-1)"
-       d="M 200,100 C 200,155.22847 155.22847,200 100,200 44.771525,200 0,155.22847 0,100 0,44.771525 44.771525,0 100,0 155.22847,0 200,44.771525 200,100 z"
+       d="m 200,100 a 100,100 0 1 1 -200,0 100,100 0 1 1 200,0 z"
        sodipodi:ry="100"
        sodipodi:rx="100"
        sodipodi:cy="100"
        sodipodi:cx="100"
        id="path8747"
-       style="opacity:0.22413797;fill:#000000;fill-opacity:1;stroke:none"
+       style="opacity:0.22413797;fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-opacity:1"
        sodipodi:type="arc" />
   </g>
   <g
@@ -90,8 +91,8 @@
        sodipodi:cy="100"
        sodipodi:rx="100"
        sodipodi:ry="100"
-       d="M 200,100 C 200,155.22847 155.22847,200 100,200 44.771525,200 0,155.22847 0,100 0,44.771525 44.771525,0 100,0 155.22847,0 200,44.771525 200,100 z"
-       transform="matrix(0.98522168,0,0,0.98522167,1.4778325,853.84002)" />
+       d="m 200,100 a 100,100 0 1 1 -200,0 100,100 0 1 1 200,0 z"
+       transform="matrix(0.98522168,0,0,0.98522167,1.7278325,853.84002)" />
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
@@ -319,4 +320,8 @@
          y="-809.20996"
          style="stroke-width:0.5">SW</tspan></text>
   </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer8"
+     inkscape:label="graticule" />
 </svg>

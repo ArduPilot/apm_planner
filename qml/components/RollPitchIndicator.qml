@@ -58,42 +58,6 @@ Item {
             angle: -rollAngle
         }]
 
-        Item { // Pitch Indicator
-            id: pitchIndicator
-            anchors.horizontalCenter: artificialHorizon.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            height: parent.height/2
-            width: parent.width
-            z:3
-            clip: true
-            smooth: true
-            Column{
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 45
-
-                Repeater {
-                    model: ["60", "50", "40", "30", "20", "10", "0", "-10", "-20", "-30", "-40", "-50" , "-60"]
-                    Rectangle { // Graticule Light
-                        id:graticuleLight
-                        width: 50
-                        height: 2
-                        color: "white"
-                        smooth: true
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.horizontalCenterOffset: -40
-                            anchors.verticalCenter: parent.verticalCenter
-                            smooth: true
-                            text: modelData
-                            color: "white"
-                        }
-                    }
-                }
-            }
-
-        } // End Pitch Indicator
-
     } // End Artficial Horizon
 
     Image { // Roll Graticule

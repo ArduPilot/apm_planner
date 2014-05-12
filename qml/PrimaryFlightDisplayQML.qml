@@ -38,6 +38,15 @@ Rectangle {
         enableBackgroundVideo: parent.enableBackgroundVideo
     }
 
+    PitchIndicator {
+        id: pitchIndicator
+        anchors.top: rollPitchIndicator.verticalCenter
+//        anchors.verticalCenterOffset:
+        anchors.bottom: parent.bottom
+        pitchAngle: parent.pitch
+        rollAngle: parent.roll
+    }
+
     AltitudeIndicator {
         id: altIndicator
         anchors.right: parent.right
