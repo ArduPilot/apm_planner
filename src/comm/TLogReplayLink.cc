@@ -7,7 +7,7 @@
 #include "MainWindow.h"
 #include "QGCMAVLinkUASFactory.h"
 TLogReplayLink::TLogReplayLink(QObject *parent) :
-    LinkInterface(parent),
+    LinkInterface(),
     m_toBeDeleted(false),
     m_threadRun(false),
     m_speedVar(50),
