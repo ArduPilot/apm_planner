@@ -329,6 +329,8 @@ public slots:
      * Works only if already landed and will cleanly shut down all onboard computers.
      */
     virtual void shutdown() = 0;
+
+    virtual void reboot()=0;
     /** @brief Set the target position for the robot to navigate to.
      *  @param x x-coordinate of the target position
      *  @param y y-coordinate of the target position

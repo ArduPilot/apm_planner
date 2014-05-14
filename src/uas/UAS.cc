@@ -3301,6 +3301,12 @@ void UAS::stopHil()
     hilEnabled = false;
     sensorHil = false;
 }
+void UAS::reboot()
+{
+    mavlink_message_t msg;
+    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 1, 1, 0, 0, 0, 0, 0);
+    sendMessage(msg);
+}
 
 void UAS::shutdown()
 {
@@ -3320,7 +3326,7 @@ void UAS::shutdown()
     {
         // If the active UAS is set, execute command
         mavlink_message_t msg;
-        mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 0, 2, 0, 0, 0, 0, 0);
+        mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 2, 2, 0, 0, 0, 0, 0);
         sendMessage(msg);
     }
 }
