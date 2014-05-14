@@ -137,10 +137,20 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished()
     {
         return;
     }
+    if (reply->error() != 0 || reply->bytesAvailable() == 0)
+    {
+        //Error condition, don't attempt to rewrite the file
+        QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to retrieve pdef.xml file! Error num:" << reply->error() << ":" << reply->errorString();
+        return;
+    }
     QByteArray apmpdef = reply->readAll();
     m_apmPdefFilename = QDir(QGC::appDataDirectory()).filePath("apm.pdef.xml");
     QFile file(m_apmPdefFilename);
-    file.open(QIODevice::ReadWrite | QIODevice::Truncate);
+    if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
+    {
+        QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to open" << file.fileName() << "for writing";
+        return;
+    }
     file.write(apmpdef);
     file.flush();
     file.close();
