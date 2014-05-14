@@ -229,7 +229,7 @@ bool TCPLink::_hardwareConnect(void)
     QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
     QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
     
-    // Give the socket a second to connect to the other side otherwise error out
+    // Give the socket five seconds to connect to the other side otherwise error out
     if (!_socket->waitForConnected(5000))
     {
         // Whether a failed connection emits an error signal or not is platform specific.
