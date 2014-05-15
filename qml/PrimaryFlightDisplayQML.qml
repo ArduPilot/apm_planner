@@ -40,9 +40,10 @@ Rectangle {
 
     PitchIndicator {
         id: pitchIndicator
-        anchors.top: rollPitchIndicator.verticalCenter
-//        anchors.verticalCenterOffset:
+        anchors.top: parent.top
         anchors.bottom: parent.bottom
+        opacity: 0.6
+
         pitchAngle: parent.pitch
         rollAngle: parent.roll
     }
