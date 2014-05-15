@@ -24,11 +24,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4"
-     inkscape:cx="115.57578"
-     inkscape:cy="105.2741"
+     inkscape:zoom="1"
+     inkscape:cx="-70.229098"
+     inkscape:cy="23.77276"
      inkscape:document-units="px"
-     inkscape:current-layer="layer8"
+     inkscape:current-layer="layer7"
      showgrid="true"
      inkscape:showpageshadow="false"
      inkscape:snap-global="false"
@@ -57,7 +57,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -65,8 +65,7 @@
      inkscape:groupmode="layer"
      id="layer7"
      inkscape:label="Hidden"
-     transform="translate(1,1)"
-     sodipodi:insensitive="true">
+     transform="translate(1,1)">
     <path
        transform="matrix(1.01,0,0,1.01,-1,-1)"
        d="m 200,100 a 100,100 0 1 1 -200,0 100,100 0 1 1 200,0 z"
@@ -75,14 +74,15 @@
        sodipodi:cy="100"
        sodipodi:cx="100"
        id="path8747"
-       style="opacity:0.22413797;fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-opacity:1"
+       style="opacity:0.4;fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-opacity:1"
        sodipodi:type="arc" />
   </g>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(1,-851.36218)">
+     transform="translate(1,-851.36218)"
+     style="display:inline">
     <path
        sodipodi:type="arc"
        style="fill:none;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -323,5 +323,6 @@
   <g
      inkscape:groupmode="layer"
      id="layer8"
-     inkscape:label="graticule" />
+     inkscape:label="graticule"
+     style="display:inline" />
 </svg>
