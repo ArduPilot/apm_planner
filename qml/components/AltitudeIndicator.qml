@@ -18,11 +18,11 @@ import QtQuick 1.1
 
 Rectangle {
     property real alt: 0
-    property real graticuleSpacing: 45
-    property real graticuleAlt: 10
+    property real graticuleSpacing: 45-graticuleHeight
+    property real graticuleAlt: 10 //metres
+    property real graticuleHeight: 2
 
-
-    anchors.top: parent.top
+    anchors.verticalCenter: parent.verticalCenter
 
     width: 50
     height: parent.height*0.8
@@ -59,7 +59,7 @@ Rectangle {
             }
         }
         transform: Translate {
-            y: alt*(altColumn.spacing/graticuleAlt)
+            y: alt*(graticuleSpacing+graticuleHeight)/graticuleAlt
         }
     }
 

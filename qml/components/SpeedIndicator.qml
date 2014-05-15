@@ -20,9 +20,11 @@ Rectangle {
     property real airspeed: 0 // m/s
     property real groundspeed: 0 //m/s
 
-    property int spacing: 45
+    property int graticuleSpacing: 45 - graticuleHeight
+    property real graticuleSpeed: 10 // m/s
+    property real graticuleHeight: 2
 
-    anchors.top: parent.top
+    anchors.verticalCenter: parent.verticalCenter
 
     width: 50
     height: parent.height*0.8
@@ -34,7 +36,7 @@ Rectangle {
     Column{
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 45
+        spacing: graticuleSpacing
 
         Repeater {
             model: ["200", "190", "180", "170", "160", "150", "140","130","120",
@@ -58,7 +60,7 @@ Rectangle {
             }
         }
         transform: Translate {
-            y: (airspeed*4.5)
+            y: (airspeed*(graticuleSpacing+graticuleHeight)/graticuleSpeed)
         }
     }
 
