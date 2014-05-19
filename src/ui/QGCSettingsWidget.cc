@@ -8,6 +8,7 @@
 #include "MAVLinkProtocol.h"
 #include "MAVLinkSettingsWidget.h"
 #include "GAudioOutput.h"
+#include "ArduPilotMegaMAV.h"
 
 //, Qt::WindowFlags flags
 
@@ -32,6 +33,7 @@ QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
 
 
 }
+
 void QGCSettingsWidget::showEvent(QShowEvent *evt)
 {
     if (!m_init)
@@ -81,6 +83,19 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         connect(ui->nativeStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadNativeStyle()));
         connect(ui->indoorStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadIndoorStyle()));
         connect(ui->outdoorStyle, SIGNAL(clicked()), MainWindow::instance(), SLOT(loadOutdoorStyle()));
+
+        connect(ui->extra1LineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
+        connect(ui->extra2LineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
+        connect(ui->extra3LineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
+        connect(ui->positionLineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
+        connect(ui->extStatusLineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
+        connect(ui->rcChannelDataLineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
+        connect(ui->rawSensorLineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
+
+        connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+        setActiveUAS(UASManager::instance()->getActiveUAS());
+
+        setDataRateLineEdits();
     }
 }
 
@@ -142,5 +157,83 @@ void QGCSettingsWidget::setAppDataDir()
         QString name = dir.absolutePath();
         QGC::setAppDataDirectory(name);
         ui->appDataDirEdit->setText(name);
+    }
+}
+
+void QGCSettingsWidget::setActiveUAS(UASInterface *uas)
+{
+    if (m_uas){
+        m_uas = NULL;
+    }
+
+    if (uas != NULL){
+        m_uas = uas;
+    }
+}
+
+void QGCSettingsWidget::setDataRateLineEdits()
+{
+    QSettings settings;
+    settings.beginGroup("DATA_RATES");
+    ui->extStatusLineEdit->setText(settings.value("EXT_SYS_STATUS",2).toString());
+    ui->positionLineEdit->setText(settings.value("POSITION",3).toString());
+    ui->extra1LineEdit->setText(settings.value("EXTRA1",10).toString());
+    ui->extra2LineEdit->setText(settings.value("EXTRA2",10).toString());
+    ui->extra3LineEdit->setText(settings.value("EXTRA3",2).toString());
+
+    ui->rawSensorLineEdit->setText(settings.value("RAW_SENSOR_DATA",2).toString());
+    ui->rcChannelDataLineEdit->setText(settings.value("RC_CHANNEL_DATA",2).toString());
+    settings.endGroup();
+}
+
+void QGCSettingsWidget::ratesChanged()
+{
+    QSettings settings;
+    settings.beginGroup("DATA_RATES");
+    bool ok;
+    int conversion = ui->extStatusLineEdit->text().toInt(&ok);
+    if (ok){
+        settings.setValue("EXT_SYS_STATUS",conversion);
+    }
+
+    conversion = ui->positionLineEdit->text().toInt(&ok);
+    if (ok){
+        settings.setValue("POSITION",conversion);
+    }
+
+    conversion = ui->extra1LineEdit->text().toInt(&ok);
+    if (ok){
+        settings.setValue("EXTRA1", conversion);
+    }
+
+    conversion = ui->extra2LineEdit->text().toInt(&ok);
+    if (ok){
+        settings.setValue("EXTRA2", conversion);
+    }
+
+    conversion = ui->extra3LineEdit->text().toInt(&ok);
+    if (ok){
+        settings.setValue("EXTRA3", conversion);
+    }
+
+    conversion = ui->rawSensorLineEdit->text().toInt(&ok);
+    if (ok){
+        settings.setValue("RAW_SENSOR_DATA", conversion);
+    }
+
+    conversion = ui->rcChannelDataLineEdit->text().toInt(&ok);
+    if (ok){
+        settings.setValue("RC_CHANNEL_DATA", conversion);
+    }
+    settings.endGroup();
+    settings.sync();
+
+    setDataRateLineEdits();
+
+    if (m_uas) {
+        ArduPilotMegaMAV *mav = dynamic_cast<ArduPilotMegaMAV*>(m_uas);
+        if (mav != NULL){
+            mav->RequestAllDataStreams();
+        }
     }
 }

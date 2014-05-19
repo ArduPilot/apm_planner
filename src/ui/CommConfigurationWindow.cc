@@ -261,7 +261,7 @@ void CommConfigurationWindow::setLinkType(qgc_link_t linktype)
 				tmpLink = xbee;
 				MainWindow::instance()->addLink(tmpLink);
 				break;
-			}
+            }
 #endif // XBEELINK
         case QGC_LINK_UDP:
 			{

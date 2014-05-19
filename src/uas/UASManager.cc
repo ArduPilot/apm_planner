@@ -303,6 +303,12 @@ void UASManager::addUAS(UASInterface* uas)
 void UASManager::removeUAS(QObject* uas)
 {
     UASInterface* mav = qobject_cast<UASInterface*>(uas);
+    removeUAS(mav);
+}
+
+void UASManager::removeUAS(UASInterface* uas)
+{
+    UASInterface* mav = uas;
 
     if (mav) {
         int listindex = systems.indexOf(mav);

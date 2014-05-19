@@ -29,9 +29,23 @@ message(Qt version $$[QT_VERSION])
 # to allow us to easily modify suported build types in one place instead of duplicated throughout
 # the project file.
 
-linux-g++ | linux-g++-64 {
-    message(Linux build)
+linux-g++-64 {
+    message(Linux build x64_86)
     CONFIG += LinuxBuild
+    DEFINES += Q_LINUX_64
+    DISTRO = $$system(lsb_release -i)
+    contains( DISTRO, "Ubuntu" ) {
+         DEFINES += Q_UBUNTU
+    }
+} else: linux-g++ {
+    message(Linux build x86)
+    CONFIG += LinuxBuild
+    DEFINES += Q_LINUX_32
+    DISTRO = $$system(lsb_release -i)
+    contains( DISTRO, "Ubuntu" ) {
+         DEFINES += Q_UBUNTU
+    }
+
 } else : win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
     message(Windows build)
     CONFIG += WindowsBuild
@@ -93,7 +107,7 @@ QT += network \
     declarative
 
 ##  testlib is needed even in release flavor for QSignalSpy support
-#QT += testlib
+QT += testlib
 
 gittouch.commands = touch qgroundcontrol.pro
 QMAKE_EXTRA_TARGETS += gittouch
@@ -384,7 +398,8 @@ FORMS += \
     src/ui/AboutDialog.ui \
     src/ui/AP2DataPlotAxisDialog.ui \
     src/ui/AutoUpdateDialog.ui \
-    src/uas/LogDownloadDialog.ui
+    src/uas/LogDownloadDialog.ui \
+    src/ui/PrimaryFlightDisplayQML.ui
 
 HEADERS += \
     src/MG.h \
@@ -590,7 +605,9 @@ HEADERS += \
     src/audio/AlsaAudio.h \
     src/ui/AutoUpdateCheck.h \
     src/ui/AutoUpdateDialog.h \
-    src/uas/LogDownloadDialog.h
+    src/uas/LogDownloadDialog.h \
+    src/comm/TLogReplayLink.h \
+    src/ui/PrimaryFlightDisplayQML.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -790,7 +807,9 @@ SOURCES += src/main.cc \
     src/audio/AlsaAudio.cc \
     src/ui/AutoUpdateCheck.cc \
     src/ui/AutoUpdateDialog.cc \
-    src/uas/LogDownloadDialog.cc
+    src/uas/LogDownloadDialog.cc \
+    src/comm/TLogReplayLink.cc \
+    src/ui/PrimaryFlightDisplayQML.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
@@ -798,7 +817,13 @@ OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
     qml/components/StatusDisplay.qml \
     qml/components/ModeDisplay.qml \
-    qml/components/HeartbeatDisplay.qml
+    qml/components/HeartbeatDisplay.qml \
+    qml/PrimaryFlightDisplayQML.qml \
+    qml/components/RollPitchIndicator.qml \
+    qml/components/AltitudeIndicator.qml \
+    qml/components/SpeedIndicator.qml \
+    qml/components/CompassIndicator.qml \
+    qml/components/PitchIndicator.qml
 
 OTHER_FILES += \
     qml/ApmToolBar.qml \

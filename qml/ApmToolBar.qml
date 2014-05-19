@@ -62,6 +62,10 @@ Rectangle {
         modeTextId.modeText = "mode"
     }
 
+    function setAdvancedMode(state){
+        terminalView.visible = state
+    }
+
     width: toolbar.width
     height: 72
     color: "black"
@@ -174,6 +178,7 @@ Rectangle {
             label: "TERMINAL"
             image: "./resources/apmplanner/toolbar/terminal.png"
             onClicked: globalObj.triggerTerminalView()
+            visible: false
         }
 
         Rectangle { // Spacer

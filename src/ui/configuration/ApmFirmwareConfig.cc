@@ -61,10 +61,12 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     loadSettings();
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
     QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
     if (settings.contains("ADVANCED_MODE"))
     {
         m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
     }
+    settings.endGroup();
 
     m_networkManager = new QNetworkAccessManager(this);
 
@@ -215,7 +217,9 @@ void ApmFirmwareConfig::showEvent(QShowEvent *)
     // Start Port scanning
     m_timer->start(2000);
     if(ui.stackedWidget->currentIndex() == 0)
+    {
         MainWindow::instance()->toolBar().disableConnectWidget(true);
+    }
     QSettings settings;
     if (settings.contains("ADVANCED_MODE"))
     {
@@ -228,12 +232,16 @@ void ApmFirmwareConfig::hideEvent(QHideEvent *)
 {
     // Stop Port scanning
     m_timer->stop();
-    MainWindow::instance()->toolBar().disableConnectWidget(false);
+    if(ui.stackedWidget->currentIndex() == 0)
+    {
+        MainWindow::instance()->toolBar().disableConnectWidget(false);
+    }
+    //MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
 
 void ApmFirmwareConfig::uasConnected()
 {
-    MainWindow::instance()->toolBar().disableConnectWidget(false);
+   // MainWindow::instance()->toolBar().disableConnectWidget(false);
     ui.stackedWidget->setCurrentIndex(1);
 }
 void ApmFirmwareConfig::cancelButtonClicked()
@@ -694,7 +702,17 @@ void ApmFirmwareConfig::flashButtonClicked()
                 }
             }
         }
-        if (QMessageBox::question(0,"Confirm","You are about to install " + m_buttonToUrlMap[senderbtn].mid(m_buttonToUrlMap[senderbtn].lastIndexOf("/")+1),QMessageBox::Ok,QMessageBox::Abort) == QMessageBox::Abort)
+        QStringList pathsplit = m_buttonToUrlMap[senderbtn].split("/");
+        QString confirmmsg = "";
+        if (pathsplit.size() > 2)
+        {
+            confirmmsg = "You are about to install " + pathsplit[pathsplit.size()-1] + " for " + pathsplit[pathsplit.size()-2];
+        }
+        else
+        {
+            confirmmsg = "You are about to install " + m_buttonToUrlMap[senderbtn].mid(m_buttonToUrlMap[senderbtn].lastIndexOf("/")+1);
+        }
+        if (QMessageBox::question(0,"Confirm",confirmmsg,QMessageBox::Ok,QMessageBox::Abort) == QMessageBox::Abort)
         {
             //aborted.
             return;

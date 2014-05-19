@@ -3,11 +3,10 @@
 
 #include <QWidget>
 #include <QFile>
-
 #include "MAVLinkProtocol.h"
-#include "LinkInterface.h"
-#include "MAVLinkSimulationLink.h"
-
+#include "TLogReplayLink.h"
+#include "MAVLinkDecoder.h"
+#include "QGCMAVLinkInspector.h"
 namespace Ui
 {
 class QGCMAVLinkLogPlayer;
@@ -25,79 +24,53 @@ class QGCMAVLinkLogPlayer : public QWidget
     Q_OBJECT
 
 public:
-    explicit QGCMAVLinkLogPlayer(MAVLinkProtocol* mavlink, QWidget *parent = 0);
+    explicit QGCMAVLinkLogPlayer(QWidget *parent = 0);
+    void setMavlinkDecoder(MAVLinkDecoder *decoder);
+    void setMavlinkInspector(QGCMAVLinkInspector *inspector);
     ~QGCMAVLinkLogPlayer();
     bool isPlayingLogFile()
     {
-        return isPlaying;
-    }
-
-    bool isLogFileSelected()
-    {
-        return logFile.isOpen();
+        return m_isPlaying;
     }
 
     /**
      * @brief Set the last log file name
      * @param filename
      */
-    void setLastLogFile(const QString& filename) {
+/*    void setLastLogFile(const QString& filename) {
         lastLogDirectory = filename;
-    }
+    }*/
 
 public slots:
-    /** @brief Toggle between play and pause */
-    void playPauseToggle();
-    /** @brief Play / pause the log */
-    void playPause(bool play);
-    /** @brief Replay the logfile */
-    void play();
-    /** @brief Pause the logfile */
-    void pause();
-    /** @brief Reset the logfile */
-    bool reset(int packetIndex=0);
-    /** @brief Select logfile */
-    bool selectLogFile(const QString startDirectory);
-    /** @brief Select logfile */
-    bool selectLogFile();
-    /** @brief Load log file */
-    bool loadLogFile(const QString& file);
-    /** @brief Jump to a position in the logfile */
-    void jumpToSliderVal(int slidervalue);
-    /** @brief The logging mainloop */
-    void logLoop();
-    /** @brief Set acceleration factor in percent */
-    void setAccelerationFactorInt(int factor);
-
-signals:
-    /** @brief Send ready bytes */
-    void bytesReady(LinkInterface* link, const QByteArray& bytes);
-
+    void loadLogButtonClicked();
+    void playButtonClicked();
+    void logLinkTerminated();
+    void speedSliderValueChanged(int value);
+    void speed75Clicked();
+    void speed100Clicked();
+    void speed150Clicked();
+    void speed200Clicked();
+    void speed500Clicked();
+    void speed1000Clicked();
+private slots:
+    void logProgress(qint64 pos,qint64 total);
+    void positionSliderReleased();
+    void positionSliderPressed();
 protected:
-    int lineCounter;
-    int totalLines;
-    quint64 startTime;
-    quint64 endTime;
-    quint64 currentStartTime;
-    float accelerationFactor;
-    MAVLinkProtocol* mavlink;
-    MAVLinkSimulationLink* logLink;
-    QFile logFile;
-    QTimer loopTimer;
-    int loopCounter;
-    bool mavlinkLogFormat;
-    int binaryBaudRate;
-    bool isPlaying;
-    unsigned int currPacketCount;
-    static const int packetLen = MAVLINK_MAX_PACKET_LEN;
-    static const int timeLen = sizeof(quint64);
-    QString lastLogDirectory;
+    bool m_sliderDown;
+    bool m_isPlaying;
     void changeEvent(QEvent *e);
 
     void storeSettings();
 
 private:
     Ui::QGCMAVLinkLogPlayer *ui;
+    TLogReplayLink *m_logLink;
+    bool m_logLoaded;
+    MAVLinkDecoder *m_mavlinkDecoder;
+    QGCMAVLinkInspector *m_mavlinkInspector;
+signals:
+    void logFinished();
 };
 
 #endif // QGCMAVLINKLOGPLAYER_H

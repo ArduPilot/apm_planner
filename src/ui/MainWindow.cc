@@ -52,10 +52,12 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCTabbedInfoView.h"
 #include "UASRawStatusView.h"
 #include "PrimaryFlightDisplay.h"
+#include "PrimaryFlightDisplayQML.h"
 #include "ApmToolBar.h"
 #include "SerialSettingsDialog.h"
 #include "TerminalConsole.h"
 #include "AP2DataPlot2D.h"
+
 
 #ifdef QGC_OSG_ENABLED
 #include "Q3DWidgetFactory.h"
@@ -127,50 +129,20 @@ bool MainWindow::lowPowerModeEnabled()
 **/
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
-    currentView(VIEW_FLIGHT),
-    currentStyle(QGC_MAINWINDOW_STYLE_OUTDOOR),
     aboutToCloseFlag(false),
     changingViewsFlag(false),
     centerStackActionGroup(new QActionGroup(this)),
-    styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
-    autoReconnect(false),
-    lowPowerMode(false)
+    styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css")
 {
     QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
     hide();
-    dockWidgetTitleBarEnabled = true;
-    isAdvancedMode = false;
     emit initStatusChanged("Loading UI Settings..");
     loadSettings();
+    enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 
     emit initStatusChanged("Loading Style.");
     loadStyle(currentStyle);
-
-    if (settings.contains("ADVANCED_MODE"))
-    {
-        isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
-    }
-
-    if (!settings.contains("CURRENT_VIEW"))
-    {
-        // Set this view as default view
-        settings.setValue("CURRENT_VIEW", currentView);
-    }
-    else
-    {
-        // LOAD THE LAST VIEW
-        VIEW_SECTIONS currentViewCandidate = (VIEW_SECTIONS) settings.value("CURRENT_VIEW", currentView).toInt();
-        if (currentViewCandidate != VIEW_ENGINEER &&
-                currentViewCandidate != VIEW_MISSION &&
-                currentViewCandidate != VIEW_FLIGHT &&
-                currentViewCandidate != VIEW_FULL)
-        {
-            currentView = currentViewCandidate;
-        }
-    }
-
-    settings.sync();
 
     emit initStatusChanged("Setting up user interface.");
 
@@ -178,6 +150,7 @@ MainWindow::MainWindow(QWidget *parent):
     ui.setupUi(this);
     hide();
 
+    ui.actionAdvanced_Mode->setChecked(isAdvancedMode);
     ui.actionSimulate->setVisible(false);
 
     // We only need this menu if we have more than one system
@@ -245,6 +218,8 @@ MainWindow::MainWindow(QWidget *parent):
 
     connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addLink(LinkInterface*)), Qt::QueuedConnection);
 
+
+
 #ifndef QGC_TOOLBAR_ENABLED
     // Add the APM 'toolbar'
 
@@ -256,6 +231,8 @@ MainWindow::MainWindow(QWidget *parent):
     m_apmToolBar->setPlotViewAction(ui.actionEngineersView);
     m_apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
     m_apmToolBar->setTerminalViewAction(ui.actionTerminalView);
+
+    connect(ui.actionAdvanced_Mode, SIGNAL(triggered(bool)), m_apmToolBar, SLOT(checkAdvancedMode(bool)));
 
     QDockWidget *widget = new QDockWidget(tr("APM Tool Bar"),this);
     widget->setWidget(m_apmToolBar);
@@ -446,6 +423,27 @@ MainWindow::~MainWindow()
     }
 
 }
+void MainWindow::disableTLogReplayBar()
+{
+    statusBar()->hide();
+}
+
+void MainWindow::enableTLogReplayBar()
+{
+    statusBar()->show();
+}
+
+void MainWindow::loadTlogMenuClicked()
+{
+    //QString fileName = QFileDialog::getOpenFileName(this, tr("Specify MAVLink log file name to replay"), QGC::MAVLinkLogDirectory(), tr("MAVLink Telemetry log (*.tlog)"));
+    //if (fileName == "")
+    //{
+        //No file selected/cancel clicked
+        return;
+    //}
+    //statusBar()->show();
+    //customStatusBar->logPlayer()->loadLog(fileName);
+}
 
 void MainWindow::resizeEvent(QResizeEvent * event)
 {
@@ -556,7 +554,9 @@ void MainWindow::buildCommonWidgets()
     mavlinkDecoder = new MAVLinkDecoder(mavlink, this);
 
     // Log player
-    logPlayer = new QGCMAVLinkLogPlayer(mavlink, customStatusBar);
+    logPlayer = new QGCMAVLinkLogPlayer(customStatusBar);
+    logPlayer->setMavlinkDecoder(mavlinkDecoder);
+    connect(logPlayer,SIGNAL(logFinished()),statusBar(),SLOT(hide()));
     customStatusBar->setLogPlayer(logPlayer);
 
     // Center widgets
@@ -689,6 +689,9 @@ void MainWindow::buildCommonWidgets()
         tempAction->setCheckable(true);
         connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
         menuToDockNameMap[tempAction] = "MAVLINK_INSPECTOR_DOCKWIDGET";
+        /*QGCMAVLinkInspector *widget = new QGCMAVLinkInspector(mavlink,this);
+        logPlayer->setMavlinkInspector(widget);
+        createDockWidget(simView,widget,tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);*/
     }
 
     /*{ //Actuator status disabled until such a point that we can ensure it's completly operational
@@ -712,9 +715,16 @@ void MainWindow::buildCommonWidgets()
     createDockWidget(pilotView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
 
+    createDockWidget(simView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display QML"),
+                     "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
+    createDockWidget(pilotView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display QML"),
+                     "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
+
     QGCTabbedInfoView *infoview = new QGCTabbedInfoView(this);
     infoview->addSource(mavlinkDecoder);
     createDockWidget(pilotView,infoview,tr("Info View"),"UAS_INFO_INFOVIEW_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
+
+    //connect(ui.actionLoad_tlog,SIGNAL(triggered()),this,SLOT(loadTlogMenuClicked()));
 
 
     // Custom widgets, added last to all menus and layouts
@@ -852,7 +862,10 @@ void MainWindow::loadDockWidget(QString name)
     }
     else if (name == "MAVLINK_INSPECTOR_DOCKWIDGET")
     {
-        createDockWidget(centerStack->currentWidget(),new QGCMAVLinkInspector(mavlink,this),tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+        QGCMAVLinkInspector *widget = new QGCMAVLinkInspector(mavlink,this);
+        logPlayer->setMavlinkInspector(widget);
+        createDockWidget(centerStack->currentWidget(),widget,tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+        //logPlayer
     }
     else if (name == "PARAMETER_INTERFACE_DOCKWIDGET")
     {
@@ -901,6 +914,10 @@ void MainWindow::loadDockWidget(QString name)
     {
         // createDockWidget(centerStack->currentWidget(),new HUD(320,240,this),tr("Head Up Display"),"PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
         createDockWidget(centerStack->currentWidget(),new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),"HEAD_UP_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+    }
+    else if (name == "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET")
+    {
+        createDockWidget(centerStack->currentWidget(),new PrimaryFlightDisplayQML(this),tr("Primary Flight Display QML"),"HEAD_UP_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
     else if (name == "UAS_INFO_QUICKVIEW_DOCKWIDGET")
     {
@@ -1024,6 +1041,8 @@ void MainWindow::connectCommonWidgets()
         connect(mavlink, SIGNAL(receiveLossChanged(int, float)),
                 infoDockWidget->widget(), SLOT(updateSendLoss(int, float)));
     }
+
+
 }
 
 void MainWindow::createCustomWidget()
@@ -1202,23 +1221,26 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 
 void MainWindow::loadSettings()
 {
-    QSettings settings;
+    settings.sync();
     settings.beginGroup("QGC_MAINWINDOW");
-    autoReconnect = settings.value("AUTO_RECONNECT", autoReconnect).toBool();
-    currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", currentStyle).toInt();
-    lowPowerMode = settings.value("LOW_POWER_MODE", lowPowerMode).toBool();
-    dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS",dockWidgetTitleBarEnabled).toBool();
+    autoReconnect = settings.value("AUTO_RECONNECT",false).toBool();
+    currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", QGC_MAINWINDOW_STYLE_OUTDOOR).toInt();
+    currentView= static_cast<VIEW_SECTIONS>(settings.value("CURRENT_VIEW", VIEW_FLIGHT).toInt());
+    lowPowerMode = settings.value("LOW_POWER_MODE", false).toBool();
+    dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS", true).toBool();
+    isAdvancedMode = settings.value("ADVANCED_MODE", false).toBool();
     settings.endGroup();
-    enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 }
 
 void MainWindow::storeSettings()
 {
-    QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
+    settings.setValue("LOW_POWER_MODE", lowPowerMode);
+    settings.setValue("ADVANCED_MODE", isAdvancedMode);
     settings.endGroup();
+
     if (!aboutToCloseFlag && isVisible())
     {
         settings.setValue(getWindowGeometryKey(), saveGeometry());
@@ -1230,7 +1252,6 @@ void MainWindow::storeSettings()
         if (UASManager::instance()->getUASList().length() > 0) settings.setValue("CURRENT_VIEW_WITH_UAS_CONNECTED", currentView);
         // Save the current power mode
     }
-    settings.setValue("LOW_POWER_MODE", lowPowerMode);
     settings.sync();
 }
 
@@ -1449,7 +1470,8 @@ void MainWindow::showStatusMessage(const QString& status)
 void MainWindow::showCriticalMessage(const QString& title, const QString& message)
 {
 //    QMessageBox msgBox(this);
-    QMessageBox::information(this,title,message);
+    //QMessageBox::information(this,title,message);
+    qDebug() << "Critical message:" << title << message;
 //    msgBox.setIcon(QMessageBox::Critical);
 //    msgBox.setText(title);
 //    msgBox.setInformativeText(message);
@@ -1557,7 +1579,7 @@ void MainWindow::connectCommonActions()
 
     // Connect actions from ui
     connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
-    connect(ui.actionAdvanced_Mode,SIGNAL(triggered()),this,SLOT(setAdvancedMode()));
+    connect(ui.actionAdvanced_Mode,SIGNAL(triggered(bool)),this,SLOT(setAdvancedMode(bool)));
 
     // Connect internal actions
     connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(UASCreated(UASInterface*)));
@@ -2163,41 +2185,20 @@ void MainWindow::loadViewState()
         win->restoreState(settings.value(getWindowStateKey()).toByteArray(), QGC::applicationVersion());
     }
 }
-void MainWindow::setAdvancedMode()
+void MainWindow::setAdvancedMode(bool mode)
 {
-    if (!isAdvancedMode)
-    {
-        ui.actionAdvanced_Mode->setChecked(true);
-        isAdvancedMode = true;
-        settings.setValue("ADVANCED_MODE",true);
-        for (QMap<QDockWidget*,QWidget*>::const_iterator i=dockToTitleBarMap.constBegin();i!=dockToTitleBarMap.constEnd();i++)
-        {
-            //QWidget *widget = i.value();
-            QWidget *widget = i.key()->titleBarWidget();
-            i.key()->setTitleBarWidget(i.value());
-            dockToTitleBarMap[i.key()] = widget;
+    isAdvancedMode = mode;
+    ui.actionAdvanced_Mode->setChecked(mode);
+    ui.menuPerspectives->menuAction()->setVisible(mode);
+    ui.menuTools->menuAction()->setVisible(mode);
+    ui.menuNetwork->menuAction()->setVisible(mode);
 
-        }
-        ui.menuPerspectives->menuAction()->setVisible(true);
-        ui.menuTools->menuAction()->setVisible(true);
-        ui.menuNetwork->menuAction()->setVisible(true);
-    }
-    else
+    for (QMap<QDockWidget*,QWidget*>::const_iterator i=dockToTitleBarMap.constBegin();
+         i!=dockToTitleBarMap.constEnd();i++)
     {
-        ui.actionAdvanced_Mode->setChecked(false);
-        isAdvancedMode = false;
-        settings.setValue("ADVANCED_MODE",false);
-        for (QMap<QDockWidget*,QWidget*>::const_iterator i=dockToTitleBarMap.constBegin();i!=dockToTitleBarMap.constEnd();i++)
-        {
-            //QWidget *widget = i.value();
-            QWidget *widget = i.key()->titleBarWidget();
-            i.key()->setTitleBarWidget(i.value());
-            dockToTitleBarMap[i.key()] = widget;
-        }
-        ui.menuPerspectives->menuAction()->setVisible(false);
-        ui.menuNetwork->menuAction()->setVisible(false);
-        ui.menuTools->menuAction()->setVisible(false);
-
+        QWidget *widget = i.key()->titleBarWidget();
+        i.key()->setTitleBarWidget(i.value());
+        dockToTitleBarMap[i.key()] = widget;
     }
 }
 

@@ -127,6 +127,12 @@ bool AlsaAudio::alsa_play( QString filename )
 
     alsa_dev = alsa_open (sfinfo.channels, sfinfo.samplerate);
 
+    if (!alsa_dev)
+    {
+        QLOG_ERROR() << "Failure playing audio file" << filename;
+        return false;
+    }
+
     subformat = sfinfo.format & SF_FORMAT_SUBMASK;
 
     if (subformat == SF_FORMAT_FLOAT || subformat == SF_FORMAT_DOUBLE)

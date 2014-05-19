@@ -24,6 +24,13 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
+      <widget class="QPushButton" name="copyPushButton">
+       <property name="text">
+        <string>Copy to Clipboard</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="autoScrollCheckBox">
        <property name="text">
         <string>Auto Scroll</string>

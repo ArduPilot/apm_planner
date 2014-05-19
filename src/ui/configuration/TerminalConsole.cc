@@ -56,7 +56,8 @@ This file is part of the APM_PLANNER project
 
 TerminalConsole::TerminalConsole(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::TerminalConsole)
+    ui(new Ui::TerminalConsole),
+    m_windowVisible(false)
 {
     ui->setupUi(this);
 
@@ -83,16 +84,50 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
     ui->settingsButton->setEnabled(true);
     ui->logsButton->setEnabled(false);
 
+    loadSettings();
     addBaudComboBoxConfig();
     fillPortsInfo(*ui->linkComboBox);
-
-    loadSettings();
 
     initConnections();
 
     //Keep refreshing the serial port list
-    m_timer = new QTimer(this);
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+    connect(&m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+    if (UASManager::instance()->getActiveUAS())
+    {
+        activeUASSet(UASManager::instance()->getActiveUAS());
+    }
+}
+
+void TerminalConsole::activeUASSet(UASInterface *uas)
+{
+    if(m_uas) {
+        disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+    }
+    m_uas = uas;
+    if (uas) {
+        connect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+        connect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+        uasConnected();
+    }
+}
+
+void TerminalConsole::uasConnected()
+{
+    ui->connectButton->setEnabled(false);
+    if(m_windowVisible){
+        MainWindow::instance()->toolBar().disableConnectWidget(false);
+    }
+}
+
+void TerminalConsole::uasDisconnected()
+{
+    ui->connectButton->setEnabled(true);
+    if(m_windowVisible){
+        MainWindow::instance()->toolBar().disableConnectWidget(true);
+    }
 }
 
 void TerminalConsole::addBaudComboBoxConfig()
@@ -140,7 +175,8 @@ void TerminalConsole::fillPortsInfo(QComboBox &comboBox)
     }
     connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
     if (current == "") {
-        setLink(comboBox.currentIndex());
+        comboBox.setCurrentIndex(comboBox.findText(m_settings.name));
+        ui->baudComboBox->setCurrentIndex(ui->baudComboBox->findText(QString::number(m_settings.baudRate)));
     }
 }
 
@@ -148,21 +184,24 @@ void TerminalConsole::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
     // Start refresh Timer
-    m_timer->start(2000);
+    m_timer.start(2000);
+    if (!m_uas) MainWindow::instance()->toolBar().disableConnectWidget(true);
+    m_windowVisible = true;
 }
 
 void TerminalConsole::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event);
     // Stop the port list refeshing
-    m_timer->stop();
-
+    m_timer.stop();
+    MainWindow::instance()->toolBar().disableConnectWidget(false);
+    m_windowVisible = false;
 }
 
 TerminalConsole::~TerminalConsole()
 {
     delete m_serial;
-    delete m_console;
+    if (!m_console.isNull()) delete m_console;
     delete m_statusBar;
     delete m_settingsDialog;
     delete m_logConsole;
@@ -220,7 +259,7 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
             writeSettings(); // Save last successful connection
 
             sendResetCommand();
-            m_timer->stop();
+            m_timer.stop();
             ui->logsButton->setEnabled(true);
         } else {
             m_serial->close();
@@ -238,7 +277,7 @@ void TerminalConsole::openSerialPort(const SerialSettings &settings)
 #ifdef Q_OS_LINUX
         if(m_serial->errorString().contains("busy"))
         {
-            errorMessage = tr("ERROR: Port ") + m_serial->portName() + tr(" is locked by an external process. Run: \"sudo lsof /dev/") + m_serial->portName() + tr("\" to determine the associated programs. They can usually be uninstalled.");
+            errorMessage = tr("ERROR: Port ") + m_serial->portName() + tr(" is locked by an external process. Try uninstalling \"modemmanager\" or run: \"sudo lsof /dev/") + m_serial->portName() + tr("\" to determine the interfering application.");
         }
 #endif
 
@@ -257,7 +296,7 @@ void TerminalConsole::closeSerialPort()
     ui->disconnectButton->setEnabled(false);
     ui->settingsButton->setEnabled(true);
     m_statusBar->showMessage(tr("Disconnected"));
-    m_timer->start(2000); //re-start port scanning
+    m_timer.start(2000); //re-start port scanning
 }
 
 void TerminalConsole::sendResetCommand()
@@ -402,7 +441,7 @@ void TerminalConsole::setLink(int index)
 void TerminalConsole::loadSettings()
 {
     // Load defaults from settings
-    QSettings settings(QGC::COMPANYNAME, QGC::APPNAME);
+    QSettings settings;
     settings.sync();
     if (settings.contains("TERMINALCONSOLE_COMM_PORT"))
     {
@@ -424,7 +463,7 @@ void TerminalConsole::loadSettings()
 void TerminalConsole::writeSettings()
 {
     // Store settings
-    QSettings settings(QGC::COMPANYNAME, QGC::APPNAME);
+    QSettings settings;
     settings.setValue("TERMINALCONSOLE_COMM_PORT", m_settings.name);
     settings.setValue("TERMINALCONSOLE_COMM_BAUD", m_settings.baudRate);
     settings.setValue("TERMINALCONSOLE_COMM_PARITY", m_settings.parity);

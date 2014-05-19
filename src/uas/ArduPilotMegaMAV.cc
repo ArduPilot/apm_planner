@@ -42,6 +42,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QString>
 #include <QDir>
 #include <QDesktopServices>
+#include <QSettings>
 
 CustomMode::CustomMode()
 {
@@ -271,19 +272,23 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
 void ArduPilotMegaMAV::RequestAllDataStreams()
 {
     QLOG_TRACE() << "APM:RequestAllDataRates";
-    enableExtendedSystemStatusTransmission(2);
+    QSettings settings;
+    settings.sync();
+    settings.beginGroup("DATA_RATES");
+    enableExtendedSystemStatusTransmission(settings.value("EXT_SYS_STATUS",2).toInt());
 
-    enablePositionTransmission(3);
+    enablePositionTransmission(settings.value("POSITION",3).toInt());
 
-    enableExtra1Transmission(10);
+    enableExtra1Transmission(settings.value("EXTRA1",10).toInt());
 
-    enableExtra2Transmission(10);
+    enableExtra2Transmission(settings.value("EXTRA2",10).toInt());
 
-    enableExtra3Transmission(2);
+    enableExtra3Transmission(settings.value("EXTRA3",2).toInt());
 
-    enableRawSensorDataTransmission(2);
+    enableRawSensorDataTransmission(settings.value("RAW_SENSOR_DATA",2).toInt());
 
-    enableRCChannelDataTransmission(2);
+    enableRCChannelDataTransmission(settings.value("RC_CHANNEL_DATA",2).toInt());
+    settings.endGroup();
 }
 
 void ArduPilotMegaMAV::uasConnected()
@@ -296,11 +301,18 @@ void ArduPilotMegaMAV::uasConnected()
 void ArduPilotMegaMAV::uasDisconnected()
 {
     QLOG_INFO() << "ArduPilotMegaMAV APM disconnected";
-    mavlink->stopLogging();
+    if (mavlink)
+    {
+        mavlink->stopLogging();
+    }
 }
 
 void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
 {
+    if (!mavlink)
+    {
+
+    }
     QString subDir;
 
     // This creates a log in subdir based on the vehicle
@@ -355,6 +367,7 @@ void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
 void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t message)
 {
     // Let UAS handle the default message set
+    //qDebug() << "Message type:" << message.sysid << message.msgid;
     UAS::receiveMessage(link, message);
 
     if (message.sysid == uasId) {

@@ -17,6 +17,7 @@ public:
     bool isValid() { return true; }
 private slots:
     void onTopCheckBoxChecked(bool checked);
+    void copyToClipboardButtonClicked();
 private:
     Ui::DebugOutput ui;
 };

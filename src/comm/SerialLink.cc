@@ -43,6 +43,7 @@
 SerialLink::SerialLink() :
     m_bytesRead(0),
     m_port(NULL),
+    m_isConnected(false),
     m_baud(QSerialPort::Baud115200),
     m_dataBits(QSerialPort::Data8),
     m_flowControl(QSerialPort::NoFlowControl),
@@ -51,8 +52,8 @@ SerialLink::SerialLink() :
     m_portName(""),
     m_stopp(false),
     m_reqReset(false),
-    m_isConnected(false),
-    m_timeoutTimer(NULL)
+    m_timeoutTimer(NULL),
+    m_timeoutsEnabled(true)
 {
     QLOG_INFO() << "create SerialLink: Load Previous Settings ";
     qRegisterMetaType<QSerialPort::SerialPortError>("QSerialPort::SerialPortError");
@@ -313,7 +314,6 @@ void SerialLink::run()
                 //QLOG_TRACE() << "rx of length " << QString::number(readData.length());
 
                 m_bytesRead += readData.length();
-                m_bitsReceivedTotal += readData.length() * 8;
             }
         } else {
             //QLOG_TRACE() << "Wait write response timeout %1" << QTime::currentTime().toString();
@@ -455,11 +455,6 @@ void SerialLink::writeBytes(const char* data, qint64 size)
 #ifdef SERIALLINK_HYBRIDTHREAD
         m_port->write(byteArray);
 #endif
-
-
-        // Increase write counter
-        m_bitsSentTotal += size * 8;
-
         // Extra debug logging
         QLOG_TRACE() << QByteArray(data,size);
     } else {
@@ -492,7 +487,7 @@ void SerialLink::readBytes()
             QByteArray b(data, numBytes);
             emit bytesReceived(this, b);
 
-            QLOG_TRACE() << "SerialLink::readBytes()" << &std::hex << data;
+            QLOG_TRACE() << "SerialLink::readBytes()" << &hex << data;
             //            int i;
             //            for (i=0; i<numBytes; i++){
             //                unsigned int v=data[i];
@@ -500,7 +495,6 @@ void SerialLink::readBytes()
             //                fprintf(stderr,"%02x ", v);
             //            }
             //            fprintf(stderr,"\n");
-            m_bitsReceivedTotal += numBytes * 8;
         }
     }
     m_dataMutex.unlock();
@@ -676,6 +670,10 @@ void SerialLink::timeoutTimerTimeout()
     }
     if (m_timeoutCounter > 10) //5 seconds
     {
+        if (!m_timeoutsEnabled)
+        {
+            return;
+        }
         m_timeoutCounter = 0;
         if (!m_triedDtrReset && !m_triedRebootReset)
         {
@@ -761,7 +759,6 @@ void SerialLink::portReadyRead()
     if (readData.length() > 0) {
         emit bytesReceived(this, readData);
         m_bytesRead += readData.length();
-        m_bitsReceivedTotal += readData.length() * 8;
     }
 }
 
@@ -792,8 +789,6 @@ bool SerialLink::hardwareConnect(QString type)
         return false; // couldn't create serial port.
     }
     m_port->setSettingsRestoredOnClose(false);
-
-    m_connectionStartTime = MG::TIME::getGroundTimeNow();
 
     int tries = 0;
     while (tries++ < 3 && !m_port->isOpen())
@@ -892,7 +887,7 @@ void SerialLink::linkError(QSerialPort::SerialPortError error)
  *
  * @return True if link is connected, false otherwise.
  **/
-bool SerialLink::isConnected()
+bool SerialLink::isConnected() const
 {
     return m_isConnected;
     if (m_port) {
@@ -907,12 +902,12 @@ bool SerialLink::isConnected()
     }
 }
 
-int SerialLink::getId()
+int SerialLink::getId() const
 {
     return m_id;
 }
 
-QString SerialLink::getName()
+QString SerialLink::getName() const
 {
     return m_portName;
 }
@@ -921,110 +916,87 @@ QString SerialLink::getName()
   * This function maps baud rate constants to numerical equivalents.
   * It relies on the mapping given in qportsettings.h from the QSerialPort library.
   */
-qint64 SerialLink::getNominalDataRate()
+qint64 SerialLink::getConnectionSpeed() const
 {
-    return m_baud;
+    qint64 dataRate;
+    switch (m_baud)
+    {
+        case QSerialPort::Baud1200:
+            dataRate = 1200;
+            break;
+        case QSerialPort::Baud2400:
+            dataRate = 2400;
+            break;
+        case QSerialPort::Baud4800:
+            dataRate = 4800;
+            break;
+        case QSerialPort::Baud9600:
+            dataRate = 9600;
+            break;
+        case QSerialPort::Baud19200:
+            dataRate = 19200;
+            break;
+        case QSerialPort::Baud38400:
+            dataRate = 38400;
+            break;
+        case QSerialPort::Baud57600:
+            dataRate = 57600;
+            break;
+        case QSerialPort::Baud115200:
+            dataRate = 115200;
+            break;
+            // Otherwise do nothing.
+        case QSerialPort::UnknownBaud:
+        default:
+            dataRate = -1;
+            break;
+    }
+    return dataRate;
 }
 
-qint64 SerialLink::getTotalUpstream()
-{
-    m_statisticsMutex.lock();
-    return m_bitsSentTotal / ((MG::TIME::getGroundTimeNow() - m_connectionStartTime) / 1000);
-    m_statisticsMutex.unlock();
-}
-
-qint64 SerialLink::getCurrentUpstream()
-{
-    return 0; // TODO
-}
-
-qint64 SerialLink::getMaxUpstream()
-{
-    return 0; // TODO
-}
-
-qint64 SerialLink::getBitsSent()
-{
-    return m_bitsSentTotal;
-}
-
-qint64 SerialLink::getBitsReceived()
-{
-    return m_bitsReceivedTotal;
-}
-
-qint64 SerialLink::getTotalDownstream()
-{
-    m_statisticsMutex.lock();
-    return m_bitsReceivedTotal / ((MG::TIME::getGroundTimeNow() - m_connectionStartTime) / 1000);
-    m_statisticsMutex.unlock();
-}
-
-qint64 SerialLink::getCurrentDownstream()
-{
-    return 0; // TODO
-}
-
-qint64 SerialLink::getMaxDownstream()
-{
-    return 0; // TODO
-}
-
-bool SerialLink::isFullDuplex()
-{
-    /* Serial connections are always half duplex */
-    return false;
-}
-
-int SerialLink::getLinkQuality()
-{
-    /* This feature is not supported with this interface */
-    return -1;
-}
-
-QString SerialLink::getPortName()
+QString SerialLink::getPortName() const
 {
     return m_portName;
 }
 
 // We should replace the accessors below with one to get the QSerialPort
 
-int SerialLink::getBaudRate()
+int SerialLink::getBaudRate() const
 {
-    return getNominalDataRate();
+    return getConnectionSpeed();
 }
 
-int SerialLink::getBaudRateType()
+int SerialLink::getBaudRateType() const
 {
     return m_baud;
 }
 
-int SerialLink::getFlowType()
+int SerialLink::getFlowType() const
 {
     return m_flowControl;
 }
 
-int SerialLink::getParityType()
+int SerialLink::getParityType() const
 {
     return m_parity;
 }
 
-int SerialLink::getDataBitsType()
+int SerialLink::getDataBitsType() const
 {
     return m_dataBits;
 }
 
-int SerialLink::getStopBitsType()
+int SerialLink::getStopBitsType() const
 {
     return m_stopBits;
 }
 
-int SerialLink::getDataBits()
+int SerialLink::getDataBits() const
 {
     return m_dataBits;
 }
 
-int SerialLink::getStopBits()
+int SerialLink::getStopBits() const
 {
     return m_stopBits;
 }
@@ -1177,4 +1149,13 @@ const QList<SerialLink*> SerialLink::getSerialLinks(UASInterface *uas)
         };
 
     return serialLinklist;
+}
+void SerialLink::disableTimeouts()
+{
+    m_timeoutsEnabled = false;
+}
+
+void SerialLink::enableTimeouts()
+{
+    m_timeoutsEnabled = true;
 }

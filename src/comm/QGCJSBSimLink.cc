@@ -219,7 +219,7 @@ void QGCJSBSimLink::readBytes()
     QHostAddress sender;
     quint16 senderPort;
 
-    qint64 s = socket->pendingDatagramSize();
+    unsigned int s = socket->pendingDatagramSize();
     if (s > maxLength) std::cerr << __FILE__ << __LINE__ << " UDP datagram overflow, allowed to read less bytes than datagram size" << std::endl;
     socket->readDatagram(data, maxLength, &sender, &senderPort);
 
@@ -243,8 +243,7 @@ void QGCJSBSimLink::readBytes()
 
         // Echo data for debugging purposes
         std::cerr << __FILE__ << __LINE__ << "Received datagram:" << std::endl;
-        int i;
-        for (i=0; i<s; i++)
+        for (unsigned int i=0; i<s; i++)
         {
             unsigned int v=data[i];
             fprintf(stderr,"%02x ", v);
@@ -273,7 +272,7 @@ bool QGCJSBSimLink::disconnectSimulation()
     disconnect(process, SIGNAL(error(QProcess::ProcessError)),
                this, SLOT(processError(QProcess::ProcessError)));
     disconnect(mav, SIGNAL(hilControlsChanged(uint64_t, float, float, float, float, uint8_t, uint8_t)), this, SLOT(updateControls(uint64_t,float,float,float,float,uint8_t,uint8_t)));
-    disconnect(this, SIGNAL(hilStateChanged(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float)), mav, SLOT(sendHilState(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float)));
+    disconnect(this, SIGNAL(hilStateChanged(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float,float,float)), mav, SLOT(sendHilState(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float,float,float)));
 
     if (process)
     {
@@ -313,7 +312,7 @@ bool QGCJSBSimLink::connectSimulation()
     process = new QProcess(this);
 
     connect(mav, SIGNAL(hilControlsChanged(uint64_t, float, float, float, float, uint8_t, uint8_t)), this, SLOT(updateControls(uint64_t,float,float,float,float,uint8_t,uint8_t)));
-    connect(this, SIGNAL(hilStateChanged(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float)), mav, SLOT(sendHilState(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float)));
+    connect(this, SIGNAL(hilStateChanged(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float,float,float)), mav, SLOT(sendHilState(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float,float,float)));
 
 
     UAS* uas = dynamic_cast<UAS*>(mav);

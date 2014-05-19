@@ -39,7 +39,7 @@ This file is part of the APM_PLANNER project
 #include <QTimer>
 
 APMToolBar::APMToolBar(QWidget *parent):
-    QDeclarativeView(parent), m_uas(NULL), m_currentLink(NULL)
+    QDeclarativeView(parent), m_uas(NULL), m_currentLink(NULL), m_disableOverride(false)
 {
     // Configure our QML object
     QLOG_DEBUG() << "qmlBaseDir" << QGC::shareDirectory();
@@ -72,6 +72,17 @@ APMToolBar::APMToolBar(QWidget *parent):
             this,SLOT(newLinkCreated(LinkInterface*)));
 
     connect(&m_heartbeatTimer, SIGNAL(timeout()), this, SLOT(stopHeartbeat()));
+    QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
+    if (settings.contains("ADVANCED_MODE"))
+    {
+       QMetaObject::invokeMethod(rootObject(),"setAdvancedMode", Q_ARG(QVariant, settings.value("ADVANCED_MODE").toBool()));
+    }
+}
+
+void APMToolBar::checkAdvancedMode(bool checked)
+{
+    QMetaObject::invokeMethod(rootObject(),"setAdvancedMode", Q_ARG(QVariant, checked));
 }
 
 void APMToolBar::activeUasSet(UASInterface *uas)
@@ -354,7 +365,7 @@ void APMToolBar::updateLinkDisplay(LinkInterface* link)
     QObject *object = rootObject();
 
     if (link && object){
-        qint64 baudrate = link->getNominalDataRate();
+        qint64 baudrate = link->getConnectionSpeed();
         object->setProperty("baudrateLabel", QString::number(baudrate));
 
         QString linkName = link->getName();
@@ -459,10 +470,17 @@ void APMToolBar::stopAnimation()
 {
     rootObject()->setProperty("stopAnimation",QVariant(true));
 }
+void APMToolBar::overrideDisableConnectWidget(bool disable)
+{
+    m_disableOverride = disable;
+}
 
 void APMToolBar::disableConnectWidget(bool disable)
 {
-    rootObject()->setProperty("disableConnectWidget",QVariant(disable));
+    if (!m_disableOverride)
+    {
+        rootObject()->setProperty("disableConnectWidget",QVariant(disable));
+    }
 }
 
 void APMToolBar::parameterChanged(int uas, int component, int parameterCount,

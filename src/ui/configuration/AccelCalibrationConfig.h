@@ -52,11 +52,14 @@ private slots:
     void uasConnected();
     void uasDisconnected();
     void levelButtonClicked();
+    void countdownTimerTick();
 private:
     int m_accelAckCount;
     Ui::AccelCalibrationConfig ui;
     bool m_muted;
     bool m_isLeveling;
+    QTimer m_countdownTimer;
+    int m_countdownCount;
 };
 
 #endif // ACCELCALIBRATIONCONFIG_H

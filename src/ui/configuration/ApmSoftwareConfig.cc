@@ -112,10 +112,13 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     ui.globalParamProgressBar->setRange(0,100);
 
     QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
     if (settings.contains("ADVANCED_MODE"))
     {
         m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
     }
+
+    connect(&m_populateTimer,SIGNAL(timeout()),this,SLOT(populateTimerTick()));
 }
 
 void ApmSoftwareConfig::advModeChanged(bool state)
@@ -301,6 +304,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                     QString humanname = xml.attributes().value("humanName").toString();
                                     QString name = xml.attributes().value("name").toString();
                                     QString tab= xml.attributes().value("user").toString();
+                                    QString range = "";
                                     if (name.contains(":"))
                                     {
                                         name = name.split(":")[1].toUpper();
@@ -365,6 +369,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 min = fieldmap["Range"].split("-")[0].trimmed().toFloat();
                                                 max = fieldmap["Range"].split("-")[1].trimmed().toFloat();
                                             }
+                                            range = QString("%1 to %2").arg(min).arg(max);
                                         }
                                     }
                                     QString units = "";
@@ -405,7 +410,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 c.isRange = false;
                                                 m_paramConfigList.append(c);
                                             }
-                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units);
+                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units,range);
                                         }
                                     }
                                     else if (fieldmap.size() > 0)
@@ -427,6 +432,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 max = fieldmap["Range"].split("-")[1].trimmed().toFloat();
                                             }
                                             increment = (max - min) / 100.0; //1% of total range increment
+                                            range = QString("%1 to %2").arg(min).arg(max);
                                         }
                                         if (compare == parametersname || valuetype == "libraries")
                                         {
@@ -456,7 +462,7 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
                                                 c.isRange = true;
                                                 m_paramConfigList.append(c);
                                             }
-                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units);
+                                            m_advParameterList->setParameterMetaData(name,humanname,docs,units,range);
                                         }
                                     }
 
@@ -473,18 +479,17 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
         }
         xml.readNext();
     }
-    populateTimer = new QTimer(this);
-    connect(populateTimer,SIGNAL(timeout()),this,SLOT(populateTimerTick()));
-    populateTimer->start(1);
+
+    m_populateTimer.start(1);
 
 }
 void ApmSoftwareConfig::populateTimerTick()
 {
     if (m_paramConfigList.size() == 0)
     {
-        populateTimer->stop();
-        populateTimer->deleteLater();
-        populateTimer = 0;
+        m_populateTimer.stop();
+        m_advancedParamConfig->allParamsAdded();
+        m_standardParamConfig->allParamsAdded();
         return;
     }
     if (m_paramConfigList.at(0).isRange)
@@ -567,7 +572,7 @@ void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCo
         ui.globalParamProgressBar->setValue((m_paramDownloadCount/(float)parameterCount)*100.0);
 
         if (m_paramDownloadCount == parameterCount){
-            m_paramDownloadState = completed;
+            m_paramDownloadState = none;
             ui.globalParamStateLabel->setText(tr("Params Downloaded"));
         }
         break;

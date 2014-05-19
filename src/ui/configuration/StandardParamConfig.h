@@ -34,12 +34,17 @@ class StandardParamConfig : public AP2ConfigWidget
 public:
     explicit StandardParamConfig(QWidget *parent = 0);
     ~StandardParamConfig();
+
+public slots:
     void addRange(QString title,QString description,QString param,double min,double max,double increment);
     void addCombo(QString title,QString description,QString param,QList<QPair<int,QString> > valuelist);
-private slots:
+    void allParamsAdded(void);
+
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void doubleValueChanged(QString param,double value);
     void intValueChanged(QString param,int value);
+    void onSearchFilterChanged(const QString &searchFilterText);
+
 private:
     QMap<QString,ParamWidget*> paramToWidgetMap;
     Ui::StandardParamConfig ui;

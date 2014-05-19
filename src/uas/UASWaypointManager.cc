@@ -506,7 +506,7 @@ void UASWaypointManager::saveWaypoints(const QString &saveFile)
     QTextStream out(&file);
 
     //write the waypoint list version to the first line for compatibility check
-    out << "QGC WPL 120\r\n";
+    out << "QGC WPL 110\r\n";
 
     for (int i = 0; i < waypointsEditable.count(); i++)
     {

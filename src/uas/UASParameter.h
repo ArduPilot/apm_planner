@@ -22,6 +22,7 @@ public:
     int component();
 
     void setValue(const QVariant value);
+    void setValue(double value);
     const QVariant &value();
 
     void setIndex(int index);

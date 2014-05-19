@@ -33,16 +33,78 @@ QGCStatusBar::QGCStatusBar(QWidget *parent) :
     toggleLoggingButton(NULL),
     player(NULL),
     changed(true),
+    m_uas(NULL),
     lastLogDirectory(QGC::MAVLinkLogDirectory())
 {
     setObjectName("QGC_STATUSBAR");
 
-    toggleLoggingButton = new QPushButton("Logging", this);
-    toggleLoggingButton->setCheckable(true);
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+}
 
-    addPermanentWidget(toggleLoggingButton);
+void QGCStatusBar::uasConnected()
+{
+    if (player)
+    {
+        if (!player->isPlayingLogFile())
+        {
+            this->setEnabled(false);
+        }
+    }
+    else
+    {
+        this->setEnabled(false);
+    }
+}
 
-    setStyleSheet("QStatusBar { border: 0px; border-bottom: 1px solid #101010; border-top: 1px solid #4F4F4F; background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #4B4B4B, stop:0.3 #404040, stop:0.34 #383838, stop:1 #181818); } ");
+void QGCStatusBar::uasDisconnected()
+{
+    if (player)
+    {
+        if (!player->isPlayingLogFile())
+        {
+            this->setEnabled(true);
+        }
+    }
+    else
+    {
+        this->setEnabled(true);
+    }
+}
+
+void QGCStatusBar::activeUASSet(UASInterface* uas)
+{
+    if (m_uas)
+    {
+        disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+    }
+    m_uas = uas;
+    if (!uas)
+    {
+        //No active UAS?
+        return;
+    }
+    connect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
+    connect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
+    if (player)
+    {
+        if (!player->isPlayingLogFile())
+        {
+            if (uas->getLinks()->size() > 0)
+            {
+                if (uas->getLinks()->at(0)->isConnected())
+                {
+                    this->setEnabled(false);
+                }
+            }
+        }
+
+    }
+    else
+    {
+        //No player!
+        this->setEnabled(false);
+    }
 }
 
 void QGCStatusBar::paintEvent(QPaintEvent * event)
@@ -58,7 +120,7 @@ void QGCStatusBar::setLogPlayer(QGCMAVLinkLogPlayer* player)
 {
     this->player = player;
     addPermanentWidget(player);
-    connect(toggleLoggingButton, SIGNAL(clicked(bool)), this, SLOT(logging(bool)));
+    //connect(toggleLoggingButton, SIGNAL(clicked(bool)), this, SLOT(logging(bool)));
 }
 
 void QGCStatusBar::logging(bool checked)
@@ -68,7 +130,7 @@ void QGCStatusBar::logging(bool checked)
 
     if (!checked && player)
     {
-        player->setLastLogFile(lastLogDirectory);
+        //player->setLastLogFile(lastLogDirectory);
     }
 
 	// If the user is enabling logging
@@ -81,7 +143,7 @@ void QGCStatusBar::logging(bool checked)
 		// Check that they didn't cancel out
 		if (fileName.isNull())
 		{
-            toggleLoggingButton->setChecked(false);
+            //toggleLoggingButton->setChecked(false);
 			return;
 		}
 
@@ -119,5 +181,5 @@ void QGCStatusBar::storeSettings()
 QGCStatusBar::~QGCStatusBar()
 {
     storeSettings();
-    if (toggleLoggingButton) toggleLoggingButton->deleteLater();
+    //if (toggleLoggingButton) toggleLoggingButton->deleteLater();
 }

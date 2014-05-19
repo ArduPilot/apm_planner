@@ -46,7 +46,9 @@ QGCFlightGearLink::QGCFlightGearLink(UASInterface* mav, QString startupArguments
     process(NULL),
     terraSync(NULL),
     flightGearVersion(0),
-    startupArguments(startupArguments)
+    startupArguments(startupArguments),
+    _sensorHilEnabled(true),
+    barometerOffsetkPa(0.0f)
 {
     this->host = host;
     this->port = port+mav->getUASID();
@@ -234,40 +236,142 @@ void QGCFlightGearLink::readBytes()
     QStringList values = state.split("\t");
 
     // Check length
-    if (values.size() != 17)
+    const int nValues = 21;
+    if (values.size() != nValues)
     {
-        QLOG_DEBUG() << "RETURN LENGTH MISMATCHING EXPECTED" << 17 << "BUT GOT" << values.size();
+        QLOG_DEBUG() << "RETURN LENGTH MISMATCHING EXPECTED" << nValues << "BUT GOT" << values.size();
         QLOG_DEBUG() << state;
         return;
     }
 
     // Parse string
     float roll, pitch, yaw, rollspeed, pitchspeed, yawspeed;
-    double lat, lon, alt;
-    double vx, vy, vz, xacc, yacc, zacc;
+    double lat, lon, alt;   
+    float ind_airspeed;
+    float true_airspeed;
+    float vx, vy, vz, xacc, yacc, zacc;
+    float diff_pressure;
+    float temperature;
+    float abs_pressure;
+    float mag_variation, mag_dip, xmag_ned, ymag_ned, zmag_ned, xmag_body, ymag_body, zmag_body;
+
 
     lat = values.at(1).toDouble();
     lon = values.at(2).toDouble();
     alt = values.at(3).toDouble();
-    roll = values.at(4).toDouble();
-    pitch = values.at(5).toDouble();
-    yaw = values.at(6).toDouble();
-    rollspeed = values.at(7).toDouble();
-    pitchspeed = values.at(8).toDouble();
-    yawspeed = values.at(9).toDouble();
+    roll = values.at(4).toFloat();
+    pitch = values.at(5).toFloat();
+    yaw = values.at(6).toFloat();
+    rollspeed = values.at(7).toFloat();
+    pitchspeed = values.at(8).toFloat();
+    yawspeed = values.at(9).toFloat();
 
-    xacc = values.at(10).toDouble();
-    yacc = values.at(11).toDouble();
-    zacc = values.at(12).toDouble();
+    xacc = values.at(10).toFloat();
+    yacc = values.at(11).toFloat();
+    zacc = values.at(12).toFloat();
 
-    vx = values.at(13).toDouble();
-    vy = values.at(14).toDouble();
-    vz = values.at(15).toDouble();
+    vx = values.at(13).toFloat();
+    vy = values.at(14).toFloat();
+    vz = values.at(15).toFloat();
 
+    true_airspeed = values.at(16).toFloat();
+
+    mag_variation = values.at(17).toFloat();
+    mag_dip = values.at(18).toFloat();
+
+    temperature = values.at(19).toFloat();
+    abs_pressure = values.at(20).toFloat() * 1e2f; //convert to Pa from hPa
+    abs_pressure += barometerOffsetkPa * 1e3f; //add offset, convert from kPa to Pa
+
+    //calculate differential pressure
+    const float air_gas_constant = 287.1f; // J/(kg * K)
+    const float absolute_null_celsius = -273.15f; // °C
+    float density = abs_pressure / (air_gas_constant * (temperature - absolute_null_celsius));
+    diff_pressure = true_airspeed * true_airspeed * density / 2.0f;
+    //qDebug() << "diff_pressure: " << diff_pressure << "abs_pressure: " << abs_pressure;
+    
+    /* Calculate indicated airspeed */
+    const float air_density_sea_level_15C  = 1.225f; //kg/m^3
+    if (diff_pressure > 0)
+    {
+        ind_airspeed =  sqrtf((2.0f*diff_pressure) / air_density_sea_level_15C);
+    } else
+    {
+        ind_airspeed =  -sqrtf((2.0f*fabsf(diff_pressure)) / air_density_sea_level_15C);
+    }
+    
+    //qDebug() << "ind_airspeed: " << ind_airspeed << "true_airspeed: " << true_airspeed;
+    
     // Send updated state
-    emit hilStateChanged(QGC::groundTimeUsecs(), roll, pitch, yaw, rollspeed,
+    //qDebug()  << "sensorHilEnabled: " << sensorHilEnabled;
+    if (_sensorHilEnabled)
+    {
+        quint16 fields_changed = 0xFFF; //set all 12 used bits
+
+        float pressure_alt = alt;
+
+        xmag_ned = cosf(mag_variation);
+        ymag_ned = sinf(mag_variation);
+        zmag_ned = sinf(mag_dip);
+        float tempMagLength = sqrtf(xmag_ned*xmag_ned + ymag_ned*ymag_ned + zmag_ned*zmag_ned);
+        xmag_ned = xmag_ned / tempMagLength;
+        ymag_ned = ymag_ned / tempMagLength;
+        zmag_ned = zmag_ned / tempMagLength;
+
+        //transform magnetic measurement to body frame coordinates
+        double cosPhi = cos(roll);
+        double sinPhi = sin(roll);
+        double cosThe = cos(pitch);
+        double sinThe = sin(pitch);
+        double cosPsi = cos(yaw);
+        double sinPsi = sin(yaw);
+
+        float R_B_N[3][3];
+
+        R_B_N[0][0] = cosThe * cosPsi;
+        R_B_N[0][1] = -cosPhi * sinPsi + sinPhi * sinThe * cosPsi;
+        R_B_N[0][2] = sinPhi * sinPsi + cosPhi * sinThe * cosPsi;
+
+		R_B_N[1][0] = cosThe * sinPsi;
+		R_B_N[1][1] = cosPhi * cosPsi + sinPhi * sinThe * sinPsi;
+		R_B_N[1][2] = -sinPhi * cosPsi + cosPhi * sinThe * sinPsi;
+
+		R_B_N[2][0] = -sinThe;
+		R_B_N[2][1] = sinPhi * cosThe;
+		R_B_N[2][2] = cosPhi * cosThe;
+
+        Eigen::Matrix3f R_B_N_M = Eigen::Map<Eigen::Matrix3f>((float*)R_B_N).eval();
+
+        Eigen::Vector3f mag_ned(xmag_ned, ymag_ned, zmag_ned);
+
+        Eigen::Vector3f mag_body = R_B_N_M * mag_ned;
+
+        xmag_body = mag_body(0);
+        ymag_body = mag_body(1);
+        zmag_body = mag_body(2);
+
+        emit sensorHilRawImuChanged(QGC::groundTimeUsecs(), xacc, yacc, zacc, rollspeed, pitchspeed, yawspeed,
+                                    xmag_body, ymag_body, zmag_body, abs_pressure*1e-2f, diff_pressure*1e-2f, pressure_alt, temperature, fields_changed); //Pressure in hPa for mavlink
+
+//        qDebug()  << "sensorHilRawImuChanged " << xacc  << yacc << zacc  << rollspeed << pitchspeed << yawspeed << xmag << ymag << zmag << abs_pressure << diff_pressure << pressure_alt << temperature;
+        int gps_fix_type = 3;
+        float eph = 0.3f;
+        float epv = 0.6f;
+        float vel = sqrt(vx*vx + vy*vy + vz*vz);
+        float cog = yaw;
+        int satellites = 8;
+
+        emit sensorHilGpsChanged(QGC::groundTimeUsecs(), lat, lon, alt, gps_fix_type, eph, epv, vel, vx, vy, vz, cog, satellites);
+
+//        qDebug()  << "sensorHilGpsChanged " << lat  << lon << alt  << vel;
+    } else {
+        emit hilStateChanged(QGC::groundTimeUsecs(), roll, pitch, yaw, rollspeed,
                          pitchspeed, yawspeed, lat, lon, alt,
-                         vx, vy, vz, xacc, yacc, zacc);
+                         vx, vy, vz,
+                         ind_airspeed, true_airspeed,
+                         xacc, yacc, zacc);
+        //qDebug()  << "hilStateChanged " << (int32_t)lat << (int32_t)lon << (int32_t)alt;
+    }
 
     //    // Echo data for debugging purposes
     //    std::cerr << __FILE__ << __LINE__ << "Received datagram:" << std::endl;
@@ -301,7 +405,9 @@ bool QGCFlightGearLink::disconnectSimulation()
     disconnect(process, SIGNAL(error(QProcess::ProcessError)),
                this, SLOT(processError(QProcess::ProcessError)));
     disconnect(mav, SIGNAL(hilControlsChanged(uint64_t, float, float, float, float, uint8_t, uint8_t)), this, SLOT(updateControls(uint64_t,float,float,float,float,uint8_t,uint8_t)));
-    disconnect(this, SIGNAL(hilStateChanged(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float)), mav, SLOT(sendHilState(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float)));
+    disconnect(this, SIGNAL(hilStateChanged(quint64, float, float, float, float,float, float, double, double, double, float, float, float, float, float, float, float, float)), mav, SLOT(sendHilState(quint64, float, float, float, float,float, float, double, double, double, float, float, float, float, float, float, float, float)));
+    disconnect(this, SIGNAL(sensorHilGpsChanged(quint64, double, double, double, int, float, float, float, float, float, float, float, int)), mav, SLOT(sendHilGps(quint64, double, double, double, int, float, float, float, float, float, float, float, int)));
+    disconnect(this, SIGNAL(sensorHilRawImuChanged(quint64,float,float,float,float,float,float,float,float,float,float,float,float,float,quint32)), mav, SLOT(sendHilSensors(quint64,float,float,float,float,float,float,float,float,float,float,float,float,float,quint32)));
 
     if (process)
     {
@@ -348,8 +454,9 @@ bool QGCFlightGearLink::connectSimulation()
     terraSync = new QProcess(this);
 
     connect(mav, SIGNAL(hilControlsChanged(uint64_t, float, float, float, float, uint8_t, uint8_t)), this, SLOT(updateControls(uint64_t,float,float,float,float,uint8_t,uint8_t)));
-    connect(this, SIGNAL(hilStateChanged(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float)), mav, SLOT(sendHilState(quint64,float,float,float,float,float,float,double,double,double,float,float,float,float,float,float)));
-
+    connect(this, SIGNAL(hilStateChanged(quint64, float, float, float, float,float, float, double, double, double, float, float, float, float, float, float, float, float)), mav, SLOT(sendHilState(quint64, float, float, float, float,float, float, double, double, double, float, float, float, float, float, float, float, float)));
+    connect(this, SIGNAL(sensorHilGpsChanged(quint64, double, double, double, int, float, float, float, float, float, float, float, int)), mav, SLOT(sendHilGps(quint64, double, double, double, int, float, float, float, float, float, float, float, int)));
+    connect(this, SIGNAL(sensorHilRawImuChanged(quint64,float,float,float,float,float,float,float,float,float,float,float,float,float,quint32)), mav, SLOT(sendHilSensors(quint64,float,float,float,float,float,float,float,float,float,float,float,float,float,quint32)));
 
     UAS* uas = dynamic_cast<UAS*>(mav);
     if (uas)
@@ -376,7 +483,7 @@ bool QGCFlightGearLink::connectSimulation()
     processFgfs = "/Applications/FlightGear.app/Contents/Resources/fgfs";
     processTerraSync = "/Applications/FlightGear.app/Contents/Resources/terrasync";
     //fgRoot = "/Applications/FlightGear.app/Contents/Resources/data";
-    //fgScenery = "/Applications/FlightGear.app/Contents/Resources/data/Scenery";
+    fgScenery = "/Applications/FlightGear.app/Contents/Resources/data/Scenery";
     terraSyncScenery = "/Applications/FlightGear.app/Contents/Resources/data/Scenery-TerraSync";
     //   /Applications/FlightGear.app/Contents/Resources/data/Scenery:
 #endif
@@ -384,13 +491,22 @@ bool QGCFlightGearLink::connectSimulation()
 #ifdef Q_OS_WIN32
     processFgfs = "C:\\Program Files (x86)\\FlightGear\\bin\\Win32\\fgfs";
     //fgRoot = "C:\\Program Files (x86)\\FlightGear\\data";
+    fgScenery = "C:\\Program Files (x86)\\FlightGear\\data\\Scenery";
     terraSyncScenery = "C:\\Program Files (x86)\\FlightGear\\data\\Scenery-Terrasync";
 #endif
 
 #ifdef Q_OS_LINUX
     processFgfs = "fgfs";
-    //fgRoot = "/usr/share/games/flightgear";
-    //fgScenery = "/usr/share/games/flightgear/Scenery/";
+    //fgRoot = "/usr/share/flightgear";
+    QString fgScenery1 = "/usr/share/flightgear/data/Scenery";
+    QString fgScenery2 = "/usr/share/games/flightgear/Scenery"; // Ubuntu default location
+    fgScenery = ""; //Flightgear can also start with fgScenery = ""
+    if (QDir(fgScenery1).exists())
+        fgScenery = fgScenery1;
+    else if (QDir(fgScenery2).exists())
+        fgScenery = fgScenery2;
+
+
     processTerraSync = "nice"; //according to http://wiki.flightgear.org/TerraSync, run with lower priority
     terraSyncScenery = QDir::homePath() + "/.terrasync/Scenery"; //according to http://wiki.flightgear.org/TerraSync a separate directory is used
 #endif
@@ -435,7 +551,7 @@ bool QGCFlightGearLink::connectSimulation()
 
     /*Prepare FlightGear Arguments */
     //flightGearArguments << QString("--fg-root=%1").arg(fgRoot);
-    flightGearArguments << QString("--fg-scenery=%1:%2").arg(terraSyncScenery); //according to http://wiki.flightgear.org/TerraSync a separate directory is used
+    flightGearArguments << QString("--fg-scenery=%1:%2").arg(fgScenery).arg(terraSyncScenery); //according to http://wiki.flightgear.org/TerraSync a separate directory is used
     flightGearArguments << QString("--fg-aircraft=%1").arg(fgAircraft);
     if (mav->getSystemType() == MAV_TYPE_QUADROTOR)
     {
@@ -493,7 +609,10 @@ bool QGCFlightGearLink::connectSimulation()
     }
     flightGearArguments << QString("--lat=%1").arg(UASManager::instance()->getHomeLatitude());
     flightGearArguments << QString("--lon=%1").arg(UASManager::instance()->getHomeLongitude());
-    flightGearArguments << QString("--altitude=%1").arg(UASManager::instance()->getHomeAltitude());
+    //The altitude is not set because an altitude not equal to the ground altitude leads to a non-zero default throttle in flightgear
+    //Without the altitude-setting the aircraft is positioned on the ground
+    //flightGearArguments << QString("--altitude=%1").arg(UASManager::instance()->getHomeAltitude());
+
     // Add new argument with this: flightGearArguments << "";
     //flightGearArguments << QString("--aircraft=%2").arg(aircraft);
 
@@ -560,6 +679,29 @@ void QGCFlightGearLink::printTerraSyncError()
    }
 }
 
+void QGCFlightGearLink::printFgfsOutput()
+{
+   qDebug() << "fgfs stdout:";
+   QByteArray byteArray = process->readAllStandardOutput();
+   QStringList strLines = QString(byteArray).split("\n");
+
+   foreach (QString line, strLines){
+    qDebug() << line;
+   }
+}
+
+void QGCFlightGearLink::printFgfsError()
+{
+   qDebug() << "fgfs stderr:";
+
+   QByteArray byteArray = process->readAllStandardError();
+   QStringList strLines = QString(byteArray).split("\n");
+
+   foreach (QString line, strLines){
+    qDebug() << line;
+   }
+}
+
 /**
  * @brief Set the startup arguments used to start flightgear
  *
@@ -593,4 +735,9 @@ void QGCFlightGearLink::setName(QString name)
 {
     this->name = name;
     //    emit nameChanged(this->name);
+}
+
+void QGCFlightGearLink::setBarometerOffset(float barometerOffsetkPa)
+{
+    this->barometerOffsetkPa = barometerOffsetkPa;
 }

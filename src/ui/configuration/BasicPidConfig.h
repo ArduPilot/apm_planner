@@ -37,9 +37,11 @@ private slots:
     void rPRCValueChanged(QString name,double value);
     void tAValueChanged(QString name,double value);
     void tHValueChanged(QString name,int value);
+    void rcFeelValueChanged(QString name, int value);
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
 private:
     Ui::BasicPidConfig ui;
+    ParamWidget *m_rcFeelWidget;
     ParamWidget *m_throttleHoverWidget;
     ParamWidget *m_rollPitchRateWidget;
     ParamWidget *m_throttleAccelWidget;

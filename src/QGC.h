@@ -30,6 +30,10 @@
 #include <QThread>
 
 
+
+#define define2string_p(x) #x
+#define define2string(x) define2string_p(x)
+
 /* Windows fixes */
 #ifdef _MSC_VER
 /* Needed define for Eigen */
@@ -50,6 +54,7 @@ inline bool isinf(T value)
 }
 #else
 #include <cmath>
+#if defined(Q_OS_MACX) || defined(Q_OS_WIN)
 #ifndef isnan
 #define isnan(x) std::isnan(x)
 #endif
@@ -57,10 +62,11 @@ inline bool isinf(T value)
 #define isinf(x) std::isinf(x)
 #endif
 #endif
+#endif
 
 namespace QGC
 {
-const static int defaultSystemId = 255;
+const static int defaultSystemId = 253; // Using 253 to 'crudely' identify a log created by APM Planner 2
 const static int defaultComponentId = 0;
 
 const QColor colorCyan(55, 154, 195);

@@ -42,7 +42,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QTimer>
 #include <qserialport.h>
 #include <configuration.h>
-
+#include <QMetaType>
+Q_DECLARE_METATYPE(QSerialPort::SerialPortError)
 class UASInterface;
 class LinkManager;
 
@@ -63,6 +64,9 @@ public:
     SerialLink();
     ~SerialLink();
 
+    void disableTimeouts();
+    void enableTimeouts();
+
     static const int poll_interval = SERIAL_POLL_INTERVAL; ///< Polling interval, defined in configuration.h
 
     /** @brief Get a list of the currently available ports */
@@ -70,38 +74,31 @@ public:
 
     void requestReset();
 
-    bool isConnected();
+    bool isConnected() const;
     qint64 bytesAvailable();
 
     /**
      * @brief The port handle
      */
-    QString getPortName();
+    QString getPortName() const;
     /**
      * @brief The human readable port name
      */
-    QString getName();
-    int getBaudRate();
-    int getDataBits();
-    int getStopBits();
+    QString getName() const;
+    int getBaudRate() const;
+    int getDataBits() const;
+    int getStopBits() const;
 
     // ENUM values
-    int getBaudRateType();
-    int getFlowType();
-    int getParityType();
-    int getDataBitsType();
-    int getStopBitsType();
+    int getBaudRateType() const;
+    int getFlowType() const;
+    int getParityType() const;
+    int getDataBitsType() const;
+    int getStopBitsType() const;
 
-    /* Extensive statistics for scientific purposes */
-    qint64 getNominalDataRate();
-    qint64 getTotalUpstream();
-    qint64 getCurrentUpstream();
-    qint64 getMaxUpstream();
-    qint64 getTotalDownstream();
-    qint64 getCurrentDownstream();
-    qint64 getMaxDownstream();
-    qint64 getBitsSent();
-    qint64 getBitsReceived();
+    qint64 getConnectionSpeed() const;
+    qint64 getCurrentInDataRate() const;
+    qint64 getCurrentOutDataRate() const;
 
     void loadSettings();
     void writeSettings();
@@ -109,9 +106,7 @@ public:
     void run();
     void run2();
 
-    int getLinkQuality();
-    bool isFullDuplex();
-    int getId();
+    int getId() const;
 
     /** @brief Returns a list of Serial Ports known to the LinkManager */
     static const QList<SerialLink*> getSerialLinks(LinkManager* linkManager);
@@ -167,19 +162,8 @@ protected:
     QString m_portName;
     int m_timeout;
     int m_id;
-
-    quint64 m_bitsSentTotal;
-    quint64 m_bitsSentShortTerm;
-    quint64 m_bitsSentCurrent;
-    quint64 m_bitsSentMax;
-    quint64 m_bitsReceivedTotal;
-    quint64 m_bitsReceivedShortTerm;
-    quint64 m_bitsReceivedCurrent;
-    quint64 m_bitsReceivedMax;
-    quint64 m_connectionStartTime;
-    QMutex m_statisticsMutex;
-    QMutex m_dataMutex;
-    QMutex m_writeMutex;
+    QMutex m_dataMutex;       // Mutex for reading data from m_port
+    QMutex m_writeMutex;      // Mutex for accessing the m_transmitBuffer.
     QList<QString> m_ports;
 
 private:
@@ -213,6 +197,7 @@ private:
     QString m_connectedType;
 
     bool hardwareConnect(QString type);
+    bool m_timeoutsEnabled;
 
 signals:
     void aboutToCloseFlag();

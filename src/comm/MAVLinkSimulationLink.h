@@ -48,40 +48,31 @@ class MAVLinkSimulationLink : public LinkInterface
 {
     Q_OBJECT
 public:
-    MAVLinkSimulationLink(QString readFile="", QString writeFile="", int rate=5, QObject* parent = 0);
+    MAVLinkSimulationLink(QString readFile="", QString writeFile="", int rate=5);
     ~MAVLinkSimulationLink();
-    bool isConnected();
+    bool isConnected() const;
     qint64 bytesAvailable();
 
     void run();
+    void disableTimeouts() { }
+    void enableTimeouts() { }
     void requestReset() { }
     bool connect();
     bool disconnect();
 
-    /* Extensive statistics for scientific purposes */
-    qint64 getNominalDataRate();
-    qint64 getTotalUpstream();
-    qint64 getShortTermUpstream();
-    qint64 getCurrentUpstream();
-    qint64 getMaxUpstream();
-    qint64 getTotalDownstream();
-    qint64 getShortTermDownstream();
-    qint64 getCurrentDownstream();
-    qint64 getMaxDownstream();
-    qint64 getBitsSent();
-    qint64 getBitsReceived();
+    // Extensive statistics for scientific purposes
+    qint64 getConnectionSpeed() const;
+    qint64 getCurrentInDataRate() const;
+    qint64 getCurrentOutDataRate() const;
 
-    QString getName();
-    int getId();
-    int getBaudRate();
-    int getBaudRateType();
-    int getFlowType();
-    int getParityType();
-    int getDataBitsType();
-    int getStopBitsType();
-
-    int getLinkQuality();
-    bool isFullDuplex();
+    QString getName() const;
+    int getId() const;
+    int getBaudRate() const;
+    int getBaudRateType() const;
+    int getFlowType() const;
+    int getParityType() const;
+    int getDataBitsType() const;
+    int getStopBitsType() const;
 
 public slots:
     void writeBytes(const char* data, qint64 size);

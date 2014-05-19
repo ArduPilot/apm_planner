@@ -75,6 +75,8 @@ public slots:
     void selectPlotView();
     void selectTerminalView();
 
+    void checkAdvancedMode(bool checked);
+
     void connectMAV();
     void showConnectionDialog();
     void setConnection(bool connection);
@@ -96,6 +98,7 @@ public slots:
     void stopAnimation();
 
     void disableConnectWidget(bool disable);
+    void overrideDisableConnectWidget(bool disable);
 
     void parameterChanged(int uas, int component, int parameterCount,
                           int parameterId, QString parameterName, QVariant value);
@@ -104,6 +107,7 @@ private:
     QPointer<UASInterface> m_uas;
     QTimer m_heartbeatTimer;
     QPointer<LinkInterface> m_currentLink;
+    bool m_disableOverride;
 };
 
 #endif // APMTOOLBAR_H

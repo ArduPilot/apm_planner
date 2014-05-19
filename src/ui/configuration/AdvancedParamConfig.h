@@ -43,10 +43,14 @@ public:
     ~AdvancedParamConfig();
     void addRange(QString title,QString description,QString param,double min,double max,double increment);
     void addCombo(QString title,QString description,QString param,QList<QPair<int,QString> > valuelist);
+    void allParamsAdded(void);
+
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void doubleValueChanged(QString param,double value);
     void intValueChanged(QString param,int value);
+    void onSearchFilterChanged(const QString &searchFilterText);
+
 private:
     QMap<QString,ParamWidget*> m_paramToWidgetMap;
     QMap<QString,QVariant> m_paramToValueMap;

@@ -21,12 +21,10 @@
  
  ======================================================================*/
 
-/**
- * @file
- *   @brief TCP connection (server) for unmanned vehicles
- *   @author Lorenz Meier <mavteam@student.ethz.ch>
- *
- */
+/// @file
+///     @brief TCP link type for SITL support
+///
+///     @author Don Gagne <don@thegagnes.com>
 
 #ifndef TCPLINK_H
 #define TCPLINK_H
@@ -36,9 +34,15 @@
 #include <QMap>
 #include <QMutex>
 #include <QHostAddress>
-#include <QTcpSocket>
 #include <LinkInterface.h>
 #include <configuration.h>
+
+// Even though QAbstractSocket::SocketError is used in a signal by Qt, Qt doesn't declare it as a meta type.
+// This in turn causes debug output to be kicked out about not being able to queue the signal. We declare it
+// as a meta type to silence that.
+#include <QMetaType>
+#include <QTcpSocket>
+Q_DECLARE_METATYPE(QAbstractSocket::SocketError)
 
 //#define TCPLINK_READWRITE_DEBUG   // Use to debug data reads/writes
 
@@ -49,83 +53,68 @@ class TCPLink : public LinkInterface
 public:
     TCPLink(QHostAddress hostAddress = QHostAddress::LocalHost, quint16 socketPort = 5760);
     ~TCPLink();
+    void disableTimeouts() { }
+    void enableTimeouts() { }
+
+    void setHostAddress(QHostAddress hostAddress);
     
-    void requestReset() { }
+    QHostAddress getHostAddress(void) const { return _hostAddress; }
+    quint16 getPort(void) const { return _port; }
+    QTcpSocket* getSocket(void) { return _socket; }
     
-    bool isConnected() ;
-    qint64 bytesAvailable();
-    int getPort()  {
-        return port;
-    }
-    QHostAddress getHostAddress()  {
-        return host;
-    }
-    
-    QString getName() ;
-    int getBaudRate() ;
-    int getBaudRateType() ;
-    int getFlowType() ;
-    int getParityType() ;
-    int getDataBitsType() ;
-    int getStopBitsType() ;
-    
-    /* Extensive statistics for scientific purposes */
-    qint64 getNominalDataRate() ;
-    qint64 getTotalUpstream();
-    qint64 getCurrentUpstream();
-    qint64 getMaxUpstream();
-    qint64 getTotalDownstream();
-    qint64 getCurrentDownstream();
-    qint64 getMaxDownstream();
-    qint64 getBitsSent() ;
-    qint64 getBitsReceived() ;
-    
-    void run();
-    
-    int getLinkQuality() ;
-    bool isFullDuplex() ;
-    int getId() ;
+    // LinkInterface methods
+    virtual int     getId(void) const;
+    virtual QString getName(void) const;
+    virtual bool    isConnected(void) const;
+    virtual bool    connect(void);
+    virtual bool    disconnect(void);
+    virtual qint64  bytesAvailable(void);
+    virtual void    requestReset(void) {};
+
+    // Extensive statistics for scientific purposes
+    qint64 getConnectionSpeed() const;
+    qint64 getCurrentInDataRate() const;
+    qint64 getCurrentOutDataRate() const;
     
 public slots:
-    void setAddress(QHostAddress host);
-    void setPort(int port);    
-    void readBytes();
-    void writeBytes(const char* data, qint64 length);
-    bool connect();
-    bool disconnect();
-    void socketError(QAbstractSocket::SocketError socketError);
-    void setAddress(const QString &text);
+    void setHostAddress(const QString& hostAddress);
+    void setPort(int port);
+    
+    // From LinkInterface
+    virtual void writeBytes(const char* data, qint64 length);
 
-    
+protected slots:
+    void _socketError(QAbstractSocket::SocketError socketError);
+
+    // From LinkInterface
+    virtual void readBytes(void);
+
 protected:
-    QString name;
-    QHostAddress host;
-    quint16 port;
-    int id;
-    QTcpSocket* socket;
-    bool socketIsConnected;
-    
-    quint64 bitsSentTotal;
-    quint64 bitsSentCurrent;
-    quint64 bitsSentMax;
-    quint64 bitsReceivedTotal;
-    quint64 bitsReceivedCurrent;
-    quint64 bitsReceivedMax;
-    quint64 connectionStartTime;
-    QMutex statisticsMutex;
-    QMutex dataMutex;
-    
-    void setName(QString name);
-    
+    // From LinkInterface->QThread
+    virtual void run(void);
+
 private:
-	bool hardwareConnect(void);
+    void _resetName(void);
+	bool _hardwareConnect(void);
 #ifdef TCPLINK_READWRITE_DEBUG
-    void writeDebugBytes(const char *data, qint16 size);
+    void _writeDebugBytes(const char *data, qint16 size);
 #endif
+
+    QString         _name;
+    QHostAddress    _hostAddress;
+    quint16         _port;
+    int             _linkId;
+    QTcpSocket*     _socket;
+    bool            _socketIsConnected;
     
-signals:
-    //Signals are defined by LinkInterface
-    
+    quint64 _bitsSentTotal;
+    quint64 _bitsSentCurrent;
+    quint64 _bitsSentMax;
+    quint64 _bitsReceivedTotal;
+    quint64 _bitsReceivedCurrent;
+    quint64 _bitsReceivedMax;
+    quint64 _connectionStartTime;
+    QMutex  _statisticsMutex;
 };
 
 #endif // TCPLINK_H

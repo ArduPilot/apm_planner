@@ -335,31 +335,31 @@ include (libs/thirdParty/quazip/quazip.pri)
 #
 
 WindowsBuild {
-    message(Including support for XBee)
+    #message(Including support for XBee)
 
-    DEFINES += XBEELINK
+    #DEFINES += XBEELINK
 
-    INCLUDEPATH += libs/thirdParty/libxbee
+    #INCLUDEPATH += libs/thirdParty/libxbee
 
-    HEADERS += \
-        src/comm/XbeeLinkInterface.h \
-        src/comm/XbeeLink.h \
-        src/comm/HexSpinBox.h \
-        src/ui/XbeeConfigurationWindow.h \
-        src/comm/CallConv.h
+    #HEADERS += \
+    #    src/comm/XbeeLinkInterface.h \
+    #    src/comm/XbeeLink.h \
+    #    src/comm/HexSpinBox.h \
+    #    src/ui/XbeeConfigurationWindow.h \
+    #    src/comm/CallConv.h
 
-    SOURCES += \
-        src/comm/XbeeLink.cpp \
-        src/comm/HexSpinBox.cpp \
-        src/ui/XbeeConfigurationWindow.cpp
+    #SOURCES += \
+    #    src/comm/XbeeLink.cpp \
+    #    src/comm/HexSpinBox.cpp \
+    #    src/ui/XbeeConfigurationWindow.cpp
 
-    WindowsBuild {
-        LIBS += -llibs/thirdParty/libxbee/lib/libxbee
-    }
+    #WindowsBuild {
+    #    LIBS += -llibs/thirdParty/libxbee/lib/libxbee
+    #}
 
-    LinuxBuild {
-        LIBS += -lxbee
-    }
+    #LinuxBuild {
+    #    LIBS += -lxbee
+    #}
 } else:WindowsCrossBuild {
     #LIBS += -llibs/thirdParty/libxbee/lib/libxbee
     message(Skipping support for XBee)

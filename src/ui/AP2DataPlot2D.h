@@ -77,6 +77,8 @@ private slots:
     //Called by every valueChanged function to actually save the value/graph it.
     void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer = true);
 
+    void navModeChanged(int uasid, int mode, const QString& text);
+
     void autoScrollClicked(bool checked);
     void tableCellClicked(int row,int column);
     void logLine(QString line);
@@ -95,8 +97,12 @@ private slots:
     void horizontalScrollMoved(int value);
     void verticalScrollMoved(int value);
     void xAxisChanged(QCPRange range);
+    void replyTLogButtonClicked();
 
 private:
+    void showEvent(QShowEvent *evt);
+    void hideEvent(QHideEvent *evt);
+    QTimer *m_updateTimer;
     class Graph
     {
     public:
@@ -106,6 +112,7 @@ private:
         double axisIndex;
         QCPAxis *axis;
         QCPGraph *graph;
+        QList<QCPAbstractItem*> itemList;
     };
 
     QMap<QString,Graph> m_graphClassMap;
@@ -145,6 +152,7 @@ private:
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
     qint64 m_timeDiff;
+    bool m_tlogReplayEnabled;
 
 
     qint64 m_scrollStartIndex; //Actual graph start

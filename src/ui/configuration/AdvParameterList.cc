@@ -35,7 +35,9 @@ This file is part of the APM_PLANNER project
 #define ADV_TABLE_COLUMN_PARAM 0
 #define ADV_TABLE_COLUMN_VALUE 1
 #define ADV_TABLE_COLUMN_UNIT 2
-#define ADV_TABLE_COLUMN_DESCRIPTION 3
+#define ADV_TABLE_COLUMN_RANGE 3
+#define ADV_TABLE_COLUMN_DESCRIPTION 4
+#define ADV_TABLE_COLUMN_COUNT ADV_TABLE_COLUMN_DESCRIPTION + 1
 
 AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     m_paramDownloadState(starting),
@@ -60,7 +62,7 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.previousItemButton, SIGNAL(clicked()), this, SLOT(previousItemInSearch()));
 
 
-    ui.tableWidget->setColumnCount(4);
+    ui.tableWidget->setColumnCount(ADV_TABLE_COLUMN_COUNT);
     ui.tableWidget->verticalHeader()->hide();
     ui.tableWidget->setColumnWidth(ADV_TABLE_COLUMN_PARAM,200);
     ui.tableWidget->setColumnWidth(ADV_TABLE_COLUMN_VALUE,100);
@@ -69,6 +71,7 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_PARAM, new QTableWidgetItem("Param"));
     ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_VALUE, new QTableWidgetItem("Value"));
     ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_UNIT, new QTableWidgetItem("Unit"));
+    ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_RANGE, new QTableWidgetItem("Range"));
     ui.tableWidget->setHorizontalHeaderItem(ADV_TABLE_COLUMN_DESCRIPTION,new QTableWidgetItem("Description"));
     ui.tableWidget->horizontalHeaderItem(ADV_TABLE_COLUMN_DESCRIPTION)->setTextAlignment(Qt::AlignLeft);
 
@@ -91,6 +94,7 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->setBackground(brush);
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_VALUE)->setBackground(brush);
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_UNIT)->setBackground(brush);
+    ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_RANGE)->setBackground(brush);
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_DESCRIPTION)->setBackground(brush);
     m_modifiedParamMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = item->text().toDouble();
 
@@ -154,11 +158,14 @@ void AdvParameterList::refreshButtonClicked()
     m_paramDownloadState = starting;
 }
 
-void AdvParameterList::setParameterMetaData(QString name,QString humanname,QString description,QString unit)
+void AdvParameterList::setParameterMetaData(const QString &name, const QString &humanname,
+                                            const QString &description, const QString &unit,
+                                            const QString &range)
 {
     m_paramToNameMap[name] = humanname;
     m_paramToDescriptionMap[name] = description;
     m_paramToUnitMap[name] = unit;
+    m_paramToRangeMap[name] = range;
 }
 void AdvParameterList::loadButtonClicked()
 {
@@ -252,12 +259,12 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
     {
         ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1);
 
-        //Col 0, param name
+        //Param name
         QTableWidgetItem *paramnameitem = new QTableWidgetItem(parameterName);
         paramnameitem->setFlags(paramnameitem->flags() ^ Qt::ItemIsEditable);
-        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,0,paramnameitem);
+        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,ADV_TABLE_COLUMN_PARAM,paramnameitem);
 
-        //Col 1, param value
+        // Param value
         QString valstr = "";
         if (value.type() == QMetaType::Float || value.type() == QVariant::Double)
         {
@@ -269,23 +276,37 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
         }
         QTableWidgetItem *valitem = new QTableWidgetItem(valstr);
         valitem->setFlags(valitem->flags() | Qt::ItemIsEditable);
-        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,1,valitem);
+        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,ADV_TABLE_COLUMN_VALUE,valitem);
 
-        //Col 2, param unit
+        // Param unit
         if (m_paramToUnitMap.contains(parameterName))
         {
             QTableWidgetItem *item = new QTableWidgetItem(m_paramToUnitMap[parameterName]);
             item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,2,item);
+            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1, ADV_TABLE_COLUMN_UNIT,item);
         }
         else
         {
             QTableWidgetItem *item = new QTableWidgetItem("");
             item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,2,item);
+            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,ADV_TABLE_COLUMN_UNIT,item);
         }
 
-        //Col 3, description
+        // Param range
+        if (m_paramToRangeMap.contains(parameterName))
+        {
+            QTableWidgetItem *item = new QTableWidgetItem(m_paramToRangeMap[parameterName]);
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1, ADV_TABLE_COLUMN_RANGE,item);
+        }
+        else
+        {
+            QTableWidgetItem *item = new QTableWidgetItem("");
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,ADV_TABLE_COLUMN_RANGE,item);
+        }
+
+        // Description
         QString desc = "";
         if (m_paramToNameMap.contains(parameterName))
         {
@@ -302,10 +323,10 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
         }
         QTableWidgetItem *item = new QTableWidgetItem(desc);
         item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,3,item);
+        ui.tableWidget->setItem(ui.tableWidget->rowCount()-1,ADV_TABLE_COLUMN_DESCRIPTION,item);
 
 
-        m_paramValueMap[parameterName] = ui.tableWidget->item(ui.tableWidget->rowCount()-1,1);
+        m_paramValueMap[parameterName] = ui.tableWidget->item(ui.tableWidget->rowCount()-1,ADV_TABLE_COLUMN_VALUE);
         ui.tableWidget->sortByColumn(0,Qt::AscendingOrder);
     }
 
@@ -315,6 +336,7 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
         ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_PARAM)->setBackground(QBrush());
         ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_VALUE)->setBackground(QBrush());
         ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_UNIT)->setBackground(QBrush());
+        ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_RANGE)->setBackground(QBrush());
         ui.tableWidget->item(m_paramValueMap[parameterName]->row(),ADV_TABLE_COLUMN_DESCRIPTION)->setBackground(QBrush());
         m_origBrushList.removeAll(parameterName);
     }

@@ -51,7 +51,7 @@
      <x>0</x>
      <y>0</y>
      <width>1080</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMGround">
@@ -558,6 +558,11 @@
   <action name="actionCheck_For_Updates">
    <property name="text">
     <string>Check For Updates</string>
+   </property>
+  </action>
+  <action name="actionLoad_tlog">
+   <property name="text">
+    <string>Load tlog</string>
    </property>
   </action>
  </widget>

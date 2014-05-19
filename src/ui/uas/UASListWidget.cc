@@ -69,6 +69,7 @@ UASListWidget::UASListWidget(QWidget *parent) : QWidget(parent),
     this->setVisible(false);
 
     connect(UASManager::instance(),SIGNAL(UASCreated(UASInterface*)),this,SLOT(addUAS(UASInterface*)));
+    connect(UASManager::instance(),SIGNAL(UASDeleted(UASInterface*)),this,SLOT(removeUAS(UASInterface*)));
 
     // Get a list of all existing UAS
     foreach (UASInterface* uas, UASManager::instance()->getUASList()) {
@@ -126,9 +127,11 @@ void UASListWidget::activeUAS(UASInterface* uas)
 
 void UASListWidget::removeUAS(UASInterface* uas)
 {
-	Q_UNUSED(uas);
-//    uasViews.remove(uas);
-//    listLayout->removeWidget(uasViews.value(uas));
-//    uasViews.value(uas)->deleteLater();
+    if (uasViews.contains(uas))
+    {
+        uasViews.remove(uas);
+        listLayout->removeWidget(uasViews.value(uas));
+        uasViews.value(uas)->deleteLater();
+    }
 }
 
