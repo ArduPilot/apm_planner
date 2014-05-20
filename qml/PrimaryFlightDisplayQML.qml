@@ -19,6 +19,7 @@ import "./components"
 
 Rectangle {
     // Property Defintions
+    id:root
     property real roll: 0
     property real pitch: 0
     property real heading: 0
