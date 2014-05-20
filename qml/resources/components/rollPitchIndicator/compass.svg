@@ -24,11 +24,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
+     inkscape:zoom="2"
      inkscape:cx="-70.229098"
      inkscape:cy="23.77276"
      inkscape:document-units="px"
-     inkscape:current-layer="layer7"
+     inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:showpageshadow="false"
      inkscape:snap-global="false"
@@ -296,28 +296,28 @@
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="-755.80695"
-       y="-668.45105"
+       x="592.45911"
+       y="-808.16589"
        id="text8724"
        sodipodi:linespacing="125%"
-       transform="matrix(-0.70710678,-0.70710678,0.70710678,-0.70710678,0,0)"><tspan
+       transform="matrix(-0.70710678,0.70710678,-0.70710678,-0.70710678,0,0)"><tspan
          sodipodi:role="line"
          id="tspan8726"
-         x="-755.80695"
-         y="-668.45105"
+         x="592.45911"
+         y="-808.16589"
          style="stroke-width:0.5">SE</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="588.62018"
-       y="-809.20996"
+       x="-759.48566"
+       y="-668.66095"
        id="text8728"
        sodipodi:linespacing="125%"
-       transform="matrix(-0.70710678,0.70710678,-0.70710678,-0.70710678,0,0)"><tspan
+       transform="matrix(-0.70710678,-0.70710678,0.70710678,-0.70710678,0,0)"><tspan
          sodipodi:role="line"
          id="tspan8730"
-         x="588.62018"
-         y="-809.20996"
+         x="-759.48566"
+         y="-668.66095"
          style="stroke-width:0.5">SW</tspan></text>
   </g>
   <g

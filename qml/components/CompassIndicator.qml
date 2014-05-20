@@ -31,7 +31,7 @@ Rectangle {
         id: compassImage
         source: "../resources/components/rollPitchIndicator/compass.svg"
         smooth: true
-        rotation: heading
+        rotation: heading + 90
     }
 
     Image {
