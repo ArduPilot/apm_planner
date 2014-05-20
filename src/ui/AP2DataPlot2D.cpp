@@ -200,7 +200,31 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
                 newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
             }
         }
-        if (graph->data()->contains(key))
+        /*m_graphNameList.append("MODE");*/
+        if (m_graphClassMap.keys()[i] == "MODE")
+        {
+            if (m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.upperBound(key) != m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.constEnd())
+            {
+                newresult.append(m_graphClassMap.keys()[i] + ": " + m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.upperBound(key).value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            }
+            else
+            {
+                if (m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().size() > 0)
+                {
+                    //If we have more than one mode, but we didn't find any, our mouse is after the last item.
+                    //So grab the last item and use it
+                    int keysize = m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().size();
+                    double keyval = m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().at(keysize-1);
+                    QString val = m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.value(keyval);
+                    newresult.append(m_graphClassMap.keys()[i] + ": " + val + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                }
+                else
+                {
+                    newresult.append(m_graphClassMap.keys()[i] + ": " + "Unknown" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                }
+            }
+        }
+        else if (graph->data()->contains(key))
         {
             newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(key).value,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
@@ -541,6 +565,8 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
     itemtext->position->setCoords((newmsec / 1000.0),2.0);
     m_plot->addItem(itemtext);
     m_graphClassMap["MODE"].itemList.append(itemtext);
+    m_graphClassMap["MODE"].modeMap[newmsec / 1000.0] = text;
+
 
     QCPItemLine *itemline = new QCPItemLine(m_plot);
     m_graphClassMap["MODE"].itemList.append(itemline);

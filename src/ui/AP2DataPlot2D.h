@@ -113,6 +113,7 @@ private:
         QCPAxis *axis;
         QCPGraph *graph;
         QList<QCPAbstractItem*> itemList;
+        QMap<double,QString> modeMap;
     };
 
     QMap<QString,Graph> m_graphClassMap;
