@@ -259,9 +259,9 @@ Rectangle {
 
         onDisableChanged:{
             if(disable){
-                visible = false;
+                opacity = 0.5;
             } else {
-                visible = true;
+                opacity = 1.0;
             }
         }
 
@@ -269,6 +269,7 @@ Rectangle {
             id: linkDevice
             label: "none"
             minWidth: linkDeviceSize
+            enabled: !connectionWidget.disable
 
             onClicked: globalObj.showConnectionDialog()
         }
@@ -277,6 +278,7 @@ Rectangle {
             id: baudrate
             label: "none"
             minWidth: 70
+            enabled: !connectionWidget.disable
 
             onClicked: globalObj.showConnectionDialog()
         }
@@ -291,6 +293,8 @@ Rectangle {
             id: connectButton
             label: "CONNECT"
             image: "./resources/apmplanner/toolbar/connect.png"
+            enabled: !connectionWidget.disable
+
             onClicked: globalObj.connectMAV()
         }
 
