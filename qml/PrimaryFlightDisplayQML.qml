@@ -24,11 +24,27 @@ Rectangle {
     property real pitch: 0
     property real heading: 0
 
-    property real alt: 0
+    property real altitudeRelative: 0
+    property real altitudeAMSL: 0
     property real airspeed: 0
     property real groundspeed: 0
+    property real climbRate: 0
 
     property bool enableBackgroundVideo: false
+    property string statusMessage: ""
+    property bool showStatusMessage: false
+
+
+    onShowStatusMessageChanged: {
+        statusMessageTimer.start()
+    }
+
+    Timer{
+        id: statusMessageTimer
+        interval: 5000;
+        repeat: false;
+        onTriggered: showStatusMessage = false
+    }
 
     // Dial with a slider to adjust it
     RollPitchIndicator {
@@ -53,7 +69,7 @@ Rectangle {
         id: altIndicator
         anchors.right: parent.right
         width: 35
-        alt: parent.alt
+        alt: parent.altitudeRelative
     }
 
     SpeedIndicator {
@@ -73,5 +89,13 @@ Rectangle {
 
         heading: parent.heading
     }
+
+    StatusMessageIndicator  {
+        id: statusMessageIndicator
+        anchors.fill: parent
+        message: statusMessage
+        visible: showStatusMessage
+    }
+
 }
 

@@ -46,6 +46,7 @@ private slots:
     void altitudeChanged(UASInterface *uas, double altitudeAMSL, double altitudeRelative,
                          double climbRate, quint64 usec);
     void speedChanged(UASInterface* uas, double groundSpeed, double airSpeed, quint64 usec);
+    void uasTextMessage(int uasid, int componentid, int severity, QString text);
 
 private:
     Ui::PrimaryFlightDisplayQML *ui;
