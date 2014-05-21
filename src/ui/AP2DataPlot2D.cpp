@@ -200,28 +200,35 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
                 newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
             }
         }
-        /*m_graphNameList.append("MODE");*/
         if (m_graphClassMap.keys()[i] == "MODE")
         {
-            if (m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.upperBound(key) != m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.constEnd())
+            if (m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().size() > 1)
             {
-                newresult.append(m_graphClassMap.keys()[i] + ": " + m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.upperBound(key).value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                for (QMap<double,QString>::const_iterator modemapiterator = m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.constBegin();modemapiterator!=m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.constEnd();modemapiterator++)
+                {
+                    if (modemapiterator.key() < key)
+                    {
+                        if (modemapiterator==m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.constEnd()-1)
+                        {
+                            //We're at the end, use the end
+                            newresult.append(m_graphClassMap.keys()[i] + ": " + modemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                        }
+                        else if ((modemapiterator+1).key() > key)
+                        {
+                            //This only gets hit if we're not at the end, and we have the proper value
+                            newresult.append(m_graphClassMap.keys()[i] + ": " + modemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().size() == 1)
+            {
+                newresult.append(m_graphClassMap.keys()[i] + ": " + m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.begin().value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
             }
             else
             {
-                if (m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().size() > 0)
-                {
-                    //If we have more than one mode, but we didn't find any, our mouse is after the last item.
-                    //So grab the last item and use it
-                    int keysize = m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().size();
-                    double keyval = m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().at(keysize-1);
-                    QString val = m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.value(keyval);
-                    newresult.append(m_graphClassMap.keys()[i] + ": " + val + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-                }
-                else
-                {
-                    newresult.append(m_graphClassMap.keys()[i] + ": " + "Unknown" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-                }
+                newresult.append(m_graphClassMap.keys()[i] + ": " + "Unknown" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
             }
         }
         else if (graph->data()->contains(key))
@@ -235,7 +242,6 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
         else
         {
             newresult.append(m_graphClassMap.keys()[i] + ": " + "ERR" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-
         }
     }
     QToolTip::showText(QPoint(evt->pos().x() + m_plot->x(),evt->pos().y()+m_plot->y()),newresult);
