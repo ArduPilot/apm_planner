@@ -52,12 +52,14 @@ Rectangle {
     AltitudeIndicator {
         id: altIndicator
         anchors.right: parent.right
+        width: 35
         alt: parent.alt
     }
 
     SpeedIndicator {
         id: speedIndicator
         anchors.left: parent.left
+        width: 35
         airspeed: parent.airspeed
         groundspeed: parent.groundspeed
     }
@@ -65,6 +67,10 @@ Rectangle {
     CompassIndicator {
         id: compassIndicator
         anchors.horizontalCenter: parent.horizontalCenter
+        transform: Translate {
+            y: 20
+        }
+
         heading: parent.heading
     }
 }

@@ -17,6 +17,7 @@
 import QtQuick 1.1
 
 Rectangle {
+    id: root
     property real airspeed: 0 // m/s
     property real groundspeed: 0 //m/s
 
@@ -26,13 +27,12 @@ Rectangle {
 
     anchors.verticalCenter: parent.verticalCenter
 
-    width: 50
     height: parent.height*0.8
     z: 1
     clip: true
     smooth: true
     border.color: "black"
-    color: Qt.rgba(0,0,0,0.25)
+    color: Qt.rgba(0,0,0,0.2)
     Column{
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
@@ -45,17 +45,20 @@ Rectangle {
                     "-110", "-120", "-130", "-140", "-150" , "-160", "-170", "-180", "-190" , "-200"]
             Rectangle { // Graticule Light
                 id:graticuleLight
-                width: 35
+                width: root.width
                 height: 2
                 color: "white"
                 smooth: true
+                opacity: 0.8
                 Text {
-                    anchors.verticalCenterOffset: -10
+                    anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     smooth: true
+                    font.bold: true
                     text: modelData
                     color: "white"
-                    opacity: 0.5
+                    style: Text.Outline
+                    styleColor: "black"
                 }
             }
         }
@@ -68,23 +71,14 @@ Rectangle {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width
-        height: 17
+        height: 20
         color: "black"
         border.color: "white"
-        opacity: 0.75
+        opacity: 1.0
         Text {
             anchors.centerIn: parent
             text: airspeed.toFixed(1)
             color: "white"
         }
-    }
-
-    Rectangle { // Speed Fine Line
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        width: parent.width
-        height: 2
-        color: "red"
-        opacity: 0.4
     }
 }
