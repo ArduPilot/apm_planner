@@ -83,6 +83,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QGCHilFlightGearConfiguration.h>
 #include <QDeclarativeView>
 
+#define PFD_QML
+
 MainWindow* MainWindow::instance(QSplashScreen* screen)
 {
     static MainWindow* _instance = 0;
@@ -723,10 +725,17 @@ void MainWindow::buildCommonWidgets()
         menuToDockNameMap[tempAction] = "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET";
     }
 #else
-    createDockWidget(simView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display QML"),
+    createDockWidget(simView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
-    createDockWidget(pilotView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display QML"),
+    createDockWidget(pilotView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
+
+    { //This is required since we don't show the old PFD in any view
+        QAction* tempAction = ui.menuTools->addAction(tr("Primary Flight Display (old)"));
+        tempAction->setCheckable(true);
+        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+        menuToDockNameMap[tempAction] = "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET";
+    }
 #endif
 
     QGCTabbedInfoView *infoview = new QGCTabbedInfoView(this);
@@ -741,7 +750,7 @@ void MainWindow::buildCommonWidgets()
 
 
 
-#ifdef QGC_OSG_ENABLED
+#ifdef QGC_OSG_ENABLE
     if (q3DWidget)
     {
         q3DWidget = Q3DWidgetFactory::get("PIXHAWK", this);
