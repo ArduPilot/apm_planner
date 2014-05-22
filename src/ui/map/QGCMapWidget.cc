@@ -272,7 +272,7 @@ void QGCMapWidget::loadSettings()
     m_lastLon = settings.value("LAST_LONGITUDE", 0.0f).toDouble();
     m_lastZoom = settings.value("LAST_ZOOM", 1.0f).toDouble();
 
-    SetMapType(static_cast<MapType::Types>(settings.value("MAP_TYPE", MapType::BingHybrid).toInt()));
+    SetMapType(static_cast<MapType::Types>(settings.value("MAP_TYPE", MapType::GoogleHybrid).toInt()));
 
     trailType = static_cast<mapcontrol::UAVTrailType::Types>(settings.value("TRAIL_TYPE", trailType).toInt());
     trailInterval = settings.value("TRAIL_INTERVAL", trailInterval).toFloat();
