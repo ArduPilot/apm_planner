@@ -141,7 +141,7 @@ namespace core {
                 case MapType::GoogleTerrain:
                 case MapType::GoogleHybrid:
                     {
-                        qheader.setRawHeader("Referrer", "http://maps.google.com/");
+                        qheader.setRawHeader("Referrer", "https://maps.google.com/");
                     }
                     break;
 
