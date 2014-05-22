@@ -23,23 +23,23 @@
 #define MAVLINK_LOGFILE_EXT ".tlog"
 
 #ifndef APP_TYPE
-#define APP_TYPE "stable" // or "daily" for master branch builds
+#define APP_TYPE stable // or "daily" for master branch builds
 #endif
 
 #ifndef APP_PLATFORM
 
 #ifdef Q_OS_MACX
-#define APP_PLATFORM "osx"
+#define APP_PLATFORM osx
 #elif defined(Q_LINUX_64) && defined(Q_UBUNTU)
-#define APP_PLATFORM "ubuntu64"
+#define APP_PLATFORM ubuntu64
 #elif defined(Q_LINUX_64)
-#define APP_PLATFORM "debian64"
+#define APP_PLATFORM debian64
 #elif defined(Q_OS_LINUX) && defined(Q_UBUNTU)
-#define APP_PLATFORM "ubuntu32"
+#define APP_PLATFORM ubuntu32
 #elif defined(Q_OS_LINUX)
-#define APP_PLATFORM "debian32"
+#define APP_PLATFORM debian32
 #else
-#define APP_PLATFORM "win"
+#define APP_PLATFORM win
 #endif
 
 #endif
