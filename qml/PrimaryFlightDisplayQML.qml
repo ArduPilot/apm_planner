@@ -46,7 +46,6 @@ Rectangle {
         onTriggered: showStatusMessage = false
     }
 
-    // Dial with a slider to adjust it
     RollPitchIndicator {
         id: rollPitchIndicator
         anchors.centerIn: parent
@@ -97,5 +96,11 @@ Rectangle {
         visible: showStatusMessage
     }
 
+    InformationOverlayIndicator{
+        id: informationIndicator
+        anchors.fill: parent
+        airSpeed: parent.airspeed
+        groundSpeed: parent.groundspeed
+    }
 }
 
