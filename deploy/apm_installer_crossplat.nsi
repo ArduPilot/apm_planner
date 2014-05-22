@@ -46,6 +46,8 @@ Section "APM Planner 2 files" APM_FILES
   File ../uploader/px4uploader.exe
   File ../uploader/Ionic.Zip.Reduced.dll
   File ../uploader/BouncyCastle.Crypto.dll
+  File ../uploader/AP2OTPCheck.exe
+  File ../uploader/validcertificates.xml
 
   WriteUninstaller $INSTDIR\APMPlanner2_uninstall.exe
 SectionEnd 
