@@ -32,7 +32,11 @@ This file is part of the APM_PLANNER project
 #include "QsLog.h"
 #include <QMessageBox>
 
-RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent)
+RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_pitchChannel(0),
+    m_rollChannel(0),
+    m_yawChannel(0),
+    m_throttleChannel(0)
 {
     ui.setupUi(this);
 
@@ -77,7 +81,30 @@ RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     rcTrim << 1500.0 << 1500.0 << 1500.0 << 1500.0 << 1500.0 << 1500.0 << 1500.0 << 1500.0;
     rcValue << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0;
 
+    ui.revPitchCheckBox->hide();
+    ui.revRollCheckBox->hide();
+    ui.revThrottleCheckBox->hide();
+    ui.revYawCheckBox->hide();
+    ui.elevonConfigGroupBox->hide();
+
     initConnections();
+
+    connect(ui.revPitchCheckBox, SIGNAL(clicked(bool)), this, SLOT(pitchClicked(bool)));
+    connect(ui.revRollCheckBox, SIGNAL(clicked(bool)), this, SLOT(rollClicked(bool)));
+    connect(ui.revYawCheckBox, SIGNAL(clicked(bool)), this, SLOT(yawClicked(bool)));
+    connect(ui.revThrottleCheckBox, SIGNAL(clicked(bool)), this, SLOT(throttleClicked(bool)));
+
+    connect(ui.elevonCheckBox, SIGNAL(clicked(bool)), this, SLOT(elevonsChecked(bool)));
+    connect(ui.elevonRevCheckBox, SIGNAL(clicked(bool)), this, SLOT(elevonsReversed(bool)));
+    connect(ui.elevonCh1CheckBox, SIGNAL(clicked(bool)), this, SLOT(elevonsCh1Rev(bool)));
+    connect(ui.elevonCh2CheckBox, SIGNAL(clicked(bool)), this, SLOT(elevonsCh2Rev(bool)));
+
+    ui.elevonOutputComboBox->addItem("Disabled");
+    ui.elevonOutputComboBox->addItem("Up Up");
+    ui.elevonOutputComboBox->addItem("Up Down");
+    ui.elevonOutputComboBox->addItem("Down Up");
+    ui.elevonOutputComboBox->addItem("Down Down");
+    connect(ui.elevonOutputComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(elevonOutput()));
 }
 
 RadioCalibrationConfig::~RadioCalibrationConfig()
@@ -95,6 +122,20 @@ void RadioCalibrationConfig::activeUASSet(UASInterface *uas)
         return;
     }
     connect(m_uas,SIGNAL(remoteControlChannelRawChanged(int,float)),this,SLOT(remoteControlChannelRawChanged(int,float)));
+
+    if (m_uas->isFixedWing()){
+        ui.revPitchCheckBox->show();
+        ui.revRollCheckBox->show();
+        ui.revThrottleCheckBox->show();
+        ui.revYawCheckBox->show();
+        ui.elevonConfigGroupBox->show();
+    } else {
+        ui.revPitchCheckBox->hide();
+        ui.revRollCheckBox->hide();
+        ui.revThrottleCheckBox->hide();
+        ui.revYawCheckBox->hide();
+        ui.elevonConfigGroupBox->hide();
+    }
 }
 void RadioCalibrationConfig::remoteControlChannelRawChanged(int chan,float val)
 {
@@ -119,8 +160,81 @@ void RadioCalibrationConfig::remoteControlChannelRawChanged(int chan,float val)
 
 void RadioCalibrationConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
 
+    if(parameterName.startsWith("RCMAP_PITCH")){
+        m_pitchChannel = value.toInt();
+        if(m_uas){
+            bool check = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(m_pitchChannel)
+                                                                     + "_REV").toBool();
+            ui.revPitchCheckBox->setChecked(check);
+        }
+        return;
+
+    } else if(parameterName.startsWith("RCMAP_ROLL")){
+        m_rollChannel = value.toInt();
+        if(m_uas){
+            bool check = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(m_rollChannel)
+                                                                     + "_REV").toBool();
+            ui.revRollCheckBox->setChecked(check);
+        }
+        return;
+
+    } else if(parameterName.startsWith("RCMAP_YAW")){
+        m_yawChannel = value.toInt();
+        if(m_uas){
+            bool check = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(m_yawChannel)
+                                                                     + "_REV").toBool();
+            ui.revYawCheckBox->setChecked(check);
+        }
+        return;
+
+    } else if(parameterName.startsWith("RCMAP_THROTTLE")){
+        m_throttleChannel = value.toInt();
+        if(m_uas){
+            bool check = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(m_throttleChannel)
+                                                                     + "_REV").toBool();
+            ui.revThrottleCheckBox->setChecked(check);
+        }
+        return;
+
+    }
+
+    // Set Pitch Reverse Channel
+    if (parameterName.startsWith("RC" + QString::number(m_pitchChannel) + "_REV")){
+        ui.revPitchCheckBox->setChecked(value.toBool());
+    }
+
+    // Set Roll Reverse Channel
+    if (parameterName.startsWith("RC" + QString::number(m_rollChannel) + "_REV")){
+        ui.revRollCheckBox->setChecked(value.toBool());
+    }
+
+    // Set Yaw Reverse Channel
+    if (parameterName.startsWith("RC" + QString::number(m_yawChannel) + "_REV")){
+        ui.revYawCheckBox->setChecked(value.toBool());
+    }
+
+    // Set Throttle Reverse Channel
+    if (parameterName.startsWith("RC" + QString::number(m_throttleChannel) + "_REV")){
+        ui.revThrottleCheckBox->setChecked(value.toBool());
+    }
+
+    if (parameterName.startsWith("ELEVON_MIXING")){
+        ui.elevonCheckBox->setChecked(value.toBool());
+    } else if (parameterName.startsWith("ELEVON_REVERSE")){
+        ui.elevonRevCheckBox->setChecked(value.toBool());
+    } else if (parameterName.startsWith("ELEVON_CH1_REV")){
+        ui.elevonCh1CheckBox->setChecked(value.toBool());
+    } else if (parameterName.startsWith("ELEVON_CH2_REV")){
+        ui.elevonCh2CheckBox->setChecked(value.toBool());
+    } else if (parameterName.startsWith("ELEVON_OUTPUT")){
+        ui.elevonOutputComboBox->setCurrentIndex(value.toInt());
+    }
 }
+
+
 void RadioCalibrationConfig::guiUpdateTimerTick()
 {
     ui.rollWidget->setValue(rcValue[0]);
@@ -153,10 +267,12 @@ void RadioCalibrationConfig::guiUpdateTimerTick()
 }
 void RadioCalibrationConfig::showEvent(QShowEvent *event)
 {
+    Q_UNUSED(event);
     guiUpdateTimer->start(100);
 }
 void RadioCalibrationConfig::hideEvent(QHideEvent *event)
 {
+    Q_UNUSED(event);
     guiUpdateTimer->stop();
 }
 void RadioCalibrationConfig::calibrateButtonClicked()
@@ -241,5 +357,100 @@ void RadioCalibrationConfig::calibrateButtonClicked()
         ui.radio8Widget->setMin(800);
         ui.radio8Widget->setMax(2200);
 
+    }
+}
+
+void RadioCalibrationConfig::pitchClicked(bool state)
+{
+    if(m_uas){
+        int channel = m_uas->getParamManager()->getParameterValue(1, "RCMAP_PITCH").toInt();
+        QString channelString = QString("RC" + QString::number(channel) + "_REV");
+        if (state)
+            m_uas->setParameter(1, channelString, 1.0);
+        else
+            m_uas->setParameter(1, channelString, 0.0);
+    }
+}
+
+void RadioCalibrationConfig::rollClicked(bool state)
+{
+    if(m_uas){
+        int channel = m_uas->getParamManager()->getParameterValue(1, "RCMAP_ROLL").toInt();
+        QString channelString = QString("RC" + QString::number(channel) + "_REV");
+        if (state)
+            m_uas->setParameter(1, channelString, 1.0);
+        else
+            m_uas->setParameter(1, channelString, 0.0);
+    }
+}
+
+void RadioCalibrationConfig::yawClicked(bool state)
+{
+    if(m_uas){
+        int channel = m_uas->getParamManager()->getParameterValue(1, "RCMAP_YAW").toInt();
+        QString channelString = QString("RC" + QString::number(channel) + "_REV");
+        if (state)
+            m_uas->setParameter(1, channelString, 1.0);
+        else
+            m_uas->setParameter(1, channelString, 0.0);
+    }
+}
+
+void RadioCalibrationConfig::throttleClicked(bool state)
+{
+    if(m_uas){
+        int channel = m_uas->getParamManager()->getParameterValue(1, "RCMAP_THROTTLE").toInt();
+        QString channelString = QString("RC" + QString::number(channel) + "_REV");
+        if (state)
+            m_uas->setParameter(1, channelString, 1.0);
+        else
+            m_uas->setParameter(1, channelString, 0.0);
+    }
+}
+
+void RadioCalibrationConfig::elevonsChecked(bool state)
+{
+    if(m_uas){
+        if (state)
+            m_uas->setParameter(1, "ELEVON_MIXING", 1.0);
+        else
+            m_uas->setParameter(1, "ELEVON_MIXING", 0.0);
+        }
+}
+
+void RadioCalibrationConfig::elevonsReversed(bool state)
+{
+    if(m_uas){
+        if (state)
+            m_uas->setParameter(1, "ELEVON_REVERSE", 1.0);
+        else
+            m_uas->setParameter(1, "ELEVON_REVERSE", 0.0);
+        }
+}
+
+void RadioCalibrationConfig::elevonsCh1Rev(bool state)
+{
+    if(m_uas){
+        if (state)
+            m_uas->setParameter(1, "ELEVON_CH1_REV", 1.0);
+        else
+            m_uas->setParameter(1, "ELEVON_CH1_REV", 0.0);
+        }
+}
+
+void RadioCalibrationConfig::elevonsCh2Rev(bool state)
+{
+    if(m_uas){
+        if (state)
+            m_uas->setParameter(1, "ELEVON_CH2_REV", 1.0);
+        else
+            m_uas->setParameter(1, "ELEVON_CH2_REV", 0.0);
+        }
+}
+
+void RadioCalibrationConfig::elevonOutput()
+{
+    if(m_uas){
+        m_uas->setParameter(1, "ELEVON_OUTPUT", ui.elevonOutputComboBox->currentIndex());
     }
 }
