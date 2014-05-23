@@ -116,7 +116,9 @@ QString ApmPlane::stringForMode(int aMode)
     case CRUISE:
         return "Cruise";
         break;
-    case RESERVED_8:
+    case AUTOTUNE:
+        return "Auto Tune";
+        break;
     case RESERVED_9:
     case RESERVED_13:
     case RESERVED_14:
