@@ -1,3 +1,81 @@
+Release Notes - APM Planner 2.0.10 - 2014-05-23
+
+505f760:  Config: Update version to 2.0.10 - Bill Bonney
+e98c38c:  Release Notes: Add commit history for all releases from RC1 to 2.0.9 - Bill Bonney
+fb6e08e:  Radio Setup: Add APM:Plane support for channel reversal and elevons - Bill Bonney
+84bd652:  Full Param Setup: fix incorrect reporting on types other than float - Bill Bonney
+379bfc8:  UAS: Add Auto Tune mode to APM:Plane - Bill Bonney
+f3595ee:  Config: Update sys_id to be 252 to identify AP2 - Bill Bonney
+18ac9a3:  Build: Added extra debug output on start to show APP_PLATFORM and APP_TYPE - Michael Carpenter
+86998a7:  Auto Update: Fix for auto update regex, and extra quotes around APP_PLATFORM - Michael Carpenter
+ae8b6be:  Firmware Install: Change to use internal code for PX4 Firmware Update - Michael Carpenter
+1167f6e:  Graph View: More changes to MODE to show the proper mode at the proper position - Michael Carpenter
+f9af21f:  Updated Arduplane and ArduCopter modes - Andre Kjellstrup
+a3d3ad5:  Separate headings for Throttle Failsafe and Battery Failsafe features - Ed Bartley
+5f31d97:  Replaced BatteryFailSafe CheckBox with a ComboBox to allow DISABLED, LAND, and RTL options. UI updates for clarity. - Ed Bartley
+aa84910:  Map Widget: Set Google Hybrid maps as the default - Bill Bonney
+1938f09:  Map Widget: Fixes #26 Fixes #98: Google Hybrid maps fixed - Stephen Dade
+3ae55a1:  PFD QML: Added basic information overlay - Bill Bonney
+f47234f:  PFD QML: Fix copyright notice - Bill Bonney
+e8bc792:  PFD QML: Add status message warning indicator - Bill Bonney
+64c1dc5:  QML PFD: Make the new QML PFD the default - Bill Bonney
+38eedcd:  PFD QML: Some more polish on the Indicators - Bill Bonney
+2961986:  PFD QML: Fix compass heading (part II) - Bill Bonney
+aa37112:  APM ToolBar: Dim connection controls on disable - Bill Bonney
+f637982:  PFD QML: Make PFD QML an option in Advanced menu - Bill Bonney
+9c6ea99:  PFD QML: Fix Heading on compasss & mislabel - Bill Bonney
+c7e6b09:  PFD QML: Small changes for initial scaling support - Bill Bonney
+16db993:  Graph View: Fix MODE display not showing up properly in mouse-over - Michael Carpenter
+bbbb027:  Full Param Setup: Fix #321, added factory reset button to reset all parameters - Michael Carpenter
+4f86f36:  Param Setup: Fix for #332, arduplane.pdef.xml being deleted when there is no internet connection - Michael Carpenter
+8e4032f:  PFD QML: blend pitch indicator by dropping transparency value - Bill Bonney
+9f83dd9:  PFD QML: Darken compass - Bill Bonney
+db5b734:  PFD QML: Fix Speed/Alt Indicator scaling - Bill Bonney
+2920ce5:  PFD QML: Separate out Pitch Indicator - Bill Bonney
+c60091e:  PFD QML: Add property to control background video - Bill Bonney
+4f048a1:  PFD QML: Added Compass Indicator - Bill Bonney
+7d8513b:  PFD QML: Adjustments to Alt and RollPitch Indicators - Bill Bonney
+03824dd:  PFD QML: Added Speed Indicator - Bill Bonney
+4ca6b6a:  PFD QML: Update crossHair to use chevron and wing level indicator - Bill Bonney
+95c0f05:  PFD QML: Fix to make Roll Graticule rotate - Bill Bonney
+35bdc98:  PFD QML: Added new QML Altitude Indicator - Bill Bonney
+aeedbb6:  PFD QML: Minor improvements to Roll Pitch Indicator - Bill Bonney
+b23d34e:  PFD QML: Adde cross hair using svg image - Bill Bonney
+1b0b1dd:  PFD QML: Add roll indicator using svg image - Bill Bonney
+99dc9ff:  PFD QML: New PFD Roll Pitch Indicator - Bill Bonney
+8205be6:  Linux: Fixed auto-updater not detecting OS correctly - Stephen Dade
+b356c9c:  Comm: Fixed UAS::shutdown() to use proper command params, and added UAS::reboot() - Michael Carpenter
+323a659:  Comm: Documentation fix of source comments - Michael Carpenter
+21eedda:  Add libqt4-sql-sqlite to build deps in Linux install docs - John Leach
+56e9156:  Comms: Fix #319 by increasing timeout on TCPLink connect, patch from @BurtMacklin - Michael Carpenter
+9c2ea9c:  Log Replay: Fix for issue compiling with new LinkInterface API - Michael Carpenter
+9f33244:  Build: Removed requirement for defines to be strings for the update check - Michael Carpenter
+ef90b1b:  Build: Changed debian rules file to include APP_PLATFORM defines for pbuilder - Michael Carpenter
+7fb1ca7:  Graph View: MODE string messages now display for live  data and tlog replay - Michael Carpenter
+1612a12:  Graph View: Fix for UI not refreshing, and added MODE string messages - Michael Carpenter
+ffe169e:  Log replay: Added 10x speed button, and cleaned up unneeded code - Michael Carpenter
+936bdee:  Log Replay: Improvments to the UI, as well as the backend for mavlink handling - Michael Carpenter
+e8fd7da:  Status Bar: Removed hardcoded stylesheet for QGCStatusBar - Michael Carpenter
+dcf3095:  Log Replay: Improved speed and position modifiers as well as cpu usage. - Michael Carpenter
+f6b4722:  Log Replay: Fix for random crash involving not checking array size before accessing - Michael Carpenter
+709854e:  Documentation: Fix #237, brought README.md up to date for building AP2 in windows - Michael Carpenter
+e111af6:  Map Tool Widget: Fix to use new UASInterface API - Bill Bonney
+8827fb1:  HIL Config: Update to use new HIL API in UASInterface. - Bill Bonney
+44cd817:  Configuration: Set the GCS sys is to be 253 to identify logs from AP2 - Bill Bonney
+6198689:  Mission Widget: Update to use AMSL & Relative Alt APIs - Bill Bonney
+d3f21b1:  3DMap Widget: Update to use AMSL & Relative Alt APIs - Bill Bonney
+595c9be:  Map Widget: Update to use new AMSL & Relative Alt APIs - Bill Bonney
+36ad1ab:  UAS: Update PxQuad to new UASInterface API - Bill Bonney
+6dd36a9:  PFD Widget: Updates to new UASInterface API - Bill Bonney
+eafa630:  UAS: Updated the UASInterface API to align more with QGC. - Bill Bonney
+63af71d:  QGC Log Player: Update to use new LinkInterface API - Bill Bonney
+5b15f1a:  APMToolBar: Update to use new getConnectionSpeed() API - Bill Bonney
+b4385e1:  BUILD: Add new dependency on QSignalSpy in TCPLink - Bill Bonney
+24e6292:  COMMS: Update link objects to use new LinkInterface definition - Bill Bonney
+9c3c9f4:  Windows: Fixed Windows compilation error caused by #322 - Michael Carpenter
+095ff1e:  Linux: fixed compilation errors in Ubuntu 14.04 - Stephen Dade
+4ed97bf:  Basic Tuning: Add RC Feel as a slider to adjust. - Bill Bonney
+e3cdd1b:  Version: Push manifest to trigger update to clients. - Bill Bonney
 
 Release Notes - APM Planner 2.0.9 - 2014-04-25
 
