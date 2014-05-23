@@ -2,6 +2,8 @@
 #define TLOGREPLYLINK_H
 
 #include "LinkInterface.h"
+#include "MAVLinkDecoder.h"
+#include "QGCMAVLinkInspector.h"
 #include <QMutex>
 
 class TLogReplayLink : public LinkInterface
@@ -9,21 +11,17 @@ class TLogReplayLink : public LinkInterface
     Q_OBJECT
 public:
     explicit TLogReplayLink(QObject *parent = 0);
+    void setMavlinkDecoder(MAVLinkDecoder *decoder);
+    void setMavlinkInspector(QGCMAVLinkInspector *inspector);
     void play();
     void pause();
     bool isPaused();
-    int getId();
-    QString getName();
+    int getId() const;
+    QString getName() const;
     void requestReset();
-    bool isConnected();
-    qint64 getNominalDataRate();
-    bool isFullDuplex();
-    int getLinkQuality();
-    qint64 getTotalUpstream();
-    qint64 getCurrentUpstream();
-    qint64 getMaxUpstream();
-    qint64 getBitsSent();
-    qint64 getBitsReceived();
+    bool isConnected() const;
+    qint64 getConnectionSpeed() const;
+
     bool connect();
     bool disconnect();
     qint64 bytesAvailable();
@@ -34,6 +32,7 @@ public:
 
     //Speed is 1-100, being slowest to fastest
     void setSpeed(int speed);
+    void setPosition(qint64 pos);
     void disableTimeouts() { }
     void enableTimeouts() { }
 signals:
@@ -58,7 +57,10 @@ private:
     bool m_threadRun;
     QMutex m_variableAccessMutex;
     int m_speedVar;
+    qint64 m_posVar;
     bool m_pause;
+    MAVLinkDecoder *m_mavlinkDecoder;
+    QGCMAVLinkInspector *m_mavlinkInspector;
 };
 
 #endif // TLOGREPLYLINK_H

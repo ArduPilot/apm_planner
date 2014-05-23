@@ -86,6 +86,7 @@ void MAVLinkSimulationMAV::mainloop()
         servos.servo6_raw = 1500;
         servos.servo7_raw = 1500;
         servos.servo8_raw = 2000;
+        servos.port = 1;    // set a fake port number
 
         mavlink_msg_servo_output_raw_encode(systemid, MAV_COMP_ID_IMU, &msg, &servos);
         link->sendMAVLinkMessage(&msg);
@@ -139,7 +140,6 @@ void MAVLinkSimulationMAV::mainloop()
 
         }
 
-
         // GLOBAL POSITION
         mavlink_message_t msg;
         mavlink_global_position_int_t pos;
@@ -168,12 +168,27 @@ void MAVLinkSimulationMAV::mainloop()
 
         // SYSTEM STATUS
         mavlink_sys_status_t status;
+        
+        // Since the simulation outputs global position, attitude and raw pressure we specify that the
+        // sensors that would be collecting this information are present, enabled and healthy.
+        
+        status.onboard_control_sensors_present = MAV_SYS_STATUS_SENSOR_3D_GYRO |
+                                                    MAV_SYS_STATUS_SENSOR_3D_ACCEL |
+                                                    MAV_SYS_STATUS_SENSOR_3D_MAG |
+                                                    MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE |
+                                                    MAV_SYS_STATUS_SENSOR_GPS;
+        
+        status.onboard_control_sensors_enabled = status.onboard_control_sensors_present;
+        status.onboard_control_sensors_health = status.onboard_control_sensors_present;
         status.load = 300;
-        //        status.mode = sys_mode;
-        //        status.nav_mode = nav_mode;
-        status.errors_comm = 0;
         status.voltage_battery = 10500;
-        //        status.status = sys_state;
+        status.current_battery = -1;  // -1: autopilot does not measure the current
+        status.drop_rate_comm = 0;
+        status.errors_comm = 0;
+        status.errors_count1 = 0;
+        status.errors_count2 = 0;
+        status.errors_count3 = 0;
+        status.errors_count4 = 0;
         status.battery_remaining = 90;
         mavlink_msg_sys_status_encode(systemid, MAV_COMP_ID_IMU, &msg, &status);
         link->sendMAVLinkMessage(&msg);
@@ -226,6 +241,13 @@ void MAVLinkSimulationMAV::mainloop()
             hil.pitch_elevator = 0.05f;
             hil.yaw_rudder = 0.05f;
             hil.throttle = 0.6f;
+            hil.aux1 = 0.0f;
+            hil.aux2 = 0.0f;
+            hil.aux3 = 0.0f;
+            hil.aux4 = 0.0f;
+            hil.mode = MAV_MODE_FLAG_HIL_ENABLED;
+            hil.nav_mode = 0;   // not currently used by any HIL consumers
+            
             // Encode the data (adding header and checksums, etc.)
             mavlink_msg_hil_controls_encode(systemid, MAV_COMP_ID_IMU, &ret, &hil);
             // And send it
@@ -304,6 +326,11 @@ void MAVLinkSimulationMAV::mainloop()
     timer25Hz--;
 }
 
+// Uncomment to turn on debug message printing
+//#define DEBUG_PRINT_MESSAGE
+
+#ifdef DEBUG_PRINT_MESSAGE
+
 //static unsigned chan_counts[MAVLINK_COMM_NUM_BUFFERS];
 
 static const unsigned message_lengths[] = MAVLINK_MESSAGE_LENGTHS;
@@ -316,37 +343,37 @@ static void print_one_field(const mavlink_message_t *msg, const mavlink_field_in
 #define PRINT_FORMAT(f, def) (f->print_format?f->print_format:def)
     switch (f->type) {
     case MAVLINK_TYPE_CHAR:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%c") << _MAV_RETURN_char(msg, f->wire_offset+idx*1);
+        qDebug(PRINT_FORMAT(f, "%c"), _MAV_RETURN_char(msg, f->wire_offset+idx*1));
         break;
     case MAVLINK_TYPE_UINT8_T:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%u") << _MAV_RETURN_uint8_t(msg, f->wire_offset+idx*1);
+        qDebug(PRINT_FORMAT(f, "%u"), _MAV_RETURN_uint8_t(msg, f->wire_offset+idx*1));
         break;
     case MAVLINK_TYPE_INT8_T:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%d") << _MAV_RETURN_int8_t(msg, f->wire_offset+idx*1);
+        qDebug(PRINT_FORMAT(f, "%d"), _MAV_RETURN_int8_t(msg, f->wire_offset+idx*1));
         break;
     case MAVLINK_TYPE_UINT16_T:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%u") << _MAV_RETURN_uint16_t(msg, f->wire_offset+idx*2);
+        qDebug(PRINT_FORMAT(f, "%u"), _MAV_RETURN_uint16_t(msg, f->wire_offset+idx*2));
         break;
     case MAVLINK_TYPE_INT16_T:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%d") << _MAV_RETURN_int16_t(msg, f->wire_offset+idx*2);
+        qDebug(PRINT_FORMAT(f, "%d"), _MAV_RETURN_int16_t(msg, f->wire_offset+idx*2));
         break;
     case MAVLINK_TYPE_UINT32_T:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%lu") << (unsigned long)_MAV_RETURN_uint32_t(msg, f->wire_offset+idx*4);
+        qDebug(PRINT_FORMAT(f, "%lu"), (unsigned long)_MAV_RETURN_uint32_t(msg, f->wire_offset+idx*4));
         break;
     case MAVLINK_TYPE_INT32_T:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%ld") << (long)_MAV_RETURN_int32_t(msg, f->wire_offset+idx*4);
+        qDebug(PRINT_FORMAT(f, "%ld"), (long)_MAV_RETURN_int32_t(msg, f->wire_offset+idx*4));
         break;
     case MAVLINK_TYPE_UINT64_T:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%llu") << (unsigned long long)_MAV_RETURN_uint64_t(msg, f->wire_offset+idx*8);
+        qDebug(PRINT_FORMAT(f, "%llu"), (unsigned long long)_MAV_RETURN_uint64_t(msg, f->wire_offset+idx*8));
         break;
     case MAVLINK_TYPE_INT64_T:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%lld") << (long long)_MAV_RETURN_int64_t(msg, f->wire_offset+idx*8);
+        qDebug(PRINT_FORMAT(f, "%lld"), (long long)_MAV_RETURN_int64_t(msg, f->wire_offset+idx*8));
         break;
     case MAVLINK_TYPE_FLOAT:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%f") << (double)_MAV_RETURN_float(msg, f->wire_offset+idx*4);
+        qDebug(PRINT_FORMAT(f, "%f"), (double)_MAV_RETURN_float(msg, f->wire_offset+idx*4));
         break;
     case MAVLINK_TYPE_DOUBLE:
-        QLOG_DEBUG() << PRINT_FORMAT(f, "%f") << _MAV_RETURN_double(msg, f->wire_offset+idx*8);
+        qDebug(PRINT_FORMAT(f, "%f"), _MAV_RETURN_double(msg, f->wire_offset+idx*8));
         break;
     }
 }
@@ -377,9 +404,11 @@ static void print_field(const mavlink_message_t *msg, const mavlink_field_info_t
     }
     QLOG_DEBUG() << " ";
 }
+#endif
 
 static void print_message(const mavlink_message_t *msg)
 {
+#ifdef DEBUG_PRINT_MESSAGE
     const mavlink_message_info_t *m = &message_info[msg->msgid];
     const mavlink_field_info_t *f = m->fields;
     unsigned i;
@@ -388,6 +417,9 @@ static void print_message(const mavlink_message_t *msg)
         print_field(msg, &f[i]);
     }
     QLOG_DEBUG() << "}\n";
+#else
+    Q_UNUSED(msg);
+#endif
 }
 
 void MAVLinkSimulationMAV::handleMessage(const mavlink_message_t& msg)
@@ -407,13 +439,51 @@ void MAVLinkSimulationMAV::handleMessage(const mavlink_message_t& msg)
         if (systemid == mode.target_system) sys_mode = mode.base_mode;
     }
     break;
-    case MAVLINK_MSG_ID_HIL_STATE:
+    case MAVLINK_MSG_ID_HIL_STATE_QUATERNION:
     {
-        mavlink_hil_state_t state;
-        mavlink_msg_hil_state_decode(&msg, &state);
-        roll = state.roll;
-        pitch = state.pitch;
-        yaw = state.yaw;
+        mavlink_hil_state_quaternion_t state;
+        mavlink_msg_hil_state_quaternion_decode(&msg, &state);
+
+        double a = state.attitude_quaternion[0];
+        double b = state.attitude_quaternion[1];
+        double c = state.attitude_quaternion[2];
+        double d = state.attitude_quaternion[3];
+        double aSq = a * a;
+        double bSq = b * b;
+        double cSq = c * c;
+        double dSq = d * d;
+        float dcm[3][3];
+        dcm[0][0] = aSq + bSq - cSq - dSq;
+        dcm[0][1] = 2.0 * (b * c - a * d);
+        dcm[0][2] = 2.0 * (a * c + b * d);
+        dcm[1][0] = 2.0 * (b * c + a * d);
+        dcm[1][1] = aSq - bSq + cSq - dSq;
+        dcm[1][2] = 2.0 * (c * d - a * b);
+        dcm[2][0] = 2.0 * (b * d - a * c);
+        dcm[2][1] = 2.0 * (a * b + c * d);
+        dcm[2][2] = aSq - bSq - cSq + dSq;
+
+        float phi, theta, psi;
+        theta = asin(-dcm[2][0]);
+
+        if (fabs(theta - M_PI_2) < 1.0e-3f) {
+            phi = 0.0f;
+            psi = (atan2(dcm[1][2] - dcm[0][1],
+                    dcm[0][2] + dcm[1][1]) + phi);
+
+        } else if (fabs(theta + M_PI_2) < 1.0e-3f) {
+            phi = 0.0f;
+            psi = atan2f(dcm[1][2] - dcm[0][1],
+                      dcm[0][2] + dcm[1][1] - phi);
+
+        } else {
+            phi = atan2f(dcm[2][1], dcm[2][2]);
+            psi = atan2f(dcm[1][0], dcm[0][0]);
+        }
+
+        roll = phi;
+        pitch = theta;
+        yaw = psi;
         rollspeed = state.rollspeed;
         pitchspeed = state.pitchspeed;
         yawspeed = state.yawspeed;

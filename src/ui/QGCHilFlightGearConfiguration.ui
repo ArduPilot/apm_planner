@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>237</width>
-    <height>204</height>
+    <height>209</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,20 +25,13 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowminimumheight="0,0,0,0,0,0,0,0">
+  <layout class="QGridLayout" name="gridLayout">
    <property name="margin">
     <number>0</number>
    </property>
    <property name="spacing">
     <number>6</number>
    </property>
-   <item row="0" column="0">
-    <widget class="QLabel" name="aircraftPlaintextInfoLabel">
-     <property name="text">
-      <string>Airframe:</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0" colspan="2">
     <widget class="QComboBox" name="aircraftComboBox">
      <property name="sizePolicy">
@@ -52,14 +45,21 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="optionsLabel">
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Additional Options:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="0" column="0">
+    <widget class="QLabel" name="aircraftPlaintextInfoLabel">
+     <property name="text">
+      <string>Airframe:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="2">
     <widget class="QPlainTextEdit" name="optionsPlainTextEdit">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -68,11 +68,11 @@
       </sizepolicy>
      </property>
      <property name="plainText">
-      <string>--in-air --roll=0 --pitch=0 --vc=90 --heading=300 --timeofday=noon --disable-hud-3d --disable-fullscreen --geometry=400x300 --disable-anti-alias-hud --wind=0@0 --turbulence=0.0 --prop:/sim/frame-rate-throttle-hz=30 --control=mouse --disable-intro-music --disable-sound --disable-random-objects --disable-ai-models --shading-flat --fog-disable --disable-specular-highlight --disable-random-objects --disable-panel --disable-clouds --fdm=jsb --units-meters --prop:/engines/engine/running=true</string>
+      <string>--roll=0 --pitch=0 --vc=0 --heading=300 --timeofday=noon --disable-hud-3d --disable-fullscreen --geometry=400x300 --disable-anti-alias-hud --wind=0@0 --turbulence=0.0 --prop:/sim/frame-rate-throttle-hz=30 --control=mouse --disable-sound --disable-random-objects --disable-ai-models --shading-flat --fog-disable --disable-specular-highlight --disable-random-objects --disable-panel --disable-clouds --fdm=jsb --units-meters --prop:/engines/engine/running=true</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="7" column="0">
     <widget class="QPushButton" name="startButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -85,10 +85,34 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="7" column="1">
     <widget class="QPushButton" name="stopButton">
      <property name="text">
       <string>Stop</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="sensorHilCheckBox">
+     <property name="text">
+      <string>Sensor HIL</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="barometerOffsetLabel">
+     <property name="text">
+      <string>Barometer Offset [kPa]:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="barometerOffsetLineEdit">
+     <property name="text">
+      <string>0</string>
      </property>
     </widget>
    </item>

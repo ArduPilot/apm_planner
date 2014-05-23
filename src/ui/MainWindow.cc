@@ -52,6 +52,7 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCTabbedInfoView.h"
 #include "UASRawStatusView.h"
 #include "PrimaryFlightDisplay.h"
+#include "PrimaryFlightDisplayQML.h"
 #include "ApmToolBar.h"
 #include "SerialSettingsDialog.h"
 #include "TerminalConsole.h"
@@ -81,6 +82,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QGCHilConfiguration.h>
 #include <QGCHilFlightGearConfiguration.h>
 #include <QDeclarativeView>
+
+#define PFD_QML
 
 MainWindow* MainWindow::instance(QSplashScreen* screen)
 {
@@ -553,7 +556,8 @@ void MainWindow::buildCommonWidgets()
     mavlinkDecoder = new MAVLinkDecoder(mavlink, this);
 
     // Log player
-    logPlayer = new QGCMAVLinkLogPlayer(mavlink, customStatusBar);
+    logPlayer = new QGCMAVLinkLogPlayer(customStatusBar);
+    logPlayer->setMavlinkDecoder(mavlinkDecoder);
     connect(logPlayer,SIGNAL(logFinished()),statusBar(),SLOT(hide()));
     customStatusBar->setLogPlayer(logPlayer);
 
@@ -687,6 +691,9 @@ void MainWindow::buildCommonWidgets()
         tempAction->setCheckable(true);
         connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
         menuToDockNameMap[tempAction] = "MAVLINK_INSPECTOR_DOCKWIDGET";
+        /*QGCMAVLinkInspector *widget = new QGCMAVLinkInspector(mavlink,this);
+        logPlayer->setMavlinkInspector(widget);
+        createDockWidget(simView,widget,tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);*/
     }
 
     /*{ //Actuator status disabled until such a point that we can ensure it's completly operational
@@ -705,10 +712,31 @@ void MainWindow::buildCommonWidgets()
     //HUD disabled until such a point that we can ensure it's completly operational
     //createDockWidget(engineeringView,new HUD(320,240,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea,this->width()/1.5);
 
+#ifndef PFD_QML
     createDockWidget(simView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
     createDockWidget(pilotView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
+
+    { //This is required since we don't show the new PFD in full yet
+        QAction* tempAction = ui.menuTools->addAction(tr("Primary Flight Display (2)"));
+        tempAction->setCheckable(true);
+        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+        menuToDockNameMap[tempAction] = "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET";
+    }
+#else
+    createDockWidget(simView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display"),
+                     "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
+    createDockWidget(pilotView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display"),
+                     "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
+
+    { //This is required since we don't show the old PFD in any view
+        QAction* tempAction = ui.menuTools->addAction(tr("Primary Flight Display (old)"));
+        tempAction->setCheckable(true);
+        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+        menuToDockNameMap[tempAction] = "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET";
+    }
+#endif
 
     QGCTabbedInfoView *infoview = new QGCTabbedInfoView(this);
     infoview->addSource(mavlinkDecoder);
@@ -722,7 +750,7 @@ void MainWindow::buildCommonWidgets()
 
 
 
-#ifdef QGC_OSG_ENABLED
+#ifdef QGC_OSG_ENABLE
     if (q3DWidget)
     {
         q3DWidget = Q3DWidgetFactory::get("PIXHAWK", this);
@@ -852,7 +880,10 @@ void MainWindow::loadDockWidget(QString name)
     }
     else if (name == "MAVLINK_INSPECTOR_DOCKWIDGET")
     {
-        createDockWidget(centerStack->currentWidget(),new QGCMAVLinkInspector(mavlink,this),tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+        QGCMAVLinkInspector *widget = new QGCMAVLinkInspector(mavlink,this);
+        logPlayer->setMavlinkInspector(widget);
+        createDockWidget(centerStack->currentWidget(),widget,tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+        //logPlayer
     }
     else if (name == "PARAMETER_INTERFACE_DOCKWIDGET")
     {
@@ -901,6 +932,10 @@ void MainWindow::loadDockWidget(QString name)
     {
         // createDockWidget(centerStack->currentWidget(),new HUD(320,240,this),tr("Head Up Display"),"PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
         createDockWidget(centerStack->currentWidget(),new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),"HEAD_UP_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+    }
+    else if (name == "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET")
+    {
+        createDockWidget(centerStack->currentWidget(),new PrimaryFlightDisplayQML(this),tr("Primary Flight Display QML"),"HEAD_UP_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
     else if (name == "UAS_INFO_QUICKVIEW_DOCKWIDGET")
     {
@@ -1024,6 +1059,8 @@ void MainWindow::connectCommonWidgets()
         connect(mavlink, SIGNAL(receiveLossChanged(int, float)),
                 infoDockWidget->widget(), SLOT(updateSendLoss(int, float)));
     }
+
+
 }
 
 void MainWindow::createCustomWidget()

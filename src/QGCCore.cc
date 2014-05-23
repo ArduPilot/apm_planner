@@ -63,8 +63,6 @@ This file is part of the QGROUNDCONTROL project
  * @param argv The string array of parameters
  **/
 
-#define define2string_p(x) #x
-#define define2string(x) define2string_p(x)
 
 QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
 {

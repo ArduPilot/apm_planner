@@ -71,22 +71,13 @@ public:
     OpalLink();
     /* Connection management */
 
-    int getId();
-    QString getName();
-    bool isConnected();
+    int getId() const;
+    QString getName() const;
+    bool isConnected() const;
 
-    /* Connection characteristics */
-
-
-    qint64 getNominalDataRate();
-    bool isFullDuplex();
-    int getLinkQuality();
-    qint64 getTotalUpstream();
-    qint64 getTotalDownstream();
-    qint64 getCurrentUpstream();
-    qint64 getMaxUpstream();
-    qint64 getBitsSent();
-    qint64 getBitsReceived();
+    qint64 getConnectionSpeed() const;
+    qint64 getCurrentInDataRate() const;
+    qint64 getCurrentOutDataRate() const;
 
     bool connect();
 
@@ -124,15 +115,8 @@ protected:
     int id;
     bool connectState;
 
-    quint64 bitsSentTotal;
-    quint64 bitsSentCurrent;
-    quint64 bitsSentMax;
-    quint64 bitsReceivedTotal;
-    quint64 bitsReceivedCurrent;
-    quint64 bitsReceivedMax;
     quint64 connectionStartTime;
 
-    QMutex statisticsMutex;
     QMutex receiveDataMutex;
 
     void setName(QString name);

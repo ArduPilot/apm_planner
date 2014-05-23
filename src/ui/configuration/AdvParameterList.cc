@@ -60,6 +60,7 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.searchLineEdit, SIGNAL(textEdited(QString)), this, SLOT(findStringInTable(QString)));
     connect(ui.nextItemButton, SIGNAL(clicked()), this, SLOT(nextItemInSearch()));
     connect(ui.previousItemButton, SIGNAL(clicked()), this, SLOT(previousItemInSearch()));
+    connect(ui.resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 
 
     ui.tableWidget->setColumnCount(ADV_TABLE_COLUMN_COUNT);
@@ -506,5 +507,22 @@ void AdvParameterList::previousItemInSearch()
         m_searchItemList[m_searchIndex]->setSelected(true);
     } else {
         m_searchIndex = m_searchItemList.count() - 1; // loops around
+    }
+}
+void AdvParameterList::resetButtonClicked()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    if (QMessageBox::question(this,"Warning","You are about to reset ALL EEPROM settings to their defaults and REBOOT the vehicle. Are you absolutely sure you want to do this?",QMessageBox::Yes,QMessageBox::No) == QMessageBox::Yes)
+    {
+        m_uas->setParameter(0,"FORMAT_VERSION",0);
+        m_uas->reboot();
+    }
+    else
+    {
+        QMessageBox::information(this,".","No Reset!!");
     }
 }

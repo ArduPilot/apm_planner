@@ -69,10 +69,11 @@ MAVLinkProtocol::MAVLinkProtocol() :
     // Start heartbeat timer, emitting a heartbeat at the configured rate
     connect(heartbeatTimer, SIGNAL(timeout()), this, SLOT(sendHeartbeat()));
     heartbeatTimer->start(1000/heartbeatRate);
-    totalReceiveCounter = 0;
-    totalLossCounter = 0;
-    currReceiveCounter = 0;
-    currLossCounter = 0;
+
+    // All the *Counter variables are not initialized here, as they should be initialized
+    // on a per-link basis before those links are used. @see resetMetadataForLink().
+
+    // Initialize the list for tracking dropped messages to invalid.
     for (int i = 0; i < 256; i++)
     {
         for (int j = 0; j < 256; j++)
@@ -161,6 +162,34 @@ QString MAVLinkProtocol::getLogfileName()
     }
 }
 
+void MAVLinkProtocol::resetMetadataForLink(const LinkInterface *link)
+{
+    int linkId = link->getId();
+    totalReceiveCounter[linkId] = 0;
+    totalLossCounter[linkId] = 0;
+    totalErrorCounter[linkId] = 0;
+    currReceiveCounter[linkId] = 0;
+    currLossCounter[linkId] = 0;
+}
+
+void MAVLinkProtocol::linkStatusChanged(bool connected)
+{
+    LinkInterface* link = qobject_cast<LinkInterface*>(QObject::sender());
+
+    if (link) {
+        if (connected) {
+            // Send command to start MAVLink
+            // XXX hacky but safe
+            // Start NSH
+            const char init[] = {0x0d, 0x0d, 0x0d};
+            link->writeBytes(init, sizeof(init));
+            const char* cmd = "sh /etc/init.d/rc.usb\n";
+            link->writeBytes(cmd, strlen(cmd));
+            link->writeBytes(init, 4);
+        }
+    }
+}
+
 /**
  * The bytes are copied by calling the LinkInterface::readBytes() method.
  * This method parses all incoming bytes and constructs a MAVLink packet.
@@ -175,6 +204,9 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
     mavlink_message_t message;
     mavlink_status_t status;
 
+    // Cache the link ID for common use.
+    int linkId = link->getId();
+
     static int mavlink09Count = 0;
     static int nonmavlinkCount = 0;
     static bool decodedFirstPacket = false;
@@ -182,8 +214,9 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
     static bool checkedUserNonMavlink = false;
     static bool warnedUserNonMavlink = false;
 
+    // FIXME: Add check for if link->getId() >= MAVLINK_COMM_NUM_BUFFERS
     for (int position = 0; position < b.size(); position++) {
-        unsigned int decodeState = mavlink_parse_char(link->getId(), (uint8_t)(b[position]), &message, &status);
+        unsigned int decodeState = mavlink_parse_char(linkId, (uint8_t)(b[position]), &message, &status);
 
         if ((uint8_t)b[position] == 0x55) mavlink09Count++;
         if ((mavlink09Count > 100) && !decodedFirstPacket && !warnedUser)
@@ -197,7 +230,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
         if (decodeState == 0 && !decodedFirstPacket)
         {
             nonmavlinkCount++;
-            if (nonmavlinkCount > 500 && !warnedUserNonMavlink)
+            if (nonmavlinkCount > 2000 && !warnedUserNonMavlink)
             {
                 //500 bytes with no mavlink message. Are we connected to a mavlink capable device?
                 if (!checkedUserNonMavlink)
@@ -216,6 +249,20 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
         if (decodeState == 1)
         {
             decodedFirstPacket = true;
+
+            if(message.msgid == MAVLINK_MSG_ID_PING)
+            {
+                // process ping requests (tgt_system and tgt_comp must be zero)
+                mavlink_ping_t ping;
+                mavlink_msg_ping_decode(&message, &ping);
+                if(!ping.target_system && !ping.target_component)
+                {
+                    mavlink_message_t msg;
+                    mavlink_msg_ping_pack(getSystemId(), getComponentId(), &msg, ping.time_usec, ping.seq, message.sysid, message.compid);
+                    sendMessage(msg);
+                }
+            }
+
 #if defined(QGC_PROTOBUF_ENABLED)
 
             if (message.msgid == MAVLINK_MSG_ID_EXTENDED_MESSAGE)
@@ -381,8 +428,8 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
             {
 
                 // Increase receive counter
-                totalReceiveCounter++;
-                currReceiveCounter++;
+                totalReceiveCounter[linkId]++;
+                currReceiveCounter[linkId]++;
 
                 // Update last message sequence ID
                 uint8_t expectedIndex;
@@ -413,22 +460,22 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                         // Console generates excessive load at high loss rates, needs better GUI visualization
                         //QLOG_DEBUG() << QString("Lost %1 messages for comp %4: expected sequence ID %2 but received %3.").arg(lostMessages).arg(expectedIndex).arg(message.seq).arg(message.compid);
                     }
-                    totalLossCounter += lostMessages;
-                    currLossCounter += lostMessages;
+                    totalLossCounter[linkId] += lostMessages;
+                    currLossCounter[linkId] += lostMessages;
                 }
 
                 // Update the last sequence ID
                 lastIndex[message.sysid][message.compid] = message.seq;
 
                 // Update on every 32th packet
-                if (totalReceiveCounter % 32 == 0)
+                if (totalReceiveCounter[linkId] % 32 == 0)
                 {
                     // Calculate new loss ratio
                     // Receive loss
-                    float receiveLoss = (double)currLossCounter/(double)(currReceiveCounter+currLossCounter);
+                    float receiveLoss = (double)currLossCounter[linkId]/(double)(currReceiveCounter[linkId]+currLossCounter[linkId]);
                     receiveLoss *= 100.0f;
-                    currLossCounter = 0;
-                    currReceiveCounter = 0;
+                    currLossCounter[linkId] = 0;
+                    currReceiveCounter[linkId] = 0;
                     emit receiveLossChanged(message.sysid, receiveLoss);
                 }
 

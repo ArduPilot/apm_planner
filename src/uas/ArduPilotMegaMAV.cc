@@ -301,11 +301,18 @@ void ArduPilotMegaMAV::uasConnected()
 void ArduPilotMegaMAV::uasDisconnected()
 {
     QLOG_INFO() << "ArduPilotMegaMAV APM disconnected";
-    mavlink->stopLogging();
+    if (mavlink)
+    {
+        mavlink->stopLogging();
+    }
 }
 
 void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
 {
+    if (!mavlink)
+    {
+
+    }
     QString subDir;
 
     // This creates a log in subdir based on the vehicle

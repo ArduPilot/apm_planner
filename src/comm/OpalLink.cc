@@ -254,6 +254,10 @@ void OpalLink::writeBytes(const char *bytes, qint64 length)
         }
 #endif
     }
+
+    // Log the amount and time written out for future data rate calculations.
+    QMutexLocker dataRateLocker(&dataRateMutex);
+    logDataRateToBuffer(outDataWriteAmounts, outDataWriteTimes, &outDataIndex, size, QDateTime::currentMSecsSinceEpoch());
 }
 
 
@@ -263,6 +267,9 @@ void OpalLink::readBytes()
     emit bytesReceived(this, receiveBuffer->dequeue());
     receiveDataMutex.unlock();
 
+    // Log the amount and time received for future data rate calculations.
+    QMutexLocker dataRateLocker(&dataRateMutex);
+    logDataRateToBuffer(inDataWriteAmounts, inDataWriteTimes, &inDataIndex, s, QDateTime::currentMSecsSinceEpoch());
 }
 
 void OpalLink::receiveMessage(mavlink_message_t message)
@@ -411,12 +418,12 @@ void OpalLink::run()
     QLOG_TRACE() << "OpalLink::run():: Starting the thread";
 }
 
-int OpalLink::getId()
+int OpalLink::getId() const
 {
     return id;
 }
 
-QString OpalLink::getName()
+QString OpalLink::getName() const
 {
     return name;
 }
@@ -427,7 +434,7 @@ void OpalLink::setName(QString name)
     emit nameChanged(this->name);
 }
 
-bool OpalLink::isConnected()
+bool OpalLink::isConnected() const
 {
     return connectState;
 }
@@ -496,63 +503,18 @@ bool OpalLink::disconnect()
     return true;
 }
 
-
-
-
-/*
- *
-  Statisctics
- *
- */
-
-qint64 OpalLink::getNominalDataRate()
+// Data rate functions
+qint64 OpalLink::getConnectionSpeed() const
 {
     return 0; //unknown
 }
 
-int OpalLink::getLinkQuality()
+qint64 OpalLink::getCurrentInDataRate() const
 {
-    return -1; //not supported
+    return 0;
 }
 
-qint64 OpalLink::getTotalUpstream()
+qint64 OpalLink::getCurrentOutDataRate() const
 {
-    statisticsMutex.lock();
-    qint64 totalUpstream =  bitsSentTotal / ((MG::TIME::getGroundTimeNow() - connectionStartTime) / 1000);
-    statisticsMutex.unlock();
-    return totalUpstream;
-}
-
-qint64 OpalLink::getTotalDownstream()
-{
-    statisticsMutex.lock();
-    qint64 totalDownstream = bitsReceivedTotal / ((MG::TIME::getGroundTimeNow() - connectionStartTime) / 1000);
-    statisticsMutex.unlock();
-    return totalDownstream;
-}
-
-qint64 OpalLink::getCurrentUpstream()
-{
-    return 0; //unknown
-}
-
-qint64 OpalLink::getMaxUpstream()
-{
-    return 0; //unknown
-}
-
-qint64 OpalLink::getBitsSent()
-{
-    return bitsSentTotal;
-}
-
-qint64 OpalLink::getBitsReceived()
-{
-    return bitsReceivedTotal;
-}
-
-
-bool OpalLink::isFullDuplex()
-{
-    return false;
+    return 0;
 }

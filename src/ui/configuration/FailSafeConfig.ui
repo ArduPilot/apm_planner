@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>795</width>
-    <height>484</height>
+    <width>832</width>
+    <height>528</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -342,19 +342,45 @@
     </item>
    </layout>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>40</y>
+     <width>62</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Radio IN</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>40</y>
+     <width>110</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Servo/Motor OUT</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_3">
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>210</y>
+     <y>200</y>
      <width>211</width>
-     <height>261</height>
+     <height>151</height>
     </rect>
    </property>
    <property name="title">
-    <string>Failsafe Options</string>
+    <string>Throttle Failsafe</string>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
      <widget class="QCheckBox" name="throttleCheckBox">
       <property name="text">
@@ -370,7 +396,7 @@
       <item>
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Failsafe PWM</string>
+         <string>Throttle PWM</string>
         </property>
        </widget>
       </item>
@@ -411,19 +437,30 @@
       </property>
      </widget>
     </item>
+   </layout>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_4">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>350</y>
+     <width>211</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Battery Failsafe</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
-     <widget class="QCheckBox" name="batteryFailCheckBox">
-      <property name="text">
-       <string>Battery Failsafe</string>
-      </property>
-     </widget>
+     <widget class="QComboBox" name="batteryFailSafeComboBox"/>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>Low Battery</string>
+         <string>Low Battery (V)</string>
         </property>
        </widget>
       </item>
@@ -441,7 +478,7 @@
       <item>
        <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Low Capacity (mAh)</string>
+         <string>Low Battery (mAh)</string>
         </property>
        </widget>
       </item>
@@ -455,32 +492,6 @@
      </layout>
     </item>
    </layout>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>40</y>
-     <width>62</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Radio IN</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>40</y>
-     <width>110</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Servo/Motor OUT</string>
-   </property>
   </widget>
  </widget>
  <customwidgets>

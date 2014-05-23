@@ -20,9 +20,9 @@ public:
 	~XbeeLink();
 	
 public: // virtual functions from XbeeLinkInterface
-	QString getPortName();
-    void requestReset() { }
-	int getBaudRate();
+	QString getPortName() const;
+	void requestReset() { }
+	int getBaudRate() const;
 
 public slots: // virtual functions from XbeeLinkInterface
 	bool setPortName(QString portName);
@@ -31,20 +31,17 @@ public slots: // virtual functions from XbeeLinkInterface
 	bool setRemoteAddressLow(quint32 low);
 
 public: // virtual functions from LinkInterface
-	int getId();
-	QString getName();
-	bool isConnected();
-	qint64 getNominalDataRate();
-	bool isFullDuplex();
-	int getLinkQuality();
-	qint64 getTotalUpstream();
-	qint64 getCurrentUpstream();
-	qint64 getMaxUpstream();
-	qint64 getBitsSent();
-	qint64 getBitsReceived();
-	bool connect();
-	bool disconnect();
-	qint64 bytesAvailable();
+    int getId() const;
+    QString getName() const;
+    bool isConnected() const;
+    bool connect();
+    bool disconnect();
+    qint64 bytesAvailable();
+
+    // Extensive statistics for scientific purposes
+    qint64 getConnectionSpeed() const;
+    qint64 getCurrentOutDataRate() const;
+    qint64 getCurrentInDataRate() const;
 
 public slots: // virtual functions from LinkInterface
 	void writeBytes(const char *bytes, qint64 length);

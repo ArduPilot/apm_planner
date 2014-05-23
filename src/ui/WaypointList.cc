@@ -270,9 +270,9 @@ void WaypointList::addEditable(bool onCurrentPosition)
             wp->setZ(last->getZ());
         }
         wp->setParam1(last->getParam1());
-        wp->setParam1(last->getParam2());
-        wp->setParam1(last->getParam3());
-        wp->setParam1(last->getParam4());
+        wp->setParam2(last->getParam2());
+        wp->setParam3(last->getParam3());
+        wp->setParam4(last->getParam4());
         wp->setAutocontinue(last->getAutoContinue());
 //        wp->blockSignals(false);
         wp->setAction(last->getAction());
@@ -288,13 +288,15 @@ void WaypointList::addEditable(bool onCurrentPosition)
             {
                 if (onCurrentPosition)
                 {
-
+                    double alt;
                     if (WPM->getFrameRecommendation() == MAV_FRAME_GLOBAL) {
                         updateStatusLabel(tr("Added default GLOBAL (Abs alt.) waypoint."));
+                        alt = uas->getAltitudeAMSL();
                     } else {
                         updateStatusLabel(tr("Added default GLOBAL (Relative alt.) waypoint."));
+                        alt = uas->getAltitudeRelative();
                     }
-                    wp = new Waypoint(0, uas->getLatitude(), uas->getLongitude(), uas->getAltitude(), 0, WPM->getAcceptanceRadiusRecommendation(), 0, 0,true, true, (MAV_FRAME)WPM->getFrameRecommendation(), MAV_CMD_NAV_WAYPOINT);
+                    wp = new Waypoint(0, uas->getLatitude(), uas->getLongitude(), alt, 0, WPM->getAcceptanceRadiusRecommendation(), 0, 0,true, true, (MAV_FRAME)WPM->getFrameRecommendation(), MAV_CMD_NAV_WAYPOINT);
                     WPM->addWaypointEditable(wp);
 
                 } else {
@@ -400,6 +402,9 @@ void WaypointList::currentWaypointEditableChanged(quint16 seq)
 // Update waypointViews to correctly indicate the new current waypoint
 void WaypointList::currentWaypointViewOnlyChanged(quint16 seq)
 {
+    // First update the edit list
+    currentWaypointEditableChanged(seq);
+
     const QList<Waypoint *> &waypoints = WPM->getWaypointViewOnlyList();
 
     if (seq < waypoints.count())
@@ -425,6 +430,7 @@ void WaypointList::updateWaypointEditable(int uas, Waypoint* wp)
     Q_UNUSED(uas);
     WaypointEditableView *wpv = wpEditableViews.value(wp);
     wpv->updateValues();
+    m_ui->tabWidget->setCurrentIndex(0); // XXX magic number
 }
 
 void WaypointList::updateWaypointViewOnly(int uas, Waypoint* wp)
@@ -432,6 +438,7 @@ void WaypointList::updateWaypointViewOnly(int uas, Waypoint* wp)
     Q_UNUSED(uas);
     WaypointViewOnlyView *wpv = wpViewOnlyViews.value(wp);
     wpv->updateValues();
+    m_ui->tabWidget->setCurrentIndex(1); // XXX magic number
 }
 
 void WaypointList::waypointViewOnlyListChanged()
@@ -482,6 +489,8 @@ void WaypointList::waypointViewOnlyListChanged()
     }
     this->setUpdatesEnabled(true);
     loadFileGlobalWP = false;
+
+    m_ui->tabWidget->setCurrentIndex(1);
 
 }
 
@@ -538,7 +547,6 @@ void WaypointList::waypointEditableListChanged()
     }
     this->setUpdatesEnabled(true);
     loadFileGlobalWP = false;
-
 
 }
 

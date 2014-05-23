@@ -32,6 +32,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QProgressBar>
 #include "UASInterface.h"
 #include "QGCMAVLinkLogPlayer.h"
+#include "MAVLinkDecoder.h"
+
 
 class QGCStatusBar : public QStatusBar
 {

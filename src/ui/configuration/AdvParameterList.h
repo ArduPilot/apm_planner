@@ -63,6 +63,7 @@ private slots:
     void findStringInTable(const QString& searchString);
     void nextItemInSearch();
     void previousItemInSearch();
+    void resetButtonClicked();
 
 private:
     Ui::AdvParameterList ui;

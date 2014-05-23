@@ -30,8 +30,14 @@
 
 #ifdef Q_OS_MACX
 #define APP_PLATFORM "osx"
-#elif defined(Q_OS_UNIX)
-#define APP_PLATFORM "debian"
+#elif defined(Q_LINUX_64) && defined(Q_UBUNTU)
+#define APP_PLATFORM "ubuntu64"
+#elif defined(Q_LINUX_64)
+#define APP_PLATFORM "debian64"
+#elif defined(Q_OS_LINUX) && defined(Q_UBUNTU)
+#define APP_PLATFORM "ubuntu32"
+#elif defined(Q_OS_LINUX)
+#define APP_PLATFORM "debian32"
 #else
 #define APP_PLATFORM "win"
 #endif
