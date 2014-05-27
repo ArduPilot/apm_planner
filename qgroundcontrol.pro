@@ -672,6 +672,7 @@ SOURCES += src/main.cc \
     src/comm/TCPLink.cc \
     src/ui/ParameterInterface.cc \
     src/ui/WaypointList.cc \
+    src/ui/WaypointNavigation.cc \
     src/Waypoint.cc \
     src/ui/ObjectDetectionView.cc \
     src/input/JoystickInput.cc \
