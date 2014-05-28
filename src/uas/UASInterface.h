@@ -425,6 +425,9 @@ public slots:
     /** @brief Receive a message from one of the communication links. */
     virtual void receiveMessage(LinkInterface* link, mavlink_message_t message) = 0;
 
+    virtual int getSystemId()=0;
+    virtual int getComponentId()=0;
+
 protected:
     QColor color;
 

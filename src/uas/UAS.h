@@ -431,6 +431,10 @@ protected: //COMMENTS FOR TEST UNIT
     int status;                   ///< The current status of the MAV
     QString shortModeText;        ///< Short textual mode description
     QString shortStateText;       ///< Short textual state description
+    int systemId;                 ///< Currently connected mavlink system id
+    int componentId;              ///< Currently connected mavlink component id
+    int getSystemId() { return systemId; }
+    int getComponentId() { return componentId; }
 
     /// OUTPUT
     QList<double> actuatorValues;
