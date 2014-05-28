@@ -43,6 +43,7 @@ signals:
     void error(QString error);
     void statusUpdate(QString status);
     void debugUpdate(QString debug);
+    void warning(QString message);
 public slots:
 
 };

@@ -91,6 +91,7 @@ private slots:
     void requestDeviceReplug();
     void devicePlugDetected();
     void px4Error(QString error);
+    void px4Warning(QString message);
     void px4Finished();
     void px4Terminated();
     void px4StatusUpdate(QString update);

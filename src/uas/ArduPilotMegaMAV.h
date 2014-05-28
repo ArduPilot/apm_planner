@@ -62,7 +62,7 @@ public:
     FLY_BY_WIRE_A = 5,
     FLY_BY_WIRE_B = 6,
     CRUISE        = 7,
-    RESERVED_8    = 8,  // RESERVED FOR FUTURE USE
+    AUTOTUNE      = 8,
     RESERVED_9    = 9,  // RESERVED FOR FUTURE USE
     AUTO          = 10,
     RTL           = 11,

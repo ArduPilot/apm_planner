@@ -55,7 +55,20 @@ private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void guiUpdateTimerTick();
     void calibrateButtonClicked();
+
+    void pitchClicked(bool state);
+    void rollClicked(bool state);
+    void yawClicked(bool state);
+    void throttleClicked(bool state);
+
+    void elevonsChecked(bool state);
+    void elevonsReversed(bool state);
+    void elevonsCh1Rev(bool state);
+    void elevonsCh2Rev(bool state);
+    void elevonOutput();
+
 private:
+    Ui::RadioCalibrationConfig ui;
     QList<double> rcMin;
     QList<double> rcMax;
     QList<double> rcTrim;
@@ -66,7 +79,11 @@ private:
     //double rcValue[8];
     QTimer *guiUpdateTimer;
     bool m_calibrationEnabled;
-    Ui::RadioCalibrationConfig ui;
+
+    int m_pitchChannel;
+    int m_rollChannel;
+    int m_yawChannel;
+    int m_throttleChannel;
 };
 
 #endif // RADIOCALIBRATIONCONFIG_H
