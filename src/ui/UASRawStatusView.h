@@ -24,12 +24,16 @@ private slots:
     void valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec);
     void valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec);
     void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
+    void valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value, const quint64 msec);
 protected:
     void resizeEvent(QResizeEvent *event);
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
 private:
     QMap<QString,double> valueMap;
     QMap<QString,QTableWidgetItem*> nameToUpdateWidgetMap;
     Ui::UASRawStatusView ui;
+    QTimer *m_updateTimer; //This time triggers a reorganization of the cells, for when new cells are added
     bool m_tableDirty;
 };
 
