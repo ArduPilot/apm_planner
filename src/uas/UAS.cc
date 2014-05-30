@@ -189,8 +189,8 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     }
     else
     {
-        systemId = 0;
-        componentId = 1;
+        systemId = QGC::defaultSystemId;
+        componentId = QGC::defaultComponentId;
     }
 }
 
@@ -1029,14 +1029,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_mission_count_t wpc;
             mavlink_msg_mission_count_decode(&message, &wpc);
-            if(wpc.target_system ==  systemId || wpc.target_system == 0)
-            {
-                waypointManager.handleWaypointCount(message.sysid, message.compid, wpc.count);
-            }
-            else
-            {
-                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wpc.target_system;
-            }
+            waypointManager.handleWaypointCount(message.sysid, message.compid, wpc.count);
         }
             break;
 
@@ -1045,14 +1038,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_mission_item_t wp;
             mavlink_msg_mission_item_decode(&message, &wp);
             //QLOG_DEBUG() << "got waypoint (" << wp.seq << ") from ID " << message.sysid << " x=" << wp.x << " y=" << wp.y << " z=" << wp.z;
-            if(wp.target_system == systemId || wp.target_system == 0)
-            {
-                waypointManager.handleWaypoint(message.sysid, message.compid, &wp);
-            }
-            else
-            {
-                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wp.target_system;
-            }
+            waypointManager.handleWaypoint(message.sysid, message.compid, &wp);
         }
             break;
 
@@ -1060,11 +1046,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_mission_ack_t wpa;
             mavlink_msg_mission_ack_decode(&message, &wpa);
-            if((wpa.target_system == systemId || wpa.target_system == 0) &&
-                    (wpa.target_component == componentId || wpa.target_component == 0))
-            {
-                waypointManager.handleWaypointAck(message.sysid, message.compid, &wpa);
-            }
+            waypointManager.handleWaypointAck(message.sysid, message.compid, &wpa);
         }
             break;
 
@@ -1072,14 +1054,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_mission_request_t wpr;
             mavlink_msg_mission_request_decode(&message, &wpr);
-            if(wpr.target_system == systemId || wpr.target_system == 0)
-            {
-                waypointManager.handleWaypointRequest(message.sysid, message.compid, &wpr);
-            }
-            else
-            {
-                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wpr.target_system;
-            }
+            waypointManager.handleWaypointRequest(message.sysid, message.compid, &wpr);
         }
             break;
 
