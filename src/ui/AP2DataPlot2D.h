@@ -64,16 +64,7 @@ private slots:
     void itemEnabled(QString name);
 
     //ValueChanged functions for getting mavlink values
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
-    void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs);
+    void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant& value,const quint64 msecs);
     //Called by every valueChanged function to actually save the value/graph it.
     void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer = true);
 
@@ -102,6 +93,8 @@ private slots:
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
+
+private:
     QTimer *m_updateTimer;
     class Graph
     {
