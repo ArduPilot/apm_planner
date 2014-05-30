@@ -33,15 +33,6 @@ void UASRawStatusView::hideEvent(QHideEvent *event)
 
 void UASRawStatusView::addSource(MAVLinkDecoder *decoder)
 {
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint16,quint64)),this,SLOT(valueChanged(int,QString,QString,qint16,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint32,quint64)),this,SLOT(valueChanged(int,QString,QString,qint32,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint64,quint64)),this,SLOT(valueChanged(int,QString,QString,qint64,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint8,quint64)),this,SLOT(valueChanged(int,QString,QString,quint8,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint16,quint64)),this,SLOT(valueChanged(int,QString,QString,qint16,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
     connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
 void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value, const quint64 msec)
@@ -54,39 +45,6 @@ void UASRawStatusView::valueChanged(const int uasId, const QString& name, const 
     {
         valueChanged(uasId,name,unit,static_cast<double>(value.toInt()),msec);
     }
-}
-
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,static_cast<double>(value),msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,static_cast<double>(value),msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,static_cast<double>(value),msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,static_cast<double>(value),msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,static_cast<double>(value),msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,static_cast<double>(value),msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,static_cast<double>(value),msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,static_cast<double>(value),msec);
 }
 
 void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
