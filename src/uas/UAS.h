@@ -988,6 +988,7 @@ public slots:
     void startMagnetometerCalibration();
     void startGyroscopeCalibration();
     void startPressureCalibration();
+    void startCompassMotCalibration();
 
     void startDataRecording();
     void stopDataRecording();
