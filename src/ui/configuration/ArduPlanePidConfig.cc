@@ -56,8 +56,8 @@ ArduPlanePidConfig::ArduPlanePidConfig(QWidget *parent) : AP2ConfigWidget(parent
     addParamToMap("KFF_PTCHCOMP", ui.otherPtTSpinBox, 1.0);
     addParamToMap("KFF_RDDRMIX", ui.otherRudderMixSpinBox, 1.0);
 
-    addParamToMap("TRIM_THROTTLE", ui.throttleCruiseSpinBox, 1.0);
-    addParamToMap("THR_FS_VALUE", ui.throttleFSSpinBox, 1.0);
+    addParamToMap("TRIM_THROTTLE", ui.throttleTrimSpinBox, 1.0);
+    addParamToMap("THR_SLEWRATE", ui.throttleSlewRateSpinBox, 1.0);
     addParamToMap("THR_MAX", ui.throttleMaxSpinBox, 1.0);
     addParamToMap("THR_MIN", ui.throttleMinSpinBox, 1.0);
 
@@ -106,7 +106,11 @@ void ArduPlanePidConfig::parameterChanged(int uas, int component, QString parame
     {
         QDoubleSpinBox* spinBox = m_nameToBoxMap[parameterName].first;
         double scalar = m_nameToBoxMap[parameterName].second;
-        spinBox->setValue(value.toDouble()*scalar);
+        if (value.type() == QVariant::Double){
+            spinBox->setValue(value.toDouble()*scalar);
+        } else {
+            spinBox->setValue(value.toInt()*scalar);
+        }
     }
 }
 void ArduPlanePidConfig::writeButtonClicked()

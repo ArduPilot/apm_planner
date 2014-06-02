@@ -639,28 +639,28 @@
             <item>
              <widget class="QLabel" name="label_25">
               <property name="text">
-               <string>Cruise (m/s)</string>
+               <string>Cruise</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_26">
               <property name="text">
-               <string>Min (%)</string>
+               <string>Min</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_27">
               <property name="text">
-               <string>Max (%)</string>
+               <string>Max</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_28">
               <property name="text">
-               <string>FS Value</string>
+               <string>Slew Rate</string>
               </property>
              </widget>
             </item>
@@ -669,12 +669,12 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_20">
             <item>
-             <widget class="QDoubleSpinBox" name="throttleCruiseSpinBox">
+             <widget class="QDoubleSpinBox" name="throttleTrimSpinBox">
               <property name="suffix">
                <string/>
               </property>
               <property name="decimals">
-               <number>2</number>
+               <number>0</number>
               </property>
               <property name="maximum">
                <double>100.000000000000000</double>
@@ -714,7 +714,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="throttleFSSpinBox">
+             <widget class="QDoubleSpinBox" name="throttleSlewRateSpinBox">
               <property name="decimals">
                <number>0</number>
               </property>
