@@ -361,13 +361,14 @@ void QGCMapWidget::mouseDoubleClickEvent(QMouseEvent* event)
  */
 void QGCMapWidget::addUAS(UASInterface* uas)
 {
+    QLOG_DEBUG() << "addUAS" << uas->getUASName();
+
     connect(uas, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(updateGlobalPosition(UASInterface*,double,double,double,quint64)));
     connect(uas, SIGNAL(systemSpecsChanged(int)), this, SLOT(updateSystemSpecs(int)));
     if (!waypointLines.value(uas->getUASID(), NULL)) {
         waypointLines.insert(uas->getUASID(), new QGraphicsItemGroup(map));
     } else {
-        foreach (QGraphicsItem* item, waypointLines.value(uas->getUASID())->childItems())
-        {
+        foreach (QGraphicsItem* item, waypointLines.value(uas->getUASID())->childItems()) {
             delete item;
         }
     }
@@ -377,7 +378,9 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
 {
     // Only execute if proper UAS is set
     if (!uas) return;
-    this->uas = uas;
+    if (this->uas == uas) return;
+
+    QLOG_DEBUG() << "activeUASSet" << uas->getUASName();
 
     // Disconnect old MAV manager
     if (currWPManager)
@@ -387,9 +390,20 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
         disconnect(currWPManager, SIGNAL(waypointEditableChanged(int, Waypoint*)), this, SLOT(updateWaypoint(int,Waypoint*)));
         disconnect(this, SIGNAL(waypointCreated(Waypoint*)), currWPManager, SLOT(addWaypointEditable(Waypoint*)));
         disconnect(this, SIGNAL(waypointChanged(Waypoint*)), currWPManager, SLOT(notifyOfChangeEditable(Waypoint*)));
+
+        QGraphicsItemGroup* group = waypointLine(this->uas ? this->uas->getUASID() : 0);
+        if (group)
+        {
+            // Delete existing waypoint lines
+            foreach (QGraphicsItem* item, group->childItems())
+            {
+                delete item;
+            }
+        }
     }
 
-    currWPManager = uas->getWaypointManager();
+    this->uas = uas;
+    this->currWPManager = uas->getWaypointManager();
 
     updateSelectedSystem(uas->getUASID());
     followUAVID = uas->getUASID();
@@ -813,7 +827,7 @@ void QGCMapWidget::redrawWaypointLines(int uas)
         delete item;
     }
 
-    QList<Waypoint* > wps = currWPManager->getGlobalFrameAndNavTypeWaypointList();
+    QList<Waypoint*> wps = currWPManager->getGlobalFrameAndNavTypeWaypointList();
     if (wps.size() > 1)
     {
         QPainterPath path = WaypointNavigation::path(wps, *map);
