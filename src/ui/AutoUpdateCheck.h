@@ -43,7 +43,7 @@ private:
     bool m_httpRequestAborted;
 
     bool m_isAutoUpdateEnabled;
-    QString m_skipVerison;
+    QString m_skipVersion;
     QString m_releaseType;
 
 };
