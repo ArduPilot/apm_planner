@@ -69,11 +69,35 @@ void QGCMapToolBar::setMap(QGCMapWidget* map)
         mapTypesGroup->addAction(action);
         if(mapType == MapType::BingHybrid) action->setChecked(true);
 
+        action =  mapTypesMenu.addAction(tr("Bing Map"),this,SLOT(setMapType()));
+        action->setData(MapType::BingMap);
+        action->setCheckable(true);
+        mapTypesGroup->addAction(action);
+        if(mapType == MapType::BingMap) action->setChecked(true);
+
+        action =  mapTypesMenu.addAction(tr("Bing Satellite"),this,SLOT(setMapType()));
+        action->setData(MapType::BingSatellite);
+        action->setCheckable(true);
+        mapTypesGroup->addAction(action);
+        if(mapType == MapType::BingSatellite) action->setChecked(true);
+
         action =  mapTypesMenu.addAction(tr("Google Hybrid"),this,SLOT(setMapType()));
         action->setData(MapType::GoogleHybrid);
         action->setCheckable(true);
         mapTypesGroup->addAction(action);
         if(mapType == MapType::GoogleHybrid) action->setChecked(true);
+
+        action =  mapTypesMenu.addAction(tr("Google Map"),this,SLOT(setMapType()));
+        action->setData(MapType::GoogleMap);
+        action->setCheckable(true);
+        mapTypesGroup->addAction(action);
+        if(mapType == MapType::GoogleMap) action->setChecked(true);
+
+        action =  mapTypesMenu.addAction(tr("Google Satellite"),this,SLOT(setMapType()));
+        action->setData(MapType::GoogleSatellite);
+        action->setCheckable(true);
+        mapTypesGroup->addAction(action);
+        if(mapType == MapType::GoogleSatellite) action->setChecked(true);
 
         action =  mapTypesMenu.addAction(tr("OpenStreetMap"),this,SLOT(setMapType()));
         action->setData(MapType::OpenStreetMap);
