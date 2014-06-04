@@ -36,6 +36,9 @@ private:
     Ui::CompassMotorCalibrationDialog *ui;
 
     UASInterface* m_uasInterface;
+    double x_scalar;
+    double y_scalar;
+    double z_scalar;
 };
 
 #endif // COMPASSMOTORCALIBRATIONDIALOG_H

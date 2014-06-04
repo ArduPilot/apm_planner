@@ -4,6 +4,7 @@
 #include "UAS.h"
 #include "UASManager.h"
 #include "QGCUASParamManager.h"
+#include "QMessageBox"
 
 #include "CompassMotorCalibrationDialog.h"
 #include "ui_CompassMotorCalibrationDialog.h"
@@ -77,11 +78,19 @@ void CompassMotorCalibrationDialog::compassMotCalibration(mavlink_compassmot_sta
     customPlot->graph(0)->addData(index, compassmot_status->current);
     customPlot->graph(1)->addData(index, compassmot_status->interference);
     customPlot->replot();
+
+    x_scalar = compassmot_status->CompensationX;
+    y_scalar = compassmot_status->CompensationY;
+    z_scalar = compassmot_status->CompensationZ;
+
 }
 
 void CompassMotorCalibrationDialog::textMessageReceived(int uasid, int componentid,
                                                         int severity, QString text)
 {
+    Q_UNUSED(uasid);
+    Q_UNUSED(componentid);
+    Q_UNUSED(severity);
     ui->messageTextEdit->insertPlainText(text +"\n");
 }
 
@@ -116,6 +125,11 @@ void CompassMotorCalibrationDialog::okButtonClicked()
         m_uasInterface->requestParameter(1, "COMPASS_MOT_X");
         m_uasInterface->requestParameter(1, "COMPASS_MOT_Y");
         m_uasInterface->requestParameter(1, "COMPASS_MOT_Z");
+        QMessageBox::information(this, "Sucess!",
+                                 QString("New values have been stored\n X:%1 Y:%2 Z:%3")
+                                 .arg(QString::number(x_scalar))
+                                 .arg(QString::number(y_scalar))
+                                 .arg(QString::number(z_scalar)));
     }
     accept();
 }
