@@ -198,7 +198,7 @@ void LogDownloadDialog::eraseAllLogs()
        return;
 
    int button = QMessageBox::critical(this, tr("Erase All Logs"),
-                                 tr("Are you sure you want to earse all logs?")
+                                 tr("Are you sure you want to erase all logs?")
                                  ,QMessageBox::Ok,QMessageBox::Cancel);
    if(button == QMessageBox::Ok){
        m_uas->logEraseAll();
