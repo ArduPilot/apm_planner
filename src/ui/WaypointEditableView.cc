@@ -360,7 +360,7 @@ void WaypointEditableView::initializeActionView(int actionID)
         }
         break;
     case MAV_CMD_DO_DIGICAM_CONTROL:
-        if (!MissionDoRepeatServoWidget)
+        if (!MissionDoDigicamControlWidget)
         {
             MissionDoDigicamControlWidget = new QGCMissionDoDigicamControl(this);
             m_ui->customActionWidget->layout()->addWidget(MissionDoDigicamControlWidget);
