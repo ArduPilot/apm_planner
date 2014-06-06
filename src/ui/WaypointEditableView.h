@@ -56,6 +56,7 @@ class QGCMissionNavTakeoff;
 class QGCMissionNavSweep;
 class QGCMissionDoJump;
 class QGCMissionDoSetServo;
+class QGCMissionDoRepeatServo;
 class QGCMissionDoStartSearch;
 class QGCMissionDoFinishSearch;
 class QGCMissionConditionDelay;
@@ -112,6 +113,7 @@ protected:
     QGCMissionNavSweep* MissionNavSweepWidget;
     QGCMissionDoJump* MissionDoJumpWidget;
     QGCMissionDoSetServo* MissionDoSetServoWidget;
+    QGCMissionDoRepeatServo* MissionDoRepeatServoWidget;
     QGCMissionDoStartSearch* MissionDoStartSearchWidget;
     QGCMissionDoFinishSearch* MissionDoFinishSearchWidget;
     QGCMissionConditionDelay* MissionConditionDelayWidget;

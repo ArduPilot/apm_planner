@@ -26,6 +26,7 @@
 #include "mission/QGCMissionConditionDelay.h"
 #include "mission/QGCMissionDoJump.h"
 #include "mission/QGCMissionDoSetServo.h"
+#include "mission/QGCMissionDoRepeatServo.h"
 #include "mission/QGCMissionDoStartSearch.h"
 #include "mission/QGCMissionDoFinishSearch.h"
 #include "mission/QGCMissionOther.h"
@@ -63,6 +64,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     MissionConditionDelayWidget = NULL;
     MissionDoJumpWidget = NULL;
     MissionDoSetServoWidget = NULL;
+    MissionDoRepeatServoWidget = NULL;
     MissionDoStartSearchWidget = NULL;
     MissionDoFinishSearchWidget = NULL;
     MissionOtherWidget = NULL;
@@ -86,12 +88,13 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("IF: Delay over"),MAV_CMD_CONDITION_DELAY);
         //m_ui->comboBox_action->addItem(tr("IF: Yaw angle is"),MAV_CMD_CONDITION_YAW);
         m_ui->comboBox_action->addItem(tr("DO: Jump to Index"),MAV_CMD_DO_JUMP);
+        m_ui->comboBox_action->addItem(tr("DO: Set Servo"), MAV_CMD_DO_SET_SERVO);
+        m_ui->comboBox_action->addItem(tr("DO: Repeat Servo"), MAV_CMD_DO_REPEAT_SERVO);
     #ifdef MAVLINK_ENABLED_PIXHAWK
         m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
         m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
         m_ui->comboBox_action->addItem(tr("Do: Finish Search"),MAV_CMD_DO_FINISH_SEARCH);
     #endif
-        m_ui->comboBox_action->addItem(tr("Do: Set Servo"), MAV_CMD_DO_SET_SERVO);
         m_ui->comboBox_action->addItem(tr("Other"), MAV_CMD_ENUM_END);
     }
 
@@ -165,6 +168,7 @@ void WaypointEditableView::updateActionView(int action)
     if(MissionConditionDelayWidget) MissionConditionDelayWidget->hide();
     if(MissionDoJumpWidget) MissionDoJumpWidget->hide();
     if(MissionDoSetServoWidget) MissionDoSetServoWidget->hide();
+    if(MissionDoRepeatServoWidget) MissionDoRepeatServoWidget->hide();
     if(MissionDoStartSearchWidget) MissionDoStartSearchWidget->hide();
     if(MissionDoFinishSearchWidget) MissionDoFinishSearchWidget->hide();
     if(MissionOtherWidget) MissionOtherWidget->hide();
@@ -202,6 +206,9 @@ void WaypointEditableView::updateActionView(int action)
             break;
         case MAV_CMD_DO_SET_SERVO:
             if(MissionDoSetServoWidget) MissionDoSetServoWidget->show();
+            break;
+        case MAV_CMD_DO_REPEAT_SERVO:
+            if(MissionDoRepeatServoWidget) MissionDoRepeatServoWidget->show();
             break;
         #ifdef MAVLINK_ENABLED_PIXHAWK
         case MAV_CMD_NAV_SWEEP:
@@ -336,6 +343,13 @@ void WaypointEditableView::initializeActionView(int actionID)
         {
             MissionDoSetServoWidget = new QGCMissionDoSetServo(this);
             m_ui->customActionWidget->layout()->addWidget(MissionDoSetServoWidget);
+        }
+        break;
+    case MAV_CMD_DO_REPEAT_SERVO:
+        if (!MissionDoRepeatServoWidget)
+        {
+            MissionDoRepeatServoWidget = new QGCMissionDoRepeatServo(this);
+            m_ui->customActionWidget->layout()->addWidget(MissionDoRepeatServoWidget);
         }
         break;
  #ifdef MAVLINK_ENABLED_PIXHAWK
