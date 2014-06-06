@@ -25,6 +25,7 @@
 #include "mission/QGCMissionNavSweep.h"
 #include "mission/QGCMissionConditionDelay.h"
 #include "mission/QGCMissionDoJump.h"
+#include "mission/QGCMissionDoSetServo.h"
 #include "mission/QGCMissionDoStartSearch.h"
 #include "mission/QGCMissionDoFinishSearch.h"
 #include "mission/QGCMissionOther.h"
@@ -60,7 +61,8 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     MissionNavTakeoffWidget = NULL;
     MissionNavSweepWidget = NULL;
     MissionConditionDelayWidget = NULL;
-    MissionDoJumpWidget = NULL;    
+    MissionDoJumpWidget = NULL;
+    MissionDoSetServoWidget = NULL;
     MissionDoStartSearchWidget = NULL;
     MissionDoFinishSearchWidget = NULL;
     MissionOtherWidget = NULL;
@@ -89,6 +91,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
         m_ui->comboBox_action->addItem(tr("Do: Finish Search"),MAV_CMD_DO_FINISH_SEARCH);
     #endif
+        m_ui->comboBox_action->addItem(tr("Do: Set Servo"), MAV_CMD_DO_SET_SERVO);
         m_ui->comboBox_action->addItem(tr("Other"), MAV_CMD_ENUM_END);
     }
 
@@ -161,6 +164,7 @@ void WaypointEditableView::updateActionView(int action)
     if(MissionNavSweepWidget) MissionNavSweepWidget->hide();
     if(MissionConditionDelayWidget) MissionConditionDelayWidget->hide();
     if(MissionDoJumpWidget) MissionDoJumpWidget->hide();
+    if(MissionDoSetServoWidget) MissionDoSetServoWidget->hide();
     if(MissionDoStartSearchWidget) MissionDoStartSearchWidget->hide();
     if(MissionDoFinishSearchWidget) MissionDoFinishSearchWidget->hide();
     if(MissionOtherWidget) MissionOtherWidget->hide();
@@ -195,6 +199,9 @@ void WaypointEditableView::updateActionView(int action)
             break;
         case MAV_CMD_DO_JUMP:
             if(MissionDoJumpWidget) MissionDoJumpWidget->show();
+            break;
+        case MAV_CMD_DO_SET_SERVO:
+            if(MissionDoSetServoWidget) MissionDoSetServoWidget->show();
             break;
         #ifdef MAVLINK_ENABLED_PIXHAWK
         case MAV_CMD_NAV_SWEEP:
@@ -322,6 +329,13 @@ void WaypointEditableView::initializeActionView(int actionID)
         {
             MissionDoJumpWidget = new QGCMissionDoJump(this);
             m_ui->customActionWidget->layout()->addWidget(MissionDoJumpWidget);
+        }
+        break;
+    case MAV_CMD_DO_SET_SERVO:
+        if (!MissionDoSetServoWidget)
+        {
+            MissionDoSetServoWidget = new QGCMissionDoSetServo(this);
+            m_ui->customActionWidget->layout()->addWidget(MissionDoSetServoWidget);
         }
         break;
  #ifdef MAVLINK_ENABLED_PIXHAWK
