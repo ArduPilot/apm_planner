@@ -27,6 +27,7 @@
 #include "mission/QGCMissionDoJump.h"
 #include "mission/QGCMissionDoSetServo.h"
 #include "mission/QGCMissionDoRepeatServo.h"
+#include "mission/QGCMissionDoDigicamControl.h"
 #include "mission/QGCMissionDoStartSearch.h"
 #include "mission/QGCMissionDoFinishSearch.h"
 #include "mission/QGCMissionOther.h"
@@ -65,6 +66,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     MissionDoJumpWidget = NULL;
     MissionDoSetServoWidget = NULL;
     MissionDoRepeatServoWidget = NULL;
+    MissionDoDigicamControlWidget = NULL;
     MissionDoStartSearchWidget = NULL;
     MissionDoFinishSearchWidget = NULL;
     MissionOtherWidget = NULL;
@@ -90,6 +92,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("DO: Jump to Index"),MAV_CMD_DO_JUMP);
         m_ui->comboBox_action->addItem(tr("DO: Set Servo"), MAV_CMD_DO_SET_SERVO);
         m_ui->comboBox_action->addItem(tr("DO: Repeat Servo"), MAV_CMD_DO_REPEAT_SERVO);
+        m_ui->comboBox_action->addItem(tr("DO: Digicam Control"), MAV_CMD_DO_DIGICAM_CONTROL);
     #ifdef MAVLINK_ENABLED_PIXHAWK
         m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
         m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
@@ -169,6 +172,7 @@ void WaypointEditableView::updateActionView(int action)
     if(MissionDoJumpWidget) MissionDoJumpWidget->hide();
     if(MissionDoSetServoWidget) MissionDoSetServoWidget->hide();
     if(MissionDoRepeatServoWidget) MissionDoRepeatServoWidget->hide();
+    if(MissionDoDigicamControlWidget) MissionDoDigicamControlWidget->hide();
     if(MissionDoStartSearchWidget) MissionDoStartSearchWidget->hide();
     if(MissionDoFinishSearchWidget) MissionDoFinishSearchWidget->hide();
     if(MissionOtherWidget) MissionOtherWidget->hide();
@@ -210,7 +214,10 @@ void WaypointEditableView::updateActionView(int action)
         case MAV_CMD_DO_REPEAT_SERVO:
             if(MissionDoRepeatServoWidget) MissionDoRepeatServoWidget->show();
             break;
-        #ifdef MAVLINK_ENABLED_PIXHAWK
+        case MAV_CMD_DO_DIGICAM_CONTROL:
+            if(MissionDoDigicamControlWidget) MissionDoDigicamControlWidget->show();
+            break;
+#ifdef MAVLINK_ENABLED_PIXHAWK
         case MAV_CMD_NAV_SWEEP:
             if(MissionNavSweepWidget) MissionNavSweepWidget->show();
             break;
@@ -350,6 +357,13 @@ void WaypointEditableView::initializeActionView(int actionID)
         {
             MissionDoRepeatServoWidget = new QGCMissionDoRepeatServo(this);
             m_ui->customActionWidget->layout()->addWidget(MissionDoRepeatServoWidget);
+        }
+        break;
+    case MAV_CMD_DO_DIGICAM_CONTROL:
+        if (!MissionDoRepeatServoWidget)
+        {
+            MissionDoDigicamControlWidget = new QGCMissionDoDigicamControl(this);
+            m_ui->customActionWidget->layout()->addWidget(MissionDoDigicamControlWidget);
         }
         break;
  #ifdef MAVLINK_ENABLED_PIXHAWK
