@@ -1,100 +1,76 @@
-/*=====================================================================
+#ifndef LINKMANAGER_H
+#define LINKMANAGER_H
 
-PIXHAWK Micro Air Vehicle Flying Robotics Toolkit
-
-(c) 2009, 2010 PIXHAWK PROJECT  <http://pixhawk.ethz.ch>
-
-This file is part of the PIXHAWK project
-
-    PIXHAWK is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    PIXHAWK is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with PIXHAWK. If not, see <http://www.gnu.org/licenses/>.
-
-======================================================================*/
-
+#include <QObject>
 /**
- * @file
- *   @brief Manage communication links
- *
- *   @author Lorenz Meier <mavteam@student.ethz.ch>
- *
+ * @brief The ConnectionManager class
+ * This class handles all connections between the GCS and the actual hardware.
+ * It will create (on request) serial or UDP links, connect the links to the associated mavlink parsers,
+ * and emit signals upwards when mavlink messages come in.
+ * This class lives in the UI thread
+ * The Serial Link lives in the UI Thread
+ * The mavlink decoder lives in its own thread
+ * the UAS Class lives in the UI thread
  */
-
-#ifndef _LINKMANAGER_H_
-#define _LINKMANAGER_H_
-
-#include <QThread>
-#include <QList>
-#include <QMultiMap>
-#include <LinkInterface.h>
-#include <ProtocolInterface.h>
-
-/**
- * The Link Manager organizes the physical Links. It can manage arbitrary
- * links and takes care of connecting them as well assigning the correct
- * protocol instance to transport the link data into the application.
- *
- **/
+#include "serialconnection.h"
+#include "new_mavlinkdecoder.h"
+#include "new_mavlinkparser.h"
+#include "MAVLinkProtocol.h"
+#include <QMap>
+#include "UASInterface.h"
+#include "UAS.h"
 class LinkManager : public QObject
 {
     Q_OBJECT
-
 public:
-    static LinkManager* instance();
-    ~LinkManager();
-
-    void run();
-
-    QList<LinkInterface*> getLinksForProtocol(ProtocolInterface* protocol);
-
-    ProtocolInterface* getProtocolForLink(LinkInterface* link);
-
-    /** @brief Get the link for this id */
-    LinkInterface* getLinkForId(int id);
-
-    /** @brief Get a list of all links */
-    const QList<LinkInterface*> getLinks();
-
-    /** @brief Get a list of all protocols */
-    const QList<ProtocolInterface*> getProtocols() {
-        return protocolLinks.uniqueKeys();
+    explicit LinkManager(QObject *parent = 0);
+    static LinkManager* instance()
+    {
+        static LinkManager* _instance = 0;
+        if(_instance == 0)
+        {
+            _instance = new LinkManager();
+        }
+        return _instance;
     }
-
-public slots:
-
-    void add(LinkInterface* link);
-    void addProtocol(LinkInterface* link, ProtocolInterface* protocol);
-
-    void removeObj(QObject* obj);
-    bool removeLink(LinkInterface* link);
-
-    bool connectAll();
-    bool connectLink(LinkInterface* link);
-
-    bool disconnectAll();
-    bool disconnectLink(LinkInterface* link);
-
-protected:
-    LinkManager();
-    QList<LinkInterface*> links;
-    QMultiMap<ProtocolInterface*,LinkInterface*> protocolLinks;
-
+    int addSerialConnection(QString port,int baud);
+    int addSerialConnection();
+    int addUdpConnection(QHostAddress addr,int port);
+    void modifySerialConnection(int index,QString port,int baud);
+    void removeSerialConnection(int index);
+    void connectLink(int index);
+    void disconnectLink(int index);
+    UASInterface* getUas(int id);
+    UASInterface* createUAS(New_MAVLinkParser* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
+    void addLink(LinkInterface *link);
+    QList<LinkInterface*> getLinks();
+    void removeLink(LinkInterface *link);
+    LinkInterface::LinkType getLinkType(int linkid);
+    bool getLinkConnected(int linkid);
+    QString getSerialLinkPort(int linkid);
+    QString getLinkName(int linkid);
+    int getSerialLinkBaud(int linkid);
+    int getUdpLinkPort(int linkid);
+    void setUdpLinkPort(int linkid, int port);
+    void addUdpHost(int linkid,QString hostname);
+    QList<QString> getCurrentPorts();
 private:
-    static LinkManager* _instance;
-
+    QMap<int,LinkInterface*> m_connectionMap;
+    QMap<int,UASInterface*> m_uasMap;
+    New_MAVLinkDecoder *m_mavlinkDecoder;
+    New_MAVLinkParser *m_mavlinkParser;
 signals:
-    void newLink(LinkInterface* link);
-    void linkRemoved(LinkInterface* link);
-
+    //void newLink(LinkInterface* link);
+    void newLink(int linkid);
+    void protocolStatusMessage(QString title,QString text);
+    void linkChanged(int linkid);
+private slots:
+    void linkConnected(LinkInterface* link);
+    void linkDisonnected(LinkInterface* link);
+    
+public slots:
+    void messageReceived(LinkInterface* link,mavlink_message_t message);
+    void protocolStatusMessageRec(QString title,QString text);
 };
 
-#endif // _LINKMANAGER_H_
+#endif // LINKMANAGER_H

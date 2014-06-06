@@ -126,7 +126,7 @@ void QGCStatusBar::setLogPlayer(QGCMAVLinkLogPlayer* player)
 void QGCStatusBar::logging(bool checked)
 {
     // Stop logging in any case
-    MainWindow::instance()->getMAVLink()->stopLogging();
+   // MainWindow::instance()->getMAVLink()->stopLogging();
 
     if (!checked && player)
     {
@@ -168,7 +168,7 @@ void QGCStatusBar::logging(bool checked)
 		// Otherwise we're off and logging
         else
         {
-            MainWindow::instance()->getMAVLink()->startLogging(fileName);
+            //MainWindow::instance()->getMAVLink()->startLogging(fileName);
         }
     }
 }

@@ -37,15 +37,16 @@ This file is part of the QGROUNDCONTROL project
 #include <QSettings>
 #include <QFileInfoList>
 
-SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidget *parent, Qt::WindowFlags flags) : QWidget(parent, flags),
+SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent, Qt::WindowFlags flags) : QWidget(parent, flags),
     userConfigured(false)
 {
-    SerialLinkInterface* serialLink = dynamic_cast<SerialLinkInterface*>(link);
+    m_linkid = linkid;
+    //SerialLinkInterface* serialLink = dynamic_cast<SerialLinkInterface*>(link);
 
-    if(serialLink != 0)
-    {
-        serialLink->loadSettings();
-        this->link = serialLink;
+    //if(serialLink != 0)
+    //{
+        //serialLink->loadSettings();
+        //this->link = serialLink;
 
         // Setup the user interface according to link type
         ui.setupUi(this);
@@ -62,8 +63,9 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
         // Create action to open this menu
         // Create configuration action for this link
         // Connect the current UAS
-        action = new QAction(QIcon(":/files/images/devices/network-wireless.svg"), "", link);
-        setLinkName(link->getName());
+        action = new QAction(QIcon(":/files/images/devices/network-wireless.svg"), "", this);
+
+        setLinkName(LinkManager::instance()->getSerialLinkPort(linkid));
 
         setupPortList();
 
@@ -122,24 +124,45 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
 		}
 
         // Load current link config
-        ui.portName->setCurrentIndex(ui.baudRate->findText(QString("%1").arg(this->link->getPortName())));
+        int baudid = ui.baudRate->findText(QString::number(LinkManager::instance()->getSerialLinkBaud(linkid)));
+        int portid = ui.portName->findText(LinkManager::instance()->getSerialLinkPort(linkid));
+        qDebug() << "Baud rate:" << LinkManager::instance()->getSerialLinkBaud(linkid) << "Expected:" << baudid;
+        if (baudid == -1)
+        {
+
+        }
+        else
+        {
+            ui.baudRate->setCurrentIndex(baudid);
+        }
+        if (portid == -1)
+        {
+        }
+        else
+        {
+            ui.portName->setCurrentIndex(portid);
+        }
+
+
 
         connect(action, SIGNAL(triggered()), this, SLOT(configureCommunication()));
         ui.advCheckBox->setVisible(false);
 
         // Make sure that a change in the link name will be reflected in the UI
-        connect(link, SIGNAL(nameChanged(QString)), this, SLOT(setLinkName(QString)));
+        connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(linkChanged(int)));
+        linkChanged(m_linkid);
 
         // Connect the individual user interface inputs
         connect(ui.portName, SIGNAL(editTextChanged(QString)), this, SLOT(setPortName(QString)));
         connect(ui.portName, SIGNAL(currentIndexChanged(QString)), this, SLOT(setPortName(QString)));
-        connect(ui.baudRate, SIGNAL(activated(QString)), this->link, SLOT(setBaudRateString(QString)));
+        connect(ui.baudRate,SIGNAL(currentIndexChanged(QString)),this,SLOT(setBaudRateString(QString)));
+        //connect(ui.baudRate, SIGNAL(activated(QString)), this->link, SLOT(setBaudRateString(QString)));
         connect(ui.flowControlCheckBox, SIGNAL(toggled(bool)), this, SLOT(enableFlowControl(bool)));
         connect(ui.parNone, SIGNAL(toggled(bool)), this, SLOT(setParityNone(bool)));
         connect(ui.parOdd, SIGNAL(toggled(bool)), this, SLOT(setParityOdd(bool)));
         connect(ui.parEven, SIGNAL(toggled(bool)), this, SLOT(setParityEven(bool)));
-        connect(ui.dataBitsSpinBox, SIGNAL(valueChanged(int)), this->link, SLOT(setDataBits(int)));
-        connect(ui.stopBitsSpinBox, SIGNAL(valueChanged(int)), this->link, SLOT(setStopBits(int)));
+       // connect(ui.dataBitsSpinBox, SIGNAL(valueChanged(int)), this->link, SLOT(setDataBits(int)));
+       // connect(ui.stopBitsSpinBox, SIGNAL(valueChanged(int)), this->link, SLOT(setStopBits(int)));
         connect(ui.advCheckBox,SIGNAL(clicked(bool)),ui.advGroupBox,SLOT(setShown(bool)));
         ui.advCheckBox->setChecked(false);
         ui.advGroupBox->setVisible(false);
@@ -148,7 +171,7 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
         //ui.portName->setSizeAdjustPolicy(QComboBox::AdjustToContentsOnFirstShow);
         //ui.baudRate->setSizeAdjustPolicy(QComboBox::AdjustToContentsOnFirstShow);
 
-        switch(this->link->getParityType()) {
+        /*switch(this->link->getParityType()) {
         case 0:
             ui.parNone->setChecked(true);
             break;
@@ -175,12 +198,12 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
         default:
             ui.flowControlCheckBox->setChecked(false);
             enableFlowControl(false);
-        }
+        }*/
 
-        ui.baudRate->setCurrentIndex(ui.baudRate->findText(QString("%1").arg(this->link->getBaudRate())));
+        //ui.baudRate->setCurrentIndex(ui.baudRate->findText(QString("%1").arg(this->link->getBaudRate())));
 
-        ui.dataBitsSpinBox->setValue(this->link->getDataBits());
-        ui.stopBitsSpinBox->setValue(this->link->getStopBits());
+        //ui.dataBitsSpinBox->setValue(this->link->getDataBits());
+        //ui.stopBitsSpinBox->setValue(this->link->getStopBits());
 
         portCheckTimer = new QTimer(this);
         portCheckTimer->setInterval(1000);
@@ -188,13 +211,16 @@ SerialConfigurationWindow::SerialConfigurationWindow(LinkInterface* link, QWidge
 
         // Display the widget
         this->window()->setWindowTitle(tr("Serial Communication Settings"));
-    }
-    else
-    {
-        QLOG_DEBUG() << "Link is NOT a serial link, can't open configuration window";
-    }
-    connect(link,SIGNAL(connected(bool)),this,SLOT(connectionStateChanged(bool)));
 }
+void SerialConfigurationWindow::linkChanged(int linkid)
+{
+    if (linkid != m_linkid)
+    {
+        return;
+    }
+
+}
+
 void SerialConfigurationWindow::connectionStateChanged(bool connected)
 {
     if (connected)
@@ -246,22 +272,22 @@ void SerialConfigurationWindow::configureCommunication()
 
 void SerialConfigurationWindow::setupPortList()
 {
-    if (!link) return;
+    //if (!link) return;
 
-    QLOG_DEBUG() << "SCW: Link is connected " << link->isConnected();
+    QLOG_DEBUG() << "SCW: Link is" << (LinkManager::instance()->getLinkConnected(this->m_linkid) ? "connected" : "disconnected");
 
     // Get the ports available on this system
-    QList<QString> ports = link->getCurrentPorts();
 
-    QString storedName = this->link->getPortName();
+    QList<QString> ports = LinkManager::instance()->getCurrentPorts();
+
+
+    QString storedName = LinkManager::instance()->getSerialLinkPort(m_linkid);
     bool storedFound = false;
 
     // Add the ports in reverse order, because we prepend them to the list
     disconnect(ui.portName, SIGNAL(editTextChanged(QString)), this, SLOT(setPortName(QString)));
     disconnect(ui.portName, SIGNAL(currentIndexChanged(QString)), this, SLOT(setPortName(QString)));
     ui.portName->clear();
-    connect(ui.portName, SIGNAL(editTextChanged(QString)), this, SLOT(setPortName(QString)));
-    connect(ui.portName, SIGNAL(currentIndexChanged(QString)), this, SLOT(setPortName(QString)));
 
     for (int i = ports.count() - 1; i >= 0; --i)
     {
@@ -284,33 +310,36 @@ void SerialConfigurationWindow::setupPortList()
         //ui.portName->setEditText(storedName);
         ui.portName->setCurrentIndex(index);
     }
+    connect(ui.portName, SIGNAL(editTextChanged(QString)), this, SLOT(setPortName(QString)));
+    connect(ui.portName, SIGNAL(currentIndexChanged(QString)), this, SLOT(setPortName(QString)));
+
 }
 
 void SerialConfigurationWindow::enableFlowControl(bool flow)
 {
-    if(flow)
+    /*if(flow)
     {
         link->setFlowType(1);
     }
     else
     {
         link->setFlowType(0);
-    }
+    }*/
 }
 
 void SerialConfigurationWindow::setParityNone(bool accept)
 {
-    if (accept) link->setParityType(0);
+    //if (accept) link->setParityType(0);
 }
 
 void SerialConfigurationWindow::setParityOdd(bool accept)
 {
-    if (accept) link->setParityType(1); // [TODO] This needs to be Fixed [BB]
+    //if (accept) link->setParityType(1); // [TODO] This needs to be Fixed [BB]
 }
 
 void SerialConfigurationWindow::setParityEven(bool accept)
 {
-    if (accept) link->setParityType(2);
+   // if (accept) link->setParityType(2);
 }
 
 void SerialConfigurationWindow::setPortName(QString port)
@@ -320,7 +349,9 @@ void SerialConfigurationWindow::setPortName(QString port)
 #endif
     port = port.remove(" ");
 
-    if (this->link->getPortName() != port) {
+    LinkManager::instance()->modifySerialConnection(m_linkid,port,ui.baudRate->currentText().toInt());
+
+    /*if (this->link->getPortName() != port) {
         link->setPortName(port);
     }
     for (int i=0;i<ui.baudRate->count();i++)
@@ -330,7 +361,7 @@ void SerialConfigurationWindow::setPortName(QString port)
             ui.baudRate->setCurrentIndex(i);
             break;
         }
-    }
+    }*/
     userConfigured = true;
 }
 
@@ -338,8 +369,17 @@ void SerialConfigurationWindow::setLinkName(QString name)
 {
     Q_UNUSED(name);
     // FIXME
-    action->setText(tr("Configure ") + link->getName());
-    action->setStatusTip(tr("Configure ") + link->getName());
-    setWindowTitle(tr("Configuration of ") + link->getName());
+    //action->setText(tr("Configure ") + link->getName());
+    //action->setStatusTip(tr("Configure ") + link->getName());
+    //setWindowTitle(tr("Configuration of ") + link->getName());
 }
 
+void SerialConfigurationWindow::setBaudRateString(QString baud)
+{
+    QString port = ui.portName->currentText();
+#ifdef Q_OS_WIN
+    port = port.split("-").first();
+#endif
+    port = port.remove(" ");
+    LinkManager::instance()->modifySerialConnection(m_linkid,port,ui.baudRate->currentText().toInt());
+}

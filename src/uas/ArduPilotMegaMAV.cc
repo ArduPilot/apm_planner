@@ -355,7 +355,7 @@ void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
 
     QString logFileName =  QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
     QLOG_DEBUG() << "start new MAVLink Log:" << logFileName;
-    mavlink->startLogging(logFileName);
+   // mavlink->startLogging(logFileName);
 }
 
 /**

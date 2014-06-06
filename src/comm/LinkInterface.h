@@ -46,6 +46,15 @@ class LinkInterface : public QThread
 {
     Q_OBJECT
 public:
+    enum LinkType
+    {
+        SERIAL_LINK,
+        TCP_LINK,
+        UDP_LINK,
+        SIM_LINK,
+        UNKNOWN_LINK
+    };
+
     LinkInterface() :
         QThread(0)
     {
@@ -156,6 +165,8 @@ public:
      * @return The number of bytes ready to read
      **/
     virtual qint64 bytesAvailable() = 0;
+
+    virtual LinkType getLinkType() { return UNKNOWN_LINK; }
 
 public slots:
 

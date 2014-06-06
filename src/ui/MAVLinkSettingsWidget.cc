@@ -191,7 +191,7 @@ void MAVLinkSettingsWidget::enableDroneOS(bool enable)
 
     // Delete from all lists first
     UDPLink* firstUdp = NULL;
-    QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(protocol);
+    /*QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(protocol);
     foreach (LinkInterface* link, links)
     {
         UDPLink* udp = dynamic_cast<UDPLink*>(link);
@@ -206,7 +206,7 @@ void MAVLinkSettingsWidget::enableDroneOS(bool enable)
                 udp->removeHost(oldHostString);
             }
         }
-    }
+    }*/
 
     // Re-add if enabled
     if (enable)

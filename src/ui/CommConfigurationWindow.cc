@@ -58,10 +58,10 @@ This file is part of the QGROUNDCONTROL project
 #include <QBoxLayout>
 #include <QWidget>
 
-CommConfigurationWindow::CommConfigurationWindow(LinkInterface* link, ProtocolInterface* protocol, QWidget *parent) : QDialog(parent)
+CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* protocol, QWidget *parent) : QDialog(parent)
 {
     setWindowFlags(Qt::WindowStaysOnTopHint);
-    this->link = link;
+    this->m_linkid = linkid;
 
     // Setup the user interface according to link type
     ui.setupUi(this);
@@ -89,10 +89,10 @@ CommConfigurationWindow::CommConfigurationWindow(LinkInterface* link, ProtocolIn
     ui.linkType->addItem(tr("Serial"), QGC_LINK_SERIAL);
     ui.linkType->addItem(tr("UDP"), QGC_LINK_UDP);
     ui.linkType->addItem(tr("TCP"), QGC_LINK_TCP);
-    if(dynamic_cast<MAVLinkSimulationLink*>(link)) {
+    //if(dynamic_cast<MAVLinkSimulationLink*>(link)) {
         //Only show simulation option if already setup elsewhere as a simulation
-        ui.linkType->addItem(tr("Simulation"), QGC_LINK_SIMULATION);
-    }
+    //    ui.linkType->addItem(tr("Simulation"), QGC_LINK_SIMULATION);
+    //}
 
 #ifdef OPAL_RT
     ui.linkType->addItem(tr("Opal-RT Link"), QGC_LINK_OPAL);
@@ -108,29 +108,31 @@ CommConfigurationWindow::CommConfigurationWindow(LinkInterface* link, ProtocolIn
     // Create configuration action for this link
     // Connect the current UAS
     action = new QAction(QIcon(":/files/images/devices/network-wireless.svg"), "", this);
-    LinkManager::instance()->add(link);
-	action->setData(link->getId());
+    //LinkManager::instance()->addLink(link);
+    action->setData(linkid);
     action->setEnabled(true);
     action->setVisible(true);
-    setLinkName(link->getName());
+
+    setLinkName(LinkManager::instance()->getLinkName(linkid));
     connect(action, SIGNAL(triggered()), this, SLOT(show()));
 
     // Make sure that a change in the link name will be reflected in the UI
-    connect(link, SIGNAL(nameChanged(QString)), this, SLOT(setLinkName(QString)));
+    //connect(link, SIGNAL(nameChanged(QString)), this, SLOT(setLinkName(QString)));
 
     // Setup user actions and link notifications
     connect(ui.connectButton, SIGNAL(clicked()), this, SLOT(setConnection()));
     connect(ui.closeButton, SIGNAL(clicked()), this->window(), SLOT(close()));
     connect(ui.deleteButton, SIGNAL(clicked()), this, SLOT(remove()));
 
-    connect(this->link, SIGNAL(connected(bool)), this, SLOT(connectionState(bool)));
+    //connect(this->link, SIGNAL(connected(bool)), this, SLOT(connectionState(bool)));
+    connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(linkUpdate(int)));
 
 
     // Fill in the current data
-    if(this->link->isConnected()) ui.connectButton->setChecked(true);
+    if(LinkManager::instance()->getLinkConnected(m_linkid)) ui.connectButton->setChecked(true);
     //connect(this->link, SIGNAL(connected(bool)), ui.connectButton, SLOT(setChecked(bool)));
 
-    if(this->link->isConnected()) {
+    if(LinkManager::instance()->getLinkConnected(linkid)) {
         ui.connectionStatusLabel->setText(tr("Connected"));
 
         // TODO Deactivate all settings to force user to manually disconnect first
@@ -141,6 +143,24 @@ CommConfigurationWindow::CommConfigurationWindow(LinkInterface* link, ProtocolIn
     // TODO Move these calls to each link so that dynamic casts vanish
 
     // Open details pane for serial link if necessary
+
+    if (LinkManager::instance()->getLinkType(linkid) == LinkInterface::SERIAL_LINK)
+    {
+        QWidget* conf = new SerialConfigurationWindow(linkid, this);
+        ui.linkScrollArea->setWidget(conf);
+        ui.linkGroupBox->setTitle(tr("Serial Link"));
+        ui.linkType->setCurrentIndex(ui.linkType->findData(QGC_LINK_SERIAL));
+        connect(ui.advCheckBox,SIGNAL(clicked(bool)),conf,SLOT(setAdvancedSettings(bool)));
+
+    }
+    else if (LinkManager::instance()->getLinkType(linkid) == LinkInterface::UDP_LINK)
+    {
+        QWidget* conf = new QGCUDPLinkConfiguration(linkid, this);
+        ui.linkScrollArea->setWidget(conf);
+        ui.linkGroupBox->setTitle(tr("UDP Link"));
+        ui.linkType->setCurrentIndex(ui.linkType->findData(QGC_LINK_UDP));
+    }
+/*
     SerialLink* serial = dynamic_cast<SerialLink*>(link);
     if(serial != 0) {
         QWidget* conf = new SerialConfigurationWindow(serial, this);
@@ -214,13 +234,21 @@ CommConfigurationWindow::CommConfigurationWindow(LinkInterface* link, ProtocolIn
     } else {
         QLOG_DEBUG() << "Protocol is NOT MAVLink, can't open configuration window";
     }
+    */
 
     // Open details for UDP link if necessary
     // TODO
 
     // Display the widget
-    this->window()->setWindowTitle(tr("Settings for ") + this->link->getName());
+    this->window()->setWindowTitle(tr("Settings for ") + LinkManager::instance()->getLinkName(linkid));
     this->hide();
+}
+void CommConfigurationWindow::linkUpdate(int linkid)
+{
+    if (linkid != this->m_linkid)
+    {
+        return;
+    }
 }
 
 CommConfigurationWindow::~CommConfigurationWindow()
@@ -240,7 +268,7 @@ void CommConfigurationWindow::linkCurrentIndexChanged(int currentIndex)
 
 void CommConfigurationWindow::setLinkType(qgc_link_t linktype)
 {
-	if(link->isConnected())
+/*	if(link->isConnected())
 	{
 		// close old configuration window
 		this->window()->close();
@@ -312,7 +340,7 @@ void CommConfigurationWindow::setLinkType(qgc_link_t linktype)
             act->trigger();
             break;
         }
-    }
+    }*/
 }
 
 void CommConfigurationWindow::setProtocol(int protocol)
@@ -322,7 +350,17 @@ void CommConfigurationWindow::setProtocol(int protocol)
 
 void CommConfigurationWindow::setConnection()
 {
-    if(!link->isConnected()) {
+    if (!LinkManager::instance()->getLinkConnected(m_linkid))
+    {
+        LinkManager::instance()->connectLink(m_linkid);
+        this->window()->close();
+    }
+    else
+    {
+        LinkManager::instance()->disconnectLink(m_linkid);
+
+    }
+    /*if(!link->isConnected()) {
         link->connect();
         QGC::SLEEP::msleep(100);
         if (link->isConnected())
@@ -330,7 +368,7 @@ void CommConfigurationWindow::setConnection()
             this->window()->close();
     } else {
         link->disconnect();
-    }
+    }*/
 }
 
 void CommConfigurationWindow::setLinkName(QString name)
@@ -345,14 +383,14 @@ void CommConfigurationWindow::remove()
     if(action) delete action; //delete action first since it has a pointer to link
     action=NULL;
 
-    if(link) {
+    /*if(link) {
         LinkManager::instance()->removeLink(link); //remove link from LinkManager list
         link->disconnect(); //disconnect port, and also calls terminate() to stop the thread
         if (link->isRunning()) link->terminate(); // terminate() the serial thread just in case it is still running
         link->wait(); // wait() until thread is stoped before deleting
         link->deleteLater();
     }
-    link=NULL;
+    link=NULL;*/
 
     this->window()->close();
     this->deleteLater();

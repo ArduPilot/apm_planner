@@ -157,8 +157,8 @@ void QGCCore::initialize()
     // Connect links
     // to make sure that all components are initialized when the
     // first messages arrive
-    UDPLink* udpLink = new UDPLink(QHostAddress::Any, 14550);
-    MainWindow::instance()->addLink(udpLink);
+    //UDPLink* udpLink = new UDPLink(QHostAddress::Any, 14550);
+    //MainWindow::instance()->addLink(udpLink);
     // Listen on Multicast-Address 239.255.77.77, Port 14550
     //QHostAddress * multicast_udp = new QHostAddress("239.255.77.77");
     //UDPLink* udpLink = new UDPLink(*multicast_udp, 14550);
@@ -175,8 +175,8 @@ void QGCCore::initialize()
 
 
     //We want to have a default serial link available for "quick" connecting.
-    SerialLink *slink = new SerialLink();
-    MainWindow::instance()->addLink(slink);
+    //SerialLink *slink = new SerialLink();
+   // MainWindow::instance()->addLink(slink);
 
     mainWindow = MainWindow::instance(splashScreen);
 
@@ -187,7 +187,7 @@ void QGCCore::initialize()
                                               tr("APM Planner has been upgraded from version %1 to version %2. Some of your user preferences have been reset to defaults for safety reasons. Please adjust them where needed.").arg(lastApplicationVersion).arg(QGC_APPLICATION_VERSION));
 
     // Check if link could be connected
-    if (!udpLink->connect())
+    /*if (!udpLink->connect())
     {
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Critical);
@@ -206,7 +206,9 @@ void QGCCore::initialize()
             //mainWindow->close();
             QTimer::singleShot(200, mainWindow, SLOT(close()));
         }
-    }
+    }*/
+    LinkManager::instance()->addSerialConnection();
+    LinkManager::instance()->addUdpConnection(QHostAddress::Any,14550);
 }
 
 /**

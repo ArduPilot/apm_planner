@@ -421,6 +421,7 @@ HEADERS += \
     src/comm/QGCFlightGearLink.h \
     src/comm/QGCJSBSimLink.h \
     src/comm/QGCXPlaneLink.h \
+    src/comm/serialconnection.h \
     src/ui/CommConfigurationWindow.h \
     src/ui/SerialConfigurationWindow.h \
     src/ui/MainWindow.h \
@@ -617,7 +618,9 @@ HEADERS += \
     src/uas/LogDownloadDialog.h \
     src/comm/TLogReplayLink.h \
     src/ui/PrimaryFlightDisplayQML.h \
-    src/ui/configuration/CompassMotorCalibrationDialog.h
+    src/ui/configuration/CompassMotorCalibrationDialog.h \
+    src/comm/new_mavlinkdecoder.h \
+    src/comm/new_mavlinkparser.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -632,6 +635,7 @@ SOURCES += src/main.cc \
     src/comm/QGCFlightGearLink.cc \
     src/comm/QGCJSBSimLink.cc \
     src/comm/QGCXPlaneLink.cc \
+    src/comm/serialconnection.cc \
     src/ui/CommConfigurationWindow.cc \
     src/ui/SerialConfigurationWindow.cc \
     src/ui/MainWindow.cc \
@@ -824,7 +828,9 @@ SOURCES += src/main.cc \
     src/uas/LogDownloadDialog.cc \
     src/comm/TLogReplayLink.cc \
     src/ui/PrimaryFlightDisplayQML.cpp \
-    src/ui/configuration/CompassMotorCalibrationDialog.cpp
+    src/ui/configuration/CompassMotorCalibrationDialog.cpp \
+    src/comm/new_mavlinkdecoder.cc \
+    src/comm/new_mavlinkparser.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

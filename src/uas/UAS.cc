@@ -1904,16 +1904,16 @@ void UAS::sendMessage(mavlink_message_t message)
     // Emit message on all links that are currently connected
     foreach (LinkInterface* link, *links)
     {
-        if (LinkManager::instance()->getLinks().contains(link))
-        {
+        //if (LinkManager::instance()->getLinks().contains(link))
+        //{
             if (link->isConnected())
                 sendMessage(link, message);
-        }
-        else
-        {
-            // Remove from list
-            links->removeAt(links->indexOf(link));
-        }
+        //}
+        //else
+        //{
+        //    // Remove from list
+        //    links->removeAt(links->indexOf(link));
+        //}
     }
 }
 
@@ -1924,7 +1924,7 @@ void UAS::sendMessage(mavlink_message_t message)
 void UAS::forwardMessage(mavlink_message_t message)
 {
     // Emit message on all links that are currently connected
-    QList<LinkInterface*>link_list = LinkManager::instance()->getLinksForProtocol(mavlink);
+    /*QList<LinkInterface*>link_list = LinkManager::instance()->getLinksForProtocol(mavlink);
 
     foreach(LinkInterface* link, link_list)
     {
@@ -1945,7 +1945,7 @@ void UAS::forwardMessage(mavlink_message_t message)
                 }
             }
         }
-    }
+    }*/
 }
 
 /**
@@ -3523,6 +3523,16 @@ QList<LinkInterface*>* UAS::getLinks()
     return links;
 }
 
+QList<int> UAS::getLinkIdList()
+{
+    QList<int> linklist;
+    for (int i=0;i<links->size();i++)
+    {
+        linklist.append(links->at(i)->getId());
+    }
+    return linklist;
+}
+
 /**
 * @rerturn the map of the components
 */
@@ -3761,4 +3771,22 @@ void UAS::playArmStateChangedAudioMessage(bool armedState)
         GAudioOutput::instance()->say("disarmed");
     }
 }
+void UAS::protocolStatusMessageRec(const QString& title, const QString& message)
+{
+    emit protocolStatusMessage(title,message);
+}
 
+void UAS::valueChangedRec(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec)
+{
+    emit valueChanged(uasId,name,unit,value,msec);
+}
+
+void UAS::textMessageReceivedRec(int uasid, int componentid, int severity, const QString& text)
+{
+    emit textMessageReceived(uasid,componentid,severity,text);
+}
+
+void UAS::receiveLossChangedRec(int id,float value)
+{
+    emit receiveLossChanged(id,value);
+}

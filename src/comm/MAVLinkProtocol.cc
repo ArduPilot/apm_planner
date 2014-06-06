@@ -488,7 +488,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 if (m_multiplexingEnabled)
                 {
                     // Get all links connected to this unit
-                    QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(this);
+                    /*QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(this);
 
                     // Emit message on all links that are currently connected
                     foreach (LinkInterface* currLink, links)
@@ -496,7 +496,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                         // Only forward this message to the other links,
                         // not the link the message was received on
                         if (currLink != link) sendMessage(currLink, message, message.sysid, message.compid);
-                    }
+                    }*/
                 }
             }
         }
@@ -534,7 +534,7 @@ int MAVLinkProtocol::getComponentId()
 void MAVLinkProtocol::sendMessage(mavlink_message_t message)
 {
     // Get all links connected to this unit
-    QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(this);
+    /*QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(this);
 
     // Emit message on all links that are currently connected
     QList<LinkInterface*>::iterator i;
@@ -542,7 +542,7 @@ void MAVLinkProtocol::sendMessage(mavlink_message_t message)
     {
         sendMessage(*i, message);
         QLOG_TRACE() << "SENT MESSAGE OVER" << ((LinkInterface*)*i)->getName() << "LIST SIZE:" << links.size();
-    }
+    }*/
 }
 
 /**
