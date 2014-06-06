@@ -39,6 +39,15 @@ CompassMotorCalibrationDialog::CompassMotorCalibrationDialog(QWidget *parent) :
     connect(this, SIGNAL(about), this, SLOT(rejected()));
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
+
+    int ok = QMessageBox::warning(this, "Compass Motor Calibration", tr("CAUTION: Starting the compass motor calibration arms the motors.\n"
+                                                               "Please make sure you have read and followed all instructions"
+                                                               "before untertaking the calibration as serious injury could occur!"),
+                         QMessageBox::Ok, QMessageBox::Cancel);
+    if (ok == QMessageBox::Cancel){
+        QTimer::singleShot(100, this, SLOT(cancelCalibration()));
+    }
+
 }
 
 CompassMotorCalibrationDialog::~CompassMotorCalibrationDialog()
