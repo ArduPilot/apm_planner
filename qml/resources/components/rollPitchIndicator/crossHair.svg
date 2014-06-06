@@ -25,8 +25,8 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4"
-     inkscape:cx="189.91356"
+     inkscape:zoom="3.9757576"
+     inkscape:cx="210.03551"
      inkscape:cy="-5.3559814"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
@@ -57,7 +57,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -96,19 +96,17 @@
        y="1038.3622"
        x="109.41758"
        id="image7927"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAAFCAIAAACCfoahAAAAA3NCSVQICAjb4U/gAAAAG0lEQVQ4
-jWP8zzDMAdNAO4DmYNSHQx8Mfx8CAH9PAQn3UGrNAAAAAElFTkSuQmCC
-"
+       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAAFCAIAAACCfoahAAAAA3NCSVQICAjb4U/gAAAAG0lEQVQ4 jWP8zzDMAdNAO4DmYNSHQx8Mfx8CAH9PAQn3UGrNAAAAAElFTkSuQmCC "
        height="5"
        width="75" />
     <path
-       style="fill:none;stroke:#ff0b0b;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 49.41758,1039.3622 -45,20 0,0"
+       style="fill:none;stroke:#ff0b0b;stroke-width:2.87228131;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 44.41758,1040.8622 -55,15 0,0"
        id="path7930"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#ff0b0b;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 49.41758,1039.3622 c 40,20 40,20 40,20"
+       style="fill:none;stroke:#ff0b0b;stroke-width:3.04651451;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 44.41758,1040.8622 c 55,15 55,15 55,15"
        id="path7976"
        inkscape:connector-curvature="0" />
   </g>

@@ -20,10 +20,12 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 
+#include "QsLog.h"
 #include "SonarConfig.h"
 #include <QMessageBox>
 
 #include "QGCCore.h"
+
 
 SonarConfig::SonarConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {

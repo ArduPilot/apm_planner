@@ -622,7 +622,7 @@ bool SerialLink::disconnectPureThreaded()
 {
     if (isRunning())
     {
-        QLOG_INFO() << "running so disconnect" << m_port->portName();
+        if (m_port) QLOG_INFO() << "running so disconnect" << m_port->portName();
         {
             QMutexLocker locker(&m_stoppMutex);
             m_stopp = true;

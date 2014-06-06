@@ -95,11 +95,12 @@ private slots:
     void setCompassPX4OnBoard();
     void setCompass3DRGPS();
 
+    void showCompassMotorCalibrationDialog();
+
 private:
     void cleanup();
 
 private:
-    bool m_validSensorOffsets;
     Ui::CompassConfig ui;
     QPointer<QProgressDialog> m_progressDialog;
     QPointer<QTimer> m_timer;
@@ -109,6 +110,7 @@ private:
     double m_oldymag;
     double m_oldzmag;
     int m_allOffsetsSet;
+    bool m_validSensorOffsets;
 };
 
 #endif // COMPASSCONFIG_H

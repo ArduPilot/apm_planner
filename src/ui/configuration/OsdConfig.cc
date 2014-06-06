@@ -42,11 +42,29 @@ void OsdConfig::enableButtonClicked()
         return;
     }
     m_uas->getParamManager()->setParameter(1,"SR0_EXT_STAT",2);
-    m_uas->getParamManager()->setParameter(1,"SR0_EXTRA1",10);
-    m_uas->getParamManager()->setParameter(1,"SR0_EXTRA2",10);
+    m_uas->getParamManager()->setParameter(1,"SR0_EXTRA1",2);
+    m_uas->getParamManager()->setParameter(1,"SR0_EXTRA2",2);
     m_uas->getParamManager()->setParameter(1,"SR0_EXTRA3",2);
-    m_uas->getParamManager()->setParameter(1,"SR0_POSITION",3);
+    m_uas->getParamManager()->setParameter(1,"SR0_POSITION",2);
     m_uas->getParamManager()->setParameter(1,"SR0_RAW_CTRL",2);
     m_uas->getParamManager()->setParameter(1,"SR0_RAW_SENS",2);
     m_uas->getParamManager()->setParameter(1,"SR0_RC_CHAN",2);
+
+    m_uas->getParamManager()->setParameter(1,"SR1_EXT_STAT",2);
+    m_uas->getParamManager()->setParameter(1,"SR1_EXTRA1",2);
+    m_uas->getParamManager()->setParameter(1,"SR1_EXTRA2",2);
+    m_uas->getParamManager()->setParameter(1,"SR1_EXTRA3",2);
+    m_uas->getParamManager()->setParameter(1,"SR1_POSITION",2);
+    m_uas->getParamManager()->setParameter(1,"SR1_RAW_CTRL",2);
+    m_uas->getParamManager()->setParameter(1,"SR1_RAW_SENS",2);
+    m_uas->getParamManager()->setParameter(1,"SR1_RC_CHAN",2);
+
+    m_uas->getParamManager()->setParameter(1,"SR3_EXT_STAT",2);
+    m_uas->getParamManager()->setParameter(1,"SR3_EXTRA1",2);
+    m_uas->getParamManager()->setParameter(1,"SR3_EXTRA2",2);
+    m_uas->getParamManager()->setParameter(1,"SR3_EXTRA3",2);
+    m_uas->getParamManager()->setParameter(1,"SR3_POSITION",2);
+    m_uas->getParamManager()->setParameter(1,"SR3_RAW_CTRL",2);
+    m_uas->getParamManager()->setParameter(1,"SR3_RAW_SENS",2);
+    m_uas->getParamManager()->setParameter(1,"SR3_RC_CHAN",2);
 }

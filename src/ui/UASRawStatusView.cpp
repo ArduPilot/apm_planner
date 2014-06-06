@@ -11,60 +11,47 @@ UASRawStatusView::UASRawStatusView(QWidget *parent) : QWidget(parent)
     ui.tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui.tableWidget->setShowGrid(false);
     ui.tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    QTimer *timer = new QTimer(this);
-    connect(timer,SIGNAL(timeout()),this,SLOT(updateTableTimerTick()));
+    m_updateTimer = new QTimer(this);
+    connect(m_updateTimer,SIGNAL(timeout()),this,SLOT(updateTableTimerTick()));
 
     // FIXME reinstate once fixed.
 
     //timer->start(2000);
 }
+void UASRawStatusView::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event)
+    //Check every 2 seconds to see if we need an update
+    m_updateTimer->start(2000);
+}
+
+void UASRawStatusView::hideEvent(QHideEvent *event)
+{
+    Q_UNUSED(event)
+    m_updateTimer->stop();
+}
+
 void UASRawStatusView::addSource(MAVLinkDecoder *decoder)
 {
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint16,quint64)),this,SLOT(valueChanged(int,QString,QString,qint16,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint32,quint64)),this,SLOT(valueChanged(int,QString,QString,qint32,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint64,quint64)),this,SLOT(valueChanged(int,QString,QString,qint64,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint8,quint64)),this,SLOT(valueChanged(int,QString,QString,quint8,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint16,quint64)),this,SLOT(valueChanged(int,QString,QString,qint16,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
+    connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
+void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value, const quint64 msec)
 {
-    valueChanged(uasId,name,unit,(double)value,msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,(double)value,msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,(double)value,msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,(double)value,msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,(double)value,msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,(double)value,msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,(double)value,msec);
-}
-void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec)
-{
-    valueChanged(uasId,name,unit,(double)value,msec);
+    if (value.type() == QVariant::Double)
+    {
+        valueChanged(uasId,name,unit,value.toDouble(),msec);
+    }
+    else
+    {
+        valueChanged(uasId,name,unit,static_cast<double>(value.toInt()),msec);
+    }
 }
 
 void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
 {
+    Q_UNUSED(uasId)
+    Q_UNUSED(unit)
+    Q_UNUSED(msec)
     valueMap[name] = value;
     if (nameToUpdateWidgetMap.contains(name))
     {

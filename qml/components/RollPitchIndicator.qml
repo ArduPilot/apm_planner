@@ -43,16 +43,17 @@ Item {
                 visible: !enableBackgroundVideo
             }
 
-            Rectangle { // horizon bar
-                id: artHorizon
-                anchors.centerIn: blueSky
-                height: 3
-                width: blueSky.width
-                color: "darkgreen"
-                smooth: true
-                visible: !enableBackgroundVideo
-                scale: 1
-            }
+//            Rectangle { // horizon bar
+//                id: artHorizon
+//                anchors.centerIn: blueSky
+//                height: 3
+//                anchors.verticalCenterOffset: 3
+//                width: blueSky.width
+//                color: "darkgreen"
+//                smooth: true
+//                visible: !enableBackgroundVideo
+//                scale: 1
+//            }
 
             Rectangle { // Ground
                 id: ground

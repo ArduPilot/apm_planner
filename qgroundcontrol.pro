@@ -399,7 +399,8 @@ FORMS += \
     src/ui/AP2DataPlotAxisDialog.ui \
     src/ui/AutoUpdateDialog.ui \
     src/uas/LogDownloadDialog.ui \
-    src/ui/PrimaryFlightDisplayQML.ui
+    src/ui/PrimaryFlightDisplayQML.ui \
+    src/ui/configuration/CompassMotorCalibrationDialog.ui
 
 HEADERS += \
     src/MG.h \
@@ -607,7 +608,8 @@ HEADERS += \
     src/ui/AutoUpdateDialog.h \
     src/uas/LogDownloadDialog.h \
     src/comm/TLogReplayLink.h \
-    src/ui/PrimaryFlightDisplayQML.h
+    src/ui/PrimaryFlightDisplayQML.h \
+    src/ui/configuration/CompassMotorCalibrationDialog.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -809,7 +811,8 @@ SOURCES += src/main.cc \
     src/ui/AutoUpdateDialog.cc \
     src/uas/LogDownloadDialog.cc \
     src/comm/TLogReplayLink.cc \
-    src/ui/PrimaryFlightDisplayQML.cpp
+    src/ui/PrimaryFlightDisplayQML.cpp \
+    src/ui/configuration/CompassMotorCalibrationDialog.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

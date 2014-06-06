@@ -182,6 +182,16 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     // Initial signals
     emit disarmed();
     emit armingChanged(false);  
+    if (mavlink)
+    {
+        systemId = mavlink->getSystemId();
+        componentId = mavlink->getComponentId();
+    }
+    else
+    {
+        systemId = QGC::defaultSystemId;
+        componentId = QGC::defaultComponentId;
+    }
 }
 
 /**
@@ -1019,14 +1029,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_mission_count_t wpc;
             mavlink_msg_mission_count_decode(&message, &wpc);
-            if(wpc.target_system == mavlink->getSystemId() || wpc.target_system == 0)
-            {
-                waypointManager.handleWaypointCount(message.sysid, message.compid, wpc.count);
-            }
-            else
-            {
-                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wpc.target_system;
-            }
+            waypointManager.handleWaypointCount(message.sysid, message.compid, wpc.count);
         }
             break;
 
@@ -1035,14 +1038,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_mission_item_t wp;
             mavlink_msg_mission_item_decode(&message, &wp);
             //QLOG_DEBUG() << "got waypoint (" << wp.seq << ") from ID " << message.sysid << " x=" << wp.x << " y=" << wp.y << " z=" << wp.z;
-            if(wp.target_system == mavlink->getSystemId() || wp.target_system == 0)
-            {
-                waypointManager.handleWaypoint(message.sysid, message.compid, &wp);
-            }
-            else
-            {
-                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wp.target_system;
-            }
+            waypointManager.handleWaypoint(message.sysid, message.compid, &wp);
         }
             break;
 
@@ -1050,11 +1046,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_mission_ack_t wpa;
             mavlink_msg_mission_ack_decode(&message, &wpa);
-            if((wpa.target_system == mavlink->getSystemId() || wpa.target_system == 0) &&
-                    (wpa.target_component == mavlink->getComponentId() || wpa.target_component == 0))
-            {
-                waypointManager.handleWaypointAck(message.sysid, message.compid, &wpa);
-            }
+            waypointManager.handleWaypointAck(message.sysid, message.compid, &wpa);
         }
             break;
 
@@ -1062,14 +1054,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_mission_request_t wpr;
             mavlink_msg_mission_request_decode(&message, &wpr);
-            if(wpr.target_system == mavlink->getSystemId() || wpr.target_system == 0)
-            {
-                waypointManager.handleWaypointRequest(message.sysid, message.compid, &wpr);
-            }
-            else
-            {
-                QLOG_DEBUG() << "Got waypoint message, but was wrong system id" << wpr.target_system;
-            }
+            waypointManager.handleWaypointRequest(message.sysid, message.compid, &wpr);
         }
             break;
 
@@ -1367,6 +1352,14 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit logData(uasId, log_data.ofs, log_data.id, log_data.count, (const char*)log_data.data);
         }
             break;
+        case MAVLINK_MSG_ID_COMPASSMOT_STATUS:
+        {
+            // Configuration Messages for Compass Calibration
+            mavlink_compassmot_status_t compassmot_status;
+            mavlink_msg_compassmot_status_decode(&message, &compassmot_status);
+            emit compassMotCalibration(&compassmot_status);
+        }
+            break;
         // Messages to ignore
         case MAVLINK_MSG_ID_SCALED_IMU:
         case MAVLINK_MSG_ID_RAW_PRESSURE:
@@ -1526,7 +1519,7 @@ void UAS::setHomePosition(double lat, double lon, double alt)
     if (ret == QMessageBox::Yes)
     {
         mavlink_message_t msg;
-        mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), 0, MAV_CMD_DO_SET_HOME, 1, 0, 0, 0, 0, lat, lon, alt);
+        mavlink_msg_command_long_pack(systemId, componentId, &msg, this->getUASID(), 0, MAV_CMD_DO_SET_HOME, 1, 0, 0, 0, 0, lat, lon, alt);
         // Send message twice to increase chance that it reaches its goal
         sendMessage(msg);
 
@@ -1537,7 +1530,7 @@ void UAS::setHomePosition(double lat, double lon, double alt)
         home.longitude = lon*1E7;
         home.altitude = alt*1000;
         QLOG_DEBUG() << "lat:" << home.latitude << " lon:" << home.longitude;
-        mavlink_msg_set_gps_global_origin_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &home);
+        mavlink_msg_set_gps_global_origin_encode(systemId, componentId, &msg, &home);
         sendMessage(msg);
     } else {
         blockHomePositionChanges = true;
@@ -1564,7 +1557,7 @@ void UAS::setLocalOriginAtCurrentGPSPosition()
     if (ret == QMessageBox::Yes)
     {
         mavlink_message_t msg;
-        mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), 0, MAV_CMD_DO_SET_HOME, 1, 1, 0, 0, 0, 0, 0, 0);
+        mavlink_msg_command_long_pack(systemId, componentId, &msg, this->getUASID(), 0, MAV_CMD_DO_SET_HOME, 1, 1, 0, 0, 0, 0, 0, 0);
         // Send message twice to increase chance that it reaches its goal
         sendMessage(msg);
     }
@@ -1580,7 +1573,7 @@ void UAS::setLocalPositionSetpoint(float x, float y, float z, float yaw)
 {
 #ifdef MAVLINK_ENABLED_PIXHAWK
     mavlink_message_t msg;
-    mavlink_msg_set_local_position_setpoint_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, MAV_FRAME_LOCAL_NED, x, y, z, yaw/M_PI*180.0);
+    mavlink_msg_set_local_position_setpoint_pack(systemId, componentId, &msg, uasId, 0, MAV_FRAME_LOCAL_NED, x, y, z, yaw/M_PI*180.0);
     sendMessage(msg);
 #else
     Q_UNUSED(x);
@@ -1601,7 +1594,7 @@ void UAS::setLocalPositionOffset(float x, float y, float z, float yaw)
 {
 #ifdef MAVLINK_ENABLED_PIXHAWK
     mavlink_message_t msg;
-    mavlink_msg_set_position_control_offset_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, x, y, z, yaw);
+    mavlink_msg_set_position_control_offset_pack(systemId, componentId, &msg, uasId, 0, x, y, z, yaw);
     sendMessage(msg);
 #else
     Q_UNUSED(x);
@@ -1615,7 +1608,7 @@ void UAS::startRadioControlCalibration(int param)
 {
     mavlink_message_t msg;
     // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 0, param, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 0, param, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -1623,21 +1616,21 @@ void UAS::endRadioControlCalibration()
 {
     mavlink_message_t msg;
     // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
 void UAS::startDataRecording()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, MAV_CMD_DO_CONTROL_VIDEO, 1, -1, -1, -1, 2, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_DO_CONTROL_VIDEO, 1, -1, -1, -1, 2, 0, 0, 0);
     sendMessage(msg);
 }
 
 void UAS::stopDataRecording()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, MAV_CMD_DO_CONTROL_VIDEO, 1, -1, -1, -1, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_DO_CONTROL_VIDEO, 1, -1, -1, -1, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -1645,7 +1638,7 @@ void UAS::startMagnetometerCalibration()
 {
     mavlink_message_t msg;
     // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_IMU, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 1, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_IMU, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 1, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -1653,7 +1646,7 @@ void UAS::startGyroscopeCalibration()
 {
     mavlink_message_t msg;
     // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_IMU, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 1, 0, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_IMU, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 1, 0, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -1661,7 +1654,15 @@ void UAS::startPressureCalibration()
 {
     mavlink_message_t msg;
     // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_IMU, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 1, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_IMU, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 1, 0, 0, 0, 0);
+    sendMessage(msg);
+}
+
+void UAS::startCompassMotCalibration()
+{
+    mavlink_message_t msg;
+    // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio, Param5: Accel Calib Param 6: Compass Mot
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 0, 0, 0, 1, 0);
     sendMessage(msg);
 }
 
@@ -1831,7 +1832,7 @@ void UAS::setMode(int mode)
     QLOG_DEBUG() << "SENDING REQUEST TO SET MODE TO SYSTEM" << uasId << ", REQUEST TO SET MODE " << newMode;
 
     mavlink_message_t msg;
-    mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, (uint8_t)uasId, newMode, (uint16_t)custom_mode);
+    mavlink_msg_set_mode_pack(systemId, componentId, &msg, (uint8_t)uasId, newMode, (uint16_t)custom_mode);
     sendMessage(msg);
 
 }
@@ -1873,7 +1874,7 @@ void UAS::setModeArm(uint8_t newBaseMode, uint32_t newCustomMode)
     if (receivedMode)
     {
         mavlink_message_t msg;
-        mavlink_msg_set_mode_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, (uint8_t)uasId, newBaseMode, newCustomMode);
+        mavlink_msg_set_mode_pack(systemId, componentId, &msg, (uint8_t)uasId, newBaseMode, newCustomMode);
         qDebug() << "mavlink_msg_set_mode_pack 1";
         sendMessage(msg);
         qDebug() << "SENDING REQUEST TO SET MODE TO SYSTEM" << uasId << ", MODE " << newBaseMode << " " << newCustomMode;
@@ -1960,7 +1961,7 @@ void UAS::sendMessage(LinkInterface* link, mavlink_message_t message)
     // Write message into buffer, prepending start sign
     int len = mavlink_msg_to_send_buffer(buffer, &message);
     static uint8_t messageKeys[256] = MAVLINK_MESSAGE_CRCS;
-    mavlink_finalize_message_chan(&message, mavlink->getSystemId(), mavlink->getComponentId(), link->getId(), message.len, messageKeys[message.msgid]);
+    mavlink_finalize_message_chan(&message, systemId, componentId, link->getId(), message.len, messageKeys[message.msgid]);
 
     // If link is connected
     if (link->isConnected())
@@ -2118,7 +2119,7 @@ void UAS::requestImage()
     if (imagePacketsArrived == 0)
     {
         mavlink_message_t msg;
-        mavlink_msg_data_transmission_handshake_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, MAVLINK_DATA_STREAM_IMG_JPEG, 0, 0, 0, 0, 0, 50);
+        mavlink_msg_data_transmission_handshake_pack(systemId, componentId, &msg, MAVLINK_DATA_STREAM_IMG_JPEG, 0, 0, 0, 0, 0, 50);
         sendMessage(msg);
     }
 #endif
@@ -2152,7 +2153,7 @@ int UAS::getCommunicationStatus() const
 void UAS::requestParameters()
 {
     mavlink_message_t msg;
-    mavlink_msg_param_request_list_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), MAV_COMP_ID_ALL);
+    mavlink_msg_param_request_list_pack(systemId, componentId, &msg, this->getUASID(), MAV_COMP_ID_ALL);
     sendMessage(msg);
     QLOG_DEBUG() << __FILE__ << __LINE__ << "LOADING PARAM LIST";
 }
@@ -2160,7 +2161,7 @@ void UAS::requestParameters()
 void UAS::writeParametersToStorage()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, MAV_CMD_PREFLIGHT_STORAGE, 1, 1, -1, -1, -1, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_PREFLIGHT_STORAGE, 1, 1, -1, -1, -1, 0, 0, 0);
     QLOG_DEBUG() << "SENT COMMAND" << MAV_CMD_PREFLIGHT_STORAGE;
     sendMessage(msg);
 }
@@ -2168,7 +2169,7 @@ void UAS::writeParametersToStorage()
 void UAS::readParametersFromStorage()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, 0, MAV_CMD_PREFLIGHT_STORAGE, 1, 0, -1, -1, -1, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_PREFLIGHT_STORAGE, 1, 0, -1, -1, -1, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -2198,7 +2199,7 @@ void UAS::enableAllDataTransmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
 }
@@ -2222,7 +2223,7 @@ void UAS::enableRawSensorDataTransmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
 }
@@ -2246,7 +2247,7 @@ void UAS::enableExtendedSystemStatusTransmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
 }
@@ -2258,7 +2259,7 @@ void UAS::enableRCChannelDataTransmission(int rate)
 {
 #if defined(MAVLINK_ENABLED_UALBERTA_MESSAGES)
     mavlink_message_t msg;
-    mavlink_msg_request_rc_channels_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, enabled);
+    mavlink_msg_request_rc_channels_pack(systemId, componentId, &msg, enabled);
     sendMessage(msg);
 #else
     mavlink_message_t msg;
@@ -2274,7 +2275,7 @@ void UAS::enableRCChannelDataTransmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
 #endif
@@ -2299,7 +2300,7 @@ void UAS::enableRawControllerDataTransmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
 }
@@ -2320,7 +2321,7 @@ void UAS::enableRawControllerDataTransmission(int rate)
 //    // The component / subsystem which should take this command
 //    stream.target_component = 0;
 //    // Encode and send the message
-//    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+//    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
 //    // Send message twice to increase chance of reception
 //    sendMessage(msg);
 //    sendMessage(msg);
@@ -2345,7 +2346,7 @@ void UAS::enablePositionTransmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
 }
@@ -2369,7 +2370,7 @@ void UAS::enableExtra1Transmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
     sendMessage(msg);
@@ -2394,7 +2395,7 @@ void UAS::enableExtra2Transmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
     sendMessage(msg);
@@ -2419,7 +2420,7 @@ void UAS::enableExtra3Transmission(int rate)
     // The component / subsystem which should take this command
     stream.target_component = 0;
     // Encode and send the message
-    mavlink_msg_request_data_stream_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &stream);
+    mavlink_msg_request_data_stream_encode(systemId, componentId, &msg, &stream);
     // Send message twice to increase chance of reception
     sendMessage(msg);
     sendMessage(msg);
@@ -2513,7 +2514,7 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
                 p.param_id[i] = 0;
             }
         }
-        mavlink_msg_param_set_encode(mavlink->getSystemId(), compId, &msg, &p);
+        mavlink_msg_param_set_encode(systemId, compId, &msg, &p);
         sendMessage(msg);
     }
 }
@@ -2648,7 +2649,7 @@ void UAS::requestParameter(int component, int id)
     read.param_id[0] = '\0'; // Enforce null termination
     read.target_system = uasId;
     read.target_component = component;
-    mavlink_msg_param_request_read_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &read);
+    mavlink_msg_param_request_read_encode(systemId, componentId, &msg, &read);
     sendMessage(msg);
     //QLOG_DEBUG() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM ID" << id;
 }
@@ -2671,7 +2672,7 @@ void UAS::requestParameter(int component, const QString& parameter)
     read.param_id[15] = '\0'; // Enforce null termination
     read.target_system = uasId;
     read.target_component = component;
-    mavlink_msg_param_request_read_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &read);
+    mavlink_msg_param_request_read_encode(systemId, componentId, &msg, &read);
     sendMessage(msg);
     QLOG_DEBUG() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM NAME" << parameter;
 }
@@ -2733,7 +2734,7 @@ void UAS::executeCommand(MAV_CMD command)
     cmd.param7 = 0.0f;
     cmd.target_system = uasId;
     cmd.target_component = 0;
-    mavlink_msg_command_long_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &cmd);
+    mavlink_msg_command_long_encode(systemId, componentId, &msg, &cmd);
     sendMessage(msg);
 }
 void UAS::executeCommandAck(int num, bool success)
@@ -2742,7 +2743,7 @@ void UAS::executeCommandAck(int num, bool success)
     mavlink_command_ack_t ack;
     ack.command = num;
     ack.result = (success ? 1 : 0);
-    mavlink_msg_command_ack_encode(mavlink->getSystemId(),mavlink->getComponentId(),&msg,&ack);
+    mavlink_msg_command_ack_encode(systemId,componentId,&msg,&ack);
     sendMessage(msg);
 }
 
@@ -2766,7 +2767,7 @@ void UAS::executeCommand(MAV_CMD command, int confirmation, float param1, float 
     cmd.param7 = param7;
     cmd.target_system = uasId;
     cmd.target_component = component;
-    mavlink_msg_command_long_encode(mavlink->getSystemId(), mavlink->getComponentId(), &msg, &cmd);
+    mavlink_msg_command_long_encode(systemId, componentId, &msg, &cmd);
     sendMessage(msg);
 }
 
@@ -2777,7 +2778,7 @@ void UAS::executeCommand(MAV_CMD command, int confirmation, float param1, float 
 void UAS::launch()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, this->getUASID(), 0, MAV_CMD_NAV_TAKEOFF, 1, 0, 0, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, this->getUASID(), 0, MAV_CMD_NAV_TAKEOFF, 1, 0, 0, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -2842,7 +2843,7 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
     if(((base_mode & MAV_MODE_FLAG_DECODE_POSITION_MANUAL) && (base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY)) || (base_mode & MAV_MODE_FLAG_HIL_ENABLED))
     {
         mavlink_message_t message;
-        mavlink_msg_manual_control_pack(mavlink->getSystemId(), mavlink->getComponentId(), &message, this->uasId, (float)manualPitchAngle, (float)manualRollAngle, (float)manualThrust, (float)manualYawAngle, buttons);
+        mavlink_msg_manual_control_pack(systemId, componentId, &message, this->uasId, (float)manualPitchAngle, (float)manualRollAngle, (float)manualThrust, (float)manualYawAngle, buttons);
         sendMessage(message);
         //QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT MANUAL CONTROL MESSAGE: roll" << manualRollAngle << " pitch: " << manualPitchAngle << " yaw: " << manualYawAngle << " thrust: " << manualThrust;
 
@@ -2860,7 +2861,7 @@ void UAS::setManual6DOFControlCommands(double x, double y, double z, double roll
     if(((base_mode & MAV_MODE_FLAG_DECODE_POSITION_MANUAL) && (base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY)) || (base_mode & MAV_MODE_FLAG_HIL_ENABLED))
     {
         mavlink_message_t message;
-        mavlink_msg_setpoint_6dof_pack(mavlink->getSystemId(), mavlink->getComponentId(), &message, this->uasId, (float)x, (float)y, (float)z, (float)roll, (float)pitch, (float)yaw);
+        mavlink_msg_setpoint_6dof_pack(systemId, componentId, &message, this->uasId, (float)x, (float)y, (float)z, (float)roll, (float)pitch, (float)yaw);
         sendMessage(message);
         QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT 6DOF CONTROL MESSAGE: x" << x << " y: " << y << " z: " << z << " roll: " << roll << " pitch: " << pitch << " yaw: " << yaw;
 
@@ -2876,7 +2877,7 @@ void UAS::logRequestList(uint16_t start, uint16_t end)
 {
     QLOG_DEBUG() << "send logRequestList start:" << start << " end:" << end;
     mavlink_message_t msg;
-    mavlink_msg_log_request_list_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+    mavlink_msg_log_request_list_pack(systemId, componentId, &msg,
                                       getUASID(), MAV_COMP_ID_ALL,
                                       start, end);
     sendMessage(msg);
@@ -2886,7 +2887,7 @@ void UAS::logRequestData(uint16_t id, uint32_t ofs, uint32_t count)
 {
     QLOG_DEBUG() << "send logRequestData id:" << id << " ofs:" << ofs << " count:" << count;
     mavlink_message_t msg;
-    mavlink_msg_log_request_data_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+    mavlink_msg_log_request_data_pack(systemId, componentId, &msg,
                                       getUASID(), MAV_COMP_ID_ALL,
                                       id, ofs, count);
     sendMessage(msg);
@@ -2895,7 +2896,7 @@ void UAS::logRequestData(uint16_t id, uint32_t ofs, uint32_t count)
 void UAS::logEraseAll()
 {
     mavlink_message_t msg;
-    mavlink_msg_log_erase_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+    mavlink_msg_log_erase_pack(systemId, componentId, &msg,
                                    getUASID(), MAV_COMP_ID_ALL);
     sendMessage(msg);
 }
@@ -2903,7 +2904,7 @@ void UAS::logEraseAll()
 void UAS::logRequestEnd()
 {
     mavlink_message_t msg;
-    mavlink_msg_log_request_end_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+    mavlink_msg_log_request_end_pack(systemId, componentId, &msg,
                                       getUASID(), MAV_COMP_ID_ALL);
     sendMessage(msg);
 }
@@ -2943,7 +2944,7 @@ void UAS::receiveButton(int buttonIndex)
 void UAS::halt()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_HOLD, MAV_GOTO_HOLD_AT_CURRENT_POSITION, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_HOLD, MAV_GOTO_HOLD_AT_CURRENT_POSITION, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -2953,7 +2954,7 @@ void UAS::halt()
 void UAS::go()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_CONTINUE, MAV_GOTO_HOLD_AT_CURRENT_POSITION, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_CONTINUE, MAV_GOTO_HOLD_AT_CURRENT_POSITION, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -2969,7 +2970,7 @@ void UAS::home()
     double altitude = UASManager::instance()->getHomeAltitude();
     int frame = UASManager::instance()->getHomeFrame();
 
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_CONTINUE, MAV_GOTO_HOLD_AT_CURRENT_POSITION, frame, 0, latitude, longitude, altitude);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_CONTINUE, MAV_GOTO_HOLD_AT_CURRENT_POSITION, frame, 0, latitude, longitude, altitude);
     sendMessage(msg);
 }
 
@@ -2980,7 +2981,7 @@ void UAS::land()
 {
     mavlink_message_t msg;
 
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_NAV_LAND, 1, 0, 0, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_NAV_LAND, 1, 0, 0, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -2991,7 +2992,7 @@ void UAS::pairRX(int rxType, int rxSubType)
 {
     mavlink_message_t msg;
 
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_START_RX_PAIR, 0, rxType, rxSubType, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_START_RX_PAIR, 0, rxType, rxSubType, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -3214,7 +3215,7 @@ void UAS::sendHilState(quint64 time_us, float roll, float pitch, float yaw, floa
                 sinPhi_2 * sinTheta_2 * cosPsi_2);
 
         mavlink_message_t msg;
-        mavlink_msg_hil_state_quaternion_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+        mavlink_msg_hil_state_quaternion_pack(systemId, componentId, &msg,
                                    time_us, q, rollspeed, pitchspeed, yawspeed,
                                    lat*1e7f, lon*1e7f, alt*1000, vx*100, vy*100, vz*100, ind_airspeed*100, true_airspeed*100, xacc*1000/9.81, yacc*1000/9.81, zacc*1000/9.81);
         sendMessage(msg);
@@ -3233,7 +3234,7 @@ void UAS::sendHilSensors(quint64 time_us, float xacc, float yacc, float zacc, fl
     if (this->base_mode & MAV_MODE_FLAG_HIL_ENABLED)
     {
         mavlink_message_t msg;
-        mavlink_msg_hil_sensor_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+        mavlink_msg_hil_sensor_pack(systemId, componentId, &msg,
                                    time_us, xacc, yacc, zacc, rollspeed, pitchspeed, yawspeed,
                                      xmag, ymag, zmag, abs_pressure, diff_pressure, pressure_alt, temperature,
                                      fields_changed);
@@ -3264,7 +3265,7 @@ void UAS::sendHilGps(quint64 time_us, double lat, double lon, double alt, int fi
         course = (course / M_PI) * 180.0f;
 
         mavlink_message_t msg;
-        mavlink_msg_hil_gps_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg,
+        mavlink_msg_hil_gps_pack(systemId, componentId, &msg,
                                    time_us, fix_type, lat*1e7, lon*1e7, alt*1e3, eph*1e2, epv*1e2, vel*1e2, vn*1e2, ve*1e2, vd*1e2, course*1e2, satellites);
         lastSendTimeGPS = QGC::groundTimeMilliseconds();
         sendMessage(msg);
@@ -3304,7 +3305,7 @@ void UAS::stopHil()
 void UAS::reboot()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 1, 1, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 1, 1, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -3326,7 +3327,7 @@ void UAS::shutdown()
     {
         // If the active UAS is set, execute command
         mavlink_message_t msg;
-        mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 2, 2, 0, 0, 0, 0, 0);
+        mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 2, 2, 0, 0, 0, 0, 0);
         sendMessage(msg);
     }
 }
@@ -3340,7 +3341,7 @@ void UAS::shutdown()
 void UAS::setTargetPosition(float x, float y, float z, float yaw)
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(), mavlink->getComponentId(), &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_NAV_PATHPLANNING, 1, 1, 1, 0, yaw, x, y, z);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_NAV_PATHPLANNING, 1, 1, 1, 0, yaw, x, y, z);
     sendMessage(msg);
 }
 

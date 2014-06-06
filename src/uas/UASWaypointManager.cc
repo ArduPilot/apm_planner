@@ -869,7 +869,7 @@ void UASWaypointManager::goToWaypoint(Waypoint *wp)
         mavlink_message_t message;
         mission.target_system = uasid;
         mission.target_component = MAV_COMP_ID_MISSIONPLANNER;
-        mavlink_msg_mission_item_encode(uas->mavlink->getSystemId(), uas->mavlink->getComponentId(), &message, &mission);
+        mavlink_msg_mission_item_encode(uas->getSystemId(), uas->getComponentId(), &message, &mission);
         uas->sendMessage(message);
         QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
     }
@@ -954,7 +954,7 @@ void UASWaypointManager::sendWaypointClearAll()
 
     emit updateStatusString(QString("Clearing waypoint list..."));
 
-    mavlink_msg_mission_clear_all_encode(uas->mavlink->getSystemId(), uas->mavlink->getComponentId(), &message, &wpca);
+    mavlink_msg_mission_clear_all_encode(uas->getSystemId(), uas->getComponentId(), &message, &wpca);
 
     uas->sendMessage(message);
     QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
@@ -972,7 +972,7 @@ void UASWaypointManager::sendWaypointSetCurrent(quint16 seq)
 
     emit updateStatusString(QString("Updating target waypoint..."));
 
-    mavlink_msg_mission_set_current_encode(uas->mavlink->getSystemId(), uas->mavlink->getComponentId(), &message, &wpsc);
+    mavlink_msg_mission_set_current_encode(uas->getSystemId(), uas->getComponentId(), &message, &wpsc);
     uas->sendMessage(message);
     QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
 }
@@ -989,7 +989,7 @@ void UASWaypointManager::sendWaypointCount()
 
     emit updateStatusString(QString("Starting to transmit waypoints..."));
 
-    mavlink_msg_mission_count_encode(uas->mavlink->getSystemId(), uas->mavlink->getComponentId(), &message, &wpc);
+    mavlink_msg_mission_count_encode(uas->getSystemId(), uas->getComponentId(), &message, &wpc);
     uas->sendMessage(message);
     QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
 }
@@ -1005,7 +1005,7 @@ void UASWaypointManager::sendWaypointRequestList()
 
     emit updateStatusString(QString("Requesting waypoint list..."));
 
-    mavlink_msg_mission_request_list_encode(uas->mavlink->getSystemId(), uas->mavlink->getComponentId(), &message, &wprl);
+    mavlink_msg_mission_request_list_encode(uas->getSystemId(), uas->getComponentId(), &message, &wprl);
     uas->sendMessage(message);
     QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
 }
@@ -1022,7 +1022,7 @@ void UASWaypointManager::sendWaypointRequest(quint16 seq)
 
     emit updateStatusString(QString("Retrieving waypoint ID %1 of %2 total").arg(wpr.seq).arg(current_count));
 
-    mavlink_msg_mission_request_encode(uas->mavlink->getSystemId(), uas->mavlink->getComponentId(), &message, &wpr);
+    mavlink_msg_mission_request_encode(uas->getSystemId(), uas->getComponentId(), &message, &wpr);
     uas->sendMessage(message);
     QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
 }
@@ -1044,7 +1044,7 @@ void UASWaypointManager::sendWaypoint(quint16 seq)
         emit updateStatusString(QString("Sending waypoint ID %1 of %2 total").arg(wp->seq).arg(current_count));
 
 
-        mavlink_msg_mission_item_encode(uas->mavlink->getSystemId(), uas->mavlink->getComponentId(), &message, wp);
+        mavlink_msg_mission_item_encode(uas->getSystemId(), uas->getComponentId(), &message, wp);
         uas->sendMessage(message);
         QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
     }
@@ -1060,7 +1060,7 @@ void UASWaypointManager::sendWaypointAck(quint8 type)
     wpa.target_component = MAV_COMP_ID_MISSIONPLANNER;
     wpa.type = type;
 
-    mavlink_msg_mission_ack_encode(uas->mavlink->getSystemId(), uas->mavlink->getComponentId(), &message, &wpa);
+    mavlink_msg_mission_ack_encode(uas->getSystemId(), uas->getComponentId(), &message, &wpa);
     uas->sendMessage(message);
     QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
 }

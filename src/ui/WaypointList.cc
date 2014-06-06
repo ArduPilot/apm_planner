@@ -386,6 +386,7 @@ void WaypointList::currentWaypointEditableChanged(quint16 seq)
             for(int i = 0; i < waypoints.count(); i++)
             {
                 WaypointEditableView* widget = wpEditableViews.find(waypoints[i]).value();
+                if (!widget) continue;
 
                 if (waypoints[i]->getId() == seq)
                 {
@@ -412,6 +413,7 @@ void WaypointList::currentWaypointViewOnlyChanged(quint16 seq)
         for(int i = 0; i < waypoints.count(); i++)
         {
             WaypointViewOnlyView* widget = wpViewOnlyViews.find(waypoints[i]).value();
+            if (!widget) continue;
 
             if (waypoints[i]->getId() == seq)
             {
