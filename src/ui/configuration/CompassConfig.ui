@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>681</width>
-    <height>461</height>
+    <width>684</width>
+    <height>485</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -141,188 +141,179 @@
     <rect>
      <x>10</x>
      <y>140</y>
-     <width>301</width>
-     <height>311</height>
+     <width>271</width>
+     <height>341</height>
     </rect>
    </property>
    <property name="title">
     <string>Orientation (ROTATION)</string>
    </property>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>261</width>
-      <height>261</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QLabel" name="apmLabel">
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/apm2.5.jpg</pixmap>
-         </property>
-         <property name="scaledContents">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="onBoardApmButton">
-         <property name="minimumSize">
-          <size>
-           <width>121</width>
-           <height>36</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>APM with On-Board
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLabel" name="apmLabel">
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/apm2.5.jpg</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="onBoardApmButton">
+          <property name="minimumSize">
+           <size>
+            <width>121</width>
+            <height>36</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>APM with On-Board
 Compass</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="2" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <widget class="QLabel" name="compassGpsLabel">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>80</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/maggps.png</pixmap>
-         </property>
-         <property name="scaledContents">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="gpsCompassButton">
-         <property name="minimumSize">
-          <size>
-           <width>121</width>
-           <height>36</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>APM with 3DR
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="compassGpsLabel">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/maggps.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="gpsCompassButton">
+          <property name="minimumSize">
+           <size>
+            <width>121</width>
+            <height>36</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>APM with 3DR
 GPS/Compass</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="px4Label">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>80</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/Pixhawk.png</pixmap>
-         </property>
-         <property name="scaledContents">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="px4Button">
-         <property name="minimumSize">
-          <size>
-           <width>121</width>
-           <height>36</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Pixhawk / PX4</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="savedLabel">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QComboBox" name="orientationComboBox">
-       <property name="minimumSize">
-        <size>
-         <width>125</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <zorder>formLayoutWidget</zorder>
-   <zorder>orientationComboBox</zorder>
-   <zorder>savedLabel</zorder>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="px4Label">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>80</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/Pixhawk.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="px4Button">
+          <property name="minimumSize">
+           <size>
+            <width>121</width>
+            <height>36</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Pixhawk / PX4</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="savedLabel">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="orientationComboBox">
+        <property name="minimumSize">
+         <size>
+          <width>125</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QPushButton" name="liveCalibrationButton">
    <property name="geometry">
     <rect>
      <x>420</x>
-     <y>120</y>
+     <y>100</y>
      <width>131</width>
      <height>32</height>
     </rect>
@@ -341,7 +332,7 @@ GPS/Compass</string>
    <property name="geometry">
     <rect>
      <x>430</x>
-     <y>160</y>
+     <y>134</y>
      <width>114</width>
      <height>16</height>
     </rect>
@@ -356,8 +347,8 @@ GPS/Compass</string>
   <widget class="QGroupBox" name="Examples">
    <property name="geometry">
     <rect>
-     <x>360</x>
-     <y>330</y>
+     <x>350</x>
+     <y>310</y>
      <width>311</width>
      <height>121</height>
     </rect>
@@ -389,6 +380,48 @@ GPS/Compass</string>
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>160</y>
+     <width>301</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Compass Motor Calibration (Optional)</string>
+   </property>
+   <widget class="QPushButton" name="compassMotButton">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>80</y>
+      <width>215</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Compass Motor Calibration</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>271</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>CompassMot calibrates the compass for magnetic interference created by the power electronics.</string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources>

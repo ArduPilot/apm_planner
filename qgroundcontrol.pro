@@ -335,7 +335,11 @@ FORMS += \
     src/ui/mission/QGCMissionOther.ui \
     src/ui/mission/QGCMissionNavWaypoint.ui \
     src/ui/mission/QGCMissionDoJump.ui \
+    src/ui/mission/QGCMissionDoSetServo.ui \
+    src/ui/mission/QGCMissionDoRepeatServo.ui \
+    src/ui/mission/QGCMissionDoDigicamControl.ui \
     src/ui/mission/QGCMissionConditionDelay.ui \
+    src/ui/mission/QGCMissionConditionYaw.ui \
     src/ui/mission/QGCMissionNavLoiterUnlim.ui \
     src/ui/mission/QGCMissionNavLoiterTurns.ui \
     src/ui/mission/QGCMissionNavLoiterTime.ui \
@@ -399,7 +403,8 @@ FORMS += \
     src/ui/AP2DataPlotAxisDialog.ui \
     src/ui/AutoUpdateDialog.ui \
     src/uas/LogDownloadDialog.ui \
-    src/ui/PrimaryFlightDisplayQML.ui
+    src/ui/PrimaryFlightDisplayQML.ui \
+    src/ui/configuration/CompassMotorCalibrationDialog.ui
 
 HEADERS += \
     src/MG.h \
@@ -514,7 +519,11 @@ HEADERS += \
     src/ui/mission/QGCMissionOther.h \
     src/ui/mission/QGCMissionNavWaypoint.h \
     src/ui/mission/QGCMissionDoJump.h \
+    src/ui/mission/QGCMissionDoSetServo.h \
+    src/ui/mission/QGCMissionDoRepeatServo.h \
+    src/ui/mission/QGCMissionDoDigicamControl.h \
     src/ui/mission/QGCMissionConditionDelay.h \
+    src/ui/mission/QGCMissionConditionYaw.h \
     src/ui/mission/QGCMissionNavLoiterUnlim.h \
     src/ui/mission/QGCMissionNavLoiterTurns.h \
     src/ui/mission/QGCMissionNavLoiterTime.h \
@@ -608,7 +617,8 @@ HEADERS += \
     src/ui/AutoUpdateDialog.h \
     src/uas/LogDownloadDialog.h \
     src/comm/TLogReplayLink.h \
-    src/ui/PrimaryFlightDisplayQML.h
+    src/ui/PrimaryFlightDisplayQML.h \
+    src/ui/configuration/CompassMotorCalibrationDialog.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -718,7 +728,11 @@ SOURCES += src/main.cc \
     src/ui/mission/QGCMissionOther.cc \
     src/ui/mission/QGCMissionNavWaypoint.cc \
     src/ui/mission/QGCMissionDoJump.cc \
+    src/ui/mission/QGCMissionDoSetServo.cc \
+    src/ui/mission/QGCMissionDoRepeatServo.cc \
+    src/ui/mission/QGCMissionDoDigicamControl.cc \
     src/ui/mission/QGCMissionConditionDelay.cc \
+    src/ui/mission/QGCMissionConditionYaw.cc \
     src/ui/mission/QGCMissionNavLoiterUnlim.cc \
     src/ui/mission/QGCMissionNavLoiterTurns.cc \
     src/ui/mission/QGCMissionNavLoiterTime.cc \
@@ -811,7 +825,8 @@ SOURCES += src/main.cc \
     src/ui/AutoUpdateDialog.cc \
     src/uas/LogDownloadDialog.cc \
     src/comm/TLogReplayLink.cc \
-    src/ui/PrimaryFlightDisplayQML.cpp
+    src/ui/PrimaryFlightDisplayQML.cpp \
+    src/ui/configuration/CompassMotorCalibrationDialog.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
