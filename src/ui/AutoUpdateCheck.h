@@ -13,9 +13,11 @@ class AutoUpdateCheck : public QObject
     Q_OBJECT
 public:
     explicit AutoUpdateCheck(QObject *parent = 0);
+    void suppressNoUpdateSignal();
 
 signals:
     void updateAvailable(QString version, QString releaseType, QString url, QString name);
+    void noUpdateAvailable();
 
 public slots:
     void forcedAutoUpdateCheck();
@@ -45,6 +47,7 @@ private:
     bool m_isAutoUpdateEnabled;
     QString m_skipVersion;
     QString m_releaseType;
+    bool m_suppressNoUpdateSignal;
 
 };
 

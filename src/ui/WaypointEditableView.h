@@ -55,9 +55,13 @@ class QGCMissionNavLand;
 class QGCMissionNavTakeoff;
 class QGCMissionNavSweep;
 class QGCMissionDoJump;
+class QGCMissionDoSetServo;
+class QGCMissionDoRepeatServo;
+class QGCMissionDoDigicamControl;
 class QGCMissionDoStartSearch;
 class QGCMissionDoFinishSearch;
 class QGCMissionConditionDelay;
+class QGCMissionConditionYaw;
 class QGCMissionOther;
 
 class WaypointEditableView : public QWidget
@@ -110,9 +114,13 @@ protected:
     QGCMissionNavTakeoff* MissionNavTakeoffWidget;
     QGCMissionNavSweep* MissionNavSweepWidget;
     QGCMissionDoJump* MissionDoJumpWidget;
+    QGCMissionDoSetServo* MissionDoSetServoWidget;
+    QGCMissionDoRepeatServo* MissionDoRepeatServoWidget;
+    QGCMissionDoDigicamControl* MissionDoDigicamControlWidget;
     QGCMissionDoStartSearch* MissionDoStartSearchWidget;
     QGCMissionDoFinishSearch* MissionDoFinishSearchWidget;
     QGCMissionConditionDelay* MissionConditionDelayWidget;
+    QGCMissionConditionYaw* MissionConditionYawWidget;
     QGCMissionOther* MissionOtherWidget;
 
 private:

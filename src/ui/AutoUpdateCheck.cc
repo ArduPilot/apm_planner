@@ -13,7 +13,8 @@
 AutoUpdateCheck::AutoUpdateCheck(QObject *parent) :
     QObject(parent),
     m_networkReply(NULL),
-    m_httpRequestAborted(false)
+    m_httpRequestAborted(false),
+    m_suppressNoUpdateSignal(false)
 {
     loadSettings();
 }
@@ -106,16 +107,23 @@ void AutoUpdateCheck::processDownloadedVersionObject(const QString &versionObjec
         QString name = entry.property("name").toString();
         QString locationUrl = entry.property("url").toString();
 
-        if ((platform == define2string(APP_PLATFORM)) && (type == define2string(APP_TYPE))
-            && (compareVersionStrings(version,QGC_APPLICATION_VERSION))){
-            QLOG_DEBUG() << "Found New Version: " << platform << " "
-                        << type << " " << version << " " << locationUrl;
-            if(m_skipVersion != version){
-                emit updateAvailable(version, type, locationUrl, name);
+        if ((platform == define2string(APP_PLATFORM)) && (type == define2string(APP_TYPE))){
+            if (compareVersionStrings(version,QGC_APPLICATION_VERSION)){
+                QLOG_DEBUG() << "Found New Version: " << platform << " "
+                            << type << " " << version << " " << locationUrl;
+                if(m_skipVersion != version){
+                    emit updateAvailable(version, type, locationUrl, name);
+                } else {
+                    QLOG_INFO() << "Version Skipped at user request";
+                }
+                break;
             } else {
-                QLOG_DEBUG() << "Version Skipped at user request";
+                QLOG_INFO() << "no new update available";
+                if (!m_suppressNoUpdateSignal){
+                    emit noUpdateAvailable();
+                }
+                m_suppressNoUpdateSignal = false;
             }
-            break;
         }
     }
 }
@@ -268,4 +276,9 @@ void AutoUpdateCheck::writeSettings()
     settings.setValue("RELEASE_TYPE", m_releaseType);
     settings.endGroup();
     settings.sync();
+}
+
+void AutoUpdateCheck::suppressNoUpdateSignal()
+{
+    m_suppressNoUpdateSignal = true;
 }
