@@ -1352,6 +1352,14 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit logData(uasId, log_data.ofs, log_data.id, log_data.count, (const char*)log_data.data);
         }
             break;
+        case MAVLINK_MSG_ID_COMPASSMOT_STATUS:
+        {
+            // Configuration Messages for Compass Calibration
+            mavlink_compassmot_status_t compassmot_status;
+            mavlink_msg_compassmot_status_decode(&message, &compassmot_status);
+            emit compassMotCalibration(&compassmot_status);
+        }
+            break;
         // Messages to ignore
         case MAVLINK_MSG_ID_SCALED_IMU:
         case MAVLINK_MSG_ID_RAW_PRESSURE:
@@ -1647,6 +1655,14 @@ void UAS::startPressureCalibration()
     mavlink_message_t msg;
     // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio
     mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_IMU, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 1, 0, 0, 0, 0);
+    sendMessage(msg);
+}
+
+void UAS::startCompassMotCalibration()
+{
+    mavlink_message_t msg;
+    // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio, Param5: Accel Calib Param 6: Compass Mot
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 0, 0, 0, 0, 1, 0);
     sendMessage(msg);
 }
 

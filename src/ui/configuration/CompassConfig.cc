@@ -22,6 +22,7 @@ This file is part of the APM_PLANNER project
 
 #include "QsLog.h"
 #include "CompassConfig.h"
+#include "CompassMotorCalibrationDialog.h"
 #include <qmath.h>
 #include "QGCCore.h"
 
@@ -97,6 +98,8 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.px4Button, SIGNAL(clicked()),
             this,SLOT(setCompassPX4OnBoard()));
 
+    connect(ui.compassMotButton, SIGNAL(clicked()), this, SLOT(showCompassMotorCalibrationDialog()));
+
 }
 
 void CompassConfig::activeUASSet(UASInterface *uas)
@@ -149,6 +152,8 @@ void CompassConfig::updateCompassSelection()
 
 void CompassConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
     if (parameterName == "MAG_ENABLE")
     {
         if (value.toInt() == 0)
@@ -516,4 +521,16 @@ void CompassConfig::sphere_error(const alglib::real_1d_array &xi, alglib::real_1
             fi[a] = err;
             a++;
         }
+}
+
+void CompassConfig::showCompassMotorCalibrationDialog()
+{
+    CompassMotorCalibrationDialog *dialog = new CompassMotorCalibrationDialog();
+    if(dialog->exec() == QDialog::Accepted){
+        // This modal, as you cannot do anything else while doing a compassMot
+        QLOG_DEBUG() << "Compass Mot Success!";
+    } else {
+        QLOG_DEBUG() << "Compass Mot Cancelled!";
+    }
+
 }

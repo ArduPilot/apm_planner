@@ -397,6 +397,7 @@ public slots:
     virtual void startMagnetometerCalibration() = 0;
     virtual void startGyroscopeCalibration() = 0;
     virtual void startPressureCalibration() = 0;
+    virtual void startCompassMotCalibration() = 0;
 
  	// [NOTE] isRotary/isFixedWing defined above.
     /** @brief Set the current battery type and voltages */
@@ -676,6 +677,8 @@ signals:
     void sensorOffsetsMessageUpdate(UASInterface *uas, mavlink_sensor_offsets_t sensorOffsets);
     /** @brief Radio Status update message*/
     void radioMessageUpdate(UASInterface *uas, mavlink_radio_t radioMessage);
+    /** @brief Compass Mot Status update message*/
+    void compassMotCalibration(mavlink_compassmot_status_t* compassmot_status);
 
     // Log Download Signals
     void logEntry(int uasId, uint32_t time_utc, uint32_t size, uint16_t id, uint16_t num_logs, uint16_t last_log_num);

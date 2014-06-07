@@ -38,6 +38,7 @@ private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void checkBoxToggled(bool enabled);
     void sonarTypeChanged(int index);
+
 private:
     Ui::SonarConfig ui;
 };
