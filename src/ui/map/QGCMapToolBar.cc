@@ -19,6 +19,24 @@ QGCMapToolBar::QGCMapToolBar(QWidget *parent) :
     ui->setupUi(this);
 }
 
+static const struct {
+    const char*    name;
+    MapType::Types type;
+} sMapTypes[] = {
+    { "Bing Hybrid", MapType::BingHybrid },
+    { "Bing Map", MapType::BingMap },
+    { "Bing Satellite", MapType::BingSatellite },
+    { "Google Hybrid", MapType::GoogleHybrid },
+    { "Google Map", MapType::GoogleMap },
+    { "Google Satellite", MapType::GoogleSatellite },
+    { "Google Terrain", MapType::GoogleTerrain },
+    { "OpenStreetMap", MapType::OpenStreetMap },
+    { "ArcGIS Map", MapType::ArcGIS_Map },
+    { "ArcGIS Terrain", MapType::ArcGIS_Terrain }
+};
+
+static const size_t sNumMapTypes = sizeof(sMapTypes) / sizeof(sMapTypes[0]);
+
 void QGCMapToolBar::setMap(QGCMapWidget* map)
 {
     this->map = map;
@@ -62,27 +80,14 @@ void QGCMapToolBar::setMap(QGCMapWidget* map)
         //setup the mapTypesMenu
         QAction* action;
         MapType::Types mapType = map->GetMapType();
-
-        action =  mapTypesMenu.addAction(tr("Bing Hybrid"),this,SLOT(setMapType()));
-        action->setData(MapType::BingHybrid);
-        action->setCheckable(true);
-        mapTypesGroup->addAction(action);
-        if(mapType == MapType::BingHybrid) action->setChecked(true);
-
-        action =  mapTypesMenu.addAction(tr("Google Hybrid"),this,SLOT(setMapType()));
-        action->setData(MapType::GoogleHybrid);
-        action->setCheckable(true);
-        mapTypesGroup->addAction(action);
-        if(mapType == MapType::GoogleHybrid) action->setChecked(true);
-
-        action =  mapTypesMenu.addAction(tr("OpenStreetMap"),this,SLOT(setMapType()));
-        action->setData(MapType::OpenStreetMap);
-        action->setCheckable(true);
-        mapTypesGroup->addAction(action);
-        if(mapType == MapType::OpenStreetMap) action->setChecked(true);
-
+        for (size_t i = 0; i < sNumMapTypes; ++i) {
+            action = mapTypesMenu.addAction(tr(sMapTypes[i].name), this, SLOT(setMapType()));
+            action->setData(sMapTypes[i].type);
+            action->setCheckable(true);
+            mapTypesGroup->addAction(action);
+            if (mapType == sMapTypes[i].type) action->setChecked(true);
+        }
         optionsMenu.addMenu(&mapTypesMenu);
-
 
         // FIXME MARK CURRENT VALUES IN MENU
         QAction *defaultTrailAction = trailPlotMenu.addAction(tr("No trail"), this, SLOT(setUAVTrailTime()));
