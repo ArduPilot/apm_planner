@@ -24,6 +24,7 @@
 #include "mission/QGCMissionNavTakeoff.h"
 #include "mission/QGCMissionNavSweep.h"
 #include "mission/QGCMissionConditionDelay.h"
+#include "mission/QGCMissionConditionYaw.h"
 #include "mission/QGCMissionDoJump.h"
 #include "mission/QGCMissionDoSetServo.h"
 #include "mission/QGCMissionDoRepeatServo.h"
@@ -63,6 +64,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     MissionNavTakeoffWidget = NULL;
     MissionNavSweepWidget = NULL;
     MissionConditionDelayWidget = NULL;
+    MissionConditionYawWidget = NULL;
     MissionDoJumpWidget = NULL;
     MissionDoSetServoWidget = NULL;
     MissionDoRepeatServoWidget = NULL;
@@ -87,8 +89,8 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("NAV: Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
         m_ui->comboBox_action->addItem(tr("NAV: Land"),MAV_CMD_NAV_LAND);
         //m_ui->comboBox_action->addItem(tr("NAV: Target"),MAV_CMD_NAV_TARGET);
-        m_ui->comboBox_action->addItem(tr("IF: Delay over"),MAV_CMD_CONDITION_DELAY);
-        //m_ui->comboBox_action->addItem(tr("IF: Yaw angle is"),MAV_CMD_CONDITION_YAW);
+        m_ui->comboBox_action->addItem(tr("IF: Condition Delay"),MAV_CMD_CONDITION_DELAY);
+        m_ui->comboBox_action->addItem(tr("IF: Condition Yaw"),MAV_CMD_CONDITION_YAW);
         m_ui->comboBox_action->addItem(tr("DO: Jump to Index"),MAV_CMD_DO_JUMP);
         m_ui->comboBox_action->addItem(tr("DO: Set Servo"), MAV_CMD_DO_SET_SERVO);
         m_ui->comboBox_action->addItem(tr("DO: Repeat Servo"), MAV_CMD_DO_REPEAT_SERVO);
@@ -169,6 +171,7 @@ void WaypointEditableView::updateActionView(int action)
     if(MissionNavTakeoffWidget) MissionNavTakeoffWidget->hide();
     if(MissionNavSweepWidget) MissionNavSweepWidget->hide();
     if(MissionConditionDelayWidget) MissionConditionDelayWidget->hide();
+    if(MissionConditionYawWidget) MissionConditionYawWidget->hide();
     if(MissionDoJumpWidget) MissionDoJumpWidget->hide();
     if(MissionDoSetServoWidget) MissionDoSetServoWidget->hide();
     if(MissionDoRepeatServoWidget) MissionDoRepeatServoWidget->hide();
@@ -204,6 +207,9 @@ void WaypointEditableView::updateActionView(int action)
             break;
         case MAV_CMD_CONDITION_DELAY:
             if(MissionConditionDelayWidget) MissionConditionDelayWidget->show();
+            break;
+        case MAV_CMD_CONDITION_YAW:
+            if(MissionConditionYawWidget) MissionConditionYawWidget->show();
             break;
         case MAV_CMD_DO_JUMP:
             if(MissionDoJumpWidget) MissionDoJumpWidget->show();
@@ -336,6 +342,13 @@ void WaypointEditableView::initializeActionView(int actionID)
         {
             MissionConditionDelayWidget = new QGCMissionConditionDelay(this);
             m_ui->customActionWidget->layout()->addWidget(MissionConditionDelayWidget);
+        }
+        break;
+    case MAV_CMD_CONDITION_YAW:
+        if (!MissionConditionYawWidget)
+        {
+            MissionConditionYawWidget = new QGCMissionConditionYaw(this);
+            m_ui->customActionWidget->layout()->addWidget(MissionConditionYawWidget);
         }
         break;
     case MAV_CMD_DO_JUMP:

@@ -61,6 +61,7 @@ class QGCMissionDoDigicamControl;
 class QGCMissionDoStartSearch;
 class QGCMissionDoFinishSearch;
 class QGCMissionConditionDelay;
+class QGCMissionConditionYaw;
 class QGCMissionOther;
 
 class WaypointEditableView : public QWidget
@@ -119,6 +120,7 @@ protected:
     QGCMissionDoStartSearch* MissionDoStartSearchWidget;
     QGCMissionDoFinishSearch* MissionDoFinishSearchWidget;
     QGCMissionConditionDelay* MissionConditionDelayWidget;
+    QGCMissionConditionYaw* MissionConditionYawWidget;
     QGCMissionOther* MissionOtherWidget;
 
 private:
