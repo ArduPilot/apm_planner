@@ -2447,7 +2447,7 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
             switch (value.type())
             {
             case QVariant::Char:
-                union_value.param_float = (unsigned char)value.toChar().toAscii();
+                union_value.param_float = static_cast<char>(value.toChar().toAscii());
                 p.param_type = MAV_PARAM_TYPE_INT8;
                 break;
             case QVariant::Int:
@@ -2473,7 +2473,7 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
             switch (value.type())
             {
             case QVariant::Char:
-                union_value.param_int8 = (unsigned char)value.toChar().toAscii();
+                union_value.param_int8 = static_cast<unsigned char>(value.toChar().toAscii());
                 p.param_type = MAV_PARAM_TYPE_INT8;
                 break;
             case QVariant::Int:
