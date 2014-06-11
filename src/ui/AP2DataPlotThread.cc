@@ -29,6 +29,7 @@ QString AP2DataPlotThread::makeCreateTableString(QString tablename, QString form
     for (int j=0;j<varchar.size();j++)
     {
         QString name = varchar[j].trimmed();
+        name = "\"" + name + "\"";
         QChar typeCode = formatstr.at(j);
         if (typeCode == 'b') //int8_t
         {
@@ -107,7 +108,7 @@ QString AP2DataPlotThread::makeInsertTableString(QString tablename, QString vari
     for (int j=0;j<linesplit.size();j++)
     {
         QString name = linesplit[j].trimmed();
-        inserttable.append("," + name);
+        inserttable.append(",\"" + name + "\"");
         insertvalues.append(",?");
     }
     inserttable.append(")");
