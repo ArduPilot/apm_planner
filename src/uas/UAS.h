@@ -53,7 +53,7 @@ class UAS : public UASInterface
 {
     Q_OBJECT
 public:
-    UAS(MAVLinkProtocol* protocol, int id = 0);
+    UAS(MAVLinkProtocol* protocol,int id = 0);
     ~UAS();
 
     static const float lipoFull;  ///< 100% charged voltage
@@ -414,7 +414,7 @@ protected: //COMMENTS FOR TEST UNIT
     QMap<int, QString> components;///< IDs and names of all detected onboard components
     QList<LinkInterface*>* links; ///< List of links this UAS can be reached by
     QList<int> unknownPackets;    ///< Packet IDs which are unknown and have been received
-    MAVLinkProtocol* mavlink;     ///< Reference to the MAVLink instance
+    //MAVLinkProtocol* mavlink;     ///< Reference to the MAVLink instance
     CommStatus commStatus;        ///< Communication status
     float receiveDropRate;        ///< Percentage of packets that were dropped on the MAV's receiving link (from GCS and other MAVs)
     float sendDropRate;           ///< Percentage of packets that were not received from the MAV by the GCS

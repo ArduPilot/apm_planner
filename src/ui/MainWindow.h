@@ -50,7 +50,7 @@ This file is part of the QGROUNDCONTROL project
 #include "WaypointList.h"
 #include "CameraView.h"
 #include "UASListWidget.h"
-#include "MAVLinkProtocol.h"
+//#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"
 #include "ObjectDetectionView.h"
 #include "HUD.h"

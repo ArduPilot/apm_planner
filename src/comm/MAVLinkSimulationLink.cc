@@ -30,7 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 #include "QsLog.h"
 #include "LinkManager.h"
-#include "MAVLinkProtocol.h"
+//#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"
 #include "QGCMAVLink.h"
 #include "QGC.h"

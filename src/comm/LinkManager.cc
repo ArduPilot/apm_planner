@@ -1,3 +1,35 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2014 APM_PLANNER PROJECT <http://www.diydrones.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+
+/**
+ * @file
+ *   @brief LinkManager
+ *
+ *   @author Michael Carpenter <malcom2073@gmail.com>
+ *   @author QGROUNDCONTROL PROJECT - This code has GPLv3+ snippets from QGROUNDCONTROL, (c) 2009, 2010 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+ *
+ */
+
+
 #include "LinkManager.h"
 #include "PxQuadMAV.h"
 #include "SlugsMAV.h"
@@ -9,12 +41,24 @@
 LinkManager::LinkManager(QObject *parent) :
     QObject(parent)
 {
-    m_mavlinkDecoder = new New_MAVLinkDecoder(this);
-    m_mavlinkParser = new New_MAVLinkParser(this);
+    m_mavlinkDecoder = new MAVLinkDecoder(this);
+    m_mavlinkParser = new MAVLinkProtocol(this);
     m_mavlinkParser->setConnectionManager(this);
     connect(m_mavlinkParser,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(messageReceived(LinkInterface*,mavlink_message_t)));
     connect(m_mavlinkParser,SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
 }
+void LinkManager::stopLogging()
+{
+    m_mavlinkParser->stopLogging();
+}
+
+void LinkManager::startLogging()
+{
+    QString logFileName = QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
+    QLOG_DEBUG() << "LinkManger::startLogging()" << logFileName;
+    m_mavlinkParser->startLogging(logFileName);
+}
+
 int LinkManager::addSerialConnection()
 {
     //Add with defaults
@@ -63,7 +107,7 @@ void LinkManager::addLink(LinkInterface *link)
 }
 void LinkManager::removeLink(LinkInterface *link)
 {
-    //if (m_connectionMap.find())
+    //This function is not yet supported, it will be once we support multiple MAVs
 }
 
 void LinkManager::connectLink(int index)
@@ -228,7 +272,7 @@ QList<LinkInterface*> LinkManager::getLinks()
     return links;
 }
 
-UASInterface* LinkManager::createUAS(New_MAVLinkParser* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent)
+UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent)
 {
     QPointer<QObject> p;
 

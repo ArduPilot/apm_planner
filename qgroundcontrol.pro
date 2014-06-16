@@ -417,7 +417,6 @@ HEADERS += \
     src/comm/SerialLinkInterface.h \
     src/comm/SerialLink.h \
     src/comm/ProtocolInterface.h \
-    src/comm/MAVLinkProtocol.h \
     src/comm/QGCFlightGearLink.h \
     src/comm/QGCJSBSimLink.h \
     src/comm/QGCXPlaneLink.h \
@@ -507,7 +506,6 @@ HEADERS += \
     src/ui/QGCToolBar.h \
     src/ui/QGCStatusBar.h \
     src/ui/QGCMAVLinkInspector.h \
-    src/ui/MAVLinkDecoder.h \
     src/ui/WaypointViewOnlyView.h \
     src/ui/WaypointEditableView.h \    
     src/ui/UnconnectedUASInfoWidget.h \
@@ -619,8 +617,8 @@ HEADERS += \
     src/comm/TLogReplayLink.h \
     src/ui/PrimaryFlightDisplayQML.h \
     src/ui/configuration/CompassMotorCalibrationDialog.h \
-    src/comm/new_mavlinkdecoder.h \
-    src/comm/new_mavlinkparser.h
+    src/comm/MAVLinkDecoder.h \
+    src/comm/MAVLinkProtocol.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -631,7 +629,6 @@ SOURCES += src/main.cc \
     src/comm/LinkManager.cc \
     src/comm/LinkInterface.cpp \
     src/comm/SerialLink.cc \
-    src/comm/MAVLinkProtocol.cc \
     src/comm/QGCFlightGearLink.cc \
     src/comm/QGCJSBSimLink.cc \
     src/comm/QGCXPlaneLink.cc \
@@ -718,7 +715,6 @@ SOURCES += src/main.cc \
     src/ui/QGCToolBar.cc \
     src/ui/QGCStatusBar.cc \
     src/ui/QGCMAVLinkInspector.cc \
-    src/ui/MAVLinkDecoder.cc \
     src/ui/WaypointViewOnlyView.cc \
     src/ui/WaypointEditableView.cc \
     src/ui/UnconnectedUASInfoWidget.cc \
@@ -829,8 +825,8 @@ SOURCES += src/main.cc \
     src/comm/TLogReplayLink.cc \
     src/ui/PrimaryFlightDisplayQML.cpp \
     src/ui/configuration/CompassMotorCalibrationDialog.cpp \
-    src/comm/new_mavlinkdecoder.cc \
-    src/comm/new_mavlinkparser.cc
+    src/comm/MAVLinkDecoder.cc \
+    src/comm/MAVLinkProtocol.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

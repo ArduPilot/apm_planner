@@ -15,7 +15,7 @@
 #include "UASManager.h"
 #include "QGC.h"
 #include "GAudioOutput.h"
-#include "MAVLinkProtocol.h"
+//#include "MAVLinkProtocol.h"
 #include "QGCMAVLink.h"
 #include "LinkManager.h"
 #include "SerialLink.h"
@@ -49,7 +49,6 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     uasId(id),
     links(new QList<LinkInterface*>()),
     unknownPackets(),
-    mavlink(protocol),
     commStatus(COMM_DISCONNECTED),
     receiveDropRate(0),
     sendDropRate(0),
@@ -182,16 +181,16 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     // Initial signals
     emit disarmed();
     emit armingChanged(false);  
-    if (mavlink)
-    {
-        systemId = mavlink->getSystemId();
-        componentId = mavlink->getComponentId();
-    }
-    else
-    {
+    //if (mavlink)
+    //{
+    //    systemId = mavlink->getSystemId();
+    //    componentId = mavlink->getComponentId();
+    //}
+    //else
+    //{
         systemId = QGC::defaultSystemId;
         componentId = QGC::defaultComponentId;
-    }
+    //}
 }
 
 /**

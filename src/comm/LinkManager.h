@@ -1,3 +1,34 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2014 APM_PLANNER PROJECT <http://www.diydrones.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+
+/**
+ * @file
+ *   @brief LinkManager
+ *
+ *   @author Michael Carpenter <malcom2073@gmail.com>
+ *   @author QGROUNDCONTROL PROJECT - This code has GPLv3+ snippets from QGROUNDCONTROL, (c) 2009, 2010 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+ *
+ */
+
 #ifndef LINKMANAGER_H
 #define LINKMANAGER_H
 
@@ -13,9 +44,9 @@
  * the UAS Class lives in the UI thread
  */
 #include "serialconnection.h"
-#include "new_mavlinkdecoder.h"
-#include "new_mavlinkparser.h"
+#include "MAVLinkDecoder.h"
 #include "MAVLinkProtocol.h"
+//#include "MAVLinkProtocol.h"
 #include <QMap>
 #include "UASInterface.h"
 #include "UAS.h"
@@ -41,7 +72,7 @@ public:
     void connectLink(int index);
     void disconnectLink(int index);
     UASInterface* getUas(int id);
-    UASInterface* createUAS(New_MAVLinkParser* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
+    UASInterface* createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
     void addLink(LinkInterface *link);
     QList<LinkInterface*> getLinks();
     void removeLink(LinkInterface *link);
@@ -54,11 +85,13 @@ public:
     void setUdpLinkPort(int linkid, int port);
     void addUdpHost(int linkid,QString hostname);
     QList<QString> getCurrentPorts();
+    void stopLogging();
+    void startLogging();
 private:
     QMap<int,LinkInterface*> m_connectionMap;
     QMap<int,UASInterface*> m_uasMap;
-    New_MAVLinkDecoder *m_mavlinkDecoder;
-    New_MAVLinkParser *m_mavlinkParser;
+    MAVLinkDecoder *m_mavlinkDecoder;
+    MAVLinkProtocol *m_mavlinkParser;
 signals:
     //void newLink(LinkInterface* link);
     void newLink(int linkid);
