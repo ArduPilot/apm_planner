@@ -15,16 +15,18 @@ class QGCUDPLinkConfiguration : public QWidget
     Q_OBJECT
 
 public:
-    explicit QGCUDPLinkConfiguration(UDPLink* link, QWidget *parent = 0);
+    explicit QGCUDPLinkConfiguration(int linkid, QWidget *parent = 0);
     ~QGCUDPLinkConfiguration();
 
 public slots:
     void addHost();
-
+    void portValueChanged(int value);
+    void linkChanged(int linkid);
 protected:
     void changeEvent(QEvent *e);
 
-    UDPLink* link;    ///< UDP link instance this widget configures
+    //UDPLink* link;    ///< UDP link instance this widget configures
+    int m_linkId;
 
 private:
     Ui::QGCUDPLinkConfiguration *ui;

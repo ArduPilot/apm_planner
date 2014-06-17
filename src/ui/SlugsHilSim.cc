@@ -44,7 +44,8 @@ SlugsHilSim::SlugsHilSim(QWidget *parent) :
 
     hilLink = NULL;
 
-    connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addToCombo(LinkInterface*)));
+    //connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addToCombo(LinkInterface*)));
+    connect(LinkManager::instance(),SIGNAL(newLink(LinkInterface*)),this,SLOT(addToCombo(LinkInterface*)));
     connect(ui->cb_mavlinkLinks, SIGNAL(currentIndexChanged(int)), this, SLOT(linkSelected(int)));
     connect(ui->bt_startHil, SIGNAL(clicked()), this, SLOT(putInHilMode()));
     connect(rxSocket, SIGNAL(readyRead()), this, SLOT(readDatagram()));
@@ -60,9 +61,9 @@ SlugsHilSim::SlugsHilSim(QWidget *parent) :
     memset(&tmpRawImuData, 0, sizeof(mavlink_raw_imu_t));
 #endif
 
-    foreach (LinkInterface* link, LinkManager::instance()->getLinks()) {
-        addToCombo(link);
-    }
+    //foreach (LinkInterface* link, LinkManager::instance()->getLinks()) {
+    //    addToCombo(link);
+    //}
 }
 
 SlugsHilSim::~SlugsHilSim()

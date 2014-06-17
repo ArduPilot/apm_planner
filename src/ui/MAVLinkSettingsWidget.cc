@@ -48,24 +48,24 @@ MAVLinkSettingsWidget::MAVLinkSettingsWidget(MAVLinkProtocol* protocol, QWidget 
     m_ui->gridLayout->setAlignment(Qt::AlignTop);
 
     // Initialize state
-    m_ui->heartbeatCheckBox->setChecked(protocol->heartbeatsEnabled());
-    m_ui->loggingCheckBox->setChecked(protocol->loggingEnabled());
-    m_ui->versionCheckBox->setChecked(protocol->versionCheckEnabled());
-    m_ui->multiplexingCheckBox->setChecked(protocol->multiplexingEnabled());
-    m_ui->systemIdSpinBox->setValue(protocol->getSystemId());
+    //m_ui->heartbeatCheckBox->setChecked(protocol->heartbeatsEnabled());
+    //m_ui->loggingCheckBox->setChecked(protocol->loggingEnabled());
+    //m_ui->versionCheckBox->setChecked(protocol->versionCheckEnabled());
+    //m_ui->multiplexingCheckBox->setChecked(protocol->multiplexingEnabled());
+    //m_ui->systemIdSpinBox->setValue(protocol->getSystemId());
 
-    m_ui->paramGuardCheckBox->setChecked(protocol->paramGuardEnabled());
-    m_ui->paramRetransmissionSpinBox->setValue(protocol->getParamRetransmissionTimeout());
-    m_ui->paramRewriteSpinBox->setValue(protocol->getParamRewriteTimeout());
+    //m_ui->paramGuardCheckBox->setChecked(protocol->paramGuardEnabled());
+    //m_ui->paramRetransmissionSpinBox->setValue(protocol->getParamRetransmissionTimeout());
+    //m_ui->paramRewriteSpinBox->setValue(protocol->getParamRewriteTimeout());
 
-    m_ui->actionGuardCheckBox->setChecked(protocol->actionGuardEnabled());
-    m_ui->actionRetransmissionSpinBox->setValue(protocol->getActionRetransmissionTimeout());
+    //m_ui->actionGuardCheckBox->setChecked(protocol->actionGuardEnabled());
+    //m_ui->actionRetransmissionSpinBox->setValue(protocol->getActionRetransmissionTimeout());
 
     // AUTH
-    m_ui->droneOSCheckBox->setChecked(protocol->getAuthEnabled());
+    //m_ui->droneOSCheckBox->setChecked(protocol->getAuthEnabled());
     QSettings settings;
-    m_ui->droneOSComboBox->setCurrentIndex(m_ui->droneOSComboBox->findText(settings.value("DRONEOS_HOST", "droneos.com:14555").toString()));
-    m_ui->droneOSLineEdit->setText(protocol->getAuthKey());
+    //m_ui->droneOSComboBox->setCurrentIndex(m_ui->droneOSComboBox->findText(settings.value("DRONEOS_HOST", "droneos.com:14555").toString()));
+    //m_ui->droneOSLineEdit->setText(protocol->getAuthKey());
 
     // Connect actions
     // Heartbeat
@@ -108,12 +108,12 @@ MAVLinkSettingsWidget::MAVLinkSettingsWidget(MAVLinkProtocol* protocol, QWidget 
     setDroneOSHost(m_ui->droneOSComboBox->currentText());
 
     // Update values
-    m_ui->versionLabel->setText(tr("MAVLINK_VERSION: %1").arg(protocol->getVersion()));
-    updateLogfileName(protocol->getLogfileName());
+    //m_ui->versionLabel->setText(tr("MAVLINK_VERSION: %1").arg(protocol->getVersion()));
+    //updateLogfileName(protocol->getLogfileName());
 
     // Connect visibility updates
     connect(protocol, SIGNAL(versionCheckChanged(bool)), m_ui->versionLabel, SLOT(setVisible(bool)));
-    m_ui->versionLabel->setVisible(protocol->versionCheckEnabled());
+    //m_ui->versionLabel->setVisible(protocol->versionCheckEnabled());
 //    // Multiplexing visibility
 //    connect(protocol, SIGNAL(multiplexingChanged(bool)), m_ui->multiplexingFilterCheckBox, SLOT(setVisible(bool)));
 //    m_ui->multiplexingFilterCheckBox->setVisible(protocol->multiplexingEnabled());
@@ -121,18 +121,18 @@ MAVLinkSettingsWidget::MAVLinkSettingsWidget(MAVLinkProtocol* protocol, QWidget 
 //    m_ui->multiplexingFilterLineEdit->setVisible(protocol->multiplexingEnabled());
     // Param guard visibility
     connect(protocol, SIGNAL(paramGuardChanged(bool)), m_ui->paramRetransmissionSpinBox, SLOT(setVisible(bool)));
-    m_ui->paramRetransmissionSpinBox->setVisible(protocol->paramGuardEnabled());
+    //m_ui->paramRetransmissionSpinBox->setVisible(protocol->paramGuardEnabled());
     connect(protocol, SIGNAL(paramGuardChanged(bool)), m_ui->paramRetransmissionLabel, SLOT(setVisible(bool)));
-    m_ui->paramRetransmissionLabel->setVisible(protocol->paramGuardEnabled());
+    //m_ui->paramRetransmissionLabel->setVisible(protocol->paramGuardEnabled());
     connect(protocol, SIGNAL(paramGuardChanged(bool)), m_ui->paramRewriteSpinBox, SLOT(setVisible(bool)));
-    m_ui->paramRewriteSpinBox->setVisible(protocol->paramGuardEnabled());
+    //m_ui->paramRewriteSpinBox->setVisible(protocol->paramGuardEnabled());
     connect(protocol, SIGNAL(paramGuardChanged(bool)), m_ui->paramRewriteLabel, SLOT(setVisible(bool)));
-    m_ui->paramRewriteLabel->setVisible(protocol->paramGuardEnabled());
+    //m_ui->paramRewriteLabel->setVisible(protocol->paramGuardEnabled());
     // Action guard visibility
     connect(protocol, SIGNAL(actionGuardChanged(bool)), m_ui->actionRetransmissionSpinBox, SLOT(setVisible(bool)));
-    m_ui->actionRetransmissionSpinBox->setVisible(protocol->actionGuardEnabled());
+    //m_ui->actionRetransmissionSpinBox->setVisible(protocol->actionGuardEnabled());
     connect(protocol, SIGNAL(actionGuardChanged(bool)), m_ui->actionRetransmissionLabel, SLOT(setVisible(bool)));
-    m_ui->actionRetransmissionLabel->setVisible(protocol->actionGuardEnabled());
+    //m_ui->actionRetransmissionLabel->setVisible(protocol->actionGuardEnabled());
 
     // TODO implement filtering
     // and then remove these two lines
@@ -177,21 +177,21 @@ void MAVLinkSettingsWidget::chooseLogfileName()
     else
     {
         updateLogfileName(fileName);
-        m_ui->loggingCheckBox->setEnabled(protocol->startLogging(fileName));
+       // m_ui->loggingCheckBox->setEnabled(protocol->startLogging(fileName));
     }
 }
 
 void MAVLinkSettingsWidget::enableDroneOS(bool enable)
 {
     // Enable multiplexing
-    protocol->enableMultiplexing(enable);
+    //protocol->enableMultiplexing(enable);
     // Get current selected host and port
     QString hostString = m_ui->droneOSComboBox->currentText();
     //QString host = hostString.split(":").first();
 
     // Delete from all lists first
     UDPLink* firstUdp = NULL;
-    QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(protocol);
+    /*QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(protocol);
     foreach (LinkInterface* link, links)
     {
         UDPLink* udp = dynamic_cast<UDPLink*>(link);
@@ -206,7 +206,7 @@ void MAVLinkSettingsWidget::enableDroneOS(bool enable)
                 udp->removeHost(oldHostString);
             }
         }
-    }
+    }*/
 
     // Re-add if enabled
     if (enable)
@@ -216,12 +216,12 @@ void MAVLinkSettingsWidget::enableDroneOS(bool enable)
             firstUdp->addHost(hostString);
         }
         // Set key
-        protocol->setAuthKey(m_ui->droneOSLineEdit->text().trimmed());
+       // protocol->setAuthKey(m_ui->droneOSLineEdit->text().trimmed());
         QSettings settings;
         settings.setValue("DRONEOS_HOST", m_ui->droneOSComboBox->currentText());
         settings.sync();
     }
-    protocol->enableAuth(enable);
+    //protocol->enableAuth(enable);
 }
 
 void MAVLinkSettingsWidget::setDroneOSKey(QString key)
@@ -256,5 +256,5 @@ void MAVLinkSettingsWidget::changeEvent(QEvent *e)
 void MAVLinkSettingsWidget::hideEvent(QHideEvent* event)
 {
     Q_UNUSED(event);
-    protocol->storeSettings();
+   // protocol->storeSettings();
 }
