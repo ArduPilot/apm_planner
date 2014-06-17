@@ -4,8 +4,10 @@
 #include "UAS.h"
 #include <QTimer>
 #include <QScrollBar>
+#include "UASManager.h"
 UASRawStatusView::UASRawStatusView(QWidget *parent) : QWidget(parent)
 {
+    m_uas = 0;
     ui.setupUi(this);
     ui.tableWidget->setColumnCount(2);
     ui.tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -17,7 +19,24 @@ UASRawStatusView::UASRawStatusView(QWidget *parent) : QWidget(parent)
     // FIXME reinstate once fixed.
 
     //timer->start(2000);
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+    activeUASSet(UASManager::instance()->getActiveUAS());
 }
+void UASRawStatusView::activeUASSet(UASInterface* uas)
+{
+    if (!uas)
+    {
+        return;
+    }
+    if (m_uas)
+    {
+        disconnect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+    }
+    m_uas = uas;
+    connect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+
+}
+
 void UASRawStatusView::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
@@ -33,7 +52,7 @@ void UASRawStatusView::hideEvent(QHideEvent *event)
 
 void UASRawStatusView::addSource(MAVLinkDecoder *decoder)
 {
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+   // connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
 void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value, const quint64 msec)
 {
@@ -92,7 +111,14 @@ void UASRawStatusView::updateTableTimerTick()
                 {
                     ui.tableWidget->setRowCount(currrow+1);
                 }
-                ui.tableWidget->setItem(currrow,currcolumn,new QTableWidgetItem(i.key().split(".")[1]));
+                if (i.key().contains("."))
+                {
+                    ui.tableWidget->setItem(currrow,currcolumn,new QTableWidgetItem(i.key().split(".")[1]));
+                }
+                else
+                {
+                    ui.tableWidget->setItem(currrow,currcolumn,new QTableWidgetItem(i.key()));
+                }
                 QTableWidgetItem *item = new QTableWidgetItem(QString::number(i.value()));
                 nameToUpdateWidgetMap[i.key()] = item;
                 ui.tableWidget->setItem(currrow,currcolumn+1,item);

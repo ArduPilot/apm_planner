@@ -14,7 +14,7 @@ class senseSoarMAV : public UAS
 	Q_INTERFACES(UASInterface)
 
 public:
-	senseSoarMAV(MAVLinkProtocol* mavlink, int id);
+    senseSoarMAV(MAVLinkProtocol* mavlink, int id);
 	~senseSoarMAV(void);
 public slots:
     /** @brief Receive a MAVLink message from this MAV */
