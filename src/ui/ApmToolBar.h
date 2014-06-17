@@ -35,7 +35,6 @@ This file is part of the APM_PLANNER project
 #include <QAction>
 #include <QDeclarativeView>
 
-class LinkInterface;
 class QTimer;
 
 class APMToolBar : public QDeclarativeView
@@ -80,15 +79,13 @@ public slots:
     void connectMAV();
     void showConnectionDialog();
     void setConnection(bool connection);
-    void connected(LinkInterface *linkInterface);
-    void disconnected(LinkInterface *linkInterface);
 
     void activeUasSet(UASInterface *uas);
     void armingChanged(int sysId, QString armingState);
     void armingChanged(bool armed);
 
-    void updateLinkDisplay(LinkInterface *link);
-    void newLinkCreated(LinkInterface* newLink);
+    void updateLinkDisplay(int linkid);
+    void newLinkCreated(int linkid);
 
     void navModeChanged(int uasid, int mode, const QString& text);
     void heartbeat(UASInterface* uas);
@@ -103,11 +100,12 @@ public slots:
     void parameterChanged(int uas, int component, int parameterCount,
                           int parameterId, QString parameterName, QVariant value);
 
+
 private:
     QPointer<UASInterface> m_uas;
     QTimer m_heartbeatTimer;
-    QPointer<LinkInterface> m_currentLink;
     bool m_disableOverride;
+    int m_currentLinkId;
 };
 
 #endif // APMTOOLBAR_H

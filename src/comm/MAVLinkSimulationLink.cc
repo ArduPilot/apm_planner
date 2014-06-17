@@ -30,7 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 #include "QsLog.h"
 #include "LinkManager.h"
-#include "MAVLinkProtocol.h"
+//#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"
 #include "QGCMAVLink.h"
 #include "QGC.h"
@@ -106,7 +106,7 @@ MAVLinkSimulationLink::MAVLinkSimulationLink(QString readFile, QString writeFile
     srand(QTime::currentTime().msec());
     maxTimeNoise = 0;
     this->id = getNextLinkId();
-    LinkManager::instance()->add(this);
+    LinkManager::instance()->addLink(this);
 }
 
 MAVLinkSimulationLink::~MAVLinkSimulationLink()

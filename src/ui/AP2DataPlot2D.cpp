@@ -486,7 +486,7 @@ void AP2DataPlot2D::disconnected()
 
 void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
 {
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+    //connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
 void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
 {
