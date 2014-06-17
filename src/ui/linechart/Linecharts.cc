@@ -89,6 +89,7 @@ void Linecharts::selectSystem(int systemid)
 
 void Linecharts::addSystem(UASInterface* uas)
 {
+    return;
     // FIXME Add removeSystem() call
 
     // Compatibility hack
@@ -140,6 +141,7 @@ void Linecharts::addSystem(UASInterface* uas)
 
 void Linecharts::addSource(QObject* obj)
 {
+    return;
     genericSources.append(obj);
     // FIXME XXX HACK
     if (plots.size() > 0)

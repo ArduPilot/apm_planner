@@ -47,7 +47,7 @@ class SerialConfigurationWindow : public QWidget
     Q_OBJECT
 
 public:
-    SerialConfigurationWindow(LinkInterface* link, QWidget *parent = 0, Qt::WindowFlags flags = Qt::Sheet);
+    SerialConfigurationWindow(int linkid, QWidget *parent = 0, Qt::WindowFlags flags = Qt::Sheet);
     ~SerialConfigurationWindow();
 
     QAction* getAction();
@@ -64,6 +64,8 @@ public slots:
     void setAdvancedSettings(bool visible);
 private slots:
     void connectionStateChanged(bool connected);
+    void linkChanged(int linkid);
+    void setBaudRateString(QString baud);
 protected:
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);
@@ -72,7 +74,7 @@ protected:
 private:
 
     Ui::serialSettings ui;
-    SerialLinkInterface* link;
+    int m_linkid;
     QAction* action;
     QTimer* portCheckTimer;
 

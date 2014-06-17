@@ -58,7 +58,6 @@ This file is part of the QGROUNDCONTROL project
 #include "TerminalConsole.h"
 #include "AP2DataPlot2D.h"
 
-
 #ifdef QGC_OSG_ENABLED
 #include "Q3DWidgetFactory.h"
 #endif
@@ -218,7 +217,9 @@ MainWindow::MainWindow(QWidget *parent):
         this->addLink(link);
     }
 
-    connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addLink(LinkInterface*)), Qt::QueuedConnection);
+    //connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addLink(LinkInterface*)), Qt::QueuedConnection);
+    connect(LinkManager::instance(), SIGNAL(newLink(int)), this, SLOT(addLink(int)), Qt::QueuedConnection);
+
 
 
 
@@ -267,14 +268,14 @@ MainWindow::MainWindow(QWidget *parent):
 #endif //MOUSE_ENABLED_LINUX
 
     // Connect link
-    if (autoReconnect)
+    /*if (autoReconnect)
     {
         SerialLink* link = new SerialLink();
         // Add to registry
         LinkManager::instance()->add(link);
         LinkManager::instance()->addProtocol(link, mavlink);
         link->connect();
-    }
+    }*/
 
     // Set low power mode
     enableLowPowerMode(lowPowerMode);
@@ -368,11 +369,11 @@ MainWindow::MainWindow(QWidget *parent):
 
 MainWindow::~MainWindow()
 {
-    if (mavlink)
+    /*if (mavlink)
     {
         delete mavlink;
         mavlink = NULL;
-    }
+    }*/
 
     if (joystick)
     {
@@ -427,7 +428,10 @@ MainWindow::~MainWindow()
         commsWidgetList[i]->deleteLater();
     }
 
+
+
 }
+
 void MainWindow::disableTLogReplayBar()
 {
     statusBar()->hide();
@@ -553,14 +557,15 @@ APMToolBar& MainWindow::toolBar()
 void MainWindow::buildCommonWidgets()
 {
     //TODO:  move protocol outside UI
-    mavlink     = new MAVLinkProtocol();
-    connect(mavlink, SIGNAL(protocolStatusMessage(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);
+    //mavlink     = new MAVLinkProtocol();
+   // connect(mavlink, SIGNAL(protocolStatusMessage(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);
+    connect(LinkManager::instance(),SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(showCriticalMessage(QString,QString)));
     // Add generic MAVLink decoder
-    mavlinkDecoder = new MAVLinkDecoder(mavlink, this);
+    //mavlinkDecoder = new MAVLinkDecoder(mavlink, this);
 
     // Log player
     logPlayer = new QGCMAVLinkLogPlayer(customStatusBar);
-    logPlayer->setMavlinkDecoder(mavlinkDecoder);
+    //logPlayer->setMavlinkDecoder(mavlinkDecoder);
     connect(logPlayer,SIGNAL(logFinished()),statusBar(),SLOT(hide()));
     customStatusBar->setLogPlayer(logPlayer);
 
@@ -883,10 +888,10 @@ void MainWindow::loadDockWidget(QString name)
     }
     else if (name == "MAVLINK_INSPECTOR_DOCKWIDGET")
     {
-        QGCMAVLinkInspector *widget = new QGCMAVLinkInspector(mavlink,this);
+        /*QGCMAVLinkInspector *widget = new QGCMAVLinkInspector(mavlink,this);
         logPlayer->setMavlinkInspector(widget);
         createDockWidget(centerStack->currentWidget(),widget,tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
-        //logPlayer
+        //logPlayer*/
     }
     else if (name == "PARAMETER_INTERFACE_DOCKWIDGET")
     {
@@ -1047,7 +1052,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (isVisible()) storeViewState();
     aboutToCloseFlag = true;
     storeSettings();
-    mavlink->storeSettings();
+    //mavlink->storeSettings();
     UASManager::instance()->storeSettings();
     QMainWindow::closeEvent(event);
 }
@@ -1057,11 +1062,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
  */
 void MainWindow::connectCommonWidgets()
 {
-    if (infoDockWidget && infoDockWidget->widget())
+    /*if (infoDockWidget && infoDockWidget->widget())
     {
         connect(mavlink, SIGNAL(receiveLossChanged(int, float)),
                 infoDockWidget->widget(), SLOT(updateSendLoss(int, float)));
-    }
+    }*/
 
 
 }
@@ -1599,7 +1604,7 @@ void MainWindow::connectCommonActions()
     connect(ui.actionCheck_For_Updates, SIGNAL(triggered()), &m_autoUpdateCheck, SLOT(forcedAutoUpdateCheck()));
 
     // Connect actions from ui
-    connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
+    //connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
     connect(ui.actionAdvanced_Mode,SIGNAL(triggered(bool)),this,SLOT(setAdvancedMode(bool)));
 
     // Connect internal actions
@@ -1742,7 +1747,8 @@ void MainWindow::showSettings()
 
 LinkInterface* MainWindow::addLink()
 {
-    SerialLink* link = new SerialLink();
+    //LinkManager::instance()->addSerialConnection("COM4",115200);
+    /*SerialLink* link = new SerialLink();
     // TODO This should be only done in the dialog itself
 
     LinkManager::instance()->add(link);
@@ -1763,23 +1769,24 @@ LinkInterface* MainWindow::addLink()
         }
     }
 
-    return link;
+    return link;*/
+    return 0;
 }
 
 
-bool MainWindow::configLink(LinkInterface *link)
+bool MainWindow::configLink(int linkid)
 {
     // Go searching for this link's configuration window
     QList<QAction*> actions = ui.menuNetwork->actions();
 
     bool found(false);
 
-    const int32_t& linkIndex(LinkManager::instance()->getLinks().indexOf(link));
-    const int32_t& linkID(LinkManager::instance()->getLinks()[linkIndex]->getId());
+    //const int32_t& linkIndex(LinkManager::instance()->getLinks().indexOf(linkid));
+    //const int32_t& linkID(LinkManager::instance()->getLinks()[linkIndex]->getId());
 
     foreach (QAction* action, actions)
     {
-        if (action->data().toInt() == linkID)
+        if (action->data().toInt() == linkid)
         { // LinkManager::instance()->getLinks().indexOf(link)
             found = true;
             action->trigger(); // Show the Link Config Dialog
@@ -1788,14 +1795,28 @@ bool MainWindow::configLink(LinkInterface *link)
 
     return found;
 }
+void MainWindow::addLink(int linkid)
+{
+    CommConfigurationWindow* commWidget = new CommConfigurationWindow(linkid, 0, NULL);
+    commsWidgetList.append(commWidget);
+    connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
+    QAction* action = commWidget->getAction();
+    ui.menuNetwork->addAction(action);
+
+    // Error handling
+    //connect(link, SIGNAL(communicationError(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);
+}
 
 void MainWindow::addLink(LinkInterface *link)
 {
+    //This signal is fired when the connection manager adds a new link.
+    //Need to create a comms configuration window.
+
     // IMPORTANT! KEEP THESE TWO LINES
     // THEY MAKE SURE THE LINK IS PROPERLY REGISTERED
     // BEFORE LINKING THE UI AGAINST IT
     // Register (does nothing if already registered)
-    LinkManager::instance()->add(link);
+    /*LinkManager::instance()->add(link);
     LinkManager::instance()->addProtocol(link, mavlink);
 
     // Go fishing for this link's configuration window
@@ -1812,19 +1833,16 @@ void MainWindow::addLink(LinkInterface *link)
         { // LinkManager::instance()->getLinks().indexOf(link)
             found = true;
         }
-    }
+    }*/
 
-    if (!found)
-    {
-        CommConfigurationWindow* commWidget = new CommConfigurationWindow(link, mavlink, NULL);
-        commsWidgetList.append(commWidget);
-        connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
-        QAction* action = commWidget->getAction();
-        ui.menuNetwork->addAction(action);
+    /*CommConfigurationWindow* commWidget = new CommConfigurationWindow(link, 0, NULL);
+    commsWidgetList.append(commWidget);
+    connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
+    QAction* action = commWidget->getAction();
+    ui.menuNetwork->addAction(action);
 
-        // Error handling
-        connect(link, SIGNAL(communicationError(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);
-    }
+    // Error handling
+    connect(link, SIGNAL(communicationError(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);*/
 }
 
 void MainWindow::simulateLink(bool simulate) {

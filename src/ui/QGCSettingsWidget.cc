@@ -20,14 +20,14 @@ QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
     ui->setupUi(this);
 
     // Add all protocols
-    QList<ProtocolInterface*> protocols = LinkManager::instance()->getProtocols();
+    /*QList<ProtocolInterface*> protocols = LinkManager::instance()->getProtocols();
     foreach (ProtocolInterface* protocol, protocols) {
         MAVLinkProtocol* mavlink = dynamic_cast<MAVLinkProtocol*>(protocol);
         if (mavlink) {
             MAVLinkSettingsWidget* msettings = new MAVLinkSettingsWidget(mavlink, this);
             ui->tabWidget->addTab(msettings, "MAVLink");
         }
-    }
+    }*/
 
     this->window()->setWindowTitle(tr("APM Planner 2 Settings"));
 

@@ -61,6 +61,10 @@ Section "JIT Debugger" JIT_DEBUGGER
 SectionEnd 
 
 Section "OpenSSL" OPENSSL
+  SetOutPath $INSTDIR
+  File vcredist_x86.exe
+  DetailPrint "Installing MSVC2008 runtime"
+  ExecWait "$INSTDIR/vcredist_x86.exe /q /norestart"
   NSISdl::download http://firmware.diydrones.com/Tools/APMPlanner/supportinstalls/Win32OpenSSL_Light-1_0_0l.exe Win32OpenSSL_Light-1_0_0l.exe
   ExecWait "Win32OpenSSL_Light-1_0_0l.exe /verysilent /sp-"
 SectionEnd
