@@ -888,7 +888,7 @@ void MainWindow::loadDockWidget(QString name)
     }
     else if (name == "MAVLINK_INSPECTOR_DOCKWIDGET")
     {
-        /*QGCMAVLinkInspector *widget = new QGCMAVLinkInspector(mavlink,this);
+        QGCMAVLinkInspector *widget = new QGCMAVLinkInspector(0,this);
         logPlayer->setMavlinkInspector(widget);
         createDockWidget(centerStack->currentWidget(),widget,tr("MAVLink Inspector"),"MAVLINK_INSPECTOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
         //logPlayer*/
