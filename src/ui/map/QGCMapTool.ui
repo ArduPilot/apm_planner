@@ -32,19 +32,6 @@
    <property name="verticalSpacing">
     <number>0</number>
    </property>
-   <item row="1" column="0">
-    <widget class="QGCMapToolBar" name="toolBar" native="true"/>
-   </item>
-   <item row="0" column="1" rowspan="2">
-    <widget class="QSlider" name="zoomSlider">
-     <property name="maximum">
-      <number>60</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
     <widget class="QGCMapWidget" name="map" native="true">
      <widget class="QLabel" name="longitudeLabel">
@@ -152,6 +139,49 @@
        <string>FIX:</string>
       </property>
      </widget>
+     <widget class="QLabel" name="zoomLabel">
+      <property name="geometry">
+       <rect>
+        <x>540</x>
+        <y>10</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>17</pointsize>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="text">
+       <string>ZOOM:</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QGCMapToolBar" name="toolBar" native="true"/>
+   </item>
+   <item row="0" column="1" rowspan="2">
+    <widget class="QSlider" name="zoomSlider">
+     <property name="maximum">
+      <number>600</number>
+     </property>
+     <property name="pageStep">
+      <number>5</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::TicksBelow</enum>
+     </property>
+     <property name="tickInterval">
+      <number>0</number>
+     </property>
     </widget>
    </item>
   </layout>
