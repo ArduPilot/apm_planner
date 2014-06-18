@@ -338,8 +338,14 @@ FORMS += \
     src/ui/mission/QGCMissionDoSetServo.ui \
     src/ui/mission/QGCMissionDoRepeatServo.ui \
     src/ui/mission/QGCMissionDoDigicamControl.ui \
+    src/ui/mission/QGCMissionDoChangeSpeed.ui \
+    src/ui/mission/QGCMissionDoSetCamTriggDist.ui \
+    src/ui/mission/QGCMissionDoSetHome.ui \
+    src/ui/mission/QGCMissionDoSetRelay.ui \
+    src/ui/mission/QGCMissionDoRepeatRelay.ui \
     src/ui/mission/QGCMissionConditionDelay.ui \
     src/ui/mission/QGCMissionConditionYaw.ui \
+    src/ui/mission/QGCMissionConditionDistance.ui \
     src/ui/mission/QGCMissionNavLoiterUnlim.ui \
     src/ui/mission/QGCMissionNavLoiterTurns.ui \
     src/ui/mission/QGCMissionNavLoiterTime.ui \
@@ -520,8 +526,14 @@ HEADERS += \
     src/ui/mission/QGCMissionDoSetServo.h \
     src/ui/mission/QGCMissionDoRepeatServo.h \
     src/ui/mission/QGCMissionDoDigicamControl.h \
+    src/ui/mission/QGCMissionDoChangeSpeed.h \
+    src/ui/mission/QGCMissionDoSetCamTriggDist.h \
+    src/ui/mission/QGCMissionDoSetHome.h \
+    src/ui/mission/QGCMissionDoSetRelay.h \
+    src/ui/mission/QGCMissionDoRepeatRelay.h \
     src/ui/mission/QGCMissionConditionDelay.h \
     src/ui/mission/QGCMissionConditionYaw.h \
+    src/ui/mission/QGCMissionConditionDistance.h \
     src/ui/mission/QGCMissionNavLoiterUnlim.h \
     src/ui/mission/QGCMissionNavLoiterTurns.h \
     src/ui/mission/QGCMissionNavLoiterTime.h \
@@ -729,8 +741,14 @@ SOURCES += src/main.cc \
     src/ui/mission/QGCMissionDoSetServo.cc \
     src/ui/mission/QGCMissionDoRepeatServo.cc \
     src/ui/mission/QGCMissionDoDigicamControl.cc \
+    src/ui/mission/QGCMissionDoChangeSpeed.cc \
+    src/ui/mission/QGCMissionDoSetCamTriggDist.cc \
+    src/ui/mission/QGCMissionDoSetHome.cc \
+    src/ui/mission/QGCMissionDoSetRelay.cc \
+    src/ui/mission/QGCMissionDoRepeatRelay.cc \
     src/ui/mission/QGCMissionConditionDelay.cc \
     src/ui/mission/QGCMissionConditionYaw.cc \
+    src/ui/mission/QGCMissionConditionDistance.cc \
     src/ui/mission/QGCMissionNavLoiterUnlim.cc \
     src/ui/mission/QGCMissionNavLoiterTurns.cc \
     src/ui/mission/QGCMissionNavLoiterTime.cc \
