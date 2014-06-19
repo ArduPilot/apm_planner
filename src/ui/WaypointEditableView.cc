@@ -482,7 +482,7 @@ void WaypointEditableView::updateValues()
 
     if (currId != lastId)
     {
-
+#ifdef WAYPOINTEDIT_ALTERNATE_LINE_COLOR
         // QLOG_DEBUG() << "COLOR ID: " << currId;
         if (currId == 1)
         {
@@ -518,6 +518,7 @@ void WaypointEditableView::updateValues()
         m_ui->idLabel->setStyleSheet(labelStyle);
         m_ui->groupBox->setStyleSheet(groupBoxStyle);
         m_ui->customActionWidget->setStyleSheet(widgetSlotStyle);
+#endif
         lastId = currId;
     }
 
