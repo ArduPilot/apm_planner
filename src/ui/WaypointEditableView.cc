@@ -1,4 +1,22 @@
 /*===================================================================
+ * QGroundControl Open Source Ground Control Station
+
+(c) 2009, 2010, 2014 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+
+This file is part of the QGROUNDCONTROL project
+
+    QGROUNDCONTROL is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    QGROUNDCONTROL is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
 ======================================================================*/
 
 /**
@@ -8,7 +26,7 @@
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
  *   @author Benjamin Knecht <mavteam@student.ethz.ch>
  *   @author Petri Tanskanen <mavteam@student.ethz.ch>
- *
+ *   @author Bill Bonney <billbonney@communistech.com>
  */
 
 #include "QsLog.h"
@@ -30,6 +48,7 @@
 #include "mission/QGCMissionDoSetServo.h"
 #include "mission/QGCMissionDoRepeatServo.h"
 #include "mission/QGCMissionDoDigicamControl.h"
+#include "mission/QGCMissionDoMountControl.h"
 #include "mission/QGCMissionDoSetCamTriggDist.h"
 #include "mission/QGCMissionDoSetRelay.h"
 #include "mission/QGCMissionDoRepeatRelay.h"
@@ -89,6 +108,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("DO: Set Cam Trigg Dist"), MAV_CMD_DO_SET_CAM_TRIGG_DIST);
         m_ui->comboBox_action->addItem(tr("DO: Change Speed"), MAV_CMD_DO_CHANGE_SPEED);
         m_ui->comboBox_action->addItem(tr("DO: Set Relay"), MAV_CMD_DO_SET_HOME);
+        m_ui->comboBox_action->addItem(tr("DO: Mount Control"), MAV_CMD_DO_MOUNT_CONTROL);
     #ifdef MAVLINK_ENABLED_PIXHAWK
         m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
         m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
@@ -240,6 +260,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
     case MAV_CMD_CONDITION_YAW:
         missionWidget = new QGCMissionConditionYaw(this);
         break;
+    case MAV_CMD_CONDITION_DISTANCE:
+        missionWidget = new QGCMissionConditionDistance(this);
+        break;
     case MAV_CMD_DO_JUMP:
         missionWidget = new QGCMissionDoJump(this);
         break;
@@ -252,6 +275,28 @@ QWidget* WaypointEditableView::createActionWidget(int action)
     case MAV_CMD_DO_DIGICAM_CONTROL:
         missionWidget = new QGCMissionDoDigicamControl(this);
         break;
+//    case MAV_CMD_DO_SET_ROI:
+//        missionWidget = new QGCMissionDoSetROI(this);
+//        break;
+    case MAV_CMD_DO_CHANGE_SPEED:
+        missionWidget = new QGCMissionDoChangeSpeed(this);
+        break;
+    case MAV_CMD_DO_SET_HOME:
+        missionWidget = new QGCMissionDoSetHome(this);
+        break;
+    case MAV_CMD_DO_SET_CAM_TRIGG_DIST:
+        missionWidget = new QGCMissionDoSetCamTriggDist(this);
+        break;
+    case MAV_CMD_DO_SET_RELAY:
+        missionWidget = new QGCMissionDoSetRelay(this);
+        break;
+    case MAV_CMD_DO_REPEAT_RELAY:
+        missionWidget = new QGCMissionDoRepeatRelay(this);
+        break;
+    case MAV_CMD_DO_MOUNT_CONTROL:
+        missionWidget = new QGCMissionDoMountControl(this);
+        break;
+
  #ifdef MAVLINK_ENABLED_PIXHAWK
     case MAV_CMD_NAV_SWEEP:
         missionWidget = new QGCMissionNavSweep(this);

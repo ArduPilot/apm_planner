@@ -1,7 +1,7 @@
 /*===================================================================
 QGroundControl Open Source Ground Control Station
 
-(c) 2009, 2010 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+(c) 2009, 2010, 2014 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
 
 This file is part of the QGROUNDCONTROL project
 
@@ -28,6 +28,7 @@ This file is part of the QGROUNDCONTROL project
  *   @author Benjamin Knecht <mavteam@student.ethz.ch>
  *   @author Petri Tanskanen <mavteam@student.ethz.ch>
  *   @author Alex Trofimov <talex@student.ethz.ch>
+ *   @author Bill Bonney <billbonney@communistech.com>
  */
 
 #ifndef WAYPOINTEDITABLEVIEW_H
