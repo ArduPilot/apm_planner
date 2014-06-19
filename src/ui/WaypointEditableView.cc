@@ -107,7 +107,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("DO: Repeat Relay"), MAV_CMD_DO_REPEAT_RELAY);
         m_ui->comboBox_action->addItem(tr("DO: Set Cam Trigg Dist"), MAV_CMD_DO_SET_CAM_TRIGG_DIST);
         m_ui->comboBox_action->addItem(tr("DO: Change Speed"), MAV_CMD_DO_CHANGE_SPEED);
-        m_ui->comboBox_action->addItem(tr("DO: Set Relay"), MAV_CMD_DO_SET_HOME);
+        m_ui->comboBox_action->addItem(tr("DO: Set Home"), MAV_CMD_DO_SET_HOME);
         m_ui->comboBox_action->addItem(tr("DO: Mount Control"), MAV_CMD_DO_MOUNT_CONTROL);
     #ifdef MAVLINK_ENABLED_PIXHAWK
         m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
