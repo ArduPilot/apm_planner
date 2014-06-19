@@ -413,10 +413,6 @@ MainWindow::~MainWindow()
     // Delete all UAS objects
 
 
-    if (debugConsole)
-    {
-        delete debugConsole;
-    }
     if (debugOutput)
     {
         QsLogging::Logger::instance().delDestination(debugOutput);
@@ -679,19 +675,6 @@ void MainWindow::buildCommonWidgets()
         tempAction->setCheckable(true);
         connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
     }*/
-    {
-        if (!debugConsole)
-        {
-            debugConsole = new DebugConsole();
-            debugConsole->setWindowTitle("Communications Console");
-            debugConsole->hide();
-            QAction* tempAction = ui.menuTools->addAction(tr("Communication Console"));
-            //menuToDockNameMap[tempAction] = "COMMUNICATION_DEBUG_CONSOLE_DOCKWIDGET";
-            tempAction->setCheckable(true);
-            connect(tempAction,SIGNAL(triggered(bool)),debugConsole,SLOT(setShown(bool)));
-
-        }
-    }
     //Horizontal situation disabled until such a point that we can ensure it's completly operational
     //createDockWidget(simView,new HSIDisplay(this),tr("Horizontal Situation"),"HORIZONTAL_SITUATION_INDICATOR_DOCKWIDGET",VIEW_SIMULATION,Qt::BottomDockWidgetArea);
 
@@ -911,12 +894,6 @@ void MainWindow::loadDockWidget(QString name)
     else if (name == "UAS_STATUS_DETAILS_DOCKWIDGET")
     {
         createDockWidget(centerStack->currentWidget(),new UASInfoWidget(this),tr("Status Details"),"UAS_STATUS_DETAILS_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
-    }
-    else if (name == "COMMUNICATION_DEBUG_CONSOLE_DOCKWIDGET")
-    {
-        //This is now a permanently detached window.
-        //centralWidgetToDockWidgetsMap[currentView][name] = console;
-        //createDockWidget(centerStack->currentWidget(),new DebugConsole(this),tr("Communication Console"),"COMMUNICATION_DEBUG_CONSOLE_DOCKWIDGET",currentView,Qt::BottomDockWidgetArea);
     }
     else if (name == "HORIZONTAL_SITUATION_INDICATOR_DOCKWIDGET")
     {
