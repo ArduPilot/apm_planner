@@ -411,7 +411,8 @@ FORMS += \
     src/ui/AutoUpdateDialog.ui \
     src/uas/LogDownloadDialog.ui \
     src/ui/PrimaryFlightDisplayQML.ui \
-    src/ui/configuration/CompassMotorCalibrationDialog.ui
+    src/ui/configuration/CompassMotorCalibrationDialog.ui \
+    src/ui/MissionElevationDisplay.ui
 
 HEADERS += \
     src/MG.h \
@@ -632,7 +633,8 @@ HEADERS += \
     src/ui/PrimaryFlightDisplayQML.h \
     src/ui/configuration/CompassMotorCalibrationDialog.h \
     src/comm/MAVLinkDecoder.h \
-    src/comm/MAVLinkProtocol.h
+    src/comm/MAVLinkProtocol.h \
+    src/ui/MissionElevationDisplay.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -847,7 +849,8 @@ SOURCES += src/main.cc \
     src/ui/PrimaryFlightDisplayQML.cpp \
     src/ui/configuration/CompassMotorCalibrationDialog.cpp \
     src/comm/MAVLinkDecoder.cc \
-    src/comm/MAVLinkProtocol.cc
+    src/comm/MAVLinkProtocol.cc \
+    src/ui/MissionElevationDisplay.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
