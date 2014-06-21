@@ -294,7 +294,6 @@ FORMS += \
     src/ui/WaypointList.ui \    
     src/ui/ObjectDetectionView.ui \
     src/ui/JoystickWidget.ui \
-    src/ui/DebugConsole.ui \
     src/ui/HDDisplay.ui \
     src/ui/MAVLinkSettingsWidget.ui \
     src/ui/AudioOutputWidget.ui \
@@ -338,8 +337,15 @@ FORMS += \
     src/ui/mission/QGCMissionDoSetServo.ui \
     src/ui/mission/QGCMissionDoRepeatServo.ui \
     src/ui/mission/QGCMissionDoDigicamControl.ui \
+    src/ui/mission/QGCMissionDoChangeSpeed.ui \
+    src/ui/mission/QGCMissionDoSetCamTriggDist.ui \
+    src/ui/mission/QGCMissionDoSetHome.ui \
+    src/ui/mission/QGCMissionDoSetRelay.ui \
+    src/ui/mission/QGCMissionDoMountControl.ui \
+    src/ui/mission/QGCMissionDoRepeatRelay.ui \
     src/ui/mission/QGCMissionConditionDelay.ui \
     src/ui/mission/QGCMissionConditionYaw.ui \
+    src/ui/mission/QGCMissionConditionDistance.ui \
     src/ui/mission/QGCMissionNavLoiterUnlim.ui \
     src/ui/mission/QGCMissionNavLoiterTurns.ui \
     src/ui/mission/QGCMissionNavLoiterTime.ui \
@@ -404,7 +410,8 @@ FORMS += \
     src/ui/AutoUpdateDialog.ui \
     src/uas/LogDownloadDialog.ui \
     src/ui/PrimaryFlightDisplayQML.ui \
-    src/ui/configuration/CompassMotorCalibrationDialog.ui
+    src/ui/configuration/CompassMotorCalibrationDialog.ui \
+    src/ui/MissionElevationDisplay.ui
 
 HEADERS += \
     src/MG.h \
@@ -444,7 +451,6 @@ HEADERS += \
     src/ui/ObjectDetectionView.h \
     src/input/JoystickInput.h \
     src/ui/JoystickWidget.h \
-    src/ui/DebugConsole.h \
     src/ui/HDDisplay.h \
     src/ui/MAVLinkSettingsWidget.h \
     src/ui/AudioOutputWidget.h \
@@ -520,8 +526,15 @@ HEADERS += \
     src/ui/mission/QGCMissionDoSetServo.h \
     src/ui/mission/QGCMissionDoRepeatServo.h \
     src/ui/mission/QGCMissionDoDigicamControl.h \
+    src/ui/mission/QGCMissionDoChangeSpeed.h \
+    src/ui/mission/QGCMissionDoSetCamTriggDist.h \
+    src/ui/mission/QGCMissionDoSetHome.h \
+    src/ui/mission/QGCMissionDoSetRelay.h \
+    src/ui/mission/QGCMissionDoMountControl.h \
+    src/ui/mission/QGCMissionDoRepeatRelay.h \
     src/ui/mission/QGCMissionConditionDelay.h \
     src/ui/mission/QGCMissionConditionYaw.h \
+    src/ui/mission/QGCMissionConditionDistance.h \
     src/ui/mission/QGCMissionNavLoiterUnlim.h \
     src/ui/mission/QGCMissionNavLoiterTurns.h \
     src/ui/mission/QGCMissionNavLoiterTime.h \
@@ -618,7 +631,8 @@ HEADERS += \
     src/ui/PrimaryFlightDisplayQML.h \
     src/ui/configuration/CompassMotorCalibrationDialog.h \
     src/comm/MAVLinkDecoder.h \
-    src/comm/MAVLinkProtocol.h
+    src/comm/MAVLinkProtocol.h \
+    src/ui/MissionElevationDisplay.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -655,7 +669,6 @@ SOURCES += src/main.cc \
     src/ui/ObjectDetectionView.cc \
     src/input/JoystickInput.cc \
     src/ui/JoystickWidget.cc \
-    src/ui/DebugConsole.cc \
     src/ui/HDDisplay.cc \
     src/ui/MAVLinkSettingsWidget.cc \
     src/ui/AudioOutputWidget.cc \
@@ -729,8 +742,15 @@ SOURCES += src/main.cc \
     src/ui/mission/QGCMissionDoSetServo.cc \
     src/ui/mission/QGCMissionDoRepeatServo.cc \
     src/ui/mission/QGCMissionDoDigicamControl.cc \
+    src/ui/mission/QGCMissionDoChangeSpeed.cc \
+    src/ui/mission/QGCMissionDoSetCamTriggDist.cc \
+    src/ui/mission/QGCMissionDoSetHome.cc \
+    src/ui/mission/QGCMissionDoSetRelay.cc \
+    src/ui/mission/QGCMissionDoMountControl.cc \
+    src/ui/mission/QGCMissionDoRepeatRelay.cc \
     src/ui/mission/QGCMissionConditionDelay.cc \
     src/ui/mission/QGCMissionConditionYaw.cc \
+    src/ui/mission/QGCMissionConditionDistance.cc \
     src/ui/mission/QGCMissionNavLoiterUnlim.cc \
     src/ui/mission/QGCMissionNavLoiterTurns.cc \
     src/ui/mission/QGCMissionNavLoiterTime.cc \
@@ -826,7 +846,8 @@ SOURCES += src/main.cc \
     src/ui/PrimaryFlightDisplayQML.cpp \
     src/ui/configuration/CompassMotorCalibrationDialog.cpp \
     src/comm/MAVLinkDecoder.cc \
-    src/comm/MAVLinkProtocol.cc
+    src/comm/MAVLinkProtocol.cc \
+    src/ui/MissionElevationDisplay.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
