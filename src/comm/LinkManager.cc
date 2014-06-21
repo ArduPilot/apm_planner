@@ -44,7 +44,7 @@ LinkManager::LinkManager(QObject *parent) :
     m_mavlinkDecoder = new MAVLinkDecoder(this);
     m_mavlinkParser = new MAVLinkProtocol(this);
     m_mavlinkParser->setConnectionManager(this);
-    connect(m_mavlinkParser,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(messageReceived(LinkInterface*,mavlink_message_t)));
+    connect(m_mavlinkParser,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
     connect(m_mavlinkParser,SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
 }
 void LinkManager::stopLogging()

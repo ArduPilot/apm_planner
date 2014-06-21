@@ -4,7 +4,7 @@
 #include "UAS.h"
 #include "UASManager.h"
 #include "QGCUASParamManager.h"
-#include "QMessageBox"
+#include <QMessageBox>
 
 #include "CompassMotorCalibrationDialog.h"
 #include "ui_CompassMotorCalibrationDialog.h"

@@ -60,7 +60,6 @@ This file is part of the QGROUNDCONTROL project
 #if (defined MOUSE_ENABLED_WIN) | (defined MOUSE_ENABLED_LINUX)
 #include "Mouse6dofInput.h"
 #endif // MOUSE_ENABLED_WIN
-#include "DebugConsole.h"
 #include "ParameterInterface.h"
 #include "XMLCommProtocolWidget.h"
 #include "HDDisplay.h"
@@ -389,7 +388,6 @@ protected:
     QPointer<QDockWidget> listDockWidget;
     QPointer<QDockWidget> waypointsDockWidget;
     QPointer<QDockWidget> detectionDockWidget;
-    QPointer<QDockWidget> debugConsoleDockWidget;
     QPointer<QDockWidget> parametersDockWidget;
     QPointer<QDockWidget> headDown1DockWidget;
     QPointer<QDockWidget> headDown2DockWidget;
@@ -417,7 +415,6 @@ protected:
 
     QPointer<QGCStatusBar> customStatusBar;
 
-    QPointer<DebugConsole> debugConsole;
 
     QPointer<QDockWidget> mavlinkInspectorWidget;
     QPointer<MAVLinkDecoder> mavlinkDecoder;
