@@ -57,6 +57,14 @@ void QGCMissionNavTakeoff::updateFrame(MAV_FRAME frame)
         this->ui->lonSpinBox->show();
         this->ui->altSpinBox->show();
         break;
+    case MAV_FRAME_MISSION:
+        this->ui->posNSpinBox->hide();
+        this->ui->posESpinBox->hide();
+        this->ui->posDSpinBox->hide();
+        this->ui->latSpinBox->hide();
+        this->ui->lonSpinBox->hide();
+        this->ui->altSpinBox->show();
+        break;
     default:
         break;
     }

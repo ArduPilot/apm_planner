@@ -270,7 +270,7 @@ Rectangle {
 
         TextButton {
             id: currentUasName
-            label: "Disconnected"
+            label: "MAV ID"
             enabled: !connectionWidget.disable
         }
 

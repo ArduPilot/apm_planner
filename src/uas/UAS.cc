@@ -1387,6 +1387,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             break;
         }
     }
+    emit mavlinkMessageRecieved(link,message);
 }
 
 

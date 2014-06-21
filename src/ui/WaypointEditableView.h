@@ -1,7 +1,7 @@
 /*===================================================================
 QGroundControl Open Source Ground Control Station
 
-(c) 2009, 2010 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+(c) 2009, 2010, 2014 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
 
 This file is part of the QGROUNDCONTROL project
 
@@ -28,6 +28,7 @@ This file is part of the QGROUNDCONTROL project
  *   @author Benjamin Knecht <mavteam@student.ethz.ch>
  *   @author Petri Tanskanen <mavteam@student.ethz.ch>
  *   @author Alex Trofimov <talex@student.ethz.ch>
+ *   @author Bill Bonney <billbonney@communistech.com>
  */
 
 #ifndef WAYPOINTEDITABLEVIEW_H
@@ -58,10 +59,16 @@ class QGCMissionDoJump;
 class QGCMissionDoSetServo;
 class QGCMissionDoRepeatServo;
 class QGCMissionDoDigicamControl;
+class QGCMissionDoSetRelay;
+class QGCMissionDoRepeatRelay;
+class QGCMissionDoSetHome;
+class QGCMissionDoSetCamTriggDistance;
+class QGCMissionDoChangeSpeed;
 class QGCMissionDoStartSearch;
 class QGCMissionDoFinishSearch;
 class QGCMissionConditionDelay;
 class QGCMissionConditionYaw;
+class QGCMissionConditionDistance;
 class QGCMissionOther;
 
 class WaypointEditableView : public QWidget
@@ -84,7 +91,6 @@ public slots:
     void changedAutoContinue(int);    
     void changedFrame(int state);
     void updateActionView(int action);
-    void initializeActionView(int action);
 
     void changedCurrent(int);
     void updateValues(void);
@@ -105,26 +111,12 @@ protected:
     Waypoint* wp;
     QGC_WAYPOINTEDITABLEVIEW_MODE viewMode;
     // Widgets for every mission element
-    QGCMissionNavWaypoint* MissionNavWaypointWidget;
-    QGCMissionNavLoiterUnlim* MissionNavLoiterUnlimWidget;
-    QGCMissionNavLoiterTurns* MissionNavLoiterTurnsWidget;
-    QGCMissionNavLoiterTime* MissionNavLoiterTimeWidget;
-    QGCMissionNavReturnToLaunch* MissionNavReturnToLaunchWidget;
-    QGCMissionNavLand* MissionNavLandWidget;
-    QGCMissionNavTakeoff* MissionNavTakeoffWidget;
-    QGCMissionNavSweep* MissionNavSweepWidget;
-    QGCMissionDoJump* MissionDoJumpWidget;
-    QGCMissionDoSetServo* MissionDoSetServoWidget;
-    QGCMissionDoRepeatServo* MissionDoRepeatServoWidget;
-    QGCMissionDoDigicamControl* MissionDoDigicamControlWidget;
-    QGCMissionDoStartSearch* MissionDoStartSearchWidget;
-    QGCMissionDoFinishSearch* MissionDoFinishSearchWidget;
-    QGCMissionConditionDelay* MissionConditionDelayWidget;
-    QGCMissionConditionYaw* MissionConditionYawWidget;
-    QGCMissionOther* MissionOtherWidget;
+    QWidget* m_missionWidget;
+    int m_currentAction;
 
 private:
     void disableMouseScrollWheel(const QWidget *parentWidget);
+    QWidget* createActionWidget(int action);
 
 private:
     Ui::WaypointEditableView *m_ui;

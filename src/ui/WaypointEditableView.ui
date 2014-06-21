@@ -185,13 +185,13 @@ QPushButton:pressed {
         </property>
         <property name="minimumSize">
          <size>
-          <width>120</width>
+          <width>0</width>
           <height>0</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>120</width>
+          <width>16777215</width>
           <height>16777215</height>
          </size>
         </property>
@@ -202,7 +202,7 @@ QPushButton:pressed {
          <string>Action at Waypoint</string>
         </property>
         <property name="sizeAdjustPolicy">
-         <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+         <enum>QComboBox::AdjustToContents</enum>
         </property>
        </widget>
       </item>
@@ -214,9 +214,15 @@ QPushButton:pressed {
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="maximumSize">
          <size>
-          <width>100</width>
+          <width>75</width>
           <height>16777215</height>
          </size>
         </property>
