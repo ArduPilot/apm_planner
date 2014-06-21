@@ -381,8 +381,8 @@ void PX4FirmwareUploader::run()
             int timeout = 0;
             if (bootloaderrev >= 4)
             {
-                QLOG_INFO() << "Requesting OTP";
-                emit statusUpdate("Requesting OTP");
+                QLOG_INFO() << "Requesting COA";
+                emit statusUpdate("Requesting COA");
                 for (int i=0;i<512;i+=4)
                 {
                     m_port->clear();
@@ -437,10 +437,10 @@ void PX4FirmwareUploader::run()
                 {
                     continue;
                 }
-                QLOG_INFO() << "OTP read";
+                QLOG_INFO() << "COA read";
                 if (otpbuf[0] != 80 && otpbuf[1] != 88 && otpbuf[2] != 52 && otpbuf[3] != 0)
                 {
-                    QLOG_ERROR() << "OTP header failure";
+                    QLOG_ERROR() << "COA header failure";
                     continue;
                 }
                 //Let's format this like MP does
@@ -455,7 +455,7 @@ void PX4FirmwareUploader::run()
                         otpoutput = "";
                     }
                 }
-                QLOG_INFO() << "OTP:" << otpstr;
+                QLOG_INFO() << "COA:" << otpstr;
 
 
                 //Create an empty buffer for the serialnumber
@@ -534,7 +534,10 @@ void PX4FirmwareUploader::run()
                 }
                 serial[0] = serial[1];
                 qDebug() << "Serial size:" << serial.size();
-                emit statusUpdate("Verifying OTP");
+                emit statusUpdate("Verifying COA");
+
+#define CERT_OF_A_FAILED "Certificate of Authenticity check failed! Please check with your autopilot hardware supplier for support."
+#define CERT_OF_A_PUB_KEY_FAILED "Certificate of Authenticity failed COA check! Public Key is not valid."
 
 #ifdef Q_OS_WIN
                 QProcess *proc = new QProcess();
@@ -547,17 +550,19 @@ void PX4FirmwareUploader::run()
                 delete proc;
                 if (!result.contains("Valid Key"))
                 {
-                    QLOG_WARN() << "Certificate of Authenticity check Failed! Please check with your autopilot hardware supplier for support";
-                    emit statusUpdate("Certificate of Authenticity check Failed! Please check with your autopilot hardware supplier for support");
-                    emit warning("Certificate of Authenticity check Failed! Please check with your autopilot hardware supplier for support");
+                    QLOG_WARN() << CERT_OF_A_FAILED;
+                    emit statusUpdate(CERT_OF_A_FAILED);
+                    emit warning(CERT_OF_A_FAILED);
                 }
                 else
                 {
-                    QLOG_DEBUG() << "OTP verification successful";
-                    emit statusUpdate("OTP verification successful");
+                    QLOG_DEBUG() << "COA verification successful";
+                    emit statusUpdate("COA verification successful");
                 }
 #else
+                // [TODO] Need to read XML file of list of authorized keys.
 
+                // 3DR COA Public Key
                 QString test = "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
                 QByteArray bytes = QByteArray::fromBase64(test.toAscii());
 
@@ -567,9 +572,9 @@ void PX4FirmwareUploader::run()
                 BIO_free(bi);
                 if(!pkey)
                 {
-                    QLOG_FATAL() << "PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?";
-                    emit statusUpdate("PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?");
-                    emit error("PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?");
+                    QLOG_FATAL() << CERT_OF_A_PUB_KEY_FAILED;
+                    emit statusUpdate(CERT_OF_A_PUB_KEY_FAILED);
+                    emit error(CERT_OF_A_PUB_KEY_FAILED);
                     m_port->close();
                     delete m_port;
                     return;
@@ -579,19 +584,19 @@ void PX4FirmwareUploader::run()
                 if (verify)
                 {
                     //Failed!
-                    QLOG_FATAL() << "PX4Firmware Uploader failed OTP check";
-                    emit statusUpdate("PX4Firmware Uploader failed OTP check");
-                    emit error("PX4Firmware Uploader failed OTP check! Are you sure this is a legimiate 3DR PX4?");
-                    m_port->close();
-                    delete m_port;
-                    return;
+                    QLOG_FATAL() << CERT_OF_A_FAILED;
+                    emit statusUpdate(CERT_OF_A_FAILED);
+                    emit error(CERT_OF_A_FAILED);
                 }
-                QLOG_DEBUG() << "OTP verification successful";
-                emit statusUpdate("OTP verification successful");
+                else
+                {
+                    QLOG_DEBUG() << "COA verification successful";
+                    emit statusUpdate("COA verification successful");
+                }
 #endif //Q_OS_WIN
 
-                //QLOG_INFO() << "OTP Successful";
-                //emit statusUpdate("OTP Verification successful!");
+                //QLOG_INFO() << "COA Successful";
+                //emit statusUpdate("COA Verification successful!");
                 //qDebug() << "Sig size:" << signature.size();
                 //qDebug() << "First three of sig:" << QString::number(signature[0],16) << QString::number(signature[1],16) << QString::number(signature[2],16);
                 //qDebug() << "Last three of sig:" << QString::number(signature[125],16) << QString::number(signature[126],16) << QString::number(signature[127],16);
@@ -603,7 +608,6 @@ void PX4FirmwareUploader::run()
                 delete m_port;
                 return;
             }
-
 
             emit boardRev(boardrev);
             emit boardId(boardid);

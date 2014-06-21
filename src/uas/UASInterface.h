@@ -700,6 +700,8 @@ signals:
     //void textMessageReceived(int uasid, int componentid, int severity, const QString& text);
     void receiveLossChanged(int id,float value);
 
+    void mavlinkMessageRecieved(LinkInterface *link,mavlink_message_t message);
+
 protected:
 
     // TIMEOUT CONSTANTS
