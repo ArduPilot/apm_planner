@@ -30,7 +30,7 @@ Item {
         id: artificialHorizon
         width: parent.width
         height: parent.height
-        scale: parent.scale*3.75
+        scale: parent.scale * 4.0
 
         Rectangle { // Artificial Horizon
             anchors.fill: parent
@@ -74,7 +74,7 @@ Item {
 
             transform: [ Translate {
                     id: artHorizonPitch
-                    y: pitchAngle * (4.5/scale)
+                    y: pitchAngle * 1.75
                 },
                 Rotation {
                     id: artHorizonRotation
