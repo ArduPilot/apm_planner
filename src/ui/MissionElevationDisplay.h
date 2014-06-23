@@ -7,6 +7,7 @@ class QCustomPlot;
 class UASInterface;
 class UASWaypointManager;
 class Waypoint;
+class GoogleElevationData;
 
 namespace Ui {
 class MissionElevationDisplay;
@@ -26,10 +27,17 @@ public slots:
 private slots:
     void updateWaypoint(int uasId, Waypoint* waypoint);
     void currentWaypointChanged(quint16 waypointId);
-    void updateElevationDisplay();
+    void updateDisplay();
+    void updateElevationData();
+    void updateElevationGraph(QList<Waypoint*> waypointList);
+    void setHomeAltOffset();
+    void useHomeAltOffset(bool state);
+    void showInfoBox();
 
 private:
+    int plotElevationGraph(QList<Waypoint*> wpList, int graphId, double homeAltOffset);
     double distanceBetweenLatLng(double lat1, double lon1, double lat2, double lon2);
+    double getHomeAlt(Waypoint* wp);
 
 private:
     Ui::MissionElevationDisplay *ui;
@@ -37,6 +45,11 @@ private:
     UASInterface* m_uasInterface;
     UASWaypointManager* m_uasWaypointMgr;
     QList<Waypoint*> m_waypointList;
+    int m_totalDistance;
+
+    GoogleElevationData* m_elevationData;
+    bool m_useHomeAltOffset;
+    double m_homeAltOffset;
 };
 
 #endif // MISSONELEVATIONDISPLAY_H

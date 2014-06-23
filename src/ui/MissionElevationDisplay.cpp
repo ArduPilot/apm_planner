@@ -3,26 +3,39 @@
 #include "UASInterface.h"
 #include "UAS.h"
 #include "UASManager.h"
+#include "GoogleElevationData.h"
 
 #include "MissionElevationDisplay.h"
 #include "ui_MissionElevationDisplay.h"
+
+#include <QInputDialog>
+#include <QMessageBox>
 
 static const double ElevationDefaultAltMin = 0.0; //m
 static const double ElevationDefaultAltMax = 25.0; //m
 static const double ElevationDefaultDistanceMax = 50.0; //m
 
+static const int ElevationGraphMissionId = 0; //m
+static const int ElevationGraphElevationId = 1; //m
+
 MissionElevationDisplay::MissionElevationDisplay(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MissionElevationDisplay),
     m_uasInterface(NULL),
-    m_uasWaypointMgr(NULL)
+    m_uasWaypointMgr(NULL),
+    m_totalDistance(0),
+    m_elevationData(NULL),
+    m_useHomeAltOffset(false)
 {
     ui->setupUi(this);
 
     QCustomPlot* customPlot = ui->customPlot;
     customPlot->addGraph();
-    customPlot->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
-    customPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20))); // first graph will be filled with translucent blue
+    customPlot->graph(ElevationGraphMissionId)->setPen(QPen(Qt::blue)); // line color blue for mission data
+    customPlot->graph(ElevationGraphMissionId)->setBrush(QBrush(QColor(0, 0, 255, 20))); // first graph will be filled with translucent blue
+    customPlot->addGraph();
+    customPlot->graph(ElevationGraphElevationId)->setPen(QPen(Qt::red)); // line color red for elevation data
+    customPlot->graph(ElevationGraphElevationId)->setBrush(QBrush(QColor(255, 0, 0, 20))); // first graph will be filled with translucent blue
     customPlot->xAxis->setLabel("distance (m)");
     customPlot->yAxis->setLabel("altitude (m)");
     // set default ranges for Alt and distance
@@ -33,6 +46,8 @@ MissionElevationDisplay::MissionElevationDisplay(QWidget *parent) :
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
+
+    connect(ui->infoButton, SIGNAL(clicked()), this, SLOT(showInfoBox()));
 }
 
 MissionElevationDisplay::~MissionElevationDisplay()
@@ -48,9 +63,12 @@ void MissionElevationDisplay::activeUASSet(UASInterface *uas)
         disconnect(m_uasWaypointMgr, SIGNAL(currentWaypointChanged(quint16)),
                 this, SLOT(currentWaypointChanged(quint16)));
         disconnect(m_uasWaypointMgr, SIGNAL(readGlobalWPFromUAS(bool)),
-                this, SLOT(updateElevationDisplay()));
+                this, SLOT(updateDisplay()));
         disconnect(m_uasWaypointMgr, SIGNAL(waypointEditableListChanged()),
-                   this, SLOT(updateElevationDisplay()));
+                   this, SLOT(updateDisplay()));
+        disconnect(ui->refreshButton, SIGNAL(clicked()), this, SLOT(updateElevationData()));
+        disconnect(ui->setHomeAltButton, SIGNAL(clicked()), this, SLOT(setHomeAltOffset()));
+        disconnect(ui->homeAltCheckBox, SIGNAL(clicked(bool)), this, SLOT(useHomeAltOffset(bool)));
     }
 
     m_uasWaypointMgr = NULL;
@@ -63,11 +81,14 @@ void MissionElevationDisplay::activeUASSet(UASInterface *uas)
         connect(m_uasWaypointMgr, SIGNAL(currentWaypointChanged(quint16)),
                 this, SLOT(currentWaypointChanged(quint16)));
         connect(m_uasWaypointMgr, SIGNAL(readGlobalWPFromUAS(bool)),
-                this, SLOT(updateElevationDisplay()));
+                this, SLOT(updateDisplay()));
         connect(m_uasWaypointMgr, SIGNAL(waypointEditableListChanged()),
-                   this, SLOT(updateElevationDisplay()));
+                   this, SLOT(updateDisplay()));
+        connect(ui->refreshButton, SIGNAL(clicked()), this, SLOT(updateElevationData()));
+        connect(ui->setHomeAltButton, SIGNAL(clicked()), this, SLOT(setHomeAltOffset()));
+        connect(ui->homeAltCheckBox, SIGNAL(clicked(bool)), this, SLOT(useHomeAltOffset(bool)));
 
-        updateElevationDisplay();
+        updateDisplay();
     }
 }
 
@@ -76,7 +97,7 @@ void MissionElevationDisplay::updateWaypoint(int uasId, Waypoint *waypoint)
     Q_UNUSED(uasId);
     QLOG_DEBUG() << "Elevation Waypoint update: " << waypoint->getId()
                  << " alt:" << waypoint->getAltitude();
-    updateElevationDisplay();
+    updateDisplay();
 }
 
 void MissionElevationDisplay::currentWaypointChanged(quint16 waypointId)
@@ -84,21 +105,36 @@ void MissionElevationDisplay::currentWaypointChanged(quint16 waypointId)
     QLOG_TRACE() << "Elevation current waypount update: " << waypointId;
 }
 
-void MissionElevationDisplay::updateElevationDisplay()
+void MissionElevationDisplay::updateDisplay()
 {
     QLOG_DEBUG() << "updateElevationDisplay";
     m_waypointList =  m_uasWaypointMgr->getGlobalFrameAndNavTypeWaypointList();
     if (m_waypointList.count() == 0)
         return;
 
+    m_totalDistance = plotElevationGraph(m_waypointList, ElevationGraphMissionId, m_homeAltOffset);
+
+}
+
+void MissionElevationDisplay::updateElevationGraph(QList<Waypoint *> waypointList)
+{
+    if (m_waypointList.count() == 0)
+        return;
+    int distance = plotElevationGraph(waypointList,ElevationGraphElevationId, 0.0);
+    if (distance > m_totalDistance)
+        m_totalDistance = distance;
+}
+
+int MissionElevationDisplay::plotElevationGraph(QList<Waypoint *> wpList, int graphId, double homeAltOffset)
+{
     Waypoint* previousWp = NULL;
     double totalDistance = 0.0;
     double homeAlt = 0.0;
     QCustomPlot* customplot = ui->customPlot;
-    QCPGraph* graph = customplot->graph(0);
+    QCPGraph* graph = customplot->graph(graphId);
     graph->clearData();
 
-    foreach(Waypoint* wp, m_waypointList){
+    foreach(Waypoint* wp, wpList){
         double lower = 0.0, upper = 0.0;
         QCPRange xRange = customplot->xAxis->range();
         QCPRange yRange = customplot->yAxis->range();
@@ -116,7 +152,7 @@ void MissionElevationDisplay::updateElevationDisplay()
         if (wp->getId() == 0){
             // Plot Waypoint at 0 (HOME) and store for next calculation
             homeAlt = wp->getAltitude();
-            graph->addData( totalDistance , homeAlt);
+            graph->addData( totalDistance, homeAlt + homeAltOffset);
 
         } else {
             // calculate the distance and plot against alt
@@ -129,17 +165,30 @@ void MissionElevationDisplay::updateElevationDisplay()
 
             double adjustedAlt = 0.0;
             if (wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT){
-                adjustedAlt =  wp->getAltitude() + homeAlt;
+                adjustedAlt =  wp->getAltitude() + homeAlt + homeAltOffset;
             } else {
                 adjustedAlt = wp->getAltitude();
             }
 
-            graph->addData(totalDistance, wp->getAltitude() + homeAlt);
+            graph->addData(totalDistance, adjustedAlt);
         }
         previousWp = wp;
     }
     customplot->rescaleAxes();
     customplot->replot();
+
+    return totalDistance;
+}
+
+void MissionElevationDisplay::updateElevationData()
+{
+    if(m_elevationData == NULL){
+        m_elevationData = new GoogleElevationData();
+        connect(m_elevationData, SIGNAL(elevationDataReady(QList<Waypoint*>)),
+                this, SLOT(updateElevationGraph(QList<Waypoint*>)));
+    }
+    int samples = m_waypointList.count()*5.0;
+    m_elevationData->requestElevationData(m_waypointList, m_totalDistance, samples); // 5 samples between waypoints
 }
 
 // When we move to QT5 the below should use QGeoLocation.
@@ -152,4 +201,32 @@ double MissionElevationDisplay::distanceBetweenLatLng(double lat1, double lon1, 
      double c = 2 * atan2(sqrt(a), sqrt(1-a));
      double d = R * c;
      return d;
+}
+
+void MissionElevationDisplay::useHomeAltOffset(bool checked)
+{
+    m_useHomeAltOffset = checked;
+
+    if (checked == false){
+        m_homeAltOffset = 0.0;
+    }
+    updateDisplay();
+}
+
+void MissionElevationDisplay::setHomeAltOffset()
+{
+    bool ok;
+    double homeAlt = QInputDialog::getDouble(this, "Home Alt Setting", "Alt (m)", m_homeAltOffset, -999999.0,999999.0,2,&ok);
+
+    if (ok){
+        ui->homeAltCheckBox->setChecked(true);
+        m_homeAltOffset = homeAlt;
+        updateDisplay();
+    }
+}
+
+void MissionElevationDisplay::showInfoBox()
+{
+    QMessageBox::information(this, "Elevation Display", "The Elevation Display will show your mission elevation (blue) against Google's elevation data for that area (red)"
+                             "\nWARNING: The datas resolution can be reduced in some areas, so please use caution.",QMessageBox::Ok);
 }
