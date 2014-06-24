@@ -50,6 +50,7 @@ private:
     GoogleElevationData* m_elevationData;
     bool m_useHomeAltOffset;
     double m_homeAltOffset;
+    bool m_elevationShown;
 };
 
 #endif // MISSONELEVATIONDISPLAY_H

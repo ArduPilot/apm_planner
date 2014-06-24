@@ -54,6 +54,26 @@ Waypoint::Waypoint(quint16 _id, double _x, double _y, double _z, double _param1,
 {
 }
 
+Waypoint::Waypoint(const Waypoint& waypoint)
+    : id(waypoint.getId()),
+      x(waypoint.getX()),
+      y(waypoint.getY()),
+      z(waypoint.getZ()),
+      yaw(waypoint.getYaw()),
+      frame(waypoint.getFrame()),
+      action(waypoint.getAction()),
+      autocontinue(waypoint.getAutoContinue()),
+      current(waypoint.getCurrent()),
+      orbit(waypoint.getParam3()),
+      param1(waypoint.getParam1()),
+      param2(waypoint.getParam2()),
+      name(waypoint.getName()),
+      description(waypoint.getDescription()),
+      reachedTime(waypoint.getReachedTime())
+{
+    // Copy Constrcutor
+}
+
 Waypoint::~Waypoint()
 {    
 }

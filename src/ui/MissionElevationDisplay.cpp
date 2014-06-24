@@ -25,7 +25,8 @@ MissionElevationDisplay::MissionElevationDisplay(QWidget *parent) :
     m_uasWaypointMgr(NULL),
     m_totalDistance(0),
     m_elevationData(NULL),
-    m_useHomeAltOffset(false)
+    m_useHomeAltOffset(false),
+    m_elevationShown(false)
 {
     ui->setupUi(this);
 
@@ -97,6 +98,17 @@ void MissionElevationDisplay::updateWaypoint(int uasId, Waypoint *waypoint)
     Q_UNUSED(uasId);
     QLOG_DEBUG() << "Elevation Waypoint update: " << waypoint->getId()
                  << " alt:" << waypoint->getAltitude();
+
+    if(m_waypointList.count() >= 2){
+        Waypoint* oldWp = m_waypointList.at(waypoint->getId());
+        if (m_elevationShown && ((oldWp->getLatitude() != waypoint->getLatitude())
+           || (oldWp->getLongitude() != waypoint->getLongitude()))){
+            // Waypoint Moved, so need to refresh elevation.
+            ui->refreshButton->setText("Refresh Elevation");
+            ui->refreshButton->setEnabled(true);
+        }
+    }
+
     updateDisplay();
 }
 
@@ -108,7 +120,14 @@ void MissionElevationDisplay::currentWaypointChanged(quint16 waypointId)
 void MissionElevationDisplay::updateDisplay()
 {
     QLOG_DEBUG() << "updateElevationDisplay";
-    m_waypointList =  m_uasWaypointMgr->getGlobalFrameAndNavTypeWaypointList();
+
+    QList<Waypoint*> list = m_uasWaypointMgr->getGlobalFrameAndNavTypeWaypointList();
+    m_waypointList.clear();
+    foreach (Waypoint* wp, list) {
+        // Create a copy
+        m_waypointList.append(new Waypoint(*wp));
+    }
+
     if (m_waypointList.count() == 0)
         return;
 
@@ -186,9 +205,14 @@ void MissionElevationDisplay::updateElevationData()
         m_elevationData = new GoogleElevationData();
         connect(m_elevationData, SIGNAL(elevationDataReady(QList<Waypoint*>)),
                 this, SLOT(updateElevationGraph(QList<Waypoint*>)));
+        m_elevationShown = true;
     }
     int samples = m_waypointList.count()*5.0;
     m_elevationData->requestElevationData(m_waypointList, m_totalDistance, samples); // 5 samples between waypoints
+    if (m_elevationShown == true) {
+        ui->refreshButton->setEnabled(false);
+        ui->refreshButton->setText("Updated");
+    }
 }
 
 // When we move to QT5 the below should use QGeoLocation.

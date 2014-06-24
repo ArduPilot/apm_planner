@@ -61,6 +61,16 @@
         </spacer>
        </item>
        <item>
+        <widget class="QLabel" name="resolutionLabel">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="homeAltCheckBox">
          <property name="maximumSize">
           <size>
