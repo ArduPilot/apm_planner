@@ -37,12 +37,10 @@ void GoogleElevationData::httpFinished()
 
     // Finished donwloading the elevation information
     if (m_networkReply->error()) {
-        // [TODO] cleanup download failed
-#ifdef QT_DEBUG
+        // cleanup download failed
         QMessageBox::information(NULL, tr("HTTP"),
                                  tr("Download failed: %1.")
                                  .arg(m_networkReply->errorString()));
-#endif
     } else {
         // Process downloadeed object
         processDownloadedObject(QString(m_networkReply->readAll()));
