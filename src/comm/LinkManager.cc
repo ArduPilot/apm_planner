@@ -36,6 +36,7 @@ This file is part of the APM_PLANNER project
 #include "ArduPilotMegaMAV.h"
 #include "UASManager.h"
 #include "UDPLink.h"
+#include "TCPLink.h"
 #include <QSettings>
 #include "qserialportinfo.h"
 LinkManager::LinkManager(QObject *parent) :
@@ -100,6 +101,13 @@ int LinkManager::addUdpConnection(QHostAddress addr,int port)
     return udpLink->getId();
 
 }
+int LinkManager::addTcpConnection(QHostAddress addr,int port)
+{
+    TCPLink *tcplink = new TCPLink(addr,port);
+    m_connectionMap.insert(tcplink->getId(),tcplink);
+    emit newLink(tcplink->getId());
+    return tcplink->getId();
+}
 
 void LinkManager::addLink(LinkInterface *link)
 {
@@ -123,6 +131,20 @@ void LinkManager::disconnectLink(int index)
     {
         m_connectionMap.value(index)->disconnect();
     }
+}
+void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    TCPLink *iface = qobject_cast<TCPLink*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setHostAddress(addr);
+    iface->setPort(port);
 }
 
 void LinkManager::modifySerialConnection(int index,QString port,int baud)
@@ -183,6 +205,33 @@ int LinkManager::getUdpLinkPort(int linkid)
         return 0;
     }
     return iface->getPort();
+}
+int LinkManager::getTcpLinkPort(int linkid)
+{
+    if (!m_connectionMap.contains(linkid))
+    {
+        return 0;
+    }
+    TCPLink *iface = qobject_cast<TCPLink*>(m_connectionMap.value(linkid));
+    if (!iface)
+    {
+        return 0;
+    }
+    return iface->getPort();
+}
+
+QHostAddress LinkManager::getTcpLinkHost(int linkid)
+{
+    if (!m_connectionMap.contains(linkid))
+    {
+        return QHostAddress::Null;
+    }
+    TCPLink *iface = qobject_cast<TCPLink*>(m_connectionMap.value(linkid));
+    if (!iface)
+    {
+        return QHostAddress::Null;
+    }
+    return iface->getHostAddress();
 }
 
 void LinkManager::setUdpLinkPort(int linkid, int port)

@@ -1593,6 +1593,12 @@ void MainWindow::connectCommonActions()
 
     // Connect actions from ui
     //connect(ui.actionAdd_Link, SIGNAL(triggered()), this, SLOT(addLink()));
+    ui.actionSerial->setData(LinkInterface::SERIAL_LINK);
+    ui.actionTCP->setData(LinkInterface::TCP_LINK);
+    ui.actionUDP->setData(LinkInterface::UDP_LINK);
+    connect(ui.actionSerial,SIGNAL(triggered()),this,SLOT(addLink()));
+    connect(ui.actionTCP,SIGNAL(triggered()),this,SLOT(addLink()));
+    connect(ui.actionUDP,SIGNAL(triggered()),this,SLOT(addLink()));
     connect(ui.actionAdvanced_Mode,SIGNAL(triggered(bool)),this,SLOT(setAdvancedMode(bool)));
 
     // Connect internal actions
@@ -1733,33 +1739,6 @@ void MainWindow::showSettings()
     settings->show();
 }
 
-LinkInterface* MainWindow::addLink()
-{
-    //LinkManager::instance()->addSerialConnection("COM4",115200);
-    /*SerialLink* link = new SerialLink();
-    // TODO This should be only done in the dialog itself
-
-    LinkManager::instance()->add(link);
-    LinkManager::instance()->addProtocol(link, mavlink);
-
-    // Go fishing for this link's configuration window
-    QList<QAction*> actions = ui.menuNetwork->actions();
-
-    const int32_t& linkIndex(LinkManager::instance()->getLinks().indexOf(link));
-    const int32_t& linkID(LinkManager::instance()->getLinks()[linkIndex]->getId());
-
-    foreach (QAction* act, actions)
-    {
-        if (act->data().toInt() == linkID)
-        { // LinkManager::instance()->getLinks().indexOf(link)
-            act->trigger();
-            break;
-        }
-    }
-
-    return link;*/
-    return 0;
-}
 
 
 bool MainWindow::configLink(int linkid)
@@ -1783,12 +1762,55 @@ bool MainWindow::configLink(int linkid)
 
     return found;
 }
+void MainWindow::addLink()
+{
+    QAction *send = qobject_cast<QAction*>(sender());
+    if (!send)
+    {
+        return;
+    }
+    int newid = 0;
+    if (send->data() == LinkInterface::SERIAL_LINK)
+    {
+        newid = LinkManager::instance()->addSerialConnection();
+    }
+    else if (send->data() == LinkInterface::TCP_LINK)
+    {
+        newid = LinkManager::instance()->addTcpConnection(QHostAddress::LocalHost,5555);
+    }
+    else if (send->data() == LinkInterface::UDP_LINK)
+    {
+        newid = LinkManager::instance()->addUdpConnection(QHostAddress::LocalHost,5555);
+    }
+    addLink(newid);
+    for (int i=0;i<ui.menuNetwork->actions().size();i++)
+    {
+        if (ui.menuNetwork->actions().at(i)->data().toInt() == newid)
+        {
+            //Link already exists!
+            ui.menuNetwork->actions().at(i)->trigger();
+            return;
+        }
+    }
+
+    //CommConfigurationWindow *commWidget = new CommConfigurationWindow()
+}
+
 void MainWindow::addLink(int linkid)
 {
+    for (int i=0;i<ui.menuNetwork->actions().size();i++)
+    {
+        if (ui.menuNetwork->actions().at(i)->data().toInt() == linkid)
+        {
+            //Link already exists!
+            return;
+        }
+    }
     CommConfigurationWindow* commWidget = new CommConfigurationWindow(linkid, 0, NULL);
     commsWidgetList.append(commWidget);
     connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
     QAction* action = commWidget->getAction();
+    action->setData(linkid);
     ui.menuNetwork->addAction(action);
 
     // Error handling

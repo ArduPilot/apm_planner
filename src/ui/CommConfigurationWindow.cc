@@ -160,6 +160,13 @@ CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* 
         ui.linkGroupBox->setTitle(tr("UDP Link"));
         ui.linkType->setCurrentIndex(ui.linkType->findData(QGC_LINK_UDP));
     }
+    else if (LinkManager::instance()->getLinkType(linkid) == LinkInterface::TCP_LINK)
+    {
+        QWidget *conf = new QGCTCPLinkConfiguration(linkid,this);
+        ui.linkScrollArea->setWidget(conf);
+        ui.linkGroupBox->setTitle(tr("TCP Link"));
+        ui.linkType->setCurrentIndex(ui.linkType->findData(QGC_LINK_TCP));
+    }
 /*
     SerialLink* serial = dynamic_cast<SerialLink*>(link);
     if(serial != 0) {
