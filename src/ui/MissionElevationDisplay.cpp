@@ -33,11 +33,11 @@ MissionElevationDisplay::MissionElevationDisplay(QWidget *parent) :
     ui->sampleSpinBox->setEnabled(false);
 
     QCustomPlot* customPlot = ui->customPlot;
-    customPlot->addGraph();
+    customPlot->addGraph(); // Mission Elevation Graph (ElevationGraphMissionId)
     customPlot->graph(ElevationGraphMissionId)->setPen(QPen(Qt::blue)); // line color blue for mission data
     customPlot->graph(ElevationGraphMissionId)->setBrush(QBrush(QColor(0, 0, 255, 20))); // first graph will be filled with translucent blue
-    customPlot->graph(ElevationGraphMissionId)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 10));
-    customPlot->addGraph();
+
+    customPlot->addGraph(); // Google Elevation Graph (ElevationGraphElevationId)
     customPlot->graph(ElevationGraphElevationId)->setPen(QPen(Qt::red)); // line color red for elevation data
     customPlot->graph(ElevationGraphElevationId)->setBrush(QBrush(QColor(255, 0, 0, 20))); // first graph will be filled with translucent blue
     customPlot->graph(ElevationGraphElevationId)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDiamond, 10));
@@ -146,7 +146,7 @@ void MissionElevationDisplay::updateDisplay()
         return;
 
     m_totalDistance = plotElevationGraph(m_waypointList, ElevationGraphMissionId, m_homeAltOffset);
-
+    addWaypointLabels();
 }
 
 void MissionElevationDisplay::updateElevationGraph(QList<Waypoint *> waypointList,double averageResolution)
@@ -212,6 +212,45 @@ int MissionElevationDisplay::plotElevationGraph(QList<Waypoint *> wpList, int gr
     customplot->replot();
 
     return totalDistance;
+}
+
+void MissionElevationDisplay::addWaypointLabels()
+{
+    QCustomPlot* customPlot = ui->customPlot;
+    customPlot->clearItems();
+    double totalDistance = 0.0;
+    double homeAlt = 0.0;
+    double distance = 0.0;
+    Waypoint* previousWp = NULL;
+
+    foreach(Waypoint* wp, m_waypointList){
+        if(previousWp != NULL){
+            distance = distanceBetweenLatLng(previousWp->getLatitude(), previousWp->getLongitude(),
+                                                wp->getLatitude(), wp->getLongitude());
+        } else {
+            homeAlt = wp->getAltitude();
+        }
+
+        totalDistance += distance;
+        QCPItemTracer *itemTracer = new QCPItemTracer(customPlot);
+        itemTracer->setGraph(customPlot->graph(ElevationGraphMissionId));
+        itemTracer->setStyle(QCPItemTracer::tsNone);
+        itemTracer->setGraphKey(totalDistance);
+        customPlot->addItem(itemTracer);
+
+        QCPItemText *itemText = new QCPItemText(customPlot);
+        itemText->setText(QString::number(wp->getId()));
+        itemText->position->setParentAnchor(itemTracer->position);
+
+        double adjustedAlt = 0.0;
+        if (wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT){
+            adjustedAlt = wp->getAltitude() + homeAlt + m_homeAltOffset;
+        } else {
+            adjustedAlt = wp->getAltitude();
+        }
+
+        previousWp = wp;
+    }
 }
 
 void MissionElevationDisplay::updateElevationData()

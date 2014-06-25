@@ -39,6 +39,7 @@ private:
     int plotElevationGraph(QList<Waypoint*> wpList, int graphId, double homeAltOffset);
     double distanceBetweenLatLng(double lat1, double lon1, double lat2, double lon2);
     double getHomeAlt(Waypoint* wp);
+    void addWaypointLabels();
 
 private:
     Ui::MissionElevationDisplay *ui;
