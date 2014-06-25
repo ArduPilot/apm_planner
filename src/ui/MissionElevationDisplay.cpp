@@ -30,13 +30,17 @@ MissionElevationDisplay::MissionElevationDisplay(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->sampleSpinBox->setEnabled(false);
+
     QCustomPlot* customPlot = ui->customPlot;
     customPlot->addGraph();
     customPlot->graph(ElevationGraphMissionId)->setPen(QPen(Qt::blue)); // line color blue for mission data
     customPlot->graph(ElevationGraphMissionId)->setBrush(QBrush(QColor(0, 0, 255, 20))); // first graph will be filled with translucent blue
+    customPlot->graph(ElevationGraphMissionId)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 10));
     customPlot->addGraph();
     customPlot->graph(ElevationGraphElevationId)->setPen(QPen(Qt::red)); // line color red for elevation data
     customPlot->graph(ElevationGraphElevationId)->setBrush(QBrush(QColor(255, 0, 0, 20))); // first graph will be filled with translucent blue
+    customPlot->graph(ElevationGraphElevationId)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDiamond, 10));
     customPlot->xAxis->setLabel("distance (m)");
     customPlot->yAxis->setLabel("altitude (m)");
     // set default ranges for Alt and distance
@@ -70,6 +74,7 @@ void MissionElevationDisplay::activeUASSet(UASInterface *uas)
         disconnect(ui->refreshButton, SIGNAL(clicked()), this, SLOT(updateElevationData()));
         disconnect(ui->setHomeAltButton, SIGNAL(clicked()), this, SLOT(setHomeAltOffset()));
         disconnect(ui->homeAltCheckBox, SIGNAL(clicked(bool)), this, SLOT(useHomeAltOffset(bool)));
+        disconnect(ui->sampleSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sampleValueChanged()));
     }
 
     m_uasWaypointMgr = NULL;
@@ -88,6 +93,7 @@ void MissionElevationDisplay::activeUASSet(UASInterface *uas)
         connect(ui->refreshButton, SIGNAL(clicked()), this, SLOT(updateElevationData()));
         connect(ui->setHomeAltButton, SIGNAL(clicked()), this, SLOT(setHomeAltOffset()));
         connect(ui->homeAltCheckBox, SIGNAL(clicked(bool)), this, SLOT(useHomeAltOffset(bool)));
+        connect(ui->sampleSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sampleValueChanged()));
 
         updateDisplay();
     }
@@ -110,6 +116,14 @@ void MissionElevationDisplay::updateWaypoint(int uasId, Waypoint *waypoint)
     }
 
     updateDisplay();
+}
+
+void MissionElevationDisplay::sampleValueChanged()
+{
+    if (m_elevationShown){
+        ui->refreshButton->setText("Refresh Elevation");
+        ui->refreshButton->setEnabled(true);
+    }
 }
 
 void MissionElevationDisplay::currentWaypointChanged(quint16 waypointId)
@@ -135,11 +149,12 @@ void MissionElevationDisplay::updateDisplay()
 
 }
 
-void MissionElevationDisplay::updateElevationGraph(QList<Waypoint *> waypointList)
+void MissionElevationDisplay::updateElevationGraph(QList<Waypoint *> waypointList,double averageResolution)
 {
     if (m_waypointList.count() == 0)
         return;
     int distance = plotElevationGraph(waypointList,ElevationGraphElevationId, 0.0);
+    ui->resolutionLabel->setText(QString::number(averageResolution)+"(m)");
     if (distance > m_totalDistance)
         m_totalDistance = distance;
 }
@@ -203,16 +218,17 @@ void MissionElevationDisplay::updateElevationData()
 {
     if(m_elevationData == NULL){
         m_elevationData = new GoogleElevationData();
-        connect(m_elevationData, SIGNAL(elevationDataReady(QList<Waypoint*>)),
-                this, SLOT(updateElevationGraph(QList<Waypoint*>)));
+        connect(m_elevationData, SIGNAL(elevationDataReady(QList<Waypoint*>,double)),
+                this, SLOT(updateElevationGraph(QList<Waypoint*>,double)));
         m_elevationShown = true;
     }
-    int samples = m_waypointList.count()*5.0;
+    int samples = m_waypointList.count()*ui->sampleSpinBox->value();
     m_elevationData->requestElevationData(m_waypointList, m_totalDistance, samples); // 5 samples between waypoints
     if (m_elevationShown == true) {
         ui->refreshButton->setEnabled(false);
         ui->refreshButton->setText("Updated");
     }
+    ui->sampleSpinBox->setEnabled(true);
 }
 
 // When we move to QT5 the below should use QGeoLocation.

@@ -122,6 +122,7 @@ void GoogleElevationData::processDownloadedObject(const QString &jsonObject)
     }
 
     QList<Waypoint*> elevationWaypoints;
+    double averageResolution = 0.0;
 
     QScriptValue entries = result.property("results");
     QScriptValueIterator it(entries);
@@ -132,7 +133,7 @@ void GoogleElevationData::processDownloadedObject(const QString &jsonObject)
         double elevation = entry.property("elevation").toNumber();
         double latitude = entry.property("location").property("lat").toNumber();
         double longitude = entry.property("location").property("lng").toNumber();
-//        double resolution = entry.property("resolution").toNumber();
+        double resolution = entry.property("resolution").toNumber();
 
         QLOG_DEBUG() << "elevation loc: " << latitude << "," << longitude;
         QLOG_DEBUG() << "elevation alt" << elevationWaypoints.count() << ":" << elevation;
@@ -140,9 +141,9 @@ void GoogleElevationData::processDownloadedObject(const QString &jsonObject)
         Waypoint* wp = new Waypoint(elevationWaypoints.count(), latitude, longitude, elevation,
                                     0.0,0.0,0.0,0.0,true,false,MAV_FRAME_GLOBAL);
         elevationWaypoints.append(wp);
+        averageResolution+= resolution;
     }
-
     elevationWaypoints.removeLast(); // the last one seems defunct.
-
-    emit elevationDataReady(elevationWaypoints);
+    averageResolution = averageResolution/elevationWaypoints.count();
+    emit elevationDataReady(elevationWaypoints, averageResolution);
 }

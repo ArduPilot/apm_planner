@@ -29,10 +29,11 @@ private slots:
     void currentWaypointChanged(quint16 waypointId);
     void updateDisplay();
     void updateElevationData();
-    void updateElevationGraph(QList<Waypoint*> waypointList);
+    void updateElevationGraph(QList<Waypoint*> waypointList,double averageResolution);
     void setHomeAltOffset();
     void useHomeAltOffset(bool state);
     void showInfoBox();
+    void sampleValueChanged();
 
 private:
     int plotElevationGraph(QList<Waypoint*> wpList, int graphId, double homeAltOffset);

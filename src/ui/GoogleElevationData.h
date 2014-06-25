@@ -20,7 +20,7 @@ public:
 
 signals:
     void downloadFailed();
-    void elevationDataReady(const QList<Waypoint *> waypointList);
+    void elevationDataReady(const QList<Waypoint *> waypointList, double averageResolution);
 
     void waypointCountToLow();
     void invalidHomeLocation();
