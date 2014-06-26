@@ -80,10 +80,11 @@ CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* 
     //connect(ui.advancedOptionsCheckBox, SIGNAL(clicked(bool)), ui.protocolGroupBox, SLOT(setVisible(bool)));
     ui.advancedOptionsCheckBox->setVisible(false);
     //connect(ui.advCheckBox,SIGNAL(clicked(bool)),ui.advancedOptionsCheckBox,SLOT(setChecked(bool)));
-    connect(ui.advCheckBox,SIGNAL(clicked(bool)),ui.protocolTypeGroupBox,SLOT(setVisible(bool)));
+    //connect(ui.advCheckBox,SIGNAL(clicked(bool)),ui.protocolTypeGroupBox,SLOT(setVisible(bool)));
     connect(ui.advCheckBox, SIGNAL(clicked(bool)), ui.connectionType, SLOT(setEnabled(bool)));
     connect(ui.advCheckBox, SIGNAL(clicked(bool)), ui.linkType, SLOT(setEnabled(bool)));
     connect(ui.advCheckBox, SIGNAL(clicked(bool)), ui.protocolGroupBox, SLOT(setVisible(bool)));
+    ui.advCheckBox->setVisible(false);
 
     // add link types
     ui.linkType->addItem(tr("Serial"), QGC_LINK_SERIAL);
@@ -150,7 +151,7 @@ CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* 
         ui.linkScrollArea->setWidget(conf);
         ui.linkGroupBox->setTitle(tr("Serial Link"));
         ui.linkType->setCurrentIndex(ui.linkType->findData(QGC_LINK_SERIAL));
-        connect(ui.advCheckBox,SIGNAL(clicked(bool)),conf,SLOT(setAdvancedSettings(bool)));
+        //connect(ui.advCheckBox,SIGNAL(clicked(bool)),conf,SLOT(setAdvancedSettings(bool)));
 
     }
     else if (LinkManager::instance()->getLinkType(linkid) == LinkInterface::UDP_LINK)

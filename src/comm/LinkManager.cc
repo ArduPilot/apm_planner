@@ -95,17 +95,28 @@ void LinkManager::loadSettings()
         {
             QString port = settings.value("port").toString();
             int baud = settings.value("baud").toInt();
+            if (baud < 0 || baud > 12500000)
+            {
+                //Bad baud rate.
+                baud = 115200;
+            }
+
             addSerialConnection(port,baud);
         }
         else if (type == "UDP_LINK")
         {
             int hostcount = settings.beginReadArray("HOSTS");
-            for (int j=0;j<hostcount;j++)
+            if (hostcount == 0)
             {
-                settings.setArrayIndex(j);
+                //Use defaults
+                addUdpConnection(QHostAddress::Any,14550);
+            }
+            else
+            {
+                settings.setArrayIndex(0);
                 QString host = settings.value("host").toString();
                 int port = settings.value("port").toInt();
-                addTcpConnection(QHostAddress(host),port);
+                addUdpConnection(QHostAddress(host),port);
             }
             settings.endArray();
         }
@@ -123,9 +134,10 @@ void LinkManager::saveSettings()
     QSettings settings;
     settings.beginGroup("LINKMANAGER");
     settings.beginWriteArray("LINKS");
+    int index = 0;
     for (QMap<int,LinkInterface*>::const_iterator i= m_connectionMap.constBegin();i!=m_connectionMap.constEnd();i++)
     {
-        settings.setArrayIndex(i.value()->getId());
+        settings.setArrayIndex(index++);
         settings.setValue("linkid",i.value()->getId());
         if (i.value()->getLinkType() == LinkInterface::SERIAL_LINK)
         {
