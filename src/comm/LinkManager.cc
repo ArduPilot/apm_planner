@@ -47,10 +47,118 @@ LinkManager::LinkManager(QObject *parent) :
     m_mavlinkParser->setConnectionManager(this);
     connect(m_mavlinkParser,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
     connect(m_mavlinkParser,SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
+    loadSettings();
+    //Check to see if we have a single serial and single UDP connection, since they are the defaults
+
+    /*//LinkManager::instance()->addSerialConnection();
+    //LinkManager::instance()->addUdpConnection(QHostAddress::Any,14550);*/
+    bool foundserial = false;
+    bool foundudp = false;
+    for (QMap<int,LinkInterface*>::const_iterator i= m_connectionMap.constBegin();i!=m_connectionMap.constEnd();i++)
+    {
+        if (i.value()->getLinkType() == LinkInterface::SERIAL_LINK)
+        {
+            foundserial = true;
+        }
+        if (i.value()->getLinkType() == LinkInterface::UDP_LINK)
+        {
+            foundudp = true;
+        }
+    }
+    if (!foundserial)
+    {
+        addSerialConnection();
+        addUdpConnection(QHostAddress::Any,14550);
+    }
+
 }
 void LinkManager::stopLogging()
 {
     m_mavlinkParser->stopLogging();
+}
+LinkManager::~LinkManager()
+{
+    saveSettings();
+}
+
+void LinkManager::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup("LINKMANAGER");
+    int linkssize = settings.beginReadArray("LINKS");
+    for (int i=0;i<linkssize;i++)
+    {
+        settings.setArrayIndex(i);
+        int linkid = settings.value("linkid").toInt();
+        QString type = settings.value("type").toString();
+        if (type == "SERIAL_LINK")
+        {
+            QString port = settings.value("port").toString();
+            int baud = settings.value("baud").toInt();
+            addSerialConnection(port,baud);
+        }
+        else if (type == "UDP_LINK")
+        {
+            int hostcount = settings.beginReadArray("HOSTS");
+            for (int j=0;j<hostcount;j++)
+            {
+                settings.setArrayIndex(j);
+                QString host = settings.value("host").toString();
+                int port = settings.value("port").toInt();
+                addTcpConnection(QHostAddress(host),port);
+            }
+            settings.endArray();
+        }
+        else if (type == "TCP_LINK")
+        {
+            QString host = settings.value("host").toString();
+            int port = settings.value("port").toInt();
+            addTcpConnection(QHostAddress(host),port);
+        }
+    }
+}
+
+void LinkManager::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup("LINKMANAGER");
+    settings.beginWriteArray("LINKS");
+    for (QMap<int,LinkInterface*>::const_iterator i= m_connectionMap.constBegin();i!=m_connectionMap.constEnd();i++)
+    {
+        settings.setArrayIndex(i.value()->getId());
+        settings.setValue("linkid",i.value()->getId());
+        if (i.value()->getLinkType() == LinkInterface::SERIAL_LINK)
+        {
+            SerialConnection *link = qobject_cast<SerialConnection*>(i.value());
+            settings.setValue("type","SERIAL_LINK");
+            settings.setValue("port",link->getPortName());
+            settings.setValue("baud",link->getBaudRate());
+        }
+        else if (i.value()->getLinkType() == LinkInterface::UDP_LINK)
+        {
+            UDPLink *link = qobject_cast<UDPLink*>(i.value());
+            settings.setValue("type","UDP_LINK");
+            settings.beginWriteArray("HOSTS");
+            for (int j=0;j<link->getHosts().size();j++)
+            {
+                settings.setArrayIndex(j);
+                settings.setValue("host",link->getHosts().at(j).toString());
+                settings.setValue("port",link->getPort());
+            }
+            settings.endArray();
+            settings.setValue("port",link->getPort());
+        }
+        else if (i.value()->getLinkType() == LinkInterface::TCP_LINK)
+        {
+            TCPLink *link = qobject_cast<TCPLink*>(i.value());
+            settings.setValue("type","TCP_LINK");
+            settings.setValue("host",link->getHostAddress().toString());
+            settings.setValue("port",link->getPort());
+        }
+    }
+    settings.endArray();
+    settings.endGroup();
+    settings.sync();
 }
 
 void LinkManager::startLogging()
@@ -311,12 +419,12 @@ UASInterface* LinkManager::getUas(int id)
     }
     return 0;
 }
-QList<LinkInterface*> LinkManager::getLinks()
+QList<int> LinkManager::getLinks()
 {
-    QList<LinkInterface*> links;
+    QList<int> links;
     for (int i=0;i<m_connectionMap.keys().size();i++)
     {
-        links.append(m_connectionMap.value(m_connectionMap.keys().at(i)));
+        links.append(m_connectionMap.value(m_connectionMap.keys().at(i))->getId());
     }
     return links;
 }

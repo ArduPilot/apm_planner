@@ -64,6 +64,9 @@ public:
         }
         return _instance;
     }
+    ~LinkManager();
+    void loadSettings();
+    void saveSettings();
     int addSerialConnection(QString port,int baud);
     int addSerialConnection();
     int addUdpConnection(QHostAddress addr,int port);
@@ -76,7 +79,7 @@ public:
     UASInterface* getUas(int id);
     UASInterface* createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
     void addLink(LinkInterface *link);
-    QList<LinkInterface*> getLinks();
+    QList<int> getLinks();
     void removeLink(LinkInterface *link);
     LinkInterface::LinkType getLinkType(int linkid);
     bool getLinkConnected(int linkid);

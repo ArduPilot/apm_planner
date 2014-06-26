@@ -212,13 +212,13 @@ MainWindow::MainWindow(QWidget *parent):
 
     // Populate link menu
     emit initStatusChanged("Populating link menu");
-    QList<LinkInterface*> links = LinkManager::instance()->getLinks();
-    foreach(LinkInterface* link, links)
+
+    QList<int> links = LinkManager::instance()->getLinks();
+    for (int i=0;i<links.size();i++)
     {
-        this->addLink(link);
+        addLink(links.at(i));
     }
 
-    //connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addLink(LinkInterface*)), Qt::QueuedConnection);
     connect(LinkManager::instance(), SIGNAL(newLink(int)), this, SLOT(addLink(int)), Qt::QueuedConnection);
 
 
