@@ -109,6 +109,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     connect(ui.downloadPushButton, SIGNAL(clicked()), this, SLOT(showLogDownloadDialog()));
     ui.downloadPushButton->setEnabled(false);
     connect(ui.loadTLogButton,SIGNAL(clicked()),this,SLOT(replyTLogButtonClicked()));
+
+    connect(ui.droneshareButton, SIGNAL(clicked()), this, SLOT(droneshareButtonClicked()));
 }
 void AP2DataPlot2D::replyTLogButtonClicked()
 {
@@ -1352,4 +1354,13 @@ void AP2DataPlot2D::closeLogDownloadDialog()
         m_logDownloadDialog->deleteLater();
         m_logDownloadDialog = NULL;
     }
+}
+
+void AP2DataPlot2D::droneshareButtonClicked()
+{
+    if(m_droneshareUploadDialog){
+        m_droneshareUploadDialog = new DroneshareUploadDialog();
+    }
+    m_droneshareUploadDialog->show();
+    m_droneshareUploadDialog->raise();
 }

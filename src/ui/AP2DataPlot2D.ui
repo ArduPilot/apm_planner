@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1007</width>
+    <width>1250</width>
     <height>545</height>
    </rect>
   </property>
@@ -159,6 +159,13 @@
         <widget class="QPushButton" name="toKMLPushButton">
          <property name="text">
           <string>Log to Google Earth File</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="droneshareButton">
+         <property name="text">
+          <string>Droneshare</string>
          </property>
         </widget>
        </item>
