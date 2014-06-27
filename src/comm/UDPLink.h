@@ -82,6 +82,8 @@ public:
 
     int getId() const;
 
+    LinkType getLinkType() { return UDP_LINK; }
+
 public slots:
     void setAddress(QHostAddress host);
     void setPort(int port);

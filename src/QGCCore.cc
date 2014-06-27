@@ -183,9 +183,6 @@ void QGCCore::initialize()
     if (upgraded) mainWindow->showInfoMessage(tr("Default Settings Loaded"),
                                               tr("APM Planner has been upgraded from version %1 to version %2. Some of your user preferences have been reset to defaults for safety reasons. Please adjust them where needed.").arg(lastApplicationVersion).arg(QGC_APPLICATION_VERSION));
 
-    //Add default serial and UDP connections
-    LinkManager::instance()->addSerialConnection();
-    LinkManager::instance()->addUdpConnection(QHostAddress::Any,14550);
 }
 
 /**

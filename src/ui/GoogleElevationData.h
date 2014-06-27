@@ -20,56 +20,51 @@ This file is part of the APM_PLANNER project
     along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
-#ifndef AUTOUPDATEDIALOG_H
-#define AUTOUPDATEDIALOG_H
+#ifndef GOOGLEELEVATIONDATA_H
+#define GOOGLEELEVATIONDATA_H
 
-#include <QDialog>
+#include <QObject>
 #include <QtNetwork>
 
-namespace Ui {
-class AutoUpdateDialog;
-}
+// see docs at http://code.google.com/apis/maps/documentation/elevation/
+static const QString GoogleElevationBaseUrl = "http://maps.googleapis.com/maps/api/elevation/json";
 
-class AutoUpdateDialog : public QDialog
+class Waypoint;
+
+class GoogleElevationData : public QObject
 {
     Q_OBJECT
-
 public:
-    explicit AutoUpdateDialog(const QString& version, const QString& targetFilename,
-                              const QString& url, QWidget *parent = 0);
-    ~AutoUpdateDialog();
+    explicit GoogleElevationData(QObject *parent = 0);
+    ~GoogleElevationData();
+
+    void requestElevationData(const QList<Waypoint *> &waypointList, int distance, int samples);
 
 signals:
-    void autoUpdateCancelled(QString version);
+    void downloadFailed();
+    void elevationDataReady(const QList<Waypoint *> waypointList, double averageResolution);
 
-public slots:
-    void yesClicked();
-    void noClicked();
-    void skipClicked();
-    bool skipVersion();
+    void waypointCountToLow();
+    void invalidHomeLocation();
 
-    bool startDownload(const QString& url, const QString &filename);
-    void startFileDownloadRequest(QUrl url);
+private slots:
+    // http slots
     void cancelDownload();
     void httpFinished();
     void httpReadyRead();
     void updateDataReadProgress(qint64 bytesRead, qint64 totalBytes);
 
-    void dmgMounted(int result, QProcess::ExitStatus exitStatus);
-    void executeDownloadedFile();
+private:
+    void processDownloadedObject(const QString& jsonObject);
 
 private:
-    Ui::AutoUpdateDialog *ui;
-
     QUrl m_url;
-    QString m_sourceUrl;
-    QString m_targetFilename;
     QNetworkAccessManager m_networkAccessManager;
     QNetworkReply* m_networkReply;
-    QFile* m_targetFile;
     bool m_httpRequestAborted;
-    bool m_skipVersion;
-    QString m_skipVersionString;
+
+    QList<Waypoint* > m_elevationData;
+
 };
 
-#endif // AUTOUPDATEDIALOG_H
+#endif // GOOGLEELEVATIONDATA_H
