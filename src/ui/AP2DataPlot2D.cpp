@@ -670,7 +670,7 @@ void AP2DataPlot2D::loadButtonClicked()
     QString filename = "";
     if (!m_logLoaded)
     {
-        filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory());
+        filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");
         if (filename == "")
         {
             return;
