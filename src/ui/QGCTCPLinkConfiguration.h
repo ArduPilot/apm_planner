@@ -15,15 +15,15 @@ class QGCTCPLinkConfiguration : public QWidget
     Q_OBJECT
 
 public:
-    explicit QGCTCPLinkConfiguration(TCPLink* link, QWidget *parent = 0);
+    explicit QGCTCPLinkConfiguration(int link, QWidget *parent = 0);
     ~QGCTCPLinkConfiguration();
 
 public slots:
-
+    void valuesChanged();
 protected:
     void changeEvent(QEvent *e);
 
-    TCPLink* link;    ///< TCP link instance this widget configures
+    int m_linkId;
 
 private:
     Ui::QGCTCPLinkConfiguration *ui;

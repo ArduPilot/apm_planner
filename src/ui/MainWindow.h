@@ -142,7 +142,7 @@ public slots:
     /** @brief Show the application About box */
     void showAbout();
     /** @brief Add a communication link */
-    LinkInterface* addLink();
+    void addLink();
     void addLink(LinkInterface* link);
     void addLink(int linkid);
     bool configLink(int linkid);
