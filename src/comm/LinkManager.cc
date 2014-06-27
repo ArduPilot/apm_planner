@@ -189,6 +189,7 @@ int LinkManager::addSerialConnection()
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     m_connectionMap.insert(connection->getId(),connection);
     emit newLink(connection->getId());
+    saveSettings();
     return connection->getId();
 }
 LinkInterface::LinkType LinkManager::getLinkType(int linkid)
@@ -209,6 +210,7 @@ int LinkManager::addSerialConnection(QString port,int baud)
     m_connectionMap.insert(connection->getId(),connection);
     //emit newLink(connection);
     emit newLink(connection->getId());
+    saveSettings();
     return connection->getId();
 
 }
@@ -218,6 +220,7 @@ int LinkManager::addUdpConnection(QHostAddress addr,int port)
     udpLink->connect();
     m_connectionMap.insert(udpLink->getId(),udpLink);
     emit newLink(udpLink->getId());
+    saveSettings();
     return udpLink->getId();
 
 }
@@ -226,6 +229,7 @@ int LinkManager::addTcpConnection(QHostAddress addr,int port)
     TCPLink *tcplink = new TCPLink(addr,port);
     m_connectionMap.insert(tcplink->getId(),tcplink);
     emit newLink(tcplink->getId());
+    saveSettings();
     return tcplink->getId();
 }
 
@@ -265,6 +269,8 @@ void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port)
     }
     iface->setHostAddress(addr);
     iface->setPort(port);
+    emit linkChanged(index);
+    saveSettings();
 }
 
 void LinkManager::modifySerialConnection(int index,QString port,int baud)
@@ -281,6 +287,7 @@ void LinkManager::modifySerialConnection(int index,QString port,int baud)
     iface->setPortName(port);
     iface->setBaudRate(baud);
     emit linkChanged(index);
+    saveSettings();
 }
 QString LinkManager::getLinkName(int linkid)
 {
@@ -367,6 +374,7 @@ void LinkManager::setUdpLinkPort(int linkid, int port)
     }
     iface->setPort(port);
     emit linkChanged(linkid);
+    saveSettings();
 }
 void LinkManager::addUdpHost(int linkid,QString hostname)
 {
@@ -380,6 +388,7 @@ void LinkManager::addUdpHost(int linkid,QString hostname)
         return;
     }
     iface->addHost(hostname);
+    saveSettings();
 }
 
 int LinkManager::getSerialLinkBaud(int linkid)
