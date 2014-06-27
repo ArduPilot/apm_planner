@@ -30,13 +30,13 @@ QGCUnconnectedInfoWidget::~QGCUnconnectedInfoWidget()
 void QGCUnconnectedInfoWidget::simulate()
 {
     // Try to get reference to MAVLinkSimulationlink
-    QList<LinkInterface*> links = LinkManager::instance()->getLinks();
+    /*QList<LinkInterface*> links = LinkManager::instance()->getLinks();
     foreach(LinkInterface* link, links) {
         MAVLinkSimulationLink* sim = dynamic_cast<MAVLinkSimulationLink*>(link);
         if (sim) {
             sim->connectLink();
         }
-    }
+    }*/
 }
 
 /**

@@ -632,7 +632,8 @@ HEADERS += \
     src/ui/configuration/CompassMotorCalibrationDialog.h \
     src/comm/MAVLinkDecoder.h \
     src/comm/MAVLinkProtocol.h \
-    src/ui/MissionElevationDisplay.h
+    src/ui/MissionElevationDisplay.h \
+    src/ui/GoogleElevationData.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -847,7 +848,8 @@ SOURCES += src/main.cc \
     src/ui/configuration/CompassMotorCalibrationDialog.cpp \
     src/comm/MAVLinkDecoder.cc \
     src/comm/MAVLinkProtocol.cc \
-    src/ui/MissionElevationDisplay.cpp
+    src/ui/MissionElevationDisplay.cpp \
+    src/ui/GoogleElevationData.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

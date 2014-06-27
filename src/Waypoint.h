@@ -46,6 +46,7 @@ class Waypoint : public QObject
 public:
     Waypoint(quint16 id = 0, double x = 0.0, double y = 0.0, double z = 0.0, double param1 = 0.0, double param2 = 0.0, double param3 = 0.0, double param4 = 0.0,
              bool autocontinue = true, bool current = false, MAV_FRAME frame=MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD action=MAV_CMD_NAV_WAYPOINT, const QString& description=QString(""));
+    Waypoint(const Waypoint& waypoint);
     ~Waypoint();
 
     quint16 getId() const {
@@ -184,7 +185,7 @@ public slots:
     /** @brief Wether this waypoint has been reached yet */
     bool isReached() { return (reachedTime > 0); }
     /** @brief Get the time this waypoint was reached */
-    quint64 getReachedTime() { return reachedTime; }
+    quint64 getReachedTime() const { return reachedTime; }
 
 public:
     QString debugString();
