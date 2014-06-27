@@ -486,7 +486,7 @@ void AP2DataPlot2D::disconnected()
 
 void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
 {
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+    //connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
 void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
 {
@@ -670,7 +670,7 @@ void AP2DataPlot2D::loadButtonClicked()
     QString filename = "";
     if (!m_logLoaded)
     {
-        filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory());
+        filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");
         if (filename == "")
         {
             return;

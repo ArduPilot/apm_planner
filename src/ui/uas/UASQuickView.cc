@@ -352,7 +352,7 @@ void UASQuickView::setActiveUAS(UASInterface* uas)
 }
 void UASQuickView::addSource(MAVLinkDecoder *decoder)
 {
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
+    //connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
 void UASQuickView::valueUpdate(const int uasId,const QString &name,const QString &unit,const double value,const quint64 msec)
 {

@@ -254,7 +254,7 @@ void AdvParameterList::saveButtonClicked()
 
 void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString parameterName, QVariant value)
 {
-    QLOG_DEBUG() << "APL::parameterChanged " << parameterName << ":int=" << value.toInt() << " float=" << value.toFloat();
+    QLOG_DEBUG() << "APL::parameterChanged:" << parameterName << "char=" << QString::number(value.toChar().toAscii()) << "int=" << value.toInt() << "float=" << value.toFloat();
     disconnect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
     if (!m_paramValueMap.contains(parameterName))
     {

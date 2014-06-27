@@ -25,6 +25,7 @@ Rectangle {
     property int linkDeviceSize: 100
 
     property alias backgroundColor : toolbar.color
+    property alias uasNameLabel: currentUasName.label
     property alias linkNameLabel: linkDevice.label
     property alias baudrateLabel: baudrate.label
     property bool connected: false
@@ -33,6 +34,7 @@ Rectangle {
     property bool enableStatusDisplay: true
 
     property alias modeText: modeTextId.modeText
+
     property alias modeTextColor: modeTextId.modeTextColor
     property alias modeBkgColor: modeTextId.modeBackgroundColor
     property alias modeBorderColor: modeTextId.modeBorderColor
@@ -222,6 +224,7 @@ Rectangle {
             stopAnimation: stopAnimation
         }
 
+
 //            DigitalDisplay { // Information Pane
 //                title: "Speed"
 //                textValue: "11.0m/s"
@@ -263,6 +266,12 @@ Rectangle {
             } else {
                 opacity = 1.0;
             }
+        }
+
+        TextButton {
+            id: currentUasName
+            label: "MAV ID"
+            enabled: !connectionWidget.disable
         }
 
         TextButton {

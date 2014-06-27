@@ -303,18 +303,14 @@ void ArduPilotMegaMAV::uasConnected()
 void ArduPilotMegaMAV::uasDisconnected()
 {
     QLOG_INFO() << "ArduPilotMegaMAV APM disconnected";
-    if (mavlink)
-    {
-        mavlink->stopLogging();
-    }
+    //if (mavlink)
+   // {
+   //     mavlink->stopLogging();
+   // }
 }
 
 void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
 {
-    if (!mavlink)
-    {
-
-    }
     QString subDir;
 
     // This creates a log in subdir based on the vehicle
@@ -352,10 +348,6 @@ void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
     default:
         subDir = "/";
     }
-
-    QString logFileName =  QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
-    QLOG_DEBUG() << "start new MAVLink Log:" << logFileName;
-    mavlink->startLogging(logFileName);
 }
 
 /**
@@ -429,8 +421,9 @@ void ArduPilotMegaMAV::armSystem()
 {
     QLOG_INFO() << "APM ARM System";
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(),
-                                  mavlink->getComponentId(),
+
+    mavlink_msg_command_long_pack(getSystemId(),
+                                  getComponentId(),
                                   &msg,
                                   getUASID(),                    // uint8_t target_system,
                                   MAV_COMP_ID_SYSTEM_CONTROL,    // uint8_t target_component
@@ -451,8 +444,8 @@ void ArduPilotMegaMAV::disarmSystem()
 {
     QLOG_INFO() << "APM DISARM System";
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(mavlink->getSystemId(),
-                                  mavlink->getComponentId(),
+    mavlink_msg_command_long_pack(getSystemId(),
+                                  getComponentId(),
                                   &msg,
                                   getUASID(),                    // uint8_t target_system,
                                   MAV_COMP_ID_SYSTEM_CONTROL,    // uint8_t target_component
