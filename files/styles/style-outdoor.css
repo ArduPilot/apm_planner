@@ -95,6 +95,9 @@ QComboBox {
     background: rgb(0, 0, 255);
  }
 
+QMenu::item::selected {
+    background: rgb(200, 200, 200);
+}
 QMenuBar::item:disabled {
     border: none;
     background: none;

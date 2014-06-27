@@ -71,6 +71,11 @@ APMToolBar::APMToolBar(QWidget *parent):
     connect(LinkManager::instance(),SIGNAL(newLink(int)),
             this,SLOT(newLinkCreated(int)));
 
+    for (int i=0;i<LinkManager::instance()->getLinks().size();i++)
+    {
+        newLinkCreated(LinkManager::instance()->getLinks().at(i));
+    }
+
     connect(&m_heartbeatTimer, SIGNAL(timeout()), this, SLOT(stopHeartbeat()));
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");

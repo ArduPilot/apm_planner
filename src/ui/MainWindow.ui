@@ -79,7 +79,15 @@
     <property name="title">
      <string>Communication</string>
     </property>
-    <addaction name="actionAdd_Link"/>
+    <widget class="QMenu" name="menuAdd_Link">
+     <property name="title">
+      <string>Add Link</string>
+     </property>
+     <addaction name="actionSerial"/>
+     <addaction name="actionTCP"/>
+     <addaction name="actionUDP"/>
+    </widget>
+    <addaction name="menuAdd_Link"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuTools">
@@ -187,15 +195,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+K</string>
-   </property>
-  </action>
-  <action name="actionAdd_Link">
-   <property name="icon">
-    <iconset resource="../../qgroundcontrol.qrc">
-     <normaloff>:/files/images/actions/list-add.svg</normaloff>:/files/images/actions/list-add.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Add Link</string>
    </property>
   </action>
   <action name="actionConfiguration">
@@ -563,6 +562,21 @@
   <action name="actionLoad_tlog">
    <property name="text">
     <string>Load tlog</string>
+   </property>
+  </action>
+  <action name="actionSerial">
+   <property name="text">
+    <string>Serial</string>
+   </property>
+  </action>
+  <action name="actionTCP">
+   <property name="text">
+    <string>TCP</string>
+   </property>
+  </action>
+  <action name="actionUDP">
+   <property name="text">
+    <string>UDP</string>
    </property>
   </action>
  </widget>

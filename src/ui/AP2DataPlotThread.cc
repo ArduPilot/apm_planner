@@ -151,6 +151,7 @@ void AP2DataPlotThread::run()
     QMap<unsigned char,QString > typeToNameMap;
     QMap<unsigned char,QString > typeToFormatMap;
     QMap<unsigned char,QString > typeToLabelMap;
+    QStringList tables;
     int index = 0;
 
     if (!m_db->transaction())
@@ -233,12 +234,15 @@ void AP2DataPlotThread::run()
                                 QLOG_DEBUG() << "AP2DataPlotThread::run(): empty format string or labels string for type" << msg_type << name;
                                 continue;
                             }
-                            QSqlQuery mktablequery(*m_db);
-                            mktablequery.prepare(makeCreateTableString(name,format,labels));
-                            if (!mktablequery.exec())
-                            {
-                                emit error("Error creating table for: " + name + " : " + m_db->lastError().text());
-                                return;
+                            if (!tables.contains(name)) {
+                                QSqlQuery mktablequery(*m_db);
+                                mktablequery.prepare(makeCreateTableString(name,format,labels));
+                                if (!mktablequery.exec())
+                                {
+                                    emit error("Error creating table for: " + name + " : " + m_db->lastError().text());
+                                    return;
+                                }
+                                tables.append(name);
                             }
                             QSqlQuery *query = new QSqlQuery(*m_db);
                             QString final = makeInsertTableString(name,labels);
