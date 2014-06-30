@@ -19,6 +19,7 @@
 #include "QGCMAVLink.h"
 #include "LinkManager.h"
 #include "SerialLink.h"
+#include "MainWindow.h"
 
 #include <QList>
 #include <QMessageBox>
@@ -181,16 +182,14 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     // Initial signals
     emit disarmed();
     emit armingChanged(false);  
-    //if (mavlink)
-    //{
-    //    systemId = mavlink->getSystemId();
-    //    componentId = mavlink->getComponentId();
-    //}
-    //else
-    //{
-        systemId = QGC::defaultSystemId;
-        componentId = QGC::defaultComponentId;
-    //}
+
+    systemId = QGC::defaultSystemId;
+    componentId = QGC::defaultComponentId;
+
+    m_heartbeatsEnabled = MainWindow::instance()->heartbeatEnabled(); //Default to sending heartbeats
+    QTimer *heartbeattimer = new QTimer(this);
+    connect(heartbeattimer,SIGNAL(timeout()),this,SLOT(sendHeartbeat()));
+    heartbeattimer->start(MAVLINK_HEARTBEAT_DEFAULT_RATE * 1000);
 }
 
 /**
@@ -1947,6 +1946,19 @@ void UAS::forwardMessage(mavlink_message_t message)
         }
     }*/
 }
+
+
+void UAS::sendHeartbeat()
+{
+    if (m_heartbeatsEnabled)
+    {
+        mavlink_message_t beat;
+        mavlink_msg_heartbeat_pack(getSystemId(), getComponentId(),&beat, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, MAV_MODE_MANUAL_ARMED, 0, MAV_STATE_ACTIVE);
+        sendMessage(beat);
+    }
+}
+
+
 
 /**
 * Send a message to the link that is connected.

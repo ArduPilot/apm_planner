@@ -56,6 +56,9 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         ui->titleBarCheckBox->setChecked(MainWindow::instance()->dockWidgetTitleBarsEnabled());
         connect(ui->titleBarCheckBox,SIGNAL(clicked(bool)),MainWindow::instance(),SLOT(enableDockWidgetTitleBars(bool)));
 
+        ui->heartbeatCheckBox->setChecked(MainWindow::instance()->heartbeatEnabled());
+        connect(ui->heartbeatCheckBox,SIGNAL(clicked(bool)),MainWindow::instance(),SLOT(enableHeartbeat(bool)));
+
         ui->logDirEdit->setText(QGC::logDirectory());
 
         ui->appDataDirEdit->setText((QGC::appDataDirectory()));
