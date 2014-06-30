@@ -178,6 +178,10 @@ void SerialConnection::loadSettings()
             m_portBaudMap[m_portName] = m_baud;
         }
     }
+    else
+    {
+        m_baud = 115200;
+    }
     emit updateLink(this);
 }
 void SerialConnection::writeSettings()

@@ -68,6 +68,9 @@ LinkManager::LinkManager(QObject *parent) :
     if (!foundserial)
     {
         addSerialConnection();
+    }
+    if (!foundudp)
+    {
         addUdpConnection(QHostAddress::Any,14550);
     }
 
