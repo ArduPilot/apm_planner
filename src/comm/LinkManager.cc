@@ -205,6 +205,8 @@ int LinkManager::addSerialConnection(QString port,int baud)
 {
     SerialConnection *connection = new SerialConnection();
     connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
+    connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connection->setPortName(port);
     connection->setBaudRate(baud);
     m_connectionMap.insert(connection->getId(),connection);
@@ -217,6 +219,9 @@ int LinkManager::addSerialConnection(QString port,int baud)
 int LinkManager::addUdpConnection(QHostAddress addr,int port)
 {
     UDPLink* udpLink = new UDPLink(addr,port);
+    connect(udpLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(udpLink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
+    connect(udpLink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     udpLink->connect();
     m_connectionMap.insert(udpLink->getId(),udpLink);
     emit newLink(udpLink->getId());
@@ -227,6 +232,9 @@ int LinkManager::addUdpConnection(QHostAddress addr,int port)
 int LinkManager::addTcpConnection(QHostAddress addr,int port)
 {
     TCPLink *tcplink = new TCPLink(addr,port);
+    connect(tcplink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(tcplink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
+    connect(tcplink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     m_connectionMap.insert(tcplink->getId(),tcplink);
     emit newLink(tcplink->getId());
     saveSettings();

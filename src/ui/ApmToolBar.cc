@@ -160,13 +160,15 @@ void APMToolBar::activeUasSet(UASInterface *uas)
             if (LinkManager::instance()->getLinkConnected(linkidlist.at(i)))
             {
                 //This link is connected
-                m_currentLinkId = linkidlist.at(i);
-                updateLinkDisplay(m_currentLinkId);
-                break;
+                if (LinkManager::instance()->getLinkType(linkidlist.at(i)) == LinkInterface::SERIAL_LINK)
+                {
+                    //We only want to attach the toolbar to a serial link.
+                    m_currentLinkId = linkidlist.at(i);
+                    updateLinkDisplay(m_currentLinkId);
+                    break;
+                }
             }
         }
-
-
     }
 }
 
