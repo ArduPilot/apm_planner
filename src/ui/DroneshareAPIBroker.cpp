@@ -39,6 +39,7 @@ DroneshareAPIBroker::DroneshareAPIBroker(QObject *parent) :
 DroneshareAPIBroker::~DroneshareAPIBroker()
 {
     delete m_networkReply;
+    m_networkReply = NULL;
 }
 
 void DroneshareAPIBroker::cancel()
@@ -57,14 +58,18 @@ void DroneshareAPIBroker::httpFinished()
             emit queryFailed(m_networkReply->errorString());
         } else {
             // Upload success
-            emit queryComplete(QString(m_networkReply->readAll()));
+            QString reply = QString(m_networkReply->readAll());
+            QLOG_DEBUG() << "Droneshare: JSON reply: " << reply;
+            emit queryComplete(reply);
         }
     }
-    m_networkReply->deleteLater();
-    m_networkReply = NULL;
+    if(m_networkReply) {
+        m_networkReply->deleteLater();
+        m_networkReply = NULL;
+    }
 }
 
-void DroneshareAPIBroker::queryProgress(qint64 bytesWritten, qint64 totalBytes)
+void DroneshareAPIBroker::downloadProgress(qint64 bytesWritten, qint64 totalBytes)
 {
     if (m_httpRequestAborted)
         return;
@@ -83,8 +88,18 @@ void DroneshareAPIBroker::addQuery(const QString &queryString)
 {
     if (queryString.length()>0){
         m_url.clear();
-        m_url.setUrl(DroneShareBaseUrl + queryString);
+        m_url.setUrl(m_droneshareBaseUrl + queryString);
     }
+}
+
+void DroneshareAPIBroker::addBaseUrl(const QString &baseUrl)
+{
+    m_droneshareBaseUrl = baseUrl;
+}
+
+const QString& DroneshareAPIBroker::getUrl() const
+{
+    return m_url.toString();
 }
 
 void DroneshareAPIBroker::sendQueryRequest()
@@ -93,10 +108,11 @@ void DroneshareAPIBroker::sendQueryRequest()
         QLOG_ERROR() << "Query request invalid";
         return;
     }
+    QLOG_DEBUG() << "Droneshare: sendQueryRequest" << m_url;
     QNetworkRequest request(m_url);
     m_networkReply = m_networkAccessManager.get(request);
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpFinished()));
     connect(m_networkReply, SIGNAL(downloadProgress(qint64,qint64)),
-            this, SLOT(queryProgress(qint64,qint64)));
+            this, SLOT(downloadProgress(qint64,qint64)));
 }
 

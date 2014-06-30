@@ -32,7 +32,7 @@ This file is part of the APM_PLANNER project
 #include <QObject>
 #include <QtNetwork>
 
-static const QString DroneShareBaseUrl = "https://api.3dr.com";
+static const QString DroneShareBaseUrl = "http://api.3dr.com";
 
 class DroneshareUpload : public QObject
 {
@@ -45,8 +45,8 @@ public:
                    const QString& vehicleID, const QString& apiKey);
 
 signals:
-    void uploadFailed(const QString& errorString);
-    void uploadComplete();
+    void uploadFailed(const QString& jsonRepsonse, const QString& errorString);
+    void uploadComplete(const QString& jsonRepsonse);
     void uploadProgress(int bytesRead, int totalBytes);
 
 private slots:
@@ -57,7 +57,7 @@ private slots:
 
 private:
     QUrl m_url;
-    QFile m_uploadFile;
+    QFile* m_uploadFile;
     QNetworkAccessManager m_networkAccessManager;
     QNetworkReply* m_networkReply;
     bool m_httpRequestAborted;

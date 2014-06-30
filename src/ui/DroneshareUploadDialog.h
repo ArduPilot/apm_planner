@@ -32,9 +32,11 @@ This file is part of the APM_PLANNER project
 #include <QDialog>
 
 class DroneshareUpload;
+class DroneshareAPIBroker;
 class UASInterface;
 
-static const QString DroneshareAPIKey = "DRONESHARE_API_KEY";
+static const QString DroneshareBaseUrl = "http://api.3dr.com/api/v1";
+static const QString DroneshareAPIKey = "5e5c1859.14f775d41f4c3b21af4b3bceb104728a";
 
 namespace Ui {
 class DroneshareUploadDialog;
@@ -54,8 +56,11 @@ public slots:
     void closeButtonClicked();
     void uploadClicked();
     void acceptUserLogin(QString& username, QString& password, int indexNumber);
-    void uploadComplete();
-    void uploadFailed(const QString &error);
+    void vehicleQueryComplete(const QString& jsonRepsonse);
+    void vehicleQueryFailed(const QString& errorString);
+    void startLogUpload(const QString &vehicleUuid);
+    void uploadComplete(const QString& jsonRepsonse);
+    void uploadFailed(const QString &jsonResponse, const QString &error);
     void uploadProgress(int bytesRead, int totalBytes);
 
 private:
@@ -63,6 +68,9 @@ private:
     UASInterface* m_uasInterface;
     QString m_filename;
     DroneshareUpload* m_droneshareUpload;
+    DroneshareAPIBroker* m_droneshareQuery;
+    QString m_username;
+    QString m_password;
 };
 
 #endif // DRONESHAREUPLOADDIALOG_H

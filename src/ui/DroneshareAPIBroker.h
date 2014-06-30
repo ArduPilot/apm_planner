@@ -32,8 +32,6 @@ This file is part of the APM_PLANNER project
 #include <QObject>
 #include <QtNetwork>
 
-static const QString DroneShareBaseUrl = "https://api.3dr.com";
-
 class DroneshareAPIBroker : public QObject
 {
     Q_OBJECT
@@ -41,9 +39,11 @@ public:
     explicit DroneshareAPIBroker(QObject *parent = 0);
     ~DroneshareAPIBroker();
 
+    void addBaseUrl(const QString& baseUrl);
     void addQuery(const QString& queryString);
     void addQueryItem(const QString& key, const QString& value);
     void sendQueryRequest();
+    const QString& getUrl() const;
 
 signals:
     void queryFailed(const QString& errorString);
@@ -54,10 +54,11 @@ private slots:
     // http slots
     void cancel();
     void httpFinished();
-    void queryProgress(qint64 bytesWritten, qint64 totalBytes);
+    void downloadProgress(qint64 bytesWritten, qint64 totalBytes);
 
 private:
     QUrl m_url;
+    QString m_droneshareBaseUrl;
     QNetworkAccessManager m_networkAccessManager;
     QNetworkReply* m_networkReply;
     bool m_httpRequestAborted;

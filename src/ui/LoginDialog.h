@@ -53,13 +53,13 @@ public:
       *\param username the string that represents the current username
       * to display
       */
-    void setUsername( QString& username );
+    void setUsername(const QString& username );
 
     /*!
       * Sets the current password to propose to the user for the login.
       * \param password the password to fill into the dialog form
       */
-    void setPassword( QString& password );
+    void setPassword(const QString& password );
 
     /*!
       * Sets a list of allowed usernames from which the user

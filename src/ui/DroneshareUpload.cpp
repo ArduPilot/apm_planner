@@ -31,6 +31,7 @@ This file is part of the APM_PLANNER project
 
 DroneshareUpload::DroneshareUpload(QObject *parent) :
     QObject(parent),
+    m_uploadFile(NULL),
     m_networkReply(NULL),
     m_httpRequestAborted(false)
 {
@@ -39,6 +40,9 @@ DroneshareUpload::DroneshareUpload(QObject *parent) :
 DroneshareUpload::~DroneshareUpload()
 {
     delete m_networkReply;
+    m_networkReply = NULL;
+    delete m_uploadFile;
+    m_uploadFile = NULL;
 }
 
 void DroneshareUpload::cancel()
@@ -54,14 +58,13 @@ void DroneshareUpload::httpFinished()
        // Finished uploading the log
         if (m_networkReply->error()) {
             // upload failed
-            emit uploadFailed(m_networkReply->errorString());
+            emit uploadFailed(QString(m_networkReply->readAll()),
+                                      m_networkReply->errorString());
         } else {
             // Upload success
-            emit uploadComplete();
+            emit uploadComplete(QString(m_networkReply->readAll()));
         }
     }
-    m_networkReply->deleteLater();
-    m_networkReply = NULL;
 }
 
 void DroneshareUpload::updateDataWriteProgress(qint64 bytesWritten, qint64 totalBytes)
@@ -79,9 +82,14 @@ void DroneshareUpload::uploadLog(const QString &filename, const QString &user, c
         delete m_networkReply;
         m_networkReply = NULL;
     }
+    if (m_uploadFile){
+        delete m_uploadFile;
+        m_uploadFile = NULL;
+    }
     // Cleanup from previous upload
     m_url.clear();
-    m_uploadFile.close();
+    if (m_uploadFile)
+        m_uploadFile->close();
 
     // Setup request url
     m_url.setUrl(DroneShareBaseUrl + "/api/v1/mission/upload/" + vehicleID);
@@ -90,17 +98,22 @@ void DroneshareUpload::uploadLog(const QString &filename, const QString &user, c
     m_url.addQueryItem("password", password);
     m_url.addQueryItem("autoCreate", "false");
 
-    QLOG_DEBUG() << " Droneshare: sending file " << filename << " to " << m_url;
-
     // Open file
-    m_uploadFile.setFileName(filename);
-    if (!m_uploadFile.open(QFile::ReadOnly)){
+
+    m_uploadFile = new QFile(filename);
+
+    QLOG_DEBUG() << " Droneshare: sending file " << filename << " to " << m_url
+                    << "size: " << m_uploadFile->size();
+
+    if (!m_uploadFile->open(QFile::ReadOnly)){
         QLOG_ERROR() << "Failed to open upload file: " << filename;
         return;
     }
 
     QNetworkRequest request(m_url);
-    m_networkReply = m_networkAccessManager.post(request, &m_uploadFile);
+    request.setHeader(QNetworkRequest::ContentLengthHeader, m_uploadFile->size());
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.mavlink.tlog");
+    m_networkReply = m_networkAccessManager.post(request, m_uploadFile);
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpFinished()));
     connect(m_networkReply, SIGNAL(uploadProgress(qint64,qint64)),
             this, SLOT(updateDataWriteProgress(qint64,qint64)));

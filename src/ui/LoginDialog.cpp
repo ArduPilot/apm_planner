@@ -86,7 +86,7 @@ void LoginDialog::setUpGUI(){
     setLayout( formGridLayout );
 }
 
-void LoginDialog::setUsername(QString &username){
+void LoginDialog::setUsername(const QString &username){
     bool found = false;
     for( int i = 0; i < comboUsername->count() && ! found ; i++ )
         if( comboUsername->itemText( i ) == username  ){
@@ -106,7 +106,7 @@ void LoginDialog::setUsername(QString &username){
     editPassword->setFocus();
 }
 
-void LoginDialog::setPassword(QString &password){
+void LoginDialog::setPassword(const QString &password){
     editPassword->setText( password );
 }
 
