@@ -36,7 +36,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
 
     QDateTime utc = QDateTime::currentDateTimeUtc();
     utc.setTimeSpec(Qt::LocalTime);
-    m_timeDiff = QDateTime::currentDateTime().msecsTo(utc);
+    //m_timeDiff = QDateTime::currentDateTime().msecsTo(utc);
     m_plot = new QCustomPlot(ui.widget);
     m_plot->setInteraction(QCP::iRangeDrag, true);
     m_plot->setInteraction(QCP::iRangeZoom, true);
@@ -58,7 +58,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(m_timeDiff / 1000,(m_timeDiff / 1000) + 100); //Default range of 0-100 milliseconds?
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeSpec(Qt::UTC);
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
 
 
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect);
@@ -169,7 +170,7 @@ void AP2DataPlot2D::verticalScrollMoved(int value)
 {
     double percent = value / 100.0;
     double center = m_wideAxisRect->axis(QCPAxis::atBottom)->range().center();
-    double requestedrange = ((m_scrollEndIndex - (m_timeDiff / 1000.0)) - m_scrollStartIndex) * percent;
+    double requestedrange = ((m_scrollEndIndex) - m_scrollStartIndex) * percent;
     m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(center + (requestedrange/2.0));
     m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(center - (requestedrange/2.0));
     m_plot->replot();
@@ -436,7 +437,7 @@ void AP2DataPlot2D::autoScrollClicked(bool checked)
     {
         if (m_graphCount > 0)
         {
-            double msec_current = ((QDateTime::currentMSecsSinceEpoch()- m_startIndex) + m_timeDiff) / 1000.0;
+            double msec_current = ((QDateTime::currentMSecsSinceEpoch()- m_startIndex)) / 1000.0;
             double difference = m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower;
             m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(msec_current - difference);
             m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper(msec_current);
@@ -461,7 +462,7 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
     m_startIndex = m_currentIndex;
     m_scrollStartIndex = 0;
     ui.horizontalScrollBar->blockSignals(true);
-    ui.horizontalScrollBar->setMinimum(m_scrollStartIndex + m_timeDiff);
+    ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
     ui.horizontalScrollBar->blockSignals(false);
     m_uas = uas;
 
@@ -502,7 +503,7 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
     }
     qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
     m_currentIndex = msec_current;
-    qint64 newmsec = (msec_current - m_startIndex) + m_timeDiff;
+    qint64 newmsec = (msec_current - m_startIndex);// + m_timeDiff;
     if (m_graphCount > 0 && ui.autoScrollCheckBox->isChecked())
     {
         double diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
@@ -584,7 +585,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
 
     qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
     m_currentIndex = msec_current;
-    qint64 newmsec = (msec_current - m_startIndex) + m_timeDiff;
+    qint64 newmsec = (msec_current - m_startIndex);// + m_timeDiff;
     if (m_graphCount > 0 && ui.autoScrollCheckBox->isChecked())
     {
         double diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
@@ -602,7 +603,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         //Set a timeout for 30 minutes from now, 1800 seconds.
         qint64 current = QDateTime::currentMSecsSinceEpoch();
         //This is 30 minutes
-        m_onlineValueTimeoutList.append(QPair<qint64,double>(current + m_timeDiff,msec));
+        m_onlineValueTimeoutList.append(QPair<qint64,double>(current,msec));
         //This is 1 minute
         //m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 60000,m_currentIndex));
         if (m_onlineValueTimeoutList[0].first <= current)
@@ -704,7 +705,7 @@ void AP2DataPlot2D::loadButtonClicked()
         ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(m_timeDiff / 1000,(m_timeDiff / 1000) + 100); //Default range of 0-100 milliseconds?
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
         m_currentIndex = QDateTime::currentMSecsSinceEpoch();
         m_startIndex = m_currentIndex;
         return;
