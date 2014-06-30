@@ -60,6 +60,8 @@ public slots:
     void setParityEven(bool accept);
     void setPortName(QString port);
     void setLinkName(QString name);
+    void setDataBits(int bits);
+    void setStopBits(int bits);
     void setupPortList();
     void setAdvancedSettings(bool visible);
 private slots:

@@ -73,6 +73,10 @@ public:
     int addTcpConnection(QHostAddress addr,int port);
     void modifySerialConnection(int index,QString port,int baud);
     void modifyTcpConnection(int index,QHostAddress addr,int port);
+    void setSerialParityType(int index,int parity);
+    void setSerialFlowType(int index,int flow);
+    void setSerialDataBits(int index,int bits);
+    void setSerialStopBits(int index,int bits);
     void removeSerialConnection(int index);
     void connectLink(int index);
     void disconnectLink(int index);

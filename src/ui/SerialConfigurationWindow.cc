@@ -146,7 +146,7 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
 
 
         connect(action, SIGNAL(triggered()), this, SLOT(configureCommunication()));
-        ui.advCheckBox->setVisible(false);
+        ui.advCheckBox->setVisible(true);
 
         // Make sure that a change in the link name will be reflected in the UI
         connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(linkChanged(int)));
@@ -161,8 +161,8 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
         connect(ui.parNone, SIGNAL(toggled(bool)), this, SLOT(setParityNone(bool)));
         connect(ui.parOdd, SIGNAL(toggled(bool)), this, SLOT(setParityOdd(bool)));
         connect(ui.parEven, SIGNAL(toggled(bool)), this, SLOT(setParityEven(bool)));
-       // connect(ui.dataBitsSpinBox, SIGNAL(valueChanged(int)), this->link, SLOT(setDataBits(int)));
-       // connect(ui.stopBitsSpinBox, SIGNAL(valueChanged(int)), this->link, SLOT(setStopBits(int)));
+        connect(ui.dataBitsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setDataBits(int)));
+        connect(ui.stopBitsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setStopBits(int)));
         connect(ui.advCheckBox,SIGNAL(clicked(bool)),ui.advGroupBox,SLOT(setShown(bool)));
         ui.advCheckBox->setChecked(false);
         ui.advGroupBox->setVisible(false);
@@ -317,29 +317,50 @@ void SerialConfigurationWindow::setupPortList()
 
 void SerialConfigurationWindow::enableFlowControl(bool flow)
 {
-    /*if(flow)
+    if(flow)
     {
-        link->setFlowType(1);
+        LinkManager::instance()->setSerialFlowType(m_linkid,1);
     }
     else
     {
-        link->setFlowType(0);
-    }*/
+        LinkManager::instance()->setSerialFlowType(m_linkid,0);
+    }
 }
 
 void SerialConfigurationWindow::setParityNone(bool accept)
 {
+    if (accept)
+    {
+        LinkManager::instance()->setSerialParityType(m_linkid,0);
+    }
     //if (accept) link->setParityType(0);
 }
 
 void SerialConfigurationWindow::setParityOdd(bool accept)
 {
+    if (accept)
+    {
+        LinkManager::instance()->setSerialParityType(m_linkid,1);
+    }
     //if (accept) link->setParityType(1); // [TODO] This needs to be Fixed [BB]
 }
 
 void SerialConfigurationWindow::setParityEven(bool accept)
 {
+    if (accept)
+    {
+        LinkManager::instance()->setSerialParityType(m_linkid,2);
+    }
    // if (accept) link->setParityType(2);
+}
+void SerialConfigurationWindow::setDataBits(int bits)
+{
+    LinkManager::instance()->setSerialDataBits(m_linkid,bits);
+}
+
+void SerialConfigurationWindow::setStopBits(int bits)
+{
+    LinkManager::instance()->setSerialStopBits(m_linkid,bits);
 }
 
 void SerialConfigurationWindow::setPortName(QString port)

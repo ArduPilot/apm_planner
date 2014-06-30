@@ -568,6 +568,61 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     return uas;
 
 }
+void LinkManager::setSerialParityType(int index,int parity)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setParityType(parity);
+}
+
+void LinkManager::setSerialFlowType(int index,int flow)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setFlowType(flow);
+}
+void LinkManager::setSerialDataBits(int index,int bits)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setDataBitsType(bits);
+}
+
+void LinkManager::setSerialStopBits(int index,int bits)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setStopBitsType(bits);
+}
+
 void LinkManager::protocolStatusMessageRec(QString title,QString text)
 {
     emit protocolStatusMessage(title,text);
