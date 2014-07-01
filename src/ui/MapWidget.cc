@@ -840,7 +840,7 @@ void MapWidget::updateGlobalPosition(UASInterface* uas, double lat, double lon, 
 
             // Icon
             //QPen* pointpen = new QPen(uasColor);
-            qDebug() << "2D MAP: ADDING" << uas->getUASName() << __FILE__ << __LINE__;
+            qDebug() << "2D MAP: ADDING" << uas->getUASName();
             p = new MAV2DIcon(uas, 68, uas->getSystemType(), uas->getColor(), QString("%1").arg(uas->getUASID()), qmapcontrol::Point::Middle);
             uasIcons.insert(uas->getUASID(), p);
             mc->layer("Waypoints")->addGeometry(p);

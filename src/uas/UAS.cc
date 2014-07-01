@@ -333,7 +333,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
     if (!links->contains(link))
     {
         addLink(link);
-        QLOG_TRACE() << __FILE__ << __LINE__ << "ADDED LINK!" << link->getName();
+        QLOG_TRACE() << "ADDED LINK!" << link->getName();
     }
 
     if (!components.contains(message.compid))
@@ -2096,7 +2096,7 @@ QImage UAS::getImage()
 
         if (!image.loadFromData(tmpImage, "PGM"))
         {
-            QLOG_DEBUG()<< __FILE__ << __LINE__ << "could not create extracted image";
+            QLOG_DEBUG() << "could not create extracted image";
             return QImage();
         }
 
@@ -2109,7 +2109,7 @@ QImage UAS::getImage()
     {
         if (!image.loadFromData(imageRecBuffer))
         {
-            QLOG_DEBUG() << __FILE__ << __LINE__ << "Loading data from image buffer failed!";
+            QLOG_DEBUG() << "Loading data from image buffer failed!";
         }
     }
     // Restart statemachine
@@ -2167,7 +2167,7 @@ void UAS::requestParameters()
     mavlink_message_t msg;
     mavlink_msg_param_request_list_pack(systemId, componentId, &msg, this->getUASID(), MAV_COMP_ID_ALL);
     sendMessage(msg);
-    QLOG_DEBUG() << __FILE__ << __LINE__ << "LOADING PARAM LIST";
+    QLOG_DEBUG() << "LOADING PARAM LIST";
 }
 
 void UAS::writeParametersToStorage()
@@ -2663,7 +2663,7 @@ void UAS::requestParameter(int component, int id)
     read.target_component = component;
     mavlink_msg_param_request_read_encode(systemId, componentId, &msg, &read);
     sendMessage(msg);
-    //QLOG_DEBUG() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM ID" << id;
+    //QLOG_DEBUG() << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM ID" << id;
 }
 
 /**
@@ -2686,7 +2686,7 @@ void UAS::requestParameter(int component, const QString& parameter)
     read.target_component = component;
     mavlink_msg_param_request_read_encode(systemId, componentId, &msg, &read);
     sendMessage(msg);
-    QLOG_DEBUG() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM NAME" << parameter;
+    QLOG_DEBUG() << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM NAME" << parameter;
 }
 
 /**
@@ -2857,7 +2857,7 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
         mavlink_message_t message;
         mavlink_msg_manual_control_pack(systemId, componentId, &message, this->uasId, (float)manualPitchAngle, (float)manualRollAngle, (float)manualThrust, (float)manualYawAngle, buttons);
         sendMessage(message);
-        //QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT MANUAL CONTROL MESSAGE: roll" << manualRollAngle << " pitch: " << manualPitchAngle << " yaw: " << manualYawAngle << " thrust: " << manualThrust;
+        //QLOG_DEBUG() << "SENT MANUAL CONTROL MESSAGE: roll" << manualRollAngle << " pitch: " << manualPitchAngle << " yaw: " << manualYawAngle << " thrust: " << manualThrust;
 
         emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
     }
@@ -2875,7 +2875,7 @@ void UAS::setManual6DOFControlCommands(double x, double y, double z, double roll
         mavlink_message_t message;
         mavlink_msg_setpoint_6dof_pack(systemId, componentId, &message, this->uasId, (float)x, (float)y, (float)z, (float)roll, (float)pitch, (float)yaw);
         sendMessage(message);
-        QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT 6DOF CONTROL MESSAGE: x" << x << " y: " << y << " z: " << z << " roll: " << roll << " pitch: " << pitch << " yaw: " << yaw;
+        QLOG_DEBUG() << "SENT 6DOF CONTROL MESSAGE: x" << x << " y: " << y << " z: " << z << " roll: " << roll << " pitch: " << pitch << " yaw: " << yaw;
 
         //emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
     }
@@ -2946,7 +2946,7 @@ void UAS::receiveButton(int buttonIndex)
 
         break;
     }
-    //    QLOG_DEBUG() << __FILE__ << __LINE__ << ": Received button clicked signal (button # is: " << buttonIndex << "), UNIMPLEMENTED IN MAVLINK!";
+    //    QLOG_DEBUG() << "Received button clicked signal (button # is: " << buttonIndex << "), UNIMPLEMENTED IN MAVLINK!";
 
 }
 
@@ -3236,7 +3236,7 @@ void UAS::sendHilState(quint64 time_us, float roll, float pitch, float yaw, floa
     {
         // Attempt to set HIL mode
         setMode(base_mode | MAV_MODE_FLAG_HIL_ENABLED, custom_mode);
-        qDebug() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
+        qDebug() << "HIL is onboard not enabled, trying to enable.";
     }
 }
 
@@ -3257,7 +3257,7 @@ void UAS::sendHilSensors(quint64 time_us, float xacc, float yacc, float zacc, fl
     {
         // Attempt to set HIL mode
         setMode(base_mode | MAV_MODE_FLAG_HIL_ENABLED, custom_mode);
-        qDebug() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
+        qDebug() << "HIL is onboard not enabled, trying to enable.";
     }
 }
 
@@ -3286,7 +3286,7 @@ void UAS::sendHilGps(quint64 time_us, double lat, double lon, double alt, int fi
     {
         // Attempt to set HIL mode
         setMode(base_mode | MAV_MODE_FLAG_HIL_ENABLED, custom_mode);
-        qDebug() << __FILE__ << __LINE__ << "HIL is onboard not enabled, trying to enable.";
+        qDebug() << "HIL is onboard not enabled, trying to enable.";
     }
 }
 

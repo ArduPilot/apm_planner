@@ -974,7 +974,7 @@ void QGCParamWidget::setRetransmissionGuardEnabled(bool enabled)
 void QGCParamWidget::retransmissionGuardTick()
 {
     if (transmissionActive) {
-        //QLOG_DEBUG() << __FILE__ << __LINE__ << "RETRANSMISSION GUARD ACTIVE, CHECKING FOR DROPS..";
+        //QLOG_DEBUG() << "RETRANSMISSION GUARD ACTIVE, CHECKING FOR DROPS..";
 
         // Check for timeout
         // stop retransmission attempts on timeout
@@ -1013,7 +1013,7 @@ void QGCParamWidget::retransmissionGuardTick()
                 int count = 0;
                 foreach (int id, *paramList) {
                     if (count < retransmissionBurstRequestSize) {
-                        //QLOG_DEBUG() << __FILE__ << __LINE__ << "RETRANSMISSION GUARD REQUESTS RETRANSMISSION OF PARAM #" << id << "FROM COMPONENT #" << component;
+                        //QLOG_DEBUG() << "RETRANSMISSION GUARD REQUESTS RETRANSMISSION OF PARAM #" << id << "FROM COMPONENT #" << component;
                         emit requestParameter(component, id);
                         statusLabel->setText(tr("Requested retransmission of #%1").arg(id+1));
                         count++;
@@ -1067,7 +1067,7 @@ void QGCParamWidget::retransmissionGuardTick()
             }
         }
     } else {
-        //QLOG_DEBUG() << __FILE__ << __LINE__ << "STOPPING RETRANSMISSION GUARD GRACEFULLY";
+        //QLOG_DEBUG() << "STOPPING RETRANSMISSION GUARD GRACEFULLY";
         setRetransmissionGuardEnabled(false);
     }
 }

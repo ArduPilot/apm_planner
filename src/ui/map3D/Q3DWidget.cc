@@ -366,7 +366,7 @@ Q3DWidget::redraw(void)
 {
     emit update();
 #if (QGC_EVENTLOOP_DEBUG)
-    QLOG_DEBUG() << "EVENTLOOP:" << __FILE__ << __LINE__;
+    QLOG_DEBUG() << "EVENTLOOP";
 #endif
     updateGL();
 }

@@ -494,11 +494,11 @@ void HUD::paintHUD()
 {
     if (isVisible()) {
         //    static quint64 interval = 0;
-        //    QLOG_DEBUG() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval << __FILE__ << __LINE__;
+        //    QLOG_DEBUG() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval;
         //    interval = MG::TIME::getGroundTimeNow();
 
 #if (QGC_EVENTLOOP_DEBUG)
-        QLOG_DEBUG() << "EVENTLOOP:" << __FILE__ << __LINE__;
+        QLOG_DEBUG() << "EVENTLOOP";
 #endif
 
         // Read out most important values to limit hash table lookups
@@ -546,7 +546,7 @@ void HUD::paintHUD()
         // Fill with black background
         if (videoEnabled) {
             if (nextOfflineImage != "" && QFileInfo(nextOfflineImage).exists()) {
-                QLOG_DEBUG() << __FILE__ << __LINE__ << "template image:" << nextOfflineImage;
+                QLOG_DEBUG() << "template image:" << nextOfflineImage;
                 QImage fill = QImage(nextOfflineImage);
 
                 glImage = fill;
@@ -1196,7 +1196,7 @@ void HUD::setImageSize(int width, int height, int depth, int channels)
             image->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 image->setColor(i, qRgb(i, i, i));
-                //QLOG_DEBUG() << __FILE__ << __LINE__ << std::hex << i;
+                //QLOG_DEBUG() << std::hex << i;
             }
 
         }
@@ -1209,7 +1209,7 @@ void HUD::setImageSize(int width, int height, int depth, int channels)
         image->fill(0);
         glImage = *image;
 
-        QLOG_DEBUG() << __FILE__ << __LINE__ << "Setting up image";
+        QLOG_DEBUG() << "Setting up image";
 
         // Set size once
         setFixedSize(receivedWidth, receivedHeight);
@@ -1245,7 +1245,7 @@ void HUD::finishImage()
 
 void HUD::commitRawDataToGL()
 {
-    QLOG_DEBUG() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
+    QLOG_DEBUG() << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
     if (image != NULL) {
         QImage::Format format = image->format();
         QImage* newImage = new QImage(rawImage, receivedWidth, receivedHeight, format);
@@ -1254,7 +1254,7 @@ void HUD::commitRawDataToGL()
             newImage->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 newImage->setColor(i, qRgb(i, i, i));
-                //QLOG_DEBUG() << __FILE__ << __LINE__ << std::hex << i;
+                //QLOG_DEBUG() << std::hex << i;
             }
         }
 
@@ -1314,7 +1314,7 @@ void HUD::enableVideo(bool enabled)
 void HUD::setPixels(int imgid, const unsigned char* imageData, int length, int startIndex)
 {
     Q_UNUSED(imgid);
-    //    QLOG_DEBUG() << "at" << __FILE__ << __LINE__ << ": Received startindex" << startIndex << "and length" << length << "(" << startIndex+length << "of" << rawExpectedBytes << "bytes)";
+    //    QLOG_DEBUG() << "Received startindex" << startIndex << "and length" << length << "(" << startIndex+length << "of" << rawExpectedBytes << "bytes)";
 
     if (imageStarted)
     {

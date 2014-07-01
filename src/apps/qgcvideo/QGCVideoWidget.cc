@@ -158,7 +158,7 @@ QGCVideoWidget::QGCVideoWidget(QWidget* parent)
     fill.fill(0);
 
     //QString imagePath = "/Users/user/Desktop/frame0000.png";
-    //qDebug() << __FILE__ << __LINE__ << "template image:" << imagePath;
+    //qDebug() << "template image:" << imagePath;
     //fill = QImage(imagePath);
 
     glImage = QGLWidget::convertToGLFormat(fill);
@@ -479,11 +479,11 @@ void QGCVideoWidget::paintHUD()
 {
     if (isVisible()) {
         //    static quint64 interval = 0;
-        //    qDebug() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval << __FILE__ << __LINE__;
+        //    qDebug() << "INTERVAL:" << MG::TIME::getGroundTimeNow() - interval;
         //    interval = MG::TIME::getGroundTimeNow();
 
 #if (QGC_EVENTLOOP_DEBUG)
-        qDebug() << "EVENTLOOP:" << __FILE__ << __LINE__;
+        qDebug() << "EVENTLOOP";
 #endif
 
         // Read out most important values to limit hash table lookups
@@ -538,7 +538,7 @@ void QGCVideoWidget::paintHUD()
         // Fill with black background
         if (videoEnabled) {
             if (nextOfflineImage != "" && QFileInfo(nextOfflineImage).exists()) {
-                qDebug() << __FILE__ << __LINE__ << "template image:" << nextOfflineImage;
+                qDebug() << "template image:" << nextOfflineImage;
                 QImage fill = QImage(nextOfflineImage);
 
                 glImage = QGLWidget::convertToGLFormat(fill);
@@ -1130,7 +1130,7 @@ void QGCVideoWidget::resizeGL(int w, int h)
 
 void QGCVideoWidget::commitRawDataToGL()
 {
-    qDebug() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
+    qDebug() << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
     if (image != NULL) {
         QImage::Format format = image->format();
         QImage* newImage = new QImage(rawImage, receivedWidth, receivedHeight, format);
@@ -1139,7 +1139,7 @@ void QGCVideoWidget::commitRawDataToGL()
             newImage->setNumColors(256);
             for (int i = 0; i < 256; i++) {
                 newImage->setColor(i, qRgb(i, i, i));
-                //qDebug() << __FILE__ << __LINE__ << std::hex << i;
+                //qDebug() << std::hex << i;
             }
         }
 

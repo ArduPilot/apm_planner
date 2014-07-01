@@ -46,7 +46,7 @@ void PX4FirmwareUpgrader::setDetectionStatusText(const QString &text)
 void PX4FirmwareUpgrader::setFlashStatusText(const QString &text)
 {
     ui->flashProgressLabel->setText(text);
-    qDebug() << __FILE__ << __LINE__ << "LABEL" << text;
+    qDebug() << "LABEL" << text;
 }
 
 void PX4FirmwareUpgrader::setFlashProgress(int percent)

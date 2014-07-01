@@ -689,7 +689,7 @@ void LinechartPlot::paintRealtime()
     if (m_active) {
 #if (QGC_EVENTLOOP_DEBUG)
         static quint64 timestamp = 0;
-        QLOG_DEBUG() << "EVENTLOOP: (" << MG::TIME::getGroundTimeNow() - timestamp << ")" << __FILE__ << __LINE__;
+        QLOG_DEBUG() << "EVENTLOOP: (" << MG::TIME::getGroundTimeNow() - timestamp << ")";
         timestamp = MG::TIME::getGroundTimeNow();
 #endif
         // Update plot window value to new max time if the last time was also the max time
