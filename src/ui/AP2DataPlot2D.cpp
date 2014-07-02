@@ -1050,6 +1050,7 @@ void AP2DataPlot2D::graphRemovedFromGroup(QString name)
     QString group = m_graphClassMap.value(name).groupName;
     m_graphGrouping[group].removeOne(name);
     m_graphClassMap[name].isInGroup = false;
+    m_graphClassMap[name].groupName = "";
     //m_graphClassMap.value(name).graph->valueAxis()->setRange;
     m_graphClassMap.value(name).graph->rescaleValueAxis();
     if (m_axisGroupingDialog)
