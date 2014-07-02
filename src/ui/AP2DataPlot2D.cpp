@@ -17,6 +17,7 @@
 #include <QsLog.h>
 #include <QStandardItemModel>
 #include "MainWindow.h"
+#include "ArduPilotMegaMAV.h"
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_uas(NULL),
     m_logDownloadDialog(NULL),
@@ -99,7 +100,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     model = new QStandardItemModel();
     connect(ui.toKMLPushButton, SIGNAL(clicked()), this, SIGNAL(toKMLClicked()));
     connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
-    connect(ui.verticalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(verticalScrollMoved(int)));
 
     connect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
     connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
@@ -132,6 +132,12 @@ void AP2DataPlot2D::xAxisChanged(QCPRange range)
 {
     ui.horizontalScrollBar->setValue(qRound(range.center())); // adjust position of scroll bar slider
     ui.horizontalScrollBar->setPageStep(qRound(range.size())); // adjust size of scroll bar slider
+    double totalrange = m_scrollEndIndex - m_scrollStartIndex;
+    double currentrange = range.upper - range.lower;
+
+    disconnect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
+    ui.verticalScrollBar->setValue(100 * (currentrange / totalrange));
+    connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
 }
 
 void AP2DataPlot2D::horizontalScrollMoved(int value)
@@ -733,7 +739,7 @@ void AP2DataPlot2D::loadButtonClicked()
     connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
     connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
-    connect(m_logLoaderThread,SIGNAL(done(int)),this,SLOT(threadDone(int)));
+    connect(m_logLoaderThread,SIGNAL(done(int,MAV_TYPE)),this,SLOT(threadDone(int,MAV_TYPE)));
     connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     connect(m_logLoaderThread,SIGNAL(lineRead(QString)),this,SLOT(logLine(QString)));
@@ -1119,7 +1125,7 @@ void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
     m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
 }
 
-void AP2DataPlot2D::threadDone(int errors)
+void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
 {
     if (!m_sharedDb.isOpen())
     {
@@ -1167,6 +1173,100 @@ void AP2DataPlot2D::threadDone(int errors)
         QString lastformat = vars;
         m_tableHeaderNameMap[linename] = lastformat.trimmed();
     }
+
+    QSqlQuery modequery(m_sharedDb);
+    modequery.prepare("SELECT * FROM 'MODE';");
+    if (!modequery.exec())
+    {
+        //No mode?
+        QLOG_DEBUG() << "Graph loaded with no mode table. Running anyway, but text modes will not be available";
+    }
+    else
+    {
+        if (!m_graphClassMap.contains("MODE"))
+        {
+            QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+            axis->setLabel("MODE");
+
+            if (m_graphCount > 0)
+            {
+                connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+            }
+            QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+            axis->setLabelColor(color);
+            axis->setTickLabelColor(color);
+            axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+            m_graphNameList.append("MODE");
+
+            mainGraph1->setPen(QPen(color, 2));
+            Graph graph;
+            graph.axis = axis;
+            graph.groupName = "";
+            graph.graph=  mainGraph1;
+            graph.isInGroup = false;
+            graph.isManualRange = false;
+            m_graphClassMap["MODE"] = graph;
+
+            mainGraph1->rescaleValueAxis();
+            if (m_graphCount == 1)
+            {
+                mainGraph1->rescaleKeyAxis();
+            }
+        }
+        while (modequery.next())
+        {
+            QSqlRecord record = modequery.record();
+            int index = record.value(0).toInt();
+            QString mode = record.value(1).toString();
+            bool ok = false;
+            int modeint = mode.toInt(&ok);
+            if (ok)
+            {
+                //It's an integer!
+                switch (type)
+                {
+                    case MAV_TYPE_QUADROTOR:
+                    {
+                        mode = ApmCopter::stringForMode(modeint);
+                    }
+                    break;
+                    case MAV_TYPE_FIXED_WING:
+                    {
+                        mode = ApmPlane::stringForMode(modeint);
+                    }
+                    break;
+                    case MAV_TYPE_GROUND_ROVER:
+                    {
+                        mode = ApmRover::stringForMode(modeint);
+                    }
+                    break;
+                }
+            }
+            QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
+            QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+            QCPItemText *itemtext = new QCPItemText(m_plot);
+            itemtext->setText(mode);
+            itemtext->position->setAxes(xAxis,m_graphClassMap["MODE"].axis);
+            itemtext->position->setCoords((index),2.0);
+            m_plot->addItem(itemtext);
+            m_graphClassMap["MODE"].itemList.append(itemtext);
+            m_graphClassMap["MODE"].modeMap[index] = mode;
+
+
+            QCPItemLine *itemline = new QCPItemLine(m_plot);
+            m_graphClassMap["MODE"].itemList.append(itemline);
+            itemline->start->setParentAnchor(itemtext->bottom);
+            itemline->start->setAxes(xAxis, m_graphClassMap["MODE"].axis);
+            itemline->start->setCoords(0.0, 0.0);
+            itemline->end->setAxes(xAxis, m_graphClassMap["MODE"].axis);
+            itemline->end->setCoords((index), 0.0);
+            itemline->setTail(QCPLineEnding::esDisc);
+            itemline->setHead(QCPLineEnding::esSpikeArrow);
+            m_plot->addItem(itemline);
+        }
+    }
+
     m_scrollStartIndex = 0;
     m_scrollEndIndex = currentIndex;
     ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
