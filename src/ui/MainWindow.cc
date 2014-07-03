@@ -612,6 +612,7 @@ void MainWindow::buildCommonWidgets()
         engineeringView->setObjectName("VIEW_ENGINEER");
         //engineeringView->setCentralWidget(new QGCDataPlot2D(this));
         plot = new AP2DataPlot2D(this);
+        connect(logPlayer,SIGNAL(logLoaded()),plot,SLOT(clearGraph()));
         plot->addSource(mavlinkDecoder);
         engineeringView->setCentralWidget(plot);
 

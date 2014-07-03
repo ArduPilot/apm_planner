@@ -71,6 +71,7 @@ private:
     QGCMAVLinkInspector *m_mavlinkInspector;
 signals:
     void logFinished();
+    void logLoaded();
 };
 
 #endif // QGCMAVLINKLOGPLAYER_H

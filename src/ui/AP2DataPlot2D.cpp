@@ -609,7 +609,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         //Set a timeout for 30 minutes from now, 1800 seconds.
         qint64 current = QDateTime::currentMSecsSinceEpoch();
         //This is 30 minutes
-        m_onlineValueTimeoutList.append(QPair<qint64,double>(current,msec));
+        m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 1800000,msec));
         //This is 1 minute
         //m_onlineValueTimeoutList.append(QPair<qint64,double>(current + 60000,m_currentIndex));
         if (m_onlineValueTimeoutList[0].first <= current)
@@ -1109,6 +1109,41 @@ void AP2DataPlot2D::itemDisabled(QString name)
 void AP2DataPlot2D::progressDialogCanceled()
 {
     m_logLoaderThread->stopLoad();
+}
+void AP2DataPlot2D::clearGraph()
+{
+    //Clear the graph
+    for (int i=0;i<m_graphNameList.size();i++)
+    {
+        m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
+        m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
+    }
+    m_dataSelectionScreen->clear();
+    if (m_axisGroupingDialog)
+    {
+        m_axisGroupingDialog->clear();
+        m_axisGroupingDialog->hide();
+    }
+    m_graphClassMap.clear();
+    m_graphCount=0;
+    m_dataList.clear();
+
+    if (m_logLoaded)
+    {
+        //Unload the log.
+        m_logLoaded = false;
+        ui.loadOfflineLogButton->setText("Load Log");
+        ui.tableWidget->setVisible(false);
+        ui.hideExcelView->setVisible(false);
+        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
+    }
+    m_currentIndex = QDateTime::currentMSecsSinceEpoch();
+    m_startIndex = m_currentIndex;
+    m_onlineValueMap.clear();
+    m_plot->replot();
 }
 
 void AP2DataPlot2D::loadStarted()

@@ -174,9 +174,10 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
         return;
     }
     m_logLoaded = true;
+    emit logLoaded();
 
     m_logLink = new TLogReplayLink(this);
-    m_logLink->setMavlinkDecoder(m_mavlinkDecoder);
+    //m_logLink->setMavlinkDecoder(m_mavlinkDecoder);
     m_logLink->setMavlinkInspector(m_mavlinkInspector);
     connect(m_logLink,SIGNAL(logProgress(qint64,qint64)),this,SLOT(logProgress(qint64,qint64)));
     connect(m_logLink,SIGNAL(finished()),this,SLOT(logLinkTerminated()));
