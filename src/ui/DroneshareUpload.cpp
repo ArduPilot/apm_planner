@@ -112,7 +112,18 @@ void DroneshareUpload::uploadLog(const QString &filename, const QString &user, c
 
     QNetworkRequest request(m_url);
     request.setHeader(QNetworkRequest::ContentLengthHeader, m_uploadFile->size());
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.mavlink.tlog");
+
+    if (filename.endsWith(".tlog")){
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.mavlink.tlog");
+    } else if (filename.endsWith(".blog") || filename.endsWith(".bin")) {
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.mavlink.blog");
+    } else if (filename.endsWith(".log") || filename.endsWith(".flog")) {
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/vnd.mavlink.flog");
+    } else {
+        QLOG_ERROR() << " Error, incorrect file type";
+        return;
+    }
+
     m_networkReply = m_networkAccessManager.post(request, m_uploadFile);
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpFinished()));
     connect(m_networkReply, SIGNAL(uploadProgress(qint64,qint64)),
