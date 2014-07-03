@@ -1,3 +1,93 @@
+Release Notes - APM Planner 2.0.11 - 2014-07-03
+
+e0bb72c:  Update Object: Increase to 2.0.11 release and support for 'trusty' builds - Bill Bonney
+b3e995a:  configuration: Update to 2.0.11 release - Bill Bonney
+5684111:  Droneshare Widget: add support to remember username for droneshare - Bill Bonney
+28c39fb:  Droneshare Widget: Add support for tlog/bin/blog/log/flog datatypes - Bill Bonney
+22ebb4e:  Droneshare Widget: Add better processing for server messages and clickable link - Bill Bonney
+644d4f5:  Droneshare Widget: Adding Droneshare Query Object - Bill Bonney
+c55eff4:  Droneshare Widget: Initial commit - Bill Bonney
+a9745a3:  Graphing: Fix for crash involving tlogs, and final fix #318, clearing the graph when a tlog is loaded - Michael Carpenter
+5b53f10:  Graphing: Fix for graph grouping not clearing when removed - Michael Carpenter
+e5c5116:  Graphing: Fix for binary and ascii logs not displaying MODE text when loaded, and fix for the zoom bar following mouse wheel movements - Michael Carpenter
+21eef30:  Terminal Console: Remove duplicate baud rate entry, closes #382 - nbrachet@gmail.com
+1a33fcb:  Comms: Set Serial port baud if no settings file exists, and a default UDPLink is now created if one does not exist - Michael Carpenter
+36fb347:  Comms: Readdition of GCS heartbeat packets, and the ability to enable or disable them - Michael Carpenter
+cb556e6:  Comms: Fix for Serial Port advanced settings UI - Michael Carpenter
+5332ed5:  Elevation Widget: Fix font sizes to be smaller - Bill Bonney
+edb142d:  Autoupate: Fix copyright notice - Bill Bonney
+82d7208:  Comms: Fix for Link name not updating the menu item - Michael Carpenter
+e380ed5:  Graphing: Fix for timestamp being wrong in live graph mode - Michael Carpenter
+c189276:  Comms: Fix for UDP/TCP links not correctly sending bytes and emitting connect/disconnect messages - Michael Carpenter
+5d8d309:  Comms: Fix for COM port not being saved in settings when changed - Michael Carpenter
+cfd1cd9:  GraphView: Fix #228, filter loadable logs by file extension in the UI, to avoid users attempting to open the wrong file type - Michael Carpenter
+601ea96:  Toolbar: Fix for port/baud buttons on toolbar not detecting initial settings - Michael Carpenter
+a836939:  Copyright: Fix files to explicitly state copyright - Bill Bonney
+18009f8:  Elevation Widget: Add waypoint Labels - Bill Bonney
+65a404a:  Elevation Widget: Add markers and resolution inidcators - Bill Bonney
+76e7a47:  Elevation Widget: Improve handling of when elevation map needs to be refresh - Bill Bonney
+bdcabe4:  Elevation Widget: Fix not showing error dialog on no internet connection - Bill Bonney
+a5099c5:  Stylesheets: Fix #381, menu items not having mouse-hover backgrounds in outdoor mode - Michael Carpenter
+73a9eef:  Comms: Added some reasonable defaults for invalid serial port baud rates - Michael Carpenter
+48bcaa9:  Comms: Current links are now saved, and restored on start. - Michael Carpenter
+68c8d9e:  Comms: Added functionality to add new links in advanced mode, including TCP Links - Michael Carpenter
+ca149be:  Graphing: Fix #380, Don't try to create the same table twice if a second message format packet is encountered - Matthew Lloyd
+2cb7345:  Mission Elevation Widget: Add Google Elevation data graph - Bill Bonney
+f9805e6:  PFD QML: Fix over sensitive pitch on artificial horizon - Bill Bonney
+4d920fa:  Installer: Addition of Ubuntu Trusty to the build system - Michael Carpenter
+0b03c14:  UI Framwork: Removed DebugConsole, as it is obsolete. - Michael Carpenter
+53d6cd6:  Mission Edit: Add Mission Elevation Display widget - Bill Bonney
+9dd2c01:  Compass Calibration: Fix bad include - Bill Bonney
+f4a39ff:  Mission Edit Widget: Remove Alt color strategy from mission edit widget - Bill Bonney
+a4f757d:  Mission Edit Widget: Fix to layout to show commands better in comboBox - Bill Bonney
+1c1206b:  Mission Edit Widget: Fixes to layout of DO commands - Bill Bonney
+3f4016e:  Mission Edit Widget: Layout fix to Condition Yaw - Bill Bonney
+7802ebd:  Mission Edit Widget: Changes to DO SET HOME layout - Bill Bonney
+ad64480:  Mission Edit Widget: Fix Typo for Do Set Home - Bill Bonney
+216c0eb:  Mission Edit Widget: Add DO_MOUNT_CONTROL command support - Bill Bonney
+c0678cc:  Mission Edit Widget: Fix Take Off command to not show location in Mission Frame mode - Bill Bonney
+3105325:  Mission Edit Widget: entry updates are much more responsive - Bill Bonney
+a1f71ae:  Mission Edit Widget: Add more missing APM mission command definitions - Bill Bonney
+79d30c6:  Mission Edit Widget: Make command Combo box bigger - Bill Bonney
+814024b:  APM ToolBar: rename disconnected to MAV ID before first connection - Bill Bonney
+79278e8:  PX4 Firmware Uploader: Fix status messages to use 'COA' - Bill Bonney
+ffe502e:  Comms: Fixed mavlink message typo, and reenabled MAVLink Inspector - Michael Carpenter
+68928b2:  Installer: Fix #372 icon file not being detected in Windows - Michael Carpenter
+035ecb3:  Installer: Fix #309 Fix #374 for OpenSSL error missing MSVC 2008 runtime - Michael Carpenter
+eab7108:  Comms: Renamed files, enabled mavlink logging, added copyright headers - Michael Carpenter
+6d3cecd:  Comms: Major changes to the serial communications and LinkManager to improve stability - Michael Carpenter
+db234f3:  Full Param Setup: Fix #371, QVariant value type not being used properly when setting and reading param values - Michael Carpenter
+88af779:  Fix loading of ArduCopter dataflash logs - Matthew Lloyd
+a47e750:  Fix typo. - Aaron Curtis
+b6f8259:  Mission Widget: Add CONDITION_YAW command - Bill Bonney
+26bb31a:  Mission Widget: Fix error in adding DO_DIGICAM_CONTROL command - Bill Bonney
+4f21d80:  Mission Widget: Added support for DO_DIGICAM_CONTROL command - Bill Bonney
+b724064:  Mission Widget: Added support for DO_REPEAT_SERVO command - Bill Bonney
+a99d6ef:  Mission Widget: Added support for DO_SET_SERVO command - Bill Bonney
+41dd0c3:  Map Widget: Refactor map action list  generation - Jim Kuhn
+25b9faa:  Compass Setup: Warn users about dangers of Compass Mot Calibration - Bill Bonney
+f14323e:  AutoUpdate: Fixes #367 Added dialog to indicate no update available on manual check - Bill Bonney
+02ae255:  Waypoint Edit Widget: Fix to keep wpEditableViews and wpViewOnlyViews in-sync - nbrachet@gmail.com
+009d794:  Maps: Allow selection of Bing and Google street maps and satellite maps - Stephen Dade
+d6aa366:  Compass Setup: Added confirmation of new value to Compass Mot - Bill Bonney
+99f22df:  Compass Setup: MAVLink Compass Mot added to Compass Setup View - Bill Bonney
+e117f5d:  10X button should be checkable - nbrachet@gmail.com
+73c66dc:  Comms: Fix basic issue with connecting using TCP - Bill Bonney
+338007a:  Tuning Setup: Fixes #358: Throttle parameters not showing in tuning page - Bill Bonney
+ba122b3:  SerialLink: Fix crash when m_port is NULL - Bill Bonney
+3ac3fd9:  OSD Setup: Fix to set channel rates SR1 and SR3 - Bill Bonney
+ce6c631:  PFD QML: Removed horizontal Horizon, due to inaccuracy - Bill Bonney
+ffd1ee7:  PFD QML: Fixed off centre cross hairs - Bill Bonney
+fa81a89:  Graph View: Update to use new valueChanged (QVariant) signal - Bill Bonney
+c983a4d:  QuickView Widget: Update Quick View to use new MAVLinkDecoder interface - Bill Bonney
+ef56f4e:  MAVLink Decoder: Update to new valueChanged (QVariant) signal - Bill Bonney
+36ba5bc:  Comms: Fix for UAS not passing on non-standard SystemID messages to the waypoint manager - Michael Carpenter
+f23c15c:  UI Framework: Removed Unused signal handlers in UASRawStatusView - Michael Carpenter
+7663d2e:  Status View: Fix #342, values not being added to the raw status table - Michael Carpenter
+132a9ab:  Comms: Fix #349, crash involving a null mavlink pointer in UASWaypointManager while replaying logs - Michael Carpenter
+5b0c874:  Firmware Install: Fixed long sataus messages baing partially visible. - Andre Kjellstrup
+e7d470f:  Comms: Fix for #337, Settings for TCP and UDP links set to a minimum port number of 1000 - Stephen Dade
+
 Release Notes - APM Planner 2.0.10 - 2014-05-23
 
 505f760:  Config: Update version to 2.0.10 - Bill Bonney
