@@ -94,10 +94,17 @@ void DroneshareUploadDialog::uploadClicked()
     QApplication::processEvents();
 
     LoginDialog* loginDialog = new LoginDialog( this );
-    loginDialog->setUsername( "maninvan" );  // optional [TODO] retreive from settings.
+
+    QSettings settings;
+    settings.beginGroup("Droneshare");
+    m_username = settings.value("username").toString();
+    settings.endGroup();
+
+    loginDialog->setUsername(m_username);
     connect( loginDialog, SIGNAL(acceptLogin(QString&,QString&,int)),
              this, SLOT(acceptUserLogin(QString&,QString&,int)));
     loginDialog->exec();
+
     delete loginDialog;
     loginDialog = NULL;
 }
@@ -107,6 +114,12 @@ void DroneshareUploadDialog::acceptUserLogin(QString& username, QString& passwor
     QLOG_DEBUG() << "Droneshare: " << username << " pass: XXXXXXX" << "index: " << indexNumber;
     m_username = username;
     m_password = password;
+
+    QSettings settings;
+    settings.beginGroup("Droneshare");
+    settings.setValue("username", m_username);
+    settings.endGroup();
+    settings.sync();
 
     m_droneshareQuery = new DroneshareAPIBroker();
     connect(m_droneshareQuery, SIGNAL(queryComplete(QString)),
