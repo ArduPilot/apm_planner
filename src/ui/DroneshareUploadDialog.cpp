@@ -90,7 +90,7 @@ void DroneshareUploadDialog::uploadClicked()
         QLOG_DEBUG() << "Not connected to a uas";
     }
     m_filename = QFileDialog::getOpenFileName(this, tr("Open Log File"), QGC::logDirectory(),
-                                                    "*.tlog *.log");
+                                                    "*.tlog *.log *.bin");
     QApplication::processEvents();
 
     LoginDialog* loginDialog = new LoginDialog( this );
@@ -121,13 +121,13 @@ void DroneshareUploadDialog::acceptUserLogin(QString& username, QString& passwor
 //    QLOG_DEBUG() << "droneshare: user request: " << m_droneshareQuery->getUrl();
 }
 
-void DroneshareUploadDialog::vehicleQueryComplete(const QString &jsonRepsonse)
+void DroneshareUploadDialog::vehicleQueryComplete(const QString &jsonResponse)
 {
-    QLOG_DEBUG() << "droneshare: Vehicle Query Complete"/* << jsonRepsonse*/;
+    QLOG_DEBUG() << "droneshare: Vehicle Query Complete"/* << jsonResponse*/;
 
-    QScriptSyntaxCheckResult syntaxCheck = QScriptEngine::checkSyntax(jsonRepsonse);
+    QScriptSyntaxCheckResult syntaxCheck = QScriptEngine::checkSyntax(jsonResponse);
     QScriptEngine engine;
-    QScriptValue result = engine.evaluate("("+jsonRepsonse+")");
+    QScriptValue result = engine.evaluate("("+jsonResponse+")");
 
     if (engine.hasUncaughtException()){
         QLOG_ERROR() << "Error evaluating version object";
@@ -178,7 +178,7 @@ void DroneshareUploadDialog::startLogUpload(const QString& vehicleUuid)
     connect(m_droneshareUpload, SIGNAL(uploadFailed(QString,QString)), this, SLOT(uploadFailed(QString,QString)));
     connect(m_droneshareUpload, SIGNAL(uploadProgress(int,int)), this, SLOT(uploadProgress(int,int)));
 
-    ui->statusLabel->setText(tr("Uploading %1").arg(m_filename));
+    ui->statusLabel->setText(tr("Uploading\n%1").arg(m_filename));
 }
 
 void DroneshareUploadDialog::uploadProgress(int bytesRead, int totalBytes)
@@ -189,16 +189,50 @@ void DroneshareUploadDialog::uploadProgress(int bytesRead, int totalBytes)
 
 void DroneshareUploadDialog::uploadFailed(const QString& jsonResponse, const QString& errorString)
 {
-    QLOG_DEBUG() << "droneshare: upload failed: " << errorString;
-    delete m_droneshareUpload;
+    QLOG_DEBUG() << "droneshare: upload failed: " << errorString
+                    << "JSON response:" << jsonResponse;
+    m_droneshareUpload->deleteLater();
     m_droneshareUpload = NULL;
-    ui->statusLabel->setText(tr("Upload Failed!"));
+
+    QScriptSyntaxCheckResult syntaxCheck = QScriptEngine::checkSyntax(jsonResponse);
+    QScriptEngine engine;
+    QScriptValue result = engine.evaluate("("+jsonResponse+")");
+
+    if (engine.hasUncaughtException()){
+        QLOG_ERROR() << "Error evaluating version object";
+        QLOG_ERROR() << "Error @line#" << engine.uncaughtExceptionLineNumber();
+        QLOG_ERROR() << "Backtrace:" << engine.uncaughtExceptionBacktrace();
+        QLOG_ERROR() << "Syntax Check:" << syntaxCheck.errorMessage();
+        QLOG_ERROR() << "Syntax Check line:" << syntaxCheck.errorLineNumber()
+                     << " col:" << syntaxCheck.errorColumnNumber();
+        return;
+    }
+
+    QString message = result.property("message").toString();
+    ui->statusLabel->setText(tr("Upload Failed!\n%1").arg(message));
 }
 
 void DroneshareUploadDialog::uploadComplete(const QString& jsonResponse)
 {
     QLOG_DEBUG() << "droneshare: upload success: " << jsonResponse;
-    delete m_droneshareUpload;
+    m_droneshareUpload->deleteLater();
     m_droneshareUpload = NULL;
-    ui->statusLabel->setText(tr("Upload Succeeded"));
+
+    QScriptSyntaxCheckResult syntaxCheck = QScriptEngine::checkSyntax(jsonResponse);
+    QScriptEngine engine;
+    QScriptValue result = engine.evaluate("("+jsonResponse+")");
+
+    if (engine.hasUncaughtException()){
+        QLOG_ERROR() << "Error evaluating version object";
+        QLOG_ERROR() << "Error @line#" << engine.uncaughtExceptionLineNumber();
+        QLOG_ERROR() << "Backtrace:" << engine.uncaughtExceptionBacktrace();
+        QLOG_ERROR() << "Syntax Check:" << syntaxCheck.errorMessage();
+        QLOG_ERROR() << "Syntax Check line:" << syntaxCheck.errorLineNumber()
+                     << " col:" << syntaxCheck.errorColumnNumber();
+        return;
+    }
+
+    QString viewURL = result.property(0).property("viewURL").toString();
+    ui->statusLabel->setOpenExternalLinks(true);
+    ui->statusLabel->setText(tr("<html><head/><body><p>Upload Suceeded!<br><a href=\"%1\"><span style=\" text-decoration: underline; color:#0000ff;\">Click to view on Droneshare</span></a></p></body></html>").arg(viewURL));
 }

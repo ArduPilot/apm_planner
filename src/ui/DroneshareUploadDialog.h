@@ -59,7 +59,7 @@ public slots:
     void vehicleQueryComplete(const QString& jsonRepsonse);
     void vehicleQueryFailed(const QString& errorString);
     void startLogUpload(const QString &vehicleUuid);
-    void uploadComplete(const QString& jsonRepsonse);
+    void uploadComplete(const QString& jsonResponse);
     void uploadFailed(const QString &jsonResponse, const QString &error);
     void uploadProgress(int bytesRead, int totalBytes);
 
