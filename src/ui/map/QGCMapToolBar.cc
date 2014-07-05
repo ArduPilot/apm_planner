@@ -32,7 +32,8 @@ static const struct {
     { "Google Terrain", MapType::GoogleTerrain },
     { "OpenStreetMap", MapType::OpenStreetMap },
     { "ArcGIS Map", MapType::ArcGIS_Map },
-    { "ArcGIS Terrain", MapType::ArcGIS_Terrain }
+    { "ArcGIS Terrain", MapType::ArcGIS_Terrain },
+    { "ArcGIS World Topo", MapType::ArcGIS_WorldTopo }
 };
 
 static const size_t sNumMapTypes = sizeof(sMapTypes) / sizeof(sMapTypes[0]);

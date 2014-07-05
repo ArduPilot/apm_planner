@@ -68,6 +68,7 @@ namespace core {
             ArcGIS_Satellite=788,
             ArcGIS_ShadedRelief=799,
             ArcGIS_Terrain=811,
+            ArcGIS_WorldTopo=812,
 
             // use these numbers to clean up old stuff
             //ArcGIS_MapsLT_Map_Old= 877,
