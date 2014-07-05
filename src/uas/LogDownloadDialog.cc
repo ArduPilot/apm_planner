@@ -39,7 +39,7 @@ LogDownloadDescriptor::LogDownloadDescriptor(uint logID, uint time_utc,
                                              uint logSize)
 {
     m_logID = logID;
-    m_logTimeUTC = QDateTime::fromMSecsSinceEpoch(time_utc);
+    m_logTimeUTC = QDateTime::fromTime_t(time_utc);
     // Set time to current UTC time if time is 1970 i.e. invalid.
     if(m_logTimeUTC.date().year() == 1970)
         m_logTimeUTC = QDateTime::currentDateTimeUtc();
