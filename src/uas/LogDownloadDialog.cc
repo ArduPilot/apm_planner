@@ -249,6 +249,16 @@ void LogDownloadDialog::issueDownloadRequest()
 {
         // Open a file for the log to be downloaded
         m_downloadFile = new QFile(QGC::logDirectory() +"/" + m_downloadFilename);
+
+        // Append a number to the end if the filename already exists
+        if(m_downloadFile->exists()){
+            uint num_dups = 0;
+            QStringList filename_spl = m_downloadFile->fileName().split('.');
+            while(m_downloadFile->exists()){
+                num_dups ++;
+                m_downloadFile->setFileName(filename_spl[0] + '_' + QString::number(num_dups) + '.' + filename_spl[1]);
+            };
+        };
         if(m_downloadFile && m_downloadFile->open(QIODevice::WriteOnly)){
             QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename << " size:" << m_downloadMaxSize;
             Q_ASSERT(m_downloadOffset == 0);
