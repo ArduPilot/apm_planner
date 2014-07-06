@@ -145,7 +145,7 @@ void UASRawStatusView::updateTableTimerTick()
                 good = true;
             }
         }
-        ui.tableWidget->resizeColumnsToContents();
+        ui.tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
         //ui.tableWidget->columnCount()-2
     }
 }
