@@ -1,4 +1,4 @@
-# Contributing to Droneshare
+# Contributing to APM Planner 2.0
 We **<3 pull requests**, this is a short guide on how to write a succesful pull request for this project.
 
 ### Fork the project, then clone the repo
