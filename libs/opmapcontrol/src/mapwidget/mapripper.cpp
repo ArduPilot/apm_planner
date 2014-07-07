@@ -68,6 +68,7 @@ namespace mapcontrol
          {
              progressForm->close();
              delete progressForm;
+             progressForm=NULL;
              this->deleteLater();
          }
      }
@@ -75,6 +76,7 @@ namespace mapcontrol
      {
          progressForm->close();
          delete progressForm;
+         progressForm=NULL;
          this->deleteLater();
      }
     }
