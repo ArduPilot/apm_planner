@@ -71,6 +71,12 @@ namespace mapcontrol
              this->deleteLater();
          }
      }
+     else
+     {
+         progressForm->close();
+         delete progressForm;
+         this->deleteLater();
+     }
     }
 
 
