@@ -254,11 +254,27 @@ void LogDownloadDialog::issueDownloadRequest()
         if(m_downloadFile->exists()){
             uint num_dups = 0;
             QStringList filename_spl = m_downloadFile->fileName().split('.');
-            while(m_downloadFile->exists()){
-                num_dups ++;
-                m_downloadFile->setFileName(filename_spl[0] + '_' + QString::number(num_dups) + '.' + filename_spl[1]);
-            };
-        };
+            if (filename_spl.size()>0)
+            {
+                while(m_downloadFile->exists()){
+                    num_dups ++;
+                    m_downloadFile->setFileName(filename_spl[0] + '_' + QString::number(num_dups) + '.' + filename_spl[1]);
+                }
+            }
+            else
+            {
+                // Filename does not have an extension, avoid a crash and append a number on the end
+                // This can not (currently) happen at runtime unless either a define goes away, or the code is otherwise broken elsewhere, but better safe with an error
+                // in the log than sorry with a crash report.
+                QLOG_ERROR() << "Download filename is not properly formatted!" << m_downloadFile->fileName();
+                QLOG_ERROR() << "The above should NEVER happen, please file a bug report with this log!";
+                QString filename_orig = m_downloadFile->fileName();
+                while(m_downloadFile->exists()){
+                    num_dups ++;
+                    m_downloadFile->setFileName(filename_orig + '_' + QString::number(num_dups));
+                }
+            }
+        }
         if(m_downloadFile && m_downloadFile->open(QIODevice::WriteOnly)){
             QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename << " size:" << m_downloadMaxSize;
             Q_ASSERT(m_downloadOffset == 0);

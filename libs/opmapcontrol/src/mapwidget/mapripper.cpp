@@ -49,36 +49,36 @@ namespace mapcontrol
     }
     void MapRipper::finish()
     {
-         if(zoom<maxzoom)
+        if(zoom<maxzoom)
         {
-         ++zoom;
-         QMessageBox msgBox;
-         msgBox.setText(QString("Continue Ripping at zoom level %1?").arg(zoom));
-        // msgBox.setInformativeText("Do you want to save your changes?");
-         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-         msgBox.setDefaultButton(QMessageBox::Yes);
-         int ret = msgBox.exec();
-         if(ret==QMessageBox::Yes)
-         {
-             points.clear();
-             points=core->Projection()->GetAreaTileList(area,zoom,0);
-             this->start();
-         }
-         else
-         {
-             progressForm->close();
-             delete progressForm;
-             progressForm=NULL;
-             this->deleteLater();
-         }
-     }
-     else
-     {
-         progressForm->close();
-         delete progressForm;
-         progressForm=NULL;
-         this->deleteLater();
-     }
+            ++zoom;
+            QMessageBox msgBox;
+            msgBox.setText(QString("Continue Ripping at zoom level %1?").arg(zoom));
+            // msgBox.setInformativeText("Do you want to save your changes?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::Yes);
+            int ret = msgBox.exec();
+            if(ret==QMessageBox::Yes)
+            {
+                points.clear();
+                points=core->Projection()->GetAreaTileList(area,zoom,0);
+                this->start();
+            }
+            else
+            {
+                    progressForm->close();
+                    delete progressForm;
+                    progressForm=NULL;
+                    this->deleteLater();
+            }
+        }
+        else
+        {
+            progressForm->close();
+            delete progressForm;
+            progressForm=NULL;
+            this->deleteLater();
+        }
     }
 
 
