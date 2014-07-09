@@ -691,7 +691,6 @@ void AP2DataPlot2D::loadButtonClicked()
     //Clear the graph
     for (int i=0;i<m_graphNameList.size();i++)
     {
-
         m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
         m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
     }
@@ -710,8 +709,9 @@ void AP2DataPlot2D::loadButtonClicked()
         //Unload the log.
         m_logLoaded = false;
         ui.loadOfflineLogButton->setText("Load Log");
-        ui.tableWidget->setVisible(false);
         ui.hideExcelView->setVisible(false);
+        ui.hideExcelView->setChecked(false);
+        ui.tableWidget->setVisible(false);
         ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
@@ -1137,8 +1137,9 @@ void AP2DataPlot2D::clearGraph()
         //Unload the log.
         m_logLoaded = false;
         ui.loadOfflineLogButton->setText("Load Log");
-        ui.tableWidget->setVisible(false);
         ui.hideExcelView->setVisible(false);
+        ui.hideExcelView->setChecked(false);
+        ui.tableWidget->setVisible(false);
         ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
