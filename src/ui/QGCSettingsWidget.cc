@@ -59,6 +59,9 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         ui->heartbeatCheckBox->setChecked(MainWindow::instance()->heartbeatEnabled());
         connect(ui->heartbeatCheckBox,SIGNAL(clicked(bool)),MainWindow::instance(),SLOT(enableHeartbeat(bool)));
 
+        ui->mavlinkLoggingCheckBox->setChecked(LinkManager::instance()->loggingEnabled());
+        connect(ui->mavlinkLoggingCheckBox,SIGNAL(clicked(bool)),LinkManager::instance(),SLOT(enableLogging(bool)));
+
         ui->logDirEdit->setText(QGC::logDirectory());
 
         ui->appDataDirEdit->setText((QGC::appDataDirectory()));

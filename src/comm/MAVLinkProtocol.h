@@ -55,6 +55,7 @@ public:
     void sendMessage(mavlink_message_t msg) { }
     void stopLogging();
     bool startLogging(const QString& filename);
+    bool loggingEnabled() { return m_loggingEnabled; }
 private:
     int getSystemId() { return 252; }
     int getComponentId() { return 1; }
