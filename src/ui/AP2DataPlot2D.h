@@ -94,6 +94,8 @@ private slots:
 
     void droneshareButtonClicked();
 
+    void exportButtonClicked();
+
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
@@ -158,6 +160,8 @@ private:
 
     LogDownloadDialog *m_logDownloadDialog;
     DroneshareUploadDialog *m_droneshareUploadDialog;
+
+    MAV_TYPE m_loadedLogMavType;
 
 
 };

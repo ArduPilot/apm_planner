@@ -121,6 +121,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="exportPushButton">
+         <property name="text">
+          <string>Export Log</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="loadTLogButton">
          <property name="text">
           <string>Enable Log Playback</string>

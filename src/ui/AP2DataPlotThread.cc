@@ -163,18 +163,35 @@ void AP2DataPlotThread::run()
     }
 
     QSqlQuery fmttablecreate(*m_db);
-    fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000),val varchar(6000));");
+    fmttablecreate.prepare("CREATE TABLE 'FMT' (idx integer PRIMARY KEY, typeid integer,length integer,name varchar(200),format varchar(6000),val varchar(6000));");
     if (!fmttablecreate.exec())
     {
         emit error("Error creating FMT table: " + m_db->lastError().text());
         return;
     }
     QSqlQuery fmtinsertquery;
-    if (!fmtinsertquery.prepare("INSERT INTO 'FMT' (typeID,length,name,format,val) values (?,?,?,?,?);"))
+    if (!fmtinsertquery.prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (?,?,?,?,?,?);"))
     {
         emit error("Error preparing FMT insert statement: " + fmtinsertquery.lastError().text());
         return;
     }
+
+
+    QSqlQuery indextablecreate(*m_db);
+    indextablecreate.prepare("CREATE TABLE 'INDEX' (idx integer PRIMARY KEY, value varchar(200));");
+    if (!indextablecreate.exec())
+    {
+        emit error("Error creating INDEX table: " + m_db->lastError().text());
+        return;
+    }
+    QSqlQuery indexinsertquery;
+    if (!indexinsertquery.prepare("INSERT INTO 'INDEX' (idx,value) values (?,?);"))
+    {
+        emit error("Error preparing INDEX insert statement: " + indexinsertquery.lastError().text());
+        return;
+    }
+
+
     QMap<QString,QSqlQuery*> nameToInsertQuery;
     QMap<QString,QString> nameToTypeString;
     if (!m_db->commit())
@@ -260,10 +277,11 @@ void AP2DataPlotThread::run()
                             }
                             //typeID,length,name,format
                             fmtinsertquery.bindValue(0,index);
-                            fmtinsertquery.bindValue(1,0);
-                            fmtinsertquery.bindValue(2,name);
-                            fmtinsertquery.bindValue(3,format);
-                            fmtinsertquery.bindValue(4,labels);
+                            fmtinsertquery.bindValue(1,msg_type);
+                            fmtinsertquery.bindValue(2,0);
+                            fmtinsertquery.bindValue(3,name);
+                            fmtinsertquery.bindValue(4,format);
+                            fmtinsertquery.bindValue(5,labels);
                             if (!fmtinsertquery.exec())
                             {
                                 emit error("Error execing insertquery" + fmtinsertquery.lastError().text());
@@ -310,6 +328,13 @@ void AP2DataPlotThread::run()
                                 }
 
                                 nameToInsertQuery[name]->bindValue(0,index);
+                                indexinsertquery.bindValue(0,index);
+                                indexinsertquery.bindValue(1,name);
+                                if (!indexinsertquery.exec())
+                                {
+                                    emit error("Error execing:" + indexinsertquery.executedQuery() + " error was " + indexinsertquery.lastError().text());
+                                    return;
+                                }
                                 index++;
                                 QString formatstr = typeToFormatMap.value(type);
 
@@ -517,7 +542,7 @@ void AP2DataPlotThread::run()
             emit lineRead(line);
             if (loadedtype == MAV_TYPE_GENERIC)
             {
-                if (line.contains("ArduCopter" || (line.contains("PARM") && (line.contains("RATE_RLL_P") || line.contains("H_SWASH_PLATE")))))
+                if ((line.contains("ArduCopter") || (line.contains("PARM") && (line.contains("RATE_RLL_P") || line.contains("H_SWASH_PLATE")))))
                 {
                     loadedtype = MAV_TYPE_QUADROTOR;
                 }
@@ -572,10 +597,11 @@ void AP2DataPlotThread::run()
                             }
                             //typeID,length,name,format
                             fmtinsertquery.bindValue(0,index);
-                            fmtinsertquery.bindValue(1,0);
-                            fmtinsertquery.bindValue(2,type);
-                            fmtinsertquery.bindValue(3,descstr);
-                            fmtinsertquery.bindValue(4,valuestr);
+                            fmtinsertquery.bindValue(1,linesplit[1].trimmed().toInt());
+                            fmtinsertquery.bindValue(2,0);
+                            fmtinsertquery.bindValue(3,type);
+                            fmtinsertquery.bindValue(4,descstr);
+                            fmtinsertquery.bindValue(5,valuestr);
                             fmtinsertquery.exec();
                             nameToInsertQuery[type] = query;
                         }
@@ -608,6 +634,13 @@ void AP2DataPlotThread::run()
                             }
                             QString typestr = nameToTypeString[name];
                             nameToInsertQuery[name]->bindValue(0,index);
+                            indexinsertquery.bindValue(0,index);
+                            indexinsertquery.bindValue(1,name);
+                            if (!indexinsertquery.exec())
+                            {
+                                emit error("Error execing:" + indexinsertquery.executedQuery() + " error was " + indexinsertquery.lastError().text());
+                                return;
+                            }
                             static QString intdef("bBhHiI");
                             static QString floatdef("cCeEfL");
                             static QString chardef("nNZM");

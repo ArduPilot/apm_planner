@@ -22,7 +22,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_uas(NULL),
     m_logDownloadDialog(NULL),
     m_updateTimer(NULL),
-    m_tlogReplayEnabled(false)
+    m_tlogReplayEnabled(false),
+    m_loadedLogMavType(MAV_TYPE_ENUM_END)
 {
     m_startIndex = 0;
     m_axisGroupingDialog = 0;
@@ -111,6 +112,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     connect(ui.loadTLogButton,SIGNAL(clicked()),this,SLOT(replyTLogButtonClicked()));
 
     connect(ui.droneshareButton, SIGNAL(clicked()), this, SLOT(droneshareButtonClicked()));
+    connect(ui.exportPushButton,SIGNAL(clicked()),this,SLOT(exportButtonClicked()));
 }
 void AP2DataPlot2D::replyTLogButtonClicked()
 {
@@ -825,7 +827,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             return;
         }
         QSqlRecord record = tablequery.record();
-        QStringList valuessplit = record.value(4).toString().split(","); //comma delimited list of names
+        QStringList valuessplit = record.value(5).toString().split(","); //comma delimited list of names
         bool found = false;
         int index = 0;
         for (int i=0;i<valuessplit.size();i++)
@@ -1165,6 +1167,7 @@ void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
 
 void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
 {
+    m_loadedLogMavType = type;
     if (!m_sharedDb.isOpen())
     {
         if (!m_sharedDb.open())
@@ -1178,7 +1181,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
     {
         QMessageBox::information(this,"Warning","There were errors countered with " + QString::number(errors) + " lines in the log file. The data is potentially corrupt and incorrect");
     }
-    //fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000));");
+    //fmttablecreate.prepare("CREATE TABLE 'FMT' (index integer PRIMARY KEY,typeid integer, length integer,name varchar(200),format varchar(6000));");
     QSqlQuery fmtquery(m_sharedDb);
     fmtquery.prepare("SELECT * FROM 'FMT';");
     if (!fmtquery.exec())
@@ -1192,14 +1195,14 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
     while (fmtquery.next())
     {
         QSqlRecord record = fmtquery.record();
-        QString name = record.value(2).toString();
-        QString vars = record.value(4).toString();
+        QString name = record.value(3).toString();
+        QString vars = record.value(5).toString();
         QStringList varssplit = vars.split(",");
         for (int i=0;i<varssplit.size();i++)
         {
             m_dataSelectionScreen->addItem(name + "." + varssplit.at(i));
         }
-        QLOG_DEBUG() << record.value(0) << record.value(1) << record.value(2) << record.value(3) << record.value(4);
+        QLOG_DEBUG() << record.value(0) << record.value(1) << record.value(2) << record.value(3) << record.value(4) << record.value(5);
         //rowlist.clear();
         //itemquery.prepare("SELECT * FROM '" + name + "';");
         //itemquery.exec();
@@ -1363,4 +1366,173 @@ void AP2DataPlot2D::droneshareButtonClicked()
     }
     m_droneshareUploadDialog->show();
     m_droneshareUploadDialog->raise();
+}
+
+void AP2DataPlot2D::exportButtonClicked()
+{
+    if (!m_logLoaded)
+    {
+        QMessageBox::information(this,"Error","You must have a log loaded before attempting to export");
+        return;
+    }
+    if (!m_sharedDb.isOpen())
+    {
+        if (!m_sharedDb.open())
+        {
+            //emit error("Unable to open database: " + m_sharedDb.lastError().text());
+            QMessageBox::information(0,"Error","Error opening DB");
+            return;
+        }
+    }
+
+    QString outputFileName = QFileDialog::getSaveFileName(this,"Save Log File",QString(),"Log files (*.log);;All Files (*.*)");
+    QFile outputfile(outputFileName);
+    if (!outputfile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+    {
+        QMessageBox::information(this,"Error","Unable to open output file: " + outputfile.errorString());
+        return;
+    }
+    QProgressDialog *progressDialog = new QProgressDialog("Saving File","Cancel",0,100);
+    progressDialog->show();
+    QApplication::processEvents();
+
+    //Iterate through the FMT table, to build a FMT block at the beginning of the log
+    QSqlQuery fmtquery(m_sharedDb);
+    fmtquery.prepare("SELECT * FROM 'FMT';");
+    if (!fmtquery.exec())
+    {
+        QMessageBox::information(0,"Error","Error selecting from table 'FMT' " + m_sharedDb.lastError().text());
+        return;
+
+    }
+    QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format\r\n";
+    while (fmtquery.next())
+    {
+        QSqlRecord record = fmtquery.record();
+        QString name = record.value(3).toString();
+        QString vars = record.value(5).toString();
+        QString format = record.value(4).toString();
+        int size = 0;
+        for (int i=0;i<format.size();i++)
+        {
+            if (format.at(i).toAscii() == 'n')
+            {
+                size += 4;
+            }
+            else if (format.at(i).toAscii() == 'N')
+            {
+                size += 16;
+            }
+            else if (format.at(i).toAscii() == 'Z')
+            {
+                size += 64;
+            }
+            else if (format.at(i).toAscii() == 'f')
+            {
+                size += 4;
+            }
+            else if ((format.at(i).toAscii() == 'i') || (format.at(i).toAscii() == 'I') || (format.at(i).toAscii() == 'e') || (format.at(i).toAscii() == 'E')  || (format.at(i).toAscii() == 'L'))
+            {
+                size += 4;
+            }
+            else if ((format.at(i).toAscii() == 'h') || (format.at(i).toAscii() == 'H') || (format.at(i).toAscii() == 'c') || (format.at(i).toAscii() == 'C'))
+            {
+                size += 2;
+            }
+            else if ((format.at(i).toAscii() == 'b') || (format.at(i).toAscii() == 'B') || (format.at(i).toAscii() == 'M'))
+            {
+                size += 1;
+            }
+        }
+        QString formatline = "FMT, " + QString::number(record.value(1).toInt()) + ", " + QString::number(size+3) + ", " + name + ", " + format + ", " + vars + "\r\n";
+        formatheader += formatline;
+        QApplication::processEvents();
+    }
+
+    //Iterate through the index table to build the actual log
+    QSqlQuery indexquery(m_sharedDb);
+    indexquery.prepare("SELECT * FROM 'INDEX';");
+    if (!indexquery.exec())
+    {
+        QMessageBox::information(0,"Error","Error selecting from table 'INDEX' " + m_sharedDb.lastError().text());
+        return;
+
+    }
+
+    outputfile.write(formatheader.toAscii());
+
+    int count = 0;
+    indexquery.last();
+    int indexrows = indexquery.record().value(0).toInt();
+    indexquery.first();
+    indexquery.previous();
+    while (indexquery.next())
+    {
+        if (progressDialog->isHidden())
+        {
+            //Cancel has been clicked
+            outputfile.close();
+            if (!QFile::remove(outputfile.fileName()))
+            {
+                QMessageBox::information(0,"Warning","Log save canceled. There may be an incomplete log in the save folder, as AP2 was unable to delete it.");
+            }
+            else
+            {
+                QMessageBox::information(0,"Warning","Log save canceled");
+            }
+            progressDialog->deleteLater();
+            progressDialog=NULL;
+            return;
+        }
+        progressDialog->setValue(100.0 * ((double)count++ / (double)indexrows));
+
+
+        QSqlRecord record = indexquery.record();
+        int index = record.value(0).toInt();
+        QString name = record.value(1).toString();
+        QSqlQuery namequery(m_sharedDb);
+        if (!namequery.exec("SELECT * FROM '" + name + "' where idx == " + QString::number(index)+ ";"))
+        {
+            QMessageBox::information(0,"Error execing",namequery.executedQuery() + ":::" + namequery.lastError().text());
+        }
+        while (namequery.next())
+        {
+            QSqlRecord namerecord = namequery.record();
+            QString fields = name;
+            for (int i=1;i<namerecord.count();i++)
+            {
+                if (namerecord.value(i).type() == QVariant::Double)
+                {
+                    QString num = QString::number(namerecord.value(i).toDouble(),'f',8);
+                    char last = num.at(num.length()-1).toAscii();
+                    while (last == '0' && num.length() > 0)
+                    {
+                        num = num.mid(0,num.length()-1);
+                        last = num.at(num.length()-1).toAscii();
+                    }
+                    if (last == '.')
+                    {
+                        num += "0";
+                    }
+                    fields.append(", " + num);
+                }
+                else if (namerecord.value(i).type() == QVariant::String)
+                {
+                    fields.append(", " + namerecord.value(i).toString());
+                }
+                else
+                {
+                    fields.append(", " + QString::number(namerecord.value(i).toInt()));
+                }
+            }
+            QApplication::processEvents();
+            outputfile.write(fields.append("\r\n").toAscii());
+        }
+    }
+
+    outputfile.close();
+    progressDialog->hide();
+    progressDialog->deleteLater();
+    progressDialog=NULL;
+
 }
