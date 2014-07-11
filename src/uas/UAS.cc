@@ -2558,7 +2558,7 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     case MAV_PARAM_TYPE_REAL32:
     {
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-            param = QVariant(paramValue.param_float);
+            param = QVariant(static_cast<double>(paramValue.param_float));
         }
         else {
             param = QVariant(paramValue.param_float);
