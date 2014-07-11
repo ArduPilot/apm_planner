@@ -15,6 +15,7 @@ public:
     void addSource(MAVLinkDecoder *decoder);
 private slots:
     void updateTableTimerTick();
+    void updateTimerTick();
     void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
     void valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value, const quint64 msec);
     void activeUASSet(UASInterface* uas);
@@ -27,7 +28,8 @@ private:
     QMap<QString,double> valueMap;
     QMap<QString,QTableWidgetItem*> nameToUpdateWidgetMap;
     Ui::UASRawStatusView ui;
-    QTimer *m_updateTimer; //This time triggers a reorganization of the cells, for when new cells are added
+    QTimer *m_updateTimer;
+    QTimer *m_tableRefreshTimer; //This time triggers a reorganization of the cells, for when new cells are added
     bool m_tableDirty;
 };
 
