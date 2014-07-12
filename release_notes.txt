@@ -1,3 +1,25 @@
+Release Notes - APM Planner 2.0.11 - 2014-07-12
+
+c52534a:  configuration: Update Version Object - Bill Bonney
+23666a0:  Configuration: Update to 2.0.12 - Bill Bonney
+80720c8:  UAS: Update conversion to use Plain Old Types to avoid conversion errors. - Bill Bonney
+b29f6a7:  UAS: Fixes #399 issues with conversion from floats not being cast to double. - Bill Bonney
+51ef0c3:  Info Widget: Roll back fix for #389, and set static column width. - Michael Carpenter
+d878ee2:  Graphing: Fix #388, grid view getting out of sync with hide checkbox - Michael Carpenter
+dfe1865:  Graphing: Fix #396, QVariants use both floats, and doubles - Michael Carpenter
+83e0753:  Logging: Fix #397, TLogs not being generated, and added option to enable/disable logging in the Config window - Michael Carpenter
+249d4e2:  Graphing: Added export button to export a loaded .bin file to a .log file, beginning of a fix for #395 - Michael Carpenter
+89b28ad:  Code Cleanup: Added error checking to Log Download filename changes, and set an pointer to null after deletion - Michael Carpenter
+8b5e8f7:  MapWidget: Set deleted variable to null for properness - Michael Carpenter
+8546ff5:  MapWidget: Fix #394, MapRipper not closing out after the last zoom level is downloaded - Michael Carpenter
+58ddf2f:  Log Download: Fixes #391. Checks for existing file and if exists appends duplicate number to new file. - foobarbecue
+54c5d46:  Info Widget: Fixes #389 by making columns expand in response to new data - foobarbecue
+ab135da:  GITHUB: add link and commit rules to CONTRIBUTING.md - Bill Bonney
+5fbd68b:  Update CONTRIBUTING.md - Bill Bonney
+07a8146:  Fix the main problem with dataflash downloads: function was expecting time in milliseconds, getting seconds. - foobarbecue
+938fa5f:  Add support for ArcGIS World Topo maps - Jim Kuhn
+11dfbb2:  Create CONTRIBUTING.md - Bill Bonney
+
 Release Notes - APM Planner 2.0.11 - 2014-07-03
 
 e0bb72c:  Update Object: Increase to 2.0.11 release and support for 'trusty' builds - Bill Bonney
