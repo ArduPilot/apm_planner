@@ -1,4 +1,4 @@
-Release Notes - APM Planner 2.0.11 - 2014-07-12
+Release Notes - APM Planner 2.0.12 - 2014-07-12
 
 c52534a:  configuration: Update Version Object - Bill Bonney
 23666a0:  Configuration: Update to 2.0.12 - Bill Bonney
