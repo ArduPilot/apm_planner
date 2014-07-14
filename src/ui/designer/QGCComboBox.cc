@@ -490,6 +490,7 @@ void QGCComboBox::comboBoxIndexChanged(QString val)
     case QVariant::UInt:
         parameterValue = (unsigned int)comboBoxTextToValMap[val];
         break;
+    case QVariant::Double:
     case QMetaType::Float:
         parameterValue =(float)comboBoxTextToValMap[val];
         break;
