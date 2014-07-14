@@ -146,6 +146,7 @@ public slots:
     void addLink(LinkInterface* link);
     void addLink(int linkid);
     bool configLink(int linkid);
+    void linkError(int linkid,QString errorstring);
     void configure();
     /** @brief Simulate a link */
     void simulateLink(bool simulate);

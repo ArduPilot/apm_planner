@@ -240,6 +240,7 @@ int LinkManager::addSerialConnection()
     connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
+    connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
     m_connectionMap.insert(connection->getId(),connection);
     emit newLink(connection->getId());
     saveSettings();
@@ -260,6 +261,7 @@ int LinkManager::addSerialConnection(QString port,int baud)
     connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
+    connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
     connection->setPortName(port);
     connection->setBaudRate(baud);
     m_connectionMap.insert(connection->getId(),connection);
@@ -275,6 +277,7 @@ int LinkManager::addUdpConnection(QHostAddress addr,int port)
     connect(udpLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(udpLink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(udpLink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
+    connect(udpLink,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
     udpLink->connect();
     m_connectionMap.insert(udpLink->getId(),udpLink);
     emit newLink(udpLink->getId());
@@ -307,7 +310,10 @@ void LinkManager::connectLink(int index)
 {
     if (m_connectionMap.contains(index))
     {
-        m_connectionMap.value(index)->connect();
+        if (!m_connectionMap.value(index)->connect())
+        {
+            //Can't connect, there will be a signal emitted.
+        }
     }
 }
 void LinkManager::disconnectLink(int index)
@@ -689,4 +695,8 @@ void LinkManager::linkConnected(LinkInterface* link)
 void LinkManager::linkDisonnected(LinkInterface* link)
 {
     emit linkChanged(link->getId());
+}
+void LinkManager::linkErrorRec(LinkInterface *link,QString errorstring)
+{
+    emit linkError(link->getId(),errorstring);
 }

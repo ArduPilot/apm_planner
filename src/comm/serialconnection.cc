@@ -35,10 +35,13 @@ This file is part of the APM_PLANNER project
 #include <qserialportinfo.h>
 #include <QSettings>
 #include <QStringList>
+#include <QTimer>
 SerialConnection::SerialConnection(QObject *parent) : SerialLinkInterface()
 {
     m_linkId = getNextLinkId();
     m_isConnected = false;
+    m_port = 0;
+    m_retryCount = 0;
     loadSettings();
 
     if (m_portName.length() == 0) {
@@ -205,13 +208,29 @@ void SerialConnection::writeSettings()
 
 bool SerialConnection::connect()
 {
+    if (m_port)
+    {
+        //Port already exists
+        disconnect();
+    }
     m_port = new QSerialPort();
     QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(readyRead()));
     m_port->setPortName(m_portName);
 
     if (!m_port->open(QIODevice::ReadWrite))
     {
-        QLOG_ERROR() << "Error opening port" << m_port->errorString();
+        if (m_retryCount++ > 1)
+        {
+            m_retryCount = 0;
+            emit error(this,"Error opening port: " + m_port->errorString());
+            QLOG_ERROR() << "Error opening port" << m_port->errorString();
+            m_port->deleteLater();
+            m_port = 0;
+            return false;
+        }
+        QLOG_ERROR() << "Error opening port" << m_port->errorString() << "trying again...";
+        QTimer::singleShot(1000,this,SLOT(connect()));
+        return false;
     }
     m_port->setBaudRate(m_baud);
     m_port->setParity(QSerialPort::NoParity);
@@ -222,10 +241,15 @@ bool SerialConnection::connect()
     emit connected();
     emit connected(true);
     emit connected(this);
+    m_retryCount = 0;
     return true;
 }
 void SerialConnection::readyRead()
 {
+    if (!m_port)
+    {
+        //This shouldn't happen
+    }
     QByteArray bytes = m_port->readAll();
     emit bytesReceived(this,bytes);
 }
@@ -263,14 +287,21 @@ qint64 SerialConnection::getConnectionSpeed() const
 
 bool SerialConnection::disconnect()
 {
-    m_port->close();
-    m_port->deleteLater();
-    m_port = 0;
-    m_isConnected = false;
-    emit disconnected();
-    emit connected(false);
-    emit disconnected(this);
-    return true;
+    if (m_port)
+    {
+        m_port->close();
+        m_port->deleteLater();
+        m_port = 0;
+        m_isConnected = false;
+        emit disconnected();
+        emit connected(false);
+        emit disconnected(this);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 qint64 SerialConnection::bytesAvailable()
@@ -280,7 +311,10 @@ qint64 SerialConnection::bytesAvailable()
 
 void SerialConnection::writeBytes(const char* buf,qint64 size)
 {
-    m_port->write(buf,size);
+    if (m_port)
+    {
+        m_port->write(buf,size);
+    }
 }
 
 void SerialConnection::readBytes()

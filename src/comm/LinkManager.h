@@ -112,10 +112,11 @@ signals:
     void newLink(int linkid);
     void protocolStatusMessage(QString title,QString text);
     void linkChanged(int linkid);
+    void linkError(int linkid, QString message);
 private slots:
     void linkConnected(LinkInterface* link);
     void linkDisonnected(LinkInterface* link);
-    
+    void linkErrorRec(LinkInterface* link,QString error);
 public slots:
     void messageReceived(LinkInterface* link,mavlink_message_t message);
     void protocolStatusMessageRec(QString title,QString text);
