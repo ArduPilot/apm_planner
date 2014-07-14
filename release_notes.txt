@@ -1,3 +1,10 @@
+Release Notes - APM Planner 2.0.13 - 2014-07-14
+
+cc32a9a:  configuration: Update json version object - Bill Bonney
+58f4268:  configuration: Update to 2.0.13 to fix type conversion issue - Bill Bonney
+7876a60:  Comms: Fix for Serial Port errors not propagating up to inform the user, and added retries on connect() calls - Michael Carpenter
+8380a9c:  UAS: Fix for double QVariants not being checked for alongside float - Michael Carpenter
+
 Release Notes - APM Planner 2.0.12 - 2014-07-12
 
 c52534a:  configuration: Update Version Object - Bill Bonney
