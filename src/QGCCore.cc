@@ -102,10 +102,19 @@ void QGCCore::initialize()
         QString qgcVersion = settings.value("QGC_APPLICATION_VERSION").toString();
         if (qgcVersion != QGC_APPLICATION_VERSION)
         {
+            settings.beginGroup("AUTO_UPDATE");
+            bool autoUpdateEnabled = settings.value("ENABLED", true).toBool();
+            QString releaseType = settings.value("RELEASE_TYPE", define2string(APP_TYPE)).toString();
+            settings.endGroup();
+
             lastApplicationVersion = qgcVersion;
             settings.clear();
-            // Write current application version
+            // Write current application version & update settings.
             settings.setValue("QGC_APPLICATION_VERSION", QGC_APPLICATION_VERSION);
+            settings.beginGroup("AUTO_UPDATE");
+            settings.setValue("ENABLED",autoUpdateEnabled);
+            settings.setValue("RELEASE_TYPE", releaseType);
+            settings.endGroup();
             upgraded = true;
         }
     }
