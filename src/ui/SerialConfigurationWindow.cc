@@ -67,7 +67,6 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
 
         setLinkName(LinkManager::instance()->getSerialLinkPort(linkid));
 
-        setupPortList();
 
         // Set up baud rates
         ui.baudRate->clear();
@@ -123,20 +122,41 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
 			ui.baudRate->addItem(QString::number(supportedBaudRates.at(i)), supportedBaudRates.at(i));
 		}
 
+        setupPortList();
+
         // Load current link config
-        int baudid = ui.baudRate->findText(QString::number(LinkManager::instance()->getSerialLinkBaud(linkid)));
-        int portid = ui.portName->findText(LinkManager::instance()->getSerialLinkPort(linkid));
+        QString linkportname = LinkManager::instance()->getSerialLinkPort(linkid);
+        int portid = ui.portName->findText(linkportname);
+
+        int linkbaudrate = LinkManager::instance()->getSerialLinkBaud(linkid);
+        int baudid = ui.baudRate->findText(QString::number(linkbaudrate));
+
         qDebug() << "Baud rate:" << LinkManager::instance()->getSerialLinkBaud(linkid) << "Expected:" << baudid;
         if (baudid == -1)
         {
-
+            //No baud rate found, select the default 115200
+            baudid = ui.baudRate->findText("115200");
         }
-        else
-        {
-            ui.baudRate->setCurrentIndex(baudid);
-        }
+        ui.baudRate->setCurrentIndex(baudid);
         if (portid == -1)
         {
+            //No valid port name found, is it No Devices?
+            if (linkportname == "No Devices")
+            {
+                if (ui.portName->count() > 0)
+                {
+                    ui.portName->setCurrentIndex(0);
+                    setPortName(ui.portName->currentText());
+                }
+                else
+                {
+                    ui.portName->setEditText("No Devices");
+                }
+            }
+            else
+            {
+                ui.portName->setEditText(linkportname);
+            }
         }
         else
         {
@@ -282,6 +302,17 @@ void SerialConfigurationWindow::setupPortList()
 
 
     QString storedName = LinkManager::instance()->getSerialLinkPort(m_linkid);
+    QString currentName = ui.portName->currentText();
+
+
+    if (ui.portName->currentText() != ui.portName->itemText(ui.portName->currentIndex()))
+    {
+        //Custom text entered
+        if (storedName != currentName)
+        {
+            return;
+        }
+    }
     bool storedFound = false;
 
     // Add the ports in reverse order, because we prepend them to the list
@@ -300,7 +331,7 @@ void SerialConfigurationWindow::setupPortList()
        */
         ui.portName->insertItem(0,ports[i]);
         // Check if the stored link name is still present
-        if (ports[i].contains(storedName) || storedName.contains(ports[i]))
+        if (ports[i].contains(storedName))
             storedFound = true;
     }
 
@@ -309,6 +340,11 @@ void SerialConfigurationWindow::setupPortList()
         int index = ui.portName->findText(storedName);
         //ui.portName->setEditText(storedName);
         ui.portName->setCurrentIndex(index);
+    }
+    else
+    {
+        //Put the name back
+        ui.portName->setEditText(storedName);
     }
     connect(ui.portName, SIGNAL(editTextChanged(QString)), this, SLOT(setPortName(QString)));
     connect(ui.portName, SIGNAL(currentIndexChanged(QString)), this, SLOT(setPortName(QString)));
