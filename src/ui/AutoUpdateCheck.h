@@ -74,7 +74,7 @@ private:
 
     bool m_isAutoUpdateEnabled;
     QString m_skipVerison;
-    QString m_releaseType;
+    QString m_releaseType; // 'stable', 'beta', 'daily'
     bool m_suppressNoUpdateSignal;
 
 };
