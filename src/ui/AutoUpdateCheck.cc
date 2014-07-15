@@ -245,7 +245,7 @@ bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QSt
                     QRegExp releaseNumber2("\\d+");
                     pos = releaseNumber2.indexIn(oldBuildSubMoniker);
                     if (pos > -1) {
-                        QLOG_DEBUG() << "Detected oldRc:" << versionEx.capturedTexts();
+                        QLOG_DEBUG() << "Detected oldRc:" << versionEx2.capturedTexts();
                         oldRc = releaseNumber.cap(0).toInt();
                     }
 
