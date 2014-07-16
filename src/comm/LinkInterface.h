@@ -235,6 +235,8 @@ signals:
     /** @brief destroying element */
     void deleteLink(LinkInterface* const link);
 
+    void error(LinkInterface* link,QString errorstring);
+
 protected:
 
     static const int dataRateBufferSize = 20; ///< Specify how many data points to capture for data rate calculations.

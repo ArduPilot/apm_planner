@@ -134,7 +134,8 @@ MainWindow::MainWindow(QWidget *parent):
     aboutToCloseFlag(false),
     changingViewsFlag(false),
     centerStackActionGroup(new QActionGroup(this)),
-    styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css")
+    styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
+    m_heartbeatEnabled(true)
 {
     QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -220,6 +221,7 @@ MainWindow::MainWindow(QWidget *parent):
     }
 
     connect(LinkManager::instance(), SIGNAL(newLink(int)), this, SLOT(addLink(int)), Qt::QueuedConnection);
+    connect(LinkManager::instance(),SIGNAL(linkError(int,QString)),this,SLOT(linkError(int,QString)));
 
 
 
@@ -611,6 +613,7 @@ void MainWindow::buildCommonWidgets()
         engineeringView->setObjectName("VIEW_ENGINEER");
         //engineeringView->setCentralWidget(new QGCDataPlot2D(this));
         plot = new AP2DataPlot2D(this);
+        connect(logPlayer,SIGNAL(logLoaded()),plot,SLOT(clearGraph()));
         plot->addSource(mavlinkDecoder);
         engineeringView->setCentralWidget(plot);
 
@@ -1235,7 +1238,7 @@ void MainWindow::loadCustomWidgetsFromDefaults(const QString& systemType, const 
 
 void MainWindow::loadSettings()
 {
-    settings.sync();
+    QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     autoReconnect = settings.value("AUTO_RECONNECT",false).toBool();
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", QGC_MAINWINDOW_STYLE_OUTDOOR).toInt();
@@ -1243,16 +1246,19 @@ void MainWindow::loadSettings()
     lowPowerMode = settings.value("LOW_POWER_MODE", false).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS", true).toBool();
     isAdvancedMode = settings.value("ADVANCED_MODE", false).toBool();
+    enableHeartbeat(settings.value("HEARTBEATS_ENABLED",true).toBool());
     settings.endGroup();
 }
 
 void MainWindow::storeSettings()
 {
+    QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
     settings.setValue("LOW_POWER_MODE", lowPowerMode);
     settings.setValue("ADVANCED_MODE", isAdvancedMode);
+    settings.setValue("HEARTBEATS_ENABLED",m_heartbeatEnabled);
     settings.endGroup();
 
     if (!aboutToCloseFlag && isVisible())
@@ -1854,6 +1860,10 @@ void MainWindow::addLink(LinkInterface *link)
     // Error handling
     connect(link, SIGNAL(communicationError(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);*/
 }
+void MainWindow::linkError(int linkid,QString errorstring)
+{
+    QMessageBox::information(this,"Link Error",errorstring);
+}
 
 void MainWindow::simulateLink(bool simulate) {
     if (!simulationLink.isNull())
@@ -2427,4 +2437,16 @@ void MainWindow::autoUpdateCancelled(QString version)
 void MainWindow::showNoUpdateAvailDialog()
 {
     QMessageBox::information(this,"Update Check", "No new update available!",QMessageBox::Ok);
+}
+void MainWindow::enableHeartbeat(bool enabled)
+{
+    if (m_heartbeatEnabled != enabled)
+    {
+        m_heartbeatEnabled = enabled;
+        for (int i=0;i<UASManager::instance()->getUASList().size();i++)
+        {
+            UASManager::instance()->getUASList().at(i)->setHeartbeatEnabled(enabled);
+        }
+        storeSettings();
+    }
 }

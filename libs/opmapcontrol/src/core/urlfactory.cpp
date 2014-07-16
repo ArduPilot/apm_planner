@@ -409,6 +409,13 @@ namespace core {
                 return QString("http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
             }
             break;
+        case MapType::ArcGIS_WorldTopo:
+            {
+                // http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/4/3/15
+
+                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
+            }
+            break;
         case MapType::ArcGIS_MapsLT_OrtoFoto:
             {
                 // http://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L02/R0000001b/C00000028.jpg

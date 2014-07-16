@@ -269,6 +269,7 @@ void QGCParamSlider::endEditMode()
     case QVariant::UInt:
         ui->intValueSpinBox->show();
         break;
+    case QVariant::Double:
     case QMetaType::Float:
         ui->doubleValueSpinBox->show();
         break;
@@ -320,6 +321,7 @@ void QGCParamSlider::setSliderValue(int sliderValue)
             parameterValue = (unsigned int)scaledIntToFloat(sliderValue);
             ui->intValueSpinBox->setValue(parameterValue.toUInt());
             break;
+        case QVariant::Double:
         case QMetaType::Float:
             parameterValue = scaledIntToFloat(sliderValue);
             ui->doubleValueSpinBox->setValue(parameterValue.toFloat());
@@ -451,6 +453,7 @@ void QGCParamSlider::setParameterValue(int uas, int component, int paramCount, i
             }
             ui->valueSlider->setValue(floatToScaledInt(value.toUInt()));
             break;
+        case QVariant::Double:
         case QMetaType::Float:
             ui->doubleValueSpinBox->setValue(value.toFloat());
             ui->doubleValueSpinBox->show();

@@ -19,6 +19,7 @@
 #include "QGCMAVLink.h"
 #include "LinkManager.h"
 #include "SerialLink.h"
+#include "MainWindow.h"
 
 #include <QList>
 #include <QMessageBox>
@@ -181,16 +182,14 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     // Initial signals
     emit disarmed();
     emit armingChanged(false);  
-    //if (mavlink)
-    //{
-    //    systemId = mavlink->getSystemId();
-    //    componentId = mavlink->getComponentId();
-    //}
-    //else
-    //{
-        systemId = QGC::defaultSystemId;
-        componentId = QGC::defaultComponentId;
-    //}
+
+    systemId = QGC::defaultSystemId;
+    componentId = QGC::defaultComponentId;
+
+    m_heartbeatsEnabled = MainWindow::instance()->heartbeatEnabled(); //Default to sending heartbeats
+    QTimer *heartbeattimer = new QTimer(this);
+    connect(heartbeattimer,SIGNAL(timeout()),this,SLOT(sendHeartbeat()));
+    heartbeattimer->start(MAVLINK_HEARTBEAT_DEFAULT_RATE * 1000);
 }
 
 /**
@@ -1948,6 +1947,19 @@ void UAS::forwardMessage(mavlink_message_t message)
     }*/
 }
 
+
+void UAS::sendHeartbeat()
+{
+    if (m_heartbeatsEnabled)
+    {
+        mavlink_message_t beat;
+        mavlink_msg_heartbeat_pack(getSystemId(), getComponentId(),&beat, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, MAV_MODE_MANUAL_ARMED, 0, MAV_STATE_ACTIVE);
+        sendMessage(beat);
+    }
+}
+
+
+
 /**
 * Send a message to the link that is connected.
 * @param link that the message will be sent to
@@ -2484,6 +2496,7 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
                 union_value.param_uint32 = value.toUInt();
                 p.param_type = MAV_PARAM_TYPE_UINT32;
                 break;
+            case QVariant::Double:
             case QMetaType::Float:
                 union_value.param_float = value.toFloat();
                 p.param_type = MAV_PARAM_TYPE_REAL32;
@@ -2546,7 +2559,7 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     case MAV_PARAM_TYPE_REAL32:
     {
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-            param = QVariant(paramValue.param_float);
+            param = QVariant(static_cast<double>(paramValue.param_float));
         }
         else {
             param = QVariant(paramValue.param_float);
@@ -2561,7 +2574,7 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     case MAV_PARAM_TYPE_UINT8:
     {
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-            param = QVariant(QChar((unsigned char)paramValue.param_float));
+            param = QVariant(static_cast<uint>(paramValue.param_float));
         }
         else {
             param = QVariant(QChar((unsigned char)paramValue.param_uint8));
@@ -2576,7 +2589,7 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     case MAV_PARAM_TYPE_INT8:
     {
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-            param = QVariant(QChar((char)paramValue.param_float));
+            param = QVariant(static_cast<int>(paramValue.param_float));
         }
         else  {
             param = QVariant(QChar((char)paramValue.param_int8));
@@ -2591,7 +2604,7 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     case MAV_PARAM_TYPE_INT16:
     {
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-            param = QVariant((short)paramValue.param_float);
+            param = QVariant(static_cast<int>(paramValue.param_float));
         }
         else {
             param = QVariant(paramValue.param_int16);
@@ -2606,7 +2619,7 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     case MAV_PARAM_TYPE_UINT32:
     {
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-            param = QVariant((unsigned int)paramValue.param_float);
+            param = QVariant(static_cast<uint>(paramValue.param_float));
         }
         else {
             param = QVariant(paramValue.param_uint32);
@@ -2620,7 +2633,7 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     case MAV_PARAM_TYPE_INT32:
     {
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-            param = QVariant((int)paramValue.param_float);
+            param = QVariant(static_cast<int>(paramValue.param_float));
         }
         else {
             param = QVariant(paramValue.param_int32);

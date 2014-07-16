@@ -13,8 +13,11 @@ UASRawStatusView::UASRawStatusView(QWidget *parent) : QWidget(parent)
     ui.tableWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     ui.tableWidget->setShowGrid(false);
     ui.tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_tableRefreshTimer = new QTimer(this);
+    connect(m_tableRefreshTimer,SIGNAL(timeout()),this,SLOT(updateTableTimerTick()));
+
     m_updateTimer = new QTimer(this);
-    connect(m_updateTimer,SIGNAL(timeout()),this,SLOT(updateTableTimerTick()));
+    connect(m_updateTimer,SIGNAL(timeout()),this,SLOT(updateTimerTick()));
 
     // FIXME reinstate once fixed.
 
@@ -41,13 +44,30 @@ void UASRawStatusView::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
     //Check every 2 seconds to see if we need an update
-    m_updateTimer->start(2000);
+    m_updateTimer->start(500);
+    m_tableRefreshTimer->start(2000);
 }
 
 void UASRawStatusView::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event)
     m_updateTimer->stop();
+    m_tableRefreshTimer->stop();
+}
+void UASRawStatusView::updateTimerTick()
+{
+    for (QMap<QString,double>::const_iterator i=valueMap.constBegin();i!=valueMap.constEnd();i++)
+    {
+        if (nameToUpdateWidgetMap.contains(i.key()))
+        {
+            nameToUpdateWidgetMap[i.key()]->setText(QString::number(i.value(),'f',4));
+        }
+        else
+        {
+            m_tableDirty = true;
+        }
+    }
+    return;
 }
 
 void UASRawStatusView::addSource(MAVLinkDecoder *decoder)
@@ -72,15 +92,6 @@ void UASRawStatusView::valueChanged(const int uasId, const QString& name, const 
     Q_UNUSED(unit)
     Q_UNUSED(msec)
     valueMap[name] = value;
-    if (nameToUpdateWidgetMap.contains(name))
-    {
-        nameToUpdateWidgetMap[name]->setText(QString::number(value,'f',4));
-    }
-    else
-    {
-        m_tableDirty = true;
-    }
-    return;
 }
 void UASRawStatusView::resizeEvent(QResizeEvent *event)
 {
@@ -99,6 +110,10 @@ void UASRawStatusView::updateTableTimerTick()
             ui.tableWidget->clear();
             ui.tableWidget->setRowCount(0);
             ui.tableWidget->setColumnCount(columncount);
+            for (int i=0;i<columncount;i++)
+            {
+                ui.tableWidget->setColumnWidth(i,100);
+            }
             ui.tableWidget->horizontalHeader()->hide();
             ui.tableWidget->verticalHeader()->hide();
             int currcolumn = 0;
@@ -145,7 +160,6 @@ void UASRawStatusView::updateTableTimerTick()
                 good = true;
             }
         }
-        ui.tableWidget->resizeColumnsToContents();
         //ui.tableWidget->columnCount()-2
     }
 }

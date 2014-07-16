@@ -39,6 +39,7 @@ This file is part of the APM_PLANNER project
 MAVLinkProtocol::MAVLinkProtocol(QObject *parent)
 {
     m_loggingEnabled = false;
+    m_logfile=NULL;
 }
 void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
 {
@@ -374,6 +375,10 @@ void MAVLinkProtocol::stopLogging()
 
 bool MAVLinkProtocol::startLogging(const QString& filename)
 {
+    if (m_logfile && m_logfile->isOpen())
+    {
+        return true;
+    }
     stopLogging();
     QLOG_DEBUG() << "Start MAVLink logging" << filename;
 

@@ -257,6 +257,7 @@ void CommConfigurationWindow::linkUpdate(int linkid)
     {
         return;
     }
+    setLinkName(LinkManager::instance()->getLinkName(linkid));
 }
 
 CommConfigurationWindow::~CommConfigurationWindow()

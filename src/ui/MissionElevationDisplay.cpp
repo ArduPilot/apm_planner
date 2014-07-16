@@ -48,6 +48,7 @@ MissionElevationDisplay::MissionElevationDisplay(QWidget *parent) :
     m_totalDistance(0),
     m_elevationData(NULL),
     m_useHomeAltOffset(false),
+    m_homeAltOffset(0.0),
     m_elevationShown(false)
 {
     ui->setupUi(this);
@@ -68,6 +69,16 @@ MissionElevationDisplay::MissionElevationDisplay(QWidget *parent) :
     // set default ranges for Alt and distance
     customPlot->xAxis->setRange(0,ElevationDefaultDistanceMax); //m
     customPlot->yAxis->setRange(ElevationDefaultAltMin,ElevationDefaultAltMax); //m
+
+    QFont legendFont = font();
+    legendFont.setPointSize(9);
+    customPlot->legend->setFont(legendFont);
+
+    // set a more compact font size for bottom and left axis tick labels:
+    customPlot->xAxis->setTickLabelFont(QFont(QFont().family(), 9));
+    customPlot->xAxis->setLabelFont(QFont(QFont().family(), 9));
+    customPlot->yAxis->setTickLabelFont(QFont(QFont().family(), 9));
+    customPlot->yAxis->setLabelFont(QFont(QFont().family(), 9));
 
     customPlot->replot();
 

@@ -146,6 +146,7 @@ public slots:
     void addLink(LinkInterface* link);
     void addLink(int linkid);
     bool configLink(int linkid);
+    void linkError(int linkid,QString errorstring);
     void configure();
     /** @brief Simulate a link */
     void simulateLink(bool simulate);
@@ -161,6 +162,7 @@ public slots:
     void startVideoCapture();
     void stopVideoCapture();
     void saveScreen();
+    void enableHeartbeat(bool enabled);
 
     /** @brief Sets advanced mode, allowing for editing of tool widget locations */
     void setAdvancedMode(bool mode);
@@ -275,6 +277,8 @@ public:
     //    return mavlink;
     //}
 
+
+    bool heartbeatEnabled() { return m_heartbeatEnabled; }
 protected:
 
     MainWindow(QWidget *parent = 0);
@@ -459,12 +463,15 @@ protected:
     QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
 
+
+
 private slots:
     void showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url, QString name);
     void autoUpdateCancelled(QString version);
     void showNoUpdateAvailDialog();
 
 private:
+    bool m_heartbeatEnabled;
     QList<QObject*> commsWidgetList;
     QMap<QString,QString> customWidgetNameToFilenameMap;
     QMap<QAction*,QString > menuToDockNameMap;

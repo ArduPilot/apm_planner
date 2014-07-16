@@ -42,6 +42,7 @@ This file is part of the APM_PLANNER project
 LinkManager::LinkManager(QObject *parent) :
     QObject(parent)
 {
+    m_mavlinkLoggingEnabled = true;
     m_mavlinkDecoder = new MAVLinkDecoder(this);
     m_mavlinkParser = new MAVLinkProtocol(this);
     m_mavlinkParser->setConnectionManager(this);
@@ -68,12 +69,18 @@ LinkManager::LinkManager(QObject *parent) :
     if (!foundserial)
     {
         addSerialConnection();
+    }
+    if (!foundudp)
+    {
         addUdpConnection(QHostAddress::Any,14550);
     }
-
 }
 void LinkManager::stopLogging()
 {
+    if (!m_mavlinkLoggingEnabled)
+    {
+        return;
+    }
     m_mavlinkParser->stopLogging();
 }
 LinkManager::~LinkManager()
@@ -85,6 +92,7 @@ void LinkManager::loadSettings()
 {
     QSettings settings;
     settings.beginGroup("LINKMANAGER");
+    m_mavlinkLoggingEnabled = settings.value("LOGGING",true).toBool();
     int linkssize = settings.beginReadArray("LINKS");
     for (int i=0;i<linkssize;i++)
     {
@@ -127,12 +135,14 @@ void LinkManager::loadSettings()
             addTcpConnection(QHostAddress(host),port);
         }
     }
+    settings.endArray();
 }
 
 void LinkManager::saveSettings()
 {
     QSettings settings;
     settings.beginGroup("LINKMANAGER");
+    settings.setValue("LOGGING",m_mavlinkLoggingEnabled);
     settings.beginWriteArray("LINKS");
     int index = 0;
     for (QMap<int,LinkInterface*>::const_iterator i= m_connectionMap.constBegin();i!=m_connectionMap.constEnd();i++)
@@ -172,10 +182,53 @@ void LinkManager::saveSettings()
     settings.endGroup();
     settings.sync();
 }
+void LinkManager::setLogSubDirectory(QString dir)
+{
+    if (!dir.startsWith("/"))
+    {
+        m_logSubDir = "/" + dir;
+    }
+    else
+    {
+        m_logSubDir = dir;
+    }
+    if (!m_logSubDir.endsWith("/"))
+    {
+        m_logSubDir += "/";
+    }
+    QDir logdir(QGC::MAVLinkLogDirectory());
+    if (!logdir.cd(m_logSubDir.mid(1)))
+    {
+        logdir.mkdir(m_logSubDir.mid(1));
+    }
+}
+void LinkManager::enableLogging(bool enabled)
+{
+
+    if (enabled)
+    {
+        m_mavlinkLoggingEnabled = enabled;
+        startLogging();
+    }
+    else
+    {
+        stopLogging();
+        m_mavlinkLoggingEnabled = enabled;
+    }
+}
+
+bool LinkManager::loggingEnabled()
+{
+    return m_mavlinkLoggingEnabled;
+}
 
 void LinkManager::startLogging()
 {
-    QString logFileName = QGC::MAVLinkLogDirectory() + QGC::fileNameAsTime();
+    if (!m_mavlinkLoggingEnabled)
+    {
+        return;
+    }
+    QString logFileName = QGC::MAVLinkLogDirectory() + m_logSubDir + QGC::fileNameAsTime();
     QLOG_DEBUG() << "LinkManger::startLogging()" << logFileName;
     m_mavlinkParser->startLogging(logFileName);
 }
@@ -187,8 +240,10 @@ int LinkManager::addSerialConnection()
     connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
+    connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
     m_connectionMap.insert(connection->getId(),connection);
     emit newLink(connection->getId());
+    saveSettings();
     return connection->getId();
 }
 LinkInterface::LinkType LinkManager::getLinkType(int linkid)
@@ -204,28 +259,41 @@ int LinkManager::addSerialConnection(QString port,int baud)
 {
     SerialConnection *connection = new SerialConnection();
     connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
+    connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
+    connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
     connection->setPortName(port);
     connection->setBaudRate(baud);
     m_connectionMap.insert(connection->getId(),connection);
     //emit newLink(connection);
     emit newLink(connection->getId());
+    saveSettings();
     return connection->getId();
 
 }
 int LinkManager::addUdpConnection(QHostAddress addr,int port)
 {
     UDPLink* udpLink = new UDPLink(addr,port);
+    connect(udpLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(udpLink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
+    connect(udpLink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
+    connect(udpLink,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
     udpLink->connect();
     m_connectionMap.insert(udpLink->getId(),udpLink);
     emit newLink(udpLink->getId());
+    saveSettings();
     return udpLink->getId();
 
 }
 int LinkManager::addTcpConnection(QHostAddress addr,int port)
 {
     TCPLink *tcplink = new TCPLink(addr,port);
+    connect(tcplink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(tcplink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
+    connect(tcplink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     m_connectionMap.insert(tcplink->getId(),tcplink);
     emit newLink(tcplink->getId());
+    saveSettings();
     return tcplink->getId();
 }
 
@@ -242,7 +310,10 @@ void LinkManager::connectLink(int index)
 {
     if (m_connectionMap.contains(index))
     {
-        m_connectionMap.value(index)->connect();
+        if (!m_connectionMap.value(index)->connect())
+        {
+            //Can't connect, there will be a signal emitted.
+        }
     }
 }
 void LinkManager::disconnectLink(int index)
@@ -265,6 +336,8 @@ void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port)
     }
     iface->setHostAddress(addr);
     iface->setPort(port);
+    emit linkChanged(index);
+    saveSettings();
 }
 
 void LinkManager::modifySerialConnection(int index,QString port,int baud)
@@ -281,6 +354,7 @@ void LinkManager::modifySerialConnection(int index,QString port,int baud)
     iface->setPortName(port);
     iface->setBaudRate(baud);
     emit linkChanged(index);
+    saveSettings();
 }
 QString LinkManager::getLinkName(int linkid)
 {
@@ -367,6 +441,7 @@ void LinkManager::setUdpLinkPort(int linkid, int port)
     }
     iface->setPort(port);
     emit linkChanged(linkid);
+    saveSettings();
 }
 void LinkManager::addUdpHost(int linkid,QString hostname)
 {
@@ -380,6 +455,7 @@ void LinkManager::addUdpHost(int linkid,QString hostname)
         return;
     }
     iface->addHost(hostname);
+    saveSettings();
 }
 
 int LinkManager::getSerialLinkBaud(int linkid)
@@ -551,6 +627,61 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     return uas;
 
 }
+void LinkManager::setSerialParityType(int index,int parity)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setParityType(parity);
+}
+
+void LinkManager::setSerialFlowType(int index,int flow)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setFlowType(flow);
+}
+void LinkManager::setSerialDataBits(int index,int bits)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setDataBitsType(bits);
+}
+
+void LinkManager::setSerialStopBits(int index,int bits)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(index));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setStopBitsType(bits);
+}
+
 void LinkManager::protocolStatusMessageRec(QString title,QString text)
 {
     emit protocolStatusMessage(title,text);
@@ -564,4 +695,8 @@ void LinkManager::linkConnected(LinkInterface* link)
 void LinkManager::linkDisonnected(LinkInterface* link)
 {
     emit linkChanged(link->getId());
+}
+void LinkManager::linkErrorRec(LinkInterface *link,QString errorstring)
+{
+    emit linkError(link->getId(),errorstring);
 }
