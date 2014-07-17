@@ -559,7 +559,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 lastTickVoltageValue = tickLowpassVoltage;
             }
 
-            if (startVoltage == -1.0f && currentVoltage > 0.1f) startVoltage = currentVoltage;
+            if (startVoltage < currentVoltage && currentVoltage > 0.1f) startVoltage = currentVoltage;
             timeRemaining = calculateTimeRemaining();
             if (!batteryRemainingEstimateEnabled && chargeLevel != -1)
             {
@@ -3654,10 +3654,10 @@ int UAS::calculateTimeRemaining()
 {
     quint64 dt = QGC::groundTimeMilliseconds() - startTime;
     double seconds = dt / 1000.0f;
-    double voltDifference = startVoltage - currentVoltage;
+    double voltDifference = startVoltage - tickLowpassVoltage;
     if (voltDifference <= 0) voltDifference = 0.00000000001f;
     double dischargePerSecond = voltDifference / seconds;
-    int remaining = static_cast<int>((currentVoltage - emptyVoltage) / dischargePerSecond);
+    int remaining = static_cast<int>((tickLowpassVoltage - emptyVoltage) / dischargePerSecond);
     // Can never be below 0
     if (remaining < 0) remaining = 0;
     return remaining;
