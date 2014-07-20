@@ -30,6 +30,8 @@ This file is part of the QGROUNDCONTROL project
 #include "ArduPilotMegaMAV.h"
 #include "QsLog.h"
 #include "GAudioOutput.h"
+#include "LinkManager.h"
+
 
 #ifndef MAVLINK_MSG_ID_MOUNT_CONFIGURE
 #include "ardupilotmega/mavlink_msg_mount_configure.h"
@@ -298,6 +300,7 @@ void ArduPilotMegaMAV::uasConnected()
     QLOG_INFO() << "ArduPilotMegaMAV APM Connected";
     QTimer::singleShot(500,this,SLOT(RequestAllDataStreams())); //Send an initial TX request in 0.5 seconds.
     createNewMAVLinkLog(type);
+    LinkManager::instance()->startLogging();
 }
 
 void ArduPilotMegaMAV::uasDisconnected()
@@ -348,6 +351,7 @@ void ArduPilotMegaMAV::createNewMAVLinkLog(uint8_t type)
     default:
         subDir = "/";
     }
+    LinkManager::instance()->setLogSubDirectory(subDir);
 }
 
 /**

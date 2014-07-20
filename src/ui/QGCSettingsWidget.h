@@ -24,6 +24,7 @@ private slots:
     void setParamDir();
     void setAppDataDir();
     void ratesChanged();
+    void setBetaRelease(bool state);
 
     void setActiveUAS(UASInterface *uas);
 

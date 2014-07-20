@@ -1,3 +1,31 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2014 APM_PLANNER PROJECT <http://www.ardupilot.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+/**
+ * @file
+ *   @brief Droneshare API Query Object
+ *
+ *   @author Bill Bonney <billbonney@communistech.com>
+ */
+
 #ifndef AUTOUPDATECHECK_H
 #define AUTOUPDATECHECK_H
 
@@ -46,7 +74,7 @@ private:
 
     bool m_isAutoUpdateEnabled;
     QString m_skipVersion;
-    QString m_releaseType;
+    QString m_releaseType; // 'stable', 'beta', 'daily'
     bool m_suppressNoUpdateSignal;
 
 };

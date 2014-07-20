@@ -40,7 +40,7 @@ class SerialConnection : public SerialLinkInterface
     Q_OBJECT
 public:
     explicit SerialConnection(QObject *parent = 0);
-    bool connect();
+
     void disableTimeouts();
     void enableTimeouts();
     int getId() const;
@@ -67,6 +67,7 @@ public:
     LinkType getLinkType() { return SERIAL_LINK; }
 
 public slots:
+    bool connect();
     bool setPortName(QString portName);
     bool setBaudRate(int rate);
     bool setBaudRateType(int rateIndex);
@@ -85,6 +86,7 @@ private:
     bool m_isConnected;
     QMap<QString,int> m_portBaudMap;
     QList<QString> m_portList;
+    int m_retryCount;
 
 signals:
     void updateLink(LinkInterface *link);

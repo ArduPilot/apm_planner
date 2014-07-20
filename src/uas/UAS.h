@@ -409,6 +409,7 @@ public:
     friend class UASWaypointManager;
 
 protected: //COMMENTS FOR TEST UNIT
+    bool m_heartbeatsEnabled;
     /// LINK ID AND STATUS
     int uasId;                    ///< Unique system ID
     QMap<int, QString> components;///< IDs and names of all detected onboard components
@@ -571,6 +572,7 @@ protected: //COMMENTS FOR TEST UNIT
     QGCHilLink* simulation;         ///< Hardware in the loop simulation link
 
 public:
+    void setHeartbeatEnabled(bool enabled) { m_heartbeatsEnabled = enabled; }
     /** @brief Set the current battery type */
     void setBattery(BatteryType type, int cells);
     /** @brief Estimate how much flight time is remaining */
@@ -1006,6 +1008,8 @@ public slots:
     void logRequestData(uint16_t id, uint32_t ofs, uint32_t count);
     void logEraseAll();
     void logRequestEnd();
+
+    void sendHeartbeat();
 
 signals:
     /** @brief The main/battery voltage has changed/was updated */

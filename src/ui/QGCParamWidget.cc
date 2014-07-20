@@ -333,6 +333,7 @@ void QGCParamWidget::saveParamsToFile(const QString &filename,ParamFileType type
                         paramValue = paramValue.arg(j.value().toUInt());
                         paramType = paramType.arg(MAV_PARAM_TYPE_UINT32);
                         break;
+                    case QVariant::Double:
                     case QMetaType::Float:
                         paramValue = paramValue.arg(j.value().toDouble(), 25, 'g', 12);
                         paramType = paramType.arg(MAV_PARAM_TYPE_REAL32);
@@ -916,6 +917,7 @@ void QGCParamWidget::parameterItemChanged(QTreeWidgetItem* current, int column)
                 parameters.value(key)->insert(str, fixedValue);
             }
                 break;
+            case QVariant::Double:
             case QMetaType::Float:
             {
                 QVariant fixedValue(value.toFloat());
@@ -1049,6 +1051,7 @@ void QGCParamWidget::retransmissionGuardTick()
                         emit parameterChanged(component, key, fixedValue);
                     }
                         break;
+                    case QVariant::Double:
                     case QMetaType::Float:
                     {
                         QVariant fixedValue(value.toFloat());
@@ -1128,6 +1131,7 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
         //QLOG_DEBUG() << "PARAM WIDGET SENT:" << fixedValue;
     }
         break;
+    case QVariant::Double:
     case QMetaType::Float:
     {
         QVariant fixedValue(value.toFloat());

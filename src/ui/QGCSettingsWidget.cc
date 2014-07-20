@@ -56,6 +56,12 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         ui->titleBarCheckBox->setChecked(MainWindow::instance()->dockWidgetTitleBarsEnabled());
         connect(ui->titleBarCheckBox,SIGNAL(clicked(bool)),MainWindow::instance(),SLOT(enableDockWidgetTitleBars(bool)));
 
+        ui->heartbeatCheckBox->setChecked(MainWindow::instance()->heartbeatEnabled());
+        connect(ui->heartbeatCheckBox,SIGNAL(clicked(bool)),MainWindow::instance(),SLOT(enableHeartbeat(bool)));
+
+        ui->mavlinkLoggingCheckBox->setChecked(LinkManager::instance()->loggingEnabled());
+        connect(ui->mavlinkLoggingCheckBox,SIGNAL(clicked(bool)),LinkManager::instance(),SLOT(enableLogging(bool)));
+
         ui->logDirEdit->setText(QGC::logDirectory());
 
         ui->appDataDirEdit->setText((QGC::appDataDirectory()));
@@ -92,10 +98,18 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         connect(ui->rcChannelDataLineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
         connect(ui->rawSensorLineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
 
-        connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+        connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(setActiveUAS(UASInterface*)));
         setActiveUAS(UASManager::instance()->getActiveUAS());
 
         setDataRateLineEdits();
+
+        QSettings settings;
+        settings.beginGroup("AUTO_UPDATE");
+        if(!settings.value("RELEASE_TYPE", "stable").toString().contains("stable")){
+            ui->enableBetaReleaseCheckBox->setChecked(true);
+        }
+        settings.endGroup();
+        connect(ui->enableBetaReleaseCheckBox, SIGNAL(clicked(bool)), this, SLOT(setBetaRelease(bool)));
     }
 }
 
@@ -236,4 +250,18 @@ void QGCSettingsWidget::ratesChanged()
             mav->RequestAllDataStreams();
         }
     }
+}
+
+void QGCSettingsWidget::setBetaRelease(bool state)
+{
+    QString type;
+    QSettings settings;
+    settings.beginGroup("AUTO_UPDATE");
+    if (state == true){
+        type = "beta";
+    } else {
+        type = "stable";
+    }
+    settings.setValue("RELEASE_TYPE", type);
+    settings.sync();
 }

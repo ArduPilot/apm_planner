@@ -10,6 +10,7 @@
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlotAxisDialog.h"
+#include "DroneshareUploadDialog.h"
 #include <QTextBrowser>
 #include <QSqlDatabase>
 #include <QStandardItemModel>
@@ -31,6 +32,7 @@ signals:
 public slots:
     void showLogDownloadDialog();
     void closeLogDownloadDialog();
+    void clearGraph();
 
 private slots:
     //New Active UAS set
@@ -49,7 +51,7 @@ private slots:
     //Cancel clicked on the graph loading thread progress dialog
     void progressDialogCanceled();
     //Graph loading thread finished
-    void threadDone(int errors);
+    void threadDone(int errors,MAV_TYPE type);
     //Graph loading thread actually exited
     void threadTerminated();
     //Graph loading thread error
@@ -89,6 +91,10 @@ private slots:
     void verticalScrollMoved(int value);
     void xAxisChanged(QCPRange range);
     void replyTLogButtonClicked();
+
+    void droneshareButtonClicked();
+
+    void exportButtonClicked();
 
 private:
     void showEvent(QShowEvent *evt);
@@ -145,7 +151,7 @@ private:
     UASInterface *m_uas;
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
-    qint64 m_timeDiff;
+    //qint64 m_timeDiff;
     bool m_tlogReplayEnabled;
 
 
@@ -153,6 +159,9 @@ private:
     qint64 m_scrollEndIndex; //Actual graph end
 
     LogDownloadDialog *m_logDownloadDialog;
+    DroneshareUploadDialog *m_droneshareUploadDialog;
+
+    MAV_TYPE m_loadedLogMavType;
 
 
 };
