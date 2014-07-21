@@ -891,8 +891,8 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
             emit valueChanged(uasId,name.arg("GPS Fix"),"",pos.fix_type,time);
             emit valueChanged(uasId,name.arg("GPS Sats"),"",pos.satellites_visible,time);
-            emit valueChanged(uasId,name.arg("GPS HDOP"),"m",pos.eph/100.0f,time);
-            emit valueChanged(uasId,name.arg("GPS COG"),"",pos.cog/100.0f,time);
+            emit valueChanged(uasId,name.arg("GPS HDOP"),"m", pos.eph/100.0,time);
+            emit valueChanged(uasId,name.arg("GPS COG"),"",pos.cog/100.0,time);
 
         }
             break;
