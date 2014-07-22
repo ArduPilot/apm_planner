@@ -374,7 +374,7 @@ void UASQuickView::valueUpdate(const int uasId,const QString &name,const QString
 
 void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec)
 {
-    if (value.type() == QVariant::Double)
+    if ((QMetaType::Type)value.type() == QMetaType::Double || (QMetaType::Type)value.type() == QMetaType::Float)
     {
         valueChanged(uasId,name,unit,value.toDouble(),msec);
     }
