@@ -280,7 +280,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 {
                     if (lastIndex.value(message.sysid).contains(message.compid))
                     {
-                        if (lastIndex.value(message.sysid).value(message.compid) == -1)
+                        if (lastIndex.value(message.sysid).value(message.compid) == static_cast<uint8_t>(-1))
                         {
                             lastIndex[message.sysid][message.compid] = message.seq;
                             expectedIndex = message.seq;
