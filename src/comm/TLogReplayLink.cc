@@ -154,14 +154,14 @@ void TLogReplayLink::run()
                     nexttime = false;
 
                     //Should be a timestamp for the next packet.
-                    unsigned long logmsecs = static_cast<unsigned char>(timebuf.at(0)) << 56;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(1)) << 48;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(2)) << 40;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(3)) << 32;
-                    logmsecs = static_cast<unsigned char>(timebuf.at(4)) << 24;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(5)) << 16;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(6)) << 8;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(7)) << 0;
+                    quint64 logmsecs = static_cast<quint64>(timebuf.at(0)) << 56;
+                    logmsecs += static_cast<quint64>(timebuf.at(1)) << 48;
+                    logmsecs += static_cast<quint64>(timebuf.at(2)) << 40;
+                    logmsecs += static_cast<quint64>(timebuf.at(3)) << 32;
+                    logmsecs = static_cast<quint64>(timebuf.at(4)) << 24;
+                    logmsecs += static_cast<quint64>(timebuf.at(5)) << 16;
+                    logmsecs += static_cast<quint64>(timebuf.at(6)) << 8;
+                    logmsecs += static_cast<quint64>(timebuf.at(7)) << 0;
 
                     timebuf.clear();
 
