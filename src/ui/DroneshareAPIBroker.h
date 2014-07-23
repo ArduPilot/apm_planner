@@ -43,7 +43,7 @@ public:
     void addQuery(const QString& queryString);
     void addQueryItem(const QString& key, const QString& value);
     void sendQueryRequest();
-    const QString& getUrl() const;
+    const QString getUrl() const;
 
 signals:
     void queryFailed(const QString& errorString);
