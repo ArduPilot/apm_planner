@@ -97,9 +97,9 @@ void DroneshareAPIBroker::addBaseUrl(const QString &baseUrl)
     m_droneshareBaseUrl = baseUrl;
 }
 
-const QString& DroneshareAPIBroker::getUrl() const
+const QUrl &DroneshareAPIBroker::getUrl() const
 {
-    return m_url.toString();
+    return m_url;
 }
 
 void DroneshareAPIBroker::sendQueryRequest()
