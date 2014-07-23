@@ -172,8 +172,8 @@ void AutoUpdateCheck::updateDataReadProgress(qint64 bytesRead, qint64 totalBytes
 bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QString& currentVersion)
 {
     // [TODO] DRY this out by creating global function for use in APM Firmware as well
-    int newMajor,newMinor,newBuild = 0;
-    int currentMajor, currentMinor,currentBuild = 0;
+    int newMajor = 0,newMinor = 0,newBuild = 0;
+    int currentMajor = 0, currentMinor = 0,currentBuild = 0;
 
     QString newBuildSubMoniker, oldBuildSubMoniker; // holds if the build is a rc or dev build
 
