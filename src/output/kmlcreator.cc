@@ -20,21 +20,28 @@ const float PI = 3.14159265;
 
 static const QString kModesToColors[][2] = {
     // Colors are expressed in aabbggrr.
-    {"AUTO", "FFFF00FF"},
-    {"STABILIZE", "FF00FF00"},
-    {"LOITER", "FFFF0000"},
-    {"OF_LOITER", "FFFF2323"},
-    {"RTL", "FFFFCE00"},
-    {"ALT_HOLD", "FF00CEFF"},
-    {"LAND", "FF009900"},
-    {"CIRCLE", "FF33FFCC"},
-    {"ACRO", "FF0000FF"},
-    {"GUIDED", "FFFFAAAA"},
-    {"POSITION", "FFABABAB"},
-    {"TOY_A", "FF99FF33"},
-    {"TOY_B", "FF66CC99"},
-    {"SPORT", "FFCC3300"},
-    {"DRIFT", "FF0066FF"},
+    {"AUTO", "FFFF00FF"},       // Plane/Copter/Rover
+    {"STABILIZE", "FF00FF00"},  // Plane/Copter
+    {"LOITER", "FFFF0000"},     // Plane/Copter
+    {"OF_LOITER", "FFFF2323"},  // Copter
+    {"RTL", "FFFFCE00"},        // Plane/Copter/Rover
+    {"ALT_HOLD", "FF00CEFF"},   // Copter
+    {"LAND", "FF009900"},       // Plane/Copter
+    {"CIRCLE", "FF33FFCC"},     // Plane/Copter
+    {"ACRO", "FF0000FF"},       // Plane/Copter
+    {"GUIDED", "FFFFAAAA"},     // Plane/Copter/Rover
+    {"POSITION", "FFABABAB"},   // Copter
+    {"TOY_A", "FF99FF33"},      // Copter (Legacy)
+    {"TOY_B", "FF66CC99"},      // Copter (Legacy)
+    {"SPORT", "FFCC3300"},      // Copter
+    {"DRIFT", "FF0066FF"},      // Copter
+    {"AUTOTUNE", "FF99FF33"},   // Plane/Copter
+    {"FLIP", "FF66CC99"},       // Copter
+    {"MANUAL", "FF00FF00"},     // Plane/Rover
+    {"LEARNING", "FFFF0000"},   // Rover
+    {"STEERING", "FFFF2323"},   // Rover
+    {"HOLD", "FF00CEFF"},       // Rover
+    {"INITIALIZING", "FF009900"},  // Plane/Rover
     {"", ""}
 };
 
@@ -79,7 +86,7 @@ static QString getColorFor(QString &str) {
         ++i;
     }
 
-    return QString("FF000000");
+    return QString("FF00F000");
 }
 
 static QString toModeString(QString &line) {
