@@ -190,7 +190,7 @@ QString ApmCopter::stringForMode(int aMode) {
         return "Circle";
         break;
     case POSITION:
-        return "Position";
+        return "Reserved"; // Marked as reserved as not supported since AC3.2
         break;
     case LAND:
         return "Land";
@@ -207,8 +207,8 @@ QString ApmCopter::stringForMode(int aMode) {
     case RESERVED_12:
         return "Reserved";
         break;
-    case HYBRID_LOITER:
-        return "Hybrid Loiter";
+    case POS_HOLD:
+        return "Position Hold";
         break;
     case AUTOTUNE:
         return "Autotune";

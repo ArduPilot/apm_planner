@@ -102,7 +102,7 @@ public:
     SPORT       = 13,  // [TODO] Verify this is correct.
     FLIP        = 14,
     AUTOTUNE    = 15,
-    HYBRID_LOITER = 16 // HYBRID LOITER.
+    POS_HOLD    = 16 // HYBRID LOITER.
     };
 
 public:
