@@ -12,7 +12,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1080</width>
+    <width>1020</width>
     <height>576</height>
    </size>
   </property>
@@ -51,7 +51,7 @@
      <x>0</x>
      <y>0</y>
      <width>1080</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMGround">
