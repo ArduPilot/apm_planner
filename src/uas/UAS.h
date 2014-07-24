@@ -56,8 +56,8 @@ public:
     UAS(MAVLinkProtocol* protocol,int id = 0);
     ~UAS();
 
-    static const float lipoFull;  ///< 100% charged voltage
-    static const float lipoEmpty; ///< Discharged voltage
+    static const double lipoFull;  ///< 100% charged voltage
+    static const double lipoEmpty; ///< Discharged voltage
 
     /* MANAGEMENT */
 
@@ -90,7 +90,7 @@ public:
     /** @brief Get the status flag for the communication */
     int getCommunicationStatus() const;
     /** @brief Add one measurement and get low-passed voltage */
-    float filterVoltage(float value) const;
+    double filterVoltage(double value) const;
     /** @brief Get the links associated with this robot */
     QList<LinkInterface*>* getLinks();
     QList<int> getLinkIdList();
@@ -417,8 +417,8 @@ protected: //COMMENTS FOR TEST UNIT
     QList<int> unknownPackets;    ///< Packet IDs which are unknown and have been received
     //MAVLinkProtocol* mavlink;     ///< Reference to the MAVLink instance
     CommStatus commStatus;        ///< Communication status
-    float receiveDropRate;        ///< Percentage of packets that were dropped on the MAV's receiving link (from GCS and other MAVs)
-    float sendDropRate;           ///< Percentage of packets that were not received from the MAV by the GCS
+    double receiveDropRate;        ///< Percentage of packets that were dropped on the MAV's receiving link (from GCS and other MAVs)
+    double sendDropRate;           ///< Percentage of packets that were not received from the MAV by the GCS
     quint64 lastHeartbeat;        ///< Time of the last heartbeat message
     QTimer* statusTimeout;        ///< Timer for various status timeouts
 
@@ -450,19 +450,19 @@ protected: //COMMENTS FOR TEST UNIT
     /// BATTERY / ENERGY
     BatteryType batteryType;    ///< The battery type
     int cells;                  ///< Number of cells
-    float fullVoltage;          ///< Voltage of the fully charged battery (100%)
-    float emptyVoltage;         ///< Voltage of the empty battery (0%)
-    float startVoltage;         ///< Voltage at system start
-    float tickVoltage;          ///< Voltage where 0.1 V ticks are told
-    float lastTickVoltageValue; ///< The last voltage where a tick was announced
-    float tickLowpassVoltage;   ///< Lowpass-filtered voltage for the tick announcement
-    float warnVoltage;          ///< Voltage where QGC will start to warn about low battery
-    float warnLevelPercent;     ///< Warning level, in percent
+    double fullVoltage;          ///< Voltage of the fully charged battery (100%)
+    double emptyVoltage;         ///< Voltage of the empty battery (0%)
+    double startVoltage;         ///< Voltage at system start
+    double tickVoltage;          ///< Voltage where 0.1 V ticks are told
+    double lastTickVoltageValue; ///< The last voltage where a tick was announced
+    double tickLowpassVoltage;   ///< Lowpass-filtered voltage for the tick announcement
+    double warnVoltage;          ///< Voltage where QGC will start to warn about low battery
+    double warnLevelPercent;     ///< Warning level, in percent
     double currentVoltage;      ///< Voltage currently measured
-    float lpVoltage;            ///< Low-pass filtered voltage
+    double lpVoltage;            ///< Low-pass filtered voltage
     double currentCurrent;      ///< Battery current currently measured
     bool batteryRemainingEstimateEnabled; ///< If the estimate is enabled, QGC will try to estimate the remaining battery life
-    float chargeLevel;          ///< Charge level of battery, in percent
+    double chargeLevel;          ///< Charge level of battery, in percent
     int timeRemaining;          ///< Remaining time calculated based on previous and current
     bool lowBattAlarm;          ///< Switch if battery is low
 
@@ -578,7 +578,7 @@ public:
     /** @brief Estimate how much flight time is remaining */
     int calculateTimeRemaining();
     /** @brief Get the current charge level */
-    float getChargeLevel();
+    double getChargeLevel();
     /** @brief Get the human-readable status message for this code */
     void getStatusForCode(int statusCode, QString& uasState, QString& stateDescription);
 

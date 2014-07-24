@@ -36,8 +36,8 @@
 #endif
 
 
-const float UAS::lipoFull = 4.2f;  ///< 100% charged voltage
-const float UAS::lipoEmpty = 3.5f; ///< Discharged voltage
+const double UAS::lipoFull = 4.2f;  ///< 100% charged voltage
+const double UAS::lipoEmpty = 3.5f; ///< Discharged voltage
 
 
 /**
@@ -78,15 +78,15 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     // cells not initialized
     // fullVoltage not initialized
     // emptyVoltage not initialized
-    startVoltage(-1.0f),
-    tickVoltage(10.5f),
-    lastTickVoltageValue(13.0f),
-    tickLowpassVoltage(12.0f),
-    warnVoltage(9.5f),
-    warnLevelPercent(20.0f),
-    currentVoltage(12.6f),
-    lpVoltage(12.0f),
-    currentCurrent(0.4f),
+    startVoltage(-1.0),
+    tickVoltage(10.5),
+    lastTickVoltageValue(13.0),
+    tickLowpassVoltage(12.0),
+    warnVoltage(9.5),
+    warnLevelPercent(20.0),
+    currentVoltage(12.6),
+    lpVoltage(12.0),
+    currentCurrent(0.4),
     batteryRemainingEstimateEnabled(true),
     // chargeLevel not initialized
     // timeRemaining  not initialized
@@ -530,13 +530,13 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit valueChanged(uasId, name.arg("Errors Count 4"), "-", state.errors_count4, time);
 
 			// Process CPU load.
-            emit loadChanged(this,state.load/10.0f);
-            emit valueChanged(uasId, name.arg("CPU Load"), "%", state.load/10.0f, time);
+            emit loadChanged(this,state.load/10.0);
+            emit valueChanged(uasId, name.arg("CPU Load"), "%", state.load/10.0, time);
 
 			// Battery charge/time remaining/voltage calculations
-            currentVoltage = state.voltage_battery/1000.0f;
+            currentVoltage = state.voltage_battery/1000.0;
             lpVoltage = filterVoltage(currentVoltage);
-            tickLowpassVoltage = tickLowpassVoltage*0.8f + 0.2f*currentVoltage;
+            tickLowpassVoltage = tickLowpassVoltage*0.8 + 0.2*currentVoltage;
 
             // We don't want to tick above the threshold
             if (tickLowpassVoltage > tickVoltage)
@@ -544,13 +544,13 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 lastTickVoltageValue = tickLowpassVoltage;
             }
 
-            if ((startVoltage > 0.0f) && (tickLowpassVoltage < tickVoltage) && (fabs(lastTickVoltageValue - tickLowpassVoltage) > 0.1f)
+            if ((startVoltage > 0.0) && (tickLowpassVoltage < tickVoltage) && (fabs(lastTickVoltageValue - tickLowpassVoltage) > 0.1)
                     /* warn if lower than treshold */
                     && (lpVoltage < tickVoltage)
                     /* warn only if we have at least the voltage of an empty LiPo cell, else we're sampling something wrong */
-                    && (currentVoltage > 3.3f)
+                    && (currentVoltage > 3.3)
                     /* warn only if current voltage is really still lower by a reasonable amount */
-                    && ((currentVoltage - 0.2f) < tickVoltage)
+                    && ((currentVoltage - 0.2) < tickVoltage)
                     /* warn only every 12 seconds */
                     && (QGC::groundTimeUsecs() - lastVoltageWarning) > 12000000)
             {
@@ -559,7 +559,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 lastTickVoltageValue = tickLowpassVoltage;
             }
 
-            if (startVoltage == -1.0f && currentVoltage > 0.1f) startVoltage = currentVoltage;
+            if (startVoltage == -1.0 && currentVoltage > 0.1) startVoltage = currentVoltage;
             timeRemaining = calculateTimeRemaining();
             if (!batteryRemainingEstimateEnabled && chargeLevel != -1)
             {
@@ -570,17 +570,17 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             // emit voltageChanged(message.sysid, currentVoltage);
 
             emit valueChanged(uasId, name.arg("Battery"), "%", state.battery_remaining, time);
-            emit valueChanged(uasId, name.arg("Voltage"), "V", state.voltage_battery/1000.0f, time);
+            emit valueChanged(uasId, name.arg("Voltage"), "V", state.voltage_battery/1000.0, time);
 
 			// And if the battery current draw is measured, log that also.
 			if (state.current_battery != -1)
 			{
-                currentCurrent = ((double)state.current_battery)/100.0f;
+                currentCurrent = ((double)state.current_battery)/100.0;
                 emit valueChanged(uasId, name.arg("Current"), "A", currentCurrent, time);
 			}
 
             // LOW BATTERY ALARM
-            if (lpVoltage < warnVoltage && (currentVoltage - 0.2f) < warnVoltage && (currentVoltage > 3.3))
+            if (lpVoltage < warnVoltage && (currentVoltage - 0.2) < warnVoltage && (currentVoltage > 3.3))
             {
                 // An audio alarm. Does not generate any signals.
                 startLowBattAlarm();
@@ -605,8 +605,8 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 			{
 				state.drop_rate_comm = 10000;
 			}
-			emit dropRateChanged(this->getUASID(), state.drop_rate_comm/100.0f);
-            emit valueChanged(uasId, name.arg("Comms Drop Rate"), "%", state.drop_rate_comm/100.0f, time);
+            emit dropRateChanged(this->getUASID(), state.drop_rate_comm/100.0);
+            emit valueChanged(uasId, name.arg("Comms Drop Rate"), "%", state.drop_rate_comm/100.0, time);
 		}
             break;
         case MAVLINK_MSG_ID_ATTITUDE:
@@ -849,7 +849,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             }
             emit localizationChanged(this, loc_type);
             setSatelliteCount(pos.satellites_visible);
-            setGpsHdop(pos.eph/100.0f);
+            setGpsHdop(pos.eph/100.0);
             setGpsFix(pos.fix_type);
 
             // emit raw GPS message
@@ -874,7 +874,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                     emit globalPositionChanged(this, getLatitude(), getLongitude(), getAltitudeAMSL(), time);
                     emit altitudeChanged(this, altitudeAMSL, altitudeRelative, -speedZ, time);
                 
-                    float vel = pos.vel/100.0f;
+                    double vel = pos.vel/100.0;
                     // Smaller than threshold and not NaN
                     if ((vel < 1000000) && !isnan(vel) && !isinf(vel))
                     {
@@ -1990,7 +1990,7 @@ void UAS::sendMessage(LinkInterface* link, mavlink_message_t message)
 /**
  * @param value battery voltage
  */
-float UAS::filterVoltage(float value) const
+double UAS::filterVoltage(double value) const
 {
     return lpVoltage * 0.6f + value * 0.4f;
 }
@@ -3666,21 +3666,21 @@ int UAS::calculateTimeRemaining()
 /**
  * @return charge level in percent - 0 - 100
  */
-float UAS::getChargeLevel()
+double UAS::getChargeLevel()
 {
     if (batteryRemainingEstimateEnabled)
     {
         if (lpVoltage < emptyVoltage)
         {
-            chargeLevel = 0.0f;
+            chargeLevel = 0.0;
         }
         else if (lpVoltage > fullVoltage)
         {
-            chargeLevel = 100.0f;
+            chargeLevel = 100.0;
         }
         else
         {
-            chargeLevel = 100.0f * ((lpVoltage - emptyVoltage)/(fullVoltage - emptyVoltage));
+            chargeLevel = 100.0 * ((lpVoltage - emptyVoltage)/(fullVoltage - emptyVoltage));
         }
     }
     return chargeLevel;
