@@ -65,10 +65,34 @@ QString CustomMode::operator <<(int aMode)
     return QString::number(aMode);
 }
 
-
-ApmPlane::ApmPlane(planeMode aMode)
+QString CustomMode::colorForMode(int aMode)
 {
-    CustomMode(static_cast<int>(aMode));
+    const uint numberOfKmlColors = 16;
+    const QString kmlColors[] = {"FFFF00FF"
+        , "FF00FF00"
+        , "FFFF0000"
+        , "FFFF2323"
+        , "FFFFCE00"
+        , "FF00CEFF"
+        , "FF009900"
+        , "FF33FFCC"
+        , "FF0000FF"
+        , "FFFFAAAA"
+        , "FFABABAB"
+        , "FF99FF33"
+        , "FF66CC99"
+        , "FFCC3300"
+        , "FF0066FF"};
+
+    if ((sizeof(kmlColors)/sizeof(const char*)) > aMode*numberOfKmlColors ){
+        QLOG_ERROR() << "ColorForMode: not enough colors, so wrapping to 1st color";
+        aMode -= numberOfKmlColors;
+    }
+    return kmlColors[aMode];
+}
+
+ApmPlane::ApmPlane(planeMode aMode) : CustomMode(aMode)
+{
 }
 
 ApmPlane::planeMode ApmPlane::mode()
@@ -130,9 +154,8 @@ QString ApmPlane::stringForMode(int aMode)
     }
 }
 
-ApmCopter::ApmCopter(copterMode aMode)
+ApmCopter::ApmCopter(copterMode aMode) : CustomMode(aMode)
 {
-     CustomMode(static_cast<int>(aMode));
 }
 
 ApmCopter::copterMode ApmCopter::mode()
@@ -198,9 +221,8 @@ QString ApmCopter::stringForMode(int aMode) {
     }
 }
 
-ApmRover::ApmRover(roverMode aMode)
+ApmRover::ApmRover(roverMode aMode) : CustomMode(aMode)
 {
-     CustomMode(static_cast<int>(aMode));
 }
 
 ApmRover::roverMode ApmRover::mode()

@@ -46,6 +46,7 @@ public:
     CustomMode(int aMode);
     int modeAsInt();
     virtual QString operator <<(int mode);
+    static QString colorForMode(int aMode);
 protected:
     int m_mode;
 };
