@@ -35,8 +35,7 @@ This file is part of the APM_PLANNER project
 #include <QSettings>
 #include "QGC.h"
 
-#define VERSION_REGEX "(\\d*\\.\\d+\\.?\\d+)-?(rc\\d)?"
-
+static const QString VersionCompareRegEx = "(\\d*\\.\\d+\\.?\\d+)-?(rc\\d)?";
 
 AutoUpdateCheck::AutoUpdateCheck(QObject *parent) :
     QObject(parent),
@@ -178,7 +177,7 @@ bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QSt
     QString newBuildSubMoniker, oldBuildSubMoniker; // holds if the build is a rc or dev build
 
 
-    QRegExp versionEx(VERSION_REGEX);
+    QRegExp versionEx(VersionCompareRegEx);
     QString versionstr = "";
     int pos = versionEx.indexIn(newVersion);
     if (pos > -1) {
@@ -197,7 +196,7 @@ bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QSt
             newBuildSubMoniker = versionEx.cap(2);
     }
 
-    QRegExp versionEx2(VERSION_REGEX);
+    QRegExp versionEx2(VersionCompareRegEx);
     versionstr = "";
     pos = versionEx2.indexIn(currentVersion);
     if (pos > -1) {
