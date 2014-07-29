@@ -109,9 +109,9 @@ QT += network \
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
-gittouch.commands = touch qgroundcontrol.pro
-QMAKE_EXTRA_TARGETS += gittouch
-POST_TARGETDEPS += gittouch
+#gittouch.commands = touch qgroundcontrol.pro
+#QMAKE_EXTRA_TARGETS += gittouch
+#POST_TARGETDEPS += gittouch
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
@@ -120,7 +120,7 @@ DEFINES += _TTY_NOWARN_
 # Logging Library
 #
 include (QsLog/QsLog.pri)
-include (libs/mavlink/include/mavlink/v1.0-qt/mavlink.pri)
+#include (libs/mavlink/include/mavlink/v1.0-qt/mavlink.pri)
 #
 # OS Specific settings
 #
@@ -642,7 +642,9 @@ HEADERS += \
     src/ui/DroneshareUpload.h \
     src/ui/LoginDialog.h \
     src/ui/DroneshareAPIBroker.h \
-    src/comm/UASObject.h
+    src/comm/UASObject.h \
+    src/comm/VehicleOverview.h \
+    src/comm/RelPositionOverview.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -865,7 +867,9 @@ SOURCES += src/main.cc \
     src/ui/DroneshareUpload.cpp \
     src/ui/LoginDialog.cpp \
     src/ui/DroneshareAPIBroker.cpp \
-    src/comm/UASObject.cc
+    src/comm/UASObject.cc \
+    src/comm/VehicleOverview.cc \
+    src/comm/RelPositionOverview.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

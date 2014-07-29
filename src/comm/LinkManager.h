@@ -50,6 +50,7 @@ This file is part of the APM_PLANNER project
 #include <QMap>
 #include "UASInterface.h"
 #include "UAS.h"
+#include "UASObject.h"
 class LinkManager : public QObject
 {
     Q_OBJECT
@@ -105,6 +106,8 @@ public:
     void startLogging();
     void setLogSubDirectory(QString dir);
     bool loggingEnabled();
+    UASObject *getUasObject(int uasid);
+    QMap<int,UASObject*> m_uasObjectMap;
 private:
     QMap<int,LinkInterface*> m_connectionMap;
     QMap<int,UASInterface*> m_uasMap;

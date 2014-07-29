@@ -49,8 +49,8 @@ Rectangle {
     RollPitchIndicator {
         id: rollPitchIndicator
         anchors.centerIn: parent
-        rollAngle: parent.roll
-        pitchAngle: parent.pitch
+        rollAngle: 0
+        pitchAngle: 0
         enableBackgroundVideo: parent.enableBackgroundVideo
     }
 
@@ -101,6 +101,16 @@ Rectangle {
         anchors.fill: parent
         airSpeed: parent.airspeed
         groundSpeed: parent.groundspeed
+    }
+    function uasObjectCreated() {
+        console.log("Uas Object created");
+        rollPitchIndicator.rollAngle = function() { return relpositionoverview.roll };
+        rollPitchIndicator.pitchAngle = function() { return  relpositionoverview.pitch };
+    }
+    function attitudeReceived(object)
+    {
+
+
     }
 }
 

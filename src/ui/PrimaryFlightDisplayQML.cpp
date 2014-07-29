@@ -27,6 +27,7 @@ This file is part of the APM_PLANNER project
 #include "configuration.h"
 #include "MainWindow.h"
 #include <QVBoxLayout>
+#include <QDeclarativeContext>
 
 #define ToRad(x) (x*0.01745329252)      // *pi/180
 #define ToDeg(x) (x*57.2957795131)      // *180/pi
@@ -87,6 +88,11 @@ void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
                 this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
         connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
                 this,SLOT(uasTextMessage(int,int,int,QString)));
+        VehicleOverview *obj = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
+        RelPositionOverview *rel = LinkManager::instance()->getUasObject(uas->getUASID())->getRelPositionOverview();
+        m_declarativeView->rootContext()->setContextProperty("vehicleoverview",obj);
+        m_declarativeView->rootContext()->setContextProperty("relpositionoverview",rel);
+        QMetaObject::invokeMethod(m_declarativeView->rootObject(),"uasObjectCreated");
     }
 }
 

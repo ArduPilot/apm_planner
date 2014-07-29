@@ -39,6 +39,7 @@ This file is part of the APM_PLANNER project
 #include "TCPLink.h"
 #include <QSettings>
 #include "qserialportinfo.h"
+#include "UASObject.h"
 LinkManager::LinkManager(QObject *parent) :
     QObject(parent)
 {
@@ -617,6 +618,10 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     case MAV_AUTOPILOT_ARDUPILOTMEGA:
     {
         ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(0, sysid);
+        UASObject *obj = new UASObject();
+        connect(mavlink,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),obj,SLOT(messageReceived(LinkInterface*,mavlink_message_t)));
+        m_uasObjectMap[sysid] = obj;
+
         // Set the system type
         mav->setSystemType((int)heartbeat->type);
         // Connect this robot to the UAS object
@@ -665,6 +670,15 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     return uas;
 
 }
+UASObject *LinkManager::getUasObject(int uasid)
+{
+    if (m_uasObjectMap.contains(uasid))
+    {
+        return m_uasObjectMap.value(uasid);
+    }
+    return 0;
+}
+
 void LinkManager::setSerialParityType(int index,int parity)
 {
     if (!m_connectionMap.contains(index))
