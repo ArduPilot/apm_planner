@@ -32,7 +32,8 @@ This file is part of the APM_PLANNER project
 #include <QObject>
 #include <QtNetwork>
 
-static const QString DroneShareBaseUrl = "http://api.3dr.com";
+static const QString DroneshareBaseUrl = "https://api.3drobotics.com/api/v1";
+static const QString DroneshareAPIKey = "5e5c1859.14f775d41f4c3b21af4b3bceb104728a";
 
 class DroneshareUpload : public QObject
 {
