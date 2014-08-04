@@ -320,7 +320,7 @@ public slots:
     //POWER_STATUS
     //BATTERY_STATUS
     //STATUSTEXT
-    void messageReceived(LinkInterface* link,mavlink_message_t message,QByteArray payload);
+    void messageReceived(LinkInterface* link,mavlink_message_t message);
 };
 
 #endif // VEHICLEOVERVIEW_H

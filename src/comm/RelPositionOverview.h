@@ -15,7 +15,43 @@ public:
     Q_PROPERTY(double yaw READ getYaw WRITE setYaw NOTIFY yawChanged)
     Q_PROPERTY(double rollspeed READ getRollspeed WRITE setRollspeed NOTIFY rollspeedChanged)
     Q_PROPERTY(double pitchspeed READ getPitchspeed WRITE setPitchspeed NOTIFY pitchspeedChanged)
+    //vfr_hud
     Q_PROPERTY(double yawspeed READ getYawspeed WRITE setYawspeed NOTIFY yawspeedChanged)
+    Q_PROPERTY(double airspeed READ getAirspeed WRITE setAirspeed NOTIFY airspeedChanged)
+    Q_PROPERTY(double groundspeed READ getGroundspeed WRITE setGroundspeed NOTIFY groundspeedChanged)
+    Q_PROPERTY(double alt READ getAlt WRITE setAlt NOTIFY altChanged)
+    Q_PROPERTY(double climb READ getClimb WRITE setClimb NOTIFY climbChanged)
+    Q_PROPERTY(int heading READ getHeading WRITE setHeading NOTIFY headingChanged)
+    Q_PROPERTY(unsigned int throttle READ getThrottle WRITE setThrottle NOTIFY throttleChanged)
+
+    //vfr_hud
+    double getAirspeed() { return m_airspeed; }
+    double getGroundspeed() { return m_groundspeed; }
+    double getAlt() { return m_alt; }
+    double getClimb() { return m_climb; }
+    int getHeading() { return m_heading; }
+    unsigned int getThrottle() { return m_throttle; }
+    void setAirspeed(double airspeed) { if (m_airspeed!=airspeed){m_airspeed = airspeed; emit airspeedChanged(airspeed);}}
+    void setGroundspeed(double groundspeed) { if (m_groundspeed!=groundspeed){m_groundspeed = groundspeed; emit groundspeedChanged(groundspeed);}}
+    void setAlt(double alt) { if (m_alt!=alt){m_alt = alt; emit altChanged(alt);}}
+    void setClimb(double climb) { if (m_climb!=climb){m_climb = climb; emit climbChanged(climb);}}
+    void setHeading(int heading) { if (m_heading!=heading){m_heading = heading; emit headingChanged(heading);}}
+    void setThrottle(unsigned int throttle) { if (m_throttle!=throttle){m_throttle = throttle; emit throttleChanged(throttle);}}
+private:
+    double m_airspeed;
+    double m_groundspeed;
+    double m_alt;
+    double m_climb;
+    int m_heading;
+    unsigned int m_throttle;
+signals:
+    void airspeedChanged(double);
+    void groundspeedChanged(double);
+    void altChanged(double);
+    void climbChanged(double);
+    void headingChanged(int);
+    void throttleChanged(unsigned int);
+public:
     unsigned int getTimeBootMs() { return m_timeBootMs; }
     double getRoll() { return m_roll; }
     double getPitch() { return m_pitch; }
@@ -58,10 +94,11 @@ public:
     //HIGHRES_IMU
 private:
     void parseAttitude(LinkInterface *link, const mavlink_message_t &message, const mavlink_attitude_t &state);
+    void parseVfrHud(LinkInterface *link, const mavlink_message_t &message, const mavlink_vfr_hud_t &state);
 signals:
 
 public slots:
-    void messageReceived(LinkInterface* link,mavlink_message_t message,QByteArray payload);
+    void messageReceived(LinkInterface* link,mavlink_message_t message);
 };
 
 #endif // RELPOSITIONOVERVIEW_H

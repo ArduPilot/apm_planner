@@ -5,6 +5,7 @@
 #include "LinkInterface.h"
 #include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
 #include "RelPositionOverview.h"
+#include "AbsPositionOverview.h"
 
 /*#include "libs/mavlink/include/mavlink/v1.0-qt/ardupilotmega/mavlink_message_ahrs.h"
 #include "libs/mavlink/include/mavlink/v1.0-qt/common/mavlink_message_global_position_int.h"
@@ -18,16 +19,6 @@ class UASObject : public QObject
     Q_OBJECT
 public:
 
-    class AbsPositionalOverview
-    {
-        //gps_raw_int
-        //gps_status
-        //raw_pressure
-        //scaled_pressure
-        //global_position_int
-        //GPS_GLOBAL_ORIGIN
-        //GPS2_RAW
-    };
     class MissionOverview
     {
         //MISSION_ITEM
@@ -46,11 +37,13 @@ public:
     explicit UASObject(QObject *parent = 0);
     VehicleOverview *getVehicleOverview() { return m_vehicleOverview; }
     RelPositionOverview *getRelPositionOverview() { return m_relPositionOverview; }
+    AbsPositionOverview *getAbsPositionOverview() { return m_absPositionOverview; }
 private slots:
 private:
     //mavlink_message_heartbeat_t lastHeartbeat;
     VehicleOverview *m_vehicleOverview;
     RelPositionOverview *m_relPositionOverview;
+    AbsPositionOverview *m_absPositionOverview;
 signals:
 
    /*void ahrsReceived(QSharedPointer<mavlink_message_ahrs_t>);

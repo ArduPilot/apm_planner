@@ -84,7 +84,7 @@ void VehicleOverview::parseSysStatus(LinkInterface *link, const mavlink_message_
     this->setDropRateComm(state.drop_rate_comm);
 }
 
-void VehicleOverview::messageReceived(LinkInterface* link,mavlink_message_t message,QByteArray payload)
+void VehicleOverview::messageReceived(LinkInterface* link,mavlink_message_t message)
 {
     switch (message.msgid)
     {

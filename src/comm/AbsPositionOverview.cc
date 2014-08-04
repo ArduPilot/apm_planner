@@ -4,6 +4,7 @@ AbsPositionOverview::AbsPositionOverview(QObject *parent) :
     QObject(parent)
 {
 }
+
 void AbsPositionOverview::parseGpsRawInt(LinkInterface *link, const mavlink_message_t &message, const mavlink_gps_raw_int_t &state)
 {
     if (state.fix_type > 2)
@@ -12,8 +13,12 @@ void AbsPositionOverview::parseGpsRawInt(LinkInterface *link, const mavlink_mess
         this->setLon(state.lon);
         this->setAlt(state.alt);
         this->setVel(state.vel);
-        altitude_gps = pos.alt/1000.0;
     }
+}
+
+void AbsPositionOverview::parseGlobalPositionInt(LinkInterface *link, const mavlink_message_t &message, const mavlink_global_position_int_t &state)
+{
+    this->setRelativeAlt(state.relative_alt);
 }
 
 void AbsPositionOverview::messageReceived(LinkInterface* link,mavlink_message_t message)
@@ -25,6 +30,13 @@ void AbsPositionOverview::messageReceived(LinkInterface* link,mavlink_message_t 
             mavlink_gps_raw_int_t state;
             mavlink_msg_gps_raw_int_decode(&message, &state);
             parseGpsRawInt(link,message,state);
+            break;
+        }
+        case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
+        {
+            mavlink_global_position_int_t state;
+            mavlink_msg_global_position_int_decode(&message, &state);
+            parseGlobalPositionInt(link,message,state);
             break;
         }
     }

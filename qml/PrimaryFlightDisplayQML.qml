@@ -20,19 +20,29 @@ import "./components"
 Rectangle {
     // Property Defintions
     id:root
-    property real roll: 0
-    property real pitch: 0
-    property real heading: 0
-
-    property real altitudeRelative: 0
-    property real altitudeAMSL: 0
-    property real airspeed: 0
-    property real groundspeed: 0
-    property real climbRate: 0
-
     property bool enableBackgroundVideo: false
     property string statusMessage: ""
     property bool showStatusMessage: false
+
+    function activeUasSet() {
+        console.log("PFD-QML: Active UAS is set");
+        rollPitchIndicator.rollAngle = function() { return relpositionoverview.roll*57.2957795131 };
+        rollPitchIndicator.pitchAngle = function() { return  relpositionoverview.pitch*57.2957795131 };
+        pitchIndicator.rollAngle = function() { return relpositionoverview.roll*57.2957795131 };
+        pitchIndicator.pitchAngle = function() { return  relpositionoverview.pitch*57.2957795131 };
+        speedIndicator.groundspeed = function() { return relpositionoverview.groundspeed };
+        informationIndicator.groundSpeed = function() { return relpositionoverview.groundspeed };
+        informationIndicator.airSpeed = function() { return relpositionoverview.airspeed };
+        compassIndicator.heading = function() {
+            return (relpositionoverview.yaw < 0) ? (relpositionoverview.yaw*57.2957795131) + 360 : (relpositionoverview.yaw*57.2957795131)
+        };
+        speedIndicator.airspeed = function() { return relpositionoverview.airspeed };
+        altIndicator.alt = function() { return abspositionoverview.relative_alt };
+    }
+    function activeUasUnset() {
+        console.log("PFD-QML: Active UAS is now unset");
+        //Code to make display show a lack of connection here.
+    }
 
 
     onShowStatusMessageChanged: {
@@ -60,23 +70,23 @@ Rectangle {
         anchors.bottom: parent.bottom
         opacity: 0.6
 
-        pitchAngle: parent.pitch
-        rollAngle: parent.roll
+        pitchAngle: 0
+        rollAngle: 0
     }
 
     AltitudeIndicator {
         id: altIndicator
         anchors.right: parent.right
         width: 35
-        alt: parent.altitudeRelative
+        alt: 0
     }
 
     SpeedIndicator {
         id: speedIndicator
         anchors.left: parent.left
         width: 35
-        airspeed: parent.airspeed
-        groundspeed: parent.groundspeed
+        airspeed: 0
+        groundspeed: 0
     }
 
     CompassIndicator {
@@ -86,7 +96,7 @@ Rectangle {
             y: 20
         }
 
-        heading: parent.heading
+        heading: 0
     }
 
     StatusMessageIndicator  {
@@ -99,18 +109,9 @@ Rectangle {
     InformationOverlayIndicator{
         id: informationIndicator
         anchors.fill: parent
-        airSpeed: parent.airspeed
-        groundSpeed: parent.groundspeed
+        airSpeed: 0
+        groundSpeed: 0
     }
-    function uasObjectCreated() {
-        console.log("Uas Object created");
-        rollPitchIndicator.rollAngle = function() { return relpositionoverview.roll };
-        rollPitchIndicator.pitchAngle = function() { return  relpositionoverview.pitch };
-    }
-    function attitudeReceived(object)
-    {
 
-
-    }
 }
 

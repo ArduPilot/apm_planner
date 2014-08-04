@@ -644,7 +644,8 @@ HEADERS += \
     src/ui/DroneshareAPIBroker.h \
     src/comm/UASObject.h \
     src/comm/VehicleOverview.h \
-    src/comm/RelPositionOverview.h
+    src/comm/RelPositionOverview.h \
+    src/comm/AbsPositionOverview.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -869,7 +870,8 @@ SOURCES += src/main.cc \
     src/ui/DroneshareAPIBroker.cpp \
     src/comm/UASObject.cc \
     src/comm/VehicleOverview.cc \
-    src/comm/RelPositionOverview.cc
+    src/comm/RelPositionOverview.cc \
+    src/comm/AbsPositionOverview.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
