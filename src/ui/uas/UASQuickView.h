@@ -19,9 +19,6 @@ public:
     void addSource(MAVLinkDecoder *decoder);
 
 private:
-    // helper method.
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
-private:
     UASInterface *uas;
 
     /** List of enabled properties */

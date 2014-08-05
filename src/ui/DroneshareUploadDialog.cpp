@@ -131,7 +131,7 @@ void DroneshareUploadDialog::acceptUserLogin(QString& username, QString& passwor
     m_droneshareQuery->addQuery("/user/" + m_username);
     m_droneshareQuery->addQueryItem("api_key", DroneshareAPIKey);
     m_droneshareQuery->sendQueryRequest();
-//    QLOG_DEBUG() << "droneshare: user request: " << m_droneshareQuery->getUrl();
+    QLOG_DEBUG() << "droneshare: user request: " << m_droneshareQuery->getUrl();
 }
 
 void DroneshareUploadDialog::vehicleQueryComplete(const QString &jsonResponse)

@@ -275,6 +275,7 @@ void UASQuickView::sortItems(int columncount)
 }
 void UASQuickView::resizeEvent(QResizeEvent *evt)
 {
+    Q_UNUSED(evt);
     recalculateItemTextSizing();
 }
 void UASQuickView::recalculateItemTextSizing()
@@ -352,10 +353,13 @@ void UASQuickView::setActiveUAS(UASInterface* uas)
 }
 void UASQuickView::addSource(MAVLinkDecoder *decoder)
 {
+    Q_UNUSED(decoder);
     //connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
-void UASQuickView::valueUpdate(const int uasId,const QString &name,const QString &unit,const double value,const quint64 msec)
+void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec)
 {
+    Q_UNUSED(msec);
+
     if (this->uas->getUASID() != uasId)
     {
         //This message is for the non active UAS
@@ -369,23 +373,11 @@ void UASQuickView::valueUpdate(const int uasId,const QString &name,const QString
             quickViewSelectDialog->addItem(propername +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[propername +" ("+unit+")"] = value;
-}
-
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec)
-{
-    if (value.type() == QVariant::Double)
-    {
-        valueChanged(uasId,name,unit,value.toDouble(),msec);
+    bool ok = false;
+    uasPropertyValueMap[propername +" ("+unit+")"] = value.toDouble(&ok);
+    if (!ok){
+        QLOG_ERROR() << "Quick View: Error Converting QuickView Item Value: " << propername;
     }
-    else
-    {
-        valueChanged(uasId,name,unit,static_cast<double>(value.toInt()),msec);
-    }
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
 }
 
 void UASQuickView::actionTriggered(bool checked)

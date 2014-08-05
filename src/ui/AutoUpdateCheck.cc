@@ -35,8 +35,7 @@ This file is part of the APM_PLANNER project
 #include <QSettings>
 #include "QGC.h"
 
-#define VERSION_REGEX "(\\d*\\.\\d+\\.?\\d+)-?(rc\\d)?"
-
+static const QString VersionCompareRegEx = "(\\d*\\.\\d+\\.?\\d+)-?(rc\\d)?";
 
 AutoUpdateCheck::AutoUpdateCheck(QObject *parent) :
     QObject(parent),
@@ -140,7 +139,7 @@ void AutoUpdateCheck::processDownloadedVersionObject(const QString &versionObjec
             if (compareVersionStrings(version,QGC_APPLICATION_VERSION)){
                 QLOG_DEBUG() << "Found New Version: " << platform << " "
                             << type << " " << version << " " << locationUrl;
-                if(m_skipVerison != version){
+                if(m_skipVersion != version){
                     emit updateAvailable(version, type, locationUrl, name);
                 } else {
                     QLOG_INFO() << "Version Skipped at user request";
@@ -172,13 +171,13 @@ void AutoUpdateCheck::updateDataReadProgress(qint64 bytesRead, qint64 totalBytes
 bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QString& currentVersion)
 {
     // [TODO] DRY this out by creating global function for use in APM Firmware as well
-    int newMajor,newMinor,newBuild = 0;
-    int currentMajor, currentMinor,currentBuild = 0;
+    int newMajor = 0,newMinor = 0,newBuild = 0;
+    int currentMajor = 0, currentMinor = 0,currentBuild = 0;
 
     QString newBuildSubMoniker, oldBuildSubMoniker; // holds if the build is a rc or dev build
 
 
-    QRegExp versionEx(VERSION_REGEX);
+    QRegExp versionEx(VersionCompareRegEx);
     QString versionstr = "";
     int pos = versionEx.indexIn(newVersion);
     if (pos > -1) {
@@ -197,7 +196,7 @@ bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QSt
             newBuildSubMoniker = versionEx.cap(2);
     }
 
-    QRegExp versionEx2(VERSION_REGEX);
+    QRegExp versionEx2(VersionCompareRegEx);
     versionstr = "";
     pos = versionEx2.indexIn(currentVersion);
     if (pos > -1) {
@@ -269,7 +268,7 @@ bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QSt
 
 void AutoUpdateCheck::setSkipVersion(const QString& version)
 {
-    m_skipVerison = version;
+    m_skipVersion = version;
     writeSettings();
 }
 
@@ -290,7 +289,7 @@ void AutoUpdateCheck::loadSettings()
     QSettings settings;
     settings.beginGroup("AUTO_UPDATE");
     m_isAutoUpdateEnabled = settings.value("ENABLED", true).toBool();
-    m_skipVerison = settings.value("SKIP_VERSION", "0.0.0").toString();
+    m_skipVersion = settings.value("SKIP_VERSION", "0.0.0").toString();
     m_releaseType = settings.value("RELEASE_TYPE", define2string(APP_TYPE)).toString();
     settings.endGroup();
 }
@@ -301,7 +300,7 @@ void AutoUpdateCheck::writeSettings()
     QSettings settings;
     settings.beginGroup("AUTO_UPDATE");
     settings.setValue("ENABLED", m_isAutoUpdateEnabled);
-    settings.setValue("SKIP_VERSION", m_skipVerison);
+    settings.setValue("SKIP_VERSION", m_skipVersion);
     settings.setValue("RELEASE_TYPE", m_releaseType);
     settings.endGroup();
     settings.sync();

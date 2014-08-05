@@ -92,7 +92,7 @@ void DroneshareUpload::uploadLog(const QString &filename, const QString &user, c
         m_uploadFile->close();
 
     // Setup request url
-    m_url.setUrl(DroneShareBaseUrl + "/api/v1/mission/upload/" + vehicleID);
+    m_url.setUrl(DroneshareBaseUrl + "/mission/upload/" + vehicleID);
     m_url.addQueryItem("api_key", apiKey);
     m_url.addQueryItem("login", user);
     m_url.addQueryItem("password", password);

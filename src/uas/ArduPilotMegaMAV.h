@@ -46,6 +46,7 @@ public:
     CustomMode(int aMode);
     int modeAsInt();
     virtual QString operator <<(int mode);
+    static QString colorForMode(int aMode);
 protected:
     int m_mode;
 };
@@ -101,7 +102,7 @@ public:
     SPORT       = 13,  // [TODO] Verify this is correct.
     FLIP        = 14,
     AUTOTUNE    = 15,
-    HYBRID_LOITER = 16 // HYBRID LOITER.
+    POS_HOLD    = 16 // HYBRID LOITER.
     };
 
 public:

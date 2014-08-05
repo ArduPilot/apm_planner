@@ -189,7 +189,7 @@ void ParamCompareDialog::compareLists()
         if (currentParam != NULL){
             UASParameter* newParam = m_newList->value(keys[count]);
 
-            if (currentParam->value().toDouble() != newParam->value().toDouble() ){
+            if ( !paramCompareEqual(currentParam->value(), newParam->value()) ){
                 QLOG_DEBUG() << "Difference : " << currentParam->name()
                              << " current: " << currentParam->value() << " new:" << newParam->value();
 
@@ -258,5 +258,19 @@ void ParamCompareDialog::checkAll()
             QTableWidgetItem* item = table->item(rowCount, PCD_COLUMN_CHECKBOX);
             if (item) item->setCheckState(Qt::Unchecked);
         }
+    }
+}
+
+bool ParamCompareDialog::paramCompareEqual(const QVariant &leftValue, const QVariant &rightValue)
+{
+    QString left = QString::number(leftValue.toDouble(), 'f', 6);
+    QString right = QString::number(rightValue.toDouble(), 'f', 6);
+
+    QLOG_DEBUG() << "left:" << left << " right:" << right;
+
+    if (left.contains(right)){
+        return true;
+    } else {
+        return false;
     }
 }

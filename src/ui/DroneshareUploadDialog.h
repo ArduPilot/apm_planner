@@ -35,9 +35,6 @@ class DroneshareUpload;
 class DroneshareAPIBroker;
 class UASInterface;
 
-static const QString DroneshareBaseUrl = "http://api.3dr.com/api/v1";
-static const QString DroneshareAPIKey = "5e5c1859.14f775d41f4c3b21af4b3bceb104728a";
-
 namespace Ui {
 class DroneshareUploadDialog;
 }

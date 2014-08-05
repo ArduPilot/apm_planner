@@ -346,11 +346,12 @@ namespace mapcontrol
 
             core->MouseWheelZooming = true;
 
-            if(event->delta() > 0)
+            static const int MapGraphicItemZoomDelta = 8; // This may need to be different for win/linux/mac
+            if(event->delta() > MapGraphicItemZoomDelta)
             {
                 SetZoom(ZoomTotal()+1);
             }
-            else if(event->delta() < 0)
+            else if(event->delta() < -MapGraphicItemZoomDelta)
             {
                 SetZoom(ZoomTotal()-1);
             }

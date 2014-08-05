@@ -53,6 +53,7 @@ private slots:
     void loadParameterFile(const QString& filename);
     void saveNewParameters();
     void checkAll();
+    bool paramCompareEqual(const QVariant& leftValue, const QVariant& rightValue);
 
 private:
     void initConnections();
