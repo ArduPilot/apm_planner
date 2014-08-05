@@ -1,3 +1,32 @@
+Release Notes - APM Planner 2.0.14 - 2014-08-01
+
+8f93791:  Configuration: Updated to 2.0.14 release - Bill Bonney
+b75472b:  Droneshare: Fix to use https for uploads - Bill Bonney
+0d2638e:  ParamCompare: Fixes #419 identical values being returned as a difference - Bill Bonney
+4ff0de7:  MainWindow: Lower maximum required width to support 1024x600 screen widths - Bill Bonney
+12d4ec1:  UAS: Fix floats to be doubles to avoid conversion errors - Bill Bonney
+a7283ce:  Autoupdate: Fix regexp definition for version update - Bill Bonney
+e53d003:  APM MAV: Rename Hybrid Loiter to Position Hold - Bill Bonney
+e7cfd14:  Graphs View: Fixes #74 Add support for Plane/Rover to KMZ generation. - Bill Bonney
+7a6ae05:  APM MAV: Add new colorForMode() API - Bill Bonney
+baf52e5:  Autoupdate: Fix variables being undefined. - Craig R. Hughes
+f2d3947:  AutoUpdate: Fix Typo in parameter name - Bill Bonney
+6dd2146:  QuickView Widget: Fixes QVariant toDouble conversion issues. - Bill Bonney
+ffa4573:  Droneshare Widget: Fixed API to return Url - Bill Bonney
+ef206c3:  MAP Widget: Improves sensitivity of Mouse Zooming with scroll wheel - Bill Bonney
+2f788f8:  MAP Widget: Changes to support better zooming sensitivity (slider) - Bill Bonney
+f74de7c:  QuickView Widget: Fixes #405 rounding error in HDOP and COG values - Bill Bonney
+a5a20a0:  configuration: update JSON object for 'beta' releases - Bill Bonney
+fc3552a:  configuration: update to 2.0.14-rc3 - Bill Bonney
+8de0f15:  Autoupdate: Fixes RC version compare - Bill Bonney
+0eb5f67:  configuration: update to 2.0.14-rc2 - Bill Bonney
+434b551:  Autoupdate: Fix debug message - Bill Bonney
+7594641:  QGCCore: Fix to remember if update is 'beta' or 'stable' - Bill Bonney
+6f2bc26:  Autoupdate: Add check for update type - Bill Bonney
+1d4bdf8:  Settings View: Add checkbox to enable 'beta' releases - Bill Bonney
+46f5345:  Settings View: Fixes #401 incomplete label display in settings - Bill Bonney
+89c59d6:  Comm Settings: Change to better sync com port between Link and Widget - Michael Carpenter
+
 Release Notes - APM Planner 2.0.13 - 2014-07-14
 
 cc32a9a:  configuration: Update json version object - Bill Bonney
@@ -557,3 +586,4 @@ a3a7a94:  Change so a popup lets the user know when parameters have been loaded 
 4bd963f:  Addition of message in PFD showing PreArm failures when tryign to arm MAV - Michael Carpenter
 
 see http://github.com/diydrones/apm_planner for a full list of the commits before 2013-12-26
+
