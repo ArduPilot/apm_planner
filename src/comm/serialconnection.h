@@ -32,7 +32,7 @@ This file is part of the APM_PLANNER project
 #ifndef SERIALCONNECTION_H
 #define SERIALCONNECTION_H
 #include "LinkInterface.h"
-#include "qserialport.h"
+#include <QtSerialPort/qserialport.h>
 #include "SerialLinkInterface.h"
 #include <QMap>
 class SerialConnection : public SerialLinkInterface

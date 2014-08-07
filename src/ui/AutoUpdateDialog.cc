@@ -34,7 +34,7 @@ AutoUpdateDialog::AutoUpdateDialog(const QString &version, const QString &target
     m_sourceUrl(url),
     m_targetFilename(targetFilename),
     m_networkReply(NULL),
-    m_skipVersion(FALSE),
+    m_skipVersion(false),
     m_skipVersionString(version)
 {
     ui->setupUi(this);
@@ -74,7 +74,7 @@ bool AutoUpdateDialog::skipVersion()
 
 bool AutoUpdateDialog::startDownload(const QString& url, const QString& filename)
 {
-    QString targetDir = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
+    QString targetDir = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
 
     if (filename.isEmpty())
         return false;

@@ -267,7 +267,7 @@ void SerialConfigurationWindow::connectionStateChanged(bool connected)
 
 void SerialConfigurationWindow::setAdvancedSettings(bool visible)
 {
-    ui.advGroupBox->setShown(visible);
+    ui.advGroupBox->setVisible(visible);
 }
 
 SerialConfigurationWindow::~SerialConfigurationWindow()

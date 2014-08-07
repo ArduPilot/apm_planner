@@ -26,7 +26,7 @@ This file is part of the APM_PLANNER project
 #include "QsLog.h"
 #include "SerialSettingsDialog.h"
 #include "Radio3DRSettings.h"
-#include "qserialport.h"
+#include <QtSerialPort/qserialport.h>
 
 #include <QPointer>
 #include <QWidget>

@@ -28,16 +28,16 @@
 
 #include "pathlisteditor.h"
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QToolButton>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QToolButton>
+#include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QFileDialog>
 #include <QtGui/QTextCursor>
 #include <QtGui/QTextBlock>
-#include <QtGui/QMenu>
-#include <QtGui/QAction>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QAction>
 
 #include <QtCore/QSignalMapper>
 #include <QtCore/QMimeData>

@@ -165,20 +165,32 @@ WindowsBuild {
     COPY_FILE_LIST = \
         $$BASEDIR_WIN\\libs\\lib\\sdl\\win32\\SDL.dll \
         $$BASEDIR_WIN\\libs\\thirdParty\\libxbee\\lib\\libxbee.dll \
-        $$(QTDIR)\\bin\\phonon$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtCore$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtGui$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtMultimedia$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtNetwork$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtOpenGL$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtSql$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtSvg$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtTest$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtWebKit$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtXml$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtXmlPatterns$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtDeclarative$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtScript$${DLL_QT_DEBUGCHAR}4.dll
+        $$(QTDIR)\\bin\\Qt5WebKitWidgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5MultimediaWidgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Multimedia$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Gui$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Core$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\icuin51.dll \
+        $$(QTDIR)\\bin\\icuuc51.dll \
+        $$(QTDIR)\\bin\\icudt51.dll \
+        $$(QTDIR)\\bin\\Qt5Network$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Widgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5OpenGL$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5PrintSupport$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5WebKit$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Quick$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Qml$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Sql$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Positioning$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Sensors$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Declarative$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5XmlPatterns$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Xml$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Script$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Svg$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Test$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5SerialPort$${DLL_QT_DEBUGCHAR}.dll
+
     for(COPY_FILE, COPY_FILE_LIST) {
         QMAKE_POST_LINK += $$escape_expand(\\n) $$quote($$QMAKE_COPY "$$COPY_FILE" "$$COPY_FILE_DESTDIR")
     }

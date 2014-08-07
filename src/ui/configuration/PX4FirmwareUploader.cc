@@ -1,5 +1,5 @@
 #include "PX4FirmwareUploader.h"
-#include "qserialportinfo.h"
+#include <QtSerialPort/qserialportinfo.h>
 #ifndef Q_OS_WIN
 #include <openssl/rsa.h>
 #include <openssl/x509.h>

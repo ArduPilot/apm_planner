@@ -25,6 +25,7 @@
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 #include "waypointitem.h"
+#include <QGraphicsSceneMouseEvent>
 namespace mapcontrol
 {
     WayPointItem::WayPointItem(const internals::PointLatLng &coord,double const& altitude, MapGraphicItem *map) :

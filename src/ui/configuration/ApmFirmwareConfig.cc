@@ -25,7 +25,7 @@ This file is part of the APM_PLANNER project
 #include "QsLog.h"
 #include "LinkManager.h"
 #include "LinkInterface.h"
-#include "qserialportinfo.h"
+#include <QtSerialPort/qserialportinfo.h>
 #include "SerialLink.h"
 #include "MainWindow.h"
 #include "PX4FirmwareUploader.h"

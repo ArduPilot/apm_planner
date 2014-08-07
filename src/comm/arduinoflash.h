@@ -34,7 +34,7 @@ This file is part of the APM_PLANNER project
 #define ARDUINOFLASH_H
 
 #include <QThread>
-#include <qserialport.h>
+#include <QtSerialPort/qserialport.h>
 #include <QMutex>
 #include <QByteArray>
 class ArduinoFlash : public QThread

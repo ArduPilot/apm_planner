@@ -87,8 +87,10 @@ exists(user_config.pri) {
 INCLUDEPATH += $$MAVLINKPATH
 isEmpty(MAVLINK_CONF) {
     INCLUDEPATH += $$MAVLINKPATH/common
+message("Using mavlink common")
 } else {
     INCLUDEPATH += $$MAVLINKPATH/$$MAVLINK_CONF
+message("Using mavlink " + $$MAVLINK_CONF)
     DEFINES += $$sprintf('QGC_USE_%1_MESSAGES', $$upper($$MAVLINK_CONF))
 }
 
@@ -104,7 +106,7 @@ INCLUDEPATH += \
     src/apps/mavlinkgen/ui \
     src/apps/mavlinkgen/generator
 
-include(src/apps/mavlinkgen/mavlinkgen.pri)
+#include(src/apps/mavlinkgen/mavlinkgen.pri)
 
 #
 # OpenSceneGraph
@@ -294,7 +296,7 @@ include(libs/alglib/alglib.pri)
 # OPMapControl library (from OpenPilot)
 #
 
-include(libs/utils/utils_external.pri)
+#include(libs/utils/utils_external.pri)
 include(libs/opmapcontrol/opmapcontrol_external.pri)
 
 DEPENDPATH += \
@@ -374,9 +376,9 @@ WindowsBuild {
 LinuxBuild : exists(/usr/local/lib/libxdrvlib.so) {
     message("Including support for Magellan 3DxWare")
 
-    DEFINES +=
-        MOUSE_ENABLED_LINUX \
-        ParameterCheck # Hack: Has to be defined for magellan usage
+    DEFINES += MOUSE_ENABLED_LINUX
+    DEFINES += ParameterCheck
+# Hack: Has to be defined for magellan usage
 
     INCLUDEPATH *= /usr/local/include
     HEADERS += src/input/Mouse6dofInput.h

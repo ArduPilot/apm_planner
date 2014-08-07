@@ -31,7 +31,7 @@ This file is part of the QGROUNDCONTROL project
 #ifndef XMLCOMMPROTOCOLWIDGET_H
 #define XMLCOMMPROTOCOLWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "DomModel.h"
 
 namespace Ui

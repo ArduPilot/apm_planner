@@ -33,6 +33,7 @@ This file is part of the QGROUNDCONTROL project
 #define SERIALLINK_H
 
 #include "SerialLinkInterface.h"
+#include "configuration.h"
 #include <QPointer>
 #include <QObject>
 #include <QThread>
@@ -40,7 +41,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QString>
 #include <QMap>
 #include <QTimer>
-#include <qserialport.h>
+#include <QtSerialPort/qserialport.h>
 #include <configuration.h>
 #include <QMetaType>
 Q_DECLARE_METATYPE(QSerialPort::SerialPortError)
@@ -67,7 +68,7 @@ public:
     void disableTimeouts();
     void enableTimeouts();
 
-    static const int poll_interval = SERIAL_POLL_INTERVAL; ///< Polling interval, defined in configuration.h
+    static const int poll_interval = 100; ///< Polling interval, defined in configuration.h
 
     /** @brief Get a list of the currently available ports */
     QList<QString> getCurrentPorts();

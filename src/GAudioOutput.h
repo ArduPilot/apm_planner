@@ -41,8 +41,8 @@ This file is part of the PIXHAWK project
 #include <AudioOutput>
 #endif
 #ifdef Q_OS_WIN
-#include <Phonon/MediaObject>
-#include <Phonon/AudioOutput>
+//#include <Phonon/MediaObject>
+//#include <Phonon/AudioOutput>
 #endif
 
 /* For Snow leopard and later

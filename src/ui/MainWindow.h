@@ -33,7 +33,7 @@ This file is part of the QGROUNDCONTROL project
 
 #include "AutoUpdateCheck.h"
 #include "AutoUpdateDialog.h"
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QStatusBar>
 #include <QStackedWidget>
 #include <QSettings>
@@ -65,7 +65,6 @@ This file is part of the QGROUNDCONTROL project
 #include "HDDisplay.h"
 #include "WatchdogControl.h"
 #include "HSIDisplay.h"
-#include "QGCDataPlot2D.h"
 #include "QGCRemoteControlView.h"
 #include "opmapcontrol.h"
 #if (defined Q_OS_MAC) | (defined _MSC_VER)

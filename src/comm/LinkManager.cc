@@ -38,7 +38,7 @@ This file is part of the APM_PLANNER project
 #include "UDPLink.h"
 #include "TCPLink.h"
 #include <QSettings>
-#include "qserialportinfo.h"
+#include <QtSerialPort/qserialportinfo.h>
 #include "UASObject.h"
 LinkManager::LinkManager(QObject *parent) :
     QObject(parent)

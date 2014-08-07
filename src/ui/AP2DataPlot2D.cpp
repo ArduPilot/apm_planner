@@ -1426,31 +1426,31 @@ void AP2DataPlot2D::exportButtonClicked()
         int size = 0;
         for (int i=0;i<format.size();i++)
         {
-            if (format.at(i).toAscii() == 'n')
+            if (format.at(i).toLatin1() == 'n')
             {
                 size += 4;
             }
-            else if (format.at(i).toAscii() == 'N')
+            else if (format.at(i).toLatin1() == 'N')
             {
                 size += 16;
             }
-            else if (format.at(i).toAscii() == 'Z')
+            else if (format.at(i).toLatin1() == 'Z')
             {
                 size += 64;
             }
-            else if (format.at(i).toAscii() == 'f')
+            else if (format.at(i).toLatin1() == 'f')
             {
                 size += 4;
             }
-            else if ((format.at(i).toAscii() == 'i') || (format.at(i).toAscii() == 'I') || (format.at(i).toAscii() == 'e') || (format.at(i).toAscii() == 'E')  || (format.at(i).toAscii() == 'L'))
+            else if ((format.at(i).toLatin1() == 'i') || (format.at(i).toLatin1() == 'I') || (format.at(i).toLatin1() == 'e') || (format.at(i).toLatin1() == 'E')  || (format.at(i).toLatin1() == 'L'))
             {
                 size += 4;
             }
-            else if ((format.at(i).toAscii() == 'h') || (format.at(i).toAscii() == 'H') || (format.at(i).toAscii() == 'c') || (format.at(i).toAscii() == 'C'))
+            else if ((format.at(i).toLatin1() == 'h') || (format.at(i).toLatin1() == 'H') || (format.at(i).toLatin1() == 'c') || (format.at(i).toLatin1() == 'C'))
             {
                 size += 2;
             }
-            else if ((format.at(i).toAscii() == 'b') || (format.at(i).toAscii() == 'B') || (format.at(i).toAscii() == 'M'))
+            else if ((format.at(i).toLatin1() == 'b') || (format.at(i).toLatin1() == 'B') || (format.at(i).toLatin1() == 'M'))
             {
                 size += 1;
             }
@@ -1470,7 +1470,7 @@ void AP2DataPlot2D::exportButtonClicked()
 
     }
 
-    outputfile.write(formatheader.toAscii());
+    outputfile.write(formatheader.toLatin1());
 
     int count = 0;
     indexquery.last();
@@ -1515,11 +1515,11 @@ void AP2DataPlot2D::exportButtonClicked()
                 if (namerecord.value(i).type() == QVariant::Double)
                 {
                     QString num = QString::number(namerecord.value(i).toDouble(),'f',8);
-                    char last = num.at(num.length()-1).toAscii();
+                    char last = num.at(num.length()-1).toLatin1();
                     while (last == '0' && num.length() > 0)
                     {
                         num = num.mid(0,num.length()-1);
-                        last = num.at(num.length()-1).toAscii();
+                        last = num.at(num.length()-1).toLatin1();
                     }
                     if (last == '.')
                     {
@@ -1537,7 +1537,7 @@ void AP2DataPlot2D::exportButtonClicked()
                 }
             }
             QApplication::processEvents();
-            outputfile.write(fields.append("\r\n").toAscii());
+            outputfile.write(fields.append("\r\n").toLatin1());
         }
     }
 

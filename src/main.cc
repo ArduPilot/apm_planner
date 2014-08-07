@@ -32,7 +32,7 @@ This file is part of the QGROUNDCONTROL project
 #include "MainWindow.h"
 #include "configuration.h"
 #include "QsLog.h"
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 
 /* SDL does ugly things to main() */
 #ifdef main
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 {
 // install the message handler
 #ifdef Q_OS_WIN
-    qInstallMsgHandler( msgHandler );
+    //qInstallMsgHandler( msgHandler );
 #endif
 
     QGCCore core(argc, argv);
