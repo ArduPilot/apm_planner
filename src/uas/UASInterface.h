@@ -686,6 +686,10 @@ signals:
 
     /** @brief RAW IMU message used for calculating offsets etc */
     void rawImuMessageUpdate(UASInterface *uas, mavlink_raw_imu_t rawImu);
+    /** @brief RAW IMU message used for calculating offsets etc */
+    void scaledImuMessageUpdate(UASInterface *uas, mavlink_scaled_imu_t scaledImu);
+    /** @brief RAW IMU message used for calculating offsets etc */
+    void scaledImu2MessageUpdate(UASInterface *uas, mavlink_scaled_imu2_t scaledImu2);
     /** @brief Sensor Offset update message*/
     void sensorOffsetsMessageUpdate(UASInterface *uas, mavlink_sensor_offsets_t sensorOffsets);
     /** @brief Radio Status update message*/
