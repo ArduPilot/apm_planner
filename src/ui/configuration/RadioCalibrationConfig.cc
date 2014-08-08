@@ -165,60 +165,19 @@ void RadioCalibrationConfig::parameterChanged(int uas, int component, QString pa
 
     if(parameterName.startsWith("RCMAP_PITCH")){
         m_pitchChannel = value.toInt();
-        if(m_uas){
-            bool check = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(m_pitchChannel)
-                                                                     + "_REV").toBool();
-            ui.revPitchCheckBox->setChecked(check);
-        }
         return;
 
     } else if(parameterName.startsWith("RCMAP_ROLL")){
         m_rollChannel = value.toInt();
-        if(m_uas){
-            bool check = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(m_rollChannel)
-                                                                     + "_REV").toBool();
-            ui.revRollCheckBox->setChecked(check);
-        }
         return;
 
     } else if(parameterName.startsWith("RCMAP_YAW")){
         m_yawChannel = value.toInt();
-        if(m_uas){
-            bool check = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(m_yawChannel)
-                                                                     + "_REV").toBool();
-            ui.revYawCheckBox->setChecked(check);
-        }
         return;
 
     } else if(parameterName.startsWith("RCMAP_THROTTLE")){
         m_throttleChannel = value.toInt();
-        if(m_uas){
-            bool check = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(m_throttleChannel)
-                                                                     + "_REV").toBool();
-            ui.revThrottleCheckBox->setChecked(check);
-        }
         return;
-
-    }
-
-    // Set Pitch Reverse Channel
-    if (parameterName.startsWith("RC" + QString::number(m_pitchChannel) + "_REV")){
-        ui.revPitchCheckBox->setChecked(value.toBool());
-    }
-
-    // Set Roll Reverse Channel
-    if (parameterName.startsWith("RC" + QString::number(m_rollChannel) + "_REV")){
-        ui.revRollCheckBox->setChecked(value.toBool());
-    }
-
-    // Set Yaw Reverse Channel
-    if (parameterName.startsWith("RC" + QString::number(m_yawChannel) + "_REV")){
-        ui.revYawCheckBox->setChecked(value.toBool());
-    }
-
-    // Set Throttle Reverse Channel
-    if (parameterName.startsWith("RC" + QString::number(m_throttleChannel) + "_REV")){
-        ui.revThrottleCheckBox->setChecked(value.toBool());
     }
 
     if (parameterName.startsWith("ELEVON_MIXING")){
@@ -234,27 +193,54 @@ void RadioCalibrationConfig::parameterChanged(int uas, int component, QString pa
     }
 }
 
+void RadioCalibrationConfig::updateChannelReversalStates()
+{
+    if(m_uas == NULL)
+        return;
+    // Update Pitch Reverse Channel
+    updateChannelRevState(ui.revPitchCheckBox, m_pitchChannel);
+
+    // Update Roll Reverse Channel
+    updateChannelRevState(ui.revRollCheckBox, m_rollChannel);
+
+    // Update Yaw Reverse Channel
+    updateChannelRevState(ui.revYawCheckBox, m_yawChannel);
+
+    // Update Throttle Reverse Channel
+    updateChannelRevState(ui.revThrottleCheckBox, m_throttleChannel);
+}
+
+void RadioCalibrationConfig::updateChannelRevState(QCheckBox* checkbox, int channelId)
+{
+    int reverse = m_uas->getParamManager()->getParameterValue(1, "RC" + QString::number(channelId)
+                                                             + "_REV").toInt();
+    if (reverse == -1) {
+        checkbox->setChecked(true);
+    } else {
+        checkbox->setChecked(false);
+    }
+}
 
 void RadioCalibrationConfig::guiUpdateTimerTick()
 {
-    ui.rollWidget->setValue(rcValue[0]);
-    ui.pitchWidget->setValue(rcValue[1]);
-    ui.throttleWidget->setValue(rcValue[2]);
-    ui.yawWidget->setValue(rcValue[3]);
+    ui.rollWidget->setValue(rcValue[m_rollChannel-1]);
+    ui.pitchWidget->setValue(rcValue[m_pitchChannel-1]);
+    ui.throttleWidget->setValue(rcValue[m_throttleChannel-1]);
+    ui.yawWidget->setValue(rcValue[m_yawChannel-1]);
     ui.radio5Widget->setValue(rcValue[4]);
     ui.radio6Widget->setValue(rcValue[5]);
     ui.radio7Widget->setValue(rcValue[6]);
     ui.radio8Widget->setValue(rcValue[7]);
     if (m_calibrationEnabled)
     {
-        ui.rollWidget->setMin(rcMin[0]);
-        ui.rollWidget->setMax(rcMax[0]);
-        ui.pitchWidget->setMin(rcMin[1]);
-        ui.pitchWidget->setMax(rcMax[1]);
-        ui.throttleWidget->setMin(rcMin[2]);
-        ui.throttleWidget->setMax(rcMax[2]);
-        ui.yawWidget->setMin(rcMin[3]);
-        ui.yawWidget->setMax(rcMax[3]);
+        ui.rollWidget->setMin(rcMin[m_rollChannel-1]);
+        ui.rollWidget->setMax(rcMax[m_rollChannel-1]);
+        ui.pitchWidget->setMin(rcMin[m_pitchChannel-1]);
+        ui.pitchWidget->setMax(rcMax[m_pitchChannel-1]);
+        ui.throttleWidget->setMin(rcMin[m_throttleChannel-1]);
+        ui.throttleWidget->setMax(rcMax[m_throttleChannel-1]);
+        ui.yawWidget->setMin(rcMin[m_yawChannel-1]);
+        ui.yawWidget->setMax(rcMax[m_yawChannel-1]);
         ui.radio5Widget->setMin(rcMin[4]);
         ui.radio5Widget->setMax(rcMax[4]);
         ui.radio6Widget->setMin(rcMin[5]);
@@ -264,6 +250,8 @@ void RadioCalibrationConfig::guiUpdateTimerTick()
         ui.radio8Widget->setMin(rcMin[7]);
         ui.radio8Widget->setMax(rcMax[7]);
     }
+
+    updateChannelReversalStates();
 }
 void RadioCalibrationConfig::showEvent(QShowEvent *event)
 {
@@ -362,49 +350,33 @@ void RadioCalibrationConfig::calibrateButtonClicked()
 
 void RadioCalibrationConfig::pitchClicked(bool state)
 {
-    if(m_uas){
-        int channel = m_uas->getParamManager()->getParameterValue(1, "RCMAP_PITCH").toInt();
-        QString channelString = QString("RC" + QString::number(channel) + "_REV");
-        if (state)
-            m_uas->setParameter(1, channelString, 1.0);
-        else
-            m_uas->setParameter(1, channelString, 0.0);
-    }
+    setParamChannelRev("RCMAP_PITCH", state);
 }
 
 void RadioCalibrationConfig::rollClicked(bool state)
 {
-    if(m_uas){
-        int channel = m_uas->getParamManager()->getParameterValue(1, "RCMAP_ROLL").toInt();
-        QString channelString = QString("RC" + QString::number(channel) + "_REV");
-        if (state)
-            m_uas->setParameter(1, channelString, 1.0);
-        else
-            m_uas->setParameter(1, channelString, 0.0);
-    }
+    setParamChannelRev("RCMAP_ROLL", state);
 }
 
 void RadioCalibrationConfig::yawClicked(bool state)
 {
-    if(m_uas){
-        int channel = m_uas->getParamManager()->getParameterValue(1, "RCMAP_YAW").toInt();
-        QString channelString = QString("RC" + QString::number(channel) + "_REV");
-        if (state)
-            m_uas->setParameter(1, channelString, 1.0);
-        else
-            m_uas->setParameter(1, channelString, 0.0);
-    }
+    setParamChannelRev("RCMAP_YAW",state);
 }
 
 void RadioCalibrationConfig::throttleClicked(bool state)
 {
+    setParamChannelRev("RCMAP_THROTTLE", state);
+}
+
+void RadioCalibrationConfig::setParamChannelRev(const QString& param, bool state)
+{
     if(m_uas){
-        int channel = m_uas->getParamManager()->getParameterValue(1, "RCMAP_THROTTLE").toInt();
+        int channel = m_uas->getParamManager()->getParameterValue(1, param).toInt();
         QString channelString = QString("RC" + QString::number(channel) + "_REV");
         if (state)
-            m_uas->setParameter(1, channelString, 1.0);
+            m_uas->setParameter(1, channelString, -1.0);
         else
-            m_uas->setParameter(1, channelString, 0.0);
+            m_uas->setParameter(1, channelString, 0.0); // We use 0 as the default, not 1.0 (which you can also use)
     }
 }
 
@@ -432,7 +404,7 @@ void RadioCalibrationConfig::elevonsCh1Rev(bool state)
 {
     if(m_uas){
         if (state)
-            m_uas->setParameter(1, "ELEVON_CH1_REV", 1.0);
+            m_uas->setParameter(1, "ELEVON_CH1_REV", -1.0);
         else
             m_uas->setParameter(1, "ELEVON_CH1_REV", 0.0);
         }
@@ -442,7 +414,7 @@ void RadioCalibrationConfig::elevonsCh2Rev(bool state)
 {
     if(m_uas){
         if (state)
-            m_uas->setParameter(1, "ELEVON_CH2_REV", 1.0);
+            m_uas->setParameter(1, "ELEVON_CH2_REV", -1.0);
         else
             m_uas->setParameter(1, "ELEVON_CH2_REV", 0.0);
         }
