@@ -34,7 +34,8 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_timer(NULL),
     m_rawImuList(),
     m_allOffsetsSet(0),
-    m_validSensorOffsets(false)
+    m_validSensorOffsets(false),
+    m_haveSecondCompass(false)
 {
     ui.setupUi(this);
 
@@ -347,9 +348,22 @@ void CompassConfig::startDataCollection()
 {
     connect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
                 this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
+    connect(m_uas, SIGNAL(scaledImu2MessageUpdate(UASInterface*,mavlink_scaled_imu2_t)),
+                this, SLOT(scaledImu2MessageUpdate(UASInterface*,mavlink_scaled_imu2_t)));
     connect(m_uas, SIGNAL(sensorOffsetsMessageUpdate(UASInterface*,mavlink_sensor_offsets_t)),
                 this, SLOT(sensorUpdateMessage(UASInterface*,mavlink_sensor_offsets_t)));
-     m_uas->enableRawSensorDataTransmission(10);
+    m_uas->enableRawSensorDataTransmission(10);
+
+    QGCUASParamManager* pm = m_uas->getParamManager();
+
+    if (pm->getParameterNames(1).contains("COMPASS_OFS2_X"))
+    {
+        m_compass2OfsX = pm->getParameterValue(1, "COMPASS_OFS2_X").toDouble();
+        m_compass2OfsY = pm->getParameterValue(1, "COMPASS_OFS2_Y").toDouble();
+        m_compass2OfsZ = pm->getParameterValue(1, "COMPASS_OFS2_Z").toDouble();
+
+        m_haveSecondCompass = true;
+    }
 
     m_progressDialog = new QProgressDialog(tr("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds."),
                                            tr("Cancel"), 0, 60, this);
@@ -377,6 +391,8 @@ void CompassConfig::cancelCompassCalibration()
     m_uas->enableRawSensorDataTransmission(2);
     disconnect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
                 this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
+    disconnect(m_uas, SIGNAL(scaledImu2MessageUpdate(UASInterface*,mavlink_scaled_imu2_t)),
+                this, SLOT(scaledImu2MessageUpdate(UASInterface*,mavlink_scaled_imu2_t)));
     cleanup();
 }
 
@@ -385,15 +401,19 @@ void CompassConfig::cleanup()
     if (m_timer) m_timer->stop();
     delete m_timer;
     m_rawImuList.clear();
+    m_scaledImu2List.clear();
     delete m_progressDialog;
     m_validSensorOffsets = false;
 }
 
 void CompassConfig::finishCompassCalibration()
 {
-    QLOG_INFO() << "finishCompassCalibration with " << m_rawImuList.count() << " data points";
+    QLOG_INFO() << "finishCompassCalibration with compass 1:" << m_rawImuList.count() << " data points";
+    QLOG_INFO() << "finishCompassCalibration with compass 2:" << m_scaledImu2List.count() << " data points";
     disconnect(m_uas, SIGNAL(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)),
                 this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
+    disconnect(m_uas, SIGNAL(scaledImu2MessageUpdate(UASInterface*,mavlink_scaled_imu2_t)),
+                this, SLOT(scaledImu2MessageUpdate(UASInterface*,mavlink_scaled_imu2_t)));
     m_uas->enableRawSensorDataTransmission(2);
     m_timer->stop();
 
@@ -406,18 +426,26 @@ void CompassConfig::finishCompassCalibration()
     }
 
     // Calculate and send the update message
-    alglib::real_1d_array* answer = leastSq(&m_rawImuList);
-    saveOffsets(*answer);
-    delete answer;
+    alglib::real_1d_array* answerCompass1 = leastSq(&m_rawImuList);
+    alglib::real_1d_array* answerCompass2 = NULL;
+    if(m_haveSecondCompass && m_scaledImu2List.count() > 10){
+        answerCompass2 = leastSq(&m_scaledImu2List);
+    }
+
+    saveOffsets(answerCompass1, answerCompass2);
+    delete answerCompass1;
+    delete answerCompass2;
 }
 
-void CompassConfig::saveOffsets(alglib::real_1d_array& ofs)
+void CompassConfig::saveOffsets(alglib::real_1d_array* offset, alglib::real_1d_array* offset2)
 {
+    alglib::real_1d_array& ofs = *offset;
+
     float xOffset = static_cast<float>(ofs[0]);
     float yOffset = static_cast<float>(ofs[1]);
     float zOffset = static_cast<float>(ofs[2]);
 
-    QLOG_INFO() << "New Mag Offset to be set are: " << xOffset
+    QLOG_INFO() << "New Compass Offset to be set are: " << xOffset
                 << ", " <<  yOffset
                 << ", " <<  zOffset;
 
@@ -429,11 +457,31 @@ void CompassConfig::saveOffsets(alglib::real_1d_array& ofs)
     paramMgr->setParameter(1, "COMPASS_OFS_Y", yOffset);
     paramMgr->setParameter(1, "COMPASS_OFS_Z", zOffset);
 
+    QString message = tr("New offsets (Compass 1) are \n\nx:") + QString::number(xOffset,'f',3)
+                                 + " y:" + QString::number(yOffset,'f',3) + " z:" + QString::number(zOffset,'f',3);
+
+    if (m_haveSecondCompass) {
+        alglib::real_1d_array& ofs2 = *offset2;
+
+        float xOffset2 = static_cast<float>(ofs2[0]);
+        float yOffset2 = static_cast<float>(ofs2[1]);
+        float zOffset2 = static_cast<float>(ofs2[2]);
+
+        QLOG_INFO() << "New Compass 2 Offset to be set are: " << xOffset2
+                    << ", " <<  yOffset2
+                    << ", " <<  zOffset2;
+
+        paramMgr->setParameter(1, "COMPASS_OFS2_X", xOffset2);
+        paramMgr->setParameter(1, "COMPASS_OFS2_Y", yOffset2);
+        paramMgr->setParameter(1, "COMPASS_OFS2_Z", zOffset2);
+
+        message.append(tr("\nNew offsets (Compass 2) are \n\nx:") + QString::number(xOffset2,'f',3)
+                       + " y:" + QString::number(yOffset2,'f',3) + " z:" + QString::number(zOffset2,'f',3));
+    }
+
     cleanup();
 
-    QMessageBox::information(this, tr("New Mag Offsets"), tr("New offsets are \n\nx:") + QString::number(xOffset,'f',3)
-                             + " y:" + QString::number(yOffset,'f',3) + " z:" + QString::number(zOffset,'f',3)
-                             + tr("\n\nThese have been saved for you."));
+    QMessageBox::information(this, tr("New Compass Offsets"), message + tr("\n\nThese have been saved for you."));
 }
 
 
@@ -456,6 +504,29 @@ void CompassConfig::rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t raw
             m_oldxmag = rawImu.xmag;
             m_oldymag = rawImu.ymag;
             m_oldzmag = rawImu.zmag;
+        }
+    }
+}
+
+void CompassConfig::scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_imu2_t scaledImu)
+{
+    if (m_uas == uas && m_validSensorOffsets){
+        QLOG_DEBUG() << "SCALED IMU2 x:" << scaledImu.xmag << " y:" << scaledImu.ymag << " z:" << scaledImu.zmag;
+
+        if (m_old2xmag != scaledImu.xmag &&
+            m_old2ymag != scaledImu.ymag &&
+            m_old2zmag != scaledImu.zmag)
+        {
+            RawImuTuple value;
+            value.magX = scaledImu.xmag - (float)m_sensorOffsets.mag_ofs_x;
+            value.magY = scaledImu.ymag - (float)m_sensorOffsets.mag_ofs_y;
+            value.magZ = scaledImu.zmag - (float)m_sensorOffsets.mag_ofs_z;
+
+            m_scaledImu2List.append(value);
+
+            m_old2xmag = scaledImu.xmag;
+            m_old2ymag = scaledImu.ymag;
+            m_old2zmag = scaledImu.zmag;
         }
     }
 }
