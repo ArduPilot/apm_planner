@@ -2016,19 +2016,6 @@ void MainWindow::UASCreated(UASInterface* uas)
     // HIL
     showHILConfigurationWidget(uas);
 
-    if (!linechartWidget)
-    {
-        linechartWidget = new Linecharts(this);
-        //linechartWidget->hide();
-
-    }
-
-    linechartWidget->addSource(mavlinkDecoder);
-    /*if (engineeringView->centralWidget() != linechartWidget)
-    {
-        engineeringView->setCentralWidget(linechartWidget);
-        linechartWidget->show();
-    }*/
 
     // Load default custom widgets for this autopilot type
     loadCustomWidgetsFromDefaults(uas->getSystemTypeName(), uas->getAutopilotTypeName());

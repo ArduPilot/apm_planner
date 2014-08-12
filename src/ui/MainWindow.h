@@ -45,7 +45,6 @@ This file is part of the QGROUNDCONTROL project
 #include "UASInterface.h"
 #include "UASManager.h"
 #include "UASControlWidget.h"
-#include "Linecharts.h"
 #include "UASInfoWidget.h"
 #include "WaypointList.h"
 #include "CameraView.h"
@@ -369,7 +368,6 @@ protected:
     QPointer<DebugOutput> debugOutput;
 
     // Center widgets
-    QPointer<Linecharts> linechartWidget;
     //QPointer<HUD> hudWidget;
     //QPointer<QGCVehicleConfig> configWidget;
     //QPointer<QGCMapTool> mapWidget;

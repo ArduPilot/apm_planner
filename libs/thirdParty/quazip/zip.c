@@ -16,7 +16,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#ifdef Q_OS_WIN
 #include <QtZlib/zlib.h>
+#else
+#include "zlib.h"
+#endif
 #include "zip.h"
 #include "quazip_global.h"
 

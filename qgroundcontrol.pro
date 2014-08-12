@@ -289,7 +289,6 @@ FORMS += \
     src/ui/UASControl.ui \
     src/ui/UASList.ui \
     src/ui/UASInfo.ui \
-    src/ui/Linechart.ui \
     src/ui/UASView.ui \
     src/ui/ParameterInterface.ui \
     src/ui/WaypointList.ui \
@@ -436,10 +435,6 @@ HEADERS += \
     src/ui/uas/UASListWidget.h \
     src/ui/uas/UASInfoWidget.h \
     src/ui/HUD.h \
-    src/ui/linechart/LinechartWidget.h \
-    src/ui/linechart/LinechartPlot.h \
-    src/ui/linechart/Scrollbar.h \
-    src/ui/linechart/ScrollZoomer.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
     src/ui/CameraView.h \
@@ -460,7 +455,6 @@ HEADERS += \
     src/LogCompressor.h \
     src/ui/QGCParamWidget.h \
     src/ui/QGCSensorSettingsWidget.h \
-    src/ui/linechart/Linecharts.h \
     src/uas/SlugsMAV.h \
     src/uas/PxQuadMAV.h \
     src/uas/ArduPilotMegaMAV.h \
@@ -473,7 +467,6 @@ HEADERS += \
     src/QGC.h \
     src/ui/QGCFirmwareUpdate.h \
     src/ui/QGCPxImuFirmwareUpdate.h \
-    src/ui/linechart/IncrementalPlot.h \
     src/ui/QGCRemoteControlView.h \
     src/ui/RadioCalibration/RadioCalibrationData.h \
     src/ui/RadioCalibration/RadioCalibrationWindow.h \
@@ -664,10 +657,6 @@ SOURCES += src/main.cc \
     src/ui/uas/UASListWidget.cc \
     src/ui/uas/UASInfoWidget.cc \
     src/ui/HUD.cc \
-    src/ui/linechart/LinechartWidget.cc \
-    src/ui/linechart/LinechartPlot.cc \
-    src/ui/linechart/Scrollbar.cc \
-    src/ui/linechart/ScrollZoomer.cc \
     src/ui/uas/UASView.cc \
     src/ui/CameraView.cc \
     src/comm/MAVLinkSimulationLink.cc \
@@ -687,7 +676,6 @@ SOURCES += src/main.cc \
     src/LogCompressor.cc \
     src/ui/QGCParamWidget.cc \
     src/ui/QGCSensorSettingsWidget.cc \
-    src/ui/linechart/Linecharts.cc \
     src/uas/SlugsMAV.cc \
     src/uas/PxQuadMAV.cc \
     src/uas/ArduPilotMegaMAV.cc \
@@ -700,7 +688,6 @@ SOURCES += src/main.cc \
     src/QGC.cc \
     src/ui/QGCFirmwareUpdate.cc \
     src/ui/QGCPxImuFirmwareUpdate.cc \
-    src/ui/linechart/IncrementalPlot.cc \
     src/ui/QGCRemoteControlView.cc \
     src/ui/RadioCalibration/RadioCalibrationWindow.cc \
     src/ui/RadioCalibration/AirfoilServoCalibrator.cc \
