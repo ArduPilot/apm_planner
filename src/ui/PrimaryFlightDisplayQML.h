@@ -25,7 +25,7 @@ This file is part of the APM_PLANNER project
 
 #include <UASInterface.h>
 #include <QWidget>
-#include <QDeclarativeView>
+#include <QQuickView>
 
 namespace Ui {
 class PrimaryFlightDisplayQML;
@@ -46,7 +46,7 @@ private slots:
 private:
     Ui::PrimaryFlightDisplayQML *ui;
 
-    QDeclarativeView* m_declarativeView;
+    QQuickView* m_declarativeView;
     UASInterface *m_uasInterface;
 };
 

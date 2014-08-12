@@ -33,15 +33,15 @@ This file is part of the APM_PLANNER project
 
 #include "UASInterface.h"
 #include <QAction>
-#include <QDeclarativeView>
+#include <QQuickView>
 
 class QTimer;
 
-class APMToolBar : public QDeclarativeView
+class APMToolBar : public QQuickView
 {
     Q_OBJECT
 public:
-    explicit APMToolBar(QWidget *parent = 0);
+    explicit APMToolBar(QWindow *parent = 0);
     ~APMToolBar();
 
     void setFlightViewAction(QAction *action);

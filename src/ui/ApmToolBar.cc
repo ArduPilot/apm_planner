@@ -34,12 +34,13 @@ This file is part of the APM_PLANNER project
 #include "LinkManager.h"
 #include "MainWindow.h"
 #include "ArduPilotMegaMAV.h"
-#include <QDeclarativeContext>
+#include <QQmlContext>
 #include <QGraphicsObject>
 #include <QTimer>
+#include <QQuickItem>
 
-APMToolBar::APMToolBar(QWidget *parent):
-    QDeclarativeView(parent), m_uas(NULL), m_disableOverride(false)
+APMToolBar::APMToolBar(QWindow *parent):
+    QQuickView(parent), m_uas(NULL), m_disableOverride(false)
 {
     // Configure our QML object
     QLOG_DEBUG() << "qmlBaseDir" << QGC::shareDirectory();
@@ -52,7 +53,7 @@ APMToolBar::APMToolBar(QWidget *parent):
     }
     setSource(url);
     QLOG_DEBUG() << "QML Status:" << status();
-    setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    setResizeMode(QQuickView::SizeRootObjectToView);
     this->rootContext()->setContextProperty("globalObj", this);
 
      // set the size of the device box and row spacing for icons

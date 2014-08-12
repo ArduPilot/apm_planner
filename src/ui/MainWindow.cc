@@ -81,7 +81,6 @@ This file is part of the QGROUNDCONTROL project
 #include <QGCHilLink.h>
 #include <QGCHilConfiguration.h>
 #include <QGCHilFlightGearConfiguration.h>
-#include <QDeclarativeView>
 
 #define PFD_QML
 
@@ -229,7 +228,7 @@ MainWindow::MainWindow(QWidget *parent):
 #ifndef QGC_TOOLBAR_ENABLED
     // Add the APM 'toolbar'
 
-    m_apmToolBar = new APMToolBar(this);
+    m_apmToolBar = new APMToolBar();
     m_apmToolBar->setFlightViewAction(ui.actionFlightView);
     m_apmToolBar->setFlightPlanViewAction(ui.actionMissionView);
     m_apmToolBar->setInitialSetupViewAction(ui.actionHardwareConfig);
@@ -241,7 +240,8 @@ MainWindow::MainWindow(QWidget *parent):
     connect(ui.actionAdvanced_Mode, SIGNAL(triggered(bool)), m_apmToolBar, SLOT(checkAdvancedMode(bool)));
 
     QDockWidget *widget = new QDockWidget(tr("APM Tool Bar"),this);
-    widget->setWidget(m_apmToolBar);
+    QWidget *toolbarcontainer = QWidget::createWindowContainer(m_apmToolBar);
+    widget->setWidget(toolbarcontainer);
     widget->setMinimumHeight(72);
     widget->setMaximumHeight(72);
     widget->setMinimumWidth(1024);
