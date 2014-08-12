@@ -86,7 +86,6 @@ private slots:
     void activeUASSet(UASInterface *uas);
     void rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu);
     void scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_imu2_t scaledImu);
-    void sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets);
 
     real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
     void saveOffsets(real_1d_array *ofs, real_1d_array *ofs2);
@@ -107,7 +106,6 @@ private:
     QPointer<QTimer> m_timer;
     QVector<RawImuTuple> m_rawImuList;
     QVector<RawImuTuple> m_scaledImu2List;
-    mavlink_sensor_offsets_t m_sensorOffsets;
     double m_compass2OfsX;
     double m_compass2OfsY;
     double m_compass2OfsZ;
@@ -117,8 +115,7 @@ private:
     double m_old2xmag;
     double m_old2ymag;
     double m_old2zmag;
-    int m_allOffsetsSet;
-    bool m_validSensorOffsets;
+
     bool m_haveSecondCompass;
 };
 

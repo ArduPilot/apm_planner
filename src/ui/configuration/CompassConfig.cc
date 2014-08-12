@@ -33,8 +33,6 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_progressDialog(NULL),
     m_timer(NULL),
     m_rawImuList(),
-    m_allOffsetsSet(0),
-    m_validSensorOffsets(false),
     m_haveSecondCompass(false)
 {
     ui.setupUi(this);
@@ -203,7 +201,6 @@ void CompassConfig::parameterChanged(int uas, int component, QString parameterNa
         ui.orientationComboBox->setCurrentIndex(value.toInt());
         ui.orientationComboBox->blockSignals(false);
         updateCompassSelection();
-
     }
 }
 
@@ -337,18 +334,12 @@ void CompassConfig::startDataCollection()
                 this, SLOT(rawImuMessageUpdate(UASInterface*,mavlink_raw_imu_t)));
     connect(m_uas, SIGNAL(scaledImu2MessageUpdate(UASInterface*,mavlink_scaled_imu2_t)),
                 this, SLOT(scaledImu2MessageUpdate(UASInterface*,mavlink_scaled_imu2_t)));
-    connect(m_uas, SIGNAL(sensorOffsetsMessageUpdate(UASInterface*,mavlink_sensor_offsets_t)),
-                this, SLOT(sensorUpdateMessage(UASInterface*,mavlink_sensor_offsets_t)));
     m_uas->enableRawSensorDataTransmission(10);
 
     QGCUASParamManager* pm = m_uas->getParamManager();
 
     if (pm->getParameterNames(1).contains("COMPASS_OFS2_X"))
     {
-        m_compass2OfsX = pm->getParameterValue(1, "COMPASS_OFS2_X").toDouble();
-        m_compass2OfsY = pm->getParameterValue(1, "COMPASS_OFS2_Y").toDouble();
-        m_compass2OfsZ = pm->getParameterValue(1, "COMPASS_OFS2_Z").toDouble();
-
         m_haveSecondCompass = true;
     }
 
@@ -390,7 +381,6 @@ void CompassConfig::cleanup()
     m_rawImuList.clear();
     m_scaledImu2List.clear();
     delete m_progressDialog;
-    m_validSensorOffsets = false;
 }
 
 void CompassConfig::finishCompassCalibration()
@@ -474,7 +464,7 @@ void CompassConfig::saveOffsets(alglib::real_1d_array* offset, alglib::real_1d_a
 
 void CompassConfig::rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu)
 {
-    if (m_uas == uas && m_validSensorOffsets){
+    if (m_uas == uas ){
         QLOG_DEBUG() << "RAW IMU x:" << rawImu.xmag << " y:" << rawImu.ymag << " z:" << rawImu.zmag;
 
         if (m_oldxmag != rawImu.xmag &&
@@ -482,9 +472,9 @@ void CompassConfig::rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t raw
             m_oldzmag != rawImu.zmag)
         {
             RawImuTuple value;
-            value.magX = rawImu.xmag - (float)m_sensorOffsets.mag_ofs_x;
-            value.magY = rawImu.ymag - (float)m_sensorOffsets.mag_ofs_y;
-            value.magZ = rawImu.zmag - (float)m_sensorOffsets.mag_ofs_z;
+            value.magX = rawImu.xmag;
+            value.magY = rawImu.ymag;
+            value.magZ = rawImu.zmag;
 
             m_rawImuList.append(value);
 
@@ -497,7 +487,7 @@ void CompassConfig::rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t raw
 
 void CompassConfig::scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_imu2_t scaledImu)
 {
-    if (m_uas == uas && m_validSensorOffsets){
+    if (m_uas == uas){
         QLOG_DEBUG() << "SCALED IMU2 x:" << scaledImu.xmag << " y:" << scaledImu.ymag << " z:" << scaledImu.zmag;
 
         if (m_old2xmag != scaledImu.xmag &&
@@ -505,9 +495,9 @@ void CompassConfig::scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_im
             m_old2zmag != scaledImu.zmag)
         {
             RawImuTuple value;
-            value.magX = scaledImu.xmag - (float)m_sensorOffsets.mag_ofs_x;
-            value.magY = scaledImu.ymag - (float)m_sensorOffsets.mag_ofs_y;
-            value.magZ = scaledImu.zmag - (float)m_sensorOffsets.mag_ofs_z;
+            value.magX = scaledImu.xmag;
+            value.magY = scaledImu.ymag;
+            value.magZ = scaledImu.zmag;
 
             m_scaledImu2List.append(value);
 
@@ -515,14 +505,6 @@ void CompassConfig::scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_im
             m_old2ymag = scaledImu.ymag;
             m_old2zmag = scaledImu.zmag;
         }
-    }
-}
-
-void CompassConfig::sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets)
-{
-    if (m_uas == uas){
-        m_sensorOffsets = sensorOffsets;
-        m_validSensorOffsets = true;
     }
 }
 
