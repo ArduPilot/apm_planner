@@ -452,7 +452,7 @@ void CompassConfig::saveOffsets(alglib::real_1d_array* offset, alglib::real_1d_a
         paramMgr->setParameter(1, "COMPASS_OFS2_Y", yOffset2);
         paramMgr->setParameter(1, "COMPASS_OFS2_Z", zOffset2);
 
-        message.append(tr("\nNew offsets (Compass 2) are \n\nx:") + QString::number(xOffset2,'f',3)
+        message.append(tr("\n\nNew offsets (Compass 2) are \n\nx:") + QString::number(xOffset2,'f',3)
                        + " y:" + QString::number(yOffset2,'f',3) + " z:" + QString::number(zOffset2,'f',3));
     }
 
