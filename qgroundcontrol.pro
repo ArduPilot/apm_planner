@@ -103,7 +103,6 @@ QT += network \
     xml \
     webkit \
     sql \
-    declarative \
     widgets \
     serialport \
     webkitwidgets
