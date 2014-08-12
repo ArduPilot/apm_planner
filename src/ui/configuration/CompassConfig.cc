@@ -204,22 +204,6 @@ void CompassConfig::parameterChanged(int uas, int component, QString parameterNa
         ui.orientationComboBox->blockSignals(false);
         updateCompassSelection();
 
-    } else if (parameterName.contains("COMPASS_OFS")) {
-        QLOG_DEBUG() << "Clearing " << parameterName;
-        if (parameterName == "COMPASS_OFS_X") {
-            m_allOffsetsSet += 2;
-        } else if (parameterName == "COMPASS_OFS_Y") {
-            m_allOffsetsSet += 4;
-        } else if (parameterName == "COMPASS_OFS_Z") {
-            m_allOffsetsSet += 8;
-        }
-
-        if (m_allOffsetsSet == 15) { // ie all offsets have been set
-            QLOG_DEBUG() << "Start Data Collection";
-            startDataCollection();
-        }
-
-
     }
 }
 
@@ -331,17 +315,20 @@ void CompassConfig::liveCalibrationClicked()
                              tr("Data will be collected for 60 seconds, Please click ok and move the apm around all axises"));
 
     QGCUASParamManager* pm = m_uas->getParamManager();
-    if ((pm->getParameterValue(1, "COMPASS_OFS_X") != 0.0f)
-       ||(pm->getParameterValue(1, "COMPASS_OFS_Y") != 0.0f)
-       || (pm->getParameterValue(1, "COMPASS_OFS_Z") != 0.0f)) {
-        // Initialiase to zero
-        pm->setParameter(1,"COMPASS_OFS_X", QVariant(static_cast<float>(0.0f)));
-        pm->setParameter(1,"COMPASS_OFS_Y", QVariant(static_cast<float>(0.0f)));
-        pm->setParameter(1,"COMPASS_OFS_Z", QVariant(static_cast<float>(0.0f)));
-        m_allOffsetsSet = 1; // Add 2 for X, 4 for Y, 8 for Z, add 1 means it's enabled.
-    } else {
-        startDataCollection();
-    }
+    // Initialiase to zero
+    pm->setParameter(1,"COMPASS_OFS_X", QVariant(static_cast<float>(0.0f)));
+    pm->setParameter(1,"COMPASS_OFS_Y", QVariant(static_cast<float>(0.0f)));
+    pm->setParameter(1,"COMPASS_OFS_Z", QVariant(static_cast<float>(0.0f)));
+
+    pm->setParameter(1,"COMPASS_OFS2_X", QVariant(static_cast<float>(0.0f)));
+    pm->setParameter(1,"COMPASS_OFS2_Y", QVariant(static_cast<float>(0.0f)));
+    pm->setParameter(1,"COMPASS_OFS2_Z", QVariant(static_cast<float>(0.0f)));
+
+    pm->setParameter(1,"COMPASS_OFS3_X", QVariant(static_cast<float>(0.0f)));
+    pm->setParameter(1,"COMPASS_OFS3_Y", QVariant(static_cast<float>(0.0f)));
+    pm->setParameter(1,"COMPASS_OFS3_Z", QVariant(static_cast<float>(0.0f)));
+
+    startDataCollection();
 }
 
 void CompassConfig::startDataCollection()
