@@ -564,7 +564,7 @@ void PX4FirmwareUploader::run()
 
                 // 3DR COA Public Key
                 QString test = "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
-                QByteArray bytes = QByteArray::fromBase64(test.toAscii());
+                QByteArray bytes = QByteArray::fromBase64(test.toLatin1());
 
                 BIO *bi = BIO_new(BIO_s_mem());
                 BIO_write(bi, bytes.data(), bytes.size());
