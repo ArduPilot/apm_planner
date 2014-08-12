@@ -13,7 +13,7 @@
 //
 //    (c) 2014 Author: Bill Bonney <billbonney@communistech.com>
 //
-import QtQuick 1.1
+import QtQuick 2.0
 
 Rectangle {
     id: root
