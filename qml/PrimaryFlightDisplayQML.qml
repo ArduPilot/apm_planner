@@ -25,19 +25,18 @@ Rectangle {
     property bool showStatusMessage: false
 
     function activeUasSet() {
-        console.log("PFD-QML: Active UAS is set");
-        rollPitchIndicator.rollAngle = function() { return relpositionoverview.roll*57.2957795131 };
-        rollPitchIndicator.pitchAngle = function() { return  relpositionoverview.pitch*57.2957795131 };
-        pitchIndicator.rollAngle = function() { return relpositionoverview.roll*57.2957795131 };
-        pitchIndicator.pitchAngle = function() { return  relpositionoverview.pitch*57.2957795131 };
-        speedIndicator.groundspeed = function() { return relpositionoverview.groundspeed };
-        informationIndicator.groundSpeed = function() { return relpositionoverview.groundspeed };
-        informationIndicator.airSpeed = function() { return relpositionoverview.airspeed };
-        compassIndicator.heading = function() {
+        rollPitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll * 57.2957795131; })
+        rollPitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch*57.2957795131 })
+        pitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll*57.2957795131 })
+        pitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch*57.2957795131 })
+        speedIndicator.groundspeed = Qt.binding(function() { return relpositionoverview.groundspeed })
+        informationIndicator.groundSpeed = Qt.binding(function() { return relpositionoverview.groundspeed })
+        informationIndicator.airSpeed = Qt.binding(function() { return relpositionoverview.airspeed })
+        compassIndicator.heading = Qt.binding(function() {
             return (relpositionoverview.yaw < 0) ? (relpositionoverview.yaw*57.2957795131) + 360 : (relpositionoverview.yaw*57.2957795131)
-        };
-        speedIndicator.airspeed = function() { return relpositionoverview.airspeed };
-        altIndicator.alt = function() { return abspositionoverview.relative_alt };
+        })
+        speedIndicator.airspeed = Qt.binding(function() { return relpositionoverview.airspeed } )
+        altIndicator.alt = Qt.binding(function() { return abspositionoverview.relative_alt } )
     }
     function activeUasUnset() {
         console.log("PFD-QML: Active UAS is now unset");
