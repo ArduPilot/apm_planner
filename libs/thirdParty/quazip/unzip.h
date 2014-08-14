@@ -53,7 +53,7 @@ extern "C" {
 
 #ifndef _ZLIB_H
 #include <QtGlobal>
-#ifdef Q_OS_WIN
+#ifdef Q_CC_MSVC
 #include <QtZlib/zlib.h>
 #else
 #include "zlib.h"
