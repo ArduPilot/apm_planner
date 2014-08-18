@@ -176,20 +176,31 @@ Section "Qt components" QT_FILES
   File ${QTDIR}\lib\libgcc_s_sjlj-1.dll
   File ${QTDIR}\lib\libstdc++-6.dll
   File ${QTDIR}\lib\libwinpthread-1.dll
-  File ${QTDIR}\lib\QtCore4.dll
-  File ${QTDIR}\lib\QtGui4.dll
-  File ${QTDIR}\lib\QtScript4.dll
-  File ${QTDIR}\lib\QtMultimedia4.dll
-  File ${QTDIR}\lib\QtDeclarative4.dll
-  File ${QTDIR}\lib\phonon4.dll
-  File ${QTDIR}\lib\QtNetwork4.dll
-  File ${QTDIR}\lib\QtOpenGL4.dll
-  File ${QTDIR}\lib\QtSql4.dll
-  File ${QTDIR}\lib\QtSvg4.dll
-  File ${QTDIR}\lib\QtTest4.dll
-  File ${QTDIR}\lib\QtWebkit4.dll
-  File ${QTDIR}\lib\QtXml4.dll
-  File ${QTDIR}\lib\QtXmlPatterns4.dll
+  File ${QTDIR}\lib\Qt5WebKitWidgets.dll \
+  File ${QTDIR}\lib\Qt5MultimediaWidgets.dll \
+  File ${QTDIR}\lib\Qt5Multimedia.dll \
+  File ${QTDIR}\lib\Qt5Gui.dll \
+  File ${QTDIR}\lib\Qt5Core.dll \
+  File ${QTDIR}\lib\icuin51.dll \
+  File ${QTDIR}\lib\icuuc51.dll \
+  File ${QTDIR}\lib\icudt51.dll \
+  File ${QTDIR}\lib\Qt5Network.dll \
+  File ${QTDIR}\lib\Qt5Widgets.dll \
+  File ${QTDIR}\lib\Qt5OpenGL.dll \
+  File ${QTDIR}\lib\Qt5PrintSupport.dll \
+  File ${QTDIR}\lib\Qt5WebKit.dll \
+  File ${QTDIR}\lib\Qt5Quick.dll \
+  File ${QTDIR}\lib\Qt5Qml.dll \
+  File ${QTDIR}\lib\Qt5Sql.dll \
+  File ${QTDIR}\lib\Qt5Positioning.dll \
+  File ${QTDIR}\lib\Qt5Sensors.dll \
+  File ${QTDIR}\lib\Qt5Declarative.dll \
+  File ${QTDIR}\lib\Qt5XmlPatterns.dll \
+  File ${QTDIR}\lib\Qt5Xml.dll \
+  File ${QTDIR}\lib\Qt5Script.dll \
+  File ${QTDIR}\lib\Qt5Svg.dll \
+  File ${QTDIR}\lib\Qt5Test.dll \
+  File ${QTDIR}\lib\Qt5SerialPort.dll
 
 SectionEnd
 
