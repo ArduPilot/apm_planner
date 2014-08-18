@@ -38,7 +38,7 @@ This file is part of the APM_PLANNER project
 #include <QGraphicsObject>
 #include <QTimer>
 #include <QQuickItem>
-
+#include <QQmlEngine>
 APMToolBar::APMToolBar(QWindow *parent):
     QQuickView(parent), m_uas(NULL), m_disableOverride(false)
 {
@@ -51,6 +51,8 @@ APMToolBar::APMToolBar(QWindow *parent):
         QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/ApmToolBar.qml" + " not found. Please reinstall the application and try again");
         exit(-1);
     }
+    engine()->addImportPath("qml/"); //For local or win32 builds
+    engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
     setSource(url);
     QLOG_DEBUG() << "QML Status:" << status();
     setResizeMode(QQuickView::SizeRootObjectToView);

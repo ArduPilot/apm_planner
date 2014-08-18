@@ -29,7 +29,7 @@ This file is part of the APM_PLANNER project
 #include <QVBoxLayout>
 #include <QQmlContext>
 #include <QQuickItem>
-
+#include <QQmlEngine>
 #define ToRad(x) (x*0.01745329252)      // *pi/180
 #define ToDeg(x) (x*57.2957795131)      // *180/pi
 
@@ -46,7 +46,12 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
         QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml" + " not found. Please reinstall the application and try again");
         exit(-1);
     }
-    m_declarativeView = new QQuickView(url);
+    m_declarativeView = new QQuickView();
+    m_declarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
+    m_declarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+    m_declarativeView->setSource(url);
+
+
     QLOG_DEBUG() << "QML Status:" << m_declarativeView->status();
     m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
     QVBoxLayout* layout = new QVBoxLayout();
