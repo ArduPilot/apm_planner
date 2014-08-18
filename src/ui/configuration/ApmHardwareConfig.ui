@@ -386,7 +386,7 @@
           </widget>
          </item>
          <item alignment="Qt::AlignRight">
-          <widget class="QPushButton" name="sonarButton">
+          <widget class="QPushButton" name="rangeFinderButton">
            <property name="minimumSize">
             <size>
              <width>150</width>
@@ -400,7 +400,7 @@
             </size>
            </property>
            <property name="text">
-            <string> Sonar</string>
+            <string>Range Finder</string>
            </property>
            <property name="checkable">
             <bool>true</bool>

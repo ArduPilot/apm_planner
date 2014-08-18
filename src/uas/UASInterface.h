@@ -696,6 +696,8 @@ signals:
     void radioMessageUpdate(UASInterface *uas, mavlink_radio_t radioMessage);
     /** @brief Compass Mot Status update message*/
     void compassMotCalibration(mavlink_compassmot_status_t* compassmot_status);
+    /** @brief Range Finder update message*/
+    void rangeFinderUpdate(UASInterface *uas, double distance, double voltage);
 
     // Log Download Signals
     void logEntry(int uasId, uint32_t time_utc, uint32_t size, uint16_t id, uint16_t num_logs, uint16_t last_log_num);

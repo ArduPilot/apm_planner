@@ -48,7 +48,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.arduPlaneLevelButton->setVisible(false);
     ui.radioCalibrateButton->setVisible(false);
     ui.batteryMonitorButton->setVisible(false);
-    ui.sonarButton->setVisible(false);
+    ui.rangeFinderButton->setVisible(false);
     ui.airspeedButton->setVisible(false);
     ui.opticalFlowButton->setVisible(false);
     ui.osdButton->setVisible(false);
@@ -111,10 +111,10 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_buttonToConfigWidgetMap[ui.batteryMonitorButton] = m_batteryConfig;
     connect(ui.batteryMonitorButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
-    m_sonarConfig = new SonarConfig(this);
+    m_sonarConfig = new RangeFinderConfig(this);
     ui.stackedWidget->addWidget(m_sonarConfig);
-    m_buttonToConfigWidgetMap[ui.sonarButton] = m_sonarConfig;
-    connect(ui.sonarButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+    m_buttonToConfigWidgetMap[ui.rangeFinderButton] = m_sonarConfig;
+    connect(ui.rangeFinderButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_airspeedConfig = new AirspeedConfig(this);
     ui.stackedWidget->addWidget(m_airspeedConfig);
@@ -238,7 +238,7 @@ void ApmHardwareConfig::uasDisconnected()
     ui.mandatoryHardware->setChecked(false);
 
     ui.frameTypeButton->setShown(false);
-    ui.sonarButton->setShown(false);
+    ui.rangeFinderButton->setShown(false);
     ui.compassButton->setShown(false);
     ui.accelCalibrateButton->setShown(false);
     ui.radioCalibrateButton->setShown(false);
@@ -343,7 +343,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.osdButton->setShown(!show);
         ui.cameraGimbalButton->setShown(!show);// [SHOW Camera Gimbal]
 //        ui.antennaTrackerButton->setShown(!show);// [HIDE Antenna Tracking]
-        ui.sonarButton->setShown(!show);
+        ui.rangeFinderButton->setShown(!show);
 
     } else if (m_uas->isFixedWing()){
         QLOG_DEBUG() << "FixedWing";
@@ -386,7 +386,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.osdButton->setShown(!show);
         ui.cameraGimbalButton->setShown(!show); // [SHOW Camera Gimbal]
 //        ui.antennaTrackerButton->setShown(!show); // [HIDE Antenna Tracking]
-        ui.sonarButton->setShown(!show);
+        ui.rangeFinderButton->setShown(!show);
     }
 }
 

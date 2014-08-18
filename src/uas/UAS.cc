@@ -1372,6 +1372,13 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit scaledImu2MessageUpdate(this, scaledImu2);
         }
             break;
+        case MAVLINK_MSG_ID_RANGEFINDER:
+        {
+            mavlink_rangefinder_t rangeFinder;
+            mavlink_msg_rangefinder_decode(&message, &rangeFinder);
+            emit rangeFinderUpdate(this, rangeFinder.distance, rangeFinder.voltage);
+        }
+            break;
         // Messages to ignore
         case MAVLINK_MSG_ID_RAW_PRESSURE:
         case MAVLINK_MSG_ID_SCALED_PRESSURE:
