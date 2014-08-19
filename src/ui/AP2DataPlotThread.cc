@@ -307,6 +307,8 @@ void AP2DataPlotThread::run()
                             QByteArray packet = block.mid(i+3,typeToLengthMap.value(type)-3);
                             block.remove(i,packet.size()+3); //Remove both the 3 byte header and the packet
                             i--;
+                            QDataStream packetstream(packet);
+                            packetstream.setByteOrder(QDataStream::LittleEndian);
 
                             QString name = typeToNameMap.value(type);
                             if (nameToInsertQuery.contains(name))
@@ -338,150 +340,136 @@ void AP2DataPlotThread::run()
                                 index++;
                                 QString formatstr = typeToFormatMap.value(type);
 
-                                int formatpos = 0;
                                 for (int j=0;j<formatstr.size();j++)
                                 {
                                     QChar typeCode = formatstr.at(j);
                                     if (typeCode == 'b') //int8_t
                                     {
-                                        char val = static_cast<char>(packet.at(formatpos));
+                                        qint8 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=1;
                                     }
                                     else if (typeCode == 'B') //uint8_t
                                     {
-                                        //unsigned char
-                                        unsigned char val = static_cast<unsigned char>(packet.at(formatpos));
+                                        quint8 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=1;
                                     }
                                     else if (typeCode == 'h') //int16_t
                                     {
-                                        //signed short
-                                        short val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
+                                        quint16 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'H') //uint16_t
                                     {
-                                        //unsigned short
-                                        unsigned short val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
+                                        quint16 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'i') //int32_t
                                     {
-                                        int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        qint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'I') //uint32_t
                                     {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        quint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'f') //float
                                     {
-                                        unsigned long val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
-                                        float f = *(float*)&val;
-                                        //float val = packet.mid(formatpos,16).at(0);
+                                        float f;
+                                        packetstream >> f;
                                         nameToInsertQuery[name]->bindValue(j+1,f);
                                         linetoemit += "," + QString::number(f,'f',4);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'n') //char(4)
                                     {
-                                        QString val = packet.mid(formatpos,4);
+
+                                        QString val = "";
+                                        for (int i=0;i<4;i++)
+                                        {
+                                            quint8 ch;
+                                            packetstream >> ch;
+                                            val += static_cast<char>(ch);
+                                        }
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
-                                        formatpos += 4;
                                     }
                                     else if (typeCode == 'N') //char(16)
                                     {
-                                        QString val = packet.mid(formatpos,16);
+                                        QString val = "";
+                                        for (int i=0;i<16;i++)
+                                        {
+                                            quint8 ch;
+                                            packetstream >> ch;
+                                            val += static_cast<char>(ch);
+                                        }
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
-                                        formatpos += 16;
                                     }
                                     else if (typeCode == 'Z') //char(64)
                                     {
-                                        QString val = packet.mid(formatpos,64);
+                                        QString val = "";
+                                        for (int i=0;i<64;i++)
+                                        {
+                                            quint8 ch;
+                                            packetstream >> ch;
+                                            val += static_cast<char>(ch);
+                                        }
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
-                                        formatpos += 64;
                                     }
                                     else if (typeCode == 'c') //int16_t * 100
                                     {
-                                        //unsigned short
-                                        int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
+                                        qint16 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'C') //uint16_t * 100
                                     {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
+                                        quint16 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'e') //int32_t * 100
                                     {
-                                        int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        qint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'E') //uint32_t * 100
                                     {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        quint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'L') //uint32_t GPS Lon/Lat * 10000000
                                     {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        quint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 10000000.0);
                                         linetoemit += "," + QString::number(val / 10000000.0,'f',6);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'M')
                                     {
-                                        char val = static_cast<char>(packet.at(formatpos));
+                                        qint8 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=1;
-
                                     }
                                     else
                                     {
