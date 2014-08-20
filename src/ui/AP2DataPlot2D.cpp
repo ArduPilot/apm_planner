@@ -923,10 +923,12 @@ void AP2DataPlot2D::itemEnabled(QString name)
             mainGraph1->setData(xlist, ylist);
         }
         mainGraph1->rescaleValueAxis();
-        if (m_graphCount == 1)
+        if (m_graphCount <= 2)
         {
             mainGraph1->rescaleKeyAxis();
+            m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(xlist.at(0));
         }
+
         return;
     } //if (m_logLoaded)
     else
