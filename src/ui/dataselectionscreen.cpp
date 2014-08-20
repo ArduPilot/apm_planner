@@ -7,6 +7,7 @@ DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
 	ui.setupUi(this);
     connect(ui.treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(onItemChanged(QTreeWidgetItem*,int)));
     connect(ui.clearPushButton,SIGNAL(clicked()),this,SLOT(clearSelectionButtonClicked()));
+    ui.treeWidget->setHeaderHidden(true);
 }
 
 DataSelectionScreen::~DataSelectionScreen()
@@ -105,8 +106,8 @@ void DataSelectionScreen::addItem(QString name)
             child->setCheckState(0,Qt::Unchecked);
             item->addChild(child);
         }
-
     }
+    ui.treeWidget->sortByColumn(0,Qt::AscendingOrder);
 }
 void DataSelectionScreen::onItemChanged(QTreeWidgetItem* item,int column)
 {
