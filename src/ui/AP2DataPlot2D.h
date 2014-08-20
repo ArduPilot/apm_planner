@@ -73,7 +73,7 @@ private slots:
     void navModeChanged(int uasid, int mode, const QString& text);
 
     void autoScrollClicked(bool checked);
-    void tableCellClicked(int row,int column);
+    void tableCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
     void logLine(QString line);
     void addGraphRight();
     void addGraphLeft();
