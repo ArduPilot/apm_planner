@@ -238,6 +238,16 @@ void SerialConfigurationWindow::linkChanged(int linkid)
     {
         return;
     }
+    int baud = LinkManager::instance()->getSerialLinkBaud(linkid);
+    QString port = LinkManager::instance()->getSerialLinkPort(linkid);
+    if (baud != ui.baudRate->currentText().toInt())
+    {
+        ui.baudRate->setCurrentIndex(ui.baudRate->findText(QString::number(baud)));
+    }
+    if (ui.portName->currentText() != port)
+    {
+        ui.portName->setEditText(port);
+    }
 
 }
 
@@ -406,7 +416,7 @@ void SerialConfigurationWindow::setPortName(QString port)
 #endif
     port = port.remove(" ");
 
-    LinkManager::instance()->modifySerialConnection(m_linkid,port,ui.baudRate->currentText().toInt());
+    LinkManager::instance()->modifySerialConnection(m_linkid,port);
 
     /*if (this->link->getPortName() != port) {
         link->setPortName(port);
