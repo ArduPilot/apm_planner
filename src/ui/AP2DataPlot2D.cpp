@@ -255,7 +255,7 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
             newresult.append(m_graphClassMap.keys()[i] + ": " + "ERR" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
     }
-    QToolTip::showText(QPoint(evt->pos().x() + m_plot->x(),evt->pos().y()+m_plot->y()),newresult);
+    QToolTip::showText(QPoint(evt->globalPos().x() + m_plot->x(),evt->globalPos().y()+m_plot->y()),newresult);
 }
 
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
