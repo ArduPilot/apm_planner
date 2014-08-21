@@ -172,7 +172,6 @@ sectionEND
 Section "Qt components" QT_FILES
   !include qt_install.list
   SetOutPath $INSTDIR
-  File ${QTDIR}\lib\zlib1.dll
   File ${QTDIR}\lib\libgcc_s_sjlj-1.dll
   File ${QTDIR}\lib\libstdc++-6.dll
   File ${QTDIR}\lib\libwinpthread-1.dll
@@ -230,7 +229,6 @@ Section "Uninstall"
   Delete $INSTDIR\QtXmlPatterns4.dll
   Delete $INSTDIR\QtScript4.dll
   Delete $INSTDIR\QtDeclarative4.dll
-  Delete $INSTDIR\zlib1.dll
   ExecWait "$INSTDIR\drmingw.exe -u"
   Delete $INSTDIR\drmingw.exe"
   Delete $INSTDIR\exchndl.dll"
