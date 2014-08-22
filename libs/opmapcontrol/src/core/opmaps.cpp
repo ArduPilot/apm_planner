@@ -200,6 +200,11 @@ namespace core {
                         qheader.setRawHeader("Referrer", "http://maps.yandex.ru/");
                     }
                     break;
+                case MapType::Statkart_Topo2:
+                                    {
+                                        qheader.setRawHeader("Referrer", "http://www.norgeskart.no/");
+                                    }
+                                    break;
                 default:
                     break;
                 }
