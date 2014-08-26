@@ -333,6 +333,7 @@ FORMS += \
     src/ui/firmwareupdate/QGCPX4FirmwareUpdate.ui \
     src/ui/mission/QGCMissionOther.ui \
     src/ui/mission/QGCMissionNavWaypoint.ui \
+    src/ui/mission/QGCMissionNavSplineWaypoint.ui \
     src/ui/mission/QGCMissionDoJump.ui \
     src/ui/mission/QGCMissionDoSetServo.ui \
     src/ui/mission/QGCMissionDoRepeatServo.ui \
@@ -523,6 +524,7 @@ HEADERS += \
     src/ui/firmwareupdate/QGCPX4FirmwareUpdate.h \
     src/ui/mission/QGCMissionOther.h \
     src/ui/mission/QGCMissionNavWaypoint.h \
+    src/ui/mission/QGCMissionNavSplineWaypoint.h \
     src/ui/mission/QGCMissionDoJump.h \
     src/ui/mission/QGCMissionDoSetServo.h \
     src/ui/mission/QGCMissionDoRepeatServo.h \
@@ -744,6 +746,7 @@ SOURCES += src/main.cc \
     src/ui/firmwareupdate/QGCPX4FirmwareUpdate.cc \
     src/ui/mission/QGCMissionOther.cc \
     src/ui/mission/QGCMissionNavWaypoint.cc \
+    src/ui/mission/QGCMissionNavSplineWaypoint.cc \
     src/ui/mission/QGCMissionDoJump.cc \
     src/ui/mission/QGCMissionDoSetServo.cc \
     src/ui/mission/QGCMissionDoRepeatServo.cc \

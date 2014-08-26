@@ -34,6 +34,7 @@ This file is part of the QGROUNDCONTROL project
 #include "ui_WaypointEditableView.h"
 
 #include "mission/QGCMissionNavWaypoint.h"
+#include "mission/QGCMissionNavSplineWaypoint.h"
 #include "mission/QGCMissionNavLoiterUnlim.h"
 #include "mission/QGCMissionNavLoiterTurns.h"
 #include "mission/QGCMissionNavLoiterTime.h"
@@ -89,6 +90,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
 
     } else {
         m_ui->comboBox_action->addItem(tr("NAV: Waypoint"),MAV_CMD_NAV_WAYPOINT);
+        m_ui->comboBox_action->addItem(tr("NAV: Spline Waypoint"),MAV_CMD_NAV_SPLINE_WAYPOINT);
         m_ui->comboBox_action->addItem(tr("NAV: TakeOff"),MAV_CMD_NAV_TAKEOFF);
         m_ui->comboBox_action->addItem(tr("NAV: Loiter Unlim."),MAV_CMD_NAV_LOITER_UNLIM);
         m_ui->comboBox_action->addItem(tr("NAV: Loiter Time"),MAV_CMD_NAV_LOITER_TIME);
@@ -236,6 +238,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
     case MAV_CMD_NAV_WAYPOINT:
         missionWidget = new QGCMissionNavWaypoint(this);
         break;
+    case MAV_CMD_NAV_SPLINE_WAYPOINT:
+        missionWidget = new QGCMissionNavSplineWaypoint(this);
+    break;
     case MAV_CMD_NAV_LOITER_UNLIM:
         missionWidget = new QGCMissionNavLoiterUnlim(this);
         break;
