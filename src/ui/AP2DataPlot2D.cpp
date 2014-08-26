@@ -303,7 +303,6 @@ void AP2DataPlot2D::addGraphRight()
     {
         QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
         QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
-        itemEnabled(itemtext + "." + headertext);
         m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
     }
 }
@@ -318,7 +317,6 @@ void AP2DataPlot2D::addGraphLeft()
     {
         QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
         QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
-        itemEnabled(itemtext + "." + headertext);
         m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
     }
 }
@@ -333,7 +331,6 @@ void AP2DataPlot2D::removeGraphLeft()
     {
         QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
         QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
-        itemDisabled(itemtext + "." + headertext);
         m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
     }
 }
