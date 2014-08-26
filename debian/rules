@@ -62,6 +62,7 @@ binary-arch: checkroot build
 	#cp -a ChangeLog "$(docdir)/changelog"
 	cd "$(docdir)" && gzip -9 changelog
 	dpkg-shlibdeps debian/tmp/usr/bin/apmplanner2
+	echo "finalfilename=${FINAL_FILENAME}" >> debian/substvars
 	dpkg-gencontrol -isp
 	chown -R root:root debian/tmp
 	chmod -R u+w,go=rX debian/tmp

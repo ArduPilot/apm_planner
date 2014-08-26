@@ -14,8 +14,8 @@ Description: Ground station software for autonomous vehicles.
  A GUI ground control station for autonomous vehicles 
  using the MAVLink protocol.
  Includes support for the APM and PX4 based controllers.
- If installing for the first time use "sudo dpkg -i apmplanner-XXX.deb", then
- "sudo apt-get install -f" and "sudo dpkg -i apmplanner-XXX.deb".
- If upgrading use "sudo dpkg -i apmplanner-XXX.deb".
+ If installing for the first time use "sudo dpkg -i ${finalfilename}", then
+ "sudo apt-get install -f" and "sudo dpkg -i ${finalfilename}".
+ If upgrading use "sudo dpkg -i ${finalfilename}".
  If uninstalling use "sudo dpkg -r apmplanner2".
 
