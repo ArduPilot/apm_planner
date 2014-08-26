@@ -36,6 +36,7 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
     header << tr("Value");
     header << tr("Type");
     ui->treeWidget->setHeaderLabels(header);
+    ui->treeWidget->sortByColumn(0,Qt::AscendingOrder);
 
     // Connect the UI
     connect(ui->systemComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectDropDownMenuSystem(int)));
