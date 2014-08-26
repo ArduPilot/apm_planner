@@ -309,6 +309,7 @@ void AP2DataPlotThread::run()
                             i--;
                             QDataStream packetstream(packet);
                             packetstream.setByteOrder(QDataStream::LittleEndian);
+                            packetstream.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
                             QString name = typeToNameMap.value(type);
                             if (nameToInsertQuery.contains(name))
@@ -459,7 +460,7 @@ void AP2DataPlotThread::run()
                                     }
                                     else if (typeCode == 'L') //uint32_t GPS Lon/Lat * 10000000
                                     {
-                                        quint32 val;
+                                        qint32 val;
                                         packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 10000000.0);
                                         linetoemit += "," + QString::number(val / 10000000.0,'f',6);
