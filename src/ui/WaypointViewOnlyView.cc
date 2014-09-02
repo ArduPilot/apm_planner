@@ -353,6 +353,11 @@ void WaypointViewOnlyView::updateValues()
         break;
         break;
     }
+    case MAV_CMD_DO_SET_CAM_TRIGG_DIST:
+    {
+        m_ui->displayBar->setText(QString("Set Cam Trigging distance to <b>%1</b> meters.").arg(wp->getParam1()));
+        break;
+    }
     case MAV_CMD_DO_JUMP:
     {
         if (wp->getParam2()>0)
