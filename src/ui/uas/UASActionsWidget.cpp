@@ -234,8 +234,15 @@ void UASActionsWidget::armButtonClicked()
 
     if (m_uas->isArmed())
     {
-        QLOG_INFO() << "UAS:: Attempt to Disarm System";
-        m_uas->disarmSystem();
+    	QMessageBox::StandardButton reply;
+    	  reply = QMessageBox::question(this, "Warning", "Disarming while airborne will result in crash ! Disarm now ?",
+    	                                QMessageBox::Yes|QMessageBox::Cancel,QMessageBox::Cancel);
+    	  if (reply == QMessageBox::Yes) {
+    		  QLOG_INFO() << "UAS:: Confirmed Attempt to Disarm System";
+    		  m_uas->disarmSystem();
+    	  } else {
+    		  QLOG_INFO() << "UAS:: Attempt to Disarm System Aborted";
+    	  }
 
     }
     else
@@ -465,7 +472,7 @@ void UASActionsWidget::setAction()
 int UASActionsWidget::preFlightWarningBox()
 {
     QLOG_INFO() << "Display Pre-Flight Warning Box";
-    return QMessageBox::critical(this,tr("Warning"),tr("This action must be done when on the gorund. If vehicle is in the air the this action will result in a crash!"),
+    return QMessageBox::critical(this,tr("Warning"),tr("This action must be done when on the ground. If vehicle is in the air the this action will result in a crash!"),
                          QMessageBox::Ok,QMessageBox::Abort);
 }
 
