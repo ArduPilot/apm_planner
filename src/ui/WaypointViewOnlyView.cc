@@ -399,6 +399,16 @@ void WaypointViewOnlyView::updateValues()
         	m_ui->displayBar->setText(QString("Camera trigging by distance disabled."));
         }
         break;
+    case MAV_CMD_DO_CHANGE_SPEED:
+        if (wp->getParam1()>0)
+        {
+        	m_ui->displayBar->setText(QString("Set <b>Ground Speed</b> to </b>%1</b> m/s, and throttle to <b>%2</b>\% .(-1 = no change)").arg(wp->getParam2()).arg(wp->getParam3()));
+        }
+        else
+        {
+        	m_ui->displayBar->setText(QString("Set <b>Air Speed</b> to </b>%1</b> m/s, and throttle to <b>%2</b>\% .(-1 = no change)").arg(wp->getParam2()).arg(wp->getParam3()));
+        }
+        break;
 
     case MAV_CMD_DO_JUMP:
     {
