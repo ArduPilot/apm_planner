@@ -89,6 +89,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
 
     } else {
         m_ui->comboBox_action->addItem(tr("NAV: Waypoint"),MAV_CMD_NAV_WAYPOINT);
+        m_ui->comboBox_action->addItem(tr("NAV: Spline Wpt"),MAV_CMD_NAV_SPLINE_WAYPOINT);
         m_ui->comboBox_action->addItem(tr("NAV: TakeOff"),MAV_CMD_NAV_TAKEOFF);
         m_ui->comboBox_action->addItem(tr("NAV: Loiter Unlim."),MAV_CMD_NAV_LOITER_UNLIM);
         m_ui->comboBox_action->addItem(tr("NAV: Loiter Time"),MAV_CMD_NAV_LOITER_TIME);
@@ -109,11 +110,11 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("DO: Change Speed"), MAV_CMD_DO_CHANGE_SPEED);
         m_ui->comboBox_action->addItem(tr("DO: Set Home"), MAV_CMD_DO_SET_HOME);
         m_ui->comboBox_action->addItem(tr("DO: Mount Control"), MAV_CMD_DO_MOUNT_CONTROL);
-    #ifdef MAVLINK_ENABLED_PIXHAWK
+#ifdef MAVLINK_ENABLED_PIXHAWK
         m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
         m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
         m_ui->comboBox_action->addItem(tr("Do: Finish Search"),MAV_CMD_DO_FINISH_SEARCH);
-    #endif
+#endif
         m_ui->comboBox_action->addItem(tr("Other"), MAV_CMD_ENUM_END);
     }
 
@@ -234,6 +235,7 @@ QWidget* WaypointEditableView::createActionWidget(int action)
     QWidget* missionWidget;
     switch(action) {
     case MAV_CMD_NAV_WAYPOINT:
+    case MAV_CMD_NAV_SPLINE_WAYPOINT:
         missionWidget = new QGCMissionNavWaypoint(this);
         break;
     case MAV_CMD_NAV_LOITER_UNLIM:
@@ -297,7 +299,7 @@ QWidget* WaypointEditableView::createActionWidget(int action)
         missionWidget = new QGCMissionDoMountControl(this);
         break;
 
- #ifdef MAVLINK_ENABLED_PIXHAWK
+#ifdef MAVLINK_ENABLED_PIXHAWK
     case MAV_CMD_NAV_SWEEP:
         missionWidget = new QGCMissionNavSweep(this);
         break;
@@ -332,25 +334,25 @@ void WaypointEditableView::changedFrame(int index)
 }
 
 void WaypointEditableView::changedCurrent(int state)
-{    
+{
     if (state == 0)
     {
         if (wp->getCurrent() == true) //User clicked on the waypoint, that is already current
-        {            
+        {
             m_ui->selectedBox->setChecked(true);
             m_ui->selectedBox->setCheckState(Qt::Checked);
         }
         else
-        {            
+        {
             m_ui->selectedBox->setChecked(false);
-            m_ui->selectedBox->setCheckState(Qt::Unchecked);            
+            m_ui->selectedBox->setCheckState(Qt::Unchecked);
         }
     }
     else
-    {       
+    {
         wp->setCurrent(true);
         emit changeCurrentWaypoint(wp->getId());   //the slot changeCurrentWaypoint() in WaypointList sets all other current flags to false
-    }    
+    }
 }
 
 void WaypointEditableView::updateValues()
@@ -432,7 +434,7 @@ void WaypointEditableView::updateValues()
     MAV_FRAME frame = wp->getFrame();
     int frame_index = m_ui->comboBox_frame->findData(frame);
     if (m_ui->comboBox_frame->currentIndex() != frame_index) {
-        m_ui->comboBox_frame->setCurrentIndex(frame_index);        
+        m_ui->comboBox_frame->setCurrentIndex(frame_index);
     }
 
     // Update action
