@@ -19,32 +19,10 @@ public:
     };
     QGCUASParamManager(UASInterface* uas, QWidget *parent = 0);
 
-    QList<QString> getParameterNames(int component) const {
-        return parameters.value(component)->keys();
-    }
-    QList<QVariant> getParameterValues(int component) const {
-        return parameters.value(component)->values();
-    }
-    bool getParameterValue(int component, const QString& parameter, QVariant& value) const {
-        if (!parameters.contains(component))
-        {
-            return false;
-        }
-
-        if (!parameters.value(component)->contains(parameter))
-        {
-            return false;
-        }
-
-        value = parameters.value(component)->value(parameter);
-
-        return true;
-    }
-
-    QVariant& getParameterValue(int component, const QString& parameter) const {
-        QVariant* value = new QVariant(parameters.value(component)->value(parameter));
-        return *value;
-    }
+    QList<QString> getParameterNames(int component) const;
+    QList<QVariant> getParameterValues(int component) const;
+    bool getParameterValue(int component, const QString& parameter, QVariant& value) const;
+    QVariant getParameterValue(int component, const QString& parameter) const;
 
     virtual bool isParamMinKnown(const QString& param) = 0;
     virtual bool isParamMaxKnown(const QString& param) = 0;

@@ -506,6 +506,13 @@ void ApmSoftwareConfig::populateTimerTick()
             //By the time this is hit, the param manager already has a full set of parameters from the vehicle,
             //no need to re-request them.
             QList<QString> paramnames = m_uas->getParamManager()->getParameterNames(1);
+            if (paramnames.size() == 0)
+            {
+                //No param names, params are likely not yet done. Wait a second and refresh.
+                QLOG_DEBUG() << "ApmSoftwareConfig::populateTimerTick() - No Param names from param manager. Sleeping for one second...";
+                m_populateTimer.start(1000);
+                return;
+            }
             for (int i=0;i<paramnames.size();i++)
             {
                 m_advancedParamConfig->parameterChanged(m_uas->getUASID(),m_uas->getComponentId(),paramnames.at(i),m_uas->getParamManager()->getParameterValue(1,paramnames.at(i)));
