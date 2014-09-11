@@ -124,18 +124,19 @@ MacBuild {
         -losgWidget
 }
 
-LinuxBuild {
-	exists(/usr/include/osg) | exists(/usr/local/include/osg) {
-        CONFIG += OSGDependency
-        exists(/usr/include/osg/osgQt) | exists(/usr/include/osgQt) | exists(/usr/local/include/osg/osgQt) | exists(/usr/local/include/osgQt) {
-            message("Including support for Linux OpenSceneGraph Qt")
-            LIBS += -losgQt
-            DEFINES += QGC_OSG_QT_ENABLED
-        } else {
-            message("Skipping support for Linux OpenSceneGraph Qt")
-        }
-	}
-}
+#Remove OSG support, as it's only valid for Qt4, not Qt5
+#LinuxBuild {
+#	exists(/usr/include/osg) | exists(/usr/local/include/osg) {
+#        CONFIG += OSGDependency
+#        exists(/usr/include/osg/osgQt) | exists(/usr/include/osgQt) | exists(/usr/local/include/osg/osgQt) | exists(/usr/local/include/osgQt) {
+#            message("Including support for Linux OpenSceneGraph Qt")
+#            LIBS += -losgQt
+#            DEFINES += QGC_OSG_QT_ENABLED
+#        } else {
+#            message("Skipping support for Linux OpenSceneGraph Qt")
+#        }
+#	}
+#}
 
 WindowsBuild {
 	exists($$BASEDIR/libs/lib/osg123) {

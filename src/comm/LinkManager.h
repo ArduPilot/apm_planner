@@ -126,6 +126,7 @@ private slots:
     void linkConnected(LinkInterface* link);
     void linkDisonnected(LinkInterface* link);
     void linkErrorRec(LinkInterface* link,QString error);
+    void linkTimeoutTriggered(LinkInterface*);
 public slots:
     void messageReceived(LinkInterface* link,mavlink_message_t message);
     void protocolStatusMessageRec(QString title,QString text);

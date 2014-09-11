@@ -35,6 +35,9 @@ This file is part of the APM_PLANNER project
 #include <QtSerialPort/qserialport.h>
 #include "SerialLinkInterface.h"
 #include <QMap>
+#include <QTimer>
+
+#define SERIAL_TIMEOUT_MILLISECONDS 5000
 class SerialConnection : public SerialLinkInterface
 {
     Q_OBJECT
@@ -87,9 +90,17 @@ private:
     QMap<QString,int> m_portBaudMap;
     QList<QString> m_portList;
     int m_retryCount;
+    QTimer *m_timeoutTimer;
+    qint64 m_lastTimeoutMessage;
+    bool m_timeoutsEnabled;
+    bool m_timeoutMessageSent;
+
+private slots:
+    void timeoutTimerTick();
 
 signals:
     void updateLink(LinkInterface *link);
+    void timeoutTriggered(LinkInterface*);
     
 public slots:
     void readyRead();

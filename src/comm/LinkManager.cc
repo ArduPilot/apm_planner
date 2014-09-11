@@ -258,6 +258,7 @@ int LinkManager::addSerialConnection()
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
+    connect(connection,SIGNAL(timeoutTriggered(LinkInterface*)),this,SLOT(linkTimeoutTriggered(LinkInterface*)));
     m_connectionMap.insert(connection->getId(),connection);
     emit newLink(connection->getId());
     saveSettings();
@@ -279,6 +280,7 @@ int LinkManager::addSerialConnection(QString port,int baud)
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
+    connect(connection,SIGNAL(timeoutTriggered(LinkInterface*)),this,SLOT(linkTimeoutTriggered(LinkInterface*)));
     connection->setPortName(port);
     connection->setBaudRate(baud);
     m_connectionMap.insert(connection->getId(),connection);
@@ -751,4 +753,10 @@ void LinkManager::linkDisonnected(LinkInterface* link)
 void LinkManager::linkErrorRec(LinkInterface *link,QString errorstring)
 {
     emit linkError(link->getId(),errorstring);
+}
+void LinkManager::linkTimeoutTriggered(LinkInterface *link)
+{
+    //Link has had a timeout
+    emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");
+    link->disconnect();
 }
