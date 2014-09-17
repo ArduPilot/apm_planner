@@ -98,7 +98,9 @@ QRectF Waypoint2DIcon::boundingRect() const
     int loiter = 0;
     int acceptance = 0;
     internals::PointLatLng coord = (internals::PointLatLng)Coord();
-    if (waypoint && showAcceptanceRadius && (waypoint->getAction() == (int)MAV_CMD_NAV_WAYPOINT))
+    if (waypoint && showAcceptanceRadius &&
+            ( (waypoint->getAction() == (int)MAV_CMD_NAV_WAYPOINT)
+             ||(waypoint->getAction() == (int)MAV_CMD_NAV_SPLINE_WAYPOINT)) )
     {
         acceptance = map->metersToPixels(waypoint->getAcceptanceRadius(), coord);
     }
@@ -288,7 +290,9 @@ void Waypoint2DIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     penBlack.setWidth(4);
     pen.setColor(color);
 
-    if ((waypoint) && (waypoint->getAction() == (int)MAV_CMD_NAV_WAYPOINT) && showAcceptanceRadius)
+    if (waypoint && showAcceptanceRadius &&
+           ( (waypoint->getAction() == (int)MAV_CMD_NAV_WAYPOINT)
+            ||(waypoint->getAction() == (int)MAV_CMD_NAV_SPLINE_WAYPOINT)) )
     {
         QPen redPen = QPen(pen);
         redPen.setColor(Qt::yellow);
