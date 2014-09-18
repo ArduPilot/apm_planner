@@ -76,11 +76,8 @@ public:
 
     QAction* getAction();
 
-private slots:
-    void linkCurrentIndexChanged(int currentIndex);
-
+    void connectButtonStatus(int linkid);
 public slots:
-    void setLinkType(qgc_link_t linktype);
     /** @brief Set the protocol for this link */
     void setProtocol(int protocol);
     void setConnection();
