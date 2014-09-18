@@ -84,7 +84,12 @@ public:
     UASInterface* createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
     void addLink(LinkInterface *link);
     QList<int> getLinks();
+
+    // Remove a link based on instance
     void removeLink(LinkInterface *link);
+    // Remove a link based on unique id
+    void removeLink(int linkId);
+
     LinkInterface::LinkType getLinkType(int linkid);
     bool getLinkConnected(int linkid);
     QString getSerialLinkPort(int linkid);

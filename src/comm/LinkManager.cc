@@ -320,6 +320,12 @@ void LinkManager::addLink(LinkInterface *link)
 }
 void LinkManager::removeLink(LinkInterface *link)
 {
+   // This is called with a LINK_ID not an interface. needs mor rework
+    //This function is not yet supported, it will be once we support multiple MAVs
+}
+
+void LinkManager::removeLink(int linkId)
+{
     //This function is not yet supported, it will be once we support multiple MAVs
 }
 
