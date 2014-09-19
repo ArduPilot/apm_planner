@@ -34,6 +34,7 @@ This file is part of the QGROUNDCONTROL project
 #include "ui_WaypointEditableView.h"
 
 #include "mission/QGCMissionNavWaypoint.h"
+#include "mission/QGCMissionNavSplineWaypoint.h"
 #include "mission/QGCMissionNavLoiterUnlim.h"
 #include "mission/QGCMissionNavLoiterTurns.h"
 #include "mission/QGCMissionNavLoiterTime.h"
@@ -238,6 +239,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
     case MAV_CMD_NAV_SPLINE_WAYPOINT:
         missionWidget = new QGCMissionNavWaypoint(this);
         break;
+    case MAV_CMD_NAV_SPLINE_WAYPOINT:
+        missionWidget = new QGCMissionNavSplineWaypoint(this);
+    break;
     case MAV_CMD_NAV_LOITER_UNLIM:
         missionWidget = new QGCMissionNavLoiterUnlim(this);
         break;
