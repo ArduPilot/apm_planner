@@ -1420,9 +1420,26 @@ void MainWindow::loadStyle(QGC_MAINWINDOW_STYLE style)
 void MainWindow::selectStylesheet()
 {
     // Let user select style sheet
-    styleFileName = QFileDialog::getOpenFileName(this, tr("Specify stylesheet"), styleFileName, tr("CSS Stylesheet (*.css);;"));
+    QFileDialog *dialog = new QFileDialog(this,tr("Specify stylesheet"), styleFileName, tr("CSS Stylesheet (*.css);;"));
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(selectStylesheetDialogAccepted()));
+    dialog->show();
+}
+void MainWindow::selectStylesheetDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        //No file selected/cancel clicked
+        return;
+    }
+    QString tmpfilename = dialog->selectedFiles().at(0);
 
-    if (!styleFileName.endsWith(".css"))
+    if (!tmpfilename.endsWith(".css"))
     {
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Information);
@@ -1433,6 +1450,7 @@ void MainWindow::selectStylesheet()
         msgBox.exec();
         return;
     }
+    styleFileName = tmpfilename;
 
     // Load style sheet
     reloadStylesheet();

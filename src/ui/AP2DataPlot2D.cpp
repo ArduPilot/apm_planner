@@ -671,20 +671,56 @@ void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QSt
         updateValue(uasId,name,unit,static_cast<double>(value.toInt()),msec);
     }
 }
-
 void AP2DataPlot2D::loadButtonClicked()
 {
-    QString filename = "";
-    if (!m_logLoaded)
+    if (m_logLoaded)
     {
-        filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");
-        if (filename == "")
+        for (int i=0;i<m_graphNameList.size();i++)
         {
-            return;
+            m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
+            m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
         }
+        m_dataSelectionScreen->clear();
+        if (m_axisGroupingDialog)
+        {
+            m_axisGroupingDialog->clear();
+        }
+        m_plot->replot();
+        m_graphClassMap.clear();
+        m_graphCount=0;
+        m_dataList.clear();
+
+        //Unload the log.
+        m_logLoaded = false;
+        ui.loadOfflineLogButton->setText("Load Log");
+        ui.hideExcelView->setVisible(false);
+        ui.hideExcelView->setChecked(false);
+        ui.tableWidget->setVisible(false);
+        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
+        m_currentIndex = QDateTime::currentMSecsSinceEpoch();
+        m_startIndex = m_currentIndex;
+        return;
     }
-    QApplication::processEvents();
-    //Clear the graph
+    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(loadDialogAccepted()));
+    dialog->show();
+}
+void AP2DataPlot2D::loadDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        return;
+    }
+    QString filename = dialog->selectedFiles().at(0);
     for (int i=0;i<m_graphNameList.size();i++)
     {
         m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
@@ -700,28 +736,9 @@ void AP2DataPlot2D::loadButtonClicked()
     m_graphCount=0;
     m_dataList.clear();
 
-    if (m_logLoaded)
-    {
-        //Unload the log.
-        m_logLoaded = false;
-        ui.loadOfflineLogButton->setText("Load Log");
-        ui.hideExcelView->setVisible(false);
-        ui.hideExcelView->setChecked(false);
-        ui.tableWidget->setVisible(false);
-        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
-        m_currentIndex = QDateTime::currentMSecsSinceEpoch();
-        m_startIndex = m_currentIndex;
-        return;
-    }
-    else
-    {
-        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded</span></p>");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
-    }
+    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded</span></p>");
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     ui.autoScrollCheckBox->setChecked(false);
     ui.loadOfflineLogButton->setText("Unload Log");
 
@@ -746,6 +763,7 @@ void AP2DataPlot2D::loadButtonClicked()
     currentIndex=0;
     m_logLoaderThread->loadFile(filename,&m_sharedDb);
 }
+
 void AP2DataPlot2D::logLine(QString line)
 {
     if (ui.tableWidget->rowCount() <= currentIndex)
@@ -1395,8 +1413,25 @@ void AP2DataPlot2D::exportButtonClicked()
             return;
         }
     }
+    QFileDialog *dialog = new QFileDialog(this,"Save Log File",QGC::logDirectory(),"Log files (*.log);;All Files (*.*)");
+    dialog->setFileMode(QFileDialog::AnyFile);
+    dialog->setAcceptMode(QFileDialog::AcceptSave);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(exportDialogAccepted()));
+    dialog->show();
 
-    QString outputFileName = QFileDialog::getSaveFileName(this,"Save Log File",QString(),"Log files (*.log);;All Files (*.*)");
+}
+void AP2DataPlot2D::exportDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        return;
+    }
+    QString outputFileName = dialog->selectedFiles().at(0);
     QFile outputfile(outputFileName);
     if (!outputfile.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {

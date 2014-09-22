@@ -195,6 +195,7 @@ public slots:
     void reloadStylesheet();
     /** @brief Let the user select the CSS style sheet */
     void selectStylesheet();
+    void selectStylesheetDialogAccepted();
     /** @breif Enable title bars on dock widgets when no in advanced mode */
     void enableDockWidgetTitleBars(bool enabled);
     /** @brief Automatically reconnect last link */

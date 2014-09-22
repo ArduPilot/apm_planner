@@ -68,8 +68,10 @@ public slots:
     //Waypoint list operations
     /** @brief Save the local waypoint list to a file */
     void saveWaypoints();
+    void saveWaypointsDialogAccepted();
     /** @brief Load a waypoint list from a file */
     void loadWaypoints();
+    void loadWaypointsDialogAccepted();
     /** @brief Transmit the local waypoint list to the UAS */
     void transmit();
     /** @brief Read the remote waypoint list to both tabs */

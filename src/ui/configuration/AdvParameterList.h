@@ -64,6 +64,8 @@ private slots:
     void nextItemInSearch();
     void previousItemInSearch();
     void resetButtonClicked();
+    void loadDialogAccepted();
+    void saveDialogAccepted();
 
 private:
     Ui::AdvParameterList ui;

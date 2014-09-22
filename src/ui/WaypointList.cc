@@ -40,6 +40,7 @@ This file is part of the PIXHAWK project
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
+#include "LinkManager.h"
 
 WaypointList::WaypointList(QWidget *parent, UASWaypointManager* wpm) :
     QWidget(parent),
@@ -203,18 +204,46 @@ void WaypointList::setUAS(UASInterface* uas)
 
 void WaypointList::saveWaypoints()
 {
-
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QGC::appDataDirectory() + "/mission.txt", tr("Waypoint File (*.txt)"));
-    QApplication::processEvents(); // Removes the dialog from screen
-    WPM->saveWaypoints(fileName);
-
+    QFileDialog *dialog = new QFileDialog(this,tr("Save File"), QGC::appDataDirectory() + "/mission.txt", tr("Waypoint File (*.txt)"));
+    dialog->setFileMode(QFileDialog::AnyFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(saveWaypointsDialogAccepted()));
+    dialog->show();
+}
+void WaypointList::saveWaypointsDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        //No file selected/cancel clicked
+        return;
+    }
+    WPM->saveWaypoints(dialog->selectedFiles().at(0));
 }
 
 void WaypointList::loadWaypoints()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load File"), QGC::appDataDirectory(), tr("Waypoint File (*.txt)"));
-    QApplication::processEvents(); // Removes the dialog from screen
-    WPM->loadWaypoints(fileName);
+    QFileDialog *dialog = new QFileDialog(this, tr("Load File"), QGC::appDataDirectory(), tr("Waypoint File (*.txt)"));
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(loadWaypointsDialogAccepted()));
+    dialog->show();
+}
+void WaypointList::loadWaypointsDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        //No file selected/cancel clicked
+        return;
+    }
+    WPM->loadWaypoints(dialog->selectedFiles().at(0));
 }
 
 void WaypointList::transmit()
