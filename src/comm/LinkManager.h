@@ -66,6 +66,10 @@ public:
         return _instance;
     }
     ~LinkManager();
+    void disableTimeouts(int index);
+    void enableTimeouts(int index);
+    void disableAllTimeouts();
+    void enableAllTimeouts();
     void loadSettings();
     void saveSettings();
     int addSerialConnection(QString port,int baud);

@@ -760,3 +760,35 @@ void LinkManager::linkTimeoutTriggered(LinkInterface *link)
     emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");
     link->disconnect();
 }
+void LinkManager::disableTimeouts(int index)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    m_connectionMap.value(index)->disableTimeouts();
+}
+
+void LinkManager::enableTimeouts(int index)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    m_connectionMap.value(index)->enableTimeouts();
+}
+void LinkManager::disableAllTimeouts()
+{
+    for (QMap<int,LinkInterface*>::const_iterator i = m_connectionMap.constBegin(); i != m_connectionMap.constEnd();i++)
+    {
+        i.value()->disableTimeouts();
+    }
+}
+
+void LinkManager::enableAllTimeouts()
+{
+    for (QMap<int,LinkInterface*>::const_iterator i = m_connectionMap.constBegin(); i != m_connectionMap.constEnd();i++)
+    {
+        i.value()->disableTimeouts();
+    }
+}
