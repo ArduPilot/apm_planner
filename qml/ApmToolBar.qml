@@ -25,6 +25,7 @@ Rectangle {
     property int linkDeviceSize: 100
 
     property alias backgroundColor : toolbar.color
+    property alias uasNameLabel: currentUasName.label
     property alias linkNameLabel: linkDevice.label
     property alias baudrateLabel: baudrate.label
     property bool connected: false
@@ -33,6 +34,7 @@ Rectangle {
     property bool enableStatusDisplay: true
 
     property alias modeText: modeTextId.modeText
+
     property alias modeTextColor: modeTextId.modeTextColor
     property alias modeBkgColor: modeTextId.modeBackgroundColor
     property alias modeBorderColor: modeTextId.modeBorderColor
@@ -222,6 +224,7 @@ Rectangle {
             stopAnimation: stopAnimation
         }
 
+
 //            DigitalDisplay { // Information Pane
 //                title: "Speed"
 //                textValue: "11.0m/s"
@@ -259,16 +262,23 @@ Rectangle {
 
         onDisableChanged:{
             if(disable){
-                visible = false;
+                opacity = 0.5;
             } else {
-                visible = true;
+                opacity = 1.0;
             }
+        }
+
+        TextButton {
+            id: currentUasName
+            label: "MAV ID"
+            enabled: !connectionWidget.disable
         }
 
         TextButton {
             id: linkDevice
             label: "none"
             minWidth: linkDeviceSize
+            enabled: !connectionWidget.disable
 
             onClicked: globalObj.showConnectionDialog()
         }
@@ -277,6 +287,7 @@ Rectangle {
             id: baudrate
             label: "none"
             minWidth: 70
+            enabled: !connectionWidget.disable
 
             onClicked: globalObj.showConnectionDialog()
         }
@@ -291,6 +302,8 @@ Rectangle {
             id: connectButton
             label: "CONNECT"
             image: "./resources/apmplanner/toolbar/connect.png"
+            enabled: !connectionWidget.disable
+
             onClicked: globalObj.connectMAV()
         }
 

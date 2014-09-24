@@ -40,7 +40,7 @@ This file is part of the QGROUNDCONTROL project
 #include <qlist.h>
 
 #include "ui_MainWindow.h"
-#include "LinkManager.h"
+//#include "LinkManager.h"
 #include "LinkInterface.h"
 #include "UASInterface.h"
 #include "UASManager.h"
@@ -50,7 +50,7 @@ This file is part of the QGROUNDCONTROL project
 #include "WaypointList.h"
 #include "CameraView.h"
 #include "UASListWidget.h"
-#include "MAVLinkProtocol.h"
+//#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"
 #include "ObjectDetectionView.h"
 #include "HUD.h"
@@ -60,7 +60,6 @@ This file is part of the QGROUNDCONTROL project
 #if (defined MOUSE_ENABLED_WIN) | (defined MOUSE_ENABLED_LINUX)
 #include "Mouse6dofInput.h"
 #endif // MOUSE_ENABLED_WIN
-#include "DebugConsole.h"
 #include "ParameterInterface.h"
 #include "XMLCommProtocolWidget.h"
 #include "HDDisplay.h"
@@ -143,9 +142,11 @@ public slots:
     /** @brief Show the application About box */
     void showAbout();
     /** @brief Add a communication link */
-    LinkInterface* addLink();
+    void addLink();
     void addLink(LinkInterface* link);
-    bool configLink(LinkInterface *link);
+    void addLink(int linkid);
+    bool configLink(int linkid);
+    void linkError(int linkid,QString errorstring);
     void configure();
     /** @brief Simulate a link */
     void simulateLink(bool simulate);
@@ -161,6 +162,7 @@ public slots:
     void startVideoCapture();
     void stopVideoCapture();
     void saveScreen();
+    void enableHeartbeat(bool enabled);
 
     /** @brief Sets advanced mode, allowing for editing of tool widget locations */
     void setAdvancedMode(bool mode);
@@ -270,11 +272,13 @@ public:
         return logPlayer;
     }
 
-    MAVLinkProtocol* getMAVLink()
-    {
-        return mavlink;
-    }
+    //MAVLinkProtocol* getMAVLink()
+    //{
+    //    return mavlink;
+    //}
 
+
+    bool heartbeatEnabled() { return m_heartbeatEnabled; }
 protected:
 
     MainWindow(QWidget *parent = 0);
@@ -345,7 +349,7 @@ protected:
     void storeSettings();
 
     // TODO Should be moved elsewhere, as the protocol does not belong to the UI
-    QPointer<MAVLinkProtocol> mavlink;
+    //QPointer<MAVLinkProtocol> mavlink;
 
     QPointer<MAVLinkSimulationLink> simulationLink;
     QPointer<LinkInterface> udpLink;
@@ -388,7 +392,6 @@ protected:
     QPointer<QDockWidget> listDockWidget;
     QPointer<QDockWidget> waypointsDockWidget;
     QPointer<QDockWidget> detectionDockWidget;
-    QPointer<QDockWidget> debugConsoleDockWidget;
     QPointer<QDockWidget> parametersDockWidget;
     QPointer<QDockWidget> headDown1DockWidget;
     QPointer<QDockWidget> headDown2DockWidget;
@@ -416,7 +419,6 @@ protected:
 
     QPointer<QGCStatusBar> customStatusBar;
 
-    QPointer<DebugConsole> debugConsole;
 
     QPointer<QDockWidget> mavlinkInspectorWidget;
     QPointer<MAVLinkDecoder> mavlinkDecoder;
@@ -461,11 +463,15 @@ protected:
     QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
 
+
+
 private slots:
     void showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url, QString name);
     void autoUpdateCancelled(QString version);
+    void showNoUpdateAvailDialog();
 
 private:
+    bool m_heartbeatEnabled;
     QList<QObject*> commsWidgetList;
     QMap<QString,QString> customWidgetNameToFilenameMap;
     QMap<QAction*,QString > menuToDockNameMap;

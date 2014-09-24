@@ -4,7 +4,7 @@
 #include <QThread>
 #include <QVariantMap>
 #include <QSqlDatabase>
-
+#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
 class AP2DataPlotThread : public QThread
 {
     Q_OBJECT
@@ -25,7 +25,7 @@ signals:
     void startLoad();
     void loadProgress(qint64 pos,qint64 size);
     void payloadDecoded(int index,QString name,QVariantMap map);
-    void done(int errors);
+    void done(int errors,MAV_TYPE type);
     void error(QString errorstr);
     void lineRead(QString line);
 public slots:

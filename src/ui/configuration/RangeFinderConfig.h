@@ -20,26 +20,35 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 
-#ifndef SONARCONFIG_H
-#define SONARCONFIG_H
+#ifndef RANGEFINDERCONFIG_H
+#define RANGEFINDERCONFIG_H
 
 #include <QWidget>
 #include "AP2ConfigWidget.h"
-#include "ui_SonarConfig.h"
+#include "ui_RangeFinderConfig.h"
 
-class SonarConfig : public AP2ConfigWidget
+class RangeFinderConfig : public AP2ConfigWidget
 {
     Q_OBJECT
     
 public:
-    explicit SonarConfig(QWidget *parent = 0);
-    ~SonarConfig();
+    explicit RangeFinderConfig(QWidget *parent = 0);
+    ~RangeFinderConfig();
+    void enableUi();
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
-    void checkBoxToggled(bool enabled);
-    void sonarTypeChanged(int index);
+    void rangeFinderTypeChanged(int index);
+    void gainSliderChanged(int value);
+    void sendParameterUpdates();
+
+    void activeUASSet(UASInterface *uas);
+    void rangeFinderUpdate(UASInterface *uas, double distance, double voltage);
+
 private:
-    Ui::SonarConfig ui;
+    void enableUi(bool state);
+
+private:
+    Ui::RangeFinderConfig ui;
 };
 
 #endif // SONARCONFIG_H

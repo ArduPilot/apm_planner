@@ -75,6 +75,7 @@ public:
     qint64 getConnectionSpeed() const;
     qint64 getCurrentInDataRate() const;
     qint64 getCurrentOutDataRate() const;
+    LinkType getLinkType() { return TCP_LINK; }
     
 public slots:
     void setHostAddress(const QString& hostAddress);

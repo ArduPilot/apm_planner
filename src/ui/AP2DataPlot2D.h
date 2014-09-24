@@ -10,6 +10,7 @@
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlotAxisDialog.h"
+#include "DroneshareUploadDialog.h"
 #include <QTextBrowser>
 #include <QSqlDatabase>
 #include <QStandardItemModel>
@@ -31,6 +32,7 @@ signals:
 public slots:
     void showLogDownloadDialog();
     void closeLogDownloadDialog();
+    void clearGraph();
 
 private slots:
     //New Active UAS set
@@ -49,7 +51,7 @@ private slots:
     //Cancel clicked on the graph loading thread progress dialog
     void progressDialogCanceled();
     //Graph loading thread finished
-    void threadDone(int errors);
+    void threadDone(int errors,MAV_TYPE type);
     //Graph loading thread actually exited
     void threadTerminated();
     //Graph loading thread error
@@ -64,23 +66,14 @@ private slots:
     void itemEnabled(QString name);
 
     //ValueChanged functions for getting mavlink values
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec);
-    void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant value,const quint64 msecs);
+    void valueChanged(const int uasid, const QString& name, const QString& unit, const QVariant& value,const quint64 msecs);
     //Called by every valueChanged function to actually save the value/graph it.
     void updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer = true);
 
     void navModeChanged(int uasid, int mode, const QString& text);
 
     void autoScrollClicked(bool checked);
-    void tableCellClicked(int row,int column);
+    void tableCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
     void logLine(QString line);
     void addGraphRight();
     void addGraphLeft();
@@ -99,9 +92,15 @@ private slots:
     void xAxisChanged(QCPRange range);
     void replyTLogButtonClicked();
 
+    void droneshareButtonClicked();
+
+    void exportButtonClicked();
+
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
+
+private:
     QTimer *m_updateTimer;
     class Graph
     {
@@ -113,6 +112,7 @@ private:
         QCPAxis *axis;
         QCPGraph *graph;
         QList<QCPAbstractItem*> itemList;
+        QMap<double,QString> modeMap;
     };
 
     QMap<QString,Graph> m_graphClassMap;
@@ -151,7 +151,7 @@ private:
     UASInterface *m_uas;
     QProgressDialog *m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
-    qint64 m_timeDiff;
+    //qint64 m_timeDiff;
     bool m_tlogReplayEnabled;
 
 
@@ -159,6 +159,9 @@ private:
     qint64 m_scrollEndIndex; //Actual graph end
 
     LogDownloadDialog *m_logDownloadDialog;
+    DroneshareUploadDialog *m_droneshareUploadDialog;
+
+    MAV_TYPE m_loadedLogMavType;
 
 
 };

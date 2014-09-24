@@ -11,10 +11,11 @@
 #include "QsLog.h"
 #include "QGC.h"
 
+
 AP2DataPlotThread::AP2DataPlotThread(QObject *parent) :
     QThread(parent)
 {
-
+    qRegisterMetaType<MAV_TYPE>("MAV_TYPE");
 }
 void AP2DataPlotThread::loadFile(QString file,QSqlDatabase *db)
 {
@@ -29,6 +30,7 @@ QString AP2DataPlotThread::makeCreateTableString(QString tablename, QString form
     for (int j=0;j<varchar.size();j++)
     {
         QString name = varchar[j].trimmed();
+        name = "\"" + name + "\"";
         QChar typeCode = formatstr.at(j);
         if (typeCode == 'b') //int8_t
         {
@@ -107,7 +109,7 @@ QString AP2DataPlotThread::makeInsertTableString(QString tablename, QString vari
     for (int j=0;j<linesplit.size();j++)
     {
         QString name = linesplit[j].trimmed();
-        inserttable.append("," + name);
+        inserttable.append(",\"" + name + "\"");
         insertvalues.append(",?");
     }
     inserttable.append(")");
@@ -145,11 +147,13 @@ void AP2DataPlotThread::run()
         emit error("Unable to open log file");
         return;
     }
+    MAV_TYPE loadedtype = MAV_TYPE_GENERIC;
     QByteArray block;
     QMap<unsigned char,unsigned char> typeToLengthMap;
     QMap<unsigned char,QString > typeToNameMap;
     QMap<unsigned char,QString > typeToFormatMap;
     QMap<unsigned char,QString > typeToLabelMap;
+    QStringList tables;
     int index = 0;
 
     if (!m_db->transaction())
@@ -159,18 +163,35 @@ void AP2DataPlotThread::run()
     }
 
     QSqlQuery fmttablecreate(*m_db);
-    fmttablecreate.prepare("CREATE TABLE 'FMT' (typeID integer PRIMARY KEY,length integer,name varchar(200),format varchar(6000),val varchar(6000));");
+    fmttablecreate.prepare("CREATE TABLE 'FMT' (idx integer PRIMARY KEY, typeid integer,length integer,name varchar(200),format varchar(6000),val varchar(6000));");
     if (!fmttablecreate.exec())
     {
         emit error("Error creating FMT table: " + m_db->lastError().text());
         return;
     }
     QSqlQuery fmtinsertquery;
-    if (!fmtinsertquery.prepare("INSERT INTO 'FMT' (typeID,length,name,format,val) values (?,?,?,?,?);"))
+    if (!fmtinsertquery.prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (?,?,?,?,?,?);"))
     {
         emit error("Error preparing FMT insert statement: " + fmtinsertquery.lastError().text());
         return;
     }
+
+
+    QSqlQuery indextablecreate(*m_db);
+    indextablecreate.prepare("CREATE TABLE 'INDEX' (idx integer PRIMARY KEY, value varchar(200));");
+    if (!indextablecreate.exec())
+    {
+        emit error("Error creating INDEX table: " + m_db->lastError().text());
+        return;
+    }
+    QSqlQuery indexinsertquery;
+    if (!indexinsertquery.prepare("INSERT INTO 'INDEX' (idx,value) values (?,?);"))
+    {
+        emit error("Error preparing INDEX insert statement: " + indexinsertquery.lastError().text());
+        return;
+    }
+
+
     QMap<QString,QSqlQuery*> nameToInsertQuery;
     QMap<QString,QString> nameToTypeString;
     if (!m_db->commit())
@@ -183,6 +204,7 @@ void AP2DataPlotThread::run()
         emit error("Unable to start database transaction 2");
         return;
     }
+    int paramtype = -1;
     if (type == 1)
     {
         bool firstactual = true;
@@ -217,6 +239,10 @@ void AP2DataPlotThread::run()
                             QString name = packet.mid(2,4); //Name of the message
                             QString format = packet.mid(6,16); //Format of the variables
                             QString labels = packet.mid(22,64); //comma delimited list of variable names.
+                            if (name == "PARM")
+                            {
+                                paramtype = msg_type;
+                            }
                             typeToFormatMap[msg_type] = format;
                             typeToLabelMap[msg_type] = labels;
                             typeToLengthMap[msg_type] = msg_length;
@@ -232,12 +258,15 @@ void AP2DataPlotThread::run()
                                 QLOG_DEBUG() << "AP2DataPlotThread::run(): empty format string or labels string for type" << msg_type << name;
                                 continue;
                             }
-                            QSqlQuery mktablequery(*m_db);
-                            mktablequery.prepare(makeCreateTableString(name,format,labels));
-                            if (!mktablequery.exec())
-                            {
-                                emit error("Error creating table for: " + name + " : " + m_db->lastError().text());
-                                return;
+                            if (!tables.contains(name)) {
+                                QSqlQuery mktablequery(*m_db);
+                                mktablequery.prepare(makeCreateTableString(name,format,labels));
+                                if (!mktablequery.exec())
+                                {
+                                    emit error("Error creating table for: " + name + " : " + m_db->lastError().text());
+                                    return;
+                                }
+                                tables.append(name);
                             }
                             QSqlQuery *query = new QSqlQuery(*m_db);
                             QString final = makeInsertTableString(name,labels);
@@ -248,10 +277,11 @@ void AP2DataPlotThread::run()
                             }
                             //typeID,length,name,format
                             fmtinsertquery.bindValue(0,index);
-                            fmtinsertquery.bindValue(1,0);
-                            fmtinsertquery.bindValue(2,name);
-                            fmtinsertquery.bindValue(3,format);
-                            fmtinsertquery.bindValue(4,labels);
+                            fmtinsertquery.bindValue(1,msg_type);
+                            fmtinsertquery.bindValue(2,0);
+                            fmtinsertquery.bindValue(3,name);
+                            fmtinsertquery.bindValue(4,format);
+                            fmtinsertquery.bindValue(5,labels);
                             if (!fmtinsertquery.exec())
                             {
                                 emit error("Error execing insertquery" + fmtinsertquery.lastError().text());
@@ -277,6 +307,9 @@ void AP2DataPlotThread::run()
                             QByteArray packet = block.mid(i+3,typeToLengthMap.value(type)-3);
                             block.remove(i,packet.size()+3); //Remove both the 3 byte header and the packet
                             i--;
+                            QDataStream packetstream(packet);
+                            packetstream.setByteOrder(QDataStream::LittleEndian);
+                            packetstream.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
                             QString name = typeToNameMap.value(type);
                             if (nameToInsertQuery.contains(name))
@@ -298,158 +331,166 @@ void AP2DataPlotThread::run()
                                 }
 
                                 nameToInsertQuery[name]->bindValue(0,index);
+                                indexinsertquery.bindValue(0,index);
+                                indexinsertquery.bindValue(1,name);
+                                if (!indexinsertquery.exec())
+                                {
+                                    emit error("Error execing:" + indexinsertquery.executedQuery() + " error was " + indexinsertquery.lastError().text());
+                                    return;
+                                }
                                 index++;
                                 QString formatstr = typeToFormatMap.value(type);
 
-                                int formatpos = 0;
                                 for (int j=0;j<formatstr.size();j++)
                                 {
                                     QChar typeCode = formatstr.at(j);
                                     if (typeCode == 'b') //int8_t
                                     {
-                                        char val = static_cast<char>(packet.at(formatpos));
+                                        qint8 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=1;
                                     }
                                     else if (typeCode == 'B') //uint8_t
                                     {
-                                        //unsigned char
-                                        unsigned char val = static_cast<unsigned char>(packet.at(formatpos));
+                                        quint8 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=1;
                                     }
                                     else if (typeCode == 'h') //int16_t
                                     {
-                                        //signed short
-                                        short val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
+                                        quint16 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'H') //uint16_t
                                     {
-                                        //unsigned short
-                                        unsigned short val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
+                                        quint16 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'i') //int32_t
                                     {
-                                        int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        qint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'I') //uint32_t
                                     {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        quint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'f') //float
                                     {
-                                        unsigned long val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
-                                        float f = *(float*)&val;
-                                        //float val = packet.mid(formatpos,16).at(0);
+                                        float f;
+                                        packetstream >> f;
                                         nameToInsertQuery[name]->bindValue(j+1,f);
                                         linetoemit += "," + QString::number(f,'f',4);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'n') //char(4)
                                     {
-                                        QString val = packet.mid(formatpos,4);
+
+                                        QString val = "";
+                                        for (int i=0;i<4;i++)
+                                        {
+                                            quint8 ch;
+                                            packetstream >> ch;
+                                            val += static_cast<char>(ch);
+                                        }
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
-                                        formatpos += 4;
                                     }
                                     else if (typeCode == 'N') //char(16)
                                     {
-                                        QString val = packet.mid(formatpos,16);
+                                        QString val = "";
+                                        for (int i=0;i<16;i++)
+                                        {
+                                            quint8 ch;
+                                            packetstream >> ch;
+                                            val += static_cast<char>(ch);
+                                        }
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
-                                        formatpos += 16;
                                     }
                                     else if (typeCode == 'Z') //char(64)
                                     {
-                                        QString val = packet.mid(formatpos,64);
+                                        QString val = "";
+                                        for (int i=0;i<64;i++)
+                                        {
+                                            quint8 ch;
+                                            packetstream >> ch;
+                                            val += static_cast<char>(ch);
+                                        }
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + val;
-                                        formatpos += 64;
                                     }
                                     else if (typeCode == 'c') //int16_t * 100
                                     {
-                                        //unsigned short
-                                        int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
+                                        qint16 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'C') //uint16_t * 100
                                     {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
+                                        quint16 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=2;
                                     }
                                     else if (typeCode == 'e') //int32_t * 100
                                     {
-                                        int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        qint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'E') //uint32_t * 100
                                     {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        quint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                         linetoemit += "," + QString::number(val / 100.0,'f',4);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'L') //uint32_t GPS Lon/Lat * 10000000
                                     {
-                                        unsigned int val = static_cast<unsigned char>(packet.at(formatpos));
-                                        val += static_cast<unsigned char>(packet.at(formatpos+1)) << 8;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+2)) << 16;
-                                        val += static_cast<unsigned char>(packet.at(formatpos+3)) << 24;
+                                        qint32 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val / 10000000.0);
                                         linetoemit += "," + QString::number(val / 10000000.0,'f',6);
-                                        formatpos+=4;
                                     }
                                     else if (typeCode == 'M')
                                     {
-                                        char val = static_cast<char>(packet.at(formatpos));
+                                        qint8 val;
+                                        packetstream >> val;
                                         nameToInsertQuery[name]->bindValue(j+1,val);
                                         linetoemit += "," + QString::number(val,'f',0);
-                                        formatpos+=1;
-
                                     }
                                     else
                                     {
                                         //Unknown!
                                         QLOG_DEBUG() << "AP2DataPlotThread::run(): ERROR UNKNOWN DATA TYPE" << typeCode;
+                                    }
+                                }
+                                if (type == paramtype && loadedtype == MAV_TYPE_GENERIC)
+                                {
+                                    if (linetoemit.contains("RATE_RLL_P") || linetoemit.contains("H_SWASH_PLATE"))
+                                    {
+                                        loadedtype = MAV_TYPE_QUADROTOR;
+                                    }
+                                    if (linetoemit.contains("PTCH2SRV_P"))
+                                    {
+                                        loadedtype = MAV_TYPE_FIXED_WING;
+                                    }
+                                    if (linetoemit.contains("SKID_STEER_OUT"))
+                                    {
+                                        loadedtype = MAV_TYPE_GROUND_ROVER;
                                     }
                                 }
                                 emit lineRead(linetoemit);
@@ -488,6 +529,21 @@ void AP2DataPlotThread::run()
             emit loadProgress(logfile.pos(),logfile.size());
             QString line = logfile.readLine();
             emit lineRead(line);
+            if (loadedtype == MAV_TYPE_GENERIC)
+            {
+                if ((line.contains("ArduCopter") || (line.contains("PARM") && (line.contains("RATE_RLL_P") || line.contains("H_SWASH_PLATE")))))
+                {
+                    loadedtype = MAV_TYPE_QUADROTOR;
+                }
+                if (line.contains("ArduPlane") || (line.contains("PARM") && line.contains("PTCH2SRV_P")))
+                {
+                    loadedtype = MAV_TYPE_FIXED_WING;
+                }
+                if (line.contains("ArduRover") || (line.contains("PARM") && line.contains("SKID_STEER_OUT")))
+                {
+                    loadedtype = MAV_TYPE_GROUND_ROVER;
+                }
+            }
             QStringList linesplit = line.replace("\r","").replace("\n","").split(",");
             if (linesplit.size() > 0)
             {
@@ -530,10 +586,11 @@ void AP2DataPlotThread::run()
                             }
                             //typeID,length,name,format
                             fmtinsertquery.bindValue(0,index);
-                            fmtinsertquery.bindValue(1,0);
-                            fmtinsertquery.bindValue(2,type);
-                            fmtinsertquery.bindValue(3,descstr);
-                            fmtinsertquery.bindValue(4,valuestr);
+                            fmtinsertquery.bindValue(1,linesplit[1].trimmed().toInt());
+                            fmtinsertquery.bindValue(2,0);
+                            fmtinsertquery.bindValue(3,type);
+                            fmtinsertquery.bindValue(4,descstr);
+                            fmtinsertquery.bindValue(5,valuestr);
                             fmtinsertquery.exec();
                             nameToInsertQuery[type] = query;
                         }
@@ -566,6 +623,13 @@ void AP2DataPlotThread::run()
                             }
                             QString typestr = nameToTypeString[name];
                             nameToInsertQuery[name]->bindValue(0,index);
+                            indexinsertquery.bindValue(0,index);
+                            indexinsertquery.bindValue(1,name);
+                            if (!indexinsertquery.exec())
+                            {
+                                emit error("Error execing:" + indexinsertquery.executedQuery() + " error was " + indexinsertquery.lastError().text());
+                                return;
+                            }
                             static QString intdef("bBhHiI");
                             static QString floatdef("cCeEfL");
                             static QString chardef("nNZM");
@@ -660,6 +724,6 @@ void AP2DataPlotThread::run()
     else
     {
         QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
-        emit done(errorcount);
+        emit done(errorcount,loadedtype);
     }
 }

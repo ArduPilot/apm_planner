@@ -12,7 +12,7 @@ TLogReplayLink::TLogReplayLink(QObject *parent) :
     m_threadRun(false),
     m_speedVar(50),
     m_posVar(0),
-    m_mavlinkDecoder(NULL),
+    m_mavlinkDecoder(new MAVLinkDecoder()),
     m_mavlinkInspector(NULL)
 {
 }

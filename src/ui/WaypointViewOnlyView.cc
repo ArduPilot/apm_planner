@@ -210,6 +210,42 @@ void WaypointViewOnlyView::updateValues()
         } //end Frame switch
         break;
     }
+    case MAV_CMD_NAV_SPLINE_WAYPOINT:
+    {
+        switch (wp->getFrame())
+        {
+        case MAV_FRAME_GLOBAL_RELATIVE_ALT:
+        case MAV_FRAME_GLOBAL:
+        {
+            if (wp->getId() == 0) // Home Waypoint
+            {
+            }
+            else if (wp->getParam1()>0)
+            {
+                m_ui->displayBar->setText(QString("Spline waypoint <b>(</b>lat <b>%1<sup>o</sup></b>, lon <b>%2<sup>o</sup></b>, alt <b>%3</b> meters and wait there for %4 sec.").arg(wp->getX(),0, 'f', 7).arg(wp->getY(),0, 'f', 7).arg(wp->getZ(),0, 'f', 2).arg(wp->getParam1()));
+            }
+            else
+            {
+                m_ui->displayBar->setText(QString("Spline waypoint <b>(</b>lat <b>%1<sup>o</sup></b>,lon <b>%2<sup>o</sup></b>,alt <b>%3</b> meters").arg(wp->getX(),0, 'f', 7).arg(wp->getY(),0, 'f', 7).arg(wp->getZ(),0, 'f', 2));
+            }
+            break;
+        }
+        case MAV_FRAME_LOCAL_NED:
+        default:
+        {
+            if (wp->getParam1()>0)
+            {
+                m_ui->displayBar->setText(QString("Spline waypoint <b>(%1, %2, %3)</b> and wait there for %4 sec.").arg(wp->getX(),0, 'f', 2).arg(wp->getY(),0, 'f', 2).arg(wp->getZ(),0, 'f',2).arg(wp->getParam1()));
+            }
+            else
+            {
+                m_ui->displayBar->setText(QString("Spline waypoint <b>(%1, %2, %3)</b>.").arg(wp->getX(),0, 'f', 2).arg(wp->getY(),0, 'f', 2).arg(wp->getZ(),0, 'f', 2));
+            }
+            break;
+        }
+        } //end Frame switch
+        break;
+    }
     case MAV_CMD_NAV_LOITER_UNLIM:
     {
         switch (wp->getFrame())
@@ -353,6 +389,27 @@ void WaypointViewOnlyView::updateValues()
         break;
         break;
     }
+    case MAV_CMD_DO_SET_CAM_TRIGG_DIST:
+        if (wp->getParam1()>0)
+        {
+        	m_ui->displayBar->setText(QString("Set camera trigging by distance to <b>%1</b> meters.").arg(wp->getParam1()));
+        }
+        else
+        {
+        	m_ui->displayBar->setText(QString("Camera trigging by distance disabled."));
+        }
+        break;
+    case MAV_CMD_DO_CHANGE_SPEED:
+        if (wp->getParam1()>0)
+        {
+        	m_ui->displayBar->setText(QString("Set <b>Ground Speed</b> to </b>%1</b> m/s, and throttle to <b>%2</b>\% .(-1 = no change)").arg(wp->getParam2()).arg(wp->getParam3()));
+        }
+        else
+        {
+        	m_ui->displayBar->setText(QString("Set <b>Air Speed</b> to </b>%1</b> m/s, and throttle to <b>%2</b>\% .(-1 = no change)").arg(wp->getParam2()).arg(wp->getParam3()));
+        }
+        break;
+
     case MAV_CMD_DO_JUMP:
     {
         if (wp->getParam2()>0)

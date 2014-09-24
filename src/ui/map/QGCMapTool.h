@@ -19,6 +19,7 @@ public:
     ~QGCMapTool();
 
 public slots:
+    void setMapZoom(int zoom);
     /** @brief Update slider zoom from map change */
     void setZoom(int zoom);
 

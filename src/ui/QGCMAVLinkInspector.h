@@ -53,6 +53,7 @@ protected:
 
     static const unsigned int updateInterval;
     static const float updateHzLowpass;
+    UASInterface *m_uas;
 
 private:
     Ui::QGCMAVLinkInspector *ui;

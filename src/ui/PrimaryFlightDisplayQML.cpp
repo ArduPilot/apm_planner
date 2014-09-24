@@ -73,6 +73,8 @@ void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
                 this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
         disconnect(uas, SIGNAL(speedChanged(UASInterface*,double,double,quint64)),
                 this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
+        disconnect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
+                this,SLOT(uasTextMessage(int,int,int,QString)));
     }
     m_uasInterface = uas;
 
@@ -83,6 +85,8 @@ void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
                 this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
         connect(uas, SIGNAL(speedChanged(UASInterface*,double,double,quint64)),
                 this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
+        connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
+                this,SLOT(uasTextMessage(int,int,int,QString)));
     }
 }
 
@@ -105,7 +109,9 @@ void PrimaryFlightDisplayQML::altitudeChanged(UASInterface *uas, double altitude
     Q_UNUSED(uas);
     Q_UNUSED(usec);
     QObject *root = m_declarativeView->rootObject();
-    root->setProperty("alt", altitudeRelative);
+    root->setProperty("altitudeRelative", altitudeRelative);
+    root->setProperty("altitudeAMSL", altitudeAMSL);
+    root->setProperty("climbRate", climbRate);
 }
 
 void PrimaryFlightDisplayQML::speedChanged(UASInterface *uas, double groundSpeed, double airSpeed, quint64 usec)
@@ -114,5 +120,17 @@ void PrimaryFlightDisplayQML::speedChanged(UASInterface *uas, double groundSpeed
     Q_UNUSED(usec);
     QObject *root = m_declarativeView->rootObject();
     root->setProperty("airspeed", airSpeed);
-    root->setProperty("groundspeed", airSpeed);
+    root->setProperty("groundspeed", groundSpeed);
+}
+
+void PrimaryFlightDisplayQML::uasTextMessage(int uasid, int componentid, int severity, QString text)
+{
+    Q_UNUSED(uasid);
+    Q_UNUSED(componentid);
+    if (text.contains("PreArm") || severity == 3)
+    {
+        QObject *root = m_declarativeView->rootObject();
+        root->setProperty("statusMessage", text);
+        root->setProperty("showStatusMessage", true);
+    }
 }

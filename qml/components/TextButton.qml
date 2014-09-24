@@ -17,12 +17,14 @@
 import QtQuick 1.1
 
 Rectangle {
+    id: root
     signal clicked
 
     property string label: "Text Button label"
     property int minWidth: 75
     property int minHeight: 0
     property int margin: 5
+    property bool enabled: true
 
     width: textBox.width
     height: 72
@@ -67,6 +69,7 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: buttonClick()
                 hoverEnabled: true
+                enabled: root.enabled
                 onEntered: {
                     parent.border.color = onHoverColor
                     parent.color = onHoverbuttonColor

@@ -43,7 +43,7 @@ namespace core {
         /// <summary>
         /// Gets or sets the value of the User-agent HTTP header.
         /// </summary>
-        UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.7) Gecko/20091221 Firefox/3.5.7";
+        UserAgent = QString("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:%1.0) Gecko/%2%3%4 Firefox/%5.0.%6").arg(QString::number(Random(3,14)), QString::number(Random(QDate().currentDate().year() - 4, QDate().currentDate().year())), QString::number(Random(11,12)), QString::number(Random(10,30)), QString::number(Random(3,14)), QString::number(Random(1,10))).toLatin1();
 
         Timeout = 5 * 1000;
         CorrectGoogleVersions=true;
@@ -53,6 +53,10 @@ namespace core {
     }
     UrlFactory::~UrlFactory()
     {
+    }
+    int UrlFactory::Random(int low, int high)
+    {
+        return low + qrand() % (high - low);
     }
     QString UrlFactory::TileXYToQuadKey(const int &tileX,const int &tileY,const int &levelOfDetail) const
     {
@@ -107,7 +111,7 @@ namespace core {
             qDebug()<<"Correct GoogleVersion";
 #endif //DEBUG_URLFACTORY
             setIsCorrectGoogleVersions(true);
-            QString url = "http://maps.google.com";
+            QString url = "https://maps.google.com";
 
             qheader.setUrl(QUrl(url));
             qheader.setRawHeader("User-Agent",UserAgent);
@@ -125,7 +129,7 @@ namespace core {
                 return;
             }
             QString html=QString(reply->readAll());
-            QRegExp reg("\"*http://mt0.google.com/vt/lyrs=m@(\\d*)",Qt::CaseInsensitive);
+            QRegExp reg("\"*https://mt0.google.com/vt/lyrs=m@(\\d*)",Qt::CaseInsensitive);
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
@@ -136,7 +140,7 @@ namespace core {
 #endif //DEBUG_URLFACTORY
             }
 
-            reg=QRegExp("\"*http://mt0.google.com/vt/lyrs=h@(\\d*)",Qt::CaseInsensitive);
+            reg=QRegExp("\"*https://mt0.google.com/vt/lyrs=h@(\\d*)",Qt::CaseInsensitive);
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
@@ -146,7 +150,7 @@ namespace core {
                 qDebug()<<"TryCorrectGoogleVersions, VersionGoogleLabels: "<<VersionGoogleLabels;
 #endif //DEBUG_URLFACTORY
             }
-            reg=QRegExp("\"*http://khm0.google.com/kh/v=(\\d*)",Qt::CaseInsensitive);
+            reg=QRegExp("\"*https://khm\\D?\\d.google.com/kh/v=(\\d*)",Qt::CaseInsensitive);
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
@@ -157,7 +161,7 @@ namespace core {
                 qDebug()<<"TryCorrectGoogleVersions, VersionGoogleSatellite: "<<VersionGoogleSatellite;
 
             }
-            reg=QRegExp("\"*http://mt0.google.com/vt/lyrs=t@(\\d*),r@(\\d*)",Qt::CaseInsensitive);
+            reg=QRegExp("\"*https://mt0.google.com/vt/lyrs=t@(\\d*),r@(\\d*)",Qt::CaseInsensitive);
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
@@ -189,7 +193,7 @@ namespace core {
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
 
-                return QString("http://%1%2.google.com/%3/lyrs=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMap).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.com/%3/lyrs=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMap).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleSatellite:
@@ -200,7 +204,7 @@ namespace core {
                 QString sec2 = ""; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
-                return QString("http://%1%2.google.com/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatellite).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.com/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatellite).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleLabels:
@@ -212,7 +216,7 @@ namespace core {
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
 
-                return QString("http://%1%2.google.com/%3/lyrs=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabels).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.com/%3/lyrs=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabels).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleTerrain:
@@ -223,7 +227,7 @@ namespace core {
                 QString sec2 = ""; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
-                return QString("http://%1%2.google.com/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleTerrain).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.com/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleTerrain).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleMapChina:
@@ -236,7 +240,7 @@ namespace core {
                 TryCorrectGoogleVersions();
                 // http://mt0.google.cn/vt/v=w2.101&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                return QString("http://%1%2.google.cn/%3/lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMapChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.cn/%3/lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMapChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleSatelliteChina:
@@ -247,9 +251,9 @@ namespace core {
                 QString sec2 = ""; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 //  TryCorrectGoogleVersions();
-                // http://khm0.google.cn/kh/v=46&x=12&y=6&z=4&s=Ga
+                // https://khm0.google.cn/kh/v=46&x=12&y=6&z=4&s=Ga
 
-                return QString("http://%1%2.google.cn/%3/lyrs=%4&gl=cn&x=%5%6&y=%7&z=%8&s=%9").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatelliteChina).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.cn/%3/lyrs=%4&gl=cn&x=%5%6&y=%7&z=%8&s=%9").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatelliteChina).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleLabelsChina:
@@ -262,7 +266,7 @@ namespace core {
                 TryCorrectGoogleVersions();
                 // http://mt0.google.cn/vt/v=w2t.110&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                return QString("http://%1%2.google.cn/%3/imgtp=png32&lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabelsChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.cn/%3/imgtp=png32&lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabelsChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleTerrainChina:
@@ -275,7 +279,7 @@ namespace core {
                 TryCorrectGoogleVersions();
                 // http://mt0.google.cn/vt/v=w2p.110&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                return QString("http://%1%2.google.com/%3/lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleTerrainChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.com/%3/lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleTerrainChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleMapKorea:
@@ -288,7 +292,7 @@ namespace core {
 
                 //http://mt3.gmaptiles.co.kr/mt/v=kr1.11&hl=lt&x=109&y=49&z=7&s=
 
-                QString ret = QString("http://%1%2.gmaptiles.co.kr/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMapKorea).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                QString ret = QString("https://%1%2.gmaptiles.co.kr/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMapKorea).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
                 return ret;
             }
             break;
@@ -302,7 +306,7 @@ namespace core {
 
                 //   http://khm1.google.co.kr/kh/v=54&x=109&y=49&z=7&s=
 
-                return QString("http://%1%2.google.co.kr/%3/v=%4&x=%5%6&y=%7&z=%8&s=%9").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatelliteKorea).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.google.co.kr/%3/v=%4&x=%5%6&y=%7&z=%8&s=%9").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatelliteKorea).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::GoogleLabelsKorea:
@@ -315,7 +319,7 @@ namespace core {
 
                 //  http://mt1.gmaptiles.co.kr/mt/v=kr1t.11&hl=lt&x=109&y=50&z=7&s=G
 
-                return QString("http://%1%2.gmaptiles.co.kr/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabelsKorea).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                return QString("https://%1%2.gmaptiles.co.kr/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabelsKorea).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
             }
             break;
         case MapType::YahooMap:
@@ -405,6 +409,13 @@ namespace core {
                 return QString("http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
             }
             break;
+        case MapType::ArcGIS_WorldTopo:
+            {
+                // http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/4/3/15
+
+                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
+            }
+            break;
         case MapType::ArcGIS_MapsLT_OrtoFoto:
             {
                 // http://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L02/R0000001b/C00000028.jpg
@@ -473,6 +484,12 @@ namespace core {
                 return QString("http://%1").arg(server)+QString("0%2.maps.yandex.ru/tiles?l=map&v=%3&x=%4&y=%5&z=%6").arg(GetServerNum(pos, 4)+1).arg(VersionYandexMap).arg(pos.X()).arg(pos.Y()).arg(zoom);
             }
             break;
+        case MapType::Statkart_Topo2:
+                    {
+
+                        return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo2&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
+                    }
+                    break;
         default:
             break;
         }
@@ -493,12 +510,12 @@ namespace core {
     QString UrlFactory::MakeGeocoderUrl(QString keywords)
     {
         QString key = keywords.replace(' ', '+');
-        return QString("http://maps.google.com/maps/geo?q=%1&output=csv&key=%2").arg(key).arg(GoogleMapsAPIKey);
+        return QString("https://maps.google.com/maps/geo?q=%1&output=csv&key=%2").arg(key).arg(GoogleMapsAPIKey);
     }
     QString UrlFactory::MakeReverseGeocoderUrl(internals::PointLatLng &pt,const QString &language)
     {
 
-        return QString("http://maps.google.com/maps/geo?hl=%1&ll=%2,%3&output=csv&key=%4").arg(language).arg(QString::number(pt.Lat())).arg(QString::number(pt.Lng())).arg(GoogleMapsAPIKey);
+        return QString("https://maps.google.com/maps/geo?hl=%1&ll=%2,%3&output=csv&key=%4").arg(language).arg(QString::number(pt.Lat())).arg(QString::number(pt.Lng())).arg(GoogleMapsAPIKey);
 
     }
     internals::PointLatLng UrlFactory::GetLatLngFromGeodecoder(const QString &keywords, GeoCoderStatusCode::Types &status)

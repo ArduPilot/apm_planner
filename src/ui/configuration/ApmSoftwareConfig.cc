@@ -137,10 +137,20 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished()
     {
         return;
     }
+    if (reply->error() != 0 || reply->bytesAvailable() == 0)
+    {
+        //Error condition, don't attempt to rewrite the file
+        QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to retrieve pdef.xml file! Error num:" << reply->error() << ":" << reply->errorString();
+        return;
+    }
     QByteArray apmpdef = reply->readAll();
     m_apmPdefFilename = QDir(QGC::appDataDirectory()).filePath("apm.pdef.xml");
     QFile file(m_apmPdefFilename);
-    file.open(QIODevice::ReadWrite | QIODevice::Truncate);
+    if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
+    {
+        QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to open" << file.fileName() << "for writing";
+        return;
+    }
     file.write(apmpdef);
     file.flush();
     file.close();
@@ -490,6 +500,25 @@ void ApmSoftwareConfig::populateTimerTick()
         m_populateTimer.stop();
         m_advancedParamConfig->allParamsAdded();
         m_standardParamConfig->allParamsAdded();
+        if (m_uas)
+        {
+            //Set all the new parameters to their proper values.
+            //By the time this is hit, the param manager already has a full set of parameters from the vehicle,
+            //no need to re-request them.
+            QList<QString> paramnames = m_uas->getParamManager()->getParameterNames(1);
+            if (paramnames.size() == 0)
+            {
+                //No param names, params are likely not yet done. Wait a second and refresh.
+                QLOG_DEBUG() << "ApmSoftwareConfig::populateTimerTick() - No Param names from param manager. Sleeping for one second...";
+                m_populateTimer.start(1000);
+                return;
+            }
+            for (int i=0;i<paramnames.size();i++)
+            {
+                m_advancedParamConfig->parameterChanged(m_uas->getUASID(),m_uas->getComponentId(),paramnames.at(i),m_uas->getParamManager()->getParameterValue(1,paramnames.at(i)));
+                m_standardParamConfig->parameterChanged(m_uas->getUASID(),m_uas->getComponentId(),paramnames.at(i),m_uas->getParamManager()->getParameterValue(1,paramnames.at(i)));
+            }
+        }
         return;
     }
     if (m_paramConfigList.at(0).isRange)

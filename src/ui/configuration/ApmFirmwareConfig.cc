@@ -507,6 +507,11 @@ void ApmFirmwareConfig::trunkFirmwareButtonClicked()
 }
 
 
+void ApmFirmwareConfig::px4Warning(QString message)
+{
+    QMessageBox::information(this,tr("Warning"),tr("Warning: ") + message,"Continue");
+    ui.statusLabel->setText(tr("Error during upload"));
+}
 void ApmFirmwareConfig::px4Error(QString error)
 {
     QMessageBox::information(0,tr("Error"),tr("Error during upload:") + error);
@@ -612,6 +617,7 @@ void ApmFirmwareConfig::downloadFinished()
         connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Terminated()));
         connect(m_px4uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
         connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
+        connect(m_px4uploader,SIGNAL(warning(QString)),this,SLOT(px4Warning(QString)));
         connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
         connect(m_px4uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
         connect(m_px4uploader,SIGNAL(devicePlugDetected()),this,SLOT(devicePlugDetected()));

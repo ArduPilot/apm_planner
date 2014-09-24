@@ -46,7 +46,7 @@ private slots:
     void hilActuatorsChanged(uint64_t time, float act1, float act2, float act3, float act4, float act5, float act6, float act7, float act8);
     void armingChanged(bool armed);
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
-    void batteryFailChecked(bool checked);
+    void batteryFailSafeChanged(int index);
     void fsLongClicked(bool checked);
     void fsShortClicked(bool checked);
     void gcsChecked(bool checked);

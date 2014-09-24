@@ -85,30 +85,38 @@ private slots:
 
     void activeUASSet(UASInterface *uas);
     void rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu);
-    void sensorUpdateMessage(UASInterface* uas, mavlink_sensor_offsets_t sensorOffsets);
+    void scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_imu2_t scaledImu);
 
     real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
-    void saveOffsets(real_1d_array &ofs);
+    void saveOffsets(real_1d_array *ofs, real_1d_array *ofs2);
     void degreeEditFinished();
 
     void setCompassAPMOnBoard();
     void setCompassPX4OnBoard();
     void setCompass3DRGPS();
 
+    void showCompassMotorCalibrationDialog();
+
 private:
     void cleanup();
 
 private:
-    bool m_validSensorOffsets;
     Ui::CompassConfig ui;
     QPointer<QProgressDialog> m_progressDialog;
     QPointer<QTimer> m_timer;
     QVector<RawImuTuple> m_rawImuList;
-    mavlink_sensor_offsets_t m_sensorOffsets;
+    QVector<RawImuTuple> m_scaledImu2List;
+    double m_compass2OfsX;
+    double m_compass2OfsY;
+    double m_compass2OfsZ;
     double m_oldxmag;
     double m_oldymag;
     double m_oldzmag;
-    int m_allOffsetsSet;
+    double m_old2xmag;
+    double m_old2ymag;
+    double m_old2zmag;
+
+    bool m_haveSecondCompass;
 };
 
 #endif // COMPASSCONFIG_H

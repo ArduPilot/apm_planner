@@ -75,12 +75,12 @@ public:
     ~BatteryMonitorConfig();
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
-    void monitorCurrentIndexChanged(int index);
-    void sensorCurrentIndexChanged(int index);
-    void apmVerCurrentIndexChanged(int index);
     void calcDividerSet();
     void measuredVoltsSet();
     void measuredCurrentSet();
+    void measuredVoltsSetBasic();
+    void measuredCurrentSetBasic();
+
     void ampsPerVoltSet();
     void batteryCapacitySet();
     void alertOnLowClicked(bool checked);

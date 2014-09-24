@@ -1,4 +1,22 @@
 /*===================================================================
+ * QGroundControl Open Source Ground Control Station
+
+(c) 2009, 2010, 2014 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+
+This file is part of the QGROUNDCONTROL project
+
+    QGROUNDCONTROL is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    QGROUNDCONTROL is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
 ======================================================================*/
 
 /**
@@ -8,7 +26,7 @@
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
  *   @author Benjamin Knecht <mavteam@student.ethz.ch>
  *   @author Petri Tanskanen <mavteam@student.ethz.ch>
- *
+ *   @author Bill Bonney <billbonney@communistech.com>
  */
 
 #include "QsLog.h"
@@ -24,7 +42,18 @@
 #include "mission/QGCMissionNavTakeoff.h"
 #include "mission/QGCMissionNavSweep.h"
 #include "mission/QGCMissionConditionDelay.h"
+#include "mission/QGCMissionConditionYaw.h"
+#include "mission/QGCMissionConditionDistance.h"
 #include "mission/QGCMissionDoJump.h"
+#include "mission/QGCMissionDoSetServo.h"
+#include "mission/QGCMissionDoRepeatServo.h"
+#include "mission/QGCMissionDoDigicamControl.h"
+#include "mission/QGCMissionDoMountControl.h"
+#include "mission/QGCMissionDoSetCamTriggDist.h"
+#include "mission/QGCMissionDoSetRelay.h"
+#include "mission/QGCMissionDoRepeatRelay.h"
+#include "mission/QGCMissionDoSetHome.h"
+#include "mission/QGCMissionDoChangeSpeed.h"
 #include "mission/QGCMissionDoStartSearch.h"
 #include "mission/QGCMissionDoFinishSearch.h"
 #include "mission/QGCMissionOther.h"
@@ -38,6 +67,7 @@
 WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     QWidget(parent),
     viewMode(QGC_WAYPOINTEDITABLEVIEW_MODE_DEFAULT),
+    m_missionWidget(NULL),
     m_ui(new Ui::WaypointEditableView)
 {
     m_ui->setupUi(this);
@@ -51,21 +81,6 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     layout->setContentsMargins(4, 0 ,4 ,0);
     m_ui->customActionWidget->setLayout(layout);
 
-    MissionNavWaypointWidget = NULL;
-    MissionNavLoiterUnlimWidget = NULL;
-    MissionNavLoiterTurnsWidget = NULL;
-    MissionNavLoiterTimeWidget = NULL;
-    MissionNavReturnToLaunchWidget = NULL;
-    MissionNavLandWidget = NULL;
-    MissionNavTakeoffWidget = NULL;
-    MissionNavSweepWidget = NULL;
-    MissionConditionDelayWidget = NULL;
-    MissionDoJumpWidget = NULL;    
-    MissionDoStartSearchWidget = NULL;
-    MissionDoFinishSearchWidget = NULL;
-    MissionOtherWidget = NULL;
-
-
     // add actions
     if(wp->getId() == 0){
         // For APM WP0 is the home location
@@ -74,6 +89,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
 
     } else {
         m_ui->comboBox_action->addItem(tr("NAV: Waypoint"),MAV_CMD_NAV_WAYPOINT);
+        m_ui->comboBox_action->addItem(tr("NAV: Spline Waypoint"),MAV_CMD_NAV_SPLINE_WAYPOINT);
         m_ui->comboBox_action->addItem(tr("NAV: TakeOff"),MAV_CMD_NAV_TAKEOFF);
         m_ui->comboBox_action->addItem(tr("NAV: Loiter Unlim."),MAV_CMD_NAV_LOITER_UNLIM);
         m_ui->comboBox_action->addItem(tr("NAV: Loiter Time"),MAV_CMD_NAV_LOITER_TIME);
@@ -81,14 +97,24 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("NAV: Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
         m_ui->comboBox_action->addItem(tr("NAV: Land"),MAV_CMD_NAV_LAND);
         //m_ui->comboBox_action->addItem(tr("NAV: Target"),MAV_CMD_NAV_TARGET);
-        m_ui->comboBox_action->addItem(tr("IF: Delay over"),MAV_CMD_CONDITION_DELAY);
-        //m_ui->comboBox_action->addItem(tr("IF: Yaw angle is"),MAV_CMD_CONDITION_YAW);
+        m_ui->comboBox_action->addItem(tr("IF: Condition Delay"),MAV_CMD_CONDITION_DELAY);
+        m_ui->comboBox_action->addItem(tr("IF: Condition Yaw"),MAV_CMD_CONDITION_YAW);
+        m_ui->comboBox_action->addItem(tr("IF: Condition Distance"),MAV_CMD_CONDITION_DISTANCE);
         m_ui->comboBox_action->addItem(tr("DO: Jump to Index"),MAV_CMD_DO_JUMP);
-    #ifdef MAVLINK_ENABLED_PIXHAWK
+        m_ui->comboBox_action->addItem(tr("DO: Set Servo"), MAV_CMD_DO_SET_SERVO);
+        m_ui->comboBox_action->addItem(tr("DO: Repeat Servo"), MAV_CMD_DO_REPEAT_SERVO);
+        m_ui->comboBox_action->addItem(tr("DO: Digicam Control"), MAV_CMD_DO_DIGICAM_CONTROL);
+        m_ui->comboBox_action->addItem(tr("DO: Set Relay"), MAV_CMD_DO_SET_RELAY);
+        m_ui->comboBox_action->addItem(tr("DO: Repeat Relay"), MAV_CMD_DO_REPEAT_RELAY);
+        m_ui->comboBox_action->addItem(tr("DO: Set Cam Trigg Dist"), MAV_CMD_DO_SET_CAM_TRIGG_DIST);
+        m_ui->comboBox_action->addItem(tr("DO: Change Speed"), MAV_CMD_DO_CHANGE_SPEED);
+        m_ui->comboBox_action->addItem(tr("DO: Set Home"), MAV_CMD_DO_SET_HOME);
+        m_ui->comboBox_action->addItem(tr("DO: Mount Control"), MAV_CMD_DO_MOUNT_CONTROL);
+#ifdef MAVLINK_ENABLED_PIXHAWK
         m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
         m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
         m_ui->comboBox_action->addItem(tr("Do: Finish Search"),MAV_CMD_DO_FINISH_SEARCH);
-    #endif
+#endif
         m_ui->comboBox_action->addItem(tr("Other"), MAV_CMD_ENUM_END);
     }
 
@@ -99,10 +125,10 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     m_ui->comboBox_frame->addItem("Mission",MAV_FRAME_MISSION);
 
     // Initialize view correctly
-    int actionID = wp->getAction();
-    initializeActionView(actionID);
+    m_currentAction = wp->getAction();
+    m_missionWidget = createActionWidget(m_currentAction);
+    m_ui->customActionWidget->layout()->addWidget(m_missionWidget);
     updateValues();
-    updateActionView(actionID);
 
     // Check for mission frame
     if (wp->getFrame() == MAV_FRAME_MISSION)
@@ -148,78 +174,6 @@ void WaypointEditableView::changedAutoContinue(int state)
         wp->setAutocontinue(true);
 }
 
-void WaypointEditableView::updateActionView(int action)
-{    
-    //Hide all
-    if(MissionNavWaypointWidget) MissionNavWaypointWidget->hide();
-    if(MissionNavLoiterUnlimWidget) MissionNavLoiterUnlimWidget->hide();
-    if(MissionNavLoiterTurnsWidget) MissionNavLoiterTurnsWidget->hide();
-    if(MissionNavLoiterTimeWidget) MissionNavLoiterTimeWidget->hide();
-    if(MissionNavReturnToLaunchWidget) MissionNavReturnToLaunchWidget->hide();
-    if(MissionNavLandWidget) MissionNavLandWidget->hide();
-    if(MissionNavTakeoffWidget) MissionNavTakeoffWidget->hide();
-    if(MissionNavSweepWidget) MissionNavSweepWidget->hide();
-    if(MissionConditionDelayWidget) MissionConditionDelayWidget->hide();
-    if(MissionDoJumpWidget) MissionDoJumpWidget->hide();
-    if(MissionDoStartSearchWidget) MissionDoStartSearchWidget->hide();
-    if(MissionDoFinishSearchWidget) MissionDoFinishSearchWidget->hide();
-    if(MissionOtherWidget) MissionOtherWidget->hide();
-
-    //Show only the correct one
-    if (viewMode != QGC_WAYPOINTEDITABLEVIEW_MODE_DIRECT_EDITING)
-    {
-        switch(action) {
-        case MAV_CMD_NAV_WAYPOINT:
-            if(MissionNavWaypointWidget) MissionNavWaypointWidget->show();
-            break;
-        case MAV_CMD_NAV_LOITER_UNLIM:
-            if(MissionNavLoiterUnlimWidget) MissionNavLoiterUnlimWidget->show();
-            break;
-        case MAV_CMD_NAV_LOITER_TURNS:
-            if(MissionNavLoiterTurnsWidget) MissionNavLoiterTurnsWidget->show();
-            break;
-        case MAV_CMD_NAV_LOITER_TIME:
-            if(MissionNavLoiterTimeWidget) MissionNavLoiterTimeWidget->show();
-            break;
-        case MAV_CMD_NAV_RETURN_TO_LAUNCH:
-            if(MissionNavReturnToLaunchWidget) MissionNavReturnToLaunchWidget->show();
-            break;
-        case MAV_CMD_NAV_LAND:
-            if(MissionNavLandWidget) MissionNavLandWidget->show();
-            break;
-        case MAV_CMD_NAV_TAKEOFF:
-            if(MissionNavTakeoffWidget) MissionNavTakeoffWidget->show();
-            break;
-        case MAV_CMD_CONDITION_DELAY:
-            if(MissionConditionDelayWidget) MissionConditionDelayWidget->show();
-            break;
-        case MAV_CMD_DO_JUMP:
-            if(MissionDoJumpWidget) MissionDoJumpWidget->show();
-            break;
-        #ifdef MAVLINK_ENABLED_PIXHAWK
-        case MAV_CMD_NAV_SWEEP:
-            if(MissionNavSweepWidget) MissionNavSweepWidget->show();
-            break;
-        case MAV_CMD_DO_START_SEARCH:
-            if(MissionDoStartSearchWidget) MissionDoStartSearchWidget->show();
-            break;
-        case MAV_CMD_DO_FINISH_SEARCH:
-            if(MissionDoFinishSearchWidget) MissionDoFinishSearchWidget->show();
-            break;
-        #endif
-
-        default:
-            if(MissionOtherWidget) MissionOtherWidget->show();
-            viewMode = QGC_WAYPOINTEDITABLEVIEW_MODE_DIRECT_EDITING;
-            break;
-        }
-    }
-    else
-    {
-        if(MissionOtherWidget) MissionOtherWidget->show();
-    }
-}
-
 /**
  * @param index The index of the combo box of the action entry, NOT the action ID
  */
@@ -238,9 +192,8 @@ void WaypointEditableView::changedAction(int index)
         wp->setAction(action);
     }
     // change the view
-    initializeActionView(actionID);
-    updateValues();
     updateActionView(actionID);
+    updateValues();
 }
 
 void WaypointEditableView::disableMouseScrollWheel(const QWidget *parentWidget)
@@ -257,109 +210,114 @@ void WaypointEditableView::disableMouseScrollWheel(const QWidget *parentWidget)
     }
 }
 
-void WaypointEditableView::initializeActionView(int actionID)
+void WaypointEditableView::updateActionView(int actionID)
 {
-    //initialize a new action-widget, if needed.
-    switch(actionID) {
+    if (m_missionWidget) m_missionWidget->hide();
+
+    if (m_missionWidget && (m_currentAction != actionID)){
+        delete m_missionWidget;
+        m_missionWidget = NULL;
+    }
+
+    if (m_missionWidget == NULL){
+        m_missionWidget = createActionWidget(actionID);
+        m_ui->customActionWidget->layout()->addWidget(m_missionWidget);
+        m_currentAction = actionID;
+    }
+
+    if(m_missionWidget) {
+        m_missionWidget->show();
+    }
+}
+
+QWidget* WaypointEditableView::createActionWidget(int action)
+{
+    QWidget* missionWidget;
+    switch(action) {
     case MAV_CMD_NAV_WAYPOINT:
-        if (!MissionNavWaypointWidget)
-        {
-            MissionNavWaypointWidget = new QGCMissionNavWaypoint(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionNavWaypointWidget);
-        }
+    case MAV_CMD_NAV_SPLINE_WAYPOINT:
+        missionWidget = new QGCMissionNavWaypoint(this);
         break;
     case MAV_CMD_NAV_LOITER_UNLIM:
-        if (!MissionNavLoiterUnlimWidget)
-        {
-            MissionNavLoiterUnlimWidget = new QGCMissionNavLoiterUnlim(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionNavLoiterUnlimWidget);
-        }
+        missionWidget = new QGCMissionNavLoiterUnlim(this);
         break;
     case MAV_CMD_NAV_LOITER_TURNS:
-        if (!MissionNavLoiterTurnsWidget)
-        {
-            MissionNavLoiterTurnsWidget = new QGCMissionNavLoiterTurns(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionNavLoiterTurnsWidget);
-        }
+        missionWidget = new QGCMissionNavLoiterTurns(this);
         break;
     case MAV_CMD_NAV_LOITER_TIME:
-        if (!MissionNavLoiterTimeWidget)
-        {
-            MissionNavLoiterTimeWidget = new QGCMissionNavLoiterTime(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionNavLoiterTimeWidget);
-        }
+        missionWidget = new QGCMissionNavLoiterTime(this);
         break;
     case MAV_CMD_NAV_RETURN_TO_LAUNCH:
-        if (!MissionNavReturnToLaunchWidget)
-        {
-            MissionNavReturnToLaunchWidget = new QGCMissionNavReturnToLaunch(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionNavReturnToLaunchWidget);
-        }
+        missionWidget = new QGCMissionNavReturnToLaunch(this);
         break;
     case MAV_CMD_NAV_LAND:
-        if (!MissionNavLandWidget)
-        {
-            MissionNavLandWidget = new QGCMissionNavLand(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionNavLandWidget);
-        }
+        missionWidget = new QGCMissionNavLand(this);
         break;
     case MAV_CMD_NAV_TAKEOFF:
-        if (!MissionNavTakeoffWidget)
-        {
-            MissionNavTakeoffWidget = new QGCMissionNavTakeoff(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionNavTakeoffWidget);
-        }
+        missionWidget = new QGCMissionNavTakeoff(this);
         break;
     case MAV_CMD_CONDITION_DELAY:
-        if (!MissionConditionDelayWidget)
-        {
-            MissionConditionDelayWidget = new QGCMissionConditionDelay(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionConditionDelayWidget);
-        }
+        missionWidget = new QGCMissionConditionDelay(this);
+        break;
+    case MAV_CMD_CONDITION_YAW:
+        missionWidget = new QGCMissionConditionYaw(this);
+        break;
+    case MAV_CMD_CONDITION_DISTANCE:
+        missionWidget = new QGCMissionConditionDistance(this);
         break;
     case MAV_CMD_DO_JUMP:
-        if (!MissionDoJumpWidget)
-        {
-            MissionDoJumpWidget = new QGCMissionDoJump(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionDoJumpWidget);
-        }
+        missionWidget = new QGCMissionDoJump(this);
         break;
+    case MAV_CMD_DO_SET_SERVO:
+        missionWidget = new QGCMissionDoSetServo(this);
+        break;
+    case MAV_CMD_DO_REPEAT_SERVO:
+        missionWidget = new QGCMissionDoRepeatServo(this);
+        break;
+    case MAV_CMD_DO_DIGICAM_CONTROL:
+        missionWidget = new QGCMissionDoDigicamControl(this);
+        break;
+//    case MAV_CMD_DO_SET_ROI:
+//        missionWidget = new QGCMissionDoSetROI(this);
+//        break;
+    case MAV_CMD_DO_CHANGE_SPEED:
+        missionWidget = new QGCMissionDoChangeSpeed(this);
+        break;
+    case MAV_CMD_DO_SET_HOME:
+        missionWidget = new QGCMissionDoSetHome(this);
+        break;
+    case MAV_CMD_DO_SET_CAM_TRIGG_DIST:
+        missionWidget = new QGCMissionDoSetCamTriggDist(this);
+        break;
+    case MAV_CMD_DO_SET_RELAY:
+        missionWidget = new QGCMissionDoSetRelay(this);
+        break;
+    case MAV_CMD_DO_REPEAT_RELAY:
+        missionWidget = new QGCMissionDoRepeatRelay(this);
+        break;
+    case MAV_CMD_DO_MOUNT_CONTROL:
+        missionWidget = new QGCMissionDoMountControl(this);
+        break;
+
  #ifdef MAVLINK_ENABLED_PIXHAWK
     case MAV_CMD_NAV_SWEEP:
-        if (!MissionNavSweepWidget)
-        {
-            MissionNavSweepWidget = new QGCMissionNavSweep(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionNavSweepWidget);
-        }
+        missionWidget = new QGCMissionNavSweep(this);
         break;
     case MAV_CMD_DO_START_SEARCH:
-        if (!MissionDoStartSearchWidget)
-        {
-            MissionDoStartSearchWidget = new QGCMissionDoStartSearch(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionDoStartSearchWidget);
-        }
+        missionWidget = new QGCMissionDoStartSearch(this);
         break;
     case MAV_CMD_DO_FINISH_SEARCH:
-        if (!MissionDoFinishSearchWidget)
-        {
-            MissionDoFinishSearchWidget = new QGCMissionDoFinishSearch(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionDoFinishSearchWidget);
-        }
+        missionWidget = new QGCMissionDoFinishSearch(this);
         break;
 #endif
     case MAV_CMD_ENUM_END:
     default:
-        if (!MissionOtherWidget)
-        {
-            MissionOtherWidget = new QGCMissionOther(this);
-            m_ui->customActionWidget->layout()->addWidget(MissionOtherWidget);
-        }
-        break;
+        missionWidget = new QGCMissionOther(this);
     }
-
     // Make sure the mouse or trackpad scrolling doesn't
     // change a value when you hover over it
     disableMouseScrollWheel(this);
+    return missionWidget;
 }
 
 void WaypointEditableView::deleted(QObject* waypoint)
@@ -372,6 +330,7 @@ void WaypointEditableView::changedFrame(int index)
     // set waypoint action
     MAV_FRAME frame = (MAV_FRAME)m_ui->comboBox_frame->itemData(index).toUInt();
     wp->setFrame(frame);
+    updateValues();
 }
 
 void WaypointEditableView::changedCurrent(int state)
@@ -525,7 +484,7 @@ void WaypointEditableView::updateValues()
 
     if (currId != lastId)
     {
-
+#ifdef WAYPOINTEDIT_ALTERNATE_LINE_COLOR
         // QLOG_DEBUG() << "COLOR ID: " << currId;
         if (currId == 1)
         {
@@ -561,6 +520,7 @@ void WaypointEditableView::updateValues()
         m_ui->idLabel->setStyleSheet(labelStyle);
         m_ui->groupBox->setStyleSheet(groupBoxStyle);
         m_ui->customActionWidget->setStyleSheet(widgetSlotStyle);
+#endif
         lastId = currId;
     }
 

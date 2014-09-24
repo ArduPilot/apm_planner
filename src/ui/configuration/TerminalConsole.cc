@@ -136,7 +136,6 @@ void TerminalConsole::addBaudComboBoxConfig()
     ui->baudComboBox->addItem(QLatin1String("57600"), QSerialPort::Baud57600);
     ui->baudComboBox->addItem(QLatin1String("38400"), QSerialPort::Baud38400);
     ui->baudComboBox->addItem(QLatin1String("19200"), QSerialPort::Baud19200);
-    ui->baudComboBox->addItem(QLatin1String("19200"), QSerialPort::Baud19200);
     ui->baudComboBox->addItem(QLatin1String("9600"), QSerialPort::Baud9600);
 }
 

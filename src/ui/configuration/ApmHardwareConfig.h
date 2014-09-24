@@ -43,7 +43,7 @@ This file is part of the APM_PLANNER project
 #include "RadioCalibrationConfig.h"
 #include "Radio3DRConfig.h"
 #include "BatteryMonitorConfig.h"
-#include "SonarConfig.h"
+#include "RangeFinderConfig.h"
 #include "AirspeedConfig.h"
 #include "OpticalFlowConfig.h"
 #include "OsdConfig.h"
@@ -92,7 +92,7 @@ private:
     //Optional
     QPointer<Radio3DRConfig> m_radio3drConfig;
     QPointer<BatteryMonitorConfig> m_batteryConfig;
-    QPointer<SonarConfig> m_sonarConfig;
+    QPointer<RangeFinderConfig> m_sonarConfig;
     QPointer<AirspeedConfig> m_airspeedConfig;
     QPointer<OpticalFlowConfig> m_opticalFlowConfig;
     QPointer<OsdConfig> m_osdConfig;

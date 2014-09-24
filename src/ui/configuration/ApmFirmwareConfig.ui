@@ -54,7 +54,7 @@
         <rect>
          <x>600</x>
          <y>470</y>
-         <width>107</width>
+         <width>121</width>
          <height>20</height>
         </rect>
        </property>
@@ -66,9 +66,9 @@
        <property name="geometry">
         <rect>
          <x>30</x>
-         <y>490</y>
+         <y>510</y>
          <width>681</width>
-         <height>151</height>
+         <height>131</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -99,11 +99,17 @@
          <x>30</x>
          <y>470</y>
          <width>561</width>
-         <height>16</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="text">
         <string>Status:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
       <widget class="QPushButton" name="y6PushButton">
@@ -726,7 +732,7 @@
         <rect>
          <x>30</x>
          <y>360</y>
-         <width>672</width>
+         <width>694</width>
          <height>111</height>
         </rect>
        </property>

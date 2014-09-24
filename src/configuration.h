@@ -15,7 +15,7 @@
 #define WITH_TEXT_TO_SPEECH 1
 
 #define QGC_APPLICATION_NAME "APM Planner"
-#define QGC_APPLICATION_VERSION "v2.0.9"
+#define QGC_APPLICATION_VERSION "v2.0.15-rc1"
 #define APP_DATA_DIRECTORY "/apmplanner2"
 #define LOG_DIRECTORY "/dataflashLogs"
 #define PARAMETER_DIRECTORY "/parameters"
@@ -23,23 +23,23 @@
 #define MAVLINK_LOGFILE_EXT ".tlog"
 
 #ifndef APP_TYPE
-#define APP_TYPE "stable" // or "daily" for master branch builds
+#define APP_TYPE stable // or "daily" for master branch builds
 #endif
 
 #ifndef APP_PLATFORM
 
 #ifdef Q_OS_MACX
-#define APP_PLATFORM "osx"
+#define APP_PLATFORM osx
 #elif defined(Q_LINUX_64) && defined(Q_UBUNTU)
-#define APP_PLATFORM "ubuntu64"
+#define APP_PLATFORM ubuntu64
 #elif defined(Q_LINUX_64)
-#define APP_PLATFORM "debian64"
+#define APP_PLATFORM debian64
 #elif defined(Q_OS_LINUX) && defined(Q_UBUNTU)
-#define APP_PLATFORM "ubuntu32"
+#define APP_PLATFORM ubuntu32
 #elif defined(Q_OS_LINUX)
-#define APP_PLATFORM "debian32"
+#define APP_PLATFORM debian32
 #else
-#define APP_PLATFORM "win"
+#define APP_PLATFORM win
 #endif
 
 #endif
@@ -49,7 +49,7 @@ namespace QGC
 {
 const QString APPNAME = "APMPLANNER2";
 const QString COMPANYNAME = "DIYDRONES";
-const int APPLICATIONVERSION = 209; // 2.0.9 [TODO] we should deprecate this version definition
+const int APPLICATIONVERSION = 2015; // 2.0.14 [TODO] we should deprecate this version definition
 
     inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();

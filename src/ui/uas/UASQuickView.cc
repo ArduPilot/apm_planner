@@ -275,6 +275,7 @@ void UASQuickView::sortItems(int columncount)
 }
 void UASQuickView::resizeEvent(QResizeEvent *evt)
 {
+    Q_UNUSED(evt);
     recalculateItemTextSizing();
 }
 void UASQuickView::recalculateItemTextSizing()
@@ -346,42 +347,19 @@ void UASQuickView::setActiveUAS(UASInterface* uas)
         return;
     }
     this->uas = uas;
-    connect(uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
-    int uasid = uas->getUASID();
-    if (m_PropertyToLayoutIndexMap.contains("test"))
-    {
+    connect(uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,
+            SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 
-    }
-    /*    m_PropertyToLayoutIndexMap[value] = m_currentColumn;
-    m_currentColumn++;
-    if (m_currentColumn >= m_columnCount-1)
-    {
-        m_currentColumn = 0;
-    }
-    uasPropertyToLabelMap[value] = item;
-    uasEnabledPropertyList.append(value);
-
-    if (!uasPropertyValueMap.contains(value))
-    {
-        uasPropertyValueMap[value] = 0;
-    }*/
-
-    //connect(uas,SIGNAL())
 }
 void UASQuickView::addSource(MAVLinkDecoder *decoder)
 {
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,double,quint64)),this,SLOT(valueChanged(int,QString,QString,double,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint8,quint64)),this,SLOT(valueChanged(int,QString,QString,qint8,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint16,quint64)),this,SLOT(valueChanged(int,QString,QString,qint16,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint32,quint64)),this,SLOT(valueChanged(int,QString,QString,qint32,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,qint64,quint64)),this,SLOT(valueChanged(int,QString,QString,qint64,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint8,quint64)),this,SLOT(valueChanged(int,QString,QString,quint8,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint16,quint64)),this,SLOT(valueChanged(int,QString,QString,quint16,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint32,quint64)),this,SLOT(valueChanged(int,QString,QString,quint32,quint64)));
-    connect(decoder,SIGNAL(valueChanged(int,QString,QString,quint64,quint64)),this,SLOT(valueChanged(int,QString,QString,quint64,quint64)));
+    Q_UNUSED(decoder);
+    //connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
-void UASQuickView::valueUpdate(const int uasId,const QString &name,const QString &unit,const double value,const quint64 msec)
+void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec)
 {
+    Q_UNUSED(msec);
+
     if (this->uas->getUASID() != uasId)
     {
         //This message is for the non active UAS
@@ -395,45 +373,11 @@ void UASQuickView::valueUpdate(const int uasId,const QString &name,const QString
             quickViewSelectDialog->addItem(propername +" ("+unit+")");
         }
     }
-    uasPropertyValueMap[propername +" ("+unit+")"] = value;
-}
-
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint8 value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
-}
-
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint16 value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint16 value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint32 value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint32 value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const quint64 value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const qint64 value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value,msec);
+    bool ok = false;
+    uasPropertyValueMap[propername +" ("+unit+")"] = value.toDouble(&ok);
+    if (!ok){
+        QLOG_ERROR() << "Quick View: Error Converting QuickView Item Value: " << propername;
+    }
 }
 
 void UASQuickView::actionTriggered(bool checked)
@@ -451,10 +395,6 @@ void UASQuickView::actionTriggered(bool checked)
     {
         valueDisabled(senderlabel->text());
     }
-}
-void UASQuickView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value,const quint64 msec)
-{
-    valueUpdate(uasId,name,unit,value.toDouble(),msec);
 }
 
 void UASQuickView::valChanged(double val,QString type)

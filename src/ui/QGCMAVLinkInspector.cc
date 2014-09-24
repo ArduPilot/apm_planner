@@ -14,6 +14,7 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
     QWidget(parent),
     selectedSystemID(0),
     selectedComponentID(0),
+    m_uas(0),
     ui(new Ui::QGCMAVLinkInspector)
 {
     ui->setupUi(this);
@@ -35,6 +36,7 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
     header << tr("Value");
     header << tr("Type");
     ui->treeWidget->setHeaderLabels(header);
+    ui->treeWidget->sortByColumn(0,Qt::AscendingOrder);
 
     // Connect the UI
     connect(ui->systemComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectDropDownMenuSystem(int)));
@@ -43,7 +45,11 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
 
     // Connect external connections
     connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(addSystem(UASInterface*)));
-    connect(protocol, SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)), this, SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+    for (int i=0;i<UASManager::instance()->getUASList().size();i++)
+    {
+        addSystem(UASManager::instance()->getUASList()[i]);
+    }
+    //connect(protocol, SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)), this, SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
 
     // Attach the UI's refresh rate to a timer.
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(refreshView()));
@@ -52,6 +58,12 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
 
 void QGCMAVLinkInspector::addSystem(UASInterface* uas)
 {
+    if (!m_uas)
+    {
+        //First UAS
+        connect(uas,SIGNAL(mavlinkMessageRecieved(LinkInterface*,mavlink_message_t)),this,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+        m_uas = uas; //UAS we're connected to
+    }
     ui->systemComboBox->addItem(uas->getUASName(), uas->getUASID());
 }
 
@@ -74,6 +86,9 @@ void QGCMAVLinkInspector::rebuildComponentList()
     UASInterface* uas = UASManager::instance()->getUASForId(selectedSystemID);
     if (uas)
     {
+        disconnect(this,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+        connect(uas,SIGNAL(mavlinkMessageRecieved(LinkInterface*,mavlink_message_t)),this,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+
         QMap<int, QString> components = uas->getComponents();
 
         foreach (int id, components.keys())
@@ -81,6 +96,17 @@ void QGCMAVLinkInspector::rebuildComponentList()
             QString name = components.value(id);
             ui->componentComboBox->addItem(name, id);
         }
+    }
+    else if (!selectedSystemID)
+    {
+        //Currently selected ID is All
+        m_uas = 0;
+        disconnect(this,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+        for (int i=0;i<UASManager::instance()->getUASList().size();i++)
+        {
+            connect(UASManager::instance()->getUASList()[i],SIGNAL(mavlinkMessageRecieved(LinkInterface*,mavlink_message_t)),this,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+        }
+
     }
 }
 

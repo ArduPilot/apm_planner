@@ -46,6 +46,7 @@ public:
     CustomMode(int aMode);
     int modeAsInt();
     virtual QString operator <<(int mode);
+    static QString colorForMode(int aMode);
 protected:
     int m_mode;
 };
@@ -62,7 +63,7 @@ public:
     FLY_BY_WIRE_A = 5,
     FLY_BY_WIRE_B = 6,
     CRUISE        = 7,
-    RESERVED_8    = 8,  // RESERVED FOR FUTURE USE
+    AUTOTUNE      = 8,
     RESERVED_9    = 9,  // RESERVED FOR FUTURE USE
     AUTO          = 10,
     RTL           = 11,
@@ -101,7 +102,7 @@ public:
     SPORT       = 13,  // [TODO] Verify this is correct.
     FLIP        = 14,
     AUTOTUNE    = 15,
-    HYBRID_LOITER = 16 // HYBRID LOITER.
+    POS_HOLD    = 16 // HYBRID LOITER.
     };
 
 public:

@@ -25,7 +25,7 @@ UASInterface* QGCMAVLinkUASFactory::createUAS(MAVLinkProtocol* mavlink, LinkInte
     {
     case MAV_AUTOPILOT_GENERIC:
     {
-        UAS* mav = new UAS(mavlink, sysid);
+        UAS* mav = new UAS(0, sysid);
         // Set the system type
         mav->setSystemType((int)heartbeat->type);
         // Connect this robot to the UAS object
@@ -38,7 +38,7 @@ UASInterface* QGCMAVLinkUASFactory::createUAS(MAVLinkProtocol* mavlink, LinkInte
     break;
     case MAV_AUTOPILOT_PIXHAWK:
     {
-        PxQuadMAV* mav = new PxQuadMAV(mavlink, sysid);
+        PxQuadMAV* mav = new PxQuadMAV(0, sysid);
         // Set the system type
         mav->setSystemType((int)heartbeat->type);
         // Connect this robot to the UAS object
@@ -54,7 +54,7 @@ UASInterface* QGCMAVLinkUASFactory::createUAS(MAVLinkProtocol* mavlink, LinkInte
     break;
     case MAV_AUTOPILOT_SLUGS:
     {
-        SlugsMAV* mav = new SlugsMAV(mavlink, sysid);
+        SlugsMAV* mav = new SlugsMAV(0, sysid);
         // Set the system type
         mav->setSystemType((int)heartbeat->type);
         // Connect this robot to the UAS object
@@ -67,7 +67,7 @@ UASInterface* QGCMAVLinkUASFactory::createUAS(MAVLinkProtocol* mavlink, LinkInte
     break;
     case MAV_AUTOPILOT_ARDUPILOTMEGA:
     {
-        ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(mavlink, sysid);
+        ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(0, sysid);
         // Set the system type
         mav->setSystemType((int)heartbeat->type);
         // Connect this robot to the UAS object
@@ -90,7 +90,7 @@ UASInterface* QGCMAVLinkUASFactory::createUAS(MAVLinkProtocol* mavlink, LinkInte
 #endif
     default:
     {
-        UAS* mav = new UAS(mavlink, sysid);
+        UAS* mav = new UAS(0, sysid);
         mav->setSystemType((int)heartbeat->type);
         // Connect this robot to the UAS object
         // it is IMPORTANT here to use the right object type,

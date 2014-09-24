@@ -622,7 +622,7 @@ bool SerialLink::disconnectPureThreaded()
 {
     if (isRunning())
     {
-        QLOG_INFO() << "running so disconnect" << m_port->portName();
+        if (m_port) QLOG_INFO() << "running so disconnect" << m_port->portName();
         {
             QMutexLocker locker(&m_stoppMutex);
             m_stopp = true;
@@ -1122,7 +1122,7 @@ const QList<SerialLink*> SerialLink::getSerialLinks(LinkManager *linkManager)
     if(!linkManager)
         return QList<SerialLink*>();
 
-    QList<LinkInterface*> list = linkManager->instance()->getLinks();
+    /*QList<LinkInterface*> list = linkManager->instance()->getLinks();
     QList<SerialLink*> serialLinklist;
     foreach( LinkInterface* link, list)  {
         SerialLink* serialLink = dynamic_cast<SerialLink*>(link);
@@ -1131,7 +1131,8 @@ const QList<SerialLink*> SerialLink::getSerialLinks(LinkManager *linkManager)
             }
         };
 
-    return serialLinklist;
+    return serialLinklist;*/
+    return QList<SerialLink*>();
 }
 
 const QList<SerialLink*> SerialLink::getSerialLinks(UASInterface *uas)

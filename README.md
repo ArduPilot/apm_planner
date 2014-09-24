@@ -100,12 +100,13 @@ You have three options in Windows. These are listed from easiest to most difficu
 Option 1: VS2010
 -------
 
-1. Download MSVc2010 express edition. You can get it from the Microsoft website
+1. Download MSVc2010 express edition (You need SP1). You can get it from the Microsoft website
 2. Download Qt libraries for windows (4.8.6, for MSVC2010) from http://qt-project.org/downloads
 3. Download and install QtCreator
 4. Download and install msysgit http://msysgit.github.io/
     - Open up git bash
     - git clone git://github.com/diydrones/apm_planner.git
+    - Ensure that msysgit's bin folder is in your path, as it has touch.exe which is needed for the build
 5. Start QtCreator and configure QtCreator:
     - click on the Tools menu item then Options
     - Select Build & Run on the left hand side

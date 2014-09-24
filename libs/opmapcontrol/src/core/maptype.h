@@ -68,6 +68,7 @@ namespace core {
             ArcGIS_Satellite=788,
             ArcGIS_ShadedRelief=799,
             ArcGIS_Terrain=811,
+            ArcGIS_WorldTopo=812,
 
             // use these numbers to clean up old stuff
             //ArcGIS_MapsLT_Map_Old= 877,
@@ -96,7 +97,8 @@ namespace core {
             GoogleLabelsKorea=4003,
             GoogleHybridKorea=4005,
 
-            YandexMapRu = 5000
+            YandexMapRu = 5000,
+            Statkart_Topo2 = 5500
         };
         static QString StrByType(Types const& value)
         {

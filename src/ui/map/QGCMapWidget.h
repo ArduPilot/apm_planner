@@ -70,6 +70,9 @@ public slots:
     void updateWaypoint(int uas, Waypoint* wp);
     /** @brief Update the whole waypoint */
     void updateWaypointList(int uas);
+    /** @brief Redraw lines between waypoints */
+    void redrawWaypointLines();
+    void redrawWaypointLines(int uas);
     /** @brief Update the home position on the map */
     void updateHomePosition(double latitude, double longitude, double altitude);
     /** @brief Set update rate limit */

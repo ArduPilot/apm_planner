@@ -1,3 +1,25 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2014 APM_PLANNER PROJECT <http://www.diydrones.com>
+(c) author: Bill Bonney <billbonney@communistech.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
 #include "QsLog.h"
 #include "LogDownloadDialog.h"
 #include "ui_LogDownloadDialog.h"
@@ -17,7 +39,7 @@ LogDownloadDescriptor::LogDownloadDescriptor(uint logID, uint time_utc,
                                              uint logSize)
 {
     m_logID = logID;
-    m_logTimeUTC = QDateTime::fromMSecsSinceEpoch(time_utc);
+    m_logTimeUTC = QDateTime::fromTime_t(time_utc);
     // Set time to current UTC time if time is 1970 i.e. invalid.
     if(m_logTimeUTC.date().year() == 1970)
         m_logTimeUTC = QDateTime::currentDateTimeUtc();
@@ -198,7 +220,7 @@ void LogDownloadDialog::eraseAllLogs()
        return;
 
    int button = QMessageBox::critical(this, tr("Erase All Logs"),
-                                 tr("Are you sure you want to earse all logs?")
+                                 tr("Are you sure you want to erase all logs?")
                                  ,QMessageBox::Ok,QMessageBox::Cancel);
    if(button == QMessageBox::Ok){
        m_uas->logEraseAll();
@@ -227,6 +249,32 @@ void LogDownloadDialog::issueDownloadRequest()
 {
         // Open a file for the log to be downloaded
         m_downloadFile = new QFile(QGC::logDirectory() +"/" + m_downloadFilename);
+
+        // Append a number to the end if the filename already exists
+        if(m_downloadFile->exists()){
+            uint num_dups = 0;
+            QStringList filename_spl = m_downloadFile->fileName().split('.');
+            if (filename_spl.size()>0)
+            {
+                while(m_downloadFile->exists()){
+                    num_dups ++;
+                    m_downloadFile->setFileName(filename_spl[0] + '_' + QString::number(num_dups) + '.' + filename_spl[1]);
+                }
+            }
+            else
+            {
+                // Filename does not have an extension, avoid a crash and append a number on the end
+                // This can not (currently) happen at runtime unless either a define goes away, or the code is otherwise broken elsewhere, but better safe with an error
+                // in the log than sorry with a crash report.
+                QLOG_ERROR() << "Download filename is not properly formatted!" << m_downloadFile->fileName();
+                QLOG_ERROR() << "The above should NEVER happen, please file a bug report with this log!";
+                QString filename_orig = m_downloadFile->fileName();
+                while(m_downloadFile->exists()){
+                    num_dups ++;
+                    m_downloadFile->setFileName(filename_orig + '_' + QString::number(num_dups));
+                }
+            }
+        }
         if(m_downloadFile && m_downloadFile->open(QIODevice::WriteOnly)){
             QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename << " size:" << m_downloadMaxSize;
             Q_ASSERT(m_downloadOffset == 0);

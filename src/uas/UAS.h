@@ -53,11 +53,11 @@ class UAS : public UASInterface
 {
     Q_OBJECT
 public:
-    UAS(MAVLinkProtocol* protocol, int id = 0);
+    UAS(MAVLinkProtocol* protocol,int id = 0);
     ~UAS();
 
-    static const float lipoFull;  ///< 100% charged voltage
-    static const float lipoEmpty; ///< Discharged voltage
+    static const double lipoFull;  ///< 100% charged voltage
+    static const double lipoEmpty; ///< Discharged voltage
 
     /* MANAGEMENT */
 
@@ -90,9 +90,10 @@ public:
     /** @brief Get the status flag for the communication */
     int getCommunicationStatus() const;
     /** @brief Add one measurement and get low-passed voltage */
-    float filterVoltage(float value) const;
+    double filterVoltage(double value) const;
     /** @brief Get the links associated with this robot */
     QList<LinkInterface*>* getLinks();
+    QList<int> getLinkIdList();
 
     Q_PROPERTY(double localX READ getLocalX WRITE setLocalX NOTIFY localXChanged)
     Q_PROPERTY(double localY READ getLocalY WRITE setLocalY NOTIFY localYChanged)
@@ -408,15 +409,16 @@ public:
     friend class UASWaypointManager;
 
 protected: //COMMENTS FOR TEST UNIT
+    bool m_heartbeatsEnabled;
     /// LINK ID AND STATUS
     int uasId;                    ///< Unique system ID
     QMap<int, QString> components;///< IDs and names of all detected onboard components
     QList<LinkInterface*>* links; ///< List of links this UAS can be reached by
     QList<int> unknownPackets;    ///< Packet IDs which are unknown and have been received
-    MAVLinkProtocol* mavlink;     ///< Reference to the MAVLink instance
+    //MAVLinkProtocol* mavlink;     ///< Reference to the MAVLink instance
     CommStatus commStatus;        ///< Communication status
-    float receiveDropRate;        ///< Percentage of packets that were dropped on the MAV's receiving link (from GCS and other MAVs)
-    float sendDropRate;           ///< Percentage of packets that were not received from the MAV by the GCS
+    double receiveDropRate;        ///< Percentage of packets that were dropped on the MAV's receiving link (from GCS and other MAVs)
+    double sendDropRate;           ///< Percentage of packets that were not received from the MAV by the GCS
     quint64 lastHeartbeat;        ///< Time of the last heartbeat message
     QTimer* statusTimeout;        ///< Timer for various status timeouts
 
@@ -431,6 +433,10 @@ protected: //COMMENTS FOR TEST UNIT
     int status;                   ///< The current status of the MAV
     QString shortModeText;        ///< Short textual mode description
     QString shortStateText;       ///< Short textual state description
+    int systemId;                 ///< Currently connected mavlink system id
+    int componentId;              ///< Currently connected mavlink component id
+    int getSystemId() { return systemId; }
+    int getComponentId() { return componentId; }
 
     /// OUTPUT
     QList<double> actuatorValues;
@@ -444,19 +450,19 @@ protected: //COMMENTS FOR TEST UNIT
     /// BATTERY / ENERGY
     BatteryType batteryType;    ///< The battery type
     int cells;                  ///< Number of cells
-    float fullVoltage;          ///< Voltage of the fully charged battery (100%)
-    float emptyVoltage;         ///< Voltage of the empty battery (0%)
-    float startVoltage;         ///< Voltage at system start
-    float tickVoltage;          ///< Voltage where 0.1 V ticks are told
-    float lastTickVoltageValue; ///< The last voltage where a tick was announced
-    float tickLowpassVoltage;   ///< Lowpass-filtered voltage for the tick announcement
-    float warnVoltage;          ///< Voltage where QGC will start to warn about low battery
-    float warnLevelPercent;     ///< Warning level, in percent
+    double fullVoltage;          ///< Voltage of the fully charged battery (100%)
+    double emptyVoltage;         ///< Voltage of the empty battery (0%)
+    double startVoltage;         ///< Voltage at system start
+    double tickVoltage;          ///< Voltage where 0.1 V ticks are told
+    double lastTickVoltageValue; ///< The last voltage where a tick was announced
+    double tickLowpassVoltage;   ///< Lowpass-filtered voltage for the tick announcement
+    double warnVoltage;          ///< Voltage where QGC will start to warn about low battery
+    double warnLevelPercent;     ///< Warning level, in percent
     double currentVoltage;      ///< Voltage currently measured
-    float lpVoltage;            ///< Low-pass filtered voltage
+    double lpVoltage;            ///< Low-pass filtered voltage
     double currentCurrent;      ///< Battery current currently measured
     bool batteryRemainingEstimateEnabled; ///< If the estimate is enabled, QGC will try to estimate the remaining battery life
-    float chargeLevel;          ///< Charge level of battery, in percent
+    double chargeLevel;          ///< Charge level of battery, in percent
     int timeRemaining;          ///< Remaining time calculated based on previous and current
     bool lowBattAlarm;          ///< Switch if battery is low
 
@@ -566,12 +572,13 @@ protected: //COMMENTS FOR TEST UNIT
     QGCHilLink* simulation;         ///< Hardware in the loop simulation link
 
 public:
+    void setHeartbeatEnabled(bool enabled) { m_heartbeatsEnabled = enabled; }
     /** @brief Set the current battery type */
     void setBattery(BatteryType type, int cells);
     /** @brief Estimate how much flight time is remaining */
     int calculateTimeRemaining();
     /** @brief Get the current charge level */
-    float getChargeLevel();
+    double getChargeLevel();
     /** @brief Get the human-readable status message for this code */
     void getStatusForCode(int statusCode, QString& uasState, QString& stateDescription);
 
@@ -769,6 +776,12 @@ public:
     bool isHelicopter();
 
 public slots:
+
+    void protocolStatusMessageRec(const QString& title, const QString& message);
+    void valueChangedRec(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec);
+    void textMessageReceivedRec(int uasid, int componentid, int severity, const QString& text);
+    void receiveLossChangedRec(int id,float value);
+
     /** @brief Set the autopilot type */
     void setAutopilotType(int apType)
     {
@@ -984,6 +997,7 @@ public slots:
     void startMagnetometerCalibration();
     void startGyroscopeCalibration();
     void startPressureCalibration();
+    void startCompassMotCalibration();
 
     void startDataRecording();
     void stopDataRecording();
@@ -994,6 +1008,8 @@ public slots:
     void logRequestData(uint16_t id, uint32_t ofs, uint32_t count);
     void logEraseAll();
     void logRequestEnd();
+
+    void sendHeartbeat();
 
 signals:
     /** @brief The main/battery voltage has changed/was updated */

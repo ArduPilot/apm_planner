@@ -46,6 +46,15 @@ class LinkInterface : public QThread
 {
     Q_OBJECT
 public:
+    enum LinkType
+    {
+        SERIAL_LINK,
+        TCP_LINK,
+        UDP_LINK,
+        SIM_LINK,
+        UNKNOWN_LINK
+    };
+
     LinkInterface() :
         QThread(0)
     {
@@ -157,6 +166,8 @@ public:
      **/
     virtual qint64 bytesAvailable() = 0;
 
+    virtual LinkType getLinkType() { return UNKNOWN_LINK; }
+
 public slots:
 
     /**
@@ -223,6 +234,8 @@ signals:
 
     /** @brief destroying element */
     void deleteLink(LinkInterface* const link);
+
+    void error(LinkInterface* link,QString errorstring);
 
 protected:
 

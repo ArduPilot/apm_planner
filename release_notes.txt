@@ -1,0 +1,589 @@
+Release Notes - APM Planner 2.0.14 - 2014-08-01
+
+8f93791:  Configuration: Updated to 2.0.14 release - Bill Bonney
+b75472b:  Droneshare: Fix to use https for uploads - Bill Bonney
+0d2638e:  ParamCompare: Fixes #419 identical values being returned as a difference - Bill Bonney
+4ff0de7:  MainWindow: Lower maximum required width to support 1024x600 screen widths - Bill Bonney
+12d4ec1:  UAS: Fix floats to be doubles to avoid conversion errors - Bill Bonney
+a7283ce:  Autoupdate: Fix regexp definition for version update - Bill Bonney
+e53d003:  APM MAV: Rename Hybrid Loiter to Position Hold - Bill Bonney
+e7cfd14:  Graphs View: Fixes #74 Add support for Plane/Rover to KMZ generation. - Bill Bonney
+7a6ae05:  APM MAV: Add new colorForMode() API - Bill Bonney
+baf52e5:  Autoupdate: Fix variables being undefined. - Craig R. Hughes
+f2d3947:  AutoUpdate: Fix Typo in parameter name - Bill Bonney
+6dd2146:  QuickView Widget: Fixes QVariant toDouble conversion issues. - Bill Bonney
+ffa4573:  Droneshare Widget: Fixed API to return Url - Bill Bonney
+ef206c3:  MAP Widget: Improves sensitivity of Mouse Zooming with scroll wheel - Bill Bonney
+2f788f8:  MAP Widget: Changes to support better zooming sensitivity (slider) - Bill Bonney
+f74de7c:  QuickView Widget: Fixes #405 rounding error in HDOP and COG values - Bill Bonney
+a5a20a0:  configuration: update JSON object for 'beta' releases - Bill Bonney
+fc3552a:  configuration: update to 2.0.14-rc3 - Bill Bonney
+8de0f15:  Autoupdate: Fixes RC version compare - Bill Bonney
+0eb5f67:  configuration: update to 2.0.14-rc2 - Bill Bonney
+434b551:  Autoupdate: Fix debug message - Bill Bonney
+7594641:  QGCCore: Fix to remember if update is 'beta' or 'stable' - Bill Bonney
+6f2bc26:  Autoupdate: Add check for update type - Bill Bonney
+1d4bdf8:  Settings View: Add checkbox to enable 'beta' releases - Bill Bonney
+46f5345:  Settings View: Fixes #401 incomplete label display in settings - Bill Bonney
+89c59d6:  Comm Settings: Change to better sync com port between Link and Widget - Michael Carpenter
+
+Release Notes - APM Planner 2.0.13 - 2014-07-14
+
+cc32a9a:  configuration: Update json version object - Bill Bonney
+58f4268:  configuration: Update to 2.0.13 to fix type conversion issue - Bill Bonney
+7876a60:  Comms: Fix for Serial Port errors not propagating up to inform the user, and added retries on connect() calls - Michael Carpenter
+8380a9c:  UAS: Fix for double QVariants not being checked for alongside float - Michael Carpenter
+
+Release Notes - APM Planner 2.0.12 - 2014-07-12
+
+c52534a:  configuration: Update Version Object - Bill Bonney
+23666a0:  Configuration: Update to 2.0.12 - Bill Bonney
+80720c8:  UAS: Update conversion to use Plain Old Types to avoid conversion errors. - Bill Bonney
+b29f6a7:  UAS: Fixes #399 issues with conversion from floats not being cast to double. - Bill Bonney
+51ef0c3:  Info Widget: Roll back fix for #389, and set static column width. - Michael Carpenter
+d878ee2:  Graphing: Fix #388, grid view getting out of sync with hide checkbox - Michael Carpenter
+dfe1865:  Graphing: Fix #396, QVariants use both floats, and doubles - Michael Carpenter
+83e0753:  Logging: Fix #397, TLogs not being generated, and added option to enable/disable logging in the Config window - Michael Carpenter
+249d4e2:  Graphing: Added export button to export a loaded .bin file to a .log file, beginning of a fix for #395 - Michael Carpenter
+89b28ad:  Code Cleanup: Added error checking to Log Download filename changes, and set an pointer to null after deletion - Michael Carpenter
+8b5e8f7:  MapWidget: Set deleted variable to null for properness - Michael Carpenter
+8546ff5:  MapWidget: Fix #394, MapRipper not closing out after the last zoom level is downloaded - Michael Carpenter
+58ddf2f:  Log Download: Fixes #391. Checks for existing file and if exists appends duplicate number to new file. - foobarbecue
+54c5d46:  Info Widget: Fixes #389 by making columns expand in response to new data - foobarbecue
+ab135da:  GITHUB: add link and commit rules to CONTRIBUTING.md - Bill Bonney
+5fbd68b:  Update CONTRIBUTING.md - Bill Bonney
+07a8146:  Fix the main problem with dataflash downloads: function was expecting time in milliseconds, getting seconds. - foobarbecue
+938fa5f:  Add support for ArcGIS World Topo maps - Jim Kuhn
+11dfbb2:  Create CONTRIBUTING.md - Bill Bonney
+
+Release Notes - APM Planner 2.0.11 - 2014-07-03
+
+e0bb72c:  Update Object: Increase to 2.0.11 release and support for 'trusty' builds - Bill Bonney
+b3e995a:  configuration: Update to 2.0.11 release - Bill Bonney
+5684111:  Droneshare Widget: add support to remember username for droneshare - Bill Bonney
+28c39fb:  Droneshare Widget: Add support for tlog/bin/blog/log/flog datatypes - Bill Bonney
+22ebb4e:  Droneshare Widget: Add better processing for server messages and clickable link - Bill Bonney
+644d4f5:  Droneshare Widget: Adding Droneshare Query Object - Bill Bonney
+c55eff4:  Droneshare Widget: Initial commit - Bill Bonney
+a9745a3:  Graphing: Fix for crash involving tlogs, and final fix #318, clearing the graph when a tlog is loaded - Michael Carpenter
+5b53f10:  Graphing: Fix for graph grouping not clearing when removed - Michael Carpenter
+e5c5116:  Graphing: Fix for binary and ascii logs not displaying MODE text when loaded, and fix for the zoom bar following mouse wheel movements - Michael Carpenter
+21eef30:  Terminal Console: Remove duplicate baud rate entry, closes #382 - nbrachet@gmail.com
+1a33fcb:  Comms: Set Serial port baud if no settings file exists, and a default UDPLink is now created if one does not exist - Michael Carpenter
+36fb347:  Comms: Readdition of GCS heartbeat packets, and the ability to enable or disable them - Michael Carpenter
+cb556e6:  Comms: Fix for Serial Port advanced settings UI - Michael Carpenter
+5332ed5:  Elevation Widget: Fix font sizes to be smaller - Bill Bonney
+edb142d:  Autoupate: Fix copyright notice - Bill Bonney
+82d7208:  Comms: Fix for Link name not updating the menu item - Michael Carpenter
+e380ed5:  Graphing: Fix for timestamp being wrong in live graph mode - Michael Carpenter
+c189276:  Comms: Fix for UDP/TCP links not correctly sending bytes and emitting connect/disconnect messages - Michael Carpenter
+5d8d309:  Comms: Fix for COM port not being saved in settings when changed - Michael Carpenter
+cfd1cd9:  GraphView: Fix #228, filter loadable logs by file extension in the UI, to avoid users attempting to open the wrong file type - Michael Carpenter
+601ea96:  Toolbar: Fix for port/baud buttons on toolbar not detecting initial settings - Michael Carpenter
+a836939:  Copyright: Fix files to explicitly state copyright - Bill Bonney
+18009f8:  Elevation Widget: Add waypoint Labels - Bill Bonney
+65a404a:  Elevation Widget: Add markers and resolution inidcators - Bill Bonney
+76e7a47:  Elevation Widget: Improve handling of when elevation map needs to be refresh - Bill Bonney
+bdcabe4:  Elevation Widget: Fix not showing error dialog on no internet connection - Bill Bonney
+a5099c5:  Stylesheets: Fix #381, menu items not having mouse-hover backgrounds in outdoor mode - Michael Carpenter
+73a9eef:  Comms: Added some reasonable defaults for invalid serial port baud rates - Michael Carpenter
+48bcaa9:  Comms: Current links are now saved, and restored on start. - Michael Carpenter
+68c8d9e:  Comms: Added functionality to add new links in advanced mode, including TCP Links - Michael Carpenter
+ca149be:  Graphing: Fix #380, Don't try to create the same table twice if a second message format packet is encountered - Matthew Lloyd
+2cb7345:  Mission Elevation Widget: Add Google Elevation data graph - Bill Bonney
+f9805e6:  PFD QML: Fix over sensitive pitch on artificial horizon - Bill Bonney
+4d920fa:  Installer: Addition of Ubuntu Trusty to the build system - Michael Carpenter
+0b03c14:  UI Framwork: Removed DebugConsole, as it is obsolete. - Michael Carpenter
+53d6cd6:  Mission Edit: Add Mission Elevation Display widget - Bill Bonney
+9dd2c01:  Compass Calibration: Fix bad include - Bill Bonney
+f4a39ff:  Mission Edit Widget: Remove Alt color strategy from mission edit widget - Bill Bonney
+a4f757d:  Mission Edit Widget: Fix to layout to show commands better in comboBox - Bill Bonney
+1c1206b:  Mission Edit Widget: Fixes to layout of DO commands - Bill Bonney
+3f4016e:  Mission Edit Widget: Layout fix to Condition Yaw - Bill Bonney
+7802ebd:  Mission Edit Widget: Changes to DO SET HOME layout - Bill Bonney
+ad64480:  Mission Edit Widget: Fix Typo for Do Set Home - Bill Bonney
+216c0eb:  Mission Edit Widget: Add DO_MOUNT_CONTROL command support - Bill Bonney
+c0678cc:  Mission Edit Widget: Fix Take Off command to not show location in Mission Frame mode - Bill Bonney
+3105325:  Mission Edit Widget: entry updates are much more responsive - Bill Bonney
+a1f71ae:  Mission Edit Widget: Add more missing APM mission command definitions - Bill Bonney
+79d30c6:  Mission Edit Widget: Make command Combo box bigger - Bill Bonney
+814024b:  APM ToolBar: rename disconnected to MAV ID before first connection - Bill Bonney
+79278e8:  PX4 Firmware Uploader: Fix status messages to use 'COA' - Bill Bonney
+ffe502e:  Comms: Fixed mavlink message typo, and reenabled MAVLink Inspector - Michael Carpenter
+68928b2:  Installer: Fix #372 icon file not being detected in Windows - Michael Carpenter
+035ecb3:  Installer: Fix #309 Fix #374 for OpenSSL error missing MSVC 2008 runtime - Michael Carpenter
+eab7108:  Comms: Renamed files, enabled mavlink logging, added copyright headers - Michael Carpenter
+6d3cecd:  Comms: Major changes to the serial communications and LinkManager to improve stability - Michael Carpenter
+db234f3:  Full Param Setup: Fix #371, QVariant value type not being used properly when setting and reading param values - Michael Carpenter
+88af779:  Fix loading of ArduCopter dataflash logs - Matthew Lloyd
+a47e750:  Fix typo. - Aaron Curtis
+b6f8259:  Mission Widget: Add CONDITION_YAW command - Bill Bonney
+26bb31a:  Mission Widget: Fix error in adding DO_DIGICAM_CONTROL command - Bill Bonney
+4f21d80:  Mission Widget: Added support for DO_DIGICAM_CONTROL command - Bill Bonney
+b724064:  Mission Widget: Added support for DO_REPEAT_SERVO command - Bill Bonney
+a99d6ef:  Mission Widget: Added support for DO_SET_SERVO command - Bill Bonney
+41dd0c3:  Map Widget: Refactor map action list  generation - Jim Kuhn
+25b9faa:  Compass Setup: Warn users about dangers of Compass Mot Calibration - Bill Bonney
+f14323e:  AutoUpdate: Fixes #367 Added dialog to indicate no update available on manual check - Bill Bonney
+02ae255:  Waypoint Edit Widget: Fix to keep wpEditableViews and wpViewOnlyViews in-sync - nbrachet@gmail.com
+009d794:  Maps: Allow selection of Bing and Google street maps and satellite maps - Stephen Dade
+d6aa366:  Compass Setup: Added confirmation of new value to Compass Mot - Bill Bonney
+99f22df:  Compass Setup: MAVLink Compass Mot added to Compass Setup View - Bill Bonney
+e117f5d:  10X button should be checkable - nbrachet@gmail.com
+73c66dc:  Comms: Fix basic issue with connecting using TCP - Bill Bonney
+338007a:  Tuning Setup: Fixes #358: Throttle parameters not showing in tuning page - Bill Bonney
+ba122b3:  SerialLink: Fix crash when m_port is NULL - Bill Bonney
+3ac3fd9:  OSD Setup: Fix to set channel rates SR1 and SR3 - Bill Bonney
+ce6c631:  PFD QML: Removed horizontal Horizon, due to inaccuracy - Bill Bonney
+ffd1ee7:  PFD QML: Fixed off centre cross hairs - Bill Bonney
+fa81a89:  Graph View: Update to use new valueChanged (QVariant) signal - Bill Bonney
+c983a4d:  QuickView Widget: Update Quick View to use new MAVLinkDecoder interface - Bill Bonney
+ef56f4e:  MAVLink Decoder: Update to new valueChanged (QVariant) signal - Bill Bonney
+36ba5bc:  Comms: Fix for UAS not passing on non-standard SystemID messages to the waypoint manager - Michael Carpenter
+f23c15c:  UI Framework: Removed Unused signal handlers in UASRawStatusView - Michael Carpenter
+7663d2e:  Status View: Fix #342, values not being added to the raw status table - Michael Carpenter
+132a9ab:  Comms: Fix #349, crash involving a null mavlink pointer in UASWaypointManager while replaying logs - Michael Carpenter
+5b0c874:  Firmware Install: Fixed long sataus messages baing partially visible. - Andre Kjellstrup
+e7d470f:  Comms: Fix for #337, Settings for TCP and UDP links set to a minimum port number of 1000 - Stephen Dade
+
+Release Notes - APM Planner 2.0.10 - 2014-05-23
+
+505f760:  Config: Update version to 2.0.10 - Bill Bonney
+e98c38c:  Release Notes: Add commit history for all releases from RC1 to 2.0.9 - Bill Bonney
+fb6e08e:  Radio Setup: Add APM:Plane support for channel reversal and elevons - Bill Bonney
+84bd652:  Full Param Setup: fix incorrect reporting on types other than float - Bill Bonney
+379bfc8:  UAS: Add Auto Tune mode to APM:Plane - Bill Bonney
+f3595ee:  Config: Update sys_id to be 252 to identify AP2 - Bill Bonney
+18ac9a3:  Build: Added extra debug output on start to show APP_PLATFORM and APP_TYPE - Michael Carpenter
+86998a7:  Auto Update: Fix for auto update regex, and extra quotes around APP_PLATFORM - Michael Carpenter
+ae8b6be:  Firmware Install: Change to use internal code for PX4 Firmware Update - Michael Carpenter
+1167f6e:  Graph View: More changes to MODE to show the proper mode at the proper position - Michael Carpenter
+f9af21f:  Updated Arduplane and ArduCopter modes - Andre Kjellstrup
+a3d3ad5:  Separate headings for Throttle Failsafe and Battery Failsafe features - Ed Bartley
+5f31d97:  Replaced BatteryFailSafe CheckBox with a ComboBox to allow DISABLED, LAND, and RTL options. UI updates for clarity. - Ed Bartley
+aa84910:  Map Widget: Set Google Hybrid maps as the default - Bill Bonney
+1938f09:  Map Widget: Fixes #26 Fixes #98: Google Hybrid maps fixed - Stephen Dade
+3ae55a1:  PFD QML: Added basic information overlay - Bill Bonney
+f47234f:  PFD QML: Fix copyright notice - Bill Bonney
+e8bc792:  PFD QML: Add status message warning indicator - Bill Bonney
+64c1dc5:  QML PFD: Make the new QML PFD the default - Bill Bonney
+38eedcd:  PFD QML: Some more polish on the Indicators - Bill Bonney
+2961986:  PFD QML: Fix compass heading (part II) - Bill Bonney
+aa37112:  APM ToolBar: Dim connection controls on disable - Bill Bonney
+f637982:  PFD QML: Make PFD QML an option in Advanced menu - Bill Bonney
+9c6ea99:  PFD QML: Fix Heading on compasss & mislabel - Bill Bonney
+c7e6b09:  PFD QML: Small changes for initial scaling support - Bill Bonney
+16db993:  Graph View: Fix MODE display not showing up properly in mouse-over - Michael Carpenter
+bbbb027:  Full Param Setup: Fix #321, added factory reset button to reset all parameters - Michael Carpenter
+4f86f36:  Param Setup: Fix for #332, arduplane.pdef.xml being deleted when there is no internet connection - Michael Carpenter
+8e4032f:  PFD QML: blend pitch indicator by dropping transparency value - Bill Bonney
+9f83dd9:  PFD QML: Darken compass - Bill Bonney
+db5b734:  PFD QML: Fix Speed/Alt Indicator scaling - Bill Bonney
+2920ce5:  PFD QML: Separate out Pitch Indicator - Bill Bonney
+c60091e:  PFD QML: Add property to control background video - Bill Bonney
+4f048a1:  PFD QML: Added Compass Indicator - Bill Bonney
+7d8513b:  PFD QML: Adjustments to Alt and RollPitch Indicators - Bill Bonney
+03824dd:  PFD QML: Added Speed Indicator - Bill Bonney
+4ca6b6a:  PFD QML: Update crossHair to use chevron and wing level indicator - Bill Bonney
+95c0f05:  PFD QML: Fix to make Roll Graticule rotate - Bill Bonney
+35bdc98:  PFD QML: Added new QML Altitude Indicator - Bill Bonney
+aeedbb6:  PFD QML: Minor improvements to Roll Pitch Indicator - Bill Bonney
+b23d34e:  PFD QML: Adde cross hair using svg image - Bill Bonney
+1b0b1dd:  PFD QML: Add roll indicator using svg image - Bill Bonney
+99dc9ff:  PFD QML: New PFD Roll Pitch Indicator - Bill Bonney
+8205be6:  Linux: Fixed auto-updater not detecting OS correctly - Stephen Dade
+b356c9c:  Comm: Fixed UAS::shutdown() to use proper command params, and added UAS::reboot() - Michael Carpenter
+323a659:  Comm: Documentation fix of source comments - Michael Carpenter
+21eedda:  Add libqt4-sql-sqlite to build deps in Linux install docs - John Leach
+56e9156:  Comms: Fix #319 by increasing timeout on TCPLink connect, patch from @BurtMacklin - Michael Carpenter
+9c2ea9c:  Log Replay: Fix for issue compiling with new LinkInterface API - Michael Carpenter
+9f33244:  Build: Removed requirement for defines to be strings for the update check - Michael Carpenter
+ef90b1b:  Build: Changed debian rules file to include APP_PLATFORM defines for pbuilder - Michael Carpenter
+7fb1ca7:  Graph View: MODE string messages now display for live  data and tlog replay - Michael Carpenter
+1612a12:  Graph View: Fix for UI not refreshing, and added MODE string messages - Michael Carpenter
+ffe169e:  Log replay: Added 10x speed button, and cleaned up unneeded code - Michael Carpenter
+936bdee:  Log Replay: Improvments to the UI, as well as the backend for mavlink handling - Michael Carpenter
+e8fd7da:  Status Bar: Removed hardcoded stylesheet for QGCStatusBar - Michael Carpenter
+dcf3095:  Log Replay: Improved speed and position modifiers as well as cpu usage. - Michael Carpenter
+f6b4722:  Log Replay: Fix for random crash involving not checking array size before accessing - Michael Carpenter
+709854e:  Documentation: Fix #237, brought README.md up to date for building AP2 in windows - Michael Carpenter
+e111af6:  Map Tool Widget: Fix to use new UASInterface API - Bill Bonney
+8827fb1:  HIL Config: Update to use new HIL API in UASInterface. - Bill Bonney
+44cd817:  Configuration: Set the GCS sys is to be 253 to identify logs from AP2 - Bill Bonney
+6198689:  Mission Widget: Update to use AMSL & Relative Alt APIs - Bill Bonney
+d3f21b1:  3DMap Widget: Update to use AMSL & Relative Alt APIs - Bill Bonney
+595c9be:  Map Widget: Update to use new AMSL & Relative Alt APIs - Bill Bonney
+36ad1ab:  UAS: Update PxQuad to new UASInterface API - Bill Bonney
+6dd36a9:  PFD Widget: Updates to new UASInterface API - Bill Bonney
+eafa630:  UAS: Updated the UASInterface API to align more with QGC. - Bill Bonney
+63af71d:  QGC Log Player: Update to use new LinkInterface API - Bill Bonney
+5b15f1a:  APMToolBar: Update to use new getConnectionSpeed() API - Bill Bonney
+b4385e1:  BUILD: Add new dependency on QSignalSpy in TCPLink - Bill Bonney
+24e6292:  COMMS: Update link objects to use new LinkInterface definition - Bill Bonney
+9c3c9f4:  Windows: Fixed Windows compilation error caused by #322 - Michael Carpenter
+095ff1e:  Linux: fixed compilation errors in Ubuntu 14.04 - Stephen Dade
+4ed97bf:  Basic Tuning: Add RC Feel as a slider to adjust. - Bill Bonney
+e3cdd1b:  Version: Push manifest to trigger update to clients. - Bill Bonney
+
+Release Notes - APM Planner 2.0.9 - 2014-04-25
+
+2134e52:  Release: Update to new 2.0.9 - Bill Bonney
+81f193a:  BasicPID View: reorders layout - Bill Bonney
+d6a2308:  Firmware Update: Fixes not being in advanced mode when selected - Bill Bonney
+2da0d7f:  Small fixes for log loading to work more smoothly with connection/disconnections - Michael Carpenter
+eb583d5:  Cleaner closing out of TLogReplayLink, and change to properly hide connect dialog - Michael Carpenter
+132761d:  Fix for TerminalConsole show/hide of connect widget - Michael Carpenter
+427d26a:  Change to allow enable/disable of connect widget to be overridden - Michael Carpenter
+8d2289c:  Changed TLog loading so the toolbar stays hidden if the user doesn't select a file to load - Michael Carpenter
+a486a0c:  Fix for crash after removing a UAS, then re-adding it, caused the FlightModeConfig screen to get in a bad signal state - Michael Carpenter
+9445b9b:  Changed UASManager function to properly delete UASInterface* objects when requested, and fixed issue where the UASListWidget wasn't actually removing a UAS when it is deleted - Michael Carpenter
+d663a30:  Addition of throwAwayGCSPackets which causes the MAVLink protocol parser to ignore any packets with the 255 GCS system ID - Michael Carpenter
+c378c5d:  Removed XBee dependancy since it is currently unused - Michael Carpenter
+47c263d:  Renamed a typo in TLogReplayLink, and changed so it now hides the connect button when replaying a log - Michael Carpenter
+b5f92db:  Added play/pause to datalog reply, and sped up some things - Michael Carpenter
+7ec0f7e:  Addition of tlog replaying capabilities - Michael Carpenter
+9409bb6:  MAVLink: removed accidentally added member variable - Bill Bonney
+0a73688:  Terminal View: Fixes Terminal to not show the MAVLink connect button - Bill Bonney
+a365db8:  MAVLink: Fixes #310 tlogs to be compatible with MP/MAVProxy - Bill Bonney
+141cfd4:  Advanced Param List: Fixes #153 Add ranges/defaults for params to view - Bill Bonney
+5bf10b2:  Linux Packaging: better compatibility with .deb standard - Stephen Dade
+7a4c939:  Linux: Changed busy-serial-port error message to reference modemmanager - Stephen Dade
+994112a:  Configuration: Allow custom data rates - Bill Bonney
+2a16c8a:  Removed a commenting out that accidently got commited - Michael Carpenter
+dcc3f16:  Fix #283, accel calibration getting stuck/out of sync - Michael Carpenter
+ba51ae7:  Fixes #297: Advanced mode not being set correctly on startup - Bill Bonney
+53864c1:  MAVLink: Updated to new headers (see https://github.com/diydrones/ardupilot/commit/a682f652d0a6aec36f5b9aed328d11e980336eb7) - Bill Bonney
+a35c0a3:  Fix #299: fix compile error in TRACE debug mode - nbrachet@gmail.com
+2697cdb:  Re-fix setting Advanced Mode flag after refactor - Bill Bonney
+d335536:  Fixes #183: Scrollbar not shown on Camera Gimbal Setup View - Bill Bonney
+5aaa237:  Added checks to ensure alsa_open returns a valid object, Fix #282 - Michael Carpenter
+0b0c6b0:  Clarification of firmware install warning, fix #253 - Michael Carpenter
+a44a80c:  Fix for https://github.com/diydrones/apm_planner/issues/291 - Nick Brachet
+9190d94:  Addition of "CopyToClipboard" button in Debugoutput window - Michael Carpenter
+68c3321:  Linux will now open the folder where the auto-update file has been downloaded to allow for user installation - Michael Carpenter
+a305e84:  Graph: Added 'c', 'C' to floats, scan as doubles, more resiliency against funky logs. - Roland Bosa
+44659b9:  Fix for type code 'e'/'E': now parsed as float. - Roland Bosa
+09ed905:  Info view: Removes Connection Button from messages widget - Bill Bonney
+7de19ac:  Fixes Param Download Bar not updating every time on refresh - Bill Bonney
+ec9097a:  Fixed #272: Zero values not loaded. - Bill Bonney
+e98fc42:  Config/Tuning View: Fixes crash from NULL pointer exception - Bill Bonney
+ed0250d:  Fixes Advanced Mode Menu Item not being checked on startup - Bill Bonney
+386bc8b:  APM Toolbar: Only show Terminal View in Advanced Mode - Bill Bonney
+8193631:  Fix #285: Allow cut and paste in the Terminal View - Bill Bonney
+773f700:  Fixes Camera View group boxes not being enabled when assigned. - Bill Bonney
+03066cf:  Added new RC_FUNCTION definitions - Bill Bonney
+7923970:  Fix 'reverse' checkbox not working as expected in Camera Gimbal  View - Bill Bonney
+3b96403:  Fix Waypoint file version to be same as Mission Planner. - Bill Bonney
+994ee81:  Add searching to Advanced and Standard Param Views - Bill Bonney
+b696d2c:  Use the current time, if time is set to 1970 i.e. invalid - Bill Bonney
+09cd3c5:  Change to support new linux installer naming scheme - Michael Carpenter
+30b3cd4:  Update to JSON version object - Bill Bonney
+3862dc5:  Fix typo - Travis Pinney
+2798684:  Graph: data source can now be toggle with keyboard too. - Roland Bosa
+a7fc4ef:  Linux: Fixed typo in menu shortcut location - Stephen Dade
+7342ec3:  Update version object to 2.0.8 - Bill Bonney
+cdfa55e:  Update to version 2.0.8 - Bill Bonney
+3e12e74:  Disable Download Button when not connected - Bill Bonney
+3ad3ab3:  Fix missing reset of m_lastDownloadOffset - Bill Bonney
+1202fca:  Rename to Download Log(s) - Bill Bonney
+da0ee85:  Remove MessageBox warning for write incomplete - Bill Bonney
+d537fd7:  Performance Improvements - Bill Bonney
+229efc6:  Add Erase All Logs feature - Bill Bonney
+7b77545:  Final Fixes to Log Download over MAVLink - Bill Bonney
+0a6850b:  Added Cancel and Background downloading options - Bill Bonney
+aef5d59:  Extra logging for Log Download - Bill Bonney
+1d4ac25:  Final fixes for MAVLink Log Download - Bill Bonney
+22904a3:  Integrate MAVLink Log Download Dialog into Graph View - Bill Bonney
+756b802:  Add MAVLink Log Download Dialog - Bill Bonney
+89a83a7:  Interface added to UAS object to download logs over MAVLink - Bill Bonney
+a24bee6:  Fixed typo, adding help on checking Qt - Bill Bonney
+
+Release Notes - APM Planner 2.0.8 2014-03-28
+
+7342ec3:  Update version object to 2.0.8 - Bill Bonney
+cdfa55e:  Update to version 2.0.8 - Bill Bonney
+3e12e74:  Disable Download Button when not connected - Bill Bonney
+3ad3ab3:  Fix missing reset of m_lastDownloadOffset - Bill Bonney
+1202fca:  Rename to Download Log(s) - Bill Bonney
+da0ee85:  Remove MessageBox warning for write incomplete - Bill Bonney
+d537fd7:  Performance Improvements - Bill Bonney
+229efc6:  Add Erase All Logs feature - Bill Bonney
+7b77545:  Final Fixes to Log Download over MAVLink - Bill Bonney
+0a6850b:  Added Cancel and Background downloading options - Bill Bonney
+aef5d59:  Extra logging for Log Download - Bill Bonney
+1d4ac25:  Final fixes for MAVLink Log Download - Bill Bonney
+22904a3:  Integrate MAVLink Log Download Dialog into Graph View - Bill Bonney
+756b802:  Add MAVLink Log Download Dialog - Bill Bonney
+89a83a7:  Interface added to UAS object to download logs over MAVLink - Bill Bonney
+a24bee6:  Fixed typo, adding help on checking Qt - Bill Bonney
+936dac1:  Changed qDebug statements to use QsLog in AP2DataPlotThread, and removed unused code - Michael Carpenter
+9558992:  Commit of linux uploader script for uploading auto-built binaries - Michael Carpenter
+42450cf:  Added checks in SerialLink after every sleep to exit out if a disconnect is requested - Michael Carpenter
+294ca7c:  Changes to allow for loading of .bin binary log files - Michael Carpenter
+d28be19:  Fix for crash when disconnecting from serial port - Michael Carpenter
+f96be16:  Cleaned up and fixed dangling pointer if the SerialLink thread ended, and the port wasn't open - Michael Carpenter
+d9ae571:  Added code to cleanly close out serial port when thread is done - Michael Carpenter
+680e33b:  Change so windows uploader script renames the file properly - Michael Carpenter
+e17d458:  Fix for #230, mouseover tooltip values were 0 from all but the first graph - Michael Carpenter
+c246f04:  Support for automatic parameter list downloading for common frame types added - Bill Bonney
+f438ff5:  Fix potential reference to a hanging pointer - Bill Bonney
+66e46c5:  Change in windows installer generation script to remove hardcoded filepaths - Michael Carpenter
+c6d2f41:  Windows installer build script - Michael Carpenter
+9ebfdf7:  Added warning when loading logs with invalid or corrupt lines, but allow the load to continue - Michael Carpenter
+80c7f53:  Fixed failure to set pointer to NUL causing crash on disconnect from the serial port when using a UDP connection. - Bill Bonney
+8c72834:  Update build scripts to label builds with version numbers of our releases. This will allow easy rollback for users to an older build as they can be more easily identified. - Bill Bonney
+93d59bb:  Added new modes to mode display. - Bill Bonney
+e804ed5:  Added RSI/REMRSSI Radio Message - Bill Bonney
+65ed91b:  Added new param files to download list - Bill Bonney
+d3306e0:  Identify the vehicle ID for multiple MAV support - Bill Bonney
+1787047:  Additional debug output in ArduinoFlash and reduction in time we wait for the bootloader to start - Michael Carpenter
+aea57b3:  Code cleanup and fixing for timeout based terminal detection - Michael Carpenter
+ba86153:  Allows for enabling different serial thread methods with an #ifdef - Michael Carpenter
+2561b85:  Added reset timer to reboot device if it is in terminal mode and not responding - Michael Carpenter
+15ea691:  Changed SerialLink to operate in the UI thread - Michael Carpenter
+22ac477:  Addition of pixhawk/px4 reset timer for resetting when the device gets stuck in terminal mode on conection - Michael Carpenter
+d65e178:  Added extra build dependencies for Linux branch in readme.md - stephendade
+6ab28cb:  Linux: Autobuild now working via pbuilder - Stephen Dade
+b287650:  Linux: Added extra search paths for support files - Stephen Dade
+7441249:  Fix issue #245 - Jairo Sanchez
+5bc88a7:  Fixes #265: Cruise and Acro not supported for APM:Plane - Bill Bonney
+
+Release Notes - APM Planner 2.0.7 2014-03-10
+
+1ae78c2:  Update version object to 2.0.7 - Bill Bonney
+ff56cb1:  Update version to 2.0.7 - Bill Bonney
+eb50748:  Disabled windows checking for serial cable disconnect, until it can be properly diagnosed and fixed - Michael Carpenter
+587e179:  Negated if statement for proper operation - Michael Carpenter
+48d9d5a:  Change so baud rate is now set on all devices except PX4/Pixhawk. Baud rate was disabled previously to prevent lockups on PX4/Pixhawk - Michael Carpenter
+f7f42b4:  Removed AVRDUDE from the install instructions - Bill Bonney
+
+Release Notes - APM Planner 2.0.6 2014-03-7
+
+4cb30f0:  Removed redirection support and only notify of object download issue when in debug mode. - Bill Bonney
+c3e49f3:  Final touches to AutoUpdate for OSX Now it will open the disk image - Bill Bonney
+5ab7f81:  updated version object with new fields - Bill Bonney
+9fe4a66:  Added notification link to open the DMG to copy the app across - Bill Bonney
+e52105c:  Added Log to KML button to Graph View - Bill Bonney
+c9f18e7:  Added feature to mount disk image on OSX - Bill Bonney
+651bac7:  Added new 'name' parameter to JSON object - Bill Bonney
+db92111:  AutoUpdate - Part 2 - Dialog to ask use for action - Bill Bonney
+d5e69f6:  AutoUpdate Feature - Part 1 - Remote Version Checking - Bill Bonney
+ade40ff:  Update to version 2.0.6 - Bill Bonney
+803723f:  Fix Plane and Rover to reflect they do not have a Basic Tuning view - Bill Bonney
+1a5bf16:  Hide Advanced Param and Extended Tuning views ... unless in Advanced Mode - Bill Bonney
+a39c53a:  Rename APM PIDs Config View as Extended Tuning - Bill Bonney
+0a7e520:  Reorder Tuning Option Orders - Bill Bonney
+a9ffdab:  Fixed missing refactor of Flight Mode detection - Bill Bonney
+86a6aea:  Fix for type issue preventing compiling in linux - Michael Carpenter
+484a313:  Fix for non working mouse interface for AP2DataPlot - Michael Carpenter
+67c659d:  Change for less CPU usage and ram usage - Michael Carpenter
+b59e8f4:  Proper using of in-memory sqlite database, and faster loading of datalogs - Michael Carpenter
+67931ca:  New SQLite database backend for graph data - Michael Carpenter
+f9e30fe:  Added Progress Bar to flight mode updates - Bill Bonney
+03d81ba:  Fixes Radio Calibration Dialogs to be centred - Bill Bonney
+e3d1de3:  Fixes Compass Calibration Progress Dialog to be centered in mainwindow - Bill Bonney
+79fcd82:  Fix layout for scroll view in Frame Type Config view - Bill Bonney
+f7673c0:  Addition of extra error checking in APM firmware uploading, and properly handling the errors - Michael Carpenter
+4e263f5:  Add a dark background to FW Buttons for a better look - Bill Bonney
+c9e662a:  Finish simple implementation of alsa_audio driver  * alsa driver running in own QThread  * driver can queue audio messages  * flite created audio files will stored in ~/apmplanner2/tmp_audio  * skipping flite if audiofile exist - wolkstein
+8ecd4ce:  initial commit in new branch alsa_audio. this branch hold all changes to use alsa-audio instead phonon-audio for linux based plattforms. - wolkstein
+3c33712:  Fixes #239: Missed file for commit f8eab2987c (oops friday afternoon!) - Bill Bonney
+f8eab29:  Fixes #239: Advanced Parameter Compare gives false result. - Bill Bonney
+1321a74:  Improvements to Battery Monitor Setup - part 2 reworked the data model ready for adding the ability to read presets from a file - Bill Bonney
+ddb75c8:  Addition of "cancel" handling to APM firmware uploading, and small code cleanup in ApmFirmwareConfig - Michael Carpenter
+1de91a9:  Fix for .pro file which had files that no longer existed - Michael Carpenter
+e11b24f:  Change to use a custom class for APM2.5 firmware uploading rather than Avrdude - Michael Carpenter
+c00f68d:  Fix for #224, not unloading previous log data causing issues with new logs being loaded - Michael Carpenter
+b650c44:  Fix for #223, where the graph scale control did not clear out entries upon loading a new graph - Michael Carpenter
+c78c96d:  Implementation of Battery Monitor Presets for easier configuration - part 1 - Bill Bonney
+80b5533:  Update to CCS to improve outdoor LAF - Bill Bonney
+e83e804:  Fixes warning message about unused functions due to wring use of the word static - Bill Bonney
+b5133d9:  Fixes #219: Tlog directory settings not being saved over restarts - Bill Bonney
+9d5e352:  Adjusted Battery Monitor Config to reflect Mission Planners layout - Bill Bonney
+5a68e8e:  Update Install Instructions - Bill Bonney
+cf07f02:  Fixes issue with FileDialogs not disappearing when expected - Bill Bonney
+bb9adff:  Fixes #234: Filedialog not disapearing when loading log file - Bill Bonney
+4d24b4e:  Linux: Forced usage of libudev for serial ports. Also minor build fixes - Stephen Dade
+4065b6c:  Terminal Console: Added error message if device is busy under Linux - Stephen Dade
+791c73e:  Fix crash when Version Parse failed with zero elements - Bill Bonney
+54bb2ac:  Fix issue where we sent the wrong command to set factory default - Bill Bonney
+4a0ee7f:  Add Hardware Flow Control setting to 3DR Radio Config View - Bill Bonney
+e63fabd:  Fixes defect where MAVProxy mission would crash waypoint loading - Bill Bonney
+cf295d3:  Cleanup commented out code - Bill Bonney
+45e87a6:  Moved the resources subfolder to be outside the project folder - Bill Bonney
+a5b028b:  Files required to create an APM Planner Installer package - Bill Bonney
+b6bdbb4:  Changes to allow for cleaner connection of COM port in windows - Michael Carpenter
+3700c3a:  QSerialPort no longer attempts to save settings on closing the port, which was causing lockups in windows - Michael Carpenter
+22ab35e:  Change so QMessageBox on serial comm errors doesn't lock up the UI to show itself - Michael Carpenter
+
+Release Notes - APM Planner 2.0.0 RC5 2014-02-20
+
+5332d8a:  Updated to Release Candidate 5 - Bill Bonney
+f7cd8c9:  Fix to align Load Parameters button in Frames Types View - Bill Bonney
+d3e01ef:  Fixes #219: Fixes problem with directory settings not being remembered across restarts - Bill Bonney
+d8d5dbe:  Changes in how SerialLink handles disconnects, to improve reliability - Michael Carpenter
+1147b1c:  Addition of missing files to windows installer script, to properly uninstall, and download for OpenSSL - Michael Carpenter
+777d498:  Fix for #220, changed AP2DataPlot axis and mouseover to match actual log lines, instead of data line count - Michael Carpenter
+69f2096:  Commit of APM/Pixhawk drivers, as well as OpenSSL installer downloader in the NSIS installer package - Michael Carpenter
+a4ce5f7:  Fix for application log files getting corrupt once a full cycle of files exists - Michael Carpenter
+3290c90:  Code and comment cleanup - Michael Carpenter
+
+Release Notes - APM Planner 2.0.0 RC4 2014-02-19
+
+2404e92:  Update to RC4 - Bill Bonney
+b8941b2:  Remove Firmware Option Buttons unless advanced mode selected - Bill Bonney
+4d19854:  Add Frame Parameter Loading to Frame Type View Remove Load Parameter View - Bill Bonney
+6fb6715:  Change so on connection, parameter widgets are loaded in a timer, to prevent the UI from locking up when loading standard and advanced parameter pages. Also a fix for #216, where params weren't being updated if they were created after the initial fetch of parameters - Michael Carpenter
+fe666b5:  Addition of more debug output in the SerialLink - Michael Carpenter
+15e981c:  Addition of new Airspeed pin configuration interface, including new sensor types - Michael Carpenter
+937e167:  Fixes #212: Incorrect Frame Type Classification - Bill Bonney
+9eb27a9:  Add in a missing stdint.h include - John Leach
+706638e:  widen firmware version labels to fix cutoff text - Daniel Bradby
+b66840f:  COPTER: add 'Hybrid Loiter' (14) in Flight Mode list - scenkov
+b7a47a8:  fix 'qmake-qt4 qgroundcontrol.pro' error '/QGCSetup.pri:217: Unescaped backslashes are deprecated.' - scenkov
+400f45a:  Added libudev-dev package to install instructions - John Leach
+fe19fc6:  Suggest qmake command in README - John Leach
+0257f20:  Added libqt4-opengl-dev to install instructions - John Leach
+a03fba8:  Changes to TCP interface to remove const'ness for now. - Bill Bonney
+28fdc33:  Final TCP link support - Don Gagne
+4d67fa8:  Initial TCP support - Don Gagne
+0fc71c6:  Fixes #195: Tooltips not showing on the Linux build - Bill Bonney
+e232e62:  Fixed #191: TUNE_LOW parameter being set incorrectly - Bill Bonney
+474200d:  Fixes #185: Crash when clicking "<" of ">" in Full Parameter List - Bill Bonney
+c6bb2e4:  Fixes #188: Continue box appears as a 'green square' instead of X - Bill Bonney
+4ed5a18:  Fix for a typo causing #187, frame type not being set in the UI properly on startup - Michael Carpenter
+b505aba:  Removed debug that would cause the debugoutput to crash, and added a wait timer on closing serial link to ensure it actually closes. - Michael Carpenter
+ff0d006:  Change to avoid QSerialPort reading a invalid DCB structure from the serial driver - Michael Carpenter
+bae2d75:  Added new 3DR RTF default params to list - Bill Bonney
+2fe40bc:  Fixes #179: Check for new firmware versions and notifies the user. Currently only checks stable releases, but if you install a beta release it will notify when a beta is release is finalized. ie. V3.1.1-rc7 to V3.1.1 stable. A user can skip a release, by selecting ignore. - Bill Bonney
+ef25115:  Remove the PIDs part from Basic Tuning view - Bill Bonney
+f2e6012:  Removed Extra Download Params Progress Bar - Bill Bonney
+d546387:  Fix #167: Incorrect comparison leading to params appearing not written in UI - Bill Bonney
+8894a0d:  Fix for #164, Full Parameter List was unreadable in indoor mode, changed alternate color to be better suited for readability - Michael Carpenter
+4c7ad73:  Fix for #146, Radio Calibration widgets not following the style for font color - Michael Carpenter
+c7243cd:  Addition of enhancement request #150, making graphed integer values display the axis as integers - Michael Carpenter
+792f39c:  Change to decrease probability of APMToolBar getting out of sync with SerialLink connect/disconnect status - Michael Carpenter
+c9060d5:  Fix for #177, where WP0 was being removed, which it should not for APM since WP0 is home - Michael Carpenter
+a8174e9:  Fixes #166: Reword copter basic PID screen - Bill Bonney
+df4d8ef:  Update to RC3 - Bill Bonney
+0127cf6:  Fix for issue #175, where new compass offsets were being calculated before receiving the old offsets from the UAS, to cancel them out - Michael Carpenter
+23e3641:  Fixes #170: Build instructions for OSX - Bill Bonney
+0489c1b:  Fix for #166, updating the screen to the new look - Michael Carpenter
+797e05a:  Fix for ParamWidget so it operates properly when actuated with the mouse - Michael Carpenter
+6646865:  Fix for crash involving sending the wrong graph name to the remove function, and added some update functionality to keep the Graph Control window in-sync. - Michael Carpenter
+
+Release Notes - APM Planner 2.0.0 RC3 2014-01-28
+
+df4d8ef:  Update to RC3 - Bill Bonney
+0127cf6:  Fix for issue #175, where new compass offsets were being calculated before receiving the old offsets from the UAS, to cancel them out - Michael Carpenter
+23e3641:  Fixes #170: Build instructions for OSX - Bill Bonney
+0489c1b:  Fix for #166, updating the screen to the new look - Michael Carpenter
+797e05a:  Fix for ParamWidget so it operates properly when actuated with the mouse - Michael Carpenter
+6646865:  Fix for crash involving sending the wrong graph name to the remove function, and added some update functionality to keep the Graph Control window in-sync. - Michael Carpenter
+48ab66f:  Fix YAW2SRV Parameters in Plane PIDs view - Bill Bonney
+579f433:  Update Load Param in Initial Config to show blank background - Bill Bonney
+36760d1:  Dataflash logs saved with DateTime when supported by APM - Bill Bonney
+4d0a08c:  Fix layout issues with the Log Download Widget - Bill Bonney
+ffb37c8:  Fixes #165: APM:Plane PIDs not read correctly Fixes some minor layout issues - Bill Bonney
+34e4a67:  Changes to fix manual axis control for AP2DataPlot, and tidying up the UI - Michael Carpenter
+783666e:  Updates Compass Config Orientation UI to be easier to use - Bill Bonney
+e85ef8e:  Change 'continue' to 'write param' when load parameters in Initial Setup - Bill Bonney
+c1aa340:  Support for APM:Plane 2.77 Arming Support - Bill Bonney
+b0d9f44:  Updated README with better Linux instructions and moved to .md. - Sunil Shah
+f0b3e02:  Fix for crash involving trying to set range on a graph that had been removed - Michael Carpenter
+1707123:  Fixed AP2DataPlot mouse-over issues, and changed text to display in a tooltip - Michael Carpenter
+6807b0a:  Initial commit of mouse-over graph numbers for AP2DataPlot - Michael Carpenter
+1b84c52:  Fix for issue #157, allowing APM2 to upload firmware via FTDI, for older APM devices - Michael Carpenter
+a364a2c:  Fix in Widnows daily upload script, to only send installer updates to the current daily day folder. - Michael Carpenter
+cc59aab:  Fix to reduce redundant logging - Bill Bonney
+c9eb045:  New Y6 motor config added and Frame Type selection rework - Bill Bonney
+0c1e994:  Update to support showing the compare dialog always on download. - Bill Bonney
+67aad49:  Reduces the number of warnings by fixing file encoding - Bill Bonney
+86fd1ab:  Fixes Map writing 0.0f,0.0f into Lat/Lon saved settings Fixes Map Tool Bar 'Last Pos' button to go to last saved coords from an activeUAS - Bill Bonney
+dbb8c71:  Fixes #82: Updated to MAVLink 1.0 version dated DEC 15th 2013 - Bill Bonney
+8500101:  Fix #155: MapWidget causing a crash when adding a WaypointItem - Bill Bonney
+455861d:  Fixes QsLog shown as not being found in QtC IDE - Bill Bonney
+e90c1c5:  Fixes #154: Map Widget will now start at last known location and zoom level - Bill Bonney
+6e53c3d:  Added more parameter files to the list from Github Now it includes: Iris, Beginner, Intermediate, Advanced & CameraPlatform - Bill Bonney
+a2c8035:  Fixes #152: Adds Full Text Search to Full Parameter List - Bill Bonney
+c2f994b:  Fix spelling mistake in log - Bill Bonney
+ff57928:  Fixes problem with 3DR Radio reset not working - Bill Bonney
+824ccd3:  Saves Map Type in preferences And highlight the selected type on startup - Bill Bonney
+1cb3a7f:  Fix #148: QML not loading on OSX - Bill Bonney
+86ccfa4:  Changed the way APMPlanner2 handles looking for support files to be more flexible - Stephen Dade
+3b8ada9:  Fix for min/max display in Axis Change Dialog so they update properly, and some comment cleanup - Michael Carpenter
+dd9c068:  Change so JIT debugger is unselected by default for windows installer - Michael Carpenter
+6637a10:  Fix for issue causing the start values of each graph to be invalid and some comment cleanup - Michael Carpenter
+5c4149d:  Refactoring of AP2DataPlot, to make the code much cleaner - Michael Carpenter
+391d1a9:  Graphs now have a manual mode, for setting a specific min/max, rather than auto-scaling - Michael Carpenter
+d570543:  Fix for bad file locations - Michael Carpenter
+997b507:  Changes to include drmingw JIT debugger for assisting with debugging potential crashes - Michael Carpenter
+3bf8378:  Fix #141 for a waypoint being set to 500m as default. This is now a default of 25m - Bill Bonney
+8b8cc19:  Fixes #126: APM:Rover PIDs view not showing L1NAV Period and Dampening controls - Bill Bonney
+9c523fe:  Stop warning about ignored MAVLink messages in release builds - Bill Bonney
+d5594dc:  Disabled XBee for Linux builds, until we get auto-building of the XBee library working - Michael Carpenter
+e6b7a12:  Fix: remove fixed zoom setting - Bill Bonney
+3008985:  Fix Typo in comment - Bill Bonney
+bfbd10a:  Added Fix Type to GPS Overlay on MapWidget - Bill Bonney
+e18a6e0:  Fixes #118: Follow Vehicle now off by default This feature now disables follow feature by default Also if enabled, will not follow until a valid GPS Location is returned. Also renamed 'Follow Vehicle' as 'Centre on UAV' - Bill Bonney
+733c176:  Adjustments to InfoView to improve sizing - Bill Bonney
+e8c3b7c:  Fixes #117: Missing labels in Failsafe view - Bill Bonney
+c365aa2:  Update App Info for OSX - Bill Bonney
+58c608d:  Update to OSX build scripts - Bill Bonney
+a28502f:  Change so AP2DataPlot UI updates faster, since it doesn't force replots - Michael Carpenter
+554a4d4:  Fix for #119, failsafe outputs not being displayed due to the wrong signal being connected to the UASInterface - Michael Carpenter
+d434aba:  Update configuration to RC2 - Bill Bonney
+
+Release Notes - APM Planner 2.0.0 RC2 2014-01-10
+
+e6b7a12:  Fix: remove fixed zoom setting - Bill Bonney
+3008985:  Fix Typo in comment - Bill Bonney
+bfbd10a:  Added Fix Type to GPS Overlay on MapWidget - Bill Bonney
+e18a6e0:  Fixes #118: Follow Vehicle now off by default This feature now disables follow feature by default Also if enabled, will not follow until a valid GPS Location is returned. Also renamed 'Follow Vehicle' as 'Centre on UAV' - Bill Bonney
+733c176:  Adjustments to InfoView to improve sizing - Bill Bonney
+e8c3b7c:  Fixes #117: Missing labels in Failsafe view - Bill Bonney
+c365aa2:  Update App Info for OSX - Bill Bonney
+58c608d:  Update to OSX build scripts - Bill Bonney
+a28502f:  Change so AP2DataPlot UI updates faster, since it doesn't force replots - Michael Carpenter
+554a4d4:  Fix for #119, failsafe outputs not being displayed due to the wrong signal being connected to the UASInterface - Michael Carpenter
+d434aba:  Update configuration to RC2 - Bill Bonney
+53fc07c:  Fix to mark WP0 as NAV: HOME for APM - Bill Bonney
+3b60ce6:  Disable scroll wheel changes in mission editing - Bill Bonney
+4673a34:  Fixes #114: H Frame radio button not highlighted on startup - Bill Bonney
+42f28d5:  Change so graph grouping box shows properly now with a button, and the table view when loading an offline log file allows you to filter by message type with "Show only this" - Michael Carpenter
+8685b8e:  Disabling XBee control for cross platform builds, and enabling SDL and zlib properly - Michael Carpenter
+540a255:  Update About Box (credits and info) - Bill Bonney
+b6b4c55:  Marked 'Native Theme', as experimental - Bill Bonney
+df26170:  Added 'Load From File' button as helper on initial setup. You no longer need to download a param file on initial setup but can apply one you have saved previously - Bill Bonney
+b87ea96:  Added Parameter Summary Display The first few lines of any parameter file marked with a '#' comment symbols will be shown as a summary for the user to accept or decline. - Bill Bonney
+f11e1ea:  Fixed README to say Qt4.8.x as the build requirement - Bill Bonney
+9d8a859:  Added macx-g++ target for autobuild system - Bill Bonney
+0614270:  Fix for wrong SDL library linked in cross platform windows build - Michael Carpenter
+76fa8b7:  Change so plot removes data after 30 minutes, and time values are shown as time since graphing started - Michael Carpenter
+e79efe2:  Fixes for cross platform builds - Michael Carpenter
+6207fce:  Cleaned up build files (inline with QGC changes 34c2c3d980) see https://github.com/mavlink/qgroundcontrol/commit/34c2c3d9801d0b811835e4d47197b84b4245a282 - Bill Bonney
+abc6636:  Fixed QGCMapTool to only update overlay on new messages - Bill Bonney
+a938d54:  Added GPS RAW Message - Bill Bonney
+e2efdc6:  Fixes issue #108: Not able to download logs from PixHawk - Bill Bonney
+a5df3b6:  Change to reduce CPU Usage by 10% in foreground - Bill Bonney
+ec35e30:  Fix bad define, that led to an incorrect fix to apmserialport.pri on linux - Bill Bonney
+e6c7197:  Re-enabled and fixed AP2DataPlot axis grouping so it works properly now. - Michael Carpenter
+7f76134:  Linux: Firmware uploading now works. Minor build directory fixes too - stephendade
+05fe849:  Fix for script rsyncing from the wrong place - Michael Carpenter
+bd3f8dc:  Changes to the windows upload script file to rsync directly to firmware.diydrones.com - Michael Carpenter
+14c045c:  Fix #96 so Linux users will pick up avrdude in usr/bin install avrdude using 'sudo apt-get install avrdude' - Bill Bonney
+947cdec:  Fixed Rover PID layout - Bill Bonney
+2ff4d73:  Update APM:Plane PIDs to reflect the new TECS system - Bill Bonney
+cde7392:  qmake install now working under Linux - stephendade
+2999f16:  Update to About Box link - Bill Bonney
+c757a6a:  Visual adjustment of PreArm check message - Bill Bonney
+6611b00:  Fix #95 When Loading Params AdvParamterList does not show changes. - Bill Bonney
+112e77e:  Update version to V2.0.0 (RC1) - Bill Bonney
+b58aca4:  Disable the Simulation view until its tested and works as expected - Bill Bonney
+3134598:  Make the CommsConfig view a ontop modal dialog - Bill Bonney
+4a2e220:  Initialize variables to zero - Bill Bonney
+a3a7a94:  Change so a popup lets the user know when parameters have been loaded via Load Parameter button - Michael Carpenter
+4bd963f:  Addition of message in PFD showing PreArm failures when tryign to arm MAV - Michael Carpenter
+
+see http://github.com/diydrones/apm_planner for a full list of the commits before 2013-12-26
+

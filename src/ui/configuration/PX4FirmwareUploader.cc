@@ -5,6 +5,7 @@
 #include <openssl/x509.h>
 #endif //Q_OS_WIN
 #include <QProcess>
+#include <QApplication>
 
 #include <QCryptographicHash>
 #include <QDateTime>
@@ -247,95 +248,6 @@ void PX4FirmwareUploader::run()
         msleep(10);
     }
     emit devicePlugDetected();
-#ifdef Q_OS_WIN
-    //Windows stuff is all QProcess based for px4uploader
-    tempJsonFile->setAutoRemove(false);
-    QString filename = tempJsonFile->fileName();
-    delete tempJsonFile;
-    tempJsonFile = 0;
-    QProcess *proc = new QProcess(this);
-
-    //Set the working directory to the temp directory, should be universally writable.
-    proc->setWorkingDirectory(tempFile->fileName().mid(0,tempFile->fileName().lastIndexOf("/")));
-    proc->start("uploader\\px4uploader.exe",QStringList() << filename.replace("/","\\"));
-    emit statusUpdate("Loading file: " + filename);
-    proc->waitForStarted(2000);
-    int total = 0;
-    int show = 0;
-    bool finished = false;
-    while ((proc->state() == QProcess::Running) || !finished)
-    {
-        proc->waitForReadyRead(1);
-        QString bytes = proc->readLine();
-        if (bytes.contains("Trying Port"))
-        {
-            emit statusUpdate("Attempting to find COM port...");
-        }
-        else if (bytes.contains("Valid Key"))
-        {
-            emit statusUpdate("OTP Verified");
-        }
-        else if (bytes.contains("erase"))
-        {
-            emit statusUpdate("Erasing...");
-        }
-        else if (bytes.contains("Program"))
-        {
-            show++;
-            if (!(show % 100))
-            {
-                emit statusUpdate("Programming...");
-                QStringList numsplit = bytes.mid(bytes.indexOf(" ")).split("/");
-                if (numsplit.size() > 1)
-                {
-                    emit flashProgress(numsplit[0].toInt(),numsplit[1].toInt());
-                }
-            }
-        }
-        else if (bytes.contains("Same Firmware. Not uploading"))
-        {
-            emit statusUpdate("No need to update, identical firmware already loaded");
-            proc->kill();
-            return;
-        }
-        else if (bytes.contains("Programming packet total:"))
-        {
-            QString totalstr = bytes.mid(bytes.indexOf("Programming packet total:")+25,bytes.indexOf("\n",bytes.indexOf("Programming packet total:")+25));
-            bool ok = false;
-            total = totalstr.toInt(&ok);
-            if (!ok)
-            {
-                total = 0;
-            }
-
-        }
-        else if (bytes.contains("done, rebooting") || bytes.contains("Press Any Key"))
-        {
-            //Finished
-            proc->write("\r");
-            proc->write("\n");
-            proc->waitForBytesWritten();
-            finished = true;
-        }
-        else if (bytes != "")
-        {
-            emit debugUpdate(bytes);
-        }
-    }
-    emit debugUpdate(proc->readAllStandardError());
-    if (finished)
-    {
-        emit statusUpdate("Process Success");
-    }
-    else
-    {
-        emit statusUpdate("Process ended: " + proc->errorString());
-    }
-    delete tempFile;
-    tempFile = 0;
-    emit done();
-    return;
-#endif
     m_port = new QSerialPort();
     msleep(500);
     m_port->setPortName(portnametouse);
@@ -469,8 +381,8 @@ void PX4FirmwareUploader::run()
             int timeout = 0;
             if (bootloaderrev >= 4)
             {
-                QLOG_INFO() << "Requesting OTP";
-                emit statusUpdate("Requesting OTP");
+                QLOG_INFO() << "Requesting COA";
+                emit statusUpdate("Requesting COA");
                 for (int i=0;i<512;i+=4)
                 {
                     m_port->clear();
@@ -525,10 +437,10 @@ void PX4FirmwareUploader::run()
                 {
                     continue;
                 }
-                QLOG_INFO() << "OTP read";
+                QLOG_INFO() << "COA read";
                 if (otpbuf[0] != 80 && otpbuf[1] != 88 && otpbuf[2] != 52 && otpbuf[3] != 0)
                 {
-                    QLOG_ERROR() << "OTP header failure";
+                    QLOG_ERROR() << "COA header failure";
                     continue;
                 }
                 //Let's format this like MP does
@@ -543,7 +455,7 @@ void PX4FirmwareUploader::run()
                         otpoutput = "";
                     }
                 }
-                QLOG_INFO() << "OTP:" << otpstr;
+                QLOG_INFO() << "COA:" << otpstr;
 
 
                 //Create an empty buffer for the serialnumber
@@ -602,34 +514,55 @@ void PX4FirmwareUploader::run()
                 QLOG_INFO() << "Board SN:" << SN;
                 snstr = SN;
                 QByteArray signature;
+                QString SIGarg = "";
                 for (int i=32;i<(128+32);i++)
                 {
                     signature.append(otpbuf[i]);
+                    SIGarg += (otpbuf[i] <= 0xF ? "0" : "") + QString::number(otpbuf[i],16).toUpper();
                 }
                 QByteArray serial;
+                QString SNarg = "";
                 for (int i=0;i<12;i++)
                 {
                     serial.append(snbuf[i]);
+                    SNarg += (snbuf[i] <= 0xF ? "0" : "") + QString::number(snbuf[i],16).toUpper();
                 }
                 for (int i=0;i<8;i++)
                 {
                     serial.append((char)0);
+                    SNarg += "00";
                 }
                 serial[0] = serial[1];
                 qDebug() << "Serial size:" << serial.size();
-                emit statusUpdate("Verifying OTP");
+                emit statusUpdate("Verifying COA");
+
+#define CERT_OF_A_FAILED "Certificate of Authenticity check failed! Please check with your autopilot hardware supplier for support."
+#define CERT_OF_A_PUB_KEY_FAILED "Certificate of Authenticity failed COA check! Public Key is not valid."
 
 #ifdef Q_OS_WIN
-                //QProcess *proc = new QProcess();
-                QLOG_FATAL() << "PX4Firmware Uploader does not yet support uploading on Windows";
-                emit statusUpdate("PX4Firmware Uploader does not yet support uploading on Windows");
-                emit error("PX4Firmware Uploader does not yet support uploading on Windows");
-                m_port->close();
-                delete m_port;
-                return;
-
+                QProcess *proc = new QProcess();
+                QLOG_DEBUG() << "Attempting to start" << QApplication::instance()->applicationDirPath() + "/uploader/AP2OTPCheck.exe" << SNarg << SIGarg;
+                proc->start(QApplication::instance()->applicationDirPath() + "/uploader/AP2OTPCheck.exe",QStringList() << SNarg << SIGarg);
+                proc->waitForStarted();
+                proc->waitForFinished();
+                QString result = proc->readAll() + " " + proc->readAllStandardError() + " " + proc->readAllStandardOutput();
+                QLOG_DEBUG() << "Proc finished with:" << result;
+                delete proc;
+                if (!result.contains("Valid Key"))
+                {
+                    QLOG_WARN() << CERT_OF_A_FAILED;
+                    emit statusUpdate(CERT_OF_A_FAILED);
+                    emit warning(CERT_OF_A_FAILED);
+                }
+                else
+                {
+                    QLOG_DEBUG() << "COA verification successful";
+                    emit statusUpdate("COA verification successful");
+                }
 #else
+                // [TODO] Need to read XML file of list of authorized keys.
 
+                // 3DR COA Public Key
                 QString test = "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
                 QByteArray bytes = QByteArray::fromBase64(test.toAscii());
 
@@ -639,9 +572,9 @@ void PX4FirmwareUploader::run()
                 BIO_free(bi);
                 if(!pkey)
                 {
-                    QLOG_FATAL() << "PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?";
-                    emit statusUpdate("PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?");
-                    emit error("PX4Firmware Uploader failed OTP check! Internal public key is not valid. Possible corrupted install?");
+                    QLOG_FATAL() << CERT_OF_A_PUB_KEY_FAILED;
+                    emit statusUpdate(CERT_OF_A_PUB_KEY_FAILED);
+                    emit error(CERT_OF_A_PUB_KEY_FAILED);
                     m_port->close();
                     delete m_port;
                     return;
@@ -651,18 +584,19 @@ void PX4FirmwareUploader::run()
                 if (verify)
                 {
                     //Failed!
-                    QLOG_FATAL() << "PX4Firmware Uploader failed OTP check";
-                    emit statusUpdate("PX4Firmware Uploader failed OTP check");
-                    emit error("PX4Firmware Uploader failed OTP check! Are you sure this is a legimiate 3DR PX4?");
-                    m_port->close();
-                    delete m_port;
-                    return;
+                    QLOG_FATAL() << CERT_OF_A_FAILED;
+                    emit statusUpdate(CERT_OF_A_FAILED);
+                    emit error(CERT_OF_A_FAILED);
+                }
+                else
+                {
+                    QLOG_DEBUG() << "COA verification successful";
+                    emit statusUpdate("COA verification successful");
                 }
 #endif //Q_OS_WIN
-                QLOG_DEBUG() << "OTP verification successful";
-                emit statusUpdate("OTP verification successful");
-                //QLOG_INFO() << "OTP Successful";
-                //emit statusUpdate("OTP Verification successful!");
+
+                //QLOG_INFO() << "COA Successful";
+                //emit statusUpdate("COA Verification successful!");
                 //qDebug() << "Sig size:" << signature.size();
                 //qDebug() << "First three of sig:" << QString::number(signature[0],16) << QString::number(signature[1],16) << QString::number(signature[2],16);
                 //qDebug() << "Last three of sig:" << QString::number(signature[125],16) << QString::number(signature[126],16) << QString::number(signature[127],16);
@@ -674,7 +608,6 @@ void PX4FirmwareUploader::run()
                 delete m_port;
                 return;
             }
-
 
             emit boardRev(boardrev);
             emit boardId(boardid);

@@ -21,43 +21,69 @@ Item {
     property real rollAngle : 0
     property real pitchAngle: 0
     property bool enableBackgroundVideo: false
+    property real scale: 1.0
 
-    width: parent.width * 1.4
-    height: parent.width * 1.4
+    width: parent.width
+    height: parent.height
 
-
-    Rectangle { // Artificial Horizon
+    Item { // Artificial Horizon
         id: artificialHorizon
-        anchors { top: parent.top; left: parent.left
-                  bottom: parent.bottom; right: parent.right}
+        width: parent.width
+        height: parent.height
+        scale: parent.scale * 4.0
 
-        Image { // Background Artificial Ground & Sky
-            id: groundImage
-            anchors { fill: parent; centerIn: parent }
-            source: "../resources/components/rollPitchIndicator/artGroundSky.svg"
-            smooth: true
-            visible: !enableBackgroundVideo
+        Rectangle { // Artificial Horizon
+            anchors.fill: parent
+
+            Rectangle { // Blue Sky
+                id: blueSky
+                anchors.fill: parent
+                color: "skyblue"
+                smooth: true
+                visible: !enableBackgroundVideo
+            }
+
+//            Rectangle { // horizon bar
+//                id: artHorizon
+//                anchors.centerIn: blueSky
+//                height: 3
+//                anchors.verticalCenterOffset: 3
+//                width: blueSky.width
+//                color: "darkgreen"
+//                smooth: true
+//                visible: !enableBackgroundVideo
+//                scale: 1
+//            }
+
+            Rectangle { // Ground
+                id: ground
+                anchors { left: blueSky.left; right: blueSky.right;
+                            bottom: blueSky.bottom }
+                color: "green"
+                smooth: true
+                height: blueSky.height/2
+                visible: !enableBackgroundVideo
+            }
+
+            Rectangle {
+                id: videoImage // Just for testing
+                anchors { fill: parent; centerIn: parent }
+                color: "darkgrey"
+                visible: enableBackgroundVideo
+            }
+
+            transform: [ Translate {
+                    id: artHorizonPitch
+                    y: pitchAngle * 1.75
+                },
+                Rotation {
+                    id: artHorizonRotation
+                    origin.x: width/2
+                    origin.y: height/2
+                    //horizon angle
+                    angle: -rollAngle
+                }]
         }
-
-        Rectangle {
-            id: videoImage // Just for testing
-            anchors { fill: parent; centerIn: parent }
-            color: "darkgrey"
-            visible: enableBackgroundVideo
-        }
-
-        transform: [ Translate {
-                id: artHorizonPitch
-                y: pitchAngle * 4.5
-            },
-            Rotation {
-            id: artHorizonRotation
-            origin.x: width/2
-            origin.y: height/2
-            //horizon angle
-            angle: -rollAngle
-        }]
-
     } // End Artficial Horizon
 
     Image { // Roll Graticule
@@ -65,6 +91,7 @@ Item {
         anchors { bottom: parent.verticalCenter; horizontalCenter: parent.horizontalCenter}
         z: 1
         source: "../resources/components/rollPitchIndicator/rollGraticule.svg"
+        scale: scale
         smooth: true
         transform: Rotation {
             origin.x: 157.5
@@ -84,6 +111,7 @@ Item {
     }
 
     Image { // Cross Hairs
+        id: crossHairs
         anchors.centerIn: parent
         z:3
         source: "../resources/components/rollPitchIndicator/crossHair.svg"

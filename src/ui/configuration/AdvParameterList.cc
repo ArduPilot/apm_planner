@@ -60,6 +60,7 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.searchLineEdit, SIGNAL(textEdited(QString)), this, SLOT(findStringInTable(QString)));
     connect(ui.nextItemButton, SIGNAL(clicked()), this, SLOT(nextItemInSearch()));
     connect(ui.previousItemButton, SIGNAL(clicked()), this, SLOT(previousItemInSearch()));
+    connect(ui.resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 
 
     ui.tableWidget->setColumnCount(ADV_TABLE_COLUMN_COUNT);
@@ -175,7 +176,7 @@ void AdvParameterList::loadButtonClicked()
         return;
     }
 
-    QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory());
+    QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory(),"*.param;;*.txt");
     QApplication::processEvents(); // Helps clear dialog from screen
 
     if(filename.length() == 0)
@@ -213,7 +214,9 @@ void AdvParameterList::loadButtonClicked()
 
 void AdvParameterList::saveButtonClicked()
 {
-    QString filename = QFileDialog::getSaveFileName(this,"Save File", QGC::parameterDirectory());
+    QString filename = QFileDialog::getSaveFileName(this, "Save File", QGC::parameterDirectory()
+                                                    + "/parameters.param",
+                                                    tr("Parameters (*.param)"));
     QApplication::processEvents(); // Helps clear dialog from screen
 
     if(filename.length() == 0)
@@ -253,7 +256,7 @@ void AdvParameterList::saveButtonClicked()
 
 void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString parameterName, QVariant value)
 {
-    QLOG_DEBUG() << "APL::parameterChanged " << parameterName << ":" <<value.toFloat();
+    QLOG_DEBUG() << "APL::parameterChanged:" << parameterName << "char=" << QString::number(value.toChar().toAscii()) << "int=" << value.toInt() << "float=" << value.toFloat();
     disconnect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
     if (!m_paramValueMap.contains(parameterName))
     {
@@ -506,5 +509,22 @@ void AdvParameterList::previousItemInSearch()
         m_searchItemList[m_searchIndex]->setSelected(true);
     } else {
         m_searchIndex = m_searchItemList.count() - 1; // loops around
+    }
+}
+void AdvParameterList::resetButtonClicked()
+{
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+    if (QMessageBox::question(this,"Warning","You are about to reset ALL EEPROM settings to their defaults and REBOOT the vehicle. Are you absolutely sure you want to do this?",QMessageBox::Yes,QMessageBox::No) == QMessageBox::Yes)
+    {
+        m_uas->setParameter(0,"FORMAT_VERSION",0);
+        m_uas->reboot();
+    }
+    else
+    {
+        QMessageBox::information(this,".","No Reset!!");
     }
 }

@@ -19,17 +19,33 @@ import "./components"
 
 Rectangle {
     // Property Defintions
+    id:root
     property real roll: 0
     property real pitch: 0
     property real heading: 0
 
-    property real alt: 0
+    property real altitudeRelative: 0
+    property real altitudeAMSL: 0
     property real airspeed: 0
     property real groundspeed: 0
+    property real climbRate: 0
 
     property bool enableBackgroundVideo: false
+    property string statusMessage: ""
+    property bool showStatusMessage: false
 
-    // Dial with a slider to adjust it
+
+    onShowStatusMessageChanged: {
+        statusMessageTimer.start()
+    }
+
+    Timer{
+        id: statusMessageTimer
+        interval: 5000;
+        repeat: false;
+        onTriggered: showStatusMessage = false
+    }
+
     RollPitchIndicator {
         id: rollPitchIndicator
         anchors.centerIn: parent
@@ -51,12 +67,14 @@ Rectangle {
     AltitudeIndicator {
         id: altIndicator
         anchors.right: parent.right
-        alt: parent.alt
+        width: 35
+        alt: parent.altitudeRelative
     }
 
     SpeedIndicator {
         id: speedIndicator
         anchors.left: parent.left
+        width: 35
         airspeed: parent.airspeed
         groundspeed: parent.groundspeed
     }
@@ -64,7 +82,25 @@ Rectangle {
     CompassIndicator {
         id: compassIndicator
         anchors.horizontalCenter: parent.horizontalCenter
+        transform: Translate {
+            y: 20
+        }
+
         heading: parent.heading
+    }
+
+    StatusMessageIndicator  {
+        id: statusMessageIndicator
+        anchors.fill: parent
+        message: statusMessage
+        visible: showStatusMessage
+    }
+
+    InformationOverlayIndicator{
+        id: informationIndicator
+        anchors.fill: parent
+        airSpeed: parent.airspeed
+        groundSpeed: parent.groundspeed
     }
 }
 
