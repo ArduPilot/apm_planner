@@ -150,7 +150,7 @@ QString ApmPlane::stringForMode(int aMode)
     case RESERVED_14:
         return "Reserved";
     default:
-        return "Undefined";
+        return "Undefined: " + QString::number(aMode);
     }
 }
 

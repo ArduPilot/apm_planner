@@ -1258,30 +1258,42 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
         {
             QSqlRecord record = modequery.record();
             int index = record.value(0).toInt();
-            QString mode = record.value(1).toString();
+            QString mode = "";
+            if (record.contains("Mode"))
+            {
+                mode = record.value("Mode").toString();
+            }
             bool ok = false;
             int modeint = mode.toInt(&ok);
-            if (ok)
+            if (!ok)
             {
-                //It's an integer!
-                switch (type)
+                if (record.contains("ModeNum"))
                 {
-                    case MAV_TYPE_QUADROTOR:
-                    {
-                        mode = ApmCopter::stringForMode(modeint);
-                    }
-                    break;
-                    case MAV_TYPE_FIXED_WING:
-                    {
-                        mode = ApmPlane::stringForMode(modeint);
-                    }
-                    break;
-                    case MAV_TYPE_GROUND_ROVER:
-                    {
-                        mode = ApmRover::stringForMode(modeint);
-                    }
-                    break;
+                    modeint = record.value("ModeNum").toString().toInt();
                 }
+                else
+                {
+                    QLOG_DEBUG() << "Unable to determine Mode number in log" << record.value("Mode").toString();
+                }
+            }
+            //It's an integer!
+            switch (type)
+            {
+                case MAV_TYPE_QUADROTOR:
+                {
+                    mode = ApmCopter::stringForMode(modeint);
+                }
+                break;
+                case MAV_TYPE_FIXED_WING:
+                {
+                    mode = ApmPlane::stringForMode(modeint);
+                }
+                break;
+                case MAV_TYPE_GROUND_ROVER:
+                {
+                    mode = ApmRover::stringForMode(modeint);
+                }
+                break;
             }
             QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
             QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
