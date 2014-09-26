@@ -376,10 +376,12 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
 
     QGCUASParamManager *pm = m_uas->getParamManager();
 
-    if (!chPrefix.isEmpty() && (newChPrefix != chPrefix)){
+    if (!chPrefix.isEmpty() && (!newChPrefix.isEmpty())
+            && (newChPrefix != chPrefix)){
         //We need to disable the old assignment first if chnaged
         QLOG_DEBUG() << "Set old " << chPrefix << " disabled";
         pm->setParameter(1, chPrefix + "_FUNCTION", RC_FUNCTION::Disabled);
+        outputChCombo->setCurrentIndex(0);
     }
 
     chPrefix = newChPrefix;
