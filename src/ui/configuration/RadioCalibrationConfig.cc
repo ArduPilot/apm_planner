@@ -376,7 +376,7 @@ void RadioCalibrationConfig::setParamChannelRev(const QString& param, bool state
         if (state)
             m_uas->setParameter(1, channelString, -1.0);
         else
-            m_uas->setParameter(1, channelString, 0.0); // We use 0 as the default, not 1.0 (which you can also use)
+            m_uas->setParameter(1, channelString, 1.0); // We use 0 as the default, not 1.0 (which you can also use)
     }
 }
 
