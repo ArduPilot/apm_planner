@@ -402,22 +402,12 @@ void RadioCalibrationConfig::elevonsReversed(bool state)
 
 void RadioCalibrationConfig::elevonsCh1Rev(bool state)
 {
-    if(m_uas){
-        if (state)
-            m_uas->setParameter(1, "ELEVON_CH1_REV", -1.0);
-        else
-            m_uas->setParameter(1, "ELEVON_CH1_REV", 0.0);
-        }
+    setParamChannelRev("ELEVON_CH1_REV", state);
 }
 
 void RadioCalibrationConfig::elevonsCh2Rev(bool state)
 {
-    if(m_uas){
-        if (state)
-            m_uas->setParameter(1, "ELEVON_CH2_REV", -1.0);
-        else
-            m_uas->setParameter(1, "ELEVON_CH2_REV", 0.0);
-        }
+    setParamChannelRev("ELEVON_CH2_REV", state);
 }
 
 void RadioCalibrationConfig::elevonOutput()
