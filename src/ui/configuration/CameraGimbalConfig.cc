@@ -191,7 +191,16 @@ void CameraGimbalConfig::addTriggerTypes(QComboBox *comboBox)
 void CameraGimbalConfig::activeUASSet(UASInterface *uas)
 {
     AP2ConfigWidget::activeUASSet(uas);
-    if (!uas) return;
+}
+
+void CameraGimbalConfig::showEvent(QShowEvent *)
+{
+    requestParameterUpdate();
+}
+
+void CameraGimbalConfig::requestParameterUpdate()
+{
+    if (!m_uas) return;
     // The List of Params we care about
 
     for (int channelCount=5; channelCount <= 11; ++channelCount) {
@@ -259,10 +268,10 @@ void CameraGimbalConfig::activeUASSet(UASInterface *uas)
 
     qDebug() << "cameraParams" << m_cameraParams;
 
-//    QGCUASParamManager *pm = m_uas->getParamManager();
-//    foreach(QString parameter, m_cameraParams) {
-//        pm->requestParameterUpdate(1, parameter);
-//    };
+    QGCUASParamManager *pm = m_uas->getParamManager();
+    foreach(QString parameter, m_cameraParams) {
+        pm->requestParameterUpdate(1, parameter);
+    };
 }
 
 void CameraGimbalConfig::updateRetractAngles()
@@ -458,7 +467,7 @@ CameraGimbalConfig::~CameraGimbalConfig()
 void CameraGimbalConfig::refreshMountParameters(QString mount, QString parameterName, QVariant &value)
 {
     qDebug() << "refresh parameters " << mount;
-
+    disconnectSignals();
     if (parameterName == "MNT_ANGMIN_TIL") //TILT
     {
         ui.tiltAngleMinSpinBox->setValue(value.toInt() / 100.0);
@@ -498,7 +507,7 @@ void CameraGimbalConfig::refreshMountParameters(QString mount, QString parameter
         int index = ui.panInputChannelComboBox->findData(value.toInt());
         ui.panInputChannelComboBox->setCurrentIndex(index);
     }
-
+    connectSignals();
 }
 
 void CameraGimbalConfig::refreshCameraTriggerParameters(QString parameterName, QVariant value)

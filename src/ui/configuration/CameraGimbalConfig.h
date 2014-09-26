@@ -68,6 +68,7 @@ class CameraGimbalConfig : public AP2ConfigWidget
 public:
     explicit CameraGimbalConfig(QWidget *parent = 0);
     ~CameraGimbalConfig();
+    void showEvent(QShowEvent *);
 
 public slots:
     void activeUASSet(UASInterface *uas);
@@ -108,6 +109,7 @@ private:
                                   QComboBox *outputChCombo, QComboBox* inputChCombo,
                                   QSpinBox* servoMin, QSpinBox* servoMax, QCheckBox* servoReverse,
                                   QSpinBox* angleMin, QSpinBox* angleMax);
+    void requestParameterUpdate();
 
 private:
     Ui::CameraGimbalConfig ui;
