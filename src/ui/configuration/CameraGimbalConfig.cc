@@ -391,9 +391,9 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
     pm->setParameter(1, "RC" + channel + "_MAX", servoMax->value());
 
     if(servoReverse->checkState() == Qt::Checked){
-        pm->setParameter(1, "RC" + channel + "_REV", -1);
+        pm->setParameter(1, "RC" + channel + "_REV", -1.0);
     } else {
-        pm->setParameter(1, "RC" + channel + "_REV", 0);
+        pm->setParameter(1, "RC" + channel + "_REV", 1.0);
     }
 
     int inChannel = inputChCombo->itemData(inputChCombo->currentIndex()).toInt();
