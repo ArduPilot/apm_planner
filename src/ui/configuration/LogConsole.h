@@ -54,6 +54,7 @@ private slots:
     void dumpFileStart(QString);
     void dumpFileFinish(QString);
     void dumpFileBytesRead(long);
+    void dumpFileStatusMsg(QString);
     void workerStopped();
     void workerCancelled();
 
@@ -101,6 +102,7 @@ signals:
     void startFile(QString);
     void finishFile(QString);
     void bytesRead(long);
+    void statusMsg(QString);
     void finishAll();
     void error(QString);
     void cancelled();
