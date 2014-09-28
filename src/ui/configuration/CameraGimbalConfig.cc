@@ -191,7 +191,16 @@ void CameraGimbalConfig::addTriggerTypes(QComboBox *comboBox)
 void CameraGimbalConfig::activeUASSet(UASInterface *uas)
 {
     AP2ConfigWidget::activeUASSet(uas);
-    if (!uas) return;
+}
+
+void CameraGimbalConfig::showEvent(QShowEvent *)
+{
+    requestParameterUpdate();
+}
+
+void CameraGimbalConfig::requestParameterUpdate()
+{
+    if (!m_uas) return;
     // The List of Params we care about
 
     for (int channelCount=5; channelCount <= 11; ++channelCount) {
@@ -259,10 +268,10 @@ void CameraGimbalConfig::activeUASSet(UASInterface *uas)
 
     qDebug() << "cameraParams" << m_cameraParams;
 
-//    QGCUASParamManager *pm = m_uas->getParamManager();
-//    foreach(QString parameter, m_cameraParams) {
-//        pm->requestParameterUpdate(1, parameter);
-//    };
+    QGCUASParamManager *pm = m_uas->getParamManager();
+    foreach(QString parameter, m_cameraParams) {
+        pm->requestParameterUpdate(1, parameter);
+    };
 }
 
 void CameraGimbalConfig::updateRetractAngles()
@@ -367,10 +376,12 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
 
     QGCUASParamManager *pm = m_uas->getParamManager();
 
-    if (!chPrefix.isEmpty() && (newChPrefix != chPrefix)){
+    if (!chPrefix.isEmpty() && (!newChPrefix.isEmpty())
+            && (newChPrefix != chPrefix)){
         //We need to disable the old assignment first if chnaged
         QLOG_DEBUG() << "Set old " << chPrefix << " disabled";
         pm->setParameter(1, chPrefix + "_FUNCTION", RC_FUNCTION::Disabled);
+        outputChCombo->setCurrentIndex(0);
     }
 
     chPrefix = newChPrefix;
@@ -391,9 +402,9 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
     pm->setParameter(1, "RC" + channel + "_MAX", servoMax->value());
 
     if(servoReverse->checkState() == Qt::Checked){
-        pm->setParameter(1, "RC" + channel + "_REV", -1);
+        pm->setParameter(1, "RC" + channel + "_REV", -1.0);
     } else {
-        pm->setParameter(1, "RC" + channel + "_REV", 0);
+        pm->setParameter(1, "RC" + channel + "_REV", 1.0);
     }
 
     int inChannel = inputChCombo->itemData(inputChCombo->currentIndex()).toInt();
@@ -458,7 +469,7 @@ CameraGimbalConfig::~CameraGimbalConfig()
 void CameraGimbalConfig::refreshMountParameters(QString mount, QString parameterName, QVariant &value)
 {
     qDebug() << "refresh parameters " << mount;
-
+    disconnectSignals();
     if (parameterName == "MNT_ANGMIN_TIL") //TILT
     {
         ui.tiltAngleMinSpinBox->setValue(value.toInt() / 100.0);
@@ -498,7 +509,7 @@ void CameraGimbalConfig::refreshMountParameters(QString mount, QString parameter
         int index = ui.panInputChannelComboBox->findData(value.toInt());
         ui.panInputChannelComboBox->setCurrentIndex(index);
     }
-
+    connectSignals();
 }
 
 void CameraGimbalConfig::refreshCameraTriggerParameters(QString parameterName, QVariant value)

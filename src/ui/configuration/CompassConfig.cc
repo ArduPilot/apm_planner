@@ -309,7 +309,7 @@ void CompassConfig::liveCalibrationClicked()
     }
 
     QMessageBox::information(this,tr("Live Compass calibration"),
-                             tr("Data will be collected for 60 seconds, Please click ok and move the apm around all axises"));
+                             tr("Data will be collected for 60 seconds, Please click ok and move the apm around all axes"));
 
     QGCUASParamManager* pm = m_uas->getParamManager();
     // Initialiase to zero
