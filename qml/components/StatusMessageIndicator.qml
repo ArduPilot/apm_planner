@@ -23,7 +23,7 @@ Rectangle {
     anchors.fill: parent
 
     border.color: "red"
-    border.width: 20
+    border.width: 5
 
     color: "Transparent"
 
@@ -36,7 +36,7 @@ Rectangle {
         styleColor: "black"
         text: message
         smooth: true
-        font.pointSize: 28
+        font.pointSize: 24
     }
 
     SequentialAnimation on border.color {
