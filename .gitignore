@@ -55,3 +55,4 @@ deploy/*.exe
 deploy/*.list
 *.exe
 deploy/*.dll
+.qmake.stash
