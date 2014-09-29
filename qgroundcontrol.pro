@@ -105,7 +105,8 @@ QT += network \
     sql \
     widgets \
     serialport \
-    webkitwidgets
+    webkitwidgets \
+    script
 
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
@@ -143,7 +144,6 @@ MacBuild {
 }
 
 LinuxBuild {
-    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
@@ -155,7 +155,6 @@ LinuxBuild {
 }
 
 WindowsBuild {
-    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     # Specify multi-process compilation within Visual Studio.
