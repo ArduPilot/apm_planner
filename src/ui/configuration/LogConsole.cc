@@ -9,10 +9,15 @@
 #include <qserialport.h>
 #include <QRegExp>
 
+static const long
+    KB = 1024
+,   MB = KB * 1024
+;
+
 using namespace kml;
 
 static bool writeSerial(QSerialPort* port, const char *s) {
-    QLOG_DEBUG() << "writeSerial(): cmd=" << s;
+    // QLOG_DEBUG() << "writeSerial(): cmd=" << s;
 
     QMutex mutex;
     QMutexLocker locker(&mutex);
@@ -125,53 +130,45 @@ void Worker::onLineRead(char *data) {
 
     QString line = QString(data).trimmed();
 
-    int idx = m_files[m_fdIndex].index;
+    switch(m_state) {
+        case start: {
+            emit statusMsg("Waiting for log data...");
 
-    if(line.indexOf("Log]") >= 0) {
-        QString str = QString("dump %1").arg(QString::number(idx));
-        if(line.indexOf(str) > 0) {
-            QLOG_DEBUG() << "dump line hit";
-            m_state = reading;
+            if(line.startsWith("Ardu")) {
+                QLOG_DEBUG() << "Starting read";
+
+                m_state = reading;
+
+                m_logLines.append(line);
+                emit bytesRead(m_totalBytesRead += line.length());
+            }
+
+            break;
         }
-    }
 
-    bool noise = (
-        line.indexOf("Log]") >= 0 ||
-        line.indexOf("logs enabled: ") >= 0 ||
-        line.indexOf("Log ") >= 0 ||
-        line.indexOf(" logs") >= 0
-    );
+        case reading: {
+            if(line.startsWith("Log] logs enabled")) {
+                QLOG_DEBUG() << "Finishing read";
 
-    if(noise) {
-        if(++m_blanks >= 3) {
-            if(m_state != finish) {
                 m_state = finish;
-                QLOG_DEBUG() << "finishing file";
+
                 onFinishFile();
 
                 QTimer *timer = new QTimer();
                 connect(timer, SIGNAL(timeout()), this, SLOT(readyNextFile()));
                 connect(timer, SIGNAL(timeout()), timer, SLOT(deleteLater()));
-                timer->start(400);
+                timer->start(1000);
             }
-        }
-    }
-    else {
-        switch(m_state) {
-            case reading: {
+            else {
                 m_logLines.append(line);
                 emit bytesRead(m_totalBytesRead += line.length());
-                break;
             }
 
-            case finish: {
-                QLOG_DEBUG() << "finishing, don't care about " << line;
-                break;
-            }
+            break;
+        }
 
-            default: {
-                break;
-            }
+        default: {
+            break;
         }
     }
 }
@@ -193,8 +190,9 @@ void Worker::readData() {
             onLineRead(line);
         }
 
-        // Oddly, this seems necessary
-        waitCondition.wait(&mutex, 5);
+        // Oddly, this seems necessary.
+        // It segfaults otherwise.
+        waitCondition.wait(&mutex, 2);
 
         if(!m_run) {
             onCancel();
@@ -383,6 +381,7 @@ void LogConsole::pullSelectedClicked() {
         connect(m_worker, SIGNAL(startFile(QString)), this, SLOT(dumpFileStart(QString)));
         connect(m_worker, SIGNAL(finishFile(QString)), this, SLOT(dumpFileFinish(QString)));
         connect(m_worker, SIGNAL(bytesRead(long)), this, SLOT(dumpFileBytesRead(long)));
+        connect(m_worker, SIGNAL(statusMsg(QString)), this, SLOT(dumpFileStatusMsg(QString)));
         connect(m_worker, SIGNAL(finishAll()), m_worker, SLOT(deleteLater()));
         connect(thread, SIGNAL(started()), m_worker, SLOT(process()));
         connect(m_worker, SIGNAL(finishAll()), thread, SLOT(quit()));
@@ -409,8 +408,25 @@ void LogConsole::dumpFileFinish(QString file) {
 }
 
 void LogConsole::dumpFileBytesRead(long bytes) {
-    QString str = QString("%1: %2 bytes").arg(m_currentFile, QString::number(bytes));
+    QString sz("bytes");
+    double d = bytes;
+    double div = 1;
+
+    if(bytes > MB) {
+        div = MB;
+        sz = "MiB";
+    }
+    else if(bytes > KB) {
+        div = KB;
+        sz = "K";
+    }
+
+    QString str = QString("%1: %2 %3").arg(m_currentFile, QString::number(d / div, 'f', 2), sz);
     emit statusMessage(str);
+}
+
+void LogConsole::dumpFileStatusMsg(QString msg) {
+    emit statusMessage(msg);
 }
 
 void LogConsole::workerStopped() {
