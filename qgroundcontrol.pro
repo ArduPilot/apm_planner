@@ -111,9 +111,9 @@ QT += network \
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
-#gittouch.commands = touch qgroundcontrol.pro
-#QMAKE_EXTRA_TARGETS += gittouch
-#POST_TARGETDEPS += gittouch
+gittouch.commands = touch qgroundcontrol.pro
+QMAKE_EXTRA_TARGETS += gittouch
+POST_TARGETDEPS += gittouch
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
