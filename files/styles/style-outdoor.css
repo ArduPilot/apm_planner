@@ -25,17 +25,55 @@ margin-top: 1ex; /* leave space at the top for the title */
 }
 
 QCheckBox {
-/*background-color: #252528;*/
-color: #222221;
+	/*background-color: #252528;*/
+	color: #222221;
 }
 
-/*QCheckBox::indicator {
-    border: 1px solid #111111;
-    border-radius: 2px;
-    color: #222221;
-         width: 10px;
-     height: 10px;
+QCheckBox::indicator {
+	border: 1px solid #111111;
+	border-radius: 1px;
+	color: #FFFFFF;
+	width: 10px;
+	height: 10px;
+}
+
+QComboBox { 
+	border: 1px solid #111111; 
+	border-radius: 2px;
+}
+
+QCheckBox::indicator:unchecked { 
+	background-color: #DDDDDD; 
+}
+
+/*QCheckBox::indicator:unchecked:hover {
+	background-color: #81ff3d;
 }*/
+
+QCheckBox::indicator:unchecked:pressed { 
+	background-color: #286e08; 
+}
+
+QCheckBox::indicator:checked { 
+	background-color: #49c70f; 
+}
+
+/*QCheckBox::indicator:checked:hover {
+	background-color: #AAAAAA;
+}*/
+
+QCheckBox::indicator:checked:pressed { 
+	background-color: #AAAAAA; 
+}
+
+/* QCheckBox::indicator:indeterminate:hover {
+     image: url(:/files/images/checkbox_indeterminate_hover.png);
+ }
+
+ QCheckBox::indicator:indeterminate:pressed {
+     image: url(:/files/images/checkbox_indeterminate_pressed.png);
+ }*/
+
 
 QLineEdit {
 border: 1px solid #111111;
@@ -51,31 +89,6 @@ QPlainTextEdit {
 border: 1px solid #111111;
     border-radius: 2px;
 }
-
-QComboBox {
-	border: 1px solid #111111;
-    	border-radius: 2px;
-}
-
-/* QCheckBox::indicator:checked {
-     background-color: #333333;
- }
-
- QCheckBox::indicator:checked:hover {
-     background-color: #222222;
- }
-
- QCheckBox::indicator:checked:pressed {
-     background-color: #222222;
- }
-
- QCheckBox::indicator:indeterminate:hover {
-     image: url(:/files/images/checkbox_indeterminate_hover.png);
- }
-
- QCheckBox::indicator:indeterminate:pressed {
-     image: url(:/files/images/checkbox_indeterminate_pressed.png);
- }*/
 
  QGroupBox::title {
      subcontrol-origin: margin;
@@ -150,7 +163,6 @@ QSeparator {
     color: #EEEEEE;
     }
 
-
 QSpinBox {
 	min-height: 14px;
 	max-height: 18px;
@@ -199,10 +211,9 @@ QPushButton {
 	/*max-height: 18px;*/
 	border: 2px solid #6A6A6F;
 	border-radius: 3px;
-	padding-left: 7px;
-	padding-right: 7px;
-/*	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #C3C2C8, stop: 1 #828288);*/
-	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 rgb(220, 219, 222), stop: 1 rgb(189, 188, 192));
+/*	padding-left: 7px;
+	padding-right: 7px;*/
+	background-color: qlineargradient(spread:pad, x1:0.507, y1:0.0340909, x2:0.522167, y2:1, stop:0 rgb(189, 188, 192), stop:1 rgb(220, 219, 222));
 }
 
 QPushButton:checked {
@@ -324,3 +335,33 @@ QProgressBar::chunk#speedBar {
 QProgressBar::chunk#thrustBar {
 	background-color: orange;
 }
+
+QTabWidget::pane { /* The tab widget frame */
+    border: 1px solid #62676B;
+    border-radius: 2px;
+    position: absolute;
+    top: -0.5em;
+}
+
+QTabWidget::tab-bar {
+    alignment: center;
+}
+
+/* Style the tab using the tab sub-control. Note that
+    it reads QTabBar _not_ QTabWidget */
+QTabBar::tab {
+/*   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #090909, stop: 1 #353535);*/
+   border: 1px solid #A2A7AB;
+   border-radius: 2px;
+   min-width: 8ex;
+   padding: 2px;
+}
+
+/*QTabBar::tab:selected, QTabBar::tab:hover {
+/*background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #090909, stop: 1 #353535);*/
+   border: 2px solid #379AC3;
+}
+
+QTabBar::tab:selected {
+    border: 2px solid #379AC3;
+}*/
