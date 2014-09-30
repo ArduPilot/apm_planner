@@ -72,6 +72,9 @@ public:
     QList<QHostAddress> getHosts() const {
         return hosts;
     }
+    QList<quint16> getPorts() const {
+        return ports;
+    }
 
     // Extensive statistics for scientific purposes
     qint64 getConnectionSpeed() const;

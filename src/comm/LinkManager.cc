@@ -113,18 +113,17 @@ void LinkManager::loadSettings()
         }
         else if (type == "UDP_LINK")
         {
+            int port = settings.value("port").toInt();
+            int linkid = addUdpConnection(QHostAddress::Any,port);
+            UDPLink *iface = qobject_cast<UDPLink*>(m_connectionMap.value(linkid));
+
             int hostcount = settings.beginReadArray("HOSTS");
-            if (hostcount == 0)
+            for (int j=0;j<hostcount;++j)
             {
-                //Use defaults
-                addUdpConnection(QHostAddress::Any,14550);
-            }
-            else
-            {
-                settings.setArrayIndex(0);
+                settings.setArrayIndex(j);
                 QString host = settings.value("host").toString();
                 int port = settings.value("port").toInt();
-                addUdpConnection(QHostAddress(host),port);
+                iface->addHost(tr("%1:%2").arg(host, port));
             }
             settings.endArray();
         }
@@ -173,7 +172,7 @@ void LinkManager::saveSettings()
             {
                 settings.setArrayIndex(j);
                 settings.setValue("host",link->getHosts().at(j).toString());
-                settings.setValue("port",link->getPort());
+                settings.setValue("port",link->getPorts().at(j));
             }
             settings.endArray();
             settings.setValue("port",link->getPort());
