@@ -337,6 +337,7 @@ void UASManager::removeUAS(UASInterface* uas)
                 // This has to be properly tested however, since it might
                 // crash code parts not handling null pointers correctly.
                 activeUAS = NULL;
+                emit activeUASSet(NULL);
                 // XXX Not emitting the null pointer yet
             }
         }

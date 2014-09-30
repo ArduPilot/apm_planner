@@ -328,7 +328,16 @@ void LinkManager::removeLink(LinkInterface *link)
 
 void LinkManager::removeLink(int linkId)
 {
-    //This function is not yet supported, it will be once we support multiple MAVs
+    if (m_connectionMap.contains(linkId))
+    {
+        if (m_connectionMap.value(linkId)->isConnected())
+        {
+            m_connectionMap.value(linkId)->disconnect();
+        }
+        delete m_connectionMap.value(linkId);
+        m_connectionMap.remove(linkId);
+        saveSettings();
+    }
 }
 
 void LinkManager::connectLink(int index)

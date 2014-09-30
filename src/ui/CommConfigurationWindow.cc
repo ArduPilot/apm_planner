@@ -151,9 +151,11 @@ CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* 
 void CommConfigurationWindow::connectButtonStatus(int linkid)
 {
     if(LinkManager::instance()->getLinkConnected(linkid)) {
+        ui.deleteButton->setEnabled(false);
         ui.connectionStatusLabel->setText(tr("Connected"));
         ui.connectButton->setText("Disconnect");
     } else {
+        ui.deleteButton->setEnabled(true);
         ui.connectionStatusLabel->setText(tr("Disconnected"));
         ui.connectButton->setText("Connect");
     }

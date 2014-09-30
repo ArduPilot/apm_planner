@@ -3539,12 +3539,21 @@ void UAS::addLink(LinkInterface* link)
 
 void UAS::removeLink(QObject* object)
 {
-    LinkInterface* link = dynamic_cast<LinkInterface*>(object);
-    if (link)
+    for (int i=0;i<links->size();i++)
     {
-        links->removeAt(links->indexOf(link));
-        disconnect(link,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
-        disconnect(link,SIGNAL(connected()),this,SIGNAL(connected()));
+        if (links->at(i) == object)
+        {
+            links->removeAt(i);
+            i--;
+        }
+
+    }
+    disconnect(object,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
+    disconnect(object,SIGNAL(connected()),this,SIGNAL(connected()));
+    if (links->size() == 0)
+    {
+        //no more links, should remove this.
+        UASManager::instance()->removeUAS(this);
     }
 }
 
