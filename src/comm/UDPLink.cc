@@ -278,7 +278,7 @@ bool UDPLink::disconnect()
 	this->quit();
 	this->wait();
 
-        if(socket)
+    if(socket)
 	{
 		delete socket;
 		socket = NULL;
@@ -299,7 +299,8 @@ bool UDPLink::disconnect()
  **/
 bool UDPLink::connect()
 {
-    QLOG_INFO() << "UDPLink::UDP connect";
+    disconnect();
+    QLOG_INFO() << "UDPLink::UDP connect " << host << ":" << port;
 	if(this->isRunning())
 	{
 		this->quit();
