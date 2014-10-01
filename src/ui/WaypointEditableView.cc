@@ -51,6 +51,7 @@ This file is part of the QGROUNDCONTROL project
 #include "mission/QGCMissionDoMountControl.h"
 #include "mission/QGCMissionDoSetCamTriggDist.h"
 #include "mission/QGCMissionDoSetRelay.h"
+#include "mission/QGCMissionDoSetROI.h"
 #include "mission/QGCMissionDoRepeatRelay.h"
 #include "mission/QGCMissionDoSetHome.h"
 #include "mission/QGCMissionDoChangeSpeed.h"
@@ -110,6 +111,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("DO: Change Speed"), MAV_CMD_DO_CHANGE_SPEED);
         m_ui->comboBox_action->addItem(tr("DO: Set Home"), MAV_CMD_DO_SET_HOME);
         m_ui->comboBox_action->addItem(tr("DO: Mount Control"), MAV_CMD_DO_MOUNT_CONTROL);
+        m_ui->comboBox_action->addItem(tr("DO: Set ROI"), MAV_CMD_DO_SET_ROI);
 #ifdef MAVLINK_ENABLED_PIXHAWK
         m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
         m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);
@@ -277,9 +279,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
     case MAV_CMD_DO_DIGICAM_CONTROL:
         missionWidget = new QGCMissionDoDigicamControl(this);
         break;
-//    case MAV_CMD_DO_SET_ROI:
-//        missionWidget = new QGCMissionDoSetROI(this);
-//        break;
+    case MAV_CMD_DO_SET_ROI:
+        missionWidget = new QGCMissionDoSetROI(this);
+        break;
     case MAV_CMD_DO_CHANGE_SPEED:
         missionWidget = new QGCMissionDoChangeSpeed(this);
         break;

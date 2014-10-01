@@ -61,6 +61,7 @@ class QGCMissionDoRepeatServo;
 class QGCMissionDoDigicamControl;
 class QGCMissionDoSetRelay;
 class QGCMissionDoRepeatRelay;
+class QGCMissionDoSetROI;
 class QGCMissionDoSetHome;
 class QGCMissionDoSetCamTriggDistance;
 class QGCMissionDoChangeSpeed;

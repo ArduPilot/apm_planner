@@ -427,6 +427,11 @@ void WaypointViewOnlyView::updateValues()
         m_ui->displayBar->setText(QString("Delay: %1 sec").arg(wp->getParam1()));
         break;
     }
+    case MAV_CMD_DO_SET_ROI:
+    {
+        m_ui->displayBar->setText(QString("ROI at lat:%1. lon: %2").arg(wp->getLatitude()).arg(wp->getLongitude()));
+        break;
+    }
 #ifdef MAVLINK_ENABLED_PIXHAWK
     case MAV_CMD_DO_START_SEARCH:
     {
