@@ -826,7 +826,7 @@ void QGCMapWidget::redrawWaypointLines()
 
 void QGCMapWidget::redrawWaypointLines(int uas)
 {
-    QLOG_DEBUG() << "REDRAW WAYPOINT LINES FOR UAS" << uas;
+//    QLOG_DEBUG() << "REDRAW WAYPOINT LINES FOR UAS" << uas;
 
     if (!currWPManager)
         return;
