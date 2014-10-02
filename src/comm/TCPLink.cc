@@ -217,6 +217,7 @@ bool TCPLink::disconnect()
 
         emit disconnected();
         emit connected(false);
+        emit disconnected(this);
 	}
 
     _server.close();
@@ -287,6 +288,7 @@ bool TCPLink::_hardwareConnect(void)
     _socketIsConnected = true;
     emit connected(true);
     emit connected();
+    emit connected(this);
 
     return true;
 }

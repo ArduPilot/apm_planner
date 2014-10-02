@@ -356,9 +356,12 @@ bool UDPLink::hardwareConnect(void)
     QObject::connect(socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
 
     emit connected(connectState);
-    emit connected(this);
     if (connectState) {
+        emit connected(this);
         emit connected();
+    } else {
+        emit disconnected(this);
+        emit disconnected();
     }
 	return connectState;
 }
