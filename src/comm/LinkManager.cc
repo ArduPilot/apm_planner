@@ -321,13 +321,16 @@ void LinkManager::addLink(LinkInterface *link)
 }
 void LinkManager::removeLink(LinkInterface *link)
 {
-   // This is called with a LINK_ID not an interface. needs mor rework
-    //This function is not yet supported, it will be once we support multiple MAVs
+    link->disconnect();
+    m_connectionMap.remove(link->getId());
+    saveSettings();
 }
 
-void LinkManager::removeLink(int linkId)
+void LinkManager::removeLink(int linkid)
 {
-    //This function is not yet supported, it will be once we support multiple MAVs
+    if (!m_connectionMap.contains(linkid))
+        return;
+    removeLink(m_connectionMap.value(linkid));
 }
 
 void LinkManager::connectLink(int index)
