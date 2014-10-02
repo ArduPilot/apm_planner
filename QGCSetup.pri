@@ -49,107 +49,12 @@ for(COPY_DIR, COPY_RESOURCE_LIST):QMAKE_POST_LINK += $$CONCATCMD $$QMAKE_COPY_DI
 #
 # Perform platform specific setup
 #
-
 MacBuild {
 	# Copy non-standard libraries and frameworks into app package
-    QMAKE_POST_LINK += && $$QMAKE_COPY_DIR $$BASEDIR/libs/lib/mac64/lib $$DESTDIR/$${TARGET}.app/Contents/libs
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$BASEDIR/libs/lib/Frameworks $$DESTDIR/$${TARGET}.app/Contents/Frameworks
-
-	# Fix library paths inside executable
-
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/MacOS/$${TARGET}
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgViewer.dylib \
-        libosgGA.dylib \
-        libosgDB.dylib \
-        libosgText.dylib \
-        libosgWidget.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# Fix library paths within libraries (inter-library dependencies)
-
-	# OSG GA LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgGA.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgGA.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# OSG DB LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgDB.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# OSG TEXT LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgText.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib \
-        libosgText.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# OSG UTIL LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgUtil.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-
-	# OSG VIEWER LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgViewer.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgGA.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib \
-        libosgText.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# OSG WIDGET LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgWidget.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgGA.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib \
-        libosgText.dylib \
-        libosgViewer.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# CORE OSG LIBRARY
-    QMAKE_POST_LINK += && install_name_tool -change libOpenThreads.dylib "@executable_path/../libs/libOpenThreads.dylib" $$DESTDIR/$${TARGET}.app/Contents/libs/libosg.dylib
 
     # SDL Framework
     QMAKE_POST_LINK += && install_name_tool -change "@rpath/SDL.framework/Versions/A/SDL" "@executable_path/../Frameworks/SDL.framework/Versions/A/SDL" $$DESTDIR/$${TARGET}.app/Contents/MacOS/$${TARGET}
-
 }
 
 WindowsBuild {

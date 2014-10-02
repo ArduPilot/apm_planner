@@ -112,17 +112,18 @@ INCLUDEPATH += \
 # OpenSceneGraph
 #
 
-MacBuild {
-    # GLUT and OpenSceneGraph are part of standard install on Mac
-	CONFIG += OSGDependency
+#Remove OSG support, as it's only valid for Qt4, not Qt5
+#MacBuild {
+#    # GLUT and OpenSceneGraph are part of standard install on Mac
+#	CONFIG += OSGDependency
 
-    INCLUDEPATH += \
-        $$BASEDIR/libs/lib/mac64/include
+#    INCLUDEPATH += \
+#        $$BASEDIR/libs/lib/mac64/include
 
-	LIBS += \
-        -L$$BASEDIR/libs/lib/mac64/lib \
-        -losgWidget
-}
+#	LIBS += \
+#        -L$$BASEDIR/libs/lib/mac64/lib \
+#        -losgWidget
+#}
 
 #Remove OSG support, as it's only valid for Qt4, not Qt5
 #LinuxBuild {
