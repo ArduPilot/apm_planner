@@ -1782,7 +1782,7 @@ void MainWindow::addLink()
     }
     else if (send->data() == LinkInterface::TCP_LINK)
     {
-        newid = LinkManager::instance()->addTcpConnection(QHostAddress::LocalHost,5555);
+        newid = LinkManager::instance()->addTcpConnection(QHostAddress::LocalHost,5555,false);
     }
     else if (send->data() == LinkInterface::UDP_LINK)
     {

@@ -131,7 +131,8 @@ void LinkManager::loadSettings()
         {
             QString host = settings.value("host").toString();
             int port = settings.value("port").toInt();
-            addTcpConnection(QHostAddress(host),port);
+            bool asServer = settings.value("asServer").toBool();
+            addTcpConnection(QHostAddress(host),port,asServer);
         }
     }
 
@@ -183,6 +184,7 @@ void LinkManager::saveSettings()
             settings.setValue("type","TCP_LINK");
             settings.setValue("host",link->getHostAddress().toString());
             settings.setValue("port",link->getPort());
+            settings.setValue("asServer",link->isServer());
         }
     }
     settings.endArray();
@@ -301,9 +303,9 @@ int LinkManager::addUdpConnection(QHostAddress addr,int port)
     return udpLink->getId();
 
 }
-int LinkManager::addTcpConnection(QHostAddress addr,int port)
+int LinkManager::addTcpConnection(QHostAddress addr,int port,bool asServer)
 {
-    TCPLink *tcplink = new TCPLink(addr,port);
+    TCPLink *tcplink = new TCPLink(addr,port,asServer);
     connect(tcplink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(tcplink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(tcplink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
@@ -345,7 +347,7 @@ void LinkManager::disconnectLink(int index)
         m_connectionMap.value(index)->disconnect();
     }
 }
-void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port)
+void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port,bool asServer)
 {
     if (!m_connectionMap.contains(index))
     {
@@ -358,6 +360,7 @@ void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port)
     }
     iface->setHostAddress(addr);
     iface->setPort(port);
+    iface->setAsServer(asServer);
     emit linkChanged(index);
     saveSettings();
 }
@@ -464,6 +467,18 @@ QHostAddress LinkManager::getTcpLinkHost(int linkid)
         return QHostAddress::Null;
     }
     return iface->getHostAddress();
+}
+
+bool LinkManager::isTcpServer(int linkid)
+{
+    if (!m_connectionMap.contains(linkid))
+        return false;
+
+    TCPLink *iface = qobject_cast<TCPLink*>(m_connectionMap.value(linkid));
+    if (!iface)
+        return false;
+
+    return iface->isServer();
 }
 
 void LinkManager::setUdpLinkPort(int linkid, int port)

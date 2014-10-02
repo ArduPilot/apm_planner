@@ -70,9 +70,9 @@ public:
     int addSerialConnection(QString port,int baud);
     int addSerialConnection();
     int addUdpConnection(QHostAddress addr,int port);
-    int addTcpConnection(QHostAddress addr,int port);
+    int addTcpConnection(QHostAddress addr,int port,bool asServer);
     void modifySerialConnection(int index,QString port,int baud = -1);
-    void modifyTcpConnection(int index,QHostAddress addr,int port);
+    void modifyTcpConnection(int index,QHostAddress addr,int port,bool asServer);
     void setSerialParityType(int index,int parity);
     void setSerialFlowType(int index,int flow);
     void setSerialDataBits(int index,int bits);
@@ -98,6 +98,7 @@ public:
     int getUdpLinkPort(int linkid);
     int getTcpLinkPort(int linkid);
     QHostAddress getTcpLinkHost(int linkid);
+    bool isTcpServer(int linkid);
     void setUdpLinkPort(int linkid, int port);
     void addUdpHost(int linkid,QString hostname);
     QList<QString> getCurrentPorts();

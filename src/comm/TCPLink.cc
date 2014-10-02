@@ -1,24 +1,24 @@
 /*=====================================================================
- 
+
  QGroundControl Open Source Ground Control Station
- 
+
  (c) 2009 - 2011 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
- 
+
  This file is part of the QGROUNDCONTROL project
- 
+
  QGROUNDCONTROL is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  QGROUNDCONTROL is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
- 
+
  ======================================================================*/
 
 #include <QTimer>
@@ -37,15 +37,18 @@
 ///
 ///     @author Don Gagne <don@thegagnes.com>
 
-TCPLink::TCPLink(QHostAddress hostAddress, quint16 socketPort) :
+TCPLink::TCPLink(QHostAddress hostAddress, quint16 socketPort, bool asServer) :
     _hostAddress(hostAddress),
     _port(socketPort),
+    _asServer(asServer),
     _socket(NULL),
     _socketIsConnected(false)
 {
+    _server.setMaxPendingConnections(1);
+
     _linkId = getNextLinkId();
     _resetName();
-    
+
     qDebug() << "TCP Created " << _name;
 }
 
@@ -63,15 +66,15 @@ void TCPLink::run()
 void TCPLink::setHostAddress(QHostAddress hostAddress)
 {
     bool reconnect = false;
-    
+
 	if (this->isConnected()) {
 		disconnect();
 		reconnect = true;
 	}
-    
+
 	_hostAddress = hostAddress;
     _resetName();
-    
+
 	if (reconnect) {
 		connect();
 	}
@@ -85,19 +88,40 @@ void TCPLink::setHostAddress(const QString& hostAddress)
 void TCPLink::setPort(int port)
 {
     bool reconnect = false;
-    
+
 	if (this->isConnected()) {
 		disconnect();
 		reconnect = true;
 	}
-    
+
 	_port = port;
     _resetName();
-    
+
 	if (reconnect) {
 		connect();
 	}
 }
+
+void TCPLink::setAsServer(bool asServer)
+{
+    if (_asServer == asServer)
+        return;
+
+    bool reconnect = false;
+
+    if (this->isConnected()) {
+        disconnect();
+        reconnect = true;
+    }
+
+    _asServer = asServer;
+    _resetName();
+
+    if (reconnect) {
+        connect();
+    }
+}
+
 
 #ifdef TCPLINK_READWRITE_DEBUG
 void TCPLink::_writeDebugBytes(const char *data, qint16 size)
@@ -144,14 +168,14 @@ void TCPLink::writeBytes(const char* data, qint64 size)
 void TCPLink::readBytes()
 {
     qint64 byteCount = _socket->bytesAvailable();
-    
+
     if (byteCount)
     {
         QByteArray buffer;
         buffer.resize(byteCount);
-        
+
         _socket->read(buffer.data(), buffer.size());
-        
+
         emit bytesReceived(this, buffer);
 
         // Log the amount and time received for future data rate calculations.
@@ -183,7 +207,7 @@ bool TCPLink::disconnect()
 {
 	quit();
 	wait();
-    
+
     if (_socket)
 	{
         _socket->disconnectFromHost();
@@ -194,7 +218,9 @@ bool TCPLink::disconnect()
         emit disconnected();
         emit connected(false);
 	}
-    
+
+    _server.close();
+
     return true;
 }
 
@@ -220,28 +246,44 @@ bool TCPLink::connect()
 bool TCPLink::_hardwareConnect(void)
 {
     Q_ASSERT(_socket == NULL);
-	_socket = new QTcpSocket();
-    
-    QSignalSpy errorSpy(_socket, SIGNAL(error(QAbstractSocket::SocketError)));
-    
-    _socket->connectToHost(_hostAddress, _port);
-    
-    QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
-    QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
-    
-    // Give the socket five seconds to connect to the other side otherwise error out
-    if (!_socket->waitForConnected(5000))
+
+    if (_asServer)
     {
-        // Whether a failed connection emits an error signal or not is platform specific.
-        // So in cases where it is not emitted, we emit one ourselves.
-        if (errorSpy.count() == 0) {
-            emit communicationError(getName(), "Connection failed");
-        }
-        delete _socket;
-        _socket = NULL;
-        return false;
+        if (!_server.isListening() && !_server.listen(QHostAddress::Any, _port))
+            return false;
+        if (!_server.waitForNewConnection(5000))
+            return false;
+
+        _socket = _server.nextPendingConnection();
+
+        QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
+        QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
     }
-    
+    else
+    {
+    	_socket = new QTcpSocket();
+
+        QSignalSpy errorSpy(_socket, SIGNAL(error(QAbstractSocket::SocketError)));
+
+        _socket->connectToHost(_hostAddress, _port);
+
+        QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
+        QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
+
+        // Give the socket five seconds to connect to the other side otherwise error out
+        if (!_socket->waitForConnected(5000))
+        {
+            // Whether a failed connection emits an error signal or not is platform specific.
+            // So in cases where it is not emitted, we emit one ourselves.
+            if (errorSpy.count() == 0) {
+                emit communicationError(getName(), "Connection failed");
+            }
+            delete _socket;
+            _socket = NULL;
+            return false;
+        }
+    }
+
     _socketIsConnected = true;
     emit connected(true);
     emit connected();
@@ -292,6 +334,6 @@ qint64 TCPLink::getCurrentOutDataRate() const
 
 void TCPLink::_resetName(void)
 {
-    _name = QString("TCP Link (host:%1 port:%2)").arg(_hostAddress.toString()).arg(_port);
+    _name = QString("TCP %1 (host:%2 port:%3)").arg(_asServer ? "Server" : "Link").arg(_hostAddress.toString()).arg(_port);
     emit nameChanged(_name);
 }
