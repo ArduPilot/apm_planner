@@ -15,12 +15,14 @@ QGCTCPLinkConfiguration::QGCTCPLinkConfiguration(int linkid, QWidget *parent) :
     ui->portSpinBox->setValue(port);
     QString addr = LinkManager::instance()->getTcpLinkHost(linkid).toString();
     ui->hostAddressLineEdit->setText(addr);
+    ui->asServerCheckBox->setChecked(LinkManager::instance()->isTcpServer(linkid));
     connect(ui->portSpinBox,SIGNAL(valueChanged(int)),this,SLOT(valuesChanged()));
     connect(ui->hostAddressLineEdit,SIGNAL(textChanged(QString)),this,SLOT(valuesChanged()));
+    connect(ui->asServerCheckBox,SIGNAL(stateChanged(int)),this,SLOT(valuesChanged()));
 }
 void QGCTCPLinkConfiguration::valuesChanged()
 {
-    LinkManager::instance()->modifyTcpConnection(m_linkId,QHostAddress(ui->hostAddressLineEdit->text()),ui->portSpinBox->value());
+    LinkManager::instance()->modifyTcpConnection(m_linkId,QHostAddress(ui->hostAddressLineEdit->text()),ui->portSpinBox->value(),ui->asServerCheckBox->isChecked());
 }
 
 QGCTCPLinkConfiguration::~QGCTCPLinkConfiguration()
