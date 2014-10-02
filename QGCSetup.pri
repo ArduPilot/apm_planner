@@ -49,9 +49,11 @@ for(COPY_DIR, COPY_RESOURCE_LIST):QMAKE_POST_LINK += $$CONCATCMD $$QMAKE_COPY_DI
 #
 # Perform platform specific setup
 #
+message(QTDIR $$[QT_INSTALL_PREFIX])
 MacBuild {
-	# Copy non-standard libraries and frameworks into app package
+    # Copy libraries and frameworks into app package
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$BASEDIR/libs/lib/Frameworks $$DESTDIR/$${TARGET}.app/Contents/Frameworks
+    QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$[QT_INSTALL_PREFIX]/qml/QtQuick.2 $$DESTDIR/$${TARGET}.app/Contents/MacOS/qml/QtQuick.2
 
     # SDL Framework
     QMAKE_POST_LINK += && install_name_tool -change "@rpath/SDL.framework/Versions/A/SDL" "@executable_path/../Frameworks/SDL.framework/Versions/A/SDL" $$DESTDIR/$${TARGET}.app/Contents/MacOS/$${TARGET}
