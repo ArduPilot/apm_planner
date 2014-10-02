@@ -83,7 +83,7 @@ public:
     void setSerialDataBits(int index,int bits);
     void setSerialStopBits(int index,int bits);
     void removeSerialConnection(int index);
-    void connectLink(int index);
+    bool connectLink(int index);
     void disconnectLink(int index);
     UASInterface* getUas(int id);
     UASInterface* createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);

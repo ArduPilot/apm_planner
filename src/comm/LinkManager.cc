@@ -346,15 +346,13 @@ void LinkManager::removeLink(int linkId)
     }
 }
 
-void LinkManager::connectLink(int index)
+bool LinkManager::connectLink(int index)
 {
     if (m_connectionMap.contains(index))
     {
-        if (!m_connectionMap.value(index)->connect())
-        {
-            //Can't connect, there will be a signal emitted.
-        }
+        return m_connectionMap.value(index)->connect();
     }
+    return false;
 }
 void LinkManager::disconnectLink(int index)
 {

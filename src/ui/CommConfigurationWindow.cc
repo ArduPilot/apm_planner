@@ -190,13 +190,12 @@ void CommConfigurationWindow::setConnection()
 {
     if (!LinkManager::instance()->getLinkConnected(m_linkid))
     {
-        LinkManager::instance()->connectLink(m_linkid);
-        this->window()->close();
+        if (LinkManager::instance()->connectLink(m_linkid))
+            this->window()->close();
     }
     else
     {
         LinkManager::instance()->disconnectLink(m_linkid);
-
     }
 }
 
