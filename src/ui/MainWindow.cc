@@ -64,6 +64,7 @@ This file is part of the QGROUNDCONTROL project
 #endif
 
 #include "AboutDialog.h"
+#include "DroneshareDialog.h"
 
 // FIXME Move
 #include "PxQuadMAV.h"
@@ -134,7 +135,8 @@ MainWindow::MainWindow(QWidget *parent):
     changingViewsFlag(false),
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
-    m_heartbeatEnabled(true)
+    m_heartbeatEnabled(true),
+    m_droneshareDialog(NULL)
 {
     QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -367,6 +369,14 @@ MainWindow::MainWindow(QWidget *parent):
             this, SLOT(showAutoUpdateDownloadDialog(QString,QString,QString,QString)));
     connect(&m_autoUpdateCheck, SIGNAL(noUpdateAvailable()),
             this, SLOT(showNoUpdateAvailDialog()));
+
+    // Trigger Droneshare Notificaton
+    QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
+    if(settings.value("DRONESHARE_NOTIFICATION_ENABLED",true).toBool()){
+        QTimer::singleShot(11000, this, SLOT(showDroneshareDialog()));
+    }
+    settings.endGroup();
 
 }
 
@@ -2453,5 +2463,14 @@ void MainWindow::enableHeartbeat(bool enabled)
             UASManager::instance()->getUASList().at(i)->setHeartbeatEnabled(enabled);
         }
         storeSettings();
+    }
+}
+
+void MainWindow::showDroneshareDialog()
+{
+    if(!m_droneshareDialog){
+        m_droneshareDialog = new DroneshareDialog(this);
+        m_droneshareDialog->show();
+        m_droneshareDialog->raise();
     }
 }

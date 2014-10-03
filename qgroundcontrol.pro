@@ -410,7 +410,8 @@ FORMS += \
     src/ui/PrimaryFlightDisplayQML.ui \
     src/ui/configuration/CompassMotorCalibrationDialog.ui \
     src/ui/MissionElevationDisplay.ui \
-    src/ui/DroneshareUploadDialog.ui
+    src/ui/DroneshareUploadDialog.ui \
+    src/ui/DroneshareDialog.ui \
 
 HEADERS += \
     src/MG.h \
@@ -629,6 +630,7 @@ HEADERS += \
     src/ui/GoogleElevationData.h \
     src/ui/DroneshareUploadDialog.h \
     src/ui/DroneshareUpload.h \
+    src/ui/DroneshareDialog.h \
     src/ui/LoginDialog.h \
     src/ui/DroneshareAPIBroker.h \
     src/comm/UASObject.h \
@@ -847,6 +849,7 @@ SOURCES += src/main.cc \
     src/ui/GoogleElevationData.cpp \
     src/ui/DroneshareUploadDialog.cpp \
     src/ui/DroneshareUpload.cpp \
+    src/ui/DroneshareDialog.cc \
     src/ui/LoginDialog.cpp \
     src/ui/DroneshareAPIBroker.cpp \
     src/comm/UASObject.cc \
