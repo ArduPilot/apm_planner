@@ -33,7 +33,7 @@
             "platform": "debian64",
             "type": "stable",
             "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.14_debian64.deb",
-            "name" : "apm_planner2_2.0.14_debian64.deb",
+            "name" : "apm_planner_2.0.14_debian64.deb",
             "version": "2.0.14",
             "sha" : "",
             "date" : "2014-08-01"
@@ -42,7 +42,7 @@
             "platform": "ubuntu",
             "type": "stable",
             "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.14_ubuntu.deb",
-            "name" : "apm_planner2_2.0.14_ubuntu.deb",
+            "name" : "apm_planner_2.0.14_ubuntu.deb",
             "version": "2.0.14",
             "sha" : "",
             "date" : "2014-08-01"
@@ -51,7 +51,7 @@
             "platform": "ubuntu64",
             "type": "stable",
             "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.14_ubuntu64.deb",
-            "name" : "apm_planner2_2.0.14_ubuntu64.deb",
+            "name" : "apm_planner_2.0.14_ubuntu64.deb",
             "version": "2.0.14",
             "sha" : "",
             "date" : "2014-08-01"
@@ -60,7 +60,7 @@
             "platform": "ubuntu_trusty",
             "type": "stable",
             "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.14_ubuntu_trusty.deb",
-            "name" : "apm_planner2_2.0.14_ubuntu_trusty.deb",
+            "name" : "apm_planner_2.0.14_ubuntu_trusty.deb",
             "version": "2.0.14",
             "sha" : "",
             "date" : "2014-08-01"
@@ -69,7 +69,7 @@
             "platform": "ubuntu_trusty64",
             "type": "stable",
             "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.14_ubuntu_trusty64.deb",
-            "name" : "apm_planner2_2.0.14_ubuntu_trusty64.deb",
+            "name" : "apm_planner_2.0.14_ubuntu_trusty64.deb",
             "version": "2.0.14",
             "sha" : "",
             "date" : "2014-08-01"
@@ -77,74 +77,74 @@
         {
             "platform": "osx",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc1_osx.dmg",
-            "name" : "apm_planner_2.0.15-rc1_osx.dmg",
-            "version" : "2.0.15-rc1",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc2_osx.dmg",
+            "name" : "apm_planner_2.0.15-rc2_osx.dmg",
+            "version" : "2.0.15-rc2",
             "sha" : "",
-            "date" : "2014-08-27"
+            "date" : "2014-10-03"
         },
         {
             "platform": "win",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc1_win.exe",
-            "name" : "apm_planner_2.0.15-rc1_win.exe",
-            "version": "2.0.15-rc1",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc2_win.exe",
+            "name" : "apm_planner_2.0.15-rc2_win.exe",
+            "version": "2.0.15-rc2",
             "sha" : "",
-            "date" : "2014-08-27"
+            "date" : "2014-10-03"
         },
         {
             "platform": "debian",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc1_debian.deb",
-            "name" : "apm_planner_2.0.15-rc1_debian.deb",
-            "version": "2.0.15-rc1",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc2_debian.deb",
+            "name" : "apm_planner_2.0.15-rc2_debian.deb",
+            "version": "2.0.15-rc2",
             "sha" : "",
-            "date" : "2014-08-27"
+            "date" : "2014-10-03"
         },
         {
             "platform": "debian64",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc1_debian64.deb",
-            "name" : "apm_planner2_2.0.15-rc1_debian64.deb",
-            "version": "2.0.15-rc1",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc2_debian64.deb",
+            "name" : "apm_planner_2.0.15-rc2_debian64.deb",
+            "version": "2.0.15-rc2",
             "sha" : "",
-            "date" : "2014-08-27"
+            "date" : "2014-10-03"
         },
         {
             "platform": "ubuntu",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc1_ubuntu.deb",
-            "name" : "apm_planner2_2.0.15-rc1_ubuntu.deb",
-            "version": "2.0.15-rc1",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc2_ubuntu.deb",
+            "name" : "apm_planner_2.0.15-rc2_ubuntu.deb",
+            "version": "2.0.15-rc2",
             "sha" : "",
-            "date" : "2014-08-27"
+            "date" : "2014-10-03"
         },
         {
             "platform": "ubuntu64",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc1_ubuntu64.deb",
-            "name" : "apm_planner2_2.0.15-rc1_ubuntu64.deb",
-            "version": "2.0.15-rc1",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc2_ubuntu64.deb",
+            "name" : "apm_planner_2.0.15-rc2_ubuntu64.deb",
+            "version": "2.0.15-rc2",
             "sha" : "",
-            "date" : "2014-08-27"
+            "date" : "2014-10-03"
         },
         {
             "platform": "ubuntu_trusty",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc1_ubuntu_trusty.deb",
-            "name" : "apm_planner2_2.0.15-rc1_ubuntu_trusty.deb",
-            "version": "2.0.15-rc1",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc2_ubuntu_trusty.deb",
+            "name" : "apm_planner_2.0.15-rc2_ubuntu_trusty.deb",
+            "version": "2.0.15-rc2",
             "sha" : "",
-            "date" : "2014-08-27"
+            "date" : "2014-10-03"
         },
         {
             "platform": "ubuntu_trusty64",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc1_ubuntu_trusty64.deb",
-            "name" : "apm_planner2_2.0.15-rc1_ubuntu_trusty64.deb",
-            "version": "2.0.15-rc1",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.15-rc2_ubuntu_trusty64.deb",
+            "name" : "apm_planner_2.0.15-rc2_ubuntu_trusty64.deb",
+            "version": "2.0.15-rc2",
             "sha" : "",
-            "date" : "2014-08-27"
+            "date" : "2014-10-03"
         }
     ]
 }

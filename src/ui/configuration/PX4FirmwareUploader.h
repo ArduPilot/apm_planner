@@ -2,7 +2,7 @@
 #define PX4FIRMWAREUPLOADER_H
 
 #include <QThread>
-#include <qserialport.h>
+#include <QtSerialPort/qserialport.h>
 #include <QFile>
 #include <QTemporaryFile>
 #include <QDebug>

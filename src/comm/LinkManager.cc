@@ -38,7 +38,8 @@ This file is part of the APM_PLANNER project
 #include "UDPLink.h"
 #include "TCPLink.h"
 #include <QSettings>
-#include "qserialportinfo.h"
+#include <QtSerialPort/qserialportinfo.h>
+#include "UASObject.h"
 LinkManager::LinkManager(QObject *parent) :
     QObject(parent)
 {
@@ -259,6 +260,7 @@ int LinkManager::addSerialConnection()
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
+    connect(connection,SIGNAL(timeoutTriggered(LinkInterface*)),this,SLOT(linkTimeoutTriggered(LinkInterface*)));
     m_connectionMap.insert(connection->getId(),connection);
     emit newLink(connection->getId());
     saveSettings();
@@ -280,6 +282,7 @@ int LinkManager::addSerialConnection(QString port,int baud)
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
+    connect(connection,SIGNAL(timeoutTriggered(LinkInterface*)),this,SLOT(linkTimeoutTriggered(LinkInterface*)));
     connection->setPortName(port);
     connection->setBaudRate(baud);
     m_connectionMap.insert(connection->getId(),connection);
@@ -328,9 +331,16 @@ void LinkManager::removeLink(LinkInterface *link)
 
 void LinkManager::removeLink(int linkid)
 {
-    if (!m_connectionMap.contains(linkid))
-        return;
-    removeLink(m_connectionMap.value(linkid));
+    if (m_connectionMap.contains(linkId))
+    {
+        if (m_connectionMap.value(linkId)->isConnected())
+        {
+            m_connectionMap.value(linkId)->disconnect();
+        }
+        delete m_connectionMap.value(linkId);
+        m_connectionMap.remove(linkId);
+        saveSettings();
+    }
 }
 
 bool LinkManager::connectLink(int index)
@@ -633,6 +643,10 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     case MAV_AUTOPILOT_ARDUPILOTMEGA:
     {
         ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(0, sysid);
+        UASObject *obj = new UASObject();
+        connect(mavlink,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),obj,SLOT(messageReceived(LinkInterface*,mavlink_message_t)));
+        m_uasObjectMap[sysid] = obj;
+
         // Set the system type
         mav->setSystemType((int)heartbeat->type);
         // Connect this robot to the UAS object
@@ -681,6 +695,15 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     return uas;
 
 }
+UASObject *LinkManager::getUasObject(int uasid)
+{
+    if (m_uasObjectMap.contains(uasid))
+    {
+        return m_uasObjectMap.value(uasid);
+    }
+    return 0;
+}
+
 void LinkManager::setSerialParityType(int index,int parity)
 {
     if (!m_connectionMap.contains(index))
@@ -753,4 +776,42 @@ void LinkManager::linkDisonnected(LinkInterface* link)
 void LinkManager::linkErrorRec(LinkInterface *link,QString errorstring)
 {
     emit linkError(link->getId(),errorstring);
+}
+void LinkManager::linkTimeoutTriggered(LinkInterface *link)
+{
+    //Link has had a timeout
+    emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");
+    link->disconnect();
+}
+void LinkManager::disableTimeouts(int index)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    m_connectionMap.value(index)->disableTimeouts();
+}
+
+void LinkManager::enableTimeouts(int index)
+{
+    if (!m_connectionMap.contains(index))
+    {
+        return;
+    }
+    m_connectionMap.value(index)->enableTimeouts();
+}
+void LinkManager::disableAllTimeouts()
+{
+    for (QMap<int,LinkInterface*>::const_iterator i = m_connectionMap.constBegin(); i != m_connectionMap.constEnd();i++)
+    {
+        i.value()->disableTimeouts();
+    }
+}
+
+void LinkManager::enableAllTimeouts()
+{
+    for (QMap<int,LinkInterface*>::const_iterator i = m_connectionMap.constBegin(); i != m_connectionMap.constEnd();i++)
+    {
+        i.value()->disableTimeouts();
+    }
 }

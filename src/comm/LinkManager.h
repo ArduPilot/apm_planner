@@ -50,6 +50,7 @@ This file is part of the APM_PLANNER project
 #include <QMap>
 #include "UASInterface.h"
 #include "UAS.h"
+#include "UASObject.h"
 class LinkManager : public QObject
 {
     Q_OBJECT
@@ -65,6 +66,10 @@ public:
         return _instance;
     }
     ~LinkManager();
+    void disableTimeouts(int index);
+    void enableTimeouts(int index);
+    void disableAllTimeouts();
+    void enableAllTimeouts();
     void loadSettings();
     void saveSettings();
     int addSerialConnection(QString port,int baud);
@@ -106,6 +111,8 @@ public:
     void startLogging();
     void setLogSubDirectory(QString dir);
     bool loggingEnabled();
+    UASObject *getUasObject(int uasid);
+    QMap<int,UASObject*> m_uasObjectMap;
 private:
     QMap<int,LinkInterface*> m_connectionMap;
     QMap<int,UASInterface*> m_uasMap;
@@ -124,6 +131,7 @@ private slots:
     void linkConnected(LinkInterface* link);
     void linkDisonnected(LinkInterface* link);
     void linkErrorRec(LinkInterface* link,QString error);
+    void linkTimeoutTriggered(LinkInterface*);
 public slots:
     void messageReceived(LinkInterface* link,mavlink_message_t message);
     void protocolStatusMessageRec(QString title,QString text);

@@ -37,19 +37,13 @@ This file is part of the PIXHAWK project
 #include <QStringList>
 #include <audio/AlsaAudio.h>
 #ifdef Q_OS_MAC
-#include <MediaObject>
-#include <AudioOutput>
-#endif
-#ifdef Q_OS_WIN
-#include <Phonon/MediaObject>
-#include <Phonon/AudioOutput>
+#include <QtMultimedia>
 #endif
 
-/* For Snow leopard and later
 #ifdef Q_OS_MAC
-#include <NSSpeechSynthesizer.h>
+struct SpeechChannelRecord;
+typedef SpeechChannelRecord *           SpeechChannel;
 #endif
-   */
 
 #ifdef Q_OS_LINUX2
 extern "C" {
@@ -107,7 +101,7 @@ signals:
 
 protected:
 #ifdef Q_OS_MAC
-    //NSSpeechSynthesizer
+    SpeechChannel *m_speech_channel;
 #endif
 #ifdef Q_OS_LINUX
     //cst_voice* voice; ///< The flite voice object

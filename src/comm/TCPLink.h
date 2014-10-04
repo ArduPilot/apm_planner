@@ -43,7 +43,7 @@
 #include <QMetaType>
 #include <QTcpSocket>
 #include <QTcpServer>
-Q_DECLARE_METATYPE(QAbstractSocket::SocketError)
+//Q_DECLARE_METATYPE(QAbstractSocket::SocketError)
 
 //#define TCPLINK_READWRITE_DEBUG   // Use to debug data reads/writes
 

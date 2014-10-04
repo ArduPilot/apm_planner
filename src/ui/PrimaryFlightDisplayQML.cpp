@@ -27,7 +27,9 @@ This file is part of the APM_PLANNER project
 #include "configuration.h"
 #include "MainWindow.h"
 #include <QVBoxLayout>
-
+#include <QQmlContext>
+#include <QQuickItem>
+#include <QQmlEngine>
 #define ToRad(x) (x*0.01745329252)      // *pi/180
 #define ToDeg(x) (x*57.2957795131)      // *180/pi
 
@@ -44,11 +46,17 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
         QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml" + " not found. Please reinstall the application and try again");
         exit(-1);
     }
-    m_declarativeView = new QDeclarativeView(url);
+    m_declarativeView = new QQuickView();
+    m_declarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
+    m_declarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+    m_declarativeView->setSource(url);
+
+
     QLOG_DEBUG() << "QML Status:" << m_declarativeView->status();
-    m_declarativeView->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
     QVBoxLayout* layout = new QVBoxLayout();
-    layout->addWidget(m_declarativeView);
+    QWidget *viewcontainer = QWidget::createWindowContainer(m_declarativeView);
+    layout->addWidget(viewcontainer);
     setLayout(layout);
     show();
 
@@ -67,60 +75,21 @@ PrimaryFlightDisplayQML::~PrimaryFlightDisplayQML()
 void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
 {
     if (m_uasInterface) {
-        disconnect(uas, SIGNAL(attitudeChanged(UASInterface*,double,double,double,quint64)),
-                this, SLOT(attitudeChanged(UASInterface*, double, double, double, quint64)));
-        disconnect(uas, SIGNAL(altitudeChanged(UASInterface*,double,double,double,quint64)),
-                this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
-        disconnect(uas, SIGNAL(speedChanged(UASInterface*,double,double,quint64)),
-                this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
         disconnect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
                 this,SLOT(uasTextMessage(int,int,int,QString)));
     }
     m_uasInterface = uas;
 
     if (m_uasInterface) {
-        connect(uas, SIGNAL(attitudeChanged(UASInterface*,double,double,double,quint64)),
-                this, SLOT(attitudeChanged(UASInterface*, double, double, double, quint64)));
-        connect(uas, SIGNAL(altitudeChanged(UASInterface*,double,double,double,quint64)),
-                this, SLOT(altitudeChanged(UASInterface*,double,double,double,quint64)));
-        connect(uas, SIGNAL(speedChanged(UASInterface*,double,double,quint64)),
-                this, SLOT(speedChanged(UASInterface*,double,double,quint64)));
         connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
                 this,SLOT(uasTextMessage(int,int,int,QString)));
+        VehicleOverview *obj = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
+        RelPositionOverview *rel = LinkManager::instance()->getUasObject(uas->getUASID())->getRelPositionOverview();
+        m_declarativeView->rootContext()->setContextProperty("vehicleoverview",obj);
+        m_declarativeView->rootContext()->setContextProperty("relpositionoverview",rel);
+        m_declarativeView->rootContext()->setContextProperty("abspositionoverview",LinkManager::instance()->getUasObject(uas->getUASID())->getAbsPositionOverview());
+        QMetaObject::invokeMethod(m_declarativeView->rootObject(),"activeUasSet");
     }
-}
-
-void PrimaryFlightDisplayQML::attitudeChanged(UASInterface *uas, double roll, double pitch, double yaw, quint64 usec)
-{
-    Q_UNUSED(uas);
-    Q_UNUSED(usec);
-    QObject *root = m_declarativeView->rootObject();
-    root->setProperty("roll", ToDeg(roll));
-    root->setProperty("pitch", ToDeg(pitch));
-    double heading = ToDeg(yaw);
-    if (heading<0)
-        heading+=360;
-    root->setProperty("heading", heading);
-}
-
-void PrimaryFlightDisplayQML::altitudeChanged(UASInterface *uas, double altitudeAMSL, double altitudeRelative,
-                                              double climbRate, quint64 usec)
-{
-    Q_UNUSED(uas);
-    Q_UNUSED(usec);
-    QObject *root = m_declarativeView->rootObject();
-    root->setProperty("altitudeRelative", altitudeRelative);
-    root->setProperty("altitudeAMSL", altitudeAMSL);
-    root->setProperty("climbRate", climbRate);
-}
-
-void PrimaryFlightDisplayQML::speedChanged(UASInterface *uas, double groundSpeed, double airSpeed, quint64 usec)
-{
-    Q_UNUSED(uas);
-    Q_UNUSED(usec);
-    QObject *root = m_declarativeView->rootObject();
-    root->setProperty("airspeed", airSpeed);
-    root->setProperty("groundspeed", groundSpeed);
 }
 
 void PrimaryFlightDisplayQML::uasTextMessage(int uasid, int componentid, int severity, QString text)

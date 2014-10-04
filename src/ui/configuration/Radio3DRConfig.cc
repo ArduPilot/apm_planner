@@ -29,8 +29,8 @@ This file is part of the APM_PLANNER project
 #include "configuration.h"
 
 #include <QSettings>
-#include <qserialportinfo.h>
-#include <qserialport.h>
+#include <QtSerialPort/qserialportinfo.h>
+#include <QtSerialPort/qserialport.h>
 #include <QTimer>
 #include <QMessageBox>
 

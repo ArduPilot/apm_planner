@@ -1002,8 +1002,8 @@ bool QGCXPlaneLink::connectSimulation()
     QLOG_TRACE() << "REQ SEND TO:" << localAddrStr << localPortStr;
 
     ip.index = 0;
-    strncpy(ip.str_ipad_them, localAddrStr.toAscii(), qMin((int)sizeof(ip.str_ipad_them), 16));
-    strncpy(ip.str_port_them, localPortStr.toAscii(), qMin((int)sizeof(ip.str_port_them), 6));
+    strncpy(ip.str_ipad_them, localAddrStr.toLatin1(), qMin((int)sizeof(ip.str_ipad_them), 16));
+    strncpy(ip.str_port_them, localPortStr.toLatin1(), qMin((int)sizeof(ip.str_port_them), 6));
     ip.use_ip = 1;
 
     writeBytes((const char*)&ip, sizeof(ip));

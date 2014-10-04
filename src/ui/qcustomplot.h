@@ -50,7 +50,7 @@
 #  include <QPrinter>
 #else
 #  include <QtNumeric>
-#  include <QtPrintSupport>
+#include <QtPrintSupport/QtPrintSupport>
 #endif
 
 class QCPPainter;

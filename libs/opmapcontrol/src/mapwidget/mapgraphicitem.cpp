@@ -29,6 +29,7 @@
 #include "homeitem.h"
 #include "mapgraphicitem.h"
 #include "waypointlineitem.h"
+#include <QGraphicsSceneMouseEvent>
 
 namespace mapcontrol
 {

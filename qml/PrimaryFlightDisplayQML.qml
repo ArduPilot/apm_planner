@@ -14,25 +14,34 @@
 //    (c) 2014 Author: Bill Bonney <billbonney@communistech.com>
 //
 
-import QtQuick 1.1
+import QtQuick 2.0
 import "./components"
 
 Rectangle {
     // Property Defintions
     id:root
-    property real roll: 0
-    property real pitch: 0
-    property real heading: 0
-
-    property real altitudeRelative: 0
-    property real altitudeAMSL: 0
-    property real airspeed: 0
-    property real groundspeed: 0
-    property real climbRate: 0
-
     property bool enableBackgroundVideo: false
     property string statusMessage: ""
     property bool showStatusMessage: false
+
+    function activeUasSet() {
+        rollPitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll * 57.2957795131; })
+        rollPitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch*57.2957795131 })
+        pitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll*57.2957795131 })
+        pitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch*57.2957795131 })
+        speedIndicator.groundspeed = Qt.binding(function() { return relpositionoverview.groundspeed })
+        informationIndicator.groundSpeed = Qt.binding(function() { return relpositionoverview.groundspeed })
+        informationIndicator.airSpeed = Qt.binding(function() { return relpositionoverview.airspeed })
+        compassIndicator.heading = Qt.binding(function() {
+            return (relpositionoverview.yaw < 0) ? (relpositionoverview.yaw*57.2957795131) + 360 : (relpositionoverview.yaw*57.2957795131)
+        })
+        speedIndicator.airspeed = Qt.binding(function() { return relpositionoverview.airspeed } )
+        altIndicator.alt = Qt.binding(function() { return abspositionoverview.relative_alt } )
+    }
+    function activeUasUnset() {
+        console.log("PFD-QML: Active UAS is now unset");
+        //Code to make display show a lack of connection here.
+    }
 
 
     onShowStatusMessageChanged: {
@@ -49,8 +58,8 @@ Rectangle {
     RollPitchIndicator {
         id: rollPitchIndicator
         anchors.centerIn: parent
-        rollAngle: parent.roll
-        pitchAngle: parent.pitch
+        rollAngle: 0
+        pitchAngle: 0
         enableBackgroundVideo: parent.enableBackgroundVideo
     }
 
@@ -60,23 +69,23 @@ Rectangle {
         anchors.bottom: parent.bottom
         opacity: 0.6
 
-        pitchAngle: parent.pitch
-        rollAngle: parent.roll
+        pitchAngle: 0
+        rollAngle: 0
     }
 
     AltitudeIndicator {
         id: altIndicator
         anchors.right: parent.right
         width: 35
-        alt: parent.altitudeRelative
+        alt: 0
     }
 
     SpeedIndicator {
         id: speedIndicator
         anchors.left: parent.left
         width: 35
-        airspeed: parent.airspeed
-        groundspeed: parent.groundspeed
+        airspeed: 0
+        groundspeed: 0
     }
 
     CompassIndicator {
@@ -86,7 +95,7 @@ Rectangle {
             y: 20
         }
 
-        heading: parent.heading
+        heading: 0
     }
 
     StatusMessageIndicator  {
@@ -99,8 +108,9 @@ Rectangle {
     InformationOverlayIndicator{
         id: informationIndicator
         anchors.fill: parent
-        airSpeed: parent.airspeed
-        groundSpeed: parent.groundspeed
+        airSpeed: 0
+        groundSpeed: 0
     }
+
 }
 

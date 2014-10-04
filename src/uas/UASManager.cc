@@ -333,11 +333,11 @@ void UASManager::removeUAS(UASInterface* uas)
             }
             else
             {
-                // TODO send a null pointer if no UAS is present any more
-                // This has to be properly tested however, since it might
-                // crash code parts not handling null pointers correctly.
+                // sends a null pointer if no UAS is present any more.
+                // It requires listeners of activeUASSet signal to
+                // check for NULL, otherwise bad stuff will happen!
                 activeUAS = NULL;
-                // XXX Not emitting the null pointer yet
+                emit activeUASSet(activeUAS);
             }
         }
         systems.removeAt(listindex);

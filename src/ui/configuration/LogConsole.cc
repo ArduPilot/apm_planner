@@ -6,7 +6,7 @@
 
 #include <QFile>
 #include <QDateTime>
-#include <qserialport.h>
+#include <QtSerialPort/qserialport.h>
 #include <QRegExp>
 
 static const long

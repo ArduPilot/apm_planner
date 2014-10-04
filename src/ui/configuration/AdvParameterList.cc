@@ -168,6 +168,8 @@ void AdvParameterList::setParameterMetaData(const QString &name, const QString &
     m_paramToUnitMap[name] = unit;
     m_paramToRangeMap[name] = range;
 }
+
+
 void AdvParameterList::loadButtonClicked()
 {
     if (!m_uas)
@@ -175,10 +177,23 @@ void AdvParameterList::loadButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
-
-    QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory(),"*.param;;*.txt");
-    QApplication::processEvents(); // Helps clear dialog from screen
-
+    QFileDialog *dialog = new QFileDialog(this,"Open File",QGC::parameterDirectory(),"*.param;;*.txt");
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(loadDialogAccepted()));
+    dialog->show();
+}
+void AdvParameterList::loadDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        return;
+    }
+    QString filename = dialog->selectedFiles().at(0);
     if(filename.length() == 0)
     {
         return;
@@ -209,16 +224,30 @@ void AdvParameterList::loadButtonClicked()
             }
         }
     }
-
 }
 
 void AdvParameterList::saveButtonClicked()
 {
-    QString filename = QFileDialog::getSaveFileName(this, "Save File", QGC::parameterDirectory()
-                                                    + "/parameters.param",
-                                                    tr("Parameters (*.param)"));
-    QApplication::processEvents(); // Helps clear dialog from screen
-
+    QFileDialog *dialog = new QFileDialog(this,"Save File",QGC::parameterDirectory()
+                                          + "/parameters.param",
+                                          tr("Parameters (*.param)"));
+    dialog->setFileMode(QFileDialog::AnyFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(saveDialogAccepted()));
+    dialog->setAcceptMode(QFileDialog::AcceptSave);
+    dialog->show();
+}
+void AdvParameterList::saveDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        return;
+    }
+    QString filename = dialog->selectedFiles().at(0);
     if(filename.length() == 0)
     {
         return;
@@ -234,7 +263,7 @@ void AdvParameterList::saveButtonClicked()
     QString fileheader = QInputDialog::getText(this,"Input file header","Header at beginning of file:");
 
     file.write(QString("#NOTE: " + QDateTime::currentDateTime().toString("M/d/yyyy h:m:s AP")
-                       + ": " + fileheader + "\r\n").toAscii());
+                       + ": " + fileheader + "\r\n").toLocal8Bit());
 
     QList<QString> paramnamelist = m_uas->getParamManager()->getParameterNames(1);
     for (int i=0;i<paramnamelist.size();i++)
@@ -243,11 +272,11 @@ void AdvParameterList::saveButtonClicked()
         m_uas->getParamManager()->getParameterValue(1,paramnamelist[i],value);
         if (value.type() == QVariant::Double || value.type() == QMetaType::Float)
         {
-            file.write(paramnamelist[i].append(",").append(QString::number(value.toFloat(),'f',8)).append("\r\n").toAscii());
+            file.write(paramnamelist[i].append(",").append(QString::number(value.toFloat(),'f',8)).append("\r\n").toLocal8Bit());
         }
         else
         {
-            file.write(paramnamelist[i].append(",").append(QString::number(value.toInt())).append("\r\n").toAscii());
+            file.write(paramnamelist[i].append(",").append(QString::number(value.toInt())).append("\r\n").toLocal8Bit());
         }
     }
     file.flush();
@@ -256,7 +285,7 @@ void AdvParameterList::saveButtonClicked()
 
 void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString parameterName, QVariant value)
 {
-    QLOG_DEBUG() << "APL::parameterChanged:" << parameterName << "char=" << QString::number(value.toChar().toAscii()) << "int=" << value.toInt() << "float=" << value.toFloat();
+    QLOG_DEBUG() << "APL::parameterChanged:" << parameterName << "char=" << QString::number(value.toChar().toLatin1()) << "int=" << value.toInt() << "float=" << value.toFloat();
     disconnect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
     if (!m_paramValueMap.contains(parameterName))
     {

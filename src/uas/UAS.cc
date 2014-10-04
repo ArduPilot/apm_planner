@@ -2479,7 +2479,7 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
             switch (value.type())
             {
             case QVariant::Char:
-                union_value.param_float = static_cast<char>(value.toChar().toAscii());
+                union_value.param_float = static_cast<char>(value.toChar().toLatin1());
                 p.param_type = MAV_PARAM_TYPE_INT8;
                 break;
             case QVariant::Int:
@@ -2505,7 +2505,7 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
             switch (value.type())
             {
             case QVariant::Char:
-                union_value.param_int8 = static_cast<unsigned char>(value.toChar().toAscii());
+                union_value.param_int8 = static_cast<unsigned char>(value.toChar().toLatin1());
                 p.param_type = MAV_PARAM_TYPE_INT8;
                 break;
             case QVariant::Int:
@@ -2539,7 +2539,7 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
             // String characters
             if ((int)i < paramId.length())
             {
-                p.param_id[i] = paramId.toAscii()[i];
+                p.param_id[i] = paramId.toLatin1()[i];
             }
             else
             {
@@ -3539,12 +3539,21 @@ void UAS::addLink(LinkInterface* link)
 
 void UAS::removeLink(QObject* object)
 {
-    LinkInterface* link = dynamic_cast<LinkInterface*>(object);
-    if (link)
+    for (int i=0;i<links->size();i++)
     {
-        links->removeAt(links->indexOf(link));
-        disconnect(link,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
-        disconnect(link,SIGNAL(connected()),this,SIGNAL(connected()));
+        if (links->at(i) == object)
+        {
+            links->removeAt(i);
+            i--;
+        }
+
+    }
+    disconnect(object,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
+    disconnect(object,SIGNAL(connected()),this,SIGNAL(connected()));
+    if (links->size() == 0)
+    {
+        //no more links, should remove this.
+        UASManager::instance()->removeUAS(this);
     }
 }
 

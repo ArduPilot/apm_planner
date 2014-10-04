@@ -1,7 +1,7 @@
 #ifndef WAYPOINTVIEWONLYVIEW_H
 #define WAYPOINTVIEWONLYVIEW_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include "Waypoint.h"
 #include <iostream>
 

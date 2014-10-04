@@ -5,8 +5,8 @@
 # HACK! BIG TIME!
 DEFINES += EXTERNAL_USE
 
-DEPENDPATH += src/core src/internals src/mapwidget src/internals/projections
-INCLUDEPATH += src/core src/internals src/internals/projections src/mapwidget
+DEPENDPATH += $$PWD/src/core $$PWD/src/internals $$PWD/src/mapwidget $$PWD/src/internals/projections
+INCLUDEPATH += $$PWD/src/core $$PWD/src/internals $$PWD/src/internals/projections $$PWD/src/mapwidget
 
 # Input
 HEADERS += libs/opmapcontrol/opmapcontrol.h \
@@ -43,7 +43,6 @@ HEADERS += libs/opmapcontrol/opmapcontrol.h \
            libs/opmapcontrol/src/internals/sizelatlng.h \
            libs/opmapcontrol/src/internals/tile.h \
            libs/opmapcontrol/src/internals/tilematrix.h \
-           libs/opmapcontrol/src/mapwidget/configuration.h \
            libs/opmapcontrol/src/mapwidget/gpsitem.h \
            libs/opmapcontrol/src/mapwidget/homeitem.h \
            libs/opmapcontrol/src/mapwidget/mapgraphicitem.h \
@@ -61,7 +60,8 @@ HEADERS += libs/opmapcontrol/opmapcontrol.h \
            libs/opmapcontrol/src/internals/projections/mercatorprojectionyandex.h \
            libs/opmapcontrol/src/internals/projections/platecarreeprojection.h \
            libs/opmapcontrol/src/internals/projections/platecarreeprojectionpergo.h \
-           libs/opmapcontrol/src/mapwidget/waypointlineitem.h
+           libs/opmapcontrol/src/mapwidget/waypointlineitem.h \
+    libs/opmapcontrol/src/mapwidget/omapconfiguration.h
 FORMS += libs/opmapcontrol/src/mapwidget/mapripform.ui
 SOURCES += libs/opmapcontrol/src/core/alllayersoftype.cpp \
            libs/opmapcontrol/src/core/cache.cpp \

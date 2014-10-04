@@ -671,20 +671,56 @@ void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QSt
         updateValue(uasId,name,unit,static_cast<double>(value.toInt()),msec);
     }
 }
-
 void AP2DataPlot2D::loadButtonClicked()
 {
-    QString filename = "";
-    if (!m_logLoaded)
+    if (m_logLoaded)
     {
-        filename = QFileDialog::getOpenFileName(this,"Select log file to open",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");
-        if (filename == "")
+        for (int i=0;i<m_graphNameList.size();i++)
         {
-            return;
+            m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
+            m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
         }
+        m_dataSelectionScreen->clear();
+        if (m_axisGroupingDialog)
+        {
+            m_axisGroupingDialog->clear();
+        }
+        m_plot->replot();
+        m_graphClassMap.clear();
+        m_graphCount=0;
+        m_dataList.clear();
+
+        //Unload the log.
+        m_logLoaded = false;
+        ui.loadOfflineLogButton->setText("Load Log");
+        ui.hideExcelView->setVisible(false);
+        ui.hideExcelView->setChecked(false);
+        ui.tableWidget->setVisible(false);
+        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
+        m_currentIndex = QDateTime::currentMSecsSinceEpoch();
+        m_startIndex = m_currentIndex;
+        return;
     }
-    QApplication::processEvents();
-    //Clear the graph
+    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(loadDialogAccepted()));
+    dialog->show();
+}
+void AP2DataPlot2D::loadDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        return;
+    }
+    QString filename = dialog->selectedFiles().at(0);
     for (int i=0;i<m_graphNameList.size();i++)
     {
         m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
@@ -700,28 +736,9 @@ void AP2DataPlot2D::loadButtonClicked()
     m_graphCount=0;
     m_dataList.clear();
 
-    if (m_logLoaded)
-    {
-        //Unload the log.
-        m_logLoaded = false;
-        ui.loadOfflineLogButton->setText("Load Log");
-        ui.hideExcelView->setVisible(false);
-        ui.hideExcelView->setChecked(false);
-        ui.tableWidget->setVisible(false);
-        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
-        m_currentIndex = QDateTime::currentMSecsSinceEpoch();
-        m_startIndex = m_currentIndex;
-        return;
-    }
-    else
-    {
-        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded</span></p>");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
-    }
+    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded</span></p>");
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     ui.autoScrollCheckBox->setChecked(false);
     ui.loadOfflineLogButton->setText("Unload Log");
 
@@ -746,6 +763,7 @@ void AP2DataPlot2D::loadButtonClicked()
     currentIndex=0;
     m_logLoaderThread->loadFile(filename,&m_sharedDb);
 }
+
 void AP2DataPlot2D::logLine(QString line)
 {
     if (ui.tableWidget->rowCount() <= currentIndex)
@@ -1395,8 +1413,25 @@ void AP2DataPlot2D::exportButtonClicked()
             return;
         }
     }
+    QFileDialog *dialog = new QFileDialog(this,"Save Log File",QGC::logDirectory(),"Log files (*.log);;All Files (*.*)");
+    dialog->setFileMode(QFileDialog::AnyFile);
+    dialog->setAcceptMode(QFileDialog::AcceptSave);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(exportDialogAccepted()));
+    dialog->show();
 
-    QString outputFileName = QFileDialog::getSaveFileName(this,"Save Log File",QString(),"Log files (*.log);;All Files (*.*)");
+}
+void AP2DataPlot2D::exportDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        return;
+    }
+    QString outputFileName = dialog->selectedFiles().at(0);
     QFile outputfile(outputFileName);
     if (!outputfile.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {
@@ -1426,31 +1461,31 @@ void AP2DataPlot2D::exportButtonClicked()
         int size = 0;
         for (int i=0;i<format.size();i++)
         {
-            if (format.at(i).toAscii() == 'n')
+            if (format.at(i).toLatin1() == 'n')
             {
                 size += 4;
             }
-            else if (format.at(i).toAscii() == 'N')
+            else if (format.at(i).toLatin1() == 'N')
             {
                 size += 16;
             }
-            else if (format.at(i).toAscii() == 'Z')
+            else if (format.at(i).toLatin1() == 'Z')
             {
                 size += 64;
             }
-            else if (format.at(i).toAscii() == 'f')
+            else if (format.at(i).toLatin1() == 'f')
             {
                 size += 4;
             }
-            else if ((format.at(i).toAscii() == 'i') || (format.at(i).toAscii() == 'I') || (format.at(i).toAscii() == 'e') || (format.at(i).toAscii() == 'E')  || (format.at(i).toAscii() == 'L'))
+            else if ((format.at(i).toLatin1() == 'i') || (format.at(i).toLatin1() == 'I') || (format.at(i).toLatin1() == 'e') || (format.at(i).toLatin1() == 'E')  || (format.at(i).toLatin1() == 'L'))
             {
                 size += 4;
             }
-            else if ((format.at(i).toAscii() == 'h') || (format.at(i).toAscii() == 'H') || (format.at(i).toAscii() == 'c') || (format.at(i).toAscii() == 'C'))
+            else if ((format.at(i).toLatin1() == 'h') || (format.at(i).toLatin1() == 'H') || (format.at(i).toLatin1() == 'c') || (format.at(i).toLatin1() == 'C'))
             {
                 size += 2;
             }
-            else if ((format.at(i).toAscii() == 'b') || (format.at(i).toAscii() == 'B') || (format.at(i).toAscii() == 'M'))
+            else if ((format.at(i).toLatin1() == 'b') || (format.at(i).toLatin1() == 'B') || (format.at(i).toLatin1() == 'M'))
             {
                 size += 1;
             }
@@ -1470,7 +1505,7 @@ void AP2DataPlot2D::exportButtonClicked()
 
     }
 
-    outputfile.write(formatheader.toAscii());
+    outputfile.write(formatheader.toLatin1());
 
     int count = 0;
     indexquery.last();
@@ -1515,11 +1550,11 @@ void AP2DataPlot2D::exportButtonClicked()
                 if (namerecord.value(i).type() == QVariant::Double)
                 {
                     QString num = QString::number(namerecord.value(i).toDouble(),'f',8);
-                    char last = num.at(num.length()-1).toAscii();
+                    char last = num.at(num.length()-1).toLatin1();
                     while (last == '0' && num.length() > 0)
                     {
                         num = num.mid(0,num.length()-1);
-                        last = num.at(num.length()-1).toAscii();
+                        last = num.at(num.length()-1).toLatin1();
                     }
                     if (last == '.')
                     {
@@ -1537,7 +1572,7 @@ void AP2DataPlot2D::exportButtonClicked()
                 }
             }
             QApplication::processEvents();
-            outputfile.write(fields.append("\r\n").toAscii());
+            outputfile.write(fields.append("\r\n").toLatin1());
         }
     }
 

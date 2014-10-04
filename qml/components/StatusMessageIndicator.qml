@@ -13,7 +13,7 @@
 //
 //    (c) 2014 Author: Bill Bonney <billbonney@communistech.com>
 //
-import QtQuick 1.1
+import QtQuick 2.0
 
 Rectangle {
     id: root
@@ -23,7 +23,7 @@ Rectangle {
     anchors.fill: parent
 
     border.color: "red"
-    border.width: 20
+    border.width: 5
 
     color: "Transparent"
 
@@ -36,7 +36,7 @@ Rectangle {
         styleColor: "black"
         text: message
         smooth: true
-        font.pointSize: 28
+        font.pointSize: 24
     }
 
     SequentialAnimation on border.color {

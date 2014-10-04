@@ -47,7 +47,7 @@ This file is part of the APM_PLANNER project
 #include "UASInterface.h"
 #include "UASManager.h"
 
-#include "qserialport.h"
+#include <QtSerialPort/qserialport.h>
 #include "SerialSettingsDialog.h"
 #include "ui_ApmFirmwareConfig.h"
 #include "PX4FirmwareUploader.h"

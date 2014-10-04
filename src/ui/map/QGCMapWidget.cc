@@ -8,6 +8,7 @@
 #include "UASWaypointManager.h"
 #include "ArduPilotMegaMAV.h"
 #include "WaypointNavigation.h"
+#include <QInputDialog>
 
 QGCMapWidget::QGCMapWidget(QWidget *parent) :
     mapcontrol::OPMapWidget(parent),
@@ -181,14 +182,14 @@ void QGCMapWidget::cameraActionTriggered()
 
 void QGCMapWidget::mousePressEvent(QMouseEvent *event)
 {
-    QLOG_DEBUG() << "mousePressEvent pos:" << event->pos() << " posF:" << event->posF();
+    QLOG_DEBUG() << "mousePressEvent pos:" << event->pos() << " posF:" << event->pos();
     mousePressPos = event->pos();
     mapcontrol::OPMapWidget::mousePressEvent(event);
 }
 
 void QGCMapWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    QLOG_DEBUG() << "mouseReleaseEvent pos:" << event->pos() << " posF:" << event->posF();
+    QLOG_DEBUG() << "mouseReleaseEvent pos:" << event->pos() << " posF:" << event->pos();
     mousePressPos = event->pos();
     mapcontrol::OPMapWidget::mouseReleaseEvent(event);
 }
@@ -209,19 +210,22 @@ void QGCMapWidget::showEvent(QShowEvent* event)
     // Pass on to parent widget
     OPMapWidget::showEvent(event);
 
-    connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(addUAS(UASInterface*)), Qt::UniqueConnection);
-    connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(activeUASSet(UASInterface*)), Qt::UniqueConnection);
-    connect(UASManager::instance(), SIGNAL(homePositionChanged(double,double,double)), this, SLOT(updateHomePosition(double,double,double)));
 
-    foreach (UASInterface* uas, UASManager::instance()->getUASList())
-    {
-        addUAS(uas);
-    }
 
     internals::PointLatLng pos_lat_lon = internals::PointLatLng(m_lastLat, m_lastLon);
 
     if (!mapInitialized)
     {
+        connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(addUAS(UASInterface*)), Qt::UniqueConnection);
+        connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(activeUASSet(UASInterface*)), Qt::UniqueConnection);
+        connect(UASManager::instance(), SIGNAL(homePositionChanged(double,double,double)), this, SLOT(updateHomePosition(double,double,double)));
+        connect(UASManager::instance(),SIGNAL(UASDeleted(UASInterface*)),this,SLOT(deleteUas(UASInterface*)));
+
+        foreach (UASInterface* uas, UASManager::instance()->getUASList())
+        {
+            addUAS(uas);
+        }
+
         //this->SetUseOpenGL(true);
         SetMouseWheelZoomType(internals::MouseWheelZoomType::MousePositionWithoutCenter);	    // set how the mouse wheel zoom functions
         SetFollowMouse(true);				    // we want a contiuous mouse position reading
@@ -374,10 +378,22 @@ void QGCMapWidget::addUAS(UASInterface* uas)
     }
 }
 
+/**
+ *
+ * @param uas the UAS/MAV to remove from the map widget
+ */
+void QGCMapWidget::deleteUas(UASInterface* uas)
+{
+}
+
 void QGCMapWidget::activeUASSet(UASInterface* uas)
 {
     // Only execute if proper UAS is set
-    if (!uas) return;
+    if (!uas)
+    {
+        this->uas = 0;
+        return;
+    }
     if (this->uas == uas) return;
 
     QLOG_DEBUG() << "activeUASSet" << uas->getUASName();
@@ -810,7 +826,7 @@ void QGCMapWidget::redrawWaypointLines()
 
 void QGCMapWidget::redrawWaypointLines(int uas)
 {
-    QLOG_DEBUG() << "REDRAW WAYPOINT LINES FOR UAS" << uas;
+//    QLOG_DEBUG() << "REDRAW WAYPOINT LINES FOR UAS" << uas;
 
     if (!currWPManager)
         return;

@@ -1,7 +1,7 @@
 #ifndef QGCWEBPAGE_H
 #define QGCWEBPAGE_H
 
-#include <QWebPage>
+#include <QtWebKitWidgets/QWebPage>
 
 class QGCWebPage : public QWebPage
 {

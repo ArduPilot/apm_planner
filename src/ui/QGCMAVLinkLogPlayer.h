@@ -56,6 +56,7 @@ private slots:
     void logProgress(qint64 pos,qint64 total);
     void positionSliderReleased();
     void positionSliderPressed();
+    void loadLogDialogAccepted();
 protected:
     bool m_sliderDown;
     bool m_isPlaying;

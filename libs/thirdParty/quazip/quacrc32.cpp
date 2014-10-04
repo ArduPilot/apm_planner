@@ -1,6 +1,10 @@
 #include "quacrc32.h"
 
+#ifdef Q_CC_MSVC
+#include <QtZlib/zlib.h>
+#else
 #include "zlib.h"
+#endif
 
 QuaCrc32::QuaCrc32()
 {

@@ -21,8 +21,8 @@
 //#include <QtSerialPort/QSerialPort>
 //#include <QtSerialPort/QSerialPortInfo>
 
-#include <qserialport.h>
-#include <qserialportinfo.h>
+#include <QtSerialPort/qserialport.h>
+#include <QtSerialPort/qserialportinfo.h>
 #include <MG.h>
 //These three defines specify which threading method is used
 //ONLY have one of these active at a time.

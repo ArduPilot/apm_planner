@@ -88,6 +88,7 @@ Name "APM Planner 2"
 !system 'python apm_installer.py ../files apm_install.list apm_uninstall.list y'
 !system 'python apm_installer.py ../qml qml_install.list qml_uninstall.list y'
 !system 'python apm_installer.py ${QTDIR}\plugins qt_install.list qt_uninstall.list n'
+!system 'python apm_installer.py ${QTDIR}\qml qt_install_qml.list qt_uninstall_qml.list n'
 
 OutFile "apmplanner2-installer-win32.exe"
 
@@ -171,25 +172,53 @@ sectionEND
 
 Section "Qt components" QT_FILES
   !include qt_install.list
+  SetOutPath $INSTDIR\qml
+  !include qt_install_qml.list
   SetOutPath $INSTDIR
-  File ${QTDIR}\lib\zlib1.dll
-  File ${QTDIR}\lib\libgcc_s_sjlj-1.dll
-  File ${QTDIR}\lib\libstdc++-6.dll
-  File ${QTDIR}\lib\libwinpthread-1.dll
-  File ${QTDIR}\lib\QtCore4.dll
-  File ${QTDIR}\lib\QtGui4.dll
-  File ${QTDIR}\lib\QtScript4.dll
-  File ${QTDIR}\lib\QtMultimedia4.dll
-  File ${QTDIR}\lib\QtDeclarative4.dll
-  File ${QTDIR}\lib\phonon4.dll
-  File ${QTDIR}\lib\QtNetwork4.dll
-  File ${QTDIR}\lib\QtOpenGL4.dll
-  File ${QTDIR}\lib\QtSql4.dll
-  File ${QTDIR}\lib\QtSvg4.dll
-  File ${QTDIR}\lib\QtTest4.dll
-  File ${QTDIR}\lib\QtWebkit4.dll
-  File ${QTDIR}\lib\QtXml4.dll
-  File ${QTDIR}\lib\QtXmlPatterns4.dll
+  File ${QTDIR}\bin\libgcc_s_dw2-1.dll
+  File ${QTDIR}\bin\libstdc++-6.dll
+  File ${QTDIR}\bin\libwinpthread-1.dll
+  File ${QTDIR}\bin\Qt5WebKitWidgets.dll
+  File ${QTDIR}\bin\Qt5MultimediaWidgets.dll
+  File ${QTDIR}\bin\Qt5Multimedia.dll
+  File ${QTDIR}\bin\Qt5Gui.dll
+  File ${QTDIR}\bin\Qt5Core.dll
+  File ${QTDIR}\bin\icuin52.dll
+  File ${QTDIR}\bin\icuuc52.dll
+  File ${QTDIR}\bin\icudt52.dll
+  File ${QTDIR}\bin\Qt5Network.dll
+  File ${QTDIR}\bin\Qt5Widgets.dll
+  File ${QTDIR}\bin\Qt5OpenGL.dll
+  File ${QTDIR}\bin\Qt5PrintSupport.dll
+  File ${QTDIR}\bin\Qt5WebKit.dll
+  File ${QTDIR}\bin\Qt5Quick.dll
+  File ${QTDIR}\bin\Qt5Qml.dll
+  File ${QTDIR}\bin\Qt5Sql.dll
+  File ${QTDIR}\bin\Qt5Positioning.dll
+  File ${QTDIR}\bin\Qt5Sensors.dll
+  File ${QTDIR}\bin\Qt5Declarative.dll
+  File ${QTDIR}\bin\Qt5XmlPatterns.dll
+  File ${QTDIR}\bin\Qt5Xml.dll
+  File ${QTDIR}\bin\Qt5Script.dll
+  File ${QTDIR}\bin\Qt5Svg.dll
+  File ${QTDIR}\bin\Qt5Test.dll
+  File ${QTDIR}\bin\Qt5SerialPort.dll
+
+  File ${QTDIR}\bin\libbz2-1.dll
+  File ${QTDIR}\bin\libfreetype-6.dll
+  File ${QTDIR}\bin\libglib-2.0-0.dll
+  File ${QTDIR}\bin\libharfbuzz-0.dll
+  File ${QTDIR}\bin\libiconv-2.dll
+  File ${QTDIR}\bin\libintl-8.dll
+  File ${QTDIR}\bin\libjpeg-8.dll
+  File ${QTDIR}\bin\liblzma-5.dll
+  File ${QTDIR}\bin\libpcre16-0.dll
+  File ${QTDIR}\bin\libpng16-16.dll
+  File ${QTDIR}\bin\libsqlite3-0.dll
+  File ${QTDIR}\bin\libwebp-5.dll
+  File ${QTDIR}\bin\libxml2-2.dll
+  File ${QTDIR}\bin\libxslt-1.dll
+  File ${QTDIR}\bin\zlib1.dll
 
 SectionEnd
 
@@ -198,28 +227,61 @@ Section "Uninstall"
   !include apm_uninstall.list
   !include qml_uninstall.list
   !include qt_uninstall.list
+  !include qt_uninstall_qml.list
   Delete $INSTDIR\apmplanner2.exe
   Delete $INSTDIR\SDL.dll
   Delete $INSTDIR\libxbee.dll
   Delete $INSTDIR\APMPlanner2_uninstall.exe
-  Delete $INSTDIR\libgcc_s_sjlj-1.dll
+
+  Delete $INSTDIR\libbz2-1.dll
+  Delete $INSTDIR\libfreetype-6.dll
+  Delete $INSTDIR\libglib-2.0-0.dll
+  Delete $INSTDIR\libharfbuzz-0.dll
+  Delete $INSTDIR\libiconv-2.dll
+  Delete $INSTDIR\libintl-8.dll
+  Delete $INSTDIR\libjpeg-8.dll
+  Delete $INSTDIR\liblzma-5.dll
+  Delete $INSTDIR\libpcre16-0.dll
+  Delete $INSTDIR\libpng16-16.dll
+  Delete $INSTDIR\libsqlite3-0.dll
+  Delete $INSTDIR\libwebp-5.dll
+  Delete $INSTDIR\libxml2-2.dll
+  Delete $INSTDIR\libxslt-1.dll
+  Delete $INSTDIR\zlib1.dll
+
+
+
+  Delete $INSTDIR\libgcc_s_dw2-1.dll
   Delete $INSTDIR\libstdc++-6.dll
   Delete $INSTDIR\libwinpthread-1.dll
-  Delete $INSTDIR\QtCore4.dll
-  Delete $INSTDIR\QtGui4.dll
-  Delete $INSTDIR\QtMultimedia4.dll
-  Delete $INSTDIR\phonon4.dll
-  Delete $INSTDIR\QtNetwork4.dll
-  Delete $INSTDIR\QtOpenGL4.dll
-  Delete $INSTDIR\QtSql4.dll
-  Delete $INSTDIR\QtSvg4.dll
-  Delete $INSTDIR\QtTest4.dll
-  Delete $INSTDIR\QtWebkit4.dll
-  Delete $INSTDIR\QtXml4.dll
-  Delete $INSTDIR\QtXmlPatterns4.dll
-  Delete $INSTDIR\QtScript4.dll
-  Delete $INSTDIR\QtDeclarative4.dll
-  Delete $INSTDIR\zlib1.dll
+  Delete $INSTDIR\Qt5WebKitWidgets.dll
+  Delete $INSTDIR\Qt5MultimediaWidgets.dll
+  Delete $INSTDIR\Qt5Multimedia.dll
+  Delete $INSTDIR\Qt5Gui.dll
+  Delete $INSTDIR\Qt5Core.dll
+  Delete $INSTDIR\icuin52.dll
+  Delete $INSTDIR\icuuc52.dll
+  Delete $INSTDIR\icudt52.dll
+  Delete $INSTDIR\Qt5Network.dll
+  Delete $INSTDIR\Qt5Widgets.dll
+  Delete $INSTDIR\Qt5OpenGL.dll
+  Delete $INSTDIR\Qt5PrintSupport.dll
+  Delete $INSTDIR\Qt5WebKit.dll
+  Delete $INSTDIR\Qt5Quick.dll
+  Delete $INSTDIR\Qt5Qml.dll
+  Delete $INSTDIR\Qt5Sql.dll
+  Delete $INSTDIR\Qt5Positioning.dll
+  Delete $INSTDIR\Qt5Sensors.dll
+  Delete $INSTDIR\Qt5Declarative.dll
+  Delete $INSTDIR\Qt5XmlPatterns.dll
+  Delete $INSTDIR\Qt5Xml.dll
+  Delete $INSTDIR\Qt5Script.dll
+  Delete $INSTDIR\Qt5Svg.dll
+  Delete $INSTDIR\Qt5Test.dll
+  Delete $INSTDIR\Qt5SerialPort.dll
+  Delete $INSTDIR\vcredist_x86.exe
+
+
   ExecWait "$INSTDIR\drmingw.exe -u"
   Delete $INSTDIR\drmingw.exe"
   Delete $INSTDIR\exchndl.dll"

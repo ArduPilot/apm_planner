@@ -129,9 +129,11 @@ void UASListWidget::removeUAS(UASInterface* uas)
 {
     if (uasViews.contains(uas))
     {
-        uasViews.remove(uas);
         listLayout->removeWidget(uasViews.value(uas));
-        uasViews.value(uas)->deleteLater();
+        delete uasViews.value(uas);
+        uasViews.remove(uas);
+
+
     }
 }
 

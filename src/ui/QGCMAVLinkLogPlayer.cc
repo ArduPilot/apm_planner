@@ -167,12 +167,24 @@ void QGCMAVLinkLogPlayer::loadLogButtonClicked()
     }
 
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Specify MAVLink log file name to replay"), QGC::MAVLinkLogDirectory(), tr("MAVLink Telemetry log (*.tlog)"));
-    if (fileName == "")
+    QFileDialog *dialog = new QFileDialog(this,tr("Specify MAVLink log file name to replay"), QGC::MAVLinkLogDirectory(), tr("MAVLink Telemetry log (*.tlog)"));
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(loadLogDialogAccepted()));
+    dialog->show();
+}
+void QGCMAVLinkLogPlayer::loadLogDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
     {
         //No file selected/cancel clicked
         return;
     }
+    QString fileName = dialog->selectedFiles().at(0);
     m_logLoaded = true;
     emit logLoaded();
 

@@ -37,8 +37,8 @@ This file is part of the APM_PLANNER project
 #include "TerminalConsole.h"
 #include "ui_SerialSettingsDialog.h"
 
-#include <qserialport.h>
-#include <qserialportinfo.h>
+#include <QtSerialPort/qserialport.h>
+#include <QtSerialPort/qserialportinfo.h>
 #include <QIntValidator>
 #include <QLineEdit>
 #include <QPointer>

@@ -5,8 +5,8 @@
 #include <QObject>
 #include <QPointer>
 #include <QTimer>
-#include "qserialport.h"
-#include "qserialportinfo.h"
+#include <QtSerialPort/qserialport.h>
+#include <QtSerialPort/qserialportinfo.h>
 
 //  Command Set for 3DR SiK Radios
 //
