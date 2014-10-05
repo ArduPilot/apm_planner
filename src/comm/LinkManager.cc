@@ -329,7 +329,7 @@ void LinkManager::removeLink(LinkInterface *link)
     saveSettings();
 }
 
-void LinkManager::removeLink(int linkid)
+void LinkManager::removeLink(int linkId)
 {
     if (m_connectionMap.contains(linkId))
     {
