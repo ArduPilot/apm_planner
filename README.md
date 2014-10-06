@@ -47,14 +47,16 @@ Linux
 
 Building on Linux (tested against Ubuntu 14.04 LTS):
 
-1) Install the required packages: [TODO: update to Qt5 dependencies]
+1) Install the required packages: 
+
+Be sure to run apt-get update first
 
 ```
-sudo apt-get install phonon libqt4-dev libqt4-opengl-dev \
- libphonon-dev libphonon4 phonon-backend-gstreamer \
- qtcreator libsdl1.2-dev libflite1 flite1-dev build-essential \
- libopenscenegraph-dev libssl-dev libqt4-opengl-dev libudev-dev \
- libsndfile1-dev libqt4-sql-sqlite
+sudo apt-get update
+sudo apt-get install git qt5-qmake qt5-default \
+  qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
+  libqt5svg5-dev libsdl1.2-dev  libsndfile-dev \
+  flite1-dev libssl-dev libudev-dev
 ```
 
 2) Clone the repository in your workspace:
@@ -72,8 +74,6 @@ qmake qgroundcontrol.pro
 make
 ```
 
-Or try `qmake-qt5` command if qmake is the wrong version. This will only work if the Qt version install on your machine is Qt5.2.1 or greater, this can be checked using `qmake -v'
-
 4) Run APM Planner:
 
 ```
@@ -83,9 +83,30 @@ Or try `qmake-qt5` command if qmake is the wrong version. This will only work if
 5) Permanent installation (optional, if you'd like to install APM Planner in a fixed location)
  
 There are two ways to do this:
-a) You can build a .deb using ```scripts/LinuxBuildPackage.sh```, and then install the deb via ```dpkg -i ~/Documents/APMPlanner2-$NOW.deb``` (where $NOW is today's date). This should add it to your launcher too.
 
-b) Alternatively, run ```sudo make install```. This will place the binary in your /bin/ folder and corresponding files in /share/.
+a) Using Debuild:
+```
+cd ~/workspace/apm_planner
+debuild -us -uc -d
+```
+Then install the deb via 
+```
+dpkg -i ~/workspace/apmplanner2_2.0.XX_YYYY.deb
+```
+Where XX is the version number, and YYY is your architecture. This method should add it to your launcher too.
+
+If it does not install due to dependancies, you can resolve them with
+```
+sudo apt-get install -f
+````
+Then attempt to install again.
+
+b) Using make:
+```
+cd ~/workspace/apm_planner
+sudo make install
+```
+This will place the binary in your /bin/ folder and corresponding files in /share/
 
 Windows
 =======
