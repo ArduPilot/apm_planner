@@ -766,8 +766,9 @@ void LinkManager::linkErrorRec(LinkInterface *link,QString errorstring)
 void LinkManager::linkTimeoutTriggered(LinkInterface *link)
 {
     //Link has had a timeout
-    emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");
-    link->disconnect();
+    //Disabled until it is fixed and more more robust - MLC
+    //emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");
+    //link->disconnect();
 }
 void LinkManager::disableTimeouts(int index)
 {
