@@ -154,11 +154,6 @@ QDockWidget::close-button:pressed, QDockWidget::float-button:pressed {
 	padding: 1px -1px -1px 1px;
 }
 
-QDockWidget::close-button, QDockWidget::float-button {
-	background-color: #181820;
-	color: #EEEEEE;
-}
-
 QSeparator {
 	color: #EEEEEE;
 }
