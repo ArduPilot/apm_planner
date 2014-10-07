@@ -111,9 +111,11 @@ QT += network \
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
-gittouch.commands = touch qgroundcontrol.pro
-QMAKE_EXTRA_TARGETS += gittouch
-POST_TARGETDEPS += gittouch
+!NOTOUCH {
+    gittouch.commands = touch qgroundcontrol.pro
+    QMAKE_EXTRA_TARGETS += gittouch
+    POST_TARGETDEPS += gittouch
+}
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
@@ -192,7 +194,8 @@ WindowsCrossBuild {
 #
 
 DebugBuild {
-    CONFIG += console
+#Let console be defined by the IDE/Build process.
+    #CONFIG += console
 }
 
 ReleaseBuild {

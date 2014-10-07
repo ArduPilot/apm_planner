@@ -183,7 +183,7 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
         connect(ui.parEven, SIGNAL(toggled(bool)), this, SLOT(setParityEven(bool)));
         connect(ui.dataBitsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setDataBits(int)));
         connect(ui.stopBitsSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setStopBits(int)));
-        connect(ui.advCheckBox,SIGNAL(clicked(bool)),ui.advGroupBox,SLOT(setShown(bool)));
+        connect(ui.advCheckBox,SIGNAL(clicked(bool)),ui.advGroupBox,SLOT(setVisible(bool)));
         ui.advCheckBox->setChecked(false);
         ui.advGroupBox->setVisible(false);
 

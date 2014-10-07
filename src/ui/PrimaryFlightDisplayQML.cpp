@@ -36,7 +36,8 @@ This file is part of the APM_PLANNER project
 PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
     QWidget(parent),
 //    ui(new Ui::PrimaryFlightDisplayQML),
-    m_declarativeView(NULL)
+    m_declarativeView(NULL),
+    m_uasInterface(NULL)
 {
 //    ui->setupUi(this);
     QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml");
@@ -75,7 +76,7 @@ PrimaryFlightDisplayQML::~PrimaryFlightDisplayQML()
 void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
 {
     if (m_uasInterface) {
-        disconnect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
+        disconnect(m_uasInterface,SIGNAL(textMessageReceived(int,int,int,QString)),
                 this,SLOT(uasTextMessage(int,int,int,QString)));
     }
     m_uasInterface = uas;
