@@ -72,8 +72,9 @@ public slots:
     void setActiveUAS(UASInterface* uas);
     void valChanged(double val,QString type);
     void selectDialogClosed();
-    void valueEnabled(QString value);
-    void valueDisabled(QString value);
+    void valueEnabled(const QString& value);
+    void valueDisabled(const QString& value);
+    void quickViewValueChanged(const QString& value);
     void columnActionTriggered();
     void replaceSingleItem(QString olditem);
     void replaceSingleItemSelected(QString newitem,QString olditem);
