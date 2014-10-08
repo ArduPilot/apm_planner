@@ -36,11 +36,19 @@ This file is part of the APM_PLANNER project
 #include "MAVLinkProtocol.h"
 #include "LinkManager.h"
 
-MAVLinkProtocol::MAVLinkProtocol(QObject *parent)
+MAVLinkProtocol::MAVLinkProtocol():
+    m_loggingEnabled(false),
+    m_logfile(NULL),
+    m_connectionManager(NULL)
 {
-    m_loggingEnabled = false;
-    m_logfile=NULL;
 }
+
+MAVLinkProtocol::~MAVLinkProtocol()
+{
+    stopLogging();
+    m_connectionManager = NULL;
+}
+
 void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
 {
     mavlink_message_t message;
@@ -213,6 +221,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
             // before emitting the packetReceived signal
 
             //UASInterface* uas = UASManager::instance()->getUASForId(message.sysid);
+            Q_ASSERT_X(m_connectionManager != NULL, "MAVLinkProtocol::receiveBytes", " error:m_connectionManager == NULL");
             UASInterface* uas = m_connectionManager->getUas(message.sysid);
             //qDebug() << "MAVLinkProtocol::receiveBytes" << uas;
 
