@@ -251,6 +251,7 @@ void PX4FirmwareUploader::run()
     m_port = new QSerialPort();
     msleep(500);
     m_port->setPortName(portnametouse);
+    QLOG_DEBUG() << "Open port:" << m_port->portName();
     if (!m_port->open(QIODevice::ReadWrite))
     {
         QLOG_ERROR() << "Unable to open port" << m_port->errorString() << m_port->portName();
@@ -802,8 +803,9 @@ void PX4FirmwareUploader::run()
     QLOG_DEBUG() << "Retry timeout";
     m_port->close();
     delete m_port;
-    emit statusUpdate("Unable to flash board, 5 retries attempted. Please check hardware and try again");
-    emit error("Unable to flash board, 5 retries attempted. Please check hardware and try again");
+    static const QString message("Unable to flash board. Bootloader not found.\nPlease check hardware and try again.\nMake sure you don't have external power connectd, via batteries, for example.' ");
+    emit statusUpdate(message);
+    emit error(message);
 
 }
 int PX4FirmwareUploader::get_sync(int timeout)
