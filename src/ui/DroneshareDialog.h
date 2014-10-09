@@ -43,7 +43,7 @@ signals:
 public slots:
     void uploadClicked();
     void laterClicked();
-    void skipClicked();
+    void okClicked();
 
 private:
     Ui::DroneshareDialog *ui;

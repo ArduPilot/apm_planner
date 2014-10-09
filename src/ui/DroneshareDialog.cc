@@ -37,7 +37,7 @@ DroneshareDialog::DroneshareDialog(QWidget *parent) :
 
     ui->textEdit->setTextInteractionFlags(Qt::TextBrowserInteraction);
 
-    connect(ui->skipPushButton, SIGNAL(clicked()), this, SLOT(skipClicked()));
+    connect(ui->okPushButton, SIGNAL(clicked()), this, SLOT(okClicked()));
     connect(ui->laterPushButton, SIGNAL(clicked()), this, SLOT(laterClicked()));
 //    connect(ui->uploadPushButton, SIGNAL(clicked()), this, SLOT(uploadClicked()));
 }
@@ -54,9 +54,9 @@ void DroneshareDialog::laterClicked()
     accept();
 }
 
-void DroneshareDialog::skipClicked()
+void DroneshareDialog::okClicked()
 {
-    QLOG_DEBUG() << "Droneshare: skip till next update";
+    QLOG_DEBUG() << "Droneshare: ok notice until next update";
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     settings.setValue("DRONESHARE_NOTIFICATION_ENABLED", false);
