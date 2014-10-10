@@ -208,9 +208,12 @@ void CommConfigurationWindow::setConnection()
 
 void CommConfigurationWindow::setLinkName(QString name)
 {
-    action->setText(tr("%1 Settings").arg(name));
-    action->setStatusTip(tr("Adjust setting for link %1").arg(name));
-    this->window()->setWindowTitle(tr("Settings for %1").arg(name));
+    if (action)
+    {
+        action->setText(tr("%1 Settings").arg(name));
+        action->setStatusTip(tr("Adjust setting for link %1").arg(name));
+        this->window()->setWindowTitle(tr("Settings for %1").arg(name));
+    }
 }
 
 void CommConfigurationWindow::remove()
