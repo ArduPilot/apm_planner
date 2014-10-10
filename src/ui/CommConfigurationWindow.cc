@@ -167,6 +167,13 @@ void CommConfigurationWindow::linkUpdate(int linkid)
     {
         return;
     }
+
+    if (LinkManager::instance()->getLinkType(linkid) == LinkInterface::TCP_LINK
+        && LinkManager::instance()->isTcpServer(linkid))
+    {
+        this->window()->close();
+    }
+
     setLinkName(LinkManager::instance()->getLinkName(linkid));
     connectButtonStatus(linkid);
 }

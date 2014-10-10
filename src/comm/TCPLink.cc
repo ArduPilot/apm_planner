@@ -49,6 +49,8 @@ TCPLink::TCPLink(QHostAddress hostAddress, quint16 socketPort, bool asServer) :
     _linkId = getNextLinkId();
     _resetName();
 
+    QObject::connect(&_server, SIGNAL(newConnection()), this, SLOT(newConnection()));
+
     qDebug() << "TCP Created " << _name;
 }
 
@@ -208,22 +210,30 @@ bool TCPLink::disconnect()
 	quit();
 	wait();
 
-    if (_socket)
-	{
+    if (_socket) {
         _socket->disconnectFromHost();
-        _socketIsConnected = false;
-		delete _socket;
-		_socket = NULL;
-
-        emit disconnected();
-        emit connected(false);
-        emit disconnected(this);
 	}
 
     _server.close();
 
     return true;
 }
+
+void TCPLink::_socketDisconnected()
+{
+    qDebug() << _name << ": disconnected";
+
+    Q_ASSERT(_socket);
+
+    _socketIsConnected = false;
+    _socket->deleteLater();
+    _socket = NULL;
+
+    emit disconnected();
+    emit connected(false);
+    emit disconnected(this);
+}
+
 
 /**
  * @brief Connect the connection.
@@ -244,21 +254,43 @@ bool TCPLink::connect()
     return connected;
 }
 
+void TCPLink::newConnection()
+{
+    qDebug() << _name << ": new connection";
+
+    Q_ASSERT(_socket == NULL);
+
+    _socket = _server.nextPendingConnection();
+
+    QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
+    QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
+    QObject::connect(_socket, SIGNAL(disconnected()), this, SLOT(_socketDisconnected()));
+
+    _socketIsConnected = true;
+    emit connected(true);
+    emit connected();
+    emit connected(this);
+}
+
 bool TCPLink::_hardwareConnect(void)
 {
     Q_ASSERT(_socket == NULL);
 
     if (_asServer)
     {
-        if (!_server.isListening() && !_server.listen(QHostAddress::Any, _port))
+        if (!_server.isListening() && !_server.listen(QHostAddress::Any, _port)) {
             return false;
+        }
+
+        // this wait isn't necessary but it gives visual feedback
+        // that the server is actually waiting for connection
+        // and listen() didn't fail.
         if (!_server.waitForNewConnection(5000))
             return false;
 
-        _socket = _server.nextPendingConnection();
+        // let the newConnection signal handle the new connection
 
-        QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
-        QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
+        return true;
     }
     else
     {
@@ -283,14 +315,14 @@ bool TCPLink::_hardwareConnect(void)
             _socket = NULL;
             return false;
         }
+
+        _socketIsConnected = true;
+        emit connected(true);
+        emit connected();
+        emit connected(this);
+
+        return true;
     }
-
-    _socketIsConnected = true;
-    emit connected(true);
-    emit connected();
-    emit connected(this);
-
-    return true;
 }
 
 void TCPLink::_socketError(QAbstractSocket::SocketError socketError)

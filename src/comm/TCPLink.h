@@ -89,6 +89,8 @@ public slots:
 
 protected slots:
     void _socketError(QAbstractSocket::SocketError socketError);
+    void _socketDisconnected();
+    void newConnection();
 
     // From LinkInterface
     virtual void readBytes(void);
