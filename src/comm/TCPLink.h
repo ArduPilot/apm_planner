@@ -1,24 +1,24 @@
 /*=====================================================================
- 
+
  QGroundControl Open Source Ground Control Station
- 
+
  (c) 2009 - 2011 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
- 
+
  This file is part of the QGROUNDCONTROL project
- 
+
  QGROUNDCONTROL is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  QGROUNDCONTROL is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
- 
+
  ======================================================================*/
 
 /// @file
@@ -42,6 +42,7 @@
 // as a meta type to silence that.
 #include <QMetaType>
 #include <QTcpSocket>
+#include <QTcpServer>
 //Q_DECLARE_METATYPE(QAbstractSocket::SocketError)
 
 //#define TCPLINK_READWRITE_DEBUG   // Use to debug data reads/writes
@@ -49,19 +50,20 @@
 class TCPLink : public LinkInterface
 {
     Q_OBJECT
-    
+
 public:
-    TCPLink(QHostAddress hostAddress = QHostAddress::LocalHost, quint16 socketPort = 5760);
+    TCPLink(QHostAddress hostAddress = QHostAddress::LocalHost, quint16 socketPort = 5760, bool asServer = false);
     ~TCPLink();
     void disableTimeouts() { }
     void enableTimeouts() { }
 
     void setHostAddress(QHostAddress hostAddress);
-    
+
     QHostAddress getHostAddress(void) const { return _hostAddress; }
     quint16 getPort(void) const { return _port; }
+    bool isServer(void) const { return _asServer; }
     QTcpSocket* getSocket(void) { return _socket; }
-    
+
     // LinkInterface methods
     virtual int     getId(void) const;
     virtual QString getName(void) const;
@@ -76,16 +78,19 @@ public:
     qint64 getCurrentInDataRate() const;
     qint64 getCurrentOutDataRate() const;
     LinkType getLinkType() { return TCP_LINK; }
-    
+
 public slots:
     void setHostAddress(const QString& hostAddress);
     void setPort(int port);
-    
+    void setAsServer(bool asServer);
+
     // From LinkInterface
     virtual void writeBytes(const char* data, qint64 length);
 
 protected slots:
     void _socketError(QAbstractSocket::SocketError socketError);
+    void _socketDisconnected();
+    void newConnection();
 
     // From LinkInterface
     virtual void readBytes(void);
@@ -104,10 +109,12 @@ private:
     QString         _name;
     QHostAddress    _hostAddress;
     quint16         _port;
+    bool            _asServer;
     int             _linkId;
     QTcpSocket*     _socket;
+    QTcpServer      _server;
     bool            _socketIsConnected;
-    
+
     quint64 _bitsSentTotal;
     quint64 _bitsSentCurrent;
     quint64 _bitsSentMax;

@@ -136,7 +136,8 @@ void LinkManager::loadSettings()
         {
             QString host = settings.value("host").toString();
             int port = settings.value("port").toInt();
-            addTcpConnection(QHostAddress(host),port);
+            bool asServer = settings.value("asServer").toBool();
+            addTcpConnection(QHostAddress(host),port,asServer);
         }
     }
 
@@ -188,6 +189,7 @@ void LinkManager::saveSettings()
             settings.setValue("type","TCP_LINK");
             settings.setValue("host",link->getHostAddress().toString());
             settings.setValue("port",link->getPort());
+            settings.setValue("asServer",link->isServer());
         }
     }
     settings.endArray();
@@ -301,22 +303,26 @@ int LinkManager::addUdpConnection(QHostAddress addr,int port)
     connect(udpLink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(udpLink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(udpLink,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
-    udpLink->connect();
     m_connectionMap.insert(udpLink->getId(),udpLink);
     emit newLink(udpLink->getId());
     saveSettings();
+    udpLink->connect();
     return udpLink->getId();
 
 }
-int LinkManager::addTcpConnection(QHostAddress addr,int port)
+int LinkManager::addTcpConnection(QHostAddress addr,int port,bool asServer)
 {
-    TCPLink *tcplink = new TCPLink(addr,port);
+    TCPLink *tcplink = new TCPLink(addr,port,asServer);
     connect(tcplink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkProtocol,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(tcplink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(tcplink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     m_connectionMap.insert(tcplink->getId(),tcplink);
     emit newLink(tcplink->getId());
     saveSettings();
+    if (asServer)
+    {
+        tcplink->connect();
+    }
     return tcplink->getId();
 }
 
@@ -326,8 +332,9 @@ void LinkManager::addLink(LinkInterface *link)
 }
 void LinkManager::removeLink(LinkInterface *link)
 {
-   // This is called with a LINK_ID not an interface. needs mor rework
-    //This function is not yet supported, it will be once we support multiple MAVs
+    link->disconnect();
+    m_connectionMap.remove(link->getId());
+    saveSettings();
 }
 
 void LinkManager::removeLink(int linkId)
@@ -344,15 +351,13 @@ void LinkManager::removeLink(int linkId)
     }
 }
 
-void LinkManager::connectLink(int index)
+bool LinkManager::connectLink(int index)
 {
     if (m_connectionMap.contains(index))
     {
-        if (!m_connectionMap.value(index)->connect())
-        {
-            //Can't connect, there will be a signal emitted.
-        }
+        return m_connectionMap.value(index)->connect();
     }
+    return false;
 }
 void LinkManager::disconnectLink(int index)
 {
@@ -361,7 +366,7 @@ void LinkManager::disconnectLink(int index)
         m_connectionMap.value(index)->disconnect();
     }
 }
-void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port)
+void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port,bool asServer)
 {
     if (!m_connectionMap.contains(index))
     {
@@ -374,6 +379,7 @@ void LinkManager::modifyTcpConnection(int index,QHostAddress addr,int port)
     }
     iface->setHostAddress(addr);
     iface->setPort(port);
+    iface->setAsServer(asServer);
     emit linkChanged(index);
     saveSettings();
 }
@@ -480,6 +486,18 @@ QHostAddress LinkManager::getTcpLinkHost(int linkid)
         return QHostAddress::Null;
     }
     return iface->getHostAddress();
+}
+
+bool LinkManager::isTcpServer(int linkid)
+{
+    if (!m_connectionMap.contains(linkid))
+        return false;
+
+    TCPLink *iface = qobject_cast<TCPLink*>(m_connectionMap.value(linkid));
+    if (!iface)
+        return false;
+
+    return iface->isServer();
 }
 
 void LinkManager::setUdpLinkPort(int linkid, int port)
