@@ -118,7 +118,7 @@ private:
     QMap<int,UASInterface*> m_uasMap;
     QMap<QString,int> m_portToBaudMap;
     MAVLinkDecoder *m_mavlinkDecoder;
-    MAVLinkProtocol *m_mavlinkParser;
+    MAVLinkProtocol *m_mavlinkProtocol;
     QString m_logSubDir;
     bool m_mavlinkLoggingEnabled;
 signals:

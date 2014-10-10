@@ -45,10 +45,10 @@ LinkManager::LinkManager(QObject *parent) :
 {
     m_mavlinkLoggingEnabled = true;
     m_mavlinkDecoder = new MAVLinkDecoder(this);
-    m_mavlinkParser = new MAVLinkProtocol(this);
-    m_mavlinkParser->setConnectionManager(this);
-    connect(m_mavlinkParser,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
-    connect(m_mavlinkParser,SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
+    m_mavlinkProtocol = new MAVLinkProtocol();
+    m_mavlinkProtocol->setConnectionManager(this);
+    connect(m_mavlinkProtocol,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+    connect(m_mavlinkProtocol,SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
     loadSettings();
     //Check to see if we have a single serial and single UDP connection, since they are the defaults
 
@@ -82,10 +82,14 @@ void LinkManager::stopLogging()
     {
         return;
     }
-    m_mavlinkParser->stopLogging();
+    m_mavlinkProtocol->stopLogging();
 }
+
 LinkManager::~LinkManager()
 {
+    m_mavlinkProtocol->setConnectionManager(NULL);
+    delete m_mavlinkProtocol;
+    m_mavlinkProtocol = NULL;
     saveSettings();
 }
 
@@ -249,14 +253,14 @@ void LinkManager::startLogging()
     }
     QString logFileName = QGC::MAVLinkLogDirectory() + m_logSubDir + QGC::fileNameAsTime();
     QLOG_DEBUG() << "LinkManger::startLogging()" << logFileName;
-    m_mavlinkParser->startLogging(logFileName);
+    m_mavlinkProtocol->startLogging(logFileName);
 }
 
 int LinkManager::addSerialConnection()
 {
     //Add with defaults
     SerialConnection *connection = new SerialConnection();
-    connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkProtocol,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
@@ -278,7 +282,7 @@ LinkInterface::LinkType LinkManager::getLinkType(int linkid)
 int LinkManager::addSerialConnection(QString port,int baud)
 {
     SerialConnection *connection = new SerialConnection();
-    connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(connection,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkProtocol,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(connection,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(connection,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(connection,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
@@ -295,7 +299,7 @@ int LinkManager::addSerialConnection(QString port,int baud)
 int LinkManager::addUdpConnection(QHostAddress addr,int port)
 {
     UDPLink* udpLink = new UDPLink(addr,port);
-    connect(udpLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(udpLink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkProtocol,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(udpLink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(udpLink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(udpLink,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
@@ -309,7 +313,7 @@ int LinkManager::addUdpConnection(QHostAddress addr,int port)
 int LinkManager::addTcpConnection(QHostAddress addr,int port,bool asServer)
 {
     TCPLink *tcplink = new TCPLink(addr,port,asServer);
-    connect(tcplink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkParser,SLOT(receiveBytes(LinkInterface*,QByteArray)));
+    connect(tcplink,SIGNAL(bytesReceived(LinkInterface*,QByteArray)),m_mavlinkProtocol,SLOT(receiveBytes(LinkInterface*,QByteArray)));
     connect(tcplink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(tcplink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     m_connectionMap.insert(tcplink->getId(),tcplink);
@@ -780,8 +784,9 @@ void LinkManager::linkErrorRec(LinkInterface *link,QString errorstring)
 void LinkManager::linkTimeoutTriggered(LinkInterface *link)
 {
     //Link has had a timeout
-    emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");
-    link->disconnect();
+    //Disabled until it is fixed and more more robust - MLC
+    //emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");
+    //link->disconnect();
 }
 void LinkManager::disableTimeouts(int index)
 {

@@ -1294,24 +1294,27 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
                     QLOG_DEBUG() << "Unable to determine Mode number in log" << record.value("Mode").toString();
                 }
             }
-            //It's an integer!
-            switch (type)
+            else
             {
-                case MAV_TYPE_QUADROTOR:
+                //It's an integer!
+                switch (type)
                 {
-                    mode = ApmCopter::stringForMode(modeint);
+                    case MAV_TYPE_QUADROTOR:
+                    {
+                        mode = ApmCopter::stringForMode(modeint);
+                    }
+                    break;
+                    case MAV_TYPE_FIXED_WING:
+                    {
+                        mode = ApmPlane::stringForMode(modeint);
+                    }
+                    break;
+                    case MAV_TYPE_GROUND_ROVER:
+                    {
+                        mode = ApmRover::stringForMode(modeint);
+                    }
+                    break;
                 }
-                break;
-                case MAV_TYPE_FIXED_WING:
-                {
-                    mode = ApmPlane::stringForMode(modeint);
-                }
-                break;
-                case MAV_TYPE_GROUND_ROVER:
-                {
-                    mode = ApmRover::stringForMode(modeint);
-                }
-                break;
             }
             QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
             QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
