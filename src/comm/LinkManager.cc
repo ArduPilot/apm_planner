@@ -303,10 +303,10 @@ int LinkManager::addUdpConnection(QHostAddress addr,int port)
     connect(udpLink,SIGNAL(connected(LinkInterface*)),this,SLOT(linkConnected(LinkInterface*)));
     connect(udpLink,SIGNAL(disconnected(LinkInterface*)),this,SLOT(linkDisonnected(LinkInterface*)));
     connect(udpLink,SIGNAL(error(LinkInterface*,QString)),this,SLOT(linkErrorRec(LinkInterface*,QString)));
-    udpLink->connect();
     m_connectionMap.insert(udpLink->getId(),udpLink);
     emit newLink(udpLink->getId());
     saveSettings();
+    udpLink->connect();
     return udpLink->getId();
 
 }
@@ -319,6 +319,10 @@ int LinkManager::addTcpConnection(QHostAddress addr,int port,bool asServer)
     m_connectionMap.insert(tcplink->getId(),tcplink);
     emit newLink(tcplink->getId());
     saveSettings();
+    if (asServer)
+    {
+        tcplink->connect();
+    }
     return tcplink->getId();
 }
 
