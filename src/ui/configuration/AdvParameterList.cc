@@ -45,7 +45,8 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     m_paramDownloadCount(0),
     m_writingParams(false),
     m_paramsWritten(0),
-    m_paramsToWrite(0)
+    m_paramsToWrite(0),
+    m_fileDialog(NULL)
 {
     ui.setupUi(this);
     connect(ui.refreshPushButton, SIGNAL(clicked()),this, SLOT(refreshButtonClicked()));
@@ -141,6 +142,8 @@ void AdvParameterList::writeButtonClicked()
 
 AdvParameterList::~AdvParameterList()
 {
+    delete m_fileDialog;
+    m_fileDialog = NULL;
 }
 
 void AdvParameterList::refreshButtonClicked()
@@ -177,11 +180,15 @@ void AdvParameterList::loadButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
-    QFileDialog *dialog = new QFileDialog(this,"Open File",QGC::parameterDirectory(),"*.param;;*.txt");
-    dialog->setFileMode(QFileDialog::ExistingFile);
-    connect(dialog,SIGNAL(accepted()),this,SLOT(loadDialogAccepted()));
-    dialog->show();
+
+    QFileDialog *fileDialog = new QFileDialog(this,"Load",QGC::parameterDirectory());
+    QLOG_DEBUG() << "CREATED:" << fileDialog;
+    fileDialog->setFileMode(QFileDialog::ExistingFile);
+    fileDialog->setNameFilter("*.param;*.txt");
+    fileDialog->open(this, SLOT(loadDialogAccepted()));
+    connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
 }
+
 void AdvParameterList::loadDialogAccepted()
 {
     QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
@@ -226,16 +233,34 @@ void AdvParameterList::loadDialogAccepted()
     }
 }
 
+void AdvParameterList::dialogRejected()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    QLOG_DEBUG() << "Dialog Rejected:" << dialog;
+    if (dialog){
+        dialog->deleteLater();
+        dialog = NULL;
+    }
+
+}
+
 void AdvParameterList::saveButtonClicked()
 {
-    QFileDialog *dialog = new QFileDialog(this,"Save File",QGC::parameterDirectory()
-                                          + "/parameters.param",
-                                          tr("Parameters (*.param)"));
-    dialog->setFileMode(QFileDialog::AnyFile);
-    connect(dialog,SIGNAL(accepted()),this,SLOT(saveDialogAccepted()));
-    dialog->setAcceptMode(QFileDialog::AcceptSave);
-    dialog->show();
+    if (!m_uas)
+    {
+        showNullMAVErrorMessageBox();
+        return;
+    }
+
+    QFileDialog *fileDialog = new QFileDialog(this,"Save",QGC::parameterDirectory());
+    QLOG_DEBUG() << "CREATED:" << fileDialog;
+    fileDialog->setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog->setNameFilter("*.param;*.txt");
+    fileDialog->selectFile("paramter.param");
+    fileDialog->open(this, SLOT(saveDialogAccepted()));
+    connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
 }
+
 void AdvParameterList::saveDialogAccepted()
 {
     QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
@@ -281,6 +306,9 @@ void AdvParameterList::saveDialogAccepted()
     }
     file.flush();
     file.close();
+
+    dialog->deleteLater(); // cleanup dialog instance
+    dialog = NULL;
 }
 
 void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString parameterName, QVariant value)

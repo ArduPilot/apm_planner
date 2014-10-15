@@ -36,6 +36,8 @@ This file is part of the APM_PLANNER project
 #include "ui_AdvParameterList.h"
 #include "AP2ConfigWidget.h"
 
+class QFileDialog;
+
 class AdvParameterList : public AP2ConfigWidget
 {
     Q_OBJECT
@@ -66,6 +68,7 @@ private slots:
     void resetButtonClicked();
     void loadDialogAccepted();
     void saveDialogAccepted();
+    void dialogRejected();
 
 private:
     Ui::AdvParameterList ui;
@@ -92,6 +95,7 @@ private:
     int m_paramsToWrite;
 
     QString m_paramFileToCompare;
+    QFileDialog *m_fileDialog;
 };
 
 #endif // ADVPARAMETERLIST_H
