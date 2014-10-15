@@ -94,9 +94,9 @@ p, li { white-space: pre-wrap; }
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="skipPushButton">
+          <widget class="QPushButton" name="okPushButton">
            <property name="text">
-            <string>Skip</string>
+            <string>OK</string>
            </property>
           </widget>
          </item>

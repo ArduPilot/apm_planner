@@ -40,12 +40,12 @@ This file is part of the APM_PLANNER project
 #define ADV_TABLE_COLUMN_COUNT ADV_TABLE_COLUMN_DESCRIPTION + 1
 
 AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
+    m_searchIndex(0),
     m_paramDownloadState(starting),
     m_paramDownloadCount(0),
     m_writingParams(false),
     m_paramsWritten(0),
-    m_paramsToWrite(0),
-    m_searchIndex(0)
+    m_paramsToWrite(0)
 {
     ui.setupUi(this);
     connect(ui.refreshPushButton, SIGNAL(clicked()),this, SLOT(refreshButtonClicked()));
