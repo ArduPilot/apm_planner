@@ -46,10 +46,10 @@
 #include <qmath.h>
 #include <limits>
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#  include <qnumeric.h>
-#  include <QPrinter>
+#include <qnumeric.h>
+#include <QPrinter>
 #else
-#  include <QtNumeric>
+#include <QtNumeric>
 #include <QtPrintSupport/QtPrintSupport>
 #endif
 

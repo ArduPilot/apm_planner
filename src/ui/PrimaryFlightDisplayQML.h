@@ -25,7 +25,11 @@ This file is part of the APM_PLANNER project
 
 #include <UASInterface.h>
 #include <QWidget>
+#if QT_VERSION >= 0x050302
+#include <QtQuick/QQuickView>
+#else
 #include <QQuickView>
+#endif
 
 namespace Ui {
 class PrimaryFlightDisplayQML;
