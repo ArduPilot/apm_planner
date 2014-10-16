@@ -410,7 +410,6 @@ FORMS += \
     src/ui/AP2DataPlotAxisDialog.ui \
     src/ui/AutoUpdateDialog.ui \
     src/uas/LogDownloadDialog.ui \
-    src/ui/PrimaryFlightDisplayQML.ui \
     src/ui/configuration/CompassMotorCalibrationDialog.ui \
     src/ui/MissionElevationDisplay.ui \
     src/ui/DroneshareUploadDialog.ui \

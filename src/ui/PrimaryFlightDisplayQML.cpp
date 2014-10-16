@@ -22,7 +22,6 @@ This file is part of the APM_PLANNER project
 
 #include "QsLog.h"
 #include "PrimaryFlightDisplayQML.h"
-#include "ui_PrimaryFlightDisplayQML.h"
 
 #include "configuration.h"
 #include "MainWindow.h"
@@ -35,11 +34,9 @@ This file is part of the APM_PLANNER project
 
 PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
     QWidget(parent),
-//    ui(new Ui::PrimaryFlightDisplayQML),
     m_declarativeView(NULL),
     m_uasInterface(NULL)
 {
-//    ui->setupUi(this);
     QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml");
     QLOG_DEBUG() << url;
     if (!QFile::exists(QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml"))
