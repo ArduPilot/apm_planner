@@ -18,7 +18,7 @@ void AbsPositionOverview::parseGpsRawInt(LinkInterface *link, const mavlink_mess
 
 void AbsPositionOverview::parseGlobalPositionInt(LinkInterface *link, const mavlink_message_t &message, const mavlink_global_position_int_t &state)
 {
-    this->setRelativeAlt(state.relative_alt);
+    this->setRelativeAlt(state.relative_alt/1000.0);
 }
 
 void AbsPositionOverview::messageReceived(LinkInterface* link,mavlink_message_t message)
