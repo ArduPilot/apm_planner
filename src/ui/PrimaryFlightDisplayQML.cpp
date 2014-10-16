@@ -81,11 +81,14 @@ void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
     if (m_uasInterface) {
         connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
                 this,SLOT(uasTextMessage(int,int,int,QString)));
-        VehicleOverview *obj = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
-        RelPositionOverview *rel = LinkManager::instance()->getUasObject(uas->getUASID())->getRelPositionOverview();
-        m_declarativeView->rootContext()->setContextProperty("vehicleoverview",obj);
-        m_declarativeView->rootContext()->setContextProperty("relpositionoverview",rel);
-        m_declarativeView->rootContext()->setContextProperty("abspositionoverview",LinkManager::instance()->getUasObject(uas->getUASID())->getAbsPositionOverview());
+        VehicleOverview *vehicleView = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
+        RelPositionOverview *relView = LinkManager::instance()->getUasObject(uas->getUASID())->getRelPositionOverview();
+        AbsPositionOverview *absView = LinkManager::instance()->getUasObject(uas->getUASID())->getAbsPositionOverview();
+
+        m_declarativeView->rootContext()->setContextProperty("vehicleoverview",vehicleView);
+        m_declarativeView->rootContext()->setContextProperty("relpositionoverview",relView);
+        m_declarativeView->rootContext()->setContextProperty("abspositionoverview",absView);
+
         QMetaObject::invokeMethod(m_declarativeView->rootObject(),"activeUasSet");
     }
 }
