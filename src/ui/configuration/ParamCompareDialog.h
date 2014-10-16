@@ -48,12 +48,14 @@ public:
     void compareLists();
 
 private slots:
+    void showLoadFileDialog();
     void loadParameterFile();
     void loadParameterWithFile();
     void loadParameterFile(const QString& filename);
     void saveNewParameters();
     void checkAll();
     bool paramCompareEqual(const QVariant& leftValue, const QVariant& rightValue);
+    void dialogRejected();
 
 private:
     void initConnections();
