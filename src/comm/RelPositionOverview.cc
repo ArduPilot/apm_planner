@@ -7,12 +7,18 @@ RelPositionOverview::RelPositionOverview(QObject *parent) :
 
 void RelPositionOverview::parseAttitude(LinkInterface *link, const mavlink_message_t &message, const mavlink_attitude_t &state)
 {
+    Q_UNUSED(link);
+    Q_UNUSED(message);
+
     this->setRoll(ToDeg(state.roll));
     this->setPitch(ToDeg(state.pitch));
     this->setYaw(ToDeg(state.yaw));
 }
 void RelPositionOverview::parseVfrHud(LinkInterface *link, const mavlink_message_t &message, const mavlink_vfr_hud_t &state)
 {
+    Q_UNUSED(link);
+    Q_UNUSED(message);
+
     this->setAirspeed(state.airspeed);
     this->setAlt(state.alt);
     this->setClimb(state.climb);
