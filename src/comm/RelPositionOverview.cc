@@ -7,9 +7,9 @@ RelPositionOverview::RelPositionOverview(QObject *parent) :
 
 void RelPositionOverview::parseAttitude(LinkInterface *link, const mavlink_message_t &message, const mavlink_attitude_t &state)
 {
-    this->setRoll(state.roll);
-    this->setPitch(state.pitch);
-    this->setYaw(state.yaw);
+    this->setRoll(ToDeg(state.roll));
+    this->setPitch(ToDeg(state.pitch));
+    this->setYaw(ToDeg(state.yaw));
 }
 void RelPositionOverview::parseVfrHud(LinkInterface *link, const mavlink_message_t &message, const mavlink_vfr_hud_t &state)
 {

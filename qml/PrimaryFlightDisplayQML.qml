@@ -25,15 +25,15 @@ Rectangle {
     property bool showStatusMessage: false
 
     function activeUasSet() {
-        rollPitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll * 57.2957795131; })
-        rollPitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch*57.2957795131 })
-        pitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll*57.2957795131 })
-        pitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch*57.2957795131 })
-        speedIndicator.groundspeed = Qt.binding(function() { return relpositionoverview.groundspeed })
-        informationIndicator.groundSpeed = Qt.binding(function() { return relpositionoverview.groundspeed })
+        rollPitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll})
+        rollPitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch})
+        pitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll})
+        pitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch})
+        speedIndicator.groundspeed = Qt.binding(function() { return relpositionoverview.groundspeed})
+        informationIndicator.groundSpeed = Qt.binding(function() { return relpositionoverview.groundspeed})
         informationIndicator.airSpeed = Qt.binding(function() { return relpositionoverview.airspeed })
         compassIndicator.heading = Qt.binding(function() {
-            return (relpositionoverview.yaw < 0) ? (relpositionoverview.yaw*57.2957795131) + 360 : (relpositionoverview.yaw*57.2957795131)
+            return (relpositionoverview.yaw < 0) ? relpositionoverview.yaw + 360 : relpositionoverview.yaw ;
         })
         speedIndicator.airspeed = Qt.binding(function() { return relpositionoverview.airspeed } )
         altIndicator.alt = Qt.binding(function() { return abspositionoverview.relative_alt } )
