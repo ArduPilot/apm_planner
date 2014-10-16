@@ -7,6 +7,9 @@ AbsPositionOverview::AbsPositionOverview(QObject *parent) :
 
 void AbsPositionOverview::parseGpsRawInt(LinkInterface *link, const mavlink_message_t &message, const mavlink_gps_raw_int_t &state)
 {
+    Q_UNUSED(link);
+    Q_UNUSED(message);
+
     if (state.fix_type > 2)
     {
         this->setLat(state.lat);
@@ -18,6 +21,8 @@ void AbsPositionOverview::parseGpsRawInt(LinkInterface *link, const mavlink_mess
 
 void AbsPositionOverview::parseGlobalPositionInt(LinkInterface *link, const mavlink_message_t &message, const mavlink_global_position_int_t &state)
 {
+    Q_UNUSED(link);
+    Q_UNUSED(message);
     this->setRelativeAlt(state.relative_alt/1000.0);
 }
 
