@@ -149,8 +149,8 @@ void BatteryMonitorConfig::setupPresetSelectionTable()
 
     preset = new BatteryPreset("Pixhawk\nPower Module HV",
                                BatteryPreset::Both,
-                               2, 10.0,   // voltPin, voltDivider
-                               3, 33.52378); // currPin, ampsPerVolt
+                               2, 12.02,   // voltPin, voltDivider
+                               3, 39.877); // currPin, ampsPerVolt
     m_presetList.append(preset);
 
     m_signalMapper = new QSignalMapper(this);
