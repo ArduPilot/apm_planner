@@ -280,7 +280,7 @@ void PX4FirmwareUploader::checkForPort()
 }
 void PX4FirmwareUploader::kickOffTriggered()
 {
-    if (!m_port)
+    if (m_port)
     {
         m_port->close();
         delete m_port;
