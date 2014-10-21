@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>714</width>
-    <height>596</height>
+    <height>651</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,134 +30,162 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>280</y>
+         <y>380</y>
          <width>471</width>
-         <height>231</height>
+         <height>221</height>
         </rect>
        </property>
        <property name="title">
         <string>File Locations</string>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>App Data</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="appDataDirEdit"/>
-          </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="appDirSetButton">
-            <property name="text">
-             <string>Set...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Log output:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="logDirEdit"/>
-          </item>
-          <item row="1" column="2">
-           <widget class="QPushButton" name="logDirSetButton">
-            <property name="text">
-             <string>Set...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>tlog output:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="mavlinkLogDirEdit"/>
-          </item>
-          <item row="2" column="2">
-           <widget class="QPushButton" name="mavlinkDirSetButton">
-            <property name="text">
-             <string>Set...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Parameters</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="paramDirEdit"/>
-          </item>
-          <item row="3" column="2">
-           <widget class="QPushButton" name="paramDirSetButton">
-            <property name="text">
-             <string>Set...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>24</y>
+          <width>451</width>
+          <height>191</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>App Data</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="appDataDirEdit"/>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="appDirSetButton">
+           <property name="text">
+            <string>Set...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Log output:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="logDirEdit"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="logDirSetButton">
+           <property name="text">
+            <string>Set...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>tlog output:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="mavlinkLogDirEdit"/>
+         </item>
+         <item row="2" column="2">
+          <widget class="QPushButton" name="mavlinkDirSetButton">
+           <property name="text">
+            <string>Set...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Parameters</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="paramDirEdit"/>
+         </item>
+         <item row="3" column="2">
+          <widget class="QPushButton" name="paramDirSetButton">
+           <property name="text">
+            <string>Set...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_2">
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>160</y>
+         <y>270</y>
          <width>471</width>
-         <height>131</height>
+         <height>101</height>
         </rect>
        </property>
        <property name="title">
         <string>Themes</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QRadioButton" name="outdoorStyle">
-          <property name="text">
-           <string>Use outdoor mission style (light background)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="indoorStyle">
-          <property name="text">
-           <string>Use indoor mission style (black background)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="nativeStyle">
-          <property name="text">
-           <string>Use native platform look and feel</string>
-          </property>
-          <property name="autoExclusive">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>(Windows/Linux/Mac OS) (Experimental)</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QRadioButton" name="nativeStyle">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>235</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use native platform look and feel</string>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="indoorStyle">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>305</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use indoor mission style (black background)</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="outdoorStyle">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>310</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use outdoor mission style (light background)</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>80</y>
+          <width>254</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>(Windows/Linux/Mac OS) (Experimental)</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
@@ -165,7 +193,7 @@
          <x>18</x>
          <y>9</y>
          <width>471</width>
-         <height>146</height>
+         <height>256</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -231,6 +259,34 @@
            <string>Enable Beta Release Updates</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="pfdTopmostCheckBox">
+          <property name="text">
+           <string>Show Primary Flight Display (PFD) Topmost</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="enableGStreamerVideoPFDCheckBox">
+          <property name="text">
+           <string>Enable GSreamer Video in Primary Flight Display (Experimental)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,0,0">
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="gstreamerPipelineStringEdit"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>GStreamer Pipeine String </string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>

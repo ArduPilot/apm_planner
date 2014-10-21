@@ -76,8 +76,8 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
 
     // batteryType not initialized
     // cells not initialized
-    // fullVoltage not initialized
-    // emptyVoltage not initialized
+    fullVoltage(12.6),
+    emptyVoltage(9),
     startVoltage(-1.0),
     tickVoltage(10.5),
     lastTickVoltageValue(13.0),
@@ -174,11 +174,13 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     }
     
     color = UASInterface::getNextColor();
-    setBatterySpecs(QString("9V,9.5V,12.6V"));
+
+    // Read setting before setting up 'systemSpecChanged' to avoid writing while reading the settings
+    readSettings();
+
     connect(statusTimeout, SIGNAL(timeout()), this, SLOT(updateState()));
     connect(this, SIGNAL(systemSpecsChanged(int)), this, SLOT(writeSettings()));
     statusTimeout->start(500);
-    readSettings(); 
     // Initial signals
     emit disarmed();
     emit armingChanged(false);  
@@ -3659,6 +3661,8 @@ void UAS::setBatterySpecs(const QString& specs)
             emit textMessageReceived(0, 0, 0, "Could not set battery options, format is wrong");
         }
     }
+
+    emit systemSpecsChanged(uasId);
 }
 
 /**

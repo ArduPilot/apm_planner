@@ -77,9 +77,9 @@ WindowsBuild {
         $$(QTDIR)\\bin\\Qt5Multimedia$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Gui$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Core$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\icuin51.dll \
-        $$(QTDIR)\\bin\\icuuc51.dll \
-        $$(QTDIR)\\bin\\icudt51.dll \
+        $$(QTDIR)\\bin\\icuin52.dll \
+        $$(QTDIR)\\bin\\icuuc52.dll \
+        $$(QTDIR)\\bin\\icudt52.dll \
         $$(QTDIR)\\bin\\Qt5Network$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Widgets$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5OpenGL$${DLL_QT_DEBUGCHAR}.dll \

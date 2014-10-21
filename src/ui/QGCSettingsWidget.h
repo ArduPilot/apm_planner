@@ -27,6 +27,9 @@ private slots:
     void setBetaRelease(bool state);
 
     void setActiveUAS(UASInterface *uas);
+    void setPFDTopMost(bool state);
+    void setPFDEnableGStreamer(bool state);
+    void setGStreamerPipelineString();
 
 private:
     void setDataRateLineEdits();

@@ -14,7 +14,7 @@
 //    (c) 2013 Author: Bill Bonney <billbonney@communistech.com>
 //
 
-import QtQuick 2.0
+import QtQuick 2.1
 
 Rectangle {
     id:modeDisplay

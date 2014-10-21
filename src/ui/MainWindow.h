@@ -489,6 +489,8 @@ private:
     AutoUpdateDialog* m_dialog;
 
     DroneshareDialog* m_droneshareDialog;
+    QDialog *m_primaryFlightDisplayDialog;
+    QDialog *m_HUDDialog;
 
 };
 

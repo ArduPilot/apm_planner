@@ -14,17 +14,27 @@
 //    (c) 2014 Author: Bill Bonney <billbonney@communistech.com>
 //
 
-import QtQuick 2.0
+import QtQuick 2.1
 
 Item {
     id: root
     property real airSpeed: 0
     property real groundSpeed: 0
+	property real batVoltage: 0
+	property real batCurrent: 0
+    property real batPercent: 0
     property color color: "white"
     property color colorOutline: "black"
+	property string navMode: ""
 
     Column{
         anchors {left: parent.left; bottom: parent.bottom}
+        Text {
+            color: root.color
+            styleColor: root.colorOutline
+            style: Text.Outline
+            text: "FM: " + navMode
+        }
         Text {
             color: root.color
             styleColor: root.colorOutline
@@ -36,6 +46,28 @@ Item {
             styleColor: root.colorOutline
             style: Text.Outline
             text: "GS: " + groundSpeed.toFixed(1)
+        }
+    }
+
+    Column{
+        anchors {right: parent.right; bottom: parent.bottom}
+        Text {
+            color: root.color
+            styleColor: root.colorOutline
+            style: Text.Outline
+            text: "V: " + batVoltage.toFixed(1)
+        }
+        Text {
+            color: root.color
+            styleColor: root.colorOutline
+            style: Text.Outline
+            text: "I: " + batCurrent.toFixed(1)
+        }
+        Text {
+            color: root.color
+            styleColor: root.colorOutline
+            style: Text.Outline
+            text: "%: " + batPercent.toFixed(1)
         }
     }
 }
