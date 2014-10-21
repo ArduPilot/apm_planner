@@ -110,6 +110,19 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         }
         settings.endGroup();
         connect(ui->enableBetaReleaseCheckBox, SIGNAL(clicked(bool)), this, SLOT(setBetaRelease(bool)));
+
+        settings.beginGroup("QGC_MAINWINDOW");
+        ui->pfdTopmostCheckBox->setChecked(settings.value("PFD_TOPMOST").toBool());
+        settings.endGroup();
+
+        settings.beginGroup("QGC_GSTREAMER");
+        ui->enableGStreamerVideoPFDCheckBox->setChecked(settings.value("PFD_ENABLE_GSTREAMER").toBool());
+        ui->gstreamerPipelineStringEdit->setText(settings.value("GSTREAMER_PIPELINE_STRING").toString());
+        settings.endGroup();
+
+        connect(ui->pfdTopmostCheckBox, SIGNAL(clicked(bool)), this, SLOT(setPFDTopMost(bool)));
+        connect(ui->enableGStreamerVideoPFDCheckBox, SIGNAL(clicked(bool)), this, SLOT(setPFDEnableGStreamer(bool)));
+        connect(ui->gstreamerPipelineStringEdit, SIGNAL(editingFinished()), this, SLOT(setGStreamerPipelineString()));
     }
 }
 
@@ -265,3 +278,28 @@ void QGCSettingsWidget::setBetaRelease(bool state)
     settings.setValue("RELEASE_TYPE", type);
     settings.sync();
 }
+
+void QGCSettingsWidget::setPFDTopMost(bool state)
+{
+    QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
+    settings.setValue("PFD_TOPMOST", state);
+    settings.sync();
+}
+
+void QGCSettingsWidget::setPFDEnableGStreamer(bool state)
+{
+    QSettings settings;
+    settings.beginGroup("QGC_GSTREAMER");
+    settings.setValue("PFD_ENABLE_GSTREAMER", state);
+    settings.sync();
+}
+
+void QGCSettingsWidget::setGStreamerPipelineString()
+{
+    QSettings settings;
+    settings.beginGroup("QGC_GSTREAMER");
+    settings.setValue("GSTREAMER_PIPELINE_STRING", ui->gstreamerPipelineStringEdit->text());
+    settings.sync();
+}
+
