@@ -14,7 +14,7 @@
 //    (c) 2014 Author: Bill Bonney <billbonney@communistech.com>
 //
 
-import QtQuick 2.0
+import QtQuick 2.1
 
 Item {
     id: pitchIndicator
