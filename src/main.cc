@@ -33,6 +33,7 @@ This file is part of the QGROUNDCONTROL project
 #include "configuration.h"
 #include "QsLog.h"
 #include <QtWidgets/QApplication>
+#include <QGst/Init>
 
 /* SDL does ugly things to main() */
 #ifdef main
@@ -68,6 +69,9 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_WIN
     //qInstallMsgHandler( msgHandler );
 #endif
+
+    QGst::init(0,0);
+
 
     QGCCore core(argc, argv);
     // init the logging mechanism
