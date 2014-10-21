@@ -137,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent):
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
     m_heartbeatEnabled(true),
-    m_droneshareDialog(NULL)
+    m_droneshareDialog(NULL),
     m_primaryFlightDisplayDialog(0),
     m_HUDDialog(0)
 {
