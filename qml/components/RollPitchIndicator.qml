@@ -14,13 +14,14 @@
 //    (c) 2014 Author: Bill Bonney <billbonney@communistech.com>
 //
 
-import QtQuick 2.0
+import QtQuick 2.1
 
 Item {
     id: root
     property real rollAngle : 0
     property real pitchAngle: 0
     property bool enableBackgroundVideo: false
+	property bool enableRollPitch: true
     property real scale: 1.0
 
     width: parent.width
@@ -31,6 +32,7 @@ Item {
         width: parent.width
         height: parent.height
         scale: parent.scale * 4.0
+		visible: !enableBackgroundVideo
 
         Rectangle { // Artificial Horizon
             anchors.fill: parent
@@ -42,18 +44,6 @@ Item {
                 smooth: true
                 visible: !enableBackgroundVideo
             }
-
-//            Rectangle { // horizon bar
-//                id: artHorizon
-//                anchors.centerIn: blueSky
-//                height: 3
-//                anchors.verticalCenterOffset: 3
-//                width: blueSky.width
-//                color: "darkgreen"
-//                smooth: true
-//                visible: !enableBackgroundVideo
-//                scale: 1
-//            }
 
             Rectangle { // Ground
                 id: ground
@@ -88,6 +78,7 @@ Item {
 
     Image { // Roll Graticule
         id: rollGraticule
+		visible: enableRollPitch
         anchors { bottom: parent.verticalCenter; horizontalCenter: parent.horizontalCenter}
         z: 1
         source: "../resources/components/rollPitchIndicator/rollGraticule.svg"
@@ -112,6 +103,7 @@ Item {
 
     Image { // Cross Hairs
         id: crossHairs
+		visible: enableRollPitch
         anchors.centerIn: parent
         z:3
         source: "../resources/components/rollPitchIndicator/crossHair.svg"
