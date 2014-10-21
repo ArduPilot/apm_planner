@@ -52,6 +52,7 @@ This file is part of the APM_PLANNER project
 #include "ui_ApmFirmwareConfig.h"
 #include "PX4FirmwareUploader.h"
 #include "arduinoflash.h"
+#include <QFileDialog>
 
 class ApmFirmwareConfig : public AP2ConfigWidget
 {

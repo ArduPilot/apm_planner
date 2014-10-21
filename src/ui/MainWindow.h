@@ -64,7 +64,6 @@ This file is part of the QGROUNDCONTROL project
 #include "HDDisplay.h"
 #include "WatchdogControl.h"
 #include "HSIDisplay.h"
-#include "QGCRemoteControlView.h"
 #include "opmapcontrol.h"
 #if (defined Q_OS_MAC) | (defined _MSC_VER)
 #include "QGCGoogleEarthView.h"
@@ -76,7 +75,6 @@ This file is part of the QGROUNDCONTROL project
 #include "SlugsHilSim.h"
 
 #include "SlugsPadCameraControl.h"
-#include "UASControlParameters.h"
 #include "QGCMAVLinkInspector.h"
 #include "QGCMAVLinkLogPlayer.h"
 #include "QGCVehicleConfig.h"

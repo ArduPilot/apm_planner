@@ -314,12 +314,6 @@ INCLUDEPATH += \
     libs/opmapcontrol
 
 #
-# QWT plotting library
-#
-
-include(libs/qwt/qwt.pri)
-
-#
 # QSerialPort - serial port library
 #
 include(libs/serialport/apmserial.pri)
