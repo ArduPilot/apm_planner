@@ -40,6 +40,10 @@ This file is part of the QGROUNDCONTROL project
 #include <QTimer>
 #include <QVector3D>
 #include "UASInterface.h"
+#include <QGst/Ui/GraphicsVideoSurface>
+#include <QVBoxLayout>
+#include <QSlider>
+#include "GStreamerPlayer.h"
 
 /**
  * @brief Displays a Head Up Display (HUD)
@@ -52,7 +56,7 @@ class HUD : public QLabel
 {
     Q_OBJECT
 public:
-    HUD(int width = 640, int height = 480, QWidget* parent = NULL);
+    HUD(int width = 640, int height = 480, QWidget* parent = NULL, bool enableGStreamer = false);
     ~HUD();
 
     void setImageSize(int width, int height, int depth, int channels);
@@ -105,7 +109,7 @@ protected slots:
     void paintText(QString text, QColor color, float fontSize, float refX, float refY, QPainter* painter);
     /** @brief Setup the OpenGL view for drawing a sub-component of the HUD */
     void setupGLView(float referencePositionX, float referencePositionY, float referenceWidth, float referenceHeight);
-    void paintHUD();
+    void paintHUD(QPainter* painter = NULL);
     void paintPitchLinePos(QString text, float refPosX, float refPosY, QPainter* painter);
     void paintPitchLineNeg(QString text, float refPosX, float refPosY, QPainter* painter);
 
@@ -117,6 +121,7 @@ protected slots:
     void drawChangeIndicatorGauge(float xRef, float yRef, float radius, float expectedMaxChange, float value, const QColor& color, QPainter* painter, bool solid=true);
 
     void drawPolygon(QPolygonF refPolygon, QPainter* painter);
+    void onCustomPaintMessage(QGst::Ui::CustomPaintMessage &message);
 
 signals:
     void visibilityChanged(bool visible);
@@ -220,6 +225,7 @@ protected:
     QString nextOfflineImage;
     bool HUDInstrumentsEnabled;
     bool videoEnabled;
+    bool enableGStreamer;
     bool dataStreamEnabled;
     bool imageLoggingEnabled;
     float xImageFactor;
@@ -233,6 +239,34 @@ protected:
     bool imageRequested;
     QString imageLogDirectory;
     unsigned int imageLogCounter;
+    GStreamerPlayer *m_player;
+    QFrame *m_declarativeView;
+};
+
+// Helper for adjusting gstreamer plugin settings
+class GStreamerToolBarWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    GStreamerToolBarWidget(QPoint pos, GStreamerPlayer *player, QWidget *parent = NULL) : QWidget(parent), m_player(player)
+    {
+        setWindowFlags(windowFlags() | Qt::Popup);
+        createLayout();
+        int newYPos = pos.y() + 100;
+        move(pos.x(), newYPos);
+    }
+
+    void createLayout();
+
+private slots:
+    void brightnessValueChanged(int value);
+    void contrastValueChanged(int value);
+    void hueValueChanged(int value);
+    void satValueChanged(int value);
+
+private:
+    GStreamerPlayer *m_player;
+
 };
 
 #endif // HUD_H

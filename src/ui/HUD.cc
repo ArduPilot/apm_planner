@@ -41,7 +41,16 @@ This file is part of the QGROUNDCONTROL project
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QPaintEvent>
-
+#include <QDeclarativeView>
+#include <QDeclarativeContext>
+#include <QDeclarativeEngine>
+#include <QGst/Pipeline>
+#include <QGst/Message>
+#include <QGst/Ui/GraphicsVideoSurface>
+#include <QGst/Init>
+#include <QGLWidget>
+#include <QSettings>
+#include "GStreamerPlayer.h"
 
 #include <cmath>
 #include <qmath.h>
@@ -55,7 +64,7 @@ This file is part of the QGROUNDCONTROL project
  * @param height
  * @param parent
  */
-HUD::HUD(int width, int height, QWidget* parent)
+HUD::HUD(int width, int height, QWidget* parent, bool enableGStreamer)
     : QLabel(parent),
       uas(NULL),
       yawInt(0.0f),
@@ -116,19 +125,28 @@ HUD::HUD(int width, int height, QWidget* parent)
       offlineDirectory(""),
       nextOfflineImage(""),
       HUDInstrumentsEnabled(false),
-      videoEnabled(true),
+      videoEnabled(false),
       xImageFactor(1.0),
       yImageFactor(1.0),
       imageRequested(false),
       imageLoggingEnabled(false),
-    image(NULL)
+      image(NULL),
+      m_declarativeView(NULL),
+      m_player(NULL),
+      enableGStreamer(enableGStreamer)
 {
     // Fill with black background
+    QColor color = qRgb(255, 255, 255);
+    if (parent)
+    {
+       color = parent->palette().color(QPalette::Background);
+    }
+
     QImage fill = QImage(width, height, QImage::Format_Indexed8);
     fill.setColorCount(3);
-    fill.setColor(0, qRgb(0, 0, 0));
-    fill.setColor(1, qRgb(0, 0, 0));
-    fill.setColor(2, qRgb(0, 0, 0));
+    fill.setColor(0, color.rgba());
+    fill.setColor(1, color.rgba());
+    fill.setColor(2, color.rgba());
     fill.fill(0);
     glImage = fill;
 
@@ -140,10 +158,6 @@ HUD::HUD(int width, int height, QWidget* parent)
     // Set preferred size
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     scalingFactor = this->width()/vwidth;
-
-    // Refresh timer
-    refreshTimer->setInterval(updateInterval);
-    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(repaint()));
 
     // Resize to correct size and fill with image
     QWidget::resize(this->width(), this->height());
@@ -168,11 +182,16 @@ HUD::HUD(int width, int height, QWidget* parent)
     createActions();
 
     if (UASManager::instance()->getActiveUAS() != NULL) setActiveUAS(UASManager::instance()->getActiveUAS());
+
+    // Refresh timer
+    refreshTimer->setInterval(updateInterval);
+    connect(refreshTimer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
 HUD::~HUD()
 {
     refreshTimer->stop();
+    if (m_player) delete m_player;
 }
 
 QSize HUD::sizeHint() const
@@ -210,6 +229,14 @@ void HUD::contextMenuEvent (QContextMenuEvent* event)
     menu.addAction(enableVideoAction);
     menu.addAction(selectOfflineDirectoryAction);
     menu.addAction(selectSaveDirectoryAction);
+
+    if (videoEnabled && enableGStreamer)
+    {
+        GStreamerToolBarWidget *toolBarWidget = new GStreamerToolBarWidget(event->globalPos(), m_player);
+            connect(&menu, SIGNAL(triggered(QAction*)), toolBarWidget, SLOT(close()));
+            toolBarWidget->show();
+    }
+
     menu.exec(event->globalPos());
 }
 
@@ -486,11 +513,15 @@ void HUD::paintRollPitchStrips()
 
 void HUD::paintEvent(QPaintEvent *event)
 {
+    if (videoEnabled && enableGStreamer) return;
 
-    paintHUD();
+    QPainter painter;
+    painter.begin(this);
+    paintHUD(&painter);
+    painter.end();
 }
 
-void HUD::paintHUD()
+void HUD::paintHUD(QPainter* painter)
 {
     if (isVisible()) {
         //    static quint64 interval = 0;
@@ -539,9 +570,16 @@ void HUD::paintHUD()
 
         // Update scaling factor
         // adjust scaling to fit both horizontally and vertically
+        xCenterOffset = 0.0;
         scalingFactor = this->width()/vwidth;
         double scalingFactorH = this->height()/vheight;
-        if (scalingFactorH < scalingFactor) scalingFactor = scalingFactorH;
+        if (scalingFactorH < scalingFactor)
+        {
+            // Move entire image in x to keep centered for big size
+            double dWidth = (double)this->width();
+            xCenterOffset = ((((scalingFactor/scalingFactorH)*dWidth)-dWidth)/2)*vwidth/dWidth;
+            scalingFactor = scalingFactorH;
+        }
 
         // Fill with black background
         if (videoEnabled) {
@@ -568,12 +606,13 @@ void HUD::paintHUD()
 
         }
 
-        QPainter painter;
-        painter.begin(this);
-        painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
-        QPixmap pmap = QPixmap::fromImage(glImage).scaledToWidth(width());
-        painter.drawPixmap(0, (height() - pmap.height()) / 2, pmap);
+        if (!enableGStreamer)
+        {
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            painter->setRenderHint(QPainter::HighQualityAntialiasing, true);
+            QPixmap pmap = QPixmap::fromImage(glImage).scaledToWidth(width());
+            painter->drawPixmap(0, (height() - pmap.height()) / 2, pmap);
+        }
 
         // END OF OPENGL PAINTING
 
@@ -584,22 +623,22 @@ void HUD::paintHUD()
             // QT PAINTING
             //makeCurrent();
 
-            painter.translate((this->vwidth/2.0+xCenterOffset)*scalingFactor, (this->vheight/2.0+yCenterOffset)*scalingFactor);
+            painter->translate(((this->vwidth/2.0+xCenterOffset)*scalingFactor), (this->vheight/2.0+yCenterOffset)*scalingFactor);
 
             // COORDINATE FRAME IS NOW (0,0) at CENTER OF WIDGET
 
 
             // Draw all fixed indicators
             // BATTERY
-            paintText(fuelStatus, fuelColor, 6.0f, (-vwidth/2.0) + 10, -vheight/2.0 + 6, &painter);
+            paintText(fuelStatus, fuelColor, 6.0f, (-vwidth/2.0) + 10, -vheight/2.0 + 6, painter);
             // Waypoint
-            paintText(waypointName, defaultColor, 6.0f, (-vwidth/3.0) + 10, +vheight/3.0 + 15, &painter);
+            paintText(waypointName, defaultColor, 6.0f, (-vwidth/3.0) + 10, +vheight/3.0 + 15, painter);
 
             QPen linePen(Qt::SolidLine);
             linePen.setWidth(refLineWidthToPen(1.0f));
             linePen.setColor(defaultColor);
-            painter.setBrush(Qt::NoBrush);
-            painter.setPen(linePen);
+            painter->setBrush(Qt::NoBrush);
+            painter->setPen(linePen);
 
             // YAW INDICATOR
             //
@@ -614,8 +653,8 @@ void HUD::paintHUD()
             yawIndicator.setPoint(1, QPoint(refToScreenX(yawIndicatorWidth/2.0f), refToScreenY(yawIndicatorY+yawIndicatorWidth)));
             yawIndicator.setPoint(2, QPoint(refToScreenX(-yawIndicatorWidth/2.0f), refToScreenY(yawIndicatorY+yawIndicatorWidth)));
             yawIndicator.setPoint(3, QPoint(refToScreenX(0.0f), refToScreenY(yawIndicatorY)));
-            painter.drawPolyline(yawIndicator);
-            painter.setPen(linePen);
+            painter->drawPolyline(yawIndicator);
+            painter->setPen(linePen);
 
             // CENTER
 
@@ -636,30 +675,30 @@ void HUD::paintHUD()
             hIndicator.setPoint(4, QPoint(refToScreenX(0.0f+hIndicatorSegmentWidth*1.0f), refToScreenY(hIndicatorYLow)));
             hIndicator.setPoint(5, QPoint(refToScreenX(0.0f+hIndicatorWidth/2.0f-hIndicatorSegmentWidth*1.75f), refToScreenY(hIndicatorY)));
             hIndicator.setPoint(6, QPoint(refToScreenX(0.0f+hIndicatorWidth/2.0f), refToScreenY(hIndicatorY)));
-            painter.drawPolyline(hIndicator);
+            painter->drawPolyline(hIndicator);
 
 
             // SETPOINT
             const float centerWidth = 8.0f;
             // TODO
-            //painter.drawEllipse(QPointF(refToScreenX(qMin(10.0f, values.value("roll desired", 0.0f) * 10.0f)), refToScreenY(qMin(10.0f, values.value("pitch desired", 0.0f) * 10.0f))), refToScreenX(centerWidth/2.0f), refToScreenX(centerWidth/2.0f));
+            //painter->drawEllipse(QPointF(refToScreenX(qMin(10.0f, values.value("roll desired", 0.0f) * 10.0f)), refToScreenY(qMin(10.0f, values.value("pitch desired", 0.0f) * 10.0f))), refToScreenX(centerWidth/2.0f), refToScreenX(centerWidth/2.0f));
 
             const float centerCrossWidth = 20.0f;
             // left
-            painter.drawLine(QPointF(refToScreenX(-centerWidth / 2.0f), refToScreenY(0.0f)), QPointF(refToScreenX(-centerCrossWidth / 2.0f), refToScreenY(0.0f)));
+            painter->drawLine(QPointF(refToScreenX(-centerWidth / 2.0f), refToScreenY(0.0f)), QPointF(refToScreenX(-centerCrossWidth / 2.0f), refToScreenY(0.0f)));
             // right
-            painter.drawLine(QPointF(refToScreenX(centerWidth / 2.0f), refToScreenY(0.0f)), QPointF(refToScreenX(centerCrossWidth / 2.0f), refToScreenY(0.0f)));
+            painter->drawLine(QPointF(refToScreenX(centerWidth / 2.0f), refToScreenY(0.0f)), QPointF(refToScreenX(centerCrossWidth / 2.0f), refToScreenY(0.0f)));
             // top
-            painter.drawLine(QPointF(refToScreenX(0.0f), refToScreenY(-centerWidth / 2.0f)), QPointF(refToScreenX(0.0f), refToScreenY(-centerCrossWidth / 2.0f)));
+            painter->drawLine(QPointF(refToScreenX(0.0f), refToScreenY(-centerWidth / 2.0f)), QPointF(refToScreenX(0.0f), refToScreenY(-centerCrossWidth / 2.0f)));
 
 
 
             // COMPASS
             const float compassY = -vheight/2.0f + 6.0f;
             QRectF compassRect(QPointF(refToScreenX(-12.0f), refToScreenY(compassY)), QSizeF(refToScreenX(24.0f), refToScreenY(12.0f)));
-            painter.setBrush(Qt::NoBrush);
-            painter.setPen(linePen);
-            painter.drawRoundedRect(compassRect, 3, 3);
+            painter->setBrush(Qt::NoBrush);
+            painter->setPen(linePen);
+            painter->drawRoundedRect(compassRect, 3, 3);
             QString yawAngle;
 
             //    const float yawDeg = ((values.value("yaw", 0.0f)/M_PI)*180.0f)+180.f;
@@ -671,16 +710,16 @@ void HUD::paintHUD()
             /* final safeguard for really stupid systems */
             int yawCompass = static_cast<int>(yawDeg) % 360;
             yawAngle.sprintf("%03d", yawCompass);
-            paintText(yawAngle, defaultColor,8.5f, -9.8f, compassY+ 1.7f, &painter);
+            paintText(yawAngle, defaultColor,8.5f, -9.8f, compassY+ 1.7f, painter);
 
-            painter.setBrush(Qt::NoBrush);
-            painter.setPen(linePen);
-
-            // CHANGE RATE STRIPS
-            drawChangeRateStrip(-95.0f, -60.0f, 40.0f, -10.0f, 10.0f, -zSpeed, &painter);
+            painter->setBrush(Qt::NoBrush);
+            painter->setPen(linePen);
 
             // CHANGE RATE STRIPS
-            drawChangeRateStrip(95.0f, -60.0f, 40.0f, -10.0f, 10.0f, totalAcc, &painter,true);
+            drawChangeRateStrip(-95.0f, -60.0f, 40.0f, -10.0f, 10.0f, -zSpeed, painter);
+
+            // CHANGE RATE STRIPS
+            drawChangeRateStrip(95.0f, -60.0f, 40.0f, -10.0f, 10.0f, totalAcc, painter,true);
 
             // GAUGES
 
@@ -693,64 +732,59 @@ void HUD::paintHUD()
                 gaugeAltitude = -zPos;
             }
 
-            painter.setBrush(Qt::NoBrush);
-            painter.setPen(linePen);
+            painter->setBrush(Qt::NoBrush);
+            painter->setPen(linePen);
 
-            drawChangeIndicatorGauge(-vGaugeSpacing, 35.0f, 15.0f, 10.0f, gaugeAltitude, defaultColor, &painter, false);
-            paintText("alt m", defaultColor, 5.5f, -73.0f, 50, &painter);
+            drawChangeIndicatorGauge(-vGaugeSpacing, 35.0f, 15.0f, 10.0f, gaugeAltitude, defaultColor, painter, false);
+            paintText("alt m", defaultColor, 5.5f, -73.0f, 50, painter);
 
             // Right speed gauge
-            drawChangeIndicatorGauge(vGaugeSpacing, 35.0f, 15.0f, 10.0f, totalSpeed, defaultColor, &painter, false);
-            paintText("v m/s", defaultColor, 5.5f, 55.0f, 50, &painter);
+            drawChangeIndicatorGauge(vGaugeSpacing, 35.0f, 15.0f, 10.0f, totalSpeed, defaultColor, painter, false);
+            paintText("v m/s", defaultColor, 5.5f, 55.0f, 50, painter);
 
 
             // Waypoint name
-            if (waypointName != "") paintText(waypointName, defaultColor, 2.0f, (-vwidth/3.0) + 10, +vheight/3.0 + 15, &painter);
+            if (waypointName != "") paintText(waypointName, defaultColor, 2.0f, (-vwidth/3.0) + 10, +vheight/3.0 + 15, painter);
 
             // MOVING PARTS
 
 
-            painter.translate(refToScreenX(yawTrans), 0);
+            painter->translate(refToScreenX(yawTrans), 0);
 
             // Old single-component pitch drawing
 //            // Rotate view and draw all roll-dependent indicators
-//            painter.rotate((rollLP/M_PI)* -180.0f);
+//            painter->rotate((rollLP/M_PI)* -180.0f);
 
-//            painter.translate(0, (-pitchLP/(float)M_PI)* -180.0f * refToScreenY(1.8f));
+//            painter->translate(0, (-pitchLP/(float)M_PI)* -180.0f * refToScreenY(1.8f));
 
 //            //QLOG_DEBUG() << "ROLL" << roll << "PITCH" << pitch << "YAW DIFF" << valuesDot.value("roll", 0.0f);
 
 //            // PITCH
 
-//            paintPitchLines(pitchLP, &painter);
+//            paintPitchLines(pitchLP, painter);
 
-            QColor attColor = painter.pen().color();
+            QColor attColor = painter->pen().color();
 
             // Draw multi-component attitude
             foreach (QVector3D att, attitudes.values())
             {
                 attColor = attColor.darker(200);
-                painter.setPen(attColor);
+                painter->setPen(attColor);
                 // Rotate view and draw all roll-dependent indicators
-                painter.rotate((att.x()/M_PI)* -180.0f);
+                painter->rotate((att.x()/M_PI)* -180.0f);
 
-                painter.translate(0, (-att.y()/(float)M_PI)* -180.0f * refToScreenY(1.8f));
+                painter->translate(0, (-att.y()/(float)M_PI)* -180.0f * refToScreenY(1.8f));
 
                 //QLOG_DEBUG() << "ROLL" << roll << "PITCH" << pitch << "YAW DIFF" << valuesDot.value("roll", 0.0f);
 
                 // PITCH
 
-                paintPitchLines(att.y(), &painter);
-                painter.translate(0, -(-att.y()/(float)M_PI)* -180.0f * refToScreenY(1.8f));
-                painter.rotate(-(att.x()/M_PI)* -180.0f);
+                paintPitchLines(att.y(), painter);
+                painter->translate(0, -(-att.y()/(float)M_PI)* -180.0f * refToScreenY(1.8f));
+                painter->rotate(-(att.x()/M_PI)* -180.0f);
             }
-
-
         }
-
-        painter.end();
     }
-
 }
 
 
@@ -1309,6 +1343,66 @@ void HUD::enableHUDInstruments(bool enabled)
 void HUD::enableVideo(bool enabled)
 {
     videoEnabled = enabled;
+
+    if (enabled)
+    {
+        if (enableGStreamer && m_declarativeView == NULL)
+        {
+            // Video overlay
+            QDeclarativeView *view = new QDeclarativeView();
+            m_declarativeView = view;
+
+            view->setViewport(new QGLWidget());
+            view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+
+            QGst::Ui::GraphicsVideoSurface *surface = new QGst::Ui::GraphicsVideoSurface(view);
+            view->rootContext()->setContextProperty(QLatin1String("videoSurface1"), surface);
+            view->rootContext()->setContextProperty(QLatin1String("container"), this);
+
+            m_player = new GStreamerPlayer(view);
+            m_player->setVideoSink(surface->videoSink());
+            view->rootContext()->setContextProperty(QLatin1String("player"), m_player);
+            view->engine()->addImportPath("qml/quick1"); //For local or win32 builds
+            view->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+            QString qml = QGC::shareDirectory() + "/qml/HudQML.qml";
+            QUrl url = QUrl::fromLocalFile(qml);
+
+            view->setSource(url);
+            view->hide();
+
+            QVBoxLayout* layout = new QVBoxLayout();
+            layout->addWidget(view);
+            setLayout(layout);
+
+            connect(surface, SIGNAL(paintMessageSent(QGst::Ui::CustomPaintMessage&)),
+                              this, SLOT(onCustomPaintMessage(QGst::Ui::CustomPaintMessage&)));
+        }
+
+        QDeclarativeView *pView = dynamic_cast<QDeclarativeView*>(m_declarativeView);
+        if (pView) pView->show();
+
+        if (m_player)
+        {
+            // Get pipeline string
+            QSettings settings;
+            settings.beginGroup("QGC_GSTREAMER");
+            QString pipelineString;
+            pipelineString = settings.value("GSTREAMER_PIPELINE_STRING", 0).toString();
+            m_player->setBrightness(settings.value("GSTREAMER_BRIGHTNESS", 0).toInt());
+            m_player->setContrast(settings.value("GSTREAMER_CONTRAST", 0).toInt());
+            m_player->setHue(settings.value("GSTREAMER_HUE", 0).toInt());
+            m_player->setSaturation(settings.value("GSTREAMER_SATURATION", 0).toInt());
+            settings.endGroup();
+            m_player->initialize(pipelineString);
+            m_player->play();
+        }
+    }
+    else
+    {
+        QDeclarativeView *pView = dynamic_cast<QDeclarativeView*>(m_declarativeView);
+        if (pView) pView->hide();
+        if (m_player) m_player->stop();
+    }
 }
 
 void HUD::setPixels(int imgid, const unsigned char* imageData, int length, int startIndex)
@@ -1397,4 +1491,94 @@ void HUD::saveImages(bool save)
         selectSaveDirectoryAction->setChecked(false);
     }
 
+}
+
+void HUD::onCustomPaintMessage( QGst::Ui::CustomPaintMessage &message)
+{
+    paintHUD(message.m_painter);
+}
+
+
+// GStreamerToolBarWidget
+
+void GStreamerToolBarWidget::createLayout()
+{
+     QGridLayout *layout = new QGridLayout;
+     QSlider *brightness = new QSlider(Qt::Horizontal);
+     brightness->setRange(-100, 100);
+     QLabel *brightnessLabel = new QLabel("Brightness");
+     QSlider *contrast = new QSlider(Qt::Horizontal);
+     contrast->setRange(-100, 100);
+     QLabel *contrastLabel = new QLabel("Contrast");
+
+     QSlider *hue = new QSlider(Qt::Horizontal);
+     hue->setRange(-100, 100);
+     QLabel *hueLabel = new QLabel("Hue");
+     QSlider *sat = new QSlider(Qt::Horizontal);
+     sat->setRange(-100, 100);
+     QLabel *satLabel = new QLabel("Saturation");
+
+     layout->addWidget(brightnessLabel,0,0);
+     layout->addWidget(brightness,0,1);
+     layout->addWidget(contrastLabel,1,0);
+     layout->addWidget(contrast,1,1);
+     layout->addWidget(hueLabel,2,0);
+     layout->addWidget(hue,2,1);
+     layout->addWidget(satLabel,3,0);
+     layout->addWidget(sat,3,1);
+     setLayout(layout);
+
+     brightness->setValue(m_player->getBrightness());
+     contrast->setValue(m_player->getContrast());
+     hue->setValue(m_player->getHue());
+     sat->setValue(m_player->getSaturation());
+
+     connect(brightness, SIGNAL(valueChanged(int)), this, SLOT(brightnessValueChanged(int)));
+     connect(contrast, SIGNAL(valueChanged(int)), this, SLOT(contrastValueChanged(int)));
+     connect(hue, SIGNAL(valueChanged(int)), this, SLOT(hueValueChanged(int)));
+     connect(sat, SIGNAL(valueChanged(int)), this, SLOT(satValueChanged(int)));
+}
+
+void GStreamerToolBarWidget::brightnessValueChanged(int value)
+{
+    m_player->setBrightness(value);
+
+    QSettings settings;
+    settings.beginGroup("QGC_GSTREAMER");
+    settings.setValue("GSTREAMER_BRIGHTNESS", value);
+    settings.endGroup();
+    settings.sync();
+}
+
+void GStreamerToolBarWidget::contrastValueChanged(int value)
+{
+    m_player->setContrast(value);
+
+    QSettings settings;
+    settings.beginGroup("QGC_GSTREAMER");
+    settings.setValue("GSTREAMER_CONTRAST", value);
+    settings.endGroup();
+    settings.sync();
+}
+
+void GStreamerToolBarWidget::hueValueChanged(int value)
+{
+    m_player->setHue(value);
+
+    QSettings settings;
+    settings.beginGroup("QGC_GSTREAMER");
+    settings.setValue("GSTREAMER_HUE", value);
+    settings.endGroup();
+    settings.sync();
+}
+
+void GStreamerToolBarWidget::satValueChanged(int value)
+{
+    m_player->setSaturation(value);
+
+    QSettings settings;
+    settings.beginGroup("QGC_GSTREAMER");
+    settings.setValue("GSTREAMER_SATURATION", value);
+    settings.endGroup();
+    settings.sync();
 }
