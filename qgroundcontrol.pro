@@ -106,7 +106,11 @@ QT += network \
     widgets \
     serialport \
     webkitwidgets \
-    script
+    script \
+    quick \
+    qml \
+    printsupport \
+    declarative
 
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
@@ -282,7 +286,10 @@ INCLUDEPATH += \
     src/ui/mission \
     src/ui/designer \
     src/ui/configuration \
-    src/output
+    src/output \
+
+INCLUDEPATH +="C:/Program Files/boost/boost_1_43_0"
+INCLUDEPATH +="C:/qt-gstreamer-1.2.0/src"
 
 FORMS += \
     src/ui/MainWindow.ui \
@@ -410,6 +417,7 @@ FORMS += \
     src/ui/AP2DataPlotAxisDialog.ui \
     src/ui/AutoUpdateDialog.ui \
     src/uas/LogDownloadDialog.ui \
+    src/ui/PrimaryFlightDisplayQML.ui \
     src/ui/configuration/CompassMotorCalibrationDialog.ui \
     src/ui/MissionElevationDisplay.ui \
     src/ui/DroneshareUploadDialog.ui \
@@ -560,6 +568,7 @@ HEADERS += \
     src/ui/QGCTabbedInfoView.h \
     src/ui/UASRawStatusView.h \
     src/ui/PrimaryFlightDisplay.h \
+    src/ui/GStreamerPlayer.h \
     src/ui/uas/QGCMessageView.h \
     src/ui/configuration/ApmHardwareConfig.h \
     src/ui/configuration/ApmSoftwareConfig.h \
@@ -857,7 +866,8 @@ SOURCES += src/main.cc \
     src/comm/UASObject.cc \
     src/comm/VehicleOverview.cc \
     src/comm/RelPositionOverview.cc \
-    src/comm/AbsPositionOverview.cc
+    src/comm/AbsPositionOverview.cc \
+    src/ui/GStreamerPlayer.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 
@@ -867,6 +877,9 @@ OTHER_FILES += \
     qml/components/ModeDisplay.qml \
     qml/components/HeartbeatDisplay.qml \
     qml/PrimaryFlightDisplayQML.qml \
+    qml/PrimaryFlightDisplayWithVideoQML.qml \
+    qml/HudQML.qml \
+    qml/Storage.js \
     qml/components/RollPitchIndicator.qml \
     qml/components/AltitudeIndicator.qml \
     qml/components/SpeedIndicator.qml \
@@ -889,10 +902,17 @@ OTHER_FILES += \
     qml/resources/apmplanner/toolbar/flightdata.png \
     qml/resources/apmplanner/toolbar/disconnect.png \
     qml/resources/apmplanner/toolbar/donate.png \
+    qml/resources/components/primaryFlightDisplay/pause.svg \
+    qml/resources/components/primaryFlightDisplay/play.svg \
+    qml/resources/components/primaryFlightDisplay/stop.svg
+
 
 # Command Line Tools
 OTHER_FILES += \
     libs/sik_uploader/sik_uploader.py
+
+LIBS += -L$$[QT_INSTALL_LIBS]/../qml/QtQuick.2/
+QTPLUGIN += QtQuick2Plugin
 
 #qmlcomponents.path    += $${DESTDIR}$${TARGET}/components
 #qmlcomponents.files   += ./components/Button.qml
@@ -902,4 +922,22 @@ OTHER_FILES += \
 #target.path         += apmplanner2
 #INSTALLS            += sources target
 
+
+
+
+
+win32:CONFIG(release, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGlib/release/ -lQt5GLib-2.0
+else:win32:CONFIG(debug, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGlib/debug/ -lQt5GLib-2.0
+
+win32:CONFIG(release, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGst/release/ -lQt5GStreamer-1.0
+else:win32:CONFIG(debug, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGst/debug/ -lQt5GStreamer-1.0
+
+win32:CONFIG(release, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGlib/release/ -lQt5GStreamerQuick-1.0
+else:win32:CONFIG(debug, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGlib/debug/ -lQt5GStreamerQuick-1.0
+
+win32:CONFIG(release, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGlib/release/ -lQt5GStreamerUi-1.0
+else:win32:CONFIG(debug, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGlib/debug/ -lQt5GStreamerUi-1.0
+
+win32:CONFIG(release, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGlib/release/ -lQt5GStreamerUtils-1.0
+else:win32:CONFIG(debug, debug|release): LIBS += -LC:/qt-gstreamer-1.2.0/build/src/QGlib/debug/ -lQt5GStreamerUtils-1.0
 
