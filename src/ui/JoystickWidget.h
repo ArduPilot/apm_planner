@@ -59,8 +59,9 @@ public slots:
      * @param thrust Thrust, 0%: 0, 100%: 65535
      * @param xHat hat vector in forward-backward direction, +1 forward, 0 center, -1 backward
      * @param yHat hat vector in left-right direction, -1 left, 0 center, +1 right
+     * @param buttons bitmask of pressed buttons
      */
-    void updateJoystick(double roll, double pitch, double yaw, double thrust, int xHat, int yHat);
+    void updateJoystick(double roll, double pitch, double yaw, double thrust, int xHat, int yHat, int buttons);
     /** @brief Throttle lever */
     void setThrottle(double thrust);
     /** @brief Back/forth movement */
