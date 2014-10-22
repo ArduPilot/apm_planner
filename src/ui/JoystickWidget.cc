@@ -1,6 +1,10 @@
+
+#include "QsLog.h"
+
 #include "JoystickWidget.h"
 #include "ui_JoystickWidget.h"
 
+#include "UASManager.h"
 
 JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
     QDialog(parent),
@@ -14,32 +18,97 @@ JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
     m_ui->pitchMapSpinBox->setValue(joystick->getMappingYAxis());
     m_ui->yawMapSpinBox->setValue(joystick->getMappingYawAxis());
     m_ui->throttleMapSpinBox->setValue(joystick->getMappingThrustAxis());
+
+    m_ui->rollInvertCheckBox->setChecked(joystick->getXReversed());
+    m_ui->pitchInvertCheckBox->setChecked(joystick->getYReversed());
+    m_ui->yawInvertCheckBox->setChecked(joystick->getYawReversed());
+    m_ui->throttleInvertCheckBox->setChecked(joystick->getThrustReversed());
+
     m_ui->autoMapSpinBox->setValue(joystick->getMappingAutoButton());
+    m_ui->stabilizeMapSpinBox->setValue(joystick->getMappingStabilizeButton());
 
     connect(this->joystick, SIGNAL(joystickChanged(double,double,double,double,int,int,int)), this, SLOT(updateJoystick(double,double,double,double,int,int)));
+    connect(this->joystick, SIGNAL(xChanged(double)), this, SLOT(setX(double)));
+    connect(this->joystick, SIGNAL(yChanged(double)), this, SLOT(setY(double)));
+    connect(this->joystick, SIGNAL(yawChanged(double)), this, SLOT(setZ(double)));
+    connect(this->joystick, SIGNAL(thrustChanged(double)), this, SLOT(setThrottle(double)));
     connect(this->joystick, SIGNAL(buttonPressed(int)), this, SLOT(pressKey(int)));
+    connect(this->joystick, SIGNAL(hatDirectionChanged(int, int)), this, SLOT(setHat(int, int)));
+
     connect(m_ui->rollMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingXAxis(int)));
     connect(m_ui->pitchMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingYAxis(int)));
     connect(m_ui->yawMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingYawAxis(int)));
     connect(m_ui->throttleMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingThrustAxis(int)));
+
+    connect(m_ui->rollInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setXReversed(bool)));
+    connect(m_ui->pitchInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setYReversed(bool)));
+    connect(m_ui->yawInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setYawReversed(bool)));
+    connect(m_ui->throttleInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setThrustReversed(bool)));
+
     connect(m_ui->autoMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingAutoButton(int)));
+    connect(m_ui->stabilizeMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingStabilizeButton(int)));
+
+    if (joystick)
+    {
+        connect(joystick, SIGNAL(joystickSelected(const QString&)),
+                this, SLOT(joystickSelected(const QString&)));
+        connect(m_ui->joystickButton, SIGNAL(clicked(bool)),
+                this, SLOT(joystickEnabled(bool)));
+        connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)),
+                this, SLOT(activeUASSet(UASInterface*)));
+
+        const QString& name = joystick->getName();
+        if (name != "")
+        {
+            // m_ui->joystickButton->setText(name);
+            joystickSelected(name);
+        }
+    }
 
     // Display the widget
-    this->window()->setWindowTitle(tr("Joystick Settings"));
-    if (joystick) updateStatus(tr("Found joystick: %1").arg(joystick->getName()));
-
+    this->window()->setWindowTitle(tr("Joystick"));
     this->show();
 }
 
 JoystickWidget::~JoystickWidget()
 {
+    close();
     delete m_ui;
+}
+
+void JoystickWidget::joystickSelected(const QString& name)
+{
+    m_ui->joystickButton->setText(name);
+    m_ui->joystickButton->setFlat(false);
+    m_ui->joystickButton->setCheckable(true);
+    m_ui->joystickButton->setChecked(false);
+    joystick->setActiveUAS(NULL);
+}
+
+void JoystickWidget::joystickEnabled(bool checked)
+{
+    if (checked)
+    {
+        QLOG_INFO() << "Enabling joystick";
+        joystick->setActiveUAS(UASManager::instance()->getActiveUAS());
+    }
+    else
+    {
+        QLOG_INFO() << "Disabling joystick";
+        joystick->setActiveUAS(NULL);
+    }
+}
+
+void JoystickWidget::activeUASSet(UASInterface* uas)
+{
+    if (m_ui->joystickButton->isChecked())
+        joystick->setActiveUAS(uas);
 }
 
 void JoystickWidget::updateJoystick(double roll, double pitch, double yaw, double thrust, int xHat, int yHat)
 {
-    setX(roll);
-    setY(pitch);
+    setX(pitch);
+    setY(roll);
     setZ(yaw);
     setThrottle(thrust);
     setHat(xHat, yHat);
@@ -54,32 +123,45 @@ void JoystickWidget::changeEvent(QEvent *e)
     default:
         break;
     }
+    QDialog::changeEvent(e);
 }
 
 
-void JoystickWidget::setThrottle(float thrust)
+void JoystickWidget::setThrottle(double thrust)
 {
-    m_ui->thrust->setValue(thrust*100);
+    m_ui->thrust->setValue(thrust*100.0);
 }
 
-void JoystickWidget::setX(float x)
+void JoystickWidget::setX(double x)
 {
-    m_ui->xSlider->setValue(x*100);
-    m_ui->xValue->display(x*100);
+    if (isVisible() && m_ui->xValue->intValue() != (int)(x*100)) {
+        QLOG_TRACE() << "X:" << x;
+    }
+
+    m_ui->xSlider->setValue(x*100.0);
+    m_ui->xValue->display((int)(x*100));
 }
 
-void JoystickWidget::setY(float y)
+void JoystickWidget::setY(double y)
 {
-    m_ui->ySlider->setValue(y*100);
-    m_ui->yValue->display(y*100);
+    if (isVisible() && m_ui->yValue->intValue() != (int)(y*100)) {
+        QLOG_TRACE() << "Y:" << y;
+    }
+
+    m_ui->ySlider->setValue(y*100.0);
+    m_ui->yValue->display((int)(y*100));
 }
 
-void JoystickWidget::setZ(float z)
+void JoystickWidget::setZ(double z)
 {
-    m_ui->dial->setValue(z*100);
+    if (isVisible() && (int)m_ui->dial->value() != (int)z) {
+        QLOG_TRACE() << "Z:" << z;
+    }
+
+    m_ui->dial->setValue(z*100.0);
 }
 
-void JoystickWidget::setHat(float x, float y)
+void JoystickWidget::setHat(int x, int y)
 {
     updateStatus(tr("Hat position: x: %1, y: %2").arg(x).arg(y));
 }
@@ -143,7 +225,7 @@ void JoystickWidget::pressKey(int key)
         m_ui->button10->setStyleSheet(colorstyle);
         break;
     }
-    QTimer::singleShot(20, this, SLOT(clearKeys()));
+    QTimer::singleShot(100, this, SLOT(clearKeys()));
     updateStatus(tr("Key %1 pressed").arg(key));
 }
 
