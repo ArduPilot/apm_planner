@@ -445,11 +445,11 @@ WindowsBuild : win32 : exists(src/lib/opalrt/OpalApi.h) : exists(C:/OPAL-RT/RT-L
 
 MacBuild {
     INCLUDEPATH += \
-        $$BASEDIR/libs/lib/Frameworks/SDL.framework/Headers
+        $$BASEDIR/libs/lib/Frameworks/SDL2.framework/Headers
 
     LIBS += \
         -F$$BASEDIR/libs/lib/Frameworks \
-        -framework SDL
+        -framework SDL2
 }
 
 LinuxBuild {
