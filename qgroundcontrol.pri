@@ -36,11 +36,11 @@ macx|macx-g++42|macx-g++|macx-llvm: {
 
 	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
 
-        INCLUDEPATH += $$BASEDIR/libs/lib/Frameworks/SDL.framework/Headers
+        INCLUDEPATH += $$BASEDIR/libs/lib/Frameworks/SDL2.framework/Headers
 
         LIBS += -framework IOKit \
                 -F$$BASEDIR/libs/lib/Frameworks \
-                -framework SDL \
+                -framework SDL2 \
                 -framework CoreFoundation \
                 -framework ApplicationServices \
                 -lm
@@ -135,8 +135,8 @@ message(BASEDIR $$BASEDIR)
 	# CORE OSG LIBRARY
         QMAKE_POST_LINK += && install_name_tool -change libOpenThreads.dylib "@executable_path/../libs/libOpenThreads.dylib" $$TARGETDIR/apmplanner2.app/Contents/libs/libosg.dylib
 
-        # SDL Framework
-        QMAKE_POST_LINK += && install_name_tool -change "@rpath/SDL.framework/Versions/A/SDL" "@executable_path/../Frameworks/SDL.framework/Versions/A/SDL" $$TARGETDIR/apmplanner2.app/Contents/MacOS/apmplanner2
+        # SDL2 Framework
+        QMAKE_POST_LINK += && install_name_tool -change "@rpath/SDL2.framework/Versions/A/SDL2" "@executable_path/../Frameworks/SDL2.framework/Versions/A/SDL2" $$TARGETDIR/apmplanner2.app/Contents/MacOS/apmplanner2
 
 	# No check for GLUT.framework since it's a MAC default
 	message("Building support for OpenSceneGraph")

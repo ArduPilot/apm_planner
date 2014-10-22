@@ -56,7 +56,7 @@ MacBuild {
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$[QT_INSTALL_PREFIX]/qml/QtQuick.2 $$DESTDIR/$${TARGET}.app/Contents/MacOS/qml/QtQuick.2
 
     # SDL Framework
-    QMAKE_POST_LINK += && install_name_tool -change "@rpath/SDL.framework/Versions/A/SDL" "@executable_path/../Frameworks/SDL.framework/Versions/A/SDL" $$DESTDIR/$${TARGET}.app/Contents/MacOS/$${TARGET}
+    QMAKE_POST_LINK += && install_name_tool -change "@rpath/SDL2.framework/Versions/A/SDL2" "@executable_path/../Frameworks/SDL2.framework/Versions/A/SDL2" $$DESTDIR/$${TARGET}.app/Contents/MacOS/$${TARGET}
 }
 
 WindowsBuild {
