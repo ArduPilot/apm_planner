@@ -421,6 +421,8 @@ void JoystickInput::run()
 
             if (SDL_JoystickGetButton(joystick, i))
             {
+                QLOG_TRACE() << "BUTTON" << i << "PRESSED";
+
                 buttons |= 1 << i;
 
                 if (uas)
