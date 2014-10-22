@@ -27,7 +27,7 @@ JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
     m_ui->autoMapSpinBox->setValue(joystick->getMappingAutoButton());
     m_ui->stabilizeMapSpinBox->setValue(joystick->getMappingStabilizeButton());
 
-    connect(this->joystick, SIGNAL(joystickChanged(double,double,double,double,int,int,int)), this, SLOT(updateJoystick(double,double,double,double,int,int)));
+    connect(this->joystick, SIGNAL(joystickChanged(double,double,double,double,int,int,int)), this, SLOT(updateJoystick(double,double,double,double,int,int,int)));
     connect(this->joystick, SIGNAL(xChanged(double)), this, SLOT(setX(double)));
     connect(this->joystick, SIGNAL(yChanged(double)), this, SLOT(setY(double)));
     connect(this->joystick, SIGNAL(yawChanged(double)), this, SLOT(setZ(double)));
@@ -105,13 +105,19 @@ void JoystickWidget::activeUASSet(UASInterface* uas)
         joystick->setActiveUAS(uas);
 }
 
-void JoystickWidget::updateJoystick(double roll, double pitch, double yaw, double thrust, int xHat, int yHat)
+void JoystickWidget::updateJoystick(double roll, double pitch, double yaw, double thrust, int xHat, int yHat, int buttons)
 {
     setX(pitch);
     setY(roll);
     setZ(yaw);
     setThrottle(thrust);
     setHat(xHat, yHat);
+
+    for (int i = 0; i < 10; ++i)
+    {
+        if (buttons & (1<<i))
+            pressKey(i);
+    }
 }
 
 void JoystickWidget::changeEvent(QEvent *e)
