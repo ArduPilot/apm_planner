@@ -313,11 +313,6 @@ INCLUDEPATH += \
     libs \
     libs/opmapcontrol
 
-#
-# QSerialPort - serial port library
-#
-include(libs/serialport/apmserial.pri)
-
 WindowsBuild {
     # Used to enumerate serial ports by QSerialPort
 	LIBS += -lsetupapi
