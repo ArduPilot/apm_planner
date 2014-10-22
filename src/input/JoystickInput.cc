@@ -303,25 +303,25 @@ void JoystickInput::run()
                 if (event.jaxis.axis == thrustAxis)
                 {
                     // THRUST
-                    double thrust = sdlJoystickValue(event.jaxis.value, thrustReversed);
+                    double thrust = sdlJoystickAxisValue(event.jaxis.value, thrustReversed);
                     emit thrustChanged((float)thrust);
                 }
                 else if (event.jaxis.axis == xAxis)
                 {
                     // X Axis
-                    double x = sdlJoystickValue(event.jaxis.value, xReversed);
+                    double x = sdlJoystickAxisValue(event.jaxis.value, xReversed);
                     emit xChanged((float)x);
                 }
                 else if (event.jaxis.axis == yAxis)
                 {
                     // Y Axis
-                    double y = sdlJoystickValue(event.jaxis.value, yReversed);
+                    double y = sdlJoystickAxisValue(event.jaxis.value, yReversed);
                     emit yChanged((float)y);
                 }
                 else if (event.jaxis.axis == yawAxis)
                 {
                     // Yaw Axis
-                    double yaw = sdlJoystickValue(event.jaxis.value, yawReversed);
+                    double yaw = sdlJoystickAxisValue(event.jaxis.value, yawReversed);
                     emit yawChanged((float)yaw);
                 }
                 else
