@@ -472,15 +472,8 @@ protected: //COMMENTS FOR TEST UNIT
     quint64 onboardTimeOffset;
 
     /// MANUAL CONTROL
-    bool controlRollManual;     ///< status flag, true if roll is controlled manually
-    bool controlPitchManual;    ///< status flag, true if pitch is controlled manually
-    bool controlYawManual;      ///< status flag, true if yaw is controlled manually
-    bool controlThrustManual;   ///< status flag, true if thrust is controlled manually
-
-    double manualRollAngle;     ///< Roll angle set by human pilot (radians)
-    double manualPitchAngle;    ///< Pitch angle set by human pilot (radians)
-    double manualYawAngle;      ///< Yaw angle set by human pilot (radians)
-    double manualThrust;        ///< Thrust set by human pilot (radians)
+    bool manualControl;             ///< status flag, true if roll/pitch/yaw/thrust are controlled manually
+    bool overrideRC;                ///< status flag, true if RC overrides are in effect
 
     /// POSITION
     bool positionLock;          ///< Status if position information is available or not
@@ -1060,6 +1053,9 @@ protected:
     quint64 getUnixTimeFromMs(quint64 time);
     /** @brief Get the UNIX timestamp in milliseconds, ignore attitudeStamped mode */
     quint64 getUnixReferenceTime(quint64 time);
+
+    /** @brief convert Joystick input ([-1.0, +1.0]) to RC PPM value ([1000, 2000]) for channel */
+    uint16_t scaleJoystickToRC(double pct, int channel) const;
 
     virtual void processParamValueMsg(mavlink_message_t& msg, const QString& paramName,const mavlink_param_value_t& rawValue, mavlink_param_union_t& paramValue);
 

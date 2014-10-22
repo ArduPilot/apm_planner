@@ -13,8 +13,11 @@
 #include "QsLog.h"
 #include "JoystickInput.h"
 #include "UAS.h"
-#include "UASManager.h"
 #include "QGC.h"
+
+#include <mavlink.h>
+
+#include <SDL_revision.h>
 
 #include <limits.h>
 #include <QMutexLocker>
@@ -25,38 +28,28 @@
  * @image html http://pixhawk.ethz.ch/wiki/_media/standards/body-frame.png Aeronautical frame
  */
 JoystickInput::JoystickInput() :
-        sdlJoystickMin(-32768.0f),
-        sdlJoystickMax(32767.0f),
-        defaultIndex(0),
+        joystick(NULL),
         uas(NULL),
-        uasButtonList(QList<int>()),
-        done(false),
+        done(0),
         thrustAxis(2),
+        thrustReversed(false),
         xAxis(0),
+        xReversed(false),
         yAxis(1),
+        yReversed(false),
         yawAxis(3),
+        yawReversed(false),
         autoButtonMapping(-1),
-        manualButtonMapping(-1),
         stabilizeButtonMapping(-1),
-        joystickName(tr("Unitinialized"))
+        joystickName("")
 {
     loadSettings();
-
-    for (int i = 0; i < 10; i++) {
-        calibrationPositive[i] = sdlJoystickMax;
-        calibrationNegative[i] = sdlJoystickMin;
-    }
-
-    connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(setActiveUAS(UASInterface*)));
-
-    // Enter main loop
-    //start();
 }
 
 JoystickInput::~JoystickInput()
 {
     storeSettings();
-    done = true;
+    done = 1;
 }
 
 void JoystickInput::loadSettings()
@@ -66,27 +59,33 @@ void JoystickInput::loadSettings()
     settings.sync();
     settings.beginGroup("QGC_JOYSTICK_INPUT");
     xAxis = (settings.value("X_AXIS_MAPPING", xAxis).toInt());
+    xReversed = (settings.value("X_REVERSED", xReversed).toBool());
     yAxis = (settings.value("Y_AXIS_MAPPING", yAxis).toInt());
+    yReversed = (settings.value("Y_REVERSED", yReversed).toBool());
     thrustAxis = (settings.value("THRUST_AXIS_MAPPING", thrustAxis).toInt());
+    thrustReversed = (settings.value("THRUST_REVERSED", thrustReversed).toBool());
     yawAxis = (settings.value("YAW_AXIS_MAPPING", yawAxis).toInt());
+    yawReversed = (settings.value("YAW_REVERSED", yawReversed).toBool());
     autoButtonMapping = (settings.value("AUTO_BUTTON_MAPPING", autoButtonMapping).toInt());
     stabilizeButtonMapping = (settings.value("STABILIZE_BUTTON_MAPPING", stabilizeButtonMapping).toInt());
-    manualButtonMapping = (settings.value("MANUAL_BUTTON_MAPPING", manualButtonMapping).toInt());
     settings.endGroup();
 }
 
-void JoystickInput::storeSettings()
+void JoystickInput::storeSettings() const
 {
     // Store settings
     QSettings settings;
     settings.beginGroup("QGC_JOYSTICK_INPUT");
     settings.setValue("X_AXIS_MAPPING", xAxis);
+    settings.setValue("X_REVERSED", xReversed);
     settings.setValue("Y_AXIS_MAPPING", yAxis);
+    settings.setValue("Y_REVERSED", yReversed);
     settings.setValue("THRUST_AXIS_MAPPING", thrustAxis);
+    settings.setValue("THRUST_REVERSED", thrustReversed);
     settings.setValue("YAW_AXIS_MAPPING", yawAxis);
+    settings.setValue("YAW_REVERSED", yawReversed);
     settings.setValue("AUTO_BUTTON_MAPPING", autoButtonMapping);
     settings.setValue("STABILIZE_BUTTON_MAPPING", stabilizeButtonMapping);
-    settings.setValue("MANUAL_BUTTON_MAPPING", manualButtonMapping);
     settings.endGroup();
     settings.sync();
 }
@@ -95,12 +94,13 @@ void JoystickInput::storeSettings()
 void JoystickInput::setActiveUAS(UASInterface* uas)
 {
     // Only connect / disconnect is the UAS is of a controllable UAS class
-    UAS* tmp = 0;
     if (this->uas)
     {
-        tmp = dynamic_cast<UAS*>(this->uas);
-        if(tmp)
+        UAS* tmp = dynamic_cast<UAS*>(this->uas);
+        if (tmp)
         {
+            emit joystickChanged(-1.0, -1.0, -1.0, 0.0, 0, 0, 0);
+
             disconnect(this, SIGNAL(joystickChanged(double,double,double,double,int,int,int)), tmp, SLOT(setManualControlCommands(double,double,double,double,int,int,int)));
             disconnect(this, SIGNAL(buttonPressed(int)), tmp, SLOT(receiveButton(int)));
         }
@@ -108,11 +108,13 @@ void JoystickInput::setActiveUAS(UASInterface* uas)
 
     this->uas = uas;
 
-    tmp = dynamic_cast<UAS*>(this->uas);
-    if(tmp) {
+    UAS* tmp = dynamic_cast<UAS*>(this->uas);
+    if (tmp)
+    {
         connect(this, SIGNAL(joystickChanged(double,double,double,double,int,int,int)), tmp, SLOT(setManualControlCommands(double,double,double,double,int,int,int)));
         connect(this, SIGNAL(buttonPressed(int)), tmp, SLOT(receiveButton(int)));
     }
+
     if (!isRunning())
     {
         start();
@@ -122,50 +124,125 @@ void JoystickInput::setActiveUAS(UASInterface* uas)
 void JoystickInput::init()
 {
     // INITIALIZE SDL Joystick support
-    /*
-    if (SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE) < 0) {
-        printf("Couldn't initialize SimpleDirectMediaLayer: %s\n", SDL_GetError());
-    }
-
-    // Enumerate joysticks and select one
-    int numJoysticks = SDL_NumJoysticks();
-
-    // Wait for joysticks if none is connected
-    while (numJoysticks == 0 && !done)
-    {
-        QGC::SLEEP::msleep(400);
-        // INITIALIZE SDL Joystick support
-        if (SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE) < 0)
-        {
-            printf("Couldn't initialize SimpleDirectMediaLayer: %s\n", SDL_GetError());
-        }
-        numJoysticks = SDL_NumJoysticks();
-    }
-    if (done)
-    {
+    if (SDL_Init(SDL_INIT_JOYSTICK) < 0) {
+        QLOG_ERROR() << "Couldn't initialize SimpleDirectMediaLayer:" << SDL_GetError();
         return;
     }
 
-    printf("%d Input devices found:\n", numJoysticks);
-    for(int i=0; i < SDL_NumJoysticks(); i++ )
+    SDL_version sdlCompiledVersion, sdlLinkedVersion;
+    SDL_VERSION(&sdlCompiledVersion);
+    SDL_GetVersion(&sdlLinkedVersion);
+    QLOG_DEBUG() << "Compiled against SDL" << QString("%1.%2.%3").arg(sdlCompiledVersion.major).arg(sdlCompiledVersion.minor).arg(sdlCompiledVersion.patch)
+                 << ", Linked against SDL" << QString("%1.%2.%3").arg(sdlLinkedVersion.major).arg(sdlLinkedVersion.minor).arg(sdlLinkedVersion.patch);
+
+    // Wait for joystick if none is connected
+    while (!done)
     {
-        printf("\t- %s\n", SDL_JoystickName(i));
-        joystickName = QString(SDL_JoystickName(i));
+        int numJoysticks = SDL_NumJoysticks();
+        if (numJoysticks == 0)
+        {
+            // no joystick detected. reset SDL.
+
+            SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+            QGC::SLEEP::msleep(1000);
+            if (done)
+                break;
+            if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
+            {
+                QLOG_ERROR() << "Couldn't initialize SimpleDirectMediaLayer:" << SDL_GetError();
+                return;
+            }
+            continue;
+        }
+
+        QLOG_INFO() << numJoysticks << "input device(s) found:";
+        int joystickId = -1;
+        for(int i = 0; i < SDL_NumJoysticks(); ++i)
+        {
+            SDL_Joystick* temp = SDL_JoystickOpen(i);
+            if (temp)
+            {
+                if (joystickId == -1)
+                    joystickId = i;
+
+                SDL_JoystickUpdate();
+                QLOG_INFO() << "\t-" << SDL_JoystickName(temp) << "("
+                            << SDL_JoystickNumAxes(temp) << "Axis,"
+                            << SDL_JoystickNumButtons(temp) << "Buttons,"
+                            << SDL_JoystickNumHats(temp) << "Hats"
+                            << ")";
+
+                SDL_JoystickClose(temp);
+            }
+            else
+            {
+                QLOG_INFO() << "\t" << i << SDL_GetError();
+            }
+        }
+        if (joystickId == -1)
+            continue;
+
+        joystick = SDL_JoystickOpen(joystickId);
+        if (! joystick)
+        {
+            QLOG_INFO() << SDL_GetError();
+            continue;
+        }
+
+        joystickName = QString(SDL_JoystickName(joystick));
+        QLOG_INFO() << "Opened" << joystickName;
+        emit joystickSelected(joystickName);
+
+#if 0
+        SDL_JoystickEventState(SDL_ENABLE);
+#endif
+
+        break;
     }
-
-    printf("\nOpened %s\n", SDL_JoystickName(defaultIndex));
-
-    SDL_JoystickEventState(SDL_ENABLE);
-
-    joystick = SDL_JoystickOpen(defaultIndex);
-
-    // Make sure active UAS is set
-    setActiveUAS(UASManager::instance()->getActiveUAS());
-    */
 }
+
 void JoystickInput::shutdown()
 {
-    done = true;
+    done = 1;
+}
+
+/** @brief Return the result of SDL_JoystickGetAxis (v) scaled to [-1.0,1.0]
+ */
+static double sdlJoystickAxisValue(Sint16 v, bool reversed)
+{
+    static const double sdlJoystickMin = -32768.0;
+    static const double sdlJoystickMax = 32767.0;
+
+    double d = ((double)v) / 32767.0; // ((double)v - sdlJoystickMin) / (sdlJoystickMax - sdlJoystickMin);
+    if (reversed)
+        d = -d; // 1.0f - d;
+    // Bound rounding errors
+    if (d > 1.0f) d = 1.0f;
+    if (d < -1.0f) d = -1.0f;
+    return d;
+}
+
+static void sdlJoystickHatValue(Uint8 v, int& xHat, int& yHat)
+{
+    xHat = 0;
+    yHat = 0;
+
+    // Build up vectors describing the hat position
+    //
+    // Coordinate frame for joystick hat:
+    //
+    //    y
+    //    ^
+    //    |
+    //    |
+    //    0 ----> x
+    //
+
+    if ((SDL_HAT_UP & v) != 0) yHat = 1;
+    if ((SDL_HAT_DOWN & v) != 0) yHat = -1;
+
+    if ((SDL_HAT_LEFT & v) != 0) xHat = -1;
+    if ((SDL_HAT_RIGHT & v) != 0) xHat = 1;
 }
 
 /**
@@ -173,161 +250,201 @@ void JoystickInput::shutdown()
  */
 void JoystickInput::run()
 {
-    return;
-    /*
     init();
-
-    forever
+    if (joystick == NULL)
     {
-        if (done)
-        {
-            done = false;
-            exit();
-            return;
-        }
-        while(SDL_PollEvent(&event))
-        {
+        exit();
+        return;
+    }
 
-            SDL_JoystickUpdate();
+    while (!done)
+    {
+#if 0
+        // SDL_WaitEventTimeout() seems to lock up when axis 2 is
+        // all the way up (at least on my joystick -- a cheap chinese PSP knock off)
+        // Plus it is really not that useful to pump SDL events
+        // since the most relevant signal includes all axis/hats/buttons
+        // together.
 
+        // Sleep, update rate of joystick is approx. 50 Hz (1000 ms / 50 = 20 ms)
+        while (SDL_WaitEventTimeout(&event, 20))
+        {
             // Todo check if it would be more beneficial to use the event structure
             switch(event.type) {
             case SDL_KEYDOWN:
-
-                QLOG_TRACE() << "KEY PRESSED!";
+                QLOG_TRACE() << "SDL_KEYDOWN";
                 break;
 
             case SDL_QUIT:
+                QLOG_TRACE() << "SDL_QUIT";
+                done = true;
                 break;
 
             case SDL_JOYBUTTONDOWN:
-                if ( event.jbutton.button == 0 ) {
-                    QLOG_TRACE() << "BUTTON PRESSED!";
-                }
+                QLOG_TRACE() << "SDL_JOYBUTTONDOWN button" << event.jbutton.button;
+                if (event.jbutton.state == SDL_PRESSED)
+                    emit buttonPressed(event.jbutton.button);
+                break;
+
+            case SDL_JOYBUTTONUP:
+                QLOG_TRACE() << "SDL_JOYBUTTONDOWN button" << event.jbutton.button;
                 break;
 
             case SDL_JOYAXISMOTION:
-                if ( ( event.jaxis.value < -3200 ) || (event.jaxis.value > 3200 ) ) {
-                    if( event.jaxis.axis == 0) {
 
-                    }
+                // if (event.jaxis.axis == 2
+                //     && -2200 <= event.jaxis.value && event.jaxis.value <= -1100)
+                // {
+                //     break;
+                // }
 
-                    if( event.jaxis.axis == 1) {
+                QLOG_TRACE() << "SDL_JOYAXISMOTION axis" << event.jaxis.axis << "value=" << event.jaxis.value;
 
+                if (event.jaxis.axis == thrustAxis)
+                {
+                    // THRUST
+                    double thrust = sdlJoystickAxisValue(event.jaxis.value, thrustReversed);
+                    emit thrustChanged((float)thrust);
+                }
+                else if (event.jaxis.axis == xAxis)
+                {
+                    // X Axis
+                    double x = sdlJoystickAxisValue(event.jaxis.value, xReversed);
+                    emit xChanged((float)x);
+                }
+                else if (event.jaxis.axis == yAxis)
+                {
+                    // Y Axis
+                    double y = sdlJoystickAxisValue(event.jaxis.value, yReversed);
+                    emit yChanged((float)y);
+                }
+                else if (event.jaxis.axis == yawAxis)
+                {
+                    // Yaw Axis
+                    double yaw = sdlJoystickAxisValue(event.jaxis.value, yawReversed);
+                    emit yawChanged((float)yaw);
+                }
+                else
+                {
+                    // Display all axes
+                    for(int i = 0; i < SDL_JoystickNumAxes(joystick); i++)
+                    {
+                        QLOG_TRACE() << "AXIS" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
                     }
                 }
+
+                break;
+
+            case SDL_JOYHATMOTION:
+            {
+                const char* status;
+                switch (event.jhat.value)
+                {
+                case SDL_HAT_CENTERED:  status = "centered";    break;
+                case SDL_HAT_UP:        status = "up";          break;
+                case SDL_HAT_RIGHT:     status = "right";       break;
+                case SDL_HAT_DOWN:      status = "down";        break;
+                case SDL_HAT_LEFT:      status = "left";        break;
+                case SDL_HAT_RIGHTUP:   status = "right-up";    break;
+                case SDL_HAT_RIGHTDOWN: status = "right-down";  break;
+                case SDL_HAT_LEFTUP:    status = "left-up";     break;
+                case SDL_HAT_LEFTDOWN:  status = "left-down";   break;
+                default:                status = "???";         break;
+                }
+                QLOG_TRACE() << "SDL_JOYHATMOTION hat" << event.jhat.hat << status;
+
+                if (event.jhat.hat == 0)
+                {
+                    int xHat,yHat;
+                    sdlJoystickHatValue(event.jhat.value, xHat, yHat);
+
+                    QLOG_TRACE() << "xHat" << xHat << "," << "yHat" << yHat;
+
+                    // Send new values to rest of groundstation
+                    emit hatDirectionChanged(xHat, yHat);
+                }
+
+                break;
+            }
+
+            case SDL_JOYBALLMOTION:
+                QLOG_TRACE() << "SDL_JOYBALLMOTION";
                 break;
 
             default:
-                QLOG_TRACE() << "SDL event occured";
+                QLOG_TRACE() << "SDL event" << event.type << "occured";
                 break;
             }
         }
+#else
+        // Sleep, update rate of joystick is approx. 50 Hz (1000 ms / 50 = 20 ms)
+        QGC::SLEEP::msleep(20);
+#endif
 
-//        // Display all axes
-//        for(int i = 0; i < SDL_JoystickNumAxes(joystick); i++)
-//        {
-//            QLOG_TRACE() << "\rAXIS" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
-//        }
+        if (done)
+            break;
 
-        // THRUST
-        double thrust = ((double)SDL_JoystickGetAxis(joystick, thrustAxis) - calibrationNegative[thrustAxis]) / (calibrationPositive[thrustAxis] - calibrationNegative[thrustAxis]);
-        // Has to be inverted for Logitech Wingman
-        thrust = 1.0f - thrust;
-        thrust = thrust * 2.0f - 1.0f;
-        // Bound rounding errors
-        if (thrust > 1.0f) thrust = 1.0f;
-        if (thrust < -1.0f) thrust = -1.0f;
-        emit thrustChanged((float)thrust);
+        SDL_JoystickUpdate();
 
-        // X Axis
-        double x = ((double)SDL_JoystickGetAxis(joystick, xAxis) - calibrationNegative[xAxis]) / (calibrationPositive[xAxis] - calibrationNegative[xAxis]);
-        x = 1.0f - x;
-        x = x * 2.0f - 1.0f;
-        // Bound rounding errors
-        if (x > 1.0f) x = 1.0f;
-        if (x < -1.0f) x = -1.0f;
-        emit xChanged((float)x);
+#if 0
+        // Display all axis
+        // for (int i = 0; i < SDL_JoystickNumAxes(joystick); i++)
+        // {
+        //     QLOG_TRACE() << "AXIS" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
+        // }
+#else
+        // QLOG_TRACE() << "THROTTLE AXIS is:" << SDL_JoystickGetAxis(joystick, thrustAxis);
+        // QLOG_TRACE() << "X AXIS is:" << SDL_JoystickGetAxis(joystick, xAxis);
+        // QLOG_TRACE() << "Y AXIS is:" << SDL_JoystickGetAxis(joystick, yAxis);
+        // QLOG_TRACE() << "Z AXIS is:" << SDL_JoystickGetAxis(joystick, yawAxis);
+#endif
 
-        // Y Axis
-        double y = ((double)SDL_JoystickGetAxis(joystick, yAxis) - calibrationNegative[yAxis]) / (calibrationPositive[yAxis] - calibrationNegative[yAxis]);
-        y = 1.0f - y;
-        y = y * 2.0f - 1.0f;
-        // Bound rounding errors
-        if (y > 1.0f) y = 1.0f;
-        if (y < -1.0f) y = -1.0f;
-        emit yChanged((float)y);
+        double thrust = 0.5 + sdlJoystickAxisValue(SDL_JoystickGetAxis(joystick, thrustAxis), thrustReversed)/2;
+        double x = sdlJoystickAxisValue(SDL_JoystickGetAxis(joystick, xAxis), xReversed);
+        double y = sdlJoystickAxisValue(SDL_JoystickGetAxis(joystick, yAxis), yReversed);
+        double yaw = sdlJoystickAxisValue(SDL_JoystickGetAxis(joystick, yawAxis), yawReversed);
 
-        // Yaw Axis
-
-        double yaw = ((double)SDL_JoystickGetAxis(joystick, yawAxis) - calibrationNegative[yawAxis]) / (calibrationPositive[yawAxis] - calibrationNegative[yawAxis]);
-        yaw = 1.0f - yaw;
-        yaw = yaw * 2.0f - 1.0f;
-        // Bound rounding errors
-        if (yaw > 1.0f) yaw = 1.0f;
-        if (yaw < -1.0f) yaw = -1.0f;
-        emit yawChanged((float)yaw);
-
-        // Get joystick hat position, convert it to vector
-        int hatPosition = SDL_JoystickGetHat(joystick, 0);
+        // Display all hats
+        // for (int i = 0; i < SDL_JoystickNumHats(joystick); i++)
+        // {
+        //     QLOG_TRACE() << "HAT" << i << "is: " << SDL_JoystickGetHat(joystick, i);
+        // }
 
         int xHat,yHat;
-        xHat = 0;
-        yHat = 0;
+        sdlJoystickHatValue(SDL_JoystickGetHat(joystick, 0), xHat, yHat);
 
-        // Build up vectors describing the hat position
-        //
-        // Coordinate frame for joystick hat:
-        //
-        //    y
-        //    ^
-        //    |
-        //    |
-        //    0 ----> x
-        //
-
-        if ((SDL_HAT_UP & hatPosition) > 0) yHat = 1;
-        if ((SDL_HAT_DOWN & hatPosition) > 0) yHat = -1;
-
-        if ((SDL_HAT_LEFT & hatPosition) > 0) xHat = -1;
-        if ((SDL_HAT_RIGHT & hatPosition) > 0) xHat = 1;
-
-        // Send new values to rest of groundstation
-        emit hatDirectionChanged(xHat, yHat);
-
-        // Display all buttons
+        // Buttons
         int buttons = 0;
-        for(int i = 0; i < SDL_JoystickNumButtons(joystick); i++)
+        for (int i = 0; i < SDL_JoystickNumButtons(joystick); i++)
         {
-            QLOG_TRACE() << "BUTTON" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
-            if(SDL_JoystickGetButton(joystick, i))
-            {
-                emit buttonPressed(i);
-                buttons |= 1 << i;
-                // Check if button is a UAS select button
+            // QLOG_TRACE() << "BUTTON" << i << "is: " << SDL_JoystickGetButton(joystick, i);
 
-                if (uasButtonList.contains(i))
+            if (SDL_JoystickGetButton(joystick, i))
+            {
+                buttons |= 1 << i;
+
+                if (uas)
                 {
-                    UASInterface* uas = UASManager::instance()->getUASForId(i);
-                    if (uas)
+                    if (i == autoButtonMapping)
                     {
-                        UASManager::instance()->setActiveUAS(uas);
+                        uas->setMode(MAV_MODE_FLAG_AUTO_ENABLED);
+                    }
+                    else if (i == stabilizeButtonMapping)
+                    {
+                        uas->setMode(MAV_MODE_FLAG_STABILIZE_ENABLED);
                     }
                 }
             }
-
         }
+
         emit joystickChanged(y, x, yaw, thrust, xHat, yHat, buttons);
-
-        // Sleep, update rate of joystick is approx. 50 Hz (1000 ms / 50 = 20 ms)
-        QGC::SLEEP::msleep(20);
-
     }
-    */
+    done = 0;
 
+    exit();
 }
 
-const QString& JoystickInput::getName()
+const QString& JoystickInput::getName() const
 {
     return joystickName;
 }

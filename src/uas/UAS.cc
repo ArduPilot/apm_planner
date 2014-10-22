@@ -95,14 +95,8 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     startTime(QGC::groundTimeMilliseconds()),
     onboardTimeOffset(0),
 
-    controlRollManual(true),
-    controlPitchManual(true),
-    controlYawManual(true),
-    controlThrustManual(true),
-    manualRollAngle(0),
-    manualPitchAngle(0),
-    manualYawAngle(0),
-    manualThrust(0),
+    manualControl(false),
+    overrideRC(false),
 
     positionLock(false),
     isLocalPositionKnown(false),
@@ -167,6 +161,8 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     lastSendTimeGPS(0),
     lastSendTimeSensors(0)
 {
+    Q_UNUSED(protocol);
+
     for (unsigned int i = 0; i<255;++i)
     {
         componentID[i] = -1;
@@ -1942,6 +1938,7 @@ void UAS::sendMessage(mavlink_message_t message)
 */
 void UAS::forwardMessage(mavlink_message_t message)
 {
+    Q_UNUSED(message);
     // Emit message on all links that are currently connected
     /*QList<LinkInterface*>link_list = LinkManager::instance()->getLinksForProtocol(mavlink);
 
@@ -2862,30 +2859,146 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
     Q_UNUSED(xHat);
     Q_UNUSED(yHat);
 
-    // Scale values
-    double rollPitchScaling = 1.0f * 1000.0f;
-    double yawScaling = 1.0f * 1000.0f;
-    double thrustScaling = 1.0f * 1000.0f;
-
-    manualRollAngle = roll * rollPitchScaling;
-    manualPitchAngle = pitch * rollPitchScaling;
-    manualYawAngle = yaw * yawScaling;
-    manualThrust = thrust * thrustScaling;
-
-    // If system has manual inputs enabled and is armed
-    if(((base_mode & MAV_MODE_FLAG_DECODE_POSITION_MANUAL) && (base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY)) || (base_mode & MAV_MODE_FLAG_HIL_ENABLED))
+    if(! (base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY))
     {
+//        QLOG_TRACE() << "JOYSTICK/MANUAL CONTROL: IGNORING COMMANDS: Not armed";
+        manualControl = false;
+        overrideRC = false;
+        return;
+    }
+
+    if(isMultirotor()
+            && (base_mode & (uint8_t)(MAV_MODE_FLAG_DECODE_POSITION_STABILIZE))
+            && (! manualControl))
+    {
+        const QMap<QString, QVariant>* params = parameters[uasId];
+        if (params == NULL
+                || ! params->contains("RCMAP_ROLL")
+                || ! params->contains("RCMAP_PITCH")
+                || ! params->contains("RCMAP_YAW")
+                || ! params->contains("RCMAP_THROTTLE")
+                || ! params->contains("SYSID_MYGCS"))
+        {
+            QLOG_DEBUG() << "JOYSTICK/RC OVERRIDE: ignoring commands: parameters not received";
+            return;
+        }
+
+        uint16_t chan_raw[8];
+        memset(chan_raw, 0, sizeof(chan_raw));
+
+        // looks like APM::Copter is not setting g.sysid_my_gcs to our systemId
+        // fetch the value APM::Copter expects
+        // see https://github.com/diydrones/ardupilot/issues/1515
+        int gcs = params->value("SYSID_MYGCS").toInt();
+
+        if (roll == -1.0 && pitch == -1.0 && yaw == -1.0 && thrust == 0.0)
+        {
+            overrideRC = false;
+
+            QLOG_DEBUG() << "JOYSTICK/RC OVERRIDE: remove overrides";
+        }
+        else
+        {
+            overrideRC = true; // (thrust < 0.495 || 0.505 < thrust);
+
+            uint16_t overrideRollRC = 0;
+            uint16_t overridePitchRC = 0;
+            uint16_t overrideYawRC = 0;
+            uint16_t overrideThrottleRC = 0;
+
+            // roll
+            {
+                int rcmap = params->value("RCMAP_ROLL").toInt();
+                Q_ASSERT(0 < rcmap && rcmap < 8);
+                Q_ASSERT(chan_raw[rcmap-1] == 0);
+                chan_raw[rcmap-1] = overrideRollRC = scaleJoystickToRC(roll, rcmap);
+            }
+            // pitch
+            {
+                int rcmap = params->value("RCMAP_PITCH").toInt();
+                Q_ASSERT(0 < rcmap && rcmap < 8);
+                Q_ASSERT(chan_raw[rcmap-1] == 0);
+                chan_raw[rcmap-1] = overridePitchRC = scaleJoystickToRC(pitch, rcmap);
+            }
+            // yaw
+            {
+                int rcmap = params->value("RCMAP_YAW").toInt();
+                Q_ASSERT(0 < rcmap && rcmap < 8);
+                Q_ASSERT(chan_raw[rcmap-1] == 0);
+                chan_raw[rcmap-1] = overrideYawRC = scaleJoystickToRC(yaw, rcmap);
+            }
+            // throttle
+            {
+                int rcmap = params->value("RCMAP_THROTTLE").toInt();
+                Q_ASSERT(0 < rcmap && rcmap < 8);
+                Q_ASSERT(chan_raw[rcmap-1] == 0);
+                chan_raw[rcmap-1] = overrideThrottleRC = scaleJoystickToRC(thrust*2.0 - 1.0, rcmap);
+            }
+
+            QLOG_DEBUG() << "JOYSTICK/RC OVERRIDE: Sent RC override: roll:" << overrideRollRC << " pitch:" << overridePitchRC << " yaw:" << overrideYawRC << " throttle:" << overrideThrottleRC;
+        }
+
         mavlink_message_t message;
-        mavlink_msg_manual_control_pack(systemId, componentId, &message, this->uasId, (float)manualPitchAngle, (float)manualRollAngle, (float)manualThrust, (float)manualYawAngle, buttons);
+        mavlink_msg_rc_channels_override_pack(gcs, componentId, &message, uasId, MAV_COMP_ID_ALL /* target_component */,
+                                              chan_raw[0], chan_raw[1], chan_raw[2], chan_raw[3], chan_raw[4], chan_raw[5], chan_raw[6], chan_raw[7]);
         sendMessage(message);
-        //QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT MANUAL CONTROL MESSAGE: roll" << manualRollAngle << " pitch: " << manualPitchAngle << " yaw: " << manualYawAngle << " thrust: " << manualThrust;
+
+        //emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
+    }
+    // If system has manual inputs enabled
+    else if(((base_mode & (uint8_t)MAV_MODE_FLAG_DECODE_POSITION_MANUAL) || (base_mode & (uint8_t)MAV_MODE_FLAG_HIL_ENABLED))
+            && (! overrideRC))
+    {
+        manualControl = true;
+
+        // Scale values
+        float manualRollAngle = -1000.0f + roll * 2000.0f;
+        float manualPitchAngle = -1000.0f + pitch * 2000.0f;
+        float manualYawAngle = -1000.0f + yaw * 2000.0f;
+        float manualThrust = -1000.0f + thrust * 2000.0f;
+
+        mavlink_message_t message;
+        mavlink_msg_manual_control_pack(systemId, componentId, &message, this->uasId, manualPitchAngle, manualRollAngle, manualThrust, manualYawAngle, buttons);
+        sendMessage(message);
+        QLOG_DEBUG() << "JOYSTICK/MANUAL CONTROL: SENT MANUAL CONTROL MESSAGE: roll:" << manualRollAngle << " pitch:" << manualPitchAngle << " yaw:" << manualYawAngle << " thrust:" << manualThrust;
 
         emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
     }
     else
     {
-        //QLOG_DEBUG() << "JOYSTICK/MANUAL CONTROL: IGNORING COMMANDS: Set mode to MANUAL to send joystick commands first";
+        QLOG_DEBUG() << "JOYSTICK/MANUAL CONTROL: IGNORING COMMANDS: Set mode to MANUAL or STABILIZE to send joystick commands first (currently" << shortModeText << ")";
     }
+}
+
+static int intValue(const QMap<QString, QVariant>* params, const QString& key, int defaultValue)
+{
+    return params->contains(key) ? params->value(key).toInt() : defaultValue;
+}
+
+/** @brief scale joystick axis to RC value
+ *         using min,max,trim,rev from UAS
+ */
+uint16_t UAS::scaleJoystickToRC(double v, int channel) const
+{
+    const QMap<QString, QVariant>* params = parameters[uasId];
+
+    int min = intValue(params, QString("RC%1_MIN").arg(channel), 1000);
+    int max = intValue(params, QString("RC%1_MAX").arg(channel), 2000);
+    int trim = intValue(params, QString("RC%1_TRIM").arg(channel), 1500);
+    int rev = intValue(params, QString("RC%1_REV").arg(channel), 1);
+    if (rev == -1)
+        v = -v;
+
+    int ppm = trim;
+    if (v > 0)
+        ppm += (max - trim) * v;
+    else if (v < 0)
+        ppm -= (min - trim) * v;
+    if (ppm < min) ppm = min;
+    if (ppm > max) ppm = max;
+
+    QLOG_TRACE() << v << "->" << ppm << "(min=" << min << ", trim=" << trim << ", max=" << max << ", rev=" << rev << ") for channel " << channel;
+    return ppm;
 }
 
 void UAS::setManual6DOFControlCommands(double x, double y, double z, double roll, double pitch, double yaw)
