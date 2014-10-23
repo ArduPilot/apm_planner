@@ -121,6 +121,7 @@ public:
 
 protected:
     SDL_Joystick* joystick;
+    QString joystickName;
     UASInterface* uas;
     QAtomicInt done;
 
@@ -135,10 +136,20 @@ protected:
     bool yawReversed;
     int autoButtonMapping;
     int stabilizeButtonMapping;
-    SDL_Event event;
-    QString joystickName;
+    int thrustValue;
+    int xValue;
+    int yValue;
+    int yawValue;
+    int hatValue;
+    Uint32 valuesTicks;
+
+    static const double sdlJoystickMin;
+    static const double sdlJoystickMax;
 
     void init();
+    bool sdlJoystickUpdate(unsigned);
+    double scaleJoystickAxisValue(int v, bool reversed);
+    void scaleJoystickHatValue(int v, int& xHat, int& yHat);
 
 signals:
 
