@@ -101,17 +101,23 @@ QT += network \
     opengl \
     svg \
     xml \
-    phonon \
     webkit \
     sql \
-    declarative
+    widgets \
+    serialport \
+    webkitwidgets \
+    script\
+    quick \
+    printsupport
 
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
-gittouch.commands = touch qgroundcontrol.pro
-QMAKE_EXTRA_TARGETS += gittouch
-POST_TARGETDEPS += gittouch
+!NOTOUCH {
+    gittouch.commands = touch qgroundcontrol.pro
+    QMAKE_EXTRA_TARGETS += gittouch
+    POST_TARGETDEPS += gittouch
+}
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
@@ -120,12 +126,14 @@ DEFINES += _TTY_NOWARN_
 # Logging Library
 #
 include (QsLog/QsLog.pri)
-
+#include (libs/mavlink/include/mavlink/v1.0-qt/mavlink.pri)
 #
 # OS Specific settings
 #
 
 MacBuild {
+    QT += multimedia
+
     QMAKE_INFO_PLIST = Custom-Info.plist
     CONFIG += x86_64
     CONFIG -= x86
@@ -142,7 +150,6 @@ MacBuild {
 }
 
 LinuxBuild {
-    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
@@ -154,7 +161,6 @@ LinuxBuild {
 }
 
 WindowsBuild {
-    QT += script
     DEFINES += __STDC_LIMIT_MACROS
 
     # Specify multi-process compilation within Visual Studio.
@@ -192,7 +198,8 @@ WindowsCrossBuild {
 #
 
 DebugBuild {
-    CONFIG += console
+#Let console be defined by the IDE/Build process.
+    #CONFIG += console
 }
 
 ReleaseBuild {
@@ -288,7 +295,6 @@ FORMS += \
     src/ui/UASControl.ui \
     src/ui/UASList.ui \
     src/ui/UASInfo.ui \
-    src/ui/Linechart.ui \
     src/ui/UASView.ui \
     src/ui/ParameterInterface.ui \
     src/ui/WaypointList.ui \
@@ -303,10 +309,7 @@ FORMS += \
     src/ui/watchdog/WatchdogView.ui \
     src/ui/QGCFirmwareUpdate.ui \
     src/ui/QGCPxImuFirmwareUpdate.ui \
-    src/ui/QGCDataPlot2D.ui \
-    src/ui/QGCRemoteControlView.ui \
     src/ui/QMap3D.ui \
-    src/ui/QGCWebView.ui \
     src/ui/SlugsDataSensorView.ui \
     src/ui/SlugsHilSim.ui \
     src/ui/SlugsPadCameraControl.ui \
@@ -320,7 +323,6 @@ FORMS += \
     src/ui/QGCUDPLinkConfiguration.ui \
     src/ui/QGCTCPLinkConfiguration.ui \
     src/ui/QGCSettingsWidget.ui \
-    src/ui/UASControlParameters.ui \
     src/ui/map/QGCMapTool.ui \
     src/ui/map/QGCMapToolBar.ui \
     src/ui/QGCMAVLinkInspector.ui \
@@ -341,6 +343,7 @@ FORMS += \
     src/ui/mission/QGCMissionDoSetCamTriggDist.ui \
     src/ui/mission/QGCMissionDoSetHome.ui \
     src/ui/mission/QGCMissionDoSetRelay.ui \
+    src/ui/mission/QGCMissionDoSetROI.ui \
     src/ui/mission/QGCMissionDoMountControl.ui \
     src/ui/mission/QGCMissionDoRepeatRelay.ui \
     src/ui/mission/QGCMissionConditionDelay.ui \
@@ -409,10 +412,10 @@ FORMS += \
     src/ui/AP2DataPlotAxisDialog.ui \
     src/ui/AutoUpdateDialog.ui \
     src/uas/LogDownloadDialog.ui \
-    src/ui/PrimaryFlightDisplayQML.ui \
     src/ui/configuration/CompassMotorCalibrationDialog.ui \
     src/ui/MissionElevationDisplay.ui \
-    src/ui/DroneshareUploadDialog.ui
+    src/ui/DroneshareUploadDialog.ui \
+    src/ui/DroneshareDialog.ui \
 
 HEADERS += \
     src/MG.h \
@@ -436,10 +439,6 @@ HEADERS += \
     src/ui/uas/UASListWidget.h \
     src/ui/uas/UASInfoWidget.h \
     src/ui/HUD.h \
-    src/ui/linechart/LinechartWidget.h \
-    src/ui/linechart/LinechartPlot.h \
-    src/ui/linechart/Scrollbar.h \
-    src/ui/linechart/ScrollZoomer.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
     src/ui/CameraView.h \
@@ -460,7 +459,6 @@ HEADERS += \
     src/LogCompressor.h \
     src/ui/QGCParamWidget.h \
     src/ui/QGCSensorSettingsWidget.h \
-    src/ui/linechart/Linecharts.h \
     src/uas/SlugsMAV.h \
     src/uas/PxQuadMAV.h \
     src/uas/ArduPilotMegaMAV.h \
@@ -473,17 +471,8 @@ HEADERS += \
     src/QGC.h \
     src/ui/QGCFirmwareUpdate.h \
     src/ui/QGCPxImuFirmwareUpdate.h \
-    src/ui/QGCDataPlot2D.h \
-    src/ui/linechart/IncrementalPlot.h \
-    src/ui/QGCRemoteControlView.h \
     src/ui/RadioCalibration/RadioCalibrationData.h \
-    src/ui/RadioCalibration/RadioCalibrationWindow.h \
-    src/ui/RadioCalibration/AirfoilServoCalibrator.h \
-    src/ui/RadioCalibration/SwitchCalibrator.h \
-    src/ui/RadioCalibration/CurveCalibrator.h \
-    src/ui/RadioCalibration/AbstractCalibrator.h \
     src/comm/QGCMAVLink.h \
-    src/ui/QGCWebView.h \
     src/ui/map3D/QGCWebPage.h \
     src/ui/SlugsDataSensorView.h \
     src/ui/SlugsHilSim.h \
@@ -503,7 +492,6 @@ HEADERS += \
     src/ui/QGCUDPLinkConfiguration.h \
     src/ui/QGCTCPLinkConfiguration.h \
     src/ui/QGCSettingsWidget.h \
-    src/ui/uas/UASControlParameters.h \
     src/uas/QGCUASParamManager.h \
     src/ui/map/QGCMapWidget.h \
     src/ui/map/MAV2DIcon.h \
@@ -532,6 +520,7 @@ HEADERS += \
     src/ui/mission/QGCMissionDoSetCamTriggDist.h \
     src/ui/mission/QGCMissionDoSetHome.h \
     src/ui/mission/QGCMissionDoSetRelay.h \
+    src/ui/mission/QGCMissionDoSetROI.h \
     src/ui/mission/QGCMissionDoMountControl.h \
     src/ui/mission/QGCMissionDoRepeatRelay.h \
     src/ui/mission/QGCMissionConditionDelay.h \
@@ -638,8 +627,13 @@ HEADERS += \
     src/ui/GoogleElevationData.h \
     src/ui/DroneshareUploadDialog.h \
     src/ui/DroneshareUpload.h \
+    src/ui/DroneshareDialog.h \
     src/ui/LoginDialog.h \
-    src/ui/DroneshareAPIBroker.h
+    src/ui/DroneshareAPIBroker.h \
+    src/comm/UASObject.h \
+    src/comm/VehicleOverview.h \
+    src/comm/RelPositionOverview.h \
+    src/comm/AbsPositionOverview.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -661,10 +655,6 @@ SOURCES += src/main.cc \
     src/ui/uas/UASListWidget.cc \
     src/ui/uas/UASInfoWidget.cc \
     src/ui/HUD.cc \
-    src/ui/linechart/LinechartWidget.cc \
-    src/ui/linechart/LinechartPlot.cc \
-    src/ui/linechart/Scrollbar.cc \
-    src/ui/linechart/ScrollZoomer.cc \
     src/ui/uas/UASView.cc \
     src/ui/CameraView.cc \
     src/comm/MAVLinkSimulationLink.cc \
@@ -684,7 +674,6 @@ SOURCES += src/main.cc \
     src/LogCompressor.cc \
     src/ui/QGCParamWidget.cc \
     src/ui/QGCSensorSettingsWidget.cc \
-    src/ui/linechart/Linecharts.cc \
     src/uas/SlugsMAV.cc \
     src/uas/PxQuadMAV.cc \
     src/uas/ArduPilotMegaMAV.cc \
@@ -697,16 +686,7 @@ SOURCES += src/main.cc \
     src/QGC.cc \
     src/ui/QGCFirmwareUpdate.cc \
     src/ui/QGCPxImuFirmwareUpdate.cc \
-    src/ui/QGCDataPlot2D.cc \
-    src/ui/linechart/IncrementalPlot.cc \
-    src/ui/QGCRemoteControlView.cc \
-    src/ui/RadioCalibration/RadioCalibrationWindow.cc \
-    src/ui/RadioCalibration/AirfoilServoCalibrator.cc \
-    src/ui/RadioCalibration/SwitchCalibrator.cc \
-    src/ui/RadioCalibration/CurveCalibrator.cc \
-    src/ui/RadioCalibration/AbstractCalibrator.cc \
     src/ui/RadioCalibration/RadioCalibrationData.cc \
-    src/ui/QGCWebView.cc \
     src/ui/map3D/QGCWebPage.cc \
     src/ui/SlugsDataSensorView.cc \
     src/ui/SlugsHilSim.cc \
@@ -726,7 +706,6 @@ SOURCES += src/main.cc \
     src/ui/QGCUDPLinkConfiguration.cc \
     src/ui/QGCTCPLinkConfiguration.cc \
     src/ui/QGCSettingsWidget.cc \
-    src/ui/uas/UASControlParameters.cpp \
     src/uas/QGCUASParamManager.cc \
     src/ui/map/QGCMapWidget.cc \
     src/ui/map/MAV2DIcon.cc \
@@ -754,6 +733,7 @@ SOURCES += src/main.cc \
     src/ui/mission/QGCMissionDoSetCamTriggDist.cc \
     src/ui/mission/QGCMissionDoSetHome.cc \
     src/ui/mission/QGCMissionDoSetRelay.cc \
+    src/ui/mission/QGCMissionDoSetROI.cc \
     src/ui/mission/QGCMissionDoMountControl.cc \
     src/ui/mission/QGCMissionDoRepeatRelay.cc \
     src/ui/mission/QGCMissionConditionDelay.cc \
@@ -859,8 +839,13 @@ SOURCES += src/main.cc \
     src/ui/GoogleElevationData.cpp \
     src/ui/DroneshareUploadDialog.cpp \
     src/ui/DroneshareUpload.cpp \
+    src/ui/DroneshareDialog.cc \
     src/ui/LoginDialog.cpp \
-    src/ui/DroneshareAPIBroker.cpp
+    src/ui/DroneshareAPIBroker.cpp \
+    src/comm/UASObject.cc \
+    src/comm/VehicleOverview.cc \
+    src/comm/RelPositionOverview.cc \
+    src/comm/AbsPositionOverview.cc
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

@@ -151,9 +151,11 @@ CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* 
 void CommConfigurationWindow::connectButtonStatus(int linkid)
 {
     if(LinkManager::instance()->getLinkConnected(linkid)) {
+        ui.deleteButton->setEnabled(false);
         ui.connectionStatusLabel->setText(tr("Connected"));
         ui.connectButton->setText("Disconnect");
     } else {
+        ui.deleteButton->setEnabled(true);
         ui.connectionStatusLabel->setText(tr("Disconnected"));
         ui.connectButton->setText("Connect");
     }
@@ -165,6 +167,13 @@ void CommConfigurationWindow::linkUpdate(int linkid)
     {
         return;
     }
+
+    if (LinkManager::instance()->getLinkType(linkid) == LinkInterface::TCP_LINK
+        && LinkManager::instance()->isTcpServer(linkid))
+    {
+        this->window()->close();
+    }
+
     setLinkName(LinkManager::instance()->getLinkName(linkid));
     connectButtonStatus(linkid);
 }
@@ -188,21 +197,23 @@ void CommConfigurationWindow::setConnection()
 {
     if (!LinkManager::instance()->getLinkConnected(m_linkid))
     {
-        LinkManager::instance()->connectLink(m_linkid);
-        this->window()->close();
+        if (LinkManager::instance()->connectLink(m_linkid))
+            this->window()->close();
     }
     else
     {
         LinkManager::instance()->disconnectLink(m_linkid);
-
     }
 }
 
 void CommConfigurationWindow::setLinkName(QString name)
 {
-    action->setText(tr("%1 Settings").arg(name));
-    action->setStatusTip(tr("Adjust setting for link %1").arg(name));
-    this->window()->setWindowTitle(tr("Settings for %1").arg(name));
+    if (action)
+    {
+        action->setText(tr("%1 Settings").arg(name));
+        action->setStatusTip(tr("Adjust setting for link %1").arg(name));
+        this->window()->setWindowTitle(tr("Settings for %1").arg(name));
+    }
 }
 
 void CommConfigurationWindow::remove()

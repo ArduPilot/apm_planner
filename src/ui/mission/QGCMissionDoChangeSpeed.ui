@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
    <property name="spacing">
     <number>5</number>
    </property>
@@ -43,6 +43,18 @@
    </property>
    <item>
     <widget class="QDoubleSpinBox" name="param1SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>135</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>135</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Mission parameter #1</string>
      </property>
@@ -53,7 +65,7 @@
       <bool>false</bool>
      </property>
      <property name="prefix">
-      <string>Type </string>
+      <string/>
      </property>
      <property name="suffix">
       <string> (0=AS/1=GS)</string>
@@ -68,9 +80,15 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="param2SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>135</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>16777215</width>
+       <width>135</width>
        <height>16777215</height>
       </size>
      </property>
@@ -102,8 +120,20 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="param3SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>75</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>75</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="toolTip">
-      <string>Mission parameter #3</string>
+      <string> (0..100, or -1 = no change)</string>
      </property>
      <property name="statusTip">
       <string>Mission parameter #3</string>
@@ -112,10 +142,10 @@
       <bool>false</bool>
      </property>
      <property name="prefix">
-      <string>Throttle </string>
+      <string>Thr </string>
      </property>
      <property name="suffix">
-      <string>%  (0..100, or -1 = no change)</string>
+      <string>%</string>
      </property>
      <property name="decimals">
       <number>0</number>
@@ -130,6 +160,19 @@
       <double>-1.000000000000000</double>
      </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

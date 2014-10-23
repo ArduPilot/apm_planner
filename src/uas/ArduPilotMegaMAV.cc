@@ -1,3 +1,4 @@
+
 /*=====================================================================
 QGroundControl Open Source Ground Control Station
 
@@ -501,6 +502,9 @@ QString ArduPilotMegaMAV::getCustomModeText()
 
     } else if (isGroundRover()){
         customModeString = ApmRover::stringForMode(custom_mode);
+
+    } else if (getSystemType() == MAV_TYPE_ANTENNA_TRACKER ){
+        customModeString = tr("Ant Tracker");
 
     } else {
         QLOG_WARN() << "APM: Unsupported System Type " << getSystemType();

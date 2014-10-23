@@ -50,7 +50,9 @@ class MAVLinkProtocol : public QObject
 {
     Q_OBJECT
 public:
-    explicit MAVLinkProtocol(QObject *parent = 0);
+    explicit MAVLinkProtocol();
+    ~MAVLinkProtocol();
+
     void setConnectionManager(LinkManager *manager) { m_connectionManager = manager; }
     void sendMessage(mavlink_message_t msg) { }
     void stopLogging();

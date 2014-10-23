@@ -43,6 +43,7 @@ private slots:
 
     //Load a graph from a file
     void loadButtonClicked();
+    void loadDialogAccepted();
 
     //Graph loading thread started
     void loadStarted();
@@ -95,6 +96,7 @@ private slots:
     void droneshareButtonClicked();
 
     void exportButtonClicked();
+    void exportDialogAccepted();
 
 private:
     void showEvent(QShowEvent *evt);

@@ -229,9 +229,9 @@ void UDPLink::readBytes()
         QMutexLocker dataRateLocker(&dataRateMutex);
         logDataRateToBuffer(inDataWriteAmounts, inDataWriteTimes, &inDataIndex, datagram.length(), QDateTime::currentMSecsSinceEpoch());
 
-
-//        // Echo data for debugging purposes
-//        std::cerr << __FILE__ << __LINE__ << "Received datagram:" << std::endl;
+#ifdef UDPLINK_DEBUG
+        // Echo data for debugging purposes
+        std::cerr << __FILE__ << __LINE__ << "Received datagram:" << std::endl;
 //        int i;
 //        for (i=0; i<s; i++)
 //        {
@@ -239,7 +239,7 @@ void UDPLink::readBytes()
 //            fprintf(stderr,"%02x ", v);
 //        }
 //        std::cerr << std::endl;
-
+#endif
 
         // Add host to broadcast list if not yet present
         if (!hosts.contains(sender))
@@ -278,7 +278,7 @@ bool UDPLink::disconnect()
 	this->quit();
 	this->wait();
 
-        if(socket)
+    if(socket)
 	{
 		delete socket;
 		socket = NULL;
@@ -299,7 +299,8 @@ bool UDPLink::disconnect()
  **/
 bool UDPLink::connect()
 {
-    QLOG_INFO() << "UDPLink::UDP connect";
+    disconnect();
+    QLOG_INFO() << "UDPLink::UDP connect " << host << ":" << port;
 	if(this->isRunning())
 	{
 		this->quit();
@@ -324,6 +325,9 @@ bool UDPLink::hardwareConnect(void)
 //    else
 //    {
     connectState = socket->bind(host, port);
+
+    QLOG_ERROR() << "bind failed! " << host << ":" << port;// << " - " << errno << ": " << strerror(errno);
+
 //    }
 
     //Provides Multicast functionality to UdpSocket
@@ -355,9 +359,12 @@ bool UDPLink::hardwareConnect(void)
     QObject::connect(socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
 
     emit connected(connectState);
-    emit connected(this);
     if (connectState) {
+        emit connected(this);
         emit connected();
+    } else {
+        emit disconnected(this);
+        emit disconnected();
     }
 	return connectState;
 }

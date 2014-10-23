@@ -10,7 +10,7 @@
 #include "GAudioOutput.h"
 #include "ArduPilotMegaMAV.h"
 
-//, Qt::WindowFlags flags
+#include <QFileDialog>
 
 QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
     QDialog(parent, flags),

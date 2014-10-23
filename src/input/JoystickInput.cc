@@ -122,6 +122,7 @@ void JoystickInput::setActiveUAS(UASInterface* uas)
 void JoystickInput::init()
 {
     // INITIALIZE SDL Joystick support
+    /*
     if (SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_NOPARACHUTE) < 0) {
         printf("Couldn't initialize SimpleDirectMediaLayer: %s\n", SDL_GetError());
     }
@@ -160,6 +161,7 @@ void JoystickInput::init()
 
     // Make sure active UAS is set
     setActiveUAS(UASManager::instance()->getActiveUAS());
+    */
 }
 void JoystickInput::shutdown()
 {
@@ -171,6 +173,8 @@ void JoystickInput::shutdown()
  */
 void JoystickInput::run()
 {
+    return;
+    /*
     init();
 
     forever
@@ -189,29 +193,27 @@ void JoystickInput::run()
             // Todo check if it would be more beneficial to use the event structure
             switch(event.type) {
             case SDL_KEYDOWN:
-                /* handle keyboard stuff here */
+
                 QLOG_TRACE() << "KEY PRESSED!";
                 break;
 
             case SDL_QUIT:
-                /* Set whatever flags are necessary to */
-                /* end the main loop here */
                 break;
 
-            case SDL_JOYBUTTONDOWN:  /* Handle Joystick Button Presses */
+            case SDL_JOYBUTTONDOWN:
                 if ( event.jbutton.button == 0 ) {
                     QLOG_TRACE() << "BUTTON PRESSED!";
                 }
                 break;
 
-            case SDL_JOYAXISMOTION:  /* Handle Joystick Motion */
+            case SDL_JOYAXISMOTION:
                 if ( ( event.jaxis.value < -3200 ) || (event.jaxis.value > 3200 ) ) {
                     if( event.jaxis.axis == 0) {
-                        /* Left-right movement code goes here */
+
                     }
 
                     if( event.jaxis.axis == 1) {
-                        /* Up-Down movement code goes here */
+
                     }
                 }
                 break;
@@ -321,6 +323,7 @@ void JoystickInput::run()
         QGC::SLEEP::msleep(20);
 
     }
+    */
 
 }
 

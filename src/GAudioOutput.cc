@@ -103,9 +103,9 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
 #ifdef Q_OS_LINUX
     // Remove Phonon Audio for linux and use alsa
     flite_init();
-    
+
     QLOG_INFO() << "Using Alsa Audio driver";
-    
+
     // Create shared dir tmp_audio
     // we create new spoken audio files here. we don't delete them as befor.
     // we save audiofiles like message inside.
@@ -119,9 +119,20 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
     {
         QLOG_WARN() << "Dir directory tmp_audio exists";
     }
-    
+
 #endif
-    
+
+#ifdef Q_OS_MAC
+    m_speech_channel = new SpeechChannel;
+    OSErr theErr = NewSpeechChannel(NULL, m_speech_channel);
+    if (theErr != noErr)
+    {
+        QLOG_WARN() << "Creating speech channel failed!";
+        delete m_speech_channel;
+        m_speech_channel = NULL;
+    }
+#endif
+
 #if _MSC_VER2
 
     ISpVoice * pVoice = NULL;
@@ -163,6 +174,14 @@ GAudioOutput::~GAudioOutput()
 #ifdef Q_OS_LINUX
     // wait until thread is running before terminate AlsaAudio thread
     AlsaAudio::instance(this)->wait();
+#endif
+#ifdef Q_OS_MAC
+    if(m_speech_channel)
+    {
+        DisposeSpeechChannel(*m_speech_channel);
+    };
+    delete m_speech_channel;
+    m_speech_channel = NULL;
 #endif
 //#ifdef _MSC_VER2
 // ::CoUninitialize();
@@ -207,13 +226,13 @@ bool GAudioOutput::say(QString text, int severity)
             synth.SpeakText(text.toStdString().c_str());
             res = true;
 #endif
-            
+
 #ifdef Q_OS_LINUX
             // spokenfilename is the filename created from spoken text
             QString spokenFilename = text;
             spokenFilename.replace(QRegExp(" "), "_");
             spokenFilename = QGC::appDataDirectory() + "/tmp_audio/" + spokenFilename + ".wav";
-            
+
             // alsadriver is a qthread. tmp. files dont work here
             QFile file( spokenFilename );
             if (!file.exists(spokenFilename)){ // if file not exist we create a new one
@@ -237,16 +256,13 @@ bool GAudioOutput::say(QString text, int severity)
                     AlsaAudio::instance(this)->start();
                 res = true;
             }
-#endif            
+#endif
 
 #ifdef Q_OS_MAC
-            // Slashes necessary to have the right start to the sentence
-            // copying data prevents SpeakString from reading additional chars
-            text = "\\" + text;
-            QStdWString str = text.toStdWString();
-            unsigned char str2[1024] = {};
-            memcpy(str2, text.toAscii().data(), str.length());
-            SpeakString(str2);
+            if(m_speech_channel)
+            {
+                SpeakCFString(*m_speech_channel, text.toCFString(), NULL);
+            }
             res = true;
 #endif
         }
@@ -340,13 +356,13 @@ void GAudioOutput::beep()
     {
         // Use QFile to transform path for all OS
         QFile f(QGC::shareDirectory()+QString("/files/audio/alert.wav"));
-        
+
 #ifdef Q_OS_LINUX
         AlsaAudio::instance(this)->enqueueFilname(f.fileName());
         if(!AlsaAudio::instance(this)->isRunning())
             AlsaAudio::instance(this)->start();
-#endif 
-        
+#endif
+
     }
 }
 

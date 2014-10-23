@@ -27,9 +27,9 @@
  */
 
 #include "treewidgetcolumnstretcher.h"
-#include <QtGui/QTreeWidget>
-#include <QtGui/QHideEvent>
-#include <QtGui/QHeaderView>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QHideEvent>
+#include <QtWidgets/QHeaderView>
 using namespace Utils;
 
 TreeWidgetColumnStretcher::TreeWidgetColumnStretcher(QTreeWidget *treeWidget, int columnToStretch)

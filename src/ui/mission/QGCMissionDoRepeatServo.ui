@@ -43,9 +43,15 @@
    </property>
    <item>
     <widget class="QDoubleSpinBox" name="param1SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>135</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>217</width>
+       <width>135</width>
        <height>16777215</height>
       </size>
      </property>
@@ -74,9 +80,15 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="param2SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>135</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>200</width>
+       <width>135</width>
        <height>16777215</height>
       </size>
      </property>
@@ -108,9 +120,15 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="param3SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>75</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>200</width>
+       <width>75</width>
        <height>16777215</height>
       </size>
      </property>
@@ -139,9 +157,15 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="param4SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>75</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>200</width>
+       <width>75</width>
        <height>16777215</height>
       </size>
      </property>

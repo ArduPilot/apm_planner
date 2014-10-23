@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "zlib.h"
 #include "zip.h"
 #include "quazip_global.h"
 

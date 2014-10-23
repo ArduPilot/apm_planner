@@ -49,107 +49,14 @@ for(COPY_DIR, COPY_RESOURCE_LIST):QMAKE_POST_LINK += $$CONCATCMD $$QMAKE_COPY_DI
 #
 # Perform platform specific setup
 #
-
+message(QTDIR $$[QT_INSTALL_PREFIX])
 MacBuild {
-	# Copy non-standard libraries and frameworks into app package
-    QMAKE_POST_LINK += && $$QMAKE_COPY_DIR $$BASEDIR/libs/lib/mac64/lib $$DESTDIR/$${TARGET}.app/Contents/libs
+    # Copy libraries and frameworks into app package
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$BASEDIR/libs/lib/Frameworks $$DESTDIR/$${TARGET}.app/Contents/Frameworks
-
-	# Fix library paths inside executable
-
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/MacOS/$${TARGET}
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgViewer.dylib \
-        libosgGA.dylib \
-        libosgDB.dylib \
-        libosgText.dylib \
-        libosgWidget.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# Fix library paths within libraries (inter-library dependencies)
-
-	# OSG GA LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgGA.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgGA.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# OSG DB LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgDB.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# OSG TEXT LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgText.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib \
-        libosgText.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# OSG UTIL LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgUtil.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-
-	# OSG VIEWER LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgViewer.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgGA.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib \
-        libosgText.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# OSG WIDGET LIBRARY
-    INSTALL_NAME_TARGET = $$DESTDIR/$${TARGET}.app/Contents/libs/libosgWidget.dylib
-    INSTALL_NAME_LIB_LIST = \
-        libOpenThreads.dylib \
-        libosg.dylib \
-        libosgGA.dylib \
-        libosgDB.dylib \
-        libosgUtil.dylib \
-        libosgText.dylib \
-        libosgViewer.dylib
-    for(INSTALL_NAME_LIB, INSTALL_NAME_LIB_LIST) {
-        QMAKE_POST_LINK += && install_name_tool -change $$INSTALL_NAME_LIB "@executable_path/../libs/$${INSTALL_NAME_LIB}" $$INSTALL_NAME_TARGET
-    }
-
-	# CORE OSG LIBRARY
-    QMAKE_POST_LINK += && install_name_tool -change libOpenThreads.dylib "@executable_path/../libs/libOpenThreads.dylib" $$DESTDIR/$${TARGET}.app/Contents/libs/libosg.dylib
+    QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$[QT_INSTALL_PREFIX]/qml/QtQuick.2 $$DESTDIR/$${TARGET}.app/Contents/MacOS/qml/QtQuick.2
 
     # SDL Framework
     QMAKE_POST_LINK += && install_name_tool -change "@rpath/SDL.framework/Versions/A/SDL" "@executable_path/../Frameworks/SDL.framework/Versions/A/SDL" $$DESTDIR/$${TARGET}.app/Contents/MacOS/$${TARGET}
-
 }
 
 WindowsBuild {
@@ -165,20 +72,32 @@ WindowsBuild {
     COPY_FILE_LIST = \
         $$BASEDIR_WIN\\libs\\lib\\sdl\\win32\\SDL.dll \
         $$BASEDIR_WIN\\libs\\thirdParty\\libxbee\\lib\\libxbee.dll \
-        $$(QTDIR)\\bin\\phonon$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtCore$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtGui$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtMultimedia$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtNetwork$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtOpenGL$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtSql$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtSvg$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtTest$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtWebKit$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtXml$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtXmlPatterns$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtDeclarative$${DLL_QT_DEBUGCHAR}4.dll \
-        $$(QTDIR)\\bin\\QtScript$${DLL_QT_DEBUGCHAR}4.dll
+        $$(QTDIR)\\bin\\Qt5WebKitWidgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5MultimediaWidgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Multimedia$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Gui$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Core$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\icuin51.dll \
+        $$(QTDIR)\\bin\\icuuc51.dll \
+        $$(QTDIR)\\bin\\icudt51.dll \
+        $$(QTDIR)\\bin\\Qt5Network$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Widgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5OpenGL$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5PrintSupport$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5WebKit$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Quick$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Qml$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Sql$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Positioning$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Sensors$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Declarative$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5XmlPatterns$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Xml$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Script$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Svg$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Test$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5SerialPort$${DLL_QT_DEBUGCHAR}.dll
+
     for(COPY_FILE, COPY_FILE_LIST) {
         QMAKE_POST_LINK += $$escape_expand(\\n) $$quote($$QMAKE_COPY "$$COPY_FILE" "$$COPY_FILE_DESTDIR")
     }

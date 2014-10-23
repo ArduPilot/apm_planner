@@ -52,7 +52,12 @@ extern "C" {
 #endif
 
 #ifndef _ZLIB_H
+#include <QtGlobal>
+#ifdef Q_CC_MSVC
+#include <QtZlib/zlib.h>
+#else
 #include "zlib.h"
+#endif
 #endif
 
 #ifndef _ZLIBIOAPI_H

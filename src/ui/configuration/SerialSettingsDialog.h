@@ -38,7 +38,7 @@ This file is part of the APM_PLANNER project
 
 #include <QDialog>
 #include <QComboBox>
-#include <qserialport.h>
+#include <QtSerialPort/qserialport.h>
 #include <QPointer>
 
 namespace Ui {

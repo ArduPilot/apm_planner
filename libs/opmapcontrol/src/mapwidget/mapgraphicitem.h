@@ -31,7 +31,7 @@
 #include "../internals/core.h"
 //#include "../internals/point.h"
 #include "../core/diagnostics.h"
-#include "configuration.h"
+#include "omapconfiguration.h"
 #include <QtGui>
 #include <QTransform>
 #include <QWidget>

@@ -46,6 +46,7 @@ public slots:
     void refreshParamList();
     void downloadButtonClicked();
     void loadFileButtonClicked();
+    void loadFileDialogAccepted();
     void closeButtonClicked();
     void httpParamListFinished();
 

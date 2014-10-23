@@ -31,9 +31,9 @@
 
 #include "utils_global.h"
 
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QMessageBox>
-#include <QtGui/QDialog>
+#include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QDialog>
 
 namespace Utils {
 

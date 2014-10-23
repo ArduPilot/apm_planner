@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="10,10,0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="10,10,0,0">
    <property name="spacing">
     <number>5</number>
    </property>
@@ -43,6 +43,18 @@
    </property>
    <item>
     <widget class="QDoubleSpinBox" name="param1SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>135</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>135</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Mission parameter #1</string>
      </property>
@@ -71,6 +83,18 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="param2SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>135</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>135</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Mission parameter #2</string>
      </property>
@@ -96,6 +120,18 @@
    </item>
    <item>
     <widget class="QDoubleSpinBox" name="param3SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>75</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>75</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Mission parameter #3</string>
      </property>
@@ -121,6 +157,19 @@
       <double>2147483647.000000000000000</double>
      </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

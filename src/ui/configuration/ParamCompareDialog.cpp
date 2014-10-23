@@ -75,7 +75,7 @@ ParamCompareDialog::~ParamCompareDialog()
 void ParamCompareDialog::initConnections()
 {
     connect(ui->cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(loadParameterFile()));
+    connect(ui->loadButton, SIGNAL(clicked()), this, SLOT(showLoadFileDialog()));
     connect(ui->continueButton, SIGNAL(clicked()), this, SLOT(saveNewParameters()));
     connect(ui->checkAllBox, SIGNAL(clicked()), this, SLOT(checkAll()));
 
@@ -86,7 +86,18 @@ void ParamCompareDialog::setAcceptButtonLabel(const QString &label)
     if (ui) ui->continueButton->setText(label);
 }
 
-void ParamCompareDialog::loadParameterFile()
+void ParamCompareDialog::dialogRejected()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    QLOG_DEBUG() << "Dialog Rejected:" << dialog;
+    if (dialog){
+        dialog->deleteLater();
+        dialog = NULL;
+    }
+
+}
+
+void ParamCompareDialog::showLoadFileDialog()
 {
     ui->compareTableWidget->setRowCount(0);
 
@@ -95,14 +106,27 @@ void ParamCompareDialog::loadParameterFile()
     if(!parameterDir.exists())
         parameterDir.mkdir(parameterDir.path());
 
-    QString filename = QFileDialog::getOpenFileName(this,tr("Open File To Compare"),
-                                                    QGC::parameterDirectory(), "*.param");
-    QApplication::processEvents(); // Helps clear dialog from screen
+    QFileDialog *fileDialog = new QFileDialog(this,"Load",QGC::parameterDirectory());
+    QLOG_DEBUG() << "CREATED:" << fileDialog;
+    fileDialog->setFileMode(QFileDialog::ExistingFile);
+    fileDialog->setNameFilter("*.param;*.txt");
+    fileDialog->open(this, SLOT(loadParameterFile()));
+    connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
+}
 
+void ParamCompareDialog::loadParameterFile()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog) {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0) {
+        return;
+    }
+    QString filename = dialog->selectedFiles().at(0);
     if(filename.length() == 0) {
         return;
     }
-    QApplication::processEvents(); // Helps clear dialog from screen
 
     loadParameterFile(filename);
 }

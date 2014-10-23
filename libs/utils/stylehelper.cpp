@@ -29,11 +29,11 @@
 #include "stylehelper.h"
 
 #include <QtGui/QPixmapCache>
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QRect>
-#include <QtGui/QPainter>
-#include <QtGui/QApplication>
-#include <QtGui/QPalette>
+#include <QtWidgets/QPainter>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QPalette>
 
 // Clamps float color values within (0, 255)
 static int clamp(float x)

@@ -85,9 +85,25 @@ void DownloadRemoteParamsDialog::loadFileButtonClicked()
 {
     QLOG_DEBUG() << "loadButtonClicked";
 
-    QString filename = QFileDialog::getOpenFileName(this,"Open File", QGC::parameterDirectory());
+    QFileDialog *dialog = new QFileDialog(this, tr("Open File"), QGC::parameterDirectory());
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(loadFileDialogAccepted()));
+    dialog->show();
+}
+void DownloadRemoteParamsDialog::loadFileDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        //No file selected/cancel clicked
+        return;
+    }
+    QString filename = dialog->selectedFiles().at(0);
     QFile file(filename);
-    QApplication::processEvents(); // Helps clear dialog from screen
 
     if((filename.length() == 0)||!file.exists())
     {

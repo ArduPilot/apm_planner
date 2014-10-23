@@ -64,6 +64,7 @@ This file is part of the QGROUNDCONTROL project
 #endif
 
 #include "AboutDialog.h"
+#include "DroneshareDialog.h"
 
 // FIXME Move
 #include "PxQuadMAV.h"
@@ -81,7 +82,6 @@ This file is part of the QGROUNDCONTROL project
 #include <QGCHilLink.h>
 #include <QGCHilConfiguration.h>
 #include <QGCHilFlightGearConfiguration.h>
-#include <QDeclarativeView>
 
 #define PFD_QML
 
@@ -135,7 +135,8 @@ MainWindow::MainWindow(QWidget *parent):
     changingViewsFlag(false),
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
-    m_heartbeatEnabled(true)
+    m_heartbeatEnabled(true),
+    m_droneshareDialog(NULL)
 {
     QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -229,7 +230,7 @@ MainWindow::MainWindow(QWidget *parent):
 #ifndef QGC_TOOLBAR_ENABLED
     // Add the APM 'toolbar'
 
-    m_apmToolBar = new APMToolBar(this);
+    m_apmToolBar = new APMToolBar();
     m_apmToolBar->setFlightViewAction(ui.actionFlightView);
     m_apmToolBar->setFlightPlanViewAction(ui.actionMissionView);
     m_apmToolBar->setInitialSetupViewAction(ui.actionHardwareConfig);
@@ -241,7 +242,8 @@ MainWindow::MainWindow(QWidget *parent):
     connect(ui.actionAdvanced_Mode, SIGNAL(triggered(bool)), m_apmToolBar, SLOT(checkAdvancedMode(bool)));
 
     QDockWidget *widget = new QDockWidget(tr("APM Tool Bar"),this);
-    widget->setWidget(m_apmToolBar);
+    QWidget *toolbarcontainer = QWidget::createWindowContainer(m_apmToolBar);
+    widget->setWidget(toolbarcontainer);
     widget->setMinimumHeight(72);
     widget->setMaximumHeight(72);
     widget->setMinimumWidth(1024);
@@ -367,6 +369,14 @@ MainWindow::MainWindow(QWidget *parent):
             this, SLOT(showAutoUpdateDownloadDialog(QString,QString,QString,QString)));
     connect(&m_autoUpdateCheck, SIGNAL(noUpdateAvailable()),
             this, SLOT(showNoUpdateAvailDialog()));
+
+    // Trigger Droneshare Notificaton
+    QSettings settings;
+    settings.beginGroup("QGC_MAINWINDOW");
+    if(settings.value("DRONESHARE_NOTIFICATION_ENABLED",true).toBool()){
+        QTimer::singleShot(11000, this, SLOT(showDroneshareDialog()));
+    }
+    settings.endGroup();
 
 }
 
@@ -622,10 +632,10 @@ void MainWindow::buildCommonWidgets()
 
     if (!mavlinkView)
     {
-        mavlinkView = new SubMainWindow(this);
-        mavlinkView->setObjectName("VIEW_MAVLINK");
-        mavlinkView->setCentralWidget(new XMLCommProtocolWidget(this));
-        addToCentralStackedWidget(mavlinkView, VIEW_MAVLINK, tr("Mavlink Generator"));
+        //mavlinkView = new SubMainWindow(this);
+        //mavlinkView->setObjectName("VIEW_MAVLINK");
+        //mavlinkView->setCentralWidget(new XMLCommProtocolWidget(this));
+        //addToCentralStackedWidget(mavlinkView, VIEW_MAVLINK, tr("Mavlink Generator"));
     }
 
     if (!simView)
@@ -1012,7 +1022,7 @@ void MainWindow::addToCentralStackedWidget(QWidget* widget, VIEW_SECTIONS viewSe
 void MainWindow::showCentralWidget()
 {
     QAction* act = qobject_cast<QAction *>(sender());
-    QWidget* widget = qVariantValue<QWidget *>(act->data());
+    QWidget* widget = act->data().value<QWidget*>();
     centerStack->setCurrentWidget(widget);
 }
 
@@ -1334,7 +1344,7 @@ void MainWindow::saveScreen()
 
     if (!screenFileName.isEmpty())
     {
-        window.save(screenFileName, format.toAscii());
+        window.save(screenFileName, format.toLatin1());
     }
 }
 void MainWindow::enableDockWidgetTitleBars(bool enabled)
@@ -1420,9 +1430,26 @@ void MainWindow::loadStyle(QGC_MAINWINDOW_STYLE style)
 void MainWindow::selectStylesheet()
 {
     // Let user select style sheet
-    styleFileName = QFileDialog::getOpenFileName(this, tr("Specify stylesheet"), styleFileName, tr("CSS Stylesheet (*.css);;"));
+    QFileDialog *dialog = new QFileDialog(this,tr("Specify stylesheet"), styleFileName, tr("CSS Stylesheet (*.css);;"));
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    connect(dialog,SIGNAL(accepted()),this,SLOT(selectStylesheetDialogAccepted()));
+    dialog->show();
+}
+void MainWindow::selectStylesheetDialogAccepted()
+{
+    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->selectedFiles().size() == 0)
+    {
+        //No file selected/cancel clicked
+        return;
+    }
+    QString tmpfilename = dialog->selectedFiles().at(0);
 
-    if (!styleFileName.endsWith(".css"))
+    if (!tmpfilename.endsWith(".css"))
     {
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Information);
@@ -1433,6 +1460,7 @@ void MainWindow::selectStylesheet()
         msgBox.exec();
         return;
     }
+    styleFileName = tmpfilename;
 
     // Load style sheet
     reloadStylesheet();
@@ -1782,7 +1810,7 @@ void MainWindow::addLink()
     }
     else if (send->data() == LinkInterface::TCP_LINK)
     {
-        newid = LinkManager::instance()->addTcpConnection(QHostAddress::LocalHost,5555);
+        newid = LinkManager::instance()->addTcpConnection(QHostAddress::LocalHost,5555,false);
     }
     else if (send->data() == LinkInterface::UDP_LINK)
     {
@@ -2016,19 +2044,6 @@ void MainWindow::UASCreated(UASInterface* uas)
     // HIL
     showHILConfigurationWidget(uas);
 
-    if (!linechartWidget)
-    {
-        linechartWidget = new Linecharts(this);
-        //linechartWidget->hide();
-
-    }
-
-    linechartWidget->addSource(mavlinkDecoder);
-    /*if (engineeringView->centralWidget() != linechartWidget)
-    {
-        engineeringView->setCentralWidget(linechartWidget);
-        linechartWidget->show();
-    }*/
 
     // Load default custom widgets for this autopilot type
     loadCustomWidgetsFromDefaults(uas->getSystemTypeName(), uas->getAutopilotTypeName());
@@ -2448,5 +2463,14 @@ void MainWindow::enableHeartbeat(bool enabled)
             UASManager::instance()->getUASList().at(i)->setHeartbeatEnabled(enabled);
         }
         storeSettings();
+    }
+}
+
+void MainWindow::showDroneshareDialog()
+{
+    if(!m_droneshareDialog){
+        m_droneshareDialog = new DroneshareDialog(this);
+        m_droneshareDialog->show();
+        m_droneshareDialog->raise();
     }
 }

@@ -87,8 +87,10 @@ exists(user_config.pri) {
 INCLUDEPATH += $$MAVLINKPATH
 isEmpty(MAVLINK_CONF) {
     INCLUDEPATH += $$MAVLINKPATH/common
+message("Using mavlink common")
 } else {
     INCLUDEPATH += $$MAVLINKPATH/$$MAVLINK_CONF
+message("Using mavlink " + $$MAVLINK_CONF)
     DEFINES += $$sprintf('QGC_USE_%1_MESSAGES', $$upper($$MAVLINK_CONF))
 }
 
@@ -104,36 +106,38 @@ INCLUDEPATH += \
     src/apps/mavlinkgen/ui \
     src/apps/mavlinkgen/generator
 
-include(src/apps/mavlinkgen/mavlinkgen.pri)
+#include(src/apps/mavlinkgen/mavlinkgen.pri)
 
 #
 # OpenSceneGraph
 #
 
-MacBuild {
-    # GLUT and OpenSceneGraph are part of standard install on Mac
-	CONFIG += OSGDependency
+#Remove OSG support, as it's only valid for Qt4, not Qt5
+#MacBuild {
+#    # GLUT and OpenSceneGraph are part of standard install on Mac
+#	CONFIG += OSGDependency
 
-    INCLUDEPATH += \
-        $$BASEDIR/libs/lib/mac64/include
+#    INCLUDEPATH += \
+#        $$BASEDIR/libs/lib/mac64/include
 
-	LIBS += \
-        -L$$BASEDIR/libs/lib/mac64/lib \
-        -losgWidget
-}
+#	LIBS += \
+#        -L$$BASEDIR/libs/lib/mac64/lib \
+#        -losgWidget
+#}
 
-LinuxBuild {
-	exists(/usr/include/osg) | exists(/usr/local/include/osg) {
-        CONFIG += OSGDependency
-        exists(/usr/include/osg/osgQt) | exists(/usr/include/osgQt) | exists(/usr/local/include/osg/osgQt) | exists(/usr/local/include/osgQt) {
-            message("Including support for Linux OpenSceneGraph Qt")
-            LIBS += -losgQt
-            DEFINES += QGC_OSG_QT_ENABLED
-        } else {
-            message("Skipping support for Linux OpenSceneGraph Qt")
-        }
-	}
-}
+#Remove OSG support, as it's only valid for Qt4, not Qt5
+#LinuxBuild {
+#	exists(/usr/include/osg) | exists(/usr/local/include/osg) {
+#        CONFIG += OSGDependency
+#        exists(/usr/include/osg/osgQt) | exists(/usr/include/osgQt) | exists(/usr/local/include/osg/osgQt) | exists(/usr/local/include/osgQt) {
+#            message("Including support for Linux OpenSceneGraph Qt")
+#            LIBS += -losgQt
+#            DEFINES += QGC_OSG_QT_ENABLED
+#        } else {
+#            message("Skipping support for Linux OpenSceneGraph Qt")
+#        }
+#	}
+#}
 
 WindowsBuild {
 	exists($$BASEDIR/libs/lib/osg123) {
@@ -294,7 +298,7 @@ include(libs/alglib/alglib.pri)
 # OPMapControl library (from OpenPilot)
 #
 
-include(libs/utils/utils_external.pri)
+#include(libs/utils/utils_external.pri)
 include(libs/opmapcontrol/opmapcontrol_external.pri)
 
 DEPENDPATH += \
@@ -308,17 +312,6 @@ INCLUDEPATH += \
     libs/utils \
     libs \
     libs/opmapcontrol
-
-#
-# QWT plotting library
-#
-
-include(libs/qwt/qwt.pri)
-
-#
-# QSerialPort - serial port library
-#
-include(libs/serialport/apmserial.pri)
 
 WindowsBuild {
     # Used to enumerate serial ports by QSerialPort
@@ -374,9 +367,9 @@ WindowsBuild {
 LinuxBuild : exists(/usr/local/lib/libxdrvlib.so) {
     message("Including support for Magellan 3DxWare")
 
-    DEFINES +=
-        MOUSE_ENABLED_LINUX \
-        ParameterCheck # Hack: Has to be defined for magellan usage
+    DEFINES += MOUSE_ENABLED_LINUX
+    DEFINES += ParameterCheck
+# Hack: Has to be defined for magellan usage
 
     INCLUDEPATH *= /usr/local/include
     HEADERS += src/input/Mouse6dofInput.h

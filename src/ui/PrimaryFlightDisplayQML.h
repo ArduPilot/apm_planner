@@ -25,7 +25,7 @@ This file is part of the APM_PLANNER project
 
 #include <UASInterface.h>
 #include <QWidget>
-#include <QDeclarativeView>
+#include <QQuickView>
 
 namespace Ui {
 class PrimaryFlightDisplayQML;
@@ -41,17 +41,12 @@ public:
 
 private slots:
     void setActiveUAS(UASInterface *uas);
-
-    void attitudeChanged(UASInterface *uas, double roll, double pitch, double yaw, quint64 usec);
-    void altitudeChanged(UASInterface *uas, double altitudeAMSL, double altitudeRelative,
-                         double climbRate, quint64 usec);
-    void speedChanged(UASInterface* uas, double groundSpeed, double airSpeed, quint64 usec);
     void uasTextMessage(int uasid, int componentid, int severity, QString text);
 
 private:
     Ui::PrimaryFlightDisplayQML *ui;
 
-    QDeclarativeView* m_declarativeView;
+    QQuickView* m_declarativeView;
     UASInterface *m_uasInterface;
 };
 

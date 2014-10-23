@@ -33,7 +33,7 @@ This file is part of the QGROUNDCONTROL project
 
 #include "AutoUpdateCheck.h"
 #include "AutoUpdateDialog.h"
-#include <QtGui/QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QStatusBar>
 #include <QStackedWidget>
 #include <QSettings>
@@ -45,7 +45,6 @@ This file is part of the QGROUNDCONTROL project
 #include "UASInterface.h"
 #include "UASManager.h"
 #include "UASControlWidget.h"
-#include "Linecharts.h"
 #include "UASInfoWidget.h"
 #include "WaypointList.h"
 #include "CameraView.h"
@@ -65,8 +64,6 @@ This file is part of the QGROUNDCONTROL project
 #include "HDDisplay.h"
 #include "WatchdogControl.h"
 #include "HSIDisplay.h"
-#include "QGCDataPlot2D.h"
-#include "QGCRemoteControlView.h"
 #include "opmapcontrol.h"
 #if (defined Q_OS_MAC) | (defined _MSC_VER)
 #include "QGCGoogleEarthView.h"
@@ -78,7 +75,6 @@ This file is part of the QGROUNDCONTROL project
 #include "SlugsHilSim.h"
 
 #include "SlugsPadCameraControl.h"
-#include "UASControlParameters.h"
 #include "QGCMAVLinkInspector.h"
 #include "QGCMAVLinkLogPlayer.h"
 #include "QGCVehicleConfig.h"
@@ -93,6 +89,7 @@ class QGCMAVLinkMessageSender;
 class QGCFirmwareUpdate;
 class QSplashScreen;
 class QGCStatusBar;
+class DroneshareDialog;
 
 /**
  * @brief Main Application Window
@@ -197,6 +194,7 @@ public slots:
     void reloadStylesheet();
     /** @brief Let the user select the CSS style sheet */
     void selectStylesheet();
+    void selectStylesheetDialogAccepted();
     /** @breif Enable title bars on dock widgets when no in advanced mode */
     void enableDockWidgetTitleBars(bool enabled);
     /** @brief Automatically reconnect last link */
@@ -370,7 +368,6 @@ protected:
     QPointer<DebugOutput> debugOutput;
 
     // Center widgets
-    QPointer<Linecharts> linechartWidget;
     //QPointer<HUD> hudWidget;
     //QPointer<QGCVehicleConfig> configWidget;
     //QPointer<QGCMapTool> mapWidget;
@@ -470,6 +467,8 @@ private slots:
     void autoUpdateCancelled(QString version);
     void showNoUpdateAvailDialog();
 
+    void showDroneshareDialog();
+
 private:
     bool m_heartbeatEnabled;
     QList<QObject*> commsWidgetList;
@@ -486,6 +485,8 @@ private:
 
     AutoUpdateCheck m_autoUpdateCheck;
     AutoUpdateDialog* m_dialog;
+
+    DroneshareDialog* m_droneshareDialog;
 
 };
 

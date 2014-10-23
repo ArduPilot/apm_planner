@@ -27,14 +27,15 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCStatusBar.h"
 #include "UASManager.h"
 #include "MainWindow.h"
+#include <QFileDialog>
 
 QGCStatusBar::QGCStatusBar(QWidget *parent) :
     QStatusBar(parent),
     toggleLoggingButton(NULL),
     player(NULL),
     changed(true),
-    m_uas(NULL),
-    lastLogDirectory(QGC::MAVLinkLogDirectory())
+    lastLogDirectory(QGC::MAVLinkLogDirectory()),
+    m_uas(NULL)
 {
     setObjectName("QGC_STATUSBAR");
 

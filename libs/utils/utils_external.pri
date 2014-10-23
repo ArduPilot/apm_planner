@@ -4,9 +4,9 @@
 
 DEPENDPATH += . \
               ../.
-INCLUDEPATH += . \
+INCLUDEPATH += $$PWD \
                ../.
-
+message("utils_external pwd" $$PWD)
 # HACK! BIG TIME!
 DEFINES += EXTERNAL_USE
 
@@ -58,19 +58,19 @@ HEADERS += utils_global.h \
            xmlconfig.h
 
 win32 {
-HEADERS += winutils.h
+HEADERS += $$PWD/winutils.h
 }
 
-FORMS += checkablemessagebox.ui \
-         filewizardpage.ui \
-         newclasswidget.ui \
-         projectintropage.ui \
-         submiteditorwidget.ui
+FORMS += $$PWD/checkablemessagebox.ui \
+         $$PWD/filewizardpage.ui \
+         $$PWD/newclasswidget.ui \
+         $$PWD/projectintropage.ui \
+         $$PWD/submiteditorwidget.ui
 
 win32 {
-SOURCES += abstractprocess_win.cpp \
-           consoleprocess_win.cpp \
-           winutils.cpp
+SOURCES += $$PWD/abstractprocess_win.cpp \
+           $$PWD/consoleprocess_win.cpp \
+           $$PWD/winutils.cpp
 }
 
 macx {
@@ -84,40 +84,40 @@ SOURCES += consoleprocess_unix.cpp
 #    submiteditorwidget.cpp \
 #    qtcolorbutton.cpp \
 
-SOURCES += reloadpromptutils.cpp \
-    settingsutils.cpp \
-    filesearch.cpp \
-    pathchooser.cpp \
-    pathlisteditor.cpp \
-    filewizardpage.cpp \
-    filewizarddialog.cpp \
-    projectintropage.cpp \
-    basevalidatinglineedit.cpp \
-    filenamevalidatinglineedit.cpp \
-    projectnamevalidatinglineedit.cpp \
-    codegeneration.cpp \
-    newclasswidget.cpp \
-    classnamevalidatinglineedit.cpp \
-    linecolumnlabel.cpp \
-    fancylineedit.cpp \
-    savedaction.cpp \
-    synchronousprocess.cpp \
-    submitfieldwidget.cpp \
-    consoleprocess.cpp \
-    uncommentselection.cpp \
-    parameteraction.cpp \
-    treewidgetcolumnstretcher.cpp \
-    checkablemessagebox.cpp \
-    styledbar.cpp \
-    stylehelper.cpp \
-    welcomemodetreewidget.cpp \
-    iwelcomepage.cpp \
-    fancymainwindow.cpp \
-    detailsbutton.cpp \
-    detailswidget.cpp \
-    coordinateconversions.cpp \
-    pathutils.cpp \
-        worldmagmodel.cpp \
-        homelocationutil.cpp \
-           xmlconfig.cpp
-RESOURCES += utils.qrc
+SOURCES += $$PWD/reloadpromptutils.cpp \
+    $$PWD/settingsutils.cpp \
+    $$PWD/filesearch.cpp \
+    $$PWD/pathchooser.cpp \
+    $$PWD/pathlisteditor.cpp \
+    $$PWD/filewizardpage.cpp \
+    $$PWD/filewizarddialog.cpp \
+    $$PWD/projectintropage.cpp \
+    $$PWD/basevalidatinglineedit.cpp \
+    $$PWD/filenamevalidatinglineedit.cpp \
+    $$PWD/projectnamevalidatinglineedit.cpp \
+    $$PWD/codegeneration.cpp \
+    $$PWD/newclasswidget.cpp \
+    $$PWD/classnamevalidatinglineedit.cpp \
+    $$PWD/linecolumnlabel.cpp \
+    $$PWD/fancylineedit.cpp \
+    $$PWD/savedaction.cpp \
+    $$PWD/synchronousprocess.cpp \
+    $$PWD/submitfieldwidget.cpp \
+    $$PWD/consoleprocess.cpp \
+    $$PWD/uncommentselection.cpp \
+    $$PWD/parameteraction.cpp \
+    $$PWD/treewidgetcolumnstretcher.cpp \
+    $$PWD/checkablemessagebox.cpp \
+    $$PWD/styledbar.cpp \
+    $$PWD/stylehelper.cpp \
+    $$PWD/welcomemodetreewidget.cpp \
+    $$PWD/iwelcomepage.cpp \
+    $$PWD/fancymainwindow.cpp \
+    $$PWD/detailsbutton.cpp \
+    $$PWD/detailswidget.cpp \
+    $$PWD/coordinateconversions.cpp \
+    $$PWD/pathutils.cpp \
+        $$PWD/worldmagmodel.cpp \
+        $$PWD/homelocationutil.cpp \
+           $$PWD/xmlconfig.cpp
+RESOURCES += $$PWD/utils.qrc

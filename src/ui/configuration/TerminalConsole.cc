@@ -49,8 +49,8 @@ This file is part of the APM_PLANNER project
 #include <QVBoxLayout>
 #include <QComboBox>
 #include <QTimer>
-#include <qserialportinfo.h>
-#include <qserialport.h>
+#include <QtSerialPort/qserialportinfo.h>
+#include <QtSerialPort/qserialport.h>
 #include <QPointer>
 #include <QFileDialog>
 

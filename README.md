@@ -28,8 +28,8 @@ Install SDL
 
 Install QT
 -----------
-1) Download Qt 4.8.x (Does not currently work with Qt5.x)
-   - you can verify the version by typing 'qmake -v' and it should report Qt 4.8.x as the version. 
+1) Download Qt 5.2.1 or greater (Does not work with Qt4.x)
+   - you can verify the version by typing 'qmake -v' and it should report Qt 5.2.1 or greater as the version. 
 
 2) Double click the package installer
 
@@ -45,16 +45,18 @@ Build APM Planner
 Linux 
 =====
 
-Building on Linux (tested against Ubuntu 13.10):
+Building on Linux (tested against Ubuntu 14.04 LTS):
 
-1) Install the required packages:
+1) Install the required packages: 
+
+Be sure to run apt-get update first
 
 ```
-sudo apt-get install phonon libqt4-dev libqt4-opengl-dev \
- libphonon-dev libphonon4 phonon-backend-gstreamer \
- qtcreator libsdl1.2-dev libflite1 flite1-dev build-essential \
- libopenscenegraph-dev libssl-dev libqt4-opengl-dev libudev-dev \
- libsndfile1-dev libqt4-sql-sqlite
+sudo apt-get update
+sudo apt-get install git qt5-qmake qt5-default \
+  qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
+  libqt5svg5-dev libsdl1.2-dev  libsndfile-dev \
+  flite1-dev libssl-dev libudev-dev
 ```
 
 2) Clone the repository in your workspace:
@@ -68,11 +70,9 @@ git clone https://github.com/diydrones/apm_planner
 
 ```
 cd ~/workspace/apm_planner
-qmake-qt4 qgroundcontrol.pro
+qmake qgroundcontrol.pro
 make
 ```
-
-Or try `qmake qgroundcontrol.pro` if the `qmake-qt4` command doesn't exist on your version of Ubuntu. This will only work if the Qt version install on your machine is Qt4.8.x, this can be checked using `qmake -v'
 
 4) Run APM Planner:
 
@@ -83,9 +83,30 @@ Or try `qmake qgroundcontrol.pro` if the `qmake-qt4` command doesn't exist on yo
 5) Permanent installation (optional, if you'd like to install APM Planner in a fixed location)
  
 There are two ways to do this:
-a) You can build a .deb using ```scripts/LinuxBuildPackage.sh```, and then install the deb via ```dpkg -i ~/Documents/APMPlanner2-$NOW.deb``` (where $NOW is today's date). This should add it to your launcher too.
 
-b) Alternatively, run ```sudo make install```. This will place the binary in your /bin/ folder and corresponding files in /share/.
+a) Using Debuild:
+```
+cd ~/workspace/apm_planner
+debuild -us -uc -d
+```
+Then install the deb via 
+```
+dpkg -i ~/workspace/apmplanner2_2.0.XX_YYYY.deb
+```
+Where XX is the version number, and YYY is your architecture. This method should add it to your launcher too.
+
+If it does not install due to dependancies, you can resolve them with
+```
+sudo apt-get install -f
+````
+Then attempt to install again.
+
+b) Using make:
+```
+cd ~/workspace/apm_planner
+sudo make install
+```
+This will place the binary in your /bin/ folder and corresponding files in /share/
 
 Windows
 =======
@@ -97,11 +118,11 @@ You have three options in Windows. These are listed from easiest to most difficu
 * Option 3: VS2012 requires a recompile of Qt, but otherwise should work with makefiles and nmake. This will not be described here.
 
 
-Option 1: VS2010
+Option 1: VS2010 [TODO: Update for Qt5]
 -------
 
 1. Download MSVc2010 express edition (You need SP1). You can get it from the Microsoft website
-2. Download Qt libraries for windows (4.8.6, for MSVC2010) from http://qt-project.org/downloads
+2. Download Qt libraries for windows (5.2.1, for MSVC2010(TODO?)) from http://qt-project.org/downloads
 3. Download and install QtCreator
 4. Download and install msysgit http://msysgit.github.io/
     - Open up git bash
@@ -117,30 +138,30 @@ Option 1: VS2010
         * Click apply
     - Qt Versions Tab:
         * click Add
-        * Find qmake.exe (typically in c:\Qt\4.8.6\bin\qmake.exe)
+        * Find qmake.exe (typically in c:\Qt\5.2.1\bin\qmake.exe)
         * click Apply
     - Kits tab:
-        * Click Add, name it Qt 4.8.6 - MSVC
+        * Click Add, name it Qt 5.2.1 - MSVC
         * Select the MSVC compiler, and Qt version you just created.
         * click Apply
     - Click Ok
 6. QtCreator is now configured.
 7. Click on File then Open, find qgroundcontrol.pro
-    - It will ask you to configure project, you want to make sure Qt 4.8.6 - MSVC is selected, and click "Configure Project"
+    - It will ask you to configure project, you want to make sure Qt 5.2.1 - MSVC is selected, and click "Configure Project"
 8. Go to "Projects" tab on the left hand side, deselect "Shadow Build".
 9. Build->Build qgroundcontrol
 10. Run and enjoy!
 
 
 
-Option 2: MinGW
+Option 2: MinGW [TODO: update for Qt5]
 -------
 
 Install everything to a path where there are NO spaces. This is important.
 
-1. Download Mingw 4.8.2 from http://sourceforge.net/projects/mingwbuilds/ (mingw-builds-install.exe)
-    - Install with options: x32 4.8.1 posix dwarf rev5
-2. Download and install Qt libraries for Windows (4.8.6, for MINGW 4.8.2) from http://qt-project.org/downloads
+1. Download Mingw 5.2.1 from http://sourceforge.net/projects/mingwbuilds/ (mingw-builds-install.exe)
+    - Install with options: x32 5.2.1 posix dwarf rev5
+2. Download and install Qt libraries for Windows (5.2.1, for MINGW 5.2.1) from http://qt-project.org/downloads
 3. Download and install QtCreator
 4. Download and install msysgit http://msysgit.github.io/
     - Open up Git Bash
@@ -158,16 +179,16 @@ Install everything to a path where there are NO spaces. This is important.
         * Click Apply
     - Qt Versions Tab:
         * click Add
-        * Find qmake.exe (typically in c:\Qt\4.8.6\bin\qmake.exe)
+        * Find qmake.exe (typically in c:\Qt\5.2.1\bin\qmake.exe)
         * click Apply
     - Kits tab:
-        * Click Add, name it Qt 4.8.6 - MinGW
+        * Click Add, name it Qt 5.2.1 - MinGW
         * Select the compiler, debugger, and Qt version you just created.
         * click Apply
         * Click Ok
 6. QtCreator is now configured.
 7. Click on File then Open, find qgroundcontrol.pro
-    - It will ask you to configure project, you want to make sure Qt 4.8.6 - MinGW is selected, and click "Configure Project"
+    - It will ask you to configure project, you want to make sure Qt 5.2.1 - MinGW is selected, and click "Configure Project"
 8. Go to "Projects" tab on the left hand side, deselect "Shadow Build".
 9. Build->Build qgroundcontrol
 10. Run and enjoy!

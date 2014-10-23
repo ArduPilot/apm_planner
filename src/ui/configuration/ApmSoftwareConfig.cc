@@ -232,6 +232,10 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     }
     if (!uas)
     {
+        if (m_populateTimer.isActive())
+        {
+            m_populateTimer.stop();
+        }
         return;
     }
     m_uas = uas;

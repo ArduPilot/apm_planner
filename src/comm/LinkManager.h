@@ -50,6 +50,7 @@ This file is part of the APM_PLANNER project
 #include <QMap>
 #include "UASInterface.h"
 #include "UAS.h"
+#include "UASObject.h"
 class LinkManager : public QObject
 {
     Q_OBJECT
@@ -65,20 +66,24 @@ public:
         return _instance;
     }
     ~LinkManager();
+    void disableTimeouts(int index);
+    void enableTimeouts(int index);
+    void disableAllTimeouts();
+    void enableAllTimeouts();
     void loadSettings();
     void saveSettings();
     int addSerialConnection(QString port,int baud);
     int addSerialConnection();
     int addUdpConnection(QHostAddress addr,int port);
-    int addTcpConnection(QHostAddress addr,int port);
+    int addTcpConnection(QHostAddress addr,int port,bool asServer);
     void modifySerialConnection(int index,QString port,int baud = -1);
-    void modifyTcpConnection(int index,QHostAddress addr,int port);
+    void modifyTcpConnection(int index,QHostAddress addr,int port,bool asServer);
     void setSerialParityType(int index,int parity);
     void setSerialFlowType(int index,int flow);
     void setSerialDataBits(int index,int bits);
     void setSerialStopBits(int index,int bits);
     void removeSerialConnection(int index);
-    void connectLink(int index);
+    bool connectLink(int index);
     void disconnectLink(int index);
     UASInterface* getUas(int id);
     UASInterface* createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
@@ -98,6 +103,7 @@ public:
     int getUdpLinkPort(int linkid);
     int getTcpLinkPort(int linkid);
     QHostAddress getTcpLinkHost(int linkid);
+    bool isTcpServer(int linkid);
     void setUdpLinkPort(int linkid, int port);
     void addUdpHost(int linkid,QString hostname);
     QList<QString> getCurrentPorts();
@@ -105,12 +111,14 @@ public:
     void startLogging();
     void setLogSubDirectory(QString dir);
     bool loggingEnabled();
+    UASObject *getUasObject(int uasid);
+    QMap<int,UASObject*> m_uasObjectMap;
 private:
     QMap<int,LinkInterface*> m_connectionMap;
     QMap<int,UASInterface*> m_uasMap;
     QMap<QString,int> m_portToBaudMap;
     MAVLinkDecoder *m_mavlinkDecoder;
-    MAVLinkProtocol *m_mavlinkParser;
+    MAVLinkProtocol *m_mavlinkProtocol;
     QString m_logSubDir;
     bool m_mavlinkLoggingEnabled;
 signals:
@@ -123,6 +131,7 @@ private slots:
     void linkConnected(LinkInterface* link);
     void linkDisonnected(LinkInterface* link);
     void linkErrorRec(LinkInterface* link,QString error);
+    void linkTimeoutTriggered(LinkInterface*);
 public slots:
     void messageReceived(LinkInterface* link,mavlink_message_t message);
     void protocolStatusMessageRec(QString title,QString text);

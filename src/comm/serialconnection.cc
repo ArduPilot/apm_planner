@@ -32,16 +32,19 @@ This file is part of the APM_PLANNER project
 
 #include "serialconnection.h"
 #include "QsLog.h"
-#include <qserialportinfo.h>
+#include <QtSerialPort/qserialportinfo.h>
 #include <QSettings>
 #include <QStringList>
 #include <QTimer>
-SerialConnection::SerialConnection(QObject *parent) : SerialLinkInterface()
+SerialConnection::SerialConnection(QObject *parent) : SerialLinkInterface(),
+    m_timeoutsEnabled(true),
+    m_isConnected(false),
+    m_port(0),
+    m_retryCount(0),
+    m_timeoutMessageSent(false)
 {
     m_linkId = getNextLinkId();
-    m_isConnected = false;
-    m_port = 0;
-    m_retryCount = 0;
+
     loadSettings();
 
     if (m_portName.length() == 0) {
@@ -52,9 +55,29 @@ SerialConnection::SerialConnection(QObject *parent) : SerialLinkInterface()
         else
             m_portName = "No Devices";
     }
+    m_timeoutTimer = new QTimer(this);
+    QObject::connect(m_timeoutTimer,SIGNAL(timeout()),this,SLOT(timeoutTimerTick()));
+    m_timeoutTimer->start(500);
 
     QLOG_INFO() <<  m_portName << m_baud;
 }
+void SerialConnection::timeoutTimerTick()
+{
+    if (!m_isConnected || !m_timeoutsEnabled)
+    {
+        //Don't care if we're not connected
+        return;
+    }
+    if (QDateTime::currentMSecsSinceEpoch() > (m_lastTimeoutMessage + SERIAL_TIMEOUT_MILLISECONDS))
+    {
+        if (m_timeoutsEnabled && !m_timeoutMessageSent)
+        {
+            m_timeoutMessageSent = true;
+            emit timeoutTriggered(this);
+        }
+    }
+}
+
 bool SerialConnection::setPortName(QString portName)
 {
     m_portName = portName;
@@ -232,12 +255,50 @@ bool SerialConnection::connect()
         QTimer::singleShot(1000,this,SLOT(connect()));
         return false;
     }
-    m_port->setBaudRate(m_baud);
-    m_port->setParity(QSerialPort::NoParity);
-    m_port->setDataBits(QSerialPort::Data8);
-    m_port->setFlowControl(QSerialPort::NoFlowControl);
-    m_port->setStopBits(QSerialPort::OneStop);
+    if (!m_port->setBaudRate(m_baud))
+    {
+        //Unable to set baud rate.
+        emit error(this,"Unable to set baud rate: " + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = 0;
+        return false;
+    }
+    if (!m_port->setParity(QSerialPort::NoParity))
+    {
+        emit error(this,"Unable to set parity rate: " + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = 0;
+        return false;
+    }
+    if (!m_port->setDataBits(QSerialPort::Data8))
+    {
+        emit error(this,"Unable to set databits: " + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = 0;
+        return false;
+    }
+    if (!m_port->setFlowControl(QSerialPort::NoFlowControl))
+    {
+        emit error(this,"Unable to set flow control: " + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = 0;
+        return false;
+    }
+    if (!m_port->setStopBits(QSerialPort::OneStop))
+    {
+        emit error(this,"Unable to set stop bits: " + m_port->errorString());
+        m_port->close();
+        delete m_port;
+        m_port = 0;
+        return false;
+    }
+    m_lastTimeoutMessage = QDateTime::currentMSecsSinceEpoch();
     m_isConnected = true;
+    m_timeoutMessageSent = false;
     emit connected();
     emit connected(true);
     emit connected(this);
@@ -250,18 +311,19 @@ void SerialConnection::readyRead()
     {
         //This shouldn't happen
     }
+    m_lastTimeoutMessage = QDateTime::currentMSecsSinceEpoch();
     QByteArray bytes = m_port->readAll();
     emit bytesReceived(this,bytes);
 }
 
 void SerialConnection::disableTimeouts()
 {
-
+    m_timeoutsEnabled = false;
 }
 
 void SerialConnection::enableTimeouts()
 {
-
+    m_timeoutsEnabled = true;
 }
 
 int SerialConnection::getId() const

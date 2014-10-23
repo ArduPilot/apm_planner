@@ -73,7 +73,7 @@ bool AudioOutput::say(QString text, int severity)
     qDebug() << "Synthesized: " << text << ", NO OUTPUT SUPPORT ON WINDOWS!";
 #elif defined(Q_OS_MAC)
     // FIXME, copy string, set callback to free the copy
-    SpeakString((const unsigned char*)text.toAscii().data());
+    SpeakString((const unsigned char*)text.toLatin1().data());
     qDebug() << "Synthesized: " << text;
 #else
     QTemporaryFile file;
