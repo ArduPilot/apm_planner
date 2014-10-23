@@ -23,25 +23,34 @@
 #include <QMutexLocker>
 #include <QSettings>
 
+/*static*/ const double JoystickInput::sdlJoystickMin = -32768.0;
+/*static*/ const double JoystickInput::sdlJoystickMax = 32767.0;
+
 /**
  * The coordinate frame of the joystick axis is the aeronautical frame like shown on this image:
  * @image html http://pixhawk.ethz.ch/wiki/_media/standards/body-frame.png Aeronautical frame
  */
 JoystickInput::JoystickInput() :
         joystick(NULL),
+        joystickName(""),
         uas(NULL),
         done(0),
         thrustAxis(2),
-        thrustReversed(false),
         xAxis(0),
-        xReversed(false),
         yAxis(1),
-        yReversed(false),
         yawAxis(3),
+        thrustReversed(false),
+        xReversed(false),
+        yReversed(false),
         yawReversed(false),
         autoButtonMapping(-1),
         stabilizeButtonMapping(-1),
-        joystickName("")
+        thrustValue(sdlJoystickMax*2),
+        xValue(sdlJoystickMax*2),
+        yValue(sdlJoystickMax*2),
+        yawValue(sdlJoystickMax*2),
+        hatValue(sdlJoystickMax*2),
+        valuesTicks(0)
 {
     loadSettings();
 }
@@ -208,21 +217,18 @@ void JoystickInput::shutdown()
 
 /** @brief Return the result of SDL_JoystickGetAxis (v) scaled to [-1.0,1.0]
  */
-static double sdlJoystickAxisValue(Sint16 v, bool reversed)
+double JoystickInput::scaleJoystickAxisValue(int v, bool reversed)
 {
-    static const double sdlJoystickMin = -32768.0;
-    static const double sdlJoystickMax = 32767.0;
-
-    double d = ((double)v) / 32767.0; // ((double)v - sdlJoystickMin) / (sdlJoystickMax - sdlJoystickMin);
+    double d = ((double)v) / sdlJoystickMax;
     if (reversed)
-        d = -d; // 1.0f - d;
+        d = -d;
     // Bound rounding errors
     if (d > 1.0f) d = 1.0f;
     if (d < -1.0f) d = -1.0f;
     return d;
 }
 
-static void sdlJoystickHatValue(Uint8 v, int& xHat, int& yHat)
+void JoystickInput::scaleJoystickHatValue(int v, int& xHat, int& yHat)
 {
     xHat = 0;
     yHat = 0;
@@ -246,6 +252,65 @@ static void sdlJoystickHatValue(Uint8 v, int& xHat, int& yHat)
 }
 
 /**
+ * @brief Calls SDL_JoystickUpdate()
+ * @return true if the joystick state changed "significantly" -- the axis
+ *         changed by more than 1%, or a button is pressed,
+ *         or more than timeout milliseconds elapsed
+ */
+bool JoystickInput::sdlJoystickUpdate(unsigned timeout)
+{
+    SDL_JoystickUpdate();
+
+    const Uint32 ticks = SDL_GetTicks();
+
+    const int currentThrustValue = SDL_JoystickGetAxis(joystick, thrustAxis);
+    const int currentXValue = SDL_JoystickGetAxis(joystick, xAxis);
+    const int currentYValue = SDL_JoystickGetAxis(joystick, yAxis);
+    const int currentYawValue = SDL_JoystickGetAxis(joystick, yawAxis);
+    const int currentHatValue = SDL_JoystickGetHat(joystick, 0);
+
+    QLOG_TRACE() << "THROTTLE AXIS is:" << currentThrustValue;
+    QLOG_TRACE() << "X AXIS is:" << currentXValue;
+    QLOG_TRACE() << "Y AXIS is:" << currentYValue;
+    QLOG_TRACE() << "Z AXIS is:" << currentYawValue;
+    QLOG_TRACE() << "HAT is:" << currentHatValue;
+
+    if (SDL_TICKS_PASSED(ticks, valuesTicks + timeout))
+        goto yes;
+
+    if (abs(currentThrustValue - thrustValue) > abs(thrustValue * 0.01)
+        || abs(currentXValue - xValue) > abs(xValue * 0.01)
+        || abs(currentYValue - yValue) > abs(yValue * 0.01)
+        || abs(currentYawValue - yawValue) > abs(yawValue * 0.01)
+        || abs(currentHatValue - hatValue) > abs(hatValue * 0.01))
+    {
+        goto yes;
+    }
+
+    for (int i = 0; i < SDL_JoystickNumButtons(joystick); i++)
+    {
+        if (SDL_JoystickGetButton(joystick, i))
+        {
+            QLOG_TRACE() << "BUTTON" << i << "pressed";
+            goto yes;
+        }
+    }
+
+    return false;
+
+yes:
+
+    valuesTicks = ticks;
+    thrustValue = currentThrustValue;
+    xValue = currentXValue;
+    yValue = currentYValue;
+    yawValue = currentYawValue;
+    hatValue = currentHatValue;
+
+    return true;
+}
+
+/**
  * @brief Execute the Joystick process
  */
 void JoystickInput::run()
@@ -265,6 +330,8 @@ void JoystickInput::run()
         // Plus it is really not that useful to pump SDL events
         // since the most relevant signal includes all axis/hats/buttons
         // together.
+
+        SDL_Event event;
 
         // Sleep, update rate of joystick is approx. 50 Hz (1000 ms / 50 = 20 ms)
         while (SDL_WaitEventTimeout(&event, 20))
@@ -384,25 +451,20 @@ void JoystickInput::run()
         if (done)
             break;
 
-        SDL_JoystickUpdate();
+        // signal rate set to 10Hz (100ms)
+        if (! sdlJoystickUpdate(100))
+            continue;
 
-#if 0
         // Display all axis
         // for (int i = 0; i < SDL_JoystickNumAxes(joystick); i++)
         // {
         //     QLOG_TRACE() << "AXIS" << i << "is: " << SDL_JoystickGetAxis(joystick, i);
         // }
-#else
-        // QLOG_TRACE() << "THROTTLE AXIS is:" << SDL_JoystickGetAxis(joystick, thrustAxis);
-        // QLOG_TRACE() << "X AXIS is:" << SDL_JoystickGetAxis(joystick, xAxis);
-        // QLOG_TRACE() << "Y AXIS is:" << SDL_JoystickGetAxis(joystick, yAxis);
-        // QLOG_TRACE() << "Z AXIS is:" << SDL_JoystickGetAxis(joystick, yawAxis);
-#endif
 
-        double thrust = 0.5 + sdlJoystickAxisValue(SDL_JoystickGetAxis(joystick, thrustAxis), thrustReversed)/2;
-        double x = sdlJoystickAxisValue(SDL_JoystickGetAxis(joystick, xAxis), xReversed);
-        double y = sdlJoystickAxisValue(SDL_JoystickGetAxis(joystick, yAxis), yReversed);
-        double yaw = sdlJoystickAxisValue(SDL_JoystickGetAxis(joystick, yawAxis), yawReversed);
+        double thrust = 0.5 + scaleJoystickAxisValue(thrustValue, thrustReversed)/2;
+        double x = scaleJoystickAxisValue(xValue, xReversed);
+        double y = scaleJoystickAxisValue(yValue, yReversed);
+        double yaw = scaleJoystickAxisValue(yawValue, yawReversed);
 
         // Display all hats
         // for (int i = 0; i < SDL_JoystickNumHats(joystick); i++)
@@ -411,7 +473,7 @@ void JoystickInput::run()
         // }
 
         int xHat,yHat;
-        sdlJoystickHatValue(SDL_JoystickGetHat(joystick, 0), xHat, yHat);
+        scaleJoystickHatValue(hatValue, xHat, yHat);
 
         // Buttons
         int buttons = 0;
