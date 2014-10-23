@@ -493,7 +493,7 @@ void AP2DataPlotThread::run()
                                         loadedtype = MAV_TYPE_GROUND_ROVER;
                                     }
                                 }
-                                emit lineRead(linetoemit);
+                                //emit lineRead(linetoemit);
 
                                 if (!nameToInsertQuery[name]->exec())
                                 {

@@ -12,6 +12,8 @@ AP2DataPlotAxisDialog::AP2DataPlotAxisDialog(QWidget *parent) :
     ui(new Ui::AP2DataPlotAxisDialog)
 {
     ui->setupUi(this);
+    //qRegisterMetaType<QList<GraphRange> >("QList<GraphRange>");
+    qRegisterMetaType<QList<AP2DataPlotAxisDialog::GraphRange> >("QList<AP2DataPlotAxisDialog::GraphRange>");
     //connect(ui->graphTableWidget,SIGNAL(currentItemChanged(QTableWidgetItem*,QTableWidgetItem*)),this,SLOT(graphTableCurrentItemChanged(QTableWidgetItem*,QTableWidgetItem*)));
     connect(ui->graphTableWidget,SIGNAL(itemSelectionChanged()),this,SLOT(graphTableItemSelectionChanged()));
     connect(ui->graphTableWidget,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(cellDoubleClicked(int,int)));
@@ -148,8 +150,10 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
             emit graphAddedToGroup(i.key(),i.value(),m_graphScaleMap.value(i.key()));
         }
     }*/
+    QList<GraphRange> graphRangeList;
     for (int i=0;i<ui->graphTableWidget->rowCount();i++)
     {
+        GraphRange graph;
         QString name = ui->graphTableWidget->item(i,1)->text();
         QComboBox *combobox = qobject_cast<QComboBox*>(ui->graphTableWidget->cellWidget(i,2));
         QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(i,5));
@@ -159,29 +163,38 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
             return;
         }
         QString group = combobox->currentText();
+        graph.graph = name;
         if (group == "NONE")
         {
+            graph.isgrouped = false;
             emit graphRemovedFromGroup(name);
             if (!checkbox->isChecked())
             {
                 //ui->graphTableWidget->item(i,1)->text(); // name
                 //ui->graphTableWidget->item(i,3)->text(); // min
                 //ui->graphTableWidget->item(i,4)->text(); // max
+                graph.manual = true;
+                graph.min = ui->graphTableWidget->item(i,3)->text().toDouble();
+                graph.max = ui->graphTableWidget->item(i,4)->text().toDouble();
                 emit graphManualRange(ui->graphTableWidget->item(i,1)->text(),ui->graphTableWidget->item(i,3)->text().toDouble(),ui->graphTableWidget->item(i,4)->text().toDouble());
             }
             else
             {
+                graph.manual = false;
                 emit graphAutoRange(ui->graphTableWidget->item(i,1)->text());
             }
         }
         else
         {
+            graph.group = group;
+            graph.isgrouped = true;
             checkbox->setChecked(true);
             emit graphAutoRange(name);
             emit graphAddedToGroup(name,group,m_graphScaleMap.value(name));
-
         }
+        graphRangeList.append(graph);
     }
+    emit graphGroupingChanged(graphRangeList);
 }
 
 void AP2DataPlotAxisDialog::cancelButtonClicked()
