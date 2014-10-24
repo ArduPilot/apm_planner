@@ -34,6 +34,7 @@ This file is part of the QGROUNDCONTROL project
 #include "QsLog.h"
 #include <QtWidgets/QApplication>
 #include <QGst/Init>
+#include "QQuickPaintedItemDelegate.h"
 
 /* SDL does ugly things to main() */
 #ifdef main
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
 #endif
 
     QGst::init(0,0);
+    qmlRegisterType<QQuickPaintedItemDelegate>("APMPlanner", 1, 0, "PaintedItemDelegate");
 
 
     QGCCore core(argc, argv);

@@ -26,7 +26,6 @@
 #include <QGst/Pad>
 #include <QGst/Event>
 #include <QQuickView>
-#include <QDeclarativeView>
 #include <QDialog>
 
 GStreamerPlayer::GStreamerPlayer(QObject *parent)

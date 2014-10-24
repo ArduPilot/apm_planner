@@ -137,9 +137,7 @@ MainWindow::MainWindow(QWidget *parent):
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
     m_heartbeatEnabled(true),
-    m_droneshareDialog(NULL),
-    m_primaryFlightDisplayDialog(0),
-    m_HUDDialog(0)
+    m_droneshareDialog(NULL)
 {
     QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -724,46 +722,10 @@ void MainWindow::buildCommonWidgets()
 	connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
     }*/
 
-    //HUD disabled until such a point that we can ensure it's completly operational
-    //createDockWidget(engineeringView,new HUD(320,240,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea,this->width()/1.5);
-    // Enable GStreamer if specified
-    settings.beginGroup("QGC_GSTREAMER");
-    bool hudEnableGStreamer = settings.value("HUD_ENABLE_GSTREAMER", false).toBool();
-    settings.endGroup();
-
-    if (hudEnableGStreamer)
-    {
-        // Use top-level window, experimental HUD
-        m_HUDDialog = new QDialog(NULL, Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint);
-        HUD *child = new HUD(640,480,this,true);
-        m_HUDDialog->setModal(false);
-        m_HUDDialog->setAttribute(Qt::WA_DeleteOnClose);
-        m_HUDDialog->setWindowTitle(tr("Heads-Up Display"));
-
-        m_HUDDialog->setLayoutDirection (Qt::LeftToRight);
-        QBoxLayout *mainDialogLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-        mainDialogLayout->addWidget(child);
-        mainDialogLayout->setMargin (0);
-
-        m_HUDDialog->setLayout(mainDialogLayout);
-        mainDialogLayout->update();
-        mainDialogLayout->activate();
-
-        m_HUDDialog->setObjectName(child->objectName());
-        m_HUDDialog->setMinimumHeight(320);
-        m_HUDDialog->setMinimumWidth(240);
-
-        m_HUDDialog->show();
-        child->show();
-
-        SetWindowPos((HWND)m_HUDDialog->winId(), HWND_TOPMOST, 0, 0, 320, 240, 0);
-    }
-    else
-    {
-        //HUD disabled until such a point that we can ensure it's completly operational
-        //createDockWidget(engineeringView,new HUD(320,240,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea,this->width()/1.5);
-        createDockWidget(pilotView,new HUD(640,480,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_FLIGHT,Qt::RightDockWidgetArea,this->width()/1.5);
-    }
+    // HUD enabled (experimental)
+    HUD *hud = new HUD(640,480,this);
+    QDockWidget *dock = createDockWidget(pilotView,hud,tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_FLIGHT,Qt::RightDockWidgetArea,this->width()/1.5);
+    connect(dock, SIGNAL(topLevelChanged(bool)) , hud, SLOT(topLevelChanged(bool)));
 
 #ifndef PFD_QML
     createDockWidget(simView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),
@@ -779,53 +741,25 @@ void MainWindow::buildCommonWidgets()
     }
 #else
 
-    // code to make the PFD a topmost dialog
-    settings.beginGroup("QGC_MAINWINDOW");
-    bool pfdTopmost = settings.value("PFD_TOPMOST", false).toBool();
-    settings.endGroup();
+    PrimaryFlightDisplayQML *pfd = new PrimaryFlightDisplayQML(this);
+    dock = createDockWidget(pilotView,pfd,tr("Primary Flight Display"),
+                     "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
 
-    // Enable GStreamer if specified
-    settings.beginGroup("QGC_GSTREAMER");
-    bool pfdEnableGStreamer = settings.value("PFD_ENABLE_GSTREAMER", false).toBool();
-    settings.endGroup();
-
-    if (pfdTopmost)
+    // Need to know when docking changes in case video is running, need to stop video or 'crash'
+    connect(dock, SIGNAL(topLevelChanged(bool)) , pfd, SLOT(topLevelChanged(bool)));
+    // Get action to allow PFD to hide itself
+    QList<QAction*> actions = ui.menuTools->actions();
+    foreach (QAction* action, actions)
     {
-        m_primaryFlightDisplayDialog = new QDialog(this, Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinMaxButtonsHint);
-        PrimaryFlightDisplayQML *child = new PrimaryFlightDisplayQML(this, pfdEnableGStreamer);
-        m_primaryFlightDisplayDialog->setModal(false);
-        m_primaryFlightDisplayDialog->setAttribute(Qt::WA_DeleteOnClose);
-        m_primaryFlightDisplayDialog->setWindowTitle(tr("Primary Flight Display"));
-
-        m_primaryFlightDisplayDialog->setLayoutDirection (Qt::LeftToRight);
-        QBoxLayout *mainDialogLayout = new QBoxLayout(QBoxLayout::LeftToRight);
-        mainDialogLayout->addWidget(child);
-        mainDialogLayout->setMargin (0);
-
-        m_primaryFlightDisplayDialog->setLayout(mainDialogLayout);
-        mainDialogLayout->update();
-        mainDialogLayout->activate();
-
-        m_primaryFlightDisplayDialog->setObjectName(child->objectName());
-        m_primaryFlightDisplayDialog->setMinimumHeight(320);
-        m_primaryFlightDisplayDialog->setMinimumWidth(240);
-
-        m_primaryFlightDisplayDialog->show();
-        child->show();
-
-        SetWindowPos((HWND)m_primaryFlightDisplayDialog->winId(), HWND_TOPMOST, 0, 0, 320, 240, 0);
-    }
-    else
-    {
-        PrimaryFlightDisplayQML *pdf = new PrimaryFlightDisplayQML(this, pfdEnableGStreamer);
-        QDockWidget *dock = createDockWidget(pilotView,pdf,tr("Primary Flight Display"),
-                         "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
-
-        connect(dock, SIGNAL(topLevelChanged(bool)) , pdf, SLOT(topLevelChanged(bool)));
+        if (action->text() == tr("Primary Flight Display"))
+        {
+            pfd->setShowToolAction(action);
+        }
     }
 
+    // Old style PFD
     createDockWidget(simView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),
-                     "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
+                 "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
 
 
     { //This is required since we don't show the old PFD in any view
@@ -1138,11 +1072,6 @@ void MainWindow::showHILConfigurationWidget(UASInterface* uas)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (m_HUDDialog)
-    {
-        m_HUDDialog->close();
-    }
-
     if (isVisible()) storeViewState();
     aboutToCloseFlag = true;
     storeSettings();

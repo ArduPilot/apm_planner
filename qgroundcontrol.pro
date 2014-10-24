@@ -109,8 +109,7 @@ QT += network \
     script \
     quick \
     qml \
-    printsupport \
-    declarative
+    printsupport
 
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
@@ -647,7 +646,9 @@ HEADERS += \
     src/comm/UASObject.h \
     src/comm/VehicleOverview.h \
     src/comm/RelPositionOverview.h \
-    src/comm/AbsPositionOverview.h
+    src/comm/AbsPositionOverview.h \
+    src/ui/QQuickPaintedItemDelegate.h \
+    src/ui/GStreamertoolbarWidget.h
 #    libs/sik_uploader/qsikuploader.h \
 #    libs/sik_uploader/sikuploader.h \
 
@@ -867,7 +868,9 @@ SOURCES += src/main.cc \
     src/comm/VehicleOverview.cc \
     src/comm/RelPositionOverview.cc \
     src/comm/AbsPositionOverview.cc \
-    src/ui/GStreamerPlayer.cpp
+    src/ui/GStreamerPlayer.cpp \
+    src/ui/QQuickPaintedItemDelegate.cpp \
+    src/ui/GStreamertoolbarWidget.cpp
 #    libs/sik_uploader/qsikuploader.cpp \
 #    libs/sik_uploader/sikuploader.cpp \
 

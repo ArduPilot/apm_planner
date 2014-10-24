@@ -261,13 +261,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="pfdTopmostCheckBox">
-          <property name="text">
-           <string>Show Primary Flight Display (PFD) Topmost</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QCheckBox" name="enableGStreamerVideoPFDCheckBox">
           <property name="text">
            <string>Enable GSreamer Video in Primary Flight Display (Experimental)</string>
@@ -275,7 +268,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,0,0">
+         <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,0">
           <item row="0" column="1">
            <widget class="QLineEdit" name="gstreamerPipelineStringEdit"/>
           </item>

@@ -57,7 +57,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     ui.hiddenPushButton->setVisible(false); // And it's checked.
     ui.radio3DRLargeButton->setVisible(true); // [SHOW 3DR RADIO]
-    ui.antennaTrackerLargeButton->setVisible(false); // [HIDE Antenna Tracking]
+    ui.antennaTrackerLargeButton->setVisible(true); // [HIDE Antenna Tracking]
 
     m_apmFirmwareConfig = new ApmFirmwareConfig(this);
     connect(m_apmFirmwareConfig,SIGNAL(showBlankingScreen()),this,SLOT(activateBlankingScreen()));
@@ -203,7 +203,7 @@ void ApmHardwareConfig::uasConnected()
             this, SLOT(mandatoryClicked()),Qt::UniqueConnection);
     // Hide offline options and show Optional and Mandatory buttons
     ui.radio3DRLargeButton->setVisible(false);
-    ui.antennaTrackerLargeButton->setVisible(false);
+    ui.antennaTrackerLargeButton->setVisible(true);
 
     ui.mandatoryHardware->setVisible(true);
     ui.mandatoryHardware->setChecked(false);
@@ -362,7 +362,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
         ui.opticalFlowButton->setVisible(!show);
         ui.osdButton->setVisible(!show);
         ui.cameraGimbalButton->setVisible(!show); // [SHOW Camera Gimbal]
-//        ui.antennaTrackerButton->setShown(!show); // [HIDE Antenna Tracking]
+        ui.antennaTrackerButton->setVisible(!show); // [HIDE Antenna Tracking]
         ui.airspeedButton->setVisible(!show);
 
     } else {

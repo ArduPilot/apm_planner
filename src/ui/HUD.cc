@@ -41,16 +41,17 @@ This file is part of the QGROUNDCONTROL project
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QPaintEvent>
-#include <QDeclarativeView>
-#include <QDeclarativeContext>
-#include <QDeclarativeEngine>
 #include <QGst/Pipeline>
 #include <QGst/Message>
-#include <QGst/Ui/GraphicsVideoSurface>
+#include <QGst/Quick/VideoSurface>
+#include <QtQml/QQmlContext>
+#include <QtQuick/QQuickItem>
+#include <QtQml/QQmlEngine>
 #include <QGst/Init>
 #include <QGLWidget>
 #include <QSettings>
 #include "GStreamerPlayer.h"
+#include "QQuickPaintedItemDelegate.h"
 
 #include <cmath>
 #include <qmath.h>
@@ -64,8 +65,9 @@ This file is part of the QGROUNDCONTROL project
  * @param height
  * @param parent
  */
-HUD::HUD(int width, int height, QWidget* parent, bool enableGStreamer)
+HUD::HUD(int width, int height, QWidget* parent)
     : QLabel(parent),
+      updateInterval(200),
       uas(NULL),
       yawInt(0.0f),
       mode(tr("UNKNOWN MODE")),
@@ -125,7 +127,7 @@ HUD::HUD(int width, int height, QWidget* parent, bool enableGStreamer)
       offlineDirectory(""),
       nextOfflineImage(""),
       HUDInstrumentsEnabled(false),
-      videoEnabled(false),
+      m_videoEnabled(false),
       xImageFactor(1.0),
       yImageFactor(1.0),
       imageRequested(false),
@@ -133,7 +135,9 @@ HUD::HUD(int width, int height, QWidget* parent, bool enableGStreamer)
       image(NULL),
       m_declarativeView(NULL),
       m_player(NULL),
-      enableGStreamer(enableGStreamer)
+      m_viewcontainer(NULL),
+      wasHidden(false),
+      m_fullScreenMode(false)
 {
     // Fill with black background
     QColor color = qRgb(255, 255, 255);
@@ -186,6 +190,10 @@ HUD::HUD(int width, int height, QWidget* parent, bool enableGStreamer)
     // Refresh timer
     refreshTimer->setInterval(updateInterval);
     connect(refreshTimer, SIGNAL(timeout()), this, SLOT(update()));
+
+    QSettings settings;
+    settings.beginGroup("QGC_GSTREAMER");
+    m_enableGStreamer = settings.value("PFD_ENABLE_GSTREAMER").toBool();
 }
 
 HUD::~HUD()
@@ -212,9 +220,11 @@ void HUD::hideEvent(QHideEvent* event)
 {
     // React only to internal (pre-display)
     // events
+    setVideoEnabled(false);
     refreshTimer->stop();
     QWidget::hideEvent(event);
     emit visibilityChanged(false);
+
 }
 
 void HUD::contextMenuEvent (QContextMenuEvent* event)
@@ -222,15 +232,16 @@ void HUD::contextMenuEvent (QContextMenuEvent* event)
     QMenu menu(this);
     // Update actions
     enableHUDAction->setChecked(HUDInstrumentsEnabled);
-    enableVideoAction->setChecked(videoEnabled);
+    enableVideoAction->setChecked(m_videoEnabled);
 
     menu.addAction(enableHUDAction);
     //menu.addAction(selectHUDColorAction);
     menu.addAction(enableVideoAction);
     menu.addAction(selectOfflineDirectoryAction);
     menu.addAction(selectSaveDirectoryAction);
+    menu.addAction(fullScreenAction);
 
-    if (videoEnabled && enableGStreamer)
+    if (m_videoEnabled && m_enableGStreamer)
     {
         GStreamerToolBarWidget *toolBarWidget = new GStreamerToolBarWidget(event->globalPos(), m_player);
             connect(&menu, SIGNAL(triggered(QAction*)), toolBarWidget, SLOT(close()));
@@ -251,7 +262,7 @@ void HUD::createActions()
     enableVideoAction = new QAction(tr("Enable Video Live feed"), this);
     enableVideoAction->setStatusTip(tr("Show the video live feed"));
     enableVideoAction->setCheckable(true);
-    enableVideoAction->setChecked(videoEnabled);
+    enableVideoAction->setChecked(m_videoEnabled);
     connect(enableVideoAction, SIGNAL(triggered(bool)), this, SLOT(enableVideo(bool)));
 
     selectOfflineDirectoryAction = new QAction(tr("Load image log"), this);
@@ -262,6 +273,10 @@ void HUD::createActions()
     selectSaveDirectoryAction->setStatusTip(tr("Save images from image stream to a directory"));
     selectSaveDirectoryAction->setCheckable(true);
     connect(selectSaveDirectoryAction, SIGNAL(triggered(bool)), this, SLOT(saveImages(bool)));
+
+    fullScreenAction = new QAction(tr("Full Screen"), this);
+    fullScreenAction->setStatusTip(tr("Toggle Full-Screen Mode"));
+    connect(fullScreenAction, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 }
 
 /**
@@ -513,7 +528,7 @@ void HUD::paintRollPitchStrips()
 
 void HUD::paintEvent(QPaintEvent *event)
 {
-    if (videoEnabled && enableGStreamer) return;
+    if (m_videoEnabled && m_enableGStreamer) return;
 
     QPainter painter;
     painter.begin(this);
@@ -582,7 +597,7 @@ void HUD::paintHUD(QPainter* painter)
         }
 
         // Fill with black background
-        if (videoEnabled) {
+        if (m_videoEnabled) {
             if (nextOfflineImage != "" && QFileInfo(nextOfflineImage).exists()) {
                 QLOG_DEBUG() << __FILE__ << __LINE__ << "template image:" << nextOfflineImage;
                 QImage fill = QImage(nextOfflineImage);
@@ -595,7 +610,7 @@ void HUD::paintHUD(QPainter* painter)
 
         }
 
-        if (dataStreamEnabled || videoEnabled)
+        if (dataStreamEnabled || m_videoEnabled)
         {
 
             xImageFactor = width() / (float)glImage.width();
@@ -606,7 +621,7 @@ void HUD::paintHUD(QPainter* painter)
 
         }
 
-        if (!enableGStreamer)
+        if (!m_enableGStreamer)
         {
             painter->setRenderHint(QPainter::Antialiasing, true);
             painter->setRenderHint(QPainter::HighQualityAntialiasing, true);
@@ -1321,7 +1336,7 @@ void HUD::saveImage()
 
 void HUD::startImage(quint64 timestamp)
 {
-    if (videoEnabled && offlineDirectory != "") {
+    if (m_videoEnabled && offlineDirectory != "") {
         // Load and diplay image file
         nextOfflineImage = QString(offlineDirectory + "/%1.bmp").arg(timestamp);
     }
@@ -1342,66 +1357,98 @@ void HUD::enableHUDInstruments(bool enabled)
 
 void HUD::enableVideo(bool enabled)
 {
-    videoEnabled = enabled;
+    m_videoEnabled = enabled;
 
     if (enabled)
     {
-        if (enableGStreamer && m_declarativeView == NULL)
+        if (m_enableGStreamer && m_declarativeView == NULL)
         {
             // Video overlay
-            QDeclarativeView *view = new QDeclarativeView();
-            m_declarativeView = view;
+            m_declarativeView = new QQuickView();
+            m_declarativeView->setFlags(Qt::Window|Qt::FramelessWindowHint);
 
-            view->setViewport(new QGLWidget());
-            view->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+            QGst::Quick::VideoSurface *surface = new QGst::Quick::VideoSurface;
+            m_declarativeView->rootContext()->setContextProperty(QLatin1String("videoSurface1"), surface);
+            m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
+            m_declarativeView->rootContext()->setContextProperty(QLatin1String("container"), this);
 
-            QGst::Ui::GraphicsVideoSurface *surface = new QGst::Ui::GraphicsVideoSurface(view);
-            view->rootContext()->setContextProperty(QLatin1String("videoSurface1"), surface);
-            view->rootContext()->setContextProperty(QLatin1String("container"), this);
-
-            m_player = new GStreamerPlayer(view);
+            m_player = new GStreamerPlayer(m_declarativeView);
             m_player->setVideoSink(surface->videoSink());
-            view->rootContext()->setContextProperty(QLatin1String("player"), m_player);
-            view->engine()->addImportPath("qml/quick1"); //For local or win32 builds
-            view->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+            m_declarativeView->rootContext()->setContextProperty(QLatin1String("player"), m_player);
+            m_declarativeView->engine()->addImportPath("qml/quick2"); //For local or win32 builds
+            m_declarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
             QString qml = QGC::shareDirectory() + "/qml/HudQML.qml";
             QUrl url = QUrl::fromLocalFile(qml);
 
-            view->setSource(url);
-            view->hide();
+            m_declarativeView->setSource(url);
+            m_declarativeView->show();
 
-            QVBoxLayout* layout = new QVBoxLayout();
-            layout->addWidget(view);
-            setLayout(layout);
+            if (m_viewcontainer == NULL)
+            {
+                QVBoxLayout* layout = new QVBoxLayout();
+                m_viewcontainer = QWidget::createWindowContainer(m_declarativeView);
+                layout->addWidget(m_viewcontainer);
+                setLayout(layout);
+            }
+            else
+            {
+                layout()->removeWidget(m_viewcontainer);
+                delete m_viewcontainer;
+                m_viewcontainer = QWidget::createWindowContainer(m_declarativeView);
+                layout()->addWidget(m_viewcontainer);
+            }
 
-            connect(surface, SIGNAL(paintMessageSent(QGst::Ui::CustomPaintMessage&)),
-                              this, SLOT(onCustomPaintMessage(QGst::Ui::CustomPaintMessage&)));
+            QQuickPaintedItemDelegate *paintDelegate = m_declarativeView->rootObject()->findChild<QQuickPaintedItemDelegate*>();
+            if (paintDelegate)
+            {
+                connect(paintDelegate, SIGNAL(paintSignal(QPainter*)),
+                              this, SLOT(paintHUD(QPainter*)));
+
+                connect(refreshTimer, SIGNAL(timeout()), paintDelegate, SLOT(update()));
+
+            }
         }
 
-        QDeclarativeView *pView = dynamic_cast<QDeclarativeView*>(m_declarativeView);
-        if (pView) pView->show();
+        if (m_declarativeView) m_declarativeView->show();
 
         if (m_player)
         {
-            // Get pipeline string
             QSettings settings;
             settings.beginGroup("QGC_GSTREAMER");
             QString pipelineString;
             pipelineString = settings.value("GSTREAMER_PIPELINE_STRING", 0).toString();
-            m_player->setBrightness(settings.value("GSTREAMER_BRIGHTNESS", 0).toInt());
-            m_player->setContrast(settings.value("GSTREAMER_CONTRAST", 0).toInt());
-            m_player->setHue(settings.value("GSTREAMER_HUE", 0).toInt());
-            m_player->setSaturation(settings.value("GSTREAMER_SATURATION", 0).toInt());
-            settings.endGroup();
+
             m_player->initialize(pipelineString);
             m_player->play();
+
+            settings.endGroup();
         }
     }
     else
     {
-        QDeclarativeView *pView = dynamic_cast<QDeclarativeView*>(m_declarativeView);
-        if (pView) pView->hide();
-        if (m_player) m_player->stop();
+        // Turn everything off
+        if (m_player)
+        {
+            delete m_player;
+            m_player = NULL;
+        }
+
+        if (m_declarativeView)
+        {
+            m_declarativeView->hide();
+            m_declarativeView->close();
+            m_declarativeView->rootContext()->setContextProperty(QLatin1String("videoSurface1"), 0);
+            m_declarativeView->engine()->clearComponentCache();
+            m_declarativeView = NULL;
+        }
+
+        if (m_viewcontainer)
+        {
+            layout()->removeWidget(m_viewcontainer);
+            m_viewcontainer->close();
+            m_viewcontainer = NULL;
+            delete layout();
+        }
     }
 }
 
@@ -1493,92 +1540,64 @@ void HUD::saveImages(bool save)
 
 }
 
-void HUD::onCustomPaintMessage( QGst::Ui::CustomPaintMessage &message)
+// QtGStreamer and the Qt docking system don't play well, so when we dock/undock, we need to reload (TODO: fix this)
+void HUD::topLevelChanged(bool topLevel)
 {
-    paintHUD(message.m_painter);
+    if (m_player)
+    {
+        delete m_player;
+        m_player = NULL;
+    }
+
+    if (m_declarativeView)
+    {
+        m_declarativeView->hide();
+        QQuickPaintedItemDelegate *paintDelegate = m_declarativeView->rootObject()->findChild<QQuickPaintedItemDelegate*>();
+        m_declarativeView->rootContext()->setContextProperty(QLatin1String("videoSurface1"), 0);
+        m_declarativeView->engine()->clearComponentCache();
+        delete m_declarativeView;
+        m_declarativeView = NULL;
+    }
+
+    if (m_viewcontainer)
+    {
+        layout()->removeWidget(m_viewcontainer);
+        delete m_viewcontainer;
+        m_viewcontainer = NULL;
+        delete layout();
+    }
+
+
+    // Force video off when dock changes
+    m_videoEnabled = false;
 }
 
-
-// GStreamerToolBarWidget
-
-void GStreamerToolBarWidget::createLayout()
+void HUD::dockLocationChanged(Qt::DockWidgetArea area)
 {
-     QGridLayout *layout = new QGridLayout;
-     QSlider *brightness = new QSlider(Qt::Horizontal);
-     brightness->setRange(-100, 100);
-     QLabel *brightnessLabel = new QLabel("Brightness");
-     QSlider *contrast = new QSlider(Qt::Horizontal);
-     contrast->setRange(-100, 100);
-     QLabel *contrastLabel = new QLabel("Contrast");
-
-     QSlider *hue = new QSlider(Qt::Horizontal);
-     hue->setRange(-100, 100);
-     QLabel *hueLabel = new QLabel("Hue");
-     QSlider *sat = new QSlider(Qt::Horizontal);
-     sat->setRange(-100, 100);
-     QLabel *satLabel = new QLabel("Saturation");
-
-     layout->addWidget(brightnessLabel,0,0);
-     layout->addWidget(brightness,0,1);
-     layout->addWidget(contrastLabel,1,0);
-     layout->addWidget(contrast,1,1);
-     layout->addWidget(hueLabel,2,0);
-     layout->addWidget(hue,2,1);
-     layout->addWidget(satLabel,3,0);
-     layout->addWidget(sat,3,1);
-     setLayout(layout);
-
-     brightness->setValue(m_player->getBrightness());
-     contrast->setValue(m_player->getContrast());
-     hue->setValue(m_player->getHue());
-     sat->setValue(m_player->getSaturation());
-
-     connect(brightness, SIGNAL(valueChanged(int)), this, SLOT(brightnessValueChanged(int)));
-     connect(contrast, SIGNAL(valueChanged(int)), this, SLOT(contrastValueChanged(int)));
-     connect(hue, SIGNAL(valueChanged(int)), this, SLOT(hueValueChanged(int)));
-     connect(sat, SIGNAL(valueChanged(int)), this, SLOT(satValueChanged(int)));
+    topLevelChanged(true);
 }
 
-void GStreamerToolBarWidget::brightnessValueChanged(int value)
-{
-    m_player->setBrightness(value);
+void HUD::setFullScreenMode(bool value) {
+    this->m_fullScreenMode = value;
+    QWidget *p = dynamic_cast<QWidget*>(this->parent());
+    if (!value &&  p->isFullScreen()) {
+        p->showNormal();
+        emit fullScreenModeChanged();
+    }
 
-    QSettings settings;
-    settings.beginGroup("QGC_GSTREAMER");
-    settings.setValue("GSTREAMER_BRIGHTNESS", value);
-    settings.endGroup();
-    settings.sync();
+    if (value && !p->isFullScreen()) {
+        p->showFullScreen();
+        emit fullScreenModeChanged();
+    }
 }
 
-void GStreamerToolBarWidget::contrastValueChanged(int value)
-{
-    m_player->setContrast(value);
-
-    QSettings settings;
-    settings.beginGroup("QGC_GSTREAMER");
-    settings.setValue("GSTREAMER_CONTRAST", value);
-    settings.endGroup();
-    settings.sync();
+bool HUD::isFullScreenMode() const {
+    QWidget *p = dynamic_cast<QWidget*>(this->parent());
+    return p->isFullScreen();
 }
 
-void GStreamerToolBarWidget::hueValueChanged(int value)
-{
-    m_player->setHue(value);
-
-    QSettings settings;
-    settings.beginGroup("QGC_GSTREAMER");
-    settings.setValue("GSTREAMER_HUE", value);
-    settings.endGroup();
-    settings.sync();
-}
-
-void GStreamerToolBarWidget::satValueChanged(int value)
-{
-    m_player->setSaturation(value);
-
-    QSettings settings;
-    settings.beginGroup("QGC_GSTREAMER");
-    settings.setValue("GSTREAMER_SATURATION", value);
-    settings.endGroup();
-    settings.sync();
+void HUD::setVideoEnabled(bool value) {
+    this->m_videoEnabled = value;
+    this->enableVideo(value);
+    emit videoEnabledChanged();
 }

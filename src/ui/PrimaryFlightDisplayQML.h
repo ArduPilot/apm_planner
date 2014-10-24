@@ -25,7 +25,8 @@ This file is part of the APM_PLANNER project
 
 #include <UASInterface.h>
 #include <QWidget>
-#include <QtQuick\QQuickView>
+#include <QDialog>
+#include <QQuickView>
 #include "GStreamerPlayer.h"
 
 
@@ -38,59 +39,50 @@ class PrimaryFlightDisplayQML : public QWidget
     Q_OBJECT
 
 public:
-    explicit PrimaryFlightDisplayQML(QWidget *parent = 0, bool enableGStreamer = false);
+    explicit PrimaryFlightDisplayQML(QWidget *parent = 0);
     ~PrimaryFlightDisplayQML();
 
-public slots:
+    static QDialog *s_primaryFlightDisplayDialog;
+
+private slots:
     void setActiveUAS(UASInterface *uas);
     void uasTextMessage(int uasid, int componentid, int severity, QString text);
     void updateNavMode(int uasid, int mode, const QString& text);
     void topLevelChanged(bool topLevel);
     void dockLocationChanged(Qt::DockWidgetArea area);
+    void enableVideo(bool enabled);
+    void onTopMostModeChanged();
 
 signals:
-    void fullScreenModeChanged ();
+    void fullScreenModeChanged();
+    void videoEnabledChanged();
+    void topMostModeChanged();
 
 public:
     Q_PROPERTY(bool fullScreenMode READ isFullScreenMode WRITE setFullScreenMode NOTIFY fullScreenModeChanged)
-    void setFullScreenMode(bool value) {
-        this->m_fullScreenMode = value;
-        QWidget *p = dynamic_cast<QWidget*>(this->parent());
-        if (!value &&  p->isFullScreen()) {
-            p->showNormal();
-            emit fullScreenModeChanged();
-        }
 
-        if (value && !p->isFullScreen()) {
-            p->showFullScreen();
-            emit fullScreenModeChanged();
-        }
-    }
-    bool isFullScreenMode() const {
-        QWidget *p = dynamic_cast<QWidget*>(this->parent());
-        return p->isFullScreen();
-    }
+    void setFullScreenMode(bool value);
+    bool isFullScreenMode() const;
+
+    Q_PROPERTY(bool videoEnabled READ isVideoEnabled WRITE setVideoEnabled NOTIFY videoEnabledChanged)
+
+    void setVideoEnabled(bool value);
+    bool isVideoEnabled() const { return m_videoEnabled; }
+
+    Q_PROPERTY(bool topMostMode READ isTopMostMode WRITE setTopMostMode NOTIFY topMostModeChanged)
+    void PrimaryFlightDisplayQML::setTopMostMode(bool value);
+    bool PrimaryFlightDisplayQML::isTopMostMode() const { return s_primaryFlightDisplayDialog != NULL; }
 
     GStreamerPlayer * player() { return m_player; }
 
     void InitializeDisplay();
     void InitializeDisplayWithVideo();
+    void ResetDisplay();
+    void setShowToolAction(QAction *action) { m_showToolAction = action; }
 
 private:
 
-    void showEvent(QShowEvent *)
-    {
-        if (m_enableGStreamer && m_wasHidden)
-        {
-            InitializeDisplayWithVideo();
-            m_wasHidden = false;
-        }
-    }
-
-    void hideEvent(QHideEvent *)
-    {
-        m_wasHidden = true;
-    }
+    void hideEvent(QHideEvent *event);
 
     Ui::PrimaryFlightDisplayQML *ui;
 
@@ -99,10 +91,12 @@ private:
     GStreamerPlayer *m_player;
     QWidget *m_viewcontainer;
     QString m_pipelineString;
+    QAction *m_showToolAction;
 
     bool m_enableGStreamer;
     bool m_fullScreenMode;
-    bool m_wasHidden;
+    bool m_videoEnabled;
+    bool m_topMostMode;
 
 };
 

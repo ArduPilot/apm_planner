@@ -43,7 +43,10 @@ This file is part of the QGROUNDCONTROL project
 #include <QGst/Ui/GraphicsVideoSurface>
 #include <QVBoxLayout>
 #include <QSlider>
+#include <QQuickView>
 #include "GStreamerPlayer.h"
+#include "GStreamertoolbarWidget.h"
+#include "QQuickPaintedItemDelegate.h"
 
 /**
  * @brief Displays a Head Up Display (HUD)
@@ -56,11 +59,19 @@ class HUD : public QLabel
 {
     Q_OBJECT
 public:
-    HUD(int width = 640, int height = 480, QWidget* parent = NULL, bool enableGStreamer = false);
+    HUD(int width = 640, int height = 480, QWidget* parent = NULL);
     ~HUD();
 
     void setImageSize(int width, int height, int depth, int channels);
     void resize(int w, int h);
+
+    Q_PROPERTY(bool fullScreenMode READ isFullScreenMode WRITE setFullScreenMode NOTIFY fullScreenModeChanged)
+    void setFullScreenMode(bool value);
+    bool isFullScreenMode() const;
+
+    Q_PROPERTY(bool videoEnabled READ isVideoEnabled WRITE setVideoEnabled NOTIFY videoEnabledChanged)
+    void setVideoEnabled(bool value);
+    bool isVideoEnabled() const { return m_videoEnabled; }
 
 public slots:
 //    void initializeGL();
@@ -100,16 +111,17 @@ public slots:
     void enableVideo(bool enabled);
     /** @brief Copy an image from the current active UAS */
     void copyImage();
+    void toggleFullScreen() { setFullScreenMode(!isFullScreenMode()); }
 
 
 protected slots:
+    void paintHUD(QPainter* painter = NULL);
     void paintRollPitchStrips();
     void paintPitchLines(float pitch, QPainter* painter);
     /** @brief Paint text on top of the image and OpenGL drawings */
     void paintText(QString text, QColor color, float fontSize, float refX, float refY, QPainter* painter);
     /** @brief Setup the OpenGL view for drawing a sub-component of the HUD */
     void setupGLView(float referencePositionX, float referencePositionY, float referenceWidth, float referenceHeight);
-    void paintHUD(QPainter* painter = NULL);
     void paintPitchLinePos(QString text, float refPosX, float refPosY, QPainter* painter);
     void paintPitchLineNeg(QString text, float refPosX, float refPosY, QPainter* painter);
 
@@ -121,10 +133,13 @@ protected slots:
     void drawChangeIndicatorGauge(float xRef, float yRef, float radius, float expectedMaxChange, float value, const QColor& color, QPainter* painter, bool solid=true);
 
     void drawPolygon(QPolygonF refPolygon, QPainter* painter);
-    void onCustomPaintMessage(QGst::Ui::CustomPaintMessage &message);
+    void topLevelChanged(bool topLevel);
+    void dockLocationChanged(Qt::DockWidgetArea area);
 
 signals:
     void visibilityChanged(bool visible);
+    void fullScreenModeChanged();
+    void videoEnabledChanged();
 
 protected:
     void commitRawDataToGL();
@@ -144,8 +159,6 @@ protected:
     void hideEvent(QHideEvent* event);
     void contextMenuEvent (QContextMenuEvent* event);
     void createActions();
-
-    static const int updateInterval = 100;
 
     QImage* image; ///< Double buffer image
     QImage glImage; ///< The background / camera image
@@ -224,49 +237,30 @@ protected:
     QString offlineDirectory;
     QString nextOfflineImage;
     bool HUDInstrumentsEnabled;
-    bool videoEnabled;
-    bool enableGStreamer;
+    bool m_videoEnabled;
+    bool m_enableGStreamer;
     bool dataStreamEnabled;
     bool imageLoggingEnabled;
+    bool wasHidden;
+    bool m_fullScreenMode;
     float xImageFactor;
     float yImageFactor;
+    int updateInterval;
+
     QAction* enableHUDAction;
     QAction* enableVideoAction;
     QAction* selectOfflineDirectoryAction;
     QAction* selectVideoChannelAction;
     QAction* selectSaveDirectoryAction;
+    QAction* fullScreenAction;
+
     void paintEvent(QPaintEvent *event);
     bool imageRequested;
     QString imageLogDirectory;
     unsigned int imageLogCounter;
     GStreamerPlayer *m_player;
-    QFrame *m_declarativeView;
-};
-
-// Helper for adjusting gstreamer plugin settings
-class GStreamerToolBarWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    GStreamerToolBarWidget(QPoint pos, GStreamerPlayer *player, QWidget *parent = NULL) : QWidget(parent), m_player(player)
-    {
-        setWindowFlags(windowFlags() | Qt::Popup);
-        createLayout();
-        int newYPos = pos.y() + 100;
-        move(pos.x(), newYPos);
-    }
-
-    void createLayout();
-
-private slots:
-    void brightnessValueChanged(int value);
-    void contrastValueChanged(int value);
-    void hueValueChanged(int value);
-    void satValueChanged(int value);
-
-private:
-    GStreamerPlayer *m_player;
-
+    QQuickView *m_declarativeView;
+    QWidget *m_viewcontainer;
 };
 
 #endif // HUD_H

@@ -31,6 +31,8 @@ Rectangle {
 	property bool enableFullScreen: false
 	property string navMode: ""
 
+	Binding { target: root; property: "enableBackgroundVideo"; value: container.videoEnabled }
+	
     function activeUasSet() {
         rollPitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll})
         rollPitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch})
@@ -52,7 +54,6 @@ Rectangle {
     
 	Component.onCompleted:
 	{
-		root.enableBackgroundVideo = Settings.get("enableBackgroundVideo", false) == 0 ? false : true
 		rollPitchIndicator.enableRollPitch = Settings.get("enableRollPitchIndicator", true) == 0 ? false : true
 		pitchIndicator.visible = Settings.get("enablePitchIndicator", true) == 0 ? false : true
 		altIndicator.visible = Settings.get("enableAltIndicator", true) == 0 ? false : true
@@ -87,7 +88,7 @@ Rectangle {
 			onTriggered: 
 			{
 				root.enableBackgroundVideo = !root.enableBackgroundVideo
-				Settings.set("enableBackgroundVideo", root.enableBackgroundVideo)
+				container.videoEnabled = root.enableBackgroundVideo 
 			}
         }
 
@@ -157,6 +158,13 @@ Rectangle {
 			}
         }
 		
+		MenuItem {
+            text: "TopMost"
+			checkable: true
+			checked: container.topMostMode
+			onTriggered: container.topMostMode = !container.topMostMode
+		}
+
 		MenuItem {
             text: "FullScreen"
 			checkable: true
