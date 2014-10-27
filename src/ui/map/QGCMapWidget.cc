@@ -276,9 +276,7 @@ void QGCMapWidget::loadSettings()
     settings.beginGroup("QGC_MAPWIDGET");
     m_lastLat = settings.value("LAST_LATITUDE", 0.0f).toDouble();
     m_lastLon = settings.value("LAST_LONGITUDE", 0.0f).toDouble();
-    //Disable loading the last_zoom setting, until a bug involving massive memory usage is fixed.
-    //m_lastZoom = settings.value("LAST_ZOOM", 1.0f).toDouble();
-    m_lastZoom = 1.0f;
+    m_lastZoom = settings.value("LAST_ZOOM", 1.0f).toDouble();
 
     SetMapType(static_cast<MapType::Types>(settings.value("MAP_TYPE", MapType::GoogleHybrid).toInt()));
 

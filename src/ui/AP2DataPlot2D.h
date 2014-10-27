@@ -14,6 +14,8 @@
 #include <QTextBrowser>
 #include <QSqlDatabase>
 #include <QStandardItemModel>
+#include "AP2DataPlot2DModel.h"
+#include <QSortFilterProxyModel>
 
 class LogDownloadDialog;
 
@@ -74,16 +76,9 @@ private slots:
     void navModeChanged(int uasid, int mode, const QString& text);
 
     void autoScrollClicked(bool checked);
-    void tableCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
-    void logLine(QString line);
-    void addGraphRight();
     void addGraphLeft();
     void removeGraphLeft();
     void axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt);
-    void graphAddedToGroup(QString name,QString group,double scale);
-    void graphRemovedFromGroup(QString name);
-    void graphManualRange(QString name, double min, double max);
-    void graphAutoRange(QString name);
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
@@ -98,9 +93,14 @@ private slots:
     void exportButtonClicked();
     void exportDialogAccepted();
 
+    void graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList);
+    void selectedRowChanged(QModelIndex current,QModelIndex previous);
+
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
+    AP2DataPlot2DModel *m_tableModel;
+    QSortFilterProxyModel *m_tableFilterProxyModel;
 
 private:
     QTimer *m_updateTimer;

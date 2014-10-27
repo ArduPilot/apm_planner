@@ -17,6 +17,7 @@
 #include <QsLog.h>
 #include <QStandardItemModel>
 #include "MainWindow.h"
+#include "AP2DataPlot2DModel.h"
 #include "ArduPilotMegaMAV.h"
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_uas(NULL),
@@ -114,6 +115,65 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     connect(ui.droneshareButton, SIGNAL(clicked()), this, SLOT(droneshareButtonClicked()));
     connect(ui.exportPushButton,SIGNAL(clicked()),this,SLOT(exportButtonClicked()));
 }
+void AP2DataPlot2D::graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList)
+{
+    for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
+    {
+        m_graphClassMap[i.key()].isManualRange = false;
+        m_graphClassMap[i.key()].isInGroup = false;
+        m_graphClassMap[i.key()].groupName = "";
+        m_graphClassMap[i.key()].graph->rescaleValueAxis();
+    }
+    m_graphGrouping.clear();
+    m_graphGroupRanges.clear();
+
+    for (int i=0;i<graphRangeList.size();i++)
+    {
+        if (graphRangeList.at(i).isgrouped)
+        {
+            QString group = graphRangeList.at(i).group;
+            m_graphClassMap[graphRangeList.at(i).graph].isInGroup = true;
+            m_graphClassMap[graphRangeList.at(i).graph].groupName = group;
+            if (!m_graphGroupRanges.contains(group))
+            {
+                m_graphGroupRanges[graphRangeList.at(i).group] = m_graphClassMap.value(graphRangeList.at(i).graph).axis->range();
+                m_graphGrouping[group] = QList<QString>();
+                m_graphGrouping[group].append(graphRangeList.at(i).graph);
+            }
+            else
+            {
+                m_graphGrouping[group].append(graphRangeList.at(i).graph);
+                for (int j=0;j<m_graphGrouping[group].size();j++)
+                {
+                    if (m_graphClassMap.value(m_graphGrouping[group][j]).axis->range().upper > m_graphGroupRanges[group].upper)
+                    {
+                        m_graphGroupRanges[group].upper = m_graphClassMap.value(m_graphGrouping[group][j]).axis->range().upper;
+                    }
+                    if (m_graphClassMap.value(m_graphGrouping[group][j]).axis->range().lower < m_graphGroupRanges[group].lower)
+                    {
+                        m_graphGroupRanges[group].lower = m_graphClassMap.value(m_graphGrouping[group][j]).axis->range().lower;
+                    }
+                }
+            }
+        }
+        else if (graphRangeList.at(i).manual)
+        {
+            m_graphClassMap[graphRangeList.at(i).graph].isManualRange = true;
+            m_graphClassMap.value(graphRangeList.at(i).graph).axis->setRange(graphRangeList.at(i).min,graphRangeList.at(i).max);
+        }
+    }
+
+    for (QMap<QString,QList<QString> >::const_iterator i = m_graphGrouping.constBegin();i!=m_graphGrouping.constEnd();i++)
+    {
+        QString group = i.key();
+        for (int j=0;j<m_graphGrouping[group].size();j++)
+        {
+            m_graphClassMap.value(m_graphGrouping[group][j]).axis->setRange(m_graphGroupRanges[group]);
+        }
+    }
+    m_plot->replot();
+}
+
 void AP2DataPlot2D::replyTLogButtonClicked()
 {
     if (m_tlogReplayEnabled)
@@ -279,10 +339,7 @@ void AP2DataPlot2D::graphControlsButtonClicked()
         return;
     }
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
-    connect(m_axisGroupingDialog,SIGNAL(graphAddedToGroup(QString,QString,double)),this,SLOT(graphAddedToGroup(QString,QString,double)));
-    connect(m_axisGroupingDialog,SIGNAL(graphRemovedFromGroup(QString)),this,SLOT(graphRemovedFromGroup(QString)));
-    connect(m_axisGroupingDialog,SIGNAL(graphManualRange(QString,double,double)),this,SLOT(graphManualRange(QString,double,double)));
-    connect(m_axisGroupingDialog,SIGNAL(graphAutoRange(QString)),this,SLOT(graphAutoRange(QString)));
+    connect(m_axisGroupingDialog,SIGNAL(graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange>)),this,SLOT(graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange>)));
     for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
     {
         m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
@@ -292,150 +349,104 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::WindowActivate));
 }
 
-void AP2DataPlot2D::addGraphRight()
-{
-    if (ui.tableWidget->selectedItems().size() == 0)
-    {
-        return;
-    }
-    ui.tableWidget->selectedItems()[0]->row();
-    if (ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column()))
-    {
-        QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
-        QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
-        m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
-    }
-}
+
 
 void AP2DataPlot2D::addGraphLeft()
 {
-    if (ui.tableWidget->selectedItems().size() == 0)
+    if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
     {
         return;
     }
-    if (ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column()))
+
+    QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
+    QString headertext = ui.tableWidget->model()->headerData(ui.tableWidget->selectionModel()->selectedIndexes().at(0).column(),Qt::Horizontal,Qt::DisplayRole).toString();
+    m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
+}
+void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
+{
+
+    m_tableModel->selectedRowChanged(m_tableFilterProxyModel->mapToSource(current),m_tableFilterProxyModel->mapToSource(previous));
+    if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
     {
-        QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
-        QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
-        m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
+        return;
+    }
+    if (current.column() == 0 || current.column() == 1)
+    {
+        //This is column 0 or 1, index and name
+        if (m_showOnlyActive)
+        {
+            m_addGraphAction->setText("Show All");
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+            connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+        }
+        else
+        {
+            m_addGraphAction->setText("Show only these rows");
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+            connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+        }
+    }
+    else
+    {
+        QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(current.row(),1)).value(Qt::DisplayRole).toString();
+        QString headertext = ui.tableWidget->model()->headerData(current.column(),Qt::Horizontal,Qt::DisplayRole).toString();
+        QString label = itemtext + "." + headertext;
+        if (m_graphClassMap.contains(label))
+        {
+            //It's an enabled
+            m_addGraphAction->setText("Remove From Graph");
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+            connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft()));
+        }
+        else
+        {
+            m_addGraphAction->setText("Add To Graph");
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+            connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
+        }
     }
 }
 void AP2DataPlot2D::removeGraphLeft()
 {
-    if (ui.tableWidget->selectedItems().size() == 0)
+    if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
     {
         return;
     }
-    ui.tableWidget->selectedItems()[0]->row();
-    if (ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column()))
-    {
-        QString headertext = ui.tableWidget->horizontalHeaderItem(ui.tableWidget->selectedItems()[0]->column())->text();
-        QString itemtext = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
-        m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
-    }
+    QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
+    QString headertext = ui.tableWidget->model()->headerData(ui.tableWidget->selectionModel()->selectedIndexes().at(0).column(),Qt::Horizontal,Qt::DisplayRole).toString();
+    QString label = itemtext + "." + headertext;
+    m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
 }
 void AP2DataPlot2D::showOnlyClicked()
 {
-    if (ui.tableWidget->selectedItems().size() == 0)
+    if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
     {
         return;
     }
-    QString name = ui.tableWidget->item(ui.tableWidget->selectedItems()[0]->row(),0)->text();
-    for (int i=0;i<ui.tableWidget->rowCount();i++)
-    {
-        if (ui.tableWidget->item(i,0))
-        {
-            if (ui.tableWidget->item(i,0)->text() != name)
-            {
-                ui.tableWidget->hideRow(i);
-            }
-        }
-        else
-        {
-            ui.tableWidget->hideRow(i);
-        }
-    }
+    QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
+    m_tableFilterProxyModel->setFilterFixedString(itemtext);
+    m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
+    m_tableFilterProxyModel->setFilterKeyColumn(1);
     m_showOnlyActive = true;
 }
 void AP2DataPlot2D::showAllClicked()
 {
-    for (int i=0;i<ui.tableWidget->rowCount();i++)
-    {
-        ui.tableWidget->showRow(i);
-    }
+    m_tableFilterProxyModel->setFilterRegExp("");
     m_showOnlyActive = false;
 }
 
-void AP2DataPlot2D::tableCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
-{
-
-    if (ui.tableWidget->item(currentRow,0))
-    {
-        if (m_tableHeaderNameMap.contains(ui.tableWidget->item(currentRow,0)->text()))
-        {
-            QString formatstr = m_tableHeaderNameMap.value(ui.tableWidget->item(currentRow,0)->text());
-            QStringList split = formatstr.split(",");
-            for (int i=0;i<split.size();i++)
-            {
-                QTableWidgetItem *item = new QTableWidgetItem(split[i]);
-                item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-                ui.tableWidget->setHorizontalHeaderItem(i+1,item);
-            }
-            for (int i=split.size();i<ui.tableWidget->columnCount()-1;i++)
-            {
-                QTableWidgetItem *item = new QTableWidgetItem();
-                item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-                ui.tableWidget->setHorizontalHeaderItem(i+1,item);
-            }
-            if (ui.tableWidget->horizontalHeaderItem(currentColumn) && currentColumn != 0)
-            {
-                QString label = ui.tableWidget->item(currentRow,0)->text() + "." + ui.tableWidget->horizontalHeaderItem(currentColumn)->text();
-                if (m_graphClassMap.contains(label))
-                {
-                    //It's an enabled
-                    m_addGraphAction->setText("Remove From Graph");
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft()));
-                }
-                else
-                {
-                    m_addGraphAction->setText("Add To Graph");
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
-                }
-            }
-            else
-            {
-                //This is column 0
-                if (m_showOnlyActive)
-                {
-                    m_addGraphAction->setText("Show All");
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-                }
-                else
-                {
-                    m_addGraphAction->setText("Show only these rows");
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-                    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-                    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-                }
-
-            }
-        }
-    }
-}
 
 void AP2DataPlot2D::autoScrollClicked(bool checked)
 {
@@ -757,43 +768,10 @@ void AP2DataPlot2D::loadDialogAccepted()
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
     connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
     connect(m_logLoaderThread,SIGNAL(done(int,MAV_TYPE)),this,SLOT(threadDone(int,MAV_TYPE)));
-    connect(m_logLoaderThread,SIGNAL(terminated()),this,SLOT(threadTerminated()));
+    connect(m_logLoaderThread,SIGNAL(finished()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
-    connect(m_logLoaderThread,SIGNAL(lineRead(QString)),this,SLOT(logLine(QString)));
     currentIndex=0;
     m_logLoaderThread->loadFile(filename,&m_sharedDb);
-}
-
-void AP2DataPlot2D::logLine(QString line)
-{
-    if (ui.tableWidget->rowCount() <= currentIndex)
-    {
-        ui.tableWidget->setRowCount(ui.tableWidget->rowCount()+1000);
-    }
-        QStringList linesplit = line.split(",");
-        if (ui.tableWidget->columnCount() < linesplit.size())
-        {
-            ui.tableWidget->setColumnCount(linesplit.size());
-        }
-        for (int j=0;j<linesplit.size();j++)
-        {
-            ui.tableWidget->setItem(currentIndex,j,new QTableWidgetItem(linesplit[j].trimmed()));
-        }
-        for (int j=linesplit.size();j<ui.tableWidget->columnCount();j++)
-        {
-            if (ui.tableWidget->item(currentIndex,j))
-            {
-                ui.tableWidget->item(currentIndex,j)->setText("");
-            }
-        }
-        if (line.startsWith("FMT"))
-        {
-            //Format line
-            QString linename = linesplit[3].trimmed();
-            QString lastformat = line.mid(linesplit[0].size() + linesplit[1].size() + linesplit[2].size() + linesplit[3].size() + linesplit[4].size() + 5);
-            m_tableHeaderNameMap[linename] = lastformat.trimmed();
-        }
-        currentIndex++;
 }
 
 void AP2DataPlot2D::threadTerminated()
@@ -1000,108 +978,6 @@ void AP2DataPlot2D::itemEnabled(QString name)
             mainGraph1->setPen(QPen(color, 2));
         }
     }
-}
-void AP2DataPlot2D::graphAddedToGroup(QString name,QString group,double scale)
-{
-    m_graphClassMap[name].isManualRange = false;
-    if (!m_graphGrouping.contains(group))
-    {
-        m_graphGrouping[group] = QList<QString>();
-        m_graphGroupRanges[group] = m_graphClassMap.value(name).axis->range();
-    }
-    if (m_graphClassMap.value(name).groupName == group)
-    {
-        return;
-    }
-    else if (m_graphGrouping[group].contains(name))
-    {
-        return;
-    }
-    else
-    {
-        graphRemovedFromGroup(name);
-    }
-    m_graphClassMap[name].groupName = group;
-    m_graphClassMap[name].isInGroup = true;
-    m_graphGrouping[group].append(name);
-    if (m_graphClassMap.value(name).axis->range().upper > m_graphGroupRanges[group].upper)
-    {
-        m_graphGroupRanges[group].upper = m_graphClassMap.value(name).axis->range().upper;
-    }
-    if (m_graphClassMap.value(name).axis->range().lower < m_graphGroupRanges[group].lower)
-    {
-        m_graphGroupRanges[group].lower = m_graphClassMap.value(name).axis->range().lower;
-    }
-    for (int i=0;i<m_graphGrouping[group].size();i++)
-    {
-        m_graphClassMap.value(m_graphGrouping[group][i]).axis->setRange(m_graphGroupRanges[group]);
-    }
-    m_plot->replot();
-}
-void AP2DataPlot2D::graphManualRange(QString name, double min, double max)
-{
-    graphRemovedFromGroup(name);
-    m_graphClassMap[name].isManualRange = true;
-    m_graphClassMap.value(name).axis->setRange(min,max);
-}
-void AP2DataPlot2D::graphAutoRange(QString name)
-{
-    m_graphClassMap[name].isManualRange = true;
-    m_graphClassMap.value(name).graph->rescaleValueAxis();
-    if (m_axisGroupingDialog)
-    {
-        m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
-    }
-}
-
-void AP2DataPlot2D::graphRemovedFromGroup(QString name)
-{
-    //Always remove it from manual range
-    if (!m_graphClassMap.contains(name))
-    {
-        return;
-    }
-    m_graphClassMap[name].isManualRange = false;
-    if (!m_graphClassMap.value(name).isInGroup)
-    {
-        //Not in a group
-        return;
-    }
-    QString group = m_graphClassMap.value(name).groupName;
-    m_graphGrouping[group].removeOne(name);
-    m_graphClassMap[name].isInGroup = false;
-    m_graphClassMap[name].groupName = "";
-    //m_graphClassMap.value(name).graph->valueAxis()->setRange;
-    m_graphClassMap.value(name).graph->rescaleValueAxis();
-    if (m_axisGroupingDialog)
-    {
-        m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
-    }
-    if (m_graphGrouping[group].size() > 0)
-    {
-        m_graphClassMap.value(m_graphGrouping[group][0]).graph->rescaleValueAxis();
-        if (m_axisGroupingDialog)
-        {
-            m_axisGroupingDialog->updateAxis(name,m_graphClassMap.value(name).axis->range().lower,m_graphClassMap.value(name).axis->range().upper);
-        }
-        m_graphGroupRanges[group] = m_graphClassMap.value(m_graphGrouping[group][0]).axis->range();
-    }
-    for (int i=0;i<m_graphGrouping[group].size();i++)
-    {
-        if (m_graphClassMap.value(m_graphGrouping[group][i]).axis->range().upper > m_graphGroupRanges[group].upper)
-        {
-            m_graphGroupRanges[group].upper = m_graphClassMap.value(m_graphGrouping[group][i]).axis->range().upper;
-        }
-        if (m_graphClassMap.value(m_graphGrouping[group][i]).axis->range().lower < m_graphGroupRanges[group].lower)
-        {
-            m_graphGroupRanges[group].lower = m_graphClassMap.value(m_graphGrouping[group][i]).axis->range().lower;
-        }
-    }
-    for (int i=0;i<m_graphGrouping[group].size();i++)
-    {
-        m_graphClassMap.value(m_graphGrouping[group][i]).axis->setRange(m_graphGroupRanges[group]);
-    }
-    m_plot->replot();
 }
 
 void AP2DataPlot2D::itemDisabled(QString name)
@@ -1344,14 +1220,23 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
     m_scrollEndIndex = currentIndex;
     ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
     ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
-    ui.tableWidget->setRowCount(currentIndex);
 
+    //ui.tableWidget->setRowCount(currentIndex);
+    m_tableModel = new AP2DataPlot2DModel(&m_sharedDb,this);
+    m_tableFilterProxyModel = new QSortFilterProxyModel(this);
+    m_tableFilterProxyModel->setSourceModel(m_tableModel);
+    ui.tableWidget->setModel(m_tableFilterProxyModel);
+    //connect(ui.tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),m_tableModel,SLOT(selectedRowChanged(QModelIndex,QModelIndex)));
+    //connect(ui.tableWidget->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(selectedRowChanged(QModelIndex,QModelIndex)));
+    connect(ui.tableWidget->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(selectedRowChanged(QModelIndex,QModelIndex)));
     m_progressDialog->hide();
     delete m_progressDialog;
     m_progressDialog=0;
     ui.tableWidget->setVisible(true);
     ui.hideExcelView->setVisible(true);
 }
+
+
 void AP2DataPlot2D::threadError(QString errorstr)
 {
     QMessageBox::information(0,"Error",errorstr);

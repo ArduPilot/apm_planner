@@ -1,6 +1,7 @@
 #include "dataselectionscreen.h"
 #include <QCheckBox>
 #include <QVBoxLayout>
+#include <QsLog.h>
 
 DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
 {
@@ -68,11 +69,12 @@ void DataSelectionScreen::disableItem(QString name)
     {
         if (items[i]->parent()->text(0).contains(first))
         {
-            items[0]->setCheckState(0,Qt::Unchecked);
+            items[i]->setCheckState(0,Qt::Unchecked);
             m_enabledList.removeOne(name);
             return;
         }
     }
+    QLOG_ERROR() << "No item found in DataSelectionScreen:disableItem:" << name;
 }
 
 void DataSelectionScreen::addItem(QString name)

@@ -15,6 +15,17 @@ class AP2DataPlotAxisDialog : public QWidget
     Q_OBJECT
     
 public:
+    class GraphRange
+    {
+    public:
+        QString graph;
+        QString group;
+        bool isgrouped;
+        bool manual;
+        double min;
+        double max;
+    };
+
     explicit AP2DataPlotAxisDialog(QWidget *parent = 0);
     ~AP2DataPlotAxisDialog();
     void addAxis(QString name,double lower, double upper,QColor color);
@@ -39,6 +50,7 @@ signals:
     void graphRemovedFromGroup(QString name);
     void graphManualRange(QString name, double min, double max);
     void graphAutoRange(QString name);
+    void graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList);
 private:
     //Map of ranges for individual graphs
     QMap<QString,QPair<double,double> > m_rangeMap;
