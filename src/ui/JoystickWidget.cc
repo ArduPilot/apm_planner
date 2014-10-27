@@ -40,8 +40,8 @@ JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
     connect(m_ui->yawMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingYawAxis(int)));
     connect(m_ui->throttleMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingThrustAxis(int)));
 
-    connect(m_ui->rollInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setXReversed(bool)));
-    connect(m_ui->pitchInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setYReversed(bool)));
+    connect(m_ui->rollInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setYReversed(bool)));
+    connect(m_ui->pitchInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setXReversed(bool)));
     connect(m_ui->yawInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setYawReversed(bool)));
     connect(m_ui->throttleInvertCheckBox, SIGNAL(clicked(bool)), this->joystick, SLOT(setThrustReversed(bool)));
 
