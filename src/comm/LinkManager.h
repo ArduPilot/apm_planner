@@ -112,7 +112,27 @@ public:
     void setLogSubDirectory(QString dir);
     bool loggingEnabled();
     UASObject *getUasObject(int uasid);
-    QMap<int,UASObject*> m_uasObjectMap;
+    QMap<int,UASObject*> m_uasObjectMap; // [TODO] make private
+
+signals:
+    //void newLink(LinkInterface* link);
+    void newLink(int linkid);
+    void protocolStatusMessage(QString title,QString text);
+    void linkChanged(int linkid);
+    void linkError(int linkid, QString message);
+
+public slots:
+    void messageReceived(LinkInterface* link,mavlink_message_t message);
+    void protocolStatusMessageRec(QString title,QString text);
+    void enableLogging(bool enabled);
+    void reloadSettings();
+
+private slots:
+    void linkConnected(LinkInterface* link);
+    void linkDisonnected(LinkInterface* link);
+    void linkErrorRec(LinkInterface* link,QString error);
+    void linkTimeoutTriggered(LinkInterface*);
+
 private:
     QMap<int,LinkInterface*> m_connectionMap;
     QMap<int,UASInterface*> m_uasMap;
@@ -121,21 +141,6 @@ private:
     MAVLinkProtocol *m_mavlinkProtocol;
     QString m_logSubDir;
     bool m_mavlinkLoggingEnabled;
-signals:
-    //void newLink(LinkInterface* link);
-    void newLink(int linkid);
-    void protocolStatusMessage(QString title,QString text);
-    void linkChanged(int linkid);
-    void linkError(int linkid, QString message);
-private slots:
-    void linkConnected(LinkInterface* link);
-    void linkDisonnected(LinkInterface* link);
-    void linkErrorRec(LinkInterface* link,QString error);
-    void linkTimeoutTriggered(LinkInterface*);
-public slots:
-    void messageReceived(LinkInterface* link,mavlink_message_t message);
-    void protocolStatusMessageRec(QString title,QString text);
-    void enableLogging(bool enabled);
 };
 
 #endif // LINKMANAGER_H

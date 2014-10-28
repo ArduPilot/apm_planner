@@ -37,9 +37,12 @@ This file is part of the APM_PLANNER project
 #include "UASManager.h"
 #include "UDPLink.h"
 #include "TCPLink.h"
+#include "UASObject.h"
+
 #include <QSettings>
 #include <QtSerialPort/qserialportinfo.h>
-#include "UASObject.h"
+#include <QTimer>
+
 LinkManager::LinkManager(QObject *parent) :
     QObject(parent)
 {
@@ -49,6 +52,12 @@ LinkManager::LinkManager(QObject *parent) :
     m_mavlinkProtocol->setConnectionManager(this);
     connect(m_mavlinkProtocol,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
     connect(m_mavlinkProtocol,SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
+
+    QTimer::singleShot(500, this, SLOT(reloadSettings()));
+}
+
+void LinkManager::reloadSettings()
+{
     loadSettings();
     //Check to see if we have a single serial and single UDP connection, since they are the defaults
 
@@ -334,6 +343,7 @@ void LinkManager::removeLink(LinkInterface *link)
 {
    // This is called with a LINK_ID not an interface. needs mor rework
     //This function is not yet supported, it will be once we support multiple MAVs
+    Q_ASSERT(link == NULL); // This shoud not be called, assert if it anything but NULL
 }
 
 void LinkManager::removeLink(int linkId)
