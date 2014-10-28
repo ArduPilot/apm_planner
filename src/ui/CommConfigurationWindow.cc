@@ -60,11 +60,13 @@ This file is part of the QGROUNDCONTROL project
 
 CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* protocol, QWidget *parent) : QDialog(parent)
 {
-    setWindowFlags(Qt::WindowStaysOnTopHint);
     this->m_linkid = linkid;
 
     // Setup the user interface according to link type
     ui.setupUi(this);
+
+    setWindowFlags(Qt::Dialog);
+    this->setWindowModality(Qt::WindowModal);
 
     // Initialize basic ui state
 

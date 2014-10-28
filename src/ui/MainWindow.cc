@@ -1840,7 +1840,7 @@ void MainWindow::addLink(int linkid)
             return;
         }
     }
-    CommConfigurationWindow* commWidget = new CommConfigurationWindow(linkid, 0, NULL);
+    CommConfigurationWindow* commWidget = new CommConfigurationWindow(linkid, 0, this);
     commsWidgetList.append(commWidget);
     connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
     QAction* action = commWidget->getAction();
