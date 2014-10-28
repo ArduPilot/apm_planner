@@ -99,8 +99,6 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
 
-    populateSerialPorts();
-
     addButtonStyleSheet(ui.roverPushButton);
     addButtonStyleSheet(ui.planePushButton);
     addButtonStyleSheet(ui.copterPushButton);
@@ -115,6 +113,8 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     m_timer = new QTimer(this);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+
+    QTimer::singleShot(1000, this, SLOT(populateSerialPorts()));
 
     updateFirmwareButtons();
 }
