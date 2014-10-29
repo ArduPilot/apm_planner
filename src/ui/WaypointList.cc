@@ -206,6 +206,7 @@ void WaypointList::saveWaypoints()
 {
     QFileDialog *dialog = new QFileDialog(this,tr("Save File"), QGC::appDataDirectory() + "/mission.txt", tr("Waypoint File (*.txt)"));
     dialog->setFileMode(QFileDialog::AnyFile);
+    dialog->setAcceptMode(QFileDialog::AcceptSave);
     connect(dialog,SIGNAL(accepted()),this,SLOT(saveWaypointsDialogAccepted()));
     dialog->show();
 }
