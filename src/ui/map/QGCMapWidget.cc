@@ -746,9 +746,7 @@ void QGCMapWidget::updateWaypoint(int uas, Waypoint* wp)
             // We're good, this is a global waypoint
 
             // Get the index of this waypoint
-            // note the call to getGlobalFrameAndNavTypeIndexOf()
-            // as we're only handling global waypoints
-            int wpindex = currWPManager->getGlobalFrameAndNavTypeIndexOf(wp);
+            int wpindex = currWPManager->getIndexOf(wp);
             // If not found, return (this should never happen, but helps safety)
             if (wpindex < 0) return;
             // Mark this wp as currently edited
