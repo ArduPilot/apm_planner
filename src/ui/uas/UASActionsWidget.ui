@@ -368,6 +368,9 @@
         <property name="text">
          <string>Stabilize</string>
         </property>
+        <property name="shortcut">
+         <string>Meta+Shift+S</string>
+        </property>
         <property name="checkable">
          <bool>true</bool>
         </property>
@@ -401,6 +404,9 @@
         <property name="text">
          <string>Loiter</string>
         </property>
+        <property name="shortcut">
+         <string>Meta+Shift+L</string>
+        </property>
         <property name="checkable">
          <bool>true</bool>
         </property>
@@ -432,6 +438,9 @@
         </property>
         <property name="text">
          <string>RTL</string>
+        </property>
+        <property name="shortcut">
+         <string>Meta+Shift+R</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
