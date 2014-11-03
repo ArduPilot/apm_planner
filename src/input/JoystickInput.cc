@@ -145,7 +145,7 @@ void JoystickInput::init()
                  << ", Linked against SDL" << QString("%1.%2.%3").arg(sdlLinkedVersion.major).arg(sdlLinkedVersion.minor).arg(sdlLinkedVersion.patch);
 
     // Wait for joystick if none is connected
-    while (!done)
+    while (done == 0)
     {
         int numJoysticks = SDL_NumJoysticks();
         if (numJoysticks == 0)
@@ -154,7 +154,7 @@ void JoystickInput::init()
 
             SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
             QGC::SLEEP::msleep(1000);
-            if (done)
+            if (done != 0)
                 break;
             if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
             {
@@ -322,7 +322,7 @@ void JoystickInput::run()
         return;
     }
 
-    while (!done)
+    while (done == 0)
     {
 #if 0
         // SDL_WaitEventTimeout() seems to lock up when axis 2 is
@@ -344,7 +344,7 @@ void JoystickInput::run()
 
             case SDL_QUIT:
                 QLOG_TRACE() << "SDL_QUIT";
-                done = true;
+                done = 1;
                 break;
 
             case SDL_JOYBUTTONDOWN:
@@ -448,7 +448,7 @@ void JoystickInput::run()
         QGC::SLEEP::msleep(20);
 #endif
 
-        if (done)
+        if (done != 0)
             break;
 
         // signal rate set to 10Hz (100ms)
