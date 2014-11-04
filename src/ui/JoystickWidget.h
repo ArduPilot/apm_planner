@@ -32,7 +32,9 @@ This file is part of the PIXHAWK project
 #define JOYSTICKWIDGET_H
 
 #include <QtWidgets/QDialog>
+
 #include "JoystickInput.h"
+#include "UASInterface.h"
 
 namespace Ui
 {
@@ -57,18 +59,19 @@ public slots:
      * @param thrust Thrust, 0%: 0, 100%: 65535
      * @param xHat hat vector in forward-backward direction, +1 forward, 0 center, -1 backward
      * @param yHat hat vector in left-right direction, -1 left, 0 center, +1 right
+     * @param buttons bitmask of pressed buttons
      */
-    void updateJoystick(double roll, double pitch, double yaw, double thrust, int xHat, int yHat);
+    void updateJoystick(double roll, double pitch, double yaw, double thrust, int xHat, int yHat, int buttons);
     /** @brief Throttle lever */
-    void setThrottle(float thrust);
+    void setThrottle(double thrust);
     /** @brief Back/forth movement */
-    void setX(float x);
+    void setX(double x);
     /** @brief Left/right movement */
-    void setY(float y);
+    void setY(double y);
     /** @brief Wrist rotation */
-    void setZ(float z);
+    void setZ(double z);
     /** @brief Hat switch position */
-    void setHat(float x, float y);
+    void setHat(int x, int y);
     /** @brief Clear keys */
     void clearKeys();
     /** @brief Joystick keys, as labeled on the joystick */
@@ -76,13 +79,20 @@ public slots:
     /** @brief Update status string */
     void updateStatus(const QString& status);
 
+protected slots:
+
+    void joystickSelected(const QString&);
+    void joystickEnabled(bool);
+
+    void activeUASSet(UASInterface*);
+
 protected:
     /** @brief UI change event */
     virtual void changeEvent(QEvent *e);
-    JoystickInput* joystick;  ///< Reference to the joystick
 
 private:
     Ui::JoystickWidget *m_ui;
+    JoystickInput* joystick;  ///< Reference to the joystick
 };
 
 #endif // JOYSTICKWIDGET_H

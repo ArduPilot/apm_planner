@@ -388,6 +388,14 @@ MainWindow::~MainWindow()
         mavlink = NULL;
     }*/
 
+
+    if (joystickWidget)
+    {
+        QLOG_DEBUG() << "Delete JoystickWidget";
+
+        delete joystickWidget;
+        joystickWidget = NULL;
+    }
     if (joystick)
     {
         joystick->shutdown();
@@ -1682,8 +1690,6 @@ void MainWindow::connectCommonActions()
     // configuration widget is not instantiated
     // unless it is actually used
     // so no ressources spend on this.
-    //Joystick is disabled until we can ensure it's operational.
-    ui.actionJoystickSettings->setVisible(false);
 
     // Configuration
     // Joystick
