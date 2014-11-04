@@ -26,13 +26,15 @@ This file is part of the APM_PLANNER project
 #include "UASManager.h"
 #include <QMessageBox>
 
+#include <math.h>
+
 #define LDD_COLUMN_ID 0
 #define LDD_COLUMN_TIME 1
 #define LDD_COLUMN_SIZE 2
 #define LDD_COLUMN_CHECKBOX 3
 #define LOG_EXT QString(".bin")
 
-static const uint LOG_PACKET_SIZE = 90;
+static const uint32_t LOG_PACKET_SIZE = 90;
 static const int LOG_RETRY_TIMER = 700; //msecs
 
 LogDownloadDescriptor::LogDownloadDescriptor(uint logID, uint time_utc,
@@ -160,7 +162,6 @@ void LogDownloadDialog::setActiveUAS(UASInterface *uas)
     m_uas = uas;
     setWindowTitle(tr("Log Download from MAV%1").arg(m_uas->getUASID()));
     ui->refreshPushButton->setEnabled(true);
-    ui->getPushButton->setEnabled(true);
     makeConnections(uas);
 }
 
@@ -247,46 +248,47 @@ void LogDownloadDialog::triggerNextDownloadRequest()
 
 void LogDownloadDialog::issueDownloadRequest()
 {
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 2000);
         // Open a file for the log to be downloaded
-        m_downloadFile = new QFile(QGC::logDirectory() +"/" + m_downloadFilename);
+    m_downloadFile = new QFile(QGC::logDirectory() +"/" + m_downloadFilename);
 
-        // Append a number to the end if the filename already exists
-        if(m_downloadFile->exists()){
-            uint num_dups = 0;
-            QStringList filename_spl = m_downloadFile->fileName().split('.');
-            if (filename_spl.size()>0)
-            {
-                while(m_downloadFile->exists()){
-                    num_dups ++;
-                    m_downloadFile->setFileName(filename_spl[0] + '_' + QString::number(num_dups) + '.' + filename_spl[1]);
-                }
-            }
-            else
-            {
-                // Filename does not have an extension, avoid a crash and append a number on the end
-                // This can not (currently) happen at runtime unless either a define goes away, or the code is otherwise broken elsewhere, but better safe with an error
-                // in the log than sorry with a crash report.
-                QLOG_ERROR() << "Download filename is not properly formatted!" << m_downloadFile->fileName();
-                QLOG_ERROR() << "The above should NEVER happen, please file a bug report with this log!";
-                QString filename_orig = m_downloadFile->fileName();
-                while(m_downloadFile->exists()){
-                    num_dups ++;
-                    m_downloadFile->setFileName(filename_orig + '_' + QString::number(num_dups));
-                }
+    // Append a number to the end if the filename already exists
+    if(m_downloadFile->exists()){
+        uint num_dups = 0;
+        QStringList filename_spl = m_downloadFile->fileName().split('.');
+        if (filename_spl.size()>0)
+        {
+            while(m_downloadFile->exists()){
+                num_dups ++;
+                m_downloadFile->setFileName(filename_spl[0] + '_' + QString::number(num_dups) + '.' + filename_spl[1]);
             }
         }
-        if(m_downloadFile && m_downloadFile->open(QIODevice::WriteOnly)){
-            QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename << " size:" << m_downloadMaxSize;
-            Q_ASSERT(m_downloadOffset == 0);
-            m_lastDownloadOffset = 0;
-            m_uas->logRequestData(m_downloadID, m_downloadOffset, LOG_PACKET_SIZE);
-            updateProgress();
-            m_downloadStart.start();
-            m_timer.start(LOG_RETRY_TIMER);
-            m_downloadSet = new QSet<uint>();
-        } else {
-            QLOG_ERROR() << "failed to open file to save log:" << m_downloadFilename;
+        else
+        {
+            // Filename does not have an extension, avoid a crash and append a number on the end
+            // This can not (currently) happen at runtime unless either a define goes away, or the code is otherwise broken elsewhere, but better safe with an error
+            // in the log than sorry with a crash report.
+            QLOG_ERROR() << "Download filename is not properly formatted!" << m_downloadFile->fileName();
+            QLOG_ERROR() << "The above should NEVER happen, please file a bug report with this log!";
+            QString filename_orig = m_downloadFile->fileName();
+            while(m_downloadFile->exists()){
+                num_dups ++;
+                m_downloadFile->setFileName(filename_orig + '_' + QString::number(num_dups));
+            }
         }
+    }
+    if(m_downloadFile && m_downloadFile->open(QIODevice::WriteOnly)){
+        QLOG_INFO() << "Log file ready for writing:" << m_downloadFilename << " size:" << m_downloadMaxSize;
+        Q_ASSERT(m_downloadOffset == 0);
+        m_lastDownloadOffset = 0;
+        m_uas->logRequestData(m_downloadID, m_downloadOffset, LOG_PACKET_SIZE);
+        updateProgress();
+        m_downloadStart.start();
+        m_timer.start(LOG_RETRY_TIMER);
+        m_downloadSet = new QSet<uint>();
+    } else {
+        QLOG_ERROR() << "failed to open file to save log:" << m_downloadFilename;
+    }
 }
 
 
@@ -325,11 +327,15 @@ void LogDownloadDialog::logEntry(int uasId, uint32_t time_utc, uint32_t size, ui
     item->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
     item->setCheckState(Qt::Checked);
     ui->tableWidget->setItem(rowCount, LDD_COLUMN_CHECKBOX, item);
+
+    if (last_log_num == id)
+        ui->getPushButton->setEnabled(true);
 }
 
 void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
                                      uint8_t count, const char *data)
 {
+    Q_UNUSED(id);
 //#define SIMULATE_PACKET_LOSS
 #ifdef SIMULATE_PACKET_LOSS
     QLOG_DEBUG() << "logData ofs:" << ofs << " id:" << id << " count:" << count
@@ -351,6 +357,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
     }
 #endif
     if (ofs != m_downloadOffset){
+        QLOG_DEBUG() << "missed packet: seek to " << ofs;
         m_downloadFile->seek(ofs);
         m_downloadOffset = ofs;
         updateProgress();
@@ -364,12 +371,13 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
             // [TODO] Abort.
         }
         m_downloadFile->flush();
-        m_downloadSet->insert(ofs / LOG_PACKET_SIZE);
+        m_downloadSet->insert(static_cast<uint>(floor(ofs / LOG_PACKET_SIZE)));
         m_downloadOffset += count;
         updateProgress();
     }
     m_downloadLastTimestamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
-    if ( count==0 || (count<LOG_PACKET_SIZE && (m_downloadSet->count() == 1+(ofs/LOG_PACKET_SIZE))) ){
+    if ( count==0 || (count<LOG_PACKET_SIZE
+                      && (static_cast<uint>(m_downloadSet->count()) == 1+(static_cast<uint>( floor(ofs / LOG_PACKET_SIZE) ))))){
         double dt = m_downloadStart.elapsed()/1000.0;
         double speed = (static_cast<double>(m_downloadFile->size())/dt)/1000.0;
         QLOG_INFO() << "Finished downloading "<< m_downloadFilename
@@ -396,6 +404,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
             return;
         }
         m_downloadFile->close();
+        QCoreApplication::processEvents();
         ui->progressBar->setValue(m_downloadMaxSize);
         if (!(m_downloadCount == m_downloadCountMax)){
             m_downloadCount++;
@@ -407,6 +416,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
             resetDownload();
         }
     }
+    QCoreApplication::processEvents();
 }
 
 void LogDownloadDialog::processDownloadedLogData()
@@ -450,8 +460,10 @@ void LogDownloadDialog::processDownloadedLogData()
             num_requests +=1;
             if(diff.size() == 0)
                 break;
+            QCoreApplication::processEvents();
         }
     }
+    QCoreApplication::processEvents();
 }
 
 void LogDownloadDialog::updateProgress()
