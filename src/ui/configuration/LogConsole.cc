@@ -175,8 +175,6 @@ void Worker::onLineRead(char *data) {
 
 void Worker::readData() {
     char line[256];
-    QWaitCondition waitCondition;
-    QMutex mutex;
 
     while(m_port->canReadLine() && m_run) {
         int len = m_port->readLine(line, 256);
@@ -189,10 +187,6 @@ void Worker::readData() {
         else {
             onLineRead(line);
         }
-
-        // Oddly, this seems necessary.
-        // It segfaults otherwise.
-        waitCondition.wait(&mutex, 2);
 
         if(!m_run) {
             onCancel();
