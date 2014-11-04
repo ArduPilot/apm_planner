@@ -58,15 +58,17 @@ This file is part of the QGROUNDCONTROL project
 #include <QBoxLayout>
 #include <QWidget>
 
-CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* protocol, QWidget *parent) : QDialog(parent)
+CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* protocol, QWidget *parent)
+    : QDialog(parent),
+      m_linkid(linkid)
+
 {
-    this->m_linkid = linkid;
+    Q_UNUSED(protocol);
 
     // Setup the user interface according to link type
     ui.setupUi(this);
 
-    setWindowFlags(Qt::Dialog);
-    this->setWindowModality(Qt::WindowModal);
+    setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
 
     // Initialize basic ui state
 
