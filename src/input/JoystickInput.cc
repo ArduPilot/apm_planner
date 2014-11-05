@@ -16,9 +16,11 @@
 #include "QGC.h"
 
 #include <mavlink.h>
-
+#ifdef Q_OS_MAC
 #include <SDL_revision.h>
-
+#else
+#include <SDL2/SDL_revision.h>
+#endif
 #include <limits.h>
 #include <QMutexLocker>
 #include <QSettings>

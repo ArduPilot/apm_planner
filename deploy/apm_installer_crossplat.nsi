@@ -113,7 +113,7 @@ Section "APM Planner 2 files" APM_FILES
   ;File /r ..\libs\mavlink
   ;File /r ..\files
   SetOutPath $INSTDIR
-  File ../libs/lib/sdl/win32/SDL.dll
+  File ../libs/lib/sdl/win32/SDL2.dll
   File ../libs/thirdParty/libxbee/lib/libxbee.dll
   SetOutPath $INSTDIR\avrdude
   File ../avrdude/avrdude.exe
@@ -229,7 +229,7 @@ Section "Uninstall"
   !include qt_uninstall.list
   !include qt_uninstall_qml.list
   Delete $INSTDIR\apmplanner2.exe
-  Delete $INSTDIR\SDL.dll
+  Delete $INSTDIR\SDL2.dll
   Delete $INSTDIR\libxbee.dll
   Delete $INSTDIR\APMPlanner2_uninstall.exe
 

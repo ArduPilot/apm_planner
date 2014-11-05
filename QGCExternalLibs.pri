@@ -449,8 +449,8 @@ MacBuild {
 
 LinuxBuild {
 	LIBS += \
-		-lSDL \
-		-lSDLmain
+        -lSDL2 \
+        -lSDL2main
 }
 
 WindowsBuild {
@@ -459,8 +459,8 @@ WindowsBuild {
 
 	LIBS += \
         -L$$BASEDIR/libs/lib/sdl/msvc/lib \
-        -lSDLmain \
-        -lSDL
+        -lSDL2main \
+        -lSDL2
 }
 
 WindowsCrossBuild {
@@ -469,7 +469,7 @@ WindowsCrossBuild {
 
         LIBS += \
         -Llibs/lib/sdl/win32 \
-        -lSDL.dll
+        -lSDL2.dll
 }
 
 #

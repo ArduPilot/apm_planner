@@ -39,7 +39,7 @@ This file is part of the PIXHAWK project
 #ifdef Q_OS_MAC
 #include <SDL.h>
 #else
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #endif
 
 #include "UASInterface.h"

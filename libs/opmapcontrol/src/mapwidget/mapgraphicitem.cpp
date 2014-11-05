@@ -556,7 +556,8 @@ namespace mapcontrol
         {
             if (value-core->Zoom() > 2)
             {
-                ConstructLastImage(2);
+                //ConstructLastImage(2);
+                lastimage = QImage();
             }
             else
             {
