@@ -56,7 +56,7 @@ sudo apt-get update
 sudo apt-get install git qt5-qmake qt5-default \
   qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
   libqt5svg5-dev libsdl1.2-dev  libsndfile-dev \
-  flite1-dev libssl-dev libudev-dev
+  flite1-dev libssl-dev libudev-dev libsdl2-dev
 ```
 
 2) Clone the repository in your workspace:
