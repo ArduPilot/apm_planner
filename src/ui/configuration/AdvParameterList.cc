@@ -577,8 +577,10 @@ void AdvParameterList::resetButtonClicked()
     }
     if (QMessageBox::question(this,"Warning","You are about to reset ALL EEPROM settings to their defaults and REBOOT the vehicle. Are you absolutely sure you want to do this?",QMessageBox::Yes,QMessageBox::No) == QMessageBox::Yes)
     {
-        m_uas->setParameter(0,"FORMAT_VERSION",0);
-        m_uas->reboot();
+        m_uas->setParameter(0,"FORMAT_VERSION",0); // Plane
+        m_uas->setParameter(0,"SYSID_SW_MREV",0); // Copter
+        QTimer::singleShot(1000,m_uas, SLOT(reboot()));
+        QMessageBox::information(this,"Reboot","Please power cycle your autopilot");
     }
     else
     {
