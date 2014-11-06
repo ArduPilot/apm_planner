@@ -99,6 +99,8 @@ private slots:
 
 private:
     void cleanup();
+    void readSettings();
+    void writeSettings();
 
 private:
     Ui::CompassConfig ui;

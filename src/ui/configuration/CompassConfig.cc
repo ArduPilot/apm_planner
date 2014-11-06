@@ -108,6 +108,27 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     connect(ui.compassMotButton, SIGNAL(clicked()), this, SLOT(showCompassMotorCalibrationDialog()));
 
+    readSettings();
+}
+
+void CompassConfig::readSettings()
+{
+    // Load defaults from settings
+    QSettings settings;
+    settings.beginGroup("COMPASS");
+    m_compatibilityMode = settings.value("COMPATIBILITY_MODE", false).toBool();
+    settings.endGroup();
+    settings.sync();
+}
+
+void CompassConfig::writeSettings()
+{
+    // Load defaults from settings
+    QSettings settings;
+    settings.beginGroup("COMPASS");
+    settings.setValue("COMPATIBILITY_MODE", m_compatibilityMode);
+    settings.endGroup();
+    settings.sync();
 }
 
 void CompassConfig::activeUASSet(UASInterface *uas)
@@ -147,6 +168,7 @@ void CompassConfig::degreeEditFinished()
 
 CompassConfig::~CompassConfig()
 {
+    writeSettings();
     delete m_timer;
     delete m_progressDialog;
     m_rawImuList.clear();
