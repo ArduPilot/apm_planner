@@ -81,6 +81,11 @@ void UASControlWidget::setUAS(UASInterface* uas)
         disconnect(uas, SIGNAL(modeChanged(int,QString,QString)), this, SLOT(updateMode(int,QString,QString)));
         disconnect(uas, SIGNAL(statusChanged(int)), this, SLOT(updateState(int)));
     }
+    if (uas == 0)
+    {
+        this->uas = 0;
+        return;
+    }
 
     // Connect user interface controls
     connect(ui.controlButton, SIGNAL(clicked()), this, SLOT(cycleContextButton()));

@@ -38,7 +38,7 @@ This file is part of the APM_PLANNER project
 #include "UDPLink.h"
 #include "TCPLink.h"
 #include "UASObject.h"
-
+#include <QApplication>
 #include <QSettings>
 #include <QtSerialPort/qserialportinfo.h>
 #include <QTimer>
@@ -596,6 +596,15 @@ QList<int> LinkManager::getLinks()
         links.append(m_connectionMap.value(m_connectionMap.keys().at(i))->getId());
     }
     return links;
+}
+void LinkManager::addSimObject(uint8_t sysid,UASObject *obj)
+{
+    m_uasObjectMap[sysid] = obj;
+    obj->moveToThread(QApplication::instance()->thread());
+}
+void LinkManager::removeSimObject(uint8_t sysid)
+{
+    m_uasObjectMap.remove(sysid);
 }
 
 UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent)

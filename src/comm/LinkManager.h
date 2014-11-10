@@ -114,6 +114,9 @@ public:
     UASObject *getUasObject(int uasid);
     QMap<int,UASObject*> m_uasObjectMap; // [TODO] make private
 
+    void addSimObject(uint8_t sysid,UASObject *obj);
+    void removeSimObject(uint8_t sysid);
+
 signals:
     //void newLink(LinkInterface* link);
     void newLink(int linkid);

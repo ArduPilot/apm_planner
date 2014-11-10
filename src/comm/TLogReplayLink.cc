@@ -225,6 +225,8 @@ void TLogReplayLink::run()
                             uas = mav;
                             // Make UAS aware that this link can be used to communicate with the actual robot
                             uas->addLink(this);
+                            UASObject *obj = new UASObject();
+                            LinkManager::instance()->addSimObject(message.sysid,obj);
 
                             // Now add UAS to "official" list, which makes the whole application aware of it
                             UASManager::instance()->addUAS(uas);
@@ -284,6 +286,7 @@ void TLogReplayLink::run()
     {
         m_toBeDeleted = true;
     }
+    LinkManager::instance()->removeSimObject(UASManager::instance()->getActiveUAS()->getSystemId());
     MainWindow::instance()->toolBar().overrideDisableConnectWidget(false);
     MainWindow::instance()->toolBar().disableConnectWidget(false);
     emit disconnected(this);
