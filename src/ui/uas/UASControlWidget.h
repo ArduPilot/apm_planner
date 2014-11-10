@@ -75,9 +75,9 @@ protected slots:
     void setBackgroundColor(QColor color);
 
 protected:
-    int uas;              ///< Reference to the current uas
-    unsigned int uasMode; ///< Current uas mode
-    bool engineOn;        ///< Engine state
+    int m_uas;              ///< Reference to the current uas
+    unsigned int m_uasMode; ///< Current uas mode
+    bool m_engineOn;        ///< Engine state
 
 private:
     Ui::uasControl ui;
