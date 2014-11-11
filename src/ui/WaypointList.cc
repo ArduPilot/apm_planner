@@ -204,9 +204,12 @@ void WaypointList::setUAS(UASInterface* uas)
 
 void WaypointList::saveWaypoints()
 {
-    QFileDialog *dialog = new QFileDialog(this,tr("Save File"), QGC::appDataDirectory() + "/mission.txt", tr("Waypoint File (*.txt)"));
-    dialog->setFileMode(QFileDialog::AnyFile);
+    QFileDialog *dialog = new QFileDialog(this,tr("Save File"), QGC::missionDirectory());
     dialog->setAcceptMode(QFileDialog::AcceptSave);
+    dialog->setNameFilter("*.txt");
+    dialog->selectFile("mission.txt");
+    dialog->open(this, SLOT(saveDialogAccepted()));
+    dialog->setFileMode(QFileDialog::AnyFile);
     connect(dialog,SIGNAL(accepted()),this,SLOT(saveWaypointsDialogAccepted()));
     dialog->show();
 }
@@ -227,7 +230,7 @@ void WaypointList::saveWaypointsDialogAccepted()
 
 void WaypointList::loadWaypoints()
 {
-    QFileDialog *dialog = new QFileDialog(this, tr("Load File"), QGC::appDataDirectory(), tr("Waypoint File (*.txt)"));
+    QFileDialog *dialog = new QFileDialog(this, tr("Load File"), QGC::missionDirectory(), tr("Waypoint File (*.txt)"));
     dialog->setFileMode(QFileDialog::ExistingFile);
     connect(dialog,SIGNAL(accepted()),this,SLOT(loadWaypointsDialogAccepted()));
     dialog->show();
