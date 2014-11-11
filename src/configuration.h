@@ -19,6 +19,7 @@
 #define APP_DATA_DIRECTORY "/apmplanner2"
 #define LOG_DIRECTORY "/dataflashLogs"
 #define PARAMETER_DIRECTORY "/parameters"
+#define MISSION_DIRECTORY "/missions"
 #define MAVLINK_LOG_DIRECTORY "/tlogs"
 #define MAVLINK_LOGFILE_EXT ".tlog"
 
@@ -103,6 +104,14 @@ const int APPLICATIONVERSION = 2015; // 2.0.15 [TODO] we should deprecate this v
 
     inline void setParameterDirectory(const QString& dir){
         GlobalObject::sharedInstance()->setParameterDirectory(dir);
+    }
+
+    inline QString missionDirectory(){
+        return GlobalObject::sharedInstance()->missionDirectory();
+    }
+
+    inline void setMissionDirectory(const QString& dir){
+        GlobalObject::sharedInstance()->setMissionDirectory(dir);
     }
 
     //Returns the absolute parth to the files, data, qml support directories

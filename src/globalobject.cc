@@ -34,6 +34,7 @@ void GlobalObject::loadSettings()
     m_logDirectory = settings.value("LOG_DIRECTORY", defaultLogDirectory()).toString();
     m_MAVLinklogDirectory = settings.value("MAVLINK_LOG_DIRECTORY", defaultMAVLinkLogDirectory()).toString();
     m_parameterDirectory = settings.value("PARAMETER_DIRECTORY", defaultParameterDirectory()).toString();
+    m_missionDirectory = settings.value("MISSION_DIRECTORY", defaultMissionDirectory()).toString();
 
     settings.endGroup();
 }
@@ -47,6 +48,7 @@ void GlobalObject::saveSettings()
     settings.setValue("MAVLINK_LOG_DIRECTORY", m_MAVLinklogDirectory);
     QLOG_DEBUG() << "save tlog dir to:" << m_MAVLinklogDirectory;
     settings.setValue("PARAMETER_DIRECTORY", m_parameterDirectory);
+    settings.setValue("MISSION_DIRECTORY", m_missionDirectory);
 
     settings.sync();
 }
@@ -161,6 +163,34 @@ void GlobalObject::setParameterDirectory(const QString &dir)
     QLOG_DEBUG() << "Set param dir to:" << dir;
     m_parameterDirectory = dir;
 }
+
+//
+// Parameter Data Directory
+//
+
+QString GlobalObject::defaultMissionDirectory()
+{
+    QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QString missionDir = homeDir + APP_DATA_DIRECTORY + MISSION_DIRECTORY;
+    makeDirectory(missionDir);
+    return missionDir;
+}
+
+QString GlobalObject::missionDirectory()
+{
+    makeDirectory(m_missionDirectory);
+    return m_missionDirectory;
+}
+
+void GlobalObject::setMissionDirectory(const QString &dir)
+{
+    QLOG_DEBUG() << "Set mission dir to:" << dir;
+    m_missionDirectory = dir;
+}
+
+//
+// Share Directory
+//
 
 QString GlobalObject::shareDirectory()
 {

@@ -64,6 +64,10 @@ public:
     QString parameterDirectory();
     void setParameterDirectory(const QString &dir);
 
+    QString defaultMissionDirectory();
+    QString missionDirectory();
+    void setMissionDirectory(const QString &dir);
+
     QString shareDirectory();
 
 private:
@@ -73,6 +77,7 @@ private:
     QString m_logDirectory;
     QString m_MAVLinklogDirectory;
     QString m_parameterDirectory;
+    QString m_missionDirectory;
 
 };
 
