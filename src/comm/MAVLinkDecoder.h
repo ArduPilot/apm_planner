@@ -50,6 +50,10 @@ class MAVLinkDecoder : public QObject
 public:
     MAVLinkDecoder(QObject *parent=0);
     void passManager(ConnectionManager *manager) { m_connectionManager = manager; }
+    mavlink_field_info_t getFieldInfo(QString msgname,QString fieldname);
+    QList<QString> getFieldList(QString msgname);
+    QString getMessageName(uint8_t msgid);
+    quint64 getUnixTimeFromMs(int systemID, quint64 time);
 private:
     int getSystemId() { return 252; }
     int getComponentId() { return 1; }
@@ -65,7 +69,7 @@ private:
     QMap<int,qint64> totalLossCounter;
     QMap<int,qint64> currLossCounter;
     bool m_multiplexingEnabled;
-    quint64 getUnixTimeFromMs(int systemID, quint64 time);
+
     QMap<int,int> componentID;
     QMap<int,bool> componentMulti;
     QMap<uint16_t, bool> messageFilter;               ///< Message/field names not to emit
@@ -84,9 +88,9 @@ signals:
     void textMessageReceived(int uasid, int componentid, int severity, const QString& text);
     void receiveLossChanged(int id,float value);
 public slots:
-    void receiveMessage(LinkInterface* link, mavlink_message_t message);
+    QList<QPair<QString,QVariant> > receiveMessage(LinkInterface* link, mavlink_message_t message);
     void sendMessage(mavlink_message_t msg);
-    void emitFieldValue(mavlink_message_t* msg, int fieldid, quint64 time);
+    QPair<QString,QVariant> emitFieldValue(mavlink_message_t* msg, int fieldid, quint64 time);
 };
 
 #endif // NEW_MAVLINKDECODER_H

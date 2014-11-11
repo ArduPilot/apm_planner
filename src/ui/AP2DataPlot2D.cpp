@@ -713,6 +713,8 @@ void AP2DataPlot2D::loadButtonClicked()
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
         m_currentIndex = QDateTime::currentMSecsSinceEpoch();
         m_startIndex = m_currentIndex;
+        m_sharedDb.close();
+        QSqlDatabase::removeDatabase("QSQLITE");
         return;
     }
     QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");

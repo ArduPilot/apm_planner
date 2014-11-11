@@ -21,8 +21,10 @@ AP2DataPlot2DModel::AP2DataPlot2DModel(QSqlDatabase *db,QObject *parent) :
     while (query.next())
     {
         QString name = query.value("value").toString();
-        m_rowToTableMap.insert(query.value("idx").toInt(),name);
-        m_rowCount++;
+        //m_rowToTableMap.insert(query.value("idx").toInt(),name);
+        quint64 idx = query.value("idx").toLongLong();
+
+        m_rowToTableMap.insert(m_rowCount,QPair<quint64,QString>(idx,name));
         QSqlQuery fmtquery(*m_sharedDb);
         if (!m_headerStringList.contains(name))
         {
@@ -49,6 +51,7 @@ AP2DataPlot2DModel::AP2DataPlot2DModel(QSqlDatabase *db,QObject *parent) :
                 m_fmtStringList.append(list);
             }
         }
+        m_rowCount++;
     }
 
     //"INSERT INTO 'FMT' (idx,typeid,length,name,format,val)
@@ -113,10 +116,16 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
     {
         return QVariant();
     }
-    QString tablename = m_rowToTableMap.value(index.row());
+    QString tablename = m_rowToTableMap.value(index.row()).second;
+    quint64 tableindex = m_rowToTableMap.value(index.row()).first;
     QSqlQuery tablequery(*m_sharedDb);
-    tablequery.prepare("SELECT * FROM '" + tablename + "' WHERE idx = " + QString::number(index.row()));
-    tablequery.exec();
+    QString val = QString::number(tableindex,'f',0);
+    tablequery.prepare("SELECT * FROM " + tablename + " WHERE idx = " + val);
+    if (!tablequery.exec())
+    {
+        qDebug() << "Unable to exec table query:" << tablequery.lastError().text();
+        return QVariant();
+    }
     if (!tablequery.next())
     {
         return QVariant();
@@ -144,10 +153,10 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
     m_currentRow = current.row();
     //Grab the index
     int rowid = data(createIndex(current.row(),0)).toString().toInt();
-    qDebug() << "row id:" << rowid << "current:" << current.row();
+
     if (m_rowToTableMap.contains(rowid))
     {
-        m_currentHeaderItems = m_headerStringList.value(m_rowToTableMap[rowid]);
+        m_currentHeaderItems = m_headerStringList.value(m_rowToTableMap[rowid].second);
     }
     else
     {

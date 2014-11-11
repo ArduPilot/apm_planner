@@ -16,7 +16,7 @@ public:
 private:
     QSqlDatabase *m_sharedDb;
     int m_rowCount;
-    QMap<int,QString> m_rowToTableMap;
+    QMap<int,QPair<quint64,QString> > m_rowToTableMap;
     int m_currentRow;
     QMap<QString,QList<QString> > m_headerStringList;
     QList<QString> m_currentHeaderItems;

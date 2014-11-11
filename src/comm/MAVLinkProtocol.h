@@ -58,7 +58,11 @@ public:
     void stopLogging();
     bool startLogging(const QString& filename);
     bool loggingEnabled() { return m_loggingEnabled; }
+    void setOnline(bool isonline) { m_isOnline = isonline; }
 private:
+    QMap<quint64,mavlink_message_t> m_mavlinkMsgBuffer;
+    void handleMessage(quint64 timeid,LinkInterface *link);
+    bool m_isOnline;
     int getSystemId() { return 252; }
     int getComponentId() { return 1; }
     bool m_loggingEnabled;
