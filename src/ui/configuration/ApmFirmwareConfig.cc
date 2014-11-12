@@ -176,9 +176,11 @@ void ApmFirmwareConfig::populateSerialPorts()
             // on windows, the friendly name is annoyingly identical between devices. On OSX it's different
             // We also want to only display COM ports for PX4/Pixhawk, or arduino mega 2560's.
             // We also want to show FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
-            if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega") || \
-                    info.productIdentifier() == 0x6001 || info.productIdentifier() == 0x6010 || \
-                    info.productIdentifier() == 0x6014)
+            if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega") ||
+                    info.productIdentifier() == 0x0001 || info.productIdentifier() == 0x0003 ||
+                    info.productIdentifier() == 0x0010 || info.productIdentifier() == 0x0011 ||
+                    info.productIdentifier() == 0x0012 || info.productIdentifier() == 0x0013 ||
+                    info.productIdentifier() == 0x0014)
             {
                 ui.linkComboBox->insertItem(0,list[0], list);
             }
