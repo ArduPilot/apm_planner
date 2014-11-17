@@ -286,7 +286,12 @@ void TLogReplayLink::run()
     {
         m_toBeDeleted = true;
     }
-    LinkManager::instance()->removeSimObject(UASManager::instance()->getActiveUAS()->getSystemId());
+    LinkManager *lm = LinkManager::instance();
+    if (lm){
+        LinkManager::instance()->removeSimObject(UASManager::instance()->getActiveUAS()->getSystemId());
+    } else {
+        QLOG_ERROR() << "TLogReplayLink: failed to get Linkmanager instance";
+    }
     MainWindow::instance()->toolBar().overrideDisableConnectWidget(false);
     MainWindow::instance()->toolBar().disableConnectWidget(false);
     emit disconnected(this);
