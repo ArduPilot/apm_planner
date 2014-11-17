@@ -100,7 +100,7 @@ QPushButton:pressed {
      <property name="title">
       <string/>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,5,20,20,200,1,0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,5,0,0,0,0,1,0,0,0,0">
       <property name="spacing">
        <number>2</number>
       </property>
@@ -207,6 +207,22 @@ QPushButton:pressed {
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>3</width>
+          <height>0</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QComboBox" name="comboBox_frame">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -251,6 +267,12 @@ QPushButton:pressed {
           <height>0</height>
          </size>
         </property>
+        <zorder>comboBox_frame</zorder>
+        <zorder>comboBox_action</zorder>
+        <zorder>comboBox_action</zorder>
+        <zorder>comboBox_frame</zorder>
+        <zorder>comboBox_action</zorder>
+        <zorder>comboBox_frame</zorder>
        </widget>
       </item>
       <item>

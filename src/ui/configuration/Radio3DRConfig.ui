@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>853</width>
+    <width>889</width>
     <height>510</height>
    </rect>
   </property>
@@ -60,326 +60,601 @@
     <rect>
      <x>10</x>
      <y>70</y>
-     <width>321</width>
+     <width>361</width>
      <height>351</height>
     </rect>
    </property>
    <property name="title">
     <string>Local</string>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="6" column="3">
-     <widget class="QLabel" name="label_10">
-      <property name="text">
-       <string>LBT RSSI</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="3">
-     <widget class="QLabel" name="label_8">
-      <property name="text">
-       <string>Max Freq.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="1">
-     <widget class="QCheckBox" name="eccCheckBox">
-      <property name="text">
-       <string>ECC</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="label_14">
-      <property name="text">
-       <string>Net ID</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="4">
-     <widget class="QComboBox" name="minFreqComboBox"/>
-    </item>
-    <item row="8" column="3">
-     <widget class="QLabel" name="label_12">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Node Dest.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="4">
-     <widget class="QComboBox" name="nodeDestComboBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="4">
-     <widget class="QComboBox" name="nodeCountComboBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Format</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="3">
-     <widget class="QLabel" name="label_11">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Node ID</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="1">
-     <widget class="QCheckBox" name="opResendCheckBox">
-      <property name="text">
-       <string>Op Resend</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="3">
-     <widget class="QLabel" name="label_6">
-      <property name="text">
-       <string>Min Freq.</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_5">
-      <property name="text">
-       <string>Air Baud</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
-     <widget class="QLabel" name="label_17">
-      <property name="text">
-       <string>Tx Power</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="3">
-     <widget class="QLabel" name="label_9">
-      <property name="text">
-       <string># Channels</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="formatLineEdit">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QComboBox" name="airBaudComboBox"/>
-    </item>
-    <item row="9" column="2" colspan="2">
-     <widget class="QLabel" name="label_13">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Node Count</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QComboBox" name="txPowerComboBox"/>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_4">
-      <property name="text">
-       <string>Baud</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="4">
-     <widget class="QComboBox" name="maxFreqComboBox"/>
-    </item>
-    <item row="1" column="1" colspan="4">
-     <widget class="QTextEdit" name="rssiTextEdit">
-      <property name="html">
-       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>204</y>
+      <width>60</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>LBT RSSI</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>119</y>
+      <width>62</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max Freq.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="eccCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>83</x>
+      <y>231</y>
+      <width>53</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ECC</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>175</y>
+      <width>39</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Net ID</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="minFreqComboBox">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>88</y>
+      <width>70</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>70</width>
+      <height>16777215</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>260</y>
+      <width>64</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Node Dest.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="nodeDestComboBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>258</y>
+      <width>70</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="nodeCountComboBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>287</y>
+      <width>70</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>90</y>
+      <width>44</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Format</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>232</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Node ID</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="opResendCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>83</x>
+      <y>288</y>
+      <width>75</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Op Resend</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>90</y>
+      <width>59</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Min Freq.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>147</y>
+      <width>53</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Air Baud</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_17">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>204</y>
+      <width>58</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Tx Power</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>147</y>
+      <width>64</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string># Channels</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="formatLineEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>85</x>
+      <y>90</y>
+      <width>64</width>
+      <height>19</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="airBaudComboBox">
+    <property name="geometry">
+     <rect>
+      <x>82</x>
+      <y>145</y>
+      <width>70</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>70</width>
+      <height>16777215</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>159</x>
+      <y>289</y>
+      <width>74</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Node Count</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="txPowerComboBox">
+    <property name="geometry">
+     <rect>
+      <x>82</x>
+      <y>202</y>
+      <width>70</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>70</width>
+      <height>16777215</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>119</y>
+      <width>33</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Baud</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="maxFreqComboBox">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>117</y>
+      <width>70</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>70</width>
+      <height>16777215</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="rssiTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>85</x>
+      <y>62</y>
+      <width>222</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.Lucida Grande UI'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.Helvetica Neue DeskInterface'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Lucida Grande';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="4">
-     <widget class="QComboBox" name="nodeIdComboBox">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>RSSI</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QComboBox" name="baudComboBox"/>
-    </item>
-    <item row="5" column="3">
-     <widget class="QLabel" name="label_7">
-      <property name="text">
-       <string>Duty Cycle</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1" colspan="2">
-     <widget class="QLabel" name="versionLabel">
-      <property name="minimumSize">
-       <size>
-        <width>210</width>
-        <height>23</height>
-       </size>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_1">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>23</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Version</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QSpinBox" name="netIdSpinBox">
-      <property name="maximum">
-       <number>499</number>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="4">
-     <widget class="QSpinBox" name="dutyCycleSpinBox">
-      <property name="maximum">
-       <number>100</number>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="4">
-     <widget class="QSpinBox" name="lbtRssiSpinBox">
-      <property name="minimum">
-       <number>0</number>
-      </property>
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="4">
-     <widget class="QSpinBox" name="numChannelsSpinBox">
-      <property name="maximum">
-       <number>50</number>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="0">
-     <widget class="QLabel" name="label_32">
-      <property name="text">
-       <string>MAVLink</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="1">
-     <widget class="QComboBox" name="mavLinkComboBox"/>
-    </item>
-    <item row="10" column="1">
-     <widget class="QSpinBox" name="maxWindowSpinBox">
-      <property name="maximum">
-       <number>999</number>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="0">
-     <widget class="QLabel" name="label_34">
-      <property name="text">
-       <string>Max Win</string>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="4">
-     <widget class="QComboBox" name="rtsCtsComboBox"/>
-    </item>
-    <item row="10" column="3">
-     <widget class="QLabel" name="label_38">
-      <property name="text">
-       <string>HW Flow</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="nodeIdComboBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>230</y>
+      <width>70</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>62</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>RSSI</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="baudComboBox">
+    <property name="geometry">
+     <rect>
+      <x>82</x>
+      <y>117</y>
+      <width>70</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>70</width>
+      <height>16777215</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>175</y>
+      <width>64</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Duty Cycle</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="versionLabel">
+    <property name="geometry">
+     <rect>
+      <x>85</x>
+      <y>33</y>
+      <width>210</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>210</width>
+      <height>23</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_1">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>33</y>
+      <width>46</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>23</height>
+     </size>
+    </property>
+    <property name="text">
+     <string>Version</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="netIdSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>85</x>
+      <y>175</y>
+      <width>64</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>499</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="dutyCycleSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>243</x>
+      <y>175</y>
+      <width>64</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>100</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="lbtRssiSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>243</x>
+      <y>204</y>
+      <width>64</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="numChannelsSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>243</x>
+      <y>147</y>
+      <width>64</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>50</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_32">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>260</y>
+      <width>54</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>MAVLink</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="mavLinkComboBox">
+    <property name="geometry">
+     <rect>
+      <x>82</x>
+      <y>258</y>
+      <width>70</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>70</width>
+      <height>16777215</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="maxWindowSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>85</x>
+      <y>317</y>
+      <width>64</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>999</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_34">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>317</y>
+      <width>54</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max Win</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="rtsCtsComboBox">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>315</y>
+      <width>70</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>70</width>
+      <height>16777215</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_38">
+    <property name="geometry">
+     <rect>
+      <x>169</x>
+      <y>317</y>
+      <width>56</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>HW Flow</string>
+    </property>
+   </widget>
    <zorder>label_1</zorder>
    <zorder>label_2</zorder>
    <zorder>formatLineEdit</zorder>
@@ -424,7 +699,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>10</x>
      <y>480</y>
-     <width>651</width>
+     <width>731</width>
      <height>23</height>
     </rect>
    </property>
@@ -435,9 +710,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QGroupBox" name="remoteGroupBox">
    <property name="geometry">
     <rect>
-     <x>340</x>
+     <x>380</x>
      <y>70</y>
-     <width>321</width>
+     <width>361</width>
      <height>351</height>
     </rect>
    </property>
@@ -456,7 +731,14 @@ p, li { white-space: pre-wrap; }
      </widget>
     </item>
     <item row="2" column="4">
-     <widget class="QComboBox" name="minFreqComboBox_remote"/>
+     <widget class="QComboBox" name="minFreqComboBox_remote">
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="9" column="1">
      <widget class="QCheckBox" name="opResendCheckBox_remote">
@@ -513,7 +795,14 @@ p, li { white-space: pre-wrap; }
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QComboBox" name="airBaudComboBox_remote"/>
+     <widget class="QComboBox" name="airBaudComboBox_remote">
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="6" column="3">
      <widget class="QLabel" name="label_15">
@@ -526,7 +815,14 @@ p, li { white-space: pre-wrap; }
      </widget>
     </item>
     <item row="6" column="1">
-     <widget class="QComboBox" name="txPowerComboBox_remote"/>
+     <widget class="QComboBox" name="txPowerComboBox_remote">
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="3" column="0">
      <widget class="QLabel" name="label_26">
@@ -539,7 +835,14 @@ p, li { white-space: pre-wrap; }
      </widget>
     </item>
     <item row="3" column="4">
-     <widget class="QComboBox" name="maxFreqComboBox_remote"/>
+     <widget class="QComboBox" name="maxFreqComboBox_remote">
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label_27">
@@ -568,7 +871,14 @@ p, li { white-space: pre-wrap; }
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QComboBox" name="baudComboBox_remote"/>
+     <widget class="QComboBox" name="baudComboBox_remote">
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_29">
@@ -715,7 +1025,14 @@ p, li { white-space: pre-wrap; }
      </widget>
     </item>
     <item row="8" column="1">
-     <widget class="QComboBox" name="mavLinkComboBox_remote"/>
+     <widget class="QComboBox" name="mavLinkComboBox_remote">
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="10" column="1">
      <widget class="QSpinBox" name="maxWindowSpinBox_remote">
@@ -732,7 +1049,14 @@ p, li { white-space: pre-wrap; }
      </widget>
     </item>
     <item row="10" column="4">
-     <widget class="QComboBox" name="rtsCtsComboBox_remote"/>
+     <widget class="QComboBox" name="rtsCtsComboBox_remote">
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item row="10" column="3">
      <widget class="QLabel" name="label_37">
@@ -760,7 +1084,7 @@ Items to Remote</string>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>670</x>
+     <x>750</x>
      <y>66</y>
      <width>131</width>
      <height>137</height>
@@ -879,14 +1203,17 @@ Items to Remote</string>
   <widget class="QLabel" name="label_36">
    <property name="geometry">
     <rect>
-     <x>670</x>
-     <y>230</y>
-     <width>171</width>
-     <height>71</height>
+     <x>760</x>
+     <y>220</y>
+     <width>121</width>
+     <height>121</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please set radio settings &lt;br/&gt;as per your countries laws&lt;br/&gt;see &lt;a href=&quot;http://copter.ardupilot.com/wiki/common-using-the-3dr-radio-for-telemetry-with-apm-and-px4/#Support_for_different_countriesregions&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://ardupilot.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please set radio settings as per your countries laws see &lt;a href=&quot;http://copter.ardupilot.com/wiki/common-using-the-3dr-radio-for-telemetry-with-apm-and-px4/#Support_for_different_countriesregions&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://ardupilot.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
    <property name="openExternalLinks">
     <bool>true</bool>
