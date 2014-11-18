@@ -357,7 +357,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
     }
 #endif
     if (ofs != m_downloadOffset){
-        QLOG_DEBUG() << "missed packet: seek to " << ofs;
+        QLOG_DEBUG() << "seek to " << ofs;
         m_downloadFile->seek(ofs);
         m_downloadOffset = ofs;
         updateProgress();

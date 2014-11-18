@@ -3041,6 +3041,7 @@ void UAS::logRequestData(uint16_t id, uint32_t ofs, uint32_t count)
 
 void UAS::logEraseAll()
 {
+    QLOG_DEBUG() << "UAS::logEraseAll()";
     mavlink_message_t msg;
     mavlink_msg_log_erase_pack(systemId, componentId, &msg,
                                    getUASID(), MAV_COMP_ID_ALL);
@@ -3049,6 +3050,7 @@ void UAS::logEraseAll()
 
 void UAS::logRequestEnd()
 {
+    QLOG_DEBUG() << "UAS::LogRequestEnd()";
     mavlink_message_t msg;
     mavlink_msg_log_request_end_pack(systemId, componentId, &msg,
                                       getUASID(), MAV_COMP_ID_ALL);
