@@ -107,7 +107,7 @@ QComboBox::indicator:checked {
  }
 
  QComboBox::down-arrow {
-     image: url(/usr/share/icons/crystalsvg/16x16/actions/1downarrow.png);
+     image: url(://files/images/components/1downarrow.png);
  }
 
  QComboBox::down-arrow:on { /* shift the arrow when popup is open */
