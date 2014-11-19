@@ -266,6 +266,9 @@ void UAS::updateState()
     {
         connectionLost = true;
         receivedMode = false;
+        base_mode = -1;
+        custom_mode = -1;
+        status = -1;
         QString audiostring = QString("Link lost to system %1").arg(this->getUASID());
         GAudioOutput::instance()->say(audiostring.toLower());
     }
