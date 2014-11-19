@@ -126,15 +126,15 @@ protected:
     QAtomicInt done;
 
     // Axis 3 is thrust (CALIBRATION!)
-    int thrustAxis;
-    int xAxis;
-    int yAxis;
-    int yawAxis;
-    bool thrustReversed;
-    bool xReversed;
-    bool yReversed;
-    bool yawReversed;
-    int autoButtonMapping;
+    volatile int thrustAxis;
+    volatile int xAxis;
+    volatile int yAxis;
+    volatile int yawAxis;
+    volatile bool thrustReversed;
+    volatile bool xReversed;
+    volatile bool yReversed;
+    volatile bool yawReversed;
+    volatile int autoButtonMapping;
     int stabilizeButtonMapping;
     int thrustValue;
     int xValue;
