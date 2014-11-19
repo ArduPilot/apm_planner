@@ -82,36 +82,49 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     layout->setContentsMargins(4, 0 ,4 ,0);
     m_ui->customActionWidget->setLayout(layout);
 
+    m_ui->comboBox_action->setMinimumSize(140,0);
+
     // add actions
     if(wp->getId() == 0){
         // For APM WP0 is the home location
-        m_ui->comboBox_action->addItem(tr("NAV: HOME"),MAV_CMD_NAV_WAYPOINT);
+        m_ui->comboBox_action->addItem(tr("HOME"),MAV_CMD_NAV_WAYPOINT);
         this->setEnabled(false);
 
     } else {
-        m_ui->comboBox_action->addItem(tr("NAV: Waypoint"),MAV_CMD_NAV_WAYPOINT);
-        m_ui->comboBox_action->addItem(tr("NAV: Spline Waypoint"),MAV_CMD_NAV_SPLINE_WAYPOINT);
-        m_ui->comboBox_action->addItem(tr("NAV: TakeOff"),MAV_CMD_NAV_TAKEOFF);
-        m_ui->comboBox_action->addItem(tr("NAV: Loiter Unlim."),MAV_CMD_NAV_LOITER_UNLIM);
-        m_ui->comboBox_action->addItem(tr("NAV: Loiter Time"),MAV_CMD_NAV_LOITER_TIME);
-        m_ui->comboBox_action->addItem(tr("NAV: Loiter Turns"),MAV_CMD_NAV_LOITER_TURNS);
-        m_ui->comboBox_action->addItem(tr("NAV: Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
-        m_ui->comboBox_action->addItem(tr("NAV: Land"),MAV_CMD_NAV_LAND);
+        // NAV Commands
+//        m_ui->comboBox_action->addItem(tr("NAV commands"));
+        m_ui->comboBox_action->addItem(tr("Waypoint"),MAV_CMD_NAV_WAYPOINT);
+        m_ui->comboBox_action->addItem(tr("Spline Waypoint"),MAV_CMD_NAV_SPLINE_WAYPOINT);
+        m_ui->comboBox_action->addItem(tr("TakeOff"),MAV_CMD_NAV_TAKEOFF);
+        m_ui->comboBox_action->addItem(tr("Loiter Unlim."),MAV_CMD_NAV_LOITER_UNLIM);
+        m_ui->comboBox_action->addItem(tr("Loiter Time"),MAV_CMD_NAV_LOITER_TIME);
+        m_ui->comboBox_action->addItem(tr("Loiter Turns"),MAV_CMD_NAV_LOITER_TURNS);
+        m_ui->comboBox_action->addItem(tr("Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
+        m_ui->comboBox_action->addItem(tr("Land"),MAV_CMD_NAV_LAND);
         //m_ui->comboBox_action->addItem(tr("NAV: Target"),MAV_CMD_NAV_TARGET);
-        m_ui->comboBox_action->addItem(tr("IF: Condition Delay"),MAV_CMD_CONDITION_DELAY);
-        m_ui->comboBox_action->addItem(tr("IF: Condition Yaw"),MAV_CMD_CONDITION_YAW);
-        m_ui->comboBox_action->addItem(tr("IF: Condition Distance"),MAV_CMD_CONDITION_DISTANCE);
-        m_ui->comboBox_action->addItem(tr("DO: Jump to Index"),MAV_CMD_DO_JUMP);
-        m_ui->comboBox_action->addItem(tr("DO: Set Servo"), MAV_CMD_DO_SET_SERVO);
-        m_ui->comboBox_action->addItem(tr("DO: Repeat Servo"), MAV_CMD_DO_REPEAT_SERVO);
-        m_ui->comboBox_action->addItem(tr("DO: Digicam Control"), MAV_CMD_DO_DIGICAM_CONTROL);
-        m_ui->comboBox_action->addItem(tr("DO: Set Relay"), MAV_CMD_DO_SET_RELAY);
-        m_ui->comboBox_action->addItem(tr("DO: Repeat Relay"), MAV_CMD_DO_REPEAT_RELAY);
-        m_ui->comboBox_action->addItem(tr("DO: Set Cam Trigg Dist"), MAV_CMD_DO_SET_CAM_TRIGG_DIST);
-        m_ui->comboBox_action->addItem(tr("DO: Change Speed"), MAV_CMD_DO_CHANGE_SPEED);
-        m_ui->comboBox_action->addItem(tr("DO: Set Home"), MAV_CMD_DO_SET_HOME);
-        m_ui->comboBox_action->addItem(tr("DO: Mount Control"), MAV_CMD_DO_MOUNT_CONTROL);
-        m_ui->comboBox_action->addItem(tr("DO: Set ROI"), MAV_CMD_DO_SET_ROI);
+
+        // IF Commands
+        m_ui->comboBox_action->insertSeparator(9999);
+//        m_ui->comboBox_action->addItem(tr("Condition Commands"));
+        m_ui->comboBox_action->addItem(tr("Condition Delay"),MAV_CMD_CONDITION_DELAY);
+        m_ui->comboBox_action->addItem(tr("Condition Yaw"),MAV_CMD_CONDITION_YAW);
+        m_ui->comboBox_action->addItem(tr("Condition Distance"),MAV_CMD_CONDITION_DISTANCE);
+
+        // DO Commands
+        m_ui->comboBox_action->insertSeparator(9999);
+//        m_ui->comboBox_action->addItem(tr("DO commands"));
+        m_ui->comboBox_action->addItem(tr("Jump to Index"),MAV_CMD_DO_JUMP);
+        m_ui->comboBox_action->addItem(tr("Set Servo"), MAV_CMD_DO_SET_SERVO);
+        m_ui->comboBox_action->addItem(tr("Repeat Servo"), MAV_CMD_DO_REPEAT_SERVO);
+        m_ui->comboBox_action->addItem(tr("Digicam Control"), MAV_CMD_DO_DIGICAM_CONTROL);
+        m_ui->comboBox_action->addItem(tr("Set Relay"), MAV_CMD_DO_SET_RELAY);
+        m_ui->comboBox_action->addItem(tr("Repeat Relay"), MAV_CMD_DO_REPEAT_RELAY);
+        m_ui->comboBox_action->addItem(tr("Set Cam Trigg Dist"), MAV_CMD_DO_SET_CAM_TRIGG_DIST);
+        m_ui->comboBox_action->addItem(tr("Change Speed"), MAV_CMD_DO_CHANGE_SPEED);
+        m_ui->comboBox_action->addItem(tr("Set Home"), MAV_CMD_DO_SET_HOME);
+        m_ui->comboBox_action->addItem(tr("Mount Control"), MAV_CMD_DO_MOUNT_CONTROL);
+        m_ui->comboBox_action->addItem(tr("Set ROI"), MAV_CMD_DO_SET_ROI);
+
 #ifdef MAVLINK_ENABLED_PIXHAWK
         m_ui->comboBox_action->addItem(tr("NAV: Sweep"),MAV_CMD_NAV_SWEEP);
         m_ui->comboBox_action->addItem(tr("Do: Start Search"),MAV_CMD_DO_START_SEARCH);

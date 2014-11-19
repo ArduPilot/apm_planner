@@ -50,7 +50,7 @@ QCheckBox::indicator {
 }
 
 /*QComboBox {
-	border: 1px solid #111111; 
+	border: 1px solid #111111;
 	border-radius: 2px;
 }
 
@@ -119,20 +119,20 @@ QComboBox::indicator:checked {
 	background-color: #81ff3d;
 }*/
 
-QCheckBox::indicator:unchecked:pressed { 
-	background-color: #286e08; 
+QCheckBox::indicator:unchecked:pressed {
+	background-color: #286e08;
 }
 
-QCheckBox::indicator:checked { 
-	background-color: #49c70f; 
+QCheckBox::indicator:checked {
+	background-color: #49c70f;
 }
 
 /*QCheckBox::indicator:checked:hover {
 	background-color: #AAAAAA;
 }*/
 
-QCheckBox::indicator:checked:pressed { 
-	background-color: #AAAAAA; 
+QCheckBox::indicator:checked:pressed {
+	background-color: #AAAAAA;
 }
 
 /* QCheckBox::indicator:indeterminate:hover {
