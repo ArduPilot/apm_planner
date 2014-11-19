@@ -482,6 +482,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 shortStateText = uasState;
             }
 
+            receivedMode = true;
             if (base_mode != state.base_mode) {
                 QLOG_DEBUG() << "UAS: new base mode " << state.base_mode;
                 modeHasChanged = true;
