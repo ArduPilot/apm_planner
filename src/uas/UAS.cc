@@ -2859,7 +2859,8 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
     Q_UNUSED(xHat);
     Q_UNUSED(yHat);
 
-    if(! (base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY))
+    if(! receivedMode
+        || ! (base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY))
     {
 //        QLOG_TRACE() << "JOYSTICK/MANUAL CONTROL: IGNORING COMMANDS: Not armed";
         manualControl = false;
