@@ -116,11 +116,7 @@ public slots:
     void moveDown(Waypoint* wp);
     void removeWaypoint(Waypoint* wp);
 
-//    void setIsLoadFileWP();
-//    void setIsReadGlobalWP(bool value);
-
-
-
+    void parameterChanged(int uas, int component, QString parameterName, QVariant value);
 
 signals:
     void clearPathclicked();
@@ -147,10 +143,6 @@ protected:
 
 private:
     Ui::WaypointList *m_ui;
-
-
-
-
 
 private slots:
     void on_clearWPListButton_clicked();

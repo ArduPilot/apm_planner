@@ -40,6 +40,8 @@ This file is part of the QGROUNDCONTROL project
 #define PROTOCOL_DELAY_MS 20        ///< minimum delay between sent messages
 #define PROTOCOL_MAX_RETRIES 5      ///< maximum number of send retries (after timeout)
 
+static const QString DEFAULT_REL_ALT = "defaultRelAltitude";
+
 UASWaypointManager::UASWaypointManager(UAS* _uas)
     : uas(_uas),
       current_retries(0),
@@ -51,7 +53,7 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
       currentWaypointEditable(NULL),
       protocol_timer(this),
       m_defaultAcceptanceRadius(5.0f),
-      m_defaultRelativeAlt(25.0f)
+      m_defaultRelativeAlt(0.0f)
 {
     if (uas)
     {
@@ -64,6 +66,8 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
     {
         uasid = 0;
     }
+
+    m_defaultRelativeAlt = readSetting(DEFAULT_REL_ALT, 20.0f).toDouble();
 }
 
 UASWaypointManager::~UASWaypointManager()
@@ -1089,6 +1093,17 @@ double UASWaypointManager::getAltitudeRecommendation(MAV_FRAME frame)
     }
 }
 
+void UASWaypointManager::setDefaultRelAltitude(double alt)
+{
+    m_defaultRelativeAlt = alt;
+    writeSetting(DEFAULT_REL_ALT, m_defaultRelativeAlt);
+}
+
+double UASWaypointManager::getDefaultRelAltitude()
+{
+    return m_defaultRelativeAlt;
+}
+
 int UASWaypointManager::getFrameRecommendation()
 {
     // APM always uses waypoint 0 as HOME location (ie. it's MAV_FRAME_GLOBAL)
@@ -1132,3 +1147,23 @@ const Waypoint *UASWaypointManager::getWaypoint(int index)
         return NULL;
     }
 }
+
+void UASWaypointManager::writeSetting(const QString &key, const QVariant &value)
+{
+    QSettings settings;
+    settings.beginGroup("WAYPOINT_MANAGER");
+    settings.setValue(key,value);
+    settings.endGroup();
+    settings.sync();
+}
+
+const QVariant UASWaypointManager::readSetting(const QString& key, const QVariant& defaultValue)
+{
+    QSettings settings;
+    settings.beginGroup("WAYPOINT_MANAGER");
+    QVariant result = settings.value(key, defaultValue);
+    settings.endGroup();
+    settings.sync();
+    return result;
+}
+

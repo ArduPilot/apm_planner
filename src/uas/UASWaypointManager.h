@@ -118,6 +118,8 @@ public:
     int getFrameRecommendation();
     double getAcceptanceRadiusRecommendation();
 
+    double getDefaultRelAltitude();
+
 private:
     /** @name Message send functions */
     /*@{*/
@@ -129,6 +131,9 @@ private:
     void sendWaypoint(quint16 seq);                 ///< Sends a waypoint with sequence number seq
     void sendWaypointAck(quint8 type);              ///< Sends a waypoint ack
     /*@}*/
+
+    const QVariant readSetting(const QString& key, const QVariant& value);
+    void writeSetting(const QString& key, const QVariant& defaultValue);
 
 public slots:
     void timeout();                                 ///< Called by the timer if a response times out. Handles send retries.
@@ -146,6 +151,8 @@ public slots:
     /*@}*/
     void handleLocalPositionChanged(UASInterface* mav, double x, double y, double z, quint64 time);
     void handleGlobalPositionChanged(UASInterface* mav, double lat, double lon, double alt, quint64 time);
+
+    void setDefaultRelAltitude(double alt);
 
 signals:
     void waypointEditableListChanged(void);                 ///< emits signal that the list of editable waypoints has been changed
