@@ -118,6 +118,8 @@ public slots:
 
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
 
+    void wpRadiusChanged(double radius);
+
 signals:
     void clearPathclicked();
     void createWaypointAtMap(const QPointF coordinate);
@@ -130,7 +132,7 @@ protected:
     QMap<Waypoint*, WaypointViewOnlyView*> wpViewOnlyViews;
     QVBoxLayout* viewOnlyListLayout;
     QVBoxLayout* editableListLayout;
-    UASInterface* uas;
+    UASInterface* m_uas;
     UASWaypointManager* WPM;
     double mavX;
     double mavY;
