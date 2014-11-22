@@ -223,6 +223,12 @@ void RadioCalibrationConfig::updateChannelRevState(QCheckBox* checkbox, int chan
 
 void RadioCalibrationConfig::guiUpdateTimerTick()
 {
+    if (m_rollChannel==0 || m_pitchChannel==0 || m_throttleChannel==0 || m_yawChannel==0){
+        // If not all parameters have been downloaded, don't update RC channels
+        // which results in out-of-range array access.
+        return;
+    }
+
     ui.rollWidget->setValue(rcValue[m_rollChannel-1]);
     ui.pitchWidget->setValue(rcValue[m_pitchChannel-1]);
     ui.throttleWidget->setValue(rcValue[m_throttleChannel-1]);
