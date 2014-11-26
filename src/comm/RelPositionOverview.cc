@@ -5,6 +5,11 @@ RelPositionOverview::RelPositionOverview(QObject *parent) :
 {
 }
 
+RelPositionOverview::~RelPositionOverview()
+{
+
+}
+
 void RelPositionOverview::parseAttitude(LinkInterface *link, const mavlink_message_t &message, const mavlink_attitude_t &state)
 {
     Q_UNUSED(link);

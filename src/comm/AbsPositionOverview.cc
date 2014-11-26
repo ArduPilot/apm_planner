@@ -5,6 +5,11 @@ AbsPositionOverview::AbsPositionOverview(QObject *parent) :
 {
 }
 
+AbsPositionOverview::~AbsPositionOverview()
+{
+
+}
+
 void AbsPositionOverview::parseGpsRawInt(LinkInterface *link, const mavlink_message_t &message, const mavlink_gps_raw_int_t &state)
 {
     Q_UNUSED(link);

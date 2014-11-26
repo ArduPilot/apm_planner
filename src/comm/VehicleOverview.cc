@@ -5,6 +5,12 @@ VehicleOverview::VehicleOverview(QObject *parent) : QObject(parent)
 {
 
 }
+
+VehicleOverview::~VehicleOverview()
+{
+
+}
+
 //Heartbeat
 //sys_status
 //system_time

@@ -1,9 +1,10 @@
 #ifndef VEHICLEOVERVIEW_H
 #define VEHICLEOVERVIEW_H
 
-#include <QObject>
 #include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
 #include "LinkInterface.h"
+#include <QObject>
+
 class VehicleOverview : public QObject
 {
     Q_OBJECT
@@ -240,6 +241,8 @@ private:
     bool m_armedState;
 public:
     explicit VehicleOverview(QObject *parent = 0);
+    ~VehicleOverview();
+
 private:
     quint64 lastHeartbeat;
     unsigned int m_uasId;

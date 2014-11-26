@@ -106,6 +106,7 @@ signals:
 
 public:
     explicit AbsPositionOverview(QObject *parent = 0);
+    ~AbsPositionOverview();
 
 signals:
 private:
