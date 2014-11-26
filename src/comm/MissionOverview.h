@@ -1,4 +1,3 @@
-
 /*=====================================================================
 
 APM_PLANNER Open Source Ground Control Station
@@ -21,7 +20,6 @@ This file is part of the APM_PLANNER project
     along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
-
 #ifndef MISSIONOVERVIEW_H
 #define MISSIONOVERVIEW_H
 

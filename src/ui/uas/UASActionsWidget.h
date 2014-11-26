@@ -55,6 +55,8 @@ private:
     void saveApmSettings();
     void loadApmSettings();
 
+    void showPreflightCalibrationDialog();
+
 private:
     Ui::UASActionsWidget ui;
     UAS *m_uas;

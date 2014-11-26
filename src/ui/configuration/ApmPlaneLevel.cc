@@ -44,11 +44,11 @@ void ApmPlaneLevel::levelClicked()
     QMessageBox::information(0,"Warning","Be sure the plane is completely level, then click OK.");
     MAV_CMD command = MAV_CMD_PREFLIGHT_CALIBRATION;
     int confirm = 0;
-    float param1 = 1.0;
-    float param2 = 0.0;
-    float param3 = 1.0;
-    float param4 = 0.0;
-    float param5 = 0.0;
+    float param1 = 1.0; // Gyro & 1D Accel
+    float param2 = 0.0; // Gyro & 1D Accel
+    float param3 = 1.0; // Baro & Air Speed Cal
+    float param4 = 0.0; // Radio Trim
+    float param5 = 0.0; // 3D Accel Cal
     float param6 = 0.0;
     float param7 = 0.0;
     int component = 1;

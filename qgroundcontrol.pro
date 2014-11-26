@@ -416,6 +416,7 @@ FORMS += \
     src/ui/MissionElevationDisplay.ui \
     src/ui/DroneshareUploadDialog.ui \
     src/ui/DroneshareDialog.ui \
+    src/ui/uas/PreFlightCalibrationDialog.ui
 
 HEADERS += \
     src/MG.h \

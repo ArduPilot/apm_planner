@@ -475,7 +475,7 @@ void CompassConfig::saveOffsets(alglib::real_1d_array* offset, alglib::real_1d_a
                         + " y:" + QString::number(yOffset,'f',3) + " z:" + QString::number(zOffset,'f',3)
                         + " dev id:" + deviceId.toString();
 
-    if (m_haveSecondCompass) {
+    if (m_haveSecondCompass && offset2) {
         alglib::real_1d_array& ofs2 = *offset2;
 
         float xOffset2 = static_cast<float>(ofs2[0]);
@@ -534,6 +534,11 @@ void CompassConfig::scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_im
 {
     if (m_uas == uas){
         QLOG_DEBUG() << "SCALED IMU2 x:" << scaledImu.xmag << " y:" << scaledImu.ymag << " z:" << scaledImu.zmag;
+
+        if (scaledImu.xmag == 0 && scaledImu.ymag == 0 && scaledImu.zmag){
+            m_haveSecondCompass = false;
+            return;
+        }
 
         if (m_old2xmag != scaledImu.xmag &&
             m_old2ymag != scaledImu.ymag &&

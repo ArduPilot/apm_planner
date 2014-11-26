@@ -20,6 +20,7 @@ This file is part of the APM_PLANNER project
     along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
+
 #include "MissionOverview.h"
 
 MissionOverview::MissionOverview(QObject *parent) :
@@ -44,3 +45,4 @@ void MissionOverview::messageReceived(LinkInterface* link, mavlink_message_t mes
 
     }
 }
+
