@@ -81,9 +81,14 @@ void PreFlightCalibrationDialog::addParamSpinBoxes()
 
 QWidget* PreFlightCalibrationDialog::addParamSpinBox(const QString& paramName, QList<QDoubleSpinBox*>& list)
 {
+    QWidget *widget = new QWidget();
+    QHBoxLayout *paramLayout = new QHBoxLayout();
     QDoubleSpinBox *paramSpinBox = new QDoubleSpinBox();
+    QLabel *paramLabel = new QLabel(paramName);
+    paramLayout->addWidget(paramSpinBox);
+    paramLayout->addWidget(paramLabel);
     list.append(paramSpinBox);
-    return paramSpinBox;
+    return widget;
 }
 
 void PreFlightCalibrationDialog::addArdupilotMegaOptions()
