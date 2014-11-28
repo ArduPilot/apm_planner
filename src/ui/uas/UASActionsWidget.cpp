@@ -464,10 +464,10 @@ void UASActionsWidget::setAction()
 }
 
 
-int UASActionsWidget::preFlightWarningBox()
+int UASActionsWidget::preFlightWarningBox(QWidget* parent)
 {
     QLOG_INFO() << "Display Pre-Flight Warning Box";
-    return QMessageBox::critical(this,tr("Warning"),tr("This action must be done when on the gorund. If vehicle is in the air the this action will result in a crash!"),
+    return QMessageBox::critical(parent,tr("Warning"),tr("This action must be done when on the gorund. If vehicle is in the air the this action will result in a crash!"),
                          QMessageBox::Ok,QMessageBox::Abort);
 }
 
@@ -562,7 +562,7 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         Q_ASSERT(command == MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
         QLOG_INFO() << "MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN";
 
-        if (preFlightWarningBox() == QMessageBox::Abort)
+        if (preFlightWarningBox(this) == QMessageBox::Abort)
             return;
 
         int confirm = 1;
@@ -661,7 +661,7 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
         Q_ASSERT(command == MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
         QLOG_INFO() << "MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN";
 
-        if (preFlightWarningBox() == QMessageBox::Abort)
+        if (preFlightWarningBox(this) == QMessageBox::Abort)
             return;
 
         int confirm = 1;
@@ -742,7 +742,7 @@ void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
         Q_ASSERT(command == MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
         QLOG_INFO() << "MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN";
 
-        if (preFlightWarningBox() == QMessageBox::Abort)
+        if (preFlightWarningBox(this) == QMessageBox::Abort)
             return;
 
         int confirm = 1;
@@ -978,7 +978,7 @@ void UASActionsWidget::loadApmSettings()
 
 void UASActionsWidget::showPreflightCalibrationDialog()
 {
-    PreFlightCalibrationDialog *dialog = new PreFlightCalibrationDialog();
+    PreFlightCalibrationDialog *dialog = new PreFlightCalibrationDialog(this);
     if(dialog->exec() == 1){
         QLOG_DEBUG() << "Preflight calibration accepted";
     } else {

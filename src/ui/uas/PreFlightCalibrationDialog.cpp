@@ -5,18 +5,24 @@
 // Local Includes
 #include "UASInterface.h"
 #include "UASManager.h"
+#include "UASActionsWidget.h"
 
 // System Includes
 #include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QLabel>
 #include <QSignalMapper>
+#include <QMessageBox>
 
 PreFlightCalibrationDialog::PreFlightCalibrationDialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::PreFlightCalibrationDialog)
 {
     m_ui->setupUi(this);
+
+    for (int count = 0; count < 7; count++){
+        m_param.append(0.0f);
+    }
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     connect(m_ui->buttonBox, SIGNAL(accepted()), this, SLOT(dialogAccepted()));
@@ -59,30 +65,31 @@ void PreFlightCalibrationDialog::addParamSpinBoxes()
 {
     m_ui->groupBox->setTitle("Generic Vehicle");
 
-    QSignalMapper* signalMapper = new QSignalMapper();
-    connect(signalMapper, SIGNAL(mapped(int)), this, SIGNAL(spinBoxChanged(int)));
+    QSignalMapper* signalMapper = new QSignalMapper(this);
+    connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(spinBoxChanged(int)));
+
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    m_ui->groupBox->setLayout(vLayout);
 
     for (int i = 0; i < 7; ++i) {
-        QString text = "Parameter" + QString::number(i);
-        widgets.append(addParamSpinBox(text,m_ui->groupBox));
-        signalMapper->setMapping(widgets[i], i);
-        connect(widgets[i], SIGNAL(valueChanged(double)), signalMapper, SLOT(map()));
+        QString text = "Parameter " + QString::number(i);
+        vLayout->addWidget(addParamSpinBox(text, m_widgets));
+        signalMapper->setMapping(m_widgets[i], i);
+        connect(m_widgets[i], SIGNAL(valueChanged(double)), signalMapper, SLOT(map()));
     }
 }
 
-QDoubleSpinBox* PreFlightCalibrationDialog::addParamSpinBox(const QString& paramName, QWidget *parent)
+QWidget* PreFlightCalibrationDialog::addParamSpinBox(const QString& paramName, QList<QDoubleSpinBox*>& list)
 {
-    QHBoxLayout *paramLayout = new QHBoxLayout(parent);
     QDoubleSpinBox *paramSpinBox = new QDoubleSpinBox();
-    QLabel *paramLabel = new QLabel(paramName);
-    paramLayout->addWidget(paramSpinBox);
-    paramLayout->addWidget(paramLabel);
+    list.append(paramSpinBox);
     return paramSpinBox;
 }
 
 void PreFlightCalibrationDialog::addArdupilotMegaOptions()
 {
-
+    // [TODO] for now add the generic option for APM
+    addParamSpinBoxes();
 }
 
 void PreFlightCalibrationDialog::dialogAccepted()
@@ -103,21 +110,19 @@ void PreFlightCalibrationDialog::sendPreflightCalibrationMessage()
 //    Q_ASSERT(command == MAV_CMD_PREFLIGHT_CALIBRATION);
     QLOG_INFO() << "MAV_CMD_PREFLIGHT_CALIBRATION";
 
-//    if (preFlightWarningBox() == QMessageBox::Abort)
-//        return;
+    UASActionsWidget* uasaction = qobject_cast<UASActionsWidget*>(parent());
 
-    int confirm = 1;
-    float param1 = 1.0; // Gyro calibration: 0: no, 1: yes
-    float param2 = 0.0; // Magnetometer calibration: 0: no, 1: yes
-    float param3 = 0.0; // Ground pressure: 0: no, 1: yes
-    float param4 = 0.0; // Radio calibration: 0: no, 1: yes
-    float param5 = 0.0; // Accelerometer calibration: 0: no, 1: yes
-    float param6 = 0.0; // | Empty|
-    float param7 = 0.0; // | Empty|
-    int component = MAV_COMP_ID_ALL;
-    m_uasInterface->executeCommand(MAV_CMD_PREFLIGHT_CALIBRATION,
-                          confirm, param1, param2, param3,
-                          param4, param5, param6, param7, component);
+    if (uasaction && (uasaction->preFlightWarningBox(this) == QMessageBox::Ok)){
+        m_uasInterface->executeCommand(MAV_CMD_PREFLIGHT_CALIBRATION, 1 /*confirm*/,
+                                       m_widgets[0]->value(), // param 1 // Gyro calibration: 0: no, 1: yes
+                                       m_widgets[1]->value(), // param 2 // Magnetometer calibration: 0: no, 1: yes
+                                       m_widgets[2]->value(), // param 3 // Ground pressure: 0: no, 1: yes
+                                       m_widgets[3]->value(), // param 4 // Radio calibration: 0: no, 1: yes
+                                       m_widgets[4]->value(), // param 5 // Accelerometer calibration: 0: no, 1: yes
+                                       m_widgets[5]->value(), // param 6 // | Empty|
+                                       m_widgets[6]->value(), // param 7 // | Empty|
+                                       MAV_COMP_ID_ALL);
+    }
 }
 
 void PreFlightCalibrationDialog::spinBoxChanged(int index)

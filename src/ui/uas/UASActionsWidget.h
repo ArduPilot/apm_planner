@@ -14,6 +14,7 @@ public:
     ~UASActionsWidget();
 
     void contextMenuEvent(QContextMenuEvent *event);
+    int preFlightWarningBox(QWidget* parent);
 
 private slots:
     void activeUASSet(UASInterface *uas);
@@ -47,7 +48,6 @@ private:
 
     bool activeUas();
 
-    int preFlightWarningBox();
     int modeChangeWarningBox(const QString& modeString);
 
     void configureModeButtonEnableDisable();

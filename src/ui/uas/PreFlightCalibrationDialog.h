@@ -30,14 +30,15 @@ private slots:
 private:
     void addArdupilotMegaOptions();
     void addParamSpinBoxes();
-    QDoubleSpinBox* addParamSpinBox(const QString &paramName, QWidget* parent);
+    QWidget* addParamSpinBox(const QString &paramName, QList<QDoubleSpinBox *> &list);
     void sendPreflightCalibrationMessage();
 
 private:
     Ui::PreFlightCalibrationDialog *m_ui;
 
     UASInterface* m_uasInterface;
-    QList<QDoubleSpinBox*> widgets;
+    QList<QDoubleSpinBox*> m_widgets;
+    QList<float> m_param;
 };
 
 #endif // PREFLIGHTCALIBRATIONDIALOG_H
