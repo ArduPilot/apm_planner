@@ -9,7 +9,7 @@ Standards-Version: 3.9.4
 
 Package: apmplanner2
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, qtdeclarative5-qtquick2-plugin
 Description: Ground station software for autonomous vehicles.
  A GUI ground control station for autonomous vehicles 
  using the MAVLink protocol.
