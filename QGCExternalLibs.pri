@@ -449,8 +449,7 @@ MacBuild {
 
 LinuxBuild {
 	LIBS += \
-        -lSDL2 \
-        -lSDL2main
+        -lSDL2 
 }
 
 WindowsBuild {
