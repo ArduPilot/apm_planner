@@ -586,7 +586,7 @@ QPair<QString,QVariant> MAVLinkDecoder::emitFieldValue(mavlink_message_t* msg, i
         else
         {
             // Single value
-            uint64_t n = *((uint64_t*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
+            qulonglong n = *((uint64_t*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
             fieldType = "uint64_t";
             if (localemit)
             {
@@ -619,7 +619,7 @@ QPair<QString,QVariant> MAVLinkDecoder::emitFieldValue(mavlink_message_t* msg, i
         else
         {
             // Single value
-            int64_t n = *((int64_t*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
+            qulonglong n = *((int64_t*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
             fieldType = "int64_t";
             if (localemit)
             {
