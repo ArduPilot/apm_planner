@@ -583,7 +583,6 @@ void AP2DataPlotThread::loadAsciiLog()
     bool firstactual = true;
     m_loadedLogType = MAV_TYPE_GENERIC;
     int index = 0;
-    int errorcount = 0;
     QMap<QString,QSqlQuery*> nameToInsertQuery;
     QMap<QString,QString> nameToTypeString;
 
@@ -701,7 +700,7 @@ void AP2DataPlotThread::loadAsciiLog()
                         {
                             QLOG_DEBUG() << "Bound values for" << name << "count:" << nameToInsertQuery[name]->boundValues().values().size() << "actual" << linesplit.size() << typestr.size();
                             QLOG_DEBUG() << "Error in line:" << index << "param" << name << "parameter mismatch";
-                            errorcount++;
+                            m_errorCount++;
                         }
                         else
                         {
@@ -751,7 +750,7 @@ void AP2DataPlotThread::loadAsciiLog()
                             if (foundError)
                             {
                                 QLOG_DEBUG() << "Found an error on line " << index << ", skipping it.";
-                                ++errorcount;
+                                ++m_errorCount;
                             }
                             else if (!nameToInsertQuery[name]->exec())
                             {
@@ -814,7 +813,7 @@ void AP2DataPlotThread::loadTLog()
     bool firstactual = true;
     m_loadedLogType = MAV_TYPE_GENERIC;
     int index = 0;
-    int errorcount = 0;
+
     QMap<QString,QSqlQuery*> nameToInsertQuery;
     QMap<QString,QString> nameToTypeString;
 
@@ -834,7 +833,6 @@ void AP2DataPlotThread::loadTLog()
     qint64 lastPcTime = QDateTime::currentMSecsSinceEpoch();
     decoder = new MAVLinkDecoder();
     QList<quint64> lastunixtimemseclist;
-    //connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)),Qt::DirectConnection);
 
     while (!logfile.atEnd() && !m_stop)
     {
@@ -982,14 +980,14 @@ void AP2DataPlotThread::loadTLog()
                                 break;
                                 default:
                                 {
-                                    qDebug() << "Unknown type:" << QString::number(fieldinfo.type);
+                                    QLOG_ERROR() << "Unknown type:" << QString::number(fieldinfo.type);
                                 }
                                 break;
                             }
                         }
                         QString createstring = makeCreateTableString(name,typechars,variablenames);
                         QString insertstring = makeInsertTableString(name,variablenames);
-                        //if (!fmtinsertquery.prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (?,?,?,?,?,?);"))
+
                         fmtinsertquery.bindValue(":idx",fmtindex++);
                         fmtinsertquery.bindValue(1,0);
                         fmtinsertquery.bindValue(2,0);
@@ -1001,42 +999,29 @@ void AP2DataPlotThread::loadTLog()
                         indexinsertquery.bindValue(1,"FMT");
                         if (!indexinsertquery.exec())
                         {
-                            qDebug() << "Error execing index:" << lastLogTime << name << indexinsertquery.lastError().text();
+                            QLOG_ERROR() << "Error execing index:" << lastLogTime << name << indexinsertquery.lastError().text();
                             emit error("Error execing:" + indexinsertquery.executedQuery() + " error was " + indexinsertquery.lastError().text());
                             return;
                         }
 
-                        //qDebug() << "Create:" << createstring;
-                        //qDebug() << "Insert:" << insertstring;
-
-                        /*QSqlQuery *query = new QSqlQuery(*m_db);
-                        query->prepare(insertstring.replace("insert or replace","insert"));
-                        for (int i=0;i<fieldnames.size();i++)
-                        {
-                            qDebug() << "Binding:" << QString(":") + fieldnames.at(i);
-                            query->bindValue(QString(":") + fieldnames.at(i),0);
-                        }
-                        m_msgNameToInsertQuery.insert(name,query);*/
                         m_msgNameToInsertQuery.insert(name,insertstring.replace("insert or replace","insert"));
                         QSqlQuery create(*m_db);
                         if (!create.prepare(createstring))
                         {
-                            qDebug() << "Unable to create:" << create.lastError().text();
+                            QLOG_ERROR() << "Unable to create:" << create.lastError().text();
                             return;
                         }
                         if (!create.exec())
                         {
-                            qDebug() << "Unable to exec create:" << create.lastError().text();
+                            QLOG_ERROR() << "Unable to exec create:" << create.lastError().text();
                         }
                     }
-                    //QSqlQuery *query = m_msgNameToInsertQuery.value(name);
                     QSqlQuery query(*m_db);
                     if (!query.prepare(m_msgNameToInsertQuery.value(name)))
                     {
-                        qDebug() << "Unable to prepare query:" << query.lastError().text();
+                        QLOG_ERROR() << "Unable to prepare query:" << query.lastError().text();
                     }
-                    //QList<QString> fieldlist = decoder->getFieldList();
-                    //qDebug() << "Values:" << query.boundValues().keys().size();
+
                     quint64 unixtimemsec = (quint64)decoder->getUnixTimeFromMs(message.sysid, lastLogTime);
                     while (lastunixtimemseclist.contains(unixtimemsec))
                     {
@@ -1046,15 +1031,13 @@ void AP2DataPlotThread::loadTLog()
                     query.bindValue(":idx",unixtimemsec);
                     for (int i=0;i<retvals.size();i++)
                     {
-                        //if (retvals.at(i).first.contains())
                         query.bindValue(QString(":") + retvals.at(i).first.split(".")[1],retvals.at(i).second.toInt());
-                        //qDebug() << "Bound:" << retvals.at(i).first.split(".")[1] << retvals.at(i).second;
                     }
                     if (retvals.size() > 0)
                     {
                         if (!query.exec())
                         {
-                            qDebug() << "Error execing insert query:" << query.lastError().text();
+                            QLOG_ERROR() << "Error execing insert query:" << query.lastError().text();
                         }
                         else
                         {
@@ -1062,78 +1045,12 @@ void AP2DataPlotThread::loadTLog()
                             indexinsertquery.bindValue(1,name);
                             if (!indexinsertquery.exec())
                             {
-                                qDebug() << "Error execing index:" << lastLogTime << name << indexinsertquery.lastError().text();
+                                QLOG_ERROR() << "Error execing index:" << lastLogTime << name << indexinsertquery.lastError().text();
                                 emit error("Error execing:" + indexinsertquery.executedQuery() + " error was " + indexinsertquery.lastError().text());
                                 return;
                             }
                         }
                     }
-
-                    //UASInterface* uas = UASManager::instance()->getUASForId(message.sysid);
-                    /*if (!uas && message.msgid == MAVLINK_MSG_ID_HEARTBEAT)
-                    {
-                        mavlink_heartbeat_t heartbeat;
-                        // Reset version field to 0
-                        heartbeat.mavlink_version = 0;
-                        mavlink_msg_heartbeat_decode(&message, &heartbeat);
-
-
-                        // Create a new UAS object
-                        if (heartbeat.autopilot == MAV_AUTOPILOT_ARDUPILOTMEGA)
-                        {
-                            ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(0, message.sysid);
-                            mav->setSystemType((int)heartbeat.type);
-                            uas = mav;
-                            // Make UAS aware that this link can be used to communicate with the actual robot
-                            uas->addLink(this);
-                            UASObject *obj = new UASObject();
-                            LinkManager::instance()->addSimObject(message.sysid,obj);
-
-                            // Now add UAS to "official" list, which makes the whole application aware of it
-                            UASManager::instance()->addUAS(uas);
-
-                        }
-                    }
-                    else if (uas)
-                    {
-                        if (delay > 0 && delay < 10000)
-                        {
-                            //Split the delay into 100msec chunks, to allow for canceling.
-                            int realdelay = delay / ((double)privSpeedVar / 100.0);
-                            int repeat = realdelay / 100;
-                            for (int i=0;i<repeat;i++)
-                            {
-                                msleep(100);
-                                if (!m_threadRun)
-                                {
-                                    //Break out
-                                    MainWindow::instance()->toolBar().overrideDisableConnectWidget(false);
-                                    MainWindow::instance()->toolBar().disableConnectWidget(false);
-                                    emit disconnected(this);
-                                    emit disconnected();
-                                    emit connected(false);
-                                    UASManager::instance()->removeUAS(UASManager::instance()->getActiveUAS());
-                                    return;
-                                }
-                            }
-                            msleep(realdelay - repeat);
-                            //msleep(delay / ((double)privSpeedVar / 100.0));
-                        }
-                        else
-                        {
-                            msleep(1);
-                        }
-                        uas->receiveMessage(this,message);
-                        m_mavlinkDecoder->receiveMessage(this,message);
-                        if (m_mavlinkInspector)
-                        {
-                            m_mavlinkInspector->receiveMessage(this,message);
-                        }
-                    }
-                    else
-                    {
-                        //no UAS, and not a heartbeat
-                    }*/
                 }
 
             }
@@ -1145,24 +1062,21 @@ void AP2DataPlotThread::loadTLog()
 void AP2DataPlotThread::run()
 {
     emit startLoad();
-    int type = -1;
     m_stop = false;
+    m_errorCount = 0;
     if (m_fileName.toLower().endsWith(".bin"))
     {
         //It's a binary file
-        type = 1;
         loadBinaryLog();
     }
     else if (m_fileName.toLower().endsWith(".log"))
     {
         //It's a ascii log.
-        type = 2;
         loadAsciiLog();
     }
     else if (m_fileName.toLower().endsWith(".tlog"))
     {
         //It's a tlog
-        type = 3;
         loadTLog();
     }
     else
@@ -1170,7 +1084,6 @@ void AP2DataPlotThread::run()
         emit error("Unable to detect file type from filename. Ensure the file has a .bin or .log extension");
         return;
     }
-    int errorcount = 0;
 
 
     qint64 msecs = QDateTime::currentMSecsSinceEpoch();
@@ -1195,149 +1108,6 @@ void AP2DataPlotThread::run()
     else
     {
         QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
-        emit done(errorcount,m_loadedLogType);
+        emit done(m_errorCount,m_loadedLogType);
     }
-}
-void AP2DataPlotThread::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec)
-{
-    //Called as a direct connection, always in-thread.
-    //Throw the data into the database here.
-    QString finalname = name;
-    if (finalname.contains(":"))
-    {
-        finalname = finalname.split(":")[1];
-    }
-    if (!finalname.contains("."))
-    {
-        return;
-    }
-    QString msg = finalname.split(".")[0];
-    QString field = finalname.split(".")[1];
-
-    if (!m_msgNameToInsertQuery.contains(msg))
-    {
-
-        QList<QString> fieldnames = decoder->getFieldList(msg);
-        QString variablenames;
-        QString typechars;
-        for (int i=0;i<fieldnames.size();i++)
-        {
-            mavlink_field_info_t fieldinfo = decoder->getFieldInfo(msg,fieldnames.at(i));
-            variablenames += QString(fieldinfo.name) + ",";
-            switch (fieldinfo.type)
-            {
-                case MAVLINK_TYPE_CHAR:
-                {
-                    typechars += "b,";
-                }
-                break;
-                case MAVLINK_TYPE_UINT8_T:
-                {
-                    typechars += "B,";
-                }
-                break;
-                case MAVLINK_TYPE_INT8_T:
-                {
-                    typechars += "b,";
-                }
-                break;
-                case MAVLINK_TYPE_UINT16_T:
-                {
-                    typechars += "H,";
-                }
-                break;
-                case MAVLINK_TYPE_INT16_T:
-                {
-                    typechars += "h,";
-                }
-                break;
-                case MAVLINK_TYPE_UINT32_T:
-                {
-                    typechars += "I,";
-                }
-                break;
-                case MAVLINK_TYPE_INT32_T:
-                {
-                    typechars += "i,";
-                }
-                break;
-                case MAVLINK_TYPE_FLOAT:
-                {
-                    typechars += "f,";
-                }
-                break;
-                default:
-                {
-                    qDebug() << "Unknown type:" << QString::number(fieldinfo.type);
-                }
-                break;
-            }
-        }
-        QString createstring = makeCreateTableString(msg,typechars,variablenames);
-        QString insertstring = makeInsertTableString(msg,variablenames);
-        qDebug() << "Create:" << createstring;
-        qDebug() << "Insert:" << insertstring;
-
-        QSqlQuery *query = new QSqlQuery(*m_db);
-        query->prepare(insertstring);
-        for (int i=0;i<variablenames.size();i++)
-        {
-            query->bindValue(QString(":") + variablenames.at(i),0);
-        }
-        //m_msgNameToInsertQuery.insert(msg,query);
-        QSqlQuery create(*m_db);
-        if (!create.prepare(createstring))
-        {
-            qDebug() << "Unable to create:" << create.lastError().text();
-            return;
-        }
-        if (!create.exec())
-        {
-            qDebug() << "Unable to exec create:" << create.lastError().text();
-        }
-    }
-
-    //Check to see if msg has a table, if not, iterate over and populate a table and FMT entry for it before entering data.
-    //this way, we only actually create the tables and fill out data that we actually receive, rather than blindly populating
-    //all of them.
-    //UPDATE msg SET field="value" WHERE idx="index"
-    mavlink_field_info_t fieldinfo = decoder->getFieldInfo(msg,field);
-    QSqlQuery selectquery(*m_db);
-    if (!selectquery.prepare("SELECT * from " + msg + " WHERE idx == " + QString::number(msec)))
-    {
-        qDebug() << "Unable to prepare selectquery:" << selectquery.lastError().text();
-
-    }
-    if (!selectquery.exec())
-    {
-        qDebug() << "Unable to exec selectquery:" << selectquery.lastError().text();
-    }
-    if (!selectquery.next())
-    {
-        //No row! insert a new one
-        //QSqlQuery *query = m_msgNameToInsertQuery.value(msg);
-        //query->bindValue(":idx",QString::number(msec));
-        //query->bindValue(QString(":") + fieldinfo.name,value.toDouble());
-        //if (!query->exec())
-        //{
-        //    qDebug() << "Unable to exec insert:" << query->lastError().text() << query->lastQuery();
-        //}
-
-    }
-    else
-    {
-        //Existing row, modify it
-        QSqlQuery editquery(*m_db);
-        if (!editquery.prepare("UPDATE '" + msg + "' SET '" + fieldinfo.name + "'= \"" + value.toInt() + "\" WHERE idx = \"" + QString::number(msec) + "\""))
-        {
-            qDebug() << "Unable to prepare editquery:" << editquery.lastError().text();
-        }
-        if (!editquery.exec())
-        {
-            qDebug() << "Unable to exec editquery:" << editquery.lastError().text();
-        }
-    }
-    qDebug() << "Field type:" << fieldinfo.type;
-    qDebug() << fieldinfo.print_format;
-    m_fieldCount++;
 }

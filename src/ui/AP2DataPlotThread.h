@@ -22,6 +22,7 @@ private:
     QString makeCreateTableString(QString tablename, QString formatstr,QString variablestr);
     int m_fieldCount;
     MAVLinkDecoder *decoder;
+    int m_errorCount;
     QMap<QString,QString> m_msgNameToInsertQuery;
     void loadBinaryLog();
     void loadAsciiLog();
@@ -40,8 +41,6 @@ signals:
     void done(int errors,MAV_TYPE type);
     void error(QString errorstr);
     void lineRead(QString line);
-private slots:
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec);
 };
 
 #endif // AP2DATAPLOTTHREAD_H
