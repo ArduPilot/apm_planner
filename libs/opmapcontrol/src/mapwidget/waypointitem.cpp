@@ -243,7 +243,7 @@ namespace mapcontrol
             numberIBG->setBrush(Qt::black);
             numberIBG->setOpacity(0.5);
             numberI->setZValue(3);
-            numberI->setPen(QPen(Qt::white));
+            numberI->setBrush(Qt::white);
             numberI->setPos(18,-picture.height()/2-2);
             numberIBG->setPos(18,-picture.height()/2-2);
             numberI->setText(QString::number(number));
