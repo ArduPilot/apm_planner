@@ -61,7 +61,6 @@ public:
     QHostAddress getHostAddress(void) const { return _hostAddress; }
     quint16 getPort(void) const { return _port; }
     bool isServer(void) const { return _asServer; }
-    QTcpSocket* getSocket(void) { return _socket; }
 
     // LinkInterface methods
     virtual int     getId(void) const;
