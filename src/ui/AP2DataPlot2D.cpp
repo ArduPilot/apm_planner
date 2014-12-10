@@ -48,6 +48,10 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
 
     connect(m_plot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(plotMouseMove(QMouseEvent*)));
 
+    connect(ui.modeDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(modeCheckBoxClicked(bool)));
+    connect(ui.errDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(errCheckBoxClicked(bool)));
+    connect(ui.evDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(evCheckBoxClicked(bool)));
+
     //ui.horizontalLayout_3->addWidget(m_plot);
     ui.verticalLayout_5->insertWidget(0,m_plot);
 
@@ -301,6 +305,10 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
             {
                 newresult.append(m_graphClassMap.keys()[i] + ": " + "Unknown" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
             }
+        }
+        else if (m_graphClassMap.keys()[i] == "ERR")
+        {
+            //Ignore ERR
         }
         else if (graph->data()->contains(key))
         {
@@ -861,6 +869,11 @@ void AP2DataPlot2D::itemEnabled(QString name)
             }
             xlist.append(graphindex);
         }
+        if (!isstr && xlist.size() == 0)
+        {
+            //No data!
+            return;
+        }
         QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
         axis->setLabel(name);
 
@@ -1122,6 +1135,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
         if (!m_graphClassMap.contains("MODE"))
         {
             QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+            axis->setVisible(false);
             axis->setLabel("MODE");
 
             if (m_graphCount > 0)
@@ -1199,7 +1213,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
             QCPItemText *itemtext = new QCPItemText(m_plot);
             itemtext->setText(mode);
             itemtext->position->setAxes(xAxis,m_graphClassMap["MODE"].axis);
-            itemtext->position->setCoords((index),2.0);
+            itemtext->position->setCoords((index),1.0);
             m_plot->addItem(itemtext);
             m_graphClassMap["MODE"].itemList.append(itemtext);
             m_graphClassMap["MODE"].modeMap[index] = mode;
@@ -1209,12 +1223,186 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
             m_graphClassMap["MODE"].itemList.append(itemline);
             itemline->start->setParentAnchor(itemtext->bottom);
             itemline->start->setAxes(xAxis, m_graphClassMap["MODE"].axis);
-            itemline->start->setCoords(0.0, 0.0);
+            itemline->start->setCoords(0.0, 5.0);
             itemline->end->setAxes(xAxis, m_graphClassMap["MODE"].axis);
             itemline->end->setCoords((index), 0.0);
             itemline->setTail(QCPLineEnding::esDisc);
             itemline->setHead(QCPLineEnding::esSpikeArrow);
             m_plot->addItem(itemline);
+            if (!ui.modeDisplayCheckBox->isChecked())
+            {
+                itemtext->setVisible(false);
+                itemline->setVisible(false);
+            }
+        }
+    }
+
+    QSqlQuery errquery(m_sharedDb);
+    errquery.prepare("SELECT * FROM 'ERR';");
+    if (!errquery.exec())
+    {
+        //No err?
+        QLOG_DEBUG() << "Graph loaded with no err table. Running anyway, but text errors will not be available";
+    }
+    else
+    {
+        if (!m_graphClassMap.contains("ERR"))
+        {
+            QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+            axis->setVisible(false);
+            axis->setLabel("ERR");
+
+            if (m_graphCount > 0)
+            {
+                connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+            }
+            QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+            axis->setLabelColor(color);
+            axis->setTickLabelColor(color);
+            axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+            m_graphNameList.append("ERR");
+
+            mainGraph1->setPen(QPen(color, 2));
+            Graph graph;
+            graph.axis = axis;
+            graph.groupName = "";
+            graph.graph=  mainGraph1;
+            graph.isInGroup = false;
+            graph.isManualRange = false;
+            m_graphClassMap["ERR"] = graph;
+
+            mainGraph1->rescaleValueAxis();
+            if (m_graphCount == 1)
+            {
+                mainGraph1->rescaleKeyAxis();
+            }
+        }
+        while (errquery.next())
+        {
+            QSqlRecord record = errquery.record();
+            int index = record.value(0).toInt();
+            int ecode = -1;
+            int subsys = -1;
+            if (record.contains("ECode"))
+            {
+                ecode = record.value("ECode").toString().toInt();
+            }
+            if (record.contains("Subsys"))
+            {
+                subsys = record.value("Subsys").toString().toInt();
+            }
+            QPair<QString,QString> errortext = ArduPilotMegaMAV::getErrText(subsys,ecode);
+
+            //QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
+            QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+            QCPItemText *itemtext = new QCPItemText(m_plot);
+            itemtext->setText(errortext.first + "\n" + errortext.second);
+            itemtext->position->setAxes(xAxis,m_graphClassMap["ERR"].axis);
+            itemtext->position->setCoords((index),4.0);
+            m_plot->addItem(itemtext);
+            m_graphClassMap["ERR"].itemList.append(itemtext);
+            //m_graphClassMap["ERR"].modeMap[index] = subsystemstring + "\n" + ecodestring;
+
+
+            QCPItemLine *itemline = new QCPItemLine(m_plot);
+            m_graphClassMap["ERR"].itemList.append(itemline);
+            itemline->start->setParentAnchor(itemtext->bottom);
+            itemline->start->setAxes(xAxis, m_graphClassMap["ERR"].axis);
+            itemline->start->setCoords(0.0, 5.0);
+            itemline->end->setAxes(xAxis, m_graphClassMap["ERR"].axis);
+            itemline->end->setCoords((index), 0.0);
+            itemline->setTail(QCPLineEnding::esDisc);
+            itemline->setHead(QCPLineEnding::esSpikeArrow);
+            m_plot->addItem(itemline);
+
+            if (!ui.errDisplayCheckBox->isChecked())
+            {
+                itemtext->setVisible(false);
+                itemline->setVisible(false);
+            }
+        }
+    }
+
+
+
+    QSqlQuery evquery(m_sharedDb);
+    evquery.prepare("SELECT * FROM 'EV';");
+    if (!evquery.exec())
+    {
+        //No err?
+        QLOG_DEBUG() << "Graph loaded with no err table. Running anyway, but text errors will not be available";
+    }
+    else
+    {
+        if (!m_graphClassMap.contains("EV"))
+        {
+            QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+            axis->setVisible(false);
+            axis->setLabel("EV");
+
+            if (m_graphCount > 0)
+            {
+                connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+            }
+            QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+            axis->setLabelColor(color);
+            axis->setTickLabelColor(color);
+            axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+            m_graphNameList.append("EV");
+
+            mainGraph1->setPen(QPen(color, 2));
+            Graph graph;
+            graph.axis = axis;
+            graph.groupName = "";
+            graph.graph=  mainGraph1;
+            graph.isInGroup = false;
+            graph.isManualRange = false;
+            m_graphClassMap["EV"] = graph;
+
+            mainGraph1->rescaleValueAxis();
+            if (m_graphCount == 1)
+            {
+                mainGraph1->rescaleKeyAxis();
+            }
+        }
+        while (evquery.next())
+        {
+            QSqlRecord record = evquery.record();
+            int index = record.value(0).toInt();
+            int ecode = -1;
+            QString ecodestring = "UNKNOWN";
+            if (record.contains("Id"))
+            {
+                ecode = record.value("Id").toString().toInt();
+            }
+            ecodestring = ArduPilotMegaMAV::getNameFromEventId(ecode);
+
+            //QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
+            QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+            QCPItemText *itemtext = new QCPItemText(m_plot);
+            itemtext->setText(ecodestring);
+            itemtext->position->setAxes(xAxis,m_graphClassMap["EV"].axis);
+            itemtext->position->setCoords((index),2.5);
+            m_plot->addItem(itemtext);
+            m_graphClassMap["EV"].itemList.append(itemtext);
+
+            QCPItemLine *itemline = new QCPItemLine(m_plot);
+            m_graphClassMap["EV"].itemList.append(itemline);
+            itemline->start->setParentAnchor(itemtext->bottom);
+            itemline->start->setAxes(xAxis, m_graphClassMap["EV"].axis);
+            itemline->start->setCoords(0.0, 5.0);
+            itemline->end->setAxes(xAxis, m_graphClassMap["EV"].axis);
+            itemline->end->setCoords((index), 0.0);
+            itemline->setTail(QCPLineEnding::esDisc);
+            itemline->setHead(QCPLineEnding::esSpikeArrow);
+            m_plot->addItem(itemline);
+            if (!ui.evDisplayCheckBox->isChecked())
+            {
+                itemtext->setVisible(false);
+                itemline->setVisible(false);
+            }
         }
     }
 
@@ -1470,4 +1658,40 @@ void AP2DataPlot2D::exportDialogAccepted()
     progressDialog->deleteLater();
     progressDialog=NULL;
 
+}
+void AP2DataPlot2D::modeCheckBoxClicked(bool checked)
+{
+    if (!m_graphClassMap.contains("MODE"))
+    {
+        return;
+    }
+    for (int i=0;i<m_graphClassMap["MODE"].itemList.size();i++)
+    {
+        m_graphClassMap["MODE"].itemList.at(i)->setVisible(checked);
+    }
+}
+
+void AP2DataPlot2D::errCheckBoxClicked(bool checked)
+{
+    if (!m_graphClassMap.contains("ERR"))
+    {
+        return;
+    }
+    for (int i=0;i<m_graphClassMap["ERR"].itemList.size();i++)
+    {
+        m_graphClassMap["ERR"].itemList.at(i)->setVisible(checked);
+    }
+}
+
+void AP2DataPlot2D::evCheckBoxClicked(bool checked)
+{
+    if (!m_graphClassMap.contains("EV"))
+    {
+        return;
+    }
+    m_graphClassMap.value("EV").graph->setVisible(checked);
+    for (int i=0;i<m_graphClassMap["EV"].itemList.size();i++)
+    {
+        m_graphClassMap["EV"].itemList.at(i)->setVisible(checked);
+    }
 }

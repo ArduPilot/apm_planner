@@ -144,6 +144,8 @@ class ArduPilotMegaMAV : public UAS
 {
     Q_OBJECT
 public:
+    static QString getNameFromEventId(int ecode);
+    static QPair<QString,QString> getErrText(int subsys,int ecode);
     ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id = 0);
     /** @brief Set camera mount stabilization modes */
     void setMountConfigure(unsigned char mode, bool stabilize_roll,bool stabilize_pitch,bool stabilize_yaw);

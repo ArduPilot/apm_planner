@@ -96,6 +96,10 @@ private slots:
     void graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList);
     void selectedRowChanged(QModelIndex current,QModelIndex previous);
 
+    void modeCheckBoxClicked(bool checked);
+    void errCheckBoxClicked(bool checked);
+    void evCheckBoxClicked(bool checked);
+
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
