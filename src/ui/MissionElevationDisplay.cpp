@@ -139,7 +139,7 @@ void MissionElevationDisplay::updateWaypoint(int uasId, Waypoint *waypoint)
                  << " alt:" << waypoint->getAltitude();
 
     if(m_waypointList.count() >= 2){
-        Waypoint* oldWp = m_waypointList.at(waypoint->getId());
+        Waypoint* oldWp = m_waypointList.value(waypoint->getId());
         if (m_elevationShown && ((oldWp->getLatitude() != waypoint->getLatitude())
            || (oldWp->getLongitude() != waypoint->getLongitude()))){
             // Waypoint Moved, so need to refresh elevation.
@@ -172,27 +172,27 @@ void MissionElevationDisplay::updateDisplay()
     m_waypointList.clear();
     foreach (Waypoint* wp, list) {
         // Create a copy
-        m_waypointList.append(new Waypoint(*wp));
+        m_waypointList.insert(wp->getId(), new Waypoint(*wp));
     }
 
     if (m_waypointList.count() == 0)
         return;
 
-    m_totalDistance = plotElevationGraph(m_waypointList, ElevationGraphMissionId, m_homeAltOffset);
+    m_totalDistance = plotElevationGraph(ElevationGraphMissionId, m_homeAltOffset);
     addWaypointLabels();
 }
 
-void MissionElevationDisplay::updateElevationGraph(QList<Waypoint *> waypointList,double averageResolution)
+void MissionElevationDisplay::updateElevationGraph(double averageResolution)
 {
     if (m_waypointList.count() == 0)
         return;
-    int distance = plotElevationGraph(waypointList,ElevationGraphElevationId, 0.0);
+    int distance = plotElevationGraph(ElevationGraphElevationId, 0.0);
     ui->resolutionLabel->setText(QString::number(averageResolution)+"(m)");
     if (distance > m_totalDistance)
         m_totalDistance = distance;
 }
 
-int MissionElevationDisplay::plotElevationGraph(QList<Waypoint *> wpList, int graphId, double homeAltOffset)
+int MissionElevationDisplay::plotElevationGraph(int graphId, double homeAltOffset)
 {
     Waypoint* previousWp = NULL;
     double totalDistance = 0.0;
@@ -201,7 +201,7 @@ int MissionElevationDisplay::plotElevationGraph(QList<Waypoint *> wpList, int gr
     QCPGraph* graph = customplot->graph(graphId);
     graph->clearData();
 
-    foreach(Waypoint* wp, wpList){
+    foreach(Waypoint* wp, m_waypointList){
         double lower = 0.0, upper = 0.0;
         QCPRange xRange = customplot->xAxis->range();
         QCPRange yRange = customplot->yAxis->range();
@@ -295,7 +295,7 @@ void MissionElevationDisplay::updateElevationData()
         m_elevationShown = true;
     }
     int samples = m_waypointList.count()*ui->sampleSpinBox->value();
-    m_elevationData->requestElevationData(m_waypointList, m_totalDistance, samples); // 5 samples between waypoints
+    m_elevationData->requestElevationData(m_waypointList.values(), m_totalDistance, samples); // 5 samples between waypoints
     if (m_elevationShown == true) {
         ui->refreshButton->setEnabled(false);
         ui->refreshButton->setText("Updated");
