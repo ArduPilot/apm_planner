@@ -30,7 +30,6 @@ This file is part of the APM_PLANNER project
 
 #include "ApmToolBar.h"
 #include "QsLog.h"
-#include "SerialLink.h"
 #include "LinkManager.h"
 #include "MainWindow.h"
 #include "ArduPilotMegaMAV.h"

@@ -18,7 +18,6 @@
 //#include "MAVLinkProtocol.h"
 #include "QGCMAVLink.h"
 #include "LinkManager.h"
-#include "SerialLink.h"
 #include "MainWindow.h"
 
 #include <QList>
@@ -1946,7 +1945,7 @@ void UAS::forwardMessage(mavlink_message_t message)
     {
         if (link)
         {
-            SerialLink* serial = dynamic_cast<SerialLink*>(link);
+            SerialLink* serial = dynamic_cast<SerialLink*>(link); //SeriakLink Deprecated use SerialConnection
             if(serial != 0)
             {
                 for(int i=0; i<links->size(); i++)

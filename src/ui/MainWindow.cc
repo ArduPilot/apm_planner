@@ -30,7 +30,6 @@ This file is part of the QGROUNDCONTROL project
 #include "dockwidgettitlebareventfilter.h"
 #include "QGC.h"
 #include "MAVLinkSimulationLink.h"
-#include "SerialLink.h"
 #include "UDPLink.h"
 #include "MAVLinkProtocol.h"
 #include "CommConfigurationWindow.h"
@@ -271,16 +270,6 @@ MainWindow::MainWindow(QWidget *parent):
     mouse = new Mouse6dofInput(this);
     connect(this, SIGNAL(x11EventOccured(XEvent*)), mouse, SLOT(handleX11Event(XEvent*)));
 #endif //MOUSE_ENABLED_LINUX
-
-    // Connect link
-    /*if (autoReconnect)
-    {
-        SerialLink* link = new SerialLink();
-        // Add to registry
-        LinkManager::instance()->add(link);
-        LinkManager::instance()->addProtocol(link, mavlink);
-        link->connect();
-    }*/
 
     // Set low power mode
     enableLowPowerMode(lowPowerMode);

@@ -34,7 +34,6 @@ This file is part of the QGROUNDCONTROL project
 
 #include "CommConfigurationWindow.h"
 #include "SerialConfigurationWindow.h"
-#include "SerialLink.h"
 #include "UDPLink.h"
 #include "TCPLink.h"
 #include "MAVLinkSimulationLink.h"

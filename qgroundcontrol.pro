@@ -427,7 +427,6 @@ HEADERS += \
     src/comm/LinkManager.h \
     src/comm/LinkInterface.h \
     src/comm/SerialLinkInterface.h \
-    src/comm/SerialLink.h \
     src/comm/ProtocolInterface.h \
     src/comm/QGCFlightGearLink.h \
     src/comm/QGCJSBSimLink.h \
@@ -647,7 +646,6 @@ SOURCES += src/main.cc \
     src/uas/UAS.cc \
     src/comm/LinkManager.cc \
     src/comm/LinkInterface.cpp \
-    src/comm/SerialLink.cc \
     src/comm/QGCFlightGearLink.cc \
     src/comm/QGCJSBSimLink.cc \
     src/comm/QGCXPlaneLink.cc \
