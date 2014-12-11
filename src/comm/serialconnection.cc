@@ -43,6 +43,7 @@ SerialConnection::SerialConnection(QObject *parent) : SerialLinkInterface(),
     m_retryCount(0),
     m_timeoutMessageSent(false)
 {
+    QLOG_DEBUG() << "Create Serial Connection:" << this;
     m_linkId = getNextLinkId();
 
     loadSettings();
@@ -61,6 +62,12 @@ SerialConnection::SerialConnection(QObject *parent) : SerialLinkInterface(),
 
     QLOG_INFO() <<  m_portName << m_baud;
 }
+
+SerialConnection::~SerialConnection()
+{
+    QLOG_DEBUG() << "Destroy Serial Connection:" << this;
+}
+
 void SerialConnection::timeoutTimerTick()
 {
     if (!m_isConnected || !m_timeoutsEnabled)

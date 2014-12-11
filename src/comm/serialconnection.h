@@ -43,6 +43,7 @@ class SerialConnection : public SerialLinkInterface
     Q_OBJECT
 public:
     explicit SerialConnection(QObject *parent = 0);
+    virtual ~SerialConnection();
 
     void disableTimeouts();
     void enableTimeouts();
