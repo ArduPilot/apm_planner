@@ -26,7 +26,6 @@ This file is part of the APM_PLANNER project
 #include "LinkManager.h"
 #include "LinkInterface.h"
 #include <QtSerialPort/qserialportinfo.h>
-#include "SerialLink.h"
 #include "MainWindow.h"
 #include "PX4FirmwareUploader.h"
 #include <QTimer>
@@ -691,25 +690,6 @@ void ApmFirmwareConfig::flashButtonClicked()
     QPushButton *senderbtn = qobject_cast<QPushButton*>(sender());
     if (m_buttonToUrlMap.contains(senderbtn))
     {
-        //Try to connect before downloading:
-        if (m_uas)
-        {
-            //Active UAS. Ensure it's not connected over Serial
-            for (int i=0;i<m_uas->getLinks()->size();i++)
-            {
-                SerialLink *testlink = qobject_cast<SerialLink*>(m_uas->getLinks()->at(i));
-                if (testlink)
-                {
-                    //It's a serial link
-                    if (testlink->isConnected())
-                    {
-                        //Error out, we don't want to attempt firmware upload when there is a serial link active.
-                        QMessageBox::information(this,"Error","You cannot load new firmware while connected via MAVLink. Please press the Disconnect button at top right to end the current MAVLink session and enable the firmware loading screen.");
-                        return;
-                    }
-                }
-            }
-        }
         QStringList pathsplit = m_buttonToUrlMap[senderbtn].split("/");
         QString confirmmsg = "";
         if (pathsplit.size() > 2)
