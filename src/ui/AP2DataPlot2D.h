@@ -169,7 +169,7 @@ private:
 
     MAV_TYPE m_loadedLogMavType;
 
-
+    QString m_filename;
 };
 
 #endif // AP2DATAPLOT2D_H

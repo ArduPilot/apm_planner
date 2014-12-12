@@ -727,8 +727,7 @@ void AP2DataPlot2D::loadButtonClicked()
     }
     QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");
     dialog->setFileMode(QFileDialog::ExistingFile);
-    connect(dialog,SIGNAL(accepted()),this,SLOT(loadDialogAccepted()));
-    dialog->show();
+    dialog->open(this, SLOT(loadDialogAccepted()));
 }
 void AP2DataPlot2D::loadDialogAccepted()
 {
@@ -741,7 +740,7 @@ void AP2DataPlot2D::loadDialogAccepted()
     {
         return;
     }
-    QString filename = dialog->selectedFiles().at(0);
+    m_filename = dialog->selectedFiles().first();
     for (int i=0;i<m_graphNameList.size();i++)
     {
         m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
@@ -757,7 +756,8 @@ void AP2DataPlot2D::loadDialogAccepted()
     m_graphCount=0;
     m_dataList.clear();
 
-    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded: " + filename.mid(filename.lastIndexOf("/")+1) + "</span></p>");
+    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded: " + m_filename.mid(m_filename.lastIndexOf("/")+1) + "</span></p>");
+
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     ui.autoScrollCheckBox->setChecked(false);
@@ -781,7 +781,7 @@ void AP2DataPlot2D::loadDialogAccepted()
     connect(m_logLoaderThread,SIGNAL(finished()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     currentIndex=0;
-    m_logLoaderThread->loadFile(filename,&m_sharedDb);
+    m_logLoaderThread->loadFile(m_filename,&m_sharedDb);
 }
 
 void AP2DataPlot2D::threadTerminated()
@@ -1481,6 +1481,12 @@ void AP2DataPlot2D::exportButtonClicked()
         QMessageBox::information(this,"Error","You must have a log loaded before attempting to export");
         return;
     }
+
+    if (m_filename.endsWith(".log")){
+        QMessageBox::information(this,"Error","Cannot export a dataflash log!");
+        return;
+    }
+
     if (!m_sharedDb.isOpen())
     {
         if (!m_sharedDb.open())
@@ -1490,12 +1496,15 @@ void AP2DataPlot2D::exportButtonClicked()
             return;
         }
     }
-    QFileDialog *dialog = new QFileDialog(this,"Save Log File",QGC::logDirectory(),"Log files (*.log);;All Files (*.*)");
-    dialog->setFileMode(QFileDialog::AnyFile);
-    dialog->setAcceptMode(QFileDialog::AcceptSave);
-    connect(dialog,SIGNAL(accepted()),this,SLOT(exportDialogAccepted()));
-    dialog->show();
 
+    //remove current extension
+    QString exportFilename = m_filename.replace(".bin",".log", Qt::CaseInsensitive); // remove extension
+    QFileDialog *dialog = new QFileDialog(this,"Save Log File",QGC::logDirectory());
+    dialog->setAcceptMode(QFileDialog::AcceptSave);
+    dialog->setNameFilter("*.log");
+    dialog->selectFile(exportFilename);
+    QLOG_DEBUG() << " Suggested Export Filename: " << exportFilename;
+    dialog->open(this,SLOT(exportDialogAccepted()));
 }
 void AP2DataPlot2D::exportDialogAccepted()
 {
