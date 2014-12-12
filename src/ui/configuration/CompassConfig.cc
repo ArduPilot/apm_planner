@@ -463,7 +463,7 @@ void CompassConfig::saveOffsets(alglib::real_1d_array* offset, alglib::real_1d_a
     // set values
     m_uas->executeCommand(MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS, 1, MAV_SENSOR_OFFSET_MAGNETOMETER,
                           xOffset, yOffset, zOffset, 0, 0, 0,
-                          MAV_COMP_ID_ALL);
+                          MAV_COMP_ID_AUTOPILOT);
     if (m_compatibilityMode){
         paramMgr->setParameter(1, "COMPASS_OFS_X", xOffset);
         paramMgr->setParameter(1, "COMPASS_OFS_Y", yOffset);
@@ -488,7 +488,7 @@ void CompassConfig::saveOffsets(alglib::real_1d_array* offset, alglib::real_1d_a
 
         m_uas->executeCommand(MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS, 1, MAV_SENSOR_OFFSET_MAGNETOMETER2,
                               xOffset2, yOffset2, zOffset2, 0, 0, 0,
-                              MAV_COMP_ID_ALL);
+                              MAV_COMP_ID_AUTOPILOT);
         if (m_compatibilityMode){
             paramMgr->setParameter(1, "COMPASS_OFS2_X", xOffset2);
             paramMgr->setParameter(1, "COMPASS_OFS2_Y", yOffset2);

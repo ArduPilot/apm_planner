@@ -49,7 +49,7 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
       current_count(0),
       current_state(WP_IDLE),
       current_partner_systemid(0),
-      current_partner_compid(0),
+      current_partner_compid(MAV_COMP_ID_AUTOPILOT),
       currentWaypointEditable(NULL),
       protocol_timer(this),
       m_defaultAcceptanceRadius(5.0f),
@@ -104,7 +104,7 @@ void UASWaypointManager::timeout()
         current_count = 0;
         current_wp_id = 0;
         current_partner_systemid = 0;
-        current_partner_compid = 0;
+        current_partner_compid = MAV_COMP_ID_AUTOPILOT;
     }
 }
 
@@ -165,7 +165,7 @@ void UASWaypointManager::handleWaypointCount(quint8 systemId, quint8 compId, qui
             current_count = 0;
             current_wp_id = 0;
             current_partner_systemid = 0;
-            current_partner_compid = 0;
+            current_partner_compid = MAV_COMP_ID_AUTOPILOT;
         }
 
 
@@ -211,7 +211,7 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
                 current_count = 0;
                 current_wp_id = 0;
                 current_partner_systemid = 0;
-                current_partner_compid = 0;
+                current_partner_compid = MAV_COMP_ID_AUTOPILOT;
 
                 protocol_timer.stop();
                 emit readGlobalWPFromUAS(false);

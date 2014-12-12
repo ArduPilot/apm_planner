@@ -2181,7 +2181,7 @@ int UAS::getCommunicationStatus() const
 void UAS::requestParameters()
 {
     mavlink_message_t msg;
-    mavlink_msg_param_request_list_pack(systemId, componentId, &msg, this->getUASID(), MAV_COMP_ID_ALL);
+    mavlink_msg_param_request_list_pack(systemId, componentId, &msg, this->getUASID(), MAV_COMP_ID_AUTOPILOT);
     sendMessage(msg);
     QLOG_DEBUG() << __FILE__ << __LINE__ << "LOADING PARAM LIST";
 }
@@ -2939,7 +2939,7 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
         }
 
         mavlink_message_t message;
-        mavlink_msg_rc_channels_override_pack(gcs, componentId, &message, uasId, MAV_COMP_ID_ALL /* target_component */,
+        mavlink_msg_rc_channels_override_pack(gcs, componentId, &message, uasId, MAV_COMP_ID_AUTOPILOT /* target_component */,
                                               chan_raw[0], chan_raw[1], chan_raw[2], chan_raw[3], chan_raw[4], chan_raw[5], chan_raw[6], chan_raw[7]);
         sendMessage(message);
 
@@ -3024,7 +3024,7 @@ void UAS::logRequestList(uint16_t start, uint16_t end)
     QLOG_DEBUG() << "send logRequestList start:" << start << " end:" << end;
     mavlink_message_t msg;
     mavlink_msg_log_request_list_pack(systemId, componentId, &msg,
-                                      getUASID(), MAV_COMP_ID_ALL,
+                                      getUASID(), MAV_COMP_ID_AUTOPILOT,
                                       start, end);
     sendMessage(msg);
 }
@@ -3034,7 +3034,7 @@ void UAS::logRequestData(uint16_t id, uint32_t ofs, uint32_t count)
     QLOG_DEBUG() << "send logRequestData id:" << id << " ofs:" << ofs << " count:" << count;
     mavlink_message_t msg;
     mavlink_msg_log_request_data_pack(systemId, componentId, &msg,
-                                      getUASID(), MAV_COMP_ID_ALL,
+                                      getUASID(), MAV_COMP_ID_AUTOPILOT,
                                       id, ofs, count);
     sendMessage(msg);
 }
@@ -3044,7 +3044,7 @@ void UAS::logEraseAll()
     QLOG_DEBUG() << "UAS::logEraseAll()";
     mavlink_message_t msg;
     mavlink_msg_log_erase_pack(systemId, componentId, &msg,
-                                   getUASID(), MAV_COMP_ID_ALL);
+                                   getUASID(), MAV_COMP_ID_AUTOPILOT);
     sendMessage(msg);
 }
 
@@ -3053,7 +3053,7 @@ void UAS::logRequestEnd()
     QLOG_DEBUG() << "UAS::LogRequestEnd()";
     mavlink_message_t msg;
     mavlink_msg_log_request_end_pack(systemId, componentId, &msg,
-                                      getUASID(), MAV_COMP_ID_ALL);
+                                      getUASID(), MAV_COMP_ID_AUTOPILOT);
     sendMessage(msg);
 }
 
@@ -3092,7 +3092,7 @@ void UAS::receiveButton(int buttonIndex)
 void UAS::halt()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_HOLD, MAV_GOTO_HOLD_AT_CURRENT_POSITION, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_AUTOPILOT, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_HOLD, MAV_GOTO_HOLD_AT_CURRENT_POSITION, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -3102,7 +3102,7 @@ void UAS::halt()
 void UAS::go()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_CONTINUE, MAV_GOTO_HOLD_AT_CURRENT_POSITION, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_AUTOPILOT, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_CONTINUE, MAV_GOTO_HOLD_AT_CURRENT_POSITION, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -3118,7 +3118,7 @@ void UAS::home()
     double altitude = UASManager::instance()->getHomeAltitude();
     int frame = UASManager::instance()->getHomeFrame();
 
-    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_CONTINUE, MAV_GOTO_HOLD_AT_CURRENT_POSITION, frame, 0, latitude, longitude, altitude);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_AUTOPILOT, MAV_CMD_OVERRIDE_GOTO, 1, MAV_GOTO_DO_CONTINUE, MAV_GOTO_HOLD_AT_CURRENT_POSITION, frame, 0, latitude, longitude, altitude);
     sendMessage(msg);
 }
 
@@ -3129,7 +3129,7 @@ void UAS::land()
 {
     mavlink_message_t msg;
 
-    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_NAV_LAND, 1, 0, 0, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_AUTOPILOT, MAV_CMD_NAV_LAND, 1, 0, 0, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -3140,7 +3140,7 @@ void UAS::pairRX(int rxType, int rxSubType)
 {
     mavlink_message_t msg;
 
-    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_START_RX_PAIR, 0, rxType, rxSubType, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_AUTOPILOT, MAV_CMD_START_RX_PAIR, 0, rxType, rxSubType, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -3453,7 +3453,7 @@ void UAS::stopHil()
 void UAS::reboot()
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 1, 1, 0, 0, 0, 0, 0);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_AUTOPILOT, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 1, 1, 0, 0, 0, 0, 0);
     sendMessage(msg);
 }
 
@@ -3475,7 +3475,7 @@ void UAS::shutdown()
     {
         // If the active UAS is set, execute command
         mavlink_message_t msg;
-        mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 2, 2, 0, 0, 0, 0, 0);
+        mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_AUTOPILOT, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1, 2, 2, 0, 0, 0, 0, 0);
         sendMessage(msg);
     }
 }
@@ -3489,7 +3489,7 @@ void UAS::shutdown()
 void UAS::setTargetPosition(float x, float y, float z, float yaw)
 {
     mavlink_message_t msg;
-    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_ALL, MAV_CMD_NAV_PATHPLANNING, 1, 1, 1, 0, yaw, x, y, z);
+    mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_AUTOPILOT, MAV_CMD_NAV_PATHPLANNING, 1, 1, 1, 0, yaw, x, y, z);
     sendMessage(msg);
 }
 
