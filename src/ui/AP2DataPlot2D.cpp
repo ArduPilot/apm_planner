@@ -35,7 +35,16 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_graphCount=0;
     m_showOnlyActive = false;
 
+
     ui.setupUi(this);
+    connect(ui.sortSelectTreeWidget,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(sortItemChanged(QTreeWidgetItem*,int)));
+    connect(ui.sortAcceptPushButton,SIGNAL(clicked()),this,SLOT(sortAcceptClicked()));
+    connect(ui.sortCancelPushButton,SIGNAL(clicked()),this,SLOT(sortCancelClicked()));
+    connect(ui.sortShowPushButton,SIGNAL(clicked()),this,SLOT(showSortButtonClicked()));
+    connect(ui.sortSelectAllPushButton,SIGNAL(clicked()),this,SLOT(sortSelectAllClicked()));
+    connect(ui.sortInvertSelectPushButton,SIGNAL(clicked()),this,SLOT(sortSelectInvertClicked()));
+    ui.tableSortGroupBox->setVisible(false);
+    ui.sortShowPushButton->setVisible(false);
 
     QDateTime utc = QDateTime::currentDateTimeUtc();
     utc.setTimeSpec(Qt::LocalTime);
@@ -709,7 +718,14 @@ void AP2DataPlot2D::loadButtonClicked()
         m_graphCount=0;
         m_dataList.clear();
 
-        //Unload the log.
+    //Clear the sorting
+    m_tableFilterList.clear();
+    ui.sortSelectTreeWidget->clear();
+    ui.tableSortGroupBox->setVisible(false);
+    ui.sortShowPushButton->setText("Show Sort");
+    ui.sortShowPushButton->setVisible(false);
+
+    //Unload the log
         m_logLoaded = false;
         ui.loadOfflineLogButton->setText("Load Log");
         ui.hideExcelView->setVisible(false);
@@ -1110,6 +1126,10 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
         {
             m_dataSelectionScreen->addItem(name + "." + varssplit.at(i));
         }
+        QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << name);
+        child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
+        child->setCheckState(0,Qt::Unchecked);
+        ui.sortSelectTreeWidget->addTopLevelItem(child);
         QLOG_DEBUG() << record.value(0) << record.value(1) << record.value(2) << record.value(3) << record.value(4) << record.value(5);
         //rowlist.clear();
         //itemquery.prepare("SELECT * FROM '" + name + "';");
@@ -1423,6 +1443,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
     m_progressDialog=0;
     ui.tableWidget->setVisible(true);
     ui.hideExcelView->setVisible(true);
+    ui.sortShowPushButton->setVisible(true);
 }
 
 
@@ -1668,6 +1689,7 @@ void AP2DataPlot2D::exportDialogAccepted()
     progressDialog=NULL;
 
 }
+
 void AP2DataPlot2D::modeCheckBoxClicked(bool checked)
 {
     if (!m_graphClassMap.contains("MODE"))
@@ -1702,5 +1724,97 @@ void AP2DataPlot2D::evCheckBoxClicked(bool checked)
     for (int i=0;i<m_graphClassMap["EV"].itemList.size();i++)
     {
         m_graphClassMap["EV"].itemList.at(i)->setVisible(checked);
+    }
+}
+void AP2DataPlot2D::sortItemChanged(QTreeWidgetItem* item,int col)
+{
+	//Sorting item changed.
+	if (!item)
+	{
+		return;
+	}
+	QString msgname = item->text(0);
+	if (item->checkState(0) == Qt::Checked)
+	{
+		if (!m_tableFilterList.contains(msgname))
+		{
+			m_tableFilterList.append(msgname);
+		}
+	}
+	else
+	{
+		if (m_tableFilterList.contains(msgname))
+		{
+			m_tableFilterList.removeOne(msgname);
+		}
+	}
+
+		//Item is enabled!
+		/*    m_tableFilterProxyModel->setFilterFixedString(itemtext);
+    m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
+    m_tableFilterProxyModel->setFilterKeyColumn(1);
+    m_showOnlyActive = true;
+}
+void AP2DataPlot2D::showAllClicked()
+{
+    m_tableFilterProxyModel->setFilterRegExp("");*/
+
+}
+void AP2DataPlot2D::sortAcceptClicked()
+{
+    QString sortstring = "";
+    for (int i=0;i<m_tableFilterList.size();i++)
+    {
+        sortstring += m_tableFilterList.at(i) + ((i == m_tableFilterList.size()-1) ? "" : "|");
+    }
+    //sortstring += "]";
+    m_tableFilterProxyModel->setFilterRegExp(sortstring);
+    m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
+    m_tableFilterProxyModel->setFilterKeyColumn(1);
+    ui.tableSortGroupBox->setVisible(false);
+    ui.sortShowPushButton->setText("Show Sort");
+}
+
+void AP2DataPlot2D::sortCancelClicked()
+{
+    ui.tableSortGroupBox->setVisible(false);
+    ui.sortShowPushButton->setText("Show Sort");
+}
+void AP2DataPlot2D::showSortButtonClicked()
+{
+    if (ui.tableSortGroupBox->isVisible())
+    {
+        ui.tableSortGroupBox->setVisible(false);
+        ui.sortShowPushButton->setText("Show Sort");
+    }
+    else
+    {
+        ui.tableSortGroupBox->setVisible(true);
+        ui.sortShowPushButton->setText("Hide Sort");
+    }
+}
+void AP2DataPlot2D::sortSelectAllClicked()
+{
+    for (int i=0;i<ui.sortSelectTreeWidget->topLevelItemCount();i++)
+    {
+        if (ui.sortSelectTreeWidget->topLevelItem(i)->checkState(0) != Qt::Checked)
+        {
+            ui.sortSelectTreeWidget->topLevelItem(i)->setCheckState(0,Qt::Checked);
+        }
+    }
+}
+
+void AP2DataPlot2D::sortSelectInvertClicked()
+{
+    for (int i=0;i<ui.sortSelectTreeWidget->topLevelItemCount();i++)
+    {
+        if (ui.sortSelectTreeWidget->topLevelItem(i)->checkState(0) == Qt::Checked)
+        {
+            ui.sortSelectTreeWidget->topLevelItem(i)->setCheckState(0,Qt::Unchecked);
+        }
+        else
+        {
+            ui.sortSelectTreeWidget->topLevelItem(i)->setCheckState(0,Qt::Checked);
+        }
     }
 }

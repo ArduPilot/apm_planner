@@ -129,7 +129,74 @@
              </layout>
             </item>
             <item>
-             <widget class="QTableView" name="tableWidget"/>
+             <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="5,2">
+              <item>
+               <widget class="QTableView" name="tableWidget"/>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="tableSortGroupBox">
+                <property name="title">
+                 <string>Sorting</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <item>
+                  <widget class="QTreeWidget" name="sortSelectTreeWidget">
+                   <column>
+                    <property name="text">
+                     <string notr="true">1</string>
+                    </property>
+                   </column>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_5">
+                   <item>
+                    <widget class="QPushButton" name="sortAcceptPushButton">
+                     <property name="text">
+                      <string>Accept</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="sortCancelPushButton">
+                     <property name="text">
+                      <string>Cancel</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="sortSelectAllPushButton">
+                     <property name="text">
+                      <string>Select All</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="sortInvertSelectPushButton">
+                     <property name="text">
+                      <string>Invert Select</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_2">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -222,6 +289,13 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="sortShowPushButton">
+         <property name="text">
+          <string>Show Sort</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
