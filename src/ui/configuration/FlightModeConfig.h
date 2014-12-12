@@ -73,6 +73,7 @@ private:
     QList<bool> m_changedModes;
     int m_modesUpdated;
     QString m_modeString;  // Array to store if the flight mode has changed
+    int m_flightModeCh;
 
 };
 
