@@ -49,7 +49,7 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
       current_count(0),
       current_state(WP_IDLE),
       current_partner_systemid(0),
-      current_partner_compid(MAV_COMP_ID_AUTOPILOT),
+      current_partner_compid(MAV_COMP_ID_PRIMARY),
       currentWaypointEditable(NULL),
       protocol_timer(this),
       m_defaultAcceptanceRadius(5.0f),
@@ -104,7 +104,7 @@ void UASWaypointManager::timeout()
         current_count = 0;
         current_wp_id = 0;
         current_partner_systemid = 0;
-        current_partner_compid = MAV_COMP_ID_AUTOPILOT;
+        current_partner_compid = MAV_COMP_ID_PRIMARY;
     }
 }
 
@@ -165,7 +165,7 @@ void UASWaypointManager::handleWaypointCount(quint8 systemId, quint8 compId, qui
             current_count = 0;
             current_wp_id = 0;
             current_partner_systemid = 0;
-            current_partner_compid = MAV_COMP_ID_AUTOPILOT;
+            current_partner_compid = MAV_COMP_ID_PRIMARY;
         }
 
 
@@ -211,7 +211,7 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
                 current_count = 0;
                 current_wp_id = 0;
                 current_partner_systemid = 0;
-                current_partner_compid = MAV_COMP_ID_AUTOPILOT;
+                current_partner_compid = MAV_COMP_ID_PRIMARY;
 
                 protocol_timer.stop();
                 emit readGlobalWPFromUAS(false);
@@ -235,7 +235,7 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
 
 void UASWaypointManager::handleWaypointAck(quint8 systemId, quint8 compId, mavlink_mission_ack_t *wpa)
 {
-    if (systemId == current_partner_systemid && (compId == current_partner_compid || compId == MAV_COMP_ID_ALL)) {
+    if (systemId == current_partner_systemid && (compId == current_partner_compid || compId == MAV_COMP_ID_PRIMARY)) {
         if((current_state == WP_SENDLIST || current_state == WP_SENDLIST_SENDWPS) && (current_wp_id == waypoint_buffer.count()-1 && wpa->type == 0)) {
             //all waypoints sent and ack received
             protocol_timer.stop();

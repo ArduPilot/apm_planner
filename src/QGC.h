@@ -29,7 +29,7 @@
 #include <QColor>
 #include <QThread>
 
-
+#include <QGCMAVLink.h>
 
 #define define2string_p(x) #x
 #define define2string(x) define2string_p(x)
@@ -67,7 +67,7 @@ inline bool isinf(T value)
 namespace QGC
 {
 const static int defaultSystemId = 252; // Using 252 to 'crudely' identify a log created by APM Planner 2
-const static int defaultComponentId = 0;
+const static int defaultComponentId = MAV_COMP_ID_PRIMARY; // The main component ID is 1 for autopilot/and GCS (0 means all components)
 
 const QColor colorCyan(55, 154, 195);
 const QColor colorRed(154, 20, 20);

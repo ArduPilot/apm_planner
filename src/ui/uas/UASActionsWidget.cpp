@@ -503,7 +503,7 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         float param5 = 0.0; // Latitude
         float param6 = 0.0; // Longitude
         float param7 = 0.0; // Altitude
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -522,7 +522,7 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         float param5 = 0.0; // Latitude
         float param6 = 0.0; // Longitude
         float param7 = 0.0; // Altitude
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -550,7 +550,7 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         float param5 = 0.0; // | Empty|
         float param6 = 0.0; // | Empty|
         float param7 = 0.0; // | Empty|
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -573,7 +573,7 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
         float param5 = 0.0; // | Empty|
         float param6 = 0.0; // | Empty|
         float param7 = 0.0; // | Empty|
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -602,7 +602,7 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
         float param5 = 0.0; // Latitude
         float param6 = 0.0; // Longitude
         float param7 = 0.0; // Altitude
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -621,7 +621,7 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
         float param5 = 0.0; // Latitude
         float param6 = 0.0; // Longitude
         float param7 = 0.0; // Altitude
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -649,7 +649,7 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
         float param5 = 0.0; // | Empty|
         float param6 = 0.0; // | Empty|
         float param7 = 0.0; // | Empty|
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -672,7 +672,7 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
         float param5 = 0.0; // | Empty|
         float param6 = 0.0; // | Empty|
         float param7 = 0.0; // | Empty|
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -702,7 +702,7 @@ void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
         float param5 = 0.0; // Latitude
         float param6 = 0.0; // Longitude
         float param7 = 0.0; // Altitude
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -730,7 +730,7 @@ void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
         float param5 = 0.0; // | Empty|
         float param6 = 0.0; // | Empty|
         float param7 = 0.0; // | Empty|
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);
@@ -753,7 +753,7 @@ void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
         float param5 = 0.0; // | Empty|
         float param6 = 0.0; // | Empty|
         float param7 = 0.0; // | Empty|
-        int component = MAV_COMP_ID_AUTOPILOT;
+        int component = MAV_COMP_ID_PRIMARY;
         m_uas->executeCommand(command,
                               confirm, param1, param2, param3,
                               param4, param5, param6, param7, component);

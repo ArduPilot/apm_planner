@@ -32,7 +32,7 @@ This file is part of the QGROUNDCONTROL project
 
 #include <mavlink.h>
 
-#define MAV_COMP_ID_AUTOPILOT 1 // Required until we have an offical enum in MAV_COMPONENT
+#define MAV_COMP_ID_PRIMARY 1 // Required until we have an offical enum in MAV_COMPONENT
 
 //#ifdef MAVLINK_CONF
 //#define MY_MACRO(x) <x>

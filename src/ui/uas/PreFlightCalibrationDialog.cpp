@@ -187,7 +187,7 @@ void PreFlightCalibrationDialog::sendPreflightCalibrationMessage()
                                        getCheckValue(m_widgets[4]), // param 5 // Accelerometer calibration: 0: no, 1: yes
                                        getCheckValue(m_widgets[5]), // param 6 // | Empty|
                                        getCheckValue(m_widgets[6]), // param 7 // | Empty|
-                                       MAV_COMP_ID_AUTOPILOT);
+                                       MAV_COMP_ID_PRIMARY);
 }
 
 float PreFlightCalibrationDialog::getCheckValue(QWidget* widget)

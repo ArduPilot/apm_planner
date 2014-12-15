@@ -453,7 +453,7 @@ void ArduPilotMegaMAV::armSystem()
                                   getComponentId(),
                                   &msg,
                                   getUASID(),                    // uint8_t target_system,
-                                  MAV_COMP_ID_SYSTEM_CONTROL,    // uint8_t target_component
+                                  MAV_COMP_ID_PRIMARY,    // uint8_t target_component
                                   MAV_CMD_COMPONENT_ARM_DISARM,    // uint16_t command,
                                   1,                // uint8_t confirmation,
                                   1.0,             // float param1,
@@ -475,7 +475,7 @@ void ArduPilotMegaMAV::disarmSystem()
                                   getComponentId(),
                                   &msg,
                                   getUASID(),                    // uint8_t target_system,
-                                  MAV_COMP_ID_SYSTEM_CONTROL,    // uint8_t target_component
+                                  MAV_COMP_ID_PRIMARY,    // uint8_t target_component
                                   MAV_CMD_COMPONENT_ARM_DISARM,    // uint16_t command,
                                   1,                // uint8_t confirmation,
                                   0.0,             // float param1,
