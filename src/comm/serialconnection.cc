@@ -36,11 +36,11 @@ This file is part of the APM_PLANNER project
 #include <QSettings>
 #include <QStringList>
 #include <QTimer>
-SerialConnection::SerialConnection(QObject *parent) : SerialLinkInterface(),
-    m_timeoutsEnabled(true),
-    m_isConnected(false),
+SerialConnection::SerialConnection() : SerialLinkInterface(),
     m_port(0),
+    m_isConnected(false),
     m_retryCount(0),
+    m_timeoutsEnabled(true),
     m_timeoutMessageSent(false)
 {
     QLOG_DEBUG() << "Create Serial Connection:" << this;
@@ -66,6 +66,28 @@ SerialConnection::SerialConnection(QObject *parent) : SerialLinkInterface(),
 SerialConnection::~SerialConnection()
 {
     QLOG_DEBUG() << "Destroy Serial Connection:" << this;
+}
+
+void SerialConnection::connectionDestroyed(QObject *object)
+{
+    QLOG_DEBUG() << "serial connection: object destroyed:" << object;
+}
+
+void SerialConnection::portError(QSerialPort::SerialPortError serialPortError)
+{
+    QLOG_ERROR() << "serial connection: error " << serialPortError;
+
+    switch(serialPortError){
+    case QSerialPort::ReadError: // Required for commands when the port is open.
+    case QSerialPort::WriteError:
+    case QSerialPort::ResourceError:
+        disconnect();
+        break;
+    case QSerialPort::NotOpen:
+    case QSerialPort::OpenError:
+    default:
+        ;// Do nothing
+    }
 }
 
 void SerialConnection::timeoutTimerTick()
@@ -162,22 +184,27 @@ int SerialConnection::getStopBitsType() const
 }
 bool SerialConnection::setBaudRateType(int rateIndex)
 {
+    Q_UNUSED(rateIndex);
     return true;
 }
 bool SerialConnection::setFlowType(int flow)
 {
+    Q_UNUSED(flow);
     return true;
 }
 bool SerialConnection::setParityType(int parity)
 {
+    Q_UNUSED(parity);
     return true;
 }
 bool SerialConnection::setDataBitsType(int dataBits)
 {
+    Q_UNUSED(dataBits);
     return true;
 }
 bool SerialConnection::setStopBitsType(int stopBits)
 {
+    Q_UNUSED(stopBits);
     return true;
 }
 void SerialConnection::loadSettings()
@@ -238,6 +265,7 @@ void SerialConnection::writeSettings()
 
 bool SerialConnection::connect()
 {
+    QLOG_DEBUG() << "SerialConnection::connect()";
     if (m_port)
     {
         //Port already exists
@@ -245,6 +273,10 @@ bool SerialConnection::connect()
     }
     m_port = new QSerialPort();
     QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(readyRead()));
+    QObject::connect(m_port, SIGNAL(destroyed(QObject*)),this,SLOT(connectionDestroyed(QObject*)));
+    QObject::connect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
+                     this, SLOT(portError(QSerialPort::SerialPortError)), Qt::UniqueConnection);
+
     m_port->setPortName(m_portName);
 
     if (!m_port->open(QIODevice::ReadWrite))
@@ -259,7 +291,7 @@ bool SerialConnection::connect()
             return false;
         }
         QLOG_ERROR() << "Error opening port" << m_port->errorString() << "trying again...";
-        QTimer::singleShot(1000,this,SLOT(connect()));
+        QTimer::singleShot(1000,this, SLOT(connect()));
         return false;
     }
     if (!m_port->setBaudRate(m_baud))
@@ -356,6 +388,7 @@ qint64 SerialConnection::getConnectionSpeed() const
 
 bool SerialConnection::disconnect()
 {
+    QLOG_DEBUG() << "SerialConnection::disconnect()" << m_port;
     if (m_port)
     {
         m_port->close();
@@ -382,14 +415,18 @@ void SerialConnection::writeBytes(const char* buf,qint64 size)
 {
     if (m_port)
     {
-        m_port->write(buf,size);
+        int error = m_port->write(buf,size);
+        if (error == -1) {
+            QLOG_DEBUG() << "serial connecton: write error = " << error;
+        }
     }
 }
 
 void SerialConnection::readBytes()
 {
-
+    QLOG_DEBUG() << "serial connection: read bytes";
 }
+
 bool SerialConnection::setBaudRateString(QString rate)
 {
     bool ok;
