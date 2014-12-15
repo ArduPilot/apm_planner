@@ -1128,7 +1128,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
         }
         QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << name);
         child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
-        child->setCheckState(0,Qt::Unchecked);
+        child->setCheckState(0,Qt::Checked); // Set it checked, since all items are enabled by default
         ui.sortSelectTreeWidget->addTopLevelItem(child);
         QLOG_DEBUG() << record.value(0) << record.value(1) << record.value(2) << record.value(3) << record.value(4) << record.value(5);
         //rowlist.clear();
