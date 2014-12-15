@@ -419,7 +419,10 @@ void AP2DataPlotThread::loadBinaryLog()
                                     {
                                         quint8 ch;
                                         packetstream >> ch;
-                                        val += static_cast<char>(ch);
+                                        if (ch)
+                                        {
+                                            val += static_cast<char>(ch);
+                                        }
                                     }
                                     nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + val;
@@ -431,7 +434,10 @@ void AP2DataPlotThread::loadBinaryLog()
                                     {
                                         quint8 ch;
                                         packetstream >> ch;
-                                        val += static_cast<char>(ch);
+                                        if (ch)
+                                        {
+                                            val += static_cast<char>(ch);
+                                        }
                                     }
                                     nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + val;
@@ -443,7 +449,10 @@ void AP2DataPlotThread::loadBinaryLog()
                                     {
                                         quint8 ch;
                                         packetstream >> ch;
-                                        val += static_cast<char>(ch);
+                                        if (ch)
+                                        {
+                                            val += static_cast<char>(ch);
+                                        }
                                     }
                                     nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + val;
