@@ -81,7 +81,7 @@ Rectangle {
     property color onHoverbuttonColor: "black"
     property color onHoverColor: "lightGrey"
     property color borderColor: "black"
-    property color onSelectedColor: "#777777"
+    property color onSelectedColor: "#AA777777"
 
     MouseArea {
         id: buttonMouseArea

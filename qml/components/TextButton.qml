@@ -40,8 +40,8 @@ Rectangle {
 
     // Highlighting and ativation section
     property color buttonColor: "black"
-    property color onHoverbuttonColor: "lightblue"
-    property color onHoverColor: "darkblue"
+    property color onHoverbuttonColor: "darkGrey"
+    property color onHoverColor: "darkGrey"
     property color borderColor: "white"
 
     Rectangle {
@@ -73,10 +73,12 @@ Rectangle {
                 onEntered: {
                     parent.border.color = onHoverColor
                     parent.color = onHoverbuttonColor
+                    textButtonLabel.color = "black"
                 }
                 onExited: {
                     parent.border.color = borderColor
                     parent.color = buttonColor
+                    textButtonLabel.color = "white"
                 }
                 onPressed: parent.color = Qt.darker(onHoverbuttonColor, 1.5)
                 onReleased: parent.color = buttonColor
