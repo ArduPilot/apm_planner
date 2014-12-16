@@ -55,9 +55,50 @@ QPlainTextEdit {
 }
 
 QComboBox {
-border: 1px solid #777777;
-    border-radius: 2px;
-    }
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+}
+
+QComboBox:editable {
+    background: black;
+}
+
+QComboBox:!editable, QComboBox::drop-down:editable {
+    background: black
+}
+
+/* QComboBox gets the "on" state when the popup is open */
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+background: darkgrey;
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+    padding-top: 3px;
+    padding-left: 4px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox::down-arrow {
+    image: url(://files/images/components/1downarrow.png);
+}
+
+QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+    top: 1px;
+    left: 1px;
+}
 
 /* QCheckBox::indicator:checked {
      background-color: #379AC3;
@@ -87,17 +128,17 @@ border: 1px solid #777777;
      font: bold 8px;
      color: #DDDDDF;
  }
- 
+
  QMainWindow::separator {
     background-color: #323235;
     width: 4px; /* when vertical */
     height: 4px; /* when horizontal */
  }
- QMainWindow::separator:hover { 
+ QMainWindow::separator:hover {
     background: rgb(0, 0, 255);
  }
 
- 
+
  QGCToolWidgetItem {
 	border: 1px solid #66666B;
 	border-radius: 3px;
@@ -290,7 +331,7 @@ QSlider::groove:horizontal {
      margin: -5px 0; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
      border-radius: 3px;
  }
- 
+
  QSlider::groove:vertical {
      border: 1px solid #999999;
      width: 4px; /* the groove expands to the size of the slider by default. by giving it a height, it has a fixed size */
