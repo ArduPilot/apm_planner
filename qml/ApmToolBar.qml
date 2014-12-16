@@ -305,6 +305,8 @@ Rectangle {
             id: currentUasName
             label: "MAV ID"
             enabled: !connectionWidget.disable
+
+            onClicked: globalObj.showConnectionDialog()
         }
 
         TextButton {
