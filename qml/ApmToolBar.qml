@@ -68,6 +68,16 @@ Rectangle {
         terminalView.visible = state
     }
 
+    function clearHighlightedButtons(){
+        console.log("APMToolBar: clear selected buttons")
+        flightDataView.setUnselected()
+        flightPlanView.setUnselected()
+        initialSetupView.setUnselected()
+        configTuningView.setUnselected()
+        plotView.setUnselected()
+        terminalView.setUnselected()
+    }
+
     width: toolbar.width
     height: 72
     color: "black"
@@ -132,8 +142,11 @@ Rectangle {
             id: flightDataView
             label: "FLIGHT DATA"
             image: "./resources/apmplanner/toolbar/flightdata.png"
+            selected: true
             onClicked: {
+                clearHighlightedButtons()
                 globalObj.triggerFlightView()
+                setSelected()
             }
         }
 
@@ -141,7 +154,11 @@ Rectangle {
             id: flightPlanView
             label: "FLIGHT PLAN"
             image: "./resources/apmplanner/toolbar/flightplanner.png"
-            onClicked: globalObj.triggerFlightPlanView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerFlightPlanView()
+                setSelected()
+            }
         }
 
         Button {
@@ -149,7 +166,11 @@ Rectangle {
             label: "INITIAL SETUP"
             image: "./resources/apmplanner/toolbar/light_initialsetup_icon.png"
 //            margins: 8
-            onClicked: globalObj.triggerInitialSetupView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerInitialSetupView()
+                setSelected()
+            }
         }
 
         Button {
@@ -157,14 +178,22 @@ Rectangle {
             label: "CONFIG/TUNING"
             image: "./resources/apmplanner/toolbar/light_tuningconfig_icon.png"
 //            margins: 8
-            onClicked: globalObj.triggerConfigTuningView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerConfigTuningView()
+                setSelected()
+            }
         }
 
         Button {
             id: plotView
             label: "GRAPHS"
             image: "./resources/apmplanner/toolbar/simulation.png"
-            onClicked: globalObj.triggerPlotView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerPlotView()
+                setSelected()
+            }
         }
 
 // [TODO] removed from toolbar until we have simulation working
@@ -179,7 +208,11 @@ Rectangle {
             id: terminalView
             label: "TERMINAL"
             image: "./resources/apmplanner/toolbar/terminal.png"
-            onClicked: globalObj.triggerTerminalView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerTerminalView()
+                setSelected()
+            }
             visible: false
         }
 
@@ -304,7 +337,10 @@ Rectangle {
             image: "./resources/apmplanner/toolbar/connect.png"
             enabled: !connectionWidget.disable
 
-            onClicked: globalObj.connectMAV()
+            onClicked: {
+                globalObj.connectMAV()
+                setUnselected()
+            }
         }
 
         Rectangle { // Spacer
