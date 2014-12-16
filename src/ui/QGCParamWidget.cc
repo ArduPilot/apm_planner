@@ -1084,7 +1084,6 @@ void QGCParamWidget::requestParameterUpdate(int component, const QString& parame
     if (mav) mav->requestParameter(component, parameter);
 }
 
-
 /**
  * @param component the subsystem which has the parameter
  * @param parameterName name of the parameter, as delivered by the system
@@ -1102,13 +1101,21 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
         statusLabel->setText(tr("REJ. %1 > max").arg(value.toDouble()));
         return;
     }
-    if (parameters.value(component)->value(parameterName) == value)
+
+    QMap<QString, QVariant>* parameterList = parameters.value(component);
+
+    if (parameterList == NULL){
+        QLOG_ERROR() << " No parameter list for component: " << component;
+        return;
+    }
+
+    if (parameterList->value(parameterName) == value)
     {
         statusLabel->setText(tr("REJ. %1 > max").arg(value.toDouble()));
         return;
     }
 
-    switch (parameters.value(component)->value(parameterName).type())
+    switch (parameterList->value(parameterName).type())
     {
     case QVariant::Char:
     {
@@ -1140,7 +1147,7 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
     }
         break;
     default:
-        qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE. PARAM NAME:" << parameterName << "Type:" << parameters.value(component)->value(parameterName).type();
+        qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE. PARAM NAME:" << parameterName << "Type:" << parameterList->value(parameterName).type();
         return;
     }
 
