@@ -35,9 +35,8 @@ QGroupBox::title {
 }
 
 QCheckBox {
-	/*background-color: #252528;*/
-	padding: 3px 3px 3px 3px;
 	color: #222221;
+	padding: 3px 3px 3px 3px;
 }
 
 QCheckBox::indicator {

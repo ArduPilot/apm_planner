@@ -24,9 +24,8 @@ QGroupBox {
 }
 
 QCheckBox {
-    /*background-color: #252528;*/
     color: #DDDDDF;
-    border: 1px solid #777777;
+    padding: 3px 3px 3px 3px;
 }
 
 /*QCheckBox::indicator {
