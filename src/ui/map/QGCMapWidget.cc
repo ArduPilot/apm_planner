@@ -22,6 +22,9 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     homeAltitude(0),
     uas(NULL)
 {
+    // Set the map cache directory
+    configuration->SetCacheLocation(QGC::appDataDirectory() + "/mapscache/");
+
     currWPManager = UASManager::instance()->getActiveUASWaypointManager();
     waypointLines.insert(0, new QGraphicsItemGroup(map));
     connect(currWPManager, SIGNAL(waypointEditableListChanged(int)), this, SLOT(updateWaypointList(int)));
