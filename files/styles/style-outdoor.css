@@ -76,6 +76,33 @@ QCheckBox::indicator:indeterminate:pressed {
 image: url(:/files/images/checkbox_indeterminate_pressed.png);
 }*/
 
+QRadioButton{
+	width: 13px;
+	height: 13px;
+	padding: 3px 3px 3px 3px;
+}
+
+QRadioButton::indicator{
+	border: 1px solid #111111;
+	border-radius: 5px;
+	color: #FFFFFF;
+	width: 10px;
+	height: 10px;
+	margin: 2px 2px 2px 2px;
+}
+
+QRadioButton::indicator:unchecked:pressed {
+	background-color: #286e08;
+}
+
+QRadioButton::indicator:checked {
+	background-color: #49c70f;
+}
+
+QRadioButton::indicator:checked:pressed {
+	background-color: #AAAAAA;
+}
+
 /*QComboBox {
 	border: 1px solid #111111;
 	border-radius: 2px;
