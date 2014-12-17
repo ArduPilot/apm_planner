@@ -94,7 +94,7 @@ QRadioButton::indicator:checked:pressed {
 }
 
 QLineEdit {
-border: 1px solid #777777;
+    border: 1px solid #777777;
     border-radius: 2px;
 }
 
@@ -122,12 +122,16 @@ QComboBox:editable {
 }
 
 QComboBox:!editable, QComboBox::drop-down:editable {
-    background: black
+    background: transparent
 }
 
 /* QComboBox gets the "on" state when the popup is open */
 QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-background: darkgrey;
+    background: solid darkgrey;
+}
+
+QComboBox:!editable:off, QComboBox::drop-down:editable:on {
+    background: solid green;
 }
 
 QComboBox:on { /* shift the text when the popup opens */
@@ -151,7 +155,8 @@ QComboBox::down-arrow {
     image: url(://files/images/components/1downarrow.png);
 }
 
-QComboBox::down-arrow:on { /* shift the arrow when popup is open */
+/* shift the arrow when popup is open */
+QComboBox::down-arrow:on {
     top: 1px;
     left: 1px;
 }
