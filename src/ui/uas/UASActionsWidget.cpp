@@ -43,7 +43,7 @@ void UASActionsWidget::setupApmCopterModes()
     ui.armedStatuslabel->setVisible(true);
 
     // Setup configurable shortcut action
-    ui.opt1ModeButton->setText("none");
+    ui.opt1ModeButton->setText("Pos Hold");
     ui.opt2ModeButton->setText("Acro");
     ui.opt3ModeButton->setText("Alt Hold");
     ui.opt4ModeButton->setText("Land");

@@ -209,7 +209,7 @@ QString ApmCopter::stringForMode(int aMode) {
         return "Reserved";
         break;
     case POS_HOLD:
-        return "Position Hold";
+        return "Pos Hold";
         break;
     case AUTOTUNE:
         return "Autotune";
