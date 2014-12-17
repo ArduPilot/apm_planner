@@ -21,7 +21,7 @@ QGroupBox {
 	border: 1px solid #222216;
 	border-radius: 3px;
 	padding: 0px 0px 0px 0px;
-	margin-top: 3ex;/* leave space at the top for the title */
+	margin-top: 2ex;/* leave space at the top for the title */
 	margin-bottom: 1ex;/* leave space at the top for the title */
 }
 

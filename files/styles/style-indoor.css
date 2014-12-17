@@ -19,8 +19,9 @@ QWidget {
 QGroupBox {
     border: 1px solid #66666B;
     border-radius: 3px;
-    padding: 10px 0px 0px 0px;
-    margin-top: 1ex; /* leave space at the top for the title */
+    padding: 0px 0px 0px 0px;
+    margin-top: 2ex;/* leave space at the top for the title */
+    margin-bottom: 1ex;/* leave space at the top for the title */
 }
 
 QCheckBox {
