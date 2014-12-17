@@ -21,7 +21,8 @@ Item {
     property real rollAngle : 0
     property real pitchAngle: 0
     property bool enableBackgroundVideo: false
-    property real scale: 1.0
+    property real scale: 0.7
+    property real rollOffsetY: 0
 
     width: parent.width
     height: parent.height
@@ -91,14 +92,16 @@ Item {
         anchors { bottom: parent.verticalCenter; horizontalCenter: parent.horizontalCenter}
         z: 1
         source: "../resources/components/rollPitchIndicator/rollGraticule.svg"
-        scale: scale
+        scale: parent.scale
         smooth: true
-        transform: Rotation {
+        transform: [Rotation {
             origin.x: 157.5
             origin.y: 200
             //horizon angle
             angle: -rollAngle
-        }
+            }, Translate {
+                y: parent.y + rollOffsetY
+            }]
         Image {
             source: "../resources/components/rollPitchIndicator/rollPointer.svg"
             transform: Rotation {

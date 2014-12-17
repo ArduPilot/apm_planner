@@ -43,7 +43,6 @@ Rectangle {
         //Code to make display show a lack of connection here.
     }
 
-
     onShowStatusMessageChanged: {
         statusMessageTimer.start()
     }
