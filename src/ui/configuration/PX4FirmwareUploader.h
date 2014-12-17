@@ -84,7 +84,7 @@ signals:
 
     void requestDevicePlug();
     void devicePlugDetected();
-    void done();
+    void complete();
     void serialNumber(QString sn);
     void OTP(QString otp);
     void boardRev(int rev);

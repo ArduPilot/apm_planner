@@ -744,7 +744,7 @@ void PX4FirmwareUploader::portReadyRead()
                 m_port->close();
                 m_port->deleteLater(); //We're in a slot for m_port, so don't delete it now.
                 m_port = NULL; //But since we called deleteLater, it's safe to clear it out, Qt promises.
-                emit done();
+                emit complete();
             }
             return;
         }
@@ -764,7 +764,7 @@ void PX4FirmwareUploader::portReadyRead()
                 m_port->close();
                 m_port->deleteLater();
                 m_port = 0;
-                emit done();
+                emit complete();
                 return;
             }
             //We've read the checksum

@@ -31,34 +31,39 @@ This file is part of the APM_PLANNER project
 #include <QTimer>
 #include <QSettings>
 #include "arduino_intelhex.h"
+
 #define ATMEGA2560CHIPID QByteArray().append(0x1E).append(0x98).append(0x01)
+
+static const QString DEFAULT_FIRMWARE_TYPE = "stable";
+static const QString DEFAULT_AUTOPILOT_HW_TYPE = "apm";
+
+
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
-    m_notificationOfUpdate(false)
+    m_throwPropSpinWarning(false),
+    m_replugRequestMessageBox(0),
+    m_px4UnplugTimer(0),
+    m_px4uploader(NULL),
+    m_arduinoUploader(NULL),
+    m_firmwareType(DEFAULT_FIRMWARE_TYPE),
+    m_autopilotType(DEFAULT_AUTOPILOT_HW_TYPE),
+    m_hasError(0),
+    m_timeoutCounter(0),
+    m_betaFirmwareChecked(false),
+    m_trunkFirmwareChecked(false),
+    m_tempFirmwareFile(NULL),
+    m_notificationOfUpdate(false),
+    m_isAdvancedMode(false)
 {
     ui.setupUi(this);
-    m_timeoutCounter=0;
-    m_throwPropSpinWarning = false;
-    m_port=0;
-    m_hasError=0;
-    //firmwareStatus = 0;
-    m_replugRequestMessageBox = 0;
-    m_px4UnplugTimer=0;
-    m_betaFirmwareChecked = false;
-    m_trunkFirmwareChecked = false;
-    m_tempFirmwareFile=NULL;
     ui.progressBar->setVisible(false);
     ui.cancelPushButton->setVisible(false);
     ui.rebootButton->setVisible(false);
     ui.warningLabel->setVisible(false);
     ui.textBrowser->setVisible(false);
-    m_firmwareType = "stable";
-    m_autopilotType = "apm";
-    m_px4uploader = 0;
-    m_isPx4 = false;
-    m_isAdvancedMode = false;
 
     loadSettings();
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
+
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     if (settings.contains("ADVANCED_MODE"))
@@ -247,7 +252,7 @@ void ApmFirmwareConfig::uasConnected()
 }
 void ApmFirmwareConfig::cancelButtonClicked()
 {
-    if (m_isPx4 && !m_px4uploader)
+    if(!m_arduinoUploader && !m_px4uploader)
     {
         return;
     }
@@ -255,35 +260,28 @@ void ApmFirmwareConfig::cancelButtonClicked()
     {
         return;
     }
-    if (m_isPx4)
+    cleanUp();
+    ui.statusLabel->setText("Flashing Canceled");
+}
+
+void ApmFirmwareConfig::cleanUp()
+{
+    // stop and cleanup an operation
+    if (m_px4uploader)
     {
-        m_px4uploader->stop();
-        m_px4uploader->wait(250);
-        ui.statusLabel->setText("Flashing Canceled");
-        m_px4uploader->deleteLater();
-        m_px4uploader = 0;
-        if (m_px4UnplugTimer)
-        {
-            m_px4UnplugTimer->stop();
-            m_px4UnplugTimer->deleteLater();
-            m_px4UnplugTimer = 0;
-        }
-        if (m_replugRequestMessageBox)
-        {
-            m_replugRequestMessageBox->hide();
-            m_replugRequestMessageBox->deleteLater();
-            m_replugRequestMessageBox = 0;
-        }
+        QLOG_DEBUG() << "PX4 Flashing Cleanup";
+        px4Cleanup();
         return;
     }
-    else
+    else if (m_arduinoUploader)
     {
-        if (m_arduinoUploader)
-        {
-            m_arduinoUploader->abortLoading();
-        }
+        m_arduinoUploader->abortLoading();
+        m_arduinoUploader->wait(500);
+        m_arduinoUploader->deleteLater();
+        m_arduinoUploader = NULL;
     }
 }
+
 void ApmFirmwareConfig::px4StatusUpdate(QString update)
 {
     ui.statusLabel->setText(update);
@@ -518,13 +516,26 @@ void ApmFirmwareConfig::px4Error(QString error)
     QMessageBox::information(0,tr("Error"),tr("Error during upload:") + error);
     ui.statusLabel->setText(tr("Error during upload"));
 }
-void ApmFirmwareConfig::px4Terminated()
+void ApmFirmwareConfig::px4Cleanup()
 {
-    if (m_px4uploader)
-    {
+    QLOG_DEBUG() << "px4cleanup resources";
+    if (m_px4uploader){
+        m_px4uploader->stop();
+        m_px4uploader->wait(250);
         m_px4uploader->deleteLater();
-        m_px4uploader = 0;
-        m_isPx4 = false;
+        m_px4uploader = NULL;
+    }
+
+    if (m_px4UnplugTimer){
+        m_px4UnplugTimer->stop();
+        m_px4UnplugTimer->deleteLater();
+        m_px4UnplugTimer = 0;
+    }
+
+    if (m_replugRequestMessageBox) {
+        m_replugRequestMessageBox->hide();
+        m_replugRequestMessageBox->deleteLater();
+        m_replugRequestMessageBox = 0;
     }
 }
 
@@ -539,6 +550,8 @@ void ApmFirmwareConfig::px4Finished()
         ui.statusLabel->setText(tr("Flashing FAILED!"));
         QMessageBox::critical(this,"FAILED","PX4 Flashing failed!");
     }
+
+    cleanUp();
 
     emit showBlankingScreen();
     ui.progressBar->setVisible(false);
@@ -611,15 +624,14 @@ void ApmFirmwareConfig::downloadFinished()
             QLOG_FATAL() << "Tried to load PX4 Firmware when it was already started!";
             return;
         }
-        m_isPx4 = true;
         m_px4uploader = new PX4FirmwareUploader();
         connect(m_px4uploader,SIGNAL(statusUpdate(QString)),this,SLOT(px4StatusUpdate(QString)));
         connect(m_px4uploader,SIGNAL(debugUpdate(QString)),this,SLOT(px4DebugUpdate(QString)));
-        connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Terminated()));
+        connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Cleanup()));
         connect(m_px4uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
         connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
         connect(m_px4uploader,SIGNAL(warning(QString)),this,SLOT(px4Warning(QString)));
-        connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
+        connect(m_px4uploader,SIGNAL(complete()),this,SLOT(px4Finished()));
         connect(m_px4uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
         connect(m_px4uploader,SIGNAL(devicePlugDetected()),this,SLOT(devicePlugDetected()));
         m_px4uploader->loadFile(filename);
@@ -1126,8 +1138,7 @@ void ApmFirmwareConfig::arduinoError(QString error)
     ui.statusLabel->setText(error);
     ui.textBrowser->append(error);
     QMessageBox::information(0,"Error",error);
-    m_arduinoUploader->deleteLater();
-    m_arduinoUploader = NULL;
+    cleanUp();
     if (m_tempFirmwareFile) m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
     m_tempFirmwareFile = NULL;
     ui.progressBar->setVisible(false);
@@ -1166,6 +1177,7 @@ void ApmFirmwareConfig::arduinoFlashFailed()
 
 void ApmFirmwareConfig::arduinoUploadComplete()
 {
+    cleanUp();
     //Ensure we're reading 100%
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(100);
@@ -1174,7 +1186,7 @@ void ApmFirmwareConfig::arduinoUploadComplete()
     emit showBlankingScreen();
     if (m_throwPropSpinWarning)
     {
-        QMessageBox::information(this,"Warning","As of AC 3.1, motors will spin when armed. This is configurable through the MOT_SPIN_ARMED parameter");
+        QMessageBox::information(parentWidget(),"Warning","As of AC 3.1, motors will spin when armed. This is configurable through the MOT_SPIN_ARMED parameter");
         m_throwPropSpinWarning = false;
     }
     //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
