@@ -28,12 +28,41 @@ QCheckBox {
     padding: 3px 3px 3px 3px;
 }
 
-/*QCheckBox::indicator {
-    border: 1px solid #777777;
-    border-radius: 2px;
+QCheckBox::indicator {
+    border: 1px solid white;
+    border-radius: 1px;
     color: #FFFFFF;
     width: 10px;
     height: 10px;
+    margin: 2px 2px 2px 2px
+}
+
+/*QCheckBox::indicator:unchecked:hover {
+background-color: #81ff3d;
+}*/
+
+QCheckBox::indicator:unchecked:pressed {
+    background-color: #286e08;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #49c70f;
+}
+
+/*QCheckBox::indicator:checked:hover {
+background-color: #AAAAAA;
+}*/
+
+QCheckBox::indicator:checked:pressed {
+    background-color: #AAAAAA;
+}
+
+/* QCheckBox::indicator:indeterminate:hover {
+image: url(:/files/images/checkbox_indeterminate_hover.png);
+}
+
+QCheckBox::indicator:indeterminate:pressed {
+image: url(:/files/images/checkbox_indeterminate_pressed.png);
 }*/
 
 QLineEdit {
@@ -99,25 +128,6 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
     left: 1px;
 }
 
-/* QCheckBox::indicator:checked {
-     background-color: #379AC3;
- }
-
- QCheckBox::indicator:checked:hover {
-     background-color: #379AC3;
- }
-
- QCheckBox::indicator:checked:pressed {
-     background-color: #379AC3;
- }
-
- QCheckBox::indicator:indeterminate:hover {
-     image: url(:/files/images/checkbox_indeterminate_hover.png);
- }
-
- QCheckBox::indicator:indeterminate:pressed {
-     image: url(:/files/images/checkbox_indeterminate_pressed.png);
- }*/
 
  QGroupBox::title {
      subcontrol-origin: margin;
