@@ -80,6 +80,15 @@ void SerialConnection::portError(QSerialPort::SerialPortError serialPortError)
     switch(serialPortError){
     case QSerialPort::ReadError: // Required for commands when the port is open.
     case QSerialPort::WriteError:
+    case QSerialPort::DeviceNotFoundError:
+        {
+            //Windows triggers this when the port disappears
+            //Break out if we're not connected, could be a genuine error.
+            if (!m_isConnected)
+            {
+                break;
+            }
+        }
     case QSerialPort::ResourceError:
         disconnect();
         break;
