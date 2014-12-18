@@ -584,6 +584,10 @@ QString ArduPilotMegaMAV::getNameFromEventId(int ecode)
     {
         ecodestring = "Takeoff";
     }
+    else if (ecode == 17)
+    {
+        ecodestring = "Land Complete Maybe";
+    }
     else if (ecode == 18)
     {
         ecodestring = "Land Complete";
@@ -599,6 +603,70 @@ QString ArduPilotMegaMAV::getNameFromEventId(int ecode)
     else if (ecode == 28)
     {
         ecodestring = "Not Landed";
+    }
+    else if (ecode == 30)
+    {
+        ecodestring = "Autotune Initialized";
+    }
+    else if (ecode == 31)
+    {
+        ecodestring = "Autotune Off";
+    }
+    else if (ecode == 32)
+    {
+        ecodestring = "Autotune Restart";
+    }
+    else if (ecode == 33)
+    {
+        ecodestring = "Autotune Success";
+    }
+    else if (ecode == 34)
+    {
+        ecodestring = "Autotune Failed";
+    }
+    else if (ecode == 35)
+    {
+        ecodestring = "Autotune Reached Limit";
+    }
+    else if (ecode == 36)
+    {
+        ecodestring = "Autotune Pilot Testing";
+    }
+    else if (ecode == 37)
+    {
+        ecodestring = "Autotune Saved Gains";
+    }
+    else if (ecode == 38)
+    {
+        ecodestring = "Save Trim";
+    }
+    else if (ecode == 39)
+    {
+        ecodestring = "Add WP";
+    }
+    else if (ecode == 40)
+    {
+        ecodestring = "WP Clear Mission RTL";
+    }
+    else if (ecode == 41)
+    {
+        ecodestring = "Fence Enable";
+    }
+    else if (ecode == 42)
+    {
+        ecodestring = "Fence Disable";
+    }
+    else if (ecode == 49)
+    {
+        ecodestring = "Parachute Disabled";
+    }
+    else if (ecode == 50)
+    {
+        ecodestring = "Parachute Enabled";
+    }
+    else if (ecode == 51)
+    {
+        ecodestring = "Parachute Released";
     }
     else
     {
