@@ -1,5 +1,5 @@
-APM Planner
-===========
+APM Planner 2.0
+===============
 
 Project:
 http://github.com/diydrones/apm_planner
