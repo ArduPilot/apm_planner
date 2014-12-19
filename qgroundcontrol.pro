@@ -441,7 +441,6 @@ HEADERS += \
     src/ui/HUD.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
-    src/ui/CameraView.h \
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
     src/comm/TCPLink.h \
@@ -658,7 +657,6 @@ SOURCES += src/main.cc \
     src/ui/uas/UASInfoWidget.cc \
     src/ui/HUD.cc \
     src/ui/uas/UASView.cc \
-    src/ui/CameraView.cc \
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
     src/comm/TCPLink.cc \
