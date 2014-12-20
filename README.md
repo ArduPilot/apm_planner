@@ -16,6 +16,8 @@ Developer Chat: https://gitter.im/diydrones/apm_planner
 
 Documentation
 =============
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/diydrones/apm_planner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 see http://planner2.ardupilot.com
 
 
