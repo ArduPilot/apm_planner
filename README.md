@@ -18,17 +18,10 @@ Documentation
 =============
 see http://planner2.ardupilot.com
 
-
 Mac OS X
 ========
 
 To build on Mac OS X (10.6 or later):
-
-Install SDL
------------
-1) Download SDL from:  <http://www.libsdl.org/release/SDL-1.2.14.dmg>
-
-2) From the SDL disk image, copy the `sdl.framework` bundle to `/Library/Frameworks` directory (if you are not an admin copy to `~/Library/Frameworks`)
 
 Install QT
 -----------
