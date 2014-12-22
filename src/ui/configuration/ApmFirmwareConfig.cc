@@ -99,6 +99,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(0);
 
+    ui.textBrowser->setVisible(ui.showOutputCheckBox->isChecked());
     connect(ui.showOutputCheckBox,SIGNAL(clicked(bool)),ui.textBrowser,SLOT(setVisible(bool)));
 
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
@@ -144,6 +145,7 @@ void ApmFirmwareConfig::loadSettings()
     settings.beginGroup("APM_FIRMWARE_CONFIG");
     m_enableUpdateCheck = settings.value("ENABLE_UPDATE_CHECK",true).toBool();
     m_lastVersionSkipped = settings.value("VERSION_LAST_SKIPPED", "0.0.0" ).toString();
+    ui.showOutputCheckBox->setChecked(settings.value("SHOW_OUTPUT", Qt::Unchecked).toBool());
 
     settings.endGroup();
 }
@@ -155,6 +157,7 @@ void ApmFirmwareConfig::storeSettings()
     settings.beginGroup("APM_FIRMWARE_CONFIG");
     settings.setValue("ENABLE_UPDATE_CHECK", m_enableUpdateCheck);
     settings.setValue("VERSION_LAST_SKIPPED", m_lastVersionSkipped);
+    settings.setValue("SHOW_OUTPUT", ui.showOutputCheckBox->isChecked());
     settings.endGroup();
     settings.sync();
     QLOG_DEBUG() << "Storing settings!";
@@ -1126,7 +1129,9 @@ void ApmFirmwareConfig::parameterChanged(int uas, int component, QString paramet
 
 ApmFirmwareConfig::~ApmFirmwareConfig()
 {
+    storeSettings();
 }
+
 void ApmFirmwareConfig::arduinoUploadStarted()
 {
     ui.progressBar->setValue(0);
