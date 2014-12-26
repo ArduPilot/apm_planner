@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1004</width>
-    <height>633</height>
+    <height>668</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,7 +52,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>60</width>
+           <width>30</width>
            <height>20</height>
           </size>
          </property>
@@ -62,6 +62,13 @@
         <widget class="QPushButton" name="resetDefaultsButton">
          <property name="text">
           <string>Restore Defaults</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="flashPushButton">
+         <property name="text">
+          <string>Flash FW</string>
          </property>
         </widget>
        </item>
@@ -1057,7 +1064,6 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
   <zorder>label</zorder>
-  <zorder>horizontalSpacer_2</zorder>
   <zorder></zorder>
  </widget>
  <resources/>

@@ -58,6 +58,8 @@ private slots:
     void loadSavedSerialSettings();
     void saveSerialSettings();
 
+    void flashButtonClicked();
+
     void writeLocalRadioSettings();
     void writeRemoteRadioSettings();
     void readRadioSettings();

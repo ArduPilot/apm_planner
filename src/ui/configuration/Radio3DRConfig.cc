@@ -25,6 +25,7 @@ This file is part of the APM_PLANNER project
 #include "SerialSettingsDialog.h"
 #include "Radio3DRConfig.h"
 #include "Radio3DRSettings.h"
+#include "RadioFlashWizard.h"
 
 #include "configuration.h"
 
@@ -183,6 +184,7 @@ void Radio3DRConfig::initConnections()
     connect(ui.loadSettingsButton, SIGNAL(clicked()), this, SLOT(readRadioSettings()));
     connect(ui.saveSettingsButton, SIGNAL(clicked()), this, SLOT(writeRemoteRadioSettings()));
     connect(ui.resetDefaultsButton, SIGNAL(clicked()), this, SLOT(resetRemoteRadioSettingsToDefaults()));
+    connect(ui.flashPushButton, SIGNAL(clicked()), this, SLOT(flashButtonClicked()));
     connect(ui.copyToRemoteButton, SIGNAL(clicked()), this, SLOT(copyLocalSettingsToRemote()));
 
     connect(ui.settingsButton, SIGNAL(released()), m_settingsDialog, SLOT(show()));
@@ -609,5 +611,12 @@ void Radio3DRConfig::resetLocalRadioSettingsToDefaults()
         m_radioSettings->resetLocalRadioToDefaults();
         m_state = complete;
     }
+}
+
+void Radio3DRConfig::flashButtonClicked()
+{
+    QLOG_DEBUG() << "Radio Falsh Wizard Started";
+    RadioFlashWizard* flashRadioWizard = new RadioFlashWizard(this);
+    flashRadioWizard->exec();
 }
 

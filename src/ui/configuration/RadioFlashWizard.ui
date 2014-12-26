@@ -79,7 +79,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QComboBox" name="portComboBox">
+   <widget class="QComboBox" name="baudrateComboBox">
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -105,14 +105,14 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>220</x>
       <y>30</y>
-      <width>26</width>
+      <width>55</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>port</string>
+     <string>baudrate</string>
     </property>
    </widget>
   </widget>

@@ -3,6 +3,8 @@
 
 #include <QWizard>
 
+class QProcess;
+
 namespace Ui {
 class RadioFlashWizard;
 }
@@ -18,10 +20,17 @@ public:
     void accept();
 
 private slots:
+    void selectPage(int index);
+
+    void portSelectionShown();
     void flashRadio();
+    void standardOutputReady();
+    void processFinished(int exitCode);
 
 private:
     Ui::RadioFlashWizard *ui;
+
+    QProcess* m_updateProcess;
 
     QString m_portName;
     int m_baudRate;
