@@ -8,6 +8,8 @@
     #pragma warning pop
   #elif defined __clang__
     #pragma clang diagnostic pop
+  #elif defined(__GNUC__) || defined(__GNUG__)
+    #pragma GCC diagnostic pop
   #endif
 #endif
 

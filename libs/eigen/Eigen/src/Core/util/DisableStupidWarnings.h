@@ -37,6 +37,13 @@
     #pragma clang diagnostic push
   #endif
   #pragma clang diagnostic ignored "-Wconstant-logical-operand"
+#elif defined(__GNUC__) || defined(__GNUG__)
+  #ifndef EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
+    #pragma GCC diagnostic push
+  #endif
+  #pragma GCC diagnostic ignored "-Wenum-compare"
+  #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+  #pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #endif
 
 #endif // not EIGEN_WARNINGS_DISABLED
