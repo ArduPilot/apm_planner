@@ -108,8 +108,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     connect(ui.hideExcelView,SIGNAL(clicked(bool)),ui.tableWidget,SLOT(setHidden(bool)));
     connect(ui.tableWidget,SIGNAL(currentCellChanged(int,int,int,int)),this,SLOT(tableCellChanged(int,int,int,int)));
 
-    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
-
+    ui.logTypeLabel->setText(DATA_PLOT_LIVE_DATA);
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
     model = new QStandardItemModel();
@@ -731,7 +730,7 @@ void AP2DataPlot2D::loadButtonClicked()
         ui.hideExcelView->setVisible(false);
         ui.hideExcelView->setChecked(false);
         ui.tableWidget->setVisible(false);
-        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+        ui.logTypeLabel->setText(DATA_PLOT_LIVE_DATA);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
@@ -772,7 +771,9 @@ void AP2DataPlot2D::loadDialogAccepted()
     m_graphCount=0;
     m_dataList.clear();
 
-    ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#ff0000;\">Offline Log Loaded: " + m_filename.mid(m_filename.lastIndexOf("/")+1) + "</span></p>");
+    QString logTitle = DATA_PLOT_LOG_LOADED;
+    QString filename =m_filename.mid(m_filename.lastIndexOf("/")+1);
+    ui.logTypeLabel->setText( logTitle.arg(filename));
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
@@ -1063,7 +1064,7 @@ void AP2DataPlot2D::clearGraph()
         ui.hideExcelView->setVisible(false);
         ui.hideExcelView->setChecked(false);
         ui.tableWidget->setVisible(false);
-        ui.logTypeLabel->setText("<p align=\"center\"><span style=\" font-size:24pt; color:#0000ff;\">Live Data</span></p>");
+        ui.logTypeLabel->setText(DATA_PLOT_LIVE_DATA);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
