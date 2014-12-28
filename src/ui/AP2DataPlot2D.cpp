@@ -26,13 +26,12 @@ static const QString DATA_PLOT_LOG_LOADED = "<p align=\"center\"><span style=\" 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_updateTimer(NULL),
     m_showOnlyActive(false),
-    currentIndex(0),
     m_graphCount(0),
     m_plot(NULL),
     m_wideAxisRect(NULL),
     m_logLoaderThread(NULL),
     m_dataSelectionScreen(NULL),
-    model(NULL),
+    m_model(NULL),
     m_logLoaded(false),
     m_currentIndex(0),
     m_startIndex(0),
@@ -121,7 +120,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     ui.logTypeLabel->setText(DATA_PLOT_LIVE_DATA);
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
-    model = new QStandardItemModel();
+    m_model = new QStandardItemModel();
     connect(ui.toKMLPushButton, SIGNAL(clicked()), this, SIGNAL(toKMLClicked()));
     connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
 
@@ -807,7 +806,6 @@ void AP2DataPlot2D::loadDialogAccepted()
     connect(m_logLoaderThread,SIGNAL(done(int,MAV_TYPE)),this,SLOT(threadDone(int,MAV_TYPE)));
     connect(m_logLoaderThread,SIGNAL(finished()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
-    currentIndex=0;
     m_logLoaderThread->loadFile(m_filename,&m_sharedDb);
 }
 
@@ -831,6 +829,9 @@ AP2DataPlot2D::~AP2DataPlot2D()
         delete m_axisGroupingDialog;
         m_axisGroupingDialog = NULL;
     }
+
+    delete m_model;
+    m_model = NULL;
 }
 void AP2DataPlot2D::itemEnabled(QString name)
 {
@@ -1437,7 +1438,6 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
         }
     }
 
-    //ui.tableWidget->setRowCount(currentIndex);
     m_tableModel = new AP2DataPlot2DModel(&m_sharedDb,this);
     m_tableFilterProxyModel = new QSortFilterProxyModel(this);
     m_tableFilterProxyModel->setSourceModel(m_tableModel);

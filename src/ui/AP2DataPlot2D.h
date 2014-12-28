@@ -156,7 +156,7 @@ private:
     QCPAxisRect *m_wideAxisRect;
     AP2DataPlotThread *m_logLoaderThread;
     DataSelectionScreen *m_dataSelectionScreen;
-    QStandardItemModel *model;
+    QStandardItemModel *m_model;
     bool m_logLoaded;
     //Current "index", X axis on graph. Used to keep all the graphs lined up.
     qint64 m_currentIndex;
