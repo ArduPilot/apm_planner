@@ -19,24 +19,34 @@
 #include "MainWindow.h"
 #include "AP2DataPlot2DModel.h"
 #include "ArduPilotMegaMAV.h"
+
+static const QString DATA_PLOT_LIVE_DATA = "<p align=\"center\"><span style=\" font-size:14pt; color:darkblue;\">Live Data</span></p>";
+static const QString DATA_PLOT_LOG_LOADED = "<p align=\"center\"><span style=\" font-size:14pt; color:darkred;\">Log Loaded: %1</span></p>";
+
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
-    m_uas(NULL),
-    m_logDownloadDialog(NULL),
     m_updateTimer(NULL),
+    m_showOnlyActive(false),
+    currentIndex(0),
+    m_graphCount(0),
+    m_plot(NULL),
+    m_wideAxisRect(NULL),
+    m_logLoaderThread(NULL),
+    m_dataSelectionScreen(NULL),
+    model(NULL),
+    m_logLoaded(false),
+    m_currentIndex(0),
+    m_startIndex(0),
+    m_addGraphAction(NULL),
+    m_uas(NULL),
+    m_progressDialog(NULL),
+    m_axisGroupingDialog(NULL),
     m_tlogReplayEnabled(false),
+    m_logDownloadDialog(NULL),
+    m_droneshareUploadDialog(NULL),
     m_loadedLogMavType(MAV_TYPE_ENUM_END)
 {
-    m_startIndex = 0;
-    m_axisGroupingDialog = 0;
-    m_logLoaderThread= 0;
-    m_logLoaded = false;
-    m_progressDialog=0;
-    m_currentIndex=0;
-    m_graphCount=0;
-    m_showOnlyActive = false;
-
-
     ui.setupUi(this);
+
     connect(ui.sortSelectTreeWidget,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(sortItemChanged(QTreeWidgetItem*,int)));
     connect(ui.sortAcceptPushButton,SIGNAL(clicked()),this,SLOT(sortAcceptClicked()));
     connect(ui.sortCancelPushButton,SIGNAL(clicked()),this,SLOT(sortCancelClicked()));

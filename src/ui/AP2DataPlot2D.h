@@ -114,6 +114,8 @@ private:
     QList<QString> m_tableFilterList;
 
 private:
+    Ui::AP2DataPlot2D ui;
+
     QTimer *m_updateTimer;
     class Graph
     {
@@ -152,7 +154,6 @@ private:
     int m_graphCount;
     QCustomPlot *m_plot;
     QCPAxisRect *m_wideAxisRect;
-    Ui::AP2DataPlot2D ui;
     AP2DataPlotThread *m_logLoaderThread;
     DataSelectionScreen *m_dataSelectionScreen;
     QStandardItemModel *model;
