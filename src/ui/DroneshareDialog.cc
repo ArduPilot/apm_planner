@@ -27,6 +27,8 @@ This file is part of the APM_PLANNER project
 #include <QDesktopServices>
 #include <QPushButton>
 #include <QSettings>
+#include <QDesktopServices>
+#include <QUrl>
 
 DroneshareDialog::DroneshareDialog(QWidget *parent) :
     QDialog(parent),
@@ -39,7 +41,7 @@ DroneshareDialog::DroneshareDialog(QWidget *parent) :
 
     connect(ui->okPushButton, SIGNAL(clicked()), this, SLOT(okClicked()));
     connect(ui->laterPushButton, SIGNAL(clicked()), this, SLOT(laterClicked()));
-//    connect(ui->uploadPushButton, SIGNAL(clicked()), this, SLOT(uploadClicked()));
+    connect(ui->signUpPushButton, SIGNAL(clicked()), this, SLOT(signupClicked()));
 }
 
 DroneshareDialog::~DroneshareDialog()
@@ -67,10 +69,10 @@ void DroneshareDialog::okClicked()
     reject();
 }
 
-void DroneshareDialog::uploadClicked()
+void DroneshareDialog::signupClicked()
 {
-    // TODO: add code to launch the Dronehare Upload Dialog
-    QLOG_DEBUG() << "Dronshare: launch droneshare upload";
+    QLOG_DEBUG() << "Droneshare: signupClicked";
+    QDesktopServices::openUrl(QUrl("http://www.droneshare.com"));
 }
 
 

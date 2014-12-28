@@ -41,7 +41,7 @@ signals:
     void autoUpdateCancelled(QString version);
 
 public slots:
-    void uploadClicked();
+    void signupClicked();
     void laterClicked();
     void okClicked();
 
