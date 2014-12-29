@@ -112,6 +112,8 @@ private:
     AP2DataPlot2DModel *m_tableModel;
     QSortFilterProxyModel *m_tableFilterProxyModel;
     QList<QString> m_tableFilterList;
+    int getStatusTextPos();
+    void plotTextArrow(int index, const QString& text, const QString& graph, QCheckBox *checkBox = NULL);
 
 private:
     Ui::AP2DataPlot2D ui;
@@ -178,6 +180,7 @@ private:
     MAV_TYPE m_loadedLogMavType;
 
     QString m_filename;
+    int m_statusTextPos;
 };
 
 #endif // AP2DATAPLOT2D_H

@@ -42,7 +42,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_tlogReplayEnabled(false),
     m_logDownloadDialog(NULL),
     m_droneshareUploadDialog(NULL),
-    m_loadedLogMavType(MAV_TYPE_ENUM_END)
+    m_loadedLogMavType(MAV_TYPE_ENUM_END),
+    m_statusTextPos(0)
 {
     ui.setupUi(this);
 
@@ -1101,6 +1102,49 @@ void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
     m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
 }
 
+int AP2DataPlot2D::getStatusTextPos()
+{
+    static const int numberOfPositions = 4;
+    m_statusTextPos++;
+    if(m_statusTextPos > numberOfPositions)
+        m_statusTextPos = 1;
+    return m_statusTextPos;
+}
+
+void AP2DataPlot2D::plotTextArrow(int index, const QString &text, const QString& graph, QCheckBox* checkBox)
+{
+    QLOG_DEBUG() << "plotTextArrow:" << index << " to " << graph;
+    int pos = getStatusTextPos();
+    QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+
+    QCPItemText *itemtext = new QCPItemText(m_plot);
+    itemtext->setText(text);
+    itemtext->setPositionAlignment(Qt::AlignLeft | Qt::AlignBottom);
+    itemtext->position->setAxes(xAxis,m_graphClassMap[graph].axis);
+
+    m_graphClassMap[graph].itemList.append(itemtext);
+
+    QCPItemLine *itemline = new QCPItemLine(m_plot);
+    m_graphClassMap[graph].itemList.append(itemline);
+
+    itemline->start->setAxes(xAxis, m_graphClassMap[graph].axis);
+    itemline->start->setCoords(index, pos);
+    itemline->end->setAxes(xAxis, m_graphClassMap[graph].axis);
+    itemline->end->setCoords(index, 0.0);
+    itemline->setTail(QCPLineEnding::esDisc);
+    itemline->setHead(QCPLineEnding::esSpikeArrow);
+
+    m_plot->addItem(itemline);
+    itemtext->position->setCoords(itemline->start->coords());
+    m_plot->addItem(itemtext);
+
+    if (checkBox && !checkBox->isChecked())
+    {
+        itemtext->setVisible(false);
+        itemline->setVisible(false);
+    }
+}
+
 void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
 {
     m_loadedLogMavType = type;
@@ -1241,31 +1285,8 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
                 }
             }
             QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
-            QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
-            QCPItemText *itemtext = new QCPItemText(m_plot);
-            itemtext->setText(mode);
-            itemtext->position->setAxes(xAxis,m_graphClassMap["MODE"].axis);
-            itemtext->position->setCoords((index),1.0);
-            m_plot->addItem(itemtext);
-            m_graphClassMap["MODE"].itemList.append(itemtext);
+            plotTextArrow(index, mode, "MODE",ui.modeDisplayCheckBox);
             m_graphClassMap["MODE"].modeMap[index] = mode;
-
-
-            QCPItemLine *itemline = new QCPItemLine(m_plot);
-            m_graphClassMap["MODE"].itemList.append(itemline);
-            itemline->start->setParentAnchor(itemtext->bottom);
-            itemline->start->setAxes(xAxis, m_graphClassMap["MODE"].axis);
-            itemline->start->setCoords(0.0, 5.0);
-            itemline->end->setAxes(xAxis, m_graphClassMap["MODE"].axis);
-            itemline->end->setCoords((index), 0.0);
-            itemline->setTail(QCPLineEnding::esDisc);
-            itemline->setHead(QCPLineEnding::esSpikeArrow);
-            m_plot->addItem(itemline);
-            if (!ui.modeDisplayCheckBox->isChecked())
-            {
-                itemtext->setVisible(false);
-                itemline->setVisible(false);
-            }
         }
     }
 
@@ -1325,34 +1346,8 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
                 subsys = record.value("Subsys").toString().toInt();
             }
             QPair<QString,QString> errortext = ArduPilotMegaMAV::getErrText(subsys,ecode);
+            plotTextArrow(index, errortext.first + "\n" + errortext.second, "ERR",ui.errDisplayCheckBox);
 
-            //QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
-            QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
-            QCPItemText *itemtext = new QCPItemText(m_plot);
-            itemtext->setText(errortext.first + "\n" + errortext.second);
-            itemtext->position->setAxes(xAxis,m_graphClassMap["ERR"].axis);
-            itemtext->position->setCoords((index),4.0);
-            m_plot->addItem(itemtext);
-            m_graphClassMap["ERR"].itemList.append(itemtext);
-            //m_graphClassMap["ERR"].modeMap[index] = subsystemstring + "\n" + ecodestring;
-
-
-            QCPItemLine *itemline = new QCPItemLine(m_plot);
-            m_graphClassMap["ERR"].itemList.append(itemline);
-            itemline->start->setParentAnchor(itemtext->bottom);
-            itemline->start->setAxes(xAxis, m_graphClassMap["ERR"].axis);
-            itemline->start->setCoords(0.0, 5.0);
-            itemline->end->setAxes(xAxis, m_graphClassMap["ERR"].axis);
-            itemline->end->setCoords((index), 0.0);
-            itemline->setTail(QCPLineEnding::esDisc);
-            itemline->setHead(QCPLineEnding::esSpikeArrow);
-            m_plot->addItem(itemline);
-
-            if (!ui.errDisplayCheckBox->isChecked())
-            {
-                itemtext->setVisible(false);
-                itemline->setVisible(false);
-            }
         }
     }
 
@@ -1412,29 +1407,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
             ecodestring = ArduPilotMegaMAV::getNameFromEventId(ecode);
 
             //QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
-            QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
-            QCPItemText *itemtext = new QCPItemText(m_plot);
-            itemtext->setText(ecodestring);
-            itemtext->position->setAxes(xAxis,m_graphClassMap["EV"].axis);
-            itemtext->position->setCoords((index),2.5);
-            m_plot->addItem(itemtext);
-            m_graphClassMap["EV"].itemList.append(itemtext);
-
-            QCPItemLine *itemline = new QCPItemLine(m_plot);
-            m_graphClassMap["EV"].itemList.append(itemline);
-            itemline->start->setParentAnchor(itemtext->bottom);
-            itemline->start->setAxes(xAxis, m_graphClassMap["EV"].axis);
-            itemline->start->setCoords(0.0, 5.0);
-            itemline->end->setAxes(xAxis, m_graphClassMap["EV"].axis);
-            itemline->end->setCoords((index), 0.0);
-            itemline->setTail(QCPLineEnding::esDisc);
-            itemline->setHead(QCPLineEnding::esSpikeArrow);
-            m_plot->addItem(itemline);
-            if (!ui.evDisplayCheckBox->isChecked())
-            {
-                itemtext->setVisible(false);
-                itemline->setVisible(false);
-            }
+            plotTextArrow(index, ecodestring, "EV",ui.evDisplayCheckBox);
         }
     }
 
