@@ -81,6 +81,12 @@ void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
     m_uasInterface = uas;
 
     if (m_uasInterface) {
+        if (LinkManager::instance()->getUasObject(uas->getUASID()) == NULL)
+        {
+            QLOG_ERROR() << "PrimaryFlightDisplayQML::setActiveUAS() getUasObject(" << uas->getUASID() <<") == NULL!";
+            return;
+        }
+
         connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
                 this,SLOT(uasTextMessage(int,int,int,QString)));
         VehicleOverview* vehicleView = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
