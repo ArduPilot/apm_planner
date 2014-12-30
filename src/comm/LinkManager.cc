@@ -673,9 +673,6 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     case MAV_AUTOPILOT_ARDUPILOTMEGA:
     {
         ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(0, sysid);
-        UASObject *obj = new UASObject();
-        connect(mavlink,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),obj,SLOT(messageReceived(LinkInterface*,mavlink_message_t)));
-        m_uasObjectMap[sysid] = obj;
 
         // Set the system type
         mav->setSystemType((int)heartbeat->type);
@@ -710,6 +707,10 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     }
     break;
     }
+
+    UASObject *obj = new UASObject();
+    connect(mavlink,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),obj,SLOT(messageReceived(LinkInterface*,mavlink_message_t)));
+    m_uasObjectMap[sysid] = obj;
 
     m_uasMap.insert(sysid,uas);
 
