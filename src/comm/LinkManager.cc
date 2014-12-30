@@ -51,10 +51,12 @@ LinkManager::LinkManager(QObject *parent) :
     m_mavlinkProtocol = new MAVLinkProtocol();
     m_mavlinkProtocol->setConnectionManager(this);
     connect(m_mavlinkProtocol,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+    connect(m_mavlinkProtocol,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),this,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
     connect(m_mavlinkProtocol,SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
 
     QTimer::singleShot(500, this, SLOT(reloadSettings()));
 }
+
 
 void LinkManager::reloadSettings()
 {
@@ -576,10 +578,12 @@ void LinkManager::removeSerialConnection(int index)
 {
 
 }
-void LinkManager::messageReceived(LinkInterface* link,mavlink_message_t message)
-{
 
+void LinkManager::receiveMessage(LinkInterface* link,mavlink_message_t message)
+{
+    emit messageReceived(link,message);
 }
+
 UASInterface* LinkManager::getUas(int id)
 {
     if (m_uasMap.contains(id))

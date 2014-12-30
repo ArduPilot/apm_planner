@@ -123,9 +123,10 @@ signals:
     void protocolStatusMessage(QString title,QString text);
     void linkChanged(int linkid);
     void linkError(int linkid, QString message);
+    void messageReceived(LinkInterface* link,mavlink_message_t message);
 
 public slots:
-    void messageReceived(LinkInterface* link,mavlink_message_t message);
+    void receiveMessage(LinkInterface* link,mavlink_message_t message);
     void protocolStatusMessageRec(QString title,QString text);
     void enableLogging(bool enabled);
     void reloadSettings();
