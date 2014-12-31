@@ -70,21 +70,15 @@ static quint32 crc32(const QByteArray src)
     return state;
 }
 
-
-
 PX4FirmwareUploader::PX4FirmwareUploader(QObject *parent) :
     QThread(parent),
-    m_currentOtpAddress(0),
-    m_currentSNAddress(0),
     m_port(NULL),
     m_waitingForSync(false),
     m_checkTimer(NULL),
+    m_currentOtpAddress(0),
+    m_currentSNAddress(0),
     m_eraseTimeoutTimer(NULL)
 {
-
-
-
-
 }
 
 void PX4FirmwareUploader::loadFile(QString filename)
@@ -595,19 +589,43 @@ bool PX4FirmwareUploader::verifyOtp()
     // [TODO] Need to read XML file of list of authorized keys.
 
     // 3DR COA Public Key
-    QString test = "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
-    QByteArray bytes = QByteArray::fromBase64(test.toUtf8());
+    QStringList publicKeyList;
+    // 3DR Public Key 1
+    publicKeyList << "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
+    // 3DR Public Key 2
+    publicKeyList << "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCei8vGvc+jPXfbAAUkiu7o9fiQ\r\nhQ6/xdJcrmsJqa2/Onf4xDk6mMoZaNXNaNsEmE/xdeYgLqbPoivCba7A0YiGzonp\r\nOiEZlfUKJPzXvGSNrKbIDsOrvhPQpFwBEU+hO5usHoWCO5VzN5+wKTpGVZ300ny4\r\nNHbIGjZUF/RUz84lVwIDAQAB";
+
+    bool checkCOAsuccess = false;
+    foreach(QString publicKey, publicKeyList){
+        checkCOAsuccess = checkCOA(serial, signature, publicKey);
+        if (checkCOAsuccess){
+            break;
+        }
+    }
+
+    if (checkCOAsuccess){
+        emit statusUpdate("COA Verification Success");
+    } else {
+        emit statusUpdate(CERT_OF_A_FAILED);
+        emit error(CERT_OF_A_FAILED);
+    }
+
+    return checkCOAsuccess;
+#endif //Q_OS_WIN
+}
+
+bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& signature, const QString& publicKey)
+{
+    QByteArray bytes = QByteArray::fromBase64(publicKey.toUtf8());
 
     BIO *bi = BIO_new(BIO_s_mem());
     BIO_write(bi, bytes.data(), bytes.size());
     EVP_PKEY *pkey = d2i_PUBKEY_bio(bi, NULL);
     BIO_free(bi);
+
     if(!pkey)
     {
-        QLOG_DEBUG() << "Failed to create public key";
-        QLOG_FATAL() << CERT_OF_A_PUB_KEY_FAILED;
-        emit statusUpdate(CERT_OF_A_PUB_KEY_FAILED);
-        emit error(CERT_OF_A_PUB_KEY_FAILED);
+        QLOG_DEBUG() << "Invalid public key: " << publicKey;
         return false;
     }
 
@@ -615,19 +633,14 @@ bool PX4FirmwareUploader::verifyOtp()
     if (verify)
     {
         //Failed!
-        QLOG_DEBUG() << "Failed to verify against public key";
-        QLOG_FATAL() << CERT_OF_A_FAILED;
-        emit statusUpdate(CERT_OF_A_FAILED);
-        emit error(CERT_OF_A_FAILED);
+        QLOG_DEBUG() << "Failed to verify against public key:" << publicKey;
         return false;
     }
     else
     {
-        QLOG_DEBUG() << "COA verification successful";
-        emit statusUpdate("COA verification successful");
+        QLOG_DEBUG() << "COA verification successful with public key" << publicKey;
         return true;
     }
-#endif //Q_OS_WIN
 }
 
 void PX4FirmwareUploader::portReadyRead()
