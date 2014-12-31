@@ -750,7 +750,7 @@ void AP2DataPlot2D::loadButtonClicked()
         QSqlDatabase::removeDatabase("QSQLITE");
         return;
     }
-    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin);;All Files (*.*)");
+    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.tlog);;All Files (*.*)");
     dialog->setFileMode(QFileDialog::ExistingFile);
     dialog->open(this, SLOT(loadDialogAccepted()));
 }
