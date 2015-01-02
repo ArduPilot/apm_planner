@@ -584,26 +584,11 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
             mainGraph1->rescaleKeyAxis();
         }
     }
-    QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
-    QCPItemText *itemtext = new QCPItemText(m_plot);
-    itemtext->setText(text);
-    itemtext->position->setAxes(xAxis,m_graphClassMap["MODE"].axis);
-    itemtext->position->setCoords((newmsec / 1000.0),2.0);
-    m_plot->addItem(itemtext);
-    m_graphClassMap["MODE"].itemList.append(itemtext);
-    m_graphClassMap["MODE"].modeMap[newmsec / 1000.0] = text;
 
+    int index = newmsec / 1000.0;
+    m_graphClassMap["MODE"].modeMap[index] = text;
+    plotTextArrow(index, text, "MODE");
 
-    QCPItemLine *itemline = new QCPItemLine(m_plot);
-    m_graphClassMap["MODE"].itemList.append(itemline);
-    itemline->start->setParentAnchor(itemtext->bottom);
-    itemline->start->setAxes(xAxis, m_graphClassMap["MODE"].axis);
-    itemline->start->setCoords(0.0, 0.0);
-    itemline->end->setAxes(xAxis, m_graphClassMap["MODE"].axis);
-    itemline->end->setCoords((newmsec / 1000.0), 0.0);
-    itemline->setTail(QCPLineEnding::esDisc);
-    itemline->setHead(QCPLineEnding::esSpikeArrow);
-    m_plot->addItem(itemline);
 }
 
 void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer)
