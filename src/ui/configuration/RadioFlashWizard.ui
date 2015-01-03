@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>242</height>
+    <height>286</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Wizard</string>
+   <string>SiK Radio Updater</string>
   </property>
   <property name="wizardStyle">
    <enum>QWizard::NStyles</enum>
@@ -33,14 +33,14 @@
      </widget>
     </item>
     <item>
-     <widget class="QRadioButton" name="rfd900aRadioButton">
+     <widget class="QRadioButton" name="standardRadio">
       <property name="text">
        <string>3DR Radio (433Mhz/915MHz)</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QRadioButton" name="standardRadio">
+     <widget class="QRadioButton" name="rfd900aRadioButton">
       <property name="text">
        <string>RFD900a (915MHz)</string>
       </property>
@@ -69,69 +69,66 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;Select Device Port&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="deviceComboBox">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>10</x>
       <y>50</y>
-      <width>104</width>
-      <height>26</height>
+      <width>351</width>
+      <height>51</height>
      </rect>
     </property>
-   </widget>
-   <widget class="QComboBox" name="baudrateComboBox">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>50</y>
-      <width>104</width>
-      <height>26</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>30</y>
-      <width>41</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>device</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>30</y>
-      <width>55</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>baudrate</string>
-    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>device</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="deviceComboBox"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>baudrate</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="baudrateComboBox"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QWizardPage" name="wizardPage3">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="2">
-     <widget class="QPlainTextEdit" name="plainTextEdit"/>
-    </item>
-    <item row="1" column="0">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="value">
-       <number>24</number>
+    <item row="0" column="0" rowspan="2" colspan="2">
+     <widget class="QPlainTextEdit" name="plainTextEdit">
+      <property name="centerOnScroll">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="1">
      <widget class="QPushButton" name="flashPushButton">
       <property name="text">
-       <string>Flash</string>
+       <string>Flash Radio</string>
       </property>
      </widget>
     </item>

@@ -26,7 +26,8 @@ QMAKE_POST_LINK += $$quote(echo "Copying files")
 COPY_RESOURCE_LIST = \
     $$BASEDIR/files \
     $$BASEDIR/qml \
-    $$BASEDIR/data
+    $$BASEDIR/data \
+    $$BASEDIR/sik_uploader
     
 WindowsBuild {
 	DESTDIR_COPY_RESOURCE_LIST = $$replace(DESTDIR,"/","\\")
