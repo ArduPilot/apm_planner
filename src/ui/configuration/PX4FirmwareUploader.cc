@@ -616,6 +616,7 @@ bool PX4FirmwareUploader::verifyOtp()
 
 bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& signature, const QString& publicKey)
 {
+#ifndef Q_OS_WIN
     QByteArray bytes = QByteArray::fromBase64(publicKey.toUtf8());
 
     BIO *bi = BIO_new(BIO_s_mem());
@@ -641,6 +642,8 @@ bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& s
         QLOG_DEBUG() << "COA verification successful with public key" << publicKey;
         return true;
     }
+#endif
+    return false;
 }
 
 void PX4FirmwareUploader::portReadyRead()
