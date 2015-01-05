@@ -42,7 +42,8 @@ namespace mapcontrol
         isDragging(false),
         altitude(altitude), // sets a 10m default just in case
         heading(0),
-        number(0)
+        number(0),
+        m_mouseDown(false)
     {
         picture.load(QString::fromUtf8(":/markers/images/marker.png"));
         number=WayPointItem::snumber;
@@ -104,6 +105,12 @@ namespace mapcontrol
     {
         if(event->button()==Qt::LeftButton)
         {
+            if (m_mouseDown)
+            {
+                //Mouse is already pressed
+                return;
+            }
+            m_mouseDown = true;
             Q_ASSERT(text == NULL);
             Q_ASSERT(textBG == NULL);
 
@@ -126,6 +133,7 @@ namespace mapcontrol
     {
         if(event->button()==Qt::LeftButton)
         {
+            m_mouseDown = false;
             delete text;
             text = NULL;
             delete textBG;

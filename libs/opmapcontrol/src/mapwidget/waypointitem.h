@@ -176,6 +176,7 @@ protected:
     double altitude;
     float heading;
     int number;
+    bool m_mouseDown;
 
 public slots:
     /**
