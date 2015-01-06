@@ -98,7 +98,7 @@ void Radio3DRConfig::fillPortsInfo(QComboBox &comboxBox)
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
         int found = comboxBox.findData(list);
-        if ((found == -1)&& info.manufacturer().contains("FTDI")) {
+        if ((found == -1)&& (info.manufacturer().contains("FTDI") || info.manufacturer().contains("Silicon Labs"))) {
             QLOG_INFO() << "Inserting " << list.first();
             comboxBox.insertItem(0,list[0], list);
         } else {
