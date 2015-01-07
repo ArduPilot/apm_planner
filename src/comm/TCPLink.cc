@@ -308,6 +308,7 @@ bool TCPLink::_hardwareConnect(void)
 
         QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
         QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
+        QObject::connect(_socket, SIGNAL(disconnected()), this, SLOT(_socketDisconnected()));
 
         // Give the socket five seconds to connect to the other side otherwise error out
         if (!_socket->waitForConnected(5000))
