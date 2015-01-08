@@ -136,6 +136,14 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
 
     connect(ui.droneshareButton, SIGNAL(clicked()), this, SLOT(droneshareButtonClicked()));
     connect(ui.exportPushButton,SIGNAL(clicked()),this,SLOT(exportButtonClicked()));
+
+    //m_sharedDb = QSqlDatabase::addDatabase("QSQLITE");
+    //m_sharedDb.setDatabaseName(":memory:");
+    //if (!m_sharedDb.open())
+    //{
+    //    QMessageBox::information(0,"error","Error opening shared database " + m_sharedDb.lastError().text());
+    //    return;
+    //}
 }
 void AP2DataPlot2D::graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList)
 {
@@ -785,7 +793,8 @@ void AP2DataPlot2D::loadDialogAccepted()
         return;
     }
 
-    m_logLoaderThread = new AP2DataPlotThread();
+    m_tableModel = new AP2DataPlot2DModel(this);
+    m_logLoaderThread = new AP2DataPlotThread(m_tableModel);
     connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
     connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
@@ -825,7 +834,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
     {
         QString parent = name.split(".")[0];
         QString child = name.split(".")[1];
-        if (!m_sharedDb.isOpen())
+        /*if (!m_sharedDb.isOpen())
         {
             if (!m_sharedDb.open())
             {
@@ -833,8 +842,20 @@ void AP2DataPlot2D::itemEnabled(QString name)
                 QMessageBox::information(0,"Error","Error opening DB");
                 return;
             }
+        }*/
+
+        QVector<double> xlist;
+        QVector<double> ylist;
+        QMap<int,double> values = m_tableModel->getValues(parent,child);
+        for (QMap<int,double>::const_iterator i = values.constBegin();i!=values.constEnd();i++)
+        {
+            xlist.append(i.key());
+            ylist.append(i.value());
+
         }
-        QSqlQuery tablequery(m_sharedDb);
+
+
+        /*QSqlQuery tablequery(m_sharedDb);
         //tablequery.prepare("SELECT * FROM '" + parent + "';");
         tablequery.prepare("SELECT * FROM 'FMT' WHERE name == '" + parent + "';");
         tablequery.exec();
@@ -887,7 +908,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         {
             //No data!
             return;
-        }
+        }*/
         QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
         axis->setLabel(name);
 
@@ -916,7 +937,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         graph.isInGroup = false;
         graph.isManualRange = false;
         m_graphClassMap[name] = graph;
-        if (isstr)
+        /*if (isstr)
         {
             for (int i=0;i<strlist.size();i++)
             {
@@ -940,7 +961,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
 
             }
         }
-        else
+        else*/
         {
             mainGraph1->setData(xlist, ylist);
         }
@@ -1133,21 +1154,46 @@ void AP2DataPlot2D::plotTextArrow(int index, const QString &text, const QString&
 void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
 {
     m_loadedLogMavType = type;
-    if (!m_sharedDb.isOpen())
-    {
-        if (!m_sharedDb.open())
+    //if (!m_sharedDb.isOpen())
+    //{
+        /*if (!m_sharedDb.open())
         {
             //emit error("Unable to open database: " + m_sharedDb.lastError().text());
             QMessageBox::information(0,"Error","Error opening DB");
             return;
-        }
-    }
+        }*/
+    //}
     if (errors != 0)
     {
         QMessageBox::information(this,"Warning","There were errors countered with " + QString::number(errors) + " lines in the log file. The data is potentially corrupt and incorrect");
     }
     //fmttablecreate.prepare("CREATE TABLE 'FMT' (index integer PRIMARY KEY,typeid integer, length integer,name varchar(200),format varchar(6000));");
-    QSqlQuery fmtquery(m_sharedDb);
+    QMap<QString,QList<QString> > fmtlist = m_tableModel->getFmtValues();
+    for (QMap<QString,QList<QString> >::const_iterator i=fmtlist.constBegin();i!=fmtlist.constEnd();i++)
+    {
+        QString name = i.key();
+        for (int j=0;j<i.value().size();j++)
+        {
+            m_dataSelectionScreen->addItem(name + "." + i.value().at(j));
+        }
+        QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << name);
+        child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
+        child->setCheckState(0,Qt::Checked); // Set it checked, since all items are enabled by default
+        ui.sortSelectTreeWidget->addTopLevelItem(child);
+        //QLOG_DEBUG() << record.value(0) << record.value(1) << record.value(2) << record.value(3) << record.value(4) << record.value(5);
+        //rowlist.clear();
+        //itemquery.prepare("SELECT * FROM '" + name + "';");
+        //itemquery.exec();
+        //while (itemquery.next())
+        //{
+
+        //}
+        //QString linename = name;
+        //QString lastformat = vars;
+        //m_tableHeaderNameMap[linename] = lastformat.trimmed();
+    }
+
+    /*QSqlQuery fmtquery(m_sharedDb);
     fmtquery.prepare("SELECT * FROM 'FMT';");
     if (!fmtquery.exec())
     {
@@ -1182,8 +1228,86 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
         QString linename = name;
         QString lastformat = vars;
         m_tableHeaderNameMap[linename] = lastformat.trimmed();
-    }
+    }*/
 
+
+    QMap<int,QString> modes = m_tableModel->getModeValues();
+    if (modes.size() == 0)
+    {
+        QLOG_DEBUG() << "Graph loaded with no mode table. Running anyway, but text modes will not be available";
+    }
+    else
+    {
+        if (!m_graphClassMap.contains("MODE"))
+        {
+            QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+            axis->setVisible(false);
+            axis->setLabel("MODE");
+
+            if (m_graphCount > 0)
+            {
+                connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+            }
+            QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+            axis->setLabelColor(color);
+            axis->setTickLabelColor(color);
+            axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+            m_graphNameList.append("MODE");
+
+            mainGraph1->setPen(QPen(color, 2));
+            Graph graph;
+            graph.axis = axis;
+            graph.groupName = "";
+            graph.graph=  mainGraph1;
+            graph.isInGroup = false;
+            graph.isManualRange = false;
+            m_graphClassMap["MODE"] = graph;
+
+            mainGraph1->rescaleValueAxis();
+            if (m_graphCount == 1)
+            {
+                mainGraph1->rescaleKeyAxis();
+            }
+        }
+        for (QMap<int,QString>::const_iterator i = modes.constBegin(); i != modes.constEnd(); i++)
+        {
+            int index = i.key();
+            QString mode = i.value();
+            bool ok = false;
+            int modeint = mode.toInt(&ok);
+            if (!ok)
+            {
+                QLOG_DEBUG() << "Unable to determine Mode number in log" << mode;
+            }
+            else
+            {
+                //It's an integer!
+                switch (type)
+                {
+                    case MAV_TYPE_QUADROTOR:
+                    {
+                        mode = ApmCopter::stringForMode(modeint);
+                    }
+                    break;
+                    case MAV_TYPE_FIXED_WING:
+                    {
+                        mode = ApmPlane::stringForMode(modeint);
+                    }
+                    break;
+                    case MAV_TYPE_GROUND_ROVER:
+                    {
+                        mode = ApmRover::stringForMode(modeint);
+                    }
+                    break;
+                }
+            }
+            QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
+            plotTextArrow(index, mode, "MODE",ui.modeDisplayCheckBox);
+            m_graphClassMap["MODE"].modeMap[index] = mode;
+        }
+    }
+    /*
     QSqlQuery modequery(m_sharedDb);
     modequery.prepare("SELECT * FROM 'MODE';");
     if (!modequery.exec())
@@ -1273,9 +1397,9 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
             plotTextArrow(index, mode, "MODE",ui.modeDisplayCheckBox);
             m_graphClassMap["MODE"].modeMap[index] = mode;
         }
-    }
+    }*/
 
-    QSqlQuery errquery(m_sharedDb);
+    /*QSqlQuery errquery(m_sharedDb);
     errquery.prepare("SELECT * FROM 'ERR';");
     if (!errquery.exec())
     {
@@ -1334,11 +1458,11 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
             plotTextArrow(index, errortext.first + "\n" + errortext.second, "ERR",ui.errDisplayCheckBox);
 
         }
-    }
+    }*/
 
 
 
-    QSqlQuery evquery(m_sharedDb);
+    /*QSqlQuery evquery(m_sharedDb);
     evquery.prepare("SELECT * FROM 'EV';");
     if (!evquery.exec())
     {
@@ -1394,9 +1518,9 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
             //QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
             plotTextArrow(index, ecodestring, "EV",ui.evDisplayCheckBox);
         }
-    }
+    }*/
 
-    m_tableModel = new AP2DataPlot2DModel(&m_sharedDb,this);
+    //m_tableModel = new AP2DataPlot2DModel(&m_sharedDb,this);
     m_tableFilterProxyModel = new QSortFilterProxyModel(this);
     m_tableFilterProxyModel->setSourceModel(m_tableModel);
     ui.tableWidget->setModel(m_tableFilterProxyModel);

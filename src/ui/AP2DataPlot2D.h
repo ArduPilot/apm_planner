@@ -16,7 +16,6 @@
 #include <QStandardItemModel>
 #include "AP2DataPlot2DModel.h"
 #include <QSortFilterProxyModel>
-
 class LogDownloadDialog;
 
 class AP2DataPlot2D : public QWidget

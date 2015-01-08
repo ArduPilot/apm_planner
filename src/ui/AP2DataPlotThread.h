@@ -5,12 +5,13 @@
 #include <QVariantMap>
 #include <QSqlDatabase>
 #include "MAVLinkDecoder.h"
+#include "AP2DataPlot2DModel.h"
 #include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
 class AP2DataPlotThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit AP2DataPlotThread(QObject *parent = 0);
+    explicit AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent = 0);
     void loadFile(QString file,QSqlDatabase *db);
     void stopLoad() { m_stop = true; }
 private:
@@ -32,6 +33,7 @@ private:
     bool createIndexTable();
     bool createIndexInsert(QSqlQuery *query);
     MAV_TYPE m_loadedLogType;
+    AP2DataPlot2DModel *m_dataModel;
 protected:
     void run();
 signals:

@@ -13,9 +13,10 @@
 #include "QGC.h"
 
 
-AP2DataPlotThread::AP2DataPlotThread(QObject *parent) :
+AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) :
     QThread(parent)
 {
+    m_dataModel = model;
     qRegisterMetaType<MAV_TYPE>("MAV_TYPE");
 }
 void AP2DataPlotThread::loadFile(QString file,QSqlDatabase *db)
@@ -178,51 +179,6 @@ void AP2DataPlotThread::loadBinaryLog()
     QMap<unsigned char,QString > typeToLabelMap;
     QStringList tables;
 
-    if (!m_db->transaction())
-    {
-        emit error("Unable to start database transaction 1");
-        return;
-    }
-
-    if (!createFMTTable())
-    {
-        //Error already emitted.
-        return;
-    }
-    QSqlQuery fmtinsertquery(*m_db);
-    if (!createFMTInsert(&fmtinsertquery))
-    {
-        emit error("Error preparing FMT insert statement: " + fmtinsertquery.lastError().text());
-        return;
-    }
-
-    if (!createIndexTable())
-    {
-        //Error already emitted.
-        return;
-    }
-    QSqlQuery indexinsertquery(*m_db);
-    if (!createIndexInsert(&indexinsertquery))
-    {
-        emit error("Error preparing INDEX insert statement: " + indexinsertquery.lastError().text());
-        return;
-    }
-
-    QMap<QString,QSqlQuery*> nameToInsertQuery;
-    QMap<QString,QString> nameToTypeString;
-    if (!m_db->commit())
-    {
-        emit error("Unable to commit database transaction 1");
-        return;
-    }
-    if (!m_db->transaction())
-    {
-        emit error("Unable to start database transaction 2");
-        return;
-    }
-
-
-
     int index = 0;
     m_loadedLogType = MAV_TYPE_GENERIC;
 
@@ -277,35 +233,9 @@ void AP2DataPlotThread::loadBinaryLog()
                             continue;
                         }
                         if (!tables.contains(name)) {
-                            QSqlQuery mktablequery(*m_db);
-                            mktablequery.prepare(makeCreateTableString(name,format,labels));
-                            if (!mktablequery.exec())
-                            {
-                                emit error("Error creating table for: " + name + " : " + m_db->lastError().text());
-                                return;
-                            }
+                            m_dataModel->addType(name,format,labels.split(","));
                             tables.append(name);
                         }
-                        QSqlQuery *query = new QSqlQuery(*m_db);
-                        QString final = makeInsertTableString(name,labels);
-                        if (!query->prepare(final))
-                        {
-                            emit error("Error preparing inserttable: " + final + " Error is: " + query->lastError().text());
-                            return;
-                        }
-                        //typeID,length,name,format
-                        fmtinsertquery.bindValue(0,index);
-                        fmtinsertquery.bindValue(1,msg_type);
-                        fmtinsertquery.bindValue(2,0);
-                        fmtinsertquery.bindValue(3,name);
-                        fmtinsertquery.bindValue(4,format);
-                        fmtinsertquery.bindValue(5,labels);
-                        if (!fmtinsertquery.exec())
-                        {
-                            emit error("Error execing insertquery" + fmtinsertquery.lastError().text());
-                            return;
-                        }
-                        nameToInsertQuery[name] = query;
                         index++;
                     }
                     else
@@ -330,34 +260,14 @@ void AP2DataPlotThread::loadBinaryLog()
                         packetstream.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
                         QString name = typeToNameMap.value(type);
-                        if (nameToInsertQuery.contains(name))
+                        if (tables.contains(name))
                         {
                             QString linetoemit = typeToNameMap.value(type);
-                            if (firstactual)
-                            {
-                                if (!m_db->commit())
-                                {
-                                    emit error("Unable to commit database transaction 2");
-                                    return;
-                                }
-                                if (!m_db->transaction())
-                                {
-                                    emit error("Unable to start database transaction 3");
-                                    return;
-                                }
-                                firstactual = false;
-                            }
-
-                            nameToInsertQuery[name]->bindValue(":idx",index);
-                            indexinsertquery.bindValue(0,index);
-                            indexinsertquery.bindValue(1,name);
-                            if (!indexinsertquery.exec())
-                            {
-                                emit error("Error execing:" + indexinsertquery.executedQuery() + " error was " + indexinsertquery.lastError().text());
-                                return;
-                            }
                             index++;
+                            QList<QPair<QString,QVariant> > valuepairlist;
                             QString formatstr = typeToFormatMap.value(type);
+                            QString labelstr = typeToLabelMap.value(type);
+                            QStringList labelstrsplit = labelstr.split(",");
 
                             for (int j=0;j<formatstr.size();j++)
                             {
@@ -366,50 +276,50 @@ void AP2DataPlotThread::loadBinaryLog()
                                 {
                                     qint8 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'B') //uint8_t
                                 {
                                     quint8 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'h') //int16_t
                                 {
                                     quint16 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'H') //uint16_t
                                 {
                                     quint16 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'i') //int32_t
                                 {
                                     qint32 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'I') //uint32_t
                                 {
                                     quint32 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'f') //float
                                 {
                                     float f;
                                     packetstream >> f;
-                                    nameToInsertQuery[name]->bindValue(j+1,f);
                                     linetoemit += "," + QString::number(f,'f',4);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),f));
                                 }
                                 else if (typeCode == 'n') //char(4)
                                 {
@@ -424,8 +334,8 @@ void AP2DataPlotThread::loadBinaryLog()
                                             val += static_cast<char>(ch);
                                         }
                                     }
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + val;
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'N') //char(16)
                                 {
@@ -439,8 +349,8 @@ void AP2DataPlotThread::loadBinaryLog()
                                             val += static_cast<char>(ch);
                                         }
                                     }
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + val;
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'Z') //char(64)
                                 {
@@ -454,50 +364,50 @@ void AP2DataPlotThread::loadBinaryLog()
                                             val += static_cast<char>(ch);
                                         }
                                     }
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + val;
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else if (typeCode == 'c') //int16_t * 100
                                 {
                                     qint16 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                     linetoemit += "," + QString::number(val / 100.0,'f',4);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 100.0));
                                 }
                                 else if (typeCode == 'C') //uint16_t * 100
                                 {
                                     quint16 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                     linetoemit += "," + QString::number(val / 100.0,'f',4);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 100.0));
                                 }
                                 else if (typeCode == 'e') //int32_t * 100
                                 {
                                     qint32 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                     linetoemit += "," + QString::number(val / 100.0,'f',4);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 100.0));
                                 }
                                 else if (typeCode == 'E') //uint32_t * 100
                                 {
                                     quint32 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val / 100.0);
                                     linetoemit += "," + QString::number(val / 100.0,'f',4);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 100.0));
                                 }
                                 else if (typeCode == 'L') //uint32_t GPS Lon/Lat * 10000000
                                 {
                                     qint32 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val / 10000000.0);
                                     linetoemit += "," + QString::number(val / 10000000.0,'f',6);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 10000000.0));
                                 }
                                 else if (typeCode == 'M')
                                 {
                                     qint8 val;
                                     packetstream >> val;
-                                    nameToInsertQuery[name]->bindValue(j+1,val);
                                     linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
                                 else
                                 {
@@ -505,6 +415,11 @@ void AP2DataPlotThread::loadBinaryLog()
                                     QLOG_DEBUG() << "AP2DataPlotThread::run(): ERROR UNKNOWN DATA TYPE" << typeCode;
                                 }
                             }
+                            if (valuepairlist.size() > 1)
+                            {
+                                m_dataModel->addRow(name,valuepairlist,index);
+                            }
+
                             if (type == paramtype && m_loadedLogType == MAV_TYPE_GENERIC)
                             {
                                 if (linetoemit.contains("RATE_RLL_P") || linetoemit.contains("H_SWASH_PLATE"))
@@ -519,13 +434,6 @@ void AP2DataPlotThread::loadBinaryLog()
                                 {
                                     m_loadedLogType = MAV_TYPE_GROUND_ROVER;
                                 }
-                            }
-                            //emit lineRead(linetoemit);
-
-                            if (!nameToInsertQuery[name]->exec())
-                            {
-                                emit error("Error execing:" + nameToInsertQuery[name]->executedQuery() + " error was " + nameToInsertQuery[name]->lastError().text());
-                                return;
                             }
                         }
                         else
@@ -557,42 +465,10 @@ void AP2DataPlotThread::loadAsciiLog()
         emit error("Unable to open log file");
         return;
     }
-    if (!m_db->transaction())
-    {
-        emit error("Unable to start database transaction 1");
-        return;
-    }
-
-    if (!createFMTTable())
-    {
-        //Error already emitted.
-        return;
-    }
-    QSqlQuery fmtinsertquery(*m_db);
-    if (!createFMTInsert(&fmtinsertquery))
-    {
-        emit error("Error preparing FMT insert statement: " + fmtinsertquery.lastError().text());
-        return;
-    }
-
-    if (!createIndexTable())
-    {
-        //Error already emitted.
-        return;
-    }
-    QSqlQuery indexinsertquery(*m_db);
-    if (!createIndexInsert(&indexinsertquery))
-    {
-        emit error("Error preparing INDEX insert statement: " + indexinsertquery.lastError().text());
-        return;
-    }
-
-
 
     bool firstactual = true;
     m_loadedLogType = MAV_TYPE_GENERIC;
     int index = 0;
-    QMap<QString,QSqlQuery*> nameToInsertQuery;
     QMap<QString,QString> nameToTypeString;
 
 
@@ -634,37 +510,13 @@ void AP2DataPlotThread::loadAsciiLog()
                         {
                             continue;
                         }
-                        QString valuestr = "";
+                        QStringList valuestr;
                         for (int i=5;i<linesplit.size();i++)
                         {
                             QString name = linesplit[i].trimmed();
-                            valuestr += name + ",";
+                            valuestr += name;
                         }
-                        valuestr = valuestr.mid(0,valuestr.length()-1);
-
-                        QSqlQuery mktablequery(*m_db);
-                        mktablequery.prepare(makeCreateTableString(type,descstr,valuestr));
-                        if (!mktablequery.exec())
-                        {
-                            emit error("Error creating table for: " + type + " : " + m_db->lastError().text());
-                            return;
-                        }
-                        QSqlQuery *query = new QSqlQuery(*m_db);
-                        QString final = makeInsertTableString(type,valuestr);
-                        if (!query->prepare(final))
-                        {
-                            emit error("Error preparing inserttable: " + final + " Error is: " + query->lastError().text());
-                            return;
-                        }
-                        //typeID,length,name,format
-                        fmtinsertquery.bindValue(0,index);
-                        fmtinsertquery.bindValue(1,linesplit[1].trimmed().toInt());
-                        fmtinsertquery.bindValue(2,0);
-                        fmtinsertquery.bindValue(3,type);
-                        fmtinsertquery.bindValue(4,descstr);
-                        fmtinsertquery.bindValue(5,valuestr);
-                        fmtinsertquery.exec();
-                        nameToInsertQuery[type] = query;
+                        m_dataModel->addType(type,descstr,valuestr);
                     }
                 }
                 else
@@ -677,42 +529,23 @@ void AP2DataPlotThread::loadAsciiLog()
                 if (linesplit.size() > 1)
                 {
                     QString name = linesplit[0].trimmed();
-                    if (nameToInsertQuery.contains(name))
+                    if (nameToTypeString.contains(name))
                     {
-                        if (firstactual)
-                        {
-                            if (!m_db->commit())
-                            {
-                                emit error("Unable to commit database transaction 2");
-                                return;
-                            }
-                            if (!m_db->transaction())
-                            {
-                                emit error("Unable to start database transaction 4");
-                                return;
-                            }
-                            firstactual = false;
-                        }
                         QString typestr = nameToTypeString[name];
-                        nameToInsertQuery[name]->bindValue(":idx",index);
-                        indexinsertquery.bindValue(0,index);
-                        indexinsertquery.bindValue(1,name);
-                        if (!indexinsertquery.exec())
-                        {
-                            emit error("Error execing:" + indexinsertquery.executedQuery() + " error was " + indexinsertquery.lastError().text());
-                            return;
-                        }
                         static QString intdef("bBhHiI");
                         static QString floatdef("cCeEfL");
                         static QString chardef("nNZM");
                         if (typestr.size() != linesplit.size() - 1)
                         {
-                            QLOG_DEBUG() << "Bound values for" << name << "count:" << nameToInsertQuery[name]->boundValues().values().size() << "actual" << linesplit.size() << typestr.size();
-                            QLOG_DEBUG() << "Error in line:" << index << "param" << name << "parameter mismatch";
+                            //QLOG_DEBUG() << "Bound values for" << name << "count:" << nameToInsertQuery[name]->boundValues().values().size() << "actual" << linesplit.size() << typestr.size();
+                            //QLOG_DEBUG() << "Error in line:" << index << "param" << name << "parameter mismatch";
                             m_errorCount++;
                         }
                         else
                         {
+                            QList<QPair<QString,QVariant> > valuepairlist;
+                            //valuelist.append(QPair<QString,QVariant>("idx",unixtimemsec));
+
                             bool foundError = false;
                             for (int i = 1; i < linesplit.size(); i++)
                             {
@@ -724,7 +557,7 @@ void AP2DataPlotThread::loadAsciiLog()
                                     int val = valStr.toInt(&ok);
                                     if (ok)
                                     {
-                                        nameToInsertQuery[name]->bindValue(i, val);
+                                        valuepairlist.append(QPair<QString,QVariant>(name,val));
                                     }
                                     else
                                     {
@@ -734,14 +567,14 @@ void AP2DataPlotThread::loadAsciiLog()
                                 }
                                 else if (chardef.contains(typeCode))
                                 {
-                                    nameToInsertQuery[name]->bindValue(i, valStr);
+                                    valuepairlist.append(QPair<QString,QVariant>(name,valStr));
                                 }
                                 else if (floatdef.contains(typeCode))
                                 {
                                     double val = valStr.toDouble(&ok);
                                     if (ok && !isinf(val) && !isnan(val))
                                     {
-                                        nameToInsertQuery[name]->bindValue(i, val);
+                                        valuepairlist.append(QPair<QString,QVariant>(name,val));
                                     }
                                     else
                                     {
@@ -761,10 +594,12 @@ void AP2DataPlotThread::loadAsciiLog()
                                 QLOG_DEBUG() << "Found an error on line " << index << ", skipping it.";
                                 ++m_errorCount;
                             }
-                            else if (!nameToInsertQuery[name]->exec())
+                            else
                             {
-                                emit error("Error execing:" + nameToInsertQuery[name]->executedQuery() + " error was " + nameToInsertQuery[name]->lastError().text());
-                                return;
+                                if (valuepairlist.size() > 1)
+                                {
+                                    m_dataModel->addRow(name,valuepairlist,index);
+                                }
                             }
                         }
                     }
@@ -787,7 +622,7 @@ void AP2DataPlotThread::loadTLog()
         return;
     }
 
-    if (!m_db->transaction())
+    /*if (!m_db->transaction())
     {
         emit error("Unable to start database transaction 1");
         return;
@@ -815,7 +650,7 @@ void AP2DataPlotThread::loadTLog()
     {
         emit error("Error preparing INDEX insert statement: " + indexinsertquery.lastError().text());
         return;
-    }
+    }*/
 
 
 
@@ -925,16 +760,16 @@ void AP2DataPlotThread::loadTLog()
                     QList<QPair<QString,QVariant> > retvals = decoder->receiveMessage(0,message);
                     QString name = decoder->getMessageName(message.msgid);
 
-                    if (!m_msgNameToInsertQuery.contains(name))
+                    if (!m_dataModel->hasType(name))
                     {
 
                         QList<QString> fieldnames = decoder->getFieldList(name);
-                        QString variablenames;
+                        QStringList variablenames;
                         QString typechars;
                         for (int i=0;i<fieldnames.size();i++)
                         {
                             mavlink_field_info_t fieldinfo = decoder->getFieldInfo(name,fieldnames.at(i));
-                            variablenames += QString(fieldinfo.name) + ",";
+                            variablenames <<  QString(fieldinfo.name);
                             switch (fieldinfo.type)
                             {
                                 case MAVLINK_TYPE_CHAR:
@@ -994,7 +829,9 @@ void AP2DataPlotThread::loadTLog()
                                 break;
                             }
                         }
-                        QString createstring = makeCreateTableString(name,typechars,variablenames);
+
+                        m_dataModel->addType(name,typechars,variablenames);
+                        /*QString createstring = makeCreateTableString(name,typechars,variablenames);
                         QString insertstring = makeInsertTableString(name,variablenames);
 
                         fmtinsertquery.bindValue(":idx",fmtindex++);
@@ -1023,26 +860,35 @@ void AP2DataPlotThread::loadTLog()
                         if (!create.exec())
                         {
                             QLOG_ERROR() << "Unable to exec create:" << create.lastError().text();
-                        }
+                        }*/
                     }
-                    QSqlQuery query(*m_db);
+                    /*QSqlQuery query(*m_db);
                     if (!query.prepare(m_msgNameToInsertQuery.value(name)))
                     {
                         QLOG_ERROR() << "Unable to prepare query:" << query.lastError().text();
-                    }
+                    }*/
 
                     quint64 unixtimemsec = (quint64)decoder->getUnixTimeFromMs(message.sysid, lastLogTime);
+                    QVariantList valuelist;
+
                     while (lastunixtimemseclist.contains(unixtimemsec))
                     {
                         unixtimemsec++;
                     }
                     lastunixtimemseclist.append(unixtimemsec);
-                    query.bindValue(":idx",unixtimemsec);
+                    //query.bindValue(":idx",unixtimemsec);
+                    QList<QPair<QString,QVariant> > valuepairlist;
+                    //valuelist.append(QPair<QString,QVariant>("idx",unixtimemsec));
                     for (int i=0;i<retvals.size();i++)
                     {
-                        query.bindValue(QString(":") + retvals.at(i).first.split(".")[1],retvals.at(i).second.toInt());
+                        valuepairlist.append(QPair<QString,QVariant>(retvals.at(i).first.split(".")[1],retvals.at(i).second.toInt()));
+                        //query.bindValue(QString(":") + retvals.at(i).first.split(".")[1],retvals.at(i).second.toInt());
                     }
-                    if (retvals.size() > 0)
+                    if (valuepairlist.size() > 1)
+                    {
+                        m_dataModel->addRow(name,valuepairlist,unixtimemsec);
+                    }
+                    /*if (retvals.size() > 0)
                     {
                         if (!query.exec())
                         {
@@ -1059,7 +905,7 @@ void AP2DataPlotThread::loadTLog()
                                 return;
                             }
                         }
-                    }
+                    }*/
                 }
 
             }
@@ -1105,8 +951,8 @@ void AP2DataPlotThread::run()
 
     if (!m_db->commit())
     {
-        emit error("Unable to commit database transaction 4");
-        return;
+        //emit error("Unable to commit database transaction 4");
+        //return;
     }
     QLOG_DEBUG() << "AP2DataPlotThread::run(): Log loading finished, pos:" << logfile.pos() << "filesize:" << logfile.size();
     if (m_stop)
