@@ -40,6 +40,9 @@ AirspeedConfig::~AirspeedConfig()
 }
 void AirspeedConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas);
+    Q_UNUSED(component);
+
     if (parameterName == "ARSPD_ENABLE")
     {
         if (value.toInt() == 0)
@@ -134,6 +137,8 @@ void AirspeedConfig::hardwareSelectComboBoxChanged(int index)
         ui.sensorComboBox->clear();
         ui.sensorComboBox->addItem("Choose One");
         ui.sensorComboBox->addItem("Analog Sensor");
+        ui.sensorComboBox->addItem("EagleTree I2C");
+        ui.sensorComboBox->addItem("MEAS I2C");
         ui.sensorComboBox->setEnabled(true);
         disconnect(ui.pinComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(pinSelectComboBoxChanged(int)));
         ui.pinComboBox->clear();
