@@ -30,24 +30,33 @@ This file is part of the APM_PLANNER project
 
 #include "RadioCalibrationConfig.h"
 #include "QsLog.h"
+#include "QGCMouseWheelEventFilter.h"
 #include <QMessageBox>
+#include <QSettings>
 
 RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_pitchChannel(0),
     m_rollChannel(0),
     m_yawChannel(0),
-    m_throttleChannel(0)
+    m_throttleChannel(0),
+    m_pitchWidget(NULL),
+    m_throttleWidget(NULL),
+    m_pitchCheckBox(NULL),
+    m_throttleCheckBox(NULL),
+    m_rcMode(0)
 {
     ui.setupUi(this);
+
+    readSettings();
 
     connect(ui.calibrateButton,SIGNAL(clicked()),this,SLOT(calibrateButtonClicked()));
     m_calibrationEnabled = false;
     ui.rollWidget->setMin(800);
     ui.rollWidget->setMax(2200);
-    ui.pitchWidget->setMin(800);
-    ui.pitchWidget->setMax(2200);
-    ui.throttleWidget->setMin(800);
-    ui.throttleWidget->setMax(2200);
+    ui.leftVWidget->setMin(800);
+    ui.leftVWidget->setMax(2200);
+    ui.rightVWidget->setMin(800);
+    ui.rightVWidget->setMax(2200);
     ui.yawWidget->setMin(800);
     ui.yawWidget->setMax(2200);
     ui.radio5Widget->setMin(800);
@@ -62,8 +71,6 @@ RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     ui.rollWidget->setName("Roll");
     ui.yawWidget->setOrientation(Qt::Horizontal);
     ui.yawWidget->setName("Yaw");
-    ui.pitchWidget->setName("Pitch");
-    ui.throttleWidget->setName("Throttle");
     ui.radio5Widget->setOrientation(Qt::Horizontal);
     ui.radio5Widget->setName("Radio 5");
     ui.radio6Widget->setOrientation(Qt::Horizontal);
@@ -81,18 +88,26 @@ RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     rcTrim << 1500.0 << 1500.0 << 1500.0 << 1500.0 << 1500.0 << 1500.0 << 1500.0 << 1500.0;
     rcValue << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0 << 0.0;
 
-    ui.revPitchCheckBox->hide();
+    ui.revLeftVCheckBox->hide();
     ui.revRollCheckBox->hide();
-    ui.revThrottleCheckBox->hide();
+    ui.revRightVCheckBox->hide();
     ui.revYawCheckBox->hide();
     ui.elevonConfigGroupBox->hide();
 
+    ui.modeComboBox->insertItem(0, "Mode 1", 1);
+    ui.modeComboBox->insertItem(1, "Mode 2", 2);
+    ui.modeComboBox->insertItem(2, "Mode 3", 3);
+    ui.modeComboBox->insertItem(3, "Mode 4", 4);
+
+    // Disable scroll wheel from easily triggering settings change
+    ui.modeComboBox->installEventFilter(QGCMouseWheelEventFilter::getFilter());
+    ui.modeComboBox->setCurrentIndex(ui.modeComboBox->findData(m_rcMode));
+    modeIndexChanged(ui.modeComboBox->currentIndex());
+
     initConnections();
 
-    connect(ui.revPitchCheckBox, SIGNAL(clicked(bool)), this, SLOT(pitchClicked(bool)));
     connect(ui.revRollCheckBox, SIGNAL(clicked(bool)), this, SLOT(rollClicked(bool)));
     connect(ui.revYawCheckBox, SIGNAL(clicked(bool)), this, SLOT(yawClicked(bool)));
-    connect(ui.revThrottleCheckBox, SIGNAL(clicked(bool)), this, SLOT(throttleClicked(bool)));
 
     connect(ui.elevonCheckBox, SIGNAL(clicked(bool)), this, SLOT(elevonsChecked(bool)));
     connect(ui.elevonRevCheckBox, SIGNAL(clicked(bool)), this, SLOT(elevonsReversed(bool)));
@@ -105,6 +120,8 @@ RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     ui.elevonOutputComboBox->addItem("Down Up");
     ui.elevonOutputComboBox->addItem("Down Down");
     connect(ui.elevonOutputComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(elevonOutput()));
+
+    connect(ui.modeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(modeIndexChanged(int)));
 }
 
 RadioCalibrationConfig::~RadioCalibrationConfig()
@@ -124,15 +141,15 @@ void RadioCalibrationConfig::activeUASSet(UASInterface *uas)
     connect(m_uas,SIGNAL(remoteControlChannelRawChanged(int,float)),this,SLOT(remoteControlChannelRawChanged(int,float)));
 
     if (m_uas->isFixedWing()){
-        ui.revPitchCheckBox->show();
+        ui.revLeftVCheckBox->show();
         ui.revRollCheckBox->show();
-        ui.revThrottleCheckBox->show();
+        ui.revRightVCheckBox->show();
         ui.revYawCheckBox->show();
         ui.elevonConfigGroupBox->show();
     } else {
-        ui.revPitchCheckBox->hide();
+        ui.revLeftVCheckBox->hide();
         ui.revRollCheckBox->hide();
-        ui.revThrottleCheckBox->hide();
+        ui.revRightVCheckBox->hide();
         ui.revYawCheckBox->hide();
         ui.elevonConfigGroupBox->hide();
     }
@@ -156,6 +173,39 @@ void RadioCalibrationConfig::remoteControlChannelRawChanged(int chan,float val)
 
     // Raw value
     rcValue[chan] = val;
+}
+
+void RadioCalibrationConfig::modeIndexChanged(int index)
+{
+    Q_UNUSED(index);
+
+    if(m_pitchCheckBox || m_throttleCheckBox){
+        disconnect(m_pitchCheckBox, SIGNAL(clicked(bool)), this, SLOT(pitchClicked(bool)));
+        disconnect(m_throttleCheckBox, SIGNAL(clicked(bool)), this, SLOT(throttleClicked(bool)));
+    }
+
+    if((ui.modeComboBox->currentData() == 1)
+        ||(ui.modeComboBox->currentData() == 3)){
+        // Mode 1 & 3 (Throttle on right) (Pitch/Aileron left)
+        m_throttleWidget = ui.rightVWidget;
+        m_throttleCheckBox = ui.revRightVCheckBox;
+        m_pitchWidget = ui.leftVWidget;
+        m_pitchCheckBox = ui.revLeftVCheckBox;
+    } else {
+        // Mode 2 & 4 (Throttle on left) (Pitch/Aileron right)
+        m_throttleWidget = ui.leftVWidget;
+        m_throttleCheckBox = ui.revLeftVCheckBox;
+        m_pitchWidget = ui.rightVWidget;
+        m_pitchCheckBox = ui.revRightVCheckBox;
+    }
+    m_pitchWidget->setName("Pitch");
+    m_throttleWidget->setName("Throttle");
+
+    connect(m_pitchCheckBox, SIGNAL(clicked(bool)), this, SLOT(pitchClicked(bool)));
+    connect(m_throttleCheckBox, SIGNAL(clicked(bool)), this, SLOT(throttleClicked(bool)));
+
+    m_rcMode = ui.modeComboBox->currentData().toInt();
+    writeSettings();
 }
 
 void RadioCalibrationConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
@@ -198,7 +248,7 @@ void RadioCalibrationConfig::updateChannelReversalStates()
     if(m_uas == NULL)
         return;
     // Update Pitch Reverse Channel
-    updateChannelRevState(ui.revPitchCheckBox, m_pitchChannel);
+    updateChannelRevState(m_pitchCheckBox, m_pitchChannel);
 
     // Update Roll Reverse Channel
     updateChannelRevState(ui.revRollCheckBox, m_rollChannel);
@@ -207,7 +257,7 @@ void RadioCalibrationConfig::updateChannelReversalStates()
     updateChannelRevState(ui.revYawCheckBox, m_yawChannel);
 
     // Update Throttle Reverse Channel
-    updateChannelRevState(ui.revThrottleCheckBox, m_throttleChannel);
+    updateChannelRevState(m_throttleCheckBox, m_throttleChannel);
 }
 
 void RadioCalibrationConfig::updateChannelRevState(QCheckBox* checkbox, int channelId)
@@ -230,8 +280,8 @@ void RadioCalibrationConfig::guiUpdateTimerTick()
     }
 
     ui.rollWidget->setValue(rcValue[m_rollChannel-1]);
-    ui.pitchWidget->setValue(rcValue[m_pitchChannel-1]);
-    ui.throttleWidget->setValue(rcValue[m_throttleChannel-1]);
+    m_pitchWidget->setValue(rcValue[m_pitchChannel-1]);
+    m_throttleWidget->setValue(rcValue[m_throttleChannel-1]);
     ui.yawWidget->setValue(rcValue[m_yawChannel-1]);
     ui.radio5Widget->setValue(rcValue[4]);
     ui.radio6Widget->setValue(rcValue[5]);
@@ -241,10 +291,10 @@ void RadioCalibrationConfig::guiUpdateTimerTick()
     {
         ui.rollWidget->setMin(rcMin[m_rollChannel-1]);
         ui.rollWidget->setMax(rcMax[m_rollChannel-1]);
-        ui.pitchWidget->setMin(rcMin[m_pitchChannel-1]);
-        ui.pitchWidget->setMax(rcMax[m_pitchChannel-1]);
-        ui.throttleWidget->setMin(rcMin[m_throttleChannel-1]);
-        ui.throttleWidget->setMax(rcMax[m_throttleChannel-1]);
+        m_pitchWidget->setMin(rcMin[m_pitchChannel-1]);
+        m_pitchWidget->setMax(rcMax[m_pitchChannel-1]);
+        m_throttleWidget->setMin(rcMin[m_throttleChannel-1]);
+        m_throttleWidget->setMax(rcMax[m_throttleChannel-1]);
         ui.yawWidget->setMin(rcMin[m_yawChannel-1]);
         ui.yawWidget->setMax(rcMax[m_yawChannel-1]);
         ui.radio5Widget->setMin(rcMin[4]);
@@ -282,12 +332,12 @@ void RadioCalibrationConfig::calibrateButtonClicked()
             rcMax[i] = 1500;
         }
         ui.rollWidget->showMinMax();
-        ui.pitchWidget->showMinMax();
+        m_pitchWidget->showMinMax();
         ui.yawWidget->showMinMax();
         ui.radio5Widget->showMinMax();
         ui.radio6Widget->showMinMax();
         ui.radio7Widget->showMinMax();
-        ui.throttleWidget->showMinMax();
+        m_throttleWidget->showMinMax();
         ui.radio8Widget->showMinMax();
         QMessageBox::information(this,"Information","Click OK, then move all sticks to their extreme positions, watching the min/max values to ensure you get the most range from your controller. This includes all switches");
     }
@@ -298,11 +348,11 @@ void RadioCalibrationConfig::calibrateButtonClicked()
         ///TODO: Set trims!
         m_calibrationEnabled = false;
         ui.rollWidget->hideMinMax();
-        ui.pitchWidget->hideMinMax();
+        m_pitchWidget->hideMinMax();
         ui.yawWidget->hideMinMax();
         ui.radio5Widget->hideMinMax();
         ui.radio6Widget->hideMinMax();
-        ui.throttleWidget->hideMinMax();
+        m_throttleWidget->hideMinMax();
         ui.radio7Widget->hideMinMax();
         ui.radio8Widget->hideMinMax();
         QString statusstr;
@@ -336,10 +386,10 @@ void RadioCalibrationConfig::calibrateButtonClicked()
         }
         ui.rollWidget->setMin(800);
         ui.rollWidget->setMax(2200);
-        ui.pitchWidget->setMin(800);
-        ui.pitchWidget->setMax(2200);
-        ui.throttleWidget->setMin(800);
-        ui.throttleWidget->setMax(2200);
+        m_pitchWidget->setMin(800);
+        m_pitchWidget->setMax(2200);
+        m_throttleWidget->setMin(800);
+        m_throttleWidget->setMax(2200);
         ui.yawWidget->setMin(800);
         ui.yawWidget->setMax(2200);
         ui.radio5Widget->setMin(800);
@@ -421,4 +471,21 @@ void RadioCalibrationConfig::elevonOutput()
     if(m_uas){
         m_uas->setParameter(1, "ELEVON_OUTPUT", ui.elevonOutputComboBox->currentIndex());
     }
+}
+
+void RadioCalibrationConfig::readSettings()
+{
+    QSettings settings;
+    settings.beginGroup("RCCALIBRATION_VIEW");
+    m_rcMode = settings.value("RC_MODE",2).toInt();
+    settings.endGroup();
+}
+
+void RadioCalibrationConfig::writeSettings()
+{
+    QSettings settings;
+    settings.beginGroup("RCCALIBRATION_VIEW");
+    settings.setValue("RC_MODE",m_rcMode);
+    settings.endGroup();
+    settings.sync();
 }

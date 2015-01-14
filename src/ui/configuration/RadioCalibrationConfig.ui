@@ -93,14 +93,14 @@ qlineargradient(spread:pad, x1:0.473, y1:0, x2:0.443, y2:0.994318, stop:0 rgba(0
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,1,2,0,2,2,0">
            <item>
-            <widget class="QCheckBox" name="revPitchCheckBox">
+            <widget class="QCheckBox" name="revLeftVCheckBox">
              <property name="text">
               <string>Reverse</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QGCRadioChannelDisplay" name="pitchWidget" native="true">
+            <widget class="QGCRadioChannelDisplay" name="leftVWidget" native="true">
              <property name="minimumSize">
               <size>
                <width>50</width>
@@ -132,14 +132,14 @@ qlineargradient(spread:pad, x1:0.473, y1:0, x2:0.443, y2:0.994318, stop:0 rgba(0
             </spacer>
            </item>
            <item>
-            <widget class="QCheckBox" name="revThrottleCheckBox">
+            <widget class="QCheckBox" name="revRightVCheckBox">
              <property name="text">
               <string>Reverse</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QGCRadioChannelDisplay" name="throttleWidget" native="true">
+            <widget class="QGCRadioChannelDisplay" name="rightVWidget" native="true">
              <property name="minimumSize">
               <size>
                <width>50</width>
@@ -341,6 +341,16 @@ qlineargradient(spread:pad, x1:0.473, y1:0, x2:0.443, y2:0.994318, stop:0 rgba(0
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>RC Radio</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="modeComboBox"/>
+         </item>
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">

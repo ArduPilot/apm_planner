@@ -68,10 +68,14 @@ private slots:
     void elevonsCh2Rev(bool state);
     void elevonOutput();
 
+    void modeIndexChanged(int index);
+
 private:
     void updateChannelReversalStates();
     void setParamChannelRev(const QString& param, bool state);
     void updateChannelRevState(QCheckBox *checkbox, int channelId);
+    void readSettings();
+    void writeSettings();
 
 private:
     Ui::RadioCalibrationConfig ui;
@@ -87,6 +91,12 @@ private:
     int m_rollChannel;
     int m_yawChannel;
     int m_throttleChannel;
+
+    QGCRadioChannelDisplay* m_pitchWidget;
+    QGCRadioChannelDisplay* m_throttleWidget;
+    QCheckBox* m_pitchCheckBox;
+    QCheckBox* m_throttleCheckBox;
+    int m_rcMode;
 };
 
 #endif // RADIOCALIBRATIONCONFIG_H
