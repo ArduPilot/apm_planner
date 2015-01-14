@@ -23,7 +23,7 @@
 static const QString DATA_PLOT_LIVE_DATA = "<p align=\"center\"><span style=\" font-size:14pt; color:darkblue;\">Live Data</span></p>";
 static const QString DATA_PLOT_LOG_LOADED = "<p align=\"center\"><span style=\" font-size:14pt; color:darkred;\">Log Loaded: %1</span></p>";
 
-AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
+AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
     m_updateTimer(NULL),
     m_showOnlyActive(false),
     m_graphCount(0),
@@ -101,8 +101,11 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     ui.horizontalLayout_3->setStretch(0,5);
     ui.horizontalLayout_3->setStretch(1,1);
 
-    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
-    activeUASSet(UASManager::instance()->getActiveUAS());
+    if (!isIndependant)
+    {
+        connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+        activeUASSet(UASManager::instance()->getActiveUAS());
+    }
 
     ui.tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
 
@@ -395,6 +398,15 @@ void AP2DataPlot2D::addGraphLeft()
     QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
     QString headertext = ui.tableWidget->model()->headerData(ui.tableWidget->selectionModel()->selectedIndexes().at(0).column(),Qt::Horizontal,Qt::DisplayRole).toString();
     m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
+    //Whenever we add a graph, make the button a remove, since there is no selectedItemChanged signal if they re-click it
+    //It's an enabled
+    m_addGraphAction->setText("Remove From Graph");
+    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft()));
+
 }
 void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
@@ -462,6 +474,12 @@ void AP2DataPlot2D::removeGraphLeft()
     QString headertext = ui.tableWidget->model()->headerData(ui.tableWidget->selectionModel()->selectedIndexes().at(0).column(),Qt::Horizontal,Qt::DisplayRole).toString();
     QString label = itemtext + "." + headertext;
     m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
+    m_addGraphAction->setText("Add To Graph");
+    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
+    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
+    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
+    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
+    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
 }
 void AP2DataPlot2D::showOnlyClicked()
 {
@@ -705,6 +723,19 @@ void AP2DataPlot2D::loadButtonClicked()
 {
     if (m_logLoaded)
     {
+        if (this->parent() == 0)
+        {
+            //Good to close out
+            this->close();
+        }
+    }
+    //Should always allow loading of logs, even when connected.
+    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.tlog);;All Files (*.*)");
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    dialog->open(this, SLOT(loadDialogAccepted()));
+    return;
+    if (m_logLoaded)
+    {
         for (int i=0;i<m_graphNameList.size();i++)
         {
             m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
@@ -720,14 +751,14 @@ void AP2DataPlot2D::loadButtonClicked()
         m_graphCount=0;
         m_dataList.clear();
 
-    //Clear the sorting
-    m_tableFilterList.clear();
-    ui.sortSelectTreeWidget->clear();
-    ui.tableSortGroupBox->setVisible(false);
-    ui.sortShowPushButton->setText("Show Sort");
-    ui.sortShowPushButton->setVisible(false);
+        //Clear the sorting
+        m_tableFilterList.clear();
+        ui.sortSelectTreeWidget->clear();
+        ui.tableSortGroupBox->setVisible(false);
+        ui.sortShowPushButton->setText("Show Sort");
+        ui.sortShowPushButton->setVisible(false);
 
-    //Unload the log
+        //Unload the log
         m_logLoaded = false;
         ui.loadOfflineLogButton->setText("Load Log");
         ui.hideExcelView->setVisible(false);
@@ -743,9 +774,7 @@ void AP2DataPlot2D::loadButtonClicked()
         QSqlDatabase::removeDatabase("QSQLITE");
         return;
     }
-    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.tlog);;All Files (*.*)");
-    dialog->setFileMode(QFileDialog::ExistingFile);
-    dialog->open(this, SLOT(loadDialogAccepted()));
+
 }
 void AP2DataPlot2D::loadDialogAccepted()
 {
@@ -759,6 +788,18 @@ void AP2DataPlot2D::loadDialogAccepted()
         return;
     }
     m_filename = dialog->selectedFiles().first();
+
+    AP2DataPlot2D *plot = new AP2DataPlot2D(0,true);
+    plot->setAttribute(Qt::WA_DeleteOnClose,true);
+    plot->show();
+    plot->loadLog(m_filename);
+
+    //loadLog(m_filename);
+
+}
+void AP2DataPlot2D::loadLog(QString filename)
+{
+    m_logLoaded = true;
     for (int i=0;i<m_graphNameList.size();i++)
     {
         m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
@@ -775,23 +816,13 @@ void AP2DataPlot2D::loadDialogAccepted()
     m_dataList.clear();
 
     QString logTitle = DATA_PLOT_LOG_LOADED;
-    QString filename =m_filename.mid(m_filename.lastIndexOf("/")+1);
-    ui.logTypeLabel->setText( logTitle.arg(filename));
+    QString shortfilename =filename.mid(filename.lastIndexOf("/")+1);
+    ui.logTypeLabel->setText( logTitle.arg(shortfilename));
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     ui.autoScrollCheckBox->setChecked(false);
     ui.loadOfflineLogButton->setText("Unload Log");
-
-    m_logLoaded = true;
-    //Create the in-memory database
-    m_sharedDb = QSqlDatabase::addDatabase("QSQLITE");
-    m_sharedDb.setDatabaseName(":memory:");
-    if (!m_sharedDb.open())
-    {
-        QMessageBox::information(0,"error","Error opening shared database " + m_sharedDb.lastError().text());
-        return;
-    }
 
     m_tableModel = new AP2DataPlot2DModel(this);
     m_logLoaderThread = new AP2DataPlotThread(m_tableModel);
@@ -801,7 +832,7 @@ void AP2DataPlot2D::loadDialogAccepted()
     connect(m_logLoaderThread,SIGNAL(done(int,MAV_TYPE)),this,SLOT(threadDone(int,MAV_TYPE)));
     connect(m_logLoaderThread,SIGNAL(finished()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
-    m_logLoaderThread->loadFile(m_filename,&m_sharedDb);
+    m_logLoaderThread->loadFile(filename);
 }
 
 void AP2DataPlot2D::threadTerminated()
