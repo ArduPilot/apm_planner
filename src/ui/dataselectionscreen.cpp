@@ -46,9 +46,12 @@ void DataSelectionScreen::enableItem(QString name)
         {
             if (items[i]->parent()->text(0).contains(first))
             {
-                items[i]->setCheckState(0,Qt::Checked);
-                ui.treeWidget->scrollToItem(items[i]);
-                m_enabledList.append(name);
+                if (items[i]->checkState(0) != Qt::Checked)
+                {
+                    items[i]->setCheckState(0,Qt::Checked);
+                    ui.treeWidget->scrollToItem(items[i]);
+                    m_enabledList.append(name);
+                }
                 return;
             }
         }

@@ -9,6 +9,7 @@ class AP2DataPlot2DModel : public QAbstractTableModel
     Q_OBJECT
 public:
     explicit AP2DataPlot2DModel(QObject *parent = 0);
+    ~AP2DataPlot2DModel();
     int rowCount( const QModelIndex & parent = QModelIndex() ) const;
     int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
     QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
@@ -21,6 +22,7 @@ public:
     QMap<int,double> getValues(QString parent,QString child);
     int getChildIndex(QString parent,QString child);
 private:
+    QString m_databaseName;
     QSqlDatabase m_sharedDb;
     int m_rowCount;
     QMap<int,QPair<quint64,QString> > m_rowToTableMap;

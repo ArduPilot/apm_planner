@@ -12,15 +12,12 @@ class AP2DataPlotThread : public QThread
     Q_OBJECT
 public:
     explicit AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent = 0);
-    void loadFile(QString file,QSqlDatabase *db);
+    void loadFile(QString file);
     void stopLoad() { m_stop = true; }
 private:
     void loadDataFieldsFromValues();
     QString m_fileName;
     bool m_stop;
-    QSqlDatabase *m_db;
-    QString makeInsertTableString(QString tablename, QString variablestr);
-    QString makeCreateTableString(QString tablename, QString formatstr,QString variablestr);
     int m_fieldCount;
     MAVLinkDecoder *decoder;
     int m_errorCount;
@@ -28,10 +25,6 @@ private:
     void loadBinaryLog();
     void loadAsciiLog();
     void loadTLog();
-    bool createFMTTable();
-    bool createFMTInsert(QSqlQuery *query);
-    bool createIndexTable();
-    bool createIndexInsert(QSqlQuery *query);
     MAV_TYPE m_loadedLogType;
     AP2DataPlot2DModel *m_dataModel;
 protected:

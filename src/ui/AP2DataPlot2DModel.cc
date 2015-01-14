@@ -4,11 +4,13 @@
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QSqlError>
+#include <QUuid>
 #include <QsLog.h>
 AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
-    m_sharedDb = QSqlDatabase::addDatabase("QSQLITE");
+    m_databaseName = QUuid::createUuid().toString();
+    m_sharedDb = QSqlDatabase::addDatabase("QSQLITE",m_databaseName);
     m_sharedDb.setDatabaseName(":memory:");
     if (!m_sharedDb.open())
     {
@@ -109,6 +111,11 @@ AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
     //"INSERT INTO 'FMT' (idx,typeid,length,name,format,val)
 
 }
+AP2DataPlot2DModel::~AP2DataPlot2DModel()
+{
+    QSqlDatabase::removeDatabase(m_databaseName);
+}
+
 QMap<QString,QList<QString> > AP2DataPlot2DModel::getFmtValues()
 {
     return m_headerStringList;
@@ -267,7 +274,6 @@ bool AP2DataPlot2DModel::hasType(QString name)
 
 void AP2DataPlot2DModel::addType(QString name,QString types,QStringList names)
 {
-    //QSqlQuery fmtinsertquery(m_sharedDb);
     if (!m_msgNameToInsertQuery.contains(name))
     {
         QString createstring = makeCreateTableString(name,types,names);
@@ -289,7 +295,6 @@ void AP2DataPlot2DModel::addType(QString name,QString types,QStringList names)
         {
             qDebug() << "FAILED TO FMT:" << m_fmtInsertQuery->lastError().text();
         }
-        qDebug() << "FMT:" << m_fmtInsertQuery->lastQuery();
         indexinsertquery->bindValue(":idx",m_fmtIndex-1);
         indexinsertquery->bindValue(":value","FMT");
         if (!indexinsertquery->exec())
@@ -299,7 +304,6 @@ void AP2DataPlot2DModel::addType(QString name,QString types,QStringList names)
             return;
         }
 
-        QLOG_DEBUG() << "Table:" << createstring;
         m_msgNameToInsertQuery.insert(name,insertstring.replace("insert or replace","insert"));
         QSqlQuery create(m_sharedDb);
         if (!create.prepare(createstring))
@@ -524,7 +528,7 @@ bool AP2DataPlot2DModel::createFMTTable()
     fmttablecreate.prepare("CREATE TABLE 'FMT' (idx integer PRIMARY KEY, typeid integer,length integer,name varchar(200),format varchar(6000),val varchar(6000));");
     if (!fmttablecreate.exec())
     {
-        //emit error("Error creating FMT table: " + m_sharedDb->lastError().text());
+        QLOG_ERROR() << "Error creating FMT table: " + fmttablecreate.lastError().text();
         return false;
     }
     return true;
