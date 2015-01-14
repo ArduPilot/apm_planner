@@ -59,6 +59,10 @@ RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     ui.rightVWidget->setMax(2200);
     ui.yawWidget->setMin(800);
     ui.yawWidget->setMax(2200);
+
+    ui.rollWidget->setName(tr("Roll"));
+    ui.yawWidget->setName(tr("Yaw"));
+
     ui.radio5Widget->setMin(800);
     ui.radio5Widget->setMax(2200);
     ui.radio6Widget->setMin(800);
@@ -67,10 +71,10 @@ RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     ui.radio7Widget->setMax(2200);
     ui.radio8Widget->setMin(800);
     ui.radio8Widget->setMax(2200);
+
     ui.rollWidget->setOrientation(Qt::Horizontal);
-    ui.rollWidget->setName("Roll");
     ui.yawWidget->setOrientation(Qt::Horizontal);
-    ui.yawWidget->setName("Yaw");
+
     ui.radio5Widget->setOrientation(Qt::Horizontal);
     ui.radio5Widget->setName("Radio 5");
     ui.radio6Widget->setOrientation(Qt::Horizontal);
@@ -198,8 +202,13 @@ void RadioCalibrationConfig::modeIndexChanged(int index)
         m_pitchWidget = ui.rightVWidget;
         m_pitchCheckBox = ui.revRightVCheckBox;
     }
-    m_pitchWidget->setName("Pitch");
-    m_throttleWidget->setName("Throttle");
+    if ((m_pitchChannel != 0 ) && (m_pitchChannel != 0 )){
+        m_pitchWidget->setName(tr("%1-Pitch").arg(m_pitchChannel));
+        m_throttleWidget->setName(tr("%1-Throttle").arg(m_throttleChannel));
+    } else {
+        m_pitchWidget->setName(tr("Pitch"));
+        m_throttleWidget->setName(tr("Throttle"));
+    }
 
     connect(m_pitchCheckBox, SIGNAL(clicked(bool)), this, SLOT(pitchClicked(bool)));
     connect(m_throttleCheckBox, SIGNAL(clicked(bool)), this, SLOT(throttleClicked(bool)));
@@ -215,18 +224,22 @@ void RadioCalibrationConfig::parameterChanged(int uas, int component, QString pa
 
     if(parameterName.startsWith("RCMAP_PITCH")){
         m_pitchChannel = value.toInt();
+        m_pitchWidget->setName(tr("%1-Pitch").arg(m_pitchChannel));
         return;
 
     } else if(parameterName.startsWith("RCMAP_ROLL")){
         m_rollChannel = value.toInt();
+        ui.rollWidget->setName(tr("%1-Roll").arg(value.toString()));
         return;
 
     } else if(parameterName.startsWith("RCMAP_YAW")){
         m_yawChannel = value.toInt();
+        ui.yawWidget->setName(tr("%1-Yaw").arg(value.toString()));
         return;
 
     } else if(parameterName.startsWith("RCMAP_THROTTLE")){
         m_throttleChannel = value.toInt();
+        m_throttleWidget->setName(tr("%1-Throttle").arg(m_throttleChannel));
         return;
     }
 
