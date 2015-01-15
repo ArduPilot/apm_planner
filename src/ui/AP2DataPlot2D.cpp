@@ -22,7 +22,8 @@
 
 static const QString DATA_PLOT_LIVE_DATA = "<p align=\"center\"><span style=\" font-size:14pt; color:darkblue;\">Live Data</span></p>";
 static const QString DATA_PLOT_LOG_LOADED = "<p align=\"center\"><span style=\" font-size:14pt; color:darkred;\">Log Loaded: %1</span></p>";
-
+//Number of additional pixels over font height for each row for the table/excel view.
+#define ROW_HEIGHT_PADDING 3
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
     m_updateTimer(NULL),
     m_showOnlyActive(false),
@@ -114,6 +115,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft()));
 
     ui.tableWidget->setVisible(false);
+    ui.tableWidget->verticalHeader()->setDefaultSectionSize(ui.tableWidget->fontMetrics().height() + ROW_HEIGHT_PADDING);
     ui.hideExcelView->setVisible(false);
 
     connect(ui.loadOfflineLogButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
@@ -823,6 +825,9 @@ void AP2DataPlot2D::loadLog(QString filename)
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     ui.autoScrollCheckBox->setChecked(false);
     ui.loadOfflineLogButton->setText("Unload Log");
+    ui.loadTLogButton->setVisible(false);
+    ui.downloadPushButton->setVisible(false);
+    ui.autoScrollCheckBox->setVisible(false);
 
     m_tableModel = new AP2DataPlot2DModel(this);
     m_logLoaderThread = new AP2DataPlotThread(m_tableModel);
@@ -875,71 +880,27 @@ void AP2DataPlot2D::itemEnabled(QString name)
             }
         }*/
 
-        QVector<double> xlist;
-        QVector<double> ylist;
-        QMap<int,double> values = m_tableModel->getValues(parent,child);
-        for (QMap<int,double>::const_iterator i = values.constBegin();i!=values.constEnd();i++)
-        {
-            xlist.append(i.key());
-            ylist.append(i.value());
-
-        }
-
-
-        /*QSqlQuery tablequery(m_sharedDb);
-        //tablequery.prepare("SELECT * FROM '" + parent + "';");
-        tablequery.prepare("SELECT * FROM 'FMT' WHERE name == '" + parent + "';");
-        tablequery.exec();
-        if (!tablequery.next())
-        {
-            return;
-        }
-        QSqlRecord record = tablequery.record();
-        QStringList valuessplit = record.value(5).toString().split(","); //comma delimited list of names
-        bool found = false;
-        int index = 0;
-        for (int i=0;i<valuessplit.size();i++)
-        {
-            if (valuessplit.at(i) == child)
-            {
-                found = true;
-                index = i;
-                i = valuessplit.size();
-            }
-        }
-        if (!found)
-        {
-            return;
-        }
-        QSqlQuery itemquery(m_sharedDb);
-        itemquery.prepare("SELECT * FROM '" + parent + "';");
-        itemquery.exec();
-        QVector<double> xlist;
-        QVector<double> ylist;
-        QList<QPair<double,QString> > strlist;
         bool isstr = false;
-        while (itemquery.next())
+        QList<QPair<double,QString> > strlist;
+        QVector<double> xlist;
+        QVector<double> ylist;
+        QMap<int,QVariant> values = m_tableModel->getValues(parent,child);
+        for (QMap<int,QVariant>::const_iterator i = values.constBegin();i!=values.constEnd();i++)
         {
-            QSqlRecord record = itemquery.record();
-            int graphindex = record.value(0).toInt();
-            if (record.value(index+1).type() == QVariant::String)
+            if (i.value().type() == QVariant::String)
             {
-                QString graphvaluestr = record.value(index+1).toString();
-                strlist.append(QPair<double,QString>(graphindex,graphvaluestr));
+                QString graphvaluestr = i.value().toString();
+                strlist.append(QPair<double,QString>(i.key(),graphvaluestr));
                 isstr = true;
             }
             else
             {
-                double graphvalue = record.value(index+1).toDouble();
+                double graphvalue = i.value().toDouble();
                 ylist.append(graphvalue);
             }
-            xlist.append(graphindex);
+            xlist.append(i.key());
+
         }
-        if (!isstr && xlist.size() == 0)
-        {
-            //No data!
-            return;
-        }*/
         QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
         axis->setLabel(name);
 
@@ -968,7 +929,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         graph.isInGroup = false;
         graph.isManualRange = false;
         m_graphClassMap[name] = graph;
-        /*if (isstr)
+        if (isstr)
         {
             for (int i=0;i<strlist.size();i++)
             {
@@ -992,7 +953,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
 
             }
         }
-        else*/
+        else
         {
             mainGraph1->setData(xlist, ylist);
         }
@@ -1632,7 +1593,7 @@ void AP2DataPlot2D::exportButtonClicked()
         return;
     }
 
-    if (!m_sharedDb.isOpen())
+    /*if (!m_sharedDb.isOpen())
     {
         if (!m_sharedDb.open())
         {
@@ -1640,7 +1601,7 @@ void AP2DataPlot2D::exportButtonClicked()
             QMessageBox::information(0,"Error","Error opening DB");
             return;
         }
-    }
+    }*/
 
     //remove current extension
     QString exportFilename = m_filename.replace(".bin",".log", Qt::CaseInsensitive); // remove extension
@@ -1673,59 +1634,43 @@ void AP2DataPlot2D::exportDialogAccepted()
     progressDialog->show();
     QApplication::processEvents();
 
-    //Iterate through the FMT table, to build a FMT block at the beginning of the log
-    QSqlQuery fmtquery(m_sharedDb);
-    fmtquery.prepare("SELECT * FROM 'FMT';");
-    if (!fmtquery.exec())
-    {
-        QMessageBox::information(0,"Error","Error selecting from table 'FMT' " + m_sharedDb.lastError().text());
-        return;
 
-    }
     QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format\r\n";
-    while (fmtquery.next())
+    QMap<QString,QList<QString> > fmtlist = m_tableModel->getFmtValues();
+    for (QMap<QString,QList<QString> >::const_iterator i = fmtlist.constBegin();i!=fmtlist.constEnd();i++)
     {
-        QSqlRecord record = fmtquery.record();
-        QString name = record.value(3).toString();
-        QString vars = record.value(5).toString();
-        QString format = record.value(4).toString();
-        int size = 0;
-        for (int i=0;i<format.size();i++)
+        QString fmtname = i.key();
+        QString line = m_tableModel->getFmtLine(fmtname);
+        if (line != "")
         {
-            if (format.at(i).toLatin1() == 'n')
-            {
-                size += 4;
-            }
-            else if (format.at(i).toLatin1() == 'N')
-            {
-                size += 16;
-            }
-            else if (format.at(i).toLatin1() == 'Z')
-            {
-                size += 64;
-            }
-            else if (format.at(i).toLatin1() == 'f')
-            {
-                size += 4;
-            }
-            else if ((format.at(i).toLatin1() == 'i') || (format.at(i).toLatin1() == 'I') || (format.at(i).toLatin1() == 'e') || (format.at(i).toLatin1() == 'E')  || (format.at(i).toLatin1() == 'L'))
-            {
-                size += 4;
-            }
-            else if ((format.at(i).toLatin1() == 'h') || (format.at(i).toLatin1() == 'H') || (format.at(i).toLatin1() == 'c') || (format.at(i).toLatin1() == 'C'))
-            {
-                size += 2;
-            }
-            else if ((format.at(i).toLatin1() == 'b') || (format.at(i).toLatin1() == 'B') || (format.at(i).toLatin1() == 'M'))
-            {
-                size += 1;
-            }
+            formatheader += line + "\r\n";
         }
-        QString formatline = "FMT, " + QString::number(record.value(1).toInt()) + ", " + QString::number(size+3) + ", " + name + ", " + format + ", " + vars + "\r\n";
-        formatheader += formatline;
+    }
+
+
+    outputfile.write(formatheader.toLatin1());
+
+    for (int i=0;i<m_tableModel->rowCount();i++)
+    {
+        int j=1;
+        QVariant val = m_tableModel->data(m_tableModel->index(i,j++));
+        QString line = val.toString();
+        val = m_tableModel->data(m_tableModel->index(i,j++));
+        while (!val.isNull())
+        {
+            line += ", " + val.toString();
+            val = m_tableModel->data(m_tableModel->index(i,j++));
+        }
+        outputfile.write(line.append("\r\n").toLatin1());
+        if (i % 5)
+        {
+            progressDialog->setValue(100.0 * ((double)i / (double)m_tableModel->rowCount()));
+        }
         QApplication::processEvents();
     }
 
+
+/*
     //Iterate through the index table to build the actual log
     QSqlQuery indexquery(m_sharedDb);
     indexquery.prepare("SELECT * FROM 'INDEX';");
@@ -1806,7 +1751,7 @@ void AP2DataPlot2D::exportDialogAccepted()
             outputfile.write(fields.append("\r\n").toLatin1());
         }
     }
-
+*/
     outputfile.close();
     progressDialog->hide();
     progressDialog->deleteLater();
