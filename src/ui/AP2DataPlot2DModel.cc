@@ -464,6 +464,7 @@ bool AP2DataPlot2DModel::startTransaction()
     if (!m_sharedDb.transaction())
     {
         setError("Unable to start transaction to database: " + m_sharedDb.lastError().text());
+        return false;
     }
     return true;
 }
@@ -472,6 +473,7 @@ bool AP2DataPlot2DModel::endTransaction()
     if (!m_sharedDb.commit())
     {
         setError("Unable to commit to database: " + m_sharedDb.lastError().text());
+        return false;
     }
     return true;
 }
@@ -611,10 +613,15 @@ QString AP2DataPlot2DModel::makeInsertTableString(QString tablename, QStringList
 bool AP2DataPlot2DModel::createFMTTable()
 {
     QSqlQuery fmttablecreate(m_sharedDb);
-    fmttablecreate.prepare("CREATE TABLE 'FMT' (idx integer PRIMARY KEY, typeid integer,length integer,name varchar(200),format varchar(6000),val varchar(6000));");
+    if (!fmttablecreate.prepare("CREATE TABLE 'FMT' (idx integer PRIMARY KEY, typeid integer,length integer,name varchar(200),format varchar(6000),val varchar(6000));"))
+    {
+        setError("Prapre create FMT table failed: " + fmttablecreate.lastError().text());
+        return false;
+    }
     if (!fmttablecreate.exec())
     {
         QLOG_ERROR() << "Error creating FMT table: " + fmttablecreate.lastError().text();
+        setError("Exec create FMT table failed: " + fmttablecreate.lastError().text());
         return false;
     }
     return true;
@@ -623,6 +630,7 @@ bool AP2DataPlot2DModel::createFMTInsert(QSqlQuery *query)
 {
     if (!query->prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (:idx,:typeid,:length,:name,:format,:val);"))
     {
+        setError("Insert into FMT prepare failed: " + query->lastError().text());
         return false;
     }
     return true;
@@ -632,12 +640,12 @@ bool AP2DataPlot2DModel::createIndexTable()
     QSqlQuery indextablecreate(m_sharedDb);
     if (!indextablecreate.prepare("CREATE TABLE 'INDEX' (idx integer PRIMARY KEY, value varchar(200));"))
     {
-        //emit error("Error preparing INDEX table: " + m_sharedDb->lastError().text());
+        setError("Error preparing INDEX table: " + m_sharedDb.lastError().text());
         return false;
     }
     if (!indextablecreate.exec())
     {
-        //emit error("Error creating INDEX table: " + m_sharedDb->lastError().text());
+        setError("Error creating INDEX table: " + m_sharedDb.lastError().text());
         return false;
     }
     return true;
@@ -646,6 +654,7 @@ bool AP2DataPlot2DModel::createIndexInsert(QSqlQuery *query)
 {
     if (!query->prepare("INSERT INTO 'INDEX' (idx,value) values (:idx,:value);"))
     {
+        setError("Insert into Index prepare failed: " + query->lastError().text());
         return false;
     }
     return true;
