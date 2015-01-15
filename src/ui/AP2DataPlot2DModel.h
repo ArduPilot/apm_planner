@@ -14,14 +14,20 @@ public:
     int columnCount ( const QModelIndex & parent = QModelIndex() ) const;
     QVariant data ( const QModelIndex & index, int role = Qt::DisplayRole ) const;
     QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-    void addType(QString name,QString types,QStringList names);
-    void addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index);
+    bool addType(QString name,int type,int length,QString types,QStringList names);
+    bool addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index);
     QMap<QString,QList<QString> > getFmtValues();
+    QString getFmtLine(QString name);
     QMap<int,QString> getModeValues();
     bool hasType(QString name);
-    QMap<int,double> getValues(QString parent,QString child);
+    QMap<int,QVariant> getValues(QString parent,QString child);
     int getChildIndex(QString parent,QString child);
+    QString getError() { return m_error; }
+    bool endTransaction();
+    bool startTransaction();
 private:
+    void setError(QString error);
+    QString m_error;
     QString m_databaseName;
     QSqlDatabase m_sharedDb;
     int m_rowCount;

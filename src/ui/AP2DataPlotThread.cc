@@ -45,6 +45,11 @@ void AP2DataPlotThread::loadBinaryLog()
     int index = 0;
     m_loadedLogType = MAV_TYPE_GENERIC;
 
+    if (!m_dataModel->startTransaction())
+    {
+        emit error(m_dataModel->getError());
+        return;
+    }
     while (!logfile.atEnd())
     {
         int nonpacketcounter = 0;
@@ -96,7 +101,13 @@ void AP2DataPlotThread::loadBinaryLog()
                             continue;
                         }
                         if (!tables.contains(name)) {
-                            m_dataModel->addType(name,format,labels.split(","));
+                            if (!m_dataModel->addType(name,msg_type,msg_length,format,labels.split(",")))
+                            {
+                                QString actualerror = m_dataModel->getError();
+                                m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                                emit error(actualerror);
+                                return;
+                            }
                             tables.append(name);
                         }
                         index++;
@@ -279,7 +290,13 @@ void AP2DataPlotThread::loadBinaryLog()
                             }
                             if (valuepairlist.size() > 1)
                             {
-                                m_dataModel->addRow(name,valuepairlist,index);
+                                if (!m_dataModel->addRow(name,valuepairlist,index))
+                                {
+                                    QString actualerror = m_dataModel->getError();
+                                    m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                                    emit error(actualerror);
+                                    return;
+                                }
                             }
 
                             if (type == paramtype && m_loadedLogType == MAV_TYPE_GENERIC)
@@ -317,6 +334,11 @@ void AP2DataPlotThread::loadBinaryLog()
             QLOG_DEBUG() << "AP2DataPlotThread::run(): Non packet bytes found in log file" << nonpacketcounter << "bytes filtered out. This may be a corrupt log";
         }
     }
+    if (!m_dataModel->endTransaction())
+    {
+        emit error(m_dataModel->getError());
+        return;
+    }
 }
 void AP2DataPlotThread::loadAsciiLog()
 {
@@ -334,7 +356,11 @@ void AP2DataPlotThread::loadAsciiLog()
     QMap<QString,QString> nameToTypeString;
     QMap<QString,QStringList> nameToValueList;
 
-
+    if (!m_dataModel->startTransaction())
+    {
+        emit error(m_dataModel->getError());
+        return;
+    }
     while (!logfile.atEnd() && !m_stop)
     {
         emit loadProgress(logfile.pos(),logfile.size());
@@ -380,7 +406,15 @@ void AP2DataPlotThread::loadAsciiLog()
                             valuestr += name;
                         }
                         nameToValueList[type] = valuestr;
-                        m_dataModel->addType(type,descstr,valuestr);
+                        int type_id = linesplit[1].trimmed().toInt();
+                        int length = linesplit[2].trimmed().toInt();
+                        if (!m_dataModel->addType(type,type_id,length,descstr,valuestr))
+                        {
+                            QString actualerror = m_dataModel->getError();
+                            m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                            emit error(actualerror);
+                            return;
+                        }
                     }
                 }
                 else
@@ -472,7 +506,13 @@ void AP2DataPlotThread::loadAsciiLog()
                             {
                                 if (valuepairlist.size() > 0)
                                 {
-                                    m_dataModel->addRow(name,valuepairlist,index);
+                                    if (!m_dataModel->addRow(name,valuepairlist,index))
+                                    {
+                                        QString actualerror = m_dataModel->getError();
+                                        m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                                        emit error(actualerror);
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -485,6 +525,11 @@ void AP2DataPlotThread::loadAsciiLog()
 
             }
         }
+    }
+    if (!m_dataModel->endTransaction())
+    {
+        emit error(m_dataModel->getError());
+        return;
     }
 }
 void AP2DataPlotThread::loadTLog()
@@ -516,6 +561,11 @@ void AP2DataPlotThread::loadTLog()
     decoder = new MAVLinkDecoder();
     QList<quint64> lastunixtimemseclist;
 
+    if (!m_dataModel->startTransaction())
+    {
+        emit error(m_dataModel->getError());
+        return;
+    }
     while (!logfile.atEnd() && !m_stop)
     {
         emit loadProgress(logfile.pos(),logfile.size());
@@ -668,7 +718,13 @@ void AP2DataPlotThread::loadTLog()
                             }
                         }
 
-                        m_dataModel->addType(name,typechars,variablenames);
+                        if (!m_dataModel->addType(name,0,0,typechars,variablenames))
+                        {
+                            QString actualerror = m_dataModel->getError();
+                            m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                            emit error(actualerror);
+                            return;
+                        }
                     }
 
                     quint64 unixtimemsec = (quint64)decoder->getUnixTimeFromMs(message.sysid, lastLogTime);
@@ -684,18 +740,28 @@ void AP2DataPlotThread::loadTLog()
                     //valuelist.append(QPair<QString,QVariant>("idx",unixtimemsec));
                     for (int i=0;i<retvals.size();i++)
                     {
-                        valuepairlist.append(QPair<QString,QVariant>(retvals.at(i).first.split(".")[1],retvals.at(i).second.toInt()));
+                        valuepairlist.append(QPair<QString,QVariant>(retvals.at(i).first.split(".")[1],retvals.at(i).second.toLongLong()));
                         //query.bindValue(QString(":") + retvals.at(i).first.split(".")[1],retvals.at(i).second.toInt());
                     }
                     if (valuepairlist.size() > 1)
                     {
-                        m_dataModel->addRow(name,valuepairlist,unixtimemsec);
+                        if (!m_dataModel->addRow(name,valuepairlist,unixtimemsec))
+                        {
+                            QString actualerror = m_dataModel->getError();
+                            m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                            emit error(actualerror);
+                            return;
+                        }
                     }
                 }
             }
         }
     }
-    bool stopper = true;
+    if (!m_dataModel->endTransaction())
+    {
+        emit error(m_dataModel->getError());
+        return;
+    }
 }
 
 void AP2DataPlotThread::run()
