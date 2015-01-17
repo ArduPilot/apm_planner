@@ -109,7 +109,7 @@ void ParamCompareDialog::showLoadFileDialog()
     QFileDialog *fileDialog = new QFileDialog(this,"Load",QGC::parameterDirectory());
     QLOG_DEBUG() << "CREATED:" << fileDialog;
     fileDialog->setFileMode(QFileDialog::ExistingFile);
-    fileDialog->setNameFilter("*.param;*.txt");
+    fileDialog->setNameFilter("*.param *.txt");
     fileDialog->open(this, SLOT(loadParameterFile()));
     connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
 }

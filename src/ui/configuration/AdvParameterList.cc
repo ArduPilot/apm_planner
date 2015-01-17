@@ -184,7 +184,7 @@ void AdvParameterList::loadButtonClicked()
     QFileDialog *fileDialog = new QFileDialog(this,"Load",QGC::parameterDirectory());
     QLOG_DEBUG() << "CREATED:" << fileDialog;
     fileDialog->setFileMode(QFileDialog::ExistingFile);
-    fileDialog->setNameFilter("*.param;*.txt");
+    fileDialog->setNameFilter("*.param *.txt");
     fileDialog->open(this, SLOT(loadDialogAccepted()));
     connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
 }
@@ -255,7 +255,7 @@ void AdvParameterList::saveButtonClicked()
     QFileDialog *fileDialog = new QFileDialog(this,"Save",QGC::parameterDirectory());
     QLOG_DEBUG() << "CREATED:" << fileDialog;
     fileDialog->setAcceptMode(QFileDialog::AcceptSave);
-    fileDialog->setNameFilter("*.param;*.txt");
+    fileDialog->setNameFilter("*.param *.txt");
     fileDialog->selectFile("paramter.param");
     fileDialog->open(this, SLOT(saveDialogAccepted()));
     connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
