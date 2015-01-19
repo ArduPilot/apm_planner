@@ -792,6 +792,8 @@ void AP2DataPlot2D::loadDialogAccepted()
     m_filename = dialog->selectedFiles().first();
 
     AP2DataPlot2D *plot = new AP2DataPlot2D(0,true);
+    connect(plot,SIGNAL(destroyed()),this,SLOT(childGraphDestroyed()));
+    m_childGraphList.append(plot);
     plot->setAttribute(Qt::WA_DeleteOnClose,true);
     plot->show();
     plot->loadLog(m_filename);
@@ -859,6 +861,11 @@ AP2DataPlot2D::~AP2DataPlot2D()
         m_axisGroupingDialog->close();
         delete m_axisGroupingDialog;
         m_axisGroupingDialog = NULL;
+    }
+
+    for (int i=0;i<m_childGraphList.size();i++)
+    {
+        m_childGraphList.at(i)->close();
     }
 
     delete m_model;
@@ -1885,5 +1892,17 @@ void AP2DataPlot2D::sortSelectInvertClicked()
         {
             ui.sortSelectTreeWidget->topLevelItem(i)->setCheckState(0,Qt::Checked);
         }
+    }
+}
+void AP2DataPlot2D::childGraphDestroyed(QObject *obj)
+{
+    AP2DataPlot2D *plot = qobject_cast<AP2DataPlot2D*>(obj);
+    if (!plot)
+    {
+        return;
+    }
+    if (m_childGraphList.contains(plot))
+    {
+        m_childGraphList.removeOne(plot);
     }
 }

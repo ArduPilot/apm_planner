@@ -275,6 +275,11 @@ int AP2DataPlot2DModel::columnCount ( const QModelIndex & parent) const
 }
 QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
 {
+    quint64 tableindex = index.row();
+    if (m_rowToTableMap.contains(index.row()))
+    {
+        tableindex = m_rowToTableMap.value(index.row()).first;
+    }
     if (role != Qt::DisplayRole)
     {
         return QVariant();
@@ -285,18 +290,14 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
     }
     if (index.column() == 0)
     {
-        return QString::number(index.row());
+        return QString::number(tableindex);
     }
     if (index.row() < m_fmtStringList.size())
     {
         return m_fmtStringList.at(index.row()).value(index.column()-1);
     }
-    if (!m_rowToTableMap.contains(index.row()))
-    {
-        return QVariant();
-    }
+
     QString tablename = m_rowToTableMap.value(index.row()).second;
-    quint64 tableindex = m_rowToTableMap.value(index.row()).first;
     QSqlQuery tablequery(m_sharedDb);
     QString val = QString::number(tableindex,'f',0);
     tablequery.prepare("SELECT * FROM " + tablename + " WHERE idx = " + val);
@@ -333,9 +334,9 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
     //Grab the index
     int rowid = data(createIndex(current.row(),0)).toString().toInt();
 
-    if (m_rowToTableMap.contains(rowid))
+    if (m_rowToTableMap.contains(current.row()))
     {
-        m_currentHeaderItems = m_headerStringList.value(m_rowToTableMap[rowid].second);
+        m_currentHeaderItems = m_headerStringList.value(m_rowToTableMap[current.row()].second);
     }
     else
     {
@@ -367,6 +368,14 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
         m_fmtInsertQuery->bindValue(":name",name);
         m_fmtInsertQuery->bindValue(":format",types);
         m_fmtInsertQuery->bindValue(":val",variablenames);
+        QList<QString> list;
+        list.append("FMT");
+        list.append(QString::number(m_fmtIndex-1));
+        list.append(QString::number(type));
+        list.append(QString::number(length));
+        list.append(types);
+        list.append(variablenames);
+        m_fmtStringList.append(list);
         if (!m_fmtInsertQuery->exec())
         {
             setError("FAILED TO FMT: " + m_fmtInsertQuery->lastError().text());
