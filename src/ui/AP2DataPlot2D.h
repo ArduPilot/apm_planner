@@ -106,6 +106,8 @@ private slots:
     void sortSelectAllClicked();
     void sortSelectInvertClicked();
 
+    void childGraphDestroyed(QObject *obj);
+
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
@@ -148,6 +150,8 @@ private:
     QList<QString> loglines;
     QSqlDatabase m_sharedDb;
     int currentIndex;
+
+    QList<AP2DataPlot2D*> m_childGraphList;
 
     QList<QPair<qint64,double> > m_onlineValueTimeoutList;
 
