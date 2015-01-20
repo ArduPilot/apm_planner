@@ -821,7 +821,7 @@ void AP2DataPlot2D::loadDialogAccepted()
     m_filename = dialog->selectedFiles().first();
 
     AP2DataPlot2D *plot = new AP2DataPlot2D(0,true);
-    connect(plot,SIGNAL(destroyed()),this,SLOT(childGraphDestroyed()));
+    connect(plot,SIGNAL(destroyed(QObject*)),this,SLOT(childGraphDestroyed(QObject*)));
     m_childGraphList.append(plot);
     plot->setAttribute(Qt::WA_DeleteOnClose,true);
     plot->show();
