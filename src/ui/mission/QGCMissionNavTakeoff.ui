@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2208</width>
-    <height>37</height>
+    <width>900</width>
+    <height>44</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -206,7 +206,7 @@
    <item>
     <widget class="QDoubleSpinBox" name="latSpinBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -258,7 +258,7 @@
    <item>
     <widget class="QDoubleSpinBox" name="lonSpinBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -310,7 +310,7 @@
    <item>
     <widget class="QDoubleSpinBox" name="altSpinBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
