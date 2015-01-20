@@ -49,6 +49,8 @@ class MAVLinkDecoder : public QObject
     Q_OBJECT
 public:
     MAVLinkDecoder(QObject *parent=0);
+    ~MAVLinkDecoder();
+
     void passManager(ConnectionManager *manager) { m_connectionManager = manager; }
     mavlink_field_info_t getFieldInfo(QString msgname,QString fieldname);
     QList<QString> getFieldList(QString msgname);

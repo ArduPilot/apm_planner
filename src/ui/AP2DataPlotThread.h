@@ -36,19 +36,17 @@ This file is part of the APM_PLANNER project
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlot2DModel.h"
 #include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+
 class AP2DataPlotThread : public QThread
 {
     Q_OBJECT
 public:
     explicit AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent = 0);
+    ~AP2DataPlotThread();
+
     void loadFile(const QString& file);
     void stopLoad() { m_stop = true; }
-private:
-    void loadDataFieldsFromValues();
-    void loadBinaryLog();
-    void loadAsciiLog();
-    void loadTLog();
-    void run();
+
 signals:
     void startLoad();
     void loadProgress(qint64 pos,qint64 size);
@@ -56,6 +54,16 @@ signals:
     void done(int errors,MAV_TYPE type);
     void error(QString errorstr);
     void lineRead(QString line);
+
+private:
+    void run(); // from QThread;
+    bool isMainThread();
+
+    void loadDataFieldsFromValues();
+    void loadBinaryLog();
+    void loadAsciiLog();
+    void loadTLog();
+
 private:
     QString m_fileName;
     bool m_stop;
