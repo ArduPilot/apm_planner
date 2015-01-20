@@ -43,15 +43,29 @@ This file is part of the APM_PLANNER project
 
 
 AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) :
-    QThread(parent)
+    QThread(parent),
+    m_decoder(NULL),
+    m_dataModel(model)
 {
-    m_dataModel = model;
+    QLOG_DEBUG() << "Created AP2DataPlotThread:" << this;
     qRegisterMetaType<MAV_TYPE>("MAV_TYPE");
 }
-void AP2DataPlotThread::loadFile(const QString& file)
+
+AP2DataPlotThread::~AP2DataPlotThread()
 {
+    QLOG_DEBUG() << "Destroyed AP2DataPlotThread:" << this;
+}
+
+void AP2DataPlotThread::loadFile(const QString &file)
+{
+    Q_ASSERT(isMainThread());
     m_fileName = file;
     start();
+}
+
+bool AP2DataPlotThread::isMainThread()
+{
+    return QThread::currentThread() == QCoreApplication::instance()->thread();
 }
 
 void AP2DataPlotThread::loadBinaryLog()
@@ -795,6 +809,7 @@ void AP2DataPlotThread::loadTLog()
 
 void AP2DataPlotThread::run()
 {
+    Q_ASSERT(!isMainThread());
     emit startLoad();
     m_stop = false;
     m_errorCount = 0;
