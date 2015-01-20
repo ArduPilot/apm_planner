@@ -33,6 +33,7 @@ This file is part of the QGROUNDCONTROL project
 #include "WaypointEditableView.h"
 #include "ui_WaypointEditableView.h"
 
+// NAV Commands
 #include "mission/QGCMissionNavWaypoint.h"
 #include "mission/QGCMissionNavLoiterUnlim.h"
 #include "mission/QGCMissionNavLoiterTurns.h"
@@ -41,9 +42,12 @@ This file is part of the QGROUNDCONTROL project
 #include "mission/QGCMissionNavLand.h"
 #include "mission/QGCMissionNavTakeoff.h"
 #include "mission/QGCMissionNavSweep.h"
+#include "mission/QGCMissionNavContinueChangeAlt.h"
+// Condition Commands
 #include "mission/QGCMissionConditionDelay.h"
 #include "mission/QGCMissionConditionYaw.h"
 #include "mission/QGCMissionConditionDistance.h"
+// DO commands
 #include "mission/QGCMissionDoJump.h"
 #include "mission/QGCMissionDoSetServo.h"
 #include "mission/QGCMissionDoRepeatServo.h"
@@ -57,6 +61,7 @@ This file is part of the QGROUNDCONTROL project
 #include "mission/QGCMissionDoChangeSpeed.h"
 #include "mission/QGCMissionDoStartSearch.h"
 #include "mission/QGCMissionDoFinishSearch.h"
+// Other
 #include "mission/QGCMissionOther.h"
 
 #include "QGCMouseWheelEventFilter.h"
@@ -101,6 +106,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("Loiter Turns"),MAV_CMD_NAV_LOITER_TURNS);
         m_ui->comboBox_action->addItem(tr("Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
         m_ui->comboBox_action->addItem(tr("Land"),MAV_CMD_NAV_LAND);
+        m_ui->comboBox_action->addItem(tr("Change Alt & cont."),MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT);
         //m_ui->comboBox_action->addItem(tr("NAV: Target"),MAV_CMD_NAV_TARGET);
 
         // IF Commands
@@ -271,6 +277,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
     case MAV_CMD_NAV_TAKEOFF:
         missionWidget = new QGCMissionNavTakeoff(this);
         break;
+    case MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT:
+        missionWidget = new QGCMissionNavContinueChangeAlt(this);
+        break;
     case MAV_CMD_CONDITION_DELAY:
         missionWidget = new QGCMissionConditionDelay(this);
         break;
@@ -349,25 +358,25 @@ void WaypointEditableView::changedFrame(int index)
 }
 
 void WaypointEditableView::changedCurrent(int state)
-{    
+{
     if (state == 0)
     {
         if (wp->getCurrent() == true) //User clicked on the waypoint, that is already current
-        {            
+        {
             m_ui->selectedBox->setChecked(true);
             m_ui->selectedBox->setCheckState(Qt::Checked);
         }
         else
-        {            
+        {
             m_ui->selectedBox->setChecked(false);
-            m_ui->selectedBox->setCheckState(Qt::Unchecked);            
+            m_ui->selectedBox->setCheckState(Qt::Unchecked);
         }
     }
     else
-    {       
+    {
         wp->setCurrent(true);
         emit changeCurrentWaypoint(wp->getId());   //the slot changeCurrentWaypoint() in WaypointList sets all other current flags to false
-    }    
+    }
 }
 
 void WaypointEditableView::updateValues()
@@ -449,7 +458,7 @@ void WaypointEditableView::updateValues()
     MAV_FRAME frame = wp->getFrame();
     int frame_index = m_ui->comboBox_frame->findData(frame);
     if (m_ui->comboBox_frame->currentIndex() != frame_index) {
-        m_ui->comboBox_frame->setCurrentIndex(frame_index);        
+        m_ui->comboBox_frame->setCurrentIndex(frame_index);
     }
 
     // Update action
