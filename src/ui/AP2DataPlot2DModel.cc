@@ -225,9 +225,9 @@ QString AP2DataPlot2DModel::getFmtLine(const QString& name)
     }
     return "";
 }
-QMap<int,QString> AP2DataPlot2DModel::getModeValues()
+QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
 {
-    QMap<int,QString> retval;
+    QMap<quint64,QString> retval;
     QSqlQuery modequery(m_sharedDb);
     modequery.prepare("SELECT * FROM 'MODE';");
     if (!modequery.exec())
@@ -240,7 +240,7 @@ QMap<int,QString> AP2DataPlot2DModel::getModeValues()
         while (modequery.next())
         {
             QSqlRecord record = modequery.record();
-            int index = record.value(0).toInt();
+            quint64 index = record.value(0).toLongLong();
             QString mode = "";
             if (record.contains("Mode"))
             {
@@ -442,13 +442,13 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
     }
     return true;
 }
-QMap<int,QVariant> AP2DataPlot2DModel::getValues(const QString& parent,const QString& child)
+QMap<quint64,QVariant> AP2DataPlot2DModel::getValues(const QString& parent,const QString& child)
 {
     int index = getChildIndex(parent,child);
     QSqlQuery itemquery(m_sharedDb);
     itemquery.prepare("SELECT * FROM '" + parent + "';");
     itemquery.exec();
-    QMap<int,QVariant> retval;
+    QMap<quint64,QVariant> retval;
     while (itemquery.next())
     {
         QSqlRecord record = itemquery.record();

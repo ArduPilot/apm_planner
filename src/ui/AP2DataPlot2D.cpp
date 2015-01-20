@@ -920,8 +920,8 @@ void AP2DataPlot2D::itemEnabled(QString name)
         QList<QPair<double,QString> > strlist;
         QVector<double> xlist;
         QVector<double> ylist;
-        QMap<int,QVariant> values = m_tableModel->getValues(parent,child);
-        for (QMap<int,QVariant>::const_iterator i = values.constBegin();i!=values.constEnd();i++)
+        QMap<quint64,QVariant> values = m_tableModel->getValues(parent,child);
+        for (QMap<quint64,QVariant>::const_iterator i = values.constBegin();i!=values.constEnd();i++)
         {
             if (i.value().type() == QVariant::String)
             {
@@ -1259,7 +1259,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
     }*/
 
 
-    QMap<int,QString> modes = m_tableModel->getModeValues();
+    QMap<quint64,QString> modes = m_tableModel->getModeValues();
     if (modes.size() == 0)
     {
         QLOG_DEBUG() << "Graph loaded with no mode table. Running anyway, but text modes will not be available";
@@ -1298,9 +1298,9 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
                 mainGraph1->rescaleKeyAxis();
             }
         }
-        for (QMap<int,QString>::const_iterator i = modes.constBegin(); i != modes.constEnd(); i++)
+        for (QMap<quint64,QString>::const_iterator i = modes.constBegin(); i != modes.constEnd(); i++)
         {
-            int index = i.key();
+            quint64 index = i.key();
             QString mode = i.value();
             bool ok = false;
             int modeint = mode.toInt(&ok);
