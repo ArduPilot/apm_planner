@@ -1,3 +1,32 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2015 APM_PLANNER PROJECT <http://www.diydrones.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+/**
+ * @file
+ *   @brief AP2DataPlot log loader thread
+ *
+ *   @author Michael Carpenter <malcom2073@gmail.com>
+ */
+
+
 #include "AP2DataPlotThread.h"
 #include <QFile>
 #include <QDebug>
@@ -19,7 +48,7 @@ AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) 
     m_dataModel = model;
     qRegisterMetaType<MAV_TYPE>("MAV_TYPE");
 }
-void AP2DataPlotThread::loadFile(QString file)
+void AP2DataPlotThread::loadFile(const QString& file)
 {
     m_fileName = file;
     start();
@@ -558,7 +587,7 @@ void AP2DataPlotThread::loadTLog()
     QList<uint64_t*> mavlinkList;
     m_fieldCount=0;
     qint64 lastPcTime = QDateTime::currentMSecsSinceEpoch();
-    decoder = new MAVLinkDecoder();
+    m_decoder = new MAVLinkDecoder();
     QList<quint64> lastunixtimemseclist;
 
     if (!m_dataModel->startTransaction())
@@ -645,18 +674,18 @@ void AP2DataPlotThread::loadTLog()
                     uint64_t *target = (uint64_t*)malloc(message.len * 4);
                     memcpy(target,message.payload64,message.len * 4);
                     mavlinkList.append(target);
-                    QList<QPair<QString,QVariant> > retvals = decoder->receiveMessage(0,message);
-                    QString name = decoder->getMessageName(message.msgid);
+                    QList<QPair<QString,QVariant> > retvals = m_decoder->receiveMessage(0,message);
+                    QString name = m_decoder->getMessageName(message.msgid);
 
                     if (!m_dataModel->hasType(name))
                     {
 
-                        QList<QString> fieldnames = decoder->getFieldList(name);
+                        QList<QString> fieldnames = m_decoder->getFieldList(name);
                         QStringList variablenames;
                         QString typechars;
                         for (int i=0;i<fieldnames.size();i++)
                         {
-                            mavlink_field_info_t fieldinfo = decoder->getFieldInfo(name,fieldnames.at(i));
+                            mavlink_field_info_t fieldinfo = m_decoder->getFieldInfo(name,fieldnames.at(i));
                             variablenames <<  QString(fieldinfo.name);
                             switch (fieldinfo.type)
                             {
@@ -727,7 +756,7 @@ void AP2DataPlotThread::loadTLog()
                         }
                     }
 
-                    quint64 unixtimemsec = (quint64)decoder->getUnixTimeFromMs(message.sysid, lastLogTime);
+                    quint64 unixtimemsec = (quint64)m_decoder->getUnixTimeFromMs(message.sysid, lastLogTime);
                     QVariantList valuelist;
 
                     while (lastunixtimemseclist.contains(unixtimemsec))

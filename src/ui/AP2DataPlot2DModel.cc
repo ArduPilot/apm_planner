@@ -1,3 +1,32 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2015 APM_PLANNER PROJECT <http://www.diydrones.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+/**
+ * @file
+ *   @brief AP2DataPlot internal data model
+ *
+ *   @author Michael Carpenter <malcom2073@gmail.com>
+ */
+
+
 #include "AP2DataPlot2DModel.h"
 #include <QSqlQuery>
 #include <QDebug>
@@ -66,8 +95,8 @@ AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
         //Error already emitted.
         return;
     }
-    indexinsertquery = new QSqlQuery(m_sharedDb);
-    if (!createIndexInsert(indexinsertquery))
+    m_indexinsertquery = new QSqlQuery(m_sharedDb);
+    if (!createIndexInsert(m_indexinsertquery))
     {
         //emit error("Error preparing INDEX insert statement: " + indexinsertquery.lastError().text());
         return;
@@ -144,7 +173,7 @@ QMap<QString,QList<QString> > AP2DataPlot2DModel::getFmtValues()
 {
     return m_headerStringList;
 }
-QString AP2DataPlot2DModel::getFmtLine(QString name)
+QString AP2DataPlot2DModel::getFmtLine(const QString& name)
 {
     QSqlQuery fmtquery(m_sharedDb);
     fmtquery.prepare("SELECT * FROM 'FMT' WHERE name = '" + name + "';");
@@ -344,7 +373,7 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
     }
     emit headerDataChanged(Qt::Horizontal,0,9);
 }
-bool AP2DataPlot2DModel::hasType(QString name)
+bool AP2DataPlot2DModel::hasType(const QString& name)
 {
     return m_msgNameToInsertQuery.contains(name);
 }
@@ -381,11 +410,11 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
             setError("FAILED TO FMT: " + m_fmtInsertQuery->lastError().text());
             return false;
         }
-        indexinsertquery->bindValue(":idx",m_fmtIndex-1);
-        indexinsertquery->bindValue(":value","FMT");
-        if (!indexinsertquery->exec())
+        m_indexinsertquery->bindValue(":idx",m_fmtIndex-1);
+        m_indexinsertquery->bindValue(":value","FMT");
+        if (!m_indexinsertquery->exec())
         {
-            setError("Error execing index: " + name + " " + indexinsertquery->lastError().text());
+            setError("Error execing index: " + name + " " + m_indexinsertquery->lastError().text());
             return false;
         }
 
@@ -413,7 +442,7 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
     }
     return true;
 }
-QMap<int,QVariant> AP2DataPlot2DModel::getValues(QString parent,QString child)
+QMap<int,QVariant> AP2DataPlot2DModel::getValues(const QString& parent,const QString& child)
 {
     int index = getChildIndex(parent,child);
     QSqlQuery itemquery(m_sharedDb);
@@ -430,7 +459,7 @@ QMap<int,QVariant> AP2DataPlot2DModel::getValues(QString parent,QString child)
     return retval;
 }
 
-int AP2DataPlot2DModel::getChildIndex(QString parent,QString child)
+int AP2DataPlot2DModel::getChildIndex(const QString& parent,const QString& child)
 {
 
     QSqlQuery tablequery(m_sharedDb);
@@ -511,11 +540,11 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
     }
     else
     {
-        indexinsertquery->bindValue(":idx",index);
-        indexinsertquery->bindValue(":value",name);
-        if (!indexinsertquery->exec())
+        m_indexinsertquery->bindValue(":idx",index);
+        m_indexinsertquery->bindValue(":value",name);
+        if (!m_indexinsertquery->exec())
         {
-            setError("Error execing:" + indexinsertquery->executedQuery() + " error was " + indexinsertquery->lastError().text());
+            setError("Error execing:" + m_indexinsertquery->executedQuery() + " error was " + m_indexinsertquery->lastError().text());
             return false;
         }
     }
