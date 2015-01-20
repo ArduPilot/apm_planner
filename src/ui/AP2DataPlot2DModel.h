@@ -48,9 +48,9 @@ public:
     bool addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index);
     QMap<QString,QList<QString> > getFmtValues();
     QString getFmtLine(const QString& name);
-    QMap<int,QString> getModeValues();
+    QMap<quint64,QString> getModeValues();
     bool hasType(const QString& name);
-    QMap<int,QVariant> getValues(const QString& parent,const QString& child);
+    QMap<quint64,QVariant> getValues(const QString& parent,const QString& child);
     int getChildIndex(const QString& parent,const QString& child);
     QString getError() { return m_error; }
     bool endTransaction();
