@@ -873,7 +873,7 @@ void AP2DataPlot2D::loadLog(QString filename)
 
 void AP2DataPlot2D::threadTerminated()
 {
-    QLOG_DEBUG() << "Terminated AP2DataPlotThread:" << m_logLoaderThread;
+    QLOG_DEBUG() << "AP2DataPlot2D::threadTerminated = " << m_logLoaderThread;
     m_logLoaderThread->deleteLater();
     m_logLoaderThread = NULL;
 }
