@@ -15,6 +15,7 @@ TLogReplayLink::TLogReplayLink(QObject *parent) :
     m_mavlinkDecoder(new MAVLinkDecoder()),
     m_mavlinkInspector(NULL)
 {
+    Q_UNUSED(parent);
 }
 int TLogReplayLink::getId() const
 {
@@ -52,7 +53,8 @@ qint64 TLogReplayLink::bytesAvailable()
 }
 void TLogReplayLink::writeBytes(const char *bytes, qint64 length)
 {
-
+    Q_UNUSED(bytes);
+    Q_UNUSED(length);
 }
 void TLogReplayLink::readBytes()
 {
@@ -154,14 +156,14 @@ void TLogReplayLink::run()
                     nexttime = false;
 
                     //Should be a timestamp for the next packet.
-                    unsigned long logmsecs = static_cast<unsigned char>(timebuf.at(0)) << 56;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(1)) << 48;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(2)) << 40;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(3)) << 32;
-                    logmsecs = static_cast<unsigned char>(timebuf.at(4)) << 24;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(5)) << 16;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(6)) << 8;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(7)) << 0;
+                    quint64 logmsecs = quint64(static_cast<unsigned char>(timebuf.at(0))) << 56;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(1))) << 48;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(2))) << 40;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(3))) << 32;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(4))) << 24;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(5))) << 16;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(6))) << 8;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(7))) << 0;
 
                     timebuf.clear();
 
