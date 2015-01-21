@@ -49,10 +49,11 @@ This file is part of the APM_PLANNER project
 #include "AP2DataPlot2DModel.h"
 #include "ArduPilotMegaMAV.h"
 
-static const QString DATA_PLOT_LIVE_DATA = "<p align=\"center\"><span style=\" font-size:14pt; color:darkblue;\">Live Data</span></p>";
-static const QString DATA_PLOT_LOG_LOADED = "<p align=\"center\"><span style=\" font-size:14pt; color:darkred;\">Log Loaded: %1</span></p>";
-//Number of additional pixels over font height for each row for the table/excel view.
-#define ROW_HEIGHT_PADDING 3
+static const QString DATA_PLOT_LIVE_DATA = "<p align=\"center\"><span style=\" font-size:13pt; color:darkblue;\">Live Data</span></p>";
+static const QString DATA_PLOT_LOG_LOADED = "<p align=\"center\"><span style=\" font-size:13pt; color:darkred;\">Log Loaded: %1</span></p>";
+
+#define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
+
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
     m_updateTimer(NULL),
     m_showOnlyActive(false),
