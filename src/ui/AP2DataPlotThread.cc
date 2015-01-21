@@ -393,7 +393,6 @@ void AP2DataPlotThread::loadAsciiLog()
         return;
     }
 
-    bool firstactual = true;
     m_loadedLogType = MAV_TYPE_GENERIC;
     int index = 0;
     QMap<QString,QString> nameToTypeString;
@@ -630,14 +629,14 @@ void AP2DataPlotThread::loadTLog()
                     nexttime = false;
 
                     //Should be a timestamp for the next packet.
-                    unsigned long logmsecs = static_cast<unsigned char>(timebuf.at(0)) << 56;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(1)) << 48;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(2)) << 40;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(3)) << 32;
-                    logmsecs = static_cast<unsigned char>(timebuf.at(4)) << 24;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(5)) << 16;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(6)) << 8;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(7)) << 0;
+                    quint64 logmsecs = quint64(static_cast<unsigned char>(timebuf.at(0))) << 56;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(1))) << 48;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(2))) << 40;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(3))) << 32;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(4))) << 24;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(5))) << 16;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(6))) << 8;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(7))) << 0;
 
                     timebuf.clear();
 
@@ -771,7 +770,6 @@ void AP2DataPlotThread::loadTLog()
                     }
 
                     quint64 unixtimemsec = (quint64)m_decoder->getUnixTimeFromMs(message.sysid, lastLogTime);
-                    QVariantList valuelist;
 
                     while (lastunixtimemseclist.contains(unixtimemsec))
                     {
