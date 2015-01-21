@@ -3,8 +3,7 @@
 $LATEST_RELEASE = "2.0";
 
 $PROJECT_NAME = "apmplanner2";
-#$REPO_URL = "https://github.com/diydrones/apm_planner";
-$REPO_URL = "https://github.com/froller/apm_planner";
+$REPO_URL = "https://github.com/diydrones/apm_planner";
 
 $RPMBUILD_ROOT = $ENV{HOME} . "/rpmbuild";
 
