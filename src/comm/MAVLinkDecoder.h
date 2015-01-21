@@ -34,16 +34,19 @@ This file is part of the APM_PLANNER project
 
 #ifndef NEW_MAVLINKDECODER_H
 #define NEW_MAVLINKDECODER_H
-#include <QObject>
+
+#include "QsLog.h"
+#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
 #include "LinkInterface.h"
+
+#include <QObject>
 #include <QThread>
 #include <QFile>
 #include <QMap>
-#include "QsLog.h"
-//#include "MAVLinkDecoder.h"
-#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include <QVector>
 
 class ConnectionManager;
+
 class MAVLinkDecoder : public QObject
 {
     Q_OBJECT
@@ -56,9 +59,23 @@ public:
     QList<QString> getFieldList(QString msgname);
     QString getMessageName(uint8_t msgid);
     quint64 getUnixTimeFromMs(int systemID, quint64 time);
+
+signals:
+    void protocolStatusMessage(const QString& title, const QString& message);
+    void valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec);
+    void textMessageReceived(int uasid, int componentid, int severity, const QString& text);
+    void receiveLossChanged(int id,float value);
+
+public slots:
+    QList<QPair<QString,QVariant> > receiveMessage(LinkInterface* link, mavlink_message_t message);
+    void sendMessage(mavlink_message_t msg);
+    QPair<QString,QVariant> emitFieldValue(mavlink_message_t* msg, int fieldid, quint64 time);
+
 private:
     int getSystemId() { return 252; }
     int getComponentId() { return 1; }
+
+private:
     bool m_loggingEnabled;
     QFile *m_logfile;
     ConnectionManager *m_connectionManager;
@@ -76,23 +93,11 @@ private:
     QMap<int,bool> componentMulti;
     QMap<uint16_t, bool> messageFilter;               ///< Message/field names not to emit
     QMap<uint16_t, bool> textMessageFilter;           ///< Message/field names not to emit in text mode
-    mavlink_message_t receivedMessages[256]; ///< Available / known messages
-    mavlink_message_info_t messageInfo[256]; ///< Message information
+    mavlink_message_t receivedMessages[256];    ///< Available / known messages
+    mavlink_message_info_t messageInfo[256];    ///< Message information
     QMap<int,quint64> onboardTimeOffset;
     QMap<int,quint64> firstOnboardTime;
     QMap<int,quint64> onboardToGCSUnixTimeOffsetAndDelay;
-
-signals:
-
-
-    void protocolStatusMessage(const QString& title, const QString& message);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec);
-    void textMessageReceived(int uasid, int componentid, int severity, const QString& text);
-    void receiveLossChanged(int id,float value);
-public slots:
-    QList<QPair<QString,QVariant> > receiveMessage(LinkInterface* link, mavlink_message_t message);
-    void sendMessage(mavlink_message_t msg);
-    QPair<QString,QVariant> emitFieldValue(mavlink_message_t* msg, int fieldid, quint64 time);
 };
 
 #endif // NEW_MAVLINKDECODER_H
