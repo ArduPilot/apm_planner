@@ -42,7 +42,7 @@ MAVLinkDecoder::MAVLinkDecoder(QObject *parent) : QObject(parent)
 {
     QLOG_DEBUG() << "Create MAVLinkDecoder: " << this;
 
-    mavlink_message_info_t msg[256] = MAVLINK_MESSAGE_INFO;
+    static mavlink_message_info_t msg[256] = MAVLINK_MESSAGE_INFO;
     memcpy(messageInfo, msg, sizeof(mavlink_message_info_t)*256);
     memset(receivedMessages, 0, sizeof(mavlink_message_t)*256);
 
