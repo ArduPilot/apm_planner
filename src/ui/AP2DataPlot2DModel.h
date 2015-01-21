@@ -83,6 +83,7 @@ private:
     QMap<QString,QString> m_msgNameToInsertQuery;
 
     int m_rowCount;
+    int m_columnCount;
     int m_currentRow;
     int m_fmtIndex;
 

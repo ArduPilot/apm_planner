@@ -62,6 +62,7 @@ This file is part of the APM_PLANNER project
 AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
+    m_columnCount = 0;
     m_databaseName = QUuid::createUuid().toString();
     m_sharedDb = QSqlDatabase::addDatabase("QSQLITE",m_databaseName);
     m_sharedDb.setDatabaseName(":memory:");
@@ -300,7 +301,7 @@ int AP2DataPlot2DModel::rowCount( const QModelIndex & parent) const
 }
 int AP2DataPlot2DModel::columnCount ( const QModelIndex & parent) const
 {
-    return 10;
+    return m_columnCount;
 }
 QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
 {
@@ -547,6 +548,10 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
             setError("Error execing:" + m_indexinsertquery->executedQuery() + " error was " + m_indexinsertquery->lastError().text());
             return false;
         }
+    }
+    if (values.size() > m_columnCount)
+    {
+        m_columnCount = values.size();
     }
     m_rowToTableMap.insert(m_rowCount++,QPair<quint64,QString>(index,name));
    // if (!m_sharedDb.commit())
