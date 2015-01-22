@@ -73,6 +73,7 @@ private:
     MAVLinkDecoder *m_decoder;
     AP2DataPlot2DModel *m_dataModel;
     QMap<QString,QString> m_msgNameToInsertQuery;
+    quint64 m_logStartTime;
 };
 
 #endif // AP2DATAPLOTTHREAD_H
