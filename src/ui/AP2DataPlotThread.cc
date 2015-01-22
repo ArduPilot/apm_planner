@@ -45,7 +45,8 @@ This file is part of the APM_PLANNER project
 AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) :
     QThread(parent),
     m_decoder(NULL),
-    m_dataModel(model)
+    m_dataModel(model),
+    m_logStartTime(0)
 {
     QLOG_DEBUG() << "Created AP2DataPlotThread:" << this;
     qRegisterMetaType<MAV_TYPE>("MAV_TYPE");
@@ -583,23 +584,16 @@ void AP2DataPlotThread::loadTLog()
         return;
     }
 
-
     m_loadedLogType = MAV_TYPE_GENERIC;
-    int index = 0;
 
     int bytesize = 0;
     QByteArray timebuf;
-    bool firsttime = true;
     qint64 lastLogTime = 0;
     mavlink_message_t message;
     mavlink_status_t status;
-    bool nexttime = false;
-    int delay;
 
-    index = 500;
     QList<uint64_t*> mavlinkList;
     m_fieldCount=0;
-    qint64 lastPcTime = QDateTime::currentMSecsSinceEpoch();
     m_decoder = new MAVLinkDecoder();
     QList<quint64> lastunixtimemseclist;
 
@@ -617,73 +611,40 @@ void AP2DataPlotThread::loadTLog()
         for (int i=0;i<bytes.size();i++)
         {
             unsigned int decodeState = mavlink_parse_char(14, (uint8_t)(bytes[i]), &message, &status);
-            if (decodeState != 1)
+            mavlink_status_t* status = mavlink_get_channel_status(14);
+            if (status->parse_state == MAVLINK_PARSE_STATE_GOT_STX)
             {
-                //Not a mavlink byte!
-                if (nexttime)
+                //last 8 bytes are our timestamp.
+                if (timebuf.length() >= 8)
                 {
-                    timebuf.append(bytes[i]);
-                }
-                if (timebuf.size() == 8)
-                {
-                    nexttime = false;
-
-                    //Should be a timestamp for the next packet.
-                    quint64 logmsecs = quint64(static_cast<unsigned char>(timebuf.at(0))) << 56;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(1))) << 48;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(2))) << 40;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(3))) << 32;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(4))) << 24;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(5))) << 16;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(6))) << 8;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(7))) << 0;
-
-                    timebuf.clear();
-
-                    if (firsttime)
-                    {
-                        firsttime = false;
-                        lastLogTime = logmsecs;
-                        lastPcTime = QDateTime::currentMSecsSinceEpoch();
-                    }
-                    else
-                    {
-                        //Difference in time between the last time we read a timestamp, and this time
-                        qint64 pcdiff = QDateTime::currentMSecsSinceEpoch() - lastPcTime;
-                        lastPcTime = QDateTime::currentMSecsSinceEpoch();
-
-                        //Difference in time between the last timestamp we fired off, and this one
-                        qint64 logdiff = logmsecs - lastLogTime;
-                        lastLogTime = logmsecs;
-                        logdiff /= 1000;
-
-                        if (logdiff < pcdiff)
-                        {
-                            //The next mavlink packet was fired faster than our loop is running, send it immediatly
-                            //Fire immediatly
-                            delay = 0;
-                        }
-                        else
-                        {
-                            //The next mavlink packet was sent logdiff-pcdiff millseconds after the current time
-                            delay = logdiff-pcdiff;
-
-                        }
-                    }
-
+                    quint64 logmsecs = quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-8))) << 56;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-7))) << 48;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-6))) << 40;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-5))) << 32;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-4))) << 24;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-3))) << 16;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-2))) << 8;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-1))) << 0;
+                    lastLogTime = logmsecs;
+                    //QLOG_DEBUG() << "Attempt timestamp:" << lastLogTime;
                 }
             }
-            else if (decodeState == 1)
+            if (decodeState != 1)
             {
-                nexttime = true;
-                //Good decode
-                if (message.sysid == 255)
+                timebuf.append(bytes[i]);
+            }
+            else if (decodeState == 1) // This 'else' works as you need one more byte that the timestamp to satisfy. as would just with else removed
+            {
+                if (m_logStartTime == 0)
                 {
-                    //GCS packet, ignore it
+                    m_logStartTime = lastLogTime;
                 }
-                else
-                {
+                //Valid message, clear the time buffer for next time
+                timebuf.clear();
 
+                //Good decode
+                if (message.sysid != 255) // [TODO] GCS packet is not always 255 sysid.
+                {
                     uint64_t *target = (uint64_t*)malloc(message.len * 4);
                     memcpy(target,message.payload64,message.len * 4);
                     mavlinkList.append(target);
@@ -769,24 +730,22 @@ void AP2DataPlotThread::loadTLog()
                         }
                     }
 
-                    quint64 unixtimemsec = (quint64)m_decoder->getUnixTimeFromMs(message.sysid, lastLogTime);
+                    quint64 unixtimemsec = (lastLogTime+1 - m_logStartTime);
 
                     while (lastunixtimemseclist.contains(unixtimemsec))
                     {
-                        unixtimemsec++;
+                        unixtimemsec += 1;
                     }
+
                     lastunixtimemseclist.append(unixtimemsec);
-                    //query.bindValue(":idx",unixtimemsec);
                     QList<QPair<QString,QVariant> > valuepairlist;
-                    //valuelist.append(QPair<QString,QVariant>("idx",unixtimemsec));
                     for (int i=0;i<retvals.size();i++)
                     {
                         valuepairlist.append(QPair<QString,QVariant>(retvals.at(i).first.split(".")[1],retvals.at(i).second.toLongLong()));
-                        //query.bindValue(QString(":") + retvals.at(i).first.split(".")[1],retvals.at(i).second.toInt());
                     }
                     if (valuepairlist.size() > 1)
                     {
-                        if (!m_dataModel->addRow(name,valuepairlist,unixtimemsec))
+                        if (!m_dataModel->addRow(name,valuepairlist,unixtimemsec+500)) // [TODO] offset index
                         {
                             QString actualerror = m_dataModel->getError();
                             m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
