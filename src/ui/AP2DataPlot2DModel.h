@@ -55,6 +55,8 @@ public:
     QString getError() { return m_error; }
     bool endTransaction();
     bool startTransaction();
+    quint64 getLastIndex();
+    quint64 getFirstIndex();
 
 public slots:
     void selectedRowChanged(QModelIndex current,QModelIndex previous);
@@ -86,6 +88,9 @@ private:
     int m_columnCount;
     int m_currentRow;
     int m_fmtIndex;
+
+    quint64 m_firstIndex;
+    quint64 m_lastIndex;
 
     QSqlQuery *m_indexinsertquery;
     QSqlQuery *m_fmtInsertQuery;

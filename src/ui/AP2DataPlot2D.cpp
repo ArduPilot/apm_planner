@@ -856,7 +856,7 @@ void AP2DataPlot2D::loadLog(QString filename)
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
     ui.autoScrollCheckBox->setChecked(false);
-    ui.loadOfflineLogButton->setText("Unload Log");
+    ui.loadOfflineLogButton->setText("Close Log");
     ui.loadTLogButton->setVisible(false);
     ui.downloadPushButton->setVisible(false);
     ui.autoScrollCheckBox->setVisible(false);
@@ -1108,7 +1108,7 @@ void AP2DataPlot2D::clearGraph()
     {
         //Unload the log.
         m_logLoaded = false;
-        ui.loadOfflineLogButton->setText("Load Log");
+        ui.loadOfflineLogButton->setText("Open Log");
         ui.hideExcelView->setVisible(false);
         ui.hideExcelView->setChecked(false);
         ui.tableWidget->setVisible(false);
@@ -1556,8 +1556,8 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
     ui.tableWidget->setModel(m_tableFilterProxyModel);
     connect(ui.tableWidget->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(selectedRowChanged(QModelIndex,QModelIndex)));
 
-    m_scrollStartIndex = 0;
-    m_scrollEndIndex = m_tableModel->rowCount();
+    m_scrollStartIndex = m_tableModel->getFirstIndex();
+    m_scrollEndIndex = m_tableModel->getLastIndex();
     ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
     ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
 

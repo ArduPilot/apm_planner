@@ -62,6 +62,8 @@ This file is part of the APM_PLANNER project
 AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
+    m_firstIndex = 0;
+    m_lastIndex = 0;
     m_columnCount = 0;
     m_databaseName = QUuid::createUuid().toString();
     m_sharedDb = QSqlDatabase::addDatabase("QSQLITE",m_databaseName);
@@ -320,7 +322,16 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
     }
     if (index.column() == 0)
     {
-        return QString::number(tableindex);
+        if (index.row() < m_fmtStringList.size())
+        {
+            //Index is a FMT msg
+            return QString::number(index.row());
+        }
+        else
+        {
+            //Index is a normal table message, get the index from m_rowToTableMap
+            return QString::number(tableindex);
+        }
     }
     if (index.row() < m_fmtStringList.size())
     {
@@ -361,6 +372,12 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
         return;
     }
     m_currentRow = current.row();
+    if (current.row() < m_fmtStringList.size())
+    {
+        m_currentHeaderItems = QList<QString>();
+        emit headerDataChanged(Qt::Horizontal,0,9);
+        return;
+    }
     //Grab the index
     int rowid = data(createIndex(current.row(),0)).toString().toInt();
 
@@ -519,6 +536,11 @@ bool AP2DataPlot2DModel::endTransaction()
 
 bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index)
 {
+    if (m_firstIndex == 0)
+    {
+        m_firstIndex = index;
+    }
+    m_lastIndex = index;
     //Add a row to a previously defined message type, NAME.Jy   Th
     QSqlQuery query(m_sharedDb);
     if (m_msgNameToInsertQuery.contains(name))
@@ -706,4 +728,13 @@ void AP2DataPlot2DModel::setError(QString error)
 {
     QLOG_ERROR() << error;
     m_error = error;
+}
+quint64 AP2DataPlot2DModel::getLastIndex()
+{
+    return m_lastIndex;
+}
+
+quint64 AP2DataPlot2DModel::getFirstIndex()
+{
+    return m_firstIndex;
 }
