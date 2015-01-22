@@ -635,6 +635,7 @@ void AP2DataPlotThread::loadTLog()
             }
             else if (decodeState == 1) // This 'else' works as you need one more byte that the timestamp to satisfy. as would just with else removed
             {
+                lastLogTime = lastLogTime / 100;
                 if (m_logStartTime == 0)
                 {
                     m_logStartTime = lastLogTime;
@@ -730,7 +731,7 @@ void AP2DataPlotThread::loadTLog()
                         }
                     }
 
-                    quint64 unixtimemsec = (lastLogTime+1 - m_logStartTime);
+                    quint64 unixtimemsec = (lastLogTime - m_logStartTime);
 
                     while (lastunixtimemseclist.contains(unixtimemsec))
                     {
@@ -745,7 +746,7 @@ void AP2DataPlotThread::loadTLog()
                     }
                     if (valuepairlist.size() > 1)
                     {
-                        if (!m_dataModel->addRow(name,valuepairlist,unixtimemsec+500)) // [TODO] offset index
+                        if (!m_dataModel->addRow(name,valuepairlist,unixtimemsec + 500)) // [TODO] offset index
                         {
                             QString actualerror = m_dataModel->getError();
                             m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
