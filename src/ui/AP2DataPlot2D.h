@@ -180,7 +180,7 @@ private:
     QSqlDatabase m_sharedDb;
     int currentIndex;
 
-    QList<AP2DataPlot2D*> m_childGraphList;
+    QList<QWidget*> m_childGraphList;
 
     QList<QPair<qint64,double> > m_onlineValueTimeoutList;
 

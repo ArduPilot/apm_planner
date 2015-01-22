@@ -1927,7 +1927,7 @@ void AP2DataPlot2D::sortSelectInvertClicked()
 }
 void AP2DataPlot2D::childGraphDestroyed(QObject *obj)
 {
-    AP2DataPlot2D *plot = qobject_cast<AP2DataPlot2D*>(obj);
+    QWidget *plot = qobject_cast<QWidget*>(obj);
     if (!plot)
     {
         return;
