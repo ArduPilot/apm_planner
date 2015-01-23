@@ -49,7 +49,7 @@ class QIntValidator;
 
 class SerialSettings {
 public:
-    SerialSettings() : name(""),
+    SerialSettings() : name("none"),
         baudRate(115200),
         dataBits(QSerialPort::Data8),
         parity(QSerialPort::NoParity),

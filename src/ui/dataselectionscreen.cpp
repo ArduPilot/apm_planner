@@ -35,7 +35,7 @@ void DataSelectionScreen::enableItem(QString name)
 {
     QString first = name.split(".")[0];
     QString second = name.split(".")[1];
-    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchContains | Qt::MatchRecursive);
+    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchExactly | Qt::MatchRecursive);
     if (items.size() == 0)
     {
         return;
@@ -44,12 +44,19 @@ void DataSelectionScreen::enableItem(QString name)
     {
         if (items[i]->parent())
         {
-            if (items[i]->parent()->text(0).contains(first))
+            if (items[i]->parent()->text(0) == first)
             {
-                items[i]->setCheckState(0,Qt::Checked);
-                ui.treeWidget->scrollToItem(items[i]);
-                m_enabledList.append(name);
+                if (items[i]->checkState(0) != Qt::Checked)
+                {
+                    items[i]->setCheckState(0,Qt::Checked);
+                    ui.treeWidget->scrollToItem(items[i]);
+                    m_enabledList.append(name);
+                }
                 return;
+            }
+            else
+            {
+                QLOG_DEBUG() << "Not found:" << items[i]->parent()->text(0);
             }
         }
     }
@@ -60,18 +67,25 @@ void DataSelectionScreen::disableItem(QString name)
 {
     QString first = name.split(".")[0];
     QString second = name.split(".")[1];
-    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchContains | Qt::MatchRecursive);
+    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchExactly | Qt::MatchRecursive);
     if (items.size() == 0)
     {
         return;
     }
     for (int i=0;i<items.size();i++)
     {
-        if (items[i]->parent()->text(0).contains(first))
+        //If the item has no parent, it's a top level item and we ignore it anyway.
+        if (items[i]->parent())
         {
-            items[i]->setCheckState(0,Qt::Unchecked);
-            m_enabledList.removeOne(name);
-            return;
+            if (items[i]->parent()->text(0) == first)
+            {
+                if (items[i]->checkState(0) != Qt::Unchecked)
+                {
+                    items[i]->setCheckState(0,Qt::Unchecked);
+                    m_enabledList.removeOne(name);
+                    return;
+                }
+            }
         }
     }
     QLOG_ERROR() << "No item found in DataSelectionScreen:disableItem:" << name;

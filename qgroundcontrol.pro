@@ -362,6 +362,7 @@ FORMS += \
     src/ui/mission/QGCMissionNavLand.ui \
     src/ui/mission/QGCMissionNavTakeoff.ui \
     src/ui/mission/QGCMissionNavSweep.ui \
+    src/ui/mission/QGCMissionNavContinueChangeAlt.ui \
     src/ui/mission/QGCMissionDoStartSearch.ui \
     src/ui/mission/QGCMissionDoFinishSearch.ui \
     src/ui/QGCVehicleConfig.ui \
@@ -541,6 +542,7 @@ HEADERS += \
     src/ui/mission/QGCMissionNavLand.h \
     src/ui/mission/QGCMissionNavTakeoff.h \
     src/ui/mission/QGCMissionNavSweep.h \
+    src/ui/mission/QGCMissionNavContinueChangeAlt.h \
     src/ui/mission/QGCMissionDoStartSearch.h \
     src/ui/mission/QGCMissionDoFinishSearch.h \
     src/ui/QGCVehicleConfig.h \
@@ -758,6 +760,7 @@ SOURCES += src/main.cc \
     src/ui/mission/QGCMissionNavLand.cc \
     src/ui/mission/QGCMissionNavTakeoff.cc \
     src/ui/mission/QGCMissionNavSweep.cc \
+    src/ui/mission/QGCMissionNavContinueChangeAlt.cc \
     src/ui/mission/QGCMissionDoStartSearch.cc \
     src/ui/mission/QGCMissionDoFinishSearch.cc \
     src/ui/QGCVehicleConfig.cc \

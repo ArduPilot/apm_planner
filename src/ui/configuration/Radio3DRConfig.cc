@@ -45,6 +45,7 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
 
     addBaudComboBoxConfig(ui.baudPortComboBox);
     fillPortsInfo(*ui.linkPortComboBox);
+    m_settings.name = ui.linkPortComboBox->currentText();
 
     addRadioBaudComboBoxConfig(*ui.baudComboBox);
     addRadioBaudComboBoxConfig(*ui.baudComboBox_remote);
@@ -109,38 +110,41 @@ void Radio3DRConfig::fillPortsInfo(QComboBox &comboxBox)
 void Radio3DRConfig::loadSavedSerialSettings()
 {
     // Load defaults from settings
-    QSettings settings(QGC::COMPANYNAME, QGC::APPNAME);
+    QSettings settings;
     settings.sync();
-    if (settings.contains("3DRRADIO_COMM_PORT"))
+    settings.beginGroup("3DRRADIO");
+    if (settings.contains("COMM_PORT"))
     {
-        m_settings.name = settings.value("3DRRADIO_COMM_PORT").toString();
-        m_settings.baudRate = settings.value("3DRRADIO_COMM_BAUD").toInt();
+        m_settings.name = settings.value("COMM_PORT").toString();
+        m_settings.baudRate = settings.value("COMM_BAUD").toInt();
         m_settings.parity = static_cast<QSerialPort::Parity>
-                (settings.value("3DRRADIO_COMM_PARITY").toInt());
+                (settings.value("COMM_PARITY").toInt());
         m_settings.stopBits = static_cast<QSerialPort::StopBits>
-                (settings.value("3DRRADIO_COMM_STOPBITS").toInt());
+                (settings.value("COMM_STOPBITS").toInt());
         m_settings.dataBits = static_cast<QSerialPort::DataBits>
-                (settings.value("3DRRADIO_COMM_DATABITS").toInt());
+                (settings.value("COMM_DATABITS").toInt());
         m_settings.flowControl = static_cast<QSerialPort::FlowControl>
-                (settings.value("3DRRADIO_COMM_FLOW_CONTROL").toInt());
+                (settings.value("COMM_FLOW_CONTROL").toInt());
 
         ui.linkPortComboBox->setCurrentIndex(ui.linkPortComboBox->findText(m_settings.name));
         ui.baudPortComboBox->setCurrentIndex(ui.baudPortComboBox->findData(m_settings.baudRate));
     } else {
-        // init the structure
+        ui.baudPortComboBox->setCurrentIndex(ui.baudPortComboBox->findData(QSerialPort::Baud57600));
     }
 }
 
 void Radio3DRConfig::saveSerialSettings()
 {
     // Store settings
-    QSettings settings(QGC::COMPANYNAME, QGC::APPNAME);
-    settings.setValue("3DRRADIO_COMM_PORT", m_settings.name);
-    settings.setValue("3DRRADIO_COMM_BAUD", m_settings.baudRate);
-    settings.setValue("3DRRADIO_COMM_PARITY", m_settings.parity);
-    settings.setValue("3DRRADIO_COMM_STOPBITS", m_settings.stopBits);
-    settings.setValue("3DRRADIO_COMM_DATABITS", m_settings.dataBits);
-    settings.setValue("3DRRADIO_COMM_FLOW_CONTROL", m_settings.flowControl);
+    QSettings settings;
+    settings.beginGroup("3DRRADIO");
+    settings.setValue("COMM_PORT", m_settings.name);
+    settings.setValue("COMM_BAUD", m_settings.baudRate);
+    settings.setValue("COMM_PARITY", m_settings.parity);
+    settings.setValue("COMM_STOPBITS", m_settings.stopBits);
+    settings.setValue("COMM_DATABITS", m_settings.dataBits);
+    settings.setValue("COMM_FLOW_CONTROL", m_settings.flowControl);
+    settings.endGroup();
     settings.sync();
 }
 

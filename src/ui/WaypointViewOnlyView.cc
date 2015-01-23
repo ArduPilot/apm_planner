@@ -389,6 +389,26 @@ void WaypointViewOnlyView::updateValues()
         break;
         break;
     }
+    case MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT:
+    {
+        switch (wp->getFrame())
+        {
+        case MAV_FRAME_GLOBAL_RELATIVE_ALT:
+        case MAV_FRAME_GLOBAL:
+        {
+            m_ui->displayBar->setText(QString("Change Alt & Cont. Go to alt <b>%1)</b>").arg(wp->getAltitude(),0, 'f', 2));
+            break;
+        }
+        case MAV_FRAME_LOCAL_NED:
+        default:
+        {
+            m_ui->displayBar->setText(QString("Change Alt & Cont. Go to Z <b>%1)</b>").arg(wp->getZ(),0, 'f', 2));
+            break;
+        }
+        } //end Frame switch
+        break;
+        break;
+    }
     case MAV_CMD_DO_SET_CAM_TRIGG_DIST:
         if (wp->getParam1()>0)
         {
