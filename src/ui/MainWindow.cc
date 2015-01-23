@@ -733,9 +733,9 @@ void MainWindow::buildCommonWidgets()
     //createDockWidget(engineeringView,new HUD(320,240,this),tr("Video Downlink"),"HEAD_UP_DISPLAY_DOCKWIDGET",VIEW_ENGINEER,Qt::RightDockWidgetArea,this->width()/1.5);
 
 #ifndef PFD_QML
-    createDockWidget(simView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),
+    createDockWidget(simView,new `FlightDisplay(320,240,this),tr("A Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
-    createDockWidget(pilotView,new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),
+    createDockWidget(pilotView,new PrimaryFlightDisplay(320,240,this),tr("B Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
 
     { //This is required since we don't show the new PFD in full yet
@@ -745,9 +745,9 @@ void MainWindow::buildCommonWidgets()
         menuToDockNameMap[tempAction] = "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET";
     }
 #else
-    createDockWidget(simView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display"),
+    createDockWidget(simView,new PrimaryFlightDisplayQML(this),tr("C Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_SIMULATION,Qt::RightDockWidgetArea);
-    createDockWidget(pilotView,new PrimaryFlightDisplayQML(this),tr("Primary Flight Display"),
+    createDockWidget(pilotView,new PrimaryFlightDisplayQML(this),tr("D Flight Display"),
                      "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
 
     { //This is required since we don't show the old PFD in any view
@@ -948,11 +948,11 @@ void MainWindow::loadDockWidget(QString name)
     else if (name == "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET")
     {
         // createDockWidget(centerStack->currentWidget(),new HUD(320,240,this),tr("Head Up Display"),"PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
-        createDockWidget(centerStack->currentWidget(),new PrimaryFlightDisplay(320,240,this),tr("Primary Flight Display"),"HEAD_UP_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+        createDockWidget(centerStack->currentWidget(),new PrimaryFlightDisplay(320,240,this),tr("E Flight Display"),"HEAD_UP_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
     else if (name == "PRIMARY_FLIGHT_DISPLAY_QML_DOCKWIDGET")
     {
-        createDockWidget(centerStack->currentWidget(),new PrimaryFlightDisplayQML(this),tr("Primary Flight Display QML"),"HEAD_UP_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+        createDockWidget(centerStack->currentWidget(),new PrimaryFlightDisplayQML(this),tr("F Flight Display QML"),"HEAD_UP_DISPLAY_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
     else if (name == "UAS_INFO_QUICKVIEW_DOCKWIDGET")
     {
