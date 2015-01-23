@@ -30,8 +30,8 @@ $CHECKOUT =~ s/\n.*//gs;
 $TARBALL_PATH = "${RPMBUILD_ROOT}/SOURCES/${PROJECT_NAME}-${VERSION}.tar.gz";
 unlink $TARBALL_PATH;
 print "Packing source tarball ${TARBALL_PATH} ... ";
-($WORK_PATH_REGEX = $WORK_PATH) =~ s/\./\\\\./g;
-system "tar --exclude-vcs --exclude=Drivers --exclude=avrdude --exclude=uploader --xform=s%^${WORK_PATH_REGEX}%${PROJECT_NAME}-${VERSION}/% -z -c -f ${RPMBUILD_ROOT}/SOURCES/${TARBALL_PATH} ${WORK_PATH}";
+($WORK_PATH_REGEX = $WORK_PATH) =~ s/^\///;
+system "tar --exclude-vcs --exclude=Drivers --exclude=avrdude --exclude=uploader --xform=s%^${WORK_PATH_REGEX}%${PROJECT_NAME}-${VERSION}/% -z -c -f ${TARBALL_PATH} ${WORK_PATH}";
 print "done\n";
 
 $OLD_SPEC = "${WORK_PATH}/redhat/apmplanner2.spec";
