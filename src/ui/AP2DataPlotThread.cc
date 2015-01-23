@@ -395,7 +395,7 @@ void AP2DataPlotThread::loadAsciiLog()
     }
 
     m_loadedLogType = MAV_TYPE_GENERIC;
-    int index = 0;
+    int index = 500;
     QMap<QString,QString> nameToTypeString;
     QMap<QString,QStringList> nameToValueList;
 
@@ -427,7 +427,6 @@ void AP2DataPlotThread::loadAsciiLog()
         QStringList linesplit = line.replace("\r","").replace("\n","").split(",");
         if (linesplit.size() > 0)
         {
-            index++;
             if (line.startsWith("FMT"))
             {
                 //Format line
@@ -549,7 +548,7 @@ void AP2DataPlotThread::loadAsciiLog()
                             {
                                 if (valuepairlist.size() > 0)
                                 {
-                                    if (!m_dataModel->addRow(name,valuepairlist,index))
+                                    if (!m_dataModel->addRow(name,valuepairlist,index++))
                                     {
                                         QString actualerror = m_dataModel->getError();
                                         m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
