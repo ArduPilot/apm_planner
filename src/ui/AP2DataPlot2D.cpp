@@ -751,63 +751,22 @@ void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QSt
         updateValue(uasId,name,unit,static_cast<double>(value.toInt()),msec);
     }
 }
+
 void AP2DataPlot2D::loadButtonClicked()
 {
-    if (m_logLoaded)
-    {
-        if (this->parent() == 0)
-        {
+    if (m_logLoaded){
+        if (this->parent() == NULL){
             //Good to close out
             this->close();
         }
+
+    } else {
+        QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.tlog);;All Files (*.*)");
+        dialog->setFileMode(QFileDialog::ExistingFile);
+        dialog->open(this, SLOT(loadDialogAccepted()));
     }
-    //Should always allow loading of logs, even when connected.
-    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.tlog);;All Files (*.*)");
-    dialog->setFileMode(QFileDialog::ExistingFile);
-    dialog->open(this, SLOT(loadDialogAccepted()));
-    return;
-    if (m_logLoaded)
-    {
-        for (int i=0;i<m_graphNameList.size();i++)
-        {
-            m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
-            m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
-        }
-        m_dataSelectionScreen->clear();
-        if (m_axisGroupingDialog)
-        {
-            m_axisGroupingDialog->clear();
-        }
-        m_plot->replot();
-        m_graphClassMap.clear();
-        m_graphCount=0;
-        m_dataList.clear();
-
-        //Clear the sorting
-        m_tableFilterList.clear();
-        ui.sortSelectTreeWidget->clear();
-        ui.tableSortGroupBox->setVisible(false);
-        ui.sortShowPushButton->setText("Show Sort");
-        ui.sortShowPushButton->setVisible(false);
-
-        //Unload the log
-        m_logLoaded = false;
-        ui.loadOfflineLogButton->setText("Load Log");
-        ui.hideExcelView->setVisible(false);
-        ui.hideExcelView->setChecked(false);
-        ui.tableWidget->setVisible(false);
-        ui.logTypeLabel->setText(DATA_PLOT_LIVE_DATA);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
-        m_currentIndex = QDateTime::currentMSecsSinceEpoch();
-        m_startIndex = m_currentIndex;
-        m_sharedDb.close();
-        QSqlDatabase::removeDatabase("QSQLITE");
-        return;
-    }
-
 }
+
 void AP2DataPlot2D::loadDialogAccepted()
 {
     QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
