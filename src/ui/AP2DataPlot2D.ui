@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1586</width>
+    <width>1595</width>
     <height>573</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Graph</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_6">
    <property name="leftMargin">
@@ -53,9 +53,12 @@
                <number>2</number>
               </property>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_5">
+               <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,1">
                 <property name="spacing">
-                 <number>1</number>
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
                 </property>
                 <item>
                  <widget class="QScrollBar" name="horizontalScrollBar">
@@ -112,35 +115,6 @@
                     </property>
                     <property name="checked">
                      <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="horizontalSpacer_4">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                     <enum>QSizePolicy::Preferred</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>25</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="logTypeLabel">
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>&lt;i&gt;Log Name&lt;/i&gt;</string>
                     </property>
                    </widget>
                   </item>

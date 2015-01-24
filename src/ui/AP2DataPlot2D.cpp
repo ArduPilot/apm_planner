@@ -49,9 +49,6 @@ This file is part of the APM_PLANNER project
 #include "AP2DataPlot2DModel.h"
 #include "ArduPilotMegaMAV.h"
 
-static const QString DATA_PLOT_LIVE_DATA = "<p align=\"center\"><span style=\" font-size:13pt; color:darkblue;\">Live Data</span></p>";
-static const QString DATA_PLOT_LOG_LOADED = "<p align=\"center\"><span style=\" font-size:13pt; color:darkred;\">Log Loaded: %1</span></p>";
-
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
@@ -152,8 +149,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(ui.autoScrollCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoScrollClicked(bool)));
     connect(ui.hideExcelView,SIGNAL(clicked(bool)),ui.tableWidget,SLOT(setHidden(bool)));
     connect(ui.tableWidget,SIGNAL(currentCellChanged(int,int,int,int)),this,SLOT(tableCellChanged(int,int,int,int)));
-
-    ui.logTypeLabel->setText(DATA_PLOT_LIVE_DATA);
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
     m_model = new QStandardItemModel();
@@ -759,7 +754,6 @@ void AP2DataPlot2D::loadButtonClicked()
             //Good to close out
             this->close();
         }
-
     } else {
         QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.tlog);;All Files (*.*)");
         dialog->setFileMode(QFileDialog::ExistingFile);
@@ -808,9 +802,8 @@ void AP2DataPlot2D::loadLog(QString filename)
     m_graphCount=0;
     m_dataList.clear();
 
-    QString logTitle = DATA_PLOT_LOG_LOADED;
     QString shortfilename =filename.mid(filename.lastIndexOf("/")+1);
-    ui.logTypeLabel->setText( logTitle.arg(shortfilename));
+    setWindowTitle(tr("Graph: %1").arg(shortfilename));
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
@@ -1071,7 +1064,6 @@ void AP2DataPlot2D::clearGraph()
         ui.hideExcelView->setVisible(false);
         ui.hideExcelView->setChecked(false);
         ui.tableWidget->setVisible(false);
-        ui.logTypeLabel->setText(DATA_PLOT_LIVE_DATA);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
