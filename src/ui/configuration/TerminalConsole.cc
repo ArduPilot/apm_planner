@@ -92,43 +92,8 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
 
     //Keep refreshing the serial port list
     connect(&m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
-
-    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
-    if (UASManager::instance()->getActiveUAS())
-    {
-        activeUASSet(UASManager::instance()->getActiveUAS());
-    }
 }
 
-void TerminalConsole::activeUASSet(UASInterface *uas)
-{
-    if(m_uas) {
-        disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
-        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
-    }
-    m_uas = uas;
-    if (uas) {
-        connect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
-        connect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
-        uasConnected();
-    }
-}
-
-void TerminalConsole::uasConnected()
-{
-    ui->connectButton->setEnabled(false);
-    if(m_windowVisible){
-        MainWindow::instance()->toolBar().disableConnectWidget(false);
-    }
-}
-
-void TerminalConsole::uasDisconnected()
-{
-    ui->connectButton->setEnabled(true);
-    if(m_windowVisible){
-        MainWindow::instance()->toolBar().disableConnectWidget(true);
-    }
-}
 
 void TerminalConsole::addBaudComboBoxConfig()
 {
@@ -184,8 +149,6 @@ void TerminalConsole::showEvent(QShowEvent *event)
     Q_UNUSED(event);
     // Start refresh Timer
     m_timer.start(2000);
-    if (!m_uas) MainWindow::instance()->toolBar().disableConnectWidget(true);
-    m_windowVisible = true;
 }
 
 void TerminalConsole::hideEvent(QHideEvent *event)
@@ -193,8 +156,6 @@ void TerminalConsole::hideEvent(QHideEvent *event)
     Q_UNUSED(event);
     // Stop the port list refeshing
     m_timer.stop();
-    MainWindow::instance()->toolBar().disableConnectWidget(false);
-    m_windowVisible = false;
 }
 
 TerminalConsole::~TerminalConsole()

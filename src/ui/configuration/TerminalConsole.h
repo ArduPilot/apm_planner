@@ -78,10 +78,6 @@ public slots:
 
     void handleError(QSerialPort::SerialPortError error);
 
-    void activeUASSet(UASInterface *uas);
-    void uasConnected();
-    void uasDisconnected();
-
 private slots:
     void setBaudRate(int index);
     void setLink(int index);
