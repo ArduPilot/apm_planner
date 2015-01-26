@@ -460,14 +460,14 @@ protected:
     QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
 
-
-
 private slots:
     void showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url, QString name);
     void autoUpdateCancelled(QString version);
     void showNoUpdateAvailDialog();
 
     void showDroneshareDialog();
+    void showTerminalConsole();
+    void closeTerminalConsole();
 
 private:
     bool m_heartbeatEnabled;
@@ -487,6 +487,7 @@ private:
     AutoUpdateDialog* m_dialog;
 
     DroneshareDialog* m_droneshareDialog;
+    QDialog* m_terminalDialog;
 
 };
 

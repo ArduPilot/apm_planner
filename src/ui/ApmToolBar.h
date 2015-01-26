@@ -50,7 +50,6 @@ public:
     void setConfigTuningViewAction(QAction *action);
     void setPlotViewAction(QAction *action);
     void setSimulationViewAction(QAction *action);
-    void setTerminalViewAction(QAction *action);
     void setConnectMAVAction(QAction *action);
     
     void setModeText(const QString &text);
@@ -61,7 +60,6 @@ signals:
     void triggerConfigTuningView();
     void triggerSimulationView();
     void triggerPlotView();
-    void triggerTerminalView();
 
     void MAVConnected(bool connected);
 
@@ -72,7 +70,6 @@ public slots:
     void selectConfigTuningView();
     void selectSimulationView();
     void selectPlotView();
-    void selectTerminalView();
 
     void checkAdvancedMode(bool checked);
 

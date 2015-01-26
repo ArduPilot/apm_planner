@@ -214,11 +214,6 @@ void APMToolBar::setSimulationViewAction(QAction *action)
     connect(this, SIGNAL(triggerSimulationView()), action, SIGNAL(triggered()));
 }
 
-void APMToolBar::setTerminalViewAction(QAction *action)
-{
-    connect(this, SIGNAL(triggerTerminalView()), action, SIGNAL(triggered()));
-}
-
 void APMToolBar::setConnectMAVAction(QAction *action)
 {
     connect(this, SIGNAL(connectMAV()), action, SIGNAL(triggered()));
@@ -257,12 +252,6 @@ void APMToolBar::selectPlotView()
 {
     QLOG_DEBUG() << "APMToolBar: selectPlotView";
 }
-
-void APMToolBar::selectTerminalView()
-{
-    QLOG_DEBUG() << "APMToolBar: selectTerminalView";
-}
-
 
 void APMToolBar::connectMAV()
 {

@@ -135,7 +135,8 @@ MainWindow::MainWindow(QWidget *parent):
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
     m_heartbeatEnabled(true),
-    m_droneshareDialog(NULL)
+    m_droneshareDialog(NULL),
+    m_terminalDialog(NULL)
 {
     QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -223,8 +224,7 @@ MainWindow::MainWindow(QWidget *parent):
     connect(LinkManager::instance(), SIGNAL(newLink(int)), this, SLOT(addLink(int)), Qt::QueuedConnection);
     connect(LinkManager::instance(),SIGNAL(linkError(int,QString)),this,SLOT(linkError(int,QString)));
 
-
-
+    connect(ui.actionTerminalConsole, SIGNAL(triggered()), this, SLOT(showTerminalConsole()));
 
 #ifndef QGC_TOOLBAR_ENABLED
     // Add the APM 'toolbar'
@@ -236,7 +236,6 @@ MainWindow::MainWindow(QWidget *parent):
     m_apmToolBar->setConfigTuningViewAction(ui.actionSoftwareConfig);
     m_apmToolBar->setPlotViewAction(ui.actionEngineersView);
     m_apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
-    m_apmToolBar->setTerminalViewAction(ui.actionTerminalView);
 
     connect(ui.actionAdvanced_Mode, SIGNAL(triggered(bool)), m_apmToolBar, SLOT(checkAdvancedMode(bool)));
 
@@ -641,16 +640,6 @@ void MainWindow::buildCommonWidgets()
         simView->setObjectName("VIEW_SIMULATOR");
         simView->setCentralWidget(new QGCMapTool(this));
         addToCentralStackedWidget(simView, VIEW_SIMULATION, tr("Simulation View"));
-    }
-
-    if (!terminalView)
-    {
-        terminalView = new SubMainWindow(this);
-        terminalView->setObjectName("VIEW_TERMINAL");
-        TerminalConsole *terminalConsole = new TerminalConsole(this);
-        terminalView->setCentralWidget(terminalConsole);
-        addToCentralStackedWidget(terminalView, VIEW_TERMINAL, tr("Terminal View"));
-        connect(plot, SIGNAL(toKMLClicked()), terminalConsole, SLOT(logToKmlClicked()));
     }
 
     if (!debugOutput)
@@ -2467,5 +2456,32 @@ void MainWindow::showDroneshareDialog()
         m_droneshareDialog = new DroneshareDialog(this);
         m_droneshareDialog->show();
         m_droneshareDialog->raise();
+    }
+}
+
+void MainWindow::showTerminalConsole()
+{
+    if(m_terminalDialog == NULL){
+        m_terminalDialog = new QDialog(NULL);
+        TerminalConsole *terminalConsole = new TerminalConsole(this);
+        QVBoxLayout* vLayout = new QVBoxLayout(m_terminalDialog);
+        vLayout->setMargin(0);
+        vLayout->addWidget(terminalConsole);
+        m_terminalDialog->resize(640,325);
+        m_terminalDialog->show();
+        connect(engineeringView->centralWidget(), SIGNAL(toKMLClicked()), terminalConsole, SLOT(logToKmlClicked()));
+        connect(m_terminalDialog, SIGNAL(finished(int)), this, SLOT(closeTerminalConsole()));
+    }
+
+    if (m_terminalDialog){
+        m_terminalDialog->raise();
+    }
+}
+
+void MainWindow::closeTerminalConsole()
+{
+    if (m_terminalDialog){
+        m_terminalDialog->deleteLater();
+        m_terminalDialog = NULL;
     }
 }

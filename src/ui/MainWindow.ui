@@ -100,6 +100,7 @@
     <addaction name="actionNewCustomWidget"/>
     <addaction name="actionLoadCustomWidgetFile"/>
     <addaction name="separator"/>
+    <addaction name="actionTerminalConsole"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -577,6 +578,11 @@
   <action name="actionUDP">
    <property name="text">
     <string>UDP</string>
+   </property>
+  </action>
+  <action name="actionTerminalConsole">
+   <property name="text">
+    <string>Terminal Console</string>
    </property>
   </action>
  </widget>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>889</width>
-    <height>531</height>
+    <width>614</width>
+    <height>382</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <widget class="QGroupBox" name="terminalGroupBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
+       <horstretch>100</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
@@ -31,7 +31,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="sizeConstraint">
-      <enum>QLayout::SetMinAndMaxSize</enum>
+      <enum>QLayout::SetMinimumSize</enum>
      </property>
      <item alignment="Qt::AlignRight|Qt::AlignVCenter">
       <widget class="QPushButton" name="connectButton">
@@ -43,7 +43,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>131</width>
+         <width>135</width>
          <height>0</height>
         </size>
        </property>
@@ -62,7 +62,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>131</width>
+         <width>135</width>
          <height>0</height>
         </size>
        </property>
@@ -87,39 +87,21 @@
        </property>
       </spacer>
      </item>
-     <item alignment="Qt::AlignRight">
+     <item>
       <widget class="QComboBox" name="linkComboBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="minimumSize">
         <size>
-         <width>123</width>
+         <width>135</width>
          <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>220</width>
-         <height>32</height>
         </size>
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignRight">
+     <item>
       <widget class="QComboBox" name="baudComboBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="minimumSize">
         <size>
-         <width>123</width>
+         <width>135</width>
          <height>0</height>
         </size>
        </property>
@@ -140,6 +122,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="logToKmlButton">
+       <property name="minimumSize">
+        <size>
+         <width>135</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Pick a dataflash log file to generate a KML/KMZ file from</string>
        </property>
@@ -150,6 +138,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="logsButton">
+       <property name="minimumSize">
+        <size>
+         <width>135</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string>Logs</string>
        </property>
@@ -157,6 +151,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="settingsButton">
+       <property name="minimumSize">
+        <size>
+         <width>135</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string>Adv. Settings</string>
        </property>
@@ -164,6 +164,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="clearButton">
+       <property name="minimumSize">
+        <size>
+         <width>135</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string>Clear</string>
        </property>

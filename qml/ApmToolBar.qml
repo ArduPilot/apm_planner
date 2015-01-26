@@ -65,7 +65,8 @@ Rectangle {
     }
 
     function setAdvancedMode(state){
-        terminalView.visible = state
+        // Enable ro disable buttons based on Adv mode.
+        // ie. terminalView.visible = state
     }
 
     function clearHighlightedButtons(){
@@ -75,7 +76,6 @@ Rectangle {
         initialSetupView.setUnselected()
         configTuningView.setUnselected()
         plotView.setUnselected()
-        terminalView.setUnselected()
     }
 
     width: toolbar.width
@@ -112,21 +112,6 @@ Rectangle {
             statusDisplayId.visible = false
         }
     }
-
-// [BB] The code below should work, not sure why. replaced with code above
-//    Connections {
-//            target: globalObj
-//            onMAVConnected: {
-//                console.log("QML Change Connection " + connected)
-//                if (connected){
-//                    console.log("connected")
-//                    connectButton.image = "./resources/apmplanner/toolbar/disconnect.png"
-//                } else {
-//                    console.log("disconnected")
-//                    connectButton.image = "./resources/apmplanner/toolbar/connect.png"
-//                }
-//            }
-//    }
 
     Row {
         anchors.left: parent.left
@@ -203,18 +188,6 @@ Rectangle {
 //            image: "./resources/apmplanner/toolbar/simulation.png"
 //            onClicked: globalObj.triggerSimulationView()
 //        }
-
-        Button {
-            id: terminalView
-            label: "TERMINAL"
-            image: "./resources/apmplanner/toolbar/terminal.png"
-            onClicked: {
-                clearHighlightedButtons()
-                globalObj.triggerTerminalView()
-                setSelected()
-            }
-            visible: false
-        }
 
         Rectangle { // Spacer
             id: statusSpacerId
