@@ -332,7 +332,7 @@
        <item>
         <widget class="QPushButton" name="loadOfflineLogButton">
          <property name="text">
-          <string>Open Log</string>
+          <string>Load Log</string>
          </property>
         </widget>
        </item>
