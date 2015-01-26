@@ -1,32 +1,3 @@
-/*===================================================================
-APM_PLANNER Open Source Ground Control Station
-
-(c) 2015 APM_PLANNER PROJECT <http://www.diydrones.com>
-
-This file is part of the APM_PLANNER project
-
-    APM_PLANNER is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    APM_PLANNER is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
-
-======================================================================*/
-/**
- * @file
- *   @brief AP2DataPlot widget class
- *
- *   @author Michael Carpenter <malcom2073@gmail.com>
- */
-
-
 #ifndef AP2DATAPLOT2D_H
 #define AP2DATAPLOT2D_H
 
@@ -45,6 +16,7 @@ This file is part of the APM_PLANNER project
 #include <QStandardItemModel>
 #include "AP2DataPlot2DModel.h"
 #include <QSortFilterProxyModel>
+
 class LogDownloadDialog;
 
 class AP2DataPlot2D : public QWidget
@@ -52,10 +24,9 @@ class AP2DataPlot2D : public QWidget
     Q_OBJECT
     
 public:
-    explicit AP2DataPlot2D(QWidget *parent = 0,bool isIndependant = false);
+    explicit AP2DataPlot2D(QWidget *parent = 0);
     ~AP2DataPlot2D();
     void addSource(MAVLinkDecoder *decoder);
-    void loadLog(QString filename);
 
 signals:
     void toKMLClicked();
@@ -135,8 +106,6 @@ private slots:
     void sortSelectAllClicked();
     void sortSelectInvertClicked();
 
-    void childGraphDestroyed(QObject *obj);
-
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
@@ -179,8 +148,6 @@ private:
     QList<QString> loglines;
     QSqlDatabase m_sharedDb;
     int currentIndex;
-
-    QList<QWidget*> m_childGraphList;
 
     QList<QPair<qint64,double> > m_onlineValueTimeoutList;
 

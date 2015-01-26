@@ -3,6 +3,10 @@
 #
 
 LinuxBuild {
+	INCLUDEPATH += \
+        /usr/include \
+        /usr/local/include
+
 	LIBS += \
 		-L/usr/lib
 

@@ -40,9 +40,7 @@ This file is part of the APM_PLANNER project
 #include "UASInterface.h"
 MAVLinkDecoder::MAVLinkDecoder(QObject *parent) : QObject(parent)
 {
-    QLOG_DEBUG() << "Create MAVLinkDecoder: " << this;
-
-    static mavlink_message_info_t msg[256] = MAVLINK_MESSAGE_INFO;
+    mavlink_message_info_t msg[256] = MAVLINK_MESSAGE_INFO;
     memcpy(messageInfo, msg, sizeof(mavlink_message_info_t)*256);
     memset(receivedMessages, 0, sizeof(mavlink_message_t)*256);
 
@@ -74,12 +72,6 @@ MAVLinkDecoder::MAVLinkDecoder(QObject *parent) : QObject(parent)
 //    textMessageFilter.insert(MAVLINK_MSG_ID_HIGHRES_IMU, false);
 
 }
-
-MAVLinkDecoder::~MAVLinkDecoder()
-{
-    QLOG_DEBUG() << "Destroy MAVLinkDecoder: " << this;
-}
-
 mavlink_field_info_t MAVLinkDecoder::getFieldInfo(QString msgname,QString fieldname)
 {
     for (int i=0;i<256;i++)
