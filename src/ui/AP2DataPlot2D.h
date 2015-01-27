@@ -30,21 +30,25 @@ This file is part of the APM_PLANNER project
 #ifndef AP2DATAPLOT2D_H
 #define AP2DATAPLOT2D_H
 
-#include <QWidget>
-#include <QProgressDialog>
-#include "ui_AP2DataPlot2D.h"
-#include "AP2DataPlotThread.h"
-#include "dataselectionscreen.h"
-#include "qcustomplot.h"
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
-#include "AP2DataPlotAxisDialog.h"
+#include "kmlcreator.h"
+#include "qcustomplot.h"
 #include "DroneshareUploadDialog.h"
+
+#include "AP2DataPlotThread.h"
+#include "dataselectionscreen.h"
+#include "AP2DataPlotAxisDialog.h"
+#include "AP2DataPlot2DModel.h"
+#include "ui_AP2DataPlot2D.h"
+
+#include <QWidget>
+#include <QProgressDialog>
+#include <QSortFilterProxyModel>
 #include <QTextBrowser>
 #include <QSqlDatabase>
 #include <QStandardItemModel>
-#include "AP2DataPlot2DModel.h"
-#include <QSortFilterProxyModel>
+
 class LogDownloadDialog;
 
 class AP2DataPlot2D : public QWidget
@@ -57,13 +61,12 @@ public:
     void addSource(MAVLinkDecoder *decoder);
     void loadLog(QString filename);
 
-signals:
-    void toKMLClicked();
-
 public slots:
     void showLogDownloadDialog();
     void closeLogDownloadDialog();
     void clearGraph();
+
+    void logToKmlClicked();
 
 private slots:
     //New Active UAS set

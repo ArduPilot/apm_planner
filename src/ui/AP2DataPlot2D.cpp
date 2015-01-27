@@ -152,7 +152,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
     m_model = new QStandardItemModel();
-    connect(ui.toKMLPushButton, SIGNAL(clicked()), this, SIGNAL(toKMLClicked()));
+    connect(ui.toKMLPushButton, SIGNAL(clicked()), this, SLOT(logToKmlClicked()));
     connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
 
     connect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
@@ -167,13 +167,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(ui.droneshareButton, SIGNAL(clicked()), this, SLOT(droneshareButtonClicked()));
     connect(ui.exportPushButton,SIGNAL(clicked()),this,SLOT(exportButtonClicked()));
 
-    //m_sharedDb = QSqlDatabase::addDatabase("QSQLITE");
-    //m_sharedDb.setDatabaseName(":memory:");
-    //if (!m_sharedDb.open())
-    //{
-    //    QMessageBox::information(0,"error","Error opening shared database " + m_sharedDb.lastError().text());
-    //    return;
-    //}
 }
 void AP2DataPlot2D::graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList)
 {
@@ -804,6 +797,7 @@ void AP2DataPlot2D::loadLog(QString filename)
 
     QString shortfilename =filename.mid(filename.lastIndexOf("/")+1);
     setWindowTitle(tr("Graph: %1").arg(shortfilename));
+    ui.toKMLPushButton->setDisabled(true);
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
@@ -1888,3 +1882,36 @@ void AP2DataPlot2D::childGraphDestroyed(QObject *obj)
         m_childGraphList.removeOne(plot);
     }
 }
+
+void AP2DataPlot2D::logToKmlClicked()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Open Log File", QGC::logDirectory(), tr("Log Files (*.log)"));
+    QApplication::processEvents(); // Helps clear dialog from screen
+
+    if(filename.length() > 0) {
+        QFile file(filename);
+        if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QString kmlFile(filename);
+            kmlFile.replace(".log", ".kml");
+            kml::KMLCreator kml;
+
+            kml.start(kmlFile);
+            QTextStream in(&file);
+            while(!in.atEnd()) {
+                QString line = in.readLine();
+                kml.processLine(line);
+            }
+
+            QString generated = kml.finish(true);
+            file.close();
+
+            QString msg = QString("Generated %1.").arg(generated);
+            QMessageBox::information(this, "Log to KML", msg);
+        }
+        else {
+            QString msg = QString("Unable to open %1.").arg(filename);
+            QMessageBox::warning(this, "Log to KML", msg, QMessageBox::Ok);
+        }
+    }
+}
+
