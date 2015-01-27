@@ -370,12 +370,7 @@ MainWindow::MainWindow(QWidget *parent):
 
 MainWindow::~MainWindow()
 {
-    /*if (mavlink)
-    {
-        delete mavlink;
-        mavlink = NULL;
-    }*/
-
+    closeTerminalConsole();
 
     if (joystickWidget)
     {
@@ -2481,6 +2476,7 @@ void MainWindow::showTerminalConsole()
 void MainWindow::closeTerminalConsole()
 {
     if (m_terminalDialog){
+        m_terminalDialog->close();
         m_terminalDialog->deleteLater();
         m_terminalDialog = NULL;
     }
