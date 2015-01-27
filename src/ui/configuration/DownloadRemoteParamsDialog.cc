@@ -40,13 +40,12 @@ DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent, bool ove
     m_extension(".param"),
     m_version("?ref=master"),
     m_networkReply(NULL),
-    m_overwriteFile(overwriteFile),
-    m_httpRequestAborted(false)
+    m_httpRequestAborted(false),
+    m_overwriteFile(overwriteFile)
 {
     QLOG_DEBUG() << "DownloadRemoteParamsDialog overwriteFile" << m_overwriteFile;
     ui->setupUi(this);
 
-    connect(this, SIGNAL(canceled()), this, SLOT(cancelDownload()));
     connect(ui->downloadButton, SIGNAL(clicked()), this, SLOT(downloadButtonClicked()));
     connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(closeButtonClicked()));
     connect(ui->refreshButton, SIGNAL(clicked()), this, SLOT(refreshParamList()));
