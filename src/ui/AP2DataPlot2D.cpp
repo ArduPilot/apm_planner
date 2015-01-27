@@ -1072,7 +1072,8 @@ void AP2DataPlot2D::clearGraph()
 
 void AP2DataPlot2D::loadStarted()
 {
-    m_progressDialog = new QProgressDialog("Loading File","Cancel",0,100);
+    m_progressDialog = new QProgressDialog("Loading File","Cancel",0,100,this);
+    m_progressDialog->setWindowModality(Qt::WindowModal);
     connect(m_progressDialog,SIGNAL(canceled()),this,SLOT(progressDialogCanceled()));
     m_progressDialog->show();
     QApplication::processEvents();
@@ -1609,16 +1610,18 @@ void AP2DataPlot2D::exportDialogAccepted()
         return;
     }
     QString outputFileName = dialog->selectedFiles().at(0);
+    dialog->close();
+
     QFile outputfile(outputFileName);
     if (!outputfile.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {
         QMessageBox::information(this,"Error","Unable to open output file: " + outputfile.errorString());
         return;
     }
-    QProgressDialog *progressDialog = new QProgressDialog("Saving File","Cancel",0,100);
+    QProgressDialog *progressDialog = new QProgressDialog("Exporting File","Cancel",0,100,this);
+    progressDialog->setWindowModality(Qt::WindowModal);
     progressDialog->show();
     QApplication::processEvents();
-
 
     QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format\r\n";
     QMap<QString,QList<QString> > fmtlist = m_tableModel->getFmtValues();
@@ -1631,7 +1634,6 @@ void AP2DataPlot2D::exportDialogAccepted()
             formatheader += line + "\r\n";
         }
     }
-
 
     outputfile.write(formatheader.toLatin1());
 
@@ -1654,89 +1656,6 @@ void AP2DataPlot2D::exportDialogAccepted()
         QApplication::processEvents();
     }
 
-
-/*
-    //Iterate through the index table to build the actual log
-    QSqlQuery indexquery(m_sharedDb);
-    indexquery.prepare("SELECT * FROM 'INDEX';");
-    if (!indexquery.exec())
-    {
-        QMessageBox::information(0,"Error","Error selecting from table 'INDEX' " + m_sharedDb.lastError().text());
-        return;
-
-    }
-
-    outputfile.write(formatheader.toLatin1());
-
-    int count = 0;
-    indexquery.last();
-    int indexrows = indexquery.record().value(0).toInt();
-    indexquery.first();
-    indexquery.previous();
-    while (indexquery.next())
-    {
-        if (progressDialog->isHidden())
-        {
-            //Cancel has been clicked
-            outputfile.close();
-            if (!QFile::remove(outputfile.fileName()))
-            {
-                QMessageBox::information(0,"Warning","Log save canceled. There may be an incomplete log in the save folder, as AP2 was unable to delete it.");
-            }
-            else
-            {
-                QMessageBox::information(0,"Warning","Log save canceled");
-            }
-            progressDialog->deleteLater();
-            progressDialog=NULL;
-            return;
-        }
-        progressDialog->setValue(100.0 * ((double)count++ / (double)indexrows));
-
-
-        QSqlRecord record = indexquery.record();
-        int index = record.value(0).toInt();
-        QString name = record.value(1).toString();
-        QSqlQuery namequery(m_sharedDb);
-        if (!namequery.exec("SELECT * FROM '" + name + "' where idx == " + QString::number(index)+ ";"))
-        {
-            QMessageBox::information(0,"Error execing",namequery.executedQuery() + ":::" + namequery.lastError().text());
-        }
-        while (namequery.next())
-        {
-            QSqlRecord namerecord = namequery.record();
-            QString fields = name;
-            for (int i=1;i<namerecord.count();i++)
-            {
-                if (namerecord.value(i).type() == QVariant::Double)
-                {
-                    QString num = QString::number(namerecord.value(i).toDouble(),'f',8);
-                    char last = num.at(num.length()-1).toLatin1();
-                    while (last == '0' && num.length() > 0)
-                    {
-                        num = num.mid(0,num.length()-1);
-                        last = num.at(num.length()-1).toLatin1();
-                    }
-                    if (last == '.')
-                    {
-                        num += "0";
-                    }
-                    fields.append(", " + num);
-                }
-                else if (namerecord.value(i).type() == QVariant::String)
-                {
-                    fields.append(", " + namerecord.value(i).toString());
-                }
-                else
-                {
-                    fields.append(", " + QString::number(namerecord.value(i).toInt()));
-                }
-            }
-            QApplication::processEvents();
-            outputfile.write(fields.append("\r\n").toLatin1());
-        }
-    }
-*/
     outputfile.close();
     progressDialog->hide();
     progressDialog->deleteLater();
