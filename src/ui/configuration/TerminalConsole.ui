@@ -33,41 +33,24 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetMinimumSize</enum>
      </property>
-     <item alignment="Qt::AlignRight|Qt::AlignVCenter">
+     <item>
       <widget class="QPushButton" name="connectButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>100</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>135</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="text">
-        <string>CONNECT</string>
+        <string>Connect</string>
        </property>
       </widget>
      </item>
-     <item alignment="Qt::AlignRight">
+     <item>
       <widget class="QPushButton" name="disconnectButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>135</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="text">
-        <string>DISCONNECT</string>
+        <string>Disconnect</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="localEchoCheckBox">
+       <property name="text">
+        <string>Local Echo</string>
        </property>
       </widget>
      </item>

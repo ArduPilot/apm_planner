@@ -92,8 +92,9 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
 
     //Keep refreshing the serial port list
     connect(&m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+    connect(ui->localEchoCheckBox, SIGNAL(clicked(bool)),
+            m_console, SLOT(setLocalEchoEnabled(bool)));
 }
-
 
 void TerminalConsole::addBaudComboBoxConfig()
 {
@@ -270,7 +271,6 @@ void TerminalConsole::sendResetCommand()
 
 void TerminalConsole::writeData(const QByteArray &data)
 {
-//    QLOG_TRACE() << "writeData:" << data;
     m_serial->write(data);
 }
 
@@ -416,6 +416,7 @@ void TerminalConsole::loadSettings()
                 (settings.value("COMM_DATABITS").toInt());
         m_settings.flowControl = static_cast<QSerialPort::FlowControl>
                 (settings.value("COMM_FLOW_CONTROL").toInt());
+        m_console->setLocalEchoEnabled(settings.value("CONSOLE_LOCAL_ECHO", false).toBool());
     }
 }
 
@@ -430,6 +431,7 @@ void TerminalConsole::writeSettings()
     settings.setValue("COMM_STOPBITS", m_settings.stopBits);
     settings.setValue("COMM_DATABITS", m_settings.dataBits);
     settings.setValue("COMM_FLOW_CONTROL", m_settings.flowControl);
+    settings.setValue("CONSOLE_LOCAL_ECHO", m_console->isLocalEchoEnabled());
     settings.endGroup();
     settings.sync();
 }
