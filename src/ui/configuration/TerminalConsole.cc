@@ -42,7 +42,6 @@ This file is part of the APM_PLANNER project
 #include "LogConsole.h"
 #include "MainWindow.h"
 
-#include <kmlcreator.h>
 #include <QSettings>
 #include <QStatusBar>
 #include <QMessageBox>
@@ -313,7 +312,6 @@ void TerminalConsole::initConnections()
 
     connect(ui->baudComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setBaudRate(int)));
     connect(ui->linkComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setLink(int)));
-    connect(ui->logToKmlButton, SIGNAL(released()), this, SLOT(logToKmlClicked()));
 
     // Serial Port Connections
     connect(m_serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
@@ -325,37 +323,6 @@ void TerminalConsole::initConnections()
     connect(m_logConsole, SIGNAL(statusMessage(QString)), this, SLOT(logConsoleStatusMessage(QString)));
     connect(m_logConsole, SIGNAL(activityStart()), this, SLOT(logConsoleActivityStart()));
     connect(m_logConsole, SIGNAL(activityStop()), this, SLOT(logConsoleActivityStop()));
-}
-
-void TerminalConsole::logToKmlClicked() {
-    QString filename = QFileDialog::getOpenFileName(this, "Open Log File", QGC::logDirectory(), tr("Log Files (*.log)"));
-    QApplication::processEvents(); // Helps clear dialog from screen
-
-    if(filename.length() > 0) {
-        QFile file(filename);
-        if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QString kmlFile(filename);
-            kmlFile.replace(".log", ".kml");
-            kml::KMLCreator kml;
-
-            kml.start(kmlFile);
-            QTextStream in(&file);
-            while(!in.atEnd()) {
-                QString line = in.readLine();
-                kml.processLine(line);
-            }
-
-            QString generated = kml.finish(true);
-            file.close();
-
-            QString msg = QString("Generated %1.").arg(generated);
-            QMessageBox::information(this, "Log to KML", msg);
-        }
-        else {
-            QString msg = QString("Unable to open %1.").arg(filename);
-            QMessageBox::warning(this, "Log to KML", msg, QMessageBox::Ok);
-        }
-    }
 }
 
 void TerminalConsole::logConsoleShown() {

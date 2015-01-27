@@ -2464,7 +2464,6 @@ void MainWindow::showTerminalConsole()
         vLayout->addWidget(terminalConsole);
         m_terminalDialog->resize(640,325);
         m_terminalDialog->show();
-        connect(engineeringView->centralWidget(), SIGNAL(toKMLClicked()), terminalConsole, SLOT(logToKmlClicked()));
         connect(m_terminalDialog, SIGNAL(finished(int)), this, SLOT(closeTerminalConsole()));
     }
 

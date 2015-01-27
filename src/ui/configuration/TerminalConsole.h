@@ -74,7 +74,6 @@ public slots:
     void logConsoleStatusMessage(QString);
     void logConsoleActivityStart();
     void logConsoleActivityStop();
-    void logToKmlClicked();
 
     void handleError(QSerialPort::SerialPortError error);
 

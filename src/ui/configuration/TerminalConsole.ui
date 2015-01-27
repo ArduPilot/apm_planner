@@ -117,22 +117,6 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="logToKmlButton">
-       <property name="minimumSize">
-        <size>
-         <width>135</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Pick a dataflash log file to generate a KML/KMZ file from</string>
-       </property>
-       <property name="text">
-        <string>Log to KML...</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="logsButton">
        <property name="minimumSize">
         <size>
