@@ -83,6 +83,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(ui.sortInvertSelectPushButton,SIGNAL(clicked()),this,SLOT(sortSelectInvertClicked()));
     ui.tableSortGroupBox->setVisible(false);
     ui.sortShowPushButton->setVisible(false);
+    ui.exportPushButton->setVisible(false);
 
     QDateTime utc = QDateTime::currentDateTimeUtc();
     utc.setTimeSpec(Qt::LocalTime);
@@ -798,6 +799,7 @@ void AP2DataPlot2D::loadLog(QString filename)
     QString shortfilename =filename.mid(filename.lastIndexOf("/")+1);
     setWindowTitle(tr("Graph: %1").arg(shortfilename));
     ui.toKMLPushButton->setDisabled(true);
+    ui.exportPushButton->setVisible(true);
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
