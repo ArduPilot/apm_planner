@@ -1414,6 +1414,15 @@ void AP2DataPlot2D::exportDialogAccepted()
             progressDialog->setValue(100.0 * ((double)i / (double)m_tableModel->rowCount()));
         }
         QApplication::processEvents();
+        if (progressDialog->wasCanceled())
+        {
+            outputfile.close();
+            progressDialog->hide();
+            progressDialog->deleteLater();
+            progressDialog=NULL;
+            QMessageBox::information(0,"Warning","Export was canceled");
+            return;
+        }
     }
 
     outputfile.close();
