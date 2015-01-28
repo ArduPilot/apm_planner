@@ -58,7 +58,6 @@ class AP2DataPlot2D : public QWidget
 public:
     explicit AP2DataPlot2D(QWidget *parent = 0,bool isIndependant = false);
     ~AP2DataPlot2D();
-    void addSource(MAVLinkDecoder *decoder);
     void loadLog(QString filename);
 
 public slots:

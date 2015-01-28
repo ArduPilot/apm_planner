@@ -292,6 +292,7 @@ void AP2DataPlot2D::showEvent(QShowEvent *evt)
     m_updateTimer = new QTimer(this);
     connect(m_updateTimer,SIGNAL(timeout()),m_plot,SLOT(replot()));
     m_updateTimer->start(500);
+    QWidget::showEvent(evt);
 }
 
 void AP2DataPlot2D::hideEvent(QHideEvent *evt)
@@ -302,6 +303,7 @@ void AP2DataPlot2D::hideEvent(QHideEvent *evt)
         m_updateTimer->deleteLater();
         m_updateTimer = 0;
     }
+    QWidget::hideEvent(evt);
 }
 
 void AP2DataPlot2D::verticalScrollMoved(int value)
@@ -392,6 +394,9 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 
 void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt)
 {
+    Q_UNUSED(axis)
+    Q_UNUSED(part)
+    Q_UNUSED(evt)
     graphControlsButtonClicked();
 }
 void AP2DataPlot2D::graphControlsButtonClicked()
@@ -589,10 +594,6 @@ void AP2DataPlot2D::disconnected()
      ui.downloadPushButton->setEnabled(false);
 }
 
-void AP2DataPlot2D::addSource(MAVLinkDecoder *decoder)
-{
-    //connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
-}
 void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
 {
     Q_UNUSED(mode);
@@ -1459,6 +1460,7 @@ void AP2DataPlot2D::evCheckBoxClicked(bool checked)
 }
 void AP2DataPlot2D::sortItemChanged(QTreeWidgetItem* item,int col)
 {
+    Q_UNUSED(col)
 	//Sorting item changed.
 	if (!item)
 	{
@@ -1479,17 +1481,6 @@ void AP2DataPlot2D::sortItemChanged(QTreeWidgetItem* item,int col)
 			m_tableFilterList.removeOne(msgname);
 		}
 	}
-
-		//Item is enabled!
-		/*    m_tableFilterProxyModel->setFilterFixedString(itemtext);
-    m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
-    m_tableFilterProxyModel->setFilterKeyColumn(1);
-    m_showOnlyActive = true;
-}
-void AP2DataPlot2D::showAllClicked()
-{
-    m_tableFilterProxyModel->setFilterRegExp("");*/
-
 }
 void AP2DataPlot2D::sortAcceptClicked()
 {
@@ -1498,7 +1489,6 @@ void AP2DataPlot2D::sortAcceptClicked()
     {
         sortstring += m_tableFilterList.at(i) + ((i == m_tableFilterList.size()-1) ? "" : "|");
     }
-    //sortstring += "]";
     m_tableFilterProxyModel->setFilterRegExp(sortstring);
     m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
     m_tableFilterProxyModel->setFilterKeyColumn(1);
