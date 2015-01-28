@@ -1055,6 +1055,7 @@ void AP2DataPlot2D::itemDisabled(QString name)
 void AP2DataPlot2D::progressDialogCanceled()
 {
     m_logLoaderThread->stopLoad();
+    this->close();
 }
 void AP2DataPlot2D::clearGraph()
 {

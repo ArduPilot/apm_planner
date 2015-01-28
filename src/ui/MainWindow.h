@@ -140,7 +140,6 @@ public slots:
     void showAbout();
     /** @brief Add a communication link */
     void addLink();
-    void addLink(LinkInterface* link);
     void addLink(int linkid);
     bool configLink(int linkid);
     void linkError(int linkid,QString errorstring);

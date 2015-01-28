@@ -94,7 +94,7 @@ void AP2DataPlotThread::loadBinaryLog()
         emit error(m_dataModel->getError());
         return;
     }
-    while (!logfile.atEnd())
+    while (!logfile.atEnd() && !m_stop)
     {
         int nonpacketcounter = 0;
         emit loadProgress(logfile.pos(),logfile.size());
