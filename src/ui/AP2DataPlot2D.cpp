@@ -58,7 +58,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     m_plot(NULL),
     m_wideAxisRect(NULL),
     m_logLoaderThread(NULL),
-    m_dataSelectionScreen(NULL),
     m_model(NULL),
     m_logLoaded(false),
     m_currentIndex(0),
@@ -122,10 +121,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     QCPMarginGroup *marginGroup = new QCPMarginGroup(m_plot);
     m_wideAxisRect->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
 
-    m_dataSelectionScreen = new DataSelectionScreen(this);
-    connect( m_dataSelectionScreen,SIGNAL(itemEnabled(QString)),this,SLOT(itemEnabled(QString)));
-    connect( m_dataSelectionScreen,SIGNAL(itemDisabled(QString)),this,SLOT(itemDisabled(QString)));
-    ui.horizontalLayout_3->addWidget(m_dataSelectionScreen);
+    //m_dataSelectionScreen = new DataSelectionScreen(this);
+    connect(ui.dataSelectionScreen,SIGNAL(itemEnabled(QString)),this,SLOT(itemEnabled(QString)));
+    connect( ui.dataSelectionScreen,SIGNAL(itemDisabled(QString)),this,SLOT(itemDisabled(QString)));
 
     ui.horizontalLayout_3->setStretch(0,5);
     ui.horizontalLayout_3->setStretch(1,1);
@@ -142,13 +140,15 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     ui.tableWidget->addAction(m_addGraphAction);
     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft()));
 
-    ui.tableWidget->setVisible(false);
+    //ui.tableWidget->setVisible(false);
+    setExcelViewHidden(true);
     ui.tableWidget->verticalHeader()->setDefaultSectionSize(ui.tableWidget->fontMetrics().height() + ROW_HEIGHT_PADDING);
     ui.hideExcelView->setVisible(false);
 
     connect(ui.loadOfflineLogButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     connect(ui.autoScrollCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoScrollClicked(bool)));
-    connect(ui.hideExcelView,SIGNAL(clicked(bool)),ui.tableWidget,SLOT(setHidden(bool)));
+    //connect(ui.hideExcelView,SIGNAL(clicked(bool)),ui.tableWidget,SLOT(setHidden(bool)));
+    connect(ui.hideExcelView,SIGNAL(clicked(bool)),this,SLOT(setExcelViewHidden(bool)));
     connect(ui.tableWidget,SIGNAL(currentCellChanged(int,int,int,int)),this,SLOT(tableCellChanged(int,int,int,int)));
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
@@ -169,6 +169,20 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(ui.exportPushButton,SIGNAL(clicked()),this,SLOT(exportButtonClicked()));
 
 }
+void AP2DataPlot2D::setExcelViewHidden(bool hidden)
+{
+    if (hidden)
+    {
+        ui.splitter->setSizes(QList<int>() << 1 << 0);
+        ui.sortShowPushButton->setVisible(false);
+    }
+    else
+    {
+        ui.splitter->setSizes(QList<int>() << 1 << 1);
+        ui.sortShowPushButton->setVisible(true);
+    }
+}
+
 void AP2DataPlot2D::graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList)
 {
     for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
@@ -418,7 +432,7 @@ void AP2DataPlot2D::addGraphLeft()
 
     QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
     QString headertext = ui.tableWidget->model()->headerData(ui.tableWidget->selectionModel()->selectedIndexes().at(0).column(),Qt::Horizontal,Qt::DisplayRole).toString();
-    m_dataSelectionScreen->enableItem(itemtext + "." + headertext);
+    ui.dataSelectionScreen->enableItem(itemtext + "." + headertext);
     //Whenever we add a graph, make the button a remove, since there is no selectedItemChanged signal if they re-click it
     //It's an enabled
     m_addGraphAction->setText("Remove From Graph");
@@ -494,7 +508,7 @@ void AP2DataPlot2D::removeGraphLeft()
     QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
     QString headertext = ui.tableWidget->model()->headerData(ui.tableWidget->selectionModel()->selectedIndexes().at(0).column(),Qt::Horizontal,Qt::DisplayRole).toString();
     QString label = itemtext + "." + headertext;
-    m_dataSelectionScreen->disableItem(itemtext + "." + headertext);
+    ui.dataSelectionScreen->disableItem(itemtext + "." + headertext);
     m_addGraphAction->setText("Add To Graph");
     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
@@ -654,7 +668,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     QString propername  = name.mid(name.indexOf(":")+1);
     if (!m_onlineValueMap.contains(propername))
     {
-        m_dataSelectionScreen->addItem(propername);
+        ui.dataSelectionScreen->addItem(propername);
     }
 
 
@@ -786,7 +800,7 @@ void AP2DataPlot2D::loadLog(QString filename)
         m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
         m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
     }
-    m_dataSelectionScreen->clear();
+    ui.dataSelectionScreen->clear();
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->clear();
@@ -875,7 +889,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         {
             //No values!
             m_graphCount++; //Prevent crash when it tries to disable
-            m_dataSelectionScreen->disableItem(name);
+            ui.dataSelectionScreen->disableItem(name);
             return;
         }
         for (QMap<quint64,QVariant>::const_iterator i = values.constBegin();i!=values.constEnd();i++)
@@ -1049,7 +1063,7 @@ void AP2DataPlot2D::clearGraph()
         m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
         m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
     }
-    m_dataSelectionScreen->clear();
+    ui.dataSelectionScreen->clear();
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->clear();
@@ -1066,7 +1080,8 @@ void AP2DataPlot2D::clearGraph()
         ui.loadOfflineLogButton->setText("Open Log");
         ui.hideExcelView->setVisible(false);
         ui.hideExcelView->setChecked(false);
-        ui.tableWidget->setVisible(false);
+        //ui.tableWidget->setVisible(false);
+        setExcelViewHidden(true);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
@@ -1157,7 +1172,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
         QString name = i.key();
         for (int j=0;j<i.value().size();j++)
         {
-            m_dataSelectionScreen->addItem(name + "." + i.value().at(j));
+            ui.dataSelectionScreen->addItem(name + "." + i.value().at(j));
         }
         QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << name);
         child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
@@ -1254,7 +1269,8 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
     m_progressDialog->hide();
     delete m_progressDialog;
     m_progressDialog=0;
-    ui.tableWidget->setVisible(true);
+    //ui.tableWidget->setVisible(true);
+    setExcelViewHidden(false);
     ui.hideExcelView->setVisible(true);
     ui.sortShowPushButton->setVisible(true);
 }
@@ -1266,7 +1282,7 @@ void AP2DataPlot2D::threadError(QString errorstr)
     m_progressDialog->hide();
     delete m_progressDialog;
     m_progressDialog=0;
-    m_dataSelectionScreen->clear();
+    ui.dataSelectionScreen->clear();
     m_dataList.clear();
 }
 

@@ -140,6 +140,8 @@ private slots:
 
     void childGraphDestroyed(QObject *obj);
 
+    void setExcelViewHidden(bool hidden);
+
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
@@ -193,7 +195,7 @@ private:
     QCustomPlot *m_plot;
     QCPAxisRect *m_wideAxisRect;
     AP2DataPlotThread *m_logLoaderThread;
-    DataSelectionScreen *m_dataSelectionScreen;
+    //DataSelectionScreen *m_dataSelectionScreen;
     QStandardItemModel *m_model;
     bool m_logLoaded;
     //Current "index", X axis on graph. Used to keep all the graphs lined up.
