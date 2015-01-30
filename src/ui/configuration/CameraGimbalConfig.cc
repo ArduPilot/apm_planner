@@ -346,7 +346,7 @@ void CameraGimbalConfig::updateTilt()
     updateCameraGimbalParams(m_tiltPrefix, m_newTiltPrefix, "TILT", RC_FUNCTION::mount_tilt,
                          ui.tiltChannelComboBox, ui.tiltInputChannelComboBox,
                          ui.tiltServoMinSpinBox, ui.tiltServoMaxSpinBox, ui.tiltReverseCheckBox,
-                         ui.tiltAngleMinSpinBox, ui.tiltAngleMaxSpinBox);
+                         ui.tiltAngleMinSpinBox, ui.tiltAngleMaxSpinBox, ui.tiltStabilizeCheckBox);
 }
 
 void CameraGimbalConfig::updateRoll()
@@ -354,7 +354,7 @@ void CameraGimbalConfig::updateRoll()
     updateCameraGimbalParams(m_rollPrefix, m_newRollPrefix, "ROLL", RC_FUNCTION::mount_roll,
                          ui.rollChannelComboBox, ui.rollInputChannelComboBox,
                          ui.rollServoMinSpinBox, ui.rollServoMaxSpinBox, ui.rollReverseCheckBox,
-                         ui.rollAngleMinSpinBox, ui.rollAngleMaxSpinBox);
+                         ui.rollAngleMinSpinBox, ui.rollAngleMaxSpinBox, ui.rollStabilizeCheckBox);
 }
 
 void CameraGimbalConfig::updatePan()
@@ -362,14 +362,14 @@ void CameraGimbalConfig::updatePan()
     updateCameraGimbalParams(m_panPrefix, m_newPanPrefix, "PAN", RC_FUNCTION::mount_pan,
                           ui.panChannelComboBox, ui.panInputChannelComboBox,
                           ui.panServoMinSpinBox, ui.panServoMaxSpinBox, ui.panReverseCheckBox,
-                          ui.panAngleMinSpinBox, ui.panAngleMaxSpinBox);
+                          ui.panAngleMinSpinBox, ui.panAngleMaxSpinBox, ui.panStabilizeCheckBox);
 }
 
 void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QString& newChPrefix,
                                         const QString& mountType, int rcFunction,
                                         QComboBox *outputChCombo, QComboBox* inputChCombo,
                                         QSpinBox* servoMin, QSpinBox* servoMax, QCheckBox* servoReverse,
-                                        QSpinBox* angleMin, QSpinBox* angleMax)
+                                        QSpinBox* angleMin, QSpinBox* angleMax, QCheckBox* stabilize)
 {
     if (showNullMAVErrorMessageBox())
         return;
@@ -418,6 +418,7 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
     type.resize(3);// makes the string either ROL or TIL
     pm->setParameter(1, "MNT_ANGMIN_" + type, QVariant(angleMin->value() * 100).toInt()); // centiDegrees
     pm->setParameter(1, "MNT_ANGMAX_" + type, QVariant(angleMax->value() * 100).toInt()); // centiDegrees
+    pm->setParameter(1, "MNT_STAB_" + mountType, QVariant(stabilize->isChecked()?1:0)); // Enable Stabilization
 }
 
 
