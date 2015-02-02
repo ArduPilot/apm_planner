@@ -182,6 +182,16 @@ void AP2DataPlot2D::setExcelViewHidden(bool hidden)
         ui.sortShowPushButton->setVisible(true);
     }
 }
+void AP2DataPlot2D::graphColorsChanged(QMap<QString,QColor> colormap)
+{
+    for (QMap<QString,QColor>::const_iterator i = colormap.constBegin();i!=colormap.constEnd();i++)
+    {
+        m_graphClassMap[i.key()].graph->setPen(i.value());
+        m_graphClassMap[i.key()].axis->setLabelColor(i.value());
+        m_graphClassMap[i.key()].axis->setTickLabelColor(i.value());
+        m_graphClassMap[i.key()].axis->setTickLabelColor(i.value());
+    }
+}
 
 void AP2DataPlot2D::graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList)
 {
@@ -417,6 +427,7 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     }
     m_axisGroupingDialog = new AP2DataPlotAxisDialog();
     connect(m_axisGroupingDialog,SIGNAL(graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange>)),this,SLOT(graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange>)));
+    connect(m_axisGroupingDialog,SIGNAL(graphColorsChanged(QMap<QString,QColor>)),this,SLOT(graphColorsChanged(QMap<QString,QColor>)));
     for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
     {
         m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());

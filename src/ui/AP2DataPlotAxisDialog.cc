@@ -3,7 +3,7 @@
 #include <QMap>
 #include <QComboBox>
 #include <QCheckBox>
-
+#include <QColorDialog>
 #include "AP2DataPlotAxisDialog.h"
 #include "ui_AP2DataPlotAxisDialog.h"
 
@@ -51,20 +51,40 @@ AP2DataPlotAxisDialog::AP2DataPlotAxisDialog(QWidget *parent) :
 }
 void AP2DataPlotAxisDialog::cellDoubleClicked(int row,int col)
 {
-    if (col != 3 && col != 4)
-    {
-        //Not a min/max cell
-        return;
-    }
     if (!ui->graphTableWidget->item(row,col))
     {
         //Error condition, double clicked on a bad cell somehow?
+        return;
+    }
+    if (col == 0)
+    {
+        //Color, show a picker!
+        QColorDialog *dialog = new QColorDialog(this);
+        m_colorDialogRowId = row;
+        dialog->open(this,SLOT(colorDialogAccepted()));
+        return;
+    }
+    if (col != 3 && col != 4)
+    {
+        //Not a min/max cell
         return;
     }
     QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(row,5));
     if (checkbox)
     {
         checkbox->setChecked(false);
+    }
+}
+void AP2DataPlotAxisDialog::colorDialogAccepted()
+{
+    QColorDialog *dialog = qobject_cast<QColorDialog*>(sender());
+    if (!dialog)
+    {
+        return;
+    }
+    if (dialog->result() == QColorDialog::Accepted)
+    {
+        ui->graphTableWidget->item(m_colorDialogRowId,0)->setBackgroundColor(dialog->selectedColor());
     }
 }
 
@@ -151,6 +171,7 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
         }
     }*/
     QList<GraphRange> graphRangeList;
+    QMap<QString,QColor> graphColorList;
     for (int i=0;i<ui->graphTableWidget->rowCount();i++)
     {
         GraphRange graph;
@@ -193,8 +214,10 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
             emit graphAddedToGroup(name,group,m_graphScaleMap.value(name));
         }
         graphRangeList.append(graph);
+        graphColorList[name] = ui->graphTableWidget->item(i,0)->backgroundColor();
     }
     emit graphGroupingChanged(graphRangeList);
+    emit graphColorsChanged(graphColorList);
 }
 
 void AP2DataPlotAxisDialog::cancelButtonClicked()

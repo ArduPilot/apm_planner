@@ -125,6 +125,7 @@ private slots:
     void exportDialogAccepted();
 
     void graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList);
+    void graphColorsChanged(QMap<QString,QColor> colormap);
     void selectedRowChanged(QModelIndex current,QModelIndex previous);
 
     void modeCheckBoxClicked(bool checked);
