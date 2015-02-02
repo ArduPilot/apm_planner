@@ -415,7 +415,7 @@ void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCo
 
         countString = QString::number(m_paramDownloadCount) + "/"
                         + QString::number(parameterCount);
-        QLOG_INFO() << "Global Param Progress Bar: " << countString
+        QLOG_TRACE() << "Global Param Progress Bar: " << countString
                      << "paramId:" << parameterId << "name:" << parameterName
                      << "paramValue:" << value;
         ui.globalParamProgressLabel->setText(countString);
@@ -428,7 +428,7 @@ void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCo
         m_paramDownloadCount++;
         countString = QString::number(m_paramDownloadCount) + "/"
                         + QString::number(parameterCount);
-        QLOG_INFO() << "Param Progress Bar: " << countString
+        QLOG_TRACE() << "Param Progress Bar: " << countString
                      << "paramId:" << parameterId << "name:" << parameterName
                      << "paramValue:" << value;
         ui.globalParamProgressLabel->setText(countString);
