@@ -358,7 +358,7 @@ void RadioCalibrationConfig::calibrateButtonClicked()
     {
         ui.calibrateButton->setText("Calibrate");
         QMessageBox::information(this,"Trims","Ensure all sticks are centered and throttle is in the downmost position, click OK to continue");
-        ///TODO: Set trims!
+
         m_calibrationEnabled = false;
         ui.rollWidget->hideMinMax();
         m_pitchWidget->hideMinMax();
@@ -368,35 +368,34 @@ void RadioCalibrationConfig::calibrateButtonClicked()
         m_throttleWidget->hideMinMax();
         ui.radio7Widget->hideMinMax();
         ui.radio8Widget->hideMinMax();
+
+        //Send calibrations.
+        QString minTpl("RC%1_MIN");
+        QString maxTpl("RC%1_MAX");
+        QString trimTpl("RC%1_TRIM");
+
         QString statusstr;
         statusstr = "Below you will find the detected radio calibration information that will be sent to the autopilot\n";
         statusstr += "Normal values are around 1100 to 1900, with disconnected channels reading very close to 1500\n\n";
         statusstr += "Channel\tMin\tCenter\tMax\n";
         statusstr += "--------------------\n";
+
         for (int i=0;i<8;i++)
         {
             statusstr += QString::number(i+1) + "\t" + QString::number(rcMin[i]) + "\t" + QString::number(rcValue[i]) + "\t" + QString::number(rcMax[i]) + "\n";
-        }
-        QMessageBox::information(this,"Status",statusstr);
-        //Send calibrations.
-        QString minTpl("RC%1_MIN");
-        QString maxTpl("RC%1_MAX");
-        //QString trimTpl("RC%1_TRIM");
 
-        // Do not write the RC type, as these values depend on this
-        // active onboard parameter
-
-        for (unsigned int i = 0; i < 8; ++i)
-        {
             QLOG_DEBUG() << "SENDING MIN" << minTpl.arg(i+1) << rcMin[i];
+            QLOG_DEBUG() << "SENDING TRIM" << trimTpl.arg(i+1) << rcValue[i];
             QLOG_DEBUG() << "SENDING MAX" << maxTpl.arg(i+1) << rcMax[i];
-            m_uas->getParamManager()->setParameter(1, minTpl.arg(i+1), (float)rcMin[i]);
-            QGC::SLEEP::usleep(50000);
-            //m_uas->setParameter(0, trimTpl.arg(i+1), rcTrim[i]);
-            //QGC::SLEEP::usleep(50000);
-            m_uas->getParamManager()->setParameter(1, maxTpl.arg(i+1), (float)rcMax[i]);
-            QGC::SLEEP::usleep(50000);
+
+            // Send Calibrations
+            m_uas->getParamManager()->setParameter(1, minTpl.arg(i+1), rcMin[i]);
+            m_uas->getParamManager()->setParameter(1, trimTpl.arg(i+1), rcValue[i]); // Save the Trim Values.
+            m_uas->getParamManager()->setParameter(1, maxTpl.arg(i+1), rcMax[i]);
         }
+
+        QMessageBox::information(this,"Status",statusstr); // Show Calibraitions to the user
+
         ui.rollWidget->setMin(800);
         ui.rollWidget->setMax(2200);
         m_pitchWidget->setMin(800);
