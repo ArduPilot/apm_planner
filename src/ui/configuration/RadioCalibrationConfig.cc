@@ -334,12 +334,17 @@ void RadioCalibrationConfig::hideEvent(QHideEvent *event)
 }
 void RadioCalibrationConfig::calibrateButtonClicked()
 {
+    if (!isRadioControlActive()){
+        QMessageBox::warning(this,tr("Radio Control"), tr("Radio Control is not active or turned on"));
+        return;
+    }
+
     if (!m_calibrationEnabled)
     {
         ui.calibrateButton->setText("End Calibration");
         QMessageBox::information(this,"Warning!","You are about to start radio calibration.\nPlease ensure all motor power is disconnected AND all props are removed from the vehicle.\nAlso ensure transmitter and reciever are powered and connected\n\nClick OK to confirm");
         m_calibrationEnabled = true;
-        for (int i=0;i<8;i++)
+        for (int i=0;i<RC_CHANNEL_NUM_MAX;i++)
         {
             rcMin[i] = 1500;
             rcMax[i] = 1500;
@@ -375,26 +380,34 @@ void RadioCalibrationConfig::calibrateButtonClicked()
         QString trimTpl("RC%1_TRIM");
 
         QString statusstr;
-        statusstr = "Below you will find the detected radio calibration information that will be sent to the autopilot\n";
-        statusstr += "Normal values are around 1100 to 1900, with disconnected channels reading very close to 1500\n\n";
+        statusstr = "Below you will find the detected radio calibration information\n";
+        statusstr += "Normal values are between 1100 to 1900, trim close to 1500\n\n";
         statusstr += "Channel\tMin\tCenter\tMax\n";
         statusstr += "--------------------\n";
 
-        for (int i=0;i<8;i++)
+        for (int i=0;i< RC_CHANNEL_NUM_MAX;i++)
         {
             statusstr += QString::number(i+1) + "\t" + QString::number(rcMin[i]) + "\t" + QString::number(rcValue[i]) + "\t" + QString::number(rcMax[i]) + "\n";
-
-            QLOG_DEBUG() << "SENDING MIN" << minTpl.arg(i+1) << rcMin[i];
-            QLOG_DEBUG() << "SENDING TRIM" << trimTpl.arg(i+1) << rcValue[i];
-            QLOG_DEBUG() << "SENDING MAX" << maxTpl.arg(i+1) << rcMax[i];
-
-            // Send Calibrations
-            m_uas->getParamManager()->setParameter(1, minTpl.arg(i+1), rcMin[i]);
-            m_uas->getParamManager()->setParameter(1, trimTpl.arg(i+1), rcValue[i]); // Save the Trim Values.
-            m_uas->getParamManager()->setParameter(1, maxTpl.arg(i+1), rcMax[i]);
         }
 
-        QMessageBox::information(this,"Status",statusstr); // Show Calibraitions to the user
+        if (validRadioSettings()){
+            for (int i=0;i< RC_CHANNEL_NUM_MAX;i++)
+            {
+                QLOG_DEBUG() << "SENDING MIN" << minTpl.arg(i+1) << rcMin[i];
+                QLOG_DEBUG() << "SENDING TRIM" << trimTpl.arg(i+1) << rcValue[i];
+                QLOG_DEBUG() << "SENDING MAX" << maxTpl.arg(i+1) << rcMax[i];
+
+                // Send Calibrations
+                m_uas->getParamManager()->setParameter(1, minTpl.arg(i+1), rcMin[i]);
+                m_uas->getParamManager()->setParameter(1, trimTpl.arg(i+1), rcValue[i]); // Save the Trim Values.
+                m_uas->getParamManager()->setParameter(1, maxTpl.arg(i+1), rcMax[i]);
+            }
+
+            QMessageBox::information(this,"Status",statusstr); // Show Calibraitions to the user
+        } else {
+            QMessageBox::warning(this,"Status","FAILED: Invalid PWM signals\n" + statusstr);
+        }
+
 
         ui.rollWidget->setMin(800);
         ui.rollWidget->setMax(2200);
@@ -501,3 +514,39 @@ void RadioCalibrationConfig::writeSettings()
     settings.endGroup();
     settings.sync();
 }
+
+bool RadioCalibrationConfig::isRadioControlActive()
+{
+    for(int count=0; count< RC_CHANNEL_NUM_MAX; count++){
+        // Any invalid range and we abort.
+        if (!isInRange(rcValue[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool RadioCalibrationConfig::validRadioSettings()
+{
+    for(int count=0; count< RC_CHANNEL_NUM_MAX; count++){
+        // Any invalid range and we abort.
+        if (!isInRange(rcMin[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)
+                ||!isInRange(rcMax[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)
+                ||!isInRange(rcTrim[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool RadioCalibrationConfig::isInRange(double value, double min, double max)
+{
+    if ((value > min)&&(value<max)){
+        return true;
+    }
+    return false;
+}
+
+
+
+

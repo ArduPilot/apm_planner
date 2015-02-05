@@ -43,6 +43,10 @@ This file is part of the APM_PLANNER project
 class RadioCalibrationConfig : public AP2ConfigWidget
 {
     Q_OBJECT
+
+    static const int RC_CHANNEL_PWM_MIN = 900.0;
+    static const int RC_CHANNEL_PWM_MAX = 2100;
+    static const int RC_CHANNEL_NUM_MAX = 8;
     
 public:
     explicit RadioCalibrationConfig(QWidget *parent = 0);
@@ -76,6 +80,9 @@ private:
     void updateChannelRevState(QCheckBox *checkbox, int channelId);
     void readSettings();
     void writeSettings();
+    bool isRadioControlActive();
+    bool isInRange(double value, double min, double max);
+    bool validRadioSettings();
 
 private:
     Ui::RadioCalibrationConfig ui;
