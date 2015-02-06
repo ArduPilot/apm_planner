@@ -126,9 +126,9 @@ void UASWaypointManager::handleGlobalPositionChanged(UASInterface* mav, double l
 {
     Q_UNUSED(mav);
     Q_UNUSED(time);
-	Q_UNUSED(alt);
-	Q_UNUSED(lon);
-	Q_UNUSED(lat);
+    Q_UNUSED(alt);
+    Q_UNUSED(lon);
+    Q_UNUSED(lat);
     if (waypointsEditable.count() > 0 && currentWaypointEditable && (currentWaypointEditable->getFrame() == MAV_FRAME_GLOBAL || currentWaypointEditable->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT))
     {
         // TODO FIXME Calculate distance
@@ -275,7 +275,7 @@ void UASWaypointManager::handleWaypointRequest(quint8 systemId, quint8 compId, m
 
 void UASWaypointManager::handleWaypointReached(quint8 systemId, quint8 compId, mavlink_mission_item_reached_t *wpr)
 {
-	Q_UNUSED(compId);
+    Q_UNUSED(compId);
     if (!uas) return;
     if (systemId == uasid) {
         emit updateStatusString(QString("Reached waypoint %1").arg(wpr->seq));
@@ -604,7 +604,7 @@ const QList<Waypoint *> UASWaypointManager::getGlobalFrameWaypointList()
     return wps;
 }
 
-const QList<Waypoint *> UASWaypointManager::getGlobalFrameAndNavTypeWaypointList()
+const QList<Waypoint *> UASWaypointManager::getGlobalFrameAndNavTypeWaypointList(bool onlypath)
 {
     // TODO Keep this global frame list up to date
     // with complete waypoint list
@@ -612,8 +612,10 @@ const QList<Waypoint *> UASWaypointManager::getGlobalFrameAndNavTypeWaypointList
     QList<Waypoint*> wps;
     foreach (Waypoint* wp, waypointsEditable)
     {
-        if ((wp->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && wp->isNavigationType())
+        if ((wp->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && (wp->isNavigationType() || (wp->visibleOnMapWidget())))
         {
+            if(wp->visibleOnMapWidget() && onlypath) // we need waypoints only to draw the path on map
+                continue;
             wps.append(wp);
         }
     }
