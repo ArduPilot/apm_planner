@@ -744,7 +744,7 @@ void QGCMapWidget::updateWaypoint(int uas, Waypoint* wp)
     if (currWPManager)
     {
         // Only accept waypoints in global coordinate frame
-        if (((wp->getFrame() == MAV_FRAME_GLOBAL) || (wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT)) && wp->isNavigationType())
+        if (((wp->getFrame() == MAV_FRAME_GLOBAL) || (wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT)) && (wp->isNavigationType() || wp->visibleOnMapWidget()))
         {
             // We're good, this is a global waypoint
 
@@ -844,7 +844,7 @@ void QGCMapWidget::redrawWaypointLines(int uas)
         delete item;
     }
 
-    QList<Waypoint*> wps = currWPManager->getGlobalFrameAndNavTypeWaypointList();
+    QList<Waypoint*> wps = currWPManager->getGlobalFrameAndNavTypeWaypointList(true);
     if (wps.size() > 1)
     {
         QPainterPath path = WaypointNavigation::path(wps, *map);
@@ -880,7 +880,7 @@ void QGCMapWidget::updateWaypointList(int uas)
     {
         // Delete first all old waypoints
         // this is suboptimal (quadratic, but wps should stay in the sub-100 range anyway)
-        QList<Waypoint* > wps = currWPManager->getGlobalFrameAndNavTypeWaypointList();
+        QList<Waypoint* > wps = currWPManager->getGlobalFrameAndNavTypeWaypointList(false);
         foreach (Waypoint* wp, waypointsToIcons.keys())
         {
             if (!wps.contains(wp))

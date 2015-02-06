@@ -98,7 +98,7 @@ public:
         return waypointsViewOnly;    ///< Returns a const reference to the waypoint list.
     }
     const QList<Waypoint *> getGlobalFrameWaypointList();  ///< Returns a global waypoint list
-    const QList<Waypoint *> getGlobalFrameAndNavTypeWaypointList(); ///< Returns a global waypoint list containing only waypoints suitable for navigation. Actions and other mission items are filtered out.
+    const QList<Waypoint *> getGlobalFrameAndNavTypeWaypointList(bool onlypath); ///< Returns a global waypoint list containing only waypoints suitable for navigation. Actions and other mission items are filtered out.
     const QList<Waypoint *> getNavTypeWaypointList(); ///< Returns a waypoint list containing only waypoints suitable for navigation. Actions and other mission items are filtered out.
     const Waypoint* getWaypoint(int index);     ///< Returns the waypoint at index, or NULL if not valid.
     int getIndexOf(Waypoint* wp);                   ///< Get the index of a waypoint in the list

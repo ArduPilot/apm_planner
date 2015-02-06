@@ -40,13 +40,21 @@ WaypointNavigation::path(QList<Waypoint*>& waypoints,
     if (waypoints.size() == 1)
         return path;
 
+    QList<int> wayPointsWithPath; // This QList of waypoints for a path to be drawn.
+    wayPointsWithPath << MAV_CMD_NAV_WAYPOINT // Here corresponding Waypoints can be added or removed.
+                      << MAV_CMD_NAV_LOITER_UNLIM
+                      << MAV_CMD_NAV_LOITER_TURNS
+                      << MAV_CMD_NAV_LOITER_TIME
+                      << MAV_CMD_NAV_LAND
+                      << MAV_CMD_NAV_TAKEOFF;
+
     QPointF m1; // spline velocity at destination
     for (int i = 1; i < waypoints.size(); ++i)
     {
         const Waypoint& wp1 = *waypoints[i];
         QPointF p1 = toQPointF(wp1, map);
 
-        if (wp1.getAction() == MAV_CMD_NAV_WAYPOINT)
+        if (wayPointsWithPath.contains(wp1.getAction()))
         {
             path.lineTo(p1);
             continue;

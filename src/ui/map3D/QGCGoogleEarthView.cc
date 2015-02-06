@@ -264,7 +264,7 @@ void QGCGoogleEarthView::updateWaypointList(int uas)
     if (uasInstance)
     {
         // Get all waypoints, including non-global waypoints
-        QList<Waypoint*> wpList = uasInstance->getWaypointManager()->getGlobalFrameAndNavTypeWaypointList();
+        QList<Waypoint*> wpList = uasInstance->getWaypointManager()->getGlobalFrameAndNavTypeWaypointList(false);
 
         // Trim internal list to number of global waypoints in the waypoint manager list
         javaScript(QString("updateWaypointListLength(%1,%2);").arg(uas).arg(wpList.count()));
@@ -711,7 +711,7 @@ void QGCGoogleEarthView::updateState()
                     // Update waypoint or symbol
                     if (mav)
                     {
-                        QList<Waypoint*> wps = mav->getWaypointManager()->getGlobalFrameAndNavTypeWaypointList();
+                        QList<Waypoint*> wps = mav->getWaypointManager()->getGlobalFrameAndNavTypeWaypointList(false);
 
                         bool ok;
                         int index = idText.toInt(&ok);
