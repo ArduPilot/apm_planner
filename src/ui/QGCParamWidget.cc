@@ -1147,7 +1147,11 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
     }
         break;
     default:
-        qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE. PARAM NAME:" << parameterName << "Type:" << parameterList->value(parameterName).type();
+        if (!parameterList->contains(parameterName)) {
+            qCritical() << "ABORTED PARAM SEND, UNKNOWN PARAM NAME:" << parameterName;
+        } else {
+            qCritical() << "ABORTED PARAM SEND, NO VALID QVARIANT TYPE. PARAM NAME:" << parameterName << "Type:" << parameterList->value(parameterName).type();
+        }
         return;
     }
 

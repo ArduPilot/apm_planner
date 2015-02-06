@@ -45,6 +45,12 @@ CameraGimbalConfig::CameraGimbalConfig(QWidget *parent) : AP2ConfigWidget(parent
 
     addTriggerTypes(ui.camTriggerTypeComboBox);
 
+    ui.mountModeComboBox->insertItem(0, "Retract", MAV_MOUNT_MODE_RETRACT);
+    ui.mountModeComboBox->insertItem(1, "Neutral", MAV_MOUNT_MODE_NEUTRAL );
+    ui.mountModeComboBox->insertItem(2, "MAVLink Targeting", MAV_MOUNT_MODE_MAVLINK_TARGETING );
+    ui.mountModeComboBox->insertItem(3, "RC Targeting", MAV_MOUNT_MODE_RC_TARGETING );
+    ui.mountModeComboBox->insertItem(4, "GPS Point", MAV_MOUNT_MODE_GPS_POINT );
+
     initConnections();
 }
 
@@ -104,6 +110,8 @@ void CameraGimbalConfig::connectSignals()
     connect(ui.neutralXSpinBox,SIGNAL(editingFinished()),this,SLOT(updateNeutralAngles()));
     connect(ui.neutralYSpinBox,SIGNAL(editingFinished()),this,SLOT(updateNeutralAngles()));
     connect(ui.neutralZSpinBox,SIGNAL(editingFinished()),this,SLOT(updateNeutralAngles()));
+
+    connect(ui.mountModeComboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(updateMountMode(int)));
 }
 
 void CameraGimbalConfig::disconnectSignals()
@@ -264,7 +272,8 @@ void CameraGimbalConfig::requestParameterUpdate()
             << "MNT2_ANGMIN_PAN"
             << "MNT2_ANGMAX_PAN"
 
-            << "MNT2_JSTICK_SPD";
+            << "MNT2_JSTICK_SPD"
+            << "MNT_MODE";
 
     qDebug() << "cameraParams" << m_cameraParams;
 
@@ -377,10 +386,10 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
     QGCUASParamManager *pm = m_uas->getParamManager();
 
     if (!chPrefix.isEmpty() && (!newChPrefix.isEmpty())
-            && (newChPrefix != chPrefix)){
+            && (newChPrefix != chPrefix) && (!chPrefix.contains("Disable"))){
         //We need to disable the old assignment first if chnaged
         QLOG_DEBUG() << "Set old " << chPrefix << " disabled";
-        pm->setParameter(1, chPrefix + "_FUNCTION", RC_FUNCTION::Disabled);
+        pm->setParameter(1, chPrefix + "_FUNCTION", static_cast<int>(RC_FUNCTION::Disabled));
         outputChCombo->setCurrentIndex(0);
     }
 
@@ -419,6 +428,7 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
     pm->setParameter(1, "MNT_ANGMIN_" + type, QVariant(angleMin->value() * 100).toInt()); // centiDegrees
     pm->setParameter(1, "MNT_ANGMAX_" + type, QVariant(angleMax->value() * 100).toInt()); // centiDegrees
     pm->setParameter(1, "MNT_STAB_" + mountType, QVariant(stabilize->isChecked()?1:0)); // Enable Stabilization
+    pm->setParameter(1, "MNT_MODE", QVariant(3)); // Set the mount mode to RC Targetting
 }
 
 
@@ -509,6 +519,9 @@ void CameraGimbalConfig::refreshMountParameters(QString mount, QString parameter
     {
         int index = ui.panInputChannelComboBox->findData(value.toInt());
         ui.panInputChannelComboBox->setCurrentIndex(index);
+
+    } else if (parameterName == "MNT_MODE") {
+        ui.mountModeComboBox->setCurrentIndex(value.toInt());
     }
     connectSignals();
 }
@@ -663,4 +676,14 @@ void CameraGimbalConfig::refreshRcFunctionComboxBox(QString rcChannelName, QVari
     }
 }
 
+void CameraGimbalConfig::updateMountMode(int index)
+{
+    if(m_uas){
+        QGCUASParamManager *pm = m_uas->getParamManager();
+        int mode = ui.mountModeComboBox->itemData(index).toInt();
+        if(pm){
+            pm->setParameter(1, "MNT_MODE", QVariant(static_cast<int>(mode))); // Set the mount mode to RC Targetting
+        }
+    }
+}
 

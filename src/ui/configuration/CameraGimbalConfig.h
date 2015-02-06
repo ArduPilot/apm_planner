@@ -91,6 +91,8 @@ private slots:
     void updateNeutralAngles();
     void updateControlAngles();
 
+    void updateMountMode(int index);
+
 private:
     void initConnections();
     void connectSignals();
