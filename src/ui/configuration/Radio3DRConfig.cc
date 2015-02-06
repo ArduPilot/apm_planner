@@ -355,6 +355,8 @@ void Radio3DRConfig::localReadComplete(Radio3DREeprom& eeprom, bool success)
 
         ui.maxWindowSpinBox->setValue(eeprom.maxWindow());
 
+        ui.rtsCtsComboBox->setCurrentIndex(ui.rtsCtsComboBox->findData(eeprom.rtsCts()));
+
     }
 }
 
@@ -410,6 +412,8 @@ void Radio3DRConfig::remoteReadComplete(Radio3DREeprom& eeprom, bool success)
         ui.maxFreqComboBox_remote->setCurrentIndex(ui.maxFreqComboBox_remote->findData(eeprom.maxFreq()));
 
         ui.maxWindowSpinBox_remote->setValue(eeprom.maxWindow());
+
+        ui.rtsCtsComboBox_remote->setCurrentIndex(ui.rtsCtsComboBox_remote->findData(eeprom.rtsCts()));
     }
 }
 
