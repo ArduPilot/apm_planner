@@ -340,7 +340,17 @@ void Radio3DRConfig::localReadComplete(Radio3DREeprom& eeprom, bool success)
 
         setupFrequencyComboBox(*ui.minFreqComboBox, eeprom.frequencyCode());
         setupFrequencyComboBox(*ui.maxFreqComboBox, eeprom.frequencyCode());
+
+        int lowFreqIndex = ui.maxFreqComboBox->findData(eeprom.minFreq());
+        if (lowFreqIndex == -1){
+            ui.maxFreqComboBox->addItem(QString::number(eeprom.minFreq()), eeprom.minFreq());
+        }
         ui.minFreqComboBox->setCurrentIndex(ui.minFreqComboBox->findData(eeprom.minFreq()));
+
+        int highFreqIndex = ui.maxFreqComboBox->findData(eeprom.maxFreq());
+        if (highFreqIndex == -1){
+            ui.maxFreqComboBox->addItem(QString::number(eeprom.maxFreq()), eeprom.maxFreq());
+        }
         ui.maxFreqComboBox->setCurrentIndex(ui.maxFreqComboBox->findData(eeprom.maxFreq()));
 
         ui.maxWindowSpinBox->setValue(eeprom.maxWindow());
@@ -387,9 +397,16 @@ void Radio3DRConfig::remoteReadComplete(Radio3DREeprom& eeprom, bool success)
         ui.lbtRssiSpinBox_remote->setValue(eeprom.lbtRssi());
         ui.numChannelsSpinBox_remote->setValue(eeprom.numChannels());
 
-        setupFrequencyComboBox(*ui.minFreqComboBox_remote, eeprom.frequencyCode());
-        setupFrequencyComboBox(*ui.maxFreqComboBox_remote, eeprom.frequencyCode());
+        int lowFreqIndex = ui.minFreqComboBox_remote->findData(eeprom.minFreq());
+        if (lowFreqIndex == -1){
+            ui.minFreqComboBox_remote->addItem(QString::number(eeprom.minFreq()), eeprom.minFreq());
+        }
         ui.minFreqComboBox_remote->setCurrentIndex(ui.minFreqComboBox_remote->findData(eeprom.minFreq()));
+
+        int highFreqIndex = ui.maxFreqComboBox_remote->findData(eeprom.maxFreq());
+        if (highFreqIndex == -1){
+            ui.maxFreqComboBox_remote->addItem(QString::number(eeprom.maxFreq()), eeprom.maxFreq());
+        }
         ui.maxFreqComboBox_remote->setCurrentIndex(ui.maxFreqComboBox_remote->findData(eeprom.maxFreq()));
 
         ui.maxWindowSpinBox_remote->setValue(eeprom.maxWindow());

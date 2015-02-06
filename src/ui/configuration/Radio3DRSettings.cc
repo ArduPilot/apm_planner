@@ -495,9 +495,10 @@ void Radio3DRSettings::readData()
 
     case readLocalFrequency:{
         if(currentLine.toInt() > 0){
-            QLOG_DEBUG() << "Read Local Freq:" << currentLine.toInt();
+            int freqCode = currentLine.toInt();
+            QLOG_DEBUG() << "Read Local Freq:" << QString().sprintf("0x%x",freqCode);
             emit updateLocalStatus(tr("read local radio frequency"));
-            m_localRadio.setRadioFreqCode(currentLine.toInt());
+            m_localRadio.setRadioFreqCode(freqCode);
             readLocalSettingsStrings();
         } else {
             emit localReadComplete(m_localRadio, false);
@@ -543,9 +544,10 @@ void Radio3DRSettings::readData()
 
     case readRemoteFrequency:{
         if(currentLine.toInt() > 0){
-            QLOG_DEBUG() << "Read Remote Freq:" << currentLine.toInt();
+            int freqCode = currentLine.toInt();
+            QLOG_DEBUG() << "Read Remote Freq:" << QString().sprintf("0x%x",freqCode);
             emit updateRemoteStatus(tr("Read remote radio frequency"));
-            m_remoteRadio.setRadioFreqCode(currentLine.toInt());
+            m_remoteRadio.setRadioFreqCode(freqCode);
             readRemoteSettingsStrings();
         } else {
             emit remoteReadComplete(m_localRadio, false);
