@@ -165,7 +165,8 @@ void Waypoint2DIcon::drawIcon()
             (waypoint->getAction() != (int)MAV_CMD_NAV_LOITER_UNLIM) &&
             (waypoint->getAction() != (int)MAV_CMD_NAV_LOITER_TIME) &&
             (waypoint->getAction() != (int)MAV_CMD_NAV_LOITER_TURNS) &&
-            (waypoint->getAction() != (int)MAV_CMD_NAV_RETURN_TO_LAUNCH)
+            (waypoint->getAction() != (int)MAV_CMD_NAV_RETURN_TO_LAUNCH)&&
+            (waypoint->getAction() != (int)MAV_CMD_DO_SET_ROI)
             )))
     {
         painter.setPen(pen1);
@@ -212,6 +213,20 @@ void Waypoint2DIcon::drawIcon()
         painter.drawPoint(p);
         painter.setPen(pen2);
         painter.drawEllipse(p, width, height);
+        painter.drawPoint(p);
+    }
+    else if ((waypoint != NULL) && (waypoint->getAction() == (int)MAV_CMD_DO_SET_ROI))
+    {
+        // Region of Interest
+        int width = (picture.width()-penWidth)/2;
+        int height = (picture.height()-penWidth)/4;
+        painter.setPen(pen1);
+        painter.drawEllipse(p, width, height);
+        painter.drawEllipse(p, height, height);
+        painter.drawPoint(p);
+        painter.setPen(pen2);
+        painter.drawEllipse(p, width, height);
+        painter.drawEllipse(p, height, height);
         painter.drawPoint(p);
     }
     else if ((waypoint != NULL) && (waypoint->getAction() == (int)MAV_CMD_NAV_RETURN_TO_LAUNCH))
