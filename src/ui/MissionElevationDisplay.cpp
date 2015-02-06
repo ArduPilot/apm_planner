@@ -168,7 +168,7 @@ void MissionElevationDisplay::updateDisplay()
 {
     QLOG_DEBUG() << "updateElevationDisplay";
 
-    QList<Waypoint*> list = m_uasWaypointMgr->getGlobalFrameAndNavTypeWaypointList();
+    QList<Waypoint*> list = m_uasWaypointMgr->getGlobalFrameAndNavTypeWaypointList(false);
     m_waypointList.clear();
     foreach (Waypoint* wp, list) {
         // Create a copy

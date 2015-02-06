@@ -75,12 +75,23 @@ Waypoint::Waypoint(const Waypoint& waypoint)
 }
 
 Waypoint::~Waypoint()
-{    
+{
 }
 
 bool Waypoint::isNavigationType()
 {
     return (action < MAV_CMD_NAV_LAST);
+}
+
+bool Waypoint::visibleOnMapWidget()
+{
+    QList<int> extraVisibleWaypoints;
+    // add waypoints here,to be visible on map
+    extraVisibleWaypoints << MAV_CMD_DO_SET_ROI;
+    if(extraVisibleWaypoints.contains(action))
+        return true;
+    else
+        return false;
 }
 
 void Waypoint::save(QTextStream &saveStream)
