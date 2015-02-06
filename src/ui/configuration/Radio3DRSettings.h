@@ -51,19 +51,32 @@
 #define LAST_PARAM_SIK17_AND_LESS "S14"
 #define LAST_PARAM_SIK18_AND_GREATER "S15"
 
-static const int FREQ_NONE      = 0xf0;
-static const int FREQ_433		= 0x43;
-static const int FREQ_470		= 0x47;
-static const int FREQ_868		= 0x86;
-static const int FREQ_915		= 0x91;
-
-
 class Radio3DREeprom
 {
     // Helper Object that stores Radio Settings
 public:
 
     enum Mode {local, remote};
+
+    enum Frequency {
+        FREQ_NONE   = 0xf0,
+        FREQ_433    = 0x43,
+        FREQ_470    = 0x47,
+        FREQ_868    = 0x86,
+        FREQ_915    = 0x91,
+    };
+
+    enum Board {
+        DEVICE_ID_RF50      = 0x4d,
+        DEVICE_ID_HM_TRP    = 0x4e,
+        DEVICE_ID_RFD900    = 0X42,
+        DEVICE_ID_RFD900A   = 0X43,
+
+        DEVICE_ID_RFD900U   = 0X80 | 0x01,
+        DEVICE_ID_RFD900P   = 0x80 | 0x02,
+
+        FAILED = 0x11,
+    };
 
 public:
 
@@ -81,6 +94,8 @@ public:
     // accessors
     float version() {return m_version;}
     const QString& versionString();
+    QString deviceIdString();
+    int deviceId() {return m_deviceId;}
     int numberOfParams() {return m_numberOfParams;}
     int eepromVersion() { return m_eepromVersion;}
     int serialSpeed(){ return m_serialSpeed;}
@@ -99,9 +114,11 @@ public:
     int rtsCts(){ return m_rtsCts;}
     int radioFrequency();
     int frequencyCode() {return m_radioFreqCode;}
+    QString frequencyCodeString();
     int maxWindow() {return m_maxWindow;}
 
     // settors
+    void deviceId(int deviceId){m_deviceId = deviceId;}
     void serialSpeed(int serialSpeed){ m_serialSpeed = serialSpeed;}
     void airSpeed(int airSpeed){ m_airSpeed = airSpeed;}
     void netID(int netID){ m_netID = netID;}
@@ -121,6 +138,7 @@ public:
 private:
     // EEPROM settings
     QString m_versionString;
+    int m_deviceId;
     int m_numberOfParams;
     int m_radioFreqCode;
     float m_version;

@@ -586,22 +586,22 @@ void Radio3DRConfig::setupFrequencyComboBox(QComboBox &comboBox, int freqCode )
     int freqStepSize;
 
     switch(freqCode){
-    case FREQ_915:
+    case Radio3DREeprom::FREQ_915:
         minFreq = 895000;
         maxFreq = 935000;
         freqStepSize = 1000;
         break;
-    case FREQ_433:
+    case Radio3DREeprom::FREQ_433:
         minFreq = 414000;
-        maxFreq = 454000;
-        freqStepSize = 100;
+        maxFreq = 460000;
+        freqStepSize = 50;
         break;
-    case FREQ_868:
+    case Radio3DREeprom::FREQ_868:
         minFreq = 849000;
         maxFreq = 889000;
         freqStepSize = 1000;
     default:
-        minFreq = 1;    // this supports RFD900 and RFD900A
+        minFreq = 1;    // this supports RFD900, RFD900A, RFD900U, RFD900P
         maxFreq = 30;
         freqStepSize = 1;
     }

@@ -7,6 +7,7 @@
 #include <QTimer>
 
 Radio3DREeprom::Radio3DREeprom():
+    m_deviceId(0),
     m_radioFreqCode(0),
     m_version(0),
     m_eepromVersion(0),
@@ -200,6 +201,46 @@ const QString Radio3DREeprom::formattedParameter(Mode mode, int index)
 const QString& Radio3DREeprom::versionString()
 {
     return m_versionString;
+}
+
+QString Radio3DREeprom::frequencyCodeString()
+{
+        switch(m_radioFreqCode){
+        case FREQ_915:
+            return QString("FREQ_915");;
+
+        case FREQ_433:
+            return QString("FREQ_433");
+
+        case FREQ_868:
+            return QString("FREQ_868");
+
+        default:
+            return QString(); // Unknown
+        }
+}
+
+QString Radio3DREeprom::deviceIdString()
+{
+        switch(m_deviceId){
+        case DEVICE_ID_HM_TRP:
+            return QString("HM_TRP");
+
+        case DEVICE_ID_RFD900:
+            return QString("RFD900");
+
+        case DEVICE_ID_RFD900A:
+            return QString("RFD900A");
+
+        case DEVICE_ID_RFD900U:
+            return QString("RFD900U");
+
+        case DEVICE_ID_RFD900P:
+            return QString("RFD900P");
+
+        default:
+            return QString(); // Unknown
+        }
 }
 
 Radio3DRSettings::Radio3DRSettings(QObject *parent) :
