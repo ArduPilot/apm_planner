@@ -77,11 +77,11 @@
         {
             "platform": "osx",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.16-rc2_osx.dmg",
-            "name" : "apm_planner_2.0.16-rc2_osx.dmg",
-            "version" : "2.0.16-rc2",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.16-rc3_osx.dmg",
+            "name" : "apm_planner_2.0.16-rc3_osx.dmg",
+            "version" : "2.0.16-rc3",
             "sha" : "",
-            "date" : "2015-01-23"
+            "date" : "2015-02-06"
         },
         {
             "platform": "win",
