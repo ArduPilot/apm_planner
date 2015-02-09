@@ -168,6 +168,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(ui.droneshareButton, SIGNAL(clicked()), this, SLOT(droneshareButtonClicked()));
     connect(ui.exportPushButton,SIGNAL(clicked()),this,SLOT(exportButtonClicked()));
 
+    ui.horizontalSplitter->setStretchFactor(0,20);
+    ui.horizontalSplitter->setStretchFactor(1,1);
+
 }
 void AP2DataPlot2D::setExcelViewHidden(bool hidden)
 {
