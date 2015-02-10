@@ -1330,7 +1330,7 @@ void AP2DataPlot2D::closeLogDownloadDialog()
 
 void AP2DataPlot2D::droneshareButtonClicked()
 {
-    if(m_droneshareUploadDialog){
+    if(!m_droneshareUploadDialog){
         m_droneshareUploadDialog = new DroneshareUploadDialog();
     }
     m_droneshareUploadDialog->show();
