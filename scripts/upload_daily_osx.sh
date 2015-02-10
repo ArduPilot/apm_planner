@@ -1,13 +1,12 @@
 #!/bin/sh
 # Move and Upload
 COMMIT_SHA=$(git describe --dirty)
-TARGET_DIR=/Users/Shared/Jenkins/Home/data/APMPlanner/daily
-TARGET_SUBDIR=${BUILD_ID:0:10}
-WEBSITE_USER=
+TARGET_DIR=/Users/admin/dev_src/APMPlanner/daily
+TARGET_SUBDIR=$(date "+%%Y-%%m-%%d")
+WEBSITE_USER=TeamCityAdmin
 
 if [ ! -d ${TARGET_DIR}/${TARGET_SUBDIR} ]; then
-  mkdir ${TARGET_DIR}/${TARGET_SUBDIR}/
+  mkdir -vp ${TARGET_DIR}/${TARGET_SUBDIR}/
 fi
-mv apm_planner2_$BUILD_ID\_osx.dmg ${TARGET_DIR}/${TARGET_SUBDIR}/apm_planner2_${COMMIT_SHA}_osx.dmg
-rsync -avh --password-file=rsyncpass ${TARGET_DIR} ${WEBSITE_USER}@firmware.diydrones.com::APMPlanner/daily/
-
+mv -v apm_planner2_$BUILD_NUMBER\_osx.dmg ${TARGET_DIR}/${TARGET_SUBDIR}/apm_planner_${COMMIT_SHA}_osx.dmg
+echo rsync -avh --password-file=../../../dev_src/rsyncpass ${TARGET_DIR}/${TARGET_SUBDIR}/ ${WEBSITE_USER}@firmware.diydrones.com::APMPlanner/daily/${TARGET_SUBDIR}/
