@@ -2,7 +2,7 @@
 #include <QCheckBox>
 #include <QVBoxLayout>
 #include <QsLog.h>
-
+#include <GraphTreeWidgetItem.h>
 DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
 {
 	ui.setupUi(this);
@@ -35,7 +35,7 @@ void DataSelectionScreen::enableItem(QString name)
 {
     QString first = name.split(".")[0];
     QString second = name.split(".")[1];
-    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchExactly | Qt::MatchRecursive);
+    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchExactly | Qt::MatchRecursive,0);
     if (items.size() == 0)
     {
         return;
@@ -67,7 +67,7 @@ void DataSelectionScreen::disableItem(QString name)
 {
     QString first = name.split(".")[0];
     QString second = name.split(".")[1];
-    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchExactly | Qt::MatchRecursive);
+    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchExactly | Qt::MatchRecursive,0);
     if (items.size() == 0)
     {
         return;
@@ -107,7 +107,7 @@ void DataSelectionScreen::addItem(QString name)
         QList<QTreeWidgetItem*> findlist = ui.treeWidget->findItems(groupname,Qt::MatchContains);
         if (findlist.size() > 0)
         {
-            QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << shortname);
+            GraphTreeWidgetItem *child = new GraphTreeWidgetItem(QStringList() << shortname);
             child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
             child->setCheckState(0,Qt::Unchecked);
             findlist[0]->addChild(child);
@@ -115,9 +115,10 @@ void DataSelectionScreen::addItem(QString name)
         }
         else
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << groupname);
+            GraphTreeWidgetItem *item = new GraphTreeWidgetItem(QStringList() << groupname);
             ui.treeWidget->addTopLevelItem(item);
-            QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << shortname);
+            GraphTreeWidgetItem *child = new GraphTreeWidgetItem(QStringList() << shortname);
+
             child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
             child->setCheckState(0,Qt::Unchecked);
             item->addChild(child);

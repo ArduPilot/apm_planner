@@ -648,7 +648,8 @@ HEADERS += \
     src/comm/MissionOverview.h \
     src/ui/AP2DataPlot2DModel.h \
     src/ui/uas/PreFlightCalibrationDialog.h \
-    src/ui/configuration/RadioFlashWizard.h
+    src/ui/configuration/RadioFlashWizard.h \
+    src/ui/GraphTreeWidgetItem.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -864,7 +865,8 @@ SOURCES += src/main.cc \
     src/comm/MissionOverview.cc \
     src/ui/AP2DataPlot2DModel.cc \
     src/ui/uas/PreFlightCalibrationDialog.cpp \
-    src/ui/configuration/RadioFlashWizard.cpp
+    src/ui/configuration/RadioFlashWizard.cpp \
+    src/ui/GraphTreeWidgetItem.cc
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
