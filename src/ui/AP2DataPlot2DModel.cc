@@ -174,7 +174,39 @@ AP2DataPlot2DModel::~AP2DataPlot2DModel()
 
 QMap<QString,QList<QString> > AP2DataPlot2DModel::getFmtValues()
 {
-    return m_headerStringList;
+    QMap<QString,QList<QString> > retval;
+    QSqlQuery fmtquery(m_sharedDb);
+    fmtquery.prepare("SELECT * FROM 'FMT';");
+    fmtquery.exec();
+    while (fmtquery.next())
+    {
+        QSqlRecord record = fmtquery.record();
+        QString name = record.value(3).toString();
+        QSqlQuery indexquery(m_sharedDb);
+        if (!indexquery.prepare("SELECT * FROM 'INDEX' WHERE value = '" + name + "';"))
+        {
+            continue;
+        }
+        if (!indexquery.exec())
+        {
+            continue;
+        }
+        if (!indexquery.next())
+        {
+            //No records
+            continue;
+        }
+        if (!m_headerStringList.contains(name))
+        {
+            continue;
+        }
+        retval.insert(name,QList<QString>());
+        for (int i=0;i<m_headerStringList[name].size();i++)
+        {
+            retval[name].append(m_headerStringList[name].at(i));
+        }
+    }
+    return retval;
 }
 QString AP2DataPlot2DModel::getFmtLine(const QString& name)
 {
