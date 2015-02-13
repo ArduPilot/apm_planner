@@ -189,7 +189,7 @@ void AP2DataPlot2D::graphColorsChanged(QMap<QString,QColor> colormap)
 {
     for (QMap<QString,QColor>::const_iterator i = colormap.constBegin();i!=colormap.constEnd();i++)
     {
-        m_graphClassMap[i.key()].graph->setPen(i.value());
+        m_graphClassMap[i.key()].graph->setPen(QPen(i.value()));
         m_graphClassMap[i.key()].axis->setLabelColor(i.value());
         m_graphClassMap[i.key()].axis->setTickLabelColor(i.value());
         m_graphClassMap[i.key()].axis->setTickLabelColor(i.value());
