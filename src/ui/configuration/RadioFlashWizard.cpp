@@ -69,7 +69,7 @@ RadioFlashWizard::~RadioFlashWizard()
 
 void RadioFlashWizard::accept()
 {
-    this->done(0);
+    close();
 }
 
 void RadioFlashWizard::selectPage(int index)
