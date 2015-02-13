@@ -645,7 +645,7 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
         m_graphNameList.append("MODE");
 
-        mainGraph1->setPen(QPen(color, 2));
+        mainGraph1->setPen(QPen(color, 1));
         Graph graph;
         graph.axis = axis;
         graph.groupName = "";
@@ -943,7 +943,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         {
             m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
         }
-        mainGraph1->setPen(QPen(color, 2));
+        mainGraph1->setPen(QPen(color, 1));
         Graph graph;
         graph.axis = axis;
         graph.groupName = "";
@@ -1039,7 +1039,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             graph.isManualRange = false;
             m_graphClassMap[name] = graph;
 
-            mainGraph1->setPen(QPen(color, 2));
+            mainGraph1->setPen(QPen(color, 1));
         }
     }
 }
@@ -1220,7 +1220,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
             QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
             m_graphNameList.append("MODE");
 
-            mainGraph1->setPen(QPen(color, 2));
+            mainGraph1->setPen(QPen(color, 1));
             Graph graph;
             graph.axis = axis;
             graph.groupName = "";
