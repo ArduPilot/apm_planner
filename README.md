@@ -14,6 +14,10 @@ Developer Chat: https://gitter.im/diydrones/apm_planner
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/diydrones/apm_planner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[Waffle.io](https://waffle.io/diydrones/apm_planner) Progress Graph
+
+[![Throughput Graph](https://graphs.waffle.io/diydrones/apm_planner/throughput.svg)](https://waffle.io/diydrones/apm_planner/metrics)
+
 Documentation
 =============
 see http://planner2.ardupilot.com
