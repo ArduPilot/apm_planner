@@ -432,12 +432,13 @@ void WaypointViewOnlyView::updateValues()
 
     case MAV_CMD_DO_JUMP:
     {
-        if (wp->getParam2()>0)
-        {
+        if (wp->getParam2() > 0)        {
             m_ui->displayBar->setText(QString("Jump to waypoint %1. Jumps left: %2").arg(wp->getParam1()).arg(wp->getParam2()));
         }
-        else
-        {
+        else if (wp->getParam2() < 0)        {
+            m_ui->displayBar->setText(QString("Jump to waypoint %1 for ever.").arg(wp->getParam1()).arg(wp->getParam2()));
+
+        } else {
             m_ui->displayBar->setText(QString("No jumps left. Proceed to next waypoint."));
         }
         break;
