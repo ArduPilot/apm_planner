@@ -7,7 +7,7 @@ NOW=$(date +"%Y%m%d")
 GIT_VERSION=$(git describe --abbrev=0)
 
 #build APM Planner
-qmake-qt4 PREFIX=~/Documents/APMPlanner2_$GIT_VERSION/usr qgroundcontrol.pro
+qmake PREFIX=~/Documents/APMPlanner2_$GIT_VERSION/usr qgroundcontrol.pro
 make --jobs=3
 make install
 
