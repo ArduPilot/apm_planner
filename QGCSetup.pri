@@ -123,7 +123,7 @@ LinuxBuild {
         DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
 
         #MAKE INSTALL - copy files
-        INSTALLS += target datafiles desktopLink menuLink permFolders permFiles
+        INSTALLS += target datafiles desktopLink menuLink
 
         target.path =$$BINDIR
 
