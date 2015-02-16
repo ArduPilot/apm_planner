@@ -35,7 +35,7 @@ This file is part of the APM_PLANNER project
 #define ATMEGA2560CHIPID QByteArray().append(0x1E).append(0x98).append(0x01)
 
 static const QString DEFAULT_FIRMWARE_TYPE = "stable";
-static const QString DEFAULT_AUTOPILOT_HW_TYPE = "apm";
+static const QString DEFAULT_AUTOPILOT_HW_TYPE = "";
 
 
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
@@ -46,12 +46,13 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_arduinoUploader(NULL),
     m_firmwareType(DEFAULT_FIRMWARE_TYPE),
     m_autopilotType(DEFAULT_AUTOPILOT_HW_TYPE),
-    m_hasError(0),
     m_timeoutCounter(0),
+    m_hasError(0),
     m_betaFirmwareChecked(false),
     m_trunkFirmwareChecked(false),
-    m_tempFirmwareFile(NULL),
+    m_enableUpdateCheck(false),
     m_notificationOfUpdate(false),
+    m_updateCheckInitiated(false),
     m_isAdvancedMode(false)
 {
     ui.setupUi(this);
