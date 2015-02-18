@@ -369,7 +369,7 @@ FORMS += \
     src/ui/QGCHilConfiguration.ui \
     src/ui/QGCHilFlightGearConfiguration.ui \
     src/ui/QGCHilJSBSimConfiguration.ui \
-    src/ui/QGCHilXPlaneConfiguration.ui \
+#    src/ui/QGCHilXPlaneConfiguration.ui \
     src/ui/designer/QGCComboBox.ui \
     src/ui/designer/QGCTextLabel.ui \
     src/ui/uas/UASQuickView.ui \
@@ -438,7 +438,7 @@ HEADERS += \
     src/comm/ProtocolInterface.h \
     src/comm/QGCFlightGearLink.h \
     src/comm/QGCJSBSimLink.h \
-    src/comm/QGCXPlaneLink.h \
+#    src/comm/QGCXPlaneLink.h \
     src/comm/serialconnection.h \
     src/ui/CommConfigurationWindow.h \
     src/ui/SerialConfigurationWindow.h \
@@ -551,7 +551,7 @@ HEADERS += \
     src/ui/QGCHilConfiguration.h \
     src/ui/QGCHilFlightGearConfiguration.h \
     src/ui/QGCHilJSBSimConfiguration.h \
-    src/ui/QGCHilXPlaneConfiguration.h \
+#    src/ui/QGCHilXPlaneConfiguration.h \
     src/ui/designer/QGCComboBox.h \
     src/ui/designer/QGCTextLabel.h \
     src/ui/submainwindow.h \
@@ -659,7 +659,7 @@ SOURCES += src/main.cc \
     src/comm/LinkInterface.cpp \
     src/comm/QGCFlightGearLink.cc \
     src/comm/QGCJSBSimLink.cc \
-    src/comm/QGCXPlaneLink.cc \
+#    src/comm/QGCXPlaneLink.cc \
     src/comm/serialconnection.cc \
     src/ui/CommConfigurationWindow.cc \
     src/ui/SerialConfigurationWindow.cc \
@@ -769,7 +769,7 @@ SOURCES += src/main.cc \
     src/ui/QGCHilConfiguration.cc \
     src/ui/QGCHilFlightGearConfiguration.cc \
     src/ui/QGCHilJSBSimConfiguration.cc \
-    src/ui/QGCHilXPlaneConfiguration.cc \
+#    src/ui/QGCHilXPlaneConfiguration.cc \
     src/ui/designer/QGCComboBox.cc \
     src/ui/designer/QGCTextLabel.cc \
     src/ui/submainwindow.cpp \

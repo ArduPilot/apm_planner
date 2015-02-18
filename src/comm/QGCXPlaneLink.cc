@@ -376,33 +376,31 @@ void QGCXPlaneLink::updateControls(uint64_t time, float rollAilerons, float pitc
 
 }
 
-Eigen::Matrix3f euler_to_wRo(double yaw, double pitch, double roll) {
-  double c__ = cos(yaw);
-  double _c_ = cos(pitch);
-  double __c = cos(roll);
-  double s__ = sin(yaw);
-  double _s_ = sin(pitch);
-  double __s = sin(roll);
-  double cc_ = c__ * _c_;
-  double cs_ = c__ * _s_;
-  double sc_ = s__ * _c_;
-  double ss_ = s__ * _s_;
-  double c_c = c__ * __c;
-  double c_s = c__ * __s;
-  double s_c = s__ * __c;
-  double s_s = s__ * __s;
-  double _cc = _c_ * __c;
-  double _cs = _c_ * __s;
-  double csc = cs_ * __c;
-  double css = cs_ * __s;
-  double ssc = ss_ * __c;
-  double sss = ss_ * __s;
-  Eigen::Matrix3f wRo;
-  wRo <<
-    cc_  , css-s_c,  csc+s_s,
-    sc_  , sss+c_c,  ssc-c_s,
-    -_s_  ,     _cs,      _cc;
-  return wRo;
+QMatrix4x4 euler_to_wRo(double yaw, double pitch, double roll) {
+    double c__ = cos(yaw);
+    double _c_ = cos(pitch);
+    double __c = cos(roll);
+    double s__ = sin(yaw);
+    double _s_ = sin(pitch);
+    double __s = sin(roll);
+    double cc_ = c__ * _c_;
+    double cs_ = c__ * _s_;
+    double sc_ = s__ * _c_;
+    double ss_ = s__ * _s_;
+    double c_c = c__ * __c;
+    double c_s = c__ * __s;
+    double s_c = s__ * __c;
+    double s_s = s__ * __s;
+    double _cc = _c_ * __c;
+    double _cs = _c_ * __s;
+    double csc = cs_ * __c;
+    double css = cs_ * __s;
+    double ssc = ss_ * __c;
+    double sss = ss_ * __s;
+    return QMatrix4x4( cc_  , css-s_c,  csc+s_s, 0.0f,
+                       sc_  , sss+c_c,  ssc-c_s, 0.0f,
+                       -_s_ ,     _cs,      _cc, 0.0f,
+                       0.0f ,    0.0f,     0.0f, 1.0f);
 }
 
 void QGCXPlaneLink::writeBytes(const char* data, qint64 size)
@@ -477,11 +475,9 @@ void QGCXPlaneLink::readBytes()
             if (p.index == 4)
             {
                 // Do not actually use the XPlane value, but calculate our own
-                Eigen::Vector3f g(0, 0, -9.81f);
-
-                Eigen::Matrix3f R = euler_to_wRo(yaw, pitch, roll);
-
-                Eigen::Vector3f gr = R.transpose().eval() * g;
+                QVector3D g(0.0f, 0.0f, -9.81f);
+//                QMatrix4x4 R = euler_to_wRo_QMatrix4x4(yaw, pitch, roll);
+//                QVector3D gr = R.transposed().mapVector(g);
 
                 // TODO Add centrip. accel
 

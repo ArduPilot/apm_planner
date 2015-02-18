@@ -41,6 +41,8 @@ This file is part of the QGROUNDCONTROL project
 #include <iostream>
 #include <QHostInfo>
 
+#include <QMatrix3x3>
+
 QGCFlightGearLink::QGCFlightGearLink(UASInterface* mav, QString startupArguments, QString remoteHost, QHostAddress host, quint16 port) :
     socket(NULL),
     process(NULL),
@@ -340,15 +342,15 @@ void QGCFlightGearLink::readBytes()
 		R_B_N[2][1] = sinPhi * cosThe;
 		R_B_N[2][2] = cosPhi * cosThe;
 
-        Eigen::Matrix3f R_B_N_M = Eigen::Map<Eigen::Matrix3f>((float*)R_B_N).eval();
+        QMatrix3x3 R_B_N_M;// = Eigen::Map<Eigen::Matrix3f>((float*)R_B_N).eval();
 
-        Eigen::Vector3f mag_ned(xmag_ned, ymag_ned, zmag_ned);
+        QVector3D mag_ned(xmag_ned, ymag_ned, zmag_ned);
 
-        Eigen::Vector3f mag_body = R_B_N_M * mag_ned;
+        QVector3D mag_body; // = R_B_N_M * mag_ned;
 
-        xmag_body = mag_body(0);
-        ymag_body = mag_body(1);
-        zmag_body = mag_body(2);
+        xmag_body = mag_body.x();
+        ymag_body = mag_body.y();
+        zmag_body = mag_body.z();
 
         emit sensorHilRawImuChanged(QGC::groundTimeUsecs(), xacc, yacc, zacc, rollspeed, pitchspeed, yawspeed,
                                     xmag_body, ymag_body, zmag_body, abs_pressure*1e-2f, diff_pressure*1e-2f, pressure_alt, temperature, fields_changed); //Pressure in hPa for mavlink
