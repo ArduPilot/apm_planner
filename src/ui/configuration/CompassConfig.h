@@ -30,58 +30,12 @@ This file is part of the APM_PLANNER project
 #ifndef COMPASSCONFIG_H
 #define COMPASSCONFIG_H
 
-
 #include "ui_CompassConfig.h"
 #include "UASManager.h"
 #include "UASInterface.h"
 #include "AP2ConfigWidget.h"
 #include <QWidget>
 #include <QProgressDialog>
-// Using alglib for least squares calc (could migrate to Eigen Lib?)
-#include "libs/alglib/src/ap.h"
-#include "libs/alglib/src/optimization.h"
-#include "libs/alglib/src/interpolation.h"
-
-
-class RawImuTuple{
-public:
-    RawImuTuple():m_x(0.0f),
-        m_y(0.0f),
-        m_z(0.0f){}
-
-    RawImuTuple(double x, double y, double z):
-        m_x(x),
-        m_y(y),
-        m_z(z){}
-
-    void set(double x, double y, double z) { m_x = x; m_y = y, m_z = z ;}
-    void set(const RawImuTuple& value) { m_x = value.getX(); m_y = value.getY(); m_z = value.getZ();}
-
-    void setX(double x) { m_x = x; }
-    void setY(double y) { m_y = y; }
-    void setZ(double z) { m_z = z; }
-
-    double getX() const { return m_x; }
-    double getY() const { return m_y; }
-    double getZ() const { return m_z; }
-
-    bool operator !=(const RawImuTuple &value) const
-    {
-        return (m_x!=value.m_x && m_y!=value.m_y && m_z!=value.m_z);
-    }
-
-    RawImuTuple operator -(const RawImuTuple &value) const {
-        return RawImuTuple(m_x-value.m_x, m_y-value.m_y, m_z-value.m_x);
-    }
-
-private:
-    double m_x;
-    double m_y;
-    double m_z;
-};
-
-
-using namespace alglib;
 
 class CompassConfig : public AP2ConfigWidget
 {
@@ -90,12 +44,25 @@ class CompassConfig : public AP2ConfigWidget
     static const int COMPASS_ID_1 = 0;
     static const int COMPASS_ID_2 = 1;
     static const int COMPASS_ID_3 = 2;
-    
+
+    static const int dataX = 0;
+    static const int dataY = 1;
+    static const int dataZ = 2;
+
+    static const int COMPASS_ORIENT_NONE = 0;
+    static const int COMPASS_ORIENT_ROLL_180 = 8;
+
+    static const int MAV_SENSOR_OFFSET_GYRO = 0;
+    static const int MAV_SENSOR_OFFSET_ACCELEROMETER = 1;
+    static const int MAV_SENSOR_OFFSET_MAGNETOMETER = 2;
+    static const int MAV_SENSOR_OFFSET_BAROMETER = 3;
+    static const int MAV_SENSOR_OFFSET_OPTICALFLOW = 4;
+    static const int MAV_SENSOR_OFFSET_MAGNETOMETER2 = 5;
+
 public:
     explicit CompassConfig(QWidget *parent = 0);
     ~CompassConfig();
 
-    static void sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj);
     void updateCompassSelection();
 
 private:
@@ -117,8 +84,7 @@ private slots:
     void rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu);
     void scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_imu2_t scaledImu);
 
-    real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
-    void saveOffsets(real_1d_array *ofs, real_1d_array *ofs2);
+    void saveOffsets(const Vector3d &ofs, int compassId);
     void degreeEditFinished();
 
     void setCompassAPMOnBoard();
@@ -131,8 +97,8 @@ private:
     void cleanup();
     void readSettings();
     void writeSettings();
-    void updateImuList(const RawImuTuple& currentReading, RawImuTuple& compassLastValue,
-                       RawImuTuple& compassOffset, QVector<RawImuTuple>& list);
+    void updateImuList(const Vector3d& currentReading, Vector3d& compassLastValue,
+                       Vector3d& compassOffset, QVector<Vector3d>& list);
     bool isCalibratingCompass() {return m_calibratingCompass;}
 
 private:
@@ -146,21 +112,25 @@ private:
     int m_compassId2;
     int m_compassId3;
 
-    QVector<RawImuTuple> m_compass1RawImuList;
-    QVector<RawImuTuple> m_compass2RawImuList;
-    QVector<RawImuTuple> m_compass3RawImuList;
+    // Compass Mag Readings
+    QVector<Vector3d> m_compass1RawImuList;
+    QVector<Vector3d> m_compass2RawImuList;
+    QVector<Vector3d> m_compass3RawImuList;
 
-    RawImuTuple m_compass1Offset;
-    RawImuTuple m_compass2Offset;
-    RawImuTuple m_compass3Offset;
+    Vector3d m_compass1Offset;
+    Vector3d m_compass2Offset;
+    Vector3d m_compass3Offset;
 
-    RawImuTuple m_compass1LastValue;
-    RawImuTuple m_compass2LastValue;
-    RawImuTuple m_compass3LastValue;
+    Vector3d m_compass1LastValue;
+    Vector3d m_compass2LastValue;
+    Vector3d m_compass3LastValue;
 
     bool m_compatibilityMode;
     bool m_haveSecondCompass;
     bool m_haveThirdCompass;
+
+    double m_avgSamples;
+    double m_rad;
 };
 
 #endif // COMPASSCONFIG_H
