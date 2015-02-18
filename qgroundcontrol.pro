@@ -727,6 +727,7 @@ SOURCES += src/main.cc \
     src/ui/map/Waypoint2DIcon.cc \
     src/ui/map/QGCMapTool.cc \
     src/ui/map/QGCMapToolBar.cc \
+    src/QGCGeo.cc \
     src/ui/QGCToolBar.cc \
     src/ui/QGCStatusBar.cc \
     src/ui/QGCMAVLinkInspector.cc \
