@@ -50,6 +50,11 @@ MAVLinkProtocol::~MAVLinkProtocol()
     m_connectionManager = NULL;
 }
 
+void MAVLinkProtocol::sendMessage(mavlink_message_t msg)
+{
+    Q_UNUSED(msg);
+}
+
 void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
 {
     mavlink_message_t message;

@@ -54,7 +54,7 @@ public:
     ~MAVLinkProtocol();
 
     void setConnectionManager(LinkManager *manager) { m_connectionManager = manager; }
-    void sendMessage(mavlink_message_t msg) { }
+    void sendMessage(mavlink_message_t msg);
     void stopLogging();
     bool startLogging(const QString& filename);
     bool loggingEnabled() { return m_loggingEnabled; }
