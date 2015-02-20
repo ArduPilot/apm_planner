@@ -3,6 +3,19 @@
 RelPositionOverview::RelPositionOverview(QObject *parent) :
     QObject(parent)
 {
+    this->m_airspeed = 0;
+    this->m_alt = 0;
+    this->m_climb = 0;
+    this->m_groundspeed = 0;
+    this->m_heading = 0;
+    this->m_pitch = 0;
+    this->m_pitchspeed = 0;
+    this->m_roll = 0;
+    this->m_rollspeed = 0;
+    this->m_throttle = 0;
+    this->m_timeBootMs = 0;
+    this->m_yawspeed = 0;
+    this->m_yaw = 0;
 }
 
 RelPositionOverview::~RelPositionOverview()
