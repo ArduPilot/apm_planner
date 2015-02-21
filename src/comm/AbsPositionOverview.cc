@@ -1,30 +1,22 @@
 #include "AbsPositionOverview.h"
 
 AbsPositionOverview::AbsPositionOverview(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+        m_alt(0.0), m_cog (0.0), m_eph (0.0),m_epv (0),
+        m_fixType (0.0), m_hdg (0.0), m_lat (0.0), m_lon (0),
+        m_relativeAlt (0.0), m_satellitesVisible  (0.0),
+        m_timeBootMs (0.0) , m_timeUsec (0.0), m_vel  (0.0),
+        m_vx (0.0), m_vy (0.0),m_vz (0.0)
+
 {
-    this->m_alt = 0;
-    this->m_cog = 0;
-    this->m_eph = 0;
-    this->m_epv = 0;
-    this->m_fixType = 0;
-    this->m_hdg = 0;
-    this->m_lat = 0;
-    this->m_lon = 0;
-    this->m_relativeAlt = 0;
-    this->m_satellitesVisible = 0;
-    this->m_timeBootMs = 0;
-    this->m_timeUsec = 0;
-    this->m_vel = 0;
-    this->m_vx = 0;
-    this->m_vy = 0;
-    this->m_vz = 0;
+    /* The defaults above are used to ensure the variables are
+     * initalised to known values and dont cause random errors.
+     */
 
 }
 
 AbsPositionOverview::~AbsPositionOverview()
 {
-
 }
 
 void AbsPositionOverview::parseGpsRawInt(LinkInterface *link, const mavlink_message_t &message, const mavlink_gps_raw_int_t &state)
