@@ -21,11 +21,12 @@ Item {
     property real rollAngle : 0
     property real pitchAngle: 0
     property bool enableBackgroundVideo: false
-    property real scale: 0.7
-    property real rollOffsetY: 0
+    //property real scale: 0.7
+    //property real rollOffsetY: 0
 
     width: parent.width
     height: parent.height
+    anchors.margins: 0
 
     Item { // Artificial Horizon
         id: artificialHorizon
@@ -87,31 +88,32 @@ Item {
         }
     } // End Artficial Horizon
 
-    Image { // Roll Graticule
-        id: rollGraticule
-        anchors { bottom: parent.verticalCenter; horizontalCenter: parent.horizontalCenter}
+    Item { //Roll Indicator
+
+        id: rollIndicator
+        width: parent.width
+        height: parent.height/2
+        anchors {top:parent.top; horizontalCenter: parent.horizontalCenter}
         z: 1
-        source: "../resources/components/rollPitchIndicator/rollGraticule.svg"
-        scale: parent.scale
-        smooth: true
-        transform: [Rotation {
-            origin.x: 157.5
-            origin.y: 200
-            //horizon angle
-            angle: -rollAngle
-            }, Translate {
-                y: parent.y + rollOffsetY
-            }]
-        Image {
-            source: "../resources/components/rollPitchIndicator/rollPointer.svg"
-            transform: Rotation {
-                origin.x: 157.5
-                origin.y: 200
-                //horizon angle
-                angle: rollAngle
+
+        Image { // Roll Graticule
+            id: rollGraticule
+            source: "../resources/components/rollPitchIndicator/rollGraticule.svg"
+            anchors { top: rollIndicator.top; horizontalCenter: rollIndicator.horizontalCenter}
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            transformOrigin: Item.Bottom
+            rotation: -rollAngle
+
+            Image {
+                source: "../resources/components/rollPitchIndicator/rollPointer.svg"
+                fillMode: Image.PreserveAspectFit
+                transformOrigin: Item.Bottom
+                rotation: rollAngle
             }
-        }
-    }
+          }//Roll Graticule
+       }//Roll Indicator
+
 
     Image { // Cross Hairs
         id: crossHairs
