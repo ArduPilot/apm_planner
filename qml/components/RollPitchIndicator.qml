@@ -17,75 +17,64 @@
 import QtQuick 2.0
 
 Item {
-    id: root
+    id: rootRollPitchIndicator
     property real rollAngle : 0
     property real pitchAngle: 0
     property bool enableBackgroundVideo: false
-    //property real scale: 0.7
-    //property real rollOffsetY: 0
-
-    width: parent.width
     height: parent.height
-    anchors.margins: 0
+    width: parent.width
+    anchors.fill: parent
 
     Item { // Artificial Horizon
-        id: artificialHorizon
-        width: parent.width
-        height: parent.height
-        scale: parent.scale * 4.0
+        id: artificialHorizonBackground
+        height: parent.width
+        width: parent.height
+        anchors.fill: parent
 
-        Rectangle { // Artificial Horizon
-            anchors.fill: parent
-
-            Rectangle { // Blue Sky
+        Rectangle { // Blue Sky
                 id: blueSky
-                anchors.fill: parent
                 color: "skyblue"
                 smooth: true
+                anchors.centerIn: parent
+                height: parent.height * 4.0
+                width: parent.width * 4.0
+
+                //So we can pitch and roll the rectangle with no white background shown
+                //scale: parent.scale * 4.0
+
                 visible: !enableBackgroundVideo
-            }
+        }
 
-//            Rectangle { // horizon bar
-//                id: artHorizon
-//                anchors.centerIn: blueSky
-//                height: 3
-//                anchors.verticalCenterOffset: 3
-//                width: blueSky.width
-//                color: "darkgreen"
-//                smooth: true
-//                visible: !enableBackgroundVideo
-//                scale: 1
-//            }
 
-            Rectangle { // Ground
+        Rectangle { // Ground
                 id: ground
-                anchors { left: blueSky.left; right: blueSky.right;
-                            bottom: blueSky.bottom }
-                color: "green"
-                smooth: true
-                height: blueSky.height/2
-                visible: !enableBackgroundVideo
-            }
+                height: parent.height * 2.0
+                width: parent.width * 4.0
 
-            Rectangle {
+                anchors.left: blueSky.left
+                anchors.right: blueSky.right
+                anchors.bottom: blueSky.bottom
+
+                color: "#038000"
+                smooth: true
+
+                visible: !enableBackgroundVideo
+        }
+
+        Rectangle {
                 id: videoImage // Just for testing
                 anchors { fill: parent; centerIn: parent }
                 color: "darkgrey"
                 visible: enableBackgroundVideo
-            }
-
-            transform: [ Translate {
-                    id: artHorizonPitch
-                    y: pitchAngle * 1.75
-                },
-                Rotation {
-                    id: artHorizonRotation
-                    origin.x: width/2
-                    origin.y: height/2
-                    //horizon angle
-                    angle: -rollAngle
-                }]
         }
+
+        //Up and down pitch
+        transform: Translate {y: pitchAngle * 1.75}
+        transformOrigin: Item.Center
+
+        //Left and Right Roll
+        rotation: -rollAngle
+
     } // End Artficial Horizon
 
     Item { //Roll Indicator
@@ -93,16 +82,21 @@ Item {
         id: rollIndicator
         width: parent.width
         height: parent.height/2
-        anchors {top:parent.top; horizontalCenter: parent.horizontalCenter}
+        scale: parent.scale * 0.7
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+
         z: 1
 
         Image { // Roll Graticule
             id: rollGraticule
             source: "../resources/components/rollPitchIndicator/rollGraticule.svg"
-            anchors { top: rollIndicator.top; horizontalCenter: rollIndicator.horizontalCenter}
+
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            transformOrigin: Image.Bottom
             fillMode: Image.PreserveAspectFit
             smooth: true
-            transformOrigin: Item.Bottom
             rotation: -rollAngle
 
             Image {
@@ -122,4 +116,9 @@ Item {
         source: "../resources/components/rollPitchIndicator/crossHair.svg"
 
     }
+    states: [
+        State {
+            name: "State1"
+        }
+    ]
 }
