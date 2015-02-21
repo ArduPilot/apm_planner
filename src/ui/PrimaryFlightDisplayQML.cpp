@@ -58,6 +58,7 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
     QWidget *viewcontainer = QWidget::createWindowContainer(m_declarativeView);
     layout->addWidget(viewcontainer);
     setLayout(layout);
+    setContentsMargins(0,0,0,0);
     show();
 
     // Connect with UAS
