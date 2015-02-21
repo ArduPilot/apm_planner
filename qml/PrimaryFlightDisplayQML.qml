@@ -60,7 +60,7 @@ Rectangle {
 
     RollPitchIndicator {
         id: rollPitchIndicator
-        anchors.centerIn: parent
+
         rollAngle: 0
         pitchAngle: 0
         enableBackgroundVideo: parent.enableBackgroundVideo
