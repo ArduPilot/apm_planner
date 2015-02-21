@@ -68,9 +68,10 @@ Item {
                 visible: enableBackgroundVideo
         }
 
+         transformOrigin: Item.Center
+
         //Up and down pitch
         transform: Translate {y: pitchAngle * 1.75}
-        transformOrigin: Item.Center
 
         //Left and Right Roll
         rotation: -rollAngle
