@@ -39,7 +39,7 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCHilLink.h"
 #include "QGCFlightGearLink.h"
 #include "QGCJSBSimLink.h"
-#include "QGCXPlaneLink.h"
+//#include "QGCXPlaneLink.h"
 
 /**
  * @brief A generic MAVLINK-connected MAV/UAV

@@ -3227,24 +3227,24 @@ void UAS::enableHilJSBSim(bool enable, QString options)
 */
 void UAS::enableHilXPlane(bool enable)
 {
-    QGCXPlaneLink* link = dynamic_cast<QGCXPlaneLink*>(simulation);
-    if (!link || !simulation) {
-        if (simulation) {
-            stopHil();
-            delete simulation;
-        }
-        QLOG_DEBUG() << "CREATED NEW XPLANE LINK";
-        simulation = new QGCXPlaneLink(this);
-    }
-    // Connect X-Plane Link
-    if (enable)
-    {
-        startHil();
-    }
-    else
-    {
-        stopHil();
-    }
+//    QGCXPlaneLink* link = dynamic_cast<QGCXPlaneLink*>(simulation);
+//    if (!link || !simulation) {
+//        if (simulation) {
+//            stopHil();
+//            delete simulation;
+//        }
+//        QLOG_DEBUG() << "CREATED NEW XPLANE LINK";
+//        simulation = new QGCXPlaneLink(this);
+//    }
+//    // Connect X-Plane Link
+//    if (enable)
+//    {
+//        startHil();
+//    }
+//    else
+//    {
+//        stopHil();
+//    }
 }
 
 /**
