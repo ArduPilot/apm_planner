@@ -29,9 +29,9 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
+#include "HSIDisplay.h"
 #include "QsLog.h"
 #include "UASManager.h"
-#include "HSIDisplay.h"
 #include "QGC.h"
 #include "Waypoint.h"
 #include "UASWaypointManager.h"

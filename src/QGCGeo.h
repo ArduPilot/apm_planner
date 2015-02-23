@@ -5,7 +5,7 @@
 #include <QVector3D>
 #include <QQuaternion>
 #include <QMatrix3x3>
-
+#include <math.h>
 
 #define DEG2RAD (M_PI/180.0)
 

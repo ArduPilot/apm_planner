@@ -282,7 +282,7 @@ MacBuild | LinuxBuild {
 # AGLLIB math library
 #
 include(libs/alglib/alglib.pri)
-
+DEFINES += NOMINMAX
 #
 # OPMapControl library (from OpenPilot)
 #

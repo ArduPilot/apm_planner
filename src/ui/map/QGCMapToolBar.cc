@@ -1,6 +1,6 @@
+#include "QGCMapToolBar.h"
 #include "UASManager.h"
 #include "ArduPilotMegaMAV.h"
-#include "QGCMapToolBar.h"
 #include "QGCMapWidget.h"
 #include "ui_QGCMapToolBar.h"
 

@@ -31,6 +31,7 @@ This file is part of the QGROUNDCONTROL project
 
 #ifndef HDDISPLAY_H
 #define HDDISPLAY_H
+#include <cmath>
 
 #include <QtWidgets/QGraphicsView>
 #include <QColor>
@@ -39,7 +40,6 @@ This file is part of the QGROUNDCONTROL project
 #include <QMap>
 #include <QContextMenuEvent>
 #include <QPair>
-#include <cmath>
 
 #include "UASInterface.h"
 
