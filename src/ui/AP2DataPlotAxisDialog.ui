@@ -45,6 +45,13 @@ This Dialog is used for grouping multiple graphs with a single value range (the 
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="clearPushButton">
+       <property name="text">
+        <string>Clear Scaling</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="cancelPushButton">
        <property name="text">
         <string>Done</string>

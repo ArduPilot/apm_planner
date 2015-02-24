@@ -37,8 +37,6 @@ public:
 
 public slots:
     void setMinMaxButtonClicked();
-    void autoButtonClicked(bool checked);
-    void manualButtonClicked(bool checked);
 
 signals:
     void graphAddedToGroup(QString name,QString group,double scale);
@@ -50,11 +48,13 @@ signals:
 
 private slots:
     void applyButtonClicked();
+    void clearButtonClicked();
     void cancelButtonClicked();
     void groupComboChanged(int name);
     void cellDoubleClicked(int row,int col);
     void cellChanged(int row,int col);
     void colorDialogAccepted();
+    void autoCheckboxChecked(bool checked);
 
 protected:
     void closeEvent(QCloseEvent *evt);
