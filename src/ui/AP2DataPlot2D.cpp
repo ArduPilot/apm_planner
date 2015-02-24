@@ -424,7 +424,10 @@ void AP2DataPlot2D::graphControlsButtonClicked()
         for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
         {
             //m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
-            m_axisGroupingDialog->fullAxisUpdate(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().isManualRange,i.value().isInGroup,i.value().groupName);
+            if (!i.key().toLower().contains("mode"))
+            {
+                m_axisGroupingDialog->fullAxisUpdate(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().isManualRange,i.value().isInGroup,i.value().groupName);
+            }
         }
         return;
     }
@@ -433,7 +436,10 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     connect(m_axisGroupingDialog,SIGNAL(graphColorsChanged(QMap<QString,QColor>)),this,SLOT(graphColorsChanged(QMap<QString,QColor>)));
     for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
     {
-        m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
+        if (!i.key().toLower().contains("mode"))
+        {
+            m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
+        }
     }
     m_axisGroupingDialog->show();
     QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::Show));
@@ -941,7 +947,10 @@ void AP2DataPlot2D::itemEnabled(QString name)
 
         if (m_axisGroupingDialog)
         {
-            m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
+            if (!name.toLower().contains("mode"))
+            {
+                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
+            }
         }
         mainGraph1->setPen(QPen(color, 1));
         Graph graph;
@@ -1029,7 +1038,10 @@ void AP2DataPlot2D::itemEnabled(QString name)
             }
             if (m_axisGroupingDialog)
             {
-                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
+                if (!name.toLower().contains("mode"))
+                {
+                    m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
+                }
             }
             Graph graph;
             graph.axis = axis;
