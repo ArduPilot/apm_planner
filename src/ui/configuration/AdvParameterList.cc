@@ -91,6 +91,19 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
         //Invalid item, something has gone awry.
         return;
     }
+    QLocale locallocale;
+    bool ok = false;
+    double number = locallocale.toDouble(item->text(),&ok);
+    if (!ok)
+    {
+        //Failed to convert
+        QMessageBox::warning(this,"Error","Failed to convert number, please verify your input and try again");
+        disconnect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+        ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_VALUE)->setText(m_paramToOrigValueMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()]);
+        connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+        return;
+    }
+
     m_origBrushList.append(ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text());
     QBrush brush = QBrush(QColor::fromRgb(132,181,132));
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->setBackground(brush);
@@ -98,7 +111,9 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_UNIT)->setBackground(brush);
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_RANGE)->setBackground(brush);
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_DESCRIPTION)->setBackground(brush);
-    m_modifiedParamMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = item->text().toDouble();
+    m_modifiedParamMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = number;
+    m_paramToOrigValueMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = item->text();
+
 
     int itemsChanged = m_modifiedParamMap.size();
 
@@ -411,6 +426,7 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
     {
         valstr = QString::number(value.toInt(),'f',0);
     }
+    m_paramToOrigValueMap[parameterName] = valstr;
     m_paramValueMap[parameterName]->setText(valstr);
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
 
