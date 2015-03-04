@@ -30,7 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "Freenect.h"
-
+#include <QGC.h>
 #include <cmath>
 #include <string.h>
 #include <QSettings>
