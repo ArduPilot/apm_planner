@@ -32,7 +32,7 @@ This file is part of the QGROUNDCONTROL project
 #ifndef FREENECT_H
 #define FREENECT_H
 
-#include <libfreenect/libfreenect.h>
+#include <libfreenect.h>
 #include <QMatrix4x4>
 #include <QMutex>
 #include <QScopedPointer>
