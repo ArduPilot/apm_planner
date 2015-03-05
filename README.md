@@ -5,6 +5,9 @@ We compiled in qtcreator 2.0.1 and qt4.8.7 using qmake-qt4 on Ubunutu 12.04
 I don't know what happens when you use these modified files with OSX or Windows so I will remove those instructions. I have also remove the qt4 and openscene dependecies because we will assume that you are using qt4 compiled as a double and openscene isn't officially supports in 12.04. 
 
 
+**Note: I have libusbx installed on top of libusb. Libusbx is deprecated and merged into libusb but libusb (newer) wouldn't let me see my Kinect sensor. This may be needed but I'm not sure. 
+
+
 APM Planner
 
 Project:
