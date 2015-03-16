@@ -60,6 +60,7 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.cancelPushButton->setVisible(false);
     ui.rebootButton->setVisible(false);
     ui.warningLabel->setVisible(false);
+    ui.warningLabelAC33->setVisible(false);
     ui.textBrowser->setVisible(false);
 
     loadSettings();
@@ -348,6 +349,7 @@ void ApmFirmwareConfig::hideBetaLabels()
         m_betaButtonLabelList[i]->hide();
     }
     ui.warningLabel->hide();
+    ui.warningLabelAC33->hide();
 }
 
 void ApmFirmwareConfig::showBetaLabels()
@@ -410,15 +412,20 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
     {
         ui.warningLabel->hide();
     }
+
+    ui.warningLabelAC33->hide();
+
+
+
     m_autopilotType = autopilot;
     m_firmwareType = type;
-    QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
-    QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
-    QNetworkReply *reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
-    QNetworkReply *reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
-    QNetworkReply *reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
-    QNetworkReply *reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
-    QNetworkReply *reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+    QNetworkReply *reply1 = NULL;
+    QNetworkReply *reply2 = NULL;
+    QNetworkReply *reply3 = NULL;
+    QNetworkReply *reply4 = NULL;
+    QNetworkReply *reply5 = NULL;
+    QNetworkReply *reply6 = NULL;
+    QNetworkReply *reply7 = NULL;
     QNetworkReply *reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/git-version.txt")));
     QNetworkReply *reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/git-version.txt")));
 
@@ -426,13 +433,56 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
     {
         m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/APMrover2.hex";
         m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/ArduPlane.hex";
-        m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/ArduCopter.hex";
-        m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/ArduCopter.hex";
-        m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter.hex";
-        m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/ArduCopter.hex";
-        m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter.hex";
-        m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter.hex";
-        m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter.hex";
+
+        if (type == "latest")
+        {
+            ui.warningLabelAC33->show();
+            /*
+             * AC3.3 only supports Pixhawk, APM1/APM2 is discontinued.
+             * Last known 'latest': http://firmware.diydrones.com/Copter/2015-03/2015-03-13-00:03/
+             * stable and beta both still support, as they are not 3.3 yet
+             */
+            QString prepath = "http://firmware.diydrones.com/Copter/2015-03/2015-03-13-00:03/" + prestring;
+            m_buttonToUrlMap[ui.copterPushButton] = prepath + "-heli/ArduCopter.hex";
+            m_buttonToUrlMap[ui.hexaPushButton] = prepath + "-hexa/ArduCopter.hex";
+            m_buttonToUrlMap[ui.octaQuadPushButton] = prepath + "-octa-quad/ArduCopter.hex";
+            m_buttonToUrlMap[ui.octaPushButton] = prepath + "-octa/ArduCopter.hex";
+            m_buttonToUrlMap[ui.quadPushButton] = prepath + "-quad/ArduCopter.hex";
+            m_buttonToUrlMap[ui.triPushButton] = prepath + "-tri/ArduCopter.hex";
+            m_buttonToUrlMap[ui.y6PushButton] = prepath + "-y6/ArduCopter.hex";
+
+            reply1 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-heli/git-version.txt")));
+            reply2 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-quad/git-version.txt")));
+            reply3 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-hexa/git-version.txt")));
+            reply4 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-octa/git-version.txt")));
+            reply5 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-octa-quad/git-version.txt")));
+            reply6 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-tri/git-version.txt")));
+            reply7 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-y6/git-version.txt")));
+
+
+        }
+        else
+        {
+            //TODO: Need to add beta and stable as they push APM1/APM2 support off
+
+            m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/ArduCopter.hex";
+            m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/ArduCopter.hex";
+            m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter.hex";
+            m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/ArduCopter.hex";
+            m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter.hex";
+            m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter.hex";
+            m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter.hex";
+
+            reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
+            reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
+            reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
+            reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
+            reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
+            reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
+            reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+
+
+        }
     }
     else if (autopilot == "px4")
     {
@@ -445,6 +495,16 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
         m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter-v1.px4";
         m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter-v1.px4";
         m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter-v1.px4";
+
+        reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
+        reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
+        reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
+        reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
+        reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
+        reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
+        reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+
+
     }
     else if (autopilot == "pixhawk")
     {
@@ -457,6 +517,16 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
         m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter-v2.px4";
         m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter-v2.px4";
         m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter-v2.px4";
+
+        reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
+        reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
+        reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
+        reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
+        reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
+        reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
+        reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+
+
     }
     else
     {
