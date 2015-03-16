@@ -144,7 +144,7 @@ void RadioCalibrationConfig::activeUASSet(UASInterface *uas)
     }
     connect(m_uas,SIGNAL(remoteControlChannelRawChanged(int,float)),this,SLOT(remoteControlChannelRawChanged(int,float)));
 
-    if (m_uas->isFixedWing()){
+    if (m_uas->isFixedWing() || m_uas->isGroundRover()){
         ui.revLeftVCheckBox->show();
         ui.revRollCheckBox->show();
         ui.revRightVCheckBox->show();
