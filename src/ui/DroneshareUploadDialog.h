@@ -61,6 +61,10 @@ public slots:
     void uploadProgress(int bytesRead, int totalBytes);
 
 private:
+    void resetStatusText();
+    void hideEvent(QHideEvent *evt);
+
+private:
     Ui::DroneshareUploadDialog *ui;
     UASInterface* m_uasInterface;
     QString m_filename;
