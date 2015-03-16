@@ -342,7 +342,11 @@ void RadioCalibrationConfig::calibrateButtonClicked()
     if (!m_calibrationEnabled)
     {
         ui.calibrateButton->setText("End Calibration");
-        QMessageBox::information(this,"Warning!","You are about to start radio calibration.\nPlease ensure all motor power is disconnected AND all props are removed from the vehicle.\nAlso ensure transmitter and reciever are powered and connected\n\nClick OK to confirm");
+        if (QMessageBox::question(this,"Warning!","You are about to start radio calibration.\nPlease ensure all motor power is disconnected AND all props are removed from the vehicle.\nAlso ensure transmitter and reciever are powered and connected\n\nClick OK to confirm, or cancel to abort radio calibration",QMessageBox::Ok,QMessageBox::Cancel) != QMessageBox::Ok)
+        {
+            QMessageBox::information(this,"Warning!","Radio calibration aborted");
+            return;
+        }
         m_calibrationEnabled = true;
         for (int i=0;i<RC_CHANNEL_NUM_MAX;i++)
         {
