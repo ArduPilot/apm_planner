@@ -91,6 +91,11 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
         //Invalid item, something has gone awry.
         return;
     }
+    if (item->column() != ADV_TABLE_COLUMN_VALUE)
+    {
+        //Don't want to edit values that aren't actual values
+        return;
+    }
     QLocale locallocale;
     bool ok = false;
     double number = locallocale.toDouble(item->text(),&ok);
