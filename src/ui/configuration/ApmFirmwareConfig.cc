@@ -531,6 +531,8 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
     else
     {
         QLOG_ERROR() << "Unknown autopilot in ApmFirmwareConfig::requestFirmwares()" << autopilot;
+        ui.statusLabel->setText("Unable to request firmware versions, autopilot version unrecognized: " + autopilot);
+        return;
     }
 
     //http://firmware.diydrones.com/Plane/stable/apm2/ArduPlane.hex
