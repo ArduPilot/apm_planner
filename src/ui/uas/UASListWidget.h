@@ -33,6 +33,7 @@ This file is part of the QGROUNDCONTROL project
 
 #include <QWidget>
 #include <QMap>
+#include <QScrollArea>
 #include <QVBoxLayout>
 #include "UASInterface.h"
 #include "UASView.h"
@@ -54,9 +55,13 @@ public slots:
 
 protected:
     QMap<UASInterface*, UASView*> uasViews;
+    QHBoxLayout* mainLayout;
+    QScrollArea* scrollArea;
+    QWidget* scrollAreaWidgetContents;
     QVBoxLayout* listLayout;
     QGCUnconnectedInfoWidget* uWidget;
     void changeEvent(QEvent *e);
+    void resizeEvent(QResizeEvent *e);
 
 private:
     Ui::UASList* m_ui;
