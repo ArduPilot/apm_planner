@@ -908,7 +908,10 @@ void ApmFirmwareConfig::firmwareListFinished()
     QString replystr = reply->readAll();
     QString outstr = "";
 
-    QLOG_DEBUG() << "firmwareListFinished error: " << reply->error() << reply->errorString();
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        QLOG_DEBUG() << "firmwareListFinished error: " << reply->error() << reply->errorString();
+    }
     QString cmpstr = "";
     QString labelstr = "";
     QString apmver = "";
