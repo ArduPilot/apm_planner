@@ -466,9 +466,9 @@ void CompassConfig::finishCompassCalibration()
                             + " y:" + QString::number(centerCompass1.y(),'f',3) + " z:" + QString::number(centerCompass1.z(),'f',3)
                             + " dev id:" + deviceId.toString();
     } else {
-        QLOG_ERROR() << "Not enough data points for calculation:" ;
+        QLOG_ERROR() << "Not enough data points for calculation of compass 1:" ;
         QMessageBox::warning(this, tr("Compass 1 Calibration Failed"), tr("Not enough data points to calibrate the compass."));
-        return;
+        message = "\n" + tr("Compass 1 Calibration Failed");
     }
 
     if(m_haveSecondCompass) {
@@ -481,9 +481,9 @@ void CompassConfig::finishCompassCalibration()
                            + " y:" + QString::number(centerCompass2.y(),'f',3) + " z:" + QString::number(centerCompass2.z(),'f',3)
                            + " dev id:" + deviceId.toString());
         } else {
-            QLOG_ERROR() << "Not enough data points for calculation:" ;
+            QLOG_ERROR() << "Not enough data points for calculation of compass 2:" ;
             QMessageBox::warning(this, tr("Compass 2 Calibration Failed"), tr("Not enough data points to calibrate the compass."));
-            return;
+            message = "\n" + tr("Compass 2 Calibration Failed");;
         }
     }
     cleanup();
