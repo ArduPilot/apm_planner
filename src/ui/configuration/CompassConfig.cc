@@ -392,10 +392,12 @@ void CompassConfig::startDataCollection()
     m_uas->enableRawSensorDataTransmission(10);
     m_calibratingCompass = true;
 
-    if (pm->getParameterNames(1).contains("COMPASS_OFS2_X"))
+    //MLC 3/23/15: Removed, since single compass systems can still have this parameter, it is not a good metric to
+    //determine if there is a second compass
+    /*if (pm->getParameterNames(1).contains("COMPASS_OFS2_X"))
     {
         m_haveSecondCompass = true;
-    }
+    }*/
 
     m_progressDialog = new QProgressDialog(tr("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds."),
                                            tr("Cancel"), 0, 60, this);
@@ -531,10 +533,12 @@ void CompassConfig::scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_im
     Q_UNUSED(uas);
     QLOG_TRACE() << "SCALED IMU2 x:" << scaledImu.xmag << " y:" << scaledImu.ymag << " z:" << scaledImu.zmag;
 
-    if (scaledImu.xmag == 0 && scaledImu.ymag == 0 && scaledImu.zmag){
-        m_haveSecondCompass = false;
+    if (scaledImu.xmag == 0 && scaledImu.ymag == 0 && scaledImu.zmag == 0)
+    {
+        //Don't use values of 0, since they could be a disconnected compass
         return;
     }
+    m_haveSecondCompass = true;
     const Vector3d currentReading(scaledImu.xmag, scaledImu.ymag, scaledImu.zmag);
     updateImuList(currentReading, m_compass2LastValue,
                   m_compass2Offset, m_compass2RawImuList);
