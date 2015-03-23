@@ -392,13 +392,6 @@ void CompassConfig::startDataCollection()
     m_uas->enableRawSensorDataTransmission(10);
     m_calibratingCompass = true;
 
-    //MLC 3/23/15: Removed, since single compass systems can still have this parameter, it is not a good metric to
-    //determine if there is a second compass
-    /*if (pm->getParameterNames(1).contains("COMPASS_OFS2_X"))
-    {
-        m_haveSecondCompass = true;
-    }*/
-
     m_progressDialog = new QProgressDialog(tr("Compass calibration in progress. Please rotate your craft around all its axes for 60 seconds."),
                                            tr("Cancel"), 0, 60, this);
     connect(m_progressDialog, SIGNAL(canceled()), this, SLOT(cancelCompassCalibration()));
