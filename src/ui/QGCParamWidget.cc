@@ -148,6 +148,8 @@ QGCParamWidget::QGCParamWidget(UASInterface* uas, QWidget *parent) :
     connect(this, SIGNAL(requestParameter(int,QString)), uas, SLOT(requestParameter(int,QString)));
     connect(this, SIGNAL(requestParameter(int,int)), uas, SLOT(requestParameter(int,int)));
     connect(&retransmissionTimer, SIGNAL(timeout()), this, SLOT(retransmissionGuardTick()));
+    initialParamTimer = new QTimer(this);
+    connect(initialParamTimer,SIGNAL(timeout()),this,SLOT(initialParamCheckTick()));
 
     // Get parameters
     if (uas) requestParameterList();
@@ -696,6 +698,10 @@ void QGCParamWidget::addParameter(int uas, int component, QString parameterName,
 {
     //QLOG_DEBUG() << "PARAM WIDGET GOT PARAM:" << value;
     Q_UNUSED(uas);
+    if (initialParamTimer->isActive())
+    {
+        initialParamTimer->stop();
+    }
     // Reference to item in tree
     QTreeWidgetItem* parameterItem = NULL;
 
@@ -869,6 +875,7 @@ void QGCParamWidget::requestParameterList()
     statusLabel->setText(tr("Requested param list.. waiting"));
 
     mav->requestParameters();
+    initialParamTimer->start(10000); //Give it 10 seconds to start getting parameters
 }
 
 void QGCParamWidget::parameterItemChanged(QTreeWidgetItem* current, int column)
@@ -1276,4 +1283,13 @@ void QGCParamWidget::clear()
 {
     tree->clear();
     components->clear();
+}
+void QGCParamWidget::initialParamCheckTick()
+{
+    if (!mav)
+    {
+        return;
+    }
+    QLOG_DEBUG() << "QGCParamWidget: No parameters, re-requesting from MAV";
+    mav->requestParameters();
 }
