@@ -205,7 +205,7 @@ void AP2DataPlotThread::loadBinaryLog()
                                 }
                                 else if (typeCode == 'h') //int16_t
                                 {
-                                    quint16 val;
+                                    qint16 val;
                                     packetstream >> val;
                                     linetoemit += "," + QString::number(val,'f',0);
                                     valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
