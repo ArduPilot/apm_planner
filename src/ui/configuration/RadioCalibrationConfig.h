@@ -47,6 +47,7 @@ class RadioCalibrationConfig : public AP2ConfigWidget
     static const int RC_CHANNEL_PWM_MIN = 900.0;
     static const int RC_CHANNEL_PWM_MAX = 2100;
     static const int RC_CHANNEL_NUM_MAX = 8;
+    static const int RC_CHANNEL_LOWER_CONTROL_CH_MAX = 4;
     
 public:
     explicit RadioCalibrationConfig(QWidget *parent = 0);

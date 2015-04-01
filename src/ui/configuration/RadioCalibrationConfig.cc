@@ -521,10 +521,23 @@ void RadioCalibrationConfig::writeSettings()
 
 bool RadioCalibrationConfig::isRadioControlActive()
 {
-    for(int count=0; count< RC_CHANNEL_NUM_MAX; count++){
+    // Check the lower 4 channels are active for radio connected.
+    for(int count=0; count < RC_CHANNEL_LOWER_CONTROL_CH_MAX; count++){
         // Any invalid range and we abort.
         if (!isInRange(rcValue[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)){
+            QLOG_ERROR() << QString().sprintf("isRadioControlActive: Error Channel %d out of range: rcValue=%f",
+                                              count+1, rcValue[count]);
             return false;
+        }
+    }
+
+    for(int count=RC_CHANNEL_LOWER_CONTROL_CH_MAX; count < RC_CHANNEL_NUM_MAX; count++){
+        if ((rcValue[count]>0.0)){ // Only active channels are validated.
+            if (!isInRange(rcValue[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)){
+                QLOG_ERROR() << QString().sprintf("isRadioControlActive: Error Channel %d out of range: rcValue=%f",
+                                                  count+1, rcValue[count]);
+                return false;
+            }
         }
     }
     return true;
@@ -532,14 +545,35 @@ bool RadioCalibrationConfig::isRadioControlActive()
 
 bool RadioCalibrationConfig::validRadioSettings()
 {
-    for(int count=0; count< RC_CHANNEL_NUM_MAX; count++){
+    // Check lower 4 channels have been set correctly zero values not allowed.
+    // i.e. Aileron (Roll), Elevator (Pitch), Throttle, Rudder (Yaw)
+    for(int count=0; count< RC_CHANNEL_LOWER_CONTROL_CH_MAX; count++){
         // Any invalid range and we abort.
         if (!isInRange(rcMin[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)
                 ||!isInRange(rcMax[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)
                 ||!isInRange(rcTrim[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)){
+            QLOG_ERROR() << QString().sprintf("validRadioSettings: Error Channel %d out of range: rcMin=%f rcMax=%f rcTrim=%f",
+                                              count+1, rcMin[count], rcMax[count], rcTrim[count]);
             return false;
         }
     }
+
+    // for channels other than the lower 4 we verify only if non-zero.
+    for(int count=RC_CHANNEL_LOWER_CONTROL_CH_MAX; count< RC_CHANNEL_NUM_MAX; count++){
+        // Only check if we have received a non-zero value on the channel
+        // that the settings are valid.
+        if ((rcValue[count]>0.0)){
+            // Any invalid range and we abort.
+            if (!isInRange(rcMin[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)
+                ||!isInRange(rcMax[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)
+                ||!isInRange(rcTrim[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)){
+                QLOG_ERROR() << QString().sprintf("validRadioSettings: Error Channel %d out of range: rcMin=%f rcMax=%f rcTrim=%f",
+                                                  count+1, rcMin[count], rcMax[count], rcTrim[count]);
+                return false;
+            }
+        }
+    }
+
     return true;
 }
 
