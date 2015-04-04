@@ -121,7 +121,7 @@ const int APPLICATIONVERSION = 2017; // 2.0.17 [TODO] we should deprecate this v
     }
 
     inline QRegExp paramSplitRegExp() {
-        return QRegExp("\t|,");
+        return QRegExp("\t|,|=");
     }
 
     inline QRegExp paramLineSplitRegExp() {
