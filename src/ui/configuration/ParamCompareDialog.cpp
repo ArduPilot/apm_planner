@@ -157,7 +157,7 @@ void ParamCompareDialog::loadParameterFile(const QString &filename)
 void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<QString, UASParameter*>* list,
                                                      QWidget* widget = NULL)
 {
-    QStringList paramSplit = paramString.split("\n");
+    QStringList paramSplit = paramString.split(QGC::paramLineSplitRegExp());
     bool summaryComplete = false;
     bool summaryShown = false;
     QString summaryText;
@@ -165,7 +165,7 @@ void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<Q
     foreach (QString paramLine, paramSplit) {
         if (!paramLine.startsWith("#")) {
             summaryComplete = true;
-            QStringList lineSplit = paramLine.split(",");
+            QStringList lineSplit = paramLine.split(QGC::paramSplitRegExp());
             if (lineSplit.size() == 2)
             {
                 bool ok;

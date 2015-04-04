@@ -172,7 +172,7 @@ QString QGCParamWidget::summaryInfoFromFile(const QString &filename)
     QString paramString = file.readAll();
     file.close();
 
-    QStringList paramSplit = paramString.split("\n");
+    QStringList paramSplit = paramString.split(QGC::paramLineSplitRegExp());
 
     foreach (QString paramLine, paramSplit) {
         if (paramLine.startsWith("#")) {
@@ -206,9 +206,9 @@ bool QGCParamWidget::loadParamsFromFile(const QString &filename,ParamFileType ty
             QString line = paramfile.readLine();
             if (!line.startsWith("#"))
             {
-                if (line.indexOf(",") != -1)
+                if (line.indexOf(QGC::paramSplitRegExp()) != -1)
                 {
-                    setParameter(1,line.split(",")[0],line.split(",")[1].toFloat());
+                    setParameter(1,line.split(QGC::paramSplitRegExp())[0],line.split(QGC::paramSplitRegExp())[1].toFloat());
                 }
             }
         }

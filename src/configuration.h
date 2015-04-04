@@ -120,6 +120,14 @@ const int APPLICATIONVERSION = 2017; // 2.0.17 [TODO] we should deprecate this v
         return GlobalObject::sharedInstance()->shareDirectory();
     }
 
+    inline QRegExp paramSplitRegExp() {
+        return QRegExp("\t|,");
+    }
+
+    inline QRegExp paramLineSplitRegExp() {
+        return QRegExp("\r|\n");
+    }
+
 }
 
 #endif // QGC_CONFIGURATION_H
