@@ -276,7 +276,7 @@ void AdvParameterList::saveButtonClicked()
     QLOG_DEBUG() << "CREATED:" << fileDialog;
     fileDialog->setAcceptMode(QFileDialog::AcceptSave);
     fileDialog->setNameFilter("*.param *.txt");
-    fileDialog->selectFile("paramter.param");
+    fileDialog->selectFile("parameter.param");
     fileDialog->open(this, SLOT(saveDialogAccepted()));
     connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
 }
