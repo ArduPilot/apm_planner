@@ -286,7 +286,13 @@ bool SerialConnection::connect()
     QObject::connect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
                      this, SLOT(portError(QSerialPort::SerialPortError)), Qt::UniqueConnection);
 
+#ifdef Q_OS_MACX
+    // temp fix Qt5.4.1 issue on OSX
+    // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
+    m_port->setPortName("/dev/cu." + m_portName);
+#else
     m_port->setPortName(m_portName);
+#endif
 
     if (!m_port->open(QIODevice::ReadWrite))
     {

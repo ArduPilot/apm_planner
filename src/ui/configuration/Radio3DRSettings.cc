@@ -311,7 +311,13 @@ bool Radio3DRSettings::openSerialPort(SerialSettings settings)
 
     m_serialPort->close();
 
+#ifdef Q_OS_MACX
+    // temp fix Qt5.4.1 issue on OSX
+    // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
+    m_serialPort->setPortName("/dev/cu." + settings.name);
+#else
     m_serialPort->setPortName(settings.name);
+#endif
 
     if(m_serialPort->open(QIODevice::ReadWrite)){
         // Start Reading the settings

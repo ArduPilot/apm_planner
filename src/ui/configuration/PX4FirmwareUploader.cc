@@ -284,7 +284,15 @@ void PX4FirmwareUploader::kickOffTriggered()
     m_currentState = INIT;
     m_port = new QSerialPort();
     connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()));
+
+#ifdef Q_OS_MACX
+    // temp fix Qt5.4.1 issue on OSX
+    // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
+    m_port->setPortName("/dev/cu." + m_portToUse);
+#else
     m_port->setPortName(m_portToUse);
+#endif
+
     if (!m_port->open(QIODevice::ReadWrite))
     {
         QLOG_ERROR() << "Unable to open port:" << m_port->errorString();
