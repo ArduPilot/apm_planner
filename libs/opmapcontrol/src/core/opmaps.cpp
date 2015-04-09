@@ -39,7 +39,7 @@ namespace core {
     OPMaps::OPMaps():RetryLoadTile(2),useMemoryCache(true)
     {
         accessmode=AccessMode::ServerAndCache;
-        Language=LanguageType::PortuguesePortugal;
+        Language=LanguageType::English;
         LanguageStr=LanguageType().toShortString(Language);
         Cache::Instance();
 
