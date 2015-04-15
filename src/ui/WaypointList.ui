@@ -68,6 +68,9 @@
          <property name="suffix">
           <string> m</string>
          </property>
+         <property name="maximum">
+          <double>999.000000000000000</double>
+         </property>
         </widget>
        </item>
        <item row="1" column="5">
