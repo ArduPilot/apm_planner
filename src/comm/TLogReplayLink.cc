@@ -265,6 +265,7 @@ void TLogReplayLink::run()
                             msleep(1);
                         }
                         uas->receiveMessage(this,message);
+                        LinkManager::instance()->getUasObject(message.sysid)->messageReceived(this,message);
                         m_mavlinkDecoder->receiveMessage(this,message);
                         if (m_mavlinkInspector)
                         {
