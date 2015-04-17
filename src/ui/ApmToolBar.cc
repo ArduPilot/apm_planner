@@ -54,6 +54,16 @@ APMToolBar::APMToolBar(QWindow *parent):
     engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
     setSource(url);
     QLOG_DEBUG() << "QML Status:" << status();
+    if (status() == QQuickView::Error)
+    {
+        QString errorstr = "";
+        for (int i=0;i<errors().size();i++)
+        {
+            errorstr += errors().at(i).toString() + "\n";
+        }
+        QMessageBox::information(0,"Error", "Unable to load ApmToolbar.qml. Please reinstall the application and try again. Errors are as follows:\n" + errorstr);
+        return;
+    }
     setResizeMode(QQuickView::SizeRootObjectToView);
     this->rootContext()->setContextProperty("globalObj", this);
 
