@@ -296,7 +296,7 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
             if (foundtype == MAV_TYPE_GENERIC)
             {
                 int type = record.value("type").toString().toInt();
-                foundtype = (MAV_TYPE)type;
+                foundtype = static_cast<MAV_TYPE>(type);
             }
             if (foundtype == MAV_TYPE_FIXED_WING)
             {
@@ -310,6 +310,10 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
             else if (foundtype == MAV_TYPE_GROUND_ROVER)
             {
                 mode = ApmRover::stringForMode(modeint);
+            }
+            else
+            {
+                mode = QString::number(static_cast<int>(modeint));
             }
         }
         bool ok = false;
