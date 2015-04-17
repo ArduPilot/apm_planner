@@ -269,34 +269,40 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
     {
         //No mode?
         QLOG_DEBUG() << "Graph loaded with no mode table. Running anyway, but text modes will not be available";
-    }
-    else
+    modequery.prepare("SELECT * FROM 'HEARTBEAT';");
+    if (!modequery.exec())
     {
-        while (modequery.next())
+        QLOG_DEBUG() << "Graph loaded with no heartbeat either. No modes available";
+    }
+    }
+    while (modequery.next())
+    {
+        QSqlRecord record = modequery.record();
+        quint64 index = record.value(0).toLongLong();
+        QString mode = "";
+        if (record.contains("Mode"))
         {
-            QSqlRecord record = modequery.record();
-            quint64 index = record.value(0).toLongLong();
-            QString mode = "";
-            if (record.contains("Mode"))
-            {
-                mode = record.value("Mode").toString();
-            }
-            bool ok = false;
-            int modeint = mode.toInt(&ok);
-            if (!ok)
-            {
-                if (record.contains("ModeNum"))
-                {
-                    mode = record.value("ModeNum").toString();
-                }
-                else
-                {
-                    QLOG_DEBUG() << "Unable to determine Mode number in log" << record.value("Mode").toString();
-                    mode = record.value("Mode").toString();
-                }
-            }
-            retval.insert(index,mode);
+        mode = record.value("Mode").toString();
         }
+        else if (record.contains("custom_mode"))
+        {
+            mode = record.value("custom_mode").toString();
+        }
+        bool ok = false;
+        int modeint = mode.toInt(&ok);
+        if (!ok)
+        {
+        if (record.contains("ModeNum"))
+        {
+            mode = record.value("ModeNum").toString();
+        }
+        else
+        {
+            QLOG_DEBUG() << "Unable to determine Mode number in log" << record.value("Mode").toString();
+            mode = record.value("Mode").toString();
+        }
+        }
+        retval.insert(index,mode);
     }
     return retval;
 }
@@ -686,7 +692,7 @@ QString AP2DataPlot2DModel::makeCreateTableString(QString tablename, QString for
         }
         else
         {
-            //QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << typeCode;
+        QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << typeCode;
         }
     }
     mktable.append(");");
