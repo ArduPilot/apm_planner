@@ -229,7 +229,7 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             m_isLeveling = false;
         }
     }
-    if (severity == 5)
+    if ((severity == 5)||(severity == 3))
     {
         //This is a calibration instruction
         if (text.contains("Place") && text.contains ("and press any key"))
