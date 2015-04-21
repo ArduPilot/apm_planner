@@ -79,6 +79,16 @@ public:
      */
     virtual QString getName() const = 0;
 
+    /**
+     * @brief Get the human readable name of this link
+     */
+    virtual QString getShortName() const = 0;
+
+    /**
+     * @brief Get the detail of this link (ie. baud, ip addres etc)
+     */
+    virtual QString getDetail() const = 0;
+
     virtual void requestReset() = 0;
 
     /**

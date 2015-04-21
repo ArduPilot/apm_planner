@@ -65,6 +65,8 @@ public:
     // LinkInterface methods
     virtual int     getId(void) const;
     virtual QString getName(void) const;
+    virtual QString getShortName(void) const;
+    virtual QString getDetail(void) const;
     virtual bool    isConnected(void) const;
     virtual bool    connect(void);
     virtual bool    disconnect(void);

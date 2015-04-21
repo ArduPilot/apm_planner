@@ -99,6 +99,8 @@ public:
     bool getLinkConnected(int linkid);
     QString getSerialLinkPort(int linkid);
     QString getLinkName(int linkid);
+    QString getLinkShortName(int linkid);
+    QString getLinkDetail(int linkid);
     int getSerialLinkBaud(int linkid);
     int getUdpLinkPort(int linkid);
     int getTcpLinkPort(int linkid);

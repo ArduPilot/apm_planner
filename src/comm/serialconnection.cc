@@ -390,6 +390,15 @@ QString SerialConnection::getName() const
     return m_portName;
 }
 
+QString SerialConnection::getShortName() const
+{
+    return m_portName;
+}
+
+QString SerialConnection::getDetail() const
+{
+    return QString::number(m_baud);
+}
 
 bool SerialConnection::isConnected() const
 {

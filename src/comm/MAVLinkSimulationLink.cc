@@ -998,6 +998,16 @@ QString MAVLinkSimulationLink::getName() const
     return name;
 }
 
+QString MAVLinkSimulationLink::getShortName() const
+{
+    return name;
+}
+
+QString MAVLinkSimulationLink::getDetail() const
+{
+    return QString("sim");
+}
+
 qint64 MAVLinkSimulationLink::getConnectionSpeed() const
 {
     /* 100 Mbit is reasonable fast and sufficient for all embedded applications */

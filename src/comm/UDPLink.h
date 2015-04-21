@@ -63,6 +63,8 @@ public:
      * @brief The human readable port name
      */
     QString getName() const;
+    QString getShortName() const;
+    QString getDetail() const;
     int getBaudRate() const;
     int getBaudRateType() const;
     int getFlowType() const;

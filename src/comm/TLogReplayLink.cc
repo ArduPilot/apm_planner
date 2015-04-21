@@ -25,6 +25,16 @@ QString TLogReplayLink::getName() const
 {
     return "AP2SimulationLink";
 }
+
+QString TLogReplayLink::getShortName() const
+{
+    return "AP2SimLink";
+}
+
+QString TLogReplayLink::getDetail() const
+{
+    return "sim";
+}
 void TLogReplayLink::requestReset()
 {
 

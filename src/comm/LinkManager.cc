@@ -427,6 +427,7 @@ void LinkManager::modifySerialConnection(int index,QString port,int baud)
     emit linkChanged(index);
     saveSettings();
 }
+
 QString LinkManager::getLinkName(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
@@ -434,6 +435,25 @@ QString LinkManager::getLinkName(int linkid)
         return "";
     }
     return m_connectionMap.value(linkid)->getName();
+}
+
+QString LinkManager::getLinkShortName(int linkid)
+{
+    if (!m_connectionMap.contains(linkid))
+    {
+        return "";
+    }
+    return m_connectionMap.value(linkid)->getShortName();
+}
+
+QString LinkManager::getLinkDetail(int linkid)
+{
+    if (!m_connectionMap.contains(linkid))
+    {
+        return "";
+    }
+
+    return m_connectionMap.value(linkid)->getDetail();
 }
 
 QString LinkManager::getSerialLinkPort(int linkid)

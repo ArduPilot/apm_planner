@@ -27,7 +27,7 @@ Rectangle {
     property alias backgroundColor : toolbar.color
     property alias uasNameLabel: currentUasName.label
     property alias linkNameLabel: linkDevice.label
-    property alias baudrateLabel: baudrate.label
+    property alias linkDetailLabel: linkDetail.label
     property bool connected: false
     property bool armed: false
     property string armedstr: "status"
@@ -292,7 +292,7 @@ Rectangle {
         }
 
         TextButton {
-            id: baudrate
+            id: linkDetail
             label: "none"
             minWidth: 70
             enabled: !connectionWidget.disable

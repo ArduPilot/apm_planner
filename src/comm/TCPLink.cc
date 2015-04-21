@@ -354,6 +354,16 @@ QString TCPLink::getName() const
     return _name;
 }
 
+QString TCPLink::getShortName() const
+{
+    return _hostAddress.toString();
+}
+
+QString TCPLink::getDetail() const
+{
+    return QString::number(_port);
+}
+
 qint64 TCPLink::getConnectionSpeed() const
 {
     return 54000000; // 54 Mbit

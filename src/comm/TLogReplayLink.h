@@ -18,6 +18,8 @@ public:
     bool isPaused();
     int getId() const;
     QString getName() const;
+    QString getShortName() const;
+    QString getDetail() const;
     void requestReset();
     bool isConnected() const;
     qint64 getConnectionSpeed() const;

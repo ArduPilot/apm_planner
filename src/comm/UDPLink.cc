@@ -390,6 +390,16 @@ QString UDPLink::getName() const
     return name;
 }
 
+QString UDPLink::getShortName() const
+{
+    return host.toString();
+}
+
+QString UDPLink::getDetail() const
+{
+    return QString::number(port);
+}
+
 void UDPLink::setName(QString name)
 {
     this->name = name;
