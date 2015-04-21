@@ -136,6 +136,9 @@
          <property name="text">
           <string>Save WPs</string>
          </property>
+         <property name="shortcut">
+          <string>Ctrl+S</string>
+         </property>
         </widget>
        </item>
        <item row="1" column="7">
@@ -155,6 +158,9 @@
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/actions/go-bottom.svg</normaloff>:/files/images/actions/go-bottom.svg</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+L</string>
          </property>
         </widget>
        </item>
@@ -251,6 +257,9 @@
          <property name="text">
           <string>Load WPs</string>
          </property>
+         <property name="shortcut">
+          <string>Ctrl+G</string>
+         </property>
         </widget>
        </item>
        <item row="1" column="12">
@@ -289,6 +298,9 @@
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+S</string>
          </property>
         </widget>
        </item>
@@ -399,6 +411,9 @@
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/actions/go-jump.svg</normaloff>:/files/images/actions/go-jump.svg</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+R</string>
          </property>
         </widget>
        </item>
