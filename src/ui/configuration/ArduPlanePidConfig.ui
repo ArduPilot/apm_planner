@@ -949,6 +949,9 @@
          <property name="text">
           <string>Write Params</string>
          </property>
+         <property name="shortcut">
+          <string>Ctrl+W</string>
+         </property>
         </widget>
        </item>
        <item alignment="Qt::AlignHCenter">
@@ -979,6 +982,9 @@
          </property>
          <property name="text">
           <string>Refresh Params</string>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+R</string>
          </property>
         </widget>
        </item>
