@@ -391,11 +391,17 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
         }
         else if (graph->data()->contains(key))
         {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(key).value,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+        	QString str = QString::number(graph->data()->value(key).value,'f',4);
+        	str.remove( QRegExp("0+$") ); // Remove trailing 0's
+        	str.remove( QRegExp("\\.$") ); // Remove '.' if it's the last character
+            newresult.append(m_graphClassMap.keys()[i] + ": " + str + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
         else if (graph->data()->lowerBound(key) != graph->data()->constEnd())
         {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number((graph->data()->lowerBound(key).value().value),'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+        	QString str = QString::number((graph->data()->lowerBound(key).value().value),'f',4);
+        	str.remove( QRegExp("0+$") ); // Remove trailing 0's
+        	str.remove( QRegExp("\\.$") ); // Remove '.' if it's the last character
+            newresult.append(m_graphClassMap.keys()[i] + ": " + str + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
         else
         {
