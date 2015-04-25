@@ -182,11 +182,14 @@
           <string>Read all waypoints from the MAV. Clears the list on this computer.</string>
          </property>
          <property name="text">
-          <string>Get</string>
+          <string>Read</string>
          </property>
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/status/software-update-available.svg</normaloff>:/files/images/status/software-update-available.svg</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+R</string>
          </property>
         </widget>
        </item>
@@ -293,14 +296,14 @@
           <string>Transmit all waypoints on this list to the MAV.</string>
          </property>
          <property name="text">
-          <string>Set</string>
+          <string>Write</string>
          </property>
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
          </property>
          <property name="shortcut">
-          <string>Ctrl+S</string>
+          <string>Ctrl+W</string>
          </property>
         </widget>
        </item>
