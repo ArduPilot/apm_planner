@@ -68,6 +68,9 @@
          <property name="suffix">
           <string> m</string>
          </property>
+         <property name="maximum">
+          <double>999.000000000000000</double>
+         </property>
         </widget>
        </item>
        <item row="1" column="5">
@@ -136,6 +139,9 @@
          <property name="text">
           <string>Save WPs</string>
          </property>
+         <property name="shortcut">
+          <string>Ctrl+S</string>
+         </property>
         </widget>
        </item>
        <item row="1" column="7">
@@ -155,6 +161,9 @@
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/actions/go-bottom.svg</normaloff>:/files/images/actions/go-bottom.svg</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+L</string>
          </property>
         </widget>
        </item>
@@ -176,11 +185,14 @@
           <string>Read all waypoints from the MAV. Clears the list on this computer.</string>
          </property>
          <property name="text">
-          <string>Get</string>
+          <string>Read</string>
          </property>
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/status/software-update-available.svg</normaloff>:/files/images/status/software-update-available.svg</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+R</string>
          </property>
         </widget>
        </item>
@@ -251,6 +263,9 @@
          <property name="text">
           <string>Load WPs</string>
          </property>
+         <property name="shortcut">
+          <string>Ctrl+G</string>
+         </property>
         </widget>
        </item>
        <item row="1" column="12">
@@ -284,11 +299,14 @@
           <string>Transmit all waypoints on this list to the MAV.</string>
          </property>
          <property name="text">
-          <string>Set</string>
+          <string>Write</string>
          </property>
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+W</string>
          </property>
         </widget>
        </item>
@@ -399,6 +417,9 @@
          <property name="icon">
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/actions/go-jump.svg</normaloff>:/files/images/actions/go-jump.svg</iconset>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+R</string>
          </property>
         </widget>
        </item>

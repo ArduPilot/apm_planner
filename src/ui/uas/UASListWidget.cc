@@ -51,18 +51,30 @@ UASListWidget::UASListWidget(QWidget *parent) : QWidget(parent),
 {
     m_ui->setupUi(this);
 
-    listLayout = new QVBoxLayout(this);
+    // Setup container for scrollbar
+    mainLayout = new QHBoxLayout(this);
+    mainLayout->setMargin(0);
+    scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    scrollAreaWidgetContents = new QWidget(scrollArea);
+
+    listLayout = new QVBoxLayout(scrollAreaWidgetContents);
     listLayout->setMargin(0);
     listLayout->setSpacing(3);
     listLayout->setAlignment(Qt::AlignTop);
-    this->setLayout(listLayout);
+
+    scrollAreaWidgetContents->setLayout(listLayout);
+    scrollArea->setWidget(scrollAreaWidgetContents);
+
+    mainLayout->addWidget(scrollArea);
+    this->setLayout(mainLayout);
     setObjectName("UNMANNED_SYSTEMS_LIST");
 
     // Construct initial widget
     //uWidget = new QGCUnconnectedInfoWidget(this);
     //listLayout->addWidget(uWidget);
 
-    this->setMinimumWidth(262);
+    this->setMinimumWidth(262 + QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent));
 
     uasViews = QMap<UASInterface*, UASView*>();
 
@@ -135,5 +147,19 @@ void UASListWidget::removeUAS(UASInterface* uas)
 
 
     }
+}
+
+void UASListWidget::resizeEvent(QResizeEvent *e)
+{
+    if (scrollArea->verticalScrollBar()->isVisible())
+    {
+        int width = this->width() - QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+        scrollAreaWidgetContents->setMaximumWidth(width);
+    }
+    else
+    {
+        scrollAreaWidgetContents->setMaximumWidth(this->width());
+    }
+    update();
 }
 

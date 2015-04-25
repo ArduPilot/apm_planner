@@ -200,6 +200,8 @@ void AccelCalibrationConfig::calibrateButtonClicked()
 
 void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
 {
+    Q_UNUSED(evt);
+
     if (m_muted) { // turns audio backon, when you leave the page
         GAudioOutput::instance()->mute(false);
         m_muted = false;
@@ -219,6 +221,8 @@ void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
 }
 void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, int severity, QString text)
 {
+    Q_UNUSED(uasid);
+    Q_UNUSED(componentid);
     //command received: " Severity 1
     //Place APM Level and press any key" severity 5
     if (m_isLeveling)
@@ -229,7 +233,7 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             m_isLeveling = false;
         }
     }
-    if ((severity == 5)||(severity == 3))
+    if ((severity == 5 /*SEVERITY_USER_RESPONSE*/)||(severity == 3 /*SEVERITY_HIGH*/))
     {
         //This is a calibration instruction
         if (text.contains("Place") && text.contains ("and press any key"))
