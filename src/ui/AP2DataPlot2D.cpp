@@ -1264,21 +1264,27 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
                 //It's an integer!
                 switch (type)
                 {
-                    case MAV_TYPE_QUADROTOR:
+                case MAV_TYPE_QUADROTOR:
+                case MAV_TYPE_HEXAROTOR:
+                case MAV_TYPE_OCTOROTOR:
+                case MAV_TYPE_HELICOPTER:
+                case MAV_TYPE_TRICOPTER:
                     {
                         mode = ApmCopter::stringForMode(modeint);
                     }
                     break;
-                    case MAV_TYPE_FIXED_WING:
+                case MAV_TYPE_FIXED_WING:
                     {
                         mode = ApmPlane::stringForMode(modeint);
                     }
                     break;
-                    case MAV_TYPE_GROUND_ROVER:
+                case MAV_TYPE_GROUND_ROVER:
                     {
                         mode = ApmRover::stringForMode(modeint);
                     }
                     break;
+                default:
+                    mode = QString().sprintf("Mode (%d)", modeint);
                 }
             }
             QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
