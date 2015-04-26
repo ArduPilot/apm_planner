@@ -391,11 +391,11 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
         }
         else if (graph->data()->contains(key))
         {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number(graph->data()->value(key).value,'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            newresult.append(m_graphClassMap.keys()[i] + ": " + QString().sprintf( "%.4g", graph->data()->value(key).value) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
         else if (graph->data()->lowerBound(key) != graph->data()->constEnd())
         {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + QString::number((graph->data()->lowerBound(key).value().value),'f',4) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            newresult.append(m_graphClassMap.keys()[i] + ": " + QString().sprintf( "%.4g", graph->data()->lowerBound(key).value().value) + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
         else
         {
