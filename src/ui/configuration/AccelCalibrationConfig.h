@@ -58,6 +58,7 @@ private:
     Ui::AccelCalibrationConfig ui;
     bool m_muted;
     bool m_isLeveling;
+    bool m_isCalibrating;
     QTimer m_countdownTimer;
     int m_countdownCount;
 };
