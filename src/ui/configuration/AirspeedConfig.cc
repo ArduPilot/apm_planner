@@ -139,6 +139,7 @@ void AirspeedConfig::hardwareSelectComboBoxChanged(int index)
         ui.sensorComboBox->addItem("Analog Sensor");
         ui.sensorComboBox->addItem("EagleTree I2C");
         ui.sensorComboBox->addItem("MEAS I2C");
+        ui.sensorComboBox->addItem("Pixhawk I2C");
         ui.sensorComboBox->setEnabled(true);
         disconnect(ui.pinComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(pinSelectComboBoxChanged(int)));
         ui.pinComboBox->clear();
@@ -154,6 +155,7 @@ void AirspeedConfig::hardwareSelectComboBoxChanged(int index)
         ui.sensorComboBox->addItem("Analog Sensor");
         ui.sensorComboBox->addItem("EagleTree I2C");
         ui.sensorComboBox->addItem("MEAS I2C");
+        ui.sensorComboBox->addItem("Pixhawk I2C");
         ui.sensorComboBox->setEnabled(true);
         disconnect(ui.pinComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(pinSelectComboBoxChanged(int)));
         ui.pinComboBox->clear();
@@ -169,6 +171,7 @@ void AirspeedConfig::hardwareSelectComboBoxChanged(int index)
         ui.sensorComboBox->addItem("Analog Sensor");
         ui.sensorComboBox->addItem("EagleTree I2C");
         ui.sensorComboBox->addItem("MEAS I2C");
+        ui.sensorComboBox->addItem("Pixhawk I2C");
         ui.sensorComboBox->setEnabled(true);
         disconnect(ui.pinComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(pinSelectComboBoxChanged(int)));
         ui.pinComboBox->clear();
@@ -239,7 +242,7 @@ void AirspeedConfig::sensorSelectComboBoxChanged(int index)
             connect(ui.pinComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(pinSelectComboBoxChanged(int)));
         }
     }
-    else if (index == 2 || index == 3) //I2C Sensor
+    else if (index == 2 || index == 3 || index == 4) //I2C Sensor
     {
         disconnect(ui.pinComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(pinSelectComboBoxChanged(int)));
         ui.pinComboBox->clear();
