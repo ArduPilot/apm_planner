@@ -162,9 +162,6 @@
           <iconset resource="../../qgroundcontrol.qrc">
            <normaloff>:/files/images/actions/go-bottom.svg</normaloff>:/files/images/actions/go-bottom.svg</iconset>
          </property>
-         <property name="shortcut">
-          <string>Ctrl+L</string>
-         </property>
         </widget>
        </item>
        <item row="1" column="1">
@@ -264,7 +261,7 @@
           <string>Load WPs</string>
          </property>
          <property name="shortcut">
-          <string>Ctrl+G</string>
+          <string>Ctrl+L</string>
          </property>
         </widget>
        </item>
