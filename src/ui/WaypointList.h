@@ -114,6 +114,8 @@ public slots:
     // Waypoint operations
     void moveUp(Waypoint* wp);
     void moveDown(Waypoint* wp);
+    void moveTop(Waypoint* wp);
+    void moveBottom(Waypoint* wp);
     void removeWaypoint(Waypoint* wp);
 
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
