@@ -86,6 +86,9 @@ public:
 public slots:
     void moveUp();
     void moveDown();
+    void moveTop();
+    void moveBottom();
+
     void remove();
     /** @brief Waypoint matching this widget has been deleted */
     void deleted(QObject* waypoint);
@@ -125,7 +128,9 @@ private:
 signals:
     void moveUpWaypoint(Waypoint*);
     void moveDownWaypoint(Waypoint*);
-    void removeWaypoint(Waypoint*);    
+    void moveTopWaypoint(Waypoint*);
+    void moveBottomWaypoint(Waypoint*);
+    void removeWaypoint(Waypoint*);
     void changeCurrentWaypoint(quint16);
     void setYaw(double);
 

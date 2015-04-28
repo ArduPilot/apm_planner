@@ -161,6 +161,8 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
 
     connect(m_ui->upButton, SIGNAL(clicked()), this, SLOT(moveUp()));
     connect(m_ui->downButton, SIGNAL(clicked()), this, SLOT(moveDown()));
+    connect(m_ui->topButton, SIGNAL(clicked()), this, SLOT(moveTop()));
+    connect(m_ui->bottomButton, SIGNAL(clicked()), this, SLOT(moveBottom()));
     connect(m_ui->removeButton, SIGNAL(clicked()), this, SLOT(remove()));
 
     connect(m_ui->autoContinue, SIGNAL(stateChanged(int)), this, SLOT(changedAutoContinue(int)));
@@ -178,6 +180,16 @@ void WaypointEditableView::moveUp()
 void WaypointEditableView::moveDown()
 {
     emit moveDownWaypoint(wp);
+}
+
+void WaypointEditableView::moveTop()
+{
+    emit moveTopWaypoint(wp);
+}
+
+void WaypointEditableView::moveBottom()
+{
+    emit moveBottomWaypoint(wp);
 }
 
 

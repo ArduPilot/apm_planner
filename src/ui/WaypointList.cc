@@ -593,6 +593,8 @@ void WaypointList::waypointEditableListChanged()
             wpEditableViews.insert(wp, wpview);
             connect(wpview, SIGNAL(moveDownWaypoint(Waypoint*)),    this, SLOT(moveDown(Waypoint*)));
             connect(wpview, SIGNAL(moveUpWaypoint(Waypoint*)),      this, SLOT(moveUp(Waypoint*)));
+            connect(wpview, SIGNAL(moveTopWaypoint(Waypoint*)),    this, SLOT(moveTop(Waypoint*)));
+            connect(wpview, SIGNAL(moveBottomWaypoint(Waypoint*)),  this, SLOT(moveBottom(Waypoint*)));
             connect(wpview, SIGNAL(removeWaypoint(Waypoint*)),      this, SLOT(removeWaypoint(Waypoint*)));
             //connect(wpview, SIGNAL(currentWaypointChanged(quint16)), this, SLOT(currentWaypointChanged(quint16)));
             connect(wpview, SIGNAL(changeCurrentWaypoint(quint16)), this, SLOT(currentWaypointEditableChanged(quint16)));
@@ -649,8 +651,44 @@ void WaypointList::moveDown(Waypoint* wp)
     }
 }
 
+void WaypointList::moveTop(Waypoint* wp)
+{
+    const QList<Waypoint *> &waypoints = WPM->getWaypointEditableList();
+
+    //get the current position of wp in the local storage
+    int i;
+    for (i = 0; i < waypoints.count(); i++) {
+        if (waypoints[i] == wp)
+            break;
+    }
+
+    // if wp was found and its not the first entry, move it
+    // For APM the first entry is WP1
+    if (i < waypoints.count() && i > 1) {
+        WPM->moveWaypoint(i, 1);
+    }
+}
+
+void WaypointList::moveBottom(Waypoint* wp)
+{
+    const QList<Waypoint *> &waypoints = WPM->getWaypointEditableList();
+
+    //get the current position of wp in the local storage
+    int i;
+    // For APM entries start at WP1
+    for (i = 1; i < waypoints.count(); i++) {
+        if (waypoints[i] == wp)
+            break;
+    }
+
+    // if wp was found and its not the last entry, move it
+    if (i < waypoints.count()-1) {
+        WPM->moveWaypoint(i, waypoints.count()-1);
+    }
+}
+
 void WaypointList::removeWaypoint(Waypoint* wp)
-{    
+{
     if (wp && (wp->getId() > 0)){ // APM use WP0 as home so do not remove it
         WPM->removeWaypoint(wp->getId());
     }

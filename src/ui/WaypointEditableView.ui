@@ -288,6 +288,58 @@ QPushButton:pressed {
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="topButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>Move to top</string>
+          </property>
+          <property name="statusTip">
+           <string>Move to top</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../qgroundcontrol.qrc">
+            <normaloff>:/files/images/actions/go-top.svg</normaloff>:/files/images/actions/go-top.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="bottomButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="toolTip">
+           <string>Move to bottom</string>
+          </property>
+          <property name="statusTip">
+           <string>Move to bottom</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../../qgroundcontrol.qrc">
+            <normaloff>:/files/images/actions/go-bottom.svg</normaloff>:/files/images/actions/go-bottom.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="upButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -311,10 +363,10 @@ QPushButton:pressed {
            <enum>Qt::NoFocus</enum>
           </property>
           <property name="toolTip">
-           <string>Move Up in List</string>
+           <string>Move up</string>
           </property>
           <property name="statusTip">
-           <string>Move Up in List</string>
+           <string>Move up</string>
           </property>
           <property name="text">
            <string/>
@@ -349,10 +401,10 @@ QPushButton:pressed {
            <enum>Qt::NoFocus</enum>
           </property>
           <property name="toolTip">
-           <string>Move Down in List</string>
+           <string>Move down</string>
           </property>
           <property name="statusTip">
-           <string>Move Down in List</string>
+           <string>Move down</string>
           </property>
           <property name="text">
            <string/>
