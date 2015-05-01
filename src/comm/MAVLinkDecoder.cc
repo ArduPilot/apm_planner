@@ -160,11 +160,27 @@ QList<QPair<QString,QVariant> > MAVLinkDecoder::receiveMessage(LinkInterface* li
         if (QString(messageInfo[msgid].fields[fieldid].name) == QString("time_boot_ms") && messageInfo[msgid].fields[fieldid].type == MAVLINK_TYPE_UINT32_T)
         {
             time = *((quint32*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
+
+            QPair<QString,QVariant> fieldval;
+            fieldval.first = QString("M%1:%2.%3")
+                             .arg(message.sysid)
+                             .arg(messageInfo[msgid].name)
+                             .arg(messageInfo[msgid].fields[fieldid].name);
+            fieldval.second = time;
+            retval.append(fieldval);
         }
         else if (QString(messageInfo[msgid].fields[fieldid].name).contains("usec") && messageInfo[msgid].fields[fieldid].type == MAVLINK_TYPE_UINT64_T)
         {
             time = *((quint64*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
             time = (time+500)/1000; // Scale to milliseconds, round up/down correctly
+
+            QPair<QString,QVariant> fieldval;
+            fieldval.first = QString("M%1:%2.%3")
+                             .arg(message.sysid)
+                             .arg(messageInfo[msgid].name)
+                             .arg(messageInfo[msgid].fields[fieldid].name);
+            fieldval.second = *((uint64_t*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
+            retval.append(fieldval);
         }
         else
         {
