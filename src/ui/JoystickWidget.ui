@@ -478,7 +478,7 @@
     </widget>
    </item>
    <item row="2" column="0" colspan="5">
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="30,0,30">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="30,0,0,30">
      <item>
       <widget class="QLabel" name="statusLabel">
        <property name="text">
@@ -487,12 +487,22 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="joystickButton">
+      <widget class="QLabel" name="joystickLabel">
        <property name="text">
         <string>No joystick detected yet.. waiting</string>
        </property>
-       <property name="checkable">
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="joystickButton">
+       <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Activate</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
        </property>
        <property name="checked">
         <bool>false</bool>
@@ -501,7 +511,7 @@
         <bool>false</bool>
        </property>
        <property name="flat">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
