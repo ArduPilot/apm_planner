@@ -178,21 +178,21 @@ void MissionElevationDisplay::updateDisplay()
     if (m_waypointList.count() == 0)
         return;
 
-    m_totalDistance = plotElevationGraph(ElevationGraphMissionId, m_homeAltOffset);
+    m_totalDistance = plotElevationGraph(m_waypointList.values(), ElevationGraphMissionId, m_homeAltOffset);
     addWaypointLabels();
 }
 
-void MissionElevationDisplay::updateElevationGraph(double averageResolution)
+void MissionElevationDisplay::updateElevationGraph(QList<Waypoint *> waypointList, double averageResolution)
 {
     if (m_waypointList.count() == 0)
         return;
-    int distance = plotElevationGraph(ElevationGraphElevationId, 0.0);
+    int distance = plotElevationGraph(waypointList, ElevationGraphElevationId, 0.0);
     ui->resolutionLabel->setText(QString::number(averageResolution)+"(m)");
     if (distance > m_totalDistance)
         m_totalDistance = distance;
 }
 
-int MissionElevationDisplay::plotElevationGraph(int graphId, double homeAltOffset)
+int MissionElevationDisplay::plotElevationGraph(QList<Waypoint *> waypointList, int graphId, double homeAltOffset)
 {
     Waypoint* previousWp = NULL;
     double totalDistance = 0.0;
@@ -201,7 +201,7 @@ int MissionElevationDisplay::plotElevationGraph(int graphId, double homeAltOffse
     QCPGraph* graph = customplot->graph(graphId);
     graph->clearData();
 
-    foreach(Waypoint* wp, m_waypointList){
+    foreach(Waypoint* wp, waypointList){
         double lower = 0.0, upper = 0.0;
         QCPRange xRange = customplot->xAxis->range();
         QCPRange yRange = customplot->yAxis->range();

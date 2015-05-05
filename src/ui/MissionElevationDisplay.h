@@ -52,14 +52,14 @@ private slots:
     void currentWaypointChanged(quint16 waypointId);
     void updateDisplay();
     void updateElevationData();
-    void updateElevationGraph(double averageResolution);
+    void updateElevationGraph(QList<Waypoint*> waypointList, double averageResolution);
     void setHomeAltOffset();
     void useHomeAltOffset(bool state);
     void showInfoBox();
     void sampleValueChanged();
 
 private:
-    int plotElevationGraph(int graphId, double homeAltOffset);
+    int plotElevationGraph(QList<Waypoint *> waypointList, int graphId, double homeAltOffset);
     double distanceBetweenLatLng(double lat1, double lon1, double lat2, double lon2);
     double getHomeAlt(Waypoint* wp);
     void addWaypointLabels();
