@@ -326,6 +326,20 @@ void AP2DataPlotThread::loadBinaryLog()
                                     linetoemit += "," + QString::number(val,'f',0);
                                     valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
                                 }
+                                else if (typeCode == 'q')
+                                {
+                                    qint64 val;
+                                    packetstream >> val;
+                                    linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
+                                }
+                                else if (typeCode == 'Q')
+                                {
+                                    quint64 val;
+                                    packetstream >> val;
+                                    linetoemit += "," + QString::number(val,'f',0);
+                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val));
+                                }
                                 else
                                 {
                                     //Unknown!

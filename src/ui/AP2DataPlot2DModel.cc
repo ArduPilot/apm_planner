@@ -723,6 +723,14 @@ QString AP2DataPlot2DModel::makeCreateTableString(QString tablename, QString for
         {
             mktable.append("," + name + " integer");
         }
+        else if (typeCode == 'q') //int64_t
+        {
+            mktable.append("," + name + " integer");
+        }
+        else if (typeCode == 'Q') //uint64_t
+        {
+            mktable.append("," + name + " integer");
+        }
         else
         {
         QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << typeCode;
