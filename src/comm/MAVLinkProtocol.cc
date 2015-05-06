@@ -37,10 +37,10 @@ This file is part of the APM_PLANNER project
 #include "LinkManager.h"
 
 MAVLinkProtocol::MAVLinkProtocol():
+    m_isOnline(true),
     m_loggingEnabled(false),
     m_logfile(NULL),
-    m_connectionManager(NULL),
-    m_isOnline(true)
+    m_connectionManager(NULL)
 {
 }
 
@@ -307,7 +307,7 @@ void MAVLinkProtocol::handleMessage(quint64 timeid,LinkInterface *link)
         {
             if (lastIndex.value(message.sysid).contains(message.compid))
             {
-                if (lastIndex.value(message.sysid).value(message.compid) == -1)
+                if (lastIndex.value(message.sysid).value(message.compid) == static_cast<uint8_t>(-1))
                 {
                     lastIndex[message.sysid][message.compid] = message.seq;
                     expectedIndex = message.seq;
