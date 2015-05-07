@@ -179,7 +179,7 @@ QList<QPair<QString,QVariant> > MAVLinkDecoder::receiveMessage(LinkInterface* li
                              .arg(message.sysid)
                              .arg(messageInfo[msgid].name)
                              .arg(messageInfo[msgid].fields[fieldid].name);
-            fieldval.second = *((uint64_t*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
+            fieldval.second = *((quint64*)(m+messageInfo[msgid].fields[fieldid].wire_offset));
             retval.append(fieldval);
         }
         else
