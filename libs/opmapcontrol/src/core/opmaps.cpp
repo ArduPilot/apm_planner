@@ -221,6 +221,9 @@ namespace core {
                 tT.stop();
                 if( (reply->error()!=QNetworkReply::NoError))
                 {
+#ifdef DEBUG_GMAPS
+                    qDebug() << " Download Tile Network error: " << reply->errorString();
+#endif
                     errorvars.lock();
                     ++diag.networkerrors;
                     errorvars.unlock();
