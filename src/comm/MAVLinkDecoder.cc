@@ -82,19 +82,21 @@ MAVLinkDecoder::~MAVLinkDecoder()
 
 mavlink_field_info_t MAVLinkDecoder::getFieldInfo(QString msgname,QString fieldname)
 {
+    mavlink_field_info_t fieldInfo;
     for (int i=0;i<256;i++)
     {
         if (msgname == messageInfo[i].name)
         {
-            for (int j=0;j<messageInfo[i].num_fields;j++)
+            for (unsigned int j=0;j<messageInfo[i].num_fields;j++)
             {
                 if (fieldname == messageInfo[i].fields[j].name)
                 {
-                    return messageInfo[i].fields[j];
+                    fieldInfo = messageInfo[i].fields[j];
                 }
             }
         }
     }
+    return fieldInfo;
 }
 QString MAVLinkDecoder::getMessageName(uint8_t msgid)
 {
@@ -109,7 +111,7 @@ QList<QString> MAVLinkDecoder::getFieldList(QString msgname)
         if (msgname == messageInfo[i].name)
         {
 
-            for (int j=0;j<messageInfo[i].num_fields;j++)
+            for (unsigned int j=0;j<messageInfo[i].num_fields;j++)
             {
                 retval.append(messageInfo[i].fields[j].name);
             }
@@ -121,7 +123,7 @@ QList<QString> MAVLinkDecoder::getFieldList(QString msgname)
 
 void MAVLinkDecoder::sendMessage(mavlink_message_t msg)
 {
-
+    Q_UNUSED(msg);
 }
 
 
