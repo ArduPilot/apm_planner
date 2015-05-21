@@ -51,6 +51,7 @@ public:
         SERIAL_LINK,
         TCP_LINK,
         UDP_LINK,
+        UDP_CLIENT_LINK,
         SIM_LINK,
         UNKNOWN_LINK
     };
@@ -146,6 +147,7 @@ public:
 
     virtual LinkType getLinkType() { return UNKNOWN_LINK; }
 
+
 public slots:
 
     /**
@@ -228,6 +230,12 @@ signals:
     void deleteLink(LinkInterface* const link);
 
     void error(LinkInterface* link,QString errorstring);
+
+    /**
+      * @brief Sends an update message when the link parameters are changed
+      *
+      */
+    void linkChanged(LinkInterface* link);
 
 protected:
 
