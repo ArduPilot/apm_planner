@@ -39,6 +39,7 @@ This file is part of the APM_PLANNER project
 #include "FailSafeConfig.h"
 #include "AdvancedParamConfig.h"
 #include "ArduCopterPidConfig.h"
+#include "CopterPidConfig.h"
 #include "ArduPlanePidConfig.h"
 #include "ArduRoverPidConfig.h"
 #include "AdvParameterList.h"
@@ -102,6 +103,7 @@ private:
     QPointer<GeoFenceConfig> m_geoFenceConfig;
     QPointer<AdvancedParamConfig> m_advancedParamConfig;
     QPointer<ArduCopterPidConfig> m_arduCopterPidConfig;
+    QPointer<CopterPidConfig> m_copterPidConfig;
     QPointer<ArduPlanePidConfig> m_arduPlanePidConfig;
     QPointer<ArduRoverPidConfig> m_arduRoverPidConfig;
     QPointer<AdvParameterList> m_advParameterList;

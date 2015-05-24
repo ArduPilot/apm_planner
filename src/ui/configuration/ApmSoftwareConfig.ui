@@ -147,6 +147,19 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="copterPidButton">
+           <property name="minimumSize">
+            <size>
+             <width>175</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Copter PIDs</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="arduPlanePidButton">
            <property name="minimumSize">
             <size>

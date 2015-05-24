@@ -399,6 +399,7 @@ FORMS += \
     src/ui/configuration/FailSafeConfig.ui \
     src/ui/configuration/AdvancedParamConfig.ui \
     src/ui/configuration/ArduCopterPidConfig.ui \
+    src/ui/configuration/CopterPidConfig.ui \
     src/ui/configuration/ApmPlaneLevel.ui \
     src/ui/configuration/ParamWidget.ui \
     src/ui/configuration/ArduPlanePidConfig.ui \
@@ -589,6 +590,7 @@ HEADERS += \
     src/ui/configuration/FailSafeConfig.h \
     src/ui/configuration/AdvancedParamConfig.h \
     src/ui/configuration/ArduCopterPidConfig.h \
+    src/ui/configuration/CopterPidConfig.h \
     src/ui/ApmToolBar.h \
     src/ui/configuration/PX4FirmwareUploader.h \
     src/ui/configuration/ApmPlaneLevel.h \
@@ -807,6 +809,7 @@ SOURCES += src/main.cc \
     src/ui/configuration/FailSafeConfig.cc \
     src/ui/configuration/AdvancedParamConfig.cc \
     src/ui/configuration/ArduCopterPidConfig.cc \
+    src/ui/configuration/CopterPidConfig.cc \
     src/ui/ApmToolBar.cc \
     src/ui/configuration/PX4FirmwareUploader.cc \
     src/ui/configuration/ApmPlaneLevel.cc \
