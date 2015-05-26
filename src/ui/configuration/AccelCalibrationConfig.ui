@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>896</width>
-    <height>514</height>
+    <width>397</width>
+    <height>331</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,53 +18,27 @@
     <rect>
      <x>10</x>
      <y>0</y>
-     <width>281</width>
-     <height>31</height>
+     <width>285</width>
+     <height>24</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;h2&gt;Accelerometer Calibration&lt;/h2&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:x-large; font-weight:600;&quot;&gt;3D Accelerometer Calibration&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="scaledContents">
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="apmGraphicLabel">
-   <property name="geometry">
-    <rect>
-     <x>440</x>
-     <y>80</y>
-     <width>241</width>
-     <height>201</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="scaledContents">
-    <bool>true</bool>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>70</y>
+     <x>10</x>
+     <y>30</y>
      <width>351</width>
-     <height>401</height>
+     <height>281</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,2,2,2,2,2,2,2,1">
-    <item>
-     <widget class="QLabel" name="coutdownLabel">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,2,2,2,0">
     <item>
      <widget class="QLabel" name="accelDescLabel">
       <property name="text">
@@ -72,6 +46,13 @@
       </property>
       <property name="wordWrap">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="coutdownLabel">
+      <property name="text">
+       <string/>
       </property>
      </widget>
     </item>
@@ -101,13 +82,12 @@
        <widget class="QPushButton" name="calibrateAccelButton">
         <property name="minimumSize">
          <size>
-          <width>75</width>
+          <width>120</width>
           <height>35</height>
          </size>
         </property>
         <property name="text">
-         <string>Calibrate
-Accelerometer</string>
+         <string>Calibrate</string>
         </property>
        </widget>
       </item>
@@ -139,73 +119,6 @@ Accelerometer</string>
        <string/>
       </property>
      </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="levelDescLabel">
-      <property name="text">
-       <string>Level your UAV to set default accelerometer offsets (1 axis)&lt;br&gt;This requires you to place your autopilot on a level surface.</string>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="levelAccelButton">
-        <property name="minimumSize">
-         <size>
-          <width>75</width>
-          <height>35</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Level
-Accelerometer</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
     </item>
    </layout>
   </widget>
