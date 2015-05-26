@@ -25,7 +25,7 @@ This file is part of the APM_PLANNER project
 #include "MainWindow.h"
 
 
-const char* COUNTDOWN_STRING = "<h3>Time remaining until timeout: <b>%d</b><h3>";
+const char* COUNTDOWN_STRING = "<h3>Calibrate MAV%03d<br>Time remaining until timeout: <b>%d</b><h3>";
 
 AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_muted(false),
@@ -46,7 +46,7 @@ AccelCalibrationConfig::~AccelCalibrationConfig()
 }
 void AccelCalibrationConfig::countdownTimerTick()
 {
-    ui.coutdownLabel->setText(QString().sprintf(COUNTDOWN_STRING, m_countdownCount--));
+    ui.coutdownLabel->setText(QString().sprintf(COUNTDOWN_STRING, m_uas->getUASID(), m_countdownCount--));
     if (m_countdownCount <= 0)
     {
         ui.coutdownLabel->setText("Command timed out, please try again");
@@ -120,7 +120,7 @@ void AccelCalibrationConfig::calibrateButtonClicked()
         int component = 1;
         m_uas->executeCommand(command, confirm, param1, param2, param3, param4, param5, param6, param7, component);
         m_countdownCount = CALIBRATION_TIMEOUT_SEC;
-        ui.coutdownLabel->setText(QString().sprintf(COUNTDOWN_STRING, m_countdownCount--));
+        ui.coutdownLabel->setText(QString().sprintf(COUNTDOWN_STRING, m_uas->getUASID(), m_countdownCount--));
         m_countdownTimer.start(1000);
     }
     else if (m_accelAckCount <= 10)
