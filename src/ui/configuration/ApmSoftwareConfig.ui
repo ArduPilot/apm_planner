@@ -37,7 +37,7 @@
         <x>0</x>
         <y>0</y>
         <width>201</width>
-        <height>592</height>
+        <height>598</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -142,22 +142,6 @@
             <bool>true</bool>
            </property>
            <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="copterPidButton">
-           <property name="minimumSize">
-            <size>
-             <width>175</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Copter PIDs</string>
-           </property>
-           <property name="checkable">
             <bool>true</bool>
            </property>
           </widget>

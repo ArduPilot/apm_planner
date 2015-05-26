@@ -43,9 +43,7 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     ui.advancedParamButton->setVisible(false);
     ui.advParamListButton->setVisible(false);
     ui.arduCopterPidButton->setVisible(false);
-    ui.copterPidButton->setVisible(false);
     ui.arduCopterPidButton->setText(tr("Extended Tuning"));
-    ui.copterPidButton->setText(tr("Tuning (Copter3.3)"));
     ui.arduRoverPidButton->setVisible(false);
     ui.arduRoverPidButton->setText(tr("Tuning"));
     ui.arduPlanePidButton->setVisible(false);
@@ -81,16 +79,6 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     ui.stackedWidget->addWidget(m_basicPidConfig);
     m_buttonToConfigWidgetMap[ui.basicPidButton] = m_basicPidConfig;
     connect(ui.basicPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-
-    m_arduCopterPidConfig = new ArduCopterPidConfig(this);
-    ui.stackedWidget->addWidget(m_arduCopterPidConfig);
-    m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_arduCopterPidConfig;
-    connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-
-    m_copterPidConfig = new CopterPidConfig(this);
-    ui.stackedWidget->addWidget(m_copterPidConfig);
-    m_buttonToConfigWidgetMap[ui.copterPidButton] = m_copterPidConfig;
-    connect(ui.copterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
     m_arduPlanePidConfig = new ArduPlanePidConfig(this);
     ui.stackedWidget->addWidget(m_arduPlanePidConfig);
@@ -182,7 +170,6 @@ void ApmSoftwareConfig::uasDisconnected()
     ui.advancedParamButton->setVisible(false);
     ui.advParamListButton->setVisible(false);
     ui.arduCopterPidButton->setVisible(false);
-    ui.copterPidButton->setVisible(false);
     ui.arduRoverPidButton->setVisible(false);
     ui.arduPlanePidButton->setVisible(false);
     ui.basicPidButton->setVisible(false);
@@ -200,7 +187,6 @@ void ApmSoftwareConfig::uasConnected()
         ui.geoFenceButton->setVisible(false); // TODO - enable when plane geo fence implemented
         ui.arduPlanePidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
-        ui.copterPidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
         ui.basicPidButton->setVisible(false);
         ui.advParamListButton->setVisible(m_isAdvancedMode);
@@ -210,7 +196,6 @@ void ApmSoftwareConfig::uasConnected()
     {
         ui.geoFenceButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(m_isAdvancedMode);
-        ui.copterPidButton->setVisible(m_isAdvancedMode);
         ui.arduPlanePidButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(false);
         ui.basicPidButton->setVisible(true);
@@ -222,7 +207,6 @@ void ApmSoftwareConfig::uasConnected()
         ui.geoFenceButton->setVisible(false);
         ui.arduRoverPidButton->setVisible(true);
         ui.arduCopterPidButton->setVisible(false);
-        ui.copterPidButton->setVisible(false);
         ui.arduPlanePidButton->setVisible(false);
         ui.basicPidButton->setVisible(false);
         ui.advParamListButton->setVisible(m_isAdvancedMode);
@@ -628,6 +612,34 @@ void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCo
 
     default:
         ; // Do Nothing
+    }
+
+    // Detects if we are using new copter PIDS or old ones
+    if (parameterName.contains("POS_XY_P")){
+        // Use New Copter PID UI
+        if (m_arduCopterPidConfig){
+            ui.stackedWidget->removeWidget(m_arduCopterPidConfig);
+            delete m_arduCopterPidConfig;
+        }
+        if (!m_copterPidConfig){
+            m_copterPidConfig = new CopterPidConfig(this);
+            ui.stackedWidget->addWidget(m_copterPidConfig);
+            m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_copterPidConfig;
+            connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+        }
+
+    } else if (parameterName.contains("HLD_LAT_P")){
+        // Use old ArduCopter PID UI,
+        if (m_copterPidConfig){
+            ui.stackedWidget->removeWidget(m_copterPidConfig);
+            delete m_copterPidConfig;
+        }
+        if (!m_arduCopterPidConfig){
+            m_arduCopterPidConfig = new ArduCopterPidConfig(this);
+            ui.stackedWidget->addWidget(m_arduCopterPidConfig);
+            m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_arduCopterPidConfig;
+            connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+        }
     }
 }
 
