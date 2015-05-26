@@ -71,6 +71,9 @@ private slots:
     void uasDisconnected();
     void apmParamNetworkReplyFinished();
     void populateTimerTick();
+    void updateUAS();
+    void reloadView();
+
 private:
 
     //Parameter from XML

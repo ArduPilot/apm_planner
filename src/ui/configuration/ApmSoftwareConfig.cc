@@ -96,6 +96,8 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     connect(ui.plannerConfigButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.plannerConfigButton]);
 
+    connect(ui.arduCopterPidButton, SIGNAL(clicked()), this, SLOT(updateUAS()));
+
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
@@ -613,33 +615,43 @@ void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCo
     default:
         ; // Do Nothing
     }
+}
 
-    // Detects if we are using new copter PIDS or old ones
-    if (parameterName.contains("POS_XY_P")){
-        // Use New Copter PID UI
-        if (m_arduCopterPidConfig){
-            ui.stackedWidget->removeWidget(m_arduCopterPidConfig);
-            delete m_arduCopterPidConfig;
-        }
-        if (!m_copterPidConfig){
-            m_copterPidConfig = new CopterPidConfig(this);
-            ui.stackedWidget->addWidget(m_copterPidConfig);
-            m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_copterPidConfig;
-            connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-        }
+void ApmSoftwareConfig::updateUAS()
+{
+    reloadView();
+}
 
-    } else if (parameterName.contains("HLD_LAT_P")){
-        // Use old ArduCopter PID UI,
-        if (m_copterPidConfig){
-            ui.stackedWidget->removeWidget(m_copterPidConfig);
-            delete m_copterPidConfig;
-        }
-        if (!m_arduCopterPidConfig){
-            m_arduCopterPidConfig = new ArduCopterPidConfig(this);
-            ui.stackedWidget->addWidget(m_arduCopterPidConfig);
-            m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_arduCopterPidConfig;
-            connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+void ApmSoftwareConfig::reloadView()
+{
+    if (m_uas){
+        // Detects if we are using new copter PIDS or old ones
+        QVariant returnValue;
+        if (m_uas->getParamManager()->getParameterValue(1, QString("POS_XY_P"), returnValue)){
+            // Use New Copter PID UI
+            if (m_arduCopterPidConfig){
+                ui.stackedWidget->removeWidget(m_arduCopterPidConfig);
+                delete m_arduCopterPidConfig;
+            }
+            if (!m_copterPidConfig){
+                m_copterPidConfig = new CopterPidConfig(this);
+                ui.stackedWidget->addWidget(m_copterPidConfig);
+                m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_copterPidConfig;
+                connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+            }
+
+        } else if (m_uas->getParamManager()->getParameterValue(1, "HLD_LAT_P", returnValue)){
+            // Use old ArduCopter PID UI,
+            if (m_copterPidConfig){
+                ui.stackedWidget->removeWidget(m_copterPidConfig);
+                delete m_copterPidConfig;
+            }
+            if (!m_arduCopterPidConfig){
+                m_arduCopterPidConfig = new ArduCopterPidConfig(this);
+                ui.stackedWidget->addWidget(m_arduCopterPidConfig);
+                m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_arduCopterPidConfig;
+                connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+            }
         }
     }
 }
-
