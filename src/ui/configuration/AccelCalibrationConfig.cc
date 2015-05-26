@@ -126,6 +126,7 @@ void AccelCalibrationConfig::calibrateButtonClicked()
     else if (m_accelAckCount <= 10)
     {
         m_uas->executeCommandAck(m_accelAckCount++,true);
+        m_countdownCount = CALIBRATION_TIMEOUT_SEC;
     }
     else
     {
