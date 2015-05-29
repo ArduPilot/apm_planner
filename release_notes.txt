@@ -1,4 +1,4 @@
-Release Notes - APM Planner  2.0.17 - 2014-03-31
+Release Notes - APM Planner  2.0.17 - 2015-03-31
 
 47bd731:  Version change for 2.0.17 release - Michael Carpenter
 c9718ee:  Param Manager: Added timer to check if UAV missed the parameter request message, and resend - Michael Carpenter
@@ -17,7 +17,7 @@ d3dfe8b:  Droneshare: Added some better window text to the Droneshare dialog - M
 cefb41f:  Radio Calibration: Fixes #641: Add rev checkboxes to rover - Bill Bonney
 55d8d46:  Radio Calibration: Fix Button renaming when calibration cancelled - Bill Bonney
 
-Release Notes - APM Planner  2.0.16 - 2014-03-09
+Release Notes - APM Planner  2.0.16 - 2015-03-09
 
 ecf57ca:  Version change for 2.0.16 release - Michael Carpenter
 6cd6f59:  Adv Param List: Fix for invalid numbers entered in Adv Param List being taken as zero - Michael Carpenter
@@ -216,7 +216,9 @@ d94637c:  Radio Calibration: Protect for array out-of-bounds error - Bill Bonney
 f2c04f8:  Mission Widget: Add Default Alt & WP Radius - Bill Bonney
 e4bc3d3:  Mission Widget: Fix layout issues with mission editing - Bill Bonney
 6e42488:  configuration: update to JSON object - Bill Bonney
-4de7a39:  ComboBox: Add ‘down-arrow’ - Bill BonneyRelease Notes - APM Planner  2.0.15 - 2014-11-17
+4de7a39:  ComboBox: Add ‘down-arrow’ - Bill Bonney
+
+Release Notes - APM Planner  2.0.15 - 2014-11-17
 
 4dbe9bc:  configuration: update to 2.0.15 stable - Bill Bonney
 ea8a9c5:  Log Download: Additions to logging to improve debugging - Bill Bonney
