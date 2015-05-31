@@ -60,26 +60,30 @@ CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
     m_nameToBoxMap["RATE_RLL_P"] = ui.rateRollPSpinBox;
     m_nameToBoxMap["RATE_RLL_I"] = ui.rateRollISpinBox;
     m_nameToBoxMap["RATE_RLL_D"] = ui.rateRollDSpinBox;
+    m_nameToBoxMap["RATE_RLL_FILT_HZ"] = ui.rateRollFiltHzSpinBox;
     m_nameToBoxMap["RATE_RLL_IMAX"] = ui.rateRollIMAXSpinBox;
 
     m_nameToBoxMap["RATE_PIT_P"] = ui.ratePitchPSpinBox;
     m_nameToBoxMap["RATE_PIT_I"] = ui.ratePitchISpinBox;
     m_nameToBoxMap["RATE_PIT_D"] = ui.ratePitchDSpinBox;
+    m_nameToBoxMap["RATE_PIT_FILT_HZ"] = ui.ratePitchFiltHzSpinBox;
     m_nameToBoxMap["RATE_PIT_IMAX"] = ui.ratePitchIMAXSpinBox;
 
     m_nameToBoxMap["RATE_YAW_P"] = ui.rateYawPSpinBox;
     m_nameToBoxMap["RATE_YAW_I"] = ui.rateYawISpinBox;
     m_nameToBoxMap["RATE_YAW_D"] = ui.rateYawDSpinBox;
+    m_nameToBoxMap["RATE_YAW_FILT_HZ"] = ui.rateYawFiltHzSpinBox;
     m_nameToBoxMap["RATE_YAW_IMAX"] = ui.rateYawIMAXSpinBox;
 
     m_nameToBoxMap["VEL_XY_P"] = ui.velXYPSpinBox;
     m_nameToBoxMap["VEL_XY_I"] = ui.velXYISpinBox;
     m_nameToBoxMap["VEL_XY_IMAX"] = ui.velXYIMAXSpinBox;
+    m_nameToBoxMap["VEL_XY_FILT_HZ"] = ui.velXYFiltHzSpinBox;
 
     m_nameToBoxMap["ACCEL_Z_P"] = ui.accelZPSpinBox;
     m_nameToBoxMap["ACCEL_Z_I"] = ui.accelZISpinBox;
     m_nameToBoxMap["ACCEL_Z_IMAX"] = ui.accelZIMAXSpinBox;
-    m_nameToBoxMap["ACCEL_Z_FILT_HZ"] = ui.accelZFILTHZSpinBox;
+    m_nameToBoxMap["ACCEL_Z_FILT_HZ"] = ui.accelZFiltHzSpinBox;
 
     m_nameToBoxMap["VEL_Z_P"] = ui.velZPSpinBox;
 

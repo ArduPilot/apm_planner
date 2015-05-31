@@ -638,6 +638,8 @@ void ApmSoftwareConfig::reloadView()
                 ui.stackedWidget->addWidget(m_copterPidConfig);
                 m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_copterPidConfig;
                 connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+                activateStackedWidget();
+                QTimer::singleShot(100,m_copterPidConfig, SLOT(refreshButtonClicked()));
             }
 
         } else if (m_uas->getParamManager()->getParameterValue(1, "HLD_LAT_P", returnValue)){
@@ -651,6 +653,8 @@ void ApmSoftwareConfig::reloadView()
                 ui.stackedWidget->addWidget(m_arduCopterPidConfig);
                 m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_arduCopterPidConfig;
                 connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+                activateStackedWidget();
+                QTimer::singleShot(100,m_arduCopterPidConfig, SLOT(refreshButtonClicked()));
             }
         }
     }
