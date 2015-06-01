@@ -64,19 +64,21 @@ public slots:
     void setStopBits(int bits);
     void setupPortList();
     void setAdvancedSettings(bool visible);
+
 private slots:
     void connectionStateChanged(bool connected);
     void linkChanged(int linkid);
     void setBaudRateString(QString baud);
-protected:
-    void showEvent(QShowEvent* event);
-    void hideEvent(QHideEvent* event);
-    bool userConfigured; ///< Switch to detect if current values are user-selected and shouldn't be overriden
 
 private:
+    void showEvent(QShowEvent* event);
+    void hideEvent(QHideEvent* event);
+    SerialLinkInterface* getSerialInterfaceLink() const;
 
+private:
     Ui::serialSettings ui;
-    int m_linkid;
+    int m_linkId;
+    bool userConfigured; ///< Switch to detect if current values are user-selected and shouldn't be overriden
     QAction* action;
     QTimer* portCheckTimer;
 

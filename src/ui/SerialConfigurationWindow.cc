@@ -41,7 +41,7 @@ This file is part of the QGROUNDCONTROL project
 SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent, Qt::WindowFlags flags) : QWidget(parent, flags),
     userConfigured(false)
 {
-    m_linkid = linkid;
+    m_linkId = linkid;
 
     ui.setupUi(this);
 
@@ -58,9 +58,6 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
     // Create configuration action for this link
     // Connect the current UAS
     action = new QAction(QIcon(":/files/images/devices/network-wireless.svg"), "", this);
-
-    setLinkName(LinkManager::instance()->getSerialLinkPort(linkid));
-
 
     // Set up baud rates
     ui.baudRate->clear();
@@ -119,13 +116,18 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
     setupPortList();
 
     // Load current link config
-    QString linkportname = LinkManager::instance()->getSerialLinkPort(linkid);
+    SerialLinkInterface* serialLink = getSerialInterfaceLink();
+    QString linkportname = "";
+    int linkbaudrate = -1;
+    if (serialLink) {
+        linkportname = serialLink->getName();
+        setLinkName(linkportname);
+        linkbaudrate = serialLink->getBaudRate();
+    }
     int portid = ui.portName->findText(linkportname);
-
-    int linkbaudrate = LinkManager::instance()->getSerialLinkBaud(linkid);
     int baudid = ui.baudRate->findText(QString::number(linkbaudrate));
 
-    QLOG_DEBUG() << "Baud rate:" << LinkManager::instance()->getSerialLinkBaud(linkid) << "Expected:" << baudid;
+    QLOG_DEBUG() << "Baud rate:" << linkbaudrate << "Expected:" << baudid;
     if (baudid == -1)
     {
         if (linkbaudrate != -1 && linkbaudrate != 0)
@@ -176,7 +178,7 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
 
     // Make sure that a change in the link name will be reflected in the UI
     connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(linkChanged(int)));
-    linkChanged(m_linkid);
+    linkChanged(m_linkId);
 
     // Connect the individual user interface inputs
     connect(ui.portName, SIGNAL(editTextChanged(QString)), this, SLOT(setPortName(QString)));
@@ -240,7 +242,7 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
 }
 void SerialConfigurationWindow::linkChanged(int linkid)
 {
-    if (linkid != m_linkid)
+    if (linkid != m_linkId)
     {
         return;
     }
@@ -323,18 +325,19 @@ void SerialConfigurationWindow::configureCommunication()
 
 void SerialConfigurationWindow::setupPortList()
 {
-    //if (!link) return;
+    SerialLinkInterface* serialLink = getSerialInterfaceLink();
+    if (serialLink){
+        return;
+    }
 
-    QLOG_DEBUG() << "SCW: Link is" << (LinkManager::instance()->getLinkConnected(this->m_linkid) ? "connected" : "disconnected");
+    QLOG_DEBUG() << "SCW: Link is" << (serialLink->isConnected() ? "connected" : "disconnected");
 
     // Get the ports available on this system
 
-    QList<QString> ports = LinkManager::instance()->getCurrentPorts();
+    QList<QString> ports = serialLink->getCurrentPorts();
 
-
-    QString storedName = LinkManager::instance()->getSerialLinkPort(m_linkid);
+    QString storedName = serialLink->getPortName();
     QString currentName = ui.portName->currentText();
-
 
     if (ui.portName->currentText() != ui.portName->itemText(ui.portName->currentIndex()))
     {
@@ -375,11 +378,11 @@ void SerialConfigurationWindow::enableFlowControl(bool flow)
 {
     if(flow)
     {
-        LinkManager::instance()->setSerialFlowType(m_linkid,1);
+        getSerialInterfaceLink()->setFlowType(1);
     }
     else
     {
-        LinkManager::instance()->setSerialFlowType(m_linkid,0);
+        getSerialInterfaceLink()->setFlowType(0);
     }
 }
 
@@ -387,7 +390,7 @@ void SerialConfigurationWindow::setParityNone(bool accept)
 {
     if (accept)
     {
-        LinkManager::instance()->setSerialParityType(m_linkid,0);
+        getSerialInterfaceLink()->setParityType(0);
     }
     //if (accept) link->setParityType(0);
 }
@@ -396,7 +399,7 @@ void SerialConfigurationWindow::setParityOdd(bool accept)
 {
     if (accept)
     {
-        LinkManager::instance()->setSerialParityType(m_linkid,1);
+        getSerialInterfaceLink()->setParityType(1);
     }
 }
 
@@ -404,17 +407,17 @@ void SerialConfigurationWindow::setParityEven(bool accept)
 {
     if (accept)
     {
-        LinkManager::instance()->setSerialParityType(m_linkid,2);
+        getSerialInterfaceLink()->setParityType(2);
     }
 }
 void SerialConfigurationWindow::setDataBits(int bits)
 {
-    LinkManager::instance()->setSerialDataBits(m_linkid,bits);
+    getSerialInterfaceLink()->setDataBitsType(bits);
 }
 
 void SerialConfigurationWindow::setStopBits(int bits)
 {
-    LinkManager::instance()->setSerialStopBits(m_linkid,bits);
+    getSerialInterfaceLink()->setStopBitsType(bits);
 }
 
 void SerialConfigurationWindow::setPortName(QString port)
@@ -424,7 +427,7 @@ void SerialConfigurationWindow::setPortName(QString port)
 #endif
     port = port.remove(" ");
 
-    LinkManager::instance()->modifySerialConnection(m_linkid,port);
+    getSerialInterfaceLink()->setPortName(port);
     userConfigured = true;
 }
 
@@ -446,7 +449,7 @@ void SerialConfigurationWindow::setBaudRateString(QString baud)
         if (!ok)
         {
             disconnect(ui.baudRate,SIGNAL(currentIndexChanged(QString)),this,SLOT(setBaudRateString(QString)));
-            ui.baudRate->setCurrentText(QString::number(LinkManager::instance()->getSerialLinkBaud(m_linkid)));
+            ui.baudRate->setCurrentText(QString::number(LinkManager::instance()->getSerialLinkBaud(m_linkId)));
             connect(ui.baudRate,SIGNAL(currentIndexChanged(QString)),this,SLOT(setBaudRateString(QString)));
             return;
         }
@@ -458,5 +461,15 @@ void SerialConfigurationWindow::setBaudRateString(QString baud)
     port = port.split("-").first();
 #endif
     port = port.remove(" ");
-    LinkManager::instance()->modifySerialConnection(m_linkid,port,baud.toInt());
+
+    SerialLinkInterface *link = getSerialInterfaceLink();
+    if (link){
+        link->setPortName(port);
+        link->setBaudRate(baud.toInt());
+    }
+}
+
+SerialLinkInterface* SerialConfigurationWindow::getSerialInterfaceLink() const
+{
+    return dynamic_cast<SerialLinkInterface*>(LinkManager::instance()->getLink(m_linkId));
 }
