@@ -22,14 +22,14 @@ public slots:
     void addHost();
     void portValueChanged(int value);
     void linkChanged(int linkid);
-protected:
-    void changeEvent(QEvent *e);
 
-    //UDPLink* link;    ///< UDP link instance this widget configures
-    int m_linkId;
+private:
+    void changeEvent(QEvent *e);
+    UDPLink* getUdpLink() const;
 
 private:
     Ui::QGCUDPLinkConfiguration *ui;
+    int m_linkId;
 };
 
 #endif // QGCUDPLINKCONFIGURATION_H
