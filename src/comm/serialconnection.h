@@ -92,7 +92,6 @@ public slots:
     bool setBaudRateString(QString baud);
 
 signals:
-    void updateLink(LinkInterface *link);
     void timeoutTriggered(LinkInterface*);
 
 private slots:

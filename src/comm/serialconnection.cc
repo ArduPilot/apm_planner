@@ -119,7 +119,7 @@ void SerialConnection::timeoutTimerTick()
 bool SerialConnection::setPortName(QString portName)
 {
     m_portName = portName;
-    emit updateLink(this);
+    emit linkChanged(this);
     writeSettings();
     return true;
 }
@@ -127,7 +127,7 @@ bool SerialConnection::setPortName(QString portName)
 bool SerialConnection::setBaudRate(int baud)
 {
     m_baud = baud;
-    emit updateLink(this);
+    emit linkChanged(this);
     writeSettings();
     return true;
 }
@@ -251,7 +251,7 @@ void SerialConnection::loadSettings()
     {
         m_baud = 115200;
     }
-    emit updateLink(this);
+    emit linkChanged(this);
 }
 void SerialConnection::writeSettings()
 {
@@ -456,10 +456,10 @@ bool SerialConnection::setBaudRateString(QString rate)
     bool ok;
     int intrate = rate.toInt(&ok);
     if (!ok) {
-        emit updateLink(this);
+        emit linkChanged(this);
         return false;
     }
-    emit updateLink(this);
+    emit linkChanged(this);
     return setBaudRate(intrate);
 
 }
