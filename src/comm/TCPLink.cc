@@ -74,16 +74,12 @@ void TCPLink::setHostAddress(QHostAddress hostAddress)
 	}
 
 	_hostAddress = hostAddress;
+    emit linkChanged(this);
     _resetName();
 
 	if (reconnect) {
 		connect();
 	}
-}
-
-void TCPLink::setHostAddress(const QString& hostAddress)
-{
-    setHostAddress(QHostAddress(hostAddress));
 }
 
 void TCPLink::setPort(int port)
@@ -96,6 +92,7 @@ void TCPLink::setPort(int port)
 	}
 
 	_port = port;
+    emit linkChanged(this);
     _resetName();
 
 	if (reconnect) {
@@ -116,6 +113,7 @@ void TCPLink::setAsServer(bool asServer)
     }
 
     _asServer = asServer;
+    emit linkChanged(this);
     _resetName();
 
     if (reconnect) {

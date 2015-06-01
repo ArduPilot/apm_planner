@@ -80,7 +80,6 @@ public:
     LinkType getLinkType() { return TCP_LINK; }
 
 public slots:
-    void setHostAddress(const QString& hostAddress);
     void setPort(int port);
     void setAsServer(bool asServer);
 
