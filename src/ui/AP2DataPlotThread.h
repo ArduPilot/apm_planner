@@ -60,9 +60,9 @@ private:
     bool isMainThread();
 
     void loadDataFieldsFromValues();
-    void loadBinaryLog();
-    void loadAsciiLog();
-    void loadTLog();
+    void loadBinaryLog(QFile &logfile);
+    void loadAsciiLog(QFile &logfile);
+    void loadTLog(QFile &logfile);
 
 private:
     QString m_fileName;

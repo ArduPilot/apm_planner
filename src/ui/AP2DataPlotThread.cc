@@ -69,15 +69,8 @@ bool AP2DataPlotThread::isMainThread()
     return QThread::currentThread() == QCoreApplication::instance()->thread();
 }
 
-void AP2DataPlotThread::loadBinaryLog()
+void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
 {
-    QFile logfile(m_fileName);
-    if (!logfile.open(QIODevice::ReadOnly))
-    {
-        emit error("Unable to open log file");
-        return;
-    }
-
     QByteArray block;
     int paramtype = -1;
     QMap<unsigned char,unsigned char> typeToLengthMap;
@@ -398,16 +391,8 @@ void AP2DataPlotThread::loadBinaryLog()
         return;
     }
 }
-void AP2DataPlotThread::loadAsciiLog()
+void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
 {
-
-    QFile logfile(m_fileName);
-    if (!logfile.open(QIODevice::ReadOnly))
-    {
-        emit error("Unable to open log file");
-        return;
-    }
-
     m_loadedLogType = MAV_TYPE_GENERIC;
     int index = 500;
     QMap<QString,QString> nameToTypeString;
@@ -588,15 +573,8 @@ void AP2DataPlotThread::loadAsciiLog()
         return;
     }
 }
-void AP2DataPlotThread::loadTLog()
+void AP2DataPlotThread::loadTLog(QFile &logfile)
 {
-    QFile logfile(m_fileName);
-    if (!logfile.open(QIODevice::ReadOnly))
-    {
-        emit error("Unable to open log file");
-        return;
-    }
-
     m_loadedLogType = MAV_TYPE_GENERIC;
 
     int bytesize = 0;
@@ -784,20 +762,31 @@ void AP2DataPlotThread::run()
     emit startLoad();
     m_stop = false;
     m_errorCount = 0;
+    qint64 msecs = QDateTime::currentMSecsSinceEpoch();
+
+    QFile logfile(m_fileName);
+    if (!logfile.open(QIODevice::ReadOnly))
+    {
+        emit error("Unable to open log file ("  +  m_fileName + ")");
+        return;
+    }
+
+    QLOG_DEBUG() << "AP2DataPlotThread::run(): Log loading start -" << logfile.size() << "bytes";
+
     if (m_fileName.toLower().endsWith(".bin"))
     {
         //It's a binary file
-        loadBinaryLog();
+        loadBinaryLog(logfile);
     }
     else if (m_fileName.toLower().endsWith(".log"))
     {
         //It's a ascii log.
-        loadAsciiLog();
+        loadAsciiLog(logfile);
     }
     else if (m_fileName.toLower().endsWith(".tlog"))
     {
         //It's a tlog
-        loadTLog();
+        loadTLog(logfile);
     }
     else
     {
@@ -806,23 +795,14 @@ void AP2DataPlotThread::run()
     }
 
 
-    qint64 msecs = QDateTime::currentMSecsSinceEpoch();
-    QFile logfile(m_fileName);
-    if (!logfile.open(QIODevice::ReadOnly))
-    {
-        emit error("Unable to open log file");
-        return;
-    }
-
-    QLOG_DEBUG() << "AP2DataPlotThread::run(): Log loading finished, pos:" << logfile.pos() << "filesize:" << logfile.size();
     if (m_stop)
     {
-        QLOG_ERROR() << "Plot Log loading was canceled after" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
+        QLOG_ERROR() << "Plot Log loading was canceled after" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds -" << logfile.pos() << "of" << logfile.size() << "bytes";
         emit error("Log loading Canceled");
     }
     else
     {
-        QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds";
+        QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds -" << logfile.pos() << "of" << logfile.size() << "bytes used";
         emit done(m_errorCount,m_loadedLogType);
     }
 }
