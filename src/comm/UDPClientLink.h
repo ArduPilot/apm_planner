@@ -66,7 +66,7 @@ public:
 
     int getId() const;
 
-    LinkType getLinkType() { return UDP_LINK; }
+    LinkType getLinkType() { return UDP_CLIENT_LINK; }
 
 public slots:
     void setAddress(QHostAddress host);

@@ -10,6 +10,7 @@ QGCUDPClientLinkConfiguration::QGCUDPClientLinkConfiguration(int linkid, QWidget
     m_linkId = linkid;
     ui->setupUi(this);
     ui->portSpinBox->setValue(getUdpClientLink()->getPort());
+    ui->ipAddressLineEdit->setText("192.168.4.1");
     connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(linkChanged(int)));
     connect(ui->portSpinBox, SIGNAL(valueChanged(int)), this, SLOT(portValueChanged(int)));
     connect(ui->ipAddressLineEdit, SIGNAL(textChanged(QString)), this, SLOT(hostValueChanged(QString)));

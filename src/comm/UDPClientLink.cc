@@ -194,6 +194,7 @@ bool UDPClientLink::_hardwareConnect()
     if (!_targetHost.isNull() && _port!=0) {
         QLOG_INFO() << "Connected UDP Client socket:" << _targetHost.toString();
         _socket.connectToHost(_targetHost,_port);
+        _socket.write(QByteArray("HELLO")); // Force Trigger connection.
         emit connected(true);
         emit connected(this);
         emit connected();

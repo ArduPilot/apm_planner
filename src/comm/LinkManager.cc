@@ -315,7 +315,7 @@ void LinkManager::addLink(LinkInterface *link)
 {
     m_connectionMap.insert(link->getId(),link);
     emit newLink(link->getId());
-    saveSettings();
+//    saveSettings();
 }
 
 LinkInterface* LinkManager::getLink(int linkId)
