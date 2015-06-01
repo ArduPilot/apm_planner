@@ -20,13 +20,15 @@ public:
 
 public slots:
     void valuesChanged();
-protected:
-    void changeEvent(QEvent *e);
 
-    int m_linkId;
+private:
+    void changeEvent(QEvent *e);
+    TCPLink* getTcpLink() const;
 
 private:
     Ui::QGCTCPLinkConfiguration *ui;
+    int m_linkId;
+
 };
 
 #endif // QGCTCPLINKCONFIGURATION_H
