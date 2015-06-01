@@ -57,6 +57,7 @@ This file is part of the QGROUNDCONTROL project
 #include "TerminalConsole.h"
 #include "AP2DataPlot2D.h"
 #include "MissionElevationDisplay.h"
+#include "LinkManagerFactory.h"
 
 #ifdef QGC_OSG_ENABLED
 #include "Q3DWidgetFactory.h"
@@ -1610,9 +1611,11 @@ void MainWindow::connectCommonActions()
     ui.actionSerial->setData(LinkInterface::SERIAL_LINK);
     ui.actionTCP->setData(LinkInterface::TCP_LINK);
     ui.actionUDP->setData(LinkInterface::UDP_LINK);
+    ui.actionUDPClient->setData(LinkInterface::UDP_CLIENT_LINK);
     connect(ui.actionSerial,SIGNAL(triggered()),this,SLOT(addLink()));
     connect(ui.actionTCP,SIGNAL(triggered()),this,SLOT(addLink()));
     connect(ui.actionUDP,SIGNAL(triggered()),this,SLOT(addLink()));
+    connect(ui.actionUDPClient,SIGNAL(triggered()),this,SLOT(addLink()));
     connect(ui.actionAdvanced_Mode,SIGNAL(triggered(bool)),this,SLOT(setAdvancedMode(bool)));
 
     // Connect internal actions
@@ -1784,15 +1787,19 @@ void MainWindow::addLink()
     int newid = 0;
     if (send->data() == LinkInterface::SERIAL_LINK)
     {
-        newid = LinkManager::instance()->addSerialConnection();
+        newid = LinkManagerFactory::addSerialConnection();
     }
     else if (send->data() == LinkInterface::TCP_LINK)
     {
-        newid = LinkManager::instance()->addTcpConnection(QHostAddress::LocalHost,5555,false);
+        newid = LinkManagerFactory::addTcpConnection(QHostAddress::LocalHost,5555,false);
     }
     else if (send->data() == LinkInterface::UDP_LINK)
     {
-        newid = LinkManager::instance()->addUdpConnection(QHostAddress::LocalHost,5555);
+        newid = LinkManagerFactory::addUdpConnection(QHostAddress::LocalHost,14550);
+    }
+    else if (send->data() == LinkInterface::UDP_CLIENT_LINK)
+    {
+        newid = LinkManagerFactory::addUdpClientConnection(QHostAddress("192.168.4.1"),14550);
     }
     addLink(newid);
     for (int i=0;i<ui.menuNetwork->actions().size();i++)

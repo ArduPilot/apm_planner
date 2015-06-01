@@ -327,6 +327,7 @@ FORMS += \
     src/ui/QGCMAVLinkLogPlayer.ui \
     src/ui/QGCWaypointListMulti.ui \
     src/ui/QGCUDPLinkConfiguration.ui \
+    src/ui/QGCUDPClientLinkConfiguration.ui \
     src/ui/QGCTCPLinkConfiguration.ui \
     src/ui/QGCSettingsWidget.ui \
     src/ui/map/QGCMapTool.ui \
@@ -455,6 +456,7 @@ HEADERS += \
 #endif
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
+    src/comm/UDPClientLink.h \
     src/comm/TCPLink.h \
     src/ui/ParameterInterface.h \
     src/ui/WaypointList.h \
@@ -501,6 +503,7 @@ HEADERS += \
     src/uas/QGCMAVLinkUASFactory.h \
     src/ui/QGCWaypointListMulti.h \
     src/ui/QGCUDPLinkConfiguration.h \
+    src/ui/QGCUDPClientLinkConfiguration.h \
     src/ui/QGCTCPLinkConfiguration.h \
     src/ui/QGCSettingsWidget.h \
     src/uas/QGCUASParamManager.h \
@@ -651,7 +654,8 @@ HEADERS += \
     src/ui/AP2DataPlot2DModel.h \
     src/ui/uas/PreFlightCalibrationDialog.h \
     src/ui/configuration/RadioFlashWizard.h \
-    src/ui/GraphTreeWidgetItem.h
+    src/ui/GraphTreeWidgetItem.h \
+    src/comm/LinkManagerFactory.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -676,6 +680,7 @@ SOURCES += src/main.cc \
 #endif
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
+    src/comm/UDPClientLink.cc \
     src/comm/TCPLink.cc \
     src/ui/ParameterInterface.cc \
     src/ui/WaypointList.cc \
@@ -721,6 +726,7 @@ SOURCES += src/main.cc \
     src/uas/QGCMAVLinkUASFactory.cc \
     src/ui/QGCWaypointListMulti.cc \
     src/ui/QGCUDPLinkConfiguration.cc \
+    src/ui/QGCUDPClientLinkConfiguration.cc \
     src/ui/QGCTCPLinkConfiguration.cc \
     src/ui/QGCSettingsWidget.cc \
     src/uas/QGCUASParamManager.cc \
@@ -870,7 +876,8 @@ SOURCES += src/main.cc \
     src/ui/AP2DataPlot2DModel.cc \
     src/ui/uas/PreFlightCalibrationDialog.cpp \
     src/ui/configuration/RadioFlashWizard.cpp \
-    src/ui/GraphTreeWidgetItem.cc
+    src/ui/GraphTreeWidgetItem.cc \
+    src/comm/LinkManagerFactory.cpp
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \

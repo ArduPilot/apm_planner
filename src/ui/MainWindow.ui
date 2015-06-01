@@ -51,7 +51,7 @@
      <x>0</x>
      <y>0</y>
      <width>1080</width>
-     <height>22</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMGround">
@@ -86,6 +86,7 @@
      <addaction name="actionSerial"/>
      <addaction name="actionTCP"/>
      <addaction name="actionUDP"/>
+     <addaction name="actionUDPClient"/>
     </widget>
     <addaction name="menuAdd_Link"/>
     <addaction name="separator"/>
@@ -586,6 +587,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+M</string>
+   </property>
+  </action>
+  <action name="actionUDPClient">
+   <property name="text">
+    <string>UDP Client</string>
+   </property>
+   <property name="toolTip">
+    <string>UDP Client</string>
    </property>
   </action>
  </widget>
