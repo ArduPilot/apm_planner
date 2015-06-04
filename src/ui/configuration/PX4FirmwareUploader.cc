@@ -602,6 +602,8 @@ bool PX4FirmwareUploader::verifyOtp()
     publicKeyList << "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
     // 3DR Public Key 2
     publicKeyList << "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCei8vGvc+jPXfbAAUkiu7o9fiQ\r\nhQ6/xdJcrmsJqa2/Onf4xDk6mMoZaNXNaNsEmE/xdeYgLqbPoivCba7A0YiGzonp\r\nOiEZlfUKJPzXvGSNrKbIDsOrvhPQpFwBEU+hO5usHoWCO5VzN5+wKTpGVZ300ny4\r\nNHbIGjZUF/RUz84lVwIDAQAB";
+    // Arsov RC Technology USA
+    publicKeyList << "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDJQfXiYHrYIHGadPwDPkUuHnQG\r\nubN4x0UAyvhP1VGzAk/CNYkcSCEKVGbi+Ro3l60xpoiOIR5HfHtzGgzdl+oBu55t\r\n2xjvbJbGIPKkA8pBU10Nj2dg/vjNphWMQpSw2yRdHuqvnrGjOq2fLduS0ITp11ST\r\nRX6cRfeDDXsVkL+XzwIDAQAB";
 
     bool checkCOAsuccess = false;
     foreach(QString publicKey, publicKeyList){
