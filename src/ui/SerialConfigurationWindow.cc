@@ -326,7 +326,7 @@ void SerialConfigurationWindow::configureCommunication()
 void SerialConfigurationWindow::setupPortList()
 {
     SerialLinkInterface* serialLink = getSerialInterfaceLink();
-    if (serialLink){
+    if (!serialLink){
         return;
     }
 
