@@ -40,7 +40,8 @@ This file is part of the APMPLANNER2 project
 
 UDPClientLink::UDPClientLink(QHostAddress host, quint16 port) :
     _targetHost(host),
-    _port(port)
+    _port(port),
+    _packetsReceived(false)
 {
     // Set unique ID and add link to the list of links
     _linkId = getNextLinkId();
@@ -127,6 +128,7 @@ void UDPClientLink::readBytes()
 {
     while (_socket.bytesAvailable())
     {
+        _packetsReceived = true;
         QByteArray datagram;
         datagram.resize(_socket.bytesAvailable());
 
@@ -163,6 +165,7 @@ bool UDPClientLink::disconnect()
     wait();
 
     _socket.close();
+    _packetsReceived = true;
 
     emit disconnected();
     emit connected(false);
@@ -198,6 +201,7 @@ bool UDPClientLink::_hardwareConnect()
         emit connected(true);
         emit connected(this);
         emit connected();
+        QTimer::singleShot(5000, this, SLOT(_sendTriggerMessage()));
         return true;
     } else {
         QLOG_ERROR() << "connect failed! " << _targetHost.toString() << ":" << _port
@@ -207,6 +211,15 @@ bool UDPClientLink::_hardwareConnect()
         emit disconnected();
     }
     return false;
+}
+
+void UDPClientLink::_sendTriggerMessage()
+{
+    if (!_packetsReceived){
+        QLOG_DEBUG() << "Send UDP Client HELLO" << _targetHost.toString();
+        _socket.write("HELLO");
+        QTimer::singleShot(5000, this, SLOT(_sendTriggerMessage()));
+    }
 }
 
 void UDPClientLink::_socketError(QAbstractSocket::SocketError socketError)

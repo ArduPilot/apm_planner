@@ -16,8 +16,8 @@ QGCTCPLinkConfiguration::QGCTCPLinkConfiguration(int linkid, QWidget *parent) :
     QString addr = getTcpLink()->getHostAddress().toString();
     ui->hostAddressLineEdit->setText(addr);
     ui->asServerCheckBox->setChecked(getTcpLink()->isServer());
-    connect(ui->portSpinBox,SIGNAL(valueChanged(int)),this,SLOT(valuesChanged()));
-    connect(ui->hostAddressLineEdit,SIGNAL(textChanged(QString)),this,SLOT(valuesChanged()));
+    connect(ui->portSpinBox,SIGNAL(editingFinished()),this,SLOT(valuesChanged()));
+    connect(ui->hostAddressLineEdit,SIGNAL(editingFinished()),this,SLOT(valuesChanged()));
     connect(ui->asServerCheckBox,SIGNAL(stateChanged(int)),this,SLOT(valuesChanged()));
 }
 

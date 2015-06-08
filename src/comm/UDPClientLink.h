@@ -82,6 +82,9 @@ protected slots:
     void _socketError(QAbstractSocket::SocketError socketError);
     void _socketDisconnected();
 
+private slots:
+    void _sendTriggerMessage();
+
 private: // Helper Methods
     void setName(QString name);
     bool _hardwareConnect();
@@ -93,6 +96,7 @@ private:
     quint16 _port;
     int _linkId;
     QUdpSocket _socket;
+    bool _packetsReceived;
 
     QMutex _dataMutex;
 };

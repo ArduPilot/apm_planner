@@ -60,7 +60,6 @@ int LinkManagerFactory::addUdpClientConnection(QHostAddress addr,int port)
     connectLinkSignals(link, lmgr);
 
     lmgr->addLink(link);
-    link->connect();
     return link->getId();
 }
 
