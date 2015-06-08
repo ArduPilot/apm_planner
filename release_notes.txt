@@ -1,3 +1,80 @@
+Release Notes - APM Planner  2.0.18-rc1 - 2015-06-08
+
+e5405e1:  configuration: Update to 2.0.18-rc1 release - Bill Bonney
+c085141:  UDP Client Link: minor defect fix - Bill Bonney
+b9671ed:  UDP Client Link: improve link conenction and UI - Bill Bonney
+35d1f82:  UDP Client Link: Add fix to force send data - Bill Bonney
+ae24dce:  UDP Client Link: Add new files for UDP Client Connection - Add changes for LinkManager Factory and UDP_CLIENT link type - Bill Bonney
+16dfc14:  Serial Link: Change to use new Link signal - Bill Bonney
+b51e04e:  Serial Link: Update to use new LinkManagerFactory - Bill Bonney
+90eff10:  UDP Link: Update to use new LinkManagerFactory - Bill Bonney
+5ab3331:  TCP Link: Update to use new LinkManagerFactory - Bill Bonney
+ed1f602:  Link Manager: Refactor object creation to LinkManagerFactory object - Bill Bonney
+0279cf5:  UDP Link: Update you use new updateLink signal - Bill Bonney
+851359a:  TCP Link: Refactored to emit LinkChanged signal - Bill Bonney
+804ee15:  Link Manager: Major refactor to Link Manager and dependents - Bill Bonney
+7934a28:  Graph View: fix output of log load times - Peter Barker
+0b59fee:  PX4 Firmware Uploader: Update for Linux and OSX certs - Bill Bonney
+dfb0f76:  PX4Uploader: Update valid certificates - Bill Bonney
+503e689:  UAS: Fix parameter reads of 16 bytes failing - Bill Bonney
+57e08b3:  Extended Tuning: Add Filter params to View - Bill Bonney
+e08a6fd:  Extended Tuning: Update Copter 3.3 PID Layout issue - Bill Bonney
+14fe717:  Extended Tuning: Improve PID view loading - Bill Bonney
+37e265d:  Extended Config: Make dynamic based on uas - Bill Bonney
+6b8d4cc:  Extended Config: Update Copter PID UI layout - Bill Bonney
+068b8b4:  Extended Config: Add new Copter PID tuning view for Copter3.3+ - Bill Bonney
+0d7e8c2:  Fix dates - Bill Bonney
+81fe167:  Accel Calibration: Add MAV ID ident to calibration message - Bill Bonney
+05140b8:  Accel Calibration: Fix missing timer reset - Bill Bonney
+71ab1ab:  Accel Calibration: Fixes #713 Update Accel Calibration for 3D only for all vehicles - Bill Bonney
+15f2e35:  Release Notes: Add notes for 2.0.15/2.0.16/2.0.17 - Bill Bonney
+1088826:  MAVLink Decoder: Fix Compile Warnings - Bill Bonney
+92ff19d:  Maps Widget: Update Google API Version - Bill Bonney
+6e65d06:  MAVLink: Fix comparison to use correct type. - Bill Bonney
+c454c66:  MAVLink: Fixes #703 Ambiguous type cast for 64bit Systems - Bill Bonney
+3910844:  Audio: use "default" ALSA device instead of "plughw:0" - Michał Wróbel
+0fd6525:  Plan View: Move mission item to Top/Bottom - Andre Kjellstrup
+4cad40f:  Graph View: Fix for #699 time_boot_ms and time_usec fields not showing - nbrachet@gmail.com
+1bc3f17:  AP2DataPlot: add support for q and Q format types - Peter Barker
+10076e2:  Elevation Widget: Fix incomplete refactor of elevation update - Bill Bonney
+6593e7b:  Joystick Widget: Add Activate/Deactivate button - Bill Bonney
+249bc8e:  Plan View: tooltip no longer adds MSL to any altitude. - Andre Kjellstrup
+43d5f9d:  Airspeed setup: adding Pixhawk I2C airspeed sensor - Andre Kjellstrup
+1f99ca5:  Mission Widget: button hotkeys fix - Andre Kjellstrup
+3d23423:  APM Tool Bar: Add simple view of TCP connections - Bill Bonney
+bc66726:  ArduPilot: Fix new modes to be displayed as text - Bill Bonney
+e98bce4:  Garph View: Fix default mode view display - Bill Bonney
+01efa08:  Graph View: Fix tooltip to show to only 4 decimal places when not 0 - Andre Kjellstrup
+9781a93:  Accel Calibration: Fixes the display of warning messages in output window - Bill Bonney
+9fe1d6b:  Serial Configuration: Update Serial Ports Dynamically - Bill Bonney
+7ee506e:  3DR Radio Config: Fixes #690 Update Serial Ports Dynamically - Bill Bonney
+14d7149:  Range Finder: Add PX4-PWM as an option - Bill Bonney
+af29fe8:  UAS Widget: Add scrollbar to Unmanned Systems list when list is long - labtoast
+d860cc9:  MissionEditor: Allow higher default/preset altitude - Andre Kjellstrup
+56d9bfb:  Mission Widget: Rename Get/Set to Read/Write - Bill Bonney
+8fb3b2a:  Mission Widget: button hotkeys - André Kjellstrup
+f7c06d8:  Flight Modes: Hotkey, and name change - André Kjellstrup
+15ac5ab:  Tuning Setup: hotkeys for ArduRover buttons - André Kjellstrup
+23c8f8e:  Tuning Setup: hotkeys for ArduPlane buttons - André Kjellstrup
+6934e8b:  Tuning Setup: hotkeys for ArduCopter buttons - André Kjellstrup
+6536ac0:  Full Parameter View - added keyboard shortcuts - André Kjellstrup
+bc73268:  Accel Calibration: Fix compiler warnings - Bill Bonney
+37c86c0:  Accel Calibration: Update to work with AC3.3-rc1 - Bill Bonney
+e76141c:  GraphView: Added reasonable default to display mode integer if no mode is found for loaded tlogs - Michael Carpenter
+1651346:  GraphView: Fix for tlog loading not displaying mode changes - Michael Carpenter
+acb0a57:  ApmToolbar: Actual fix for #669, commited wrong modification - Michael Carpenter
+7aa3f92:  ApmToolbar: Fix #669, crash when toolbar fails to load, and added info to readme about additional dependancies - Michael Carpenter
+b8b677c:  PrimaryFlightDisplay: Fix #666, PFD not updating when replaying tlogs - Michael Carpenter
+7c09afe:  Maps Widget: Fixes #657 map shown in Portuguese - Bill Bonney
+9fbdb4b:  Radio Calibration: Drop channel validation lower PWM to 895 - Bill Bonney
+c9259ea:  config: update version object for AP2 2.0.17 release - Bill Bonney
+dc9bc43:  Serial Connection: Fixes #656 for QT5.4.1 issue on OS X - Bill Bonney
+88b8af5:  Full Parameter View: Fixed typo in suggested filename - Chris Anderson
+bd86a57:  Param Widget: Add ‘=’ as a delimiter for param files - Bill Bonney
+5f8aa07:  Param Widget: Add ‘tab’ & ‘crlf’ as a delimiter for param files - Bill Bonney
+b081977:  Graph View: Fix #654, logs loaded using unsigned when they should used signed for 'h' values - Michael Carpenter
+298a91c:  Radio Calibration: Fixes #653: Cannot use radios with less than 8 channels - Bill Bonney
+
 Release Notes - APM Planner  2.0.17 - 2015-03-31
 
 47bd731:  Version change for 2.0.17 release - Michael Carpenter
@@ -982,6 +1059,5 @@ a3a7a94:  Change so a popup lets the user know when parameters have been loaded 
 4bd963f:  Addition of message in PFD showing PreArm failures when tryign to arm MAV - Michael Carpenter
 
 see http://github.com/diydrones/apm_planner for a full list of the commits before 2013-12-26
-
 
 
