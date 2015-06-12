@@ -52,8 +52,8 @@ CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
     connect(ui.rateRollIMAXSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIMAXChanged(double)));
 
 
-    m_nameToBoxMap["STB_RLL_P"] = ui.stabilPitchPSpinBox;
-    m_nameToBoxMap["STB_PIT_P"] = ui.stabilRollPSpinBox;
+    m_nameToBoxMap["STB_RLL_P"] = ui.stabilRollPSpinBox;
+    m_nameToBoxMap["STB_PIT_P"] = ui.stabilPitchPSpinBox;
     m_nameToBoxMap["STB_YAW_P"] = ui.stabilYawPSpinBox;
     m_nameToBoxMap["POS_XY_P"] = ui.posXYPSpinBox;
 
