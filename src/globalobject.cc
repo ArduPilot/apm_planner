@@ -77,7 +77,6 @@ QString GlobalObject::defaultAppDataDirectory()
 {
     QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString appHomeDir = homeDir + APP_DATA_DIRECTORY;
-    makeDirectory(appHomeDir);
     return appHomeDir;
 }
 
@@ -101,7 +100,6 @@ QString GlobalObject::defaultLogDirectory()
 {
     QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString logHomeDir = homeDir + APP_DATA_DIRECTORY + LOG_DIRECTORY;
-    makeDirectory(logHomeDir);
     return logHomeDir;
 }
 
@@ -125,7 +123,6 @@ QString GlobalObject::defaultMAVLinkLogDirectory()
 {
     QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString logHomeDir = homeDir + APP_DATA_DIRECTORY + MAVLINK_LOG_DIRECTORY;
-    makeDirectory(logHomeDir);
     return logHomeDir;
 }
 
@@ -149,7 +146,7 @@ QString GlobalObject::defaultParameterDirectory()
 {
     QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString paramHomeDir = homeDir + APP_DATA_DIRECTORY + PARAMETER_DIRECTORY;
-    makeDirectory(paramHomeDir);   return paramHomeDir;
+    return paramHomeDir;
 }
 
 QString GlobalObject::parameterDirectory()
@@ -172,7 +169,6 @@ QString GlobalObject::defaultMissionDirectory()
 {
     QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString missionDir = homeDir + APP_DATA_DIRECTORY + MISSION_DIRECTORY;
-    makeDirectory(missionDir);
     return missionDir;
 }
 
