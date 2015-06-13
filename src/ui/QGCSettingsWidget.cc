@@ -122,7 +122,7 @@ QGCSettingsWidget::~QGCSettingsWidget()
 
 void QGCSettingsWidget::setLogDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set log output directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::logDirectory());
 
@@ -136,7 +136,7 @@ void QGCSettingsWidget::setLogDir()
 
 void QGCSettingsWidget::setMAVLinkLogDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set tlog output directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::MAVLinkLogDirectory());
 
@@ -150,7 +150,7 @@ void QGCSettingsWidget::setMAVLinkLogDir()
 
 void QGCSettingsWidget::setParamDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set parameters directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::parameterDirectory());
 
@@ -164,7 +164,7 @@ void QGCSettingsWidget::setParamDir()
 
 void QGCSettingsWidget::setAppDataDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set application data directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::appDataDirectory());
 
@@ -178,7 +178,7 @@ void QGCSettingsWidget::setAppDataDir()
 
 void QGCSettingsWidget::setMissionsDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set missions directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::missionDirectory());
 
