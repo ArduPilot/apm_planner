@@ -8,7 +8,8 @@
 
 JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
     QDialog(parent),
-    m_ui(new Ui::JoystickWidget)
+    m_ui(new Ui::JoystickWidget),
+    m_buttonPressedMessage("")
 {
     m_ui->setupUi(this);
 	clearKeys();
@@ -21,7 +22,6 @@ JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
     connect(this->joystick, SIGNAL(yChanged(double)), this, SLOT(setY(double)));
     connect(this->joystick, SIGNAL(yawChanged(double)), this, SLOT(setZ(double)));
     connect(this->joystick, SIGNAL(thrustChanged(double)), this, SLOT(setThrottle(double)));
-    connect(this->joystick, SIGNAL(buttonPressed(int)), this, SLOT(pressKey(int)));
     connect(this->joystick, SIGNAL(hatDirectionChanged(int, int)), this, SLOT(setHat(int, int)));
 
     connect(m_ui->rollMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingXAxis(int)));
@@ -57,6 +57,9 @@ JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
         }
     }
 
+    for (int i = 0; i < 11; ++i) {
+        m_buttonStates[i] = false;
+    }
     // Display the widget
     this->window()->setWindowTitle(tr("Joystick"));
     this->show();
@@ -134,8 +137,10 @@ void JoystickWidget::updateJoystick(double roll, double pitch, double yaw, doubl
 
     for (int i = 0; i < 11; ++i)
     {
-        if (buttons & (1<<i))
-            pressKey(i);
+        if (m_buttonStates[i] != (buttons & (1<<i))) {
+            buttonStateChanged(i, (buttons & (1<<i)));
+            m_buttonStates[i] = (buttons & (1<<i));
+        }
     }
 }
 
@@ -188,7 +193,7 @@ void JoystickWidget::setZ(double z)
 
 void JoystickWidget::setHat(int x, int y)
 {
-    updateStatus(tr("Hat position: x: %1, y: %2").arg(x).arg(y));
+    updateStatus(m_buttonPressedMessage + " " + tr("Hat position: x: %1, y: %2").arg(x).arg(y));
 }
 
 void JoystickWidget::clearKeys()
@@ -210,11 +215,17 @@ void JoystickWidget::clearKeys()
     m_ui->button10->setStyleSheet(colorstyle);
 }
 
-void JoystickWidget::pressKey(int key)
+void JoystickWidget::buttonStateChanged(const int key, const bool pressed)
 {
     QString colorstyle;
-    QColor buttonStyleColor = QColor(20, 200, 20);
-    colorstyle = QString("QLabel { border: 1px solid #EEEEEE; border-radius: 4px; padding: 0px; margin: 0px; background-color: %1;}").arg(buttonStyleColor.name());
+    QColor buttonStyleColor;
+    if (pressed) {
+        buttonStyleColor = QColor(20, 200, 20);
+        colorstyle = QString("QLabel { border: 1px solid #EEEEEE; border-radius: 4px; padding: 0px; margin: 0px; background-color: %1;}").arg(buttonStyleColor.name());
+    } else {
+        buttonStyleColor = QColor(200, 20, 20);
+        colorstyle = QString("QLabel { border: 1px solid #EEEEEE; border-radius: 4px; padding: 0px; margin: 0px; background-color: %1;}").arg(buttonStyleColor.name());
+    }
     switch(key) {
     case 0:
         m_ui->button0->setStyleSheet(colorstyle);
@@ -250,8 +261,12 @@ void JoystickWidget::pressKey(int key)
         m_ui->button10->setStyleSheet(colorstyle);
         break;
     }
-    QTimer::singleShot(100, this, SLOT(clearKeys()));
-    updateStatus(tr("Key %1 pressed").arg(key));
+
+    if (pressed) {
+        m_buttonPressedMessage = tr("Key %1 pressed").arg(key);
+    } else {
+        m_buttonPressedMessage = "";
+    }
 }
 
 void JoystickWidget::updateStatus(const QString& status)

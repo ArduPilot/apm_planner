@@ -75,7 +75,7 @@ public slots:
     /** @brief Clear keys */
     void clearKeys();
     /** @brief Joystick keys, as labeled on the joystick */
-    void pressKey(int key);
+    void buttonStateChanged(const int key, const bool pressed);
     /** @brief Update status string */
     void updateStatus(const QString& status);
 
@@ -98,6 +98,10 @@ protected:
 private:
     Ui::JoystickWidget *m_ui;
     JoystickInput* joystick;  ///< Reference to the joystick
+
+    int m_buttonStates[11];
+
+    QString m_buttonPressedMessage;
 
     void updateMappings();
 };
