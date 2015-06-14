@@ -72,6 +72,11 @@ const QString JoystickInput::getActiveJoystickId()
     return QString::fromStdString(joystickId);
 }
 
+const int JoystickInput::getNumberOfButtons() const
+{
+    return SDL_JoystickNumButtons(joystick);
+}
+
 void JoystickInput::loadSettings()
 {
     // Load defaults from settings

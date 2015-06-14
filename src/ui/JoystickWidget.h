@@ -32,6 +32,7 @@ This file is part of the PIXHAWK project
 #define JOYSTICKWIDGET_H
 
 #include <QtWidgets/QDialog>
+#include <QLabel>
 
 #include "JoystickInput.h"
 #include "UASInterface.h"
@@ -102,6 +103,10 @@ private:
     int m_buttonStates[11];
 
     QString m_buttonPressedMessage;
+
+    QList<QLabel*> m_buttonList;
+
+    void addJoystickButtonLabel(int i);
 
     void updateMappings();
 };
