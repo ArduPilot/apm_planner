@@ -132,7 +132,7 @@ void JoystickWidget::updateJoystick(double roll, double pitch, double yaw, doubl
     setThrottle(thrust);
     setHat(xHat, yHat);
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 11; ++i)
     {
         if (buttons & (1<<i))
             pressKey(i);
