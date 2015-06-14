@@ -54,6 +54,7 @@ JoystickInput::JoystickInput() :
         hatValue(sdlJoystickMax*2),
         valuesTicks(0)
 {
+    init();
     loadSettings();
 }
 
@@ -63,12 +64,20 @@ JoystickInput::~JoystickInput()
     done.store(1);
 }
 
+const QString JoystickInput::getActiveJoystickId()
+{
+    char joystickId[64];
+
+    SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(joystick), joystickId, sizeof(joystickId));
+    return QString::fromStdString(joystickId);
+}
+
 void JoystickInput::loadSettings()
 {
     // Load defaults from settings
     QSettings settings;
     settings.sync();
-    settings.beginGroup("QGC_JOYSTICK_INPUT");
+    settings.beginGroup("QGC_JOYSTICK_INPUT_" + getActiveJoystickId());
     xAxis = (settings.value("X_AXIS_MAPPING", xAxis).toInt());
     xReversed = (settings.value("X_REVERSED", xReversed).toBool());
     yAxis = (settings.value("Y_AXIS_MAPPING", yAxis).toInt());
@@ -82,11 +91,11 @@ void JoystickInput::loadSettings()
     settings.endGroup();
 }
 
-void JoystickInput::storeSettings() const
+void JoystickInput::storeSettings()
 {
     // Store settings
     QSettings settings;
-    settings.beginGroup("QGC_JOYSTICK_INPUT");
+    settings.beginGroup("QGC_JOYSTICK_INPUT_" + getActiveJoystickId());
     settings.setValue("X_AXIS_MAPPING", xAxis);
     settings.setValue("X_REVERSED", xReversed);
     settings.setValue("Y_AXIS_MAPPING", yAxis);
@@ -317,7 +326,6 @@ yes:
  */
 void JoystickInput::run()
 {
-    init();
     if (joystick == NULL)
     {
         exit();

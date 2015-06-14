@@ -14,18 +14,7 @@ JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
 	clearKeys();
     this->joystick = joystick;
 
-    m_ui->rollMapSpinBox->setValue(joystick->getMappingXAxis());
-    m_ui->pitchMapSpinBox->setValue(joystick->getMappingYAxis());
-    m_ui->yawMapSpinBox->setValue(joystick->getMappingYawAxis());
-    m_ui->throttleMapSpinBox->setValue(joystick->getMappingThrustAxis());
-
-    m_ui->rollInvertCheckBox->setChecked(joystick->getXReversed());
-    m_ui->pitchInvertCheckBox->setChecked(joystick->getYReversed());
-    m_ui->yawInvertCheckBox->setChecked(joystick->getYawReversed());
-    m_ui->throttleInvertCheckBox->setChecked(joystick->getThrustReversed());
-
-    m_ui->autoMapSpinBox->setValue(joystick->getMappingAutoButton());
-    m_ui->stabilizeMapSpinBox->setValue(joystick->getMappingStabilizeButton());
+    updateMappings();
 
     connect(this->joystick, SIGNAL(joystickChanged(double,double,double,double,int,int,int)), this, SLOT(updateJoystick(double,double,double,double,int,int,int)));
     connect(this->joystick, SIGNAL(xChanged(double)), this, SLOT(setX(double)));
@@ -47,6 +36,9 @@ JoystickWidget::JoystickWidget(JoystickInput* joystick, QWidget *parent) :
 
     connect(m_ui->autoMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingAutoButton(int)));
     connect(m_ui->stabilizeMapSpinBox, SIGNAL(valueChanged(int)), this->joystick, SLOT(setMappingStabilizeButton(int)));
+
+    connect(this, SIGNAL(accepted()), this, SLOT(storeMapping()));
+    connect(this, SIGNAL(rejected()), this, SLOT(restoreMapping()));
 
     if (joystick)
     {
@@ -103,6 +95,33 @@ void JoystickWidget::activeUASSet(UASInterface* uas)
 {
     if (m_ui->joystickButton->isChecked())
         joystick->setActiveUAS(uas);
+}
+
+void JoystickWidget::updateMappings()
+{
+    m_ui->rollMapSpinBox->setValue(joystick->getMappingXAxis());
+    m_ui->pitchMapSpinBox->setValue(joystick->getMappingYAxis());
+    m_ui->yawMapSpinBox->setValue(joystick->getMappingYawAxis());
+    m_ui->throttleMapSpinBox->setValue(joystick->getMappingThrustAxis());
+
+    m_ui->rollInvertCheckBox->setChecked(joystick->getXReversed());
+    m_ui->pitchInvertCheckBox->setChecked(joystick->getYReversed());
+    m_ui->yawInvertCheckBox->setChecked(joystick->getYawReversed());
+    m_ui->throttleInvertCheckBox->setChecked(joystick->getThrustReversed());
+
+    m_ui->autoMapSpinBox->setValue(joystick->getMappingAutoButton());
+    m_ui->stabilizeMapSpinBox->setValue(joystick->getMappingStabilizeButton());
+}
+
+void JoystickWidget::storeMapping()
+{
+    joystick->storeSettings();
+}
+
+void JoystickWidget::restoreMapping()
+{
+    joystick->loadSettings();
+    updateMappings();
 }
 
 void JoystickWidget::updateJoystick(double roll, double pitch, double yaw, double thrust, int xHat, int yHat, int buttons)

@@ -86,6 +86,11 @@ protected slots:
 
     void activeUASSet(UASInterface*);
 
+private slots:
+    void storeMapping();
+
+    void restoreMapping();
+
 protected:
     /** @brief UI change event */
     virtual void changeEvent(QEvent *e);
@@ -93,6 +98,8 @@ protected:
 private:
     Ui::JoystickWidget *m_ui;
     JoystickInput* joystick;  ///< Reference to the joystick
+
+    void updateMappings();
 };
 
 #endif // JOYSTICKWIDGET_H
