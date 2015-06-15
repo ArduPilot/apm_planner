@@ -96,6 +96,13 @@ void JoystickWidget::joystickSelected(const QString& name)
     m_ui->joystickLabel->setText(name);
     m_ui->joystickButton->setEnabled(true);
     joystick->setActiveUAS(NULL);
+    updateMappings();
+
+    m_buttonList.clear();
+    for (int i = 0; i < joystick->getNumberOfButtons(); ++i) {
+        addJoystickButtonLabel(i);
+    }
+    clearKeys();
 }
 
 void JoystickWidget::joystickEnabled(bool checked)

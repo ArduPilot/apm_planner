@@ -215,6 +215,7 @@ void JoystickInput::init()
 
         joystickName = QString(SDL_JoystickName(joystick));
         QLOG_INFO() << "Opened" << joystickName;
+        loadSettings();
         emit joystickSelected(joystickName);
 
 #if 0
@@ -330,6 +331,7 @@ yes:
  */
 void JoystickInput::run()
 {
+    init();
     if (joystick == NULL)
     {
         exit();
