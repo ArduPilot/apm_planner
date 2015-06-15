@@ -54,7 +54,7 @@ JoystickInput::JoystickInput() :
         hatValue(sdlJoystickMax*2),
         valuesTicks(0)
 {
-    init();
+//    init();
     loadSettings();
 }
 
