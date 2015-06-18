@@ -257,12 +257,16 @@ public:
     QString getGpsFixString()
     {
         switch(m_gps_fix){
+        case 5:
+            return "3D+RTK";
+        case 4:
+            return "3D+DGPS";
         case 3:
             return "3D";
         case 2:
             return "2D";
         case 1:
-            return "1";
+            return "NO FIX";
         default:
             return ".";
         }
