@@ -1838,7 +1838,11 @@ void MainWindow::addLink(int linkid)
 
 void MainWindow::linkError(int linkid,QString errorstring)
 {
-    QMessageBox::information(this,"Link Error",errorstring);
+    QWidget* parent = QApplication::activeWindow();
+    if (!parent) {
+        parent = this;
+    }
+    QMessageBox::information(parent,"Link Error",errorstring);
 }
 
 void MainWindow::simulateLink(bool simulate) {
