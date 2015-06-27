@@ -151,7 +151,7 @@ QString ApmPlane::stringForMode(int aMode)
     case RESERVED_14:
         return "Reserved";
     default:
-        return "Undefined: " + QString::number(aMode);
+        return QString().sprintf("Mode (%d)", aMode);
     }
 }
 
@@ -191,7 +191,7 @@ QString ApmCopter::stringForMode(int aMode) {
         return "Circle";
         break;
     case POSITION:
-        return "Reserved"; // Marked as reserved as not supported since AC3.2
+        return QString().sprintf("Position (%d)", aMode);
         break;
     case LAND:
         return "Land";
@@ -209,7 +209,7 @@ QString ApmCopter::stringForMode(int aMode) {
         return "Reserved";
         break;
     case POS_HOLD:
-        return "Position Hold";
+        return "Pos Hold";
         break;
     case AUTOTUNE:
         return "Autotune";
@@ -218,7 +218,7 @@ QString ApmCopter::stringForMode(int aMode) {
         return "Flip";
         break;
     default:
-        return "Undefined";
+        return QString().sprintf("Mode (%d)", aMode);
     }
 }
 
@@ -266,9 +266,8 @@ QString ApmRover::stringForMode(int aMode) {
     case RESERVED_12:
     case RESERVED_13:
     case RESERVED_14:
-        return "Reserved";
     default:
-        return "Undefined";
+        return QString().sprintf("Mode (%d)", aMode);
     }
 }
 
@@ -453,7 +452,7 @@ void ArduPilotMegaMAV::armSystem()
                                   getComponentId(),
                                   &msg,
                                   getUASID(),                    // uint8_t target_system,
-                                  MAV_COMP_ID_SYSTEM_CONTROL,    // uint8_t target_component
+                                  MAV_COMP_ID_PRIMARY,    // uint8_t target_component
                                   MAV_CMD_COMPONENT_ARM_DISARM,    // uint16_t command,
                                   1,                // uint8_t confirmation,
                                   1.0,             // float param1,
@@ -475,7 +474,7 @@ void ArduPilotMegaMAV::disarmSystem()
                                   getComponentId(),
                                   &msg,
                                   getUASID(),                    // uint8_t target_system,
-                                  MAV_COMP_ID_SYSTEM_CONTROL,    // uint8_t target_component
+                                  MAV_COMP_ID_PRIMARY,    // uint8_t target_component
                                   MAV_CMD_COMPONENT_ARM_DISARM,    // uint16_t command,
                                   1,                // uint8_t confirmation,
                                   0.0,             // float param1,
@@ -565,3 +564,394 @@ void ArduPilotMegaMAV::playArmStateChangedAudioMessage(bool armedState)
     GAudioOutput::instance()->say(QString("system %1 is %2").arg(QString::number(getUASID()),armedPhrase));
 }
 
+QString ArduPilotMegaMAV::getNameFromEventId(int ecode)
+{
+    QString ecodestring = "";
+    if (ecode == 10)
+    {
+        ecodestring = "Armed";
+    }
+    else if (ecode == 11)
+    {
+        ecodestring = "Disrmed";
+    }
+    else if (ecode == 15)
+    {
+        ecodestring = "Auto-Armed";
+    }
+    else if (ecode == 16)
+    {
+        ecodestring = "Takeoff";
+    }
+    else if (ecode == 17)
+    {
+        ecodestring = "Land Complete Maybe";
+    }
+    else if (ecode == 18)
+    {
+        ecodestring = "Land Complete";
+    }
+    else if (ecode == 19)
+    {
+        ecodestring = "Lost GPS";
+    }
+    else if (ecode == 25)
+    {
+        ecodestring = "Home Set";
+    }
+    else if (ecode == 28)
+    {
+        ecodestring = "Not Landed";
+    }
+    else if (ecode == 30)
+    {
+        ecodestring = "Autotune Initialized";
+    }
+    else if (ecode == 31)
+    {
+        ecodestring = "Autotune Off";
+    }
+    else if (ecode == 32)
+    {
+        ecodestring = "Autotune Restart";
+    }
+    else if (ecode == 33)
+    {
+        ecodestring = "Autotune Success";
+    }
+    else if (ecode == 34)
+    {
+        ecodestring = "Autotune Failed";
+    }
+    else if (ecode == 35)
+    {
+        ecodestring = "Autotune Reached Limit";
+    }
+    else if (ecode == 36)
+    {
+        ecodestring = "Autotune Pilot Testing";
+    }
+    else if (ecode == 37)
+    {
+        ecodestring = "Autotune Saved Gains";
+    }
+    else if (ecode == 38)
+    {
+        ecodestring = "Save Trim";
+    }
+    else if (ecode == 39)
+    {
+        ecodestring = "Add WP";
+    }
+    else if (ecode == 40)
+    {
+        ecodestring = "WP Clear Mission RTL";
+    }
+    else if (ecode == 41)
+    {
+        ecodestring = "Fence Enable";
+    }
+    else if (ecode == 42)
+    {
+        ecodestring = "Fence Disable";
+    }
+    else if (ecode == 49)
+    {
+        ecodestring = "Parachute Disabled";
+    }
+    else if (ecode == 50)
+    {
+        ecodestring = "Parachute Enabled";
+    }
+    else if (ecode == 51)
+    {
+        ecodestring = "Parachute Released";
+    }
+    else
+    {
+        return "Event: " + QString::number(ecode);
+    }
+    return ecodestring;
+
+}
+
+QPair<QString,QString> ArduPilotMegaMAV::getErrText(int subsys,int ecode)
+{
+    QString ecodeinvalid = "Invalid error code";
+    QPair<QString,QString> retval;
+    retval.first = "E" + QString::number(subsys) + ": Unknown Subsystem";
+    retval.second = "E" + QString::number(ecode) + ": Unknown Error Code";
+    if (subsys == 2)
+    {
+        //Radio
+        retval.first = "S2: Radio";
+        if (ecode == 0)
+        {
+            //Error resolved
+            retval.second = "E0: PPM Encoder error resolved";
+        }
+        else if (ecode == 2)
+        {
+            retval.second = "E2: Lame Frame, no updates from PPM encoder";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 3)
+    {
+        //Compass
+        retval.first = "S3: Compass";
+        if (ecode == 0)
+        {
+            retval.second = "E0: Error resolved";
+        }
+        else if (ecode == 1)
+        {
+            retval.second = "E1: Compass failed to initialized";
+        }
+        else if (ecode == 2)
+        {
+            retval.second = "E2: Failure when trying to read a value";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 4)
+    {
+        //Optical flow
+        retval.first = "S4: Optical Flow";
+        if (ecode == 1)
+        {
+            retval.second = "E1: Failed to initialize";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 5)
+    {
+        //throttle
+        retval.first = "S5: Throttle";
+        if (ecode == 0)
+        {
+            retval.second = "E0: Error Resolved";
+        }
+        else if (ecode == 1)
+        {
+            retval.second = "E1: Throttle below FS_THR_VALUE";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 6)
+    {
+        //Battery
+        retval.first = "S6: Battery";
+        if (ecode == 1)
+        {
+            retval.second = "E1: Voltage below LOW_VOLT/BATT_CAPACITY exceeded";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 7)
+    {
+        //GPS
+        retval.first = "E7: GPS";
+        if (ecode == 0)
+        {
+            retval.second = "E0: GPS Lock Restored";
+        }
+        else if (ecode == 1)
+        {
+            retval.second = "E1: GPS Lock Lost";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 8)
+    {
+        //GCS
+        retval.first = "E8: Ground Control Station";
+        if (ecode == 0)
+        {
+            retval.second = "E0: GCS Updates restored";
+        }
+        else if (ecode == 1)
+        {
+            retval.second = "E1: GCS joystick updates lost";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 9)
+    {
+        //Optical flow
+        retval.first = "E9: Fence";
+        if (ecode == 0)
+        {
+            retval.second = "E0: Vehicle back within fence";
+        }
+        else if (ecode == 1)
+        {
+            retval.second = "E1: Altitude fence breached";
+        }
+        else if (ecode == 2)
+        {
+            retval.second = "E2: Circular fence breached";
+        }
+        else if (ecode == 3)
+        {
+            retval.second = "E3: Altitude AND Circular fences breached";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 10)
+    {
+        //Flight Mode
+        retval.first = "E10: Flight Mode";
+        retval.second = "E " + QString::number(ecode) + ": Vehicle unable to enter flight mode";
+    }
+    else if (subsys == 11)
+    {
+        //GPS
+        retval.first = "E11: GPS Glitch";
+        if (ecode == 0)
+        {
+            retval.second = "E0: Glitch Cleared";
+        }
+        else if (ecode == 2)
+        {
+            retval.second = "E2: GPS Glick Detected";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 12)
+    {
+        retval.first = "E12: Crash Check";
+        if (ecode == 1)
+        {
+            retval.second = "E1: Crash Detected";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 13)
+    {
+        retval.first = "E13: Flip";
+        if (ecode == 2)
+        {
+            retval.second = "E2: Flip Abandoned";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 14)
+    {
+        retval.first = "E14: Auto Tune";
+        if (ecode == 2)
+        {
+            retval.second = "E2: Bad Gains";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 15)
+    {
+        retval.first = "E15: Parachute";
+        if (ecode == 2)
+        {
+            retval.second = "E2: Too low to deploy";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 16)
+    {
+        retval.first = "E16: EKF/InertialNav Check";
+        if (ecode == 0)
+        {
+            retval.second = "E0: Bad Variance Cleared";
+        }
+        else if (ecode == 2)
+        {
+            retval.second = "E2: Bad Variance";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 17)
+    {
+        retval.first = "E17: EKF/InertialNav Failure";
+        if (ecode == 2)
+        {
+            retval.second = "E2: EKF Failsafe Triggered";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    else if (subsys == 18)
+    {
+        retval.first = "E18: Baro Glitch";
+        if (ecode == 0)
+        {
+            retval.second = "E0: Baro Glitch Cleared";
+        }
+        else if (ecode == 2)
+        {
+            retval.second = "E2: Baro Glitch";
+        }
+        else if (ecode == -1)
+        {
+            //No ecode registered
+            retval.second = ecodeinvalid;
+        }
+    }
+    return retval;
+}

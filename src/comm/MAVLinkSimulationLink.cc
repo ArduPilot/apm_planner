@@ -396,7 +396,7 @@ void MAVLinkSimulationLink::mainloop()
 
         // Send back new setpoint
         mavlink_message_t ret;
-        mavlink_msg_local_position_setpoint_pack(systemId, componentId, &ret, MAV_FRAME_LOCAL_NED, spX, spY, spZ, spYaw); // spYaw/180.0*M_PI);
+//        [REMOVED] mavlink_msg_local_position_setpoint_pack(systemId, componentId, &ret, MAV_FRAME_LOCAL_NED, spX, spY, spZ, spYaw); // spYaw/180.0*M_PI);
         bufferlength = mavlink_msg_to_send_buffer(buffer, &ret);
         //add data into datastream
         memcpy(stream+streampointer,buffer, bufferlength);
@@ -702,23 +702,24 @@ void MAVLinkSimulationLink::writeBytes(const char* data, qint64 size)
                 system.base_mode = mode.base_mode;
             }
             break;
-            case MAVLINK_MSG_ID_SET_LOCAL_POSITION_SETPOINT:
-            {
-                mavlink_set_local_position_setpoint_t set;
-                mavlink_msg_set_local_position_setpoint_decode(&msg, &set);
-                spX = set.x;
-                spY = set.y;
-                spZ = set.z;
-                spYaw = set.yaw;
+                // [REMOVED from AP2]
+//            case MAVLINK_MSG_ID_SET_LOCAL_POSITION_SETPOINT:
+//            {
+//                mavlink_set_local_position_setpoint_t set;
+//                mavlink_msg_set_local_position_setpoint_decode(&msg, &set);
+//                spX = set.x;
+//                spY = set.y;
+//                spZ = set.z;
+//                spYaw = set.yaw;
 
-                // Send back new setpoint
-                mavlink_message_t ret;
-                mavlink_msg_local_position_setpoint_pack(systemId, componentId, &ret, MAV_FRAME_LOCAL_NED, spX, spY, spZ, spYaw);
-                bufferlength = mavlink_msg_to_send_buffer(buffer, &msg);
-                //add data into datastream
-                memcpy(stream+streampointer,buffer, bufferlength);
-                streampointer += bufferlength;
-            }
+//                // Send back new setpoint
+//                mavlink_message_t ret;
+//                mavlink_msg_local_position_setpoint_pack(systemId, componentId, &ret, MAV_FRAME_LOCAL_NED, spX, spY, spZ, spYaw);
+//                bufferlength = mavlink_msg_to_send_buffer(buffer, &msg);
+//                //add data into datastream
+//                memcpy(stream+streampointer,buffer, bufferlength);
+//                streampointer += bufferlength;
+//            }
             break;
             // EXECUTE OPERATOR ACTIONS
             case MAVLINK_MSG_ID_COMMAND_LONG:
@@ -995,6 +996,16 @@ int MAVLinkSimulationLink::getId() const
 QString MAVLinkSimulationLink::getName() const
 {
     return name;
+}
+
+QString MAVLinkSimulationLink::getShortName() const
+{
+    return name;
+}
+
+QString MAVLinkSimulationLink::getDetail() const
+{
+    return QString("sim");
 }
 
 qint64 MAVLinkSimulationLink::getConnectionSpeed() const

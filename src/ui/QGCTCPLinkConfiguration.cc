@@ -11,18 +11,28 @@ QGCTCPLinkConfiguration::QGCTCPLinkConfiguration(int linkid, QWidget *parent) :
 {
     ui->setupUi(this);
     m_linkId = linkid;
-    uint16_t port = LinkManager::instance()->getTcpLinkPort(linkid);
+    uint16_t port = getTcpLink()->getPort();
     ui->portSpinBox->setValue(port);
-    QString addr = LinkManager::instance()->getTcpLinkHost(linkid).toString();
+    QString addr = getTcpLink()->getHostAddress().toString();
     ui->hostAddressLineEdit->setText(addr);
-    ui->asServerCheckBox->setChecked(LinkManager::instance()->isTcpServer(linkid));
-    connect(ui->portSpinBox,SIGNAL(valueChanged(int)),this,SLOT(valuesChanged()));
-    connect(ui->hostAddressLineEdit,SIGNAL(textChanged(QString)),this,SLOT(valuesChanged()));
+    ui->asServerCheckBox->setChecked(getTcpLink()->isServer());
+    connect(ui->portSpinBox,SIGNAL(editingFinished()),this,SLOT(valuesChanged()));
+    connect(ui->hostAddressLineEdit,SIGNAL(editingFinished()),this,SLOT(valuesChanged()));
     connect(ui->asServerCheckBox,SIGNAL(stateChanged(int)),this,SLOT(valuesChanged()));
 }
+
 void QGCTCPLinkConfiguration::valuesChanged()
 {
-    LinkManager::instance()->modifyTcpConnection(m_linkId,QHostAddress(ui->hostAddressLineEdit->text()),ui->portSpinBox->value(),ui->asServerCheckBox->isChecked());
+    LinkManager *lm = LinkManager::instance();
+
+    TCPLink *iface = qobject_cast<TCPLink*>(lm->getLink(m_linkId));
+    if (!iface)
+    {
+        return;
+    }
+    iface->setHostAddress(QHostAddress(ui->hostAddressLineEdit->text()));
+    iface->setPort(ui->portSpinBox->value());
+    iface->setAsServer(ui->asServerCheckBox->isChecked());
 }
 
 QGCTCPLinkConfiguration::~QGCTCPLinkConfiguration()
@@ -40,4 +50,9 @@ void QGCTCPLinkConfiguration::changeEvent(QEvent *e)
     default:
         break;
     }
+}
+
+TCPLink* QGCTCPLinkConfiguration::getTcpLink() const
+{
+    return dynamic_cast<TCPLink*>(LinkManager::instance()->getLink(m_linkId));
 }

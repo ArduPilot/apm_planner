@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>519</height>
+    <width>904</width>
+    <height>595</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1239,6 +1239,9 @@
       <property name="text">
        <string>Write Params</string>
       </property>
+      <property name="shortcut">
+       <string>Ctrl+W</string>
+      </property>
      </widget>
     </item>
     <item row="3" column="2">
@@ -1441,6 +1444,9 @@
      <widget class="QPushButton" name="refreshPushButton">
       <property name="text">
        <string>Refresh Params</string>
+      </property>
+      <property name="shortcut">
+       <string>Ctrl+R</string>
       </property>
      </widget>
     </item>

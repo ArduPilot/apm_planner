@@ -7,6 +7,7 @@
 #include <QTimer>
 
 Radio3DREeprom::Radio3DREeprom():
+    m_deviceId(0),
     m_radioFreqCode(0),
     m_version(0),
     m_eepromVersion(0),
@@ -202,6 +203,46 @@ const QString& Radio3DREeprom::versionString()
     return m_versionString;
 }
 
+QString Radio3DREeprom::frequencyCodeString()
+{
+        switch(m_radioFreqCode){
+        case FREQ_915:
+            return QString("FREQ_915");;
+
+        case FREQ_433:
+            return QString("FREQ_433");
+
+        case FREQ_868:
+            return QString("FREQ_868");
+
+        default:
+            return QString(); // Unknown
+        }
+}
+
+QString Radio3DREeprom::deviceIdString()
+{
+        switch(m_deviceId){
+        case DEVICE_ID_HM_TRP:
+            return QString("HM_TRP");
+
+        case DEVICE_ID_RFD900:
+            return QString("RFD900");
+
+        case DEVICE_ID_RFD900A:
+            return QString("RFD900A");
+
+        case DEVICE_ID_RFD900U:
+            return QString("RFD900U");
+
+        case DEVICE_ID_RFD900P:
+            return QString("RFD900P");
+
+        default:
+            return QString(); // Unknown
+        }
+}
+
 Radio3DRSettings::Radio3DRSettings(QObject *parent) :
     QObject(parent),
     m_state(none),
@@ -270,7 +311,13 @@ bool Radio3DRSettings::openSerialPort(SerialSettings settings)
 
     m_serialPort->close();
 
+#ifdef Q_OS_MACX
+    // temp fix Qt5.4.1 issue on OSX
+    // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
+    m_serialPort->setPortName("/dev/cu." + settings.name);
+#else
     m_serialPort->setPortName(settings.name);
+#endif
 
     if(m_serialPort->open(QIODevice::ReadWrite)){
         // Start Reading the settings
@@ -495,9 +542,10 @@ void Radio3DRSettings::readData()
 
     case readLocalFrequency:{
         if(currentLine.toInt() > 0){
-            QLOG_DEBUG() << "Read Local Freq:" << currentLine.toInt();
+            int freqCode = currentLine.toInt();
+            QLOG_DEBUG() << "Read Local Freq:" << QString().sprintf("0x%x",freqCode);
             emit updateLocalStatus(tr("read local radio frequency"));
-            m_localRadio.setRadioFreqCode(currentLine.toInt());
+            m_localRadio.setRadioFreqCode(freqCode);
             readLocalSettingsStrings();
         } else {
             emit localReadComplete(m_localRadio, false);
@@ -543,9 +591,10 @@ void Radio3DRSettings::readData()
 
     case readRemoteFrequency:{
         if(currentLine.toInt() > 0){
-            QLOG_DEBUG() << "Read Remote Freq:" << currentLine.toInt();
+            int freqCode = currentLine.toInt();
+            QLOG_DEBUG() << "Read Remote Freq:" << QString().sprintf("0x%x",freqCode);
             emit updateRemoteStatus(tr("Read remote radio frequency"));
-            m_remoteRadio.setRadioFreqCode(currentLine.toInt());
+            m_remoteRadio.setRadioFreqCode(freqCode);
             readRemoteSettingsStrings();
         } else {
             emit remoteReadComplete(m_localRadio, false);

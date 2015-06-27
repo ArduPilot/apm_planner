@@ -75,12 +75,23 @@ Waypoint::Waypoint(const Waypoint& waypoint)
 }
 
 Waypoint::~Waypoint()
-{    
+{
 }
 
 bool Waypoint::isNavigationType()
 {
     return (action < MAV_CMD_NAV_LAST);
+}
+
+bool Waypoint::visibleOnMapWidget()
+{
+    QList<int> extraVisibleWaypoints;
+    // add waypoints here,to be visible on map
+    extraVisibleWaypoints << MAV_CMD_DO_SET_ROI;
+    if(extraVisibleWaypoints.contains(action))
+        return true;
+    else
+        return false;
 }
 
 void Waypoint::save(QTextStream &saveStream)
@@ -105,7 +116,8 @@ bool Waypoint::load(QTextStream &loadStream)
 
     const QStringList& wpParams = readLine.split("\t");
 
-    if (wpParams.size() == 12) {
+    if ((wpParams.size() >= 12)
+        &&(wpParams.size() <= 13)){
         this->id = wpParams[0].toInt();
         this->current = (wpParams[1].toInt() == 1 ? true : false);
         this->frame = (MAV_FRAME) wpParams[2].toInt();
@@ -118,7 +130,9 @@ bool Waypoint::load(QTextStream &loadStream)
         this->y = wpParams[9].toDouble();
         this->z = wpParams[10].toDouble();
         this->autocontinue = (wpParams[11].toInt() == 1 ? true : false);
-        //this->description = wpParams[12];
+        if(wpParams.size() == 13) { // Optional Description
+            this->description = wpParams[12];
+        }
         return true;
     }
     return false;

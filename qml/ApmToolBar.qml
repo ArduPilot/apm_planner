@@ -27,7 +27,7 @@ Rectangle {
     property alias backgroundColor : toolbar.color
     property alias uasNameLabel: currentUasName.label
     property alias linkNameLabel: linkDevice.label
-    property alias baudrateLabel: baudrate.label
+    property alias linkDetailLabel: linkDetail.label
     property bool connected: false
     property bool armed: false
     property string armedstr: "status"
@@ -65,7 +65,17 @@ Rectangle {
     }
 
     function setAdvancedMode(state){
-        terminalView.visible = state
+        // Enable ro disable buttons based on Adv mode.
+        // ie. terminalView.visible = state
+    }
+
+    function clearHighlightedButtons(){
+        console.log("APMToolBar: clear selected buttons")
+        flightDataView.setUnselected()
+        flightPlanView.setUnselected()
+        initialSetupView.setUnselected()
+        configTuningView.setUnselected()
+        plotView.setUnselected()
     }
 
     width: toolbar.width
@@ -103,21 +113,6 @@ Rectangle {
         }
     }
 
-// [BB] The code below should work, not sure why. replaced with code above
-//    Connections {
-//            target: globalObj
-//            onMAVConnected: {
-//                console.log("QML Change Connection " + connected)
-//                if (connected){
-//                    console.log("connected")
-//                    connectButton.image = "./resources/apmplanner/toolbar/disconnect.png"
-//                } else {
-//                    console.log("disconnected")
-//                    connectButton.image = "./resources/apmplanner/toolbar/connect.png"
-//                }
-//            }
-//    }
-
     Row {
         anchors.left: parent.left
         spacing: rowSpacerSize
@@ -132,8 +127,11 @@ Rectangle {
             id: flightDataView
             label: "FLIGHT DATA"
             image: "./resources/apmplanner/toolbar/flightdata.png"
+            selected: true
             onClicked: {
+                clearHighlightedButtons()
                 globalObj.triggerFlightView()
+                setSelected()
             }
         }
 
@@ -141,7 +139,11 @@ Rectangle {
             id: flightPlanView
             label: "FLIGHT PLAN"
             image: "./resources/apmplanner/toolbar/flightplanner.png"
-            onClicked: globalObj.triggerFlightPlanView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerFlightPlanView()
+                setSelected()
+            }
         }
 
         Button {
@@ -149,7 +151,11 @@ Rectangle {
             label: "INITIAL SETUP"
             image: "./resources/apmplanner/toolbar/light_initialsetup_icon.png"
 //            margins: 8
-            onClicked: globalObj.triggerInitialSetupView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerInitialSetupView()
+                setSelected()
+            }
         }
 
         Button {
@@ -157,14 +163,22 @@ Rectangle {
             label: "CONFIG/TUNING"
             image: "./resources/apmplanner/toolbar/light_tuningconfig_icon.png"
 //            margins: 8
-            onClicked: globalObj.triggerConfigTuningView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerConfigTuningView()
+                setSelected()
+            }
         }
 
         Button {
             id: plotView
             label: "GRAPHS"
             image: "./resources/apmplanner/toolbar/simulation.png"
-            onClicked: globalObj.triggerPlotView()
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerPlotView()
+                setSelected()
+            }
         }
 
 // [TODO] removed from toolbar until we have simulation working
@@ -174,14 +188,6 @@ Rectangle {
 //            image: "./resources/apmplanner/toolbar/simulation.png"
 //            onClicked: globalObj.triggerSimulationView()
 //        }
-
-        Button {
-            id: terminalView
-            label: "TERMINAL"
-            image: "./resources/apmplanner/toolbar/terminal.png"
-            onClicked: globalObj.triggerTerminalView()
-            visible: false
-        }
 
         Rectangle { // Spacer
             id: statusSpacerId
@@ -272,6 +278,8 @@ Rectangle {
             id: currentUasName
             label: "MAV ID"
             enabled: !connectionWidget.disable
+
+            onClicked: globalObj.showConnectionDialog()
         }
 
         TextButton {
@@ -284,7 +292,7 @@ Rectangle {
         }
 
         TextButton {
-            id: baudrate
+            id: linkDetail
             label: "none"
             minWidth: 70
             enabled: !connectionWidget.disable
@@ -304,7 +312,10 @@ Rectangle {
             image: "./resources/apmplanner/toolbar/connect.png"
             enabled: !connectionWidget.disable
 
-            onClicked: globalObj.connectMAV()
+            onClicked: {
+                globalObj.connectMAV()
+                setUnselected()
+            }
         }
 
         Rectangle { // Spacer

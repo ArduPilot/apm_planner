@@ -3,10 +3,6 @@
 #
 
 LinuxBuild {
-	INCLUDEPATH += \
-        /usr/include \
-        /usr/local/include
-
 	LIBS += \
 		-L/usr/lib
 
@@ -283,17 +279,10 @@ MacBuild | LinuxBuild {
 }
 
 #
-# EIGEN matrix library (NOMINMAX needed to make internal min/max work)
-#
-
-INCLUDEPATH += libs/eigen
-DEFINES += NOMINMAX
-
-#
 # AGLLIB math library
 #
 include(libs/alglib/alglib.pri)
-
+DEFINES += NOMINMAX
 #
 # OPMapControl library (from OpenPilot)
 #
@@ -440,17 +429,16 @@ WindowsBuild : win32 : exists(src/lib/opalrt/OpalApi.h) : exists(C:/OPAL-RT/RT-L
 
 MacBuild {
     INCLUDEPATH += \
-        $$BASEDIR/libs/lib/Frameworks/SDL.framework/Headers
+        $$BASEDIR/libs/lib/Frameworks/SDL2.framework/Headers
 
     LIBS += \
         -F$$BASEDIR/libs/lib/Frameworks \
-        -framework SDL
+        -framework SDL2
 }
 
 LinuxBuild {
 	LIBS += \
-		-lSDL \
-		-lSDLmain
+        -lSDL2
 }
 
 WindowsBuild {
@@ -459,8 +447,8 @@ WindowsBuild {
 
 	LIBS += \
         -L$$BASEDIR/libs/lib/sdl/msvc/lib \
-        -lSDLmain \
-        -lSDL
+        -lSDL2main \
+        -lSDL2
 }
 
 WindowsCrossBuild {
@@ -469,7 +457,7 @@ WindowsCrossBuild {
 
         LIBS += \
         -Llibs/lib/sdl/win32 \
-        -lSDL.dll
+        -lSDL2.dll
 }
 
 #

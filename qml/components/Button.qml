@@ -22,6 +22,15 @@ Rectangle {
     property string label: "button label"
     property alias image: buttonImage.source
     property int margins: 2
+    property bool selected: false
+
+    function setSelected(){
+        selected = true;
+    }
+
+    function setUnselected(){
+        selected = false;
+    }
 
     id: button
     width: 76
@@ -29,6 +38,8 @@ Rectangle {
     radius: 3
     smooth: true
     border.width: 2
+    color: buttonColor
+    border.color: borderColor
 
     Text {
         id: buttonLabel
@@ -51,36 +62,42 @@ Rectangle {
         height: image.height
     }
 
-    signal buttonClick()
+    onSelectedChanged: {
+        if (selected){
+            color = onSelectedColor
+            console.log("APMToolBar: " + buttonLabel.text + " SELECTED")
+        } else {
+            color = buttonColor
+            console.log("APMToolBar: " + buttonLabel.text + " unselected")
+        }
+    }
 
-    onButtonClick: {
-        console.log("APMToolBar:" + buttonLabel.text + " clicked calling signal")
-        clicked()
+    onVisibleChanged: {
+        border.color = borderColor
     }
 
     // Highlighting and ativation section
     property color buttonColor: "black"
-    property color onHoverbuttonColor: "lightblue"
-    property color onHoverColor: "darkblue"
+    property color onHoverbuttonColor: "black"
+    property color onHoverColor: "lightGrey"
     property color borderColor: "black"
+    property color onSelectedColor: "#AA777777"
 
     MouseArea {
         id: buttonMouseArea
         anchors.fill: parent
-        onClicked: buttonClick()
+        onClicked: {
+            parent.selected = true
+            parent.clicked()
+        }
         hoverEnabled: true
         onEntered: {
             parent.border.color = onHoverColor
-            parent.color = onHoverbuttonColor
         }
         onExited: {
             parent.border.color = borderColor
-            parent.color = buttonColor
         }
-        onPressed: parent.color = Qt.darker(onHoverbuttonColor, 1.5)
-        onReleased: parent.color = buttonColor
     }
-    color: buttonColor
-    border.color: borderColor
+
 }
 

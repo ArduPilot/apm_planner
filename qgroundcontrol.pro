@@ -122,6 +122,8 @@ QT += testlib
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
 
+#Turn on camera view
+#DEFINES += AMERAVIEW
 #
 # Logging Library
 #
@@ -130,6 +132,10 @@ include (QsLog/QsLog.pri)
 #
 # OS Specific settings
 #
+
+RaspberryPiBuild {
+   DEFINES -= CAMERAVIEW
+}
 
 MacBuild {
     QT += multimedia
@@ -321,6 +327,7 @@ FORMS += \
     src/ui/QGCMAVLinkLogPlayer.ui \
     src/ui/QGCWaypointListMulti.ui \
     src/ui/QGCUDPLinkConfiguration.ui \
+    src/ui/QGCUDPClientLinkConfiguration.ui \
     src/ui/QGCTCPLinkConfiguration.ui \
     src/ui/QGCSettingsWidget.ui \
     src/ui/map/QGCMapTool.ui \
@@ -356,13 +363,14 @@ FORMS += \
     src/ui/mission/QGCMissionNavLand.ui \
     src/ui/mission/QGCMissionNavTakeoff.ui \
     src/ui/mission/QGCMissionNavSweep.ui \
+    src/ui/mission/QGCMissionNavContinueChangeAlt.ui \
     src/ui/mission/QGCMissionDoStartSearch.ui \
     src/ui/mission/QGCMissionDoFinishSearch.ui \
     src/ui/QGCVehicleConfig.ui \
     src/ui/QGCHilConfiguration.ui \
     src/ui/QGCHilFlightGearConfiguration.ui \
     src/ui/QGCHilJSBSimConfiguration.ui \
-    src/ui/QGCHilXPlaneConfiguration.ui \
+#    src/ui/QGCHilXPlaneConfiguration.ui \
     src/ui/designer/QGCComboBox.ui \
     src/ui/designer/QGCTextLabel.ui \
     src/ui/uas/UASQuickView.ui \
@@ -392,6 +400,7 @@ FORMS += \
     src/ui/configuration/FailSafeConfig.ui \
     src/ui/configuration/AdvancedParamConfig.ui \
     src/ui/configuration/ArduCopterPidConfig.ui \
+    src/ui/configuration/CopterPidConfig.ui \
     src/ui/configuration/ApmPlaneLevel.ui \
     src/ui/configuration/ParamWidget.ui \
     src/ui/configuration/ArduPlanePidConfig.ui \
@@ -416,6 +425,8 @@ FORMS += \
     src/ui/MissionElevationDisplay.ui \
     src/ui/DroneshareUploadDialog.ui \
     src/ui/DroneshareDialog.ui \
+    src/ui/uas/PreFlightCalibrationDialog.ui \
+    src/ui/configuration/RadioFlashWizard.ui
 
 HEADERS += \
     src/MG.h \
@@ -426,11 +437,10 @@ HEADERS += \
     src/comm/LinkManager.h \
     src/comm/LinkInterface.h \
     src/comm/SerialLinkInterface.h \
-    src/comm/SerialLink.h \
     src/comm/ProtocolInterface.h \
     src/comm/QGCFlightGearLink.h \
     src/comm/QGCJSBSimLink.h \
-    src/comm/QGCXPlaneLink.h \
+#    src/comm/QGCXPlaneLink.h \
     src/comm/serialconnection.h \
     src/ui/CommConfigurationWindow.h \
     src/ui/SerialConfigurationWindow.h \
@@ -441,9 +451,12 @@ HEADERS += \
     src/ui/HUD.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
+#ifdef CAMERAVIEW
     src/ui/CameraView.h \
+#endif
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
+    src/comm/UDPClientLink.h \
     src/comm/TCPLink.h \
     src/ui/ParameterInterface.h \
     src/ui/WaypointList.h \
@@ -490,6 +503,7 @@ HEADERS += \
     src/uas/QGCMAVLinkUASFactory.h \
     src/ui/QGCWaypointListMulti.h \
     src/ui/QGCUDPLinkConfiguration.h \
+    src/ui/QGCUDPClientLinkConfiguration.h \
     src/ui/QGCTCPLinkConfiguration.h \
     src/ui/QGCSettingsWidget.h \
     src/uas/QGCUASParamManager.h \
@@ -533,6 +547,7 @@ HEADERS += \
     src/ui/mission/QGCMissionNavLand.h \
     src/ui/mission/QGCMissionNavTakeoff.h \
     src/ui/mission/QGCMissionNavSweep.h \
+    src/ui/mission/QGCMissionNavContinueChangeAlt.h \
     src/ui/mission/QGCMissionDoStartSearch.h \
     src/ui/mission/QGCMissionDoFinishSearch.h \
     src/ui/QGCVehicleConfig.h \
@@ -540,7 +555,7 @@ HEADERS += \
     src/ui/QGCHilConfiguration.h \
     src/ui/QGCHilFlightGearConfiguration.h \
     src/ui/QGCHilJSBSimConfiguration.h \
-    src/ui/QGCHilXPlaneConfiguration.h \
+#    src/ui/QGCHilXPlaneConfiguration.h \
     src/ui/designer/QGCComboBox.h \
     src/ui/designer/QGCTextLabel.h \
     src/ui/submainwindow.h \
@@ -578,6 +593,7 @@ HEADERS += \
     src/ui/configuration/FailSafeConfig.h \
     src/ui/configuration/AdvancedParamConfig.h \
     src/ui/configuration/ArduCopterPidConfig.h \
+    src/ui/configuration/CopterPidConfig.h \
     src/ui/ApmToolBar.h \
     src/ui/configuration/PX4FirmwareUploader.h \
     src/ui/configuration/ApmPlaneLevel.h \
@@ -633,9 +649,13 @@ HEADERS += \
     src/comm/UASObject.h \
     src/comm/VehicleOverview.h \
     src/comm/RelPositionOverview.h \
-    src/comm/AbsPositionOverview.h
-#    libs/sik_uploader/qsikuploader.h \
-#    libs/sik_uploader/sikuploader.h \
+    src/comm/AbsPositionOverview.h \
+    src/comm/MissionOverview.h \
+    src/ui/AP2DataPlot2DModel.h \
+    src/ui/uas/PreFlightCalibrationDialog.h \
+    src/ui/configuration/RadioFlashWizard.h \
+    src/ui/GraphTreeWidgetItem.h \
+    src/comm/LinkManagerFactory.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -643,10 +663,9 @@ SOURCES += src/main.cc \
     src/uas/UAS.cc \
     src/comm/LinkManager.cc \
     src/comm/LinkInterface.cpp \
-    src/comm/SerialLink.cc \
     src/comm/QGCFlightGearLink.cc \
     src/comm/QGCJSBSimLink.cc \
-    src/comm/QGCXPlaneLink.cc \
+#    src/comm/QGCXPlaneLink.cc \
     src/comm/serialconnection.cc \
     src/ui/CommConfigurationWindow.cc \
     src/ui/SerialConfigurationWindow.cc \
@@ -656,9 +675,12 @@ SOURCES += src/main.cc \
     src/ui/uas/UASInfoWidget.cc \
     src/ui/HUD.cc \
     src/ui/uas/UASView.cc \
+#ifdef CAMERAVIEW
     src/ui/CameraView.cc \
+#endif
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
+    src/comm/UDPClientLink.cc \
     src/comm/TCPLink.cc \
     src/ui/ParameterInterface.cc \
     src/ui/WaypointList.cc \
@@ -704,6 +726,7 @@ SOURCES += src/main.cc \
     src/uas/QGCMAVLinkUASFactory.cc \
     src/ui/QGCWaypointListMulti.cc \
     src/ui/QGCUDPLinkConfiguration.cc \
+    src/ui/QGCUDPClientLinkConfiguration.cc \
     src/ui/QGCTCPLinkConfiguration.cc \
     src/ui/QGCSettingsWidget.cc \
     src/uas/QGCUASParamManager.cc \
@@ -712,6 +735,7 @@ SOURCES += src/main.cc \
     src/ui/map/Waypoint2DIcon.cc \
     src/ui/map/QGCMapTool.cc \
     src/ui/map/QGCMapToolBar.cc \
+    src/QGCGeo.cc \
     src/ui/QGCToolBar.cc \
     src/ui/QGCStatusBar.cc \
     src/ui/QGCMAVLinkInspector.cc \
@@ -746,13 +770,14 @@ SOURCES += src/main.cc \
     src/ui/mission/QGCMissionNavLand.cc \
     src/ui/mission/QGCMissionNavTakeoff.cc \
     src/ui/mission/QGCMissionNavSweep.cc \
+    src/ui/mission/QGCMissionNavContinueChangeAlt.cc \
     src/ui/mission/QGCMissionDoStartSearch.cc \
     src/ui/mission/QGCMissionDoFinishSearch.cc \
     src/ui/QGCVehicleConfig.cc \
     src/ui/QGCHilConfiguration.cc \
     src/ui/QGCHilFlightGearConfiguration.cc \
     src/ui/QGCHilJSBSimConfiguration.cc \
-    src/ui/QGCHilXPlaneConfiguration.cc \
+#    src/ui/QGCHilXPlaneConfiguration.cc \
     src/ui/designer/QGCComboBox.cc \
     src/ui/designer/QGCTextLabel.cc \
     src/ui/submainwindow.cpp \
@@ -790,6 +815,7 @@ SOURCES += src/main.cc \
     src/ui/configuration/FailSafeConfig.cc \
     src/ui/configuration/AdvancedParamConfig.cc \
     src/ui/configuration/ArduCopterPidConfig.cc \
+    src/ui/configuration/CopterPidConfig.cc \
     src/ui/ApmToolBar.cc \
     src/ui/configuration/PX4FirmwareUploader.cc \
     src/ui/configuration/ApmPlaneLevel.cc \
@@ -845,9 +871,13 @@ SOURCES += src/main.cc \
     src/comm/UASObject.cc \
     src/comm/VehicleOverview.cc \
     src/comm/RelPositionOverview.cc \
-    src/comm/AbsPositionOverview.cc
-#    libs/sik_uploader/qsikuploader.cpp \
-#    libs/sik_uploader/sikuploader.cpp \
+    src/comm/AbsPositionOverview.cc \
+    src/comm/MissionOverview.cc \
+    src/ui/AP2DataPlot2DModel.cc \
+    src/ui/uas/PreFlightCalibrationDialog.cpp \
+    src/ui/configuration/RadioFlashWizard.cpp \
+    src/ui/GraphTreeWidgetItem.cc \
+    src/comm/LinkManagerFactory.cpp
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \

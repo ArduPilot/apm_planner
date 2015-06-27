@@ -43,9 +43,9 @@ This file is part of the PIXHAWK project
 #include "QGC.h"
 
 UASControlWidget::UASControlWidget(QWidget *parent) : QWidget(parent),
-    uas(0),
-    uasMode(0),
-    engineOn(false)
+    m_uas(0),
+    m_uasMode(0),
+    m_engineOn(false)
 {
     ui.setupUi(this);
 
@@ -60,7 +60,7 @@ UASControlWidget::UASControlWidget(QWidget *parent) : QWidget(parent),
     connect(ui.modeComboBox, SIGNAL(activated(int)), this, SLOT(setMode(int)));
     connect(ui.setModeButton, SIGNAL(clicked()), this, SLOT(transmitMode()));
 
-    uasMode = ui.modeComboBox->itemData(ui.modeComboBox->currentIndex()).toInt();
+    m_uasMode = ui.modeComboBox->itemData(ui.modeComboBox->currentIndex()).toInt();
 
     ui.modeComboBox->setCurrentIndex(0);
 
@@ -70,9 +70,9 @@ UASControlWidget::UASControlWidget(QWidget *parent) : QWidget(parent),
 
 void UASControlWidget::setUAS(UASInterface* uas)
 {
-    if (this->uas != 0)
+    if (m_uas != 0)
     {
-        UASInterface* oldUAS = UASManager::instance()->getUASForId(this->uas);
+        UASInterface* oldUAS = UASManager::instance()->getUASForId(this->m_uas);
         disconnect(ui.controlButton, SIGNAL(clicked()), oldUAS, SLOT(armSystem()));
         disconnect(ui.liftoffButton, SIGNAL(clicked()), oldUAS, SLOT(launch()));
         disconnect(ui.landButton, SIGNAL(clicked()), oldUAS, SLOT(home()));
@@ -80,6 +80,11 @@ void UASControlWidget::setUAS(UASInterface* uas)
         //connect(ui.setHomeButton, SIGNAL(clicked()), uas, SLOT(setLocalOriginAtCurrentGPSPosition()));
         disconnect(uas, SIGNAL(modeChanged(int,QString,QString)), this, SLOT(updateMode(int,QString,QString)));
         disconnect(uas, SIGNAL(statusChanged(int)), this, SLOT(updateState(int)));
+    }
+    if (uas == 0)
+    {
+        m_uas = 0;
+        return;
     }
 
     // Connect user interface controls
@@ -93,7 +98,7 @@ void UASControlWidget::setUAS(UASInterface* uas)
 
     ui.controlStatusLabel->setText(tr("Connected to ") + uas->getUASName());
 
-    this->uas = uas->getUASID();
+    m_uas = uas->getUASID();
     setBackgroundColor(uas->getColor());
 }
 
@@ -105,7 +110,7 @@ UASControlWidget::~UASControlWidget()
 void UASControlWidget::updateStatemachine()
 {
 
-    if (engineOn)
+    if (m_engineOn)
     {
         ui.controlButton->setText(tr("DISARM SYSTEM"));
     }
@@ -149,11 +154,11 @@ void UASControlWidget::updateState(int state)
     switch (state)
     {
     case (int)MAV_STATE_ACTIVE:
-        engineOn = true;
+        m_engineOn = true;
         ui.controlButton->setText(tr("DISARM SYSTEM"));
         break;
     case (int)MAV_STATE_STANDBY:
-        engineOn = false;
+        m_engineOn = false;
         ui.controlButton->setText(tr("ARM SYSTEM"));
         break;
     }
@@ -165,7 +170,7 @@ void UASControlWidget::updateState(int state)
 void UASControlWidget::setMode(int mode)
 {
     // Adapt context button mode
-    uasMode = ui.modeComboBox->itemData(mode).toInt();
+    m_uasMode = ui.modeComboBox->itemData(mode).toInt();
     ui.modeComboBox->blockSignals(true);
     ui.modeComboBox->setCurrentIndex(mode);
     ui.modeComboBox->blockSignals(false);
@@ -175,16 +180,16 @@ void UASControlWidget::setMode(int mode)
 
 void UASControlWidget::transmitMode()
 {
-    UASInterface* mav = UASManager::instance()->getUASForId(this->uas);
+    UASInterface* mav = UASManager::instance()->getUASForId(this->m_uas);
     if (mav)
     {
         // include armed state
-        if (engineOn)
-            uasMode |= MAV_MODE_FLAG_SAFETY_ARMED;
+        if (m_engineOn)
+            m_uasMode |= MAV_MODE_FLAG_SAFETY_ARMED;
         else
-            uasMode &= ~MAV_MODE_FLAG_SAFETY_ARMED;
+            m_uasMode &= ~MAV_MODE_FLAG_SAFETY_ARMED;
 
-        mav->setMode(uasMode);
+        mav->setMode(m_uasMode);
         QString mode = ui.modeComboBox->currentText();
 
         ui.lastActionLabel->setText(QString("Sent new mode %1 to %2").arg(mode).arg(mav->getUASName()));
@@ -193,11 +198,11 @@ void UASControlWidget::transmitMode()
 
 void UASControlWidget::cycleContextButton()
 {
-    UAS* mav = dynamic_cast<UAS*>(UASManager::instance()->getUASForId(this->uas));
+    UAS* mav = dynamic_cast<UAS*>(UASManager::instance()->getUASForId(this->m_uas));
     if (mav)
     {
 
-        if (!engineOn)
+        if (!m_engineOn)
         {
             mav->armSystem();
             ui.lastActionLabel->setText(QString("Enabled motors on %1").arg(mav->getUASName()));

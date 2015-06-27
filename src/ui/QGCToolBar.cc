@@ -21,7 +21,6 @@ This file is part of the QGROUNDCONTROL project
 
 ======================================================================*/
 #include "QsLog.h"
-#include "SerialLink.h"
 #include "QGCToolBar.h"
 #include "UASManager.h"
 #include "MainWindow.h"
@@ -574,7 +573,7 @@ void QGCToolBar::updateComboBox()
     portComboBox->clear();
     for (int i=0;i<LinkManager::instance()->getLinks().count();i++)
     {
-        /*SerialLink *slink = qobject_cast<SerialLink*>(LinkManager::instance()->getLinks()[i]);
+        /*SerialLink *slink = qobject_cast<SerialLink*>(LinkManager::instance()->getLinks()[i]); // SerialLink Deprecated
         if (slink)
         {
             //It's a serial link

@@ -183,9 +183,7 @@ void SettingsDialog::fillPortsInfo(QComboBox &comboBox)
         if (comboBox.itemText(i) == current)
         {
             comboBox.setCurrentIndex(i);
-            setLink(comboBox.currentIndex());
-            connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
-            return;
+            break;
         }
     }
     connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));

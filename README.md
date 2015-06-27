@@ -1,4 +1,5 @@
-APM Planner
+APM Planner 2.0
+===============
 
 Project:
 http://github.com/diydrones/apm_planner
@@ -9,22 +10,22 @@ https://github.com/diydrones/apm_planner
 Credits:
 http://planner2.ardupilot.com/credits-and-contributors/
 
+Developer Chat: https://gitter.im/diydrones/apm_planner
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/diydrones/apm_planner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+[Waffle.io](https://waffle.io/diydrones/apm_planner) Progress Graph
+
+[![Throughput Graph](https://graphs.waffle.io/diydrones/apm_planner/throughput.svg)](https://waffle.io/diydrones/apm_planner/metrics)
 
 Documentation
 =============
 see http://planner2.ardupilot.com
 
-
 Mac OS X
 ========
 
 To build on Mac OS X (10.6 or later):
-
-Install SDL
------------
-1) Download SDL from:  <http://www.libsdl.org/release/SDL-1.2.14.dmg>
-
-2) From the SDL disk image, copy the `sdl.framework` bundle to `/Library/Frameworks` directory (if you are not an admin copy to `~/Library/Frameworks`)
 
 Install QT
 -----------
@@ -56,7 +57,8 @@ sudo apt-get update
 sudo apt-get install git qt5-qmake qt5-default \
   qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
   libqt5svg5-dev libsdl1.2-dev  libsndfile-dev \
-  flite1-dev libssl-dev libudev-dev
+  flite1-dev libssl-dev libudev-dev libsdl2-dev \
+  qtdeclarative5-qtquick2-plugin
 ```
 
 2) Clone the repository in your workspace:

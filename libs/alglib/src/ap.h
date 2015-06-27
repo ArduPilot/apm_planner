@@ -24,7 +24,9 @@ http://www.fsf.org/licensing/licenses
 #include <stddef.h>
 #include <string>
 #include <cstring>
+extern "C" {
 #include <math.h>
+}
 
 #ifdef __BORLANDC__
 #include <list.h>

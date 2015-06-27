@@ -41,8 +41,7 @@ TCPLink::TCPLink(QHostAddress hostAddress, quint16 socketPort, bool asServer) :
     _hostAddress(hostAddress),
     _port(socketPort),
     _asServer(asServer),
-    _socket(NULL),
-    _socketIsConnected(false)
+    _socket(NULL)
 {
     _server.setMaxPendingConnections(1);
 
@@ -75,16 +74,12 @@ void TCPLink::setHostAddress(QHostAddress hostAddress)
 	}
 
 	_hostAddress = hostAddress;
+    emit linkChanged(this);
     _resetName();
 
 	if (reconnect) {
 		connect();
 	}
-}
-
-void TCPLink::setHostAddress(const QString& hostAddress)
-{
-    setHostAddress(QHostAddress(hostAddress));
 }
 
 void TCPLink::setPort(int port)
@@ -97,6 +92,7 @@ void TCPLink::setPort(int port)
 	}
 
 	_port = port;
+    emit linkChanged(this);
     _resetName();
 
 	if (reconnect) {
@@ -117,6 +113,7 @@ void TCPLink::setAsServer(bool asServer)
     }
 
     _asServer = asServer;
+    emit linkChanged(this);
     _resetName();
 
     if (reconnect) {
@@ -151,6 +148,9 @@ void TCPLink::_writeDebugBytes(const char *data, qint16 size)
 
 void TCPLink::writeBytes(const char* data, qint64 size)
 {
+    if (!(_socket && _socket->isOpen()))
+        return;
+
 #ifdef TCPLINK_READWRITE_DEBUG
     _writeDebugBytes(data, size);
 #endif
@@ -225,7 +225,6 @@ void TCPLink::_socketDisconnected()
 
     Q_ASSERT(_socket);
 
-    _socketIsConnected = false;
     _socket->deleteLater();
     _socket = NULL;
 
@@ -256,17 +255,19 @@ bool TCPLink::connect()
 
 void TCPLink::newConnection()
 {
-    qDebug() << _name << ": new connection";
-
-    Q_ASSERT(_socket == NULL);
+    if (_socket != NULL)
+        disconnect();
 
     _socket = _server.nextPendingConnection();
+    if (_socket == NULL)
+        return;
+
+    qDebug() << _name << ": new connection";
 
     QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
     QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
     QObject::connect(_socket, SIGNAL(disconnected()), this, SLOT(_socketDisconnected()));
 
-    _socketIsConnected = true;
     emit connected(true);
     emit connected();
     emit connected(this);
@@ -302,6 +303,7 @@ bool TCPLink::_hardwareConnect(void)
 
         QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
         QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
+        QObject::connect(_socket, SIGNAL(disconnected()), this, SLOT(_socketDisconnected()));
 
         // Give the socket five seconds to connect to the other side otherwise error out
         if (!_socket->waitForConnected(5000))
@@ -316,7 +318,6 @@ bool TCPLink::_hardwareConnect(void)
             return false;
         }
 
-        _socketIsConnected = true;
         emit connected(true);
         emit connected();
         emit connected(this);
@@ -338,7 +339,7 @@ void TCPLink::_socketError(QAbstractSocket::SocketError socketError)
  **/
 bool TCPLink::isConnected() const
 {
-    return _socketIsConnected;
+    return _socket ? _socket->isOpen() : false;
 }
 
 int TCPLink::getId() const
@@ -349,6 +350,16 @@ int TCPLink::getId() const
 QString TCPLink::getName() const
 {
     return _name;
+}
+
+QString TCPLink::getShortName() const
+{
+    return _hostAddress.toString();
+}
+
+QString TCPLink::getDetail() const
+{
+    return QString::number(_port);
 }
 
 qint64 TCPLink::getConnectionSpeed() const

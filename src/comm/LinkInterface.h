@@ -51,31 +51,14 @@ public:
         SERIAL_LINK,
         TCP_LINK,
         UDP_LINK,
+        UDP_CLIENT_LINK,
         SIM_LINK,
         UNKNOWN_LINK
     };
 
-    LinkInterface() :
-        QThread(0)
-    {
-        // Initialize everything for the data rate calculation buffers.
-        inDataIndex = 0;
-        outDataIndex = 0;
-
-        // Initialize our data rate buffers manually, cause C++<03 is dumb.
-        for (int i = 0; i < dataRateBufferSize; ++i)
-        {
-            inDataWriteAmounts[i] = 0;
-            inDataWriteTimes[i] = 0;
-            outDataWriteAmounts[i] = 0;
-            outDataWriteTimes[i] = 0;
-        }
-
-    }
-
-    virtual ~LinkInterface() {
-        emit this->deleteLink(this);
-    }
+public:
+    LinkInterface();
+    virtual ~LinkInterface();
 
     /**
      * @brief Conenction Management
@@ -96,6 +79,16 @@ public:
      * @brief Get the human readable name of this link
      */
     virtual QString getName() const = 0;
+
+    /**
+     * @brief Get the human readable name of this link
+     */
+    virtual QString getShortName() const = 0;
+
+    /**
+     * @brief Get the detail of this link (ie. baud, ip addres etc)
+     */
+    virtual QString getDetail() const = 0;
 
     virtual void requestReset() = 0;
 
@@ -146,6 +139,18 @@ public:
     }
 
     /**
+     * @brief Get the current number of bytes in buffer.
+     *
+     * @return The number of bytes ready to read
+     **/
+    virtual qint64 bytesAvailable() = 0;
+
+    virtual LinkType getLinkType() { return UNKNOWN_LINK; }
+
+
+public slots:
+
+    /**
      * @brief Connect this interface logically
      *
      * @return True if connection could be established, false otherwise
@@ -158,17 +163,6 @@ public:
      * @return True if connection could be terminated, false otherwise
      **/
     virtual bool disconnect() = 0;
-
-    /**
-     * @brief Get the current number of bytes in buffer.
-     *
-     * @return The number of bytes ready to read
-     **/
-    virtual qint64 bytesAvailable() = 0;
-
-    virtual LinkType getLinkType() { return UNKNOWN_LINK; }
-
-public slots:
 
     /**
      * @brief This method allows to write bytes to the interface.
@@ -236,6 +230,12 @@ signals:
     void deleteLink(LinkInterface* const link);
 
     void error(LinkInterface* link,QString errorstring);
+
+    /**
+      * @brief Sends an update message when the link parameters are changed
+      *
+      */
+    void linkChanged(LinkInterface* link);
 
 protected:
 

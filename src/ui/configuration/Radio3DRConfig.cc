@@ -25,6 +25,7 @@ This file is part of the APM_PLANNER project
 #include "SerialSettingsDialog.h"
 #include "Radio3DRConfig.h"
 #include "Radio3DRSettings.h"
+#include "RadioFlashWizard.h"
 
 #include "configuration.h"
 
@@ -45,6 +46,7 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
 
     addBaudComboBoxConfig(ui.baudPortComboBox);
     fillPortsInfo(*ui.linkPortComboBox);
+    m_settings.name = ui.linkPortComboBox->currentText();
 
     addRadioBaudComboBoxConfig(*ui.baudComboBox);
     addRadioBaudComboBoxConfig(*ui.baudComboBox_remote);
@@ -64,6 +66,7 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
     //Keep refreshing the serial port list
     m_timer = new QTimer(this);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+    m_timer->start(RADIO3DR_UPDATE_PORT_TIME);
 }
 
 Radio3DRConfig::~Radio3DRConfig()
@@ -85,9 +88,12 @@ void Radio3DRConfig::addBaudComboBoxConfig(QComboBox *comboBox)
     comboBox->setCurrentIndex(2);
 }
 
-void Radio3DRConfig::fillPortsInfo(QComboBox &comboxBox)
+void Radio3DRConfig::fillPortsInfo(QComboBox &comboBox)
 {
     QLOG_TRACE() << "3DR Radio fillPortsInfo ";
+    QString current = comboBox.itemText(comboBox.currentIndex());
+    disconnect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    comboBox.clear();
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         QStringList list;
         list << info.portName()
@@ -97,50 +103,64 @@ void Radio3DRConfig::fillPortsInfo(QComboBox &comboxBox)
              << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
              << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
 
-        int found = comboxBox.findData(list);
-        if ((found == -1)&& info.manufacturer().contains("FTDI")) {
+        int found = comboBox.findData(list);
+        if ((found == -1)&& (info.manufacturer().contains("FTDI") || info.manufacturer().contains("Silicon Labs"))) {
             QLOG_INFO() << "Inserting " << list.first();
-            comboxBox.insertItem(0,list[0], list);
+            comboBox.insertItem(0,list[0], list);
         } else {
             // Do nothing as the port is already listed
         }
-    }}
+    }
+    for (int i=0;i<comboBox.count();i++)
+    {
+        if (comboBox.itemText(i) == current)
+        {
+            comboBox.setCurrentIndex(i);
+            break;
+        }
+    }
+    connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    setLink(comboBox.currentIndex());
+}
 
 void Radio3DRConfig::loadSavedSerialSettings()
 {
     // Load defaults from settings
-    QSettings settings(QGC::COMPANYNAME, QGC::APPNAME);
+    QSettings settings;
     settings.sync();
-    if (settings.contains("3DRRADIO_COMM_PORT"))
+    settings.beginGroup("3DRRADIO");
+    if (settings.contains("COMM_PORT"))
     {
-        m_settings.name = settings.value("3DRRADIO_COMM_PORT").toString();
-        m_settings.baudRate = settings.value("3DRRADIO_COMM_BAUD").toInt();
+        m_settings.name = settings.value("COMM_PORT").toString();
+        m_settings.baudRate = settings.value("COMM_BAUD").toInt();
         m_settings.parity = static_cast<QSerialPort::Parity>
-                (settings.value("3DRRADIO_COMM_PARITY").toInt());
+                (settings.value("COMM_PARITY").toInt());
         m_settings.stopBits = static_cast<QSerialPort::StopBits>
-                (settings.value("3DRRADIO_COMM_STOPBITS").toInt());
+                (settings.value("COMM_STOPBITS").toInt());
         m_settings.dataBits = static_cast<QSerialPort::DataBits>
-                (settings.value("3DRRADIO_COMM_DATABITS").toInt());
+                (settings.value("COMM_DATABITS").toInt());
         m_settings.flowControl = static_cast<QSerialPort::FlowControl>
-                (settings.value("3DRRADIO_COMM_FLOW_CONTROL").toInt());
+                (settings.value("COMM_FLOW_CONTROL").toInt());
 
         ui.linkPortComboBox->setCurrentIndex(ui.linkPortComboBox->findText(m_settings.name));
         ui.baudPortComboBox->setCurrentIndex(ui.baudPortComboBox->findData(m_settings.baudRate));
     } else {
-        // init the structure
+        ui.baudPortComboBox->setCurrentIndex(ui.baudPortComboBox->findData(QSerialPort::Baud57600));
     }
 }
 
 void Radio3DRConfig::saveSerialSettings()
 {
     // Store settings
-    QSettings settings(QGC::COMPANYNAME, QGC::APPNAME);
-    settings.setValue("3DRRADIO_COMM_PORT", m_settings.name);
-    settings.setValue("3DRRADIO_COMM_BAUD", m_settings.baudRate);
-    settings.setValue("3DRRADIO_COMM_PARITY", m_settings.parity);
-    settings.setValue("3DRRADIO_COMM_STOPBITS", m_settings.stopBits);
-    settings.setValue("3DRRADIO_COMM_DATABITS", m_settings.dataBits);
-    settings.setValue("3DRRADIO_COMM_FLOW_CONTROL", m_settings.flowControl);
+    QSettings settings;
+    settings.beginGroup("3DRRADIO");
+    settings.setValue("COMM_PORT", m_settings.name);
+    settings.setValue("COMM_BAUD", m_settings.baudRate);
+    settings.setValue("COMM_PARITY", m_settings.parity);
+    settings.setValue("COMM_STOPBITS", m_settings.stopBits);
+    settings.setValue("COMM_DATABITS", m_settings.dataBits);
+    settings.setValue("COMM_FLOW_CONTROL", m_settings.flowControl);
+    settings.endGroup();
     settings.sync();
 }
 
@@ -149,7 +169,7 @@ void Radio3DRConfig::showEvent(QShowEvent *event)
     Q_UNUSED(event);
     // Start refresh Timer
     QLOG_DEBUG() << "3DR Radio Start Serial Port Scanning";
-    m_timer->start(2000);
+    m_timer->start(RADIO3DR_UPDATE_PORT_TIME);
     loadSavedSerialSettings();
 
     MainWindow::instance()->toolBar().disableConnectWidget(true);
@@ -179,6 +199,7 @@ void Radio3DRConfig::initConnections()
     connect(ui.loadSettingsButton, SIGNAL(clicked()), this, SLOT(readRadioSettings()));
     connect(ui.saveSettingsButton, SIGNAL(clicked()), this, SLOT(writeRemoteRadioSettings()));
     connect(ui.resetDefaultsButton, SIGNAL(clicked()), this, SLOT(resetRemoteRadioSettingsToDefaults()));
+    connect(ui.flashPushButton, SIGNAL(clicked()), this, SLOT(flashButtonClicked()));
     connect(ui.copyToRemoteButton, SIGNAL(clicked()), this, SLOT(copyLocalSettingsToRemote()));
 
     connect(ui.settingsButton, SIGNAL(released()), m_settingsDialog, SLOT(show()));
@@ -334,10 +355,22 @@ void Radio3DRConfig::localReadComplete(Radio3DREeprom& eeprom, bool success)
 
         setupFrequencyComboBox(*ui.minFreqComboBox, eeprom.frequencyCode());
         setupFrequencyComboBox(*ui.maxFreqComboBox, eeprom.frequencyCode());
+
+        int lowFreqIndex = ui.maxFreqComboBox->findData(eeprom.minFreq());
+        if (lowFreqIndex == -1){
+            ui.maxFreqComboBox->addItem(QString::number(eeprom.minFreq()), eeprom.minFreq());
+        }
         ui.minFreqComboBox->setCurrentIndex(ui.minFreqComboBox->findData(eeprom.minFreq()));
+
+        int highFreqIndex = ui.maxFreqComboBox->findData(eeprom.maxFreq());
+        if (highFreqIndex == -1){
+            ui.maxFreqComboBox->addItem(QString::number(eeprom.maxFreq()), eeprom.maxFreq());
+        }
         ui.maxFreqComboBox->setCurrentIndex(ui.maxFreqComboBox->findData(eeprom.maxFreq()));
 
         ui.maxWindowSpinBox->setValue(eeprom.maxWindow());
+
+        ui.rtsCtsComboBox->setCurrentIndex(ui.rtsCtsComboBox->findData(eeprom.rtsCts()));
 
     }
 }
@@ -381,12 +414,21 @@ void Radio3DRConfig::remoteReadComplete(Radio3DREeprom& eeprom, bool success)
         ui.lbtRssiSpinBox_remote->setValue(eeprom.lbtRssi());
         ui.numChannelsSpinBox_remote->setValue(eeprom.numChannels());
 
-        setupFrequencyComboBox(*ui.minFreqComboBox_remote, eeprom.frequencyCode());
-        setupFrequencyComboBox(*ui.maxFreqComboBox_remote, eeprom.frequencyCode());
+        int lowFreqIndex = ui.minFreqComboBox_remote->findData(eeprom.minFreq());
+        if (lowFreqIndex == -1){
+            ui.minFreqComboBox_remote->addItem(QString::number(eeprom.minFreq()), eeprom.minFreq());
+        }
         ui.minFreqComboBox_remote->setCurrentIndex(ui.minFreqComboBox_remote->findData(eeprom.minFreq()));
+
+        int highFreqIndex = ui.maxFreqComboBox_remote->findData(eeprom.maxFreq());
+        if (highFreqIndex == -1){
+            ui.maxFreqComboBox_remote->addItem(QString::number(eeprom.maxFreq()), eeprom.maxFreq());
+        }
         ui.maxFreqComboBox_remote->setCurrentIndex(ui.maxFreqComboBox_remote->findData(eeprom.maxFreq()));
 
         ui.maxWindowSpinBox_remote->setValue(eeprom.maxWindow());
+
+        ui.rtsCtsComboBox_remote->setCurrentIndex(ui.rtsCtsComboBox_remote->findData(eeprom.rtsCts()));
     }
 }
 
@@ -563,22 +605,22 @@ void Radio3DRConfig::setupFrequencyComboBox(QComboBox &comboBox, int freqCode )
     int freqStepSize;
 
     switch(freqCode){
-    case FREQ_915:
+    case Radio3DREeprom::FREQ_915:
         minFreq = 895000;
         maxFreq = 935000;
         freqStepSize = 1000;
         break;
-    case FREQ_433:
+    case Radio3DREeprom::FREQ_433:
         minFreq = 414000;
-        maxFreq = 454000;
-        freqStepSize = 100;
+        maxFreq = 460000;
+        freqStepSize = 50;
         break;
-    case FREQ_868:
+    case Radio3DREeprom::FREQ_868:
         minFreq = 849000;
         maxFreq = 889000;
         freqStepSize = 1000;
     default:
-        minFreq = 1;    // this supports RFD900 and RFD900A
+        minFreq = 1;    // this supports RFD900, RFD900A, RFD900U, RFD900P
         maxFreq = 30;
         freqStepSize = 1;
     }
@@ -605,5 +647,12 @@ void Radio3DRConfig::resetLocalRadioSettingsToDefaults()
         m_radioSettings->resetLocalRadioToDefaults();
         m_state = complete;
     }
+}
+
+void Radio3DRConfig::flashButtonClicked()
+{
+    QLOG_DEBUG() << "Radio Flash Wizard Started";
+    RadioFlashWizard* flashRadioWizard = new RadioFlashWizard(this);
+    flashRadioWizard->exec();
 }
 

@@ -77,8 +77,10 @@ void UDPLink::setAddress(QHostAddress host)
 		disconnect();
 		reconnect = true;
 	}
-	this->host = host;
-	if(reconnect)
+    this->host = host;
+    emit linkChanged(this);
+
+    if(reconnect)
 	{
 		connect();
 	}
@@ -95,6 +97,8 @@ void UDPLink::setPort(int port)
     this->port = port;
 	this->name = tr("UDP Link (port:%1)").arg(this->port);
 	emit nameChanged(this->name);
+    emit linkChanged(this);
+
 	if(reconnect)
 	{
 		connect();
@@ -141,6 +145,7 @@ void UDPLink::addHost(const QString& host)
             ports.append(port);
         }
     }
+    emit linkChanged(this);
 }
 
 void UDPLink::removeHost(const QString& hostname)
@@ -390,10 +395,21 @@ QString UDPLink::getName() const
     return name;
 }
 
+QString UDPLink::getShortName() const
+{
+    return host.toString();
+}
+
+QString UDPLink::getDetail() const
+{
+    return QString::number(port);
+}
+
 void UDPLink::setName(QString name)
 {
     this->name = name;
     emit nameChanged(this->name);
+    emit linkChanged(this);
 }
 
 

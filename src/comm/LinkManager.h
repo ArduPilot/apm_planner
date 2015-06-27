@@ -43,7 +43,6 @@ This file is part of the APM_PLANNER project
  * The mavlink decoder lives in its own thread
  * the UAS Class lives in the UI thread
  */
-#include "serialconnection.h"
 #include "MAVLinkDecoder.h"
 #include "MAVLinkProtocol.h"
 //#include "MAVLinkProtocol.h"
@@ -56,40 +55,25 @@ class LinkManager : public QObject
     Q_OBJECT
 public:
     explicit LinkManager(QObject *parent = 0);
-    static LinkManager* instance()
-    {
-        static LinkManager* _instance = 0;
-        if(_instance == 0)
-        {
-            _instance = new LinkManager();
-        }
-        return _instance;
-    }
+    static LinkManager* instance();
     ~LinkManager();
+
     void disableTimeouts(int index);
     void enableTimeouts(int index);
     void disableAllTimeouts();
     void enableAllTimeouts();
-    void loadSettings();
-    void saveSettings();
-    int addSerialConnection(QString port,int baud);
-    int addSerialConnection();
-    int addUdpConnection(QHostAddress addr,int port);
-    int addTcpConnection(QHostAddress addr,int port,bool asServer);
-    void modifySerialConnection(int index,QString port,int baud = -1);
-    void modifyTcpConnection(int index,QHostAddress addr,int port,bool asServer);
-    void setSerialParityType(int index,int parity);
-    void setSerialFlowType(int index,int flow);
-    void setSerialDataBits(int index,int bits);
-    void setSerialStopBits(int index,int bits);
-    void removeSerialConnection(int index);
+
+    MAVLinkProtocol* getProtocol() const;
     bool connectLink(int index);
     void disconnectLink(int index);
+
     UASInterface* getUas(int id);
     UASInterface* createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
+
     void addLink(LinkInterface *link);
     QList<int> getLinks();
 
+    LinkInterface* getLink(int linkId);
     // Remove a link based on instance
     void removeLink(LinkInterface *link);
     // Remove a link based on unique id
@@ -97,22 +81,53 @@ public:
 
     LinkInterface::LinkType getLinkType(int linkid);
     bool getLinkConnected(int linkid);
-    QString getSerialLinkPort(int linkid);
-    QString getLinkName(int linkid);
-    int getSerialLinkBaud(int linkid);
-    int getUdpLinkPort(int linkid);
-    int getTcpLinkPort(int linkid);
-    QHostAddress getTcpLinkHost(int linkid);
-    bool isTcpServer(int linkid);
-    void setUdpLinkPort(int linkid, int port);
-    void addUdpHost(int linkid,QString hostname);
+
+    QString getSerialLinkPort(int linkid); // [TODO] remove
+    QString getLinkName(int linkid); // [TODO] remove
+    QString getLinkShortName(int linkid); // [TODO] remove
+    QString getLinkDetail(int linkid); // [TODO] remove
+    int getSerialLinkBaud(int linkid); // [TODO] remove
+
     QList<QString> getCurrentPorts();
     void stopLogging();
     void startLogging();
     void setLogSubDirectory(QString dir);
     bool loggingEnabled();
     UASObject *getUasObject(int uasid);
-    QMap<int,UASObject*> m_uasObjectMap;
+    QMap<int,UASObject*> m_uasObjectMap; // [TODO] make private
+
+    void addSimObject(uint8_t sysid,UASObject *obj); // [TODO] remove
+    void removeSimObject(uint8_t sysid); // [TODO] remove
+
+signals:
+    //void newLink(LinkInterface* link);
+    void newLink(int linkid);
+    void protocolStatusMessage(QString title,QString text);
+    void linkChanged(int linkid);
+
+    /** @brief aggregated signal for when link status changes */
+    void linkChanged(LinkInterface *link);
+
+    void linkError(int linkid, QString message);
+    void messageReceived(LinkInterface* link,mavlink_message_t message);
+
+public slots:
+    void receiveMessage(LinkInterface* link,mavlink_message_t message);
+    void protocolStatusMessageRec(QString title,QString text);
+    void enableLogging(bool enabled);
+    void reloadSettings();
+    void linkUpdated(LinkInterface* link);
+
+private slots:
+    void linkConnected(LinkInterface* link);
+    void linkDisonnected(LinkInterface* link);
+    void linkErrorRec(LinkInterface* link,QString error);
+    void linkTimeoutTriggered(LinkInterface*);
+
+private:
+    void loadSettings();
+    void saveSettings();
+
 private:
     QMap<int,LinkInterface*> m_connectionMap;
     QMap<int,UASInterface*> m_uasMap;
@@ -121,21 +136,6 @@ private:
     MAVLinkProtocol *m_mavlinkProtocol;
     QString m_logSubDir;
     bool m_mavlinkLoggingEnabled;
-signals:
-    //void newLink(LinkInterface* link);
-    void newLink(int linkid);
-    void protocolStatusMessage(QString title,QString text);
-    void linkChanged(int linkid);
-    void linkError(int linkid, QString message);
-private slots:
-    void linkConnected(LinkInterface* link);
-    void linkDisonnected(LinkInterface* link);
-    void linkErrorRec(LinkInterface* link,QString error);
-    void linkTimeoutTriggered(LinkInterface*);
-public slots:
-    void messageReceived(LinkInterface* link,mavlink_message_t message);
-    void protocolStatusMessageRec(QString title,QString text);
-    void enableLogging(bool enabled);
 };
 
 #endif // LINKMANAGER_H

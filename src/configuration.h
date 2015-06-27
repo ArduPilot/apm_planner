@@ -15,10 +15,11 @@
 #define WITH_TEXT_TO_SPEECH 1
 
 #define QGC_APPLICATION_NAME "APM Planner"
-#define QGC_APPLICATION_VERSION "v2.0.15-rc3"
+#define QGC_APPLICATION_VERSION "v2.0.18-rc2"
 #define APP_DATA_DIRECTORY "/apmplanner2"
 #define LOG_DIRECTORY "/dataflashLogs"
 #define PARAMETER_DIRECTORY "/parameters"
+#define MISSION_DIRECTORY "/missions"
 #define MAVLINK_LOG_DIRECTORY "/tlogs"
 #define MAVLINK_LOGFILE_EXT ".tlog"
 
@@ -49,7 +50,7 @@ namespace QGC
 {
 const QString APPNAME = "APMPLANNER2";
 const QString COMPANYNAME = "DIYDRONES";
-const int APPLICATIONVERSION = 2015; // 2.0.15 [TODO] we should deprecate this version definition
+const int APPLICATIONVERSION = 2018; // 2.0.18 [TODO] we should deprecate this version definition
 
     inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();
@@ -105,10 +106,26 @@ const int APPLICATIONVERSION = 2015; // 2.0.15 [TODO] we should deprecate this v
         GlobalObject::sharedInstance()->setParameterDirectory(dir);
     }
 
+    inline QString missionDirectory(){
+        return GlobalObject::sharedInstance()->missionDirectory();
+    }
+
+    inline void setMissionDirectory(const QString& dir){
+        GlobalObject::sharedInstance()->setMissionDirectory(dir);
+    }
+
     //Returns the absolute parth to the files, data, qml support directories
     //It could be in 1 of 2 places under Linux
     inline QString shareDirectory(){
         return GlobalObject::sharedInstance()->shareDirectory();
+    }
+
+    inline QRegExp paramSplitRegExp() {
+        return QRegExp("\t|,|=");
+    }
+
+    inline QRegExp paramLineSplitRegExp() {
+        return QRegExp("\r|\n");
     }
 
 }

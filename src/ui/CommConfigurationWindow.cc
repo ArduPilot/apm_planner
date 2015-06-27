@@ -34,7 +34,6 @@ This file is part of the QGROUNDCONTROL project
 
 #include "CommConfigurationWindow.h"
 #include "SerialConfigurationWindow.h"
-#include "SerialLink.h"
 #include "UDPLink.h"
 #include "TCPLink.h"
 #include "MAVLinkSimulationLink.h"
@@ -49,6 +48,7 @@ This file is part of the QGROUNDCONTROL project
 #include "MAVLinkProtocol.h"
 #include "MAVLinkSettingsWidget.h"
 #include "QGCUDPLinkConfiguration.h"
+#include "QGCUDPClientLinkConfiguration.h"
 #include "QGCTCPLinkConfiguration.h"
 #include "LinkManager.h"
 #include "MainWindow.h"
@@ -58,13 +58,17 @@ This file is part of the QGROUNDCONTROL project
 #include <QBoxLayout>
 #include <QWidget>
 
-CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* protocol, QWidget *parent) : QDialog(parent)
+CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* protocol, QWidget *parent)
+    : QDialog(parent),
+      m_linkid(linkid)
+
 {
-    setWindowFlags(Qt::WindowStaysOnTopHint);
-    this->m_linkid = linkid;
+    Q_UNUSED(protocol);
 
     // Setup the user interface according to link type
     ui.setupUi(this);
+
+    setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
 
     // Initialize basic ui state
 
@@ -84,6 +88,7 @@ CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* 
     // add link types
     ui.linkType->addItem(tr("Serial"), QGC_LINK_SERIAL);
     ui.linkType->addItem(tr("UDP"), QGC_LINK_UDP);
+    ui.linkType->addItem(tr("UDP Client"), QGC_LINK_UDP_CLIENT);
     ui.linkType->addItem(tr("TCP"), QGC_LINK_TCP);
     //    ui.linkType->addItem(tr("Simulation"), QGC_LINK_SIMULATION); // [TODO] left as key where to add simulation mode
 
@@ -142,6 +147,13 @@ CommConfigurationWindow::CommConfigurationWindow(int linkid, ProtocolInterface* 
         ui.linkGroupBox->setTitle(tr("TCP Link"));
         ui.linkType->setCurrentIndex(ui.linkType->findData(QGC_LINK_TCP));
     }
+    else if (LinkManager::instance()->getLinkType(linkid) == LinkInterface::UDP_CLIENT_LINK)
+    {
+        QWidget* conf = new QGCUDPClientLinkConfiguration(linkid, this);
+        ui.linkScrollArea->setWidget(conf);
+        ui.linkGroupBox->setTitle(tr("UDP Client Link"));
+        ui.linkType->setCurrentIndex(ui.linkType->findData(QGC_LINK_UDP_CLIENT));
+    }
 
     // Display the widget
     this->window()->setWindowTitle(tr("Settings for ") + LinkManager::instance()->getLinkName(linkid));
@@ -168,9 +180,8 @@ void CommConfigurationWindow::linkUpdate(int linkid)
         return;
     }
 
-    if (LinkManager::instance()->getLinkType(linkid) == LinkInterface::TCP_LINK
-        && LinkManager::instance()->isTcpServer(linkid))
-    {
+    TCPLink* tcpLink = dynamic_cast<TCPLink*>(LinkManager::instance()->getLink(linkid));
+    if (tcpLink) {
         this->window()->close();
     }
 

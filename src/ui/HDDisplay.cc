@@ -9,9 +9,10 @@
  *
  */
 
+#include "HDDisplay.h"
+
 #include "QsLog.h"
 #include "UASManager.h"
-#include "HDDisplay.h"
 #include "ui_HDDisplay.h"
 #include "MG.h"
 #include "QGC.h"

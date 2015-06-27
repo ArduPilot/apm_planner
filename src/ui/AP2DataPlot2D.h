@@ -1,16 +1,50 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2015 APM_PLANNER PROJECT <http://www.diydrones.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+/**
+ * @file
+ *   @brief AP2DataPlot widget class
+ *
+ *   @author Michael Carpenter <malcom2073@gmail.com>
+ */
+
+
 #ifndef AP2DATAPLOT2D_H
 #define AP2DATAPLOT2D_H
 
-#include <QWidget>
-#include <QProgressDialog>
-#include "ui_AP2DataPlot2D.h"
-#include "AP2DataPlotThread.h"
-#include "dataselectionscreen.h"
-#include "qcustomplot.h"
 #include "UASInterface.h"
 #include "MAVLinkDecoder.h"
-#include "AP2DataPlotAxisDialog.h"
+#include "kmlcreator.h"
+#include "qcustomplot.h"
 #include "DroneshareUploadDialog.h"
+
+#include "AP2DataPlotThread.h"
+#include "dataselectionscreen.h"
+#include "AP2DataPlotAxisDialog.h"
+#include "AP2DataPlot2DModel.h"
+#include "ui_AP2DataPlot2D.h"
+
+#include <QWidget>
+#include <QProgressDialog>
+#include <QSortFilterProxyModel>
 #include <QTextBrowser>
 #include <QSqlDatabase>
 #include <QStandardItemModel>
@@ -22,17 +56,16 @@ class AP2DataPlot2D : public QWidget
     Q_OBJECT
     
 public:
-    explicit AP2DataPlot2D(QWidget *parent = 0);
+    explicit AP2DataPlot2D(QWidget *parent = 0,bool isIndependant = false);
     ~AP2DataPlot2D();
-    void addSource(MAVLinkDecoder *decoder);
-
-signals:
-    void toKMLClicked();
+    void loadLog(QString filename);
 
 public slots:
     void showLogDownloadDialog();
     void closeLogDownloadDialog();
     void clearGraph();
+
+    void logToKmlClicked();
 
 private slots:
     //New Active UAS set
@@ -74,16 +107,9 @@ private slots:
     void navModeChanged(int uasid, int mode, const QString& text);
 
     void autoScrollClicked(bool checked);
-    void tableCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
-    void logLine(QString line);
-    void addGraphRight();
     void addGraphLeft();
     void removeGraphLeft();
     void axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt);
-    void graphAddedToGroup(QString name,QString group,double scale);
-    void graphRemovedFromGroup(QString name);
-    void graphManualRange(QString name, double min, double max);
-    void graphAutoRange(QString name);
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
@@ -98,11 +124,36 @@ private slots:
     void exportButtonClicked();
     void exportDialogAccepted();
 
+    void graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList);
+    void graphColorsChanged(QMap<QString,QColor> colormap);
+    void selectedRowChanged(QModelIndex current,QModelIndex previous);
+
+    void modeCheckBoxClicked(bool checked);
+    void errCheckBoxClicked(bool checked);
+    void evCheckBoxClicked(bool checked);
+    void sortItemChanged(QTreeWidgetItem* item,int col);
+    void sortAcceptClicked();
+    void sortCancelClicked();
+    void showSortButtonClicked();
+    void sortSelectAllClicked();
+    void sortSelectInvertClicked();
+
+    void childGraphDestroyed(QObject *obj);
+
+    void setExcelViewHidden(bool hidden);
+
 private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
+    AP2DataPlot2DModel *m_tableModel;
+    QSortFilterProxyModel *m_tableFilterProxyModel;
+    QList<QString> m_tableFilterList;
+    int getStatusTextPos();
+    void plotTextArrow(int index, const QString& text, const QString& graph, QCheckBox *checkBox = NULL);
 
 private:
+    Ui::AP2DataPlot2D ui;
+
     QTimer *m_updateTimer;
     class Graph
     {
@@ -134,6 +185,8 @@ private:
     QSqlDatabase m_sharedDb;
     int currentIndex;
 
+    QList<QWidget*> m_childGraphList;
+
     QList<QPair<qint64,double> > m_onlineValueTimeoutList;
 
     //List of graph names, used in m_axisList, m_graphMap,m_graphToGroupMap and the like as the graph name
@@ -141,10 +194,9 @@ private:
     int m_graphCount;
     QCustomPlot *m_plot;
     QCPAxisRect *m_wideAxisRect;
-    Ui::AP2DataPlot2D ui;
     AP2DataPlotThread *m_logLoaderThread;
-    DataSelectionScreen *m_dataSelectionScreen;
-    QStandardItemModel *model;
+    //DataSelectionScreen *m_dataSelectionScreen;
+    QStandardItemModel *m_model;
     bool m_logLoaded;
     //Current "index", X axis on graph. Used to keep all the graphs lined up.
     qint64 m_currentIndex;
@@ -165,7 +217,8 @@ private:
 
     MAV_TYPE m_loadedLogMavType;
 
-
+    QString m_filename;
+    int m_statusTextPos;
 };
 
 #endif // AP2DATAPLOT2D_H

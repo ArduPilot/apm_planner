@@ -48,7 +48,9 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
     m_declarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
     m_declarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
     m_declarativeView->setSource(url);
-
+    QSurfaceFormat format = m_declarativeView->format();
+    format.setSamples(16);
+    m_declarativeView->setFormat(format);
 
     QLOG_DEBUG() << "QML Status:" << m_declarativeView->status();
     m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
@@ -56,6 +58,7 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
     QWidget *viewcontainer = QWidget::createWindowContainer(m_declarativeView);
     layout->addWidget(viewcontainer);
     setLayout(layout);
+    setContentsMargins(0,0,0,0);
     show();
 
     // Connect with UAS
@@ -81,13 +84,33 @@ void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
     if (m_uasInterface) {
         connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
                 this,SLOT(uasTextMessage(int,int,int,QString)));
-        VehicleOverview *vehicleView = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
-        RelPositionOverview *relView = LinkManager::instance()->getUasObject(uas->getUASID())->getRelPositionOverview();
-        AbsPositionOverview *absView = LinkManager::instance()->getUasObject(uas->getUASID())->getAbsPositionOverview();
-
-        m_declarativeView->rootContext()->setContextProperty("vehicleoverview",vehicleView);
-        m_declarativeView->rootContext()->setContextProperty("relpositionoverview",relView);
-        m_declarativeView->rootContext()->setContextProperty("abspositionoverview",absView);
+        VehicleOverview* vehicleView = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
+        RelPositionOverview* relView = LinkManager::instance()->getUasObject(uas->getUASID())->getRelPositionOverview();
+        AbsPositionOverview* absView = LinkManager::instance()->getUasObject(uas->getUASID())->getAbsPositionOverview();
+        if (vehicleView)
+        {
+            m_declarativeView->rootContext()->setContextProperty("vehicleoverview", vehicleView);
+        }
+        else
+        {
+            QLOG_ERROR() << "PrimaryFlightDisplayQML::setActiveUAS() Invalid vehicleoverview!";
+        }
+        if (relView)
+        {
+            m_declarativeView->rootContext()->setContextProperty("relpositionoverview", relView);
+        }
+        else
+        {
+            QLOG_ERROR() << "PrimaryFlightDisplayQML::setActiveUAS() Invalid relpositionoverview!";
+        }
+        if (absView)
+        {
+            m_declarativeView->rootContext()->setContextProperty("abspositionoverview", absView);
+        }
+        else
+        {
+            QLOG_ERROR() << "PrimaryFlightDisplayQML::setActiveUAS() Invalid abspositionoverview!";
+        }
 
         QMetaObject::invokeMethod(m_declarativeView->rootObject(),"activeUasSet");
     }

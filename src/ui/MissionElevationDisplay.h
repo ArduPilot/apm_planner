@@ -24,6 +24,7 @@ This file is part of the APM_PLANNER project
 #define MISSONELEVATIONDISPLAY_H
 
 #include <QWidget>
+#include <QMap>
 
 class QCustomPlot;
 class UASInterface;
@@ -51,14 +52,14 @@ private slots:
     void currentWaypointChanged(quint16 waypointId);
     void updateDisplay();
     void updateElevationData();
-    void updateElevationGraph(QList<Waypoint*> waypointList,double averageResolution);
+    void updateElevationGraph(QList<Waypoint*> waypointList, double averageResolution);
     void setHomeAltOffset();
     void useHomeAltOffset(bool state);
     void showInfoBox();
     void sampleValueChanged();
 
 private:
-    int plotElevationGraph(QList<Waypoint*> wpList, int graphId, double homeAltOffset);
+    int plotElevationGraph(QList<Waypoint *> waypointList, int graphId, double homeAltOffset);
     double distanceBetweenLatLng(double lat1, double lon1, double lat2, double lon2);
     double getHomeAlt(Waypoint* wp);
     void addWaypointLabels();
@@ -68,7 +69,7 @@ private:
 
     UASInterface* m_uasInterface;
     UASWaypointManager* m_uasWaypointMgr;
-    QList<Waypoint*> m_waypointList;
+    QMap<int, Waypoint*> m_waypointList; // Ordered Map of waypoint IDs to waypoints.
     int m_totalDistance;
 
     GoogleElevationData* m_elevationData;

@@ -30,7 +30,6 @@ This file is part of the QGROUNDCONTROL project
 #include "dockwidgettitlebareventfilter.h"
 #include "QGC.h"
 #include "MAVLinkSimulationLink.h"
-#include "SerialLink.h"
 #include "UDPLink.h"
 #include "MAVLinkProtocol.h"
 #include "CommConfigurationWindow.h"
@@ -58,6 +57,7 @@ This file is part of the QGROUNDCONTROL project
 #include "TerminalConsole.h"
 #include "AP2DataPlot2D.h"
 #include "MissionElevationDisplay.h"
+#include "LinkManagerFactory.h"
 
 #ifdef QGC_OSG_ENABLED
 #include "Q3DWidgetFactory.h"
@@ -136,7 +136,8 @@ MainWindow::MainWindow(QWidget *parent):
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
     m_heartbeatEnabled(true),
-    m_droneshareDialog(NULL)
+    m_droneshareDialog(NULL),
+    m_terminalDialog(NULL)
 {
     QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -224,8 +225,7 @@ MainWindow::MainWindow(QWidget *parent):
     connect(LinkManager::instance(), SIGNAL(newLink(int)), this, SLOT(addLink(int)), Qt::QueuedConnection);
     connect(LinkManager::instance(),SIGNAL(linkError(int,QString)),this,SLOT(linkError(int,QString)));
 
-
-
+    connect(ui.actionTerminalConsole, SIGNAL(triggered()), this, SLOT(showTerminalConsole()));
 
 #ifndef QGC_TOOLBAR_ENABLED
     // Add the APM 'toolbar'
@@ -237,7 +237,6 @@ MainWindow::MainWindow(QWidget *parent):
     m_apmToolBar->setConfigTuningViewAction(ui.actionSoftwareConfig);
     m_apmToolBar->setPlotViewAction(ui.actionEngineersView);
     m_apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
-    m_apmToolBar->setTerminalViewAction(ui.actionTerminalView);
 
     connect(ui.actionAdvanced_Mode, SIGNAL(triggered(bool)), m_apmToolBar, SLOT(checkAdvancedMode(bool)));
 
@@ -271,16 +270,6 @@ MainWindow::MainWindow(QWidget *parent):
     mouse = new Mouse6dofInput(this);
     connect(this, SIGNAL(x11EventOccured(XEvent*)), mouse, SLOT(handleX11Event(XEvent*)));
 #endif //MOUSE_ENABLED_LINUX
-
-    // Connect link
-    /*if (autoReconnect)
-    {
-        SerialLink* link = new SerialLink();
-        // Add to registry
-        LinkManager::instance()->add(link);
-        LinkManager::instance()->addProtocol(link, mavlink);
-        link->connect();
-    }*/
 
     // Set low power mode
     enableLowPowerMode(lowPowerMode);
@@ -382,12 +371,15 @@ MainWindow::MainWindow(QWidget *parent):
 
 MainWindow::~MainWindow()
 {
-    /*if (mavlink)
-    {
-        delete mavlink;
-        mavlink = NULL;
-    }*/
+    closeTerminalConsole();
 
+    if (joystickWidget)
+    {
+        QLOG_DEBUG() << "Delete JoystickWidget";
+
+        delete joystickWidget;
+        joystickWidget = NULL;
+    }
     if (joystick)
     {
         joystick->shutdown();
@@ -624,7 +616,6 @@ void MainWindow::buildCommonWidgets()
         //engineeringView->setCentralWidget(new QGCDataPlot2D(this));
         plot = new AP2DataPlot2D(this);
         connect(logPlayer,SIGNAL(logLoaded()),plot,SLOT(clearGraph()));
-        plot->addSource(mavlinkDecoder);
         engineeringView->setCentralWidget(plot);
 
         addToCentralStackedWidget(engineeringView, VIEW_ENGINEER, tr("Logfile Plot"));
@@ -644,16 +635,6 @@ void MainWindow::buildCommonWidgets()
         simView->setObjectName("VIEW_SIMULATOR");
         simView->setCentralWidget(new QGCMapTool(this));
         addToCentralStackedWidget(simView, VIEW_SIMULATION, tr("Simulation View"));
-    }
-
-    if (!terminalView)
-    {
-        terminalView = new SubMainWindow(this);
-        terminalView->setObjectName("VIEW_TERMINAL");
-        TerminalConsole *terminalConsole = new TerminalConsole(this);
-        terminalView->setCentralWidget(terminalConsole);
-        addToCentralStackedWidget(terminalView, VIEW_TERMINAL, tr("Terminal View"));
-        connect(plot, SIGNAL(toKMLClicked()), terminalConsole, SLOT(logToKmlClicked()));
     }
 
     if (!debugOutput)
@@ -1630,9 +1611,11 @@ void MainWindow::connectCommonActions()
     ui.actionSerial->setData(LinkInterface::SERIAL_LINK);
     ui.actionTCP->setData(LinkInterface::TCP_LINK);
     ui.actionUDP->setData(LinkInterface::UDP_LINK);
+    ui.actionUDPClient->setData(LinkInterface::UDP_CLIENT_LINK);
     connect(ui.actionSerial,SIGNAL(triggered()),this,SLOT(addLink()));
     connect(ui.actionTCP,SIGNAL(triggered()),this,SLOT(addLink()));
     connect(ui.actionUDP,SIGNAL(triggered()),this,SLOT(addLink()));
+    connect(ui.actionUDPClient,SIGNAL(triggered()),this,SLOT(addLink()));
     connect(ui.actionAdvanced_Mode,SIGNAL(triggered(bool)),this,SLOT(setAdvancedMode(bool)));
 
     // Connect internal actions
@@ -1682,8 +1665,6 @@ void MainWindow::connectCommonActions()
     // configuration widget is not instantiated
     // unless it is actually used
     // so no ressources spend on this.
-    //Joystick is disabled until we can ensure it's operational.
-    ui.actionJoystickSettings->setVisible(false);
 
     // Configuration
     // Joystick
@@ -1806,15 +1787,19 @@ void MainWindow::addLink()
     int newid = 0;
     if (send->data() == LinkInterface::SERIAL_LINK)
     {
-        newid = LinkManager::instance()->addSerialConnection();
+        newid = LinkManagerFactory::addSerialConnection();
     }
     else if (send->data() == LinkInterface::TCP_LINK)
     {
-        newid = LinkManager::instance()->addTcpConnection(QHostAddress::LocalHost,5555,false);
+        newid = LinkManagerFactory::addTcpConnection(QHostAddress::LocalHost,5555,false);
     }
     else if (send->data() == LinkInterface::UDP_LINK)
     {
-        newid = LinkManager::instance()->addUdpConnection(QHostAddress::LocalHost,5555);
+        newid = LinkManagerFactory::addUdpConnection(QHostAddress::LocalHost,14550);
+    }
+    else if (send->data() == LinkInterface::UDP_CLIENT_LINK)
+    {
+        newid = LinkManagerFactory::addUdpClientConnection(QHostAddress("192.168.4.1"),14550);
     }
     addLink(newid);
     for (int i=0;i<ui.menuNetwork->actions().size();i++)
@@ -1840,7 +1825,7 @@ void MainWindow::addLink(int linkid)
             return;
         }
     }
-    CommConfigurationWindow* commWidget = new CommConfigurationWindow(linkid, 0, NULL);
+    CommConfigurationWindow* commWidget = new CommConfigurationWindow(linkid, 0, this);
     commsWidgetList.append(commWidget);
     connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
     QAction* action = commWidget->getAction();
@@ -1851,43 +1836,6 @@ void MainWindow::addLink(int linkid)
     //connect(link, SIGNAL(communicationError(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);
 }
 
-void MainWindow::addLink(LinkInterface *link)
-{
-    //This signal is fired when the connection manager adds a new link.
-    //Need to create a comms configuration window.
-
-    // IMPORTANT! KEEP THESE TWO LINES
-    // THEY MAKE SURE THE LINK IS PROPERLY REGISTERED
-    // BEFORE LINKING THE UI AGAINST IT
-    // Register (does nothing if already registered)
-    /*LinkManager::instance()->add(link);
-    LinkManager::instance()->addProtocol(link, mavlink);
-
-    // Go fishing for this link's configuration window
-    QList<QAction*> actions = ui.menuNetwork->actions();
-
-    bool found(false);
-
-    const int32_t& linkIndex(LinkManager::instance()->getLinks().indexOf(link));
-    const int32_t& linkID(LinkManager::instance()->getLinks()[linkIndex]->getId());
-
-    foreach (QAction* act, actions)
-    {
-        if (act->data().toInt() == linkID)
-        { // LinkManager::instance()->getLinks().indexOf(link)
-            found = true;
-        }
-    }*/
-
-    /*CommConfigurationWindow* commWidget = new CommConfigurationWindow(link, 0, NULL);
-    commsWidgetList.append(commWidget);
-    connect(commWidget,SIGNAL(destroyed(QObject*)),this,SLOT(commsWidgetDestroyed(QObject*)));
-    QAction* action = commWidget->getAction();
-    ui.menuNetwork->addAction(action);
-
-    // Error handling
-    connect(link, SIGNAL(communicationError(QString,QString)), this, SLOT(showCriticalMessage(QString,QString)), Qt::QueuedConnection);*/
-}
 void MainWindow::linkError(int linkid,QString errorstring)
 {
     QMessageBox::information(this,"Link Error",errorstring);
@@ -1899,10 +1847,6 @@ void MainWindow::simulateLink(bool simulate) {
     simulationLink->connectLink(simulate);
 }
 
-//void MainWindow::configLink(LinkInterface *link)
-//{
-
-//}
 void MainWindow::commsWidgetDestroyed(QObject *obj)
 {
     if (commsWidgetList.contains(obj))
@@ -1947,16 +1891,8 @@ void MainWindow::UASSpecsChanged(int uas)
 void MainWindow::UASCreated(UASInterface* uas)
 {
 
-    // Check if this is the 2nd system and we need a switch menu
-    if (UASManager::instance()->getUASList().count() > 1)
-        //        ui.menuConnected_Systems->setEnabled(true);
-
-        // Connect the UAS to the full user interface
-
-        //if (uas != NULL)
-        //{
         // The pilot, operator and engineer views were not available on startup, enable them now
-        ui.actionFlightView->setEnabled(true);
+    ui.actionFlightView->setEnabled(true);
     ui.actionMissionView->setEnabled(true);
     ui.actionEngineersView->setEnabled(true);
     // The UAS actions are not enabled without connection to system
@@ -2129,15 +2065,6 @@ void MainWindow::UASDeleted(UASInterface* uas)
         //        ui.menuUnmanned_System->setTitle(tr("No System"));
         //        ui.menuUnmanned_System->setEnabled(false);
     }
-
-    //    QAction* act;
-    //    QList<QAction*> actions = ui.menuConnected_Systems->actions();
-
-    //    foreach (act, actions)
-    //    {
-    //        if (act->text().contains(uas->getUASName()))
-    //            ui.menuConnected_Systems->removeAction(act);
-    //    }
 }
 
 /**
@@ -2472,5 +2399,32 @@ void MainWindow::showDroneshareDialog()
         m_droneshareDialog = new DroneshareDialog(this);
         m_droneshareDialog->show();
         m_droneshareDialog->raise();
+    }
+}
+
+void MainWindow::showTerminalConsole()
+{
+    if(m_terminalDialog == NULL){
+        m_terminalDialog = new QDialog(NULL);
+        TerminalConsole *terminalConsole = new TerminalConsole(this);
+        QVBoxLayout* vLayout = new QVBoxLayout(m_terminalDialog);
+        vLayout->setMargin(0);
+        vLayout->addWidget(terminalConsole);
+        m_terminalDialog->resize(640,325);
+        m_terminalDialog->show();
+        connect(m_terminalDialog, SIGNAL(finished(int)), this, SLOT(closeTerminalConsole()));
+    }
+
+    if (m_terminalDialog){
+        m_terminalDialog->raise();
+    }
+}
+
+void MainWindow::closeTerminalConsole()
+{
+    if (m_terminalDialog){
+        m_terminalDialog->close();
+        m_terminalDialog->deleteLater();
+        m_terminalDialog = NULL;
     }
 }

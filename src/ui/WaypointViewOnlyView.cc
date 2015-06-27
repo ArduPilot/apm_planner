@@ -389,6 +389,26 @@ void WaypointViewOnlyView::updateValues()
         break;
         break;
     }
+    case MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT:
+    {
+        switch (wp->getFrame())
+        {
+        case MAV_FRAME_GLOBAL_RELATIVE_ALT:
+        case MAV_FRAME_GLOBAL:
+        {
+            m_ui->displayBar->setText(QString("Change Alt & Cont. Go to alt <b>%1)</b>").arg(wp->getAltitude(),0, 'f', 2));
+            break;
+        }
+        case MAV_FRAME_LOCAL_NED:
+        default:
+        {
+            m_ui->displayBar->setText(QString("Change Alt & Cont. Go to Z <b>%1)</b>").arg(wp->getZ(),0, 'f', 2));
+            break;
+        }
+        } //end Frame switch
+        break;
+        break;
+    }
     case MAV_CMD_DO_SET_CAM_TRIGG_DIST:
         if (wp->getParam1()>0)
         {
@@ -412,12 +432,13 @@ void WaypointViewOnlyView::updateValues()
 
     case MAV_CMD_DO_JUMP:
     {
-        if (wp->getParam2()>0)
-        {
+        if (wp->getParam2() > 0)        {
             m_ui->displayBar->setText(QString("Jump to waypoint %1. Jumps left: %2").arg(wp->getParam1()).arg(wp->getParam2()));
         }
-        else
-        {
+        else if (wp->getParam2() < 0)        {
+            m_ui->displayBar->setText(QString("Jump to waypoint %1 for ever.").arg(wp->getParam1()).arg(wp->getParam2()));
+
+        } else {
             m_ui->displayBar->setText(QString("No jumps left. Proceed to next waypoint."));
         }
         break;

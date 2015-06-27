@@ -74,13 +74,8 @@ public slots:
     void logConsoleStatusMessage(QString);
     void logConsoleActivityStart();
     void logConsoleActivityStop();
-    void logToKmlClicked();
 
     void handleError(QSerialPort::SerialPortError error);
-
-    void activeUASSet(UASInterface *uas);
-    void uasConnected();
-    void uasDisconnected();
 
 private slots:
     void setBaudRate(int index);

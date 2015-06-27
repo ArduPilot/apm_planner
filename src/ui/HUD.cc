@@ -28,6 +28,9 @@ This file is part of the QGROUNDCONTROL project
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
  *
  */
+#include <cmath>
+
+
 
 #include "QsLog.h"
 #include "UASManager.h"
@@ -43,7 +46,6 @@ This file is part of the QGROUNDCONTROL project
 #include <QPaintEvent>
 
 
-#include <cmath>
 #include <qmath.h>
 #include <limits>
 

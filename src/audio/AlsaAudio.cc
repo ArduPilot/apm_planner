@@ -150,6 +150,8 @@ bool AlsaAudio::alsa_play( QString filename )
         {
             for (m = 0; m < readcount; m++)
                 buffer [m] *= scale * aa_Volume;
+            for (; m < BUFFER_LEN; m++)
+                buffer [m] = 0;
             alsa_write_float (alsa_dev, buffer, BUFFER_LEN / sfinfo.channels, sfinfo.channels);
         }
     }
@@ -160,6 +162,8 @@ bool AlsaAudio::alsa_play( QString filename )
         {
             for (m = 0; m < readcount; m++)
                 buffer [m] *= aa_Volume;
+            for (; m < BUFFER_LEN; m++)
+                buffer [m] = 0;
             alsa_write_float (alsa_dev, buffer, BUFFER_LEN / sfinfo.channels, sfinfo.channels);
         }
     }
@@ -174,7 +178,7 @@ bool AlsaAudio::alsa_play( QString filename )
 
 snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
 {
-    const char * device = "plughw:0";
+    const char * device = "default";
     snd_pcm_t *alsa_dev;
     snd_pcm_hw_params_t *hw_params;
     snd_pcm_uframes_t buffer_size, xfer_align, start_threshold;

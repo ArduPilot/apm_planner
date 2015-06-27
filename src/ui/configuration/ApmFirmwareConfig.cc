@@ -26,40 +26,46 @@ This file is part of the APM_PLANNER project
 #include "LinkManager.h"
 #include "LinkInterface.h"
 #include <QtSerialPort/qserialportinfo.h>
-#include "SerialLink.h"
 #include "MainWindow.h"
 #include "PX4FirmwareUploader.h"
 #include <QTimer>
 #include <QSettings>
 #include "arduino_intelhex.h"
+
 #define ATMEGA2560CHIPID QByteArray().append(0x1E).append(0x98).append(0x01)
+
+static const QString DEFAULT_FIRMWARE_TYPE = "stable";
+static const QString DEFAULT_AUTOPILOT_HW_TYPE = "";
+
+
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
-    m_notificationOfUpdate(false)
+    m_throwPropSpinWarning(false),
+    m_replugRequestMessageBox(0),
+    m_px4UnplugTimer(0),
+    m_px4uploader(NULL),
+    m_arduinoUploader(NULL),
+    m_firmwareType(DEFAULT_FIRMWARE_TYPE),
+    m_autopilotType(DEFAULT_AUTOPILOT_HW_TYPE),
+    m_timeoutCounter(0),
+    m_hasError(0),
+    m_betaFirmwareChecked(false),
+    m_trunkFirmwareChecked(false),
+    m_enableUpdateCheck(false),
+    m_notificationOfUpdate(false),
+    m_updateCheckInitiated(false),
+    m_isAdvancedMode(false)
 {
     ui.setupUi(this);
-    m_timeoutCounter=0;
-    m_throwPropSpinWarning = false;
-    m_port=0;
-    m_hasError=0;
-    //firmwareStatus = 0;
-    m_replugRequestMessageBox = 0;
-    m_px4UnplugTimer=0;
-    m_betaFirmwareChecked = false;
-    m_trunkFirmwareChecked = false;
-    m_tempFirmwareFile=NULL;
     ui.progressBar->setVisible(false);
     ui.cancelPushButton->setVisible(false);
     ui.rebootButton->setVisible(false);
     ui.warningLabel->setVisible(false);
+    ui.warningLabelAC33->setVisible(false);
     ui.textBrowser->setVisible(false);
-    m_firmwareType = "stable";
-    m_autopilotType = "apm";
-    m_px4uploader = 0;
-    m_isPx4 = false;
-    m_isAdvancedMode = false;
 
     loadSettings();
     //QNetworkRequest req(QUrl("https://raw.github.com/diydrones/binary/master/Firmware/firmware2.xml"));
+
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     if (settings.contains("ADVANCED_MODE"))
@@ -95,11 +101,10 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(0);
 
+    ui.textBrowser->setVisible(ui.showOutputCheckBox->isChecked());
     connect(ui.showOutputCheckBox,SIGNAL(clicked(bool)),ui.textBrowser,SLOT(setVisible(bool)));
 
     connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
-
-    populateSerialPorts();
 
     addButtonStyleSheet(ui.roverPushButton);
     addButtonStyleSheet(ui.planePushButton);
@@ -115,6 +120,8 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     m_timer = new QTimer(this);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+
+    QTimer::singleShot(1000, this, SLOT(populateSerialPorts()));
 
     updateFirmwareButtons();
 }
@@ -140,6 +147,7 @@ void ApmFirmwareConfig::loadSettings()
     settings.beginGroup("APM_FIRMWARE_CONFIG");
     m_enableUpdateCheck = settings.value("ENABLE_UPDATE_CHECK",true).toBool();
     m_lastVersionSkipped = settings.value("VERSION_LAST_SKIPPED", "0.0.0" ).toString();
+    ui.showOutputCheckBox->setChecked(settings.value("SHOW_OUTPUT", Qt::Unchecked).toBool());
 
     settings.endGroup();
 }
@@ -151,6 +159,7 @@ void ApmFirmwareConfig::storeSettings()
     settings.beginGroup("APM_FIRMWARE_CONFIG");
     settings.setValue("ENABLE_UPDATE_CHECK", m_enableUpdateCheck);
     settings.setValue("VERSION_LAST_SKIPPED", m_lastVersionSkipped);
+    settings.setValue("SHOW_OUTPUT", ui.showOutputCheckBox->isChecked());
     settings.endGroup();
     settings.sync();
     QLOG_DEBUG() << "Storing settings!";
@@ -176,9 +185,11 @@ void ApmFirmwareConfig::populateSerialPorts()
             // on windows, the friendly name is annoyingly identical between devices. On OSX it's different
             // We also want to only display COM ports for PX4/Pixhawk, or arduino mega 2560's.
             // We also want to show FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
-            if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega") || \
-                    info.productIdentifier() == 0x6001 || info.productIdentifier() == 0x6010 || \
-                    info.productIdentifier() == 0x6014)
+            if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega") ||
+                    info.productIdentifier() == 0x0001 || info.productIdentifier() == 0x0003 ||
+                    info.productIdentifier() == 0x0010 || info.productIdentifier() == 0x0011 ||
+                    info.productIdentifier() == 0x0012 || info.productIdentifier() == 0x0013 ||
+                    info.productIdentifier() == 0x0014)
             {
                 ui.linkComboBox->insertItem(0,list[0], list);
             }
@@ -246,7 +257,7 @@ void ApmFirmwareConfig::uasConnected()
 }
 void ApmFirmwareConfig::cancelButtonClicked()
 {
-    if (m_isPx4 && !m_px4uploader)
+    if(!m_arduinoUploader && !m_px4uploader)
     {
         return;
     }
@@ -254,35 +265,28 @@ void ApmFirmwareConfig::cancelButtonClicked()
     {
         return;
     }
-    if (m_isPx4)
+    cleanUp();
+    ui.statusLabel->setText("Flashing Canceled");
+}
+
+void ApmFirmwareConfig::cleanUp()
+{
+    // stop and cleanup an operation
+    if (m_px4uploader)
     {
-        m_px4uploader->stop();
-        m_px4uploader->wait(250);
-        ui.statusLabel->setText("Flashing Canceled");
-        m_px4uploader->deleteLater();
-        m_px4uploader = 0;
-        if (m_px4UnplugTimer)
-        {
-            m_px4UnplugTimer->stop();
-            m_px4UnplugTimer->deleteLater();
-            m_px4UnplugTimer = 0;
-        }
-        if (m_replugRequestMessageBox)
-        {
-            m_replugRequestMessageBox->hide();
-            m_replugRequestMessageBox->deleteLater();
-            m_replugRequestMessageBox = 0;
-        }
+        QLOG_DEBUG() << "PX4 Flashing Cleanup";
+        px4Cleanup();
         return;
     }
-    else
+    else if (m_arduinoUploader)
     {
-        if (m_arduinoUploader)
-        {
-            m_arduinoUploader->abortLoading();
-        }
+        m_arduinoUploader->abortLoading();
+        m_arduinoUploader->wait(500);
+        m_arduinoUploader->deleteLater();
+        m_arduinoUploader = NULL;
     }
 }
+
 void ApmFirmwareConfig::px4StatusUpdate(QString update)
 {
     ui.statusLabel->setText(update);
@@ -345,6 +349,7 @@ void ApmFirmwareConfig::hideBetaLabels()
         m_betaButtonLabelList[i]->hide();
     }
     ui.warningLabel->hide();
+    ui.warningLabelAC33->hide();
 }
 
 void ApmFirmwareConfig::showBetaLabels()
@@ -407,15 +412,20 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
     {
         ui.warningLabel->hide();
     }
+
+    ui.warningLabelAC33->hide();
+
+
+
     m_autopilotType = autopilot;
     m_firmwareType = type;
-    QNetworkReply *reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
-    QNetworkReply *reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
-    QNetworkReply *reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
-    QNetworkReply *reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
-    QNetworkReply *reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
-    QNetworkReply *reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
-    QNetworkReply *reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+    QNetworkReply *reply1 = NULL;
+    QNetworkReply *reply2 = NULL;
+    QNetworkReply *reply3 = NULL;
+    QNetworkReply *reply4 = NULL;
+    QNetworkReply *reply5 = NULL;
+    QNetworkReply *reply6 = NULL;
+    QNetworkReply *reply7 = NULL;
     QNetworkReply *reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/git-version.txt")));
     QNetworkReply *reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/git-version.txt")));
 
@@ -423,13 +433,56 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
     {
         m_buttonToUrlMap[ui.roverPushButton] = "http://firmware.diydrones.com/Rover/" + type + "/" + prestring + "/APMrover2.hex";
         m_buttonToUrlMap[ui.planePushButton] = "http://firmware.diydrones.com/Plane/" + type + "/" + prestring + "/ArduPlane.hex";
-        m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/ArduCopter.hex";
-        m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/ArduCopter.hex";
-        m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter.hex";
-        m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/ArduCopter.hex";
-        m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter.hex";
-        m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter.hex";
-        m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter.hex";
+
+        if (type == "latest")
+        {
+            ui.warningLabelAC33->show();
+            /*
+             * AC3.3 only supports Pixhawk, APM1/APM2 is discontinued.
+             * Last known 'latest': http://firmware.diydrones.com/Copter/2015-03/2015-03-13-00:03/
+             * stable and beta both still support, as they are not 3.3 yet
+             */
+            QString prepath = "http://firmware.diydrones.com/Copter/2015-03/2015-03-13-00:03/" + prestring;
+            m_buttonToUrlMap[ui.copterPushButton] = prepath + "-heli/ArduCopter.hex";
+            m_buttonToUrlMap[ui.hexaPushButton] = prepath + "-hexa/ArduCopter.hex";
+            m_buttonToUrlMap[ui.octaQuadPushButton] = prepath + "-octa-quad/ArduCopter.hex";
+            m_buttonToUrlMap[ui.octaPushButton] = prepath + "-octa/ArduCopter.hex";
+            m_buttonToUrlMap[ui.quadPushButton] = prepath + "-quad/ArduCopter.hex";
+            m_buttonToUrlMap[ui.triPushButton] = prepath + "-tri/ArduCopter.hex";
+            m_buttonToUrlMap[ui.y6PushButton] = prepath + "-y6/ArduCopter.hex";
+
+            reply1 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-heli/git-version.txt")));
+            reply2 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-quad/git-version.txt")));
+            reply3 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-hexa/git-version.txt")));
+            reply4 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-octa/git-version.txt")));
+            reply5 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-octa-quad/git-version.txt")));
+            reply6 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-tri/git-version.txt")));
+            reply7 = m_networkManager->get(QNetworkRequest(QUrl(prepath + "-y6/git-version.txt")));
+
+
+        }
+        else
+        {
+            //TODO: Need to add beta and stable as they push APM1/APM2 support off
+
+            m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/ArduCopter.hex";
+            m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/ArduCopter.hex";
+            m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter.hex";
+            m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/ArduCopter.hex";
+            m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter.hex";
+            m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter.hex";
+            m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter.hex";
+
+            reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
+            reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
+            reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
+            reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
+            reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
+            reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
+            reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+
+
+        }
     }
     else if (autopilot == "px4")
     {
@@ -442,6 +495,16 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
         m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter-v1.px4";
         m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter-v1.px4";
         m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter-v1.px4";
+
+        reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
+        reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
+        reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
+        reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
+        reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
+        reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
+        reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+
+
     }
     else if (autopilot == "pixhawk")
     {
@@ -454,10 +517,22 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
         m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/ArduCopter-v2.px4";
         m_buttonToUrlMap[ui.triPushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/ArduCopter-v2.px4";
         m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/ArduCopter-v2.px4";
+
+        reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
+        reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
+        reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
+        reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
+        reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
+        reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
+        reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://firmware.diydrones.com/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+
+
     }
     else
     {
         QLOG_ERROR() << "Unknown autopilot in ApmFirmwareConfig::requestFirmwares()" << autopilot;
+        ui.statusLabel->setText("Unable to request firmware versions, autopilot version unrecognized: " + autopilot);
+        return;
     }
 
     //http://firmware.diydrones.com/Plane/stable/apm2/ArduPlane.hex
@@ -517,13 +592,26 @@ void ApmFirmwareConfig::px4Error(QString error)
     QMessageBox::information(0,tr("Error"),tr("Error during upload:") + error);
     ui.statusLabel->setText(tr("Error during upload"));
 }
-void ApmFirmwareConfig::px4Terminated()
+void ApmFirmwareConfig::px4Cleanup()
 {
-    if (m_px4uploader)
-    {
+    QLOG_DEBUG() << "px4cleanup resources";
+    if (m_px4uploader){
+        m_px4uploader->stop();
+        m_px4uploader->wait(250);
         m_px4uploader->deleteLater();
-        m_px4uploader = 0;
-        m_isPx4 = false;
+        m_px4uploader = NULL;
+    }
+
+    if (m_px4UnplugTimer){
+        m_px4UnplugTimer->stop();
+        m_px4UnplugTimer->deleteLater();
+        m_px4UnplugTimer = 0;
+    }
+
+    if (m_replugRequestMessageBox) {
+        m_replugRequestMessageBox->hide();
+        m_replugRequestMessageBox->deleteLater();
+        m_replugRequestMessageBox = 0;
     }
 }
 
@@ -538,6 +626,8 @@ void ApmFirmwareConfig::px4Finished()
         ui.statusLabel->setText(tr("Flashing FAILED!"));
         QMessageBox::critical(this,"FAILED","PX4 Flashing failed!");
     }
+
+    cleanUp();
 
     emit showBlankingScreen();
     ui.progressBar->setVisible(false);
@@ -610,15 +700,14 @@ void ApmFirmwareConfig::downloadFinished()
             QLOG_FATAL() << "Tried to load PX4 Firmware when it was already started!";
             return;
         }
-        m_isPx4 = true;
         m_px4uploader = new PX4FirmwareUploader();
         connect(m_px4uploader,SIGNAL(statusUpdate(QString)),this,SLOT(px4StatusUpdate(QString)));
         connect(m_px4uploader,SIGNAL(debugUpdate(QString)),this,SLOT(px4DebugUpdate(QString)));
-        connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Terminated()));
+        connect(m_px4uploader,SIGNAL(finished()),this,SLOT(px4Cleanup()));
         connect(m_px4uploader,SIGNAL(flashProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
         connect(m_px4uploader,SIGNAL(error(QString)),this,SLOT(px4Error(QString)));
         connect(m_px4uploader,SIGNAL(warning(QString)),this,SLOT(px4Warning(QString)));
-        connect(m_px4uploader,SIGNAL(done()),this,SLOT(px4Finished()));
+        connect(m_px4uploader,SIGNAL(complete()),this,SLOT(px4Finished()));
         connect(m_px4uploader,SIGNAL(requestDevicePlug()),this,SLOT(requestDeviceReplug()));
         connect(m_px4uploader,SIGNAL(devicePlugDetected()),this,SLOT(devicePlugDetected()));
         m_px4uploader->loadFile(filename);
@@ -689,25 +778,6 @@ void ApmFirmwareConfig::flashButtonClicked()
     QPushButton *senderbtn = qobject_cast<QPushButton*>(sender());
     if (m_buttonToUrlMap.contains(senderbtn))
     {
-        //Try to connect before downloading:
-        if (m_uas)
-        {
-            //Active UAS. Ensure it's not connected over Serial
-            for (int i=0;i<m_uas->getLinks()->size();i++)
-            {
-                SerialLink *testlink = qobject_cast<SerialLink*>(m_uas->getLinks()->at(i));
-                if (testlink)
-                {
-                    //It's a serial link
-                    if (testlink->isConnected())
-                    {
-                        //Error out, we don't want to attempt firmware upload when there is a serial link active.
-                        QMessageBox::information(this,"Error","You cannot load new firmware while connected via MAVLink. Please press the Disconnect button at top right to end the current MAVLink session and enable the firmware loading screen.");
-                        return;
-                    }
-                }
-            }
-        }
         QStringList pathsplit = m_buttonToUrlMap[senderbtn].split("/");
         QString confirmmsg = "";
         if (pathsplit.size() > 2)
@@ -838,7 +908,10 @@ void ApmFirmwareConfig::firmwareListFinished()
     QString replystr = reply->readAll();
     QString outstr = "";
 
-    QLOG_DEBUG() << "firmwareListFinished error: " << reply->error() << reply->errorString();
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        QLOG_DEBUG() << "firmwareListFinished error: " << reply->error() << reply->errorString();
+    }
     QString cmpstr = "";
     QString labelstr = "";
     QString apmver = "";
@@ -1132,7 +1205,9 @@ void ApmFirmwareConfig::parameterChanged(int uas, int component, QString paramet
 
 ApmFirmwareConfig::~ApmFirmwareConfig()
 {
+    storeSettings();
 }
+
 void ApmFirmwareConfig::arduinoUploadStarted()
 {
     ui.progressBar->setValue(0);
@@ -1144,8 +1219,7 @@ void ApmFirmwareConfig::arduinoError(QString error)
     ui.statusLabel->setText(error);
     ui.textBrowser->append(error);
     QMessageBox::information(0,"Error",error);
-    m_arduinoUploader->deleteLater();
-    m_arduinoUploader = NULL;
+    cleanUp();
     if (m_tempFirmwareFile) m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
     m_tempFirmwareFile = NULL;
     ui.progressBar->setVisible(false);
@@ -1184,6 +1258,7 @@ void ApmFirmwareConfig::arduinoFlashFailed()
 
 void ApmFirmwareConfig::arduinoUploadComplete()
 {
+    cleanUp();
     //Ensure we're reading 100%
     ui.progressBar->setMaximum(100);
     ui.progressBar->setValue(100);
@@ -1192,7 +1267,7 @@ void ApmFirmwareConfig::arduinoUploadComplete()
     emit showBlankingScreen();
     if (m_throwPropSpinWarning)
     {
-        QMessageBox::information(this,"Warning","As of AC 3.1, motors will spin when armed. This is configurable through the MOT_SPIN_ARMED parameter");
+        QMessageBox::information(parentWidget(),"Warning","As of AC 3.1, motors will spin when armed. This is configurable through the MOT_SPIN_ARMED parameter");
         m_throwPropSpinWarning = false;
     }
     //QLOG_DEBUG() << "Upload finished!" << QString::number(status);

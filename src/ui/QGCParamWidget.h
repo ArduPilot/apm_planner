@@ -107,6 +107,7 @@ public slots:
 protected:
     QTreeWidget* tree;   ///< The parameter tree
     QLabel* statusLabel; ///< Parameter transmission label
+    QTimer *initialParamTimer;
     QMap<int, QTreeWidgetItem*>* components; ///< The list of components
     QMap<int, QMap<QString, QTreeWidgetItem*>* > paramGroups; ///< Parameter groups
 
@@ -123,6 +124,9 @@ protected:
     void loadSettings();
     /** @brief Load meta information from CSV */
     void loadParameterInfoCSV(const QString& autopilot, const QString& airframe);
+
+private slots:
+    void initialParamCheckTick();
 };
 
 #endif // QGCPARAMWIDGET_H

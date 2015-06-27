@@ -19,6 +19,7 @@ import QtQuick 2.0
 Rectangle {
     id: root
     property real heading: 0
+    property real scale: 0.8
 
     anchors.horizontalCenterOffset: -compassImage.width/2
     color: "transparent"
@@ -33,6 +34,7 @@ Rectangle {
         source: "../resources/components/rollPitchIndicator/compass.svg"
         smooth: true
         rotation: -heading
+        scale: parent.scale
     }
 
     Image {
@@ -41,6 +43,7 @@ Rectangle {
         anchors.horizontalCenter: compassImage.horizontalCenter
         source: "../resources/components/rollPitchIndicator/compassIndicator.svg"
         smooth: true
+        scale: parent.scale
     }
 
     Rectangle{
@@ -48,8 +51,11 @@ Rectangle {
         anchors.verticalCenterOffset: compassImage.height/2 - 40
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.horizontalCenterOffset: compassImage.width/2
+
         height: 20
         width: 50
+        scale: parent.scale
+
         border.color: "white"
         border.width: 2
         z:1

@@ -98,7 +98,7 @@ public:
         return waypointsViewOnly;    ///< Returns a const reference to the waypoint list.
     }
     const QList<Waypoint *> getGlobalFrameWaypointList();  ///< Returns a global waypoint list
-    const QList<Waypoint *> getGlobalFrameAndNavTypeWaypointList(); ///< Returns a global waypoint list containing only waypoints suitable for navigation. Actions and other mission items are filtered out.
+    const QList<Waypoint *> getGlobalFrameAndNavTypeWaypointList(bool onlypath); ///< Returns a global waypoint list containing only waypoints suitable for navigation. Actions and other mission items are filtered out.
     const QList<Waypoint *> getNavTypeWaypointList(); ///< Returns a waypoint list containing only waypoints suitable for navigation. Actions and other mission items are filtered out.
     const Waypoint* getWaypoint(int index);     ///< Returns the waypoint at index, or NULL if not valid.
     int getIndexOf(Waypoint* wp);                   ///< Get the index of a waypoint in the list
@@ -118,6 +118,8 @@ public:
     int getFrameRecommendation();
     double getAcceptanceRadiusRecommendation();
 
+    double getDefaultRelAltitude();
+
 private:
     /** @name Message send functions */
     /*@{*/
@@ -129,6 +131,9 @@ private:
     void sendWaypoint(quint16 seq);                 ///< Sends a waypoint with sequence number seq
     void sendWaypointAck(quint8 type);              ///< Sends a waypoint ack
     /*@}*/
+
+    const QVariant readSetting(const QString& key, const QVariant& value);
+    void writeSetting(const QString& key, const QVariant& defaultValue);
 
 public slots:
     void timeout();                                 ///< Called by the timer if a response times out. Handles send retries.
@@ -146,6 +151,8 @@ public slots:
     /*@}*/
     void handleLocalPositionChanged(UASInterface* mav, double x, double y, double z, quint64 time);
     void handleGlobalPositionChanged(UASInterface* mav, double lat, double lon, double alt, quint64 time);
+
+    void setDefaultRelAltitude(double alt);
 
 signals:
     void waypointEditableListChanged(void);                 ///< emits signal that the list of editable waypoints has been changed

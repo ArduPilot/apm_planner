@@ -42,35 +42,42 @@ class SerialConnection : public SerialLinkInterface
 {
     Q_OBJECT
 public:
-    explicit SerialConnection(QObject *parent = 0);
+    explicit SerialConnection();
+    virtual ~SerialConnection();
 
+    // From LinkInterface
     void disableTimeouts();
     void enableTimeouts();
     int getId() const;
     QString getName() const;
+    QString getShortName() const;
+    QString getDetail() const;
+    void requestReset();
     bool isConnected() const;
     qint64 getConnectionSpeed() const;
-    bool disconnect();
     qint64 bytesAvailable();
-    void writeBytes(const char* buf,qint64 size);
-    void readBytes();
+    LinkType getLinkType() { return SERIAL_LINK; }
 
-public:
+    // From SerialLinkInterface
     QList<QString> getCurrentPorts();
     QString getPortName() const;
     int getBaudRate() const;
     int getDataBits() const;
     int getStopBits() const;
-    void requestReset();
     int getBaudRateType() const;
     int getFlowType() const;
     int getParityType() const;
     int getDataBitsType() const;
     int getStopBitsType() const;
-    LinkType getLinkType() { return SERIAL_LINK; }
 
 public slots:
+    // from LinkInterface
     bool connect();
+    bool disconnect();
+    void writeBytes(const char* buf,qint64 size);
+    void readBytes();
+
+    // From SerialLinkInterface
     bool setPortName(QString portName);
     bool setBaudRate(int rate);
     bool setBaudRateType(int rateIndex);
@@ -80,6 +87,17 @@ public slots:
     bool setStopBitsType(int stopBits);
     void loadSettings();
     void writeSettings();
+
+    void readyRead();
+    bool setBaudRateString(QString baud);
+
+signals:
+    void timeoutTriggered(LinkInterface*);
+
+private slots:
+    void timeoutTimerTick();
+    void connectionDestroyed(QObject* object);
+    void portError(QSerialPort::SerialPortError serialPortError);
 
 private:
     QSerialPort *m_port;
@@ -94,17 +112,6 @@ private:
     qint64 m_lastTimeoutMessage;
     bool m_timeoutsEnabled;
     bool m_timeoutMessageSent;
-
-private slots:
-    void timeoutTimerTick();
-
-signals:
-    void updateLink(LinkInterface *link);
-    void timeoutTriggered(LinkInterface*);
-    
-public slots:
-    void readyRead();
-    bool setBaudRateString(QString baud);
     
 };
 

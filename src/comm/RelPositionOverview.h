@@ -87,6 +87,7 @@ signals:
     void yawspeedChanged(double);
 public:
     explicit RelPositionOverview(QObject *parent = 0);
+    ~RelPositionOverview();
     //scaled_imu
     //SCALED_IMU2
     //raw_imu

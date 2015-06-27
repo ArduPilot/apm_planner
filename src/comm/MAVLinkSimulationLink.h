@@ -66,6 +66,8 @@ public:
     qint64 getCurrentOutDataRate() const;
 
     QString getName() const;
+    QString getShortName() const;
+    QString getDetail() const;
     int getId() const;
     int getBaudRate() const;
     int getBaudRateType() const;

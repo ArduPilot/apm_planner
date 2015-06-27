@@ -82,6 +82,7 @@ private:
     QMap<QString,double> m_modifiedParamMap;
     QMap<QString,QString> m_paramToUnitMap;
     QMap<QString,QString> m_paramToRangeMap;
+    QMap<QString,QString> m_paramToOrigValueMap;
 
     QList<QTableWidgetItem *> m_searchItemList;
     int m_searchIndex;

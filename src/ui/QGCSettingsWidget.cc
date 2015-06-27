@@ -67,11 +67,13 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         ui->appDataDirEdit->setText((QGC::appDataDirectory()));
         ui->paramDirEdit->setText(QGC::parameterDirectory());
         ui->mavlinkLogDirEdit->setText((QGC::MAVLinkLogDirectory()));
+        ui->missionsDirEdit->setText((QGC::missionDirectory()));
 
         connect(ui->logDirSetButton, SIGNAL(clicked()), this, SLOT(setLogDir()));
         connect(ui->appDirSetButton, SIGNAL(clicked()), this, SLOT(setAppDataDir()));
         connect(ui->paramDirSetButton, SIGNAL(clicked()), this, SLOT(setParamDir()));
         connect(ui->mavlinkDirSetButton, SIGNAL(clicked()), this, SLOT(setMAVLinkLogDir()));
+        connect(ui->missionsSetButton, SIGNAL(clicked()), this, SLOT(setMissionsDir()));
 
         // Style
         MainWindow::QGC_MAINWINDOW_STYLE style = (MainWindow::QGC_MAINWINDOW_STYLE)MainWindow::instance()->getStyle();
@@ -120,7 +122,7 @@ QGCSettingsWidget::~QGCSettingsWidget()
 
 void QGCSettingsWidget::setLogDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set log output directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::logDirectory());
 
@@ -134,7 +136,7 @@ void QGCSettingsWidget::setLogDir()
 
 void QGCSettingsWidget::setMAVLinkLogDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set tlog output directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::MAVLinkLogDirectory());
 
@@ -148,7 +150,7 @@ void QGCSettingsWidget::setMAVLinkLogDir()
 
 void QGCSettingsWidget::setParamDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set parameters directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::parameterDirectory());
 
@@ -162,7 +164,7 @@ void QGCSettingsWidget::setParamDir()
 
 void QGCSettingsWidget::setAppDataDir()
 {
-    QFileDialog dlg(this);
+    QFileDialog dlg(this, "Set application data directory");
     dlg.setFileMode(QFileDialog::Directory);
     dlg.setDirectory(QGC::appDataDirectory());
 
@@ -171,6 +173,20 @@ void QGCSettingsWidget::setAppDataDir()
         QString name = dir.absolutePath();
         QGC::setAppDataDirectory(name);
         ui->appDataDirEdit->setText(name);
+    }
+}
+
+void QGCSettingsWidget::setMissionsDir()
+{
+    QFileDialog dlg(this, "Set missions directory");
+    dlg.setFileMode(QFileDialog::Directory);
+    dlg.setDirectory(QGC::missionDirectory());
+
+    if(dlg.exec() ==  QDialog::Accepted) {
+        QDir dir = dlg.directory();
+        QString name = dir.absolutePath();
+        QGC::setMissionDirectory(name);
+        ui->missionsDirEdit->setText(name);
     }
 }
 

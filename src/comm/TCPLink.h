@@ -61,11 +61,12 @@ public:
     QHostAddress getHostAddress(void) const { return _hostAddress; }
     quint16 getPort(void) const { return _port; }
     bool isServer(void) const { return _asServer; }
-    QTcpSocket* getSocket(void) { return _socket; }
 
     // LinkInterface methods
     virtual int     getId(void) const;
     virtual QString getName(void) const;
+    virtual QString getShortName(void) const;
+    virtual QString getDetail(void) const;
     virtual bool    isConnected(void) const;
     virtual bool    connect(void);
     virtual bool    disconnect(void);
@@ -79,7 +80,6 @@ public:
     LinkType getLinkType() { return TCP_LINK; }
 
 public slots:
-    void setHostAddress(const QString& hostAddress);
     void setPort(int port);
     void setAsServer(bool asServer);
 
@@ -112,7 +112,6 @@ private:
     int             _linkId;
     QTcpSocket*     _socket;
     QTcpServer      _server;
-    bool            _socketIsConnected;
 
     quint64 _bitsSentTotal;
     quint64 _bitsSentCurrent;

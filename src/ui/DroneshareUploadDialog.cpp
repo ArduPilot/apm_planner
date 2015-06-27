@@ -57,6 +57,8 @@ DroneshareUploadDialog::DroneshareUploadDialog(QWidget *parent) :
     connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)),
             this, SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
+
+    resetStatusText();
 }
 
 DroneshareUploadDialog::~DroneshareUploadDialog()
@@ -248,4 +250,14 @@ void DroneshareUploadDialog::uploadComplete(const QString& jsonResponse)
     QString viewURL = result.property(0).property("viewURL").toString();
     ui->statusLabel->setOpenExternalLinks(true);
     ui->statusLabel->setText(tr("<html><head/><body><p>Upload Suceeded!<br><a href=\"%1\"><span style=\" text-decoration: underline; color:#0000ff;\">Click to view on Droneshare</span></a></p></body></html>").arg(viewURL));
+}
+
+void DroneshareUploadDialog::resetStatusText()
+{
+    ui->statusLabel->setText("Click upload to select a log file to upload to <a href=\"http://www.droneshare.com/\">Droneshare</a>!");
+}
+
+void DroneshareUploadDialog::hideEvent(QHideEvent *evt)
+{
+    resetStatusText();
 }

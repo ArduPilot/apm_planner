@@ -42,7 +42,6 @@ This file is part of the APM_PLANNER project
 #include "LogConsole.h"
 #include "MainWindow.h"
 
-#include <kmlcreator.h>
 #include <QSettings>
 #include <QStatusBar>
 #include <QMessageBox>
@@ -92,42 +91,8 @@ TerminalConsole::TerminalConsole(QWidget *parent) :
 
     //Keep refreshing the serial port list
     connect(&m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
-
-    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
-    if (UASManager::instance()->getActiveUAS())
-    {
-        activeUASSet(UASManager::instance()->getActiveUAS());
-    }
-}
-
-void TerminalConsole::activeUASSet(UASInterface *uas)
-{
-    if(m_uas) {
-        disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
-        disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
-    }
-    m_uas = uas;
-    if (uas) {
-        connect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
-        connect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
-        uasConnected();
-    }
-}
-
-void TerminalConsole::uasConnected()
-{
-    ui->connectButton->setEnabled(false);
-    if(m_windowVisible){
-        MainWindow::instance()->toolBar().disableConnectWidget(false);
-    }
-}
-
-void TerminalConsole::uasDisconnected()
-{
-    ui->connectButton->setEnabled(true);
-    if(m_windowVisible){
-        MainWindow::instance()->toolBar().disableConnectWidget(true);
-    }
+    connect(ui->localEchoCheckBox, SIGNAL(clicked(bool)),
+            m_console, SLOT(setLocalEchoEnabled(bool)));
 }
 
 void TerminalConsole::addBaudComboBoxConfig()
@@ -184,8 +149,6 @@ void TerminalConsole::showEvent(QShowEvent *event)
     Q_UNUSED(event);
     // Start refresh Timer
     m_timer.start(2000);
-    if (!m_uas) MainWindow::instance()->toolBar().disableConnectWidget(true);
-    m_windowVisible = true;
 }
 
 void TerminalConsole::hideEvent(QHideEvent *event)
@@ -193,8 +156,6 @@ void TerminalConsole::hideEvent(QHideEvent *event)
     Q_UNUSED(event);
     // Stop the port list refeshing
     m_timer.stop();
-    MainWindow::instance()->toolBar().disableConnectWidget(false);
-    m_windowVisible = false;
 }
 
 TerminalConsole::~TerminalConsole()
@@ -239,7 +200,13 @@ void TerminalConsole::logsButtonClicked() {
 
 void TerminalConsole::openSerialPort(const SerialSettings &settings)
 {
+#ifdef Q_OS_MACX
+    // temp fix Qt5.4.1 issue on OSX
+    // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
+    m_serial->setPortName("/dev/cu." + settings.name);
+#else
     m_serial->setPortName(settings.name);
+#endif
     if (m_serial->open(QIODevice::ReadWrite)) {
         if (m_serial->setBaudRate(settings.baudRate)
                 && m_serial->setDataBits(settings.dataBits)
@@ -309,7 +276,6 @@ void TerminalConsole::sendResetCommand()
 
 void TerminalConsole::writeData(const QByteArray &data)
 {
-//    QLOG_TRACE() << "writeData:" << data;
     m_serial->write(data);
 }
 
@@ -352,7 +318,6 @@ void TerminalConsole::initConnections()
 
     connect(ui->baudComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setBaudRate(int)));
     connect(ui->linkComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setLink(int)));
-    connect(ui->logToKmlButton, SIGNAL(released()), this, SLOT(logToKmlClicked()));
 
     // Serial Port Connections
     connect(m_serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
@@ -364,37 +329,6 @@ void TerminalConsole::initConnections()
     connect(m_logConsole, SIGNAL(statusMessage(QString)), this, SLOT(logConsoleStatusMessage(QString)));
     connect(m_logConsole, SIGNAL(activityStart()), this, SLOT(logConsoleActivityStart()));
     connect(m_logConsole, SIGNAL(activityStop()), this, SLOT(logConsoleActivityStop()));
-}
-
-void TerminalConsole::logToKmlClicked() {
-    QString filename = QFileDialog::getOpenFileName(this, "Open Log File", QGC::logDirectory(), tr("Log Files (*.log)"));
-    QApplication::processEvents(); // Helps clear dialog from screen
-
-    if(filename.length() > 0) {
-        QFile file(filename);
-        if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QString kmlFile(filename);
-            kmlFile.replace(".log", ".kml");
-            kml::KMLCreator kml;
-
-            kml.start(kmlFile);
-            QTextStream in(&file);
-            while(!in.atEnd()) {
-                QString line = in.readLine();
-                kml.processLine(line);
-            }
-
-            QString generated = kml.finish(true);
-            file.close();
-
-            QString msg = QString("Generated %1.").arg(generated);
-            QMessageBox::information(this, "Log to KML", msg);
-        }
-        else {
-            QString msg = QString("Unable to open %1.").arg(filename);
-            QMessageBox::warning(this, "Log to KML", msg, QMessageBox::Ok);
-        }
-    }
 }
 
 void TerminalConsole::logConsoleShown() {
@@ -442,20 +376,20 @@ void TerminalConsole::loadSettings()
     // Load defaults from settings
     QSettings settings;
     settings.sync();
-    if (settings.contains("TERMINALCONSOLE_COMM_PORT"))
+    settings.beginGroup("TERMINALCONSOLE");
+    if (settings.contains("COMM_PORT"))
     {
-        m_settings.name = settings.value("TERMINALCONSOLE_COMM_PORT").toString();
-        m_settings.baudRate = settings.value("TERMINALCONSOLE_COMM_BAUD").toInt();
+        m_settings.name = settings.value("COMM_PORT").toString();
+        m_settings.baudRate = settings.value("COMM_BAUD").toInt();
         m_settings.parity = static_cast<QSerialPort::Parity>
-                (settings.value("TERMINALCONSOLE_COMM_PARITY").toInt());
+                (settings.value("COMM_PARITY").toInt());
         m_settings.stopBits = static_cast<QSerialPort::StopBits>
-                (settings.value("TERMINALCONSOLE_COMM_STOPBITS").toInt());
+                (settings.value("COMM_STOPBITS").toInt());
         m_settings.dataBits = static_cast<QSerialPort::DataBits>
-                (settings.value("TERMINALCONSOLE_COMM_DATABITS").toInt());
+                (settings.value("COMM_DATABITS").toInt());
         m_settings.flowControl = static_cast<QSerialPort::FlowControl>
-                (settings.value("TERMINALCONSOLE_COMM_FLOW_CONTROL").toInt());
-    } else {
-        // init the structure
+                (settings.value("COMM_FLOW_CONTROL").toInt());
+        m_console->setLocalEchoEnabled(settings.value("CONSOLE_LOCAL_ECHO", false).toBool());
     }
 }
 
@@ -463,12 +397,15 @@ void TerminalConsole::writeSettings()
 {
     // Store settings
     QSettings settings;
-    settings.setValue("TERMINALCONSOLE_COMM_PORT", m_settings.name);
-    settings.setValue("TERMINALCONSOLE_COMM_BAUD", m_settings.baudRate);
-    settings.setValue("TERMINALCONSOLE_COMM_PARITY", m_settings.parity);
-    settings.setValue("TERMINALCONSOLE_COMM_STOPBITS", m_settings.stopBits);
-    settings.setValue("TERMINALCONSOLE_COMM_DATABITS", m_settings.dataBits);
-    settings.setValue("TERMINALCONSOLE_COMM_FLOW_CONTROL", m_settings.flowControl);
+    settings.beginGroup("TERMINALCONSOLE");
+    settings.setValue("COMM_PORT", m_settings.name);
+    settings.setValue("COMM_BAUD", m_settings.baudRate);
+    settings.setValue("COMM_PARITY", m_settings.parity);
+    settings.setValue("COMM_STOPBITS", m_settings.stopBits);
+    settings.setValue("COMM_DATABITS", m_settings.dataBits);
+    settings.setValue("COMM_FLOW_CONTROL", m_settings.flowControl);
+    settings.setValue("CONSOLE_LOCAL_ECHO", m_console->isLocalEchoEnabled());
+    settings.endGroup();
     settings.sync();
 }
 

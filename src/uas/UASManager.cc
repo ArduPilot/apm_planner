@@ -18,6 +18,9 @@
 #include "UASManager.h"
 #include "QGC.h"
 
+#include <QVector3D>
+#include <QMatrix3x3>
+
 #define PI 3.1415926535897932384626433832795
 #define MEAN_EARTH_DIAMETER	12756274.0
 #define UMR	0.017453292519943295769236907684886
@@ -111,19 +114,19 @@ bool UASManager::setHomePosition(double lat, double lon, double alt)
  */
 void UASManager::setLocalNEDSafetyBorders(double x1, double y1, double z1, double x2, double y2, double z2)
 {
-    nedSafetyLimitPosition1.x() = x1;
-    nedSafetyLimitPosition1.y() = y1;
-    nedSafetyLimitPosition1.z() = z1;
+    nedSafetyLimitPosition1.setX(x1);
+    nedSafetyLimitPosition1.setY(y1);
+    nedSafetyLimitPosition1.setZ(z1);
 
-    nedSafetyLimitPosition2.x() = x2;
-    nedSafetyLimitPosition2.y() = y2;
-    nedSafetyLimitPosition2.z() = z2;
+    nedSafetyLimitPosition2.setX(x2);
+    nedSafetyLimitPosition2.setY(y2);
+    nedSafetyLimitPosition2.setZ(z2);
 }
 
 
 void UASManager::initReference(const double & latitude, const double & longitude, const double & altitude)
 {
-    Eigen::Matrix3d R;
+    QMatrix3x3 R;
     double s_long, s_lat, c_long, c_lat;
     sincos(latitude * DEG2RAD, &s_lat, &c_lat);
     sincos(longitude * DEG2RAD, &s_long, &c_long);
@@ -140,12 +143,12 @@ void UASManager::initReference(const double & latitude, const double & longitude
     R(2, 1) = c_lat * s_long;
     R(2, 2) = s_lat;
 
-    ecef_ref_orientation_ = Eigen::Quaterniond(R);
+    ecef_ref_orientation_ = quaternionFromMatrix3x3(R);
 
     ecef_ref_point_ = wgs84ToEcef(latitude, longitude, altitude);
 }
 
-Eigen::Vector3d UASManager::wgs84ToEcef(const double & latitude, const double & longitude, const double & altitude)
+Vector3d UASManager::wgs84ToEcef(const double & latitude, const double & longitude, const double & altitude)
 {
     const double a = 6378137.0; // semi-major axis
     const double e_sq = 6.69437999014e-3; // first eccentricity squared
@@ -156,7 +159,7 @@ Eigen::Vector3d UASManager::wgs84ToEcef(const double & latitude, const double & 
 
     const double N = a / sqrt(1 - e_sq * s_lat * s_lat);
 
-    Eigen::Vector3d ecef;
+    Vector3d ecef;
 
     ecef[0] = (N + altitude) * c_lat * c_long;
     ecef[1] = (N + altitude) * c_lat * s_long;
@@ -165,26 +168,21 @@ Eigen::Vector3d UASManager::wgs84ToEcef(const double & latitude, const double & 
     return ecef;
 }
 
-Eigen::Vector3d UASManager::ecefToEnu(const Eigen::Vector3d & ecef)
+Vector3d UASManager::ecefToEnu(const Vector3d & ecef)
 {
-    return ecef_ref_orientation_ * (ecef - ecef_ref_point_);
+    Vector3d derefd = ecef - ecef_ref_point_;
+    derefd.rotateWithQuaternion(ecef_ref_orientation_);
+    return derefd;
 }
 
 void UASManager::wgs84ToEnu(const double& lat, const double& lon, const double& alt, double* east, double* north, double* up)
 {
-    Eigen::Vector3d ecef = wgs84ToEcef(lat, lon, alt);
-    Eigen::Vector3d enu = ecefToEnu(ecef);
+    Vector3d ecef = wgs84ToEcef(lat, lon, alt);
+    Vector3d enu = ecefToEnu(ecef);
     *east = enu.x();
     *north = enu.y();
     *up = enu.z();
 }
-
-//void UASManager::wgs84ToNed(const double& lat, const double& lon, const double& alt, double* north, double* east, double* down)
-//{
-
-//}
-
-
 
 void UASManager::enuToWgs84(const double& x, const double& y, const double& z, double* lat, double* lon, double* alt)
 {

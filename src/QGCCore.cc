@@ -41,7 +41,6 @@ This file is part of the QGROUNDCONTROL project
 #endif
 #include "UDPLink.h"
 #include "MAVLinkSimulationLink.h"
-#include "SerialLink.h"
 
 #include <QFile>
 #include <QFlags>

@@ -41,9 +41,8 @@ This file is part of the APM_PLANNER project
 
 #include <QtCore/QDebug>
 
-Console::Console(QWidget *parent)
-    : QTextBrowser(parent)
-    , localEchoEnabled(false)
+Console::Console(QWidget *parent): QTextBrowser(parent),
+    m_localEchoEnabled(false)
 {
     document()->setMaximumBlockCount(500);
     QPalette p = palette();
@@ -59,6 +58,11 @@ Console::Console(QWidget *parent)
     setFocus();
 }
 
+bool Console::isLocalEchoEnabled()
+{
+    return m_localEchoEnabled;
+}
+
 void Console::putData(const QByteArray &data)
 {
     insertPlainText(QString(data));
@@ -69,7 +73,7 @@ void Console::putData(const QByteArray &data)
 
 void Console::setLocalEchoEnabled(bool set)
 {
-    localEchoEnabled = set;
+    m_localEchoEnabled = set;
 }
 
 void Console::keyPressEvent(QKeyEvent *ev)
@@ -84,7 +88,7 @@ void Console::keyPressEvent(QKeyEvent *ev)
 //    case Qt::Key_Backspace:
 //        break;
     default:
-        if (localEchoEnabled)
+        if (m_localEchoEnabled)
             QTextBrowser::keyPressEvent(ev);
         emit getData(ev->text().toLocal8Bit());
     }

@@ -9,6 +9,14 @@
 #include "CompassMotorCalibrationDialog.h"
 #include "ui_CompassMotorCalibrationDialog.h"
 
+static const int GRAPH_ID_INTERFERENCE = 0;
+static const int GRAPH_ID_CURRENT = 1;
+
+static const QColor GRAPH_COLOR_INTERFERENCE = Qt::blue; // Blue
+static const QColor GRAPH_COLOR_CURRENT = Qt::red; // Red
+static const QColor GRAPH_COLOR_INTERFERENCE_FILL = QColor(0, 0, 255, 20); // Blue
+static const QColor GRAPH_COLOR_CURRENT_FILL = QColor(0, 255, 0, 20); // Red
+
 CompassMotorCalibrationDialog::CompassMotorCalibrationDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CompassMotorCalibrationDialog),
@@ -18,18 +26,23 @@ CompassMotorCalibrationDialog::CompassMotorCalibrationDialog(QWidget *parent) :
 
     QCustomPlot* customPlot = ui->customPlot;
     customPlot->addGraph();
-    customPlot->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
-    customPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20))); // first graph will be filled with translucent blue
+    customPlot->graph(GRAPH_ID_INTERFERENCE)->setPen(QPen(GRAPH_COLOR_INTERFERENCE)); // line color blue for first graph
+    customPlot->graph(GRAPH_ID_INTERFERENCE)->setBrush(QBrush(GRAPH_COLOR_INTERFERENCE_FILL)); // first graph will be filled with translucent blue
+
     customPlot->xAxis->setLabel("Throttle (%)");
+
     customPlot->yAxis->setLabel("Interference (%)");
+    customPlot->yAxis->setLabelColor(GRAPH_COLOR_INTERFERENCE);
     customPlot->xAxis->setRange(0,100);
     customPlot->yAxis->setRange(0,100);
 
     customPlot->addGraph();
-    customPlot->graph(1)->setPen(QPen(Qt::red)); // line color blue for first graph
-    customPlot->graph(1)->setBrush(QBrush(QColor(0, 255, 0, 20)));
+    customPlot->graph(GRAPH_ID_CURRENT)->setPen(QPen(GRAPH_COLOR_CURRENT)); // line color red for second graph
+    customPlot->graph(GRAPH_ID_CURRENT)->setBrush(QBrush(GRAPH_COLOR_CURRENT_FILL));
+
     customPlot->yAxis2->setVisible(true);
     customPlot->yAxis2->setLabel("Amps (A)");
+    customPlot->yAxis2->setLabelColor(GRAPH_COLOR_CURRENT);
     customPlot->xAxis2->setRange(0,100);
     customPlot->yAxis2->setRange(0,50);
 
@@ -84,8 +97,8 @@ void CompassMotorCalibrationDialog::compassMotCalibration(mavlink_compassmot_sta
     QCustomPlot* customPlot = ui->customPlot;
 
     int index = compassmot_status->throttle/10;
-    customPlot->graph(0)->addData(index, compassmot_status->current);
-    customPlot->graph(1)->addData(index, compassmot_status->interference);
+    customPlot->graph(GRAPH_ID_CURRENT)->addData(index, compassmot_status->current);
+    customPlot->graph(GRAPH_ID_INTERFERENCE)->addData(index, compassmot_status->interference);
     customPlot->replot();
 
     x_scalar = compassmot_status->CompensationX;

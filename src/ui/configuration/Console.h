@@ -44,21 +44,22 @@ class Console : public QTextBrowser
 {
     Q_OBJECT
 
+public:
+    explicit Console(QWidget *parent = 0);
+    bool isLocalEchoEnabled();
+
 signals:
     void getData(const QByteArray &data);
 
-public:
-    explicit Console(QWidget *parent = 0);
-
+public slots:
     void putData(const QByteArray &data);
-
     void setLocalEchoEnabled(bool set);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *e);
 
 private:
-    bool localEchoEnabled;
+    bool m_localEchoEnabled;
     APMHighlighter* m_highlighter;
 
 };

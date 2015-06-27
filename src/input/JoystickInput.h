@@ -35,11 +35,11 @@ This file is part of the PIXHAWK project
 
 #include <QThread>
 #include <QList>
-#include <qmutex.h>
+#include <QAtomicInt>
 #ifdef Q_OS_MAC
 #include <SDL.h>
 #else
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #endif
 
 #include "UASInterface.h"
@@ -53,11 +53,15 @@ class JoystickInput : public QThread
 
 public:
     JoystickInput();
-	~JoystickInput();
+    ~JoystickInput();
     void run();
     void shutdown();
 
-    const QString& getName();
+    const QString& getName() const;
+
+    const QString getActiveJoystickId();
+
+    const int getNumberOfButtons() const;
 
     /**
      * @brief Load joystick settings
@@ -69,78 +73,102 @@ public:
      */
     void storeSettings();
 
-    int getMappingThrustAxis()
+    int getMappingThrustAxis() const
     {
         return thrustAxis;
     }
 
-    int getMappingXAxis()
+    bool getThrustReversed() const
+    {
+      return thrustReversed;
+    }
+
+    int getMappingXAxis() const
     {
         return xAxis;
     }
 
-    int getMappingYAxis()
+    bool getXReversed() const
+    {
+        return xReversed;
+    }
+
+    int getMappingYAxis() const
     {
         return yAxis;
     }
 
-    int getMappingYawAxis()
+    bool getYReversed() const
+    {
+        return yReversed;
+    }
+
+    int getMappingYawAxis() const
     {
         return yawAxis;
     }
 
-    int getMappingAutoButton()
+    bool getYawReversed() const
+    {
+        return yawReversed;
+    }
+
+    int getMappingAutoButton() const
     {
         return autoButtonMapping;
     }
 
-    int getMappingManualButton()
-    {
-        return manualButtonMapping;
-    }
-
-    int getMappingStabilizeButton()
+    int getMappingStabilizeButton() const
     {
         return stabilizeButtonMapping;
     }
 
-    const double sdlJoystickMin;
-    const double sdlJoystickMax;
-
 protected:
-    int defaultIndex;
-    double calibrationPositive[10];
-    double calibrationNegative[10];
     SDL_Joystick* joystick;
+    QString joystickName;
     UASInterface* uas;
-    QList<int> uasButtonList;
-    bool done;
-	QMutex m_doneMutex;
+    QAtomicInt done;
 
     // Axis 3 is thrust (CALIBRATION!)
-    int thrustAxis;
-    int xAxis;
-    int yAxis;
-    int yawAxis;
-    int autoButtonMapping;
-    int manualButtonMapping;
+    volatile int thrustAxis;
+    volatile int xAxis;
+    volatile int yAxis;
+    volatile int yawAxis;
+    volatile bool thrustReversed;
+    volatile bool xReversed;
+    volatile bool yReversed;
+    volatile bool yawReversed;
+    volatile int autoButtonMapping;
     int stabilizeButtonMapping;
-    SDL_Event event;
-    QString joystickName;
+    int thrustValue;
+    int xValue;
+    int yValue;
+    int yawValue;
+    int hatValue;
+    Uint32 valuesTicks;
+
+    static const double sdlJoystickMin;
+    static const double sdlJoystickMax;
 
     void init();
+    bool sdlJoystickUpdate(unsigned);
+    double scaleJoystickAxisValue(int v, bool reversed);
+    void scaleJoystickHatValue(int v, int& xHat, int& yHat);
 
 signals:
+
+    void joystickSelected(const QString&);
 
     /**
      * @brief Signal containing all joystick raw positions
      *
-     * @param roll forward / pitch / x axis, front: 1, center: 0, back: -1
-     * @param pitch left / roll / y axis, left: -1, middle: 0, right: 1
+     * @param roll left / roll / y axis, left: -1, middle: 0, right: 1
+     * @param pitch forward / pitch / x axis, front: 1, center: 0, back: -1
      * @param yaw turn axis, left-turn: -1, centered: 0, right-turn: 1
      * @param thrust Thrust, 0%: 0, 100%: 1
      * @param xHat hat vector in forward-backward direction, +1 forward, 0 center, -1 backward
      * @param yHat hat vector in left-right direction, -1 left, 0 center, +1 right
+     * @param buttons bitmask of pressed buttons
      */
     void joystickChanged(double roll, double pitch, double yaw, double thrust, int xHat, int yHat, int buttons);
 
@@ -149,28 +177,28 @@ signals:
      *
      * @param thrust Thrust, 0%: 0, 100%: 1.0
      */
-    void thrustChanged(int thrust);
+    void thrustChanged(double thrust);
 
     /**
       * @brief X-Axis / forward-backward axis has changed
       *
-      * @param x forward / pitch / x axis, front: +1.0, center: 0.0, back: -1.0
+      * @param x forward / pitch / x axis, back: -1.0, center: 0.0, front: +1.0
       */
-    void xChanged(int x);
+    void xChanged(double x);
 
     /**
       * @brief Y-Axis / left-right axis has changed
       *
       * @param y left / roll / y axis, left: -1.0, middle: 0.0, right: +1.0
       */
-    void yChanged(int y);
+    void yChanged(double y);
 
     /**
       * @brief Yaw / left-right turn has changed
       *
       * @param yaw turn axis, left-turn: -1.0, middle: 0.0, right-turn: +1.0
       */
-    void yawChanged(int yaw);
+    void yawChanged(double yaw);
 
     /**
       * @brief Joystick button has been pressed
@@ -218,14 +246,29 @@ public slots:
         yawAxis = mapping;
     }
 
+    void setThrustReversed(bool reversed)
+    {
+        thrustReversed = reversed;
+    }
+
+    void setXReversed(bool reversed)
+    {
+        xReversed = reversed;
+    }
+
+    void setYReversed(bool reversed)
+    {
+        yReversed = reversed;
+    }
+
+    void setYawReversed(bool reversed)
+    {
+        yawReversed = reversed;
+    }
+
     void setMappingAutoButton(int mapping)
     {
         autoButtonMapping = mapping;
-    }
-
-    void setMappingManualButton(int mapping)
-    {
-        manualButtonMapping = mapping;
     }
 
     void setMappingStabilizeButton(int mapping)

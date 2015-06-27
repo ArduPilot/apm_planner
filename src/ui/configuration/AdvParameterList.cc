@@ -91,6 +91,24 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
         //Invalid item, something has gone awry.
         return;
     }
+    if (item->column() != ADV_TABLE_COLUMN_VALUE)
+    {
+        //Don't want to edit values that aren't actual values
+        return;
+    }
+    QLocale locallocale;
+    bool ok = false;
+    double number = locallocale.toDouble(item->text(),&ok);
+    if (!ok)
+    {
+        //Failed to convert
+        QMessageBox::warning(this,"Error","Failed to convert number, please verify your input and try again");
+        disconnect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+        ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_VALUE)->setText(m_paramToOrigValueMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()]);
+        connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
+        return;
+    }
+
     m_origBrushList.append(ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text());
     QBrush brush = QBrush(QColor::fromRgb(132,181,132));
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->setBackground(brush);
@@ -98,7 +116,9 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_UNIT)->setBackground(brush);
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_RANGE)->setBackground(brush);
     ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_DESCRIPTION)->setBackground(brush);
-    m_modifiedParamMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = item->text().toDouble();
+    m_modifiedParamMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = number;
+    m_paramToOrigValueMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()] = item->text();
+
 
     int itemsChanged = m_modifiedParamMap.size();
 
@@ -184,7 +204,7 @@ void AdvParameterList::loadButtonClicked()
     QFileDialog *fileDialog = new QFileDialog(this,"Load",QGC::parameterDirectory());
     QLOG_DEBUG() << "CREATED:" << fileDialog;
     fileDialog->setFileMode(QFileDialog::ExistingFile);
-    fileDialog->setNameFilter("*.param;*.txt");
+    fileDialog->setNameFilter("*.param *.txt");
     fileDialog->open(this, SLOT(loadDialogAccepted()));
     connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
 }
@@ -255,8 +275,8 @@ void AdvParameterList::saveButtonClicked()
     QFileDialog *fileDialog = new QFileDialog(this,"Save",QGC::parameterDirectory());
     QLOG_DEBUG() << "CREATED:" << fileDialog;
     fileDialog->setAcceptMode(QFileDialog::AcceptSave);
-    fileDialog->setNameFilter("*.param;*.txt");
-    fileDialog->selectFile("paramter.param");
+    fileDialog->setNameFilter("*.param *.txt");
+    fileDialog->selectFile("parameter.param");
     fileDialog->open(this, SLOT(saveDialogAccepted()));
     connect(fileDialog,SIGNAL(rejected()),SLOT(dialogRejected()));
 }
@@ -313,7 +333,8 @@ void AdvParameterList::saveDialogAccepted()
 
 void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString parameterName, QVariant value)
 {
-    QLOG_DEBUG() << "APL::parameterChanged:" << parameterName << "char=" << QString::number(value.toChar().toLatin1()) << "int=" << value.toInt() << "float=" << value.toFloat();
+    QLOG_DEBUG() << "Param:" << parameterName << ": " << value;
+
     disconnect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
     if (!m_paramValueMap.contains(parameterName))
     {
@@ -410,6 +431,7 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
     {
         valstr = QString::number(value.toInt(),'f',0);
     }
+    m_paramToOrigValueMap[parameterName] = valstr;
     m_paramValueMap[parameterName]->setText(valstr);
     connect(ui.tableWidget,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
 
@@ -577,8 +599,10 @@ void AdvParameterList::resetButtonClicked()
     }
     if (QMessageBox::question(this,"Warning","You are about to reset ALL EEPROM settings to their defaults and REBOOT the vehicle. Are you absolutely sure you want to do this?",QMessageBox::Yes,QMessageBox::No) == QMessageBox::Yes)
     {
-        m_uas->setParameter(0,"FORMAT_VERSION",0);
-        m_uas->reboot();
+        m_uas->setParameter(0,"FORMAT_VERSION",0); // Plane
+        m_uas->setParameter(0,"SYSID_SW_MREV",0); // Copter
+        QTimer::singleShot(1000,m_uas, SLOT(reboot()));
+        QMessageBox::information(this,"Reboot","Please power cycle your autopilot");
     }
     else
     {

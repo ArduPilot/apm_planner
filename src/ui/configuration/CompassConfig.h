@@ -30,42 +30,39 @@ This file is part of the APM_PLANNER project
 #ifndef COMPASSCONFIG_H
 #define COMPASSCONFIG_H
 
-
 #include "ui_CompassConfig.h"
 #include "UASManager.h"
 #include "UASInterface.h"
 #include "AP2ConfigWidget.h"
 #include <QWidget>
 #include <QProgressDialog>
-// Using alglib for least squares calc (could migrate to Eigen Lib?)
-#include "libs/alglib/src/ap.h"
-#include "libs/alglib/src/optimization.h"
-#include "libs/alglib/src/interpolation.h"
-
-
-class RawImuTuple{
-public:
-    RawImuTuple():magX(0.0f),
-        magY(0.0f),
-        magZ(0.0f){}
-
-public:
-    float magX;
-    float magY;
-    float magZ;
-};
-
-using namespace alglib;
 
 class CompassConfig : public AP2ConfigWidget
 {
     Q_OBJECT
-    
+
+    static const int COMPASS_ID_1 = 0;
+    static const int COMPASS_ID_2 = 1;
+    static const int COMPASS_ID_3 = 2;
+
+    static const int dataX = 0;
+    static const int dataY = 1;
+    static const int dataZ = 2;
+
+    static const int COMPASS_ORIENT_NONE = 0;
+    static const int COMPASS_ORIENT_ROLL_180 = 8;
+
+    static const int MAV_SENSOR_OFFSET_GYRO = 0;
+    static const int MAV_SENSOR_OFFSET_ACCELEROMETER = 1;
+    static const int MAV_SENSOR_OFFSET_MAGNETOMETER = 2;
+    static const int MAV_SENSOR_OFFSET_BAROMETER = 3;
+    static const int MAV_SENSOR_OFFSET_OPTICALFLOW = 4;
+    static const int MAV_SENSOR_OFFSET_MAGNETOMETER2 = 5;
+
 public:
     explicit CompassConfig(QWidget *parent = 0);
     ~CompassConfig();
 
-    static void sphere_error(const alglib::real_1d_array &xi, alglib::real_1d_array &fi, void *obj);
     void updateCompassSelection();
 
 private:
@@ -87,8 +84,7 @@ private slots:
     void rawImuMessageUpdate(UASInterface* uas, mavlink_raw_imu_t rawImu);
     void scaledImu2MessageUpdate(UASInterface* uas, mavlink_scaled_imu2_t scaledImu);
 
-    real_1d_array* leastSq(QVector<RawImuTuple> *rawImuList);
-    void saveOffsets(real_1d_array *ofs, real_1d_array *ofs2);
+    void saveOffsets(const Vector3d &ofs, int compassId);
     void degreeEditFinished();
 
     void setCompassAPMOnBoard();
@@ -99,24 +95,42 @@ private slots:
 
 private:
     void cleanup();
+    void readSettings();
+    void writeSettings();
+    void updateImuList(const Vector3d& currentReading, Vector3d& compassLastValue,
+                       Vector3d& compassOffset, QVector<Vector3d>& list);
+    bool isCalibratingCompass() {return m_calibratingCompass;}
 
 private:
     Ui::CompassConfig ui;
     QPointer<QProgressDialog> m_progressDialog;
     QPointer<QTimer> m_timer;
-    QVector<RawImuTuple> m_rawImuList;
-    QVector<RawImuTuple> m_scaledImu2List;
-    double m_compass2OfsX;
-    double m_compass2OfsY;
-    double m_compass2OfsZ;
-    double m_oldxmag;
-    double m_oldymag;
-    double m_oldzmag;
-    double m_old2xmag;
-    double m_old2ymag;
-    double m_old2zmag;
 
+    bool m_calibratingCompass;
+
+    int m_compassId;
+    int m_compassId2;
+    int m_compassId3;
+
+    // Compass Mag Readings
+    QVector<Vector3d> m_compass1RawImuList;
+    QVector<Vector3d> m_compass2RawImuList;
+    QVector<Vector3d> m_compass3RawImuList;
+
+    Vector3d m_compass1Offset;
+    Vector3d m_compass2Offset;
+    Vector3d m_compass3Offset;
+
+    Vector3d m_compass1LastValue;
+    Vector3d m_compass2LastValue;
+    Vector3d m_compass3LastValue;
+
+    bool m_compatibilityMode;
     bool m_haveSecondCompass;
+    bool m_haveThirdCompass;
+
+    double m_avgSamples;
+    double m_rad;
 };
 
 #endif // COMPASSCONFIG_H

@@ -24,15 +24,18 @@ This file is part of the APM_PLANNER project
 #include "GAudioOutput.h"
 #include "MainWindow.h"
 
+
+const char* COUNTDOWN_STRING = "<h3>Calibrate MAV%03d<br>Time remaining until timeout: <b>%d</b><h3>";
+
 AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent),
-    m_muted(false)
+    m_muted(false),
+    m_isCalibrating(false),
+    m_countdownCount(CALIBRATION_TIMEOUT_SEC)
 {
     ui.setupUi(this);
     connect(ui.calibrateAccelButton,SIGNAL(clicked()),this,SLOT(calibrateButtonClicked()));
-    connect(ui.levelAccelButton,SIGNAL(clicked()),this,SLOT(levelButtonClicked()));
 
     m_accelAckCount=0;
-    m_isLeveling = false;
     initConnections();
     //coutdownLabel
     connect(&m_countdownTimer,SIGNAL(timeout()),this,SLOT(countdownTimerTick()));
@@ -43,7 +46,7 @@ AccelCalibrationConfig::~AccelCalibrationConfig()
 }
 void AccelCalibrationConfig::countdownTimerTick()
 {
-    ui.coutdownLabel->setText("Time remaining until timeout: " + QString::number(m_countdownCount--));
+    ui.coutdownLabel->setText(QString().sprintf(COUNTDOWN_STRING, m_uas->getUASID(), m_countdownCount--));
     if (m_countdownCount <= 0)
     {
         ui.coutdownLabel->setText("Command timed out, please try again");
@@ -74,70 +77,12 @@ void AccelCalibrationConfig::activeUASSet(UASInterface *uas)
 }
 void AccelCalibrationConfig::uasConnected()
 {
-    if (m_uas->isFixedWing())
-    {
-        //Show fixed wing level stuff here
-        ui.levelAccelButton->setVisible(true);
-        ui.levelOutputLabel->setVisible(true);
-        ui.levelDescLabel->setVisible(true);
-    }
-    else if (m_uas->isMultirotor())
-    {
-        ui.levelAccelButton->setVisible(false);
-        ui.levelOutputLabel->setVisible(false);
-        ui.levelDescLabel->setVisible(false);
-    }
-    else if (m_uas->isGroundRover())
-    {
-        ui.levelAccelButton->setVisible(false);
-        ui.levelOutputLabel->setVisible(false);
-        ui.levelDescLabel->setVisible(false);
-    }
-    else
-    {
-        ui.levelAccelButton->setVisible(false);
-        ui.levelOutputLabel->setVisible(false);
-        ui.levelDescLabel->setVisible(false);
-    }
+
 }
 
 void AccelCalibrationConfig::uasDisconnected()
 {
 
-}
-
-void AccelCalibrationConfig::levelButtonClicked()
-{
-    if (!m_uas)
-    {
-        showNullMAVErrorMessageBox();
-        return;
-    }
-    // Mute Audio until calibrated to avoid HeartBeat Warning message
-    if (GAudioOutput::instance()->isMuted() == false) {
-        GAudioOutput::instance()->mute(true);
-        m_muted = true;
-    }
-    m_uas->getLinks()->at(0)->disableTimeouts();
-
-    MainWindow::instance()->toolBar().stopAnimation();
-
-    MAV_CMD command = MAV_CMD_PREFLIGHT_CALIBRATION;
-    int confirm = 0;
-    float param1 = 1.0;
-    float param2 = 0.0;
-    float param3 = 0.0;
-    float param4 = 0.0;
-    float param5 = 0.0;
-    float param6 = 0.0;
-    float param7 = 0.0;
-    int component = 1;
-    m_uas->executeCommand(command, confirm, param1, param2, param3, param4, param5, param6, param7, component);
-    if (m_muted) { // turns audio backon, when you leave the page
-        GAudioOutput::instance()->mute(false);
-        m_muted = false;
-    }
-    m_isLeveling = true;
 }
 
 void AccelCalibrationConfig::calibrateButtonClicked()
@@ -147,6 +92,11 @@ void AccelCalibrationConfig::calibrateButtonClicked()
         showNullMAVErrorMessageBox();
         return;
     }
+
+    ui.outputLabel->clear();
+
+    m_isCalibrating = true; // this is to guard against showing unwanted GCS Text Messages.
+
     // Mute Audio until calibrated to avoid HeartBeat Warning message
     if (GAudioOutput::instance()->isMuted() == false) {
         GAudioOutput::instance()->mute(true);
@@ -169,14 +119,14 @@ void AccelCalibrationConfig::calibrateButtonClicked()
         float param7 = 0.0;
         int component = 1;
         m_uas->executeCommand(command, confirm, param1, param2, param3, param4, param5, param6, param7, component);
-        m_countdownCount = 40;
-        ui.coutdownLabel->setText("Time remaining until timeout: 30");
+        m_countdownCount = CALIBRATION_TIMEOUT_SEC;
+        ui.coutdownLabel->setText(QString().sprintf(COUNTDOWN_STRING, m_uas->getUASID(), m_countdownCount--));
         m_countdownTimer.start(1000);
     }
     else if (m_accelAckCount <= 10)
     {
         m_uas->executeCommandAck(m_accelAckCount++,true);
-        m_countdownCount = 40;
+        m_countdownCount = CALIBRATION_TIMEOUT_SEC;
     }
     else
     {
@@ -200,6 +150,8 @@ void AccelCalibrationConfig::calibrateButtonClicked()
 
 void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
 {
+    Q_UNUSED(evt);
+
     if (m_muted) { // turns audio backon, when you leave the page
         GAudioOutput::instance()->mute(false);
         m_muted = false;
@@ -219,26 +171,26 @@ void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
 }
 void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, int severity, QString text)
 {
-    //command received: " Severity 1
-    //Place APM Level and press any key" severity 5
-    if (m_isLeveling)
-    {
-        ui.levelOutputLabel->setText(text);
-        if (text.toLower().contains("success"))
-        {
-            m_isLeveling = false;
-        }
-    }
-    if (severity == 5)
+    Q_UNUSED(uasid);
+    Q_UNUSED(componentid);
+
+    if ((severity == 5 /*SEVERITY_USER_RESPONSE*/)||(severity == 3 /*SEVERITY_HIGH*/))
     {
         //This is a calibration instruction
+        if (!m_isCalibrating || text.startsWith("PreArm:") || text.startsWith("EKF") || text.startsWith("Arm"))
+        {
+            // Don't show these warning messages
+            return;
+        }
+
         if (text.contains("Place") && text.contains ("and press any key"))
         {
             //Instruction
             if (m_accelAckCount == 0)
             {
                 //Calibration Sucessful\r"
-                ui.calibrateAccelButton->setText("Continue");
+                ui.calibrateAccelButton->setText("Continue\nPress SpaceBar");
+                ui.calibrateAccelButton->setShortcut(QKeySequence(Qt::Key_Space));
             }
             ui.outputLabel->setText(text);
             m_accelAckCount++;
@@ -256,6 +208,8 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             MainWindow::instance()->toolBar().startAnimation();
             m_accelAckCount = 0;
             ui.calibrateAccelButton->setText("Calibrate\nAccelerometer");
+            ui.calibrateAccelButton->setShortcut(QKeySequence());
+            m_isCalibrating = false;
         }
         else
         {

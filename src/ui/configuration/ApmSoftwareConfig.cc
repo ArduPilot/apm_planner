@@ -80,11 +80,6 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     m_buttonToConfigWidgetMap[ui.basicPidButton] = m_basicPidConfig;
     connect(ui.basicPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
-    m_arduCopterPidConfig = new ArduCopterPidConfig(this);
-    ui.stackedWidget->addWidget(m_arduCopterPidConfig);
-    m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_arduCopterPidConfig;
-    connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-
     m_arduPlanePidConfig = new ArduPlanePidConfig(this);
     ui.stackedWidget->addWidget(m_arduPlanePidConfig);
     m_buttonToConfigWidgetMap[ui.arduPlanePidButton] = m_arduPlanePidConfig;
@@ -100,6 +95,8 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     m_buttonToConfigWidgetMap[ui.plannerConfigButton] = m_settingsConfig;
     connect(ui.plannerConfigButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.plannerConfigButton]);
+
+    connect(ui.arduCopterPidButton, SIGNAL(clicked()), this, SLOT(updateUAS()));
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
@@ -585,7 +582,7 @@ void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCo
 
         countString = QString::number(m_paramDownloadCount) + "/"
                         + QString::number(parameterCount);
-        QLOG_INFO() << "Global Param Progress Bar: " << countString
+        QLOG_TRACE() << "Global Param Progress Bar: " << countString
                      << "paramId:" << parameterId << "name:" << parameterName
                      << "paramValue:" << value;
         ui.globalParamProgressLabel->setText(countString);
@@ -598,7 +595,7 @@ void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCo
         m_paramDownloadCount++;
         countString = QString::number(m_paramDownloadCount) + "/"
                         + QString::number(parameterCount);
-        QLOG_INFO() << "Param Progress Bar: " << countString
+        QLOG_TRACE() << "Param Progress Bar: " << countString
                      << "paramId:" << parameterId << "name:" << parameterName
                      << "paramValue:" << value;
         ui.globalParamProgressLabel->setText(countString);
@@ -620,3 +617,45 @@ void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCo
     }
 }
 
+void ApmSoftwareConfig::updateUAS()
+{
+    reloadView();
+}
+
+void ApmSoftwareConfig::reloadView()
+{
+    if (m_uas){
+        // Detects if we are using new copter PIDS or old ones
+        QVariant returnValue;
+        if (m_uas->getParamManager()->getParameterValue(1, QString("POS_XY_P"), returnValue)){
+            // Use New Copter PID UI
+            if (m_arduCopterPidConfig){
+                ui.stackedWidget->removeWidget(m_arduCopterPidConfig);
+                delete m_arduCopterPidConfig;
+            }
+            if (!m_copterPidConfig){
+                m_copterPidConfig = new CopterPidConfig(this);
+                ui.stackedWidget->addWidget(m_copterPidConfig);
+                m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_copterPidConfig;
+                connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+                activateStackedWidget();
+                QTimer::singleShot(100,m_copterPidConfig, SLOT(refreshButtonClicked()));
+            }
+
+        } else if (m_uas->getParamManager()->getParameterValue(1, "HLD_LAT_P", returnValue)){
+            // Use old ArduCopter PID UI,
+            if (m_copterPidConfig){
+                ui.stackedWidget->removeWidget(m_copterPidConfig);
+                delete m_copterPidConfig;
+            }
+            if (!m_arduCopterPidConfig){
+                m_arduCopterPidConfig = new ArduCopterPidConfig(this);
+                ui.stackedWidget->addWidget(m_arduCopterPidConfig);
+                m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_arduCopterPidConfig;
+                connect(ui.arduCopterPidButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
+                activateStackedWidget();
+                QTimer::singleShot(100,m_arduCopterPidConfig, SLOT(refreshButtonClicked()));
+            }
+        }
+    }
+}

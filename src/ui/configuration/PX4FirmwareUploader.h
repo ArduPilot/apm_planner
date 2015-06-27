@@ -23,6 +23,9 @@ public:
     void loadFile(QString filename);
 
 private:
+    bool checkCOA(const QByteArray& serial, const QByteArray& signature, const QString& publicKey);
+
+private:
     QList<QString> m_portlist;
     QString m_portToUse;
     QSerialPort *m_port;
@@ -84,7 +87,7 @@ signals:
 
     void requestDevicePlug();
     void devicePlugDetected();
-    void done();
+    void complete();
     void serialNumber(QString sn);
     void OTP(QString otp);
     void boardRev(int rev);

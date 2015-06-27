@@ -43,6 +43,11 @@ This file is part of the APM_PLANNER project
 class RadioCalibrationConfig : public AP2ConfigWidget
 {
     Q_OBJECT
+
+    static const int RC_CHANNEL_PWM_MIN = 895; // Spektrum DX6i reports 898 on ch7 even though its 6 channels
+    static const int RC_CHANNEL_PWM_MAX = 2100;
+    static const int RC_CHANNEL_NUM_MAX = 8;
+    static const int RC_CHANNEL_LOWER_CONTROL_CH_MAX = 4;
     
 public:
     explicit RadioCalibrationConfig(QWidget *parent = 0);
@@ -68,10 +73,17 @@ private slots:
     void elevonsCh2Rev(bool state);
     void elevonOutput();
 
+    void modeIndexChanged(int index);
+
 private:
     void updateChannelReversalStates();
     void setParamChannelRev(const QString& param, bool state);
     void updateChannelRevState(QCheckBox *checkbox, int channelId);
+    void readSettings();
+    void writeSettings();
+    bool isRadioControlActive();
+    bool isInRange(double value, double min, double max);
+    bool validRadioSettings();
 
 private:
     Ui::RadioCalibrationConfig ui;
@@ -87,6 +99,12 @@ private:
     int m_rollChannel;
     int m_yawChannel;
     int m_throttleChannel;
+
+    QGCRadioChannelDisplay* m_pitchWidget;
+    QGCRadioChannelDisplay* m_throttleWidget;
+    QCheckBox* m_pitchCheckBox;
+    QCheckBox* m_throttleCheckBox;
+    int m_rcMode;
 };
 
 #endif // RADIOCALIBRATIONCONFIG_H

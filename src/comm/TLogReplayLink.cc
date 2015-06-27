@@ -15,6 +15,7 @@ TLogReplayLink::TLogReplayLink(QObject *parent) :
     m_mavlinkDecoder(new MAVLinkDecoder()),
     m_mavlinkInspector(NULL)
 {
+    Q_UNUSED(parent);
 }
 int TLogReplayLink::getId() const
 {
@@ -23,6 +24,16 @@ int TLogReplayLink::getId() const
 QString TLogReplayLink::getName() const
 {
     return "AP2SimulationLink";
+}
+
+QString TLogReplayLink::getShortName() const
+{
+    return "AP2SimLink";
+}
+
+QString TLogReplayLink::getDetail() const
+{
+    return "sim";
 }
 void TLogReplayLink::requestReset()
 {
@@ -52,7 +63,8 @@ qint64 TLogReplayLink::bytesAvailable()
 }
 void TLogReplayLink::writeBytes(const char *bytes, qint64 length)
 {
-
+    Q_UNUSED(bytes);
+    Q_UNUSED(length);
 }
 void TLogReplayLink::readBytes()
 {
@@ -154,14 +166,14 @@ void TLogReplayLink::run()
                     nexttime = false;
 
                     //Should be a timestamp for the next packet.
-                    unsigned long logmsecs = static_cast<unsigned char>(timebuf.at(0)) << 56;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(1)) << 48;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(2)) << 40;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(3)) << 32;
-                    logmsecs = static_cast<unsigned char>(timebuf.at(4)) << 24;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(5)) << 16;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(6)) << 8;
-                    logmsecs += static_cast<unsigned char>(timebuf.at(7)) << 0;
+                    quint64 logmsecs = quint64(static_cast<unsigned char>(timebuf.at(0))) << 56;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(1))) << 48;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(2))) << 40;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(3))) << 32;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(4))) << 24;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(5))) << 16;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(6))) << 8;
+                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(7))) << 0;
 
                     timebuf.clear();
 
@@ -225,6 +237,8 @@ void TLogReplayLink::run()
                             uas = mav;
                             // Make UAS aware that this link can be used to communicate with the actual robot
                             uas->addLink(this);
+                            UASObject *obj = new UASObject();
+                            LinkManager::instance()->addSimObject(message.sysid,obj);
 
                             // Now add UAS to "official" list, which makes the whole application aware of it
                             UASManager::instance()->addUAS(uas);
@@ -261,6 +275,7 @@ void TLogReplayLink::run()
                             msleep(1);
                         }
                         uas->receiveMessage(this,message);
+                        LinkManager::instance()->getUasObject(message.sysid)->messageReceived(this,message);
                         m_mavlinkDecoder->receiveMessage(this,message);
                         if (m_mavlinkInspector)
                         {
@@ -283,6 +298,12 @@ void TLogReplayLink::run()
     if (m_threadRun)
     {
         m_toBeDeleted = true;
+    }
+    LinkManager *lm = LinkManager::instance();
+    if (lm){
+        LinkManager::instance()->removeSimObject(UASManager::instance()->getActiveUAS()->getSystemId());
+    } else {
+        QLOG_ERROR() << "TLogReplayLink: failed to get Linkmanager instance";
     }
     MainWindow::instance()->toolBar().overrideDisableConnectWidget(false);
     MainWindow::instance()->toolBar().disableConnectWidget(false);

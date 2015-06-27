@@ -1,6 +1,5 @@
 #include "QsLog.h"
 #include "MainWindow.h"
-#include "SerialLink.h"
 #include "QGCMAVLinkLogPlayer.h"
 #include "QGC.h"
 #include "ui_QGCMAVLinkLogPlayer.h"
