@@ -91,10 +91,10 @@ CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 
     m_nameToBoxMap["POS_XY_P"] = ui.posXYPSpinBox;
 
-    m_nameToBoxMap["WPNAV_SPEED"] = ui.wpNavLoiterSpeedSpinBox;
+    m_nameToBoxMap["WPNAV_SPEED"] = ui.wpNavSpeedSpinBox;
     m_nameToBoxMap["WPNAV_RADIUS"] = ui.wpNavRadiusSpinBox;
     m_nameToBoxMap["WPNAV_SPEED_DN"] = ui.wpNavSpeedDownSpinBox;
-    m_nameToBoxMap["WPNAV_LOIT_SPEED"] = ui.wpNavSpeedSpinBox;
+    m_nameToBoxMap["WPNAV_LOIT_SPEED"] = ui.wpNavLoiterSpeedSpinBox;
     m_nameToBoxMap["WPNAV_SPEED_UP"] = ui.wpNavSpeedUpSpinBox;
 
     //m_nameToBoxMap["TUNE_HIGH"] = ui.ch6MaxSpinBox;
