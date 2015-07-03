@@ -272,7 +272,7 @@ void MissionElevationDisplay::addWaypointLabels()
         customPlot->addItem(itemTracer);
 
         QCPItemText *itemText = new QCPItemText(customPlot);
-        itemText->setText(QString::number(wp->getId()));
+        itemText->setText("WP" + (QString::number(wp->getId())) + " (+" + (QString::number(distance,'f', 1)) +"m)");
         itemText->position->setParentAnchor(itemTracer->position);
 
         double adjustedAlt = 0.0;
