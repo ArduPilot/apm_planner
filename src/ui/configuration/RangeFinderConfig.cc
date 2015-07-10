@@ -47,6 +47,7 @@ RangeFinderConfig::RangeFinderConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.typeComboBox->addItem("APM2-PulsedLightI2C", 3) ;
     ui.typeComboBox->addItem("PX4-I2C", 4 );
     ui.typeComboBox->addItem("PX4-PWM", 5 );
+    ui.typeComboBox->addItem("BBB-PRU", 6 );
 
     ui.functionComboBox->addItem("Linear", 0);
     ui.functionComboBox->addItem("Inverted", 1);
