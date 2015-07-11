@@ -179,12 +179,6 @@ void CommConfigurationWindow::linkUpdate(int linkid)
     {
         return;
     }
-
-    TCPLink* tcpLink = dynamic_cast<TCPLink*>(LinkManager::instance()->getLink(linkid));
-    if (tcpLink) {
-        this->window()->close();
-    }
-
     setLinkName(LinkManager::instance()->getLinkName(linkid));
     connectButtonStatus(linkid);
 }
