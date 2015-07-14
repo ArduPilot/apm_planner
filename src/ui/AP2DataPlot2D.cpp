@@ -1417,7 +1417,7 @@ void AP2DataPlot2D::exportDialogAccepted()
     progressDialog->show();
     QApplication::processEvents();
 
-    QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format\r\n";
+    QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format,Columns\r\n";
     QMap<QString,QList<QString> > fmtlist = m_tableModel->getFmtValues();
     for (QMap<QString,QList<QString> >::const_iterator i = fmtlist.constBegin();i!=fmtlist.constEnd();i++)
     {
