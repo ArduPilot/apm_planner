@@ -123,9 +123,12 @@ LinuxBuild {
         DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
 
         #MAKE INSTALL - copy files
-        INSTALLS += target datafiles desktopLink menuLink
+        INSTALLS += target radioup datafiles desktopLink menuLink
 
         target.path =$$BINDIR
+        
+	radioup.path = $$BINDIR
+	radioup.files += $$BASEDIR/sik_uploader
 
         datafiles.path = $$DATADIR/APMPlanner2
         datafiles.files += $$BASEDIR/files
