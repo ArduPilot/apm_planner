@@ -130,6 +130,16 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     ui.paramProgressBar->show();
 }
 
+void AdvParameterList::resetParamWriteWidget()
+{
+    ui.paramProgressBar->setValue(0);
+    m_paramsWritten = 0;
+    ui.progressLabel->setText("No params to write");
+    ui.progressLabel->show();
+    QTimer::singleShot(500,ui.progressLabel, SLOT(hide()));
+    QTimer::singleShot(500,ui.paramProgressBar, SLOT(hide()));
+}
+
 void AdvParameterList::writeButtonClicked()
 {
     if (!m_uas)
@@ -151,10 +161,7 @@ void AdvParameterList::writeButtonClicked()
     m_paramsWritten = 0;
 
     if(m_paramsToWrite == 0) {
-        ui.paramProgressBar->setValue(0);
-        ui.progressLabel->setText("No params to write");
-        ui.progressLabel->show();
-        QTimer::singleShot(700,ui.progressLabel, SLOT(hide()));
+        resetParamWriteWidget();
     }
 
     m_modifiedParamMap.clear();
@@ -177,6 +184,8 @@ void AdvParameterList::refreshButtonClicked()
     m_writingParams = false;
     m_paramsToWrite = 0;
     m_paramsWritten = 0;
+
+    resetParamWriteWidget();
 
     m_uas->getParamManager()->requestParameterList();
     m_paramDownloadState = starting;
