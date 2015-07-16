@@ -96,13 +96,15 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
         //Don't want to edit values that aren't actual values
         return;
     }
-    QLocale locallocale;
+
+    // This is to force the use of '.' decimal as the seperator. ie use the 'C' locale.
+    // thousand seperators are also rejected in 'C' locale
     bool ok = false;
-    double number = locallocale.toDouble(item->text(),&ok);
+    double number = item->text().toDouble(&ok);
     if (!ok)
     {
         //Failed to convert
-        QMessageBox::warning(this,"Error","Failed to convert number, please verify your input and try again");
+        QMessageBox::warning(this,"Error","Failed to convert number, please verify your input uses '.' as decimal and no seperator and try again");
         disconnect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
         ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_VALUE)->setText(m_paramToOrigValueMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()]);
         connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
