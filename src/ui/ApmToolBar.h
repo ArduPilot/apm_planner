@@ -49,6 +49,7 @@ public:
     void setInitialSetupViewAction(QAction *action);
     void setConfigTuningViewAction(QAction *action);
     void setPlotViewAction(QAction *action);
+    void setDonateViewAction(QAction *action);
     void setSimulationViewAction(QAction *action);
     void setConnectMAVAction(QAction *action);
     
@@ -60,6 +61,7 @@ signals:
     void triggerConfigTuningView();
     void triggerSimulationView();
     void triggerPlotView();
+    void triggerDonateView();
 
     void MAVConnected(bool connected);
 
@@ -69,6 +71,7 @@ public slots:
     void selectInitialSetupView();
     void selectConfigTuningView();
     void selectSimulationView();
+    void selectDonateView();
     void selectPlotView();
 
     void checkAdvancedMode(bool checked);
