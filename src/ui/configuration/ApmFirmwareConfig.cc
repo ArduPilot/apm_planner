@@ -28,7 +28,6 @@ This file is part of the APM_PLANNER project
 #include <QtSerialPort/qserialportinfo.h>
 #include "MainWindow.h"
 #include "PX4FirmwareUploader.h"
-#include <QTimer>
 #include <QSettings>
 #include "arduino_intelhex.h"
 
@@ -118,10 +117,9 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     initConnections();
 
-    m_timer = new QTimer(this);
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
-
-    QTimer::singleShot(1000, this, SLOT(populateSerialPorts()));
+    connect(&m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+    m_timer.setSingleShot(true);
+    m_timer.start(1000);
 
     updateFirmwareButtons();
 }
@@ -193,7 +191,7 @@ void ApmFirmwareConfig::populateSerialPorts()
             {
                 ui.linkComboBox->insertItem(0,list[0], list);
             }
-            //QLOG_DEBUG() << "Inserting " << list.first();
+            QLOG_DEBUG() << "Inserting " << list.first();
         }
     }
     for (int i=0;i<ui.linkComboBox->count();i++)
@@ -226,7 +224,8 @@ void ApmFirmwareConfig::populateSerialPorts()
 void ApmFirmwareConfig::showEvent(QShowEvent *)
 {
     // Start Port scanning
-    m_timer->start(2000);
+    m_timer.setSingleShot(false);
+    m_timer.start(2000);
     if(ui.stackedWidget->currentIndex() == 0)
     {
         MainWindow::instance()->toolBar().disableConnectWidget(true);
@@ -242,7 +241,7 @@ void ApmFirmwareConfig::showEvent(QShowEvent *)
 void ApmFirmwareConfig::hideEvent(QHideEvent *)
 {
     // Stop Port scanning
-    m_timer->stop();
+    m_timer.stop();
     if(ui.stackedWidget->currentIndex() == 0)
     {
         MainWindow::instance()->toolBar().disableConnectWidget(false);

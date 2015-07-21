@@ -40,6 +40,7 @@ This file is part of the APM_PLANNER project
 #include <QComboBox>
 #include <QtSerialPort/qserialport.h>
 #include <QPointer>
+#include <QTimer>
 
 namespace Ui {
 class SettingsDialog;
@@ -94,7 +95,7 @@ private:
     Ui::SettingsDialog *ui;
     SerialSettings m_currentSettings;
     QIntValidator *m_intValidator;
-    QPointer<QTimer> m_timer;
+    QTimer m_timer;
 };
 
 #endif // SETTINGSDIALOG_H
