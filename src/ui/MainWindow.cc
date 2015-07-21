@@ -237,6 +237,7 @@ MainWindow::MainWindow(QWidget *parent):
     m_apmToolBar->setConfigTuningViewAction(ui.actionSoftwareConfig);
     m_apmToolBar->setPlotViewAction(ui.actionEngineersView);
     m_apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
+    m_apmToolBar->setDonateViewAction(ui.actionDonate);
 
     connect(ui.actionAdvanced_Mode, SIGNAL(triggered(bool)), m_apmToolBar, SLOT(checkAdvancedMode(bool)));
 
