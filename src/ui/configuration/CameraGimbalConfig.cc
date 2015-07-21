@@ -178,7 +178,10 @@ void CameraGimbalConfig::addOutputRcChannels(QComboBox* comboBox)
     comboBox->addItem("RC10", 10);
     comboBox->addItem("RC11", 11);
     comboBox->addItem("RC12", 12);
-
+    comboBox->addItem("RC13", 13);
+    comboBox->addItem("RC14", 14);
+    comboBox->addItem("RC15", 15);
+    comboBox->addItem("RC16", 16);
 }
 
 void CameraGimbalConfig::addInputRcChannels(QComboBox* comboBox)
@@ -188,6 +191,14 @@ void CameraGimbalConfig::addInputRcChannels(QComboBox* comboBox)
     comboBox->addItem("RC6", 6);
     comboBox->addItem("RC7", 7);
     comboBox->addItem("RC8", 8);
+    comboBox->addItem("RC9", 9);
+    comboBox->addItem("RC10", 10);
+    comboBox->addItem("RC11", 11);
+    comboBox->addItem("RC12", 12);
+    comboBox->addItem("RC13", 13);
+    comboBox->addItem("RC14", 14);
+    comboBox->addItem("RC15", 15);
+    comboBox->addItem("RC16", 16);
 }
 
 void CameraGimbalConfig::addTriggerTypes(QComboBox *comboBox)
