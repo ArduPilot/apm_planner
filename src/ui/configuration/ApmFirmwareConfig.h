@@ -167,7 +167,7 @@ private:
         int version;
     };
     QList<FirmwareDef> m_firmwareList;
-    QPointer<QTimer> m_timer;
+    QTimer m_timer;
 
     bool m_enableUpdateCheck;
     bool m_notificationOfUpdate;
