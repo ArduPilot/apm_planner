@@ -63,10 +63,8 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
 
     initConnections();
 
-    //Keep refreshing the serial port list
-    m_timer = new QTimer(this);
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
-    m_timer->start(RADIO3DR_UPDATE_PORT_TIME);
+    //connect timer for when refreshing the serial port list
+    connect(&m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
 }
 
 Radio3DRConfig::~Radio3DRConfig()
@@ -119,8 +117,8 @@ void Radio3DRConfig::fillPortsInfo(QComboBox &comboBox)
             break;
         }
     }
-    connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
     setLink(comboBox.currentIndex());
+    connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
 }
 
 void Radio3DRConfig::loadSavedSerialSettings()
@@ -169,7 +167,7 @@ void Radio3DRConfig::showEvent(QShowEvent *event)
     Q_UNUSED(event);
     // Start refresh Timer
     QLOG_DEBUG() << "3DR Radio Start Serial Port Scanning";
-    m_timer->start(RADIO3DR_UPDATE_PORT_TIME);
+    m_timer.start(RADIO3DR_UPDATE_PORT_TIME);
     loadSavedSerialSettings();
 
     MainWindow::instance()->toolBar().disableConnectWidget(true);
@@ -180,7 +178,7 @@ void Radio3DRConfig::hideEvent(QHideEvent *event)
     Q_UNUSED(event);
     // Stop the port list refeshing
     QLOG_DEBUG() << "3DR Radio Stop Serial Port Scanning";
-    m_timer->stop();
+    m_timer.stop();
     saveSerialSettings();
     QLOG_DEBUG() << "3DR Radio Remove Conenction to Serial Port";
     delete m_radioSettings;
@@ -264,7 +262,7 @@ void Radio3DRConfig::readRadioSettings()
     resetUI();
 
     if(m_radioSettings->openSerialPort(m_settings)){
-         m_timer->stop(); // Stop updatuing the ports combobox
+         m_timer.stop(); // Stop updatuing the ports combobox
 
         m_radioSettings->writeEscapeSeqeunce(); // Start Sate machine
     }
