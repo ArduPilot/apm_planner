@@ -96,6 +96,8 @@ APMToolBar::APMToolBar(QWindow *parent):
        QMetaObject::invokeMethod(rootObject(),"setAdvancedMode", Q_ARG(QVariant, settings.value("ADVANCED_MODE").toBool()));
     }
     connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(updateLinkDisplay(int)));
+
+    connect(this, SIGNAL(triggerDonateView()), this, SLOT(selectDonateView()));
 }
 
 void APMToolBar::checkAdvancedMode(bool checked)
@@ -213,6 +215,11 @@ void APMToolBar::setPlotViewAction(QAction *action)
     connect(this, SIGNAL(triggerPlotView()), action, SIGNAL(triggered()));
 }
 
+void APMToolBar::setDonateViewAction(QAction *action)
+{
+    connect(action, SIGNAL(triggered()), this, SLOT(selectDonateView()));
+}
+
 void APMToolBar::setSimulationViewAction(QAction *action)
 {
     connect(this, SIGNAL(triggerSimulationView()), action, SIGNAL(triggered()));
@@ -250,6 +257,13 @@ void APMToolBar::selectConfigTuningView()
 void APMToolBar::selectSimulationView()
 {
     QLOG_DEBUG() << "APMToolBar: selectSimulationView";
+}
+
+void APMToolBar::selectDonateView()
+{
+    QLOG_DEBUG() << "APMToolBar: selectDonateView";
+    QString donateUrl = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UKV3U28LVDGN4";
+    QDesktopServices::openUrl(QUrl(donateUrl));
 }
 
 void APMToolBar::selectPlotView()

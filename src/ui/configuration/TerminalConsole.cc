@@ -121,7 +121,7 @@ void TerminalConsole::fillPortsInfo(QComboBox &comboBox)
 
         int found = comboBox.findData(list);
         if (found == -1) {
-            // QLOG_INFO() << "Inserting " << list.first();
+            QLOG_INFO() << "Inserting " << list.first();
             comboBox.insertItem(0,list[0], list);
         } else {
             // Do nothing as the port is already listed
