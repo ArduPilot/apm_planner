@@ -51,6 +51,7 @@ public:
                               const QString& unit, const QString& range);
     ~AdvParameterList();
     void updateTableWidgetElements(QMap<QString, UASParameter*> &parameterList);
+
 private slots:
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void parameterChanged(int uas, int component, int parameterCount, int parameterId,
@@ -69,6 +70,10 @@ private slots:
     void loadDialogAccepted();
     void saveDialogAccepted();
     void dialogRejected();
+
+private:
+    // Helper methods
+    void resetParamWriteWidget();
 
 private:
     Ui::AdvParameterList ui;

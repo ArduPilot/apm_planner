@@ -40,6 +40,9 @@ namespace mapcontrol
     public:
         MapRipper(internals::Core *,internals::RectLatLng const&);
         void run();
+        void moveFormToCenter();
+        void doRip();
+
     private:
         QList<core::Point> points;
         int zoom;
@@ -50,15 +53,25 @@ namespace mapcontrol
         MapRipForm * progressForm;
         int maxzoom;
         internals::Core * core;
+        bool shouldAutoRip;
+        int openMessageBox();
 
     signals:
         void percentageChanged(int const& perc);
         void numberOfTilesChanged(int const& total,int const& actual);
         void providerChanged(QString const& prov,int const& zoom);
 
-
     public slots:
         void finish();
+        void stopRipping();
+
+        //-- Set functions --//
+        void setAutoRip(bool val){
+            shouldAutoRip = val;
+        }
+        void cancelRipping(){
+            this->cancel=true;
+        }
     };
 }
 #endif // MAPRIPPER_H

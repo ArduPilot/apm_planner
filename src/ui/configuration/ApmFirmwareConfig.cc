@@ -28,7 +28,6 @@ This file is part of the APM_PLANNER project
 #include <QtSerialPort/qserialportinfo.h>
 #include "MainWindow.h"
 #include "PX4FirmwareUploader.h"
-#include <QTimer>
 #include <QSettings>
 #include "arduino_intelhex.h"
 
@@ -118,10 +117,9 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
 
     initConnections();
 
-    m_timer = new QTimer(this);
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
-
-    QTimer::singleShot(1000, this, SLOT(populateSerialPorts()));
+    connect(&m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
+    m_timer.setSingleShot(true);
+    m_timer.start(1000);
 
     updateFirmwareButtons();
 }
@@ -193,7 +191,7 @@ void ApmFirmwareConfig::populateSerialPorts()
             {
                 ui.linkComboBox->insertItem(0,list[0], list);
             }
-            //QLOG_DEBUG() << "Inserting " << list.first();
+            QLOG_DEBUG() << "Inserting " << list.first();
         }
     }
     for (int i=0;i<ui.linkComboBox->count();i++)
@@ -226,7 +224,8 @@ void ApmFirmwareConfig::populateSerialPorts()
 void ApmFirmwareConfig::showEvent(QShowEvent *)
 {
     // Start Port scanning
-    m_timer->start(2000);
+    m_timer.setSingleShot(false);
+    m_timer.start(2000);
     if(ui.stackedWidget->currentIndex() == 0)
     {
         MainWindow::instance()->toolBar().disableConnectWidget(true);
@@ -242,7 +241,7 @@ void ApmFirmwareConfig::showEvent(QShowEvent *)
 void ApmFirmwareConfig::hideEvent(QHideEvent *)
 {
     // Stop Port scanning
-    m_timer->stop();
+    m_timer.stop();
     if(ui.stackedWidget->currentIndex() == 0)
     {
         MainWindow::instance()->toolBar().disableConnectWidget(false);
@@ -386,6 +385,7 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
 {
     //type can be "stable" "beta" or "latest"
     //autopilot can be "apm" "px4" or "pixhawk"
+    //or "aerocore"
     QLOG_DEBUG() << "Requesting firmware:" << type << autopilot;
     m_betaFirmwareChecked = false;
     m_trunkFirmwareChecked = false;
@@ -403,6 +403,10 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
     else if (autopilot == "pixhawk")
     {
         prestring = "PX4";
+    }
+    else if (autopilot == "aerocore")
+    {
+	prestring = "PX4";
     }
     if (type != "stable")
     {
@@ -528,6 +532,30 @@ void ApmFirmwareConfig::requestFirmwares(QString type,QString autopilot, bool no
 
 
     }
+    else if (autopilot == "aerocore")
+    {
+        m_buttonToUrlMap[ui.roverPushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Rover/" + type + "/" + prestring + "/APMrover2-aerocore.px4";
+        m_buttonToUrlMap[ui.planePushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Plane/" + type + "/" + prestring + "/ArduPlane-aerocore.px4";
+        m_buttonToUrlMap[ui.copterPushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-heli/ArduCopter-aerocore.px4";
+        m_buttonToUrlMap[ui.hexaPushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-hexa/ArduCopter-aerocore.px4";
+        m_buttonToUrlMap[ui.octaQuadPushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter-aerocore.px4";
+        m_buttonToUrlMap[ui.octaPushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-octa/ArduCopter-aerocore.px4";
+        m_buttonToUrlMap[ui.quadPushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-quad/ArduCopter-aerocore.px4";
+        m_buttonToUrlMap[ui.triPushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-tri/ArduCopter-aerocore.px4";
+        m_buttonToUrlMap[ui.y6PushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-y6/ArduCopter-aerocore.px4";
+
+        reply1 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-heli/git-version.txt")));
+        reply2 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-quad/git-version.txt")));
+        reply3 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-hexa/git-version.txt")));
+        reply4 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-octa/git-version.txt")));
+        reply5 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt")));
+        reply6 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-tri/git-version.txt")));
+        reply7 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Copter/" + type + "/" + prestring + "-y6/git-version.txt")));
+	reply8 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Plane/" + type + "/" + prestring + "/git-version.txt")));
+	reply9 = m_networkManager->get(QNetworkRequest(QUrl("http://gumstix-aerocore.s3.amazonaws.com/APM/Rover/" + type + "/" + prestring + "/git-version.txt")));
+
+
+    }
     else
     {
         QLOG_ERROR() << "Unknown autopilot in ApmFirmwareConfig::requestFirmwares()" << autopilot;
@@ -621,7 +649,10 @@ void ApmFirmwareConfig::px4Finished()
     if (!m_hasError)
     {
         ui.statusLabel->setText(tr("Flashing complete"));
-        QMessageBox::information(this,"Complete","PX4 Flashing is complete!");
+	if (m_autopilotType == "aerocore")
+		QMessageBox::information(this,"Complete","AeroCore Flashing is complete!");
+	else
+		QMessageBox::information(this,"Complete","PX4 Flashing is complete!");
     } else {
         ui.statusLabel->setText(tr("Flashing FAILED!"));
         QMessageBox::critical(this,"FAILED","PX4 Flashing failed!");
@@ -693,7 +724,7 @@ void ApmFirmwareConfig::downloadFinished()
         m_arduinoUploader->loadFirmware(m_settings.name,filename);
 
     }
-    else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4")
+    else if (m_autopilotType == "pixhawk" || m_autopilotType == "px4" || m_autopilotType == "aerocore")
     {
         if (m_px4uploader)
         {
@@ -876,6 +907,10 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
         {
             return "Unknown";
         }
+    }
+    else if (info.description().toLower().contains("aerocore"))
+    {
+	return "aerocore";
     }
     else
     {
