@@ -15,6 +15,7 @@
 //
 
 import QtQuick 2.0
+import QGroundControl.QgcQtGStreamer 1.0
 
 Item {
     id: rootRollPitchIndicator
@@ -43,6 +44,29 @@ Item {
                 //scale: parent.scale * 4.0
 
                 visible: !enableBackgroundVideo
+        }
+
+        VideoItem {
+            id: videoBackground
+            anchors.fill: parent
+            property var display
+            property var receiver
+            surface: display
+            onVisibleChanged: {
+                if(videoBackground.receiver && videoBackground.display) {
+                    if(videoBackground.visible) {
+                        videoBackground.receiver.start();
+                    } else {
+                        videoBackground.receiver.stop();
+                    }
+                }
+            }
+            Component.onCompleted: {
+                if(videoBackground.visible && videoBackground.receiver) {
+                    videoBackground.receiver.start();
+                }
+            }
+            visible: enableBackgroundVideo
         }
 
 
