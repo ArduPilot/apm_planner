@@ -258,6 +258,33 @@ include(QGCExternalLibs.pri)
 
 include(QGCSetup.pri)
 
+#-------------------------------------------------------------------------------------
+# Video Streaming
+
+INCLUDEPATH += \
+    src/VideoStreaming
+
+HEADERS += \
+    src/VideoStreaming/VideoItem.h \
+    src/VideoStreaming/VideoReceiver.h \
+    src/VideoStreaming/VideoSurface.h \
+    src/VideoStreaming/VideoSurface_p.h \
+
+SOURCES += \
+    src/VideoStreaming/VideoItem.cc \
+    src/VideoStreaming/VideoReceiver.cc \
+    src/VideoStreaming/VideoSurface.cc \
+
+contains (DEFINES, DISABLE_VIDEOSTREAMING) {
+    message("Skipping support for video streaming (manual override from command line)")
+    DEFINES -= DISABLE_VIDEOSTREAMING
+# Otherwise the user can still disable this feature in the user_config.pri file.
+} else:exists(user_config.pri):infile(user_config.pri, DEFINES, DISABLE_VIDEOSTREAMING) {
+    message("Skipping support for video streaming (manual override from user_config.pri)")
+} else {
+    include(src/VideoStreaming/VideoStreaming.pri)
+}
+
 #
 # Main QGroundControl portion of project file
 #

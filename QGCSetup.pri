@@ -52,6 +52,19 @@ for(COPY_DIR, COPY_RESOURCE_LIST):QMAKE_POST_LINK += $$CONCATCMD $$QMAKE_COPY_DI
 #
 message(QTDIR $$[QT_INSTALL_PREFIX])
 MacBuild {
+        VideoEnabled {
+            # Install the gstreamer framework
+            # This will:
+            # Copy from the original distibution into libs/lib/Framworks (if not already there)
+            # Prune the framework, removing stuff we don't need
+            # Relocate all dylibs so they can work under @executable_path/...
+            # Copy the result into the app bundle
+            # Make sure qgroundcontrol can find them
+            message("Preparing GStreamer Framework")
+            QMAKE_POST_LINK += && $$BASEDIR/tools/prepare_gstreamer_framework.sh $$BASEDIR/libs/lib/Frameworks/ $$DESTDIR/$${TARGET}.app $${TARGET}
+        } else {
+            message("Skipping GStreamer Framework")
+        }
     # Copy libraries and frameworks into app package
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$BASEDIR/libs/lib/Frameworks $$DESTDIR/$${TARGET}.app/Contents/Frameworks
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$[QT_INSTALL_PREFIX]/qml/QtQuick.2 $$DESTDIR/$${TARGET}.app/Contents/MacOS/qml/QtQuick.2
