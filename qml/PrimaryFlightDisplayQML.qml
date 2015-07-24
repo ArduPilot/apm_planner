@@ -15,18 +15,20 @@
 //
 
 import QtQuick 2.0
+import QtQuick.Controls 1.3
+import QtQuick.Layouts 1.0
+import QtQuick.LocalStorage 2.0
+//import "Storage.js" as Settings
+
 import "./components"
 
 Rectangle {
     // Property Defintions
     id:root
 
-
     property bool enableBackgroundVideo: false
     property string statusMessage: ""
     property bool showStatusMessage: false
-
-
 
     function activeUasSet() {
         rollPitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll})
@@ -36,12 +38,21 @@ Rectangle {
         speedIndicator.groundspeed = Qt.binding(function() { return relpositionoverview.groundspeed})
         informationIndicator.groundSpeed = Qt.binding(function() { return relpositionoverview.groundspeed})
         informationIndicator.airSpeed = Qt.binding(function() { return relpositionoverview.airspeed })
+        informationIndicator.batVoltage = Qt.binding(function() { return vehicleoverview.voltage_battery/1000.0 })
+        informationIndicator.batCurrent = Qt.binding(function() { return vehicleoverview.current_battery/100.0 })
+        informationIndicator.batPercent = Qt.binding(function() { return vehicleoverview.battery_remaining })
+
         compassIndicator.heading = Qt.binding(function() {
             return (relpositionoverview.yaw < 0) ? relpositionoverview.yaw + 360 : relpositionoverview.yaw ;
         })
         speedIndicator.airspeed = Qt.binding(function() { return relpositionoverview.airspeed } )
         altIndicator.alt = Qt.binding(function() { return abspositionoverview.relative_alt } )
     }
+
+    Component.onCompleted: {
+//        root.enableBackgroundVideo = Settings.get("enableBackgroundVideo", false) == 0 ? false : true
+    }
+
     function activeUasUnset() {
         console.log("PFD-QML: Active UAS is now unset");
         //Code to make display show a lack of connection here.
@@ -64,6 +75,30 @@ Rectangle {
         rollAngle: 0
         pitchAngle: 0
         enableBackgroundVideo: parent.enableBackgroundVideo
+
+        Menu {
+            id: contextMenu
+
+            MenuItem {
+                text: "Video"
+                checkable: true
+                checked: enableBackgroundVideo
+                onTriggered:
+                {
+                    root.enableBackgroundVideo = !root.enableBackgroundVideo
+                }
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onClicked: {
+                if (mouse.button == Qt.RightButton){
+                    contextMenu.popup()
+                }
+            }
+        }
     }
 
     PitchIndicator {
