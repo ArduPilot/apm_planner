@@ -397,7 +397,7 @@ QString UDPLink::getName() const
 
 QString UDPLink::getShortName() const
 {
-    return host.toString();
+    return QString("UDP Link");
 }
 
 QString UDPLink::getDetail() const
