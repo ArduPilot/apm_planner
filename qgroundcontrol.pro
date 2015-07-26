@@ -24,7 +24,18 @@
 
 include(apmplanner_core.pro)
 
-TEMPLATE = app
-TARGET = apmplanner2
+test {
+   message("Building unit tests")
 
-SOURCES += src/main.cc
+   TEMPLATE = app
+   TARGET = apmplanner2_test
+
+   include(qgcunittest.pro)
+} else: {
+   message("Building main application")
+
+   TEMPLATE = app
+   TARGET = apmplanner2
+
+   SOURCES += src/main.cc
+}
