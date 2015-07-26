@@ -28,6 +28,8 @@ TESTDIR = $$BASEDIR/src/qgcunittest
 
 HEADERS += $$TESTDIR/AutoTest.h \
     $$TESTDIR/TestFrameworkTest.h \
+    $$TESTDIR/versioncomparatortest.h
 
 SOURCES += $$TESTDIR/testSuite.cc \
-    $$TESTDIR/TestFrameworkTest.cc
+    $$TESTDIR/TestFrameworkTest.cc \
+    $$TESTDIR/versioncomparatortest.cc

@@ -655,7 +655,8 @@ HEADERS += \
     src/ui/uas/PreFlightCalibrationDialog.h \
     src/ui/configuration/RadioFlashWizard.h \
     src/ui/GraphTreeWidgetItem.h \
-    src/comm/LinkManagerFactory.h
+    src/comm/LinkManagerFactory.h \
+    src/versioncomparator.h
 
 SOURCES += \
     src/QGCCore.cc \
@@ -877,7 +878,8 @@ SOURCES += \
     src/ui/uas/PreFlightCalibrationDialog.cpp \
     src/ui/configuration/RadioFlashWizard.cpp \
     src/ui/GraphTreeWidgetItem.cc \
-    src/comm/LinkManagerFactory.cpp
+    src/comm/LinkManagerFactory.cpp \
+    src/versioncomparator.cc
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
