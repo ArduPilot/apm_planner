@@ -80,7 +80,7 @@ bool VersionComparator::isVersionNewer(const QString& newVersion,
                     pos = releaseNumber2.indexIn(oldBuildSubMoniker);
                     if (pos > -1) {
                         QLOG_DEBUG() << "Detected oldRc:" << versionEx.capturedTexts();
-                        oldRc = releaseNumber.cap(0).toInt();
+                        oldRc = releaseNumber2.cap(0).toInt();
                     }
 
                     if (newRc > oldRc)
