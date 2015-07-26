@@ -1075,8 +1075,13 @@ protected:
     quint64 lastSendTimeGPS;     ///< Last HIL GPS message sent
     quint64 lastSendTimeSensors;
 
+    QList< QPair<int, QString> >  paramRequestQueue;
+
+
 
 protected slots:
+    void requestNextParamFromQueue();
+
     /** @brief Write settings to disk */
     void writeSettings();
     /** @brief Read settings from disk */
