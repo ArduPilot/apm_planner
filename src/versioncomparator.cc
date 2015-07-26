@@ -27,8 +27,7 @@ bool VersionComparator::isVersionNewer(const QString& newVersion,
             newBuild = versionList[2].toInt();
         }
         // second subelement is either rcX candidate or developement build
-        if (versionEx.captureCount() == 2)
-            newBuildSubMoniker = versionEx.cap(2);
+        newBuildSubMoniker = versionEx.cap(2);
     }
 
     QRegExp versionEx2("(\\d*\\.\\d+\\.?\\d?)-?(rc\\d)?");
@@ -45,8 +44,7 @@ bool VersionComparator::isVersionNewer(const QString& newVersion,
             currentBuild = versionList[2].toInt();
         }
         // second subelement is either rcX candidate or developement build
-        if (versionEx2.captureCount() == 2)
-            oldBuildSubMoniker = versionEx2.cap(2);
+        oldBuildSubMoniker = versionEx2.cap(2);
     }
 
     QLOG_DEBUG() << "Verison Compare:" <<QString().sprintf(" New Version %d.%d.%d > Old Version %d.%d.%d",
