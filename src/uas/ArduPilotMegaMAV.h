@@ -83,7 +83,7 @@ public:
 
 class ApmCopter: public CustomMode {
 public:
-    static const int modeCount = 17;
+    static const int modeCount = 18;
     enum copterMode {
     STABILIZE   = 0,   // hold level position
     ACRO        = 1,   // rate control
@@ -102,7 +102,8 @@ public:
     SPORT       = 13,  // [TODO] Verify this is correct.
     FLIP        = 14,
     AUTOTUNE    = 15,
-    POS_HOLD    = 16 // HYBRID LOITER.
+    POS_HOLD    = 16, // HYBRID LOITER.
+    BRAKE       = 17
     };
 
 public:

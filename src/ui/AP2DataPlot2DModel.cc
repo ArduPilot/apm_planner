@@ -411,7 +411,7 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
 
     QString tablename = m_rowToTableMap.value(index.row()).second;
     QSqlQuery tablequery(m_sharedDb);
-    QString val = QString::number(tableindex,'f',0);
+    QString val = QString::number(tableindex);
     tablequery.prepare("SELECT * FROM " + tablename + " WHERE idx = " + val);
     if (!tablequery.exec())
     {

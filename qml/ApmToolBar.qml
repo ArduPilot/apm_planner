@@ -67,6 +67,7 @@ Rectangle {
     function setAdvancedMode(state){
         // Enable ro disable buttons based on Adv mode.
         // ie. terminalView.visible = state
+        donateView.visible = !state;
     }
 
     function clearHighlightedButtons(){
@@ -177,6 +178,17 @@ Rectangle {
             onClicked: {
                 clearHighlightedButtons()
                 globalObj.triggerPlotView()
+                setSelected()
+            }
+        }
+
+        Button {
+            id: donateView
+            label: "DONATE"
+            image: "./resources/apmplanner/toolbar/flightdata.png"
+            onClicked: {
+                clearHighlightedButtons()
+                globalObj.triggerDonateView()
                 setSelected()
             }
         }

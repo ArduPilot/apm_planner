@@ -237,6 +237,7 @@ MainWindow::MainWindow(QWidget *parent):
     m_apmToolBar->setConfigTuningViewAction(ui.actionSoftwareConfig);
     m_apmToolBar->setPlotViewAction(ui.actionEngineersView);
     m_apmToolBar->setSimulationViewAction(ui.actionSimulation_View);
+    m_apmToolBar->setDonateViewAction(ui.actionDonate);
 
     connect(ui.actionAdvanced_Mode, SIGNAL(triggered(bool)), m_apmToolBar, SLOT(checkAdvancedMode(bool)));
 
@@ -1838,7 +1839,11 @@ void MainWindow::addLink(int linkid)
 
 void MainWindow::linkError(int linkid,QString errorstring)
 {
-    QMessageBox::information(this,"Link Error",errorstring);
+    QWidget* parent = QApplication::activeWindow();
+    if (!parent) {
+        parent = this;
+    }
+    QMessageBox::information(parent,"Link Error",errorstring);
 }
 
 void MainWindow::simulateLink(bool simulate) {

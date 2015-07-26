@@ -99,7 +99,7 @@ private:
     SerialSettings m_settings;
     Radio3DREeprom m_newRadioSettings;
     Radio3DREeprom m_remoteRadioSettings;
-    QPointer<QTimer> m_timer;
+    QTimer m_timer;
     QPointer<Radio3DRSettings> m_radioSettings;
     State m_state;
 };

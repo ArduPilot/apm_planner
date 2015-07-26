@@ -217,6 +217,9 @@ QString ApmCopter::stringForMode(int aMode) {
     case FLIP:
         return "Flip";
         break;
+    case BRAKE:
+        return "Brake";
+        break;
     default:
         return QString().sprintf("Mode (%d)", aMode);
     }

@@ -33,21 +33,68 @@ MapRipForm::MapRipForm(QWidget *parent) :
     ui(new Ui::MapRipForm)
 {
     ui->setupUi(this);
+
+    //Hide the progress bars and resize until ripping time
+    ui->frame_rippingInfo->hide();
+    this->resizeForm();
+
+    //Grab the stopping zoom level from the spin box
+    maxAutoRipZoom = ui->spnBoxLevelLimit->value();
 }
 
 MapRipForm::~MapRipForm()
 {
     delete ui;
 }
+
 void MapRipForm::SetPercentage(const int &perc)
 {
     ui->progressBar->setValue(perc);
 }
+
 void MapRipForm::SetProvider(const QString &prov,const int &zoom)
 {
-    ui->mainlabel->setText(QString("Currently ripping from:%1 at Zoom level %2").arg(prov).arg(zoom));
+    ui->lblProvider->setText(QString("Currently ripping from: %1").arg(prov));
+    ui->lblLevel->setText(QString("Current zoom level: %1").arg(zoom));
+
 }
+
 void MapRipForm::SetNumberOfTiles(const int &total, const int &actual)
 {
-    ui->statuslabel->setText(QString("Downloading tile %1 of %2").arg(actual).arg(total));
+    ui->statuslabel->setText(QString("Downloading tile: %1 of %2").arg(actual).arg(total));
 }
+
+void MapRipForm::on_rdoBtn_singleLayer_clicked()
+{
+    emit shouldAutoRip(false);
+}
+
+void MapRipForm::on_rdoBtn_multiLlayer_clicked()
+{
+    emit shouldAutoRip(true);
+}
+
+void MapRipForm::on_spnBoxLevelLimit_valueChanged(int value)
+{
+    maxAutoRipZoom = value;
+}
+
+void MapRipForm::on_pshBtnBeginRip_clicked()
+{
+    ui->frame_rippingInfo->show();
+    this->resizeForm();
+    emit beginRip();
+}
+
+void MapRipForm::on_cancelButton_clicked()
+{
+    emit cancelRip();
+    this->close();
+}
+
+void MapRipForm::resizeForm()
+{
+    resize(0,0);
+}
+
+

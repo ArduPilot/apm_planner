@@ -37,7 +37,7 @@ print "done\n";
 $OLD_SPEC = "${WORK_PATH}/redhat/apmplanner2.spec";
 $NEW_SPEC = "${RPMBUILD_ROOT}/SPECS/${PROJECT_NAME}.spec";
 
-print "Writing .spec ... ";
+print "Writing ${PROJECT_NAME}.spec ... ";
 open SPEC_IN, $OLD_SPEC or die $!;
 open SPEC_OUT, "> $NEW_SPEC" or die $!;
 while (<SPEC_IN>) {
@@ -47,6 +47,16 @@ while (<SPEC_IN>) {
 }
 close SPEC_IN;
 close SPEC_OUT;
+print "done\n";
+
+print "Copying diydrones.repo ... ";
+$REPO_FILE = "${WORK_PATH}/redhat/diydrones.repo";
+system "cp ${REPO_FILE} ${RPMBUILD_ROOT}/SOURCES";
+print "done\n";
+
+print "Copying diydrones-repo.spec ... ";
+$OLD_SPEC = "${WORK_PATH}/redhat/diydrones-repo.spec";
+system "cp ${OLD_SPEC} ${RPMBUILD_ROOT}/SPECS";
 print "done\n";
 
 sub get_release {

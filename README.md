@@ -48,6 +48,8 @@ Linux
 
 Building on Linux (tested against Ubuntu 14.04 LTS):
 
+(**NOTE:** There is an error in 14.04LTS with libxcb crashing sometimes, try this [fix](https://gist.github.com/slimsag/a26d838ccc4480ce21bc))
+
 1) Install the required packages: 
 
 Be sure to run apt-get update first

@@ -1,0 +1,32 @@
+[diydrones]
+name=DIY Drones - $basearch
+failovermethod=priority
+baseurl=http://www.froller.net/diydrones/$basearch
+#metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch
+enabled=1
+metadata_expire=7d
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-diydrones-$basearch
+skip_if_unavailable=False
+
+[diydrones-debuginfo]
+name=DIY Drones - $basearch - Debug
+failovermethod=priority
+baseurl=http://www.froller.net/diydrones/$basearch/debug/
+#metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-debug-$releasever&arch=$basearch
+enabled=0
+#metadata_expire=7d
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-diydrones-$basearch
+skip_if_unavailable=False
+
+[diydrones-source]
+name=DIY Drones - Source
+failovermethod=priority
+baseurl=http://www.froller.net/diydrones/SRPMS/
+#metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-source-$releasever&arch=$basearch
+enabled=0
+#metadata_expire=7d
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-diydrones-$basearch
+skip_if_unavailable=False

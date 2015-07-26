@@ -30,7 +30,7 @@
 #include <QWidget>
 
 namespace Ui {
-    class MapRipForm;
+class MapRipForm;
 }
 
 class MapRipForm : public QWidget
@@ -40,12 +40,29 @@ class MapRipForm : public QWidget
 public:
     explicit MapRipForm(QWidget *parent = 0);
     ~MapRipForm();
+    int maxAutoRipZoom;
+
 public slots:
     void SetPercentage(int const& perc);
     void SetProvider(QString const& prov,int const& zoom);
-    void SetNumberOfTiles(int const& total,int const& actual);
+    void SetNumberOfTiles(int const& total,int const& actual);    
+
+signals:
+    void beginRip();
+    void cancelRip();
+    void shouldAutoRip(bool);
+
+private slots:
+    void on_rdoBtn_multiLlayer_clicked();
+    void on_spnBoxLevelLimit_valueChanged(int value);
+    void on_pshBtnBeginRip_clicked();
+    void on_cancelButton_clicked();
+    void on_rdoBtn_singleLayer_clicked();
+
 private:
     Ui::MapRipForm *ui;
+    void resizeForm();
+
 };
 
 #endif // MAPRIPFORM_H

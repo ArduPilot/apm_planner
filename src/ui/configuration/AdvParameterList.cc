@@ -96,13 +96,15 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
         //Don't want to edit values that aren't actual values
         return;
     }
-    QLocale locallocale;
+
+    // This is to force the use of '.' decimal as the seperator. ie use the 'C' locale.
+    // thousand seperators are also rejected in 'C' locale
     bool ok = false;
-    double number = locallocale.toDouble(item->text(),&ok);
+    double number = item->text().toDouble(&ok);
     if (!ok)
     {
         //Failed to convert
-        QMessageBox::warning(this,"Error","Failed to convert number, please verify your input and try again");
+        QMessageBox::warning(this,"Error","Failed to convert number, please verify your input uses '.' as decimal and no seperator and try again");
         disconnect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
         ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_VALUE)->setText(m_paramToOrigValueMap[ui.tableWidget->item(item->row(),ADV_TABLE_COLUMN_PARAM)->text()]);
         connect(ui.tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),this, SLOT(tableWidgetItemChanged(QTableWidgetItem*)));
@@ -130,6 +132,16 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     ui.paramProgressBar->show();
 }
 
+void AdvParameterList::resetParamWriteWidget()
+{
+    ui.paramProgressBar->setValue(0);
+    m_paramsWritten = 0;
+    ui.progressLabel->setText("No params to write");
+    ui.progressLabel->show();
+    QTimer::singleShot(500,ui.progressLabel, SLOT(hide()));
+    QTimer::singleShot(500,ui.paramProgressBar, SLOT(hide()));
+}
+
 void AdvParameterList::writeButtonClicked()
 {
     if (!m_uas)
@@ -151,10 +163,7 @@ void AdvParameterList::writeButtonClicked()
     m_paramsWritten = 0;
 
     if(m_paramsToWrite == 0) {
-        ui.paramProgressBar->setValue(0);
-        ui.progressLabel->setText("No params to write");
-        ui.progressLabel->show();
-        QTimer::singleShot(700,ui.progressLabel, SLOT(hide()));
+        resetParamWriteWidget();
     }
 
     m_modifiedParamMap.clear();
@@ -177,6 +186,8 @@ void AdvParameterList::refreshButtonClicked()
     m_writingParams = false;
     m_paramsToWrite = 0;
     m_paramsWritten = 0;
+
+    resetParamWriteWidget();
 
     m_uas->getParamManager()->requestParameterList();
     m_paramDownloadState = starting;
