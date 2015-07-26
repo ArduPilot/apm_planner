@@ -11,8 +11,8 @@ VersionComparatorTest::VersionComparatorTest()
 
 void VersionComparatorTest::testHigherMajorNumberIsNewer()
 {
-    const QString newVersion("2.3.2-rc1");
-    const QString currentVersion("1.2.4");
+    const QString newVersion("v2.3.2-rc1");
+    const QString currentVersion("v1.2.4");
 
     QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), true);
     QCOMPARE(VersionComparator::isVersionNewer(currentVersion, newVersion), false);
@@ -20,7 +20,7 @@ void VersionComparatorTest::testHigherMajorNumberIsNewer()
 
 void VersionComparatorTest::testEqualMajorNumberIsNotNewer()
 {
-    const QString newVersion("1.0.0");
+    const QString newVersion("v1.0.0");
     const QString currentVersion("1.0.0");
 
     QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), false);
@@ -28,7 +28,7 @@ void VersionComparatorTest::testEqualMajorNumberIsNotNewer()
 
 void VersionComparatorTest::testHigherMinorNumberIsNewer()
 {
-    const QString newVersion("1.3.2-rc1");
+    const QString newVersion("v1.3.2-rc1");
     const QString currentVersion("1.2.4");
 
     QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), true);
@@ -37,7 +37,7 @@ void VersionComparatorTest::testHigherMinorNumberIsNewer()
 
 void VersionComparatorTest::testEqualMinorNumberIsNotNewer()
 {
-    const QString newVersion("1.3.0");
+    const QString newVersion("v1.3.0");
     const QString currentVersion("1.3.0");
 
     QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), false);
@@ -45,8 +45,8 @@ void VersionComparatorTest::testEqualMinorNumberIsNotNewer()
 
 void VersionComparatorTest::testHigherBuildNumberIsNewer()
 {
-    const QString newVersion("2.3.4");
-    const QString currentVersion("2.3.2-rc1");
+    const QString newVersion("v2.3.4");
+    const QString currentVersion("v2.3.2-rc1");
 
     QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), true);
     QCOMPARE(VersionComparator::isVersionNewer(currentVersion, newVersion), false);
@@ -55,7 +55,7 @@ void VersionComparatorTest::testHigherBuildNumberIsNewer()
 void VersionComparatorTest::testEqualBuildNumberIsNotNewer()
 {
     const QString newVersion("2.3.3");
-    const QString currentVersion("2.3.3");
+    const QString currentVersion("v2.3.3");
 
     QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), false);
 }
@@ -63,7 +63,7 @@ void VersionComparatorTest::testEqualBuildNumberIsNotNewer()
 void VersionComparatorTest::testExistingBuildNumberIsNewerThanNoBuildNumber()
 {
     const QString newVersion("2.3.2");
-    const QString currentVersion("2.3");
+    const QString currentVersion("v2.3");
 
     QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), true);
     QCOMPARE(VersionComparator::isVersionNewer(currentVersion, newVersion), false);
