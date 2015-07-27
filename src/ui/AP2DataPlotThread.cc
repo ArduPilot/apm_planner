@@ -281,32 +281,28 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                 {
                                     qint16 val;
                                     packetstream >> val;
-                                    val = val/100;
-                                    linetoemit += "," + QString::number(static_cast<qint16>(val));
+                                    linetoemit += "," + QString::number((val/100.0) , 'f', 4);
                                     valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 100.0));
                                 }
                                 else if (typeCode == 'C') //uint16_t * 100
                                 {
                                     quint16 val;
                                     packetstream >> val;
-                                    val = val/100;
-                                    linetoemit += "," + QString::number(static_cast<quint16>(val));
+                                    linetoemit += "," + QString::number((val/100.0) , 'f', 4);
                                     valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 100.0));
                                 }
                                 else if (typeCode == 'e') //int32_t * 100
                                 {
                                     qint32 val;
                                     packetstream >> val;
-                                    val = val/100;
-                                    linetoemit += "," + QString::number(static_cast<qint32>(val));
+                                    linetoemit += "," + QString::number((val/100.0) , 'f', 4);
                                     valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 100.0));
                                 }
                                 else if (typeCode == 'E') //uint32_t * 100
                                 {
                                     quint32 val;
                                     packetstream >> val;
-                                    val = val/100;
-                                    linetoemit += "," + QString::number(static_cast<quint32>(val));
+                                    linetoemit += "," + QString::number((val/100.0) , 'f', 4);
                                     valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 100.0));
                                 }
                                 else if (typeCode == 'L') //uint32_t GPS Lon/Lat * 10000000
