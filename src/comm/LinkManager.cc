@@ -156,10 +156,11 @@ void LinkManager::loadSettings()
         }
         else if (type == "TCP_LINK")
         {
-            QString host = settings.value("host").toString();
+            QHostAddress hostAddress = QHostAddress(settings.value("host").toString());
+            QString hostName = settings.value("hostname").toString();
             int port = settings.value("port").toInt();
             bool asServer = settings.value("asServer").toBool();
-            LinkManagerFactory::addTcpConnection(QHostAddress(host),port,asServer);
+            LinkManagerFactory::addTcpConnection(hostAddress, hostName, port, asServer);
         }
         else if (type == "UDP_CLIENT_LINK")
         {
@@ -223,6 +224,7 @@ void LinkManager::saveSettings()
             TCPLink *link = qobject_cast<TCPLink*>(i.value());
             settings.setValue("type","TCP_LINK");
             settings.setValue("host",link->getHostAddress().toString());
+            settings.setValue("hostname",link->getName());
             settings.setValue("port",link->getPort());
             settings.setValue("asServer",link->isServer());
         }

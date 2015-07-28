@@ -1,9 +1,10 @@
 #ifndef QGCTCPLINKCONFIGURATION_H
 #define QGCTCPLINKCONFIGURATION_H
 
-#include <QWidget>
-
 #include "TCPLink.h"
+
+#include <QWidget>
+#include <QHostInfo>
 
 namespace Ui
 {
@@ -20,6 +21,11 @@ public:
 
 public slots:
     void valuesChanged();
+    void hostChanged();
+
+private slots:
+    void lookedUp(const QHostInfo &host);
+    void communicationError(QString name, QString error);
 
 private:
     void changeEvent(QEvent *e);

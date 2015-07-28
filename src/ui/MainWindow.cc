@@ -1792,7 +1792,7 @@ void MainWindow::addLink()
     }
     else if (send->data() == LinkInterface::TCP_LINK)
     {
-        newid = LinkManagerFactory::addTcpConnection(QHostAddress::LocalHost,5555,false);
+        newid = LinkManagerFactory::addTcpConnection(QHostAddress::LocalHost, "", 5760, false);
     }
     else if (send->data() == LinkInterface::UDP_LINK)
     {

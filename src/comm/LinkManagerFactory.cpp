@@ -63,11 +63,11 @@ int LinkManagerFactory::addUdpClientConnection(QHostAddress addr,int port)
     return link->getId();
 }
 
-int LinkManagerFactory::addTcpConnection(QHostAddress addr,int port,bool asServer)
+int LinkManagerFactory::addTcpConnection(QHostAddress addr, QString hostName, int port,bool asServer)
 {
     LinkManager *lmgr = LinkManager::instance();
 
-    TCPLink *link = new TCPLink(addr,port,asServer);
+    TCPLink *link = new TCPLink(addr, hostName, port, asServer);
 
     connectLinkSignals(link, lmgr);
 
