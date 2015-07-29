@@ -12,36 +12,11 @@ bool VersionComparator::isVersionNewer(const QString& newVersion,
 
     QString newBuildSubMoniker, oldBuildSubMoniker; // holds if the build is a rc or dev build
 
-    QRegExp versionEx("((\\d)*\\.(\\d)+\\.?(\\d)?)-?(rc(\\d))?");
+    splitVersionString(newVersion, newMajor, newMinor, newBuild,
+                       newBuildSubMoniker, newRc);
 
-    int pos = versionEx.indexIn(newVersion);
-    if (pos > -1) {
-
-        QLOG_DEBUG() << "Detected newVersion:" << versionEx.capturedTexts()<< " count:"
-                     << versionEx.captureCount();
-
-        newMajor = versionEx.cap(2).toInt();
-        newMinor = versionEx.cap(3).toInt();
-        newBuild = versionEx.cap(4).toInt();
-
-        // fifth subelement is either rcX candidate or developement build
-        newBuildSubMoniker = versionEx.cap(5);
-        newRc = versionEx.cap(6).toInt();
-    }
-
-    pos = versionEx.indexIn(currentVersion);
-    if (pos > -1) {
-
-        QLOG_DEBUG() << "Detected currentVersion:" << versionEx.capturedTexts() << " count:"
-                     << versionEx.captureCount();
-        currentMajor = versionEx.cap(2).toInt();
-        currentMinor = versionEx.cap(3).toInt();
-        currentBuild = versionEx.cap(4).toInt();
-
-        // fifth subelement is either rcX candidate or developement build
-        oldBuildSubMoniker = versionEx.cap(5);
-        oldRc = versionEx.cap(6).toInt();
-    }
+    splitVersionString(currentVersion, currentMajor, currentMinor, currentBuild,
+                       oldBuildSubMoniker, oldRc);
 
     QLOG_DEBUG() << "Verison Compare:" <<QString().sprintf(" New Version %d.%d.%d > Old Version %d.%d.%d",
                                                  newMajor,newMinor,newBuild,currentMajor, currentMinor,currentBuild);
@@ -77,4 +52,27 @@ bool VersionComparator::isVersionNewer(const QString& newVersion,
     }
 
     return false;
+}
+
+void VersionComparator::splitVersionString(const QString& versionString,
+                                           int& majorNumber, int& minorNumber,
+                                           int& buildNumber, QString& buildSubMoniker,
+                                           int& rcVersion)
+{
+    const QRegExp versionEx("((\\d)*\\.(\\d)+\\.?(\\d)?)-?(rc(\\d))?");
+
+    const int pos = versionEx.indexIn(versionString);
+    if (pos > -1) {
+
+        QLOG_DEBUG() << "Detected version:" << versionEx.capturedTexts()<< " count:"
+                     << versionEx.captureCount();
+
+        majorNumber = versionEx.cap(2).toInt();
+        minorNumber = versionEx.cap(3).toInt();
+        buildNumber = versionEx.cap(4).toInt();
+
+        // fifth subelement is either rcX candidate or developement build
+        buildSubMoniker = versionEx.cap(5);
+        rcVersion = versionEx.cap(6).toInt();
+    }
 }
