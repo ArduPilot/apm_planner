@@ -1296,6 +1296,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_radio_t radio;
             mavlink_msg_radio_decode(&message, &radio);
             emit radioMessageUpdate(this, radio);
+            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
             emit valueChanged(uasId, name.arg("Radio RSSI"), "", radio.rssi, time);
             emit valueChanged(uasId, name.arg("Radio REM RSSI"), "", radio.remrssi, time);
             emit valueChanged(uasId, name.arg("Radio noise"), "", radio.noise, time);
