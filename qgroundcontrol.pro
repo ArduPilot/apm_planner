@@ -655,7 +655,8 @@ HEADERS += \
     src/ui/uas/PreFlightCalibrationDialog.h \
     src/ui/configuration/RadioFlashWizard.h \
     src/ui/GraphTreeWidgetItem.h \
-    src/comm/LinkManagerFactory.h
+    src/comm/LinkManagerFactory.h \
+    src/ui/VibrationMonitor.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -877,7 +878,8 @@ SOURCES += src/main.cc \
     src/ui/uas/PreFlightCalibrationDialog.cpp \
     src/ui/configuration/RadioFlashWizard.cpp \
     src/ui/GraphTreeWidgetItem.cc \
-    src/comm/LinkManagerFactory.cpp
+    src/comm/LinkManagerFactory.cpp \
+    src/ui/VibrationMonitor.cpp
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
@@ -891,7 +893,7 @@ OTHER_FILES += \
     qml/components/CompassIndicator.qml \
     qml/components/PitchIndicator.qml \
     qml/components/StatusMessageIndicator.qml \
-    qml/components/InformationOverlayIndicator.qml
+    qml/components/InformationOverlayIndicator.qml \
 
 OTHER_FILES += \
     qml/ApmToolBar.qml \
@@ -906,7 +908,10 @@ OTHER_FILES += \
     qml/resources/apmplanner/toolbar/light_tuningconfig_icon.png \
     qml/resources/apmplanner/toolbar/flightdata.png \
     qml/resources/apmplanner/toolbar/disconnect.png \
-    qml/resources/apmplanner/toolbar/donate.png \
+    qml/resources/apmplanner/toolbar/donate.png
+
+OTHER_FILES += \
+    qml/VibrationMonitor.qml
 
 # Command Line Tools
 OTHER_FILES += \

@@ -52,6 +52,7 @@ This file is part of the QGROUNDCONTROL project
 #include "UASRawStatusView.h"
 #include "PrimaryFlightDisplay.h"
 #include "PrimaryFlightDisplayQML.h"
+#include "VibrationMonitor.h"
 #include "ApmToolBar.h"
 #include "SerialSettingsDialog.h"
 #include "TerminalConsole.h"
@@ -740,6 +741,13 @@ void MainWindow::buildCommonWidgets()
     }
 #endif
 
+    { // Adds the Vibration Monitor Tool
+        QAction* tempAction = ui.menuTools->addAction(tr("Vibration Monitor"));
+        tempAction->setCheckable(true);
+        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+        menuToDockNameMap[tempAction] = "VIBRATION_MONITOR_DOCKWIDGET";
+    }
+
     QGCTabbedInfoView *infoview = new QGCTabbedInfoView(this);
     infoview->addSource(mavlinkDecoder);
     createDockWidget(pilotView,infoview,tr("Info View"),"UAS_INFO_INFOVIEW_DOCKWIDGET",VIEW_FLIGHT,Qt::LeftDockWidgetArea);
@@ -882,6 +890,10 @@ void MainWindow::loadDockWidget(QString name)
     else if (name == "MISSION_ELEVATION_DOCKWIDGET")
     {
         createDockWidget(centerStack->currentWidget(),new MissionElevationDisplay(this),tr("Mission Elevation"),"MISSION_ELEVATION_DOCKWIDGET",currentView,Qt::TopDockWidgetArea);
+    }
+    else if (name == "VIBRATION_MONITOR_DOCKWIDGET")
+    {
+        createDockWidget(centerStack->currentWidget(),new VibrationMonitor(this),tr("Vibration Monitor"),"VIBRATION_MONITOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
     else if (name == "MAVLINK_INSPECTOR_DOCKWIDGET")
     {
