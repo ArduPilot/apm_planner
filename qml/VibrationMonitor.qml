@@ -24,8 +24,8 @@ Rectangle {
     function activeUasSet() {
         console.log("Vibration Monitor: Active UAS is now set");
         vibrationXIndicator.value = Qt.binding(function() { return vehicleOverview.vibration_x})
-//        vibrationYIndicator.value = Qt.binding(function() { return vehicleOverview.vibration.y})
-//        vibrationZIndicator.value = Qt.binding(function() { return vehicleOverview.vibration.z})
+        vibrationYIndicator.value = Qt.binding(function() { return vehicleOverview.vibration.y})
+        vibrationZIndicator.value = Qt.binding(function() { return vehicleOverview.vibration.z})
     }
 
     function activeUasUnset() {
@@ -33,12 +33,34 @@ Rectangle {
         //Code to make display show a lack of connection here.
     }
 
-    Text {
-        id:vibrationXIndicator
-        property double value: 0.0
+    Column {
+        id: col1
         anchors.centerIn: parent
-        text: " Vibration Display X " + value
+        width: parent.width
+        height: parent.height
+
+        Text {
+            id:vibrationXIndicator
+            property double value: 0.0
+            text: qsTr(" Vib X ") + value
+            font.pixelSize: 12
+        }
+
+        Text {
+            id: vibrationYIndicator
+            property double value: 0.0
+            text: qsTr(" Vib Y ") + value
+            font.pixelSize: 12
+        }
+
+        Text {
+            id: vibrationZIndicator
+            property double value: 0.0
+            text: qsTr(" Vib Z ") + value
+            font.pixelSize: 12
+        }
     }
+
 
 }
 

@@ -131,6 +131,6 @@ void VehicleOverview::parseVibration(LinkInterface *link, const mavlink_vibratio
 {
     Q_UNUSED(link);
     setVibrationX(vibration.vibration_x);
-    setVibrationX(vibration.vibration_x);
-    setVibrationX(vibration.vibration_x);
+    setVibrationY(vibration.vibration_y);
+    setVibrationZ(vibration.vibration_z);
 }
