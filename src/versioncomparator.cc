@@ -59,7 +59,7 @@ void VersionComparator::splitVersionString(const QString& versionString,
                                            int& buildNumber, QString& buildSubMoniker,
                                            int& rcVersion)
 {
-    const QRegExp versionEx("((\\d)*\\.(\\d)+\\.?(\\d)?)-?(rc(\\d))?");
+    const QRegExp versionEx("((\\d*)\\.(\\d+)\\.?(\\d+)?)-?(rc(\\d))?");
 
     const int pos = versionEx.indexIn(versionString);
     if (pos > -1) {
