@@ -87,3 +87,11 @@ void VersionComparatorTest::testHigherReleaseCandidateIsNewer()
     QCOMPARE(VersionComparator::isVersionNewer(currentVersion, newVersion), false);
 }
 
+void VersionComparatorTest::testInvalidNewVersionReturnsFalse()
+{
+    const QString newVersion("abcdef");
+    const QString currentVersion("2.3.2-rc1");
+
+    QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), false);
+}
+

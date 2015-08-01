@@ -30,7 +30,7 @@ private slots:
 
     void testHigherReleaseCandidateIsNewer();
 
-
+    void testInvalidNewVersionReturnsFalse();
 };
 
 DECLARE_TEST(VersionComparatorTest)
