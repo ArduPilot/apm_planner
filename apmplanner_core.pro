@@ -219,34 +219,6 @@ ReleaseBuild {
 }
 
 #
-# Unit Test specific configuration goes here (debug only)
-#
-
-#DebugBuild {
-#    INCLUDEPATH += \
-#        src/qgcunittest
-
-#    HEADERS += \
-#        src/qgcunittest/AutoTest.h \
-#        src/qgcunittest/UASUnitTest.h \
-#        src/qgcunittest/MockUASManager.h \
-#        src/qgcunittest/MockUAS.h \
-#        src/qgcunittest/MockQGCUASParamManager.h \
-#        src/qgcunittest/MultiSignalSpy.h \
-#        src/qgcunittest/TCPLinkTest.h \
-#        src/qgcunittest/FlightModeConfigTest.h
-
-#    SOURCES += \
-#        src/qgcunittest/UASUnitTest.cc \
-#        src/qgcunittest/MockUASManager.cc \
-#        src/qgcunittest/MockUAS.cc \
-#        src/qgcunittest/MockQGCUASParamManager.cc \
-#        src/qgcunittest/MultiSignalSpy.cc \
-#        src/qgcunittest/TCPLinkTest.cc \
-#        src/qgcunittest/FlightModeConfigTest.cc
-#}
-
-#
 # External library configuration
 #
 
