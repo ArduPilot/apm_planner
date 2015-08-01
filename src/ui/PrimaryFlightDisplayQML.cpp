@@ -25,10 +25,15 @@ This file is part of the APM_PLANNER project
 
 #include "configuration.h"
 #include "MainWindow.h"
+#include <VideoItem.h>
+#include <VideoSurface.h>
+#include "VideoReceiver.h"
+
 #include <QVBoxLayout>
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQmlEngine>
+
 #define ToRad(x) (x*0.01745329252)      // *pi/180
 #define ToDeg(x) (x*57.2957795131)      // *180/pi
 
@@ -65,6 +70,16 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
     connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this,
             SLOT(setActiveUAS(UASInterface*)), Qt::UniqueConnection);
     setActiveUAS(UASManager::instance()->getActiveUAS());
+
+    // Create Video Surface for HUD
+    VideoSurface* surface = new VideoSurface;
+    m_declarativeView->rootContext()->setContextProperty("videoDisplay", surface);
+    VideoReceiver* receiver = new VideoReceiver(this);
+    receiver->setUri(QLatin1Literal("udp://0.0.0.0:5000"));
+#if defined(QGC_GST_STREAMING)
+    receiver->setVideoSink(surface->videoSink());
+#endif
+    m_declarativeView->rootContext()->setContextProperty("videoReceiver", receiver);
 
 }
 

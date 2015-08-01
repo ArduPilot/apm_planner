@@ -71,10 +71,11 @@ Rectangle {
 
     RollPitchIndicator {
         id: rollPitchIndicator
-
         rollAngle: 0
         pitchAngle: 0
         enableBackgroundVideo: parent.enableBackgroundVideo
+        display: videoDisplay
+        receiver: videoReceiver
 
         Menu {
             id: contextMenu

@@ -15,13 +15,18 @@
 //
 
 import QtQuick 2.0
+import QtQuick.Controls 1.3
 import QGroundControl.QgcQtGStreamer 1.0
 
 Item {
-    id: rootRollPitchIndicator
+    id: root
     property real rollAngle : 0
     property real pitchAngle: 0
     property bool enableBackgroundVideo: false
+
+    property var display
+    property var receiver
+
     height: parent.height
     width: parent.width
     anchors.fill: parent
@@ -49,21 +54,19 @@ Item {
         VideoItem {
             id: videoBackground
             anchors.fill: parent
-            property var display
-            property var receiver
             surface: display
             onVisibleChanged: {
-                if(videoBackground.receiver && videoBackground.display) {
+                if(root.receiver && root.display) {
                     if(videoBackground.visible) {
-                        videoBackground.receiver.start();
+                        root.receiver.start();
                     } else {
-                        videoBackground.receiver.stop();
+                        root.receiver.stop();
                     }
                 }
             }
             Component.onCompleted: {
-                if(videoBackground.visible && videoBackground.receiver) {
-                    videoBackground.receiver.start();
+                if(videoBackground.visible && root.receiver) {
+                    root.receiver.start();
                 }
             }
             visible: enableBackgroundVideo
@@ -85,12 +88,12 @@ Item {
                 visible: !enableBackgroundVideo
         }
 
-        Rectangle {
-                id: videoImage // Just for testing
-                anchors { fill: parent; centerIn: parent }
-                color: "darkgrey"
-                visible: enableBackgroundVideo
-        }
+//        Rectangle {
+//                id: videoImage // Just for testing
+//                anchors { fill: parent; centerIn: parent }
+//                color: "darkgrey"
+//                visible: enableBackgroundVideo
+//        }
 
          transformOrigin: Item.Center
 
