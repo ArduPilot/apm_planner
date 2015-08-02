@@ -371,13 +371,13 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
             // [TODO] Abort.
         }
         m_downloadFile->flush();
-        m_downloadSet->insert(static_cast<uint>(floor(ofs / LOG_PACKET_SIZE)));
+        m_downloadSet->insert(static_cast<uint>(ofs / LOG_PACKET_SIZE));
         m_downloadOffset += count;
         updateProgress();
     }
     m_downloadLastTimestamp = QDateTime::currentDateTime().toMSecsSinceEpoch();
     if ( count==0 || (count<LOG_PACKET_SIZE
-                      && (static_cast<uint>(m_downloadSet->count()) == 1+(static_cast<uint>( floor(ofs / LOG_PACKET_SIZE) ))))){
+                      && (static_cast<uint>(m_downloadSet->count()) == 1+(static_cast<uint>(ofs / LOG_PACKET_SIZE))))){
         double dt = m_downloadStart.elapsed()/1000.0;
         double speed = (static_cast<double>(m_downloadFile->size())/dt)/1000.0;
         QLOG_INFO() << "Finished downloading "<< m_downloadFilename
