@@ -142,3 +142,52 @@ void PrimaryFlightDisplayQML::uasTextMessage(int uasid, int componentid, int sev
         root->setProperty("showStatusMessage", true);
     }
 }
+
+void PrimaryFlightDisplayQML::InitializeDisplayWithVideo()
+{
+    ResetDisplay();
+    // ToDo
+}
+
+void PrimaryFlightDisplayQML::InitializeDisplay()
+{
+    ResetDisplay();
+
+    //ToDo
+}
+
+void PrimaryFlightDisplayQML::enableVideo(bool enabled)
+{
+//    if (m_enableGStreamer)
+//    {
+//        if (enabled) InitializeDisplayWithVideo();
+//        else InitializeDisplay();
+//    }
+}
+
+void PrimaryFlightDisplayQML::ResetDisplay()
+{
+    // Removes the current engine and widgets
+//    if (m_player)
+//    {
+//        delete m_player;
+//        m_player = NULL;
+//    }
+
+    if (m_declarativeView)
+    {
+        m_declarativeView->hide();
+        m_declarativeView->close();
+        m_declarativeView->rootContext()->setContextProperty(QLatin1String("videoSurface1"), 0);
+        m_declarativeView->engine()->clearComponentCache();
+        m_declarativeView = NULL;
+    }
+
+//    if (m_viewcontainer)
+//    {
+////        layout()->removeWidget(m_viewcontainer);
+////        m_viewcontainer->close();
+////        m_viewcontainer = NULL;
+//        delete layout();
+//    }
+}

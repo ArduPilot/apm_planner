@@ -39,6 +39,11 @@ public:
     explicit PrimaryFlightDisplayQML(QWidget *parent = 0);
     ~PrimaryFlightDisplayQML();
 
+    void InitializeDisplay();
+    void InitializeDisplayWithVideo();
+    void ResetDisplay();
+    void enableVideo(bool enabled);
+
 private slots:
     void setActiveUAS(UASInterface *uas);
     void uasTextMessage(int uasid, int componentid, int severity, QString text);
