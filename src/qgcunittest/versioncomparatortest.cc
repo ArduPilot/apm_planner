@@ -18,6 +18,15 @@ void VersionComparatorTest::testHigherMajorNumberIsNewer()
     QCOMPARE(VersionComparator::isVersionNewer(currentVersion, newVersion), false);
 }
 
+void VersionComparatorTest::testHigherMajorNumberWithoutBuildNumberIsNewer()
+{
+    const QString newVersion("v2.1");
+    const QString currentVersion("v1.2");
+
+    QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), true);
+    QCOMPARE(VersionComparator::isVersionNewer(currentVersion, newVersion), false);
+}
+
 void VersionComparatorTest::testEqualMajorNumberIsNotNewer()
 {
     const QString newVersion("v1.0.0");
@@ -35,6 +44,15 @@ void VersionComparatorTest::testHigherMinorNumberIsNewer()
     QCOMPARE(VersionComparator::isVersionNewer(currentVersion, newVersion), false);
 }
 
+void VersionComparatorTest::testHigherMinorNumberWithoutBuildNumberIsHigher()
+{
+    const QString newVersion("1.1");
+    const QString currentVersion("1.0");
+
+    QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), true);
+    QCOMPARE(VersionComparator::isVersionNewer(currentVersion, newVersion), false);
+}
+
 void VersionComparatorTest::testEqualMinorNumberIsNotNewer()
 {
     const QString newVersion("v1.3.0");
@@ -42,6 +60,7 @@ void VersionComparatorTest::testEqualMinorNumberIsNotNewer()
 
     QCOMPARE(VersionComparator::isVersionNewer(newVersion, currentVersion), false);
 }
+
 
 void VersionComparatorTest::testHigherBuildNumberIsNewer()
 {

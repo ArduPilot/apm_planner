@@ -14,9 +14,13 @@ public:
 private slots:
     void testHigherMajorNumberIsNewer();
 
+    void testHigherMajorNumberWithoutBuildNumberIsNewer();
+
     void testEqualMajorNumberIsNotNewer();
 
     void testHigherMinorNumberIsNewer();
+
+    void testHigherMinorNumberWithoutBuildNumberIsHigher();
 
     void testEqualMinorNumberIsNotNewer();
 
