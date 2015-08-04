@@ -122,9 +122,6 @@ QT += testlib
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
 
-#Turn on camera view
-#DEFINES += AMERAVIEW
-#
 # Logging Library
 #
 include (QsLog/QsLog.pri)
@@ -132,10 +129,6 @@ include (QsLog/QsLog.pri)
 #
 # OS Specific settings
 #
-
-RaspberryPiBuild {
-   DEFINES -= CAMERAVIEW
-}
 
 MacBuild {
     QT += multimedia
@@ -451,9 +444,6 @@ HEADERS += \
     src/ui/HUD.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
-#ifdef CAMERAVIEW
-    src/ui/CameraView.h \
-#endif
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
     src/comm/UDPClientLink.h \
@@ -675,9 +665,6 @@ SOURCES += src/main.cc \
     src/ui/uas/UASInfoWidget.cc \
     src/ui/HUD.cc \
     src/ui/uas/UASView.cc \
-#ifdef CAMERAVIEW
-    src/ui/CameraView.cc \
-#endif
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
     src/comm/UDPClientLink.cc \
