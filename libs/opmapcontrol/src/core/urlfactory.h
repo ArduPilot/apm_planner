@@ -53,7 +53,6 @@ namespace core {
         /// Gets or sets the value of the User-agent HTTP header.
         /// </summary>
         QByteArray UserAgent;
-        QNetworkProxy Proxy;
         UrlFactory();
         ~UrlFactory();
         QString MakeImageUrl(const MapType::Types &type,const core::Point &pos,const int &zoom,const QString &language);

@@ -38,6 +38,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QStackedWidget>
 #include <QSettings>
 #include <qlist.h>
+#include <QNetworkProxy>
 
 #include "ui_MainWindow.h"
 //#include "LinkManager.h"
@@ -118,6 +119,8 @@ public:
     bool dockWidgetTitleBarsEnabled();
     /** @brief Get low power mode setting */
     bool lowPowerModeEnabled();
+    /** @brief Get Auto Prox mode setting */
+    bool autoProxyModeEnabled();
 
     QList<QAction*> listLinkMenuActions(void);
 
@@ -200,6 +203,8 @@ public slots:
     void enableAutoReconnect(bool enabled);
     /** @brief Save power by reducing update rates */
     void enableLowPowerMode(bool enabled) { lowPowerMode = enabled; }
+    /** @brief Use the system proxy for network connections automatically */
+    void enableAutoProxyMode(bool enabled);
     /** @brief Switch to native application style */
     void loadNativeStyle();
     /** @brief Switch to indoor mission style */
@@ -262,6 +267,7 @@ signals:
     /** @brief Forward X11Event to catch 3DMouse inputs */
     void x11EventOccured(XEvent *event);
 #endif //MOUSE_ENABLED_LINUX
+    void autoProxyChanged(bool);
 
 public:
     QGCMAVLinkLogPlayer* getLogPlayer()
@@ -456,6 +462,7 @@ protected:
     bool autoReconnect;
     Qt::WindowStates windowStateVal;
     bool lowPowerMode; ///< If enabled, QGC reduces the update rates of all widgets
+    bool autoProxyMode;
     QPointer<QGCFlightGearLink> fgLink;
     QTimer windowNameUpdateTimer;
 

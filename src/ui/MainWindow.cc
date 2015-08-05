@@ -122,6 +122,11 @@ bool MainWindow::lowPowerModeEnabled()
     return lowPowerMode;
 }
 
+bool MainWindow::autoProxyModeEnabled()
+{
+    return autoProxyMode;
+}
+
 /**
 * Create new mainwindow. The constructor instantiates all parts of the user
 * interface. It does NOT show the mainwindow. To display it, call the show()
@@ -274,6 +279,9 @@ MainWindow::MainWindow(QWidget *parent):
 
     // Set low power mode
     enableLowPowerMode(lowPowerMode);
+
+    // Set Automatic use of system Proxies
+    enableAutoProxyMode(autoProxyMode);
 
     // Initialize window state
     windowStateVal = windowState();
@@ -1236,6 +1244,7 @@ void MainWindow::loadSettings()
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", QGC_MAINWINDOW_STYLE_OUTDOOR).toInt();
     currentView= static_cast<VIEW_SECTIONS>(settings.value("CURRENT_VIEW", VIEW_FLIGHT).toInt());
     lowPowerMode = settings.value("LOW_POWER_MODE", false).toBool();
+    autoProxyMode = settings.value("AUTO_PROXY_MODE", false).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS", true).toBool();
     isAdvancedMode = settings.value("ADVANCED_MODE", false).toBool();
     enableHeartbeat(settings.value("HEARTBEATS_ENABLED",true).toBool());
@@ -1249,6 +1258,7 @@ void MainWindow::storeSettings()
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
     settings.setValue("LOW_POWER_MODE", lowPowerMode);
+    settings.setValue("AUTO_PROXY_MODE", autoProxyMode);
     settings.setValue("ADVANCED_MODE", isAdvancedMode);
     settings.setValue("HEARTBEATS_ENABLED",m_heartbeatEnabled);
     settings.endGroup();
@@ -1363,6 +1373,41 @@ void MainWindow::enableDockWidgetTitleBars(bool enabled)
 void MainWindow::enableAutoReconnect(bool enabled)
 {
     autoReconnect = enabled;
+}
+
+void MainWindow::enableAutoProxyMode(bool enabled)
+{
+    if (enabled)
+    {
+        QLOG_INFO() << "NETWORK_PROXY:" << "Attempting to enable System Network Proxies";
+        QNetworkProxyFactory::setUseSystemConfiguration(true);
+
+        // Check for proxy used for well known external URL
+        QNetworkProxyQuery npq(QUrl("http://www.google.com"));
+        QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+
+        if (listOfProxies.size() &&
+                QNetworkProxy::NoProxy != listOfProxies[0].type())
+        {
+            QLOG_INFO() << "NETWORK_PROXY:" << "System Proxies in use for external urls";
+            autoProxyMode = enabled;
+        }
+        else
+        {
+            QLOG_ERROR() << "NETWORK_PROXY:" << "No System Proxies found in environment";
+            QNetworkProxyFactory::setUseSystemConfiguration(false);
+        }
+    }
+    else
+    {
+        QLOG_INFO() << "NETWORK_PROXY:" << "Disabling System Network Proxies";
+        QNetworkProxyFactory::setUseSystemConfiguration(false);
+
+        autoProxyMode = enabled;
+    }
+
+    // Ensure the checkbox is in-sync with the current value
+    emit autoProxyChanged(autoProxyMode);
 }
 
 void MainWindow::loadNativeStyle()
