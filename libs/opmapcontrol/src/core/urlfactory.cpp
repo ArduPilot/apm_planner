@@ -38,8 +38,6 @@ namespace core {
         /// timeout for map connections
         /// </summary>
 
-        Proxy.setType(QNetworkProxy::NoProxy);
-
         /// <summary>
         /// Gets or sets the value of the User-agent HTTP header.
         /// </summary>
@@ -106,7 +104,6 @@ namespace core {
             connect(&network, SIGNAL(finished(QNetworkReply*)),
                     &q, SLOT(quit()));
             connect(&tT, SIGNAL(timeout()), &q, SLOT(quit()));
-            network.setProxy(Proxy);
 #ifdef DEBUG_URLFACTORY
             qDebug()<<"Correct GoogleVersion";
 #endif //DEBUG_URLFACTORY
@@ -550,7 +547,6 @@ namespace core {
             QNetworkReply *reply;
             QNetworkRequest qheader;
             QNetworkAccessManager network;
-            network.setProxy(Proxy);
             qheader.setUrl(QUrl(url));
             qheader.setRawHeader("User-Agent",UserAgent);
             reply=network.get(qheader);
@@ -644,7 +640,6 @@ namespace core {
             QNetworkReply *reply;
             QNetworkRequest qheader;
             QNetworkAccessManager network;
-            network.setProxy(Proxy);
             qheader.setUrl(QUrl(url));
             qheader.setRawHeader("User-Agent",UserAgent);
             reply=network.get(qheader);

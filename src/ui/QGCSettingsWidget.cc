@@ -52,6 +52,11 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         ui->lowPowerCheckBox->setChecked(MainWindow::instance()->lowPowerModeEnabled());
         connect(ui->lowPowerCheckBox, SIGNAL(clicked(bool)), MainWindow::instance(), SLOT(enableLowPowerMode(bool)));
 
+        // Automatic use of system Proxies
+        ui->autoProxyCheckBox->setChecked(MainWindow::instance()->autoProxyModeEnabled());
+        connect(ui->autoProxyCheckBox, SIGNAL(clicked(bool)), MainWindow::instance(), SLOT(enableAutoProxyMode(bool)));
+        connect(MainWindow::instance(), SIGNAL(autoProxyChanged(bool)), ui->autoProxyCheckBox, SLOT(setChecked(bool)));
+
         //Dock widget title bars
         ui->titleBarCheckBox->setChecked(MainWindow::instance()->dockWidgetTitleBarsEnabled());
         connect(ui->titleBarCheckBox,SIGNAL(clicked(bool)),MainWindow::instance(),SLOT(enableDockWidgetTitleBars(bool)));
