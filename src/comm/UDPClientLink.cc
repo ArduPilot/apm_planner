@@ -270,7 +270,7 @@ QString UDPClientLink::getName() const
 
 QString UDPClientLink::getShortName() const
 {
-    return _targetHost.toString();
+    return QString("UDP %1").arg(_targetHost.toString());
 }
 
 QString UDPClientLink::getDetail() const

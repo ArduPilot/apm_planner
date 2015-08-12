@@ -27,37 +27,52 @@ This file is part of the QGROUNDCONTROL project
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
  *
  */
-
-#include "QsLog.h"
-#include "UDPLink.h"
-#include "LinkManager.h"
-#include "QGC.h"
+#include <QtGlobal>
+#if QT_VERSION > 0x050401
+#define UDP_BROKEN_SIGNAL 1
+#else
+#define UDP_BROKEN_SIGNAL 0
+#endif
 
 #include <QTimer>
 #include <QList>
 #include <QMutexLocker>
 #include <iostream>
 #include <QHostInfo>
-//#include <netinet/in.h>
+
+#include "QsLog.h"
+#include "UDPLink.h"
+#include "LinkManager.h"
+#include "QGC.h"
+
 
 UDPLink::UDPLink(QHostAddress host, quint16 port) :
-    socket(NULL)
+    socket(NULL),
+    connectState(false),
+    _running(false)
 {
     this->host = host;
     this->port = port;
-    this->connectState = false;
     // Set unique ID and add link to the list of links
     this->id = getNextLinkId();
 	this->name = tr("UDP Link (port:%1)").arg(this->port);
 	emit nameChanged(this->name);
-    // LinkManager::instance()->add(this);
     QLOG_INFO() << "UDP Created " << name;
 }
 
 UDPLink::~UDPLink()
 {
+    // Disconnect link from configuration
     disconnect();
-	this->deleteLater();
+    // Tell the thread to exit
+    _running = false;
+    quit();
+    // Wait for it to exit
+    wait();
+    while(_outQueue.count() > 0) {
+        delete _outQueue.dequeue();
+    }
+    this->deleteLater();
 }
 
 /**
@@ -66,7 +81,39 @@ UDPLink::~UDPLink()
  **/
 void UDPLink::run()
 {
-	exec();
+    if(hardwareConnect()) {
+        if(UDP_BROKEN_SIGNAL) {
+            bool loop = false;
+            while(true) {
+                //-- Anything to read?
+                loop = socket->hasPendingDatagrams();
+                if(loop) {
+                    readBytes();
+                }
+                //-- Loop right away if busy
+                if((_dequeBytes() || loop) && _running)
+                    continue;
+                if(!_running)
+                    break;
+                //-- Settle down (it gets here if there is nothing to read or write)
+                this->msleep(50);
+            }
+        } else {
+            exec();
+        }
+    }
+    if (socket) {
+        socket->close();
+    }
+}
+
+void UDPLink::restartConnection()
+{
+    if(this->isConnected())
+    {
+        disconnect();
+        connect();
+    }
 }
 
 void UDPLink::setAddress(QHostAddress host)
@@ -176,6 +223,33 @@ void UDPLink::removeHost(const QString& hostname)
 
 void UDPLink::writeBytes(const char* data, qint64 size)
 {
+    if (!socket) {
+        return;
+    }
+    if(UDP_BROKEN_SIGNAL) {
+        QByteArray* qdata = new QByteArray(data, size);
+        QMutexLocker lock(&_mutex);
+        _outQueue.enqueue(qdata);
+    } else {
+        _sendBytes(data, size);
+    }
+}
+
+bool UDPLink::_dequeBytes()
+{
+    QMutexLocker lock(&_mutex);
+    if(_outQueue.count() > 0) {
+        QByteArray* qdata = _outQueue.dequeue();
+        lock.unlock();
+        _sendBytes(qdata->data(), qdata->size());
+        delete qdata;
+        lock.relock();
+    }
+    return (_outQueue.count() > 0);
+}
+
+void UDPLink::_sendBytes(const char* data, qint64 size)
+{
     // Broadcast to all connected systems
     for (int h = 0; h < hosts.size(); h++)
     {
@@ -258,6 +332,8 @@ void UDPLink::readBytes()
             int index = hosts.indexOf(sender);
             ports.replace(index, senderPort);
         }
+        if(UDP_BROKEN_SIGNAL && !_running)
+            break;
     }
 }
 
@@ -280,12 +356,13 @@ qint64 UDPLink::bytesAvailable()
 bool UDPLink::disconnect()
 {
     QLOG_INFO() << "UDP disconnect";
+    _running = false;
 	this->quit();
 	this->wait();
 
     if(socket)
 	{
-		delete socket;
+        socket->deleteLater();
 		socket = NULL;
 	}
 
@@ -294,7 +371,7 @@ bool UDPLink::disconnect()
     emit disconnected();
     emit connected(false);
     emit disconnected(this);
-    return !connectState;
+    return true;
 }
 
 /**
@@ -306,70 +383,49 @@ bool UDPLink::connect()
 {
     disconnect();
     QLOG_INFO() << "UDPLink::UDP connect " << host << ":" << port;
-	if(this->isRunning())
+    if(this->isRunning() || _running)
 	{
+        _running = false;
 		this->quit();
 		this->wait();
 	}
+    _running = true;
     bool connected = this->hardwareConnect();
-    start(LowPriority);
+    if (connected){
+        emit this->connected(true);
+        emit this->connected(this);
+        emit this->connected();
+    } else {
+        emit this->connected(false);
+        emit disconnected(this);
+        emit disconnected();
+    }
+    start(NormalPriority);
     return connected;
 }
 
 bool UDPLink::hardwareConnect(void)
 {
-	socket = new QUdpSocket();
-
-    //Check if we are using a multicast-address
-//    bool multicast = false;
-//    if (host.isInSubnet(QHostAddress("224.0.0.0"),4))
-//    {
-//        multicast = true;
-//        connectState = socket->bind(port, QUdpSocket::ShareAddress);
-//    }
-//    else
-//    {
-    connectState = socket->bind(host, port);
-
-    QLOG_ERROR() << "bind failed! " << host << ":" << port;// << " - " << errno << ": " << strerror(errno);
-
-//    }
-
-    //Provides Multicast functionality to UdpSocket
-    /* not working yet
-    if (multicast)
-    {
-        int sendingFd = socket->socketDescriptor();
-
-        if (sendingFd != -1)
-        {
-            // set up destination address
-            struct sockaddr_in sendAddr;
-            memset(&sendAddr,0,sizeof(sendAddr));
-            sendAddr.sin_family=AF_INET;
-            sendAddr.sin_addr.s_addr=inet_addr(HELLO_GROUP);
-            sendAddr.sin_port=htons(port);
-
-            // set TTL
-            unsigned int ttl = 1; // restricted to the same subnet
-            if (setsockopt(sendingFd, IPPROTO_IP, IP_MULTICAST_TTL, (unsigned int*)&ttl, sizeof(ttl) ) < 0)
-            {
-                std::cout << "TTL failed\n";
-            }
-        }
+    if (socket) {
+        delete socket;
+        socket = NULL;
     }
-    */
-
-    //QObject::connect(socket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
-    QObject::connect(socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
-
-    emit connected(connectState);
+    QHostAddress host = QHostAddress::AnyIPv4;
+    socket = new QUdpSocket();
+    socket->setProxy(QNetworkProxy::NoProxy);
+    connectState = socket->bind(host, port, QAbstractSocket::ReuseAddressHint);
     if (connectState) {
-        emit connected(this);
+        //-- Connect signal if this version of Qt is not broken
+        if(!UDP_BROKEN_SIGNAL) {
+            QObject::connect(socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
+        }
         emit connected();
+        emit connected(true);
+        emit connected(this);
     } else {
-        emit disconnected(this);
         emit disconnected();
+        emit connected(false);
+        emit communicationError("UDP Link Error", "Error binding UDP port");
     }
 	return connectState;
 }
@@ -397,7 +453,7 @@ QString UDPLink::getName() const
 
 QString UDPLink::getShortName() const
 {
-    return host.toString();
+    return QString("UDP Link");
 }
 
 QString UDPLink::getDetail() const
