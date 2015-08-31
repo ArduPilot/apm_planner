@@ -1296,6 +1296,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_radio_t radio;
             mavlink_msg_radio_decode(&message, &radio);
             emit radioMessageUpdate(this, radio);
+            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
             emit valueChanged(uasId, name.arg("Radio RSSI"), "", radio.rssi, time);
             emit valueChanged(uasId, name.arg("Radio REM RSSI"), "", radio.remrssi, time);
             emit valueChanged(uasId, name.arg("Radio noise"), "", radio.noise, time);
@@ -2638,6 +2639,10 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     default:
         QLOG_ERROR() << "INVALID DATA TYPE USED AS PARAMETER VALUE: " << rawValue.param_type;
     } //switch (value.param_type)
+
+    if(!paramRequestQueue.isEmpty()) {
+        requestNextParamFromQueue();
+    }
 }
 
 /**
@@ -2657,11 +2662,13 @@ void UAS::requestParameter(int component, int id)
     //QLOG_DEBUG() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM ID" << id;
 }
 
-/**
-* Request a parameter, use parameter name to request it.
-*/
-void UAS::requestParameter(int component, const QString& parameter)
-{
+void UAS::requestNextParamFromQueue() {
+    if(paramRequestQueue.isEmpty()) return;
+
+    QPair<int,QString> pr = paramRequestQueue.front();
+    int component = pr.first;
+    QString parameter = pr.second;
+
     // Request parameter, use parameter name to request it
     mavlink_message_t msg;
     mavlink_param_request_read_t read;
@@ -2681,6 +2688,24 @@ void UAS::requestParameter(int component, const QString& parameter)
     mavlink_msg_param_request_read_encode(systemId, componentId, &msg, &read);
     sendMessage(msg);
     QLOG_DEBUG() << __FILE__ << __LINE__ << "REQUESTING PARAM RETRANSMISSION FROM COMPONENT" << component << "FOR PARAM NAME" << parameter;
+
+    paramRequestQueue.pop_front();
+}
+
+/**
+* Request a parameter, use parameter name to request it.
+*/
+void UAS::requestParameter(int component, const QString& parameter)
+{
+    QLOG_DEBUG() << "Queuing param " << parameter;
+    QPair<int,QString> p = QPair<int,QString>(component, parameter);
+
+    paramRequestQueue.append(p);
+
+    if(paramRequestQueue.size() == 1) {
+       //requestNextParamFromQueue();
+       QTimer::singleShot(0, this, SLOT(requestNextParamFromQueue()));
+    }
 }
 
 /**

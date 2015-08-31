@@ -1,3 +1,52 @@
+
+Release Notes - APM Planner  2.0.18 - 2015-07-25
+
+51b6aa9:  configuration: Update to 2.0.18 release - Bill Bonney
+245fb82:  Graph View: Use int conversion for QString::number() - Bill Bonney
+70b9a58:  Graph View: Fix conversion issue - Bill Bonney
+f6823e2:  UDP Link: Improve naming - Bill Bonney
+2f30aa0:  Camera Setup: Add extra RC channel selectors to support up to 16 channels - Александр Фролов
+62cb360:  Map Widget: Update Google API versions - Bill Bonney
+1afd084:  APM Toolbar: Add Donate Button to Toolbar and Menu Item - Bill Bonney
+8809381:  Serial Ports: stop scanning when ports have been selected - Bill Bonney
+cdf3a7c:  3DR Radio Config: Stop scanning serial ports until view shown - Bill Bonney
+b996db6:  Full Parameter View: Fix locale to use ‘decimal’ only - Bill Bonney
+a6f3219:  Full Parameter View: Fix inconsistency when param update refreshed - Bill Bonney
+02c8069:  build: fixed radio uplaoder problem in Linux build - martinjuju
+fc9fca0:  Graph View: correct FMT header in plain-text export - Peter Barker
+e193313:  Range Finder: Add BBB-PRU support - mirkix
+54df6c6:  Radio Calibration: lower minimum PWM value - Lucas De Marchi
+7b34a00:  Firmware Upload: Add support for Gumstix AeroCore. - Andrew C. Smith
+0b76f70:  APM: Add Brake mode - Bill Bonney
+c3d06ab:  Comms UI: Remove automatic dismiss of TCP link - Bill Bonney
+1b22a3c:  Map Widget: Fixes #701 Add auto map caching option - Mark Sutherland
+14c0ff5:  Elevation Widget: added distance from previous WP. - Andre Kjellstrup
+0703c8d:  Extended Tuning: Fixes #755 WP NAV/LOITER SPEED swapped - Bill Bonney
+c59edad:  Map Widget: Add 3D+DGPS and 3D+RTK to Fix label - mirkix
+d7e38a9:  Build: update autoudpate object - Bill Bonney
+c0ee96c:  Main View: fixed #605 - Markus Reitboeck
+44ea50a:  README: Add note about libxcb crashing on 14.04LTS - Bill Bonney
+230b768:  RPM-packaged Yum repository configuration files - Александр Фролов
+d7af33d:  Repository base URL fixed - Александр Фролов
+54fd6cd:  Yum repository support - Александр Фролов
+
+Release Notes - APM Planner  2.0.18-rc2 - 2015-06-17
+
+65caf45:  configuration: Update to 2.0.18-rc2 release - Bill Bonney
+a1ed6d2:  Joystick Support: bugfix: moved init method back to run method to allow initializing a joystick during runtime - Markus Reitboeck
+6ff6926:  Joystick Widget: removed init() as it locks startup (requires fix) - Bill Bonney
+8ec23e8:  Joystick Widget: improvement: create joystick buttons dynamically as there are joysticks with more than 11 buttons - Markus Reitboeck
+cb87b43:  Joystick Widget: improvement: change button label color only if the button state changes - Markus Reitboeck
+2062769:  Joystick Widget: bugfix: There are 11 joystick button labels displayed - Markus Reitboeck
+d68d913:  Joystick Mapping: Fixes #718 Add 'save settings' feature - Markus Reitboeck
+a52fca0:  Settings Widget: added window title for file location dialog - mrpilot
+3d59a75:  Settings Widget: disable file locations text fields because user input in these fields is not applied - mrpilot
+16c408d:  Settings Widget: added support to change missions directory - mrpilot
+87d11d3:  General Settings: Fixes #730 default directory always created - mrpilot
+bca8b5c:  Extended Tuning: Fixes #733 Stab Roll/Pitch reversed - Bill Bonney
+d368575:  configuration: Update json version object to 2.0.18-rc1 - Bill Bonney
+0743f5f:  Release: Update 2.0.18-rc1 release notes - Bill Bonney
+
 Release Notes - APM Planner  2.0.18-rc1 - 2015-06-08
 
 e5405e1:  configuration: Update to 2.0.18-rc1 release - Bill Bonney
@@ -1059,5 +1108,6 @@ a3a7a94:  Change so a popup lets the user know when parameters have been loaded 
 4bd963f:  Addition of message in PFD showing PreArm failures when tryign to arm MAV - Michael Carpenter
 
 see http://github.com/diydrones/apm_planner for a full list of the commits before 2013-12-26
+
 
 

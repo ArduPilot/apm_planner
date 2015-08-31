@@ -82,6 +82,7 @@ CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 
     m_nameToBoxMap["ACCEL_Z_P"] = ui.accelZPSpinBox;
     m_nameToBoxMap["ACCEL_Z_I"] = ui.accelZISpinBox;
+    m_nameToBoxMap["ACCEL_Z_D"] = ui.accelZDSpinBox;
     m_nameToBoxMap["ACCEL_Z_IMAX"] = ui.accelZIMAXSpinBox;
     m_nameToBoxMap["ACCEL_Z_FILT_HZ"] = ui.accelZFiltHzSpinBox;
 
@@ -273,17 +274,21 @@ void CopterPidConfig::parameterChanged(int uas, int component, QString parameter
     if (m_nameToBoxMap.contains(parameterName))
     {
         m_nameToBoxMap[parameterName]->setValue(value.toDouble());
+        m_nameToBoxMap[parameterName]->setEnabled(true);
     }
     else if (parameterName == "TUNE_HIGH")
     {
         ui.ch6MaxSpinBox->setValue(value.toDouble() / 1000.0);
+        ui.ch6MaxSpinBox->setEnabled(true);
     }
     else if (parameterName == "TUNE_LOW")
     {
         ui.ch6MinSpinBox->setValue(value.toDouble() / 1000.0);
+        ui.ch6MinSpinBox->setEnabled(true);
     }
     else if (parameterName == "TUNE")
     {
+        ui.ch6OptComboBox->setEnabled(true);
         for (int i=0;i<m_ch6ValueToTextList.size();i++)
         {
             if (m_ch6ValueToTextList[i].first == value.toInt())
@@ -294,6 +299,7 @@ void CopterPidConfig::parameterChanged(int uas, int component, QString parameter
     }
     else if (parameterName == "CH7_OPT")
     {
+        ui.ch7OptComboBox->setEnabled(true);
         for (int i=0;i<m_ch78ValueToTextList.size();i++)
         {
             if (m_ch78ValueToTextList[i].first == value.toInt())
@@ -304,6 +310,7 @@ void CopterPidConfig::parameterChanged(int uas, int component, QString parameter
     }
     else if (parameterName == "CH8_OPT")
     {
+        ui.ch8OptComboBox->setEnabled(true);
         for (int i=0;i<m_ch78ValueToTextList.size();i++)
         {
             if (m_ch78ValueToTextList[i].first == value.toInt())

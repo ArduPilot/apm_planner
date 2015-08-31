@@ -18,7 +18,7 @@ public:
     // IP Links
     static int addUdpConnection(QHostAddress addr,int port);
     static int addUdpClientConnection(QHostAddress addr,int port);
-    static int addTcpConnection(QHostAddress addr,int port,bool asServer);
+    static int addTcpConnection(QHostAddress addr, QString hostName, int port, bool asServer);
 
 private:
     static void connectLinkSignals(LinkInterface *link, LinkManager *lmgr);

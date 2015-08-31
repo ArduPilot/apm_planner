@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>677</width>
-    <height>575</height>
+    <height>588</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -113,6 +113,9 @@
                <layout class="QVBoxLayout" name="verticalLayout_30">
                 <item>
                  <widget class="QDoubleSpinBox" name="posZPSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="decimals">
                    <number>4</number>
                   </property>
@@ -190,6 +193,9 @@
                <layout class="QVBoxLayout" name="verticalLayout_27">
                 <item>
                  <widget class="QDoubleSpinBox" name="velZPSpinBox">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="decimals">
                    <number>4</number>
                   </property>
@@ -237,6 +243,9 @@
        </item>
        <item row="4" column="0">
         <widget class="QPushButton" name="writePushButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="text">
           <string>Write Params</string>
          </property>
@@ -371,6 +380,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_10">
               <item>
                <widget class="QDoubleSpinBox" name="rateRollPSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -387,6 +399,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="rateRollISpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -403,6 +418,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="rateRollDSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -419,6 +437,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="rateRollIMAXSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="minimum">
                  <double>-10000.000000000000000</double>
                 </property>
@@ -429,6 +450,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="rateRollFiltHzSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="suffix">
                  <string> Hz</string>
                 </property>
@@ -553,6 +577,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_24">
               <item>
                <widget class="QDoubleSpinBox" name="rateYawPSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -569,6 +596,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="rateYawISpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -585,6 +615,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="rateYawDSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -601,6 +634,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="rateYawIMAXSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="minimum">
                  <double>-10000.000000000000000</double>
                 </property>
@@ -611,6 +647,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="rateYawFiltHzSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="suffix">
                  <string> Hz</string>
                 </property>
@@ -648,6 +687,9 @@
            </item>
            <item>
             <widget class="QComboBox" name="ch6OptComboBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -687,6 +729,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="ch6MinSpinBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="maximumSize">
               <size>
                <width>200</width>
@@ -726,6 +771,9 @@
            </item>
            <item>
             <widget class="QDoubleSpinBox" name="ch6MaxSpinBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="maximumSize">
               <size>
                <width>200</width>
@@ -762,6 +810,9 @@
            </item>
            <item>
             <widget class="QComboBox" name="ch7OptComboBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -801,6 +852,9 @@
            </item>
            <item>
             <widget class="QComboBox" name="ch8OptComboBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -879,6 +933,13 @@
                 </property>
                </widget>
               </item>
+              <item alignment="Qt::AlignRight">
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>D</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QLabel" name="label_45">
                 <property name="text">
@@ -905,6 +966,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_33">
               <item>
                <widget class="QDoubleSpinBox" name="accelZPSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -921,6 +985,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="accelZISpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -936,7 +1003,20 @@
                </widget>
               </item>
               <item>
+               <widget class="QDoubleSpinBox" name="accelZDSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="decimals">
+                 <number>4</number>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QDoubleSpinBox" name="accelZIMAXSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -950,6 +1030,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="accelZFiltHzSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="suffix">
                  <string> Hz</string>
                 </property>
@@ -1024,6 +1107,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
                <widget class="QDoubleSpinBox" name="stabilPitchPSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1084,6 +1170,9 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="posXYPSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="decimals">
              <number>4</number>
             </property>
@@ -1148,6 +1237,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <item>
                <widget class="QDoubleSpinBox" name="stabilYawPSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -1243,6 +1335,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_21">
               <item>
                <widget class="QDoubleSpinBox" name="velXYPSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -1259,6 +1354,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="velXYISpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -1275,6 +1373,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="velXYIMAXSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -1288,6 +1389,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="velXYFiltHzSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="suffix">
                  <string> Hz</string>
                 </property>
@@ -1402,6 +1506,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_12">
               <item>
                <widget class="QDoubleSpinBox" name="ratePitchPSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -1418,6 +1525,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="ratePitchISpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -1434,6 +1544,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="ratePitchDSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>4</number>
                 </property>
@@ -1450,6 +1563,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="ratePitchIMAXSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="minimum">
                  <double>-10000.000000000000000</double>
                 </property>
@@ -1460,6 +1576,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="ratePitchFiltHzSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="suffix">
                  <string> Hz</string>
                 </property>
@@ -1549,6 +1668,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_2">
               <item>
                <widget class="QDoubleSpinBox" name="stabilRollPSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -1663,6 +1785,9 @@
              <layout class="QVBoxLayout" name="verticalLayout_36">
               <item>
                <widget class="QDoubleSpinBox" name="wpNavSpeedSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>0</number>
                 </property>
@@ -1676,6 +1801,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="wpNavRadiusSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>0</number>
                 </property>
@@ -1689,6 +1817,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="wpNavSpeedUpSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>0</number>
                 </property>
@@ -1702,6 +1833,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="wpNavSpeedDownSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>0</number>
                 </property>
@@ -1715,6 +1849,9 @@
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="wpNavLoiterSpeedSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="decimals">
                  <number>0</number>
                 </property>
