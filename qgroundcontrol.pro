@@ -925,4 +925,7 @@ OTHER_FILES += \
 #target.path         += apmplanner2
 #INSTALLS            += sources target
 
+DISTFILES += \
+    qml/components/VibrationGauge.qml
+
 

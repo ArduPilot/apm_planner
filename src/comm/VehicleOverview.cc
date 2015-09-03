@@ -3,7 +3,9 @@
 #include "QGC.h"
 VehicleOverview::VehicleOverview(QObject *parent) : QObject(parent)
 {
-
+    m_vibrationX = 0;
+    m_vibrationY = 0;
+    m_vibrationZ = 0;
 }
 
 VehicleOverview::~VehicleOverview()
@@ -133,4 +135,8 @@ void VehicleOverview::parseVibration(LinkInterface *link, const mavlink_vibratio
     setVibrationX(vibration.vibration_x);
     setVibrationY(vibration.vibration_y);
     setVibrationZ(vibration.vibration_z);
+
+    setClipping0(vibration.clipping_0);
+    setClipping1(vibration.clipping_1);
+    setClipping2(vibration.clipping_2);
 }

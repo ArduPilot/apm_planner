@@ -11,10 +11,14 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//    (c) 2014 Author: Bill Bonney <billbonney@communistech.com>
+//    (c) 2015 Author: Bill Bonney <billbonney@communistech.com>
 //
 
-import QtQuick 2.0
+import QtQuick 2.2
+//import QtQuick.Controls 1.2
+//import QtQuick.Controls.Styles 1.2
+////import QtQuick.Extras 1.4
+
 import "./components"
 
 Rectangle {
@@ -23,9 +27,13 @@ Rectangle {
 
     function activeUasSet() {
         console.log("Vibration Monitor: Active UAS is now set");
-        vibrationXIndicator.value = Qt.binding(function() { return vehicleOverview.vibration_x})
-        vibrationYIndicator.value = Qt.binding(function() { return vehicleOverview.vibration.y})
-        vibrationZIndicator.value = Qt.binding(function() { return vehicleOverview.vibration.z})
+        gaugeX.value = Qt.binding(function() { return vehicleOverview.vibration_x})
+        gaugeY.value = Qt.binding(function() { return vehicleOverview.vibration_y})
+        gaugeZ.value = Qt.binding(function() { return vehicleOverview.vibration_z})
+
+        clip0.value = Qt.binding(function() { return vehicleOverview.clipping_0})
+        clip1.value = Qt.binding(function() { return vehicleOverview.clipping_1})
+        clip2.value = Qt.binding(function() { return vehicleOverview.clipping_2})
     }
 
     function activeUasUnset() {
@@ -33,31 +41,66 @@ Rectangle {
         //Code to make display show a lack of connection here.
     }
 
-    Column {
+    Row {
         id: col1
         anchors.centerIn: parent
         width: parent.width
         height: parent.height
+        spacing: 5
 
-        Text {
-            id:vibrationXIndicator
-            property double value: 0.0
-            text: qsTr(" Vib X ") + value
-            font.pixelSize: 12
+        VibrationGauge {
+            id: gaugeX
+            width: 40
+            height: 0.8*parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            label: "X"
         }
 
-        Text {
-            id: vibrationYIndicator
-            property double value: 0.0
-            text: qsTr(" Vib Y ") + value
-            font.pixelSize: 12
+        VibrationGauge {
+            id: gaugeY
+            width: 40
+            height: 0.8*parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            label: "Y"
         }
 
-        Text {
-            id: vibrationZIndicator
-            property double value: 0.0
-            text: qsTr(" Vib Z ") + value
-            font.pixelSize: 12
+        VibrationGauge {
+            id: gaugeZ
+            width: 40
+            height: 0.8*parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            label: "Z"
+        }
+
+
+        Column {
+            anchors.verticalCenter: parent.verticalCenter
+
+            Text {
+                text: "<b>Clipping</b>"
+            }
+
+            Text {
+                id: clip0
+                property double value: 0.0
+                text: qsTr(" Primary \t") + value
+                font.pixelSize: 12
+            }
+
+            Text {
+                id: clip1
+                property double value: 0.0
+                text: qsTr(" Secondary \t") + value
+                font.pixelSize: 12
+            }
+
+            Text {
+                id: clip2
+                property double value: 0.0
+                text: qsTr(" Tertiary \t") + value
+                font.pixelSize: 12
+            }
+
         }
     }
 
