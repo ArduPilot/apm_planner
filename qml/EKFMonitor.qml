@@ -41,7 +41,7 @@ Rectangle {
         height: parent.height
         spacing: 5
 
-        VibrationGauge {
+        BarGauge {
             id: velocity
             width: 40
             height: 0.8*parent.height
@@ -51,7 +51,7 @@ Rectangle {
             label: "X"
         }
 
-        VibrationGauge {
+        BarGauge {
             id: positionHoriz
             width: 40
             height: 0.8*parent.height
@@ -61,7 +61,7 @@ Rectangle {
             label: "Y"
         }
 
-        VibrationGauge {
+        BarGauge {
             id: positionVert
             width: 40
             height: 0.8*parent.height
@@ -71,7 +71,7 @@ Rectangle {
             label: "Z"
         }
 
-        VibrationGauge {
+        BarGauge {
             id: compass
             width: 40
             height: 0.8*parent.height
@@ -81,7 +81,7 @@ Rectangle {
             label: "Z"
         }
 
-        VibrationGauge {
+        BarGauge {
             id: terrainAlt
             width: 40
             height: 0.8*parent.height
