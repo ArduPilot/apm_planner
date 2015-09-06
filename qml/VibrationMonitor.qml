@@ -15,9 +15,6 @@
 //
 
 import QtQuick 2.2
-//import QtQuick.Controls 1.2
-//import QtQuick.Controls.Styles 1.2
-////import QtQuick.Extras 1.4
 
 import "./components"
 
@@ -42,36 +39,40 @@ Rectangle {
     }
 
     Row {
-        id: col1
         anchors.centerIn: parent
         width: parent.width
         height: parent.height
         spacing: 5
 
-        VibrationGauge {
+        BarGauge {
             id: gaugeX
             width: 40
-            height: 0.8*parent.height
+            height: 0.9*parent.height
             anchors.verticalCenter: parent.verticalCenter
+            minimum: 0
+            maximum: 100
             label: "X"
         }
 
-        VibrationGauge {
+        BarGauge {
             id: gaugeY
             width: 40
-            height: 0.8*parent.height
+            height: 0.9*parent.height
             anchors.verticalCenter: parent.verticalCenter
+            minimum: 0
+            maximum: 100
             label: "Y"
         }
 
-        VibrationGauge {
+        BarGauge {
             id: gaugeZ
             width: 40
-            height: 0.8*parent.height
+            height: 0.9*parent.height
             anchors.verticalCenter: parent.verticalCenter
+            minimum: 0
+            maximum: 100
             label: "Z"
         }
-
 
         Column {
             anchors.verticalCenter: parent.verticalCenter

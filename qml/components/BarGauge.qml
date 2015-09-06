@@ -6,6 +6,8 @@ Rectangle {
     id: root
     property real value: 0
     property color valueColor: "white"
+    property real minimum: 0.0
+    property real maximum: 1.0
 
     property string label: "value"
     property color labelColor: "black"
@@ -38,8 +40,8 @@ Rectangle {
         id: bar
         width: parent.width
         height: parent.height
-        minimumValue: 0
-        maximumValue: 100
+        minimumValue: root.minimum
+        maximumValue: root.maximum
         value: root.value
         orientation: Qt.Vertical
         style: ProgressBarStyle {

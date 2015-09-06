@@ -929,6 +929,6 @@ OTHER_FILES += \
 #INSTALLS            += sources target
 
 DISTFILES += \
-    qml/components/VibrationGauge.qml
+    qml/components/BarGauge.qml
 
 
