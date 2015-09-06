@@ -656,7 +656,8 @@ HEADERS += \
     src/ui/configuration/RadioFlashWizard.h \
     src/ui/GraphTreeWidgetItem.h \
     src/comm/LinkManagerFactory.h \
-    src/ui/VibrationMonitor.h
+    src/ui/VibrationMonitor.h \
+    src/ui/EKFMonitor.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -879,7 +880,8 @@ SOURCES += src/main.cc \
     src/ui/configuration/RadioFlashWizard.cpp \
     src/ui/GraphTreeWidgetItem.cc \
     src/comm/LinkManagerFactory.cpp \
-    src/ui/VibrationMonitor.cpp
+    src/ui/VibrationMonitor.cpp \
+    src/ui/EKFMonitor.cpp
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
@@ -911,7 +913,8 @@ OTHER_FILES += \
     qml/resources/apmplanner/toolbar/donate.png
 
 OTHER_FILES += \
-    qml/VibrationMonitor.qml
+    qml/VibrationMonitor.qml \
+    qml/EKFMonitor.qml
 
 # Command Line Tools
 OTHER_FILES += \
