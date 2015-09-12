@@ -3,7 +3,9 @@
 #include "QGC.h"
 VehicleOverview::VehicleOverview(QObject *parent) : QObject(parent)
 {
-
+    m_vibrationX = 0;
+    m_vibrationY = 0;
+    m_vibrationZ = 0;
 }
 
 VehicleOverview::~VehicleOverview()
@@ -69,11 +71,12 @@ void VehicleOverview::parseHeartbeat(LinkInterface* link,const mavlink_message_t
     }
 
 }
-void VehicleOverview::parseBattery(LinkInterface *link, const mavlink_message_t &message, const mavlink_battery_status_t &state)
+void VehicleOverview::parseBattery(LinkInterface *link, const mavlink_battery_status_t &state)
 {
-
+    Q_UNUSED(state);
 }
-void VehicleOverview::parseSysStatus(LinkInterface *link, const mavlink_message_t &message, const mavlink_sys_status_t &state)
+
+void VehicleOverview::parseSysStatus(LinkInterface *link, const mavlink_sys_status_t &state)
 {
     this->setOnboardControlSensorsEnabled(state.onboard_control_sensors_enabled);
     this->setOnboardControlSensorsHealth(state.onboard_control_sensors_health);
@@ -105,17 +108,35 @@ void VehicleOverview::messageReceived(LinkInterface* link,mavlink_message_t mess
         {
             mavlink_battery_status_t state;
             mavlink_msg_battery_status_decode(&message,&state);
-            parseBattery(link,message,state);
+            parseBattery(link,state);
             break;
         }
         case MAVLINK_MSG_ID_SYS_STATUS:
         {
             mavlink_sys_status_t state;
             mavlink_msg_sys_status_decode(&message,&state);
-            parseSysStatus(link,message,state);
+            parseSysStatus(link,state);
+            break;
+        }
+        case MAVLINK_MSG_ID_VIBRATION:
+        {
+            mavlink_vibration_t vibration;
+            mavlink_msg_vibration_decode(&message, &vibration);
+            parseVibration(link,vibration);
             break;
         }
 
-
     }
+}
+
+void VehicleOverview::parseVibration(LinkInterface *link, const mavlink_vibration_t &vibration)
+{
+    Q_UNUSED(link);
+    setVibrationX(vibration.vibration_x);
+    setVibrationY(vibration.vibration_y);
+    setVibrationZ(vibration.vibration_z);
+
+    setClipping0(vibration.clipping_0);
+    setClipping1(vibration.clipping_1);
+    setClipping2(vibration.clipping_2);
 }

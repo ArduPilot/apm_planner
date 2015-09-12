@@ -68,6 +68,16 @@ class VehicleOverview : public QObject
 
     //User generated
     Q_PROPERTY(bool armed_state READ getArmedState WRITE setArmedState NOTIFY armedStateChanged)
+
+    // Vibration Messages
+    Q_PROPERTY(double vibration_x READ getVibrationX NOTIFY vibrationXChanged)
+    Q_PROPERTY(double vibration_y READ getVibrationY NOTIFY vibrationYChanged)
+    Q_PROPERTY(double vibration_z READ getVibrationZ NOTIFY vibrationZChanged)
+
+    Q_PROPERTY(double clipping_0 READ getClipping0 NOTIFY clipping0Changed)
+    Q_PROPERTY(double clipping_1 READ getClipping1 NOTIFY clipping1Changed)
+    Q_PROPERTY(double clipping_2 READ getClipping2 NOTIFY clipping2Changed)
+
 public:
     //Heartbeat
     unsigned int getCustomMode() { return m_customMode; }
@@ -177,6 +187,20 @@ public:
     bool getArmedState() { return m_armedState; }
     void setArmedState(bool armedState) { if (m_armedState != armedState) { m_armedState = armedState; emit armedStateChanged(armedState); }}
 
+    // Vibration
+    double getVibrationX() { return m_vibrationX; }
+    double getVibrationY() { return m_vibrationY; }
+    double getVibrationZ() { return m_vibrationZ; }
+    void setVibrationX(double newValue) { if (m_vibrationX != newValue) { m_vibrationX = newValue; emit vibrationXChanged(m_vibrationX); }}
+    void setVibrationY(double newValue) { if (m_vibrationY != newValue) { m_vibrationY = newValue; emit vibrationYChanged(m_vibrationY); }}
+    void setVibrationZ(double newValue) { if (m_vibrationZ != newValue) { m_vibrationZ = newValue; emit vibrationZChanged(m_vibrationZ); }}
+
+    double getClipping0() { return m_clipping[0]; }
+    double getClipping1() { return m_clipping[1]; }
+    double getClipping2() { return m_clipping[2]; }
+    void setClipping0(double newValue) { if (m_clipping[0] != newValue) { m_clipping[0] = newValue; emit clipping0Changed(m_clipping[0]); }}
+    void setClipping1(double newValue) { if (m_clipping[1] != newValue) { m_clipping[1] = newValue; emit clipping1Changed(m_clipping[1]); }}
+    void setClipping2(double newValue) { if (m_clipping[2] != newValue) { m_clipping[2] = newValue; emit clipping2Changed(m_clipping[2]); }}
 
 private:
     //Heartbeat
@@ -239,6 +263,14 @@ private:
 
     //User Generated
     bool m_armedState;
+
+    // Vibration
+    double m_vibrationX;
+    double m_vibrationY;
+    double m_vibrationZ;
+
+    int m_clipping[3];
+
 public:
     explicit VehicleOverview(QObject *parent = 0);
     ~VehicleOverview();
@@ -248,8 +280,9 @@ private:
     unsigned int m_uasId;
     unsigned int m_mavType;
     void parseHeartbeat(LinkInterface *link, const mavlink_message_t &message, const mavlink_heartbeat_t &state);
-    void parseBattery(LinkInterface *link, const mavlink_message_t &message, const mavlink_battery_status_t &state);
-    void parseSysStatus(LinkInterface *link, const mavlink_message_t &message, const mavlink_sys_status_t &state);
+    void parseBattery(LinkInterface *link, const mavlink_battery_status_t &state);
+    void parseSysStatus(LinkInterface *link, const mavlink_sys_status_t &state);
+    void parseVibration(LinkInterface *link, const mavlink_vibration_t &vibration);
 
 signals:
     //Heartbeat
@@ -312,6 +345,15 @@ signals:
 
     //User Generated
     void armedStateChanged(bool);
+
+    // Vibration
+    void vibrationXChanged(double);
+    void vibrationYChanged(double);
+    void vibrationZChanged(double);
+
+    void clipping0Changed(double);
+    void clipping1Changed(double);
+    void clipping2Changed(double);
 
     void valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec);
 public slots:
