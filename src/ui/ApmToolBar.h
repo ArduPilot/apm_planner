@@ -106,6 +106,7 @@ private:
     QTimer m_heartbeatTimer;
     bool m_disableOverride;
     int m_currentLinkId;
+    bool m_donated;
 };
 
 #endif // APMTOOLBAR_H

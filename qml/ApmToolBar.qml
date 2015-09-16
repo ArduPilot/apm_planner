@@ -43,6 +43,8 @@ Rectangle {
     property bool stopAnimation: false
     property alias disableConnectWidget: connectionWidget.disable
 
+    property bool donated: false
+
     function setArmed(armedState) {
         if (armedState) {
             statusDisplayId.statusText = "ARMED"
@@ -67,7 +69,9 @@ Rectangle {
     function setAdvancedMode(state){
         // Enable ro disable buttons based on Adv mode.
         // ie. terminalView.visible = state
-        donateView.visible = !state;
+        if (donated){
+            donateView.visible = false;
+        }
     }
 
     function clearHighlightedButtons(){
@@ -190,6 +194,14 @@ Rectangle {
                 clearHighlightedButtons()
                 globalObj.triggerDonateView()
                 setSelected()
+                donateHideTimer.start()
+            }
+
+            Timer {
+                id: donateHideTimer
+                running: false
+                interval: 500
+                onTriggered: donateView.visible = false
             }
         }
 

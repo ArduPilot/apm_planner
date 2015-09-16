@@ -95,6 +95,8 @@ APMToolBar::APMToolBar(QWindow *parent):
     {
        QMetaObject::invokeMethod(rootObject(),"setAdvancedMode", Q_ARG(QVariant, settings.value("ADVANCED_MODE").toBool()));
     }
+    m_donated = settings.value("USER_DONATED", false ).toBool();
+
     connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(updateLinkDisplay(int)));
 
     connect(this, SIGNAL(triggerDonateView()), this, SLOT(selectDonateView()));
@@ -264,6 +266,7 @@ void APMToolBar::selectDonateView()
     QLOG_DEBUG() << "APMToolBar: selectDonateView";
     QString donateUrl = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UKV3U28LVDGN4";
     QDesktopServices::openUrl(QUrl(donateUrl));
+
 }
 
 void APMToolBar::selectPlotView()
