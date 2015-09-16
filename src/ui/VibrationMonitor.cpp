@@ -50,7 +50,9 @@ VibrationMonitor::VibrationMonitor(QWidget *parent) :
     format.setSamples(16);
     m_declarativeView->setFormat(format);
 
-    QLOG_DEBUG() << "QML Status:" << m_declarativeView->status();
+    QLOG_DEBUG() << "VIB QML Status:" << m_declarativeView->status();
+    QLOG_DEBUG() << "VIB QML Size h:" << m_declarativeView->initialSize().height()
+                 << " w:" << m_declarativeView->initialSize().width();
     m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
     QVBoxLayout* layout = new QVBoxLayout();
     QWidget *viewcontainer = QWidget::createWindowContainer(m_declarativeView);
@@ -76,7 +78,8 @@ void VibrationMonitor::setActiveUAS(UASInterface *uas)
     m_uasInterface = uas;
 
     if (m_uasInterface) {
-        connect(uas,SIGNAL(),this,SLOT(uasTextMessage(int,int,int,QString)));
+        connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
+                this,SLOT(uasTextMessage(int,int,int,QString)));
 
         VehicleOverview* vehicleOverview = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
         if (vehicleOverview) {
