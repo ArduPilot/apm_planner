@@ -35,12 +35,9 @@ Rectangle {
         console.log("EKF Monitor: Active UAS is now unset");
     }
 
-    Column {
-        id: column1
-        width: parent.width
-        height: parent.height
-        spacing: 5
-        anchors.centerIn: parent
+    property color normalColor: "#32af4f"
+    property color warnColor: "orange"
+    property color failColor: "red"
 
         Row {
             id: row1
@@ -48,17 +45,11 @@ Rectangle {
             anchors.topMargin: 10
             anchors.bottomMargin: 10
             anchors.leftMargin: 10
-            anchors.fill: parent
+            anchors.top: parent.top
+            anchors.left: parent.left
             anchors.right: parent.right
+            anchors.bottom: key.top
             spacing: 5
-
-            Text {
-                id: text1
-                text: qsTr("EKF Status")
-                anchors.horizontalCenter: root.horizontalCenter
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: 12
-            }
 
             BarGauge {
                 id: ekfVelocity
@@ -111,6 +102,30 @@ Rectangle {
             }
         }
 
-    }
+        Rectangle {
+            id: key
+            width: parent.width
+            height: 45
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            Column {
+                anchors.margins: 5
+                anchors.left: parent.left
+                Text {
+                    color: normalColor
+                    text: "Green = GOOD"
+                }
+                Text {
+                    color: warnColor
+                    text: "Oange = WARN"
+                }
+                Text {
+                    color: failColor
+                    text: "Red = FAIL"
+                }
+            }
+        }
 }
 
