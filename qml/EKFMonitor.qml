@@ -24,105 +24,93 @@ Rectangle {
 
     function activeUasSet() {
         console.log("EKF Monitor: Active UAS is now set");
-        velocity.value = Qt.binding(function() { return vehicleOverview.velocity_variance})
-        positionHoriz.value = Qt .binding(function() { return vehicleOverview.pos_horiz_variance})
-        positionVert.value = Qt.binding(function() { return vehicleOverview.pos_vert_variance})
-        compass.value = Qt.binding(function() { return vehicleOverview.compass_variance})
-        terrainAlt.value = Qt.binding(function() { return vehicleOverview.terrain_alt_variance})
+        ekfVelocity.value = Qt.binding(function() { return vehicleOverview.ekf_velocity_variance})
+        ekfPositionHoriz.value = Qt .binding(function() { return vehicleOverview.ekf_pos_horiz_variance})
+        ekfPositionVert.value = Qt.binding(function() { return vehicleOverview.ekf_pos_vert_variance})
+        ekfCompass.value = Qt.binding(function() { return vehicleOverview.ekf_compass_variance})
+        ekfTerrainAlt.value = Qt.binding(function() { return vehicleOverview.ekf_terrain_alt_variance})
     }
 
     function activeUasUnset() {
         console.log("EKF Monitor: Active UAS is now unset");
     }
 
-    Row {
-        anchors.centerIn: parent
+    Column {
+        id: column1
         width: parent.width
         height: parent.height
         spacing: 5
+        anchors.centerIn: parent
 
-        BarGauge {
-            id: velocity
-            width: 40
-            height: 0.8*parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            warnValue: 0.5
-            failValue: 0.8
-            label: "X"
-        }
-
-        BarGauge {
-            id: positionHoriz
-            width: 40
-            height: 0.8*parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            warnValue: 0.5
-            failValue: 0.8
-            label: "Y"
-        }
-
-        BarGauge {
-            id: positionVert
-            width: 40
-            height: 0.8*parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            warnValue: 0.5
-            failValue: 0.8
-            label: "Z"
-        }
-
-        BarGauge {
-            id: compass
-            width: 40
-            height: 0.8*parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            warnValue: 0.5
-            failValue: 0.8
-            label: "Z"
-        }
-
-        BarGauge {
-            id: terrainAlt
-            width: 40
-            height: 0.8*parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            warnValue: 0.5
-            failValue: 0.8
-            label: "Z"
-        }
-
-
-        Column {
-            anchors.verticalCenter: parent.verticalCenter
+        Row {
+            id: row1
+            anchors.rightMargin: 10
+            anchors.topMargin: 10
+            anchors.bottomMargin: 10
+            anchors.leftMargin: 10
+            anchors.fill: parent
+            anchors.right: parent.right
+            spacing: 5
 
             Text {
-                text: "<b>Flags</b>"
+                id: text1
+                text: qsTr("EKF Status")
+                anchors.horizontalCenter: root.horizontalCenter
+                horizontalAlignment: Text.AlignLeft
+                font.pixelSize: 12
             }
 
-//            Text {
-//                id: clip0
-//                property double value: 0.0
-//                text: qsTr(" Primary \t") + value
-//                font.pixelSize: 12
-//            }
+            BarGauge {
+                id: ekfVelocity
+                width: 40
+                height: parent.height
+                anchors.verticalCenter: parent.verticalCenter
+                warnValue: 0.5
+                failValue: 0.8
+                label: "Vel"
+            }
 
-//            Text {
-//                id: clip1
-//                property double value: 0.0
-//                text: qsTr(" Secondary \t") + value
-//                font.pixelSize: 12
-//            }
+            BarGauge {
+                id: ekfPositionHoriz
+                width: 40
+                height: parent.height
+                anchors.verticalCenter: parent.verticalCenter
+                warnValue: 0.5
+                failValue: 0.8
+                label: "Pos H"
+            }
 
-//            Text {
-//                id: clip2
-//                property double value: 0.0
-//                text: qsTr(" Tertiary \t") + value
-//                font.pixelSize: 12
-//            }
+            BarGauge {
+                id: ekfPositionVert
+                width: 40
+                height: parent.height
+                anchors.verticalCenter: parent.verticalCenter
+                warnValue: 0.5
+                failValue: 0.8
+                label: "Pos V"
+            }
 
+            BarGauge {
+                id: ekfCompass
+                width: 40
+                height: parent.height
+                anchors.verticalCenter: parent.verticalCenter
+                warnValue: 0.5
+                failValue: 0.8
+                label: "Mag"
+            }
+
+            BarGauge {
+                id: ekfTerrainAlt
+                width: 40
+                height: parent.height
+                anchors.verticalCenter: parent.verticalCenter
+                warnValue: 0.5
+                failValue: 0.8
+                label: "Terrain"
+            }
         }
+
     }
-
-
 }
 

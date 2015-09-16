@@ -26,15 +26,12 @@ Rectangle {
             actualColor = failColor
             return;
         }
-
         if (value > warnValue*bar.maximumValue ) {
             actualColor = warnColor;
             return;
         }
-
         actualColor = normalColor
-
-        }
+    }
 
     ProgressBar {
         id: bar
@@ -51,7 +48,7 @@ Rectangle {
                 border.color: "gray"
                 border.width: 1
                 implicitWidth: bar.width
-                implicitHeight: 0.8*bar.height
+                implicitHeight: bar.height
             }
             progress: Rectangle {
                 id: barProgressStyle

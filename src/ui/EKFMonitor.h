@@ -26,7 +26,7 @@ This file is part of the APM_PLANNER project
 #include <QWidget>
 #include <QQuickView>
 
-class VibrationMonitor : public QWidget
+class EKFMonitor : public QWidget
 {
     Q_OBJECT
 public:
