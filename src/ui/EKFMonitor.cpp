@@ -20,7 +20,7 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 #include "QsLog.h"
-#include "VibrationMonitor.h"
+#include "EKFMonitor.h"
 
 #include "configuration.h"
 #include "MainWindow.h"
@@ -30,16 +30,16 @@ This file is part of the APM_PLANNER project
 #include <QQuickItem>
 #include <QQmlEngine>
 
-VibrationMonitor::VibrationMonitor(QWidget *parent) :
+EKFMonitor::EKFMonitor(QWidget *parent) :
     QWidget(parent),
     m_declarativeView(NULL),
     m_uasInterface(NULL)
 {
-    QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/VibrationMonitor.qml");
+    QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/EKFMonitor.qml");
     QLOG_DEBUG() << url;
-    if (!QFile::exists(QGC::shareDirectory() + "/qml/VibrationMonitor.qml"))
+    if (!QFile::exists(QGC::shareDirectory() + "/qml/EKFMonitor.qml"))
     {
-        QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/VibrationMonitor.qml" + " not found. Please reinstall the application and try again");
+        QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/EKFMonitor.qml" + " not found. Please reinstall the application and try again");
         exit(-1);
     }
     m_declarativeView = new QQuickView();
@@ -50,9 +50,7 @@ VibrationMonitor::VibrationMonitor(QWidget *parent) :
     format.setSamples(16);
     m_declarativeView->setFormat(format);
 
-    QLOG_DEBUG() << "VIB QML Status:" << m_declarativeView->status();
-    QLOG_DEBUG() << "VIB QML Size h:" << m_declarativeView->initialSize().height()
-                 << " w:" << m_declarativeView->initialSize().width();
+    QLOG_DEBUG() << "QML Status:" << m_declarativeView->status();
     m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
     QVBoxLayout* layout = new QVBoxLayout();
     QWidget *viewcontainer = QWidget::createWindowContainer(m_declarativeView);
@@ -68,24 +66,23 @@ VibrationMonitor::VibrationMonitor(QWidget *parent) :
 
 }
 
-VibrationMonitor::~VibrationMonitor()
+EKFMonitor::~EKFMonitor()
 {
     delete m_declarativeView;
 }
 
-void VibrationMonitor::setActiveUAS(UASInterface *uas)
+void EKFMonitor::setActiveUAS(UASInterface *uas)
 {
     m_uasInterface = uas;
 
     if (m_uasInterface) {
-        connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
-                this,SLOT(uasTextMessage(int,int,int,QString)));
+        connect(uas,SIGNAL(),this,SLOT(uasTextMessage(int,int,int,QString)));
 
         VehicleOverview* vehicleOverview = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
         if (vehicleOverview) {
             m_declarativeView->rootContext()->setContextProperty("vehicleOverview", vehicleOverview);
         } else {
-            QLOG_ERROR() << "VibrationMonitor::setActiveUAS() Invalid vehicleOverview!";
+            QLOG_ERROR() << "EKFMonitor::setActiveUAS() Invalid vehicleOverview!";
         }
 
         QMetaObject::invokeMethod(m_declarativeView->rootObject(),"activeUasSet");

@@ -15,9 +15,6 @@
 //
 
 import QtQuick 2.2
-//import QtQuick.Controls 1.2
-//import QtQuick.Controls.Styles 1.2
-////import QtQuick.Extras 1.4
 
 import "./components"
 
@@ -41,66 +38,98 @@ Rectangle {
         //Code to make display show a lack of connection here.
     }
 
+    property color normalColor: "#32af4f"
+    property color warnColor: "orange"
+    property color failColor: "red"
+
     Row {
-        id: col1
-        anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
+        anchors.rightMargin: 10
+        anchors.leftMargin: 10
+        anchors.bottomMargin: 10
+        anchors.topMargin: 10
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.fill: parent
         spacing: 5
 
-        VibrationGauge {
+        BarGauge {
             id: gaugeX
             width: 40
-            height: 0.8*parent.height
+            height: parent.height
             anchors.verticalCenter: parent.verticalCenter
+            minimum: 0
+            maximum: 100
             label: "X"
         }
 
-        VibrationGauge {
+        BarGauge {
             id: gaugeY
             width: 40
-            height: 0.8*parent.height
+            height: parent.height
             anchors.verticalCenter: parent.verticalCenter
+            minimum: 0
+            maximum: 100
             label: "Y"
         }
 
-        VibrationGauge {
+        BarGauge {
             id: gaugeZ
             width: 40
-            height: 0.8*parent.height
+            height: parent.height
             anchors.verticalCenter: parent.verticalCenter
+            minimum: 0
+            maximum: 100
             label: "Z"
         }
 
-
         Column {
+            width: 88
+            anchors.margins: 10
             anchors.verticalCenter: parent.verticalCenter
 
             Text {
+                width: 50
                 text: "<b>Clipping</b>"
             }
 
             Text {
                 id: clip0
                 property double value: 0.0
-                text: qsTr(" Primary \t") + value
+                text: qsTr("Primary \t") + value
                 font.pixelSize: 12
             }
 
             Text {
                 id: clip1
                 property double value: 0.0
-                text: qsTr(" Secondary \t") + value
+                text: qsTr("Secondary \t") + value
                 font.pixelSize: 12
             }
 
             Text {
                 id: clip2
                 property double value: 0.0
-                text: qsTr(" Tertiary \t") + value
+                text: qsTr("Tertiary \t") + value
                 font.pixelSize: 12
             }
 
+            Text {
+                id: spacer
+                text: qsTr("\n")
+                font.pixelSize: 12
+            }
+
+            Text {
+                color: normalColor
+                text: "Green = GOOD"
+            }
+            Text {
+                color: warnColor
+                text: "Oange = WARN"
+            }
+            Text {
+                color: failColor
+                text: "Red = FAIL"
+            }
         }
     }
 

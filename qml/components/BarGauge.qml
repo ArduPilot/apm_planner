@@ -6,6 +6,8 @@ Rectangle {
     id: root
     property real value: 0
     property color valueColor: "white"
+    property real minimum: 0.0
+    property real maximum: 1.0
 
     property string label: "value"
     property color labelColor: "black"
@@ -24,22 +26,19 @@ Rectangle {
             actualColor = failColor
             return;
         }
-
         if (value > warnValue*bar.maximumValue ) {
             actualColor = warnColor;
             return;
         }
-
         actualColor = normalColor
-
-        }
+    }
 
     ProgressBar {
         id: bar
         width: parent.width
         height: parent.height
-        minimumValue: 0
-        maximumValue: 100
+        minimumValue: root.minimum
+        maximumValue: root.maximum
         value: root.value
         orientation: Qt.Vertical
         style: ProgressBarStyle {
@@ -49,7 +48,7 @@ Rectangle {
                 border.color: "gray"
                 border.width: 1
                 implicitWidth: bar.width
-                implicitHeight: 0.8*bar.height
+                implicitHeight: bar.height
             }
             progress: Rectangle {
                 id: barProgressStyle
