@@ -18,7 +18,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QGroundControl.QgcQtGStreamer 1.0
 
-Item {
+Rectangle {
     id: root
     property real rollAngle : 0
     property real pitchAngle: 0
@@ -30,6 +30,8 @@ Item {
     height: parent.height
     width: parent.width
     anchors.fill: parent
+
+    color: "grey"
 
     Item { // Artificial Horizon
         id: artificialHorizonBackground
