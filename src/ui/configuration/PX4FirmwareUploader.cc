@@ -7,9 +7,10 @@
 #include <QJsonObject>
 #include <QProcess>
 #include <QApplication>
-#ifndef Q_OS_WIN
+#if defined(OPENSSL)
 #include <openssl/ssl.h>
 #endif
+
 #include "QsLog.h"
 
 #define CERT_OF_A_FAILED "Certificate of Authenticity check failed! Please check with your autopilot hardware supplier for support."
@@ -626,7 +627,7 @@ bool PX4FirmwareUploader::verifyOtp()
 
 bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& signature, const QString& publicKey)
 {
-#ifndef Q_OS_WIN
+#if defined(OPENSSL)
     QByteArray bytes = QByteArray::fromBase64(publicKey.toUtf8());
 
     BIO *bi = BIO_new(BIO_s_mem());
