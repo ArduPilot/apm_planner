@@ -43,6 +43,7 @@ This file is part of the QGROUNDCONTROL project
 #include "mission/QGCMissionNavTakeoff.h"
 #include "mission/QGCMissionNavSweep.h"
 #include "mission/QGCMissionNavContinueChangeAlt.h"
+#include "mission/QGCMissionNavLoiterToAlt.h"
 // Condition Commands
 #include "mission/QGCMissionConditionDelay.h"
 #include "mission/QGCMissionConditionYaw.h"
@@ -107,6 +108,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
         m_ui->comboBox_action->addItem(tr("Land"),MAV_CMD_NAV_LAND);
         m_ui->comboBox_action->addItem(tr("Change Alt & cont."),MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT);
+        m_ui->comboBox_action->addItem(tr("Loiter to Alt."),MAV_CMD_NAV_LOITER_TO_ALT);
         //m_ui->comboBox_action->addItem(tr("NAV: Target"),MAV_CMD_NAV_TARGET);
 
         // IF Commands
@@ -291,6 +293,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
         break;
     case MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT:
         missionWidget = new QGCMissionNavContinueChangeAlt(this);
+        break;
+    case MAV_CMD_NAV_LOITER_TO_ALT:
+        missionWidget = new QGCMissionNavLoiterToAlt(this);
         break;
     case MAV_CMD_CONDITION_DELAY:
         missionWidget = new QGCMissionConditionDelay(this);

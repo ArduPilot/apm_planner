@@ -345,6 +345,39 @@ void WaypointViewOnlyView::updateValues()
         } //end Frame switch
         break;
     }
+    case MAV_CMD_NAV_LOITER_TO_ALT:
+    {
+        switch (wp->getFrame())
+        {
+        case MAV_FRAME_GLOBAL_RELATIVE_ALT:
+        case MAV_FRAME_GLOBAL:
+        {
+            if (wp->getParam1()>=0)
+            {
+                m_ui->displayBar->setText(QString("Go to <b>(</b>lat <b>%1<sup>o</sup></b>, lon <b>%2<sup>o</sup></b>, alt <b>%3)</b> and loiter there until altitude reached (clockwise); radius: %4").arg(wp->getX(),0, 'f', 7).arg(wp->getY(),0, 'f', 7).arg(wp->getZ(),0, 'f', 2).arg(wp->getParam2()));
+            }
+            else
+            {
+                m_ui->displayBar->setText(QString("Go to <b>(</b>lat <b>%1<sup>o</sup></b>, lon <b>%2<sup>o</sup></b>, alt <b>%3)</b> and loiter there loiter there until altitude reached  (counter-clockwise); radius: %4").arg(wp->getX(),0, 'f', 7).arg(wp->getY(),0, 'f', 7).arg(wp->getZ(),0, 'f', 2).arg(-wp->getParam2()));
+            }
+            break;
+        }
+        case MAV_FRAME_LOCAL_NED:
+        default:
+        {
+            if (wp->getParam1()>=0)
+            {
+                m_ui->displayBar->setText(QString("Go to <b>(%1, %2, %3)</b> and loiter there until altitude is reached (clockwise); radius: %4").arg(wp->getX(),0, 'f', 2).arg(wp->getY(),0, 'f', 2).arg(wp->getZ(),0, 'f',2).arg(wp->getParam2()));
+            }
+            else
+            {
+                m_ui->displayBar->setText(QString("Go to <b>(%1, %2, %3)</b> and loiter there until altitude is reached (counter-clockwise); radius: %4").arg(wp->getX(),0, 'f', 2).arg(wp->getY(),0, 'f', 2).arg(wp->getZ(),0, 'f', 2).arg(-wp->getParam2()));
+            }
+            break;
+        }
+        } //end Frame switch
+        break;
+    }
     case MAV_CMD_NAV_RETURN_TO_LAUNCH:
     {
         m_ui->displayBar->setText(QString("Return to launch location"));
