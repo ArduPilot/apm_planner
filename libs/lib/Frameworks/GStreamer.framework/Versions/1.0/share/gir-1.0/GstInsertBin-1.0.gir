@@ -1,0 +1,388 @@
+<?xml version="1.0"?>
+<!-- This file was automatically generated from C sources - DO NOT EDIT!
+To affect the contents of this file, edit the original C definitions,
+and/or use gtk-doc annotations.  -->
+<repository version="1.2"
+            xmlns="http://www.gtk.org/introspection/core/1.0"
+            xmlns:c="http://www.gtk.org/introspection/c/1.0"
+            xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <include name="Gst" version="1.0"/>
+  <include name="GstBase" version="1.0"/>
+  <package name="gstreamer-insertbin-1.0"/>
+  <c:include name="gst/insertbin/gstinsertbin.h"/>
+  <namespace name="GstInsertBin"
+             version="1.0"
+             shared-library="/Library/Frameworks/GStreamer.framework/Versions/1.0/lib/libgstinsertbin-1.0.0.dylib"
+             c:identifier-prefixes="Gst"
+             c:symbol-prefixes="gst">
+    <class name="InsertBin"
+           c:symbol-prefix="insert_bin"
+           c:type="GstInsertBin"
+           parent="Gst.Bin"
+           glib:type-name="GstInsertBin"
+           glib:get-type="gst_insert_bin_get_type"
+           glib:type-struct="InsertBinClass">
+      <doc xml:space="preserve">This element is a #GstBin that has a single source and sink pad. It allows
+the user (the application) to easily add and remove filter-like element
+(that has a single source and sink pad), to the pipeline while it is running.
+It features a fully asynchronous API inspired by GLib's GAsyncResult based
+APIs.
+
+Each operation (addition or removal) can take a callback, this callback
+is guaranteed to be called. Unlike GIO, there is no guarantee about where
+this callback will be called from, it could be called before the action
+returns or it could be called later from another thread. The signature of
+this callback GstInsertBinCallback().</doc>
+      <implements name="Gst.ChildProxy"/>
+      <constructor name="new" c:identifier="gst_insert_bin_new" version="1.2">
+        <doc xml:space="preserve">Creates a new #GstInsertBin</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The new #GstInsertBin</doc>
+          <type name="Gst.Element" c:type="GstElement*"/>
+        </return-value>
+        <parameters>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The name of the new #GstInsertBin element (or %NULL)</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="append" c:identifier="gst_insert_bin_append" version="1.2">
+        <doc xml:space="preserve">This action signal adds the filter like element after any other element
+in the bin.
+
+Same as the #GstInsertBin::append signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="InsertBin" c:type="GstInsertBin*"/>
+          </instance-parameter>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to add</doc>
+            <type name="Gst.Element" c:type="GstElement*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">the callback to call when the element has been
+ added or not, or %NULL</doc>
+            <type name="InsertBinCallback" c:type="GstInsertBinCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="insert_after"
+              c:identifier="gst_insert_bin_insert_after"
+              version="1.2">
+        <doc xml:space="preserve">This action signal adds the filter like element after the @sibling
+element in the bin.
+
+Same as the #GstInsertBin::insert-after signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="InsertBin" c:type="GstInsertBin*"/>
+          </instance-parameter>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to add</doc>
+            <type name="Gst.Element" c:type="GstElement*"/>
+          </parameter>
+          <parameter name="sibling" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to add @element after</doc>
+            <type name="Gst.Element" c:type="GstElement*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">the callback to call when the element has been
+ added or not, or %NULL</doc>
+            <type name="InsertBinCallback" c:type="GstInsertBinCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="insert_before"
+              c:identifier="gst_insert_bin_insert_before"
+              version="1.2">
+        <doc xml:space="preserve">This action signal adds the filter like element before the @sibling
+element in the bin.
+
+Same as the #GstInsertBin::insert-before signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="InsertBin" c:type="GstInsertBin*"/>
+          </instance-parameter>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to add</doc>
+            <type name="Gst.Element" c:type="GstElement*"/>
+          </parameter>
+          <parameter name="sibling" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to add @element before</doc>
+            <type name="Gst.Element" c:type="GstElement*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve">the callback to call when the element has been
+ added or not, or %NULL</doc>
+            <type name="InsertBinCallback" c:type="GstInsertBinCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepend"
+              c:identifier="gst_insert_bin_prepend"
+              version="1.2">
+        <doc xml:space="preserve">This action signal adds the filter like element before any other element
+in the bin.
+
+Same as the #GstInsertBin::prepend signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="InsertBin" c:type="GstInsertBin*"/>
+          </instance-parameter>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to add</doc>
+            <type name="Gst.Element" c:type="GstElement*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">the callback to call when the element has been
+ added or not, or %NULL</doc>
+            <type name="InsertBinCallback" c:type="GstInsertBinCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove" c:identifier="gst_insert_bin_remove" version="1.2">
+        <doc xml:space="preserve">This action signal removed the filter like element from the bin.
+
+Same as the #GstInsertBin::remove signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="InsertBin" c:type="GstInsertBin*"/>
+          </instance-parameter>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to remove</doc>
+            <type name="Gst.Element" c:type="GstElement*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">the callback to call when the element has been
+ removed or not, or %NULL</doc>
+            <type name="InsertBinCallback" c:type="GstInsertBinCallback"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent">
+        <type name="Gst.Bin" c:type="GstBin"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="InsertBinPrivate" c:type="GstInsertBinPrivate*"/>
+      </field>
+      <glib:signal name="append" when="last" action="1">
+        <doc xml:space="preserve">This action signal adds the filter like element after any other element
+in the bin.
+
+Same as gst_insert_bin_append()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="callback" transfer-ownership="none">
+            <doc xml:space="preserve">the callback to call when the element has been added or not, or
+ %NULL</doc>
+            <type name="Gst.Element"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="user_data2" transfer-ownership="none">
+            <doc xml:space="preserve">The user data of the signal (ignored)</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="insert-after" when="last" action="1">
+        <doc xml:space="preserve">This action signal adds the filter like element after the @sibling
+element in the bin.
+element in the bin.
+
+Same as gst_insert_bin_insert_after()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="sibling" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to add @element after</doc>
+            <type name="Gst.Element"/>
+          </parameter>
+          <parameter name="callback" transfer-ownership="none">
+            <doc xml:space="preserve">the callback to call when the element has been added or not, or
+ %NULL</doc>
+            <type name="Gst.Element"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="user_data2" transfer-ownership="none">
+            <doc xml:space="preserve">The user data of the signal (ignored)</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="insert-before" when="last" action="1">
+        <doc xml:space="preserve">This action signal adds the filter like element before the @sibling
+element in the bin.
+
+Same as gst_insert_bin_insert_before()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="sibling" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstElement to add @element before</doc>
+            <type name="Gst.Element"/>
+          </parameter>
+          <parameter name="callback" transfer-ownership="none">
+            <doc xml:space="preserve">the callback to call when the element has been added or not, or
+ %NULL</doc>
+            <type name="Gst.Element"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="user_data2" transfer-ownership="none">
+            <doc xml:space="preserve">The user data of the signal (ignored)</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="prepend" when="last" action="1">
+        <doc xml:space="preserve">This action signal adds the filter like element before any other element
+in the bin.
+
+Same as gst_insert_bin_prepend()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="callback" transfer-ownership="none">
+            <doc xml:space="preserve">the callback to call when the element has been added or not, or
+ %NULL</doc>
+            <type name="Gst.Element"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="user_data2" transfer-ownership="none">
+            <doc xml:space="preserve">The user data of the signal (ignored)</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="remove" when="last" action="1">
+        <doc xml:space="preserve">This action signal removed the filter like element from the bin.
+
+Same as gst_insert_bin_remove()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="callback" transfer-ownership="none">
+            <doc xml:space="preserve">the callback to call when the element has been removed or not,
+or %NULL</doc>
+            <type name="Gst.Element"/>
+          </parameter>
+          <parameter name="user_data" transfer-ownership="none">
+            <doc xml:space="preserve">The data to pass to the callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="user_data2" transfer-ownership="none">
+            <doc xml:space="preserve">The user data of the signal (ignored)</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+    </class>
+    <callback name="InsertBinCallback" c:type="GstInsertBinCallback">
+      <doc xml:space="preserve">This is the prototype of callbacks to be called when the operation completes.
+It could be called at any time, including as a re-entrant call while the
+operation is requested.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="insertbin" transfer-ownership="none">
+          <doc xml:space="preserve">A #GstInsertBin</doc>
+          <type name="InsertBin" c:type="GstInsertBin*"/>
+        </parameter>
+        <parameter name="element" transfer-ownership="none">
+          <doc xml:space="preserve">The #GstElement on which the operation was performed</doc>
+          <type name="Gst.Element" c:type="GstElement*"/>
+        </parameter>
+        <parameter name="success" transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the operation was successful</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" closure="3">
+          <doc xml:space="preserve">The user data passed</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <record name="InsertBinClass"
+            c:type="GstInsertBinClass"
+            glib:is-gtype-struct-for="InsertBin">
+      <doc xml:space="preserve">The object class structure.</doc>
+      <field name="parent_class">
+        <type name="Gst.BinClass" c:type="GstBinClass"/>
+      </field>
+    </record>
+    <record name="InsertBinPrivate" c:type="GstInsertBinPrivate" disguised="1">
+    </record>
+  </namespace>
+</repository>
