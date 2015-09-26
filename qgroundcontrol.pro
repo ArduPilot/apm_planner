@@ -246,18 +246,6 @@ ReleaseBuild {
 #        src/qgcunittest/FlightModeConfigTest.cc
 #}
 
-#
-# External library configuration
-#
-
-include(QGCExternalLibs.pri)
-
-#
-# Post link configuration
-#
-
-include(QGCSetup.pri)
-
 #-------------------------------------------------------------------------------------
 # Video Streaming
 
@@ -275,15 +263,19 @@ SOURCES += \
     src/VideoStreaming/VideoReceiver.cc \
     src/VideoStreaming/VideoSurface.cc \
 
-contains (DEFINES, DISABLE_VIDEOSTREAMING) {
-    message("Skipping support for video streaming (manual override from command line)")
-    DEFINES -= DISABLE_VIDEOSTREAMING
-# Otherwise the user can still disable this feature in the user_config.pri file.
-} else:exists(user_config.pri):infile(user_config.pri, DEFINES, DISABLE_VIDEOSTREAMING) {
-    message("Skipping support for video streaming (manual override from user_config.pri)")
-} else {
-    include(src/VideoStreaming/VideoStreaming.pri)
-}
+include(src/VideoStreaming/VideoStreaming.pri)
+
+#
+# External library configuration
+#
+
+include(QGCExternalLibs.pri)
+
+#
+# Post link configuration
+#
+
+include(QGCSetup.pri)
 
 #
 # Main QGroundControl portion of project file
