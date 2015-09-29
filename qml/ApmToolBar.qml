@@ -69,8 +69,14 @@ Rectangle {
     function setAdvancedMode(state){
         // Enable ro disable buttons based on Adv mode.
         // ie. terminalView.visible = state
-        if (donated){
+        var donate = Settings.value("USER_DONATED", "false");
+        console.log("Set Advanced Mode " + state + " USER_DONATED:" + donate);
+        if (donate === true){
+            console.log("Donate invisible");
             donateView.visible = false;
+        } else {
+            console.log("Donate visbile");
+            donateView.visible = true;
         }
     }
 
@@ -81,6 +87,7 @@ Rectangle {
         initialSetupView.setUnselected()
         configTuningView.setUnselected()
         plotView.setUnselected()
+        donateView.setUnselected()
     }
 
     width: toolbar.width
@@ -201,7 +208,13 @@ Rectangle {
                 id: donateHideTimer
                 running: false
                 interval: 500
-                onTriggered: donateView.visible = false
+                onTriggered: {
+                    var donated = Settings.value("USER_DONATED", "false");
+                    if (donated === 'true'){
+                        donateView.visible = false;
+                        console.log("remove donated button")
+                    }
+                }
             }
         }
 

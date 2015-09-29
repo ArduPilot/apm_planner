@@ -302,6 +302,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="hideDonateButtonCheckBox">
+           <property name="text">
+            <string>Hide Donate Button</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item row="4" column="0">

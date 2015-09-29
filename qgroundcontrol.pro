@@ -659,7 +659,8 @@ HEADERS += \
     src/ui/GraphTreeWidgetItem.h \
     src/comm/LinkManagerFactory.h \
     src/ui/VibrationMonitor.h \
-    src/ui/EKFMonitor.h
+    src/ui/EKFMonitor.h \
+    src/Settings.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -883,7 +884,8 @@ SOURCES += src/main.cc \
     src/ui/GraphTreeWidgetItem.cc \
     src/comm/LinkManagerFactory.cpp \
     src/ui/VibrationMonitor.cpp \
-    src/ui/EKFMonitor.cpp
+    src/ui/EKFMonitor.cpp \
+    src/Settings.cpp
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \

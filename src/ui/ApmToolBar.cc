@@ -38,6 +38,7 @@ This file is part of the APM_PLANNER project
 #include <QTimer>
 #include <QQuickItem>
 #include <QQmlEngine>
+
 APMToolBar::APMToolBar(QWindow *parent):
     QQuickView(parent), m_uas(NULL), m_disableOverride(false)
 {
@@ -52,6 +53,9 @@ APMToolBar::APMToolBar(QWindow *parent):
     }
     engine()->addImportPath("qml/"); //For local or win32 builds
     engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+    // access to ini file from QML
+    rootContext()->setContextProperty("Settings", &m_settings);
+
     setSource(url);
     QLOG_DEBUG() << "QML Status:" << status();
     if (status() == QQuickView::Error)
@@ -89,14 +93,14 @@ APMToolBar::APMToolBar(QWindow *parent):
     }
 
     connect(&m_heartbeatTimer, SIGNAL(timeout()), this, SLOT(stopHeartbeat()));
+
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     if (settings.contains("ADVANCED_MODE"))
     {
-       QMetaObject::invokeMethod(rootObject(),"setAdvancedMode", Q_ARG(QVariant, settings.value("ADVANCED_MODE").toBool()));
+        bool isAdvanced = settings.value("ADVANCED_MODE").toBool();
+        checkAdvancedMode(isAdvanced);
     }
-    m_donated = settings.value("USER_DONATED", false ).toBool();
-
     connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(updateLinkDisplay(int)));
 
     connect(this, SIGNAL(triggerDonateView()), this, SLOT(selectDonateView()));
