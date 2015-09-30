@@ -31,6 +31,7 @@ This file is part of the APM_PLANNER project
 #include <QFile>
 #include <QDebug>
 #include <QStringList>
+#include <QDataStream>
 #include <QDateTime>
 #include <QSqlDatabase>
 #include <QSqlRecord>
