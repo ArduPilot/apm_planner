@@ -531,7 +531,7 @@ void ArduPilotMegaMAV::textMessageReceived(int /*uasid*/, int /*componentid*/, i
         QString audioString = "Pre-arm check:" + text.remove("PreArm:");
         GAudioOutput::instance()->say(audioString, severity);
     } else if (text.startsWith("Arm:")){
-        QString audioString = "Please press and hold safety switch";
+        QString audioString = "Arm check:" + text.remove("Arm:");
         GAudioOutput::instance()->say(audioString, severity);
     }
 }
