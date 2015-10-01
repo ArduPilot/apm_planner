@@ -240,6 +240,9 @@ void ApmFirmwareConfig::showEvent(QShowEvent *)
 
 void ApmFirmwareConfig::hideEvent(QHideEvent *)
 {
+    if(m_timer.isSingleShot())
+        return;
+
     // Stop Port scanning
     m_timer.stop();
     if(ui.stackedWidget->currentIndex() == 0)
