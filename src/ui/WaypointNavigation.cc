@@ -44,6 +44,7 @@ WaypointNavigation::path(QList<Waypoint*>& waypoints,
     wayPointsWithPath << MAV_CMD_NAV_WAYPOINT // Here corresponding Waypoints can be added or removed.
                       << MAV_CMD_NAV_LOITER_UNLIM
                       << MAV_CMD_NAV_LOITER_TURNS
+                      << MAV_CMD_NAV_LOITER_TO_ALT
                       << MAV_CMD_NAV_LOITER_TIME
                       << MAV_CMD_NAV_LAND
                       << MAV_CMD_NAV_TAKEOFF;

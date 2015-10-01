@@ -361,6 +361,7 @@ FORMS += \
     src/ui/mission/QGCMissionNavLoiterUnlim.ui \
     src/ui/mission/QGCMissionNavLoiterTurns.ui \
     src/ui/mission/QGCMissionNavLoiterTime.ui \
+    src/ui/mission/QGCMissionNavLoiterToAlt.ui \
     src/ui/mission/QGCMissionNavReturnToLaunch.ui \
     src/ui/mission/QGCMissionNavLand.ui \
     src/ui/mission/QGCMissionNavTakeoff.ui \
@@ -545,6 +546,7 @@ HEADERS += \
     src/ui/mission/QGCMissionNavLoiterUnlim.h \
     src/ui/mission/QGCMissionNavLoiterTurns.h \
     src/ui/mission/QGCMissionNavLoiterTime.h \
+    src/ui/mission/QGCMissionNavLoiterToAlt.h \
     src/ui/mission/QGCMissionNavReturnToLaunch.h \
     src/ui/mission/QGCMissionNavLand.h \
     src/ui/mission/QGCMissionNavTakeoff.h \
@@ -771,6 +773,7 @@ SOURCES += src/main.cc \
     src/ui/mission/QGCMissionNavLoiterUnlim.cc \
     src/ui/mission/QGCMissionNavLoiterTurns.cc \
     src/ui/mission/QGCMissionNavLoiterTime.cc \
+    src/ui/mission/QGCMissionNavLoiterToAlt.cc \
     src/ui/mission/QGCMissionNavReturnToLaunch.cc \
     src/ui/mission/QGCMissionNavLand.cc \
     src/ui/mission/QGCMissionNavTakeoff.cc \
