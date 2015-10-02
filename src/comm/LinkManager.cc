@@ -463,9 +463,10 @@ UASInterface* LinkManager::getUas(int id)
 QList<int> LinkManager::getLinks() const
 {
     QList<int> links;
-    for (int i=0;i<m_connectionMap.keys().size();i++)
+    links.reserve(m_connectionMap.values().count());
+    foreach(LinkInterface *link, m_connectionMap.values())
     {
-        links.append(m_connectionMap.value(m_connectionMap.keys().at(i))->getId());
+        links.append(link->getId());
     }
     return links;
 }
