@@ -47,6 +47,8 @@ This file is part of the APM_PLANNER project
 #include "MAVLinkProtocol.h"
 //#include "MAVLinkProtocol.h"
 #include <QMap>
+#include <QStringList>
+
 #include "UASInterface.h"
 #include "UAS.h"
 #include "UASObject.h"
@@ -88,7 +90,7 @@ public:
     QString getLinkDetail(int linkid); // [TODO] remove
     int getSerialLinkBaud(int linkid); // [TODO] remove
 
-    QList<QString> getCurrentPorts();
+    QStringList getCurrentPorts();
     void stopLogging();
     void startLogging();
     void setLogSubDirectory(const QString& dir);

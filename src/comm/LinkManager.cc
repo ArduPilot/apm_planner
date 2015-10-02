@@ -427,15 +427,17 @@ int LinkManager::getSerialLinkBaud(int linkid)
     return iface->getBaudRate();
 }
 
-QList<QString> LinkManager::getCurrentPorts()
+QStringList LinkManager::getCurrentPorts()
 {
-    QList<QString> m_portList;
+    QStringList m_portList;
     QList<QSerialPortInfo> portList =  QSerialPortInfo::availablePorts();
 
     if( portList.count() == 0){
         QLOG_INFO() << "No Ports Found" << m_portList;
+        return m_portList;
     }
 
+    m_portList.reserve(portList.count());
     foreach (const QSerialPortInfo &info, portList)
     {
         QLOG_TRACE() << "PortName    : " << info.portName()
