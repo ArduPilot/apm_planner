@@ -48,12 +48,8 @@ This file is part of the APM_PLANNER project
 
 LinkManager* LinkManager::instance()
 {
-    static LinkManager* _instance = 0;
-    if(_instance == 0)
-    {
-        _instance = new LinkManager();
-    }
-    return _instance;
+    static LinkManager _instance;
+    return &_instance;
 }
 
 LinkManager::LinkManager(QObject *parent) :
@@ -77,13 +73,14 @@ void LinkManager::reloadSettings()
 
     bool foundserial = false;
     bool foundudp = false;
+
     for (QMap<int,LinkInterface*>::const_iterator i= m_connectionMap.constBegin();i!=m_connectionMap.constEnd();i++)
     {
         if (i.value()->getLinkType() == LinkInterface::SERIAL_LINK)
         {
             foundserial = true;
         }
-        if (i.value()->getLinkType() == LinkInterface::UDP_LINK)
+        else if (i.value()->getLinkType() == LinkInterface::UDP_LINK)
         {
             foundudp = true;
         }
@@ -110,7 +107,7 @@ void LinkManager::stopLogging()
 LinkManager::~LinkManager()
 {
     m_mavlinkProtocol->setConnectionManager(NULL);
-    delete m_mavlinkProtocol;
+    m_mavlinkProtocol->deleteLater();
     m_mavlinkProtocol = NULL;
     saveSettings();
 }
@@ -155,7 +152,7 @@ void LinkManager::loadSettings()
         }
         else if (type == "TCP_LINK")
         {
-            QHostAddress hostAddress = QHostAddress(settings.value("host").toString());
+            QHostAddress hostAddress(settings.value("host").toString());
             QString hostName = settings.value("hostname").toString();
             int port = settings.value("port").toInt();
             bool asServer = settings.value("asServer").toBool();
@@ -242,20 +239,18 @@ void LinkManager::saveSettings()
     settings.sync();
 }
 
-void LinkManager::setLogSubDirectory(QString dir)
+void LinkManager::setLogSubDirectory(const QString& dir)
 {
-    if (!dir.startsWith("/"))
+    m_logSubDir = dir;
+    if (!m_logSubDir.startsWith(QChar('/')))
     {
-        m_logSubDir = "/" + dir;
+        m_logSubDir.prepend('/');
     }
-    else
+    if (!m_logSubDir.endsWith(QChar('/')))
     {
-        m_logSubDir = dir;
+        m_logSubDir += QChar('/');
     }
-    if (!m_logSubDir.endsWith("/"))
-    {
-        m_logSubDir += "/";
-    }
+
     QDir logdir(QGC::MAVLinkLogDirectory());
     if (!logdir.cd(m_logSubDir.mid(1)))
     {
@@ -278,7 +273,7 @@ void LinkManager::enableLogging(bool enabled)
     }
 }
 
-bool LinkManager::loggingEnabled()
+bool LinkManager::loggingEnabled() const
 {
     return m_mavlinkLoggingEnabled;
 }
@@ -317,7 +312,7 @@ void LinkManager::addLink(LinkInterface *link)
 //    saveSettings();
 }
 
-LinkInterface* LinkManager::getLink(int linkId)
+LinkInterface* LinkManager::getLink(int linkId) const
 {
     return m_connectionMap.value(linkId, 0);
 }
@@ -371,7 +366,7 @@ QString LinkManager::getLinkName(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
     {
-        return "";
+        return QString();
     }
     return m_connectionMap.value(linkid)->getName();
 }
@@ -380,7 +375,7 @@ QString LinkManager::getLinkShortName(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
     {
-        return "";
+        return QString();
     }
     return m_connectionMap.value(linkid)->getShortName();
 }
@@ -389,7 +384,7 @@ QString LinkManager::getLinkDetail(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
     {
-        return "";
+        return QString();
     }
 
     return m_connectionMap.value(linkid)->getDetail();
@@ -397,22 +392,20 @@ QString LinkManager::getLinkDetail(int linkid)
 
 QString LinkManager::getSerialLinkPort(int linkid)
 {
-    if (!m_connectionMap.contains(linkid))
+    if (m_connectionMap.contains(linkid))
     {
-        return "";
+        if(SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(linkid)))
+        {
+            return iface->getPortName();
+        }
     }
-    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(linkid));
-    if (!iface)
-    {
-        return "";
-    }
-    return iface->getPortName();
+    return QString();
 }
 bool LinkManager::getLinkConnected(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
     {
-        return "";
+        return false;
     }
     return m_connectionMap.value(linkid)->isConnected();
 }
@@ -431,15 +424,17 @@ int LinkManager::getSerialLinkBaud(int linkid)
     return iface->getBaudRate();
 }
 
-QList<QString> LinkManager::getCurrentPorts()
+QStringList LinkManager::getCurrentPorts()
 {
-    QList<QString> m_portList;
+    QStringList m_portList;
     QList<QSerialPortInfo> portList =  QSerialPortInfo::availablePorts();
 
     if( portList.count() == 0){
         QLOG_INFO() << "No Ports Found" << m_portList;
+        return m_portList;
     }
 
+    m_portList.reserve(portList.count());
     foreach (const QSerialPortInfo &info, portList)
     {
         QLOG_TRACE() << "PortName    : " << info.portName()
@@ -464,12 +459,13 @@ UASInterface* LinkManager::getUas(int id)
     }
     return 0;
 }
-QList<int> LinkManager::getLinks()
+QList<int> LinkManager::getLinks() const
 {
     QList<int> links;
-    for (int i=0;i<m_connectionMap.keys().size();i++)
+    links.reserve(m_connectionMap.values().count());
+    foreach(LinkInterface *link, m_connectionMap.values())
     {
-        links.append(m_connectionMap.value(m_connectionMap.keys().at(i))->getId());
+        links.append(link->getId());
     }
     return links;
 }
@@ -485,16 +481,7 @@ void LinkManager::removeSimObject(uint8_t sysid)
 
 UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent)
 {
-    QPointer<QObject> p;
-
-    if (parent != NULL)
-    {
-        p = parent;
-    }
-    else
-    {
-        p = mavlink;
-    }
+    QPointer<QObject> p (parent ? parent : mavlink );
 
     UASInterface* uas;
 

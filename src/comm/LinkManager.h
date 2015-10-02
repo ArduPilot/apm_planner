@@ -47,6 +47,8 @@ This file is part of the APM_PLANNER project
 #include "MAVLinkProtocol.h"
 //#include "MAVLinkProtocol.h"
 #include <QMap>
+#include <QStringList>
+
 #include "UASInterface.h"
 #include "UAS.h"
 #include "UASObject.h"
@@ -71,9 +73,9 @@ public:
     UASInterface* createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
 
     void addLink(LinkInterface *link);
-    QList<int> getLinks();
+    QList<int> getLinks() const;
 
-    LinkInterface* getLink(int linkId);
+    LinkInterface* getLink(int linkId) const;
     // Remove a link based on instance
     void removeLink(LinkInterface *link);
     // Remove a link based on unique id
@@ -88,11 +90,11 @@ public:
     QString getLinkDetail(int linkid); // [TODO] remove
     int getSerialLinkBaud(int linkid); // [TODO] remove
 
-    QList<QString> getCurrentPorts();
+    QStringList getCurrentPorts();
     void stopLogging();
     void startLogging();
-    void setLogSubDirectory(QString dir);
-    bool loggingEnabled();
+    void setLogSubDirectory(const QString& dir);
+    bool loggingEnabled() const;
     UASObject *getUasObject(int uasid);
     QMap<int,UASObject*> m_uasObjectMap; // [TODO] make private
 
