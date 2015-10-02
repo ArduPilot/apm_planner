@@ -367,7 +367,7 @@ QString LinkManager::getLinkName(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
     {
-        return "";
+        return QString();
     }
     return m_connectionMap.value(linkid)->getName();
 }
@@ -376,7 +376,7 @@ QString LinkManager::getLinkShortName(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
     {
-        return "";
+        return QString();
     }
     return m_connectionMap.value(linkid)->getShortName();
 }
@@ -385,7 +385,7 @@ QString LinkManager::getLinkDetail(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
     {
-        return "";
+        return QString();
     }
 
     return m_connectionMap.value(linkid)->getDetail();
@@ -393,22 +393,20 @@ QString LinkManager::getLinkDetail(int linkid)
 
 QString LinkManager::getSerialLinkPort(int linkid)
 {
-    if (!m_connectionMap.contains(linkid))
+    if (m_connectionMap.contains(linkid))
     {
-        return "";
+        if(SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(linkid)))
+        {
+            return iface->getPortName();
+        }
     }
-    SerialLinkInterface *iface = qobject_cast<SerialLinkInterface*>(m_connectionMap.value(linkid));
-    if (!iface)
-    {
-        return "";
-    }
-    return iface->getPortName();
+    return QString();
 }
 bool LinkManager::getLinkConnected(int linkid)
 {
     if (!m_connectionMap.contains(linkid))
     {
-        return "";
+        return false;
     }
     return m_connectionMap.value(linkid)->isConnected();
 }
