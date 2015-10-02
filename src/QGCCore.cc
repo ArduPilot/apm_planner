@@ -205,7 +205,7 @@ QGCCore::~QGCCore()
     // First systems
     delete UASManager::instance();
     // then links
-    delete LinkManager::instance();
+
     // Finally the main window
     //delete MainWindow::instance();
     //The main window now autodeletes on close.

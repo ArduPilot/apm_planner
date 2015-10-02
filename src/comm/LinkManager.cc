@@ -48,12 +48,8 @@ This file is part of the APM_PLANNER project
 
 LinkManager* LinkManager::instance()
 {
-    static LinkManager* _instance = 0;
-    if(_instance == 0)
-    {
-        _instance = new LinkManager();
-    }
-    return _instance;
+    static LinkManager _instance;
+    return &_instance;
 }
 
 LinkManager::LinkManager(QObject *parent) :
