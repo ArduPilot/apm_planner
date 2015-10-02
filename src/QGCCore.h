@@ -61,7 +61,7 @@ public:
     ~QGCCore();
 
     void initialize();
-    QGCMouseWheelEventFilter *getMouseWheelFilter() { return m_mouseWheelFilter; }
+    QGCMouseWheelEventFilter *getMouseWheelFilter() const { return m_mouseWheelFilter; }
 
 protected:
     void startLinkManager();
