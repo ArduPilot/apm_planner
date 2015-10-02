@@ -254,7 +254,7 @@ void QGCCore::startUASManager()
 
     QStringList pluginFileNames;
 
-    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
+    foreach (const QString& fileName, pluginsDir.entryList(QDir::Files)) {
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = loader.instance();
         if (plugin) {
