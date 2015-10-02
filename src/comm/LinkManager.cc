@@ -83,7 +83,7 @@ void LinkManager::reloadSettings()
         {
             foundserial = true;
         }
-        if (i.value()->getLinkType() == LinkInterface::UDP_LINK)
+        else if (i.value()->getLinkType() == LinkInterface::UDP_LINK)
         {
             foundudp = true;
         }
