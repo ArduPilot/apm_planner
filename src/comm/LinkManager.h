@@ -71,9 +71,9 @@ public:
     UASInterface* createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent=NULL);
 
     void addLink(LinkInterface *link);
-    QList<int> getLinks();
+    QList<int> getLinks() const;
 
-    LinkInterface* getLink(int linkId);
+    LinkInterface* getLink(int linkId) const;
     // Remove a link based on instance
     void removeLink(LinkInterface *link);
     // Remove a link based on unique id
@@ -92,7 +92,7 @@ public:
     void stopLogging();
     void startLogging();
     void setLogSubDirectory(const QString& dir);
-    bool loggingEnabled();
+    bool loggingEnabled() const;
     UASObject *getUasObject(int uasid);
     QMap<int,UASObject*> m_uasObjectMap; // [TODO] make private
 

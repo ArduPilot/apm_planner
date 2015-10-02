@@ -274,7 +274,7 @@ void LinkManager::enableLogging(bool enabled)
     }
 }
 
-bool LinkManager::loggingEnabled()
+bool LinkManager::loggingEnabled() const
 {
     return m_mavlinkLoggingEnabled;
 }
@@ -313,7 +313,7 @@ void LinkManager::addLink(LinkInterface *link)
 //    saveSettings();
 }
 
-LinkInterface* LinkManager::getLink(int linkId)
+LinkInterface* LinkManager::getLink(int linkId) const
 {
     return m_connectionMap.value(linkId, 0);
 }
@@ -460,7 +460,7 @@ UASInterface* LinkManager::getUas(int id)
     }
     return 0;
 }
-QList<int> LinkManager::getLinks()
+QList<int> LinkManager::getLinks() const
 {
     QList<int> links;
     for (int i=0;i<m_connectionMap.keys().size();i++)
