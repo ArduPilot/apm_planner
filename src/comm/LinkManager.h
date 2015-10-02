@@ -91,7 +91,7 @@ public:
     QList<QString> getCurrentPorts();
     void stopLogging();
     void startLogging();
-    void setLogSubDirectory(QString dir);
+    void setLogSubDirectory(const QString& dir);
     bool loggingEnabled();
     UASObject *getUasObject(int uasid);
     QMap<int,UASObject*> m_uasObjectMap; // [TODO] make private

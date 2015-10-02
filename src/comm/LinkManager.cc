@@ -153,7 +153,7 @@ void LinkManager::loadSettings()
         }
         else if (type == "TCP_LINK")
         {
-            QHostAddress hostAddress = QHostAddress(settings.value("host").toString());
+            QHostAddress hostAddress(settings.value("host").toString());
             QString hostName = settings.value("hostname").toString();
             int port = settings.value("port").toInt();
             bool asServer = settings.value("asServer").toBool();
@@ -240,20 +240,18 @@ void LinkManager::saveSettings()
     settings.sync();
 }
 
-void LinkManager::setLogSubDirectory(QString dir)
+void LinkManager::setLogSubDirectory(const QString& dir)
 {
-    if (!dir.startsWith("/"))
+    m_logSubDir = dir;
+    if (!m_logSubDir.startsWith(QChar('/')))
     {
-        m_logSubDir = "/" + dir;
+        m_logSubDir.prepend('/');
     }
-    else
+    if (!m_logSubDir.endsWith(QChar('/')))
     {
-        m_logSubDir = dir;
+        m_logSubDir += QChar('/');
     }
-    if (!m_logSubDir.endsWith("/"))
-    {
-        m_logSubDir += "/";
-    }
+
     QDir logdir(QGC::MAVLinkLogDirectory());
     if (!logdir.cd(m_logSubDir.mid(1)))
     {
