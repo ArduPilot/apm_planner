@@ -95,7 +95,7 @@ void QGCCore::initialize()
 
     // Show user an upgrade message if QGC got upgraded (see code below, after splash screen)
     bool upgraded = false;
-    QString lastApplicationVersion("");
+    QString lastApplicationVersion;
     if (settings.contains("QGC_APPLICATION_VERSION"))
     {
         QString qgcVersion = settings.value("QGC_APPLICATION_VERSION").toString();
@@ -141,8 +141,8 @@ void QGCCore::initialize()
     connect(this, SIGNAL(lastWindowClosed()), this, SLOT(quit()));
 
     // Load application font
-    QFontDatabase fontDatabase = QFontDatabase();
-    const QString fontFileName = ":/general/vera.ttf"; ///< Font file is part of the QRC file and compiled into the app
+    QFontDatabase fontDatabase;
+    const QString fontFileName(":/general/vera.ttf"); ///< Font file is part of the QRC file and compiled into the app
     //const QString fontFamilyName = "Bitstream Vera Sans";
     if(!QFile::exists(fontFileName)) printf("ERROR! font file: %s DOES NOT EXIST!\n", fontFileName.toStdString().c_str());
     fontDatabase.addApplicationFont(fontFileName);
@@ -231,7 +231,7 @@ void QGCCore::startUASManager()
 {
     QLOG_INFO() << "Start UAS Manager";
     // Load UAS plugins
-    QDir pluginsDir = QDir(qApp->applicationDirPath());
+    QDir pluginsDir(qApp->applicationDirPath());
 
 #if defined(Q_OS_WIN)
     if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
