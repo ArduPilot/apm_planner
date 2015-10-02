@@ -482,16 +482,7 @@ void LinkManager::removeSimObject(uint8_t sysid)
 
 UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* link, int sysid, mavlink_heartbeat_t* heartbeat, QObject* parent)
 {
-    QPointer<QObject> p;
-
-    if (parent != NULL)
-    {
-        p = parent;
-    }
-    else
-    {
-        p = mavlink;
-    }
+    QPointer<QObject> p (parent ? parent : mavlink );
 
     UASInterface* uas;
 
