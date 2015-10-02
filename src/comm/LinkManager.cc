@@ -73,6 +73,7 @@ void LinkManager::reloadSettings()
 
     bool foundserial = false;
     bool foundudp = false;
+
     for (QMap<int,LinkInterface*>::const_iterator i= m_connectionMap.constBegin();i!=m_connectionMap.constEnd();i++)
     {
         if (i.value()->getLinkType() == LinkInterface::SERIAL_LINK)
@@ -106,7 +107,7 @@ void LinkManager::stopLogging()
 LinkManager::~LinkManager()
 {
     m_mavlinkProtocol->setConnectionManager(NULL);
-    delete m_mavlinkProtocol;
+    m_mavlinkProtocol->deleteLater();
     m_mavlinkProtocol = NULL;
     saveSettings();
 }
