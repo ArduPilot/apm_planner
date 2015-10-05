@@ -413,15 +413,15 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
         emit lineRead(line);
         if (m_loadedLogType == MAV_TYPE_GENERIC)
         {
-            if ((line.contains("ArduCopter") || (line.contains("PARM") && (line.contains("RATE_RLL_P") || line.contains("H_SWASH_PLATE")))))
+            if ((line.contains(APM_COPTER_REXP) || (line.contains("PARM") && (line.contains("RATE_RLL_P") || line.contains("H_SWASH_PLATE")))))
             {
                 m_loadedLogType = MAV_TYPE_QUADROTOR;
             }
-            if (line.contains("ArduPlane") || (line.contains("PARM") && line.contains("PTCH2SRV_P")))
+            if (line.contains(APM_PLANE_REXP) || (line.contains("PARM") && line.contains("PTCH2SRV_P")))
             {
                 m_loadedLogType = MAV_TYPE_FIXED_WING;
             }
-            if (line.contains("ArduRover") || (line.contains("PARM") && line.contains("SKID_STEER_OUT")))
+            if (line.contains(APM_ROVER_REXP) || (line.contains("PARM") && line.contains("SKID_STEER_OUT")))
             {
                 m_loadedLogType = MAV_TYPE_GROUND_ROVER;
             }
