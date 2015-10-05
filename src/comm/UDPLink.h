@@ -119,6 +119,7 @@ private:
     int id;
     QUdpSocket* socket;
     bool connectState;
+		bool _shouldRestartConnection;
     QList<QHostAddress> hosts;
     QList<quint16> ports;
 
