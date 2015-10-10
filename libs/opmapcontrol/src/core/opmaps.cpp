@@ -118,7 +118,6 @@ namespace core {
                 connect(&network, SIGNAL(finished(QNetworkReply*)),
                         &q, SLOT(quit()));
                 connect(&tT, SIGNAL(timeout()), &q, SLOT(quit()));
-                network.setProxy(Proxy);
 #ifdef DEBUG_GMAPS
                 qDebug()<<"Try Tile from the Internet";
 #endif //DEBUG_GMAPS

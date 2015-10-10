@@ -119,9 +119,6 @@ ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     initConnections();
 
     connect(&m_timer,SIGNAL(timeout()),this,SLOT(populateSerialPorts()));
-    m_timer.setSingleShot(true);
-    m_timer.start(1000);
-
     updateFirmwareButtons();
 }
 
@@ -242,6 +239,9 @@ void ApmFirmwareConfig::showEvent(QShowEvent *)
 void ApmFirmwareConfig::hideEvent(QHideEvent *)
 {
     // Stop Port scanning
+    if (!m_timer.isActive())
+        return;
+
     m_timer.stop();
     if(ui.stackedWidget->currentIndex() == 0)
     {

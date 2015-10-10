@@ -39,3 +39,4 @@ test {
 
    SOURCES += src/main.cc
 }
+

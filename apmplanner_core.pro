@@ -331,6 +331,7 @@ FORMS += \
     src/ui/mission/QGCMissionNavLoiterUnlim.ui \
     src/ui/mission/QGCMissionNavLoiterTurns.ui \
     src/ui/mission/QGCMissionNavLoiterTime.ui \
+    src/ui/mission/QGCMissionNavLoiterToAlt.ui \
     src/ui/mission/QGCMissionNavReturnToLaunch.ui \
     src/ui/mission/QGCMissionNavLand.ui \
     src/ui/mission/QGCMissionNavTakeoff.ui \
@@ -515,6 +516,7 @@ HEADERS += \
     src/ui/mission/QGCMissionNavLoiterUnlim.h \
     src/ui/mission/QGCMissionNavLoiterTurns.h \
     src/ui/mission/QGCMissionNavLoiterTime.h \
+    src/ui/mission/QGCMissionNavLoiterToAlt.h \
     src/ui/mission/QGCMissionNavReturnToLaunch.h \
     src/ui/mission/QGCMissionNavLand.h \
     src/ui/mission/QGCMissionNavTakeoff.h \
@@ -628,7 +630,10 @@ HEADERS += \
     src/ui/configuration/RadioFlashWizard.h \
     src/ui/GraphTreeWidgetItem.h \
     src/comm/LinkManagerFactory.h \
-    src/versioncomparator.h
+    src/versioncomparator.h \
+    src/ui/VibrationMonitor.h \
+    src/ui/EKFMonitor.h \
+    src/Settings.h
 
 SOURCES += \
     src/QGCCore.cc \
@@ -739,6 +744,7 @@ SOURCES += \
     src/ui/mission/QGCMissionNavLoiterUnlim.cc \
     src/ui/mission/QGCMissionNavLoiterTurns.cc \
     src/ui/mission/QGCMissionNavLoiterTime.cc \
+    src/ui/mission/QGCMissionNavLoiterToAlt.cc \
     src/ui/mission/QGCMissionNavReturnToLaunch.cc \
     src/ui/mission/QGCMissionNavLand.cc \
     src/ui/mission/QGCMissionNavTakeoff.cc \
@@ -851,7 +857,10 @@ SOURCES += \
     src/ui/configuration/RadioFlashWizard.cpp \
     src/ui/GraphTreeWidgetItem.cc \
     src/comm/LinkManagerFactory.cpp \
-    src/versioncomparator.cc
+    src/versioncomparator.cc \
+    src/ui/VibrationMonitor.cpp \
+    src/ui/EKFMonitor.cpp \
+    src/Settings.cpp
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
@@ -865,7 +874,7 @@ OTHER_FILES += \
     qml/components/CompassIndicator.qml \
     qml/components/PitchIndicator.qml \
     qml/components/StatusMessageIndicator.qml \
-    qml/components/InformationOverlayIndicator.qml
+    qml/components/InformationOverlayIndicator.qml \
 
 OTHER_FILES += \
     qml/ApmToolBar.qml \
@@ -880,7 +889,11 @@ OTHER_FILES += \
     qml/resources/apmplanner/toolbar/light_tuningconfig_icon.png \
     qml/resources/apmplanner/toolbar/flightdata.png \
     qml/resources/apmplanner/toolbar/disconnect.png \
-    qml/resources/apmplanner/toolbar/donate.png \
+    qml/resources/apmplanner/toolbar/donate.png
+
+OTHER_FILES += \
+    qml/VibrationMonitor.qml \
+    qml/EKFMonitor.qml
 
 # Command Line Tools
 OTHER_FILES += \
