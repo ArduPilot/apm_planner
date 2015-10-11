@@ -276,8 +276,8 @@ QString ApmRover::stringForMode(int aMode) {
 }
 
 ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
-    UAS(mavlink, id)//,
-    // place other initializers here
+    UAS(mavlink, id),
+    m_severityCompatibilityMode(false)
 {
     //This does not seem to work. Manually request each stream type at a specified rate.
     // Ask for all streams at 4 Hz
@@ -297,6 +297,25 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
 
     connect(this, SIGNAL(heartbeatTimeout(bool,uint)),
             this, SLOT(heartbeatTimeout(bool,uint)));
+
+    loadSettings();
+}
+
+void ArduPilotMegaMAV::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup("ARDUPILOT");
+    m_severityCompatibilityMode = settings.value("STATUSTEXT_COMPAT_MODE",false).toBool();
+    settings.endGroup();
+}
+
+void ArduPilotMegaMAV::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup("ARDUPILOT");
+    settings.setValue("STATUSTEXT_COMPAT_MODE",m_severityCompatibilityMode);
+    settings.endGroup();
+    settings.sync();
 }
 
 void ArduPilotMegaMAV::RequestAllDataStreams()
@@ -392,7 +411,6 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
 {
     // Let UAS handle the default message set
     //qDebug() << "Message type:" << message.sysid << message.msgid;
-    UAS::receiveMessage(link, message);
 
     if (message.sysid == uasId) {
         // Handle your special messages
@@ -416,8 +434,34 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             if (text.contains(APM_COPTER_REXP) || text.contains(APM_PLANE_REXP)
                     || text.contains(APM_ROVER_REXP)) {
                 QLOG_DEBUG() << "APM Version String detected:" << text;
+                // Process Version and keep.
+
                 emit versionDetected(text);
             }
+
+            // Check is older APM and reset severity to correct MAVLINK spec.
+            if (m_severityCompatibilityMode) {
+                 // Older APM detected, translate severity to MAVLink Standard severity
+                 // SEVERITY_LOW     =1 MAV_SEVERITY_WARNING = 4
+                 // SEVERITY_MEDIUM  =2 MAV_SEVERITY_ALERT   = 1
+                 // SEVERITY_HIGH    =3 MAV_SEVERITY_CRITICAL= 2
+                 switch (severity) {
+                     case 1: /*gcs_severity::SEVERITY_LOW:*/
+                         severity = MAV_SEVERITY_WARNING;
+                         break;
+                     case 2: /*gcs_severity::SEVERITY_MEDIUM*/
+                         severity = MAV_SEVERITY_ALERT;
+                         break;
+                     case 3: /*gcs_severity::SEVERITY_HIGH:*/
+                         severity = MAV_SEVERITY_CRITICAL;
+                         break;
+                     default:
+                         severity = MAV_SEVERITY_INFO;
+                         break;
+                 }
+                 // repack message for further down the stack.s
+                 //message = mavlink_msg_statustext_pack(message.sysid,message.compid,&message,severity,b.data());
+             }
 
         } break;
         default:
@@ -425,6 +469,9 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             break;
         }
     }
+
+    // default Bea
+    UAS::receiveMessage(link, message);
 }
 void ArduPilotMegaMAV::setMountConfigure(unsigned char mode, bool stabilize_roll,bool stabilize_pitch,bool stabilize_yaw)
 {

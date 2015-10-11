@@ -159,6 +159,9 @@ public:
     void playCustomModeChangedAudioMessage();
     void playArmStateChangedAudioMessage(bool armedState) ;
 
+    void loadSettings();
+    void saveSettings();
+
 signals:
     void versionDetected(QString versionString);
 
@@ -184,6 +187,7 @@ private:
 
 private:
     QTimer *txReqTimer;
+    bool m_severityCompatibilityMode;
 };
 
 
