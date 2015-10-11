@@ -183,6 +183,7 @@ private:
 
 private:
     QTimer *txReqTimer;
+    int severityCompatibilityMode;
 };
 
 #endif // ARDUPILOTMAV_H

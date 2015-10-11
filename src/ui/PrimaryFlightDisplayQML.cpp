@@ -120,10 +120,17 @@ void PrimaryFlightDisplayQML::uasTextMessage(int uasid, int componentid, int sev
 {
     Q_UNUSED(uasid);
     Q_UNUSED(componentid);
-    if (text.contains("PreArm") || severity == 3)
+    if (text.contains("PreArm") || severity <= MAV_SEVERITY_CRITICAL)
     {
         QObject *root = m_declarativeView->rootObject();
         root->setProperty("statusMessage", text);
         root->setProperty("showStatusMessage", true);
+        root->setProperty("statusMessageColor", "red");
+    } else if (severity <= MAV_SEVERITY_INFO ){
+        QObject *root = m_declarativeView->rootObject();
+        root->setProperty("statusMessage", text);
+        root->setProperty("showStatusMessage", true);
+        root->setProperty("statusMessageColor", "darkgreen");
     }
+
 }
