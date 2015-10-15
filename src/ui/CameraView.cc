@@ -31,6 +31,9 @@ This file is part of the QGROUNDCONTROL project
 #include "QsLog.h"
 #include "CameraView.h"
 
+#ifndef Q_OS_MAC
+#include <GL/gl.h>
+#endif
 
 CameraView::CameraView(int width, int height, int depth, int channels, QWidget* parent) : QGLWidget(parent)
 {

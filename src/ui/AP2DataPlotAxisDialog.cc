@@ -99,10 +99,7 @@ void AP2DataPlotAxisDialog::colorDialogAccepted()
     {
         return;
     }
-    if (dialog->result() == QColorDialog::Accepted)
-    {
-        ui->graphTableWidget->item(m_colorDialogRowId,0)->setBackgroundColor(dialog->selectedColor());
-    }
+    ui->graphTableWidget->item(m_colorDialogRowId,0)->setBackgroundColor(dialog->selectedColor());
 }
 
 void AP2DataPlotAxisDialog::cellChanged(int row,int col)

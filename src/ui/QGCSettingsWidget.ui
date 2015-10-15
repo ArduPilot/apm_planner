@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="general">
       <attribute name="title">
@@ -302,6 +302,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="hideDonateButtonCheckBox">
+           <property name="text">
+            <string>Hide Donate Button</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item row="4" column="0">
@@ -401,7 +408,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="label_6">
             <property name="text">
-             <string>Attitude</string>
+             <string>Attitude (Extra1)</string>
             </property>
            </widget>
           </item>
