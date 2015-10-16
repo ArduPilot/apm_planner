@@ -283,6 +283,10 @@ MacBuild | LinuxBuild {
 #
 include(libs/alglib/alglib.pri)
 DEFINES += NOMINMAX
+
+INCLUDEPATH += \
+    libs/alglib/src \
+
 #
 # OPMapControl library (from OpenPilot)
 #
