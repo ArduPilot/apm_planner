@@ -63,7 +63,7 @@ exists(qupgrade) {
 #
 
 MAVLINK_CONF = ""
-MAVLINKPATH = $$BASEDIR/libs/mavlink/include/mavlink/v1.0
+MAVLINKPATH = $$PWD/libs/mavlink/include/mavlink/v1.0
 DEFINES += MAVLINK_NO_DATA
 
 # If the user config file exists, it will be included.
