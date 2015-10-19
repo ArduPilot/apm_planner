@@ -185,6 +185,9 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     QTimer *heartbeattimer = new QTimer(this);
     connect(heartbeattimer,SIGNAL(timeout()),this,SLOT(sendHeartbeat()));
     heartbeattimer->start(MAVLINK_HEARTBEAT_DEFAULT_RATE * 1000);
+
+    m_parameterSendTimer.setInterval(20);
+    connect(&m_parameterSendTimer, SIGNAL(timeout()), this, SLOT(requestNextParamFromQueue()));
 }
 
 /**
@@ -2639,10 +2642,6 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     default:
         QLOG_ERROR() << "INVALID DATA TYPE USED AS PARAMETER VALUE: " << rawValue.param_type;
     } //switch (value.param_type)
-
-    if(!paramRequestQueue.isEmpty()) {
-        requestNextParamFromQueue();
-    }
 }
 
 /**
@@ -2663,7 +2662,10 @@ void UAS::requestParameter(int component, int id)
 }
 
 void UAS::requestNextParamFromQueue() {
-    if(paramRequestQueue.isEmpty()) return;
+    if(paramRequestQueue.isEmpty()){
+        m_parameterSendTimer.stop();
+        return;
+    }
 
     QPair<int,QString> pr = paramRequestQueue.front();
     int component = pr.first;
@@ -2701,11 +2703,7 @@ void UAS::requestParameter(int component, const QString& parameter)
     QPair<int,QString> p = QPair<int,QString>(component, parameter);
 
     paramRequestQueue.append(p);
-
-    if(paramRequestQueue.size() == 1) {
-       //requestNextParamFromQueue();
-       QTimer::singleShot(0, this, SLOT(requestNextParamFromQueue()));
-    }
+    m_parameterSendTimer.start();
 }
 
 /**
