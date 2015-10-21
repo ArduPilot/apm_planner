@@ -46,7 +46,7 @@ This file is part of the QGROUNDCONTROL project
 #include <VideoSurface.h>
 #if defined(QGC_GST_STREAMING)
 G_BEGIN_DECLS
-GST_PLUGIN_STATIC_DECLARE(QGC_VIDEOSINK_PLUGIN);
+GST_PLUGIN_STATIC_DECLARE(QTVIDEOSINK_NAME);
 G_END_DECLS
 #endif
 
@@ -116,7 +116,7 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
         qCritical() << "gst_init_check() failed: " << error->message;
         g_error_free(error);
     }
-    GST_PLUGIN_STATIC_REGISTER(QGC_VIDEOSINK_PLUGIN);
+    GST_PLUGIN_STATIC_REGISTER(QTVIDEOSINK_NAME);
 #endif
 }
 
