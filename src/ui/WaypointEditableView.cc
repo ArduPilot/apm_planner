@@ -518,10 +518,6 @@ void WaypointEditableView::updateValues()
     }
     m_ui->idLabel->setText(QString("%1").arg(wp->getId()));
 
-
-
-    QColor backGroundColor = QGC::colorBackground;
-
     static int lastId = -1;
     int currId = wp->getId() % 2;
 
