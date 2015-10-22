@@ -146,6 +146,9 @@ public:
     * @param value heading in degrees, 0 = north, 90 = east
     */
     void SetHeading(float const& value);
+
+    bool isDraggingActive() const { return isDragging; }
+
     int type() const;
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,

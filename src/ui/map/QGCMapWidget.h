@@ -137,6 +137,9 @@ private:
     void sendGuidedAction(Waypoint *wp, double alt);
     bool isValidGpsLocation(UASInterface* system) const;
 
+    void shiftOtherSelectedWaypoints(mapcontrol::WayPointItem* selectedWaypoint,
+                                     double shiftLong, double shiftLat);
+
 protected:
     /** @brief Update the highlighting of the currently controlled system */
     void updateSelectedSystem(int uas);

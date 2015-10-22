@@ -685,6 +685,33 @@ void QGCMapWidget::cacheVisibleRegion()
 
 // WAYPOINT MAP INTERACTION FUNCTIONS
 
+void QGCMapWidget::shiftOtherSelectedWaypoints(mapcontrol::WayPointItem* selectedWaypoint,
+                                               double shiftLong, double shiftLat)
+{
+    QMap<mapcontrol::WayPointItem*, Waypoint*>::iterator i;
+    for (i = iconsToWaypoints.begin(); i != iconsToWaypoints.end(); ++i) {
+        mapcontrol::WayPointItem* waypoint = i.key();
+
+        if (waypoint == selectedWaypoint) {
+            continue;
+        }
+
+        if (waypoint->isSelected()) {
+            // Update WP values
+            Waypoint* wp = i.value();
+            internals::PointLatLng pos = waypoint->Coord();
+
+            // Block waypoint signals
+            wp->blockSignals(true);
+            wp->setLatitude(pos.Lat() - shiftLat);
+            wp->setLongitude(pos.Lng() - shiftLong);
+            wp->blockSignals(false);
+
+            emit waypointChanged(wp);
+        }
+    }
+}
+
 void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
 {
     // Block circle updates
@@ -704,13 +731,12 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
     // Update WP values
     internals::PointLatLng pos = waypoint->Coord();
 
+    double shiftLat = wp->getLatitude() - pos.Lat();
+    double shiftLong = wp->getLongitude() - pos.Lng();
     // Block waypoint signals
     wp->blockSignals(true);
     wp->setLatitude(pos.Lat());
     wp->setLongitude(pos.Lng());
-    // XXX Magic values
-//    wp->setAltitude(homeAltitude + 50.0f);
-//    wp->setAcceptanceRadius(10.0f);
     wp->blockSignals(false);
 
 
@@ -723,6 +749,10 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
     firingWaypointChange = NULL;
 
     emit waypointChanged(wp);
+
+    if (waypoint->isSelected() && waypoint->isDraggingActive()) {
+        shiftOtherSelectedWaypoints(waypoint, shiftLong, shiftLat);
+    }
 }
 
 // WAYPOINT UPDATE FUNCTIONS
