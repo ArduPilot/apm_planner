@@ -398,10 +398,13 @@ void WaypointEditableView::changedCurrent(int state)
 
 void WaypointEditableView::blockAllSpinBoxSignals(const bool shallBlock)
 {
-    for (int j = 0; j  < children().size(); ++j)
+    QObjectList allChildrenToBlock(children());
+    allChildrenToBlock.append(m_ui->customActionWidget->children());
+
+    for (int j = 0; j  < allChildrenToBlock.size(); ++j)
     {
         // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(children().at(j));
+        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(allChildrenToBlock.at(j));
         if (spin)
         {
             //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
@@ -410,41 +413,10 @@ void WaypointEditableView::blockAllSpinBoxSignals(const bool shallBlock)
         else
         {
             // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(children().at(j));
+            QWidget* item = dynamic_cast<QWidget*>(allChildrenToBlock.at(j));
             if (item)
             {
                 //QLOG_DEBUG() << "FOUND WIDGET BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                        //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(shallBlock);
-                    }
-                }
-            }
-        }
-    }
-
-    // Block all custom action widget actions
-    for (int j = 0; j  < m_ui->customActionWidget->children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(m_ui->customActionWidget->children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
-            spin->blockSignals(shallBlock);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(m_ui->customActionWidget->children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "CUSTOM ACTIONS FOUND WIDGET BOX";
                 for (int k = 0; k  < item->children().size(); ++k)
                 {
                     // Store only QGCToolWidgetItems
