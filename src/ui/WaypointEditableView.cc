@@ -396,19 +396,8 @@ void WaypointEditableView::changedCurrent(int state)
     }
 }
 
-void WaypointEditableView::updateValues()
+void WaypointEditableView::blockAllSpinBoxSignals(const bool shallBlock)
 {
-    // Check if we just lost the wp, delete the widget
-    // accordingly
-    if (!wp) {
-        deleteLater();
-        return;
-    }
-
-    //wp->blockSignals(true);
-
-    // Deactivate all QDoubleSpinBox signals due to
-    // unwanted rounding effects
     for (int j = 0; j  < children().size(); ++j)
     {
         // Store only QGCToolWidgetItems
@@ -416,7 +405,7 @@ void WaypointEditableView::updateValues()
         if (spin)
         {
             //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
-            spin->blockSignals(true);
+            spin->blockSignals(shallBlock);
         }
         else
         {
@@ -432,7 +421,7 @@ void WaypointEditableView::updateValues()
                     if (spin)
                     {
                         //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(true);
+                        spin->blockSignals(shallBlock);
                     }
                 }
             }
@@ -447,7 +436,7 @@ void WaypointEditableView::updateValues()
         if (spin)
         {
             //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
-            spin->blockSignals(true);
+            spin->blockSignals(shallBlock);
         }
         else
         {
@@ -463,13 +452,26 @@ void WaypointEditableView::updateValues()
                     if (spin)
                     {
                         //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(true);
+                        spin->blockSignals(shallBlock);
                     }
                 }
             }
         }
     }
+}
 
+void WaypointEditableView::updateValues()
+{
+    // Check if we just lost the wp, delete the widget
+    // accordingly
+    if (!wp) {
+        deleteLater();
+        return;
+    }
+
+    // Deactivate all QDoubleSpinBox signals due to
+    // unwanted rounding effects
+    blockAllSpinBoxSignals(true);
 
     // update frame
     MAV_FRAME frame = wp->getFrame();
@@ -567,68 +569,7 @@ void WaypointEditableView::updateValues()
 
     // Activate all QDoubleSpinBox signals due to
     // unwanted rounding effects
-    for (int j = 0; j  < children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << j;
-            spin->blockSignals(false);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QGroupBox* item = dynamic_cast<QGroupBox*>(children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "FOUND GROUP BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                        //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(false);
-                    }
-                }
-            }
-        }
-    }
-
-    // Unblock all custom action widget actions
-    for (int j = 0; j  < m_ui->customActionWidget->children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(m_ui->customActionWidget->children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << j;
-            spin->blockSignals(false);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(m_ui->customActionWidget->children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "FOUND WIDGET BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                       //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(false);
-                    }
-                }
-            }
-        }
-    }
-
-//    wp->blockSignals(false);
+    blockAllSpinBoxSignals(false);
 }
 
 void WaypointEditableView::setCurrent(bool state)
