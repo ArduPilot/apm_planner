@@ -630,10 +630,12 @@ void ApmSoftwareConfig::reloadView()
         if (m_uas->getParamManager()->getParameterValue(1, QString("POS_XY_P"), returnValue)){
             // Use New Copter PID UI
             if (m_arduCopterPidConfig){
+                QLOG_DEBUG() << "Destroy Ext Tuning (m_arduCopterPidConfig)";
                 ui.stackedWidget->removeWidget(m_arduCopterPidConfig);
                 delete m_arduCopterPidConfig;
             }
-            if (!m_copterPidConfig){
+            if (m_copterPidConfig.isNull()){
+                QLOG_DEBUG() << "Create Ext Tuning (m_copterPidConfig)";
                 m_copterPidConfig = new CopterPidConfig(this);
                 ui.stackedWidget->addWidget(m_copterPidConfig);
                 m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_copterPidConfig;
@@ -645,10 +647,12 @@ void ApmSoftwareConfig::reloadView()
         } else if (m_uas->getParamManager()->getParameterValue(1, "HLD_LAT_P", returnValue)){
             // Use old ArduCopter PID UI,
             if (m_copterPidConfig){
+                QLOG_DEBUG() << "Destroy Ext Tuning (m_copterPidConfig)";
                 ui.stackedWidget->removeWidget(m_copterPidConfig);
                 delete m_copterPidConfig;
             }
-            if (!m_arduCopterPidConfig){
+            if (m_arduCopterPidConfig.isNull()){
+                QLOG_DEBUG() << "Create Ext Tuning (m_arduCopterPidConfig)";
                 m_arduCopterPidConfig = new ArduCopterPidConfig(this);
                 ui.stackedWidget->addWidget(m_arduCopterPidConfig);
                 m_buttonToConfigWidgetMap[ui.arduCopterPidButton] = m_arduCopterPidConfig;
