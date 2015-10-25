@@ -35,17 +35,18 @@ Rectangle {
         rollPitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch})
         pitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll})
         pitchIndicator.pitchAngle = Qt.binding(function() { return  relpositionoverview.pitch})
-        speedIndicator.groundspeed = Qt.binding(function() { return relpositionoverview.groundspeed})
+
         informationIndicator.groundSpeed = Qt.binding(function() { return relpositionoverview.groundspeed})
         informationIndicator.airSpeed = Qt.binding(function() { return relpositionoverview.airspeed })
-        informationIndicator.batVoltage = Qt.binding(function() { return vehicleoverview.voltage_battery/1000.0 })
-        informationIndicator.batCurrent = Qt.binding(function() { return vehicleoverview.current_battery/100.0 })
-        informationIndicator.batPercent = Qt.binding(function() { return vehicleoverview.battery_remaining })
+//        informationIndicator.batVoltage = Qt.binding(function() { return vehicleoverview.voltage_battery/1000.0 })
+//        informationIndicator.batCurrent = Qt.binding(function() { return vehicleoverview.current_battery/100.0 })
+//        informationIndicator.batPercent = Qt.binding(function() { return vehicleoverview.battery_remaining })
 
         compassIndicator.heading = Qt.binding(function() {
             return (relpositionoverview.yaw < 0) ? relpositionoverview.yaw + 360 : relpositionoverview.yaw ;
         })
         speedIndicator.airspeed = Qt.binding(function() { return relpositionoverview.airspeed } )
+        speedIndicator.groundspeed = Qt.binding(function() { return relpositionoverview.groundspeed})
         altIndicator.alt = Qt.binding(function() { return abspositionoverview.relative_alt } )
     }
 
