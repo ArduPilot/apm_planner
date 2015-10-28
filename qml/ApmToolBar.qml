@@ -43,6 +43,8 @@ Rectangle {
     property bool stopAnimation: false
     property alias disableConnectWidget: connectionWidget.disable
 
+    property bool donated: false
+
     function setArmed(armedState) {
         if (armedState) {
             statusDisplayId.statusText = "ARMED"
@@ -67,7 +69,15 @@ Rectangle {
     function setAdvancedMode(state){
         // Enable ro disable buttons based on Adv mode.
         // ie. terminalView.visible = state
-        donateView.visible = !state;
+        var donate = Settings.value("USER_DONATED", "false");
+        console.log("Set Advanced Mode " + state + " USER_DONATED:" + donate);
+        if (donate === true){
+            console.log("Donate invisible");
+            donateView.visible = false;
+        } else {
+            console.log("Donate visbile");
+            donateView.visible = true;
+        }
     }
 
     function clearHighlightedButtons(){
@@ -77,6 +87,7 @@ Rectangle {
         initialSetupView.setUnselected()
         configTuningView.setUnselected()
         plotView.setUnselected()
+        donateView.setUnselected()
     }
 
     width: toolbar.width
@@ -190,6 +201,20 @@ Rectangle {
                 clearHighlightedButtons()
                 globalObj.triggerDonateView()
                 setSelected()
+                donateHideTimer.start()
+            }
+
+            Timer {
+                id: donateHideTimer
+                running: false
+                interval: 500
+                onTriggered: {
+                    var donated = Settings.value("USER_DONATED", "false");
+                    if (donated === 'true'){
+                        donateView.visible = false;
+                        console.log("remove donated button")
+                    }
+                }
             }
         }
 

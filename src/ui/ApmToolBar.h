@@ -32,6 +32,7 @@ This file is part of the APM_PLANNER project
 #define APMTOOLBAR_H
 
 #include "UASInterface.h"
+#include "Settings.h"
 #include <QAction>
 #include <QQuickView>
 
@@ -103,9 +104,11 @@ public slots:
 
 private:
     QPointer<UASInterface> m_uas;
+    Settings m_settings;
     QTimer m_heartbeatTimer;
     bool m_disableOverride;
     int m_currentLinkId;
+    bool m_donated;
 };
 
 #endif // APMTOOLBAR_H

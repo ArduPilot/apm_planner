@@ -104,9 +104,14 @@ QRectF Waypoint2DIcon::boundingRect() const
     {
         acceptance = map->metersToPixels(waypoint->getAcceptanceRadius(), coord);
     }
-    if (waypoint && ((waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_UNLIM) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TIME) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TURNS)))
+    if ((waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_UNLIM) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TIME) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TURNS))
     {
         loiter = map->metersToPixels(waypoint->getLoiterOrbit(), coord);
+    }
+
+    if (waypoint && waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TO_ALT)
+    {
+        loiter = map->metersToPixels(waypoint->getParam2(), coord);
     }
 
     int width = qMax(picture.width()/2, qMax(loiter, acceptance));
@@ -163,6 +168,7 @@ void Waypoint2DIcon::drawIcon()
             (waypoint->getAction() != (int)MAV_CMD_NAV_TAKEOFF) &&
             (waypoint->getAction() != (int)MAV_CMD_NAV_LAND) &&
             (waypoint->getAction() != (int)MAV_CMD_NAV_LOITER_UNLIM) &&
+            (waypoint->getAction() != (int)MAV_CMD_NAV_LOITER_TO_ALT) &&
             (waypoint->getAction() != (int)MAV_CMD_NAV_LOITER_TIME) &&
             (waypoint->getAction() != (int)MAV_CMD_NAV_LOITER_TURNS) &&
             (waypoint->getAction() != (int)MAV_CMD_NAV_RETURN_TO_LAUNCH)&&
@@ -203,7 +209,7 @@ void Waypoint2DIcon::drawIcon()
         painter.drawEllipse(p, width, height);
         painter.drawLine(p.x()-width/2, p.y()-height/2, 2*width, 2*height);
     }
-    else if ((waypoint != NULL) && ((waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_UNLIM) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TIME) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TURNS)))
+    else if ((waypoint != NULL) && ((waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TO_ALT) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_UNLIM) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TIME) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TURNS)))
     {
         // Loiter waypoint
         int width = (picture.width()-penWidth)/2;
@@ -321,12 +327,17 @@ void Waypoint2DIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
         painter->setPen(redPen);
         painter->drawEllipse(QPointF(0, 0), acceptance, acceptance);
     }
-    if ((waypoint) && ((waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_UNLIM) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TIME) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TURNS)))
+    if ((waypoint) && ((waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TO_ALT) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_UNLIM) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TIME) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TURNS)))
     {
+        QLOG_DEBUG() << "DRAW LOITER" ;
         QPen penDash(color);
         penDash.setWidth(1);
         //penDash.setStyle(Qt::DotLine);
-        const int loiter = map->metersToPixels(waypoint->getLoiterOrbit(), Coord());
+        int loiter=0;
+        if (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TO_ALT)
+        {loiter = map->metersToPixels(waypoint->getParam2(), Coord());}
+        else
+        {loiter = map->metersToPixels(waypoint->getLoiterOrbit(), Coord());}
         if (loiter > picture.width()/2)
         {
             painter->setPen(penBlack);

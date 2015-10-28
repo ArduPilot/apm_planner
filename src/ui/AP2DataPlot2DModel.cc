@@ -243,6 +243,14 @@ QString AP2DataPlot2DModel::getFmtLine(const QString& name)
             {
                 size += 4;
             }
+            else if (format.at(i).toLatin1() == 'Q')
+            {
+                size += 8;
+            }
+            else if (format.at(i).toLatin1() == 'q')
+            {
+                size += 8;
+            }
             else if ((format.at(i).toLatin1() == 'i') || (format.at(i).toLatin1() == 'I') || (format.at(i).toLatin1() == 'e') || (format.at(i).toLatin1() == 'E')  || (format.at(i).toLatin1() == 'L'))
             {
                 size += 4;
@@ -254,6 +262,8 @@ QString AP2DataPlot2DModel::getFmtLine(const QString& name)
             else if ((format.at(i).toLatin1() == 'b') || (format.at(i).toLatin1() == 'B') || (format.at(i).toLatin1() == 'M'))
             {
                 size += 1;
+            } else {
+                QLOG_DEBUG() << "Unknown format character (" << format.at(i).toLatin1() << "); export will be bad";
             }
         }
         QString formatline = "FMT, " + QString::number(record.value(1).toInt()) + ", " + QString::number(size+3) + ", " + name + ", " + format + ", " + vars;
@@ -378,11 +388,6 @@ int AP2DataPlot2DModel::columnCount ( const QModelIndex & parent) const
 }
 QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
 {
-    quint64 tableindex = index.row();
-    if (m_rowToTableMap.contains(index.row()))
-    {
-        tableindex = m_rowToTableMap.value(index.row()).first;
-    }
     if (role != Qt::DisplayRole)
     {
         return QVariant();
@@ -391,6 +396,14 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
     {
         return QVariant();
     }
+
+    quint64 tableindex = index.row();
+    if (m_rowToTableMap.contains(index.row()))
+    {
+        tableindex = m_rowToTableMap.value(index.row()).first;
+    } else {
+    }
+
     if (index.column() == 0)
     {
         if (index.row() < m_fmtStringList.size())
@@ -403,10 +416,6 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
             //Index is a normal table message, get the index from m_rowToTableMap
             return QString::number(tableindex);
         }
-    }
-    if (index.row() < m_fmtStringList.size())
-    {
-        return m_fmtStringList.at(index.row()).value(index.column()-1);
     }
 
     QString tablename = m_rowToTableMap.value(index.row()).second;
@@ -642,9 +651,13 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
             return false;
         }
     }
-    if (values.size() > m_columnCount)
+
+    // Our table model is larger than the number of columns we insert:
+    // +1 for the index column (in column 0)
+    // +1 for the table/message type (in column 1)
+    if (values.size()+2 > m_columnCount)
     {
-        m_columnCount = values.size();
+        m_columnCount = values.size() +2;
     }
     m_rowToTableMap.insert(m_rowCount++,QPair<quint64,QString>(index,name));
    // if (!m_sharedDb.commit())
@@ -688,6 +701,10 @@ QString AP2DataPlot2DModel::makeCreateTableString(QString tablename, QString for
             mktable.append("," + name + " integer");
         }
         else if (typeCode == 'f') //float
+        {
+            mktable.append("," + name + " real");
+        }
+        else if (typeCode == 'd') //double
         {
             mktable.append("," + name + " real");
         }
