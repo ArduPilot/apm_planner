@@ -109,7 +109,6 @@ static freenect_frame_mode supported_depth_modes[depth_mode_count] = {
 static const freenect_frame_mode invalid_mode = {0, (freenect_resolution)0, {(freenect_video_format)0}, 0, 0, 0, 0, 0, 0, 0};
 
 
-//const freenect_frame_mode FREENECT_VIDEO_RGB = supported_video_modes[5];
 
 class Freenect
 {

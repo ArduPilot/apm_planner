@@ -128,11 +128,9 @@ Freenect::init(int userDeviceNumber)
     }
 
     if (freenect_set_video_mode(device, FREENECT_VIDEO_RGB_MEDIUM) != 0) {
-    //if (freenect_set_video_format(device, FREENECT_VIDEO_RGB) != 0) {
         return false;
     }
     if (freenect_set_depth_mode(device, FREENECT_DEPTH_11_BIT_MEDIUM) != 0) {
-    //if (freenect_set_depth_format(device, FREENECT_DEPTH_11BIT) != 0) {
         return false;
     }
     freenect_set_video_callback(device, videoCallback);
