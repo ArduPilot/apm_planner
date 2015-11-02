@@ -396,32 +396,24 @@ void WaypointEditableView::changedCurrent(int state)
     }
 }
 
-void WaypointEditableView::updateValues()
+void WaypointEditableView::blockAllSpinBoxSignals(const bool shallBlock)
 {
-    // Check if we just lost the wp, delete the widget
-    // accordingly
-    if (!wp) {
-        deleteLater();
-        return;
-    }
+    QObjectList allChildrenToBlock(children());
+    allChildrenToBlock.append(m_ui->customActionWidget->children());
 
-    //wp->blockSignals(true);
-
-    // Deactivate all QDoubleSpinBox signals due to
-    // unwanted rounding effects
-    for (int j = 0; j  < children().size(); ++j)
+    for (int j = 0; j  < allChildrenToBlock.size(); ++j)
     {
         // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(children().at(j));
+        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(allChildrenToBlock.at(j));
         if (spin)
         {
             //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
-            spin->blockSignals(true);
+            spin->blockSignals(shallBlock);
         }
         else
         {
             // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(children().at(j));
+            QWidget* item = dynamic_cast<QWidget*>(allChildrenToBlock.at(j));
             if (item)
             {
                 //QLOG_DEBUG() << "FOUND WIDGET BOX";
@@ -432,44 +424,26 @@ void WaypointEditableView::updateValues()
                     if (spin)
                     {
                         //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(true);
+                        spin->blockSignals(shallBlock);
                     }
                 }
             }
         }
     }
+}
 
-    // Block all custom action widget actions
-    for (int j = 0; j  < m_ui->customActionWidget->children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(m_ui->customActionWidget->children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
-            spin->blockSignals(true);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(m_ui->customActionWidget->children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "CUSTOM ACTIONS FOUND WIDGET BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                        //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(true);
-                    }
-                }
-            }
-        }
+void WaypointEditableView::updateValues()
+{
+    // Check if we just lost the wp, delete the widget
+    // accordingly
+    if (!wp) {
+        deleteLater();
+        return;
     }
 
+    // Deactivate all QDoubleSpinBox signals due to
+    // unwanted rounding effects
+    blockAllSpinBoxSignals(true);
 
     // update frame
     MAV_FRAME frame = wp->getFrame();
@@ -515,10 +489,6 @@ void WaypointEditableView::updateValues()
         m_ui->autoContinue->setChecked(wp->getAutoContinue());
     }
     m_ui->idLabel->setText(QString("%1").arg(wp->getId()));
-
-
-
-    QColor backGroundColor = QGC::colorBackground;
 
     static int lastId = -1;
     int currId = wp->getId() % 2;
@@ -567,68 +537,7 @@ void WaypointEditableView::updateValues()
 
     // Activate all QDoubleSpinBox signals due to
     // unwanted rounding effects
-    for (int j = 0; j  < children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << j;
-            spin->blockSignals(false);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QGroupBox* item = dynamic_cast<QGroupBox*>(children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "FOUND GROUP BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                        //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(false);
-                    }
-                }
-            }
-        }
-    }
-
-    // Unblock all custom action widget actions
-    for (int j = 0; j  < m_ui->customActionWidget->children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(m_ui->customActionWidget->children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << j;
-            spin->blockSignals(false);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(m_ui->customActionWidget->children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "FOUND WIDGET BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                       //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(false);
-                    }
-                }
-            }
-        }
-    }
-
-//    wp->blockSignals(false);
+    blockAllSpinBoxSignals(false);
 }
 
 void WaypointEditableView::setCurrent(bool state)
