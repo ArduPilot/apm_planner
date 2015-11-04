@@ -532,6 +532,9 @@ void UASWaypointManager::loadWaypoints(const QString &loadFile)
         delete t;
     }
 
+    emit waypointEditableListChanged();
+    emit waypointEditableListChanged(uasid);
+
     QTextStream in(&file);
 
     const QStringList &version = in.readLine().split(" ");
