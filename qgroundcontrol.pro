@@ -108,7 +108,9 @@ QT += network \
     webkitwidgets \
     script\
     quick \
-    printsupport
+    printsupport \
+    qml \
+    quickwidgets
 
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
