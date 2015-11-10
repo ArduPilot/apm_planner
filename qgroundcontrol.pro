@@ -101,11 +101,9 @@ QT += network \
     opengl \
     svg \
     xml \
-    webkit \
     sql \
     widgets \
     serialport \
-    webkitwidgets \
     script\
     quick \
     printsupport \
@@ -456,7 +454,7 @@ HEADERS += \
     src/ui/HUD.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
-#ifdef CAMERAVIEW
+#if defined(CAMERAVIEW)
     src/ui/CameraView.h \
 #endif
     src/comm/MAVLinkSimulationLink.h \
@@ -491,7 +489,6 @@ HEADERS += \
     src/ui/QGCPxImuFirmwareUpdate.h \
     src/ui/RadioCalibration/RadioCalibrationData.h \
     src/comm/QGCMAVLink.h \
-    src/ui/map3D/QGCWebPage.h \
     src/ui/SlugsDataSensorView.h \
     src/ui/SlugsHilSim.h \
     src/ui/SlugsPadCameraControl.h \
@@ -718,7 +715,6 @@ SOURCES += src/main.cc \
     src/ui/QGCFirmwareUpdate.cc \
     src/ui/QGCPxImuFirmwareUpdate.cc \
     src/ui/RadioCalibration/RadioCalibrationData.cc \
-    src/ui/map3D/QGCWebPage.cc \
     src/ui/SlugsDataSensorView.cc \
     src/ui/SlugsHilSim.cc \
     src/ui/SlugsPadCameraControl.cpp \
@@ -891,6 +887,16 @@ SOURCES += src/main.cc \
     src/ui/VibrationMonitor.cpp \
     src/ui/EKFMonitor.cpp \
     src/Settings.cpp
+
+MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
+    message(Including support for Google Earth)
+    QT +=  webkit webkitwidgets
+    HEADERS +=  src/ui/map3D/QGCWebPage.h
+    SOURCES +=  src/ui/map3D/QGCWebPage.cc
+
+} else {
+    message(Skipping support for Google Earth)
+}
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
