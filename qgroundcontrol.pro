@@ -181,8 +181,8 @@ WindowsBuild {
 
     RC_FILE = $$BASEDIR/qgroundcontrol.rc
 
-    DEFINES += GIT_COMMIT=$$system(\"c:/program files (x86)/git/bin/git.exe\" describe --dirty=-DEV --always)
-    DEFINES += GIT_HASH=$$system(\"c:/program files (x86)/git/bin/git.exe\" log -n 1 --pretty=format:%H)
+    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
+    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 }
 
 WindowsCrossBuild {
