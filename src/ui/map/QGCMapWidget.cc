@@ -685,6 +685,33 @@ void QGCMapWidget::cacheVisibleRegion()
 
 // WAYPOINT MAP INTERACTION FUNCTIONS
 
+void QGCMapWidget::shiftOtherSelectedWaypoints(mapcontrol::WayPointItem* selectedWaypoint,
+                                               double shiftLong, double shiftLat)
+{
+    QMap<mapcontrol::WayPointItem*, Waypoint*>::iterator i;
+    for (i = iconsToWaypoints.begin(); i != iconsToWaypoints.end(); ++i) {
+        mapcontrol::WayPointItem* waypoint = i.key();
+
+        if (waypoint == selectedWaypoint) {
+            continue;
+        }
+
+        if (waypoint->isSelected()) {
+            // Update WP values
+            Waypoint* wp = i.value();
+            internals::PointLatLng pos = waypoint->Coord();
+
+            // Block waypoint signals
+            wp->blockSignals(true);
+            wp->setLatitude(pos.Lat() - shiftLat);
+            wp->setLongitude(pos.Lng() - shiftLong);
+            wp->blockSignals(false);
+
+            emit waypointChanged(wp);
+        }
+    }
+}
+
 void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
 {
     // Block circle updates
@@ -704,25 +731,21 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
     // Update WP values
     internals::PointLatLng pos = waypoint->Coord();
 
+    double shiftLat = wp->getLatitude() - pos.Lat();
+    double shiftLong = wp->getLongitude() - pos.Lng();
     // Block waypoint signals
     wp->blockSignals(true);
     wp->setLatitude(pos.Lat());
     wp->setLongitude(pos.Lng());
-    // XXX Magic values
-//    wp->setAltitude(homeAltitude + 50.0f);
-//    wp->setAcceptanceRadius(10.0f);
     wp->blockSignals(false);
-
-
-    internals::PointLatLng coord = waypoint->Coord();
-    QString coord_str = " " + QString::number(coord.Lat(), 'f', 6) + "   " + QString::number(coord.Lng(), 'f', 6);
-    // // QLOG_DEBUG() << "MAP WP COORD (MAP):" << coord_str << __FILE__ << __LINE__;
-    QString wp_str = QString::number(wp->getLatitude(), 'f', 6) + "   " + QString::number(wp->getLongitude(), 'f', 6);
-    // // QLOG_DEBUG() << "MAP WP COORD (WP):" << wp_str << __FILE__ << __LINE__;
 
     firingWaypointChange = NULL;
 
     emit waypointChanged(wp);
+
+    if (waypoint->isSelected() && waypoint->isDraggingActive()) {
+        shiftOtherSelectedWaypoints(waypoint, shiftLong, shiftLat);
+    }
 }
 
 // WAYPOINT UPDATE FUNCTIONS
@@ -915,46 +938,3 @@ void QGCMapWidget::updateWaypointList(int uas)
         redrawWaypointLines(uas);
     }
 }
-
-
-//// ADAPTER / HELPER FUNCTIONS
-//float QGCMapWidget::metersToPixels(double meters)
-//{
-//    return meters/map->Projection()->GetGroundResolution(map->ZoomTotal(),coord.Lat());
-//}
-
-//double QGCMapWidget::headingP1P2(internals::PointLatLng p1, internals::PointLatLng p2)
-//{
-//    double lat1 = p1.Lat() * deg_to_rad;
-//    double lon1 = p2.Lng() * deg_to_rad;
-
-//    double lat2 = p2.Lat() * deg_to_rad;
-//    double lon2 = p2.Lng() * deg_to_rad;
-
-//    double delta_lon = lon2 - lon1;
-
-//    double y = sin(delta_lon) * cos(lat2);
-//    double x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(delta_lon);
-//    double heading = atan2(y, x) * rad_to_deg;
-
-//    heading += 360;
-//    while (heading < 0) bear += 360;
-//    while (heading >= 360) bear -= 360;
-
-//    return heading;
-//}
-
-//internals::PointLatLng QGCMapWidget::targetLatLon(internals::PointLatLng source, double heading, double dist)
-//{
-//    double lat1 = source.Lat() * deg_to_rad;
-//    double lon1 = source.Lng() * deg_to_rad;
-
-//    heading *= deg_to_rad;
-
-//    double ad = dist / earth_mean_radius;
-
-//    double lat2 = asin(sin(lat1) * cos(ad) + cos(lat1) * sin(ad) * cos(heading));
-//    double lon2 = lon1 + atan2(sin(bear) * sin(ad) * cos(lat1), cos(ad) - sin(lat1) * sin(lat2));
-
-//    return internals::PointLatLng(lat2 * rad_to_deg, lon2 * rad_to_deg);
-//}

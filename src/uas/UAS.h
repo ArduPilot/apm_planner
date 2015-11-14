@@ -1077,6 +1077,7 @@ protected:
 
     QList< QPair<int, QString> >  paramRequestQueue;
 
+    QTimer m_parameterSendTimer;
 
 
 protected slots:

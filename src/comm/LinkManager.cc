@@ -621,6 +621,7 @@ void LinkManager::linkConnected(LinkInterface* link)
 
 void LinkManager::linkDisonnected(LinkInterface* link)
 {
+    QLOG_DEBUG() << "LinkManager::linkDisonnected: " << link->getName() << link->getId();
     emit linkChanged(link->getId());
 }
 

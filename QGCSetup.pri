@@ -54,6 +54,7 @@ message(QTDIR $$[QT_INSTALL_PREFIX])
 MacBuild {
     # Copy libraries and frameworks into app package
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$BASEDIR/libs/lib/Frameworks $$DESTDIR/$${TARGET}.app/Contents/Frameworks
+    QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$[QT_INSTALL_PREFIX]/qml/QtQuick $$DESTDIR/$${TARGET}.app/Contents/MacOS/qml/QtQuick
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$[QT_INSTALL_PREFIX]/qml/QtQuick.2 $$DESTDIR/$${TARGET}.app/Contents/MacOS/qml/QtQuick.2
 
     # SDL Framework
@@ -103,16 +104,35 @@ WindowsBuild {
         QMAKE_POST_LINK += $$escape_expand(\\n) $$quote($$QMAKE_COPY "$$COPY_FILE" "$$COPY_FILE_DESTDIR")
     }
 
-	ReleaseBuild {
-		QMAKE_POST_LINK += $$escape_expand(\\n) $$quote(del /F "$$DESTDIR_WIN\\$${TARGET}.exp")
+    # Copy Qml libraries
+    Q_DIR = $$[QT_INSTALL_QML]
+    QML_DIR_WIN = $$replace(Q_DIR, "/", "\\")
+    #QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY_DIR \"$$QML_DIR_WIN\\QtGraphicalEffects\" \"$$DESTDIR_WIN\\QtGraphicalEffects\"
+    QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY_DIR \"$$QML_DIR_WIN\\QtQuick\" \"$$DESTDIR_WIN\\QtQuick\"
+    QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY_DIR \"$$QML_DIR_WIN\\QtQuick.2\" \"$$DESTDIR_WIN\\QtQuick.2\"
+    #QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY_DIR \"$$QML_DIR_WIN\\QtLocation\" \"$$DESTDIR_WIN\\QtLocation\"
+    #QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY_DIR \"$$QML_DIR_WIN\\QtPositioning\" \"$$DESTDIR_WIN\\QtPositioning\"
 
-		# Copy Visual Studio DLLs
-		# Note that this is only done for release because the debugging versions of these DLLs cannot be redistributed.
-		# I'm not certain of the path for VS2008, so this only works for VS2010.
-		win32-msvc2010 {
-			QMAKE_POST_LINK += $$escape_expand(\\n) $$quote(xcopy /D /Y "\"C:\\Program Files \(x86\)\\Microsoft Visual Studio 10.0\\VC\\redist\\x86\\Microsoft.VC100.CRT\\*.dll\""  "$$DESTDIR_WIN\\")
-		}
-	}
+    ReleaseBuild {
+        # Copy Visual Studio DLLs
+        # Note that this is only done for release because the debugging versions of these DLLs cannot be redistributed.
+        win32-msvc2010 {
+                QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcp100.dll\"  \"$$DESTDIR_WIN\"
+                QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcr100.dll\"  \"$$DESTDIR_WIN\"
+        }
+        else:win32-msvc2012 {
+                QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcp110.dll\"  \"$$DESTDIR_WIN\"
+                QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcr110.dll\"  \"$$DESTDIR_WIN\"
+        }
+        else:win32-msvc2013 {
+                QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcp120.dll\"  \"$$DESTDIR_WIN\"
+                QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcr120.dll\"  \"$$DESTDIR_WIN\"
+        }
+        else {
+                error("Visual studio version not supported, installation cannot be completed.")
+        }
+    }
+
 }
 
 LinuxBuild {

@@ -68,6 +68,24 @@ class VehicleOverview : public QObject
 
     //User generated
     Q_PROPERTY(bool armed_state READ getArmedState WRITE setArmedState NOTIFY armedStateChanged)
+
+    // Vibration Messages
+    Q_PROPERTY(double vibration_x READ getVibrationX NOTIFY vibrationXChanged)
+    Q_PROPERTY(double vibration_y READ getVibrationY NOTIFY vibrationYChanged)
+    Q_PROPERTY(double vibration_z READ getVibrationZ NOTIFY vibrationZChanged)
+
+    Q_PROPERTY(double clipping_0 READ getClipping0 NOTIFY clipping0Changed)
+    Q_PROPERTY(double clipping_1 READ getClipping1 NOTIFY clipping1Changed)
+    Q_PROPERTY(double clipping_2 READ getClipping2 NOTIFY clipping2Changed)
+
+    // EKF Status Report
+    Q_PROPERTY(double ekf_flags READ getEkfFlags NOTIFY ekfFlagsChanged)
+    Q_PROPERTY(double ekf_velocity_variance READ getEkfVelocityVariance NOTIFY ekfVelocityVarianceChanged)
+    Q_PROPERTY(double ekf_pos_horiz_variance READ getEkfPosHorizVariance NOTIFY ekfPosHorizVarianceChanged)
+    Q_PROPERTY(double ekf_pos_vert_variance READ getEkfPosVertVariance NOTIFY ekfPosVertVarianceChanged)
+    Q_PROPERTY(double ekf_compass_varaince READ getEkfComapssVariance NOTIFY ekfCompassVarianceChanged)
+    Q_PROPERTY(double ekf_terrain_alt_variance READ getEkfTerrainAltVariance NOTIFY ekfTerrainAltVarianceChanged)
+
 public:
     //Heartbeat
     unsigned int getCustomMode() { return m_customMode; }
@@ -177,6 +195,35 @@ public:
     bool getArmedState() { return m_armedState; }
     void setArmedState(bool armedState) { if (m_armedState != armedState) { m_armedState = armedState; emit armedStateChanged(armedState); }}
 
+    // Vibration
+    double getVibrationX() { return m_vibrationX; }
+    double getVibrationY() { return m_vibrationY; }
+    double getVibrationZ() { return m_vibrationZ; }
+    void setVibrationX(double newValue) { if (m_vibrationX != newValue) { m_vibrationX = newValue; emit vibrationXChanged(m_vibrationX); }}
+    void setVibrationY(double newValue) { if (m_vibrationY != newValue) { m_vibrationY = newValue; emit vibrationYChanged(m_vibrationY); }}
+    void setVibrationZ(double newValue) { if (m_vibrationZ != newValue) { m_vibrationZ = newValue; emit vibrationZChanged(m_vibrationZ); }}
+
+    double getClipping0() { return m_clipping0; }
+    double getClipping1() { return m_clipping1; }
+    double getClipping2() { return m_clipping2; }
+    void setClipping0(double newValue) { if (m_clipping0 != newValue) { m_clipping0 = newValue; emit clipping0Changed(m_clipping0); }}
+    void setClipping1(double newValue) { if (m_clipping1 != newValue) { m_clipping1 = newValue; emit clipping1Changed(m_clipping1); }}
+    void setClipping2(double newValue) { if (m_clipping2 != newValue) { m_clipping2 = newValue; emit clipping2Changed(m_clipping2); }}
+
+    // EKF Status Report
+    uint16_t getEkfFlags() { return m_ekfFlags; }
+    float getEkfVelocityVariance() { return m_velocity_variance; }
+    float getEkfPosHorizVariance() { return m_pos_horiz_variance; }
+    float getEkfPosVertVariance() { return m_pos_vert_variance; }
+    float getEkfComapssVariance() { return m_compass_variance; }
+    float getEkfTerrainAltVariance() { return m_terrain_alt_variance; }
+
+    void setEkfFlags(uint16_t newFlags) { if (m_ekfFlags != newFlags) { m_ekfFlags = newFlags; emit ekfFlagsChanged(m_ekfFlags); }}
+    void setEkfVelocityVariance(float newValue) { if (m_velocity_variance != newValue) { m_velocity_variance = newValue; emit ekfVelocityVarianceChanged(newValue); }}
+    void setEkfPosHorizVariance(float newValue) { if (m_pos_horiz_variance != newValue) { m_pos_horiz_variance = newValue; emit ekfPosHorizVarianceChanged(newValue); }}
+    void setEkfPosVertVariance(float newValue) { if (m_pos_horiz_variance != newValue) { m_pos_horiz_variance = newValue; emit ekfPosVertVarianceChanged(newValue); }}
+    void setEkfComapssVariance(float newValue) { if (m_compass_variance != newValue) { m_compass_variance = newValue; emit ekfCompassVarianceChanged(newValue); }}
+    void setEkfTerrainAltVariance(float newValue) { if (m_terrain_alt_variance != newValue) { m_terrain_alt_variance = newValue; emit ekfTerrainAltVarianceChanged(newValue); }}
 
 private:
     //Heartbeat
@@ -239,17 +286,27 @@ private:
 
     //User Generated
     bool m_armedState;
+
+    // Vibration
+    double m_vibrationX;
+    double m_vibrationY;
+    double m_vibrationZ;
+
+    int m_clipping0;
+    int m_clipping1;
+    int m_clipping2;
+
+    // EKF Status report
+    unsigned int m_ekfFlags;
+    double m_velocity_variance;
+    double m_pos_horiz_variance;
+    double m_pos_vert_variance;
+    double m_compass_variance;
+    double m_terrain_alt_variance;
+
 public:
     explicit VehicleOverview(QObject *parent = 0);
     ~VehicleOverview();
-
-private:
-    quint64 lastHeartbeat;
-    unsigned int m_uasId;
-    unsigned int m_mavType;
-    void parseHeartbeat(LinkInterface *link, const mavlink_message_t &message, const mavlink_heartbeat_t &state);
-    void parseBattery(LinkInterface *link, const mavlink_message_t &message, const mavlink_battery_status_t &state);
-    void parseSysStatus(LinkInterface *link, const mavlink_message_t &message, const mavlink_sys_status_t &state);
 
 signals:
     //Heartbeat
@@ -313,17 +370,36 @@ signals:
     //User Generated
     void armedStateChanged(bool);
 
+    // Vibration
+    void vibrationXChanged(double);
+    void vibrationYChanged(double);
+    void vibrationZChanged(double);
+
+    void clipping0Changed(double);
+    void clipping1Changed(double);
+    void clipping2Changed(double);
+
+    // EKF Status Report
+    void ekfFlagsChanged(unsigned int);
+    void ekfVelocityVarianceChanged(float);
+    void ekfPosHorizVarianceChanged(float);
+    void ekfPosVertVarianceChanged(float);
+    void ekfCompassVarianceChanged(float);
+    void ekfTerrainAltVarianceChanged(float);
+
     void valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec);
 public slots:
-    //Heartbeat
-    //sys_status
-    //system_time
-    //NAV_CONTROLLER_OUTPUT
-    //RADIO_STATUS
-    //POWER_STATUS
-    //BATTERY_STATUS
-    //STATUSTEXT
     void messageReceived(LinkInterface* link,mavlink_message_t message);
+
+private:
+    quint64 lastHeartbeat;
+    unsigned int m_uasId;
+    unsigned int m_mavType;
+    void parseHeartbeat(LinkInterface *link, const mavlink_message_t &message, const mavlink_heartbeat_t &state);
+    void parseBattery(LinkInterface *link, const mavlink_battery_status_t &state);
+    void parseSysStatus(LinkInterface *link, const mavlink_sys_status_t &state);
+    void parseVibration(LinkInterface *link, const mavlink_vibration_t &vibration);
+    void parseEkfStatusReport(LinkInterface *link, const mavlink_ekf_status_report_t &report);
 };
 
 #endif // VEHICLEOVERVIEW_H

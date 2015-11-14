@@ -288,6 +288,27 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="autoProxyCheckBox">
+           <property name="toolTip">
+            <string>Use the system defined network proxies to download data from the Internet through a firewall.</string>
+           </property>
+           <property name="text">
+            <string>Automatically Use System Network Proxies</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../qgroundcontrol.qrc">
+             <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="hideDonateButtonCheckBox">
+           <property name="text">
+            <string>Hide Donate Button</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item row="4" column="0">
@@ -387,7 +408,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="label_6">
             <property name="text">
-             <string>Attitude</string>
+             <string>Attitude (Extra1)</string>
             </property>
            </widget>
           </item>

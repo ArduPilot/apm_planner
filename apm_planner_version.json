@@ -41,38 +41,38 @@
         {
             "platform": "osx",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.18-rc2_osx.dmg",
-            "name" : "apm_planner_2.0.18-rc2_osx.dmg",
-            "version" : "2.0.18-rc2",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.19-rc4_osx.dmg",
+            "name" : "apm_planner_2.0.19-rc4_osx.dmg",
+            "version" : "2.0.19-rc4",
             "sha" : "",
-            "date" : "2015-06-17"
+            "date" : "2015-10-20"
         },
         {
             "platform": "win",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.18-rc2_win.exe",
-            "name" : "apm_planner_2.0.18-rc2_win.exe",
-            "version": "2.0.18-rc2",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.19-rc4_win.exe",
+            "name" : "apm_planner_2.0.19-rc4_win.exe",
+            "version": "2.0.19-rc4",
             "sha" : "",
-            "date" : "2015-06-17"
+            "date" : "2015-10-20"
         },
         {
             "platform": "ubuntu_trusty",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.18-rc2_ubuntu_trusty.deb",
-            "name" : "apm_planner_2.0.18-rc2_ubuntu_trusty.deb",
-            "version": "2.0.18-rc2",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.19-rc4_ubuntu_trusty.deb",
+            "name" : "apm_planner_2.0.19-rc4_ubuntu_trusty.deb",
+            "version": "2.0.19-rc4",
             "sha" : "",
-            "date" : "2015-06-17"
+            "date" : "2015-10-20"
         },
         {
             "platform": "ubuntu_trusty64",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.18-rc2_ubuntu_trusty64.deb",
-            "name" : "apm_planner_2.0.18-rc2_ubuntu_trusty64.deb",
-            "version": "2.0.18-rc2",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.19-rc4_ubuntu_trusty64.deb",
+            "name" : "apm_planner_2.0.19-rc4_ubuntu_trusty64.deb",
+            "version": "2.0.19-rc4",
             "sha" : "",
-            "date" : "2015-06-17"
+            "date" : "2015-10-20"
         }
     ]
 }

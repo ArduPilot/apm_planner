@@ -7,9 +7,10 @@
 #include <QJsonObject>
 #include <QProcess>
 #include <QApplication>
-#ifndef Q_OS_WIN
+#if defined(OPENSSL)
 #include <openssl/ssl.h>
 #endif
+
 #include "QsLog.h"
 
 #define CERT_OF_A_FAILED "Certificate of Authenticity check failed! Please check with your autopilot hardware supplier for support."
@@ -285,7 +286,7 @@ void PX4FirmwareUploader::kickOffTriggered()
     m_port = new QSerialPort();
     connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()));
 
-#ifdef Q_OS_MACX
+#if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
     // temp fix Qt5.4.1 issue on OSX
     // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
     m_port->setPortName("/dev/cu." + m_portToUse);
@@ -626,7 +627,7 @@ bool PX4FirmwareUploader::verifyOtp()
 
 bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& signature, const QString& publicKey)
 {
-#ifndef Q_OS_WIN
+#if defined(OPENSSL)
     QByteArray bytes = QByteArray::fromBase64(publicKey.toUtf8());
 
     BIO *bi = BIO_new(BIO_s_mem());

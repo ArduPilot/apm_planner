@@ -15,13 +15,17 @@
 #define WITH_TEXT_TO_SPEECH 1
 
 #define QGC_APPLICATION_NAME "APM Planner"
-#define QGC_APPLICATION_VERSION "v2.0.18"
+#define QGC_APPLICATION_VERSION "v2.0.19-rc4"
 #define APP_DATA_DIRECTORY "/apmplanner2"
 #define LOG_DIRECTORY "/dataflashLogs"
 #define PARAMETER_DIRECTORY "/parameters"
 #define MISSION_DIRECTORY "/missions"
 #define MAVLINK_LOG_DIRECTORY "/tlogs"
 #define MAVLINK_LOGFILE_EXT ".tlog"
+
+static const QRegExp APM_COPTER_REXP = QRegExp("^(ArduCopter|APM:Copter)");
+static const QRegExp APM_PLANE_REXP = QRegExp("^(ArduPlane|APM:Plane)");
+static const QRegExp APM_ROVER_REXP = QRegExp("^(ArduRover|APM:Rover)");
 
 #ifndef APP_TYPE
 #define APP_TYPE stable // or "daily" for master branch builds
@@ -50,7 +54,7 @@ namespace QGC
 {
 const QString APPNAME = "APMPLANNER2";
 const QString COMPANYNAME = "DIYDRONES";
-const int APPLICATIONVERSION = 2018; // 2.0.18 [TODO] we should deprecate this version definition
+const int APPLICATIONVERSION = 2019; // 2.0.19 [TODO] we should deprecate this version definition
 
     inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();
