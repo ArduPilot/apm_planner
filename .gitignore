@@ -1,3 +1,7 @@
+# debian build package files
+*.deb
+*.tgz
+#
 *.swp
 *.nfs
 CMakeFiles
