@@ -382,7 +382,7 @@
            <item>
             <widget class="QLabel" name="label_49">
              <property name="text">
-              <string>speed Down</string>
+              <string>Speed Down</string>
              </property>
             </widget>
            </item>

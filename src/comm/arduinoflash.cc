@@ -79,7 +79,7 @@ void ArduinoFlash::run()
         emit debugUpdate("Hex file loaded: " + QString::number(hex.size()) + " bytes");
     }
     m_port = new QSerialPort();
-#ifdef Q_OS_MACX
+#if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
     // temp fix Qt5.4.1 issue on OSX
     // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
     m_port->setPortName("/dev/cu." + m_comPort);

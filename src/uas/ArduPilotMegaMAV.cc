@@ -412,8 +412,8 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             int severity = mavlink_msg_statustext_get_severity(&message);
             QLOG_INFO() << "STATUS TEXT:" << severity << ":" << text;
 
-            if (text.startsWith("ArduCopter") || text.startsWith("ArduPlane")
-                    || text.startsWith("ArduRover")) {
+            if (text.contains(APM_COPTER_REXP) || text.contains(APM_PLANE_REXP)
+                    || text.contains(APM_ROVER_REXP)) {
                 QLOG_DEBUG() << "APM Version String detected:" << text;
                 emit versionDetected(text);
             }
@@ -531,7 +531,7 @@ void ArduPilotMegaMAV::textMessageReceived(int /*uasid*/, int /*componentid*/, i
         QString audioString = "Pre-arm check:" + text.remove("PreArm:");
         GAudioOutput::instance()->say(audioString, severity);
     } else if (text.startsWith("Arm:")){
-        QString audioString = "Please press and hold safety switch";
+        QString audioString = "Arm check:" + text.remove("Arm:");
         GAudioOutput::instance()->say(audioString, severity);
     }
 }

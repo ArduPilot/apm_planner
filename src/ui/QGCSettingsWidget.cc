@@ -117,6 +117,9 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         }
         settings.endGroup();
         connect(ui->enableBetaReleaseCheckBox, SIGNAL(clicked(bool)), this, SLOT(setBetaRelease(bool)));
+
+        ui->hideDonateButtonCheckBox->setChecked(settings.value("USER_DONATED", false).toBool());
+        connect(ui->hideDonateButtonCheckBox, SIGNAL(clicked(bool)), this, SLOT(setHideDonateButton(bool)));
     }
 }
 
@@ -284,5 +287,12 @@ void QGCSettingsWidget::setBetaRelease(bool state)
         type = "stable";
     }
     settings.setValue("RELEASE_TYPE", type);
+    settings.sync();
+}
+
+void QGCSettingsWidget::setHideDonateButton(bool state)
+{
+    QSettings settings;
+    settings.setValue("USER_DONATED", state);
     settings.sync();
 }

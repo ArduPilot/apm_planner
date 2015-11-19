@@ -82,7 +82,6 @@ public:
 
 public:
     void setCurrent(bool state);
-
 public slots:
     void moveUp();
     void moveDown();
@@ -122,6 +121,7 @@ private:
     void disableMouseScrollWheel(const QWidget *parentWidget);
     QWidget* createActionWidget(int action);
 
+    void blockAllSpinBoxSignals(const bool shallBlock);
 private:
     Ui::WaypointEditableView *m_ui;
 
