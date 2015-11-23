@@ -33,6 +33,30 @@ This file is part of the APM_PLANNER project
 #include <QAbstractTableModel>
 #include <QSqlDatabase>
 
+
+//**************** Helper Class ErrorType *****************
+
+/**
+ * @brief Helper class for making it easier to handle the
+ *        errorcodes, especially the toString conversion
+ */
+
+class ErrorType
+{
+public:
+    u_int64_t Timeus;
+    u_int8_t SubSys;
+    u_int8_t ErrorCode;
+
+    ErrorType();
+
+    bool operator != (const ErrorType &lhs);
+
+    QString toString();
+};
+
+// ********************************************************
+
 class AP2DataPlot2DModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -49,6 +73,7 @@ public:
     QMap<QString,QList<QString> > getFmtValues();
     QString getFmtLine(const QString& name);
     QMap<quint64,QString> getModeValues();
+    QMap<quint64, ErrorType> getErrorValues();
     bool hasType(const QString& name);
     QMap<quint64,QVariant> getValues(const QString& parent,const QString& child);
     int getChildIndex(const QString& parent,const QString& child);
@@ -97,5 +122,7 @@ private:
 
 
 };
+
+
 
 #endif // AP2DATAPLOT2DMODEL_H

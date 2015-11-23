@@ -36,6 +36,7 @@ This file is part of the APM_PLANNER project
 #include <QUuid>
 #include <QsLog.h>
 #include <ArduPilotMegaMAV.h>
+#include <sstream>
 /*
  * This model holds everything in memory in a sqlite database.
  * There are two system tables, then unlimited number of message tables.
@@ -349,6 +350,52 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
     }
     return retval;
 }
+
+
+QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues()
+{
+    QMap<quint64,ErrorType> retval;
+    QSqlQuery errorquery(m_sharedDb);
+    errorquery.prepare("SELECT * FROM 'ERR';");
+    if (!errorquery.exec())
+    {
+        //No error?
+        QLOG_DEBUG() << "Graph loaded with no error table. This is perfect!";
+    }
+
+    ErrorType lastErr;
+
+    while (errorquery.next())
+    {
+        QSqlRecord record = errorquery.record();
+        quint64 index = record.value(0).toLongLong();
+        ErrorType error;
+
+        if (record.contains("TimeUS"))
+        {
+            error.Timeus = record.value("TimeUS").toString().toLongLong();
+        }
+
+        if (record.contains("Subsys"))
+        {
+            error.SubSys = record.value("Subsys").toString().toShort();
+        }
+
+        if (record.contains("ECode"))
+        {
+            error.ErrorCode = record.value("ECode").toString().toShort();
+        }
+
+        if (lastErr != error)
+        {
+            retval.insert(index,error);
+            lastErr = error;
+        }
+
+    }
+    return retval;
+}
+
 
 QVariant AP2DataPlot2DModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
@@ -834,3 +881,198 @@ quint64 AP2DataPlot2DModel::getFirstIndex()
 {
     return m_firstIndex;
 }
+
+//******************* Class Error Type **************************
+
+ErrorType::ErrorType() : Timeus(0), SubSys(0), ErrorCode(0)
+{}
+
+bool ErrorType::operator != (const ErrorType &lhs)
+{
+    return ((this->Timeus != lhs.Timeus) || (this->SubSys != lhs.SubSys) || (this->ErrorCode != lhs.ErrorCode));
+}
+
+QString ErrorType::toString()
+{
+    // SubSys ans ErrorCode interpretation was taken from
+    // Ardupilot/ArduCopter/defines.h
+
+    std::stringstream ss;
+    bool EcodeUsed = false;
+
+    switch (SubSys)
+    {
+    case 1:
+        ss << "Main:";
+        if (ErrorCode == 1)
+        {
+            ss << "Ins-Delay";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 2:
+        ss << "Radio:";
+        if (ErrorCode == 2)
+        {
+            ss << "Late Frame detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 3:
+        ss << "Compass:";
+        break;
+
+    case 4:
+        ss << "OptFlow:";
+        break;
+
+    case 5:
+        ss << "FS-Radio:";
+        break;
+
+    case 6:
+        ss << "FS-Batt:";
+        if (ErrorCode == 1)
+        {
+            ss << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 7:
+        ss << "FS-GPS:";
+        if (ErrorCode == 1)
+        {
+            ss << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 8:
+        ss << "FS-GCS:";
+        if (ErrorCode == 1)
+        {
+            ss << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 9:
+        ss << "FS-Fence:";
+        if (ErrorCode == 1)
+        {
+            ss << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 10:
+        ss << "Flight-Mode:";
+        break;
+
+    case 11:
+        ss << "GPS:";
+        break;
+
+    case 12:
+        ss << "Crash-Check:";
+        if (ErrorCode == 1)
+        {
+            ss << "Crash Detected";
+            EcodeUsed = true;
+        }
+        else if (ErrorCode == 2)
+        {
+            ss << "Control Lost";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 13:
+        ss << "FLIP:";
+        if (ErrorCode == 2)
+        {
+            ss << "Abandoned";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 14:
+        ss << "Autotune:";
+        break;
+
+    case 15:
+        ss << "Parachute:";
+        if (ErrorCode == 2)
+        {
+            ss << "Too low to eject";
+            EcodeUsed = true;
+        }
+        else if (ErrorCode == 3)
+        {
+            ss << "Copter Landed";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 16:
+        ss << "EKF-Check:";
+        if (ErrorCode == 2)
+        {
+            ss << "Bad Variance detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 17:
+        ss << "FS-EKF-INAV";
+        break;
+
+    case 18:
+        ss << "Baro:";
+        if (ErrorCode == 2)
+        {
+            ss << "Glitch detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 19:
+        ss << "CPU:";
+        break;
+
+    default:
+        ss << "SubSys:" << SubSys << " ECode:" << ErrorCode;
+        EcodeUsed = true;
+        break;
+
+    }
+
+    if (!EcodeUsed)
+    {
+        switch (ErrorCode)
+        {
+        case 0:
+            ss << "Everything OK!";
+            break;
+
+        case 1:
+            ss << "Failed to init";
+            break;
+
+        case 4:
+            ss << "Is Unhealthy";
+            break;
+
+        default:
+            ss << "Unknown ErrorCode(" << ErrorCode << ")";
+            break;
+        }
+    }
+
+    QString str = QString::fromStdString(ss.str());
+    return str;
+}
+
