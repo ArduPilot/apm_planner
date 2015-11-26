@@ -52,6 +52,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QStyleFactory>
 #include <QAction>
 
+
 /**
  * @brief Constructor for the main application.
  *
@@ -81,8 +82,8 @@ void QGCCore::initialize()
 {
     QLOG_INFO() << "QGCCore::initialize()";
     QLOG_INFO() << "Current Build Info";
-    QLOG_INFO() << "Git Hash:" << define2string(GIT_HASH);
-    QLOG_INFO() << "Git Commit:" << define2string(GIT_COMMIT);
+    QLOG_INFO() << "Git Hash:" << QString(define2string(GIT_HASH));
+    QLOG_INFO() << "Git Commit:" << QString(define2string(GIT_COMMIT));
     QLOG_INFO() << "APPLICATION_NAME:" << define2string(QGC_APPLICATION_NAME);
     QLOG_INFO() << "APPLICATION_VERSION:" << define2string(QGC_APPLICATION_VERSION);
     QLOG_INFO() << "APP_PLATFORM:" << define2string(APP_PLATFORM);

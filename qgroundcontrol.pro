@@ -25,6 +25,10 @@
 
 message(Qt version $$[QT_VERSION])
 
+!equals(QT_MAJOR_VERSION, 5) | !greaterThan(QT_MINOR_VERSION, 3) {
+    error("Unsupported Qt version, 5.4+ is required")
+}
+
 # Setup our supported build types. We do this once here and then use the defined config scopes
 # to allow us to easily modify suported build types in one place instead of duplicated throughout
 # the project file.
@@ -45,12 +49,11 @@ linux-g++-64 {
     contains( DISTRO, "Ubuntu" ) {
          DEFINES += Q_UBUNTU
     }
-
-} else : win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+} else : win32-msvc2013 {
     message(Windows build)
     CONFIG += WindowsBuild
-}  else : win32-x-g++|win64-x-g++ {
-    message(Windows Cross Build)
+}  else : win32-g++|win64-g++ {
+    error("Windows cross build is unsupported, MSVC required")
     CONFIG += WindowsCrossBuild
 } else : macx-clang | macx-g++ {
     message(Mac build)
@@ -113,11 +116,12 @@ QT += network \
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
-!NOTOUCH {
-    gittouch.commands = touch qgroundcontrol.pro
-    QMAKE_EXTRA_TARGETS += gittouch
-    POST_TARGETDEPS += gittouch
-}
+#Not sure what we were doing here, will have to ask
+#!NOTOUCH {
+#    gittouch.commands = touch qgroundcontrol.pro
+#    QMAKE_EXTRA_TARGETS += gittouch
+#    POST_TARGETDEPS += gittouch
+#}
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
@@ -307,7 +311,7 @@ FORMS += \
     src/ui/ParameterInterface.ui \
     src/ui/WaypointList.ui \
     src/ui/ObjectDetectionView.ui \
-    src/ui/JoystickWidget.ui \
+    #src/ui/JoystickWidget.ui \
     src/ui/HDDisplay.ui \
     src/ui/MAVLinkSettingsWidget.ui \
     src/ui/AudioOutputWidget.ui \
@@ -455,7 +459,7 @@ HEADERS += \
     src/configuration.h \
     src/ui/uas/UASView.h \
 #if defined(CAMERAVIEW)
-    src/ui/CameraView.h \
+    #src/ui/CameraView.h \
 #endif
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
@@ -466,8 +470,8 @@ HEADERS += \
     src/ui/WaypointNavigation.h \
     src/Waypoint.h \
     src/ui/ObjectDetectionView.h \
-    src/input/JoystickInput.h \
-    src/ui/JoystickWidget.h \
+    #src/input/JoystickInput.h \
+    #src/ui/JoystickWidget.h \
     src/ui/HDDisplay.h \
     src/ui/MAVLinkSettingsWidget.h \
     src/ui/AudioOutputWidget.h \
@@ -682,7 +686,7 @@ SOURCES += src/main.cc \
     src/ui/HUD.cc \
     src/ui/uas/UASView.cc \
 #ifdef CAMERAVIEW
-    src/ui/CameraView.cc \
+    #src/ui/CameraView.cc \
 #endif
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
@@ -693,8 +697,8 @@ SOURCES += src/main.cc \
     src/ui/WaypointNavigation.cc \
     src/Waypoint.cc \
     src/ui/ObjectDetectionView.cc \
-    src/input/JoystickInput.cc \
-    src/ui/JoystickWidget.cc \
+    #src/input/JoystickInput.cc \
+    #src/ui/JoystickWidget.cc \
     src/ui/HDDisplay.cc \
     src/ui/MAVLinkSettingsWidget.cc \
     src/ui/AudioOutputWidget.cc \
@@ -945,5 +949,3 @@ OTHER_FILES += \
 
 DISTFILES += \
     qml/components/BarGauge.qml
-
-
