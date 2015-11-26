@@ -36,7 +36,6 @@ This file is part of the APM_PLANNER project
 static const QString DEFAULT_FIRMWARE_TYPE = "stable";
 static const QString DEFAULT_AUTOPILOT_HW_TYPE = "";
 
-
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_throwPropSpinWarning(false),
     m_replugRequestMessageBox(0),
@@ -899,7 +898,7 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
             return "px4";
         }
         else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001
-                 || info.productIdentifier() == 0x0016) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
+                 || info.productIdentifier() == 0x0016 || info.productIdentifier() == 0x27CA) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
         {
             return "pixhawk";
         }
