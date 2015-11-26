@@ -36,7 +36,7 @@ This file is part of the APM_PLANNER project
 #include <QUuid>
 #include <QsLog.h>
 #include <ArduPilotMegaMAV.h>
-#include <sstream>
+
 /*
  * This model holds everything in memory in a sqlite database.
  * There are two system tables, then unlimited number of message tables.
@@ -897,154 +897,156 @@ QString ErrorType::toString()
     // SubSys ans ErrorCode interpretation was taken from
     // Ardupilot/ArduCopter/defines.h
 
-    std::stringstream ss;
+    QString output;
+    QTextStream QTStream(&output);
+
     bool EcodeUsed = false;
 
     switch (SubSys)
     {
     case 1:
-        ss << "Main:";
+        QTStream << "Main:";
         if (ErrorCode == 1)
         {
-            ss << "Ins-Delay";
+            QTStream << "Ins-Delay";
             EcodeUsed = true;
         }
         break;
 
     case 2:
-        ss << "Radio:";
+        QTStream << "Radio:";
         if (ErrorCode == 2)
         {
-            ss << "Late Frame detected";
+            QTStream << "Late Frame detected";
             EcodeUsed = true;
         }
         break;
 
     case 3:
-        ss << "Compass:";
+        QTStream << "Compass:";
         break;
 
     case 4:
-        ss << "OptFlow:";
+        QTStream << "OptFlow:";
         break;
 
     case 5:
-        ss << "FS-Radio:";
+        QTStream << "FS-Radio:";
         break;
 
     case 6:
-        ss << "FS-Batt:";
+        QTStream << "FS-Batt:";
         if (ErrorCode == 1)
         {
-            ss << "Detected";
+            QTStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 7:
-        ss << "FS-GPS:";
+        QTStream << "FS-GPS:";
         if (ErrorCode == 1)
         {
-            ss << "Detected";
+            QTStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 8:
-        ss << "FS-GCS:";
+        QTStream << "FS-GCS:";
         if (ErrorCode == 1)
         {
-            ss << "Detected";
+            QTStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 9:
-        ss << "FS-Fence:";
+        QTStream << "FS-Fence:";
         if (ErrorCode == 1)
         {
-            ss << "Detected";
+            QTStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 10:
-        ss << "Flight-Mode:";
+        QTStream << "Flight-Mode:";
         break;
 
     case 11:
-        ss << "GPS:";
+        QTStream << "GPS:";
         break;
 
     case 12:
-        ss << "Crash-Check:";
+        QTStream << "Crash-Check:";
         if (ErrorCode == 1)
         {
-            ss << "Crash Detected";
+            QTStream << "Crash Detected";
             EcodeUsed = true;
         }
         else if (ErrorCode == 2)
         {
-            ss << "Control Lost";
+            QTStream << "Control Lost";
             EcodeUsed = true;
         }
         break;
 
     case 13:
-        ss << "FLIP:";
+        QTStream << "FLIP:";
         if (ErrorCode == 2)
         {
-            ss << "Abandoned";
+            QTStream << "Abandoned";
             EcodeUsed = true;
         }
         break;
 
     case 14:
-        ss << "Autotune:";
+        QTStream << "Autotune:";
         break;
 
     case 15:
-        ss << "Parachute:";
+        QTStream << "Parachute:";
         if (ErrorCode == 2)
         {
-            ss << "Too low to eject";
+            QTStream << "Too low to eject";
             EcodeUsed = true;
         }
         else if (ErrorCode == 3)
         {
-            ss << "Copter Landed";
+            QTStream << "Copter Landed";
             EcodeUsed = true;
         }
         break;
 
     case 16:
-        ss << "EKF-Check:";
+        QTStream << "EKF-Check:";
         if (ErrorCode == 2)
         {
-            ss << "Bad Variance detected";
+            QTStream << "Bad Variance detected";
             EcodeUsed = true;
         }
         break;
 
     case 17:
-        ss << "FS-EKF-INAV";
+        QTStream << "FS-EKF-INAV";
         break;
 
     case 18:
-        ss << "Baro:";
+        QTStream << "Baro:";
         if (ErrorCode == 2)
         {
-            ss << "Glitch detected";
+            QTStream << "Glitch detected";
             EcodeUsed = true;
         }
         break;
 
     case 19:
-        ss << "CPU:";
+        QTStream << "CPU:";
         break;
 
     default:
-        ss << "SubSys:" << SubSys << " ECode:" << ErrorCode;
+        QTStream << "SubSys:" << SubSys << " ECode:" << ErrorCode;
         EcodeUsed = true;
         break;
 
@@ -1055,24 +1057,23 @@ QString ErrorType::toString()
         switch (ErrorCode)
         {
         case 0:
-            ss << "Everything OK!";
+            QTStream << "Everything OK!";
             break;
 
         case 1:
-            ss << "Failed to init";
+            QTStream << "Failed to init";
             break;
 
         case 4:
-            ss << "Is Unhealthy";
+            QTStream << "Is Unhealthy";
             break;
 
         default:
-            ss << "Unknown ErrorCode(" << ErrorCode << ")";
+            QTStream << "Unknown ErrorCode(" << ErrorCode << ")";
             break;
         }
     }
 
-    QString str = QString::fromStdString(ss.str());
-    return str;
+    return output;
 }
 
