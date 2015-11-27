@@ -124,7 +124,6 @@ void LinkManager::loadSettings()
     for (int i=0;i<linkssize;i++)
     {
         settings.setArrayIndex(i);
-        int linkid = settings.value("linkid").toInt();
         QString type = settings.value("type").toString();
         if (type == "SERIAL_LINK")
         {
