@@ -7071,8 +7071,7 @@ bool rmatrixschur(real_2d_array &a, const ae_int_t n, real_2d_array &s)
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
-static ae_int_t ablas_rgemmparallelsize = 64;
-static ae_int_t ablas_cgemmparallelsize = 64;
+
 static void ablas_ablasinternalsplitlength(ae_int_t n,
      ae_int_t nb,
      ae_int_t* n1,
