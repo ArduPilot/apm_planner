@@ -4817,6 +4817,9 @@ static void densesolver_spdmatrixcholeskysolveinternal(/* Real    */ ae_matrix* 
      /* Real    */ ae_matrix* x,
      ae_state *_state)
 {
+    (void)a;
+    (void)havea;
+
     ae_frame _frame_block;
     ae_int_t i;
     ae_int_t j;
@@ -5146,6 +5149,9 @@ static void densesolver_hpdmatrixcholeskysolveinternal(/* Complex */ ae_matrix* 
      /* Complex */ ae_matrix* x,
      ae_state *_state)
 {
+    (void)a;
+    (void)havea;
+
     ae_frame _frame_block;
     ae_int_t i;
     ae_int_t j;
@@ -5274,6 +5280,11 @@ static ae_int_t densesolver_densesolverrfsmax(ae_int_t n,
      double rinf,
      ae_state *_state)
 {
+    (void)n;
+    (void)r1;
+    (void)rinf;
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -5296,6 +5307,8 @@ static ae_int_t densesolver_densesolverrfsmaxv2(ae_int_t n,
      double r2,
      ae_state *_state)
 {
+    (void)r2;
+
     ae_int_t result;
 
 
@@ -5322,6 +5335,8 @@ static void densesolver_rbasiclusolve(/* Real    */ ae_matrix* lua,
      /* Real    */ ae_vector* tmp,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     double v;
 
@@ -5368,6 +5383,8 @@ static void densesolver_spdbasiccholeskysolve(/* Real    */ ae_matrix* cha,
      /* Real    */ ae_vector* tmp,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     double v;
 
@@ -5459,6 +5476,8 @@ static void densesolver_cbasiclusolve(/* Complex */ ae_matrix* lua,
      /* Complex */ ae_vector* tmp,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_complex v;
 
@@ -5580,6 +5599,9 @@ static void densesolver_hpdbasiccholeskysolve(/* Complex */ ae_matrix* cha,
 
 ae_bool _densesolverreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     densesolverreport *p = (densesolverreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -5588,6 +5610,9 @@ ae_bool _densesolverreport_init(void* _p, ae_state *_state, ae_bool make_automat
 
 ae_bool _densesolverreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     densesolverreport *dst = (densesolverreport*)_dst;
     densesolverreport *src = (densesolverreport*)_src;
     dst->r1 = src->r1;
@@ -6521,7 +6546,7 @@ void linlsqrsetxrep(linlsqrstate* state,
      ae_bool needxrep,
      ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -6549,7 +6574,7 @@ Clears request fileds (to be sure that we don't forgot to clear something)
 *************************************************************************/
 static void linlsqr_clearrfields(linlsqrstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->xupdated = ae_false;
     state->needmv = ae_false;
@@ -6724,6 +6749,9 @@ void _linlsqrstate_destroy(void* _p)
 
 ae_bool _linlsqrreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     linlsqrreport *p = (linlsqrreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -6732,6 +6760,9 @@ ae_bool _linlsqrreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _linlsqrreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     linlsqrreport *dst = (linlsqrreport*)_dst;
     linlsqrreport *src = (linlsqrreport*)_src;
     dst->iterationscount = src->iterationscount;
@@ -7659,7 +7690,7 @@ provided to MinCGOptimize().
 *************************************************************************/
 void lincgsetxrep(lincgstate* state, ae_bool needxrep, ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -7687,7 +7718,7 @@ Clears request fileds (to be sure that we don't forgot to clear something)
 *************************************************************************/
 static void lincg_clearrfields(lincgstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->xupdated = ae_false;
     state->needmv = ae_false;
@@ -7703,7 +7734,7 @@ Clears request fileds (to be sure that we don't forgot to clear something)
 *************************************************************************/
 static void lincg_updateitersdata(lincgstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->repiterationscount = 0;
     state->repnmv = 0;
@@ -7849,6 +7880,9 @@ void _lincgstate_destroy(void* _p)
 
 ae_bool _lincgreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     lincgreport *p = (lincgreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -7857,6 +7891,9 @@ ae_bool _lincgreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _lincgreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     lincgreport *dst = (lincgreport*)_dst;
     lincgreport *src = (lincgreport*)_src;
     dst->iterationscount = src->iterationscount;
@@ -8038,7 +8075,7 @@ provided to NLEQSolve().
 *************************************************************************/
 void nleqsetxrep(nleqstate* state, ae_bool needxrep, ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -8511,7 +8548,7 @@ Clears request fileds (to be sure that we don't forgot to clear something)
 *************************************************************************/
 static void nleq_clearrequestfields(nleqstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->needf = ae_false;
     state->needfij = ae_false;
@@ -8672,6 +8709,9 @@ void _nleqstate_destroy(void* _p)
 
 ae_bool _nleqreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     nleqreport *p = (nleqreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -8680,6 +8720,9 @@ ae_bool _nleqreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _nleqreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     nleqreport *dst = (nleqreport*)_dst;
     nleqreport *src = (nleqreport*)_src;
     dst->iterationscount = src->iterationscount;
