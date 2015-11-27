@@ -59,6 +59,7 @@ This file is part of the QGROUNDCONTROL project
  */
 HUD::HUD(int width, int height, QWidget* parent)
     : QLabel(parent),
+      image(NULL),
       uas(NULL),
       yawInt(0.0f),
       mode(tr("UNKNOWN MODE")),
@@ -119,11 +120,10 @@ HUD::HUD(int width, int height, QWidget* parent)
       nextOfflineImage(""),
       HUDInstrumentsEnabled(false),
       videoEnabled(true),
+      imageLoggingEnabled(false),
       xImageFactor(1.0),
       yImageFactor(1.0),
-      imageRequested(false),
-      imageLoggingEnabled(false),
-    image(NULL)
+      imageRequested(false)
 {
     // Fill with black background
     QImage fill = QImage(width, height, QImage::Format_Indexed8);
@@ -153,15 +153,18 @@ HUD::HUD(int width, int height, QWidget* parent)
     fontDatabase = QFontDatabase();
     const QString fontFileName = ":/general/vera.ttf"; ///< Font file is part of the QRC file and compiled into the app
     const QString fontFamilyName = "Bitstream Vera Sans";
-    if(!QFile::exists(fontFileName)) QLOG_DEBUG() << "ERROR! font file: " << fontFileName << " DOES NOT EXIST!";
-
+    if(!QFile::exists(fontFileName)) {
+        QLOG_DEBUG() << "ERROR! font file: " << fontFileName << " DOES NOT EXIST!";
+    }
     fontDatabase.addApplicationFont(fontFileName);
     font = fontDatabase.font(fontFamilyName, "Roman", qMax(5,(int)(10.0f*scalingFactor*1.2f+0.5f)));
     QFont* fontPtr = &font;
     if (!fontPtr) {
         QLOG_DEBUG() << "ERROR! FONT NOT LOADED!";
     } else {
-        if (font.family() != fontFamilyName) QLOG_DEBUG() << "ERROR! WRONG FONT LOADED: " << fontFamilyName;
+        if (font.family() != fontFamilyName) {
+            QLOG_DEBUG() << "ERROR! WRONG FONT LOADED: " << fontFamilyName;
+        }
     }
 
     // Connect with UAS

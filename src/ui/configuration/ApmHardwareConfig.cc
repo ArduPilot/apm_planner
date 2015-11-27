@@ -31,9 +31,9 @@ This file is part of the APM_PLANNER project
 #include "ApmHardwareConfig.h"
 
 ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_uas(NULL),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
-    m_uas(NULL),
     m_mandatory(false)
 {
     ui.setupUi(this);
