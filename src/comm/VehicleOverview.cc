@@ -24,6 +24,8 @@ VehicleOverview::~VehicleOverview()
 
 void VehicleOverview::parseHeartbeat(LinkInterface* link,const mavlink_message_t &message, const mavlink_heartbeat_t &state)
 {
+    Q_UNUSED(link)
+    Q_UNUSED(message)
     // Set new type if it has changed
     if (m_type != state.type)
     {
@@ -74,11 +76,13 @@ void VehicleOverview::parseHeartbeat(LinkInterface* link,const mavlink_message_t
 }
 void VehicleOverview::parseBattery(LinkInterface *link, const mavlink_battery_status_t &state)
 {
-    Q_UNUSED(state);
+    Q_UNUSED(state)
+    Q_UNUSED(link)
 }
 
 void VehicleOverview::parseSysStatus(LinkInterface *link, const mavlink_sys_status_t &state)
 {
+    Q_UNUSED(link)
     this->setOnboardControlSensorsEnabled(state.onboard_control_sensors_enabled);
     this->setOnboardControlSensorsHealth(state.onboard_control_sensors_health);
     this->setOnboardControlSensorsPresent(state.onboard_control_sensors_present);

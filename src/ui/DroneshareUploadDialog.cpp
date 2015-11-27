@@ -259,5 +259,6 @@ void DroneshareUploadDialog::resetStatusText()
 
 void DroneshareUploadDialog::hideEvent(QHideEvent *evt)
 {
+    Q_UNUSED(evt)
     resetStatusText();
 }

@@ -75,6 +75,9 @@ void AdvancedParamConfig::allParamsAdded(void)
 
 void AdvancedParamConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas)
+    Q_UNUSED(component)
+
     if (m_paramToWidgetMap.contains(parameterName))
     {
         QMetaType::Type metaType(static_cast<QMetaType::Type>(value.type()));

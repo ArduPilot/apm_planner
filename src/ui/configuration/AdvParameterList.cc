@@ -471,6 +471,8 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
 
 void AdvParameterList::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas)
+    Q_UNUSED(parameterCount)
     // Create a parameter list model for comparison feature
     // [TODO] This needs to move to the global parameter model.
 

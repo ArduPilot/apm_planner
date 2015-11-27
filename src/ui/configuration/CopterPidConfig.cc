@@ -271,6 +271,9 @@ CopterPidConfig::~CopterPidConfig()
 }
 void CopterPidConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas)
+    Q_UNUSED(component)
+
     if (m_nameToBoxMap.contains(parameterName))
     {
         m_nameToBoxMap[parameterName]->setValue(value.toDouble());

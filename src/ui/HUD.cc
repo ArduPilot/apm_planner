@@ -476,7 +476,7 @@ void HUD::paintRollPitchStrips()
 
 void HUD::paintEvent(QPaintEvent *event)
 {
-
+    Q_UNUSED(event)
     paintHUD();
 }
 
