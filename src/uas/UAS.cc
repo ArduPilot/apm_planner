@@ -2446,21 +2446,21 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
         // TODO: This is a hack for MAV_AUTOPILOT_ARDUPILOTMEGA until the new version of MAVLink and a fix for their param handling.
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
         {
-            switch (value.type())
+            switch (static_cast<QMetaType::Type>(value.type()))
             {
-            case QVariant::Char:
+            case QMetaType::QChar:
                 union_value.param_float = static_cast<char>(value.toChar().toLatin1());
                 p.param_type = MAV_PARAM_TYPE_INT8;
                 break;
-            case QVariant::Int:
+            case QMetaType::Int:
                 union_value.param_float = value.toInt();
                 p.param_type = MAV_PARAM_TYPE_INT32;
                 break;
-            case QVariant::UInt:
+            case QMetaType::UInt:
                 union_value.param_float = value.toUInt();
                 p.param_type = MAV_PARAM_TYPE_UINT32;
                 break;
-            case QVariant::Double:
+            case QMetaType::Double:
             case QMetaType::Float:
                 union_value.param_float = value.toFloat();
                 p.param_type = MAV_PARAM_TYPE_REAL32;
@@ -2472,21 +2472,21 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
         }
         else
         {
-            switch (value.type())
+            switch (static_cast<QMetaType::Type>(value.type()))
             {
-            case QVariant::Char:
+            case QMetaType::QChar:
                 union_value.param_int8 = static_cast<unsigned char>(value.toChar().toLatin1());
                 p.param_type = MAV_PARAM_TYPE_INT8;
                 break;
-            case QVariant::Int:
+            case QMetaType::Int:
                 union_value.param_int32 = value.toInt();
                 p.param_type = MAV_PARAM_TYPE_INT32;
                 break;
-            case QVariant::UInt:
+            case QMetaType::UInt:
                 union_value.param_uint32 = value.toUInt();
                 p.param_type = MAV_PARAM_TYPE_UINT32;
                 break;
-            case QVariant::Double:
+            case QMetaType::Double:
             case QMetaType::Float:
                 union_value.param_float = value.toFloat();
                 p.param_type = MAV_PARAM_TYPE_REAL32;
