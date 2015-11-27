@@ -750,7 +750,7 @@ QString AP2DataPlot2DModel::makeCreateTableString(QString tablename, QString for
         }
         else
         {
-        QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << typeCode;
+            QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << typeCode;
         }
     }
     mktable.append(");");

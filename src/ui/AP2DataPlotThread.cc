@@ -473,8 +473,29 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                     QString name = linesplit[0].trimmed();
                     if (nameToTypeString.contains(name))
                     {
+                        /* from https://github.com/diydrones/ardupilot/blob/master/libraries/DataFlash/DataFlash.h#L737
+                        Format characters in the format string for binary log messages
+                          b   : int8_t
+                          B   : uint8_t
+                          h   : int16_t
+                          H   : uint16_t
+                          i   : int32_t
+                          I   : uint32_t
+                          f   : float
+                          n   : char[4]
+                          N   : char[16]
+                          Z   : char[64]
+                          c   : int16_t * 100
+                          C   : uint16_t * 100
+                          e   : int32_t * 100
+                          E   : uint32_t * 100
+                          L   : int32_t latitude/longitude
+                          M   : uint8_t flight mode
+                          q   : int64_t
+                          Q   : uint64_t
+                        */
                         QString typestr = nameToTypeString[name];
-                        static QString intdef("bBhHiI");
+                        static QString intdef("bBhHiI"); // 32 bit max types.
                         static QString floatdef("cCeEfL");
                         static QString chardef("nNZM");
                         if (typestr.size() != linesplit.size() - 1)
@@ -531,6 +552,32 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                                     else
                                     {
                                         QLOG_DEBUG() << "Failed to convert " << valStr << " to a floating point number.";
+                                        foundError = true;
+                                    }
+                                }
+                                else if (QString('q').contains(typeCode) )
+                                {
+                                    quint64 val = valStr.toLongLong(&ok);
+                                    if (ok)
+                                    {
+                                        valuepairlist.append(QPair<QString,QVariant>(subname,val));
+                                    }
+                                    else
+                                    {
+                                        QLOG_DEBUG() << "Failed to convert " << valStr << " to an qint64 number.";
+                                        foundError = true;
+                                    }
+                                }
+                                else if (QString('Q').contains(typeCode) )
+                                {
+                                    quint64 val = valStr.toULongLong(&ok);
+                                    if (ok)
+                                    {
+                                        valuepairlist.append(QPair<QString,QVariant>(subname,val));
+                                    }
+                                    else
+                                    {
+                                        QLOG_DEBUG() << "Failed to convert " << valStr << " to an quint64 number.";
                                         foundError = true;
                                     }
                                 }
