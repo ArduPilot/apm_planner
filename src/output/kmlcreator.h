@@ -35,6 +35,8 @@ struct GPSRecord: DataLine {
     }
 
     static GPSRecord from(FormatLine& format, QString& line);
+
+    virtual ~GPSRecord() {}
 };
 
 /**
@@ -54,6 +56,8 @@ struct Attitude: DataLine {
     }
 
     static Attitude from(FormatLine& format, QString& line);
+
+    virtual ~Attitude() {}
 };
 
 /**
@@ -76,6 +80,8 @@ struct CommandedWaypoint: DataLine {
     }
 
     static CommandedWaypoint from(FormatLine& format, QString& line);
+
+    virtual ~CommandedWaypoint() {}
 };
 
 /**
