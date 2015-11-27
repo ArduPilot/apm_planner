@@ -4873,7 +4873,7 @@ std::string alglib::complex::tostring(int _dps) const
     return std::string("0");
 }
 
-const bool alglib::operator==(const alglib::complex& lhs, const alglib::complex& rhs)
+bool alglib::operator==(const alglib::complex& lhs, const alglib::complex& rhs)
 {
     volatile double x1 = lhs.x;
     volatile double x2 = rhs.x;
@@ -4882,7 +4882,7 @@ const bool alglib::operator==(const alglib::complex& lhs, const alglib::complex&
     return x1==x2 && y1==y2;
 }
 
-const bool alglib::operator!=(const alglib::complex& lhs, const alglib::complex& rhs)
+bool alglib::operator!=(const alglib::complex& lhs, const alglib::complex& rhs)
 { return !(lhs==rhs); }
 
 const alglib::complex alglib::operator+(const alglib::complex& lhs)
