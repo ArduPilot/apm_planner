@@ -653,6 +653,10 @@ bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& s
         QLOG_DEBUG() << "COA verification successful with public key" << publicKey;
         return true;
     }
+#else
+    Q_UNUSED(serial)
+    Q_UNUSED(signature)
+    Q_UNUSED(publicKey)
 #endif
     return false;
 }

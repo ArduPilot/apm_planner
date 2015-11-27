@@ -72,8 +72,6 @@ void UASQuickViewItemSelect::addItem(QString item,bool enabled)
     label->setText(name);
     label->show();
     //ui.gridLayout->addWidget(label,currrow,currcol++);
-    bool breakout = false;
-    int row = -1;
     /*    while (!breakout)
     {
          if (!ui.gridLayout->itemAtPosition(++row,col) || row > 100)

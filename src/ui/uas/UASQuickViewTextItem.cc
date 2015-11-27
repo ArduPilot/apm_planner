@@ -135,6 +135,7 @@ void UASQuickViewTextItem::setValuePixelSize(int size)
 
 void UASQuickViewTextItem::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event)
     return;
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();

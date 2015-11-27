@@ -327,7 +327,7 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
             }
         }
         bool ok = false;
-        int modeint = mode.toInt(&ok);
+
         if (!ok && !custom_mode)
         {
             if (record.contains("ModeNum"))
@@ -459,7 +459,6 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
         return;
     }
     //Grab the index
-    int rowid = data(createIndex(current.row(),0)).toString().toInt();
 
     if (m_rowToTableMap.contains(current.row()))
     {

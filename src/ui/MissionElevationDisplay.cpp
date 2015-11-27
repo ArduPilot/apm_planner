@@ -252,16 +252,13 @@ void MissionElevationDisplay::addWaypointLabels()
     QCustomPlot* customPlot = ui->customPlot;
     customPlot->clearItems();
     double totalDistance = 0.0;
-    double homeAlt = 0.0;
     double distance = 0.0;
     Waypoint* previousWp = NULL;
 
     foreach(Waypoint* wp, m_waypointList){
-        if(previousWp != NULL){
+        if(previousWp != NULL) {
             distance = distanceBetweenLatLng(previousWp->getLatitude(), previousWp->getLongitude(),
                                                 wp->getLatitude(), wp->getLongitude());
-        } else {
-            homeAlt = wp->getAltitude();
         }
 
         totalDistance += distance;
@@ -274,13 +271,6 @@ void MissionElevationDisplay::addWaypointLabels()
         QCPItemText *itemText = new QCPItemText(customPlot);
         itemText->setText("WP" + (QString::number(wp->getId())) + " (+" + (QString::number(distance,'f', 1)) +"m)");
         itemText->position->setParentAnchor(itemTracer->position);
-
-        double adjustedAlt = 0.0;
-        if (wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT){
-            adjustedAlt = wp->getAltitude() + homeAlt + m_homeAltOffset;
-        } else {
-            adjustedAlt = wp->getAltitude();
-        }
 
         previousWp = wp;
     }
