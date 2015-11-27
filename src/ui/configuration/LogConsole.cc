@@ -38,12 +38,12 @@ static bool writeSerial(QSerialPort* port, const char *s) {
 }
 
 Worker::Worker(QSerialPort* port, QList<LogConsole::FileData>& fileData):
+    m_state(start),
     m_port(port),
     m_files(fileData),
-    m_run(true),
     m_fdIndex(-1),
     m_blanks(0),
-    m_state(start)
+    m_run(true)
     {}
 
 Worker::~Worker() {}
