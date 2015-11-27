@@ -367,22 +367,25 @@ LinuxBuild : exists(/usr/local/lib/libxdrvlib.so) {
 }
 
 WindowsBuild {
-    message("Including support for Magellan 3DxWare")
+#    if defined(MOUSE_ENABLED_WIN)
+#    message("Including support for Magellan 3DxWare")
 
-    DEFINES += MOUSE_ENABLED_WIN
+#    DEFINES += MOUSE_ENABLED_WIN
 
-    INCLUDEPATH += libs/thirdParty/3DMouse/win
+#    INCLUDEPATH += libs/thirdParty/3DMouse/win
 
-    HEADERS += \
-        libs/thirdParty/3DMouse/win/I3dMouseParams.h \
-        libs/thirdParty/3DMouse/win/MouseParameters.h \
-        libs/thirdParty/3DMouse/win/Mouse3DInput.h \
-        src/input/Mouse6dofInput.h
+#    HEADERS += \
+#        libs/thirdParty/3DMouse/win/I3dMouseParams.h \
+#        libs/thirdParty/3DMouse/win/MouseParameters.h \
+#        libs/thirdParty/3DMouse/win/Mouse3DInput.h \
+#        src/input/Mouse6dofInput.h
 
-    SOURCES += \
-        libs/thirdParty/3DMouse/win/MouseParameters.cpp \
-        libs/thirdParty/3DMouse/win/Mouse3DInput.cpp \
-        src/input/Mouse6dofInput.cpp
+#    SOURCES += \
+#        libs/thirdParty/3DMouse/win/MouseParameters.cpp \
+#        libs/thirdParty/3DMouse/win/Mouse3DInput.cpp \
+#        src/input/Mouse6dofInput.cpp
+#    endif
+    message("Skipping support for Magellan 3DxWare")
 }
 
 #
@@ -456,8 +459,8 @@ WindowsCrossBuild {
         $$BASEDIR/libs/lib/sdl/include \
 
         LIBS += \
-        -Llibs/lib/sdl/win32 \
-        -lSDL2.dll
+        -L$$BASEDIR/libs/lib/sdl/win32 \
+        -lSDL2
 }
 
 #

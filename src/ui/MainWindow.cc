@@ -35,7 +35,7 @@ This file is part of the QGROUNDCONTROL project
 #include "CommConfigurationWindow.h"
 #include "QGCWaypointListMulti.h"
 #include "MainWindow.h"
-#include "JoystickWidget.h"
+//#include "JoystickWidget.h"
 #include "GAudioOutput.h"
 #include "QGCToolWidget.h"
 #include "QGCMAVLinkLogPlayer.h"
@@ -261,9 +261,9 @@ MainWindow::MainWindow(QWidget *parent):
 #endif
 
     // Connect user interface devices
-    emit initStatusChanged("Initializing joystick interface.");
-    joystickWidget = 0;
-    joystick = new JoystickInput();
+    //emit initStatusChanged("Initializing joystick interface.");
+    //joystickWidget = 0;
+    //joystick = new JoystickInput();
 
 #ifdef MOUSE_ENABLED_WIN
     emit initStatusChanged("Initializing 3D mouse interface.");
@@ -384,6 +384,7 @@ MainWindow::~MainWindow()
 {
     closeTerminalConsole();
 
+    /*
     if (joystickWidget)
     {
         QLOG_DEBUG() << "Delete JoystickWidget";
@@ -398,6 +399,7 @@ MainWindow::~MainWindow()
         delete joystick;
         joystick = NULL;
     }
+    */
 
     // Get and delete all dockwidgets and contained
     // widgets
@@ -1738,7 +1740,7 @@ void MainWindow::connectCommonActions()
 
     // Configuration
     // Joystick
-    connect(ui.actionJoystickSettings, SIGNAL(triggered()), this, SLOT(configure()));
+    //connect(ui.actionJoystickSettings, SIGNAL(triggered()), this, SLOT(configure()));
     // Application Settings
     connect(ui.actionSettings, SIGNAL(triggered()), this, SLOT(showSettings()));
 
@@ -1807,6 +1809,7 @@ void MainWindow::showRoadMap()
 
 void MainWindow::configure()
 {
+    /*
     if (!joystickWidget)
     {
         if (!joystick->isRunning())
@@ -1816,6 +1819,7 @@ void MainWindow::configure()
         joystickWidget = new JoystickWidget(joystick);
     }
     joystickWidget->show();
+    */
 }
 
 void MainWindow::showSettings()

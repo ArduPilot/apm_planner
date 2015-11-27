@@ -5,8 +5,8 @@
 DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent), QsLogging::Destination()
 {
     ui.setupUi(this);
-    ui.hashLineEdit->setText(define2string(GIT_HASH));
-    ui.commitLineEdit->setText(define2string(GIT_COMMIT));
+    ui.hashLineEdit->setText(QString(define2string(GIT_HASH)));
+    ui.commitLineEdit->setText(QString(define2string(GIT_COMMIT)));
     connect(ui.onTopCheckBox,SIGNAL(clicked(bool)),this,SLOT(onTopCheckBoxChecked(bool)));
     connect(ui.copyPushButton,SIGNAL(clicked()),this,SLOT(copyToClipboardButtonClicked()));
 }
