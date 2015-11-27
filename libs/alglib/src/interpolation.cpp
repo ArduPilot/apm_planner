@@ -11026,6 +11026,8 @@ static double idwint_idwcalcq(idwinterpolant* z,
      ae_int_t k,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t nx;
     ae_int_t i;
     ae_int_t j;
@@ -11086,6 +11088,7 @@ static void idwint_idwinit1(ae_int_t n,
      idwinterpolant* z,
      ae_state *_state)
 {
+    (void)nq;
 
 
     z->debugsolverfailures = 0;
@@ -17809,6 +17812,7 @@ static void spline1d_hermitecalc(double p0,
      double* ds,
      ae_state *_state)
 {
+    (void)_state;
 
     *s = 0;
     *ds = 0;
@@ -17857,6 +17861,8 @@ static double spline1d_rescaleval(double a0,
      double t,
      ae_state *_state)
 {
+    (void)_state;
+
     double result;
 
 
@@ -20730,7 +20736,7 @@ value of fitting function) are reported.
 *************************************************************************/
 void lsfitsetxrep(lsfitstate* state, ae_bool needxrep, ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -22544,7 +22550,7 @@ Internal subroutine
 static void lsfit_lsfitclearrequestfields(lsfitstate* state,
      ae_state *_state)
 {
-
+    (void)_state;
 
     state->needf = ae_false;
     state->needfg = ae_false;
@@ -23570,6 +23576,9 @@ static void lsfit_estimateerrors(/* Real    */ ae_matrix* f1,
 
 ae_bool _polynomialfitreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     polynomialfitreport *p = (polynomialfitreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -23578,6 +23587,9 @@ ae_bool _polynomialfitreport_init(void* _p, ae_state *_state, ae_bool make_autom
 
 ae_bool _polynomialfitreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     polynomialfitreport *dst = (polynomialfitreport*)_dst;
     polynomialfitreport *src = (polynomialfitreport*)_src;
     dst->taskrcond = src->taskrcond;
@@ -23605,6 +23617,9 @@ void _polynomialfitreport_destroy(void* _p)
 
 ae_bool _barycentricfitreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     barycentricfitreport *p = (barycentricfitreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -23613,6 +23628,9 @@ ae_bool _barycentricfitreport_init(void* _p, ae_state *_state, ae_bool make_auto
 
 ae_bool _barycentricfitreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     barycentricfitreport *dst = (barycentricfitreport*)_dst;
     barycentricfitreport *src = (barycentricfitreport*)_src;
     dst->taskrcond = src->taskrcond;
@@ -23641,6 +23659,9 @@ void _barycentricfitreport_destroy(void* _p)
 
 ae_bool _spline1dfitreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     spline1dfitreport *p = (spline1dfitreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -23649,6 +23670,9 @@ ae_bool _spline1dfitreport_init(void* _p, ae_state *_state, ae_bool make_automat
 
 ae_bool _spline1dfitreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     spline1dfitreport *dst = (spline1dfitreport*)_dst;
     spline1dfitreport *src = (spline1dfitreport*)_src;
     dst->taskrcond = src->taskrcond;
@@ -25411,7 +25435,7 @@ NOTE: this   function  has   some   serialization-related  subtleties.  We
 *************************************************************************/
 void rbfsetlinterm(rbfmodel* s, ae_state *_state)
 {
-
+    (void)_state;
 
     s->aterm = 1;
 }
@@ -25434,7 +25458,7 @@ NOTE: this   function  has   some   serialization-related  subtleties.  We
 *************************************************************************/
 void rbfsetconstterm(rbfmodel* s, ae_state *_state)
 {
-
+    (void)_state;
 
     s->aterm = 2;
 }
@@ -25457,7 +25481,7 @@ NOTE: this   function  has   some   serialization-related  subtleties.  We
 *************************************************************************/
 void rbfsetzeroterm(rbfmodel* s, ae_state *_state)
 {
-
+    (void)_state;
 
     s->aterm = 3;
 }
@@ -26634,7 +26658,7 @@ NOTE: this   function  has   some   serialization-related  subtleties.  We
 *************************************************************************/
 static void rbf_rbfgridpoints(rbfmodel* s, ae_state *_state)
 {
-
+    (void)_state;
 
     s->gridtype = 2;
 }
@@ -26910,6 +26934,8 @@ static void rbf_buildrbfmodellsqr(/* Real    */ ae_matrix* x,
      ae_int_t* nmv,
      ae_state *_state)
 {
+    (void)x;
+
     ae_frame _frame_block;
     linlsqrstate state;
     linlsqrreport lsqrrep;
@@ -27608,6 +27634,9 @@ void _rbfmodel_destroy(void* _p)
 
 ae_bool _rbfreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     rbfreport *p = (rbfreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -27616,6 +27645,9 @@ ae_bool _rbfreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _rbfreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     rbfreport *dst = (rbfreport*)_dst;
     rbfreport *src = (rbfreport*)_src;
     dst->arows = src->arows;

@@ -1152,6 +1152,9 @@ void _odesolverstate_destroy(void* _p)
 
 ae_bool _odesolverreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     odesolverreport *p = (odesolverreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -1160,6 +1163,9 @@ ae_bool _odesolverreport_init(void* _p, ae_state *_state, ae_bool make_automatic
 
 ae_bool _odesolverreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     odesolverreport *dst = (odesolverreport*)_dst;
     odesolverreport *src = (odesolverreport*)_src;
     dst->nfev = src->nfev;

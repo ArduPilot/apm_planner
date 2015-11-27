@@ -3211,6 +3211,7 @@ void autogkresults(autogkstate* state,
      autogkreport* rep,
      ae_state *_state)
 {
+    (void)_state;
 
     *v = 0;
     _autogkreport_clear(rep);
@@ -3676,6 +3677,8 @@ static void autogk_mheappop(/* Real    */ ae_matrix* heap,
      ae_int_t heapwidth,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t p;
     double t;
@@ -3726,6 +3729,8 @@ static void autogk_mheappush(/* Real    */ ae_matrix* heap,
      ae_int_t heapwidth,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t p;
     double t;
@@ -3788,6 +3793,9 @@ static void autogk_mheapresize(/* Real    */ ae_matrix* heap,
 
 ae_bool _autogkreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     autogkreport *p = (autogkreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -3796,6 +3804,9 @@ ae_bool _autogkreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _autogkreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     autogkreport *dst = (autogkreport*)_dst;
     autogkreport *src = (autogkreport*)_src;
     dst->terminationtype = src->terminationtype;

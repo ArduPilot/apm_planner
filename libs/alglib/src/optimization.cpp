@@ -6090,6 +6090,8 @@ void trimfunction(double* f,
      double threshold,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
 
 
@@ -6142,6 +6144,8 @@ ae_bool enforceboundaryconstraints(/* Real    */ ae_vector* x,
      ae_int_t nslack,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_bool result;
 
@@ -6624,6 +6628,8 @@ ae_int_t numberofchangedconstraints(/* Real    */ ae_vector* x,
      ae_int_t nslack,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_bool statuschanged;
     ae_int_t result;
@@ -7739,7 +7745,7 @@ INPUT PARAMETERS:
 *************************************************************************/
 void cqmdropa(convexquadraticmodel* s, ae_state *_state)
 {
-
+    (void)_state;
 
     s->alpha = 0.0;
     s->ismaintermchanged = ae_true;
@@ -8376,6 +8382,8 @@ void cqmscalevector(convexquadraticmodel* s,
      /* Real    */ ae_vector* x,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t n;
     ae_int_t i;
     double v;
@@ -11672,7 +11680,7 @@ NOTE: this function can be called many times for optimizer which was
 *************************************************************************/
 void sasstopoptimization(sactiveset* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->algostate = 0;
 }
@@ -13039,7 +13047,7 @@ provided to MinCGOptimize().
 *************************************************************************/
 void mincgsetxrep(mincgstate* state, ae_bool needxrep, ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -13062,7 +13070,7 @@ may cause program failure.
 *************************************************************************/
 void mincgsetdrep(mincgstate* state, ae_bool needdrep, ae_state *_state)
 {
-
+    (void)_state;
 
     state->drep = needdrep;
 }
@@ -13178,7 +13186,7 @@ iterations.
 *************************************************************************/
 void mincgsetprecdefault(mincgstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->prectype = 0;
     state->innerresetneeded = ae_true;
@@ -13247,7 +13255,7 @@ iterations.
 *************************************************************************/
 void mincgsetprecscale(mincgstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->prectype = 3;
     state->innerresetneeded = ae_true;
@@ -14239,6 +14247,8 @@ void mincgsetprecvarpart(mincgstate* state,
      /* Real    */ ae_vector* d2,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t n;
 
@@ -14316,7 +14326,7 @@ Clears request fileds (to be sure that we don't forgot to clear something)
 *************************************************************************/
 static void mincg_clearrequestfields(mincgstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->needf = ae_false;
     state->needfg = ae_false;
@@ -14689,6 +14699,9 @@ void _mincgstate_destroy(void* _p)
 
 ae_bool _mincgreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     mincgreport *p = (mincgreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -14697,6 +14710,9 @@ ae_bool _mincgreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _mincgreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     mincgreport *dst = (mincgreport*)_dst;
     mincgreport *src = (mincgreport*)_src;
     dst->iterationscount = src->iterationscount;
@@ -15173,7 +15189,7 @@ INPUT PARAMETERS:
 *************************************************************************/
 void minbleicsetprecdefault(minbleicstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->prectype = 0;
 }
@@ -15241,7 +15257,7 @@ INPUT PARAMETERS:
 *************************************************************************/
 void minbleicsetprecscale(minbleicstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->prectype = 3;
 }
@@ -15264,7 +15280,7 @@ void minbleicsetxrep(minbleicstate* state,
      ae_bool needxrep,
      ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -15289,7 +15305,7 @@ void minbleicsetdrep(minbleicstate* state,
      ae_bool needdrep,
      ae_state *_state)
 {
-
+    (void)_state;
 
     state->drep = needdrep;
 }
@@ -17039,7 +17055,7 @@ Clears request fileds (to be sure that we don't forget to clear something)
 static void minbleic_clearrequestfields(minbleicstate* state,
      ae_state *_state)
 {
-
+    (void)_state;
 
     state->needf = ae_false;
     state->needfg = ae_false;
@@ -17126,7 +17142,7 @@ static void minbleic_updateestimateofgoodstep(double* estimate,
      double newstep,
      ae_state *_state)
 {
-
+    (void)_state;
 
     if( ae_fp_eq(*estimate,0) )
     {
@@ -17394,6 +17410,9 @@ void _minbleicstate_destroy(void* _p)
 
 ae_bool _minbleicreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minbleicreport *p = (minbleicreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -17402,6 +17421,9 @@ ae_bool _minbleicreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _minbleicreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minbleicreport *dst = (minbleicreport*)_dst;
     minbleicreport *src = (minbleicreport*)_src;
     dst->iterationscount = src->iterationscount;
@@ -17654,7 +17676,7 @@ void minlbfgssetxrep(minlbfgsstate* state,
      ae_bool needxrep,
      ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -17818,7 +17840,7 @@ iterations.
 *************************************************************************/
 void minlbfgssetprecdefault(minlbfgsstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->prectype = 0;
 }
@@ -17944,7 +17966,7 @@ INPUT PARAMETERS:
 *************************************************************************/
 void minlbfgssetprecscale(minlbfgsstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->prectype = 3;
 }
@@ -18778,7 +18800,7 @@ Clears request fileds (to be sure that we don't forgot to clear something)
 static void minlbfgs_clearrequestfields(minlbfgsstate* state,
      ae_state *_state)
 {
-
+    (void)_state;
 
     state->needf = ae_false;
     state->needfg = ae_false;
@@ -18935,6 +18957,9 @@ void _minlbfgsstate_destroy(void* _p)
 
 ae_bool _minlbfgsreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minlbfgsreport *p = (minlbfgsreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -18943,6 +18968,9 @@ ae_bool _minlbfgsreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _minlbfgsreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minlbfgsreport *dst = (minlbfgsreport*)_dst;
     minlbfgsreport *src = (minlbfgsreport*)_src;
     dst->iterationscount = src->iterationscount;
@@ -19305,7 +19333,7 @@ INPUT PARAMETERS:
 *************************************************************************/
 void minqpsetalgocholesky(minqpstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->algokind = 1;
 }
@@ -20542,7 +20570,7 @@ void minqpsetlineartermfast(minqpstate* state,
      /* Real    */ ae_vector* b,
      ae_state *_state)
 {
-
+    (void)_state;
 
     ae_v_move(&state->b.ptr.p_double[0], 1, &b->ptr.p_double[0], 1, ae_v_len(0,state->n-1));
 }
@@ -20640,6 +20668,8 @@ void minqpsetstartingpointfast(minqpstate* state,
      /* Real    */ ae_vector* x,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t n;
 
 
@@ -20660,6 +20690,8 @@ void minqpsetoriginfast(minqpstate* state,
      /* Real    */ ae_vector* xorigin,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t n;
 
 
@@ -21131,6 +21163,9 @@ void _minqpstate_destroy(void* _p)
 
 ae_bool _minqpreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minqpreport *p = (minqpreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -21139,6 +21174,9 @@ ae_bool _minqpreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _minqpreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minqpreport *dst = (minqpreport*)_dst;
     minqpreport *src = (minqpreport*)_src;
     dst->inneriterationscount = src->inneriterationscount;
@@ -21542,7 +21580,7 @@ iterations are reported.
 *************************************************************************/
 void minlmsetxrep(minlmstate* state, ae_bool needxrep, ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -23115,7 +23153,7 @@ Clears request fileds (to be sure that we don't forgot to clear something)
 *************************************************************************/
 static void minlm_clearrequestfields(minlmstate* state, ae_state *_state)
 {
-
+    (void)_state;
 
     state->needf = ae_false;
     state->needfg = ae_false;
@@ -23487,6 +23525,9 @@ void _minlmstate_destroy(void* _p)
 
 ae_bool _minlmreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minlmreport *p = (minlmreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -23495,6 +23536,9 @@ ae_bool _minlmreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _minlmreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minlmreport *dst = (minlmreport*)_dst;
     minlmreport *src = (minlmreport*)_src;
     dst->iterationscount = src->iterationscount;
@@ -23569,7 +23613,9 @@ void minbleicsetbarrierwidth(minbleicstate* state,
      double mu,
      ae_state *_state)
 {
-
+    (void)state;
+    (void)mu;
+    (void)_state;
 
 }
 
@@ -23585,7 +23631,9 @@ void minbleicsetbarrierdecay(minbleicstate* state,
      double mudecay,
      ae_state *_state)
 {
-
+    (void)state;
+    (void)mudecay;
+    (void)_state;
 
 }
 
@@ -23691,7 +23739,7 @@ Was replaced by MinBLEIC subpackage.
 *************************************************************************/
 void minasasetxrep(minasastate* state, ae_bool needxrep, ae_state *_state)
 {
-
+    (void)_state;
 
     state->xrep = needxrep;
 }
@@ -24834,7 +24882,7 @@ Clears request fileds (to be sure that we don't forgot to clear something)
 static void mincomp_clearrequestfields(minasastate* state,
      ae_state *_state)
 {
-
+    (void)_state;
 
     state->needfg = ae_false;
     state->xupdated = ae_false;
@@ -24997,6 +25045,9 @@ void _minasastate_destroy(void* _p)
 
 ae_bool _minasareport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minasareport *p = (minasareport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -25005,6 +25056,9 @@ ae_bool _minasareport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _minasareport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     minasareport *dst = (minasareport*)_dst;
     minasareport *src = (minasareport*)_src;
     dst->iterationscount = src->iterationscount;
