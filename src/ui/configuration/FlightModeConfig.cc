@@ -70,7 +70,6 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
 {
     if (m_uas)
     {
-        disconnect(m_uas,SIGNAL(modeChanged(int,QString,QString)),this,SLOT(modeChanged(int,QString,QString)));
         disconnect(m_uas,SIGNAL(remoteControlChannelRawChanged(int,float)),this,SLOT(remoteControlChannelRawChanged(int,float)));
         disconnect(ui.mode1ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
         disconnect(ui.mode2ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxChanged(int)));
@@ -95,7 +94,6 @@ void FlightModeConfig::activeUASSet(UASInterface *uas)
     }
     AP2ConfigWidget::activeUASSet(uas);
     if (!uas) return;
-    connect(m_uas,SIGNAL(modeChanged(int,QString,QString)),this,SLOT(modeChanged(int,QString,QString)));
     connect(m_uas,SIGNAL(remoteControlChannelRawChanged(int,float)),this,SLOT(remoteControlChannelRawChanged(int,float)));
     QStringList itemlist;
 
@@ -192,11 +190,6 @@ bool FlightModeConfig::isFlightModeChanged()
 
     return false; // no changes
 
-}
-
-void FlightModeConfig::modeChanged(int sysId, QString status, QString description)
-{
-    //Unused?
 }
 
 void FlightModeConfig::checkForComboxBoxChanged(QObject* sender, QComboBox *comboBox, int index,
