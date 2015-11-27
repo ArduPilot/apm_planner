@@ -262,14 +262,14 @@ void QGCParamSlider::endEditMode()
     ui->writeButton->show();
     ui->readButton->show();
     ui->valueSlider->show();
-    switch (parameterValue.type())
+    switch (static_cast<QMetaType::Type>(parameterValue.type()))
     {
-    case QVariant::Char:
-    case QVariant::Int:
-    case QVariant::UInt:
+    case QMetaType::QChar:
+    case QMetaType::Int:
+    case QMetaType::UInt:
         ui->intValueSpinBox->show();
         break;
-    case QVariant::Double:
+    case QMetaType::Double:
     case QMetaType::Float:
         ui->doubleValueSpinBox->show();
         break;
@@ -307,21 +307,21 @@ void QGCParamSlider::setSliderValue(int sliderValue)
     if (!valueModLock && !valueModLockParam)
     {
         valueModLock = true;
-        switch (parameterValue.type())
+        switch (static_cast<QMetaType::Type>(parameterValue.type()))
         {
-        case QVariant::Char:
+        case QMetaType::QChar:
             parameterValue = QVariant(QChar((unsigned char)scaledIntToFloat(sliderValue)));
             ui->intValueSpinBox->setValue(parameterValue.toInt());
             break;
-        case QVariant::Int:
+        case QMetaType::Int:
             parameterValue = (int)scaledIntToFloat(sliderValue);
             ui->intValueSpinBox->setValue(parameterValue.toInt());
             break;
-        case QVariant::UInt:
+        case QMetaType::UInt:
             parameterValue = (unsigned int)scaledIntToFloat(sliderValue);
             ui->intValueSpinBox->setValue(parameterValue.toUInt());
             break;
-        case QVariant::Double:
+        case QMetaType::Double:
         case QMetaType::Float:
             parameterValue = scaledIntToFloat(sliderValue);
             ui->doubleValueSpinBox->setValue(parameterValue.toFloat());
@@ -412,9 +412,9 @@ void QGCParamSlider::setParameterValue(int uas, int component, int paramCount, i
         parameterValue = value;
         ui->valueSlider->setEnabled(true);
         valueModLockParam = true;
-        switch (value.type())
+        switch (static_cast<QMetaType::Type>(value.type()))
         {
-        case QVariant::Char:
+        case QMetaType::QChar:
             ui->intValueSpinBox->show();
             ui->intValueSpinBox->setEnabled(true);
             ui->doubleValueSpinBox->hide();
@@ -427,7 +427,7 @@ void QGCParamSlider::setParameterValue(int uas, int component, int paramCount, i
             }
             ui->valueSlider->setValue(floatToScaledInt(value.toUInt()));
             break;
-        case QVariant::Int:
+        case QMetaType::Int:
             ui->intValueSpinBox->show();
             ui->intValueSpinBox->setEnabled(true);
             ui->doubleValueSpinBox->hide();
@@ -440,7 +440,7 @@ void QGCParamSlider::setParameterValue(int uas, int component, int paramCount, i
             }
             ui->valueSlider->setValue(floatToScaledInt(value.toInt()));
             break;
-        case QVariant::UInt:
+        case QMetaType::UInt:
             ui->intValueSpinBox->show();
             ui->intValueSpinBox->setEnabled(true);
             ui->doubleValueSpinBox->hide();
@@ -453,7 +453,7 @@ void QGCParamSlider::setParameterValue(int uas, int component, int paramCount, i
             }
             ui->valueSlider->setValue(floatToScaledInt(value.toUInt()));
             break;
-        case QVariant::Double:
+        case QMetaType::Double:
         case QMetaType::Float:
             ui->doubleValueSpinBox->setValue(value.toFloat());
             ui->doubleValueSpinBox->show();

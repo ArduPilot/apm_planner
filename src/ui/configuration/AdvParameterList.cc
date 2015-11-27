@@ -326,7 +326,8 @@ void AdvParameterList::saveDialogAccepted()
     {
         QVariant value;
         m_uas->getParamManager()->getParameterValue(1,paramnamelist[i],value);
-        if (value.type() == QVariant::Double || value.type() == QMetaType::Float)
+        QMetaType::Type metaType(static_cast<QMetaType::Type>(value.type()));
+        if (metaType == QMetaType::Double || metaType == QMetaType::Float)
         {
             file.write(paramnamelist[i].append(",").append(QString::number(value.toFloat(),'f',8)).append("\r\n").toLocal8Bit());
         }
@@ -358,7 +359,8 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
 
         // Param value
         QString valstr = "";
-        if (value.type() == QMetaType::Float || value.type() == QVariant::Double)
+        QMetaType::Type metaType(static_cast<QMetaType::Type>(value.type()));
+        if (metaType == QMetaType::Float || metaType == QMetaType::Double)
         {
             valstr = QString::number(value.toFloat(),'f',4);
         }
@@ -434,7 +436,8 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
     }
 
     QString valstr = "";
-    if (value.type() == QMetaType::Float || value.type() == QVariant::Double)
+    QMetaType::Type metaType(static_cast<QMetaType::Type>(value.type()));
+    if (metaType == QMetaType::Float || metaType == QMetaType::Double)
     {
         valstr = QString::number(value.toFloat(),'f',6);
     }
