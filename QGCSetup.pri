@@ -17,7 +17,7 @@
 # along with QGroundControl. If not, see <http://www.gnu.org/licenses/>.
 # -------------------------------------------------
 
-QMAKE_POST_LINK += echo "Copying files"
+QMAKE_POST_LINK += $$quote(echo "Copying files")
 
 #
 # Copy the application resources to the associated place alongside the application
@@ -38,6 +38,12 @@ MacBuild {
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR $$BASEDIR/sik_uploader $$DESTDIR_COPY_RESOURCE_LIST
 }
 
+WindowsCrossBuild {
+    DESTDIR_COPY_RESOURCE_LIST = $$DESTDIR
+    QMAKE_POST_LINK += && $$QMAKE_COPY_DIR $$BASEDIR/qml $$DESTDIR_COPY_RESOURCE_LIST
+    QMAKE_POST_LINK += && $$QMAKE_COPY_DIR $$BASEDIR/sik_uploader $$DESTDIR_COPY_RESOURCE_LIST
+}
+
 # Windows version of QMAKE_COPY_DIR of course doesn't work the same as Mac/Linux. It will only
 # copy the contents of the source directory. It doesn't create the top level source directory
 # in the target.
@@ -53,6 +59,39 @@ WindowsBuild {
 # Perform platform specific setup
 #
 
+LinuxBuild {
+        #Installer section
+        BINDIR = $$PREFIX/bin
+        DATADIR =$$PREFIX/share
+
+        DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
+
+        #MAKE INSTALL - copy files
+        INSTALLS += target radioup datafiles desktopLink menuLink
+
+        target.path =$$BINDIR
+
+        radioup.path = $$BINDIR
+        radioup.files += $$BASEDIR/sik_uploader
+
+        datafiles.path = $$DATADIR/APMPlanner2
+        datafiles.files += $$BASEDIR/files
+        datafiles.files += $$BASEDIR/data
+        datafiles.files += $$BASEDIR/qml
+
+        #fix up file permissions. Bit of a hack job
+        #permFolders.path = $$DATADIR/APMPlanner2
+        #permFolders.commands += find $$DATADIR -type d -exec chmod 755 {} \\;
+        #permFiles.path = $$DATADIR/APMPlanner2
+        #permFiles.commands += find $$DATADIR -type f -exec chmod 644 {} \\;
+
+        #create menu links
+        desktopLink.path = $$DATADIR/menu
+        desktopLink.files += $$BASEDIR/debian/apmplanner2
+        menuLink.path = $$DATADIR/applications
+        menuLink.files += $$BASEDIR/debian/apmplanner2.desktop
+}
+
 MacBuild {
     # Copy libraries and frameworks into app package
     QMAKE_POST_LINK += && $$QMAKE_COPY_DIR -L $$BASEDIR/libs/lib/Frameworks $$DESTDIR/$${TARGET}.app/Contents/Frameworks
@@ -63,6 +102,27 @@ MacBuild {
     QMAKE_POST_LINK += && install_name_tool -change "@rpath/SDL2.framework/Versions/A/SDL2" "@executable_path/../Frameworks/SDL2.framework/Versions/A/SDL2" $$DESTDIR/$${TARGET}.app/Contents/MacOS/$${TARGET}
 }
 
+WindowsCrossBuild {
+
+    # Copy dependencies
+    DebugBuild: DLL_QT_DEBUGCHAR = "d"
+    ReleaseBuild: DLL_QT_DEBUGCHAR = ""
+
+    COPY_FILE_LIST = \
+        $$BASEDIR/libs/lib/sdl/win32/SDL2.dll \
+        $$BASEDIR/libs/thirdParty/libxbee/lib/libxbee.dll \
+        $$[QT_INSTALL_PREFIX]/bin/libgcc_s_dw2-1.dll \
+        $$[QT_INSTALL_PREFIX]/bin/libwinpthread-1.dll \
+        $$[QT_INSTALL_PREFIX]/bin/libstdc++-6.dll
+
+    for(COPY_FILE, COPY_FILE_LIST) {
+        QMAKE_POST_LINK += && $$QMAKE_COPY $$COPY_FILE $$DESTDIR_COPY_RESOURCE_LIST
+    }
+
+    DEPLOY_TARGET = $$DESTDIR/$${TARGET}.exe
+    QMAKE_POST_LINK += && windeployqt --no-compiler-runtime --qmldir=$${BASEDIR}/qml $${DEPLOY_TARGET}
+}
+
 WindowsBuild {
 
     BASEDIR_WIN = $$replace(BASEDIR,"/","\\")
@@ -71,6 +131,7 @@ WindowsBuild {
     # Copy dependencies
     DebugBuild: DLL_QT_DEBUGCHAR = "d"
     ReleaseBuild: DLL_QT_DEBUGCHAR = ""
+
     COPY_FILE_LIST = \
         $$BASEDIR_WIN\\libs\\lib\\sdl\\win32\\SDL2.dll \
         $$BASEDIR_WIN\\libs\\thirdParty\\libxbee\\lib\\libxbee.dll \
@@ -100,37 +161,4 @@ WindowsBuild {
     }
     DEPLOY_TARGET = $$shell_quote($$shell_path($$DESTDIR_WIN\\$${TARGET}.exe))
     QMAKE_POST_LINK += $$escape_expand(\\n) windeployqt --no-compiler-runtime --qmldir=$${BASEDIR_WIN}\\qml $${DEPLOY_TARGET}
-}
-
-LinuxBuild {
-        #Installer section
-        BINDIR = $$PREFIX/bin
-        DATADIR =$$PREFIX/share
-
-        DEFINES += DATADIR=\\\"$$DATADIR\\\" PKGDATADIR=\\\"$$PKGDATADIR\\\"
-
-        #MAKE INSTALL - copy files
-        INSTALLS += target radioup datafiles desktopLink menuLink
-
-        target.path =$$BINDIR
-        
-	radioup.path = $$BINDIR
-	radioup.files += $$BASEDIR/sik_uploader
-
-        datafiles.path = $$DATADIR/APMPlanner2
-        datafiles.files += $$BASEDIR/files
-        datafiles.files += $$BASEDIR/data
-        datafiles.files += $$BASEDIR/qml
-
-        #fix up file permissions. Bit of a hack job
-        #permFolders.path = $$DATADIR/APMPlanner2
-        #permFolders.commands += find $$DATADIR -type d -exec chmod 755 {} \\;
-        #permFiles.path = $$DATADIR/APMPlanner2
-        #permFiles.commands += find $$DATADIR -type f -exec chmod 644 {} \\;
-
-        #create menu links
-        desktopLink.path = $$DATADIR/menu
-        desktopLink.files += $$BASEDIR/debian/apmplanner2
-        menuLink.path = $$DATADIR/applications
-        menuLink.files += $$BASEDIR/debian/apmplanner2.desktop
 }

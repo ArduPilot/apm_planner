@@ -459,8 +459,8 @@ WindowsCrossBuild {
         $$BASEDIR/libs/lib/sdl/include \
 
         LIBS += \
-        -Llibs/lib/sdl/win32 \
-        -lSDL2.dll
+        -L$$BASEDIR/libs/lib/sdl/win32 \
+        -lSDL2
 }
 
 #

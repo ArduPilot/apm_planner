@@ -113,37 +113,66 @@ This will place the binary in your /bin/ folder and corresponding files in /shar
 Windows
 =======
 
-To build on Windows:
-* Both 32 and 64 bit applications are supported, the following steps can be used for either. 
-* Install Qt 5.5.1 32bit MSVC2013 with the [Qt installer](http://www.qt.io/download-open-source).
-* Install the [Visual Studio 2013 compiler](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop).
+To build on Windows there are two options:
+* Option 1: Visual Studio 2013 native compile
+    * Download and install [Visual Studio 2013 express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop)
+* Option 2: MinGW cross-compile
 
-Check QtCreator configuration:
+Install Qt with the [online Qt installer](http://www.qt.io/download-open-source): 
+* You will be presented with a list of Qt versions and compiler options to install
+* You can install mulitple versions and compilers beside one another and choose which to use later 
+* Select any one (or mulitple) of the following options, 
+	* Qt 5.5 MSVC2013 32-bit
+	* Qt 5.5 MSVC2013 64-bit
+	* Qt 5.5 MinGW 4.9.2 32-bit (also select the same version of MinGW under Tools)
+
+Configure QtCreator:
+* The installer is pretty smart but it's good to double check everything was setup corretly
 * Start QtCreator
-    - click on the Tools menu item then Options
-    - Select Build & Run on the left hand side
-    - Compilers tab
-        * Ensure Microsoft Visual C++ Compiler 12.0 is listed under Auto-detected
-    - Qt Versions Tab:
-		* Ensure Qt 5.5.1 MSVC2013 32bit is listed under Auto-detected
-		* If Qt 5.5.1 MSVC2013 32bit is not listed:
-			- Click Add
-			- Find the qmake.exe (typically in c:\Qt\5.5.1\bin\qmake.exe)
-			- Click Apply
-    - Kits tab:
-        * Ensure Desktop Qt 5.5.1 MSVC2013 32bit is listed under Auto-detected
-		* If Qt 5.5.1 MSVC2013 32bit is not listed:
-			- Click Add, name it Qt 5.5.1 MSVC 32bit
-			- Select the MSVC compiler (Microsoft Visual C++ Compiler 12.0 (x86)
-			- Select the Qt version (Qt 5.5.1 MSVC2013 32bit)
-			- Click Apply
-    - Click Ok
-* QtCreator is now configured.
-* Click on File then Open, find qgroundcontrol.pro
-    - It will ask you to configure project, you want to make sure Qt 5.5.1 MSVC 32bit is selected, and click "Configure Project"
-* Go to "Projects" tab on the left hand side, ensure "Shadow Build" is selected.
-* Build->Build qgroundcontrol
-* Run and enjoy!
+    * Click on the *Tools* menu item then *Options*
+    * Select *Build & Run* on the left hand side
+    * Look at the *Compilers* tab
+        * Under *Auto-detected* should be a list of compilers installed, such as:
+            * Microsoft Visual C++ Compiler 12.0 (x86)
+            * Microsoft Visual C++ Compiler 12.0 (amd64)
+            * MinGW 4.9.2 32bit
+        * If using MSVC there will be a few others listed as well but that is normal
+    * Look at the *Qt Versions* Tab:
+        * Under *Auto-detected* should be a list of the Qt versions you installed earlier:
+		    * Qt 5.5.1 MSVC2013 32bit
+		    * Qt 5.5.1 MSVC2013 32bit
+		    * Qt 5.5.1 MinGW 32bit
+		* If your desired Qt versions is not listed, or you installed one after the initial setup:
+			* Click Add
+			* Find the qmake.exe for the version you want
+			    * For example: c:/Qt/5.5/msvc2013/bin/qmake.exe
+			    * For example: c:/Qt/5.5/mingw492_32/bin/qmake.exe
+			* Click Apply
+    * Look under the *Kits* tab:
+        * Under *Auto-detected* should be a list of the appropriate kits:
+            * Desktop Qt 5.5.1 MSVC2013 32bit
+            * Desktop Qt 5.5.1 MSVC2013 63bit
+            * Desktop Qt 5.5.1 MinGB 32bit
+		* If a kit with your desired Qt versions and/or compiler is not listed, or you installed a new Qt version or compiler after the initial setup:
+			* Click *Add*, give it a nice name (like Qt 5.5.1 MSVC 32bit)
+			* Select the desired compiler from the drop down
+			* Select the Qt version (with matching compiler) from the drop down
+			* Click Apply
+    - Click *Ok* at the bottom of the window
+* QtCreator is now configured for fun
+
+Build APM Planner 2.0:
+* Start QtCreator (if not already)
+* Click on *File* then *Open File or Project*
+* Find qgroundcontrol.pro, then click *Open*
+    * The first time will ask you to configure project
+    * Select the desired version (same list of Kits from above) 
+    * Click *Configure Project*
+* Go to *Projects* tab on the left hand side
+    * Select the "Shadow Build" checkbox
+    * Browse to a location where you want the application to build to
+* From the *Build* drop down select *Build Project qgroundcontrol* (or Ctrl+B)
+* Run the generated apmplanner2.exe and enjoy!
 
 Installing this compiled version: 
 * To Do
