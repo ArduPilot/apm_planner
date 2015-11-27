@@ -47,7 +47,6 @@ public:
 private slots:
     void activeUASSet(UASInterface *uas);
     void saveButtonClicked();
-    void modeChanged(int sysId, QString status, QString description);
     void remoteControlChannelRawChanged(int chan,float val);
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
 

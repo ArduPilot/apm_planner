@@ -60,8 +60,6 @@ public:
 
 public slots:
     void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
-    void writeParameter(int component, QString parameterName, QVariant value);
-    void readParameter(int component, QString parameterName, QVariant value);
     void advModeChanged(bool state);
 
 private slots:

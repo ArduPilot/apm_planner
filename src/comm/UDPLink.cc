@@ -119,11 +119,6 @@ void UDPLink::run()
     }
 }
 
-void UDPLink::restartConnection()
-{
-    _shouldRestartConnection;
-}
-
 void UDPLink::setAddress(QHostAddress host)
 {
     this->host = host;

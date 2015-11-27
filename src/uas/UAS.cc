@@ -2997,24 +2997,6 @@ uint16_t UAS::scaleJoystickToRC(double v, int channel) const
     return ppm;
 }
 
-void UAS::setManual6DOFControlCommands(double x, double y, double z, double roll, double pitch, double yaw)
-{
-    // If system has manual inputs enabled and is armed
-    if(((base_mode & MAV_MODE_FLAG_DECODE_POSITION_MANUAL) && (base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY)) || (base_mode & MAV_MODE_FLAG_HIL_ENABLED))
-    {
-//        mavlink_message_t message;
-//        mavlink_msg_setpoint_6dof_pack(systemId, componentId, &message, this->uasId, (float)x, (float)y, (float)z, (float)roll, (float)pitch, (float)yaw);
-//        sendMessage(message);
-//        QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT 6DOF CONTROL MESSAGE: x" << x << " y: " << y << " z: " << z << " roll: " << roll << " pitch: " << pitch << " yaw: " << yaw;
-
-//        //emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
-    }
-    else
-    {
-        QLOG_DEBUG() << "3DMOUSE/MANUAL CONTROL: IGNORING COMMANDS: Set mode to MANUAL to send 3DMouse commands first";
-    }
-}
-
 void UAS::logRequestList(uint16_t start, uint16_t end)
 {
     QLOG_DEBUG() << "send logRequestList start:" << start << " end:" << end;
@@ -3242,31 +3224,6 @@ void UAS::enableHilJSBSim(bool enable, QString options)
     {
         stopHil();
     }
-}
-
-/**
-* If enabled, connect the X-plane gear link.
-*/
-void UAS::enableHilXPlane(bool enable)
-{
-//    QGCXPlaneLink* link = dynamic_cast<QGCXPlaneLink*>(simulation);
-//    if (!link || !simulation) {
-//        if (simulation) {
-//            stopHil();
-//            delete simulation;
-//        }
-//        QLOG_DEBUG() << "CREATED NEW XPLANE LINK";
-//        simulation = new QGCXPlaneLink(this);
-//    }
-//    // Connect X-Plane Link
-//    if (enable)
-//    {
-//        startHil();
-//    }
-//    else
-//    {
-//        stopHil();
-//    }
 }
 
 /**

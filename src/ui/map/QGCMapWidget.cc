@@ -222,7 +222,6 @@ void QGCMapWidget::showEvent(QShowEvent* event)
         connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(addUAS(UASInterface*)), Qt::UniqueConnection);
         connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(activeUASSet(UASInterface*)), Qt::UniqueConnection);
         connect(UASManager::instance(), SIGNAL(homePositionChanged(double,double,double)), this, SLOT(updateHomePosition(double,double,double)));
-        connect(UASManager::instance(),SIGNAL(UASDeleted(UASInterface*)),this,SLOT(deleteUas(UASInterface*)));
 
         foreach (UASInterface* uas, UASManager::instance()->getUASList())
         {
@@ -379,14 +378,6 @@ void QGCMapWidget::addUAS(UASInterface* uas)
             delete item;
         }
     }
-}
-
-/**
- *
- * @param uas the UAS/MAV to remove from the map widget
- */
-void QGCMapWidget::deleteUas(UASInterface* uas)
-{
 }
 
 void QGCMapWidget::activeUASSet(UASInterface* uas)

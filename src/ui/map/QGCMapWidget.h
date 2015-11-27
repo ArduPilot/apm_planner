@@ -48,8 +48,6 @@ public slots:
     void guidedAltActionTriggered();
     /** @brief Add system to map view */
     void addUAS(UASInterface* uas);
-    /** @brief Remove system from map view */
-    void deleteUas(UASInterface* uas);
     /** @brief Update the global position of a system */
     void updateGlobalPosition(UASInterface* uas, double lat, double lon, double alt, quint64 usec);
     /** @brief Update the global position of all systems */
