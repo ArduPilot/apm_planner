@@ -561,6 +561,8 @@ void ApmSoftwareConfig::readParameter(int component, QString parameterName, QVar
 
 void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
 {
+    Q_UNUSED(component)
+
     QString countString;
     // Create progress of downloading all parameters for UI
     switch (m_paramDownloadState){

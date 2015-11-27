@@ -520,20 +520,6 @@ void MAVLinkSimulationWaypointPlanner::send_setpoint(uint16_t seq)
 
         // send new set point to local IMU
         if (cur->frame == MAV_FRAME_LOCAL_NED || cur->frame == MAV_FRAME_LOCAL_ENU) {
-            mavlink_message_t msg;
-//            [REMOVED from AP2] mavlink_set_local_position_setpoint_t PControlSetPoint;
-
-//            PControlSetPoint.target_system = systemid;
-//            PControlSetPoint.target_component = MAV_COMP_ID_IMU;
-//            PControlSetPoint.x = cur->x;
-//            PControlSetPoint.y = cur->y;
-//            PControlSetPoint.z = cur->z;
-//            PControlSetPoint.yaw = cur->param4;
-//            PControlSetPoint.coordinate_frame = cur->frame;
-            
-//            mavlink_msg_set_local_position_setpoint_encode(systemid, compid, &msg, &PControlSetPoint);
-//            link->sendMAVLinkMessage(&msg);
-//            emit messageSent(msg);
 
             uint64_t now = QGC::groundTimeMilliseconds();
             timestamp_last_send_setpoint = now;

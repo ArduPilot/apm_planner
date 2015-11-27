@@ -393,6 +393,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId,
                                          QString parameterName, QVariant value)
 {
+    Q_UNUSED(component)
 
     QString countString;
     // Create progress of downloading all parameters for UI

@@ -477,6 +477,8 @@ void QGCMAVLinkInspector::receiveMessage(LinkInterface* link,mavlink_message_t m
 
 void QGCMAVLinkInspector::changeStreamInterval(int msgid, int interval)
 {
+    Q_UNUSED(msgid)
+    Q_UNUSED(interval)
     //REQUEST_DATA_STREAM
     if (selectedSystemID == 0 || selectedComponentID == 0) {
         return;
