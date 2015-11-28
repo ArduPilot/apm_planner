@@ -56,3 +56,5 @@ deploy/*.list
 *.exe
 deploy/*.dll
 .qmake.stash
+libs/lib/Frameworks/GStreamer.framework/
+

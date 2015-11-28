@@ -145,11 +145,8 @@ void UASWaypointManager::handleWaypointCount(quint8 systemId, quint8 compId, qui
 
         //Clear the old edit-list before receiving the new one
         if (read_to_edit == true){
-            while(waypointsEditable.count()>0) {
-                Waypoint *t = waypointsEditable[0];
-                waypointsEditable.removeAt(0);
-                delete t;
-            }
+            qDeleteAll(waypointsEditable);
+            waypointsEditable.clear();
             emit waypointEditableListChanged();
         }
 
@@ -526,11 +523,11 @@ void UASWaypointManager::loadWaypoints(const QString &loadFile)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    while(waypointsEditable.count()>0) {
-        Waypoint *t = waypointsEditable[0];
-        waypointsEditable.removeAt(0);
-        delete t;
-    }
+    qDeleteAll(waypointsEditable);
+    waypointsEditable.clear();
+
+    emit waypointEditableListChanged();
+    emit waypointEditableListChanged(uasid);
 
     QTextStream in(&file);
 
@@ -814,11 +811,8 @@ void UASWaypointManager::readWaypoints(bool readToEdit)
 
 
         //Clear the old view-list before receiving the new one
-        while(waypointsViewOnly.size()>0) {
-            Waypoint *t = waypointsViewOnly[0];
-            waypointsViewOnly.removeAt(0);
-            delete t;
-        }
+        qDeleteAll(waypointsViewOnly);
+        waypointsViewOnly.clear();
         emit waypointViewOnlyListChanged();
         /* THIS PART WAS MOVED TO handleWaypointCount. THE EDIT-LIST SHOULD NOT BE CLEARED UNLESS THERE IS A RESPONSE FROM UAV.
         //Clear the old edit-list before receiving the new one

@@ -37,7 +37,7 @@ linux-g++-64 {
     contains( DISTRO, "Ubuntu" ) {
          DEFINES += Q_UBUNTU
     }
-} else: linux-g++ {
+} else: linux-g++ | linux-clang {
     message(Linux build x86)
     CONFIG += LinuxBuild
     DEFINES += Q_LINUX_32
@@ -101,15 +101,15 @@ QT += network \
     opengl \
     svg \
     xml \
-    webkit \
     sql \
     widgets \
     serialport \
-    webkitwidgets \
     script\
     quick \
-    printsupport
-
+    printsupport \
+    qml \
+    quickwidgets
+ 
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
@@ -143,7 +143,8 @@ MacBuild {
     QMAKE_INFO_PLIST = Custom-Info.plist
     CONFIG += x86_64
     CONFIG -= x86
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
+#    QMAKE_MAC_SDK = macosx10.11 # Required for Xcode7.0
+    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     ICON = $$BASEDIR/files/APMIcons/icon.icns
     QMAKE_INFO_PLIST = APMPlanner.plist   # Sets the pretty name for the build
 
@@ -164,6 +165,7 @@ LinuxBuild {
     LIBS += -lsndfile -lasound
     LIBS += -lz
     LIBS += -lssl -lcrypto
+    DEFINES += OPENSSL
 }
 
 WindowsBuild {
@@ -179,8 +181,8 @@ WindowsBuild {
 
     RC_FILE = $$BASEDIR/qgroundcontrol.rc
 
-    DEFINES += GIT_COMMIT=$$system(\"c:/program files (x86)/git/bin/git.exe\" describe --dirty=-DEV --always)
-    DEFINES += GIT_HASH=$$system(\"c:/program files (x86)/git/bin/git.exe\" log -n 1 --pretty=format:%H)
+    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
+    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 }
 
 WindowsCrossBuild {
@@ -424,7 +426,7 @@ HEADERS += \
     src/ui/HUD.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
-#ifdef CAMERAVIEW
+#if defined(CAMERAVIEW)
     src/ui/CameraView.h \
 #endif
     src/comm/MAVLinkSimulationLink.h \
@@ -459,7 +461,6 @@ HEADERS += \
     src/ui/QGCPxImuFirmwareUpdate.h \
     src/ui/RadioCalibration/RadioCalibrationData.h \
     src/comm/QGCMAVLink.h \
-    src/ui/map3D/QGCWebPage.h \
     src/ui/SlugsDataSensorView.h \
     src/ui/SlugsHilSim.h \
     src/ui/SlugsPadCameraControl.h \
@@ -687,7 +688,6 @@ SOURCES += \
     src/ui/QGCFirmwareUpdate.cc \
     src/ui/QGCPxImuFirmwareUpdate.cc \
     src/ui/RadioCalibration/RadioCalibrationData.cc \
-    src/ui/map3D/QGCWebPage.cc \
     src/ui/SlugsDataSensorView.cc \
     src/ui/SlugsHilSim.cc \
     src/ui/SlugsPadCameraControl.cpp \
@@ -862,6 +862,16 @@ SOURCES += \
     src/ui/EKFMonitor.cpp \
     src/Settings.cpp
 
+MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
+    message(Including support for Google Earth)
+    QT +=  webkit webkitwidgets
+    HEADERS +=  src/ui/map3D/QGCWebPage.h
+    SOURCES +=  src/ui/map3D/QGCWebPage.cc
+
+} else {
+    message(Skipping support for Google Earth)
+}
+
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
     qml/components/StatusDisplay.qml \
@@ -906,5 +916,8 @@ OTHER_FILES += \
 #sources.path        += $$DESTDIR/qml
 #target.path         += apmplanner2
 #INSTALLS            += sources target
+
+DISTFILES += \
+    qml/components/BarGauge.qml
 
 
