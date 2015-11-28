@@ -136,6 +136,10 @@ void QGCTextLabel::readSettings(const QString& pre,const QVariantMap& settings)
 }
 void QGCTextLabel::textMessageReceived(int uasid, int component, int severity, QString message)
 {
+    Q_UNUSED(uasid)
+    Q_UNUSED(component)
+    Q_UNUSED(severity)
+
     if (enabledNum != -1)
     {
         //SUCCESS: Executed CMD: 241

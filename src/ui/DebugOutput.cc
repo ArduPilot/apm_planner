@@ -16,6 +16,7 @@ DebugOutput::~DebugOutput()
 }
 void DebugOutput::write(const QString& message, QsLogging::Level level)
 {
+    Q_UNUSED(level)
     ui.textBrowser->append(message);
     if (ui.autoScrollCheckBox->isChecked())
     {

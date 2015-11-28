@@ -38,8 +38,8 @@
 ///     @author Don Gagne <don@thegagnes.com>
 
 TCPLink::TCPLink(const QHostAddress &hostAddress, const QString &hostName, quint16 socketPort, bool asServer) :
-    _hostAddress(hostAddress),
     _name(hostName),
+    _hostAddress(hostAddress),
     _port(socketPort),
     _asServer(asServer),
     _socket(NULL)

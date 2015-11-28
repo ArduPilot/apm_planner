@@ -922,8 +922,10 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
 
 void ApmFirmwareConfig::firmwareListError(QNetworkReply::NetworkError error)
 {
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
-    QLOG_ERROR() << "Error!" << reply->errorString();
+    if (error != QNetworkReply::NoError) {
+        QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+        QLOG_ERROR() << "Error!" << reply->errorString();
+    }
 }
 
 bool ApmFirmwareConfig::stripVersionFromGitReply(QString url, QString reply,QString type,QString stable,QString *out)

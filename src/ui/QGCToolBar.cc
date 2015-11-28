@@ -616,6 +616,7 @@ void QGCToolBar::updateLinkState(bool connected)
 
 void QGCToolBar::connectLink(bool connect)
 {
+    Q_UNUSED(connect)
     // No serial port yet present
     // XXX magic number
     /*if (connect && LinkManager::instance()->getLinks().count() < 3)

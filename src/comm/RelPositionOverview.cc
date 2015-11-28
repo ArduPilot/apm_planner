@@ -1,9 +1,10 @@
 #include "RelPositionOverview.h"
 
 RelPositionOverview::RelPositionOverview(QObject *parent) :
-    QObject(parent), m_airspeed (0.0), m_alt (0.0), m_climb (0.0), m_groundspeed (0.0), m_heading (0.0),
-    m_pitch (0.0), m_pitchspeed (0.0), m_roll (0.0), m_rollspeed (0.0), m_throttle (0.0),
-    m_timeBootMs (0.0), m_yawspeed (0.0),m_yaw (0.0)
+    QObject(parent), m_airspeed (0.0), m_groundspeed (0.0), m_alt (0.0),
+    m_climb (0.0),  m_heading (0.0), m_throttle (0.0), m_timeBootMs (0.0),
+    m_roll (0.0), m_pitch (0.0), m_yaw (0.0), m_rollspeed (0.0), m_pitchspeed (0.0),
+    m_yawspeed (0.0)
 {
     /* The defaults above are used to ensure the variables are
      * initalised to known values and dont cause random errors.

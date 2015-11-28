@@ -128,6 +128,7 @@ void DataSelectionScreen::addItem(QString name)
 }
 void DataSelectionScreen::onItemChanged(QTreeWidgetItem* item,int column)
 {
+    Q_UNUSED(column)
     if (!item->parent())
     {
         return;

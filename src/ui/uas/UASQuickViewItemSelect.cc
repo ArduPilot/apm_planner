@@ -72,8 +72,6 @@ void UASQuickViewItemSelect::addItem(QString item,bool enabled)
     label->setText(name);
     label->show();
     //ui.gridLayout->addWidget(label,currrow,currcol++);
-    bool breakout = false;
-    int row = -1;
     /*    while (!breakout)
     {
          if (!ui.gridLayout->itemAtPosition(++row,col) || row > 100)
@@ -86,24 +84,6 @@ void UASQuickViewItemSelect::addItem(QString item,bool enabled)
     ui.stackedWidget->widget(col)->layout()->removeItem(ui.stackedWidget->widget(col)->layout()->itemAt(ui.stackedWidget->widget(col)->layout()->count()-1));
     ui.stackedWidget->widget(col)->layout()->addWidget(label);
     ui.stackedWidget->widget(col)->layout()->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
-}
-void UASQuickViewItemSelect::resizeEvent(QResizeEvent *event)
-{
-    /*for (int i=0;i<m_checkBoxList.size();i++)
-    {
-        ui.gridLayout->removeWidget(m_checkBoxList[i]);
-    }
-    int row = 0;
-    int col = 0;
-    for (int i=0;i<m_checkBoxList.size();i++)
-    {
-        ui.gridLayout->addWidget(m_checkBoxList[i],row,col);
-        col++;
-        ui.gridLayout->widget()->width() > this->width();
-        //need to reduce column number.
-
-    }*/
-
 }
 
 void UASQuickViewItemSelect::checkBoxClicked(bool checked)

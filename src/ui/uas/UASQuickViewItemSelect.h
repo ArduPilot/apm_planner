@@ -15,8 +15,7 @@ public:
     void addItem(QString item,bool enabled = false);
     int currrow;
     int currcol;
-protected:
-    void resizeEvent(QResizeEvent *event);
+
 private:
     bool m_isSingleOnly;
     QMap<QString,int> m_categoryToIndexMap;

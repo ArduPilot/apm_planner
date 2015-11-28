@@ -1908,6 +1908,8 @@ void MainWindow::addLink(int linkid)
 
 void MainWindow::linkError(int linkid,QString errorstring)
 {
+    Q_UNUSED(linkid)
+
     QWidget* parent = QApplication::activeWindow();
     if (!parent) {
         parent = this;
