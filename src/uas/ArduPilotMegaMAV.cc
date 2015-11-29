@@ -679,29 +679,32 @@ QString ArduPilotMegaMAV::getNameFromEventId(int ecode)
 
 }
 
-//******************* Class Error Type **************************
+//******************* Classes for error handling **************************
 
-ErrorType::ErrorType() : Timeus(0), SubSys(0), ErrorCode(0)
+ErrorBase::ErrorBase() : SubSys(0), ErrorCode(0)
 {}
 
-bool ErrorType::operator != (const ErrorType &rhs)
+ErrorBase::~ErrorBase()
+{}
+
+bool ErrorBase::operator != (const ErrorBase &rhs)
 {
-    // The timestamp is not part of the comparison
     return ((this->SubSys != rhs.SubSys) || (this->ErrorCode != rhs.ErrorCode));
 }
 
-bool ErrorType::setFromSqlRecord(const QSqlRecord &record)
+quint8 ErrorBase::getSubsystemCode()
+{
+    return SubSys;
+}
+
+quint8 ErrorBase::getErrorCode()
+{
+    return ErrorCode;
+}
+
+bool ErrorBase::setFromSqlRecord(const QSqlRecord &record)
 {
     bool returnCode = true;
-
-    if (record.contains("TimeUS"))
-    {
-        Timeus = static_cast<quint64>(record.value("TimeUS").toString().toLongLong());
-    }
-    else
-    {
-        returnCode = false;
-    }
 
     if (record.contains("Subsys"))
     {
@@ -724,7 +727,38 @@ bool ErrorType::setFromSqlRecord(const QSqlRecord &record)
     return returnCode;
 }
 
+
+
+ErrorType::ErrorType() : ErrorBase()
+{}
+
+ErrorType::~ErrorType()
+{}
+
 QString ErrorType::toString() const
+{
+    QString output;
+    QTextStream QTStream(&output);
+
+    QTStream << " Subsystem:" << SubSys << " Errorcode:" << ErrorCode;
+    return output;
+}
+
+
+
+CopterErrorType::CopterErrorType() : ErrorBase()
+{}
+
+CopterErrorType::CopterErrorType(ErrorType &code)
+{
+    SubSys = code.getSubsystemCode();
+    ErrorCode = code.getErrorCode();
+}
+
+CopterErrorType::~CopterErrorType()
+{}
+
+QString CopterErrorType::toString() const
 {
     // SubSys ans ErrorCode interpretation was taken from
     // Ardupilot/ArduCopter/defines.h
@@ -918,8 +952,3 @@ QString ErrorType::toString() const
 
     return output;
 }
-
-
-
-
-

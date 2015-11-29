@@ -1338,9 +1338,29 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
             quint64 index = i.key();
             ErrorType err = i.value();
 
-            QLOG_DEBUG() << "ERR change at index" << index << "to" << err.toString();
-            plotTextArrow(index, err.toString(), "ERR",ui.modeDisplayCheckBox);
-            m_graphClassMap["ERR"].modeMap[index] = err.toString();
+            switch (m_loadedLogMavType)
+            {
+                case MAV_TYPE_QUADROTOR:
+                case MAV_TYPE_HEXAROTOR:
+                case MAV_TYPE_OCTOROTOR:
+                case MAV_TYPE_HELICOPTER:
+                case MAV_TYPE_TRICOPTER:
+                {
+                    CopterErrorType copterError(err);
+                    QLOG_DEBUG() << "ERR change at index" << index << "to" << copterError.toString();
+                    plotTextArrow(index, copterError.toString(), "ERR",ui.modeDisplayCheckBox);
+                    m_graphClassMap["ERR"].modeMap[index] = copterError.toString();
+                    break;
+                }
+
+                default:
+                {
+                    QLOG_DEBUG() << "ERR change at index" << index << "to" << err.toString();
+                    plotTextArrow(index, err.toString(), "ERR",ui.modeDisplayCheckBox);
+                    m_graphClassMap["ERR"].modeMap[index] = err.toString();
+                    break;
+                }
+            }
         }
     }
 

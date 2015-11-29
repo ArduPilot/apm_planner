@@ -189,20 +189,36 @@ private:
 
 /**
  * @brief Helper class for making it easier to handle the
- *        errorcodes, especially the toString conversion
+ *        errorcodes.
+ *        This virtual base class implements everything need
+ *        to handle MAV Errors exept the to string method which
+ *        must be specialized and implemented in derived classes
  */
-
-class ErrorType
+class ErrorBase
 {
 public:
 
-    ErrorType();
+    ErrorBase();
+
+    virtual ~ErrorBase();
 
     /**
      * @brief This != operator does include the timestamp "Timeus"
      *        field of this class
      */
-    bool operator != (const ErrorType &rhs);
+    bool operator != (const ErrorBase &rhs);
+
+    /**
+     * @brief Getter for the Subsystem ID which emitted the error
+     * @return Subsystem ID
+     */
+    quint8 getSubsystemCode();
+
+    /**
+     * @brief Getter for the Errorcode emitted by the subsystem
+     * @return Errorcode
+     */
+    quint8 getErrorCode();
 
     /**
      * @brief Reads an QSqlRecord and sets the internal data.
@@ -217,18 +233,68 @@ public:
 
     /**
      * @brief Converts the ErrorCode into an interpreted string
+     *        Must be implemented by derived classes
      * @return The interpreted Qstring
      */
-    QString toString() const;
+    virtual QString toString() const = 0;
 
-private:
+protected:
 
-    quint64 Timeus;       /// Timestamp in micro seconds
     quint8 SubSys;        /// Subsystem signaling the error
     quint8 ErrorCode;     /// Errorcode of the Subsystem
 };
 
-// ********************************************************
+
+/**
+ * @brief Basic ErrorType class wich should be used for all generic
+ *        handling of error messages
+ */
+class ErrorType : public ErrorBase
+{
+public:
+
+    ErrorType();
+
+    virtual ~ErrorType();
+
+    /**
+     * @brief Basic to String method giving just Subsystem ID
+     *        and Errorcode
+     * @return Non interpreted string
+     */
+    virtual QString toString() const;
+};
+
+
+/**
+ * @brief Specialized ErrorType for all copters. Should only be
+ *        used if an full interpreted error string is needed.
+ *        Just use the copy constructor to construct it from an
+ *        ErrorType.
+ */
+class CopterErrorType : public ErrorBase
+{
+public:
+
+    CopterErrorType();
+
+    /**
+     * @brief Copy constructor to create a CopterErrorType from
+     *        ErrorType
+     * @param ErrorType code to construct from.
+     */
+    CopterErrorType(ErrorType &code);
+
+    virtual ~CopterErrorType();
+
+    /**
+     * @brief Specialized to String method giving a full interpreted
+     *        string for copters
+     * @return Full interpreted string
+     */
+    virtual QString toString() const;
+};
+
 
 
 #endif // ARDUPILOTMAV_H
