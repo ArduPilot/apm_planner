@@ -35,7 +35,7 @@ This file is part of the APM_PLANNER project
 #include <QSqlError>
 #include <QUuid>
 #include <QsLog.h>
-#include <ArduPilotMegaMAV.h>
+
 
 /*
  * This model holds everything in memory in a sqlite database.
@@ -357,42 +357,32 @@ QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues()
     QMap<quint64,ErrorType> retval;
     QSqlQuery errorquery(m_sharedDb);
     errorquery.prepare("SELECT * FROM 'ERR';");
-    if (!errorquery.exec())
+    if (errorquery.exec())
     {
-        //No error?
+        ErrorType lastErr;
+        while (errorquery.next())
+        {
+            QSqlRecord record = errorquery.record();
+            quint64 index = static_cast<quint64>(record.value(0).toLongLong());
+            ErrorType error;
+
+            if (!error.setFromSqlRecord(record))
+            {
+                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?!";
+            }
+            if (lastErr != error)
+            {
+                retval.insert(index,error);
+                lastErr = error;
+            }
+        }
+    }
+    else
+    {
+        //Errorquery returned no result - No error?
         QLOG_DEBUG() << "Graph loaded with no error table. This is perfect!";
     }
 
-    ErrorType lastErr;
-
-    while (errorquery.next())
-    {
-        QSqlRecord record = errorquery.record();
-        quint64 index = record.value(0).toLongLong();
-        ErrorType error;
-
-        if (record.contains("TimeUS"))
-        {
-            error.Timeus = record.value("TimeUS").toString().toLongLong();
-        }
-
-        if (record.contains("Subsys"))
-        {
-            error.SubSys = record.value("Subsys").toString().toShort();
-        }
-
-        if (record.contains("ECode"))
-        {
-            error.ErrorCode = record.value("ECode").toString().toShort();
-        }
-
-        if (lastErr != error)
-        {
-            retval.insert(index,error);
-            lastErr = error;
-        }
-
-    }
     return retval;
 }
 
@@ -881,199 +871,3 @@ quint64 AP2DataPlot2DModel::getFirstIndex()
 {
     return m_firstIndex;
 }
-
-//******************* Class Error Type **************************
-
-ErrorType::ErrorType() : Timeus(0), SubSys(0), ErrorCode(0)
-{}
-
-bool ErrorType::operator != (const ErrorType &lhs)
-{
-    return ((this->Timeus != lhs.Timeus) || (this->SubSys != lhs.SubSys) || (this->ErrorCode != lhs.ErrorCode));
-}
-
-QString ErrorType::toString()
-{
-    // SubSys ans ErrorCode interpretation was taken from
-    // Ardupilot/ArduCopter/defines.h
-
-    QString output;
-    QTextStream QTStream(&output);
-
-    bool EcodeUsed = false;
-
-    switch (SubSys)
-    {
-    case 1:
-        QTStream << "Main:";
-        if (ErrorCode == 1)
-        {
-            QTStream << "Ins-Delay";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 2:
-        QTStream << "Radio:";
-        if (ErrorCode == 2)
-        {
-            QTStream << "Late Frame detected";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 3:
-        QTStream << "Compass:";
-        break;
-
-    case 4:
-        QTStream << "OptFlow:";
-        break;
-
-    case 5:
-        QTStream << "FS-Radio:";
-        break;
-
-    case 6:
-        QTStream << "FS-Batt:";
-        if (ErrorCode == 1)
-        {
-            QTStream << "Detected";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 7:
-        QTStream << "FS-GPS:";
-        if (ErrorCode == 1)
-        {
-            QTStream << "Detected";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 8:
-        QTStream << "FS-GCS:";
-        if (ErrorCode == 1)
-        {
-            QTStream << "Detected";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 9:
-        QTStream << "FS-Fence:";
-        if (ErrorCode == 1)
-        {
-            QTStream << "Detected";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 10:
-        QTStream << "Flight-Mode:";
-        break;
-
-    case 11:
-        QTStream << "GPS:";
-        break;
-
-    case 12:
-        QTStream << "Crash-Check:";
-        if (ErrorCode == 1)
-        {
-            QTStream << "Crash Detected";
-            EcodeUsed = true;
-        }
-        else if (ErrorCode == 2)
-        {
-            QTStream << "Control Lost";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 13:
-        QTStream << "FLIP:";
-        if (ErrorCode == 2)
-        {
-            QTStream << "Abandoned";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 14:
-        QTStream << "Autotune:";
-        break;
-
-    case 15:
-        QTStream << "Parachute:";
-        if (ErrorCode == 2)
-        {
-            QTStream << "Too low to eject";
-            EcodeUsed = true;
-        }
-        else if (ErrorCode == 3)
-        {
-            QTStream << "Copter Landed";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 16:
-        QTStream << "EKF-Check:";
-        if (ErrorCode == 2)
-        {
-            QTStream << "Bad Variance detected";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 17:
-        QTStream << "FS-EKF-INAV";
-        break;
-
-    case 18:
-        QTStream << "Baro:";
-        if (ErrorCode == 2)
-        {
-            QTStream << "Glitch detected";
-            EcodeUsed = true;
-        }
-        break;
-
-    case 19:
-        QTStream << "CPU:";
-        break;
-
-    default:
-        QTStream << "SubSys:" << SubSys << " ECode:" << ErrorCode;
-        EcodeUsed = true;
-        break;
-
-    }
-
-    if (!EcodeUsed)
-    {
-        switch (ErrorCode)
-        {
-        case 0:
-            QTStream << "Everything OK!";
-            break;
-
-        case 1:
-            QTStream << "Failed to init";
-            break;
-
-        case 4:
-            QTStream << "Is Unhealthy";
-            break;
-
-        default:
-            QTStream << "Unknown ErrorCode(" << ErrorCode << ")";
-            break;
-        }
-    }
-
-    return output;
-}
-
