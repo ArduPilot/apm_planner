@@ -34,6 +34,7 @@ This file is part of the QGROUNDCONTROL project
 
 #include "UAS.h"
 #include <QString>
+#include <QSqlDatabase>
 
 //
 // Auto Pilot modes
@@ -184,5 +185,50 @@ private:
 private:
     QTimer *txReqTimer;
 };
+
+
+/**
+ * @brief Helper class for making it easier to handle the
+ *        errorcodes, especially the toString conversion
+ */
+
+class ErrorType
+{
+public:
+
+    ErrorType();
+
+    /**
+     * @brief This != operator does include the timestamp "Timeus"
+     *        field of this class
+     */
+    bool operator != (const ErrorType &rhs);
+
+    /**
+     * @brief Reads an QSqlRecord and sets the internal data.
+     *        The record should contain the colums "TimeUS",
+     *        "Subsys" and "ECode" in order to get an apropriate
+     *        returnvalue.
+     * @param record[in] - Filled QSqlRecord
+     * @return true - all Fields could be read
+     *         false - not all data could be read
+     */
+    bool setFromSqlRecord(const QSqlRecord &record);
+
+    /**
+     * @brief Converts the ErrorCode into an interpreted string
+     * @return The interpreted Qstring
+     */
+    QString toString() const;
+
+private:
+
+    quint64 Timeus;       /// Timestamp in micro seconds
+    quint8 SubSys;        /// Subsystem signaling the error
+    quint8 ErrorCode;     /// Errorcode of the Subsystem
+};
+
+// ********************************************************
+
 
 #endif // ARDUPILOTMAV_H
