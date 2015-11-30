@@ -74,27 +74,17 @@ WindowsBuild {
     COPY_FILE_LIST = \
         $$BASEDIR_WIN\\libs\\lib\\sdl\\win32\\SDL2.dll \
         $$BASEDIR_WIN\\libs\\thirdParty\\libxbee\\lib\\libxbee.dll \
-        $$(QTDIR)\\bin\\Qt5WebKitWidgets$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5MultimediaWidgets$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5Multimedia$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Gui$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Core$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\icuin51.dll \
-        $$(QTDIR)\\bin\\icuuc51.dll \
-        $$(QTDIR)\\bin\\icudt51.dll \
+        $$(QTDIR)\\bin\\icuin5*.dll \
+        $$(QTDIR)\\bin\\icuuc5*.dll \
+        $$(QTDIR)\\bin\\icudt5*.dll \
         $$(QTDIR)\\bin\\Qt5Network$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Widgets$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5OpenGL$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5PrintSupport$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5WebKit$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Quick$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Qml$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Sql$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5Positioning$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5Sensors$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5Declarative$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5XmlPatterns$${DLL_QT_DEBUGCHAR}.dll \
-        $$(QTDIR)\\bin\\Qt5Xml$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Script$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Svg$${DLL_QT_DEBUGCHAR}.dll \
         $$(QTDIR)\\bin\\Qt5Test$${DLL_QT_DEBUGCHAR}.dll \
