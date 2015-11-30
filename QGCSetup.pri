@@ -135,6 +135,27 @@ WindowsBuild {
     COPY_FILE_LIST = \
         $$BASEDIR_WIN\\libs\\thirdParty\\libxbee\\lib\\libxbee.dll \
 
+        # [TODO] Do we need to remove the 3 line below for windows?
+        $$(QTDIR)\\bin\\Qt5WebKitWidgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5MultimediaWidgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Multimedia$${DLL_QT_DEBUGCHAR}.dll \
+
+        $$(QTDIR)\\bin\\Qt5Gui$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Core$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\icuin5*.dll \
+        $$(QTDIR)\\bin\\icuuc5*.dll \
+        $$(QTDIR)\\bin\\icudt5*.dll \
+        $$(QTDIR)\\bin\\Qt5Network$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Widgets$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5OpenGL$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Quick$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Qml$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Sql$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Script$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Svg$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5Test$${DLL_QT_DEBUGCHAR}.dll \
+        $$(QTDIR)\\bin\\Qt5SerialPort$${DLL_QT_DEBUGCHAR}.dll
+
     contains(QT_ARCH, i386) {
         COPY_FILE_LIST += $$BASEDIR_WIN\\libs\\lib\\sdl\\msvc\\lib\\x86\\SDL2.dll
     }else {
