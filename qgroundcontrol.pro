@@ -29,6 +29,9 @@ message(Qt version $$[QT_VERSION])
 # to allow us to easily modify suported build types in one place instead of duplicated throughout
 # the project file.
 
+DEFINES+=DISABLE_3DMOUSE    # Disable 3D mice support for now
+#DEFINES+=ENABLE_CAMRAVIEW   # Example to include camraview
+
 linux-g++-64 {
     message(Linux build x64_86)
     CONFIG += LinuxBuild
@@ -46,10 +49,10 @@ linux-g++-64 {
          DEFINES += Q_UBUNTU
     }
 
-} else : win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+} else : win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
     message(Windows build)
     CONFIG += WindowsBuild
-}  else : win32-x-g++|win64-x-g++ {
+}  else : win32-g++|win64-g++ {
     message(Windows Cross Build)
     CONFIG += WindowsCrossBuild
 } else : macx-clang | macx-g++ {
@@ -113,11 +116,12 @@ QT += network \
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
-!NOTOUCH {
-    gittouch.commands = touch qgroundcontrol.pro
-    QMAKE_EXTRA_TARGETS += gittouch
-    POST_TARGETDEPS += gittouch
-}
+#Not sure what we were doing here, will have to ask
+#!NOTOUCH {
+#    gittouch.commands = touch qgroundcontrol.pro
+#    QMAKE_EXTRA_TARGETS += gittouch
+#    POST_TARGETDEPS += gittouch
+#}
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
@@ -454,9 +458,6 @@ HEADERS += \
     src/ui/HUD.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
-#if defined(CAMERAVIEW)
-    src/ui/CameraView.h \
-#endif
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
     src/comm/UDPClientLink.h \
@@ -681,9 +682,6 @@ SOURCES += src/main.cc \
     src/ui/uas/UASInfoWidget.cc \
     src/ui/HUD.cc \
     src/ui/uas/UASView.cc \
-#ifdef CAMERAVIEW
-    src/ui/CameraView.cc \
-#endif
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
     src/comm/UDPClientLink.cc \
@@ -893,10 +891,18 @@ MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sens
     QT +=  webkit webkitwidgets
     HEADERS +=  src/ui/map3D/QGCWebPage.h
     SOURCES +=  src/ui/map3D/QGCWebPage.cc
-
 } else {
     message(Skipping support for Google Earth)
 }
+
+contains(DEFINES, ENABLE_CAMRAVIEW){
+    message(Including support for Camera View)
+    HEADERS += src/ui/CameraView.h
+    SOURCES += src/ui/CameraView.cc
+} else {
+    message(Skipping support for Camera View)
+}
+
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \
