@@ -48,7 +48,9 @@ This file is part of the QGROUNDCONTROL project
 #include "UASControlWidget.h"
 #include "UASInfoWidget.h"
 #include "WaypointList.h"
+#if (defined ENABLE_CAMRAVIW)
 #include "CameraView.h"
+#endif // ENABLE_CAMRAVIW
 #include "UASListWidget.h"
 //#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"
