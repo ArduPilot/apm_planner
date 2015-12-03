@@ -35,33 +35,29 @@
 #define define2string(x) define2string_p(x)
 
 /* Windows fixes */
-#ifdef _MSC_VER
-/* Needed define for Eigen */
-//#define NOMINMAX
-#include <limits>
-template<typename T>
-inline bool isnan(T value)
-{
-    return value != value;
+#if _MSC_VER<1800
+    #include <limits>
 
-}
+    template<typename T>
+    inline bool isnan(T value){
+        return value != value;
+    }
 
-// requires #include <limits>
-template<typename T>
-inline bool isinf(T value)
-{
-    return (value == std::numeric_limits<T>::infinity() || (-1*value) == std::numeric_limits<T>::infinity()) && std::numeric_limits<T>::has_infinity;
-}
+    template<typename T>
+    inline bool isinf(T value){
+        return (value == std::numeric_limits<T>::infinity() || (-1*value) == std::numeric_limits<T>::infinity()) && std::numeric_limits<T>::has_infinity;
+    }
 #else
-#include <cmath>
-#if defined(Q_OS_MACX) || defined(Q_OS_WIN)
-#ifndef isnan
-#define isnan(x) std::isnan(x)
-#endif
-#ifndef isinf
-#define isinf(x) std::isinf(x)
-#endif
-#endif
+    #include <cmath>
+
+    #if defined(Q_OS_MACX) || defined(Q_OS_WIN)
+        #ifndef isnan
+            #define isnan(x) std::isnan(x)
+        #endif
+        #ifndef isinf
+            #define isinf(x) std::isinf(x)
+        #endif
+    #endif
 #endif
 
 namespace QGC
