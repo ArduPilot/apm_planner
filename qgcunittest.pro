@@ -23,6 +23,11 @@ CONFIG += qt \
     console
 QT += testlib
 
+LinuxBuild {
+    QMAKE_CXX_FLAGS += -fprofile-arcs -ftest-coverage
+    QMAKE_LFLAGS += -fprofile-arcs
+}
+
 BASEDIR = $${IN_PWD}
 TESTDIR = $$BASEDIR/src/qgcunittest
 
