@@ -684,28 +684,25 @@ QString ArduPilotMegaMAV::getNameFromEventId(int ecode)
 
 //******************* Classes for error handling **************************
 
-ErrorBase::ErrorBase() : SubSys(0), ErrorCode(0)
+ErrorType::ErrorType() : SubSys(0), ErrorCode(0)
 {}
 
-ErrorBase::~ErrorBase()
-{}
-
-bool ErrorBase::operator != (const ErrorBase &rhs)
+bool ErrorType::operator != (const ErrorType &rhs)
 {
     return ((this->SubSys != rhs.SubSys) || (this->ErrorCode != rhs.ErrorCode));
 }
 
-quint8 ErrorBase::getSubsystemCode()
+quint8 ErrorType::getSubsystemCode()
 {
     return SubSys;
 }
 
-quint8 ErrorBase::getErrorCode()
+quint8 ErrorType::getErrorCode()
 {
     return ErrorCode;
 }
 
-bool ErrorBase::setFromSqlRecord(const QSqlRecord &record)
+bool ErrorType::setFromSqlRecord(const QSqlRecord &record)
 {
     bool returnCode = true;
 
@@ -730,14 +727,6 @@ bool ErrorBase::setFromSqlRecord(const QSqlRecord &record)
     return returnCode;
 }
 
-
-
-ErrorType::ErrorType() : ErrorBase()
-{}
-
-ErrorType::~ErrorType()
-{}
-
 QString ErrorType::toString() const
 {
     QString output;
@@ -747,21 +736,7 @@ QString ErrorType::toString() const
     return output;
 }
 
-
-
-CopterErrorType::CopterErrorType() : ErrorBase()
-{}
-
-CopterErrorType::CopterErrorType(ErrorType &code)
-{
-    SubSys = code.getSubsystemCode();
-    ErrorCode = code.getErrorCode();
-}
-
-CopterErrorType::~CopterErrorType()
-{}
-
-QString CopterErrorType::toString() const
+QString CopterErrorTypeFormatter::format(ErrorType &code)
 {
     // SubSys ans ErrorCode interpretation was taken from
     // Ardupilot/ArduCopter/defines.h
@@ -771,11 +746,11 @@ QString CopterErrorType::toString() const
 
     bool EcodeUsed = false;
 
-    switch (SubSys)
+    switch (code.getSubsystemCode())
     {
     case 1:
         QTStream << "Main:";
-        if (ErrorCode == 1)
+        if (code.getErrorCode() == 1)
         {
             QTStream << "Ins-Delay";
             EcodeUsed = true;
@@ -784,7 +759,7 @@ QString CopterErrorType::toString() const
 
     case 2:
         QTStream << "Radio:";
-        if (ErrorCode == 2)
+        if (code.getErrorCode() == 2)
         {
             QTStream << "Late Frame detected";
             EcodeUsed = true;
@@ -793,7 +768,7 @@ QString CopterErrorType::toString() const
 
     case 3:
         QTStream << "Compass:";
-        if (ErrorCode == 2)
+        if (code.getErrorCode() == 2)
         {
             QTStream << "Failed to read data";
             EcodeUsed = true;
@@ -810,7 +785,7 @@ QString CopterErrorType::toString() const
 
     case 6:
         QTStream << "FS-Batt:";
-        if (ErrorCode == 1)
+        if (code.getErrorCode() == 1)
         {
             QTStream << "Detected";
             EcodeUsed = true;
@@ -819,7 +794,7 @@ QString CopterErrorType::toString() const
 
     case 7:
         QTStream << "FS-GPS:";
-        if (ErrorCode == 1)
+        if (code.getErrorCode() == 1)
         {
             QTStream << "Detected";
             EcodeUsed = true;
@@ -828,7 +803,7 @@ QString CopterErrorType::toString() const
 
     case 8:
         QTStream << "FS-GCS:";
-        if (ErrorCode == 1)
+        if (code.getErrorCode() == 1)
         {
             QTStream << "Detected";
             EcodeUsed = true;
@@ -837,7 +812,7 @@ QString CopterErrorType::toString() const
 
     case 9:
         QTStream << "FS-Fence:";
-        if (ErrorCode == 1)
+        if (code.getErrorCode() == 1)
         {
             QTStream << "Detected";
             EcodeUsed = true;
@@ -854,12 +829,12 @@ QString CopterErrorType::toString() const
 
     case 12:
         QTStream << "Crash-Check:";
-        if (ErrorCode == 1)
+        if (code.getErrorCode() == 1)
         {
             QTStream << "Crash Detected";
             EcodeUsed = true;
         }
-        else if (ErrorCode == 2)
+        else if (code.getErrorCode() == 2)
         {
             QTStream << "Control Lost";
             EcodeUsed = true;
@@ -868,7 +843,7 @@ QString CopterErrorType::toString() const
 
     case 13:
         QTStream << "FLIP:";
-        if (ErrorCode == 2)
+        if (code.getErrorCode() == 2)
         {
             QTStream << "Abandoned";
             EcodeUsed = true;
@@ -881,12 +856,12 @@ QString CopterErrorType::toString() const
 
     case 15:
         QTStream << "Parachute:";
-        if (ErrorCode == 2)
+        if (code.getErrorCode() == 2)
         {
             QTStream << "Too low to eject";
             EcodeUsed = true;
         }
-        else if (ErrorCode == 3)
+        else if (code.getErrorCode() == 3)
         {
             QTStream << "Copter Landed";
             EcodeUsed = true;
@@ -895,7 +870,7 @@ QString CopterErrorType::toString() const
 
     case 16:
         QTStream << "EKF-Check:";
-        if (ErrorCode == 2)
+        if (code.getErrorCode() == 2)
         {
             QTStream << "Bad Variance detected";
             EcodeUsed = true;
@@ -904,7 +879,7 @@ QString CopterErrorType::toString() const
 
     case 17:
         QTStream << "FS-EKF-INAV:";
-        if (ErrorCode == 1)
+        if (code.getErrorCode() == 1)
         {
             QTStream << "Detected";
             EcodeUsed = true;
@@ -913,7 +888,7 @@ QString CopterErrorType::toString() const
 
     case 18:
         QTStream << "Baro:";
-        if (ErrorCode == 2)
+        if (code.getErrorCode() == 2)
         {
             QTStream << "Glitch detected";
             EcodeUsed = true;
@@ -925,7 +900,7 @@ QString CopterErrorType::toString() const
         break;
 
     default:
-        QTStream << "SubSys:" << SubSys << " ECode:" << ErrorCode;
+        QTStream << "SubSys:" << code.getErrorCode() << " ECode:" << code.getErrorCode();
         EcodeUsed = true;
         break;
 
@@ -933,7 +908,7 @@ QString CopterErrorType::toString() const
 
     if (!EcodeUsed)
     {
-        switch (ErrorCode)
+        switch (code.getErrorCode())
         {
         case 0:
             QTStream << "Everything OK!";
@@ -948,7 +923,7 @@ QString CopterErrorType::toString() const
             break;
 
         default:
-            QTStream << "Unknown ErrorCode(" << ErrorCode << ")";
+            QTStream << "Unknown ErrorCode(" << code.getErrorCode() << ")";
             break;
         }
     }
