@@ -1346,10 +1346,9 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
                 case MAV_TYPE_HELICOPTER:
                 case MAV_TYPE_TRICOPTER:
                 {
-                    CopterErrorType copterError(err);
-                    QLOG_DEBUG() << "ERR change at index" << index << "to" << copterError.toString();
-                    plotTextArrow(index, copterError.toString(), "ERR",ui.modeDisplayCheckBox);
-                    m_graphClassMap["ERR"].modeMap[index] = copterError.toString();
+                    QLOG_DEBUG() << "ERR change at index" << index << "to" << CopterErrorTypeFormatter::format(err);
+                    plotTextArrow(index, CopterErrorTypeFormatter::format(err), "ERR",ui.modeDisplayCheckBox);
+                    m_graphClassMap["ERR"].modeMap[index] = CopterErrorTypeFormatter::format(err);
                     break;
                 }
 
