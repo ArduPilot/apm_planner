@@ -24,8 +24,10 @@ CONFIG += qt \
 QT += testlib
 
 LinuxBuild {
-    QMAKE_CXX_FLAGS += -fprofile-arcs -ftest-coverage
+    message("Adding coverage information")
+    QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
     QMAKE_LFLAGS += -fprofile-arcs
+    LIBS += -lgcov
 }
 
 BASEDIR = $${IN_PWD}
