@@ -184,6 +184,7 @@ private:
 
 private:
     QTimer *txReqTimer;
+    int severityCompatibilityMode;
 };
 
 

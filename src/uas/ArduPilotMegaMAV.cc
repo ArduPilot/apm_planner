@@ -276,7 +276,8 @@ QString ApmRover::stringForMode(int aMode) {
 }
 
 ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
-    UAS(mavlink, id)//,
+    UAS(mavlink, id),
+    severityCompatibilityMode(false)//,
     // place other initializers here
 {
     //This does not seem to work. Manually request each stream type at a specified rate.
@@ -416,6 +417,8 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             if (text.contains(APM_COPTER_REXP) || text.contains(APM_PLANE_REXP)
                     || text.contains(APM_ROVER_REXP)) {
                 QLOG_DEBUG() << "APM Version String detected:" << text;
+                // Process Version and keep.
+
                 emit versionDetected(text);
             }
 
