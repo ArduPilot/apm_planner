@@ -337,7 +337,7 @@ void PrimaryFlightDisplay::setActiveUAS(UASInterface* uas)
 void PrimaryFlightDisplay::uasTextMessage(int uasid, int componentid, int severity, QString text)
 {
     Q_UNUSED(componentid);
-    if (text.contains("PreArm") || severity == 3)
+    if (text.contains("PreArm") || severity <= MAV_SEVERITY_CRITICAL)
     {
         if (preArmMessageTimer->isActive())
         {

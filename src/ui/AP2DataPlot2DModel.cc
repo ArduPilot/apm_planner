@@ -35,7 +35,8 @@ This file is part of the APM_PLANNER project
 #include <QSqlError>
 #include <QUuid>
 #include <QsLog.h>
-#include <ArduPilotMegaMAV.h>
+
+
 /*
  * This model holds everything in memory in a sqlite database.
  * There are two system tables, then unlimited number of message tables.
@@ -349,6 +350,42 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
     }
     return retval;
 }
+
+
+QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues()
+{
+    QMap<quint64,ErrorType> retval;
+    QSqlQuery errorquery(m_sharedDb);
+    errorquery.prepare("SELECT * FROM 'ERR';");
+    if (errorquery.exec())
+    {
+        ErrorType lastErr;
+        while (errorquery.next())
+        {
+            QSqlRecord record = errorquery.record();
+            quint64 index = static_cast<quint64>(record.value(0).toLongLong());
+            ErrorType error;
+
+            if (!error.setFromSqlRecord(record))
+            {
+                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?!";
+            }
+            if (lastErr != error)
+            {
+                retval.insert(index,error);
+                lastErr = error;
+            }
+        }
+    }
+    else
+    {
+        //Errorquery returned no result - No error?
+        QLOG_DEBUG() << "Graph loaded with no error table. This is perfect!";
+    }
+
+    return retval;
+}
+
 
 QVariant AP2DataPlot2DModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {

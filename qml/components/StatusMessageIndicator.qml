@@ -19,19 +19,25 @@ Rectangle {
     id: root
 
     property string message
+    property color messageColor
+
+    onMessageColorChanged: {
+        messageText.color = messageColor;
+    }
 
     anchors.fill: parent
 
-    border.color: "red"
+    border.color: messageColor
     border.width: 5
 
     color: "Transparent"
 
     Text {
+        id: messageText
         anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: -50
         anchors.horizontalCenter: parent.horizontalCenter
-        color: "red"
+        color: messageColor
         style: Text.Outline
         styleColor: "black"
         text: message
@@ -43,7 +49,7 @@ Rectangle {
         id: animator
         running: true
         loops: Animation.Infinite
-        ColorAnimation {id:toRed; to: "red"; duration: 1000 }
+        ColorAnimation {id:toMessageColor; to: messageColor; duration: 1000 }
         ColorAnimation {id:toTransparent; to: "transparent"; duration: 1000 }
     }
 }

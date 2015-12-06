@@ -1052,7 +1052,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_mission_item_reached_t wpr;
             mavlink_msg_mission_item_reached_decode(&message, &wpr);
             waypointManager.handleWaypointReached(message.sysid, message.compid, &wpr);
-            QString text = QString("System %1 reached waypoint %2").arg(getUASName()).arg(wpr.seq);
+            QString text = QString("%1 reached waypoint %2").arg(getUASName()).arg(wpr.seq);
             GAudioOutput::instance()->say(text);
             emit textMessageReceived(message.sysid, message.compid, 0, text);
         }
@@ -1074,6 +1074,27 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             b[b.length()-1] = '\0';
             QString text = QString(b);
             int severity = mavlink_msg_statustext_get_severity(&message);
+
+            if (false) {
+                 // Older APM detected, translate severity to MAVLink Standard severity
+                 // SEVERITY_LOW     =1 MAV_SEVERITY_WARNING = 4
+                 // SEVERITY_MEDIUM  =2 MAV_SEVERITY_ALERT   = 1
+                 // SEVERITY_HIGH    =3 MAV_SEVERITY_CRITICAL= 2
+                 switch (severity) {
+                     case 1: /*gcs_severity::SEVERITY_LOW:*/
+                         severity = MAV_SEVERITY_WARNING;
+                         break;
+                     case 2: /*gcs_severity::SEVERITY_MEDIUM*/
+                         severity = MAV_SEVERITY_ALERT;
+                         break;
+                     case 3: /*gcs_severity::SEVERITY_HIGH:*/
+                         severity = MAV_SEVERITY_CRITICAL;
+                         break;
+                     default:
+                         severity = MAV_SEVERITY_INFO;
+                         break;
+                 }
+             }
 
             if (text.startsWith("#audio:"))
             {

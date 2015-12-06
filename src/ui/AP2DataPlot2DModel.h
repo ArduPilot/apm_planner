@@ -32,6 +32,8 @@ This file is part of the APM_PLANNER project
 
 #include <QAbstractTableModel>
 #include <QSqlDatabase>
+#include <ArduPilotMegaMAV.h>
+
 
 class AP2DataPlot2DModel : public QAbstractTableModel
 {
@@ -49,6 +51,7 @@ public:
     QMap<QString,QList<QString> > getFmtValues();
     QString getFmtLine(const QString& name);
     QMap<quint64,QString> getModeValues();
+    QMap<quint64, ErrorType> getErrorValues();
     bool hasType(const QString& name);
     QMap<quint64,QVariant> getValues(const QString& parent,const QString& child);
     int getChildIndex(const QString& parent,const QString& child);
@@ -97,5 +100,7 @@ private:
 
 
 };
+
+
 
 #endif // AP2DATAPLOT2DMODEL_H

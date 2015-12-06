@@ -46,6 +46,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QDir>
 #include <QDesktopServices>
 #include <QSettings>
+#include <QSqlRecord>
 
 CustomMode::CustomMode()
 {
@@ -275,7 +276,8 @@ QString ApmRover::stringForMode(int aMode) {
 }
 
 ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
-    UAS(mavlink, id)//,
+    UAS(mavlink, id),
+    severityCompatibilityMode(false)//,
     // place other initializers here
 {
     //This does not seem to work. Manually request each stream type at a specified rate.
@@ -415,6 +417,8 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             if (text.contains(APM_COPTER_REXP) || text.contains(APM_PLANE_REXP)
                     || text.contains(APM_ROVER_REXP)) {
                 QLOG_DEBUG() << "APM Version String detected:" << text;
+                // Process Version and keep.
+
                 emit versionDetected(text);
             }
 
@@ -678,283 +682,251 @@ QString ArduPilotMegaMAV::getNameFromEventId(int ecode)
 
 }
 
-QPair<QString,QString> ArduPilotMegaMAV::getErrText(int subsys,int ecode)
+//******************* Classes for error handling **************************
+
+ErrorType::ErrorType() : SubSys(0), ErrorCode(0)
+{}
+
+bool ErrorType::operator != (const ErrorType &rhs)
 {
-    QString ecodeinvalid = "Invalid error code";
-    QPair<QString,QString> retval;
-    retval.first = "E" + QString::number(subsys) + ": Unknown Subsystem";
-    retval.second = "E" + QString::number(ecode) + ": Unknown Error Code";
-    if (subsys == 2)
+    return ((this->SubSys != rhs.SubSys) || (this->ErrorCode != rhs.ErrorCode));
+}
+
+quint8 ErrorType::getSubsystemCode()
+{
+    return SubSys;
+}
+
+quint8 ErrorType::getErrorCode()
+{
+    return ErrorCode;
+}
+
+bool ErrorType::setFromSqlRecord(const QSqlRecord &record)
+{
+    bool returnCode = true;
+
+    if (record.contains("Subsys"))
     {
-        //Radio
-        retval.first = "S2: Radio";
-        if (ecode == 0)
+        SubSys = static_cast<quint8>(record.value("Subsys").toString().toShort());
+    }
+    else
+    {
+        returnCode = false;
+    }
+
+    if (record.contains("ECode"))
+    {
+        ErrorCode = static_cast<quint8>(record.value("ECode").toString().toShort());
+    }
+    else
+    {
+        returnCode = false;
+    }
+
+    return returnCode;
+}
+
+QString ErrorType::toString() const
+{
+    QString output;
+    QTextStream QTStream(&output);
+
+    QTStream << " Subsystem:" << SubSys << " Errorcode:" << ErrorCode;
+    return output;
+}
+
+QString CopterErrorTypeFormatter::format(ErrorType &code)
+{
+    // SubSys ans ErrorCode interpretation was taken from
+    // Ardupilot/ArduCopter/defines.h
+
+    QString output;
+    QTextStream QTStream(&output);
+
+    bool EcodeUsed = false;
+
+    switch (code.getSubsystemCode())
+    {
+    case 1:
+        QTStream << "Main:";
+        if (code.getErrorCode() == 1)
         {
-            //Error resolved
-            retval.second = "E0: PPM Encoder error resolved";
+            QTStream << "Ins-Delay";
+            EcodeUsed = true;
         }
-        else if (ecode == 2)
+        break;
+
+    case 2:
+        QTStream << "Radio:";
+        if (code.getErrorCode() == 2)
         {
-            retval.second = "E2: Lame Frame, no updates from PPM encoder";
+            QTStream << "Late Frame detected";
+            EcodeUsed = true;
         }
-        else if (ecode == -1)
+        break;
+
+    case 3:
+        QTStream << "Compass:";
+        if (code.getErrorCode() == 2)
         {
-            //No ecode registered
-            retval.second = ecodeinvalid;
+            QTStream << "Failed to read data";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 4:
+        QTStream << "OptFlow:";
+        break;
+
+    case 5:
+        QTStream << "FS-Radio:";
+        break;
+
+    case 6:
+        QTStream << "FS-Batt:";
+        if (code.getErrorCode() == 1)
+        {
+            QTStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 7:
+        QTStream << "FS-GPS:";
+        if (code.getErrorCode() == 1)
+        {
+            QTStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 8:
+        QTStream << "FS-GCS:";
+        if (code.getErrorCode() == 1)
+        {
+            QTStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 9:
+        QTStream << "FS-Fence:";
+        if (code.getErrorCode() == 1)
+        {
+            QTStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 10:
+        QTStream << "Flight-Mode:";
+        break;
+
+    case 11:
+        QTStream << "GPS:";
+        break;
+
+    case 12:
+        QTStream << "Crash-Check:";
+        if (code.getErrorCode() == 1)
+        {
+            QTStream << "Crash Detected";
+            EcodeUsed = true;
+        }
+        else if (code.getErrorCode() == 2)
+        {
+            QTStream << "Control Lost";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 13:
+        QTStream << "FLIP:";
+        if (code.getErrorCode() == 2)
+        {
+            QTStream << "Abandoned";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 14:
+        QTStream << "Autotune:";
+        break;
+
+    case 15:
+        QTStream << "Parachute:";
+        if (code.getErrorCode() == 2)
+        {
+            QTStream << "Too low to eject";
+            EcodeUsed = true;
+        }
+        else if (code.getErrorCode() == 3)
+        {
+            QTStream << "Copter Landed";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 16:
+        QTStream << "EKF-Check:";
+        if (code.getErrorCode() == 2)
+        {
+            QTStream << "Bad Variance detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 17:
+        QTStream << "FS-EKF-INAV:";
+        if (code.getErrorCode() == 1)
+        {
+            QTStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 18:
+        QTStream << "Baro:";
+        if (code.getErrorCode() == 2)
+        {
+            QTStream << "Glitch detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 19:
+        QTStream << "CPU:";
+        break;
+
+    default:
+        QTStream << "SubSys:" << code.getErrorCode() << " ECode:" << code.getErrorCode();
+        EcodeUsed = true;
+        break;
+
+    }
+
+    if (!EcodeUsed)
+    {
+        switch (code.getErrorCode())
+        {
+        case 0:
+            QTStream << "Everything OK!";
+            break;
+
+        case 1:
+            QTStream << "Failed to init";
+            break;
+
+        case 4:
+            QTStream << "Is Unhealthy";
+            break;
+
+        default:
+            QTStream << "Unknown ErrorCode(" << code.getErrorCode() << ")";
+            break;
         }
     }
-    else if (subsys == 3)
-    {
-        //Compass
-        retval.first = "S3: Compass";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Error resolved";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: Compass failed to initialized";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Failure when trying to read a value";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 4)
-    {
-        //Optical flow
-        retval.first = "S4: Optical Flow";
-        if (ecode == 1)
-        {
-            retval.second = "E1: Failed to initialize";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 5)
-    {
-        //throttle
-        retval.first = "S5: Throttle";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Error Resolved";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: Throttle below FS_THR_VALUE";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 6)
-    {
-        //Battery
-        retval.first = "S6: Battery";
-        if (ecode == 1)
-        {
-            retval.second = "E1: Voltage below LOW_VOLT/BATT_CAPACITY exceeded";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 7)
-    {
-        //GPS
-        retval.first = "E7: GPS";
-        if (ecode == 0)
-        {
-            retval.second = "E0: GPS Lock Restored";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: GPS Lock Lost";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 8)
-    {
-        //GCS
-        retval.first = "E8: Ground Control Station";
-        if (ecode == 0)
-        {
-            retval.second = "E0: GCS Updates restored";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: GCS joystick updates lost";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 9)
-    {
-        //Optical flow
-        retval.first = "E9: Fence";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Vehicle back within fence";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: Altitude fence breached";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Circular fence breached";
-        }
-        else if (ecode == 3)
-        {
-            retval.second = "E3: Altitude AND Circular fences breached";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 10)
-    {
-        //Flight Mode
-        retval.first = "E10: Flight Mode";
-        retval.second = "E " + QString::number(ecode) + ": Vehicle unable to enter flight mode";
-    }
-    else if (subsys == 11)
-    {
-        //GPS
-        retval.first = "E11: GPS Glitch";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Glitch Cleared";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: GPS Glick Detected";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 12)
-    {
-        retval.first = "E12: Crash Check";
-        if (ecode == 1)
-        {
-            retval.second = "E1: Crash Detected";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 13)
-    {
-        retval.first = "E13: Flip";
-        if (ecode == 2)
-        {
-            retval.second = "E2: Flip Abandoned";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 14)
-    {
-        retval.first = "E14: Auto Tune";
-        if (ecode == 2)
-        {
-            retval.second = "E2: Bad Gains";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 15)
-    {
-        retval.first = "E15: Parachute";
-        if (ecode == 2)
-        {
-            retval.second = "E2: Too low to deploy";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 16)
-    {
-        retval.first = "E16: EKF/InertialNav Check";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Bad Variance Cleared";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Bad Variance";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 17)
-    {
-        retval.first = "E17: EKF/InertialNav Failure";
-        if (ecode == 2)
-        {
-            retval.second = "E2: EKF Failsafe Triggered";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 18)
-    {
-        retval.first = "E18: Baro Glitch";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Baro Glitch Cleared";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Baro Glitch";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    return retval;
+
+    return output;
 }
