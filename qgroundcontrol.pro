@@ -126,9 +126,6 @@ QT += testlib
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
 
-#Turn on camera view
-#DEFINES += AMERAVIEW
-#
 # Logging Library
 #
 include (QsLog/QsLog.pri)
@@ -136,10 +133,6 @@ include (QsLog/QsLog.pri)
 #
 # OS Specific settings
 #
-
-RaspberryPiBuild {
-   DEFINES -= CAMERAVIEW
-}
 
 MacBuild {
     QT += multimedia
