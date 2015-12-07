@@ -151,7 +151,7 @@ OSGDependency {
     message("Including support for OpenSceneGraph")
 
 	DEFINES += QGC_OSG_ENABLED
-
+    
     LIBS += \
         -losg \
         -losgViewer \
@@ -183,7 +183,7 @@ OSGDependency {
         src/ui/map3D/WaypointGroupNode.h \
         src/ui/map3D/TerrainParamDialog.h \
         src/ui/map3D/ImageryParamDialog.h
-
+        
     SOURCES += \
         src/ui/map3D/gpl.cc \
         src/ui/map3D/CameraParams.cc \
@@ -394,7 +394,7 @@ WindowsBuild : win32 : exists(src/lib/opalrt/OpalApi.h) : exists(C:/OPAL-RT/RT-L
 
     DEFINES += OPAL_RT
 
-    INCLUDEPATH +=
+    INCLUDEPATH += 
         src/lib/opalrt
         libs/lib/opal/include \
 
@@ -466,7 +466,7 @@ WindowsCrossBuild {
 
 LinuxBuild {
 	LIBS += \
-		-lflite_cmu_us_kal16 \
+		-lflite_cmu_us_kal \
 		-lflite_usenglish \
 		-lflite_cmulex \
 		-lflite
