@@ -482,7 +482,7 @@ WindowsCrossBuild {
 
 LinuxBuild {
 	LIBS += \
-		-lflite_cmu_us_kal16 \
+		-lflite_cmu_us_kal \
 		-lflite_usenglish \
 		-lflite_cmulex \
 		-lflite

@@ -62,6 +62,7 @@ extern CComModule _Module;
 #ifdef Q_OS_LINUX
 extern "C" {
 #include <flite/flite.h>
+    cst_voice* register_cmu_us_kal(const char* voxdir);
 };
 #endif
 
@@ -238,7 +239,7 @@ bool GAudioOutput::say(QString text, int severity)
                 if (file.open(QIODevice::ReadWrite))
                 {
                     QLOG_INFO() << file.fileName() << " file not exist, create a new one";
-                    cst_voice *v = new_voice();
+                    cst_voice *v = register_cmu_us_kal(NULL);
                     cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
                     cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
                     file.close();
