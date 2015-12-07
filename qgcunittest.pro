@@ -34,9 +34,11 @@ BASEDIR = $${IN_PWD}
 TESTDIR = $$BASEDIR/src/qgcunittest
 
 HEADERS += $$TESTDIR/AutoTest.h \
+    $$TESTDIR/GAudioOutputTest.h \
     $$TESTDIR/TestFrameworkTest.h \
     $$TESTDIR/versioncomparatortest.h
 
 SOURCES += $$TESTDIR/testSuite.cc \
+    $$TESTDIR/GAudioOutputTest.cc \
     $$TESTDIR/TestFrameworkTest.cc \
     $$TESTDIR/versioncomparatortest.cc
