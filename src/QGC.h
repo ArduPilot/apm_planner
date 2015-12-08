@@ -34,8 +34,7 @@
 #define define2string_p(x) #x
 #define define2string(x) define2string_p(x)
 
-#ifdef _MSC_VER
-    #if _MSC_VER<1800
+#if defined(_MSC_VER) && (_MSC_VER<1800)
         #include <limits>
 
         template<typename T>
@@ -47,7 +46,6 @@
         inline bool isinf(T value){
             return (value == std::numeric_limits<T>::infinity() || (-1*value) == std::numeric_limits<T>::infinity()) && std::numeric_limits<T>::has_infinity;
         }
-    #endif
 #else
     #include <cmath>
 
