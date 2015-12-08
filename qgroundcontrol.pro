@@ -49,7 +49,7 @@ linux-g++-64 {
          DEFINES += Q_UBUNTU
     }
 
-} else : win32-msvc2010 | win32-msvc2012 | win32-msvc2013 {
+} else : win32-msvc2012 | win32-msvc2013 {
     message(Windows build)
     CONFIG += WindowsBuild
 }  else : win32-g++|win64-g++ {
