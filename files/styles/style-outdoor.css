@@ -196,6 +196,20 @@ QMainWindow::separator:hover {
 	background: rgb(0, 0, 255);
 }
 
+QMenu {
+    border: 1px solid black;
+}
+
+QMenuBar {
+    background: black;
+    color: white;
+}
+
+QMenuBar::item {
+    background: black;
+    color: white;
+}
+
 QMenu::item::selected {
 	background: rgb(200, 200, 200);
 }

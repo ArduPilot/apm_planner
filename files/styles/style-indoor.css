@@ -345,6 +345,14 @@ QMenu::separator {
      margin-right: 5px;
  }
 
+QMenuBar {
+    background: black;
+}
+
+QMenuBar::item {
+    background: black;
+}
+
 QMenuBar::item:disabled {
     border: none;
     background: none;
