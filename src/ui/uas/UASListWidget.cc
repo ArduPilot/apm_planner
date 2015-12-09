@@ -151,6 +151,8 @@ void UASListWidget::removeUAS(UASInterface* uas)
 
 void UASListWidget::resizeEvent(QResizeEvent *e)
 {
+    Q_UNUSED(e)
+
     if (scrollArea->verticalScrollBar()->isVisible())
     {
         int width = this->width() - QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent);

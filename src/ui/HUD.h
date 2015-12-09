@@ -103,8 +103,6 @@ protected slots:
     void paintPitchLines(float pitch, QPainter* painter);
     /** @brief Paint text on top of the image and OpenGL drawings */
     void paintText(QString text, QColor color, float fontSize, float refX, float refY, QPainter* painter);
-    /** @brief Setup the OpenGL view for drawing a sub-component of the HUD */
-    void setupGLView(float referencePositionX, float referencePositionY, float referenceWidth, float referenceHeight);
     void paintHUD();
     void paintPitchLinePos(QString text, float refPosX, float refPosY, QPainter* painter);
     void paintPitchLineNeg(QString text, float refPosX, float refPosY, QPainter* painter);

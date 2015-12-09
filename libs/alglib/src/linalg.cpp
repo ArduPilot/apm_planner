@@ -7071,8 +7071,7 @@ bool rmatrixschur(real_2d_array &a, const ae_int_t n, real_2d_array &s)
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
-static ae_int_t ablas_rgemmparallelsize = 64;
-static ae_int_t ablas_cgemmparallelsize = 64;
+
 static void ablas_ablasinternalsplitlength(ae_int_t n,
      ae_int_t nb,
      ae_int_t* n1,
@@ -7694,6 +7693,8 @@ INPUT PARAMETERS
 *************************************************************************/
 ae_int_t ablasblocksize(/* Real    */ ae_matrix* a, ae_state *_state)
 {
+    (void)a;
+    (void)_state;
     ae_int_t result;
 
 
@@ -7712,6 +7713,9 @@ Block size for complex subroutines.
 ae_int_t ablascomplexblocksize(/* Complex */ ae_matrix* a,
      ae_state *_state)
 {
+    (void)a;
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -7729,6 +7733,8 @@ Microblock size
 *************************************************************************/
 ae_int_t ablasmicroblocksize(ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -7874,6 +7880,8 @@ void rmatrixenforcesymmetricity(/* Real    */ ae_matrix* a,
      ae_bool isupper,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t j;
 
@@ -7924,6 +7932,8 @@ void cmatrixcopy(ae_int_t m,
      ae_int_t jb,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
 
 
@@ -7961,6 +7971,8 @@ void rmatrixcopy(ae_int_t m,
      ae_int_t jb,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
 
 
@@ -9264,6 +9276,8 @@ static void ablas_ablasinternalsplitlength(ae_int_t n,
      ae_int_t* n2,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t r;
 
     *n1 = 0;
@@ -13594,6 +13608,8 @@ static void ortfac_rmatrixblockreflector(/* Real    */ ae_matrix* a,
      /* Real    */ ae_vector* work,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t j;
     ae_int_t k;
@@ -13705,6 +13721,8 @@ static void ortfac_cmatrixblockreflector(/* Complex */ ae_matrix* a,
      /* Complex */ ae_vector* work,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t k;
     ae_complex v;
@@ -13936,6 +13954,8 @@ static ae_bool bdsvd_bidiagonalsvddecompositioninternal(/* Real    */ ae_vector*
      ae_int_t ncvt,
      ae_state *_state)
 {
+    (void)isfractionalaccuracyrequired;
+
     ae_frame _frame_block;
     ae_vector _e;
     ae_int_t i;
@@ -19424,6 +19444,10 @@ static void evd_internaldlaebz(ae_int_t ijob,
      ae_int_t* info,
      ae_state *_state)
 {
+    (void)e;
+    (void)work;
+    (void)iwork;
+
     ae_int_t itmp1;
     ae_int_t itmp2;
     ae_int_t j;
@@ -27187,7 +27211,7 @@ static void rcond_internalcomplexrcondsaveall(/* Integer */ ae_vector* isave,
      double* temp,
      ae_state *_state)
 {
-
+    (void)_state;
 
     isave->ptr.p_int[0] = *i;
     isave->ptr.p_int[1] = *iter;
@@ -27214,7 +27238,7 @@ static void rcond_internalcomplexrcondloadall(/* Integer */ ae_vector* isave,
      double* temp,
      ae_state *_state)
 {
-
+    (void)_state;
 
     *i = isave->ptr.p_int[0];
     *iter = isave->ptr.p_int[1];
@@ -29009,6 +29033,9 @@ static void matinv_hpdmatrixcholeskyinverserec(/* Complex */ ae_matrix* a,
 
 ae_bool _matinvreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     matinvreport *p = (matinvreport*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -29017,6 +29044,9 @@ ae_bool _matinvreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _matinvreport_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     matinvreport *dst = (matinvreport*)_dst;
     matinvreport *src = (matinvreport*)_src;
     dst->r1 = src->r1;
@@ -31172,6 +31202,7 @@ OUTPUT PARAMETERS
 *************************************************************************/
 void sparsefree(sparsematrix* s, ae_state *_state)
 {
+    (void)_state;
 
     _sparsematrix_clear(s);
 
@@ -31193,6 +31224,8 @@ RESULT: number of rows of a sparse matrix.
 *************************************************************************/
 ae_int_t sparsegetnrows(sparsematrix* s, ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -31211,6 +31244,8 @@ RESULT: number of columns of a sparse matrix.
 *************************************************************************/
 ae_int_t sparsegetncols(sparsematrix* s, ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -32512,6 +32547,7 @@ void normestimatorresults(normestimatorstate* state,
      double* nrm,
      ae_state *_state)
 {
+    (void)_state;
 
     *nrm = 0;
 

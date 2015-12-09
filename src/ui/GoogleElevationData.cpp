@@ -87,6 +87,8 @@ void GoogleElevationData::updateDataReadProgress(qint64 bytesRead, qint64 totalB
 void GoogleElevationData::requestElevationData(const QList<Waypoint *> &waypointList, int distance,
                                                int samples)
 {
+    Q_UNUSED(distance)
+
     // Create the google request from the currentWaypointList
     if (waypointList.count() < 2){
         QLOG_ERROR() << "Not enough waypoints to request elevation data.";

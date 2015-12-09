@@ -35,6 +35,7 @@ MissionOverview::~MissionOverview()
 
 void MissionOverview::messageReceived(LinkInterface* link, mavlink_message_t message)
 {
+    Q_UNUSED(link)
     // ToDo [ Add mission handking code ]
     switch (message.msgid)
     {

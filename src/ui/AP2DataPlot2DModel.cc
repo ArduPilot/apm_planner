@@ -328,7 +328,7 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
             }
         }
         bool ok = false;
-        int modeint = mode.toInt(&ok);
+
         if (!ok && !custom_mode)
         {
             if (record.contains("ModeNum"))
@@ -417,10 +417,12 @@ QVariant AP2DataPlot2DModel::headerData ( int section, Qt::Orientation orientati
 }
 int AP2DataPlot2DModel::rowCount( const QModelIndex & parent) const
 {
-     return m_rowCount;
+    Q_UNUSED(parent)
+    return m_rowCount;
 }
 int AP2DataPlot2DModel::columnCount ( const QModelIndex & parent) const
 {
+    Q_UNUSED(parent)
     return m_columnCount;
 }
 QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
@@ -484,6 +486,7 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
 }
 void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
+    Q_UNUSED(previous)
     if (m_currentRow == current.row())
     {
         return;
@@ -496,7 +499,6 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
         return;
     }
     //Grab the index
-    int rowid = data(createIndex(current.row(),0)).toString().toInt();
 
     if (m_rowToTableMap.contains(current.row()))
     {

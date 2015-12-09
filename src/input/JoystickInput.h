@@ -61,7 +61,7 @@ public:
 
     const QString getActiveJoystickId();
 
-    const int getNumberOfButtons() const;
+    int getNumberOfButtons() const;
 
     /**
      * @brief Load joystick settings

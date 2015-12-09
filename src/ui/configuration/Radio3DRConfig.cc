@@ -319,6 +319,8 @@ void Radio3DRConfig::updateRemoteComplete(int result)
         case resetRadioSettings:
             resetLocalRadioSettingsToDefaults();
             break;
+        default:
+            break;
         }
     }
 }
