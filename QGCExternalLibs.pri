@@ -480,11 +480,16 @@ WindowsCrossBuild {
 # Festival Lite speech synthesis engine
 #
 
-LinuxBuild {
-	LIBS += \
-		-lflite_cmu_us_kal \
-		-lflite_usenglish \
-		-lflite_cmulex \
-		-lflite
+LinuxBuild{
+    exists(/usr/include/flite/flite.h){
+        LIBS += \
+            -lflite_cmu_us_kal \
+            -lflite_usenglish \
+            -lflite_cmulex \
+            -lflite
+    } else {
+        message(Skipping Flite Support)
+        DEFINES -= FLITE_AUDIO_ENABLED
+    }
 }
 

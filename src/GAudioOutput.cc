@@ -59,7 +59,7 @@ extern CComModule _Module;
 //using System.Speech.Synthesis;
 #endif
 
-#ifdef Q_OS_LINUX
+#if defined(FLITE_AUDIO_ENABLED)
 extern "C" {
 #include <flite/flite.h>
     cst_voice* register_cmu_us_kal(const char* voxdir);
@@ -100,7 +100,7 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
     settings.sync();
     muted = settings.value(QGC_GAUDIOOUTPUT_KEY+"muted", muted).toBool();
 
-#ifdef Q_OS_LINUX
+#ifdef FLITE_AUDIO_ENABLED
     // Remove Phonon Audio for linux and use alsa
     flite_init();
 
@@ -227,7 +227,7 @@ bool GAudioOutput::say(QString text, int severity)
             res = true;
 #endif
 
-#ifdef Q_OS_LINUX
+#ifdef FLITE_AUDIO_ENABLED
             // spokenfilename is the filename created from spoken text
             QString spokenFilename = text;
             spokenFilename.replace(QRegExp(" "), "_");
@@ -391,7 +391,7 @@ void GAudioOutput::selectNeutralVoice()
 QStringList GAudioOutput::listVoices(void)
 {
     QStringList l;
-#ifdef Q_OS_LINUX2
+#ifdef FLITE_AUDIO_ENABLED
     cst_voice *voice;
     const cst_val *v;
 

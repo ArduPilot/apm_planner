@@ -36,17 +36,36 @@ linux-g++-64 {
     message(Linux build x64_86)
     CONFIG += LinuxBuild
     DEFINES += Q_LINUX_64
+    DEFINES += FLITE_AUDIO_ENABLED
+
     DISTRO = $$system(lsb_release -i)
+
     contains( DISTRO, "Ubuntu" ) {
-         DEFINES += Q_UBUNTU
+        message(ArchLinux Build)
+        DEFINES += Q_UBUNTU
     }
+
+    contains( DISTRO, "Arch" ) {
+        message(ArchLinux Build)
+        DEFINES += Q_ARCHLINUX
+    }
+
 } else: linux-g++ {
     message(Linux build x86)
     CONFIG += LinuxBuild
     DEFINES += Q_LINUX_32
+    DEFINES += FLITE_AUDIO_ENABLED
+
     DISTRO = $$system(lsb_release -i)
+
     contains( DISTRO, "Ubuntu" ) {
-         DEFINES += Q_UBUNTU
+        message(ArchLinux Build)
+        DEFINES += Q_UBUNTU
+    }
+
+    contains( DISTRO, "Arch" ) {
+        message(ArchLinux Build)
+        DEFINES += Q_ARCHLINUX
     }
 
 } else : win32-msvc2012 | win32-msvc2013 {
