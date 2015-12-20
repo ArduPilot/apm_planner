@@ -1500,21 +1500,29 @@ void AP2DataPlot2D::exportDialogAccepted()
             formatheader += line + "\r\n";
         }
     }
-
     outputfile.write(formatheader.toLatin1());
 
     for (int i=0;i<m_tableModel->rowCount();i++)
     {
         int j=1;
-        QVariant val = m_tableModel->data(m_tableModel->index(i,j++));
-        QString line = val.toString();
-        val = m_tableModel->data(m_tableModel->index(i,j++));
-        while (!val.isNull())
+        bool rowFetched = m_tableModel->prefetchRow(m_tableModel->index(i,j));
+
+        if (rowFetched)
         {
-            line += ", " + val.toString();
-            val = m_tableModel->data(m_tableModel->index(i,j++));
+            QVariant val = m_tableModel->dataFromPrefetchedRow(m_tableModel->index(i,j++));
+            QString line = val.toString();
+            val = m_tableModel->dataFromPrefetchedRow(m_tableModel->index(i,j++));
+            while (!val.isNull())
+            {
+                line += ", " + val.toString();
+                val = m_tableModel->dataFromPrefetchedRow(m_tableModel->index(i,j++));
+            }
+            outputfile.write(line.append("\r\n").toLatin1());
         }
-        outputfile.write(line.append("\r\n").toLatin1());
+        else
+        {
+            QLOG_DEBUG() << "AP2DataPlot2D::exportDialogAccepted: Row " << i << " could not be fetched.";
+        }
         if (i % 5)
         {
             progressDialog->setValue(100.0 * ((double)i / (double)m_tableModel->rowCount()));
