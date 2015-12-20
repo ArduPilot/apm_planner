@@ -484,6 +484,68 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
     }
     return tablequery.value((index.column()-1));
 }
+
+QVariant AP2DataPlot2DModel::dataFromPrefetchedRow(const QModelIndex &index)
+{
+    // Check whether its the same row as used for the prefetch call
+    // and if size is at least 2
+    if ((index.row() == m_prefetchedRowIndex.row()) && m_prefetchedRowData.size() >= 2)
+    {
+        if (index.column() == 0)
+        {
+            return m_prefetchedRowData[0];
+        }
+        if (index.column() == 1)
+        {
+            return m_rowToTableMap.value(index.row()).second; // returns Tablename
+        }
+        if ((index.column()-1) >= m_prefetchedRowData.size())
+        {
+            return QVariant();
+        }
+        return m_prefetchedRowData[index.column()-1];
+    }
+    return QVariant();
+}
+
+bool AP2DataPlot2DModel::prefetchRow(const QModelIndex& index)
+{
+    bool retval = false;
+    m_prefetchedRowData.clear();
+
+    if (index.isValid())
+    {
+        if (m_rowToTableMap.contains(index.row()))
+        {
+            quint64 tableindex = m_rowToTableMap.value(index.row()).first;
+            QString tablename  = m_rowToTableMap.value(index.row()).second;
+
+            QSqlQuery tableQuery(m_sharedDb);
+            QString val = QString::number(tableindex);
+            tableQuery.prepare("SELECT * FROM " + tablename + " WHERE idx = " + val);
+            if (tableQuery.exec())
+            {
+                int recordCount = tableQuery.record().count();
+                if (!tableQuery.next())
+                {
+                    return false;
+                }
+                for (int i = 0; i < recordCount; ++i)
+                {
+                    m_prefetchedRowData.push_back(tableQuery.value(i));
+                }
+                retval = true;
+                m_prefetchedRowIndex = index;
+            }
+            else
+            {
+                qDebug() << "Unable to exec table query:" << tableQuery.lastError().text();
+            }
+        }
+    }
+    return retval;
+}
+
 void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
     Q_UNUSED(previous)

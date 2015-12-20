@@ -61,6 +61,25 @@ public:
     quint64 getLastIndex();
     quint64 getFirstIndex();
 
+    /**
+     * @brief Fetches the row defined in index and stores the values in
+     *        an internal structure for later usage
+     * @param index - defines the row which will be fetched and stored
+     * @return true if successful - false otherwise
+     */
+    bool prefetchRow(const QModelIndex& index);
+
+    /**
+     * @brief Reads the data from a previous prefetchRow(). Index must hold
+     *        the same row wich was used for the prefetch. The value referred
+     *        by colum will be returned.
+     * @param index - defines the colum wich will be returned. Row must be the
+     *                same used for prefetch.
+     * @return QVariant containing the data or empty QVariant if colum or row not
+     *         valid
+     */
+    QVariant dataFromPrefetchedRow(const QModelIndex& index);
+
 public slots:
     void selectedRowChanged(QModelIndex current,QModelIndex previous);
 
@@ -97,6 +116,9 @@ private:
 
     QSqlQuery *m_indexinsertquery;
     QSqlQuery *m_fmtInsertQuery;
+
+    QVector<QVariant> m_prefetchedRowData;  /// Stores the data fetched with prefetchRow(...)
+    QModelIndex m_prefetchedRowIndex;       /// Stores the index which was used for the last prefetchRow(...) call
 
 
 };
