@@ -342,7 +342,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                     QLOG_DEBUG() << "AP2DataPlotThread::run(): ERROR UNKNOWN DATA TYPE" << typeCode;
                                 }
                             }
-                            if (valuepairlist.size() > 1)
+                            if (valuepairlist.size() >= 1)
                             {
                                 if (!m_dataModel->addRow(name,valuepairlist,index))
                                 {
