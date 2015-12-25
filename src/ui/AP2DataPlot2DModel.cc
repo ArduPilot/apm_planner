@@ -488,8 +488,8 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
 QVariant AP2DataPlot2DModel::dataFromPrefetchedRow(const QModelIndex &index)
 {
     // Check whether its the same row as used for the prefetch call
-    // and if size is at least 2
-    if ((index.row() == m_prefetchedRowIndex.row()) && m_prefetchedRowData.size() >= 2)
+    // and if size is at least 1
+    if ((index.row() == m_prefetchedRowIndex.row()) && (m_prefetchedRowData.size() >= 1))
     {
         if (index.column() == 0)
         {
