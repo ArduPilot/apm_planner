@@ -72,7 +72,8 @@ public:
     /**
      * @brief Reads the data from a previous prefetchRow(). Index must hold
      *        the same row wich was used for the prefetch. The value referred
-     *        by colum will be returned.
+     *        by colum will be returned. If index is not valid an empty QVariant
+     *        will be returned.
      * @param index - defines the colum wich will be returned. Row must be the
      *                same used for prefetch.
      * @return QVariant containing the data or empty QVariant if colum or row not
