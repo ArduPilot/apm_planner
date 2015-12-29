@@ -166,7 +166,7 @@ MacBuild {
     QMAKE_INFO_PLIST = Custom-Info.plist
     CONFIG += x86_64
     CONFIG -= x86
-#    QMAKE_MAC_SDK = macosx10.11 # Required for Xcode7.0
+    QMAKE_MAC_SDK = macosx10.11 # Required for Xcode7.0
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     ICON = $$BASEDIR/files/APMIcons/icon.icns
     QMAKE_INFO_PLIST = APMPlanner.plist   # Sets the pretty name for the build
