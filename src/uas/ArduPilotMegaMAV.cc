@@ -817,7 +817,8 @@ QString CopterErrorTypeFormatter::format(ErrorType &code)
         break;
 
     case 10:
-        QTStream << "Flight-Mode:";
+        QTStream << "Flight-Mode "  << code.getErrorCode() <<" refused.";
+        EcodeUsed = true;
         break;
 
     case 11:
