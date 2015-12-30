@@ -727,9 +727,9 @@ bool ErrorType::setFromSqlRecord(const QSqlRecord &record)
 QString ErrorType::toString() const
 {
     QString output;
-    QTextStream QTStream(&output);
+    QTextStream outputStream(&output);
 
-    QTStream << " Subsystem:" << SubSys << " Errorcode:" << ErrorCode;
+    outputStream << " Subsystem:" << SubSys << " Errorcode:" << ErrorCode;
     return output;
 }
 
@@ -739,166 +739,166 @@ QString CopterErrorTypeFormatter::format(ErrorType &code)
     // Ardupilot/ArduCopter/defines.h
 
     QString output;
-    QTextStream QTStream(&output);
+    QTextStream outputStream(&output);
 
     bool EcodeUsed = false;
 
     switch (code.getSubsystemCode())
     {
     case 1:
-        QTStream << "Main:";
+        outputStream << "Main:";
         if (code.getErrorCode() == 1)
         {
-            QTStream << "Ins-Delay";
+            outputStream << "Ins-Delay";
             EcodeUsed = true;
         }
         break;
 
     case 2:
-        QTStream << "Radio:";
+        outputStream << "Radio:";
         if (code.getErrorCode() == 2)
         {
-            QTStream << "Late Frame detected";
+            outputStream << "Late Frame detected";
             EcodeUsed = true;
         }
         break;
 
     case 3:
-        QTStream << "Compass:";
+        outputStream << "Compass:";
         if (code.getErrorCode() == 2)
         {
-            QTStream << "Failed to read data";
+            outputStream << "Failed to read data";
             EcodeUsed = true;
         }
         break;
 
     case 4:
-        QTStream << "OptFlow:";
+        outputStream << "OptFlow:";
         break;
 
     case 5:
-        QTStream << "FS-Radio:";
+        outputStream << "FS-Radio:";
         break;
 
     case 6:
-        QTStream << "FS-Batt:";
+        outputStream << "FS-Batt:";
         if (code.getErrorCode() == 1)
         {
-            QTStream << "Detected";
+            outputStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 7:
-        QTStream << "FS-GPS:";
+        outputStream << "FS-GPS:";
         if (code.getErrorCode() == 1)
         {
-            QTStream << "Detected";
+            outputStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 8:
-        QTStream << "FS-GCS:";
+        outputStream << "FS-GCS:";
         if (code.getErrorCode() == 1)
         {
-            QTStream << "Detected";
+            outputStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 9:
-        QTStream << "FS-Fence:";
+        outputStream << "FS-Fence:";
         if (code.getErrorCode() == 1)
         {
-            QTStream << "Detected";
+            outputStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 10:
-        QTStream << "Flight-Mode "  << code.getErrorCode() <<" refused.";
+        outputStream << "Flight-Mode "  << code.getErrorCode() <<" refused.";
         EcodeUsed = true;
         break;
 
     case 11:
-        QTStream << "GPS:";
+        outputStream << "GPS:";
         break;
 
     case 12:
-        QTStream << "Crash-Check:";
+        outputStream << "Crash-Check:";
         if (code.getErrorCode() == 1)
         {
-            QTStream << "Crash Detected";
+            outputStream << "Crash Detected";
             EcodeUsed = true;
         }
         else if (code.getErrorCode() == 2)
         {
-            QTStream << "Control Lost";
+            outputStream << "Control Lost";
             EcodeUsed = true;
         }
         break;
 
     case 13:
-        QTStream << "FLIP:";
+        outputStream << "FLIP:";
         if (code.getErrorCode() == 2)
         {
-            QTStream << "Abandoned";
+            outputStream << "Abandoned";
             EcodeUsed = true;
         }
         break;
 
     case 14:
-        QTStream << "Autotune:";
+        outputStream << "Autotune:";
         break;
 
     case 15:
-        QTStream << "Parachute:";
+        outputStream << "Parachute:";
         if (code.getErrorCode() == 2)
         {
-            QTStream << "Too low to eject";
+            outputStream << "Too low to eject";
             EcodeUsed = true;
         }
         else if (code.getErrorCode() == 3)
         {
-            QTStream << "Copter Landed";
+            outputStream << "Copter Landed";
             EcodeUsed = true;
         }
         break;
 
     case 16:
-        QTStream << "EKF-Check:";
+        outputStream << "EKF-Check:";
         if (code.getErrorCode() == 2)
         {
-            QTStream << "Bad Variance detected";
+            outputStream << "Bad Variance detected";
             EcodeUsed = true;
         }
         break;
 
     case 17:
-        QTStream << "FS-EKF-INAV:";
+        outputStream << "FS-EKF-INAV:";
         if (code.getErrorCode() == 1)
         {
-            QTStream << "Detected";
+            outputStream << "Detected";
             EcodeUsed = true;
         }
         break;
 
     case 18:
-        QTStream << "Baro:";
+        outputStream << "Baro:";
         if (code.getErrorCode() == 2)
         {
-            QTStream << "Glitch detected";
+            outputStream << "Glitch detected";
             EcodeUsed = true;
         }
         break;
 
     case 19:
-        QTStream << "CPU:";
+        outputStream << "CPU:";
         break;
 
     default:
-        QTStream << "SubSys:" << code.getErrorCode() << " ECode:" << code.getErrorCode();
+        outputStream << "SubSys:" << code.getErrorCode() << " ECode:" << code.getErrorCode();
         EcodeUsed = true;
         break;
 
@@ -909,19 +909,19 @@ QString CopterErrorTypeFormatter::format(ErrorType &code)
         switch (code.getErrorCode())
         {
         case 0:
-            QTStream << "Everything OK!";
+            outputStream << "Everything OK!";
             break;
 
         case 1:
-            QTStream << "Failed to init";
+            outputStream << "Failed to init";
             break;
 
         case 4:
-            QTStream << "Is Unhealthy";
+            outputStream << "Is Unhealthy";
             break;
 
         default:
-            QTStream << "Unknown ErrorCode(" << code.getErrorCode() << ")";
+            outputStream << "Unknown ErrorCode(" << code.getErrorCode() << ")";
             break;
         }
     }
