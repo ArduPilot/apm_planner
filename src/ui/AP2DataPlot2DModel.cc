@@ -36,6 +36,8 @@ This file is part of the APM_PLANNER project
 #include <QUuid>
 #include <QsLog.h>
 
+#include <qelapsedtimer.h>
+
 
 /*
  * This model holds everything in memory in a sqlite database.
@@ -64,111 +66,57 @@ This file is part of the APM_PLANNER project
 AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
+    m_rowCount = 0;
+    m_columnCount = 0;
+    m_currentRow = 0;
+    m_fmtIndex = 0;
     m_firstIndex = 0;
     m_lastIndex = 0;
-    m_columnCount = 0;
     m_databaseName = QUuid::createUuid().toString();
     m_sharedDb = QSqlDatabase::addDatabase("QSQLITE",m_databaseName);
     m_sharedDb.setDatabaseName(":memory:");
+
+    //  Open DB an start transaction
     if (!m_sharedDb.open())
     {
-     //   QMessageBox::information(0,"error","Error opening shared database " + m_sharedDb.lastError().text());
+        setError("Error opening shared database " + m_sharedDb.lastError().text());
         return;
     }
-
-    m_fmtIndex=0;
     if (!m_sharedDb.transaction())
     {
-       // emit error("Unable to start database transaction 1");
+        setError("Unable to start database transaction "  + m_sharedDb.lastError().text());
         return;
     }
 
+    // Create FMT Table and prepare insert query
     if (!createFMTTable())
     {
-        //Error already emitted.
-        return;
+        return; //Error already emitted.
     }
-    m_fmtInsertQuery = new QSqlQuery(m_sharedDb);
+    m_fmtInsertQuery = queryPtr(new QSqlQuery(m_sharedDb));
     if (!createFMTInsert(m_fmtInsertQuery))
     {
-        //emit error("Error preparing FMT insert statement: " + fmtinsertquery.lastError().text());
-        return;
+        return;  //Error already emitted.
     }
 
+    // Create index table and prepare insert query
     if (!createIndexTable())
     {
-        //Error already emitted.
-        return;
+        return;   //Error already emitted.
     }
-    m_indexinsertquery = new QSqlQuery(m_sharedDb);
+    m_indexinsertquery = queryPtr(new QSqlQuery(m_sharedDb));
     if (!createIndexInsert(m_indexinsertquery))
     {
-        //emit error("Error preparing INDEX insert statement: " + indexinsertquery.lastError().text());
-        return;
+        return;  //Error already emitted.
     }
 
-    QMap<QString,QSqlQuery*> nameToInsertQuery;
-    QMap<QString,QString> nameToTypeString;
     if (!m_sharedDb.commit())
     {
-       // emit error("Unable to commit database transaction 1");
+        setError("Unable to commit database transaction "  + m_sharedDb.lastError().text());
         return;
     }
-    //if (!m_sharedDb.transaction())
-    //{
-        //emit error("Unable to start database transaction 2");
-    //    return;
-    //}
-
-    QSqlQuery query(m_sharedDb);
-    if (!query.prepare("SELECT * FROM 'INDEX'"))
-    {
-        qDebug() << "Error preparing:" << query.lastError();
-    }
-    if (!query.exec())
-    {
-        qDebug() << "Error execing:" << query.lastError();
-    }
-    m_rowCount = 0;
-    while (query.next())
-    {
-        QString name = query.value("value").toString();
-        //m_rowToTableMap.insert(query.value("idx").toInt(),name);
-        quint64 idx = query.value("idx").toLongLong();
-
-        m_rowToTableMap.insert(m_rowCount,QPair<quint64,QString>(idx,name));
-        QSqlQuery fmtquery(m_sharedDb);
-        if (!m_headerStringList.contains(name))
-        {
-            if (!fmtquery.prepare("SELECT * FROM 'FMT' WHERE name = '" + name + "'"))
-            {
-                qDebug() << "Error selecting from fmt";
-            }
-            fmtquery.exec();
-            if (fmtquery.next())
-            {
-                m_headerStringList.insert(name,QList<QString>());
-                QStringList valsplit = fmtquery.value("val").toString().split(",");
-                foreach (QString val,valsplit)
-                {
-                    m_headerStringList[name].append(val);
-                }
-                QList<QString> list;
-                list.append(QString::number(m_rowCount));
-                list.append("FMT");
-                for (int i=1;i<fmtquery.record().count();i++)
-                {
-                    list.append(fmtquery.value(fmtquery.record().field(i).name()).toString());
-                }
-                m_fmtStringList.append(list);
-            }
-        }
-        m_rowCount++;
-    }
-
-    //"INSERT INTO 'FMT' (idx,typeid,length,name,format,val)
-
 }
+
 AP2DataPlot2DModel::~AP2DataPlot2DModel()
 {
     QSqlDatabase::removeDatabase(m_databaseName);
@@ -574,12 +522,12 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
 }
 bool AP2DataPlot2DModel::hasType(const QString& name)
 {
-    return m_msgNameToInsertQuery.contains(name);
+    return m_msgNameToPrepearedInsertQuery.contains(name);
 }
 
 bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,QStringList names)
 {
-    if (!m_msgNameToInsertQuery.contains(name))
+    if (!m_msgNameToPrepearedInsertQuery.contains(name))
     {
         QString createstring = makeCreateTableString(name,types,names);
         QString variablenames = "";
@@ -617,7 +565,7 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
             return false;
         }
 
-        m_msgNameToInsertQuery.insert(name,insertstring.replace("insert or replace","insert"));
+        // Create table for measurement of type "name"
         QSqlQuery create(m_sharedDb);
         if (!create.prepare(createstring))
         {
@@ -629,11 +577,18 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
             setError("Unable to exec create: " + create.lastError().text());
             return false;
         }
+        // Prepare an insert query for the created table above and store it to speed up the inserting process later
+        queryPtr prepQuery = queryPtr(new QSqlQuery(m_sharedDb));
+        if (!prepQuery->prepare(insertstring.replace("insert or replace","insert")))
+        {
+            setError("Error preparing insertquery: " + name + " " + prepQuery->lastError().text());
+            return false;
+        }
+        m_msgNameToPrepearedInsertQuery.insert(name, prepQuery);
     }
     if (!m_headerStringList.contains(name))
     {
         m_headerStringList.insert(name,QList<QString>());
-        //QStringList valsplit = fmtquery.value("val").toString().split(",");
         foreach (QString val,names)
         {
             m_headerStringList[name].append(val);
@@ -722,30 +677,28 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
         m_firstIndex = index;
     }
     m_lastIndex = index;
-    //Add a row to a previously defined message type, NAME.Jy   Th
-    QSqlQuery query(m_sharedDb);
-    if (m_msgNameToInsertQuery.contains(name))
+
+    //Add a row to a previously defined message type using the already prepared insert query
+    queryPtr insertQuery = m_msgNameToPrepearedInsertQuery.value(name);
+    if (!insertQuery)
     {
-        if (!query.prepare(m_msgNameToInsertQuery.value(name)))
-        {
-           setError("Unable to prepare query: " + query.lastError().text());
-           return false;
-        }
+        setError("No prepared insert query available for mesage: " + name);
+        return false;
     }
-    query.bindValue(QString(":idx"),index);
+    insertQuery->bindValue(":idx", index);
     for (int i=0;i<values.size();i++)
     {
-        query.bindValue(QString(":") + values.at(i).first,values.at(i).second);
+        insertQuery->bindValue(":" + values.at(i).first, values.at(i).second);
     }
-    if (!query.exec())
+    if (!insertQuery->exec())
     {
-        setError("Error execing insert query: " + query.lastError().text());
+        setError("Error execing insert query: " + insertQuery->lastError().text());
         return false;
     }
     else
     {
-        m_indexinsertquery->bindValue(":idx",index);
-        m_indexinsertquery->bindValue(":value",name);
+        m_indexinsertquery->bindValue(":idx", index);
+        m_indexinsertquery->bindValue(":value", name);
         if (!m_indexinsertquery->exec())
         {
             setError("Error execing:" + m_indexinsertquery->executedQuery() + " error was " + m_indexinsertquery->lastError().text());
@@ -761,13 +714,7 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
         m_columnCount = values.size() +2;
     }
     m_rowToTableMap.insert(m_rowCount++,QPair<quint64,QString>(index,name));
-   // if (!m_sharedDb.commit())
-   // {
-   //     setError("Error commiting to database " + m_sharedDb.lastError().text());
-   //     return false;
-   // }
     return true;
-
 }
 QString AP2DataPlot2DModel::makeCreateTableString(QString tablename, QString formatstr,QStringList variablestr)
 {
@@ -888,7 +835,7 @@ bool AP2DataPlot2DModel::createFMTTable()
     }
     return true;
 }
-bool AP2DataPlot2DModel::createFMTInsert(QSqlQuery *query)
+bool AP2DataPlot2DModel::createFMTInsert(queryPtr &query)
 {
     if (!query->prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (:idx,:typeid,:length,:name,:format,:val);"))
     {
@@ -912,7 +859,7 @@ bool AP2DataPlot2DModel::createIndexTable()
     }
     return true;
 }
-bool AP2DataPlot2DModel::createIndexInsert(QSqlQuery *query)
+bool AP2DataPlot2DModel::createIndexInsert(queryPtr &query)
 {
     if (!query->prepare("INSERT INTO 'INDEX' (idx,value) values (:idx,:value);"))
     {
