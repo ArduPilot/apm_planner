@@ -36,9 +36,6 @@ This file is part of the APM_PLANNER project
 #include <QUuid>
 #include <QsLog.h>
 
-#include <qelapsedtimer.h>
-
-
 /*
  * This model holds everything in memory in a sqlite database.
  * There are two system tables, then unlimited number of message tables.
