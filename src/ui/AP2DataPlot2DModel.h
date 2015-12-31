@@ -89,10 +89,12 @@ signals:
 private slots:
 
 private: //helpers
+    typedef QSharedPointer<QSqlQuery> queryPtr;              /// Shared pointer type for QSqlQueries
+
     bool createFMTTable();
-    bool createFMTInsert(QSqlQuery *query);
+    bool createFMTInsert(queryPtr &query);
     bool createIndexTable();
-    bool createIndexInsert(QSqlQuery *query);
+    bool createIndexInsert(queryPtr &query);
     void setError(QString error);
     QString makeCreateTableString(QString tablename, QString formatstr,QStringList variablestr);
     QString makeInsertTableString(QString tablename, QStringList variablestr);
@@ -105,7 +107,8 @@ private:
     QMap<QString,QList<QString> > m_headerStringList;
     QList<QString> m_currentHeaderItems;
     QList<QList<QString> > m_fmtStringList;
-    QMap<QString,QString> m_msgNameToInsertQuery;
+
+    QMap<QString,queryPtr> m_msgNameToPrepearedInsertQuery;  /// Map holding prepared insert queries to speed up inserts
 
     int m_rowCount;
     int m_columnCount;
@@ -115,8 +118,8 @@ private:
     quint64 m_firstIndex;
     quint64 m_lastIndex;
 
-    QSqlQuery *m_indexinsertquery;
-    QSqlQuery *m_fmtInsertQuery;
+    queryPtr m_indexinsertquery;
+    queryPtr m_fmtInsertQuery;
 
     QVector<QVariant> m_prefetchedRowData;  /// Stores the data fetched with prefetchRow(...)
     QModelIndex m_prefetchedRowIndex;       /// Stores the index which was used for the last prefetchRow(...) call
