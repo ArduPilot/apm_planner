@@ -61,19 +61,19 @@ This file is part of the APM_PLANNER project
  *  inside AP2DataPlot2DModel::makeCreateTableString.
  */
 AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
-    QAbstractTableModel(parent)
+    QAbstractTableModel(parent),
+    m_databaseName(QUuid::createUuid().toString()),
+    m_rowCount(0),
+    m_columnCount(0),
+    m_currentRow(0),
+    m_fmtIndex(0),
+    m_firstIndex(0),
+    m_lastIndex(0)
 {
-    m_rowCount = 0;
-    m_columnCount = 0;
-    m_currentRow = 0;
-    m_fmtIndex = 0;
-    m_firstIndex = 0;
-    m_lastIndex = 0;
-    m_databaseName = QUuid::createUuid().toString();
     m_sharedDb = QSqlDatabase::addDatabase("QSQLITE",m_databaseName);
     m_sharedDb.setDatabaseName(":memory:");
 
-    //  Open DB an start transaction
+    //  Open DB and start transaction
     if (!m_sharedDb.open())
     {
         setError("Error opening shared database " + m_sharedDb.lastError().text());
