@@ -52,7 +52,6 @@ user_config.pri
 apmplanner2.xcodeproj/
 GeneratedFiles/
 deploy/*.list
-*.exe
 deploy/*.dll
 .qmake.stash
 libs/lib/Frameworks/GStreamer.framework/
