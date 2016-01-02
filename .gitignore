@@ -51,7 +51,6 @@ user_config.pri
 *.opensdf
 apmplanner2.xcodeproj/
 GeneratedFiles/
-deploy/*.exe
 deploy/*.list
 *.exe
 deploy/*.dll
