@@ -1466,6 +1466,8 @@ void AP2DataPlot2D::exportButtonClicked()
 }
 void AP2DataPlot2D::exportDialogAccepted()
 {
+    QElapsedTimer timer1;
+    timer1.start();
     QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
     if (!dialog)
     {
@@ -1505,24 +1507,15 @@ void AP2DataPlot2D::exportDialogAccepted()
     for (int i=0;i<m_tableModel->rowCount();i++)
     {
         int j=1;
-        bool rowFetched = m_tableModel->prefetchRow(m_tableModel->index(i,j));
-
-        if (rowFetched)
+        QVariant val = m_tableModel->data(m_tableModel->index(i,j++));
+        QString line = val.toString();
+        val = m_tableModel->data(m_tableModel->index(i,j++));
+        while (!val.isNull())
         {
-            QVariant val = m_tableModel->dataFromPrefetchedRow(m_tableModel->index(i,j++));
-            QString line = val.toString();
-            val = m_tableModel->dataFromPrefetchedRow(m_tableModel->index(i,j++));
-            while (!val.isNull())
-            {
-                line += ", " + val.toString();
-                val = m_tableModel->dataFromPrefetchedRow(m_tableModel->index(i,j++));
-            }
-            outputfile.write(line.append("\r\n").toLatin1());
+            line += ", " + val.toString();
+            val = m_tableModel->data(m_tableModel->index(i,j++));
         }
-        else
-        {
-            QLOG_DEBUG() << "AP2DataPlot2D::exportDialogAccepted: Row " << i << " could not be fetched.";
-        }
+        outputfile.write(line.append("\r\n").toLatin1());
         if (i % 5)
         {
             progressDialog->setValue(100.0 * ((double)i / (double)m_tableModel->rowCount()));
@@ -1543,6 +1536,8 @@ void AP2DataPlot2D::exportDialogAccepted()
     progressDialog->hide();
     progressDialog->deleteLater();
     progressDialog=NULL;
+
+    QLOG_DEBUG() << "Log export took " << timer1.elapsed() << "ms";
 
 }
 

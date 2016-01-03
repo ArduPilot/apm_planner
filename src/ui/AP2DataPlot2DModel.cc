@@ -360,140 +360,88 @@ QVariant AP2DataPlot2DModel::headerData ( int section, Qt::Orientation orientati
     }
     return m_currentHeaderItems.at(section-2);
 }
+
 int AP2DataPlot2DModel::rowCount( const QModelIndex & parent) const
 {
     Q_UNUSED(parent)
     return m_rowCount;
 }
+
 int AP2DataPlot2DModel::columnCount ( const QModelIndex & parent) const
 {
     Q_UNUSED(parent)
     return m_columnCount;
 }
+
 QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
 {
-    if (role != Qt::DisplayRole)
+    if ((role != Qt::DisplayRole) || !index.isValid())
     {
         return QVariant();
     }
-    if (!index.isValid())
+    if (index.row() >= m_rowCount)
     {
+        QLOG_ERROR() << "Accessing a Database row that does not exist! Row was: " << index.row();
         return QVariant();
-    }
-
-    quint64 tableindex = index.row();
-    if (m_rowToTableMap.contains(index.row()))
-    {
-        tableindex = m_rowToTableMap.value(index.row()).first;
-    } else {
     }
 
     if (index.column() == 0)
     {
-        if (index.row() < m_fmtStringList.size())
-        {
-            //Index is a FMT msg
-            return QString::number(index.row());
-        }
-        else
-        {
-            //Index is a normal table message, get the index from m_rowToTableMap
-            return QString::number(tableindex);
-        }
-    }
-
-    QString tablename = m_rowToTableMap.value(index.row()).second;
-    QSqlQuery tablequery(m_sharedDb);
-    QString val = QString::number(tableindex);
-    tablequery.prepare("SELECT * FROM " + tablename + " WHERE idx = " + val);
-    if (!tablequery.exec())
-    {
-        qDebug() << "Unable to exec table query:" << tablequery.lastError().text();
-        return QVariant();
-    }
-    if (!tablequery.next())
-    {
-        return QVariant();
-    }
-    if ((index.column()-1) >= tablequery.record().count())
-    {
-        return QVariant();
-    }
-    if (index.column() == 0)
-    {
-        return tablequery.value(0);
+        // Column 0 is the DB index of the log data
+        return QVariant(QString::number(m_rowIndexToDBIndex[index.row()].first));
     }
     if (index.column() == 1)
     {
-        return tablename;
+        // Column 1 is the name of the log data (ATT,ATUN...)
+        return QVariant(m_rowIndexToDBIndex[index.row()].second);
     }
-    return tablequery.value((index.column()-1));
-}
 
-QVariant AP2DataPlot2DModel::dataFromPrefetchedRow(const QModelIndex &index)
-{
-    // Check whether its the same row as used for the prefetch call
-    // and if size is at least 1
-    if ((index.row() == m_prefetchedRowIndex.row()) && (m_prefetchedRowData.size() >= 1))
+    // The data is mostly read row by row. This means first all columns of row 1 are read and then
+    // all columns of row 2 and than all colums of row 3 and so on.
+    // This cache reads a whole row from DB and caches it internally. All consecutive accesses to this
+    // row will be answered from the cache.
+    if (index.row() != m_prefetchedRowIndex.row())
     {
-        if (index.column() == 0)
+        m_prefetchedRowData.clear();
+        QString tableIndex = QString::number(m_rowIndexToDBIndex[index.row()].first);
+        QString tableName  = m_rowIndexToDBIndex[index.row()].second;
+
+        queryPtr selectRowQuery = m_msgNameToPrepearedSelectQuery.value(tableName);
+        selectRowQuery->bindValue(":val", tableIndex);
+        if (selectRowQuery->exec())
         {
-            return m_prefetchedRowData[0];
+            int recordCount = selectRowQuery->record().count();
+            if (!selectRowQuery->next())
+            {
+                return QVariant();
+            }
+            for (int i = 0; i < recordCount; ++i)
+            {
+                m_prefetchedRowData.push_back(selectRowQuery->value(i));
+            }
+            m_prefetchedRowIndex = index;
+            selectRowQuery->finish();   // must be called because we will reuse this query
         }
-        if (index.column() == 1)
+        else
         {
-            return m_rowToTableMap.value(index.row()).second; // returns Tablename
+            qDebug() << "Unable to exec table query:" << selectRowQuery->lastError().text();
         }
-        if ((index.column()-1) >= m_prefetchedRowData.size())
-        {
-            return QVariant();
-        }
-        return m_prefetchedRowData[index.column()-1];
     }
-    return QVariant();
-}
 
-bool AP2DataPlot2DModel::prefetchRow(const QModelIndex& index)
-{
-    bool retval = false;
-    m_prefetchedRowData.clear();
-
-    if (index.isValid())
+    if ((index.column()-1) >= m_prefetchedRowData.size())
     {
-        if (m_rowToTableMap.contains(index.row()))
-        {
-            quint64 tableindex = m_rowToTableMap.value(index.row()).first;
-            QString tablename  = m_rowToTableMap.value(index.row()).second;
-
-            QSqlQuery tableQuery(m_sharedDb);
-            QString val = QString::number(tableindex);
-            tableQuery.prepare("SELECT * FROM " + tablename + " WHERE idx = " + val);
-            if (tableQuery.exec())
-            {
-                int recordCount = tableQuery.record().count();
-                if (!tableQuery.next())
-                {
-                    return false;
-                }
-                for (int i = 0; i < recordCount; ++i)
-                {
-                    m_prefetchedRowData.push_back(tableQuery.value(i));
-                }
-                retval = true;
-                m_prefetchedRowIndex = index;
-            }
-            else
-            {
-                qDebug() << "Unable to exec table query:" << tableQuery.lastError().text();
-            }
-        }
+        return QVariant();
     }
-    return retval;
+    return m_prefetchedRowData[index.column()-1];
 }
 
 void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
     Q_UNUSED(previous)
+    if (!current.isValid())
+    {
+        return;
+    }
     if (m_currentRow == current.row())
     {
         return;
@@ -507,9 +455,9 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
     }
     //Grab the index
 
-    if (m_rowToTableMap.contains(current.row()))
+    if (current.row() < m_rowCount)
     {
-        m_currentHeaderItems = m_headerStringList.value(m_rowToTableMap[current.row()].second);
+        m_currentHeaderItems = m_headerStringList.value(m_rowIndexToDBIndex[current.row()].second);
     }
     else
     {
@@ -517,6 +465,7 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
     }
     emit headerDataChanged(Qt::Horizontal,0,9);
 }
+
 bool AP2DataPlot2DModel::hasType(const QString& name)
 {
     return m_msgNameToPrepearedInsertQuery.contains(name);
@@ -582,6 +531,15 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
             return false;
         }
         m_msgNameToPrepearedInsertQuery.insert(name, prepQuery);
+        // And prepare a select query for rows of this table
+        prepQuery = queryPtr(new QSqlQuery(m_sharedDb));
+        if (!prepQuery->prepare("SELECT * FROM " + name + " WHERE idx = :val"))
+        {
+            setError("Error preparing select query: " + name + " " + prepQuery->lastError().text());
+            return false;
+        }
+        m_msgNameToPrepearedSelectQuery.insert(name, prepQuery);
+
     }
     if (!m_headerStringList.contains(name))
     {
@@ -679,7 +637,7 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
     queryPtr insertQuery = m_msgNameToPrepearedInsertQuery.value(name);
     if (!insertQuery)
     {
-        setError("No prepared insert query available for mesage: " + name);
+        setError("No prepared insert query available for message: " + name);
         return false;
     }
     insertQuery->bindValue(":idx", index);
@@ -694,6 +652,7 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
     }
     else
     {
+        insertQuery->finish();  // must be called in case of a reusage of this query
         m_indexinsertquery->bindValue(":idx", index);
         m_indexinsertquery->bindValue(":value", name);
         if (!m_indexinsertquery->exec())
@@ -710,7 +669,9 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
     {
         m_columnCount = values.size() +2;
     }
-    m_rowToTableMap.insert(m_rowCount++,QPair<quint64,QString>(index,name));
+
+    m_rowIndexToDBIndex.push_back(QPair<quint64,QString>(index,name));
+    m_rowCount++;
     return true;
 }
 QString AP2DataPlot2DModel::makeCreateTableString(QString tablename, QString formatstr,QStringList variablestr)
