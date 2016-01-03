@@ -61,26 +61,6 @@ public:
     quint64 getLastIndex();
     quint64 getFirstIndex();
 
-    /**
-     * @brief Fetches the row defined in index and stores the values in
-     *        an internal structure for later usage
-     * @param index - defines the row which will be fetched and stored
-     * @return true if successful - false otherwise
-     */
-    bool prefetchRow(const QModelIndex& index);
-
-    /**
-     * @brief Reads the data from a previous prefetchRow(). Index must hold
-     *        the same row wich was used for the prefetch. The value referred
-     *        by colum will be returned. If index is not valid an empty QVariant
-     *        will be returned.
-     * @param index - defines the colum wich will be returned. Row must be the
-     *                same used for prefetch.
-     * @return QVariant containing the data or empty QVariant if colum or row not
-     *         valid
-     */
-    QVariant dataFromPrefetchedRow(const QModelIndex& index);
-
 public slots:
     void selectedRowChanged(QModelIndex current,QModelIndex previous);
 
@@ -103,14 +83,16 @@ private:
     QString m_error;
     QString m_databaseName;
     QSqlDatabase m_sharedDb;
-    QMap<int,QPair<quint64,QString> > m_rowToTableMap;
+    QVector<QPair<quint64,QString> > m_rowIndexToDBIndex;   /// stores relation between Table row index
+                                                            /// and DB index and DB table name
     QMap<QString,QList<QString> > m_headerStringList;
     QList<QString> m_currentHeaderItems;
     QList<QList<QString> > m_fmtStringList;
 
     QMap<QString,queryPtr> m_msgNameToPrepearedInsertQuery;  /// Map holding prepared insert queries to speed up inserts
+    QMap<QString,queryPtr> m_msgNameToPrepearedSelectQuery;  /// Map holding prepared select queries to speed up selects
 
-    int m_rowCount;
+    int m_rowCount;         /// Stores the number of rows held in model.
     int m_columnCount;
     int m_currentRow;
     int m_fmtIndex;
@@ -121,8 +103,11 @@ private:
     queryPtr m_indexinsertquery;
     queryPtr m_fmtInsertQuery;
 
-    QVector<QVariant> m_prefetchedRowData;  /// Stores the data fetched with prefetchRow(...)
-    QModelIndex m_prefetchedRowIndex;       /// Stores the index which was used for the last prefetchRow(...) call
+    mutable QVector<QVariant> m_prefetchedRowData;  /// holds the cached data used in data(...) method
+    mutable QModelIndex m_prefetchedRowIndex;       /// Stores the index which which is actually in cache
+
+
+
 
 
 };
