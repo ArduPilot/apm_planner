@@ -472,12 +472,12 @@ void AP2DataPlot2D::addGraphLeft()
 }
 void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
-
-    m_tableModel->selectedRowChanged(m_tableFilterProxyModel->mapToSource(current),m_tableFilterProxyModel->mapToSource(previous));
-    if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
+    if (!current.isValid())
     {
         return;
     }
+    m_tableModel->selectedRowChanged(m_tableFilterProxyModel->mapToSource(current),m_tableFilterProxyModel->mapToSource(previous));
+
     if (current.column() == 0 || current.column() == 1)
     {
         //This is column 0 or 1, index and name
@@ -500,7 +500,7 @@ void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
             connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
         }
     }
-    else
+    else if (ui.tableWidget->selectionModel()->selectedIndexes().size() != 0)
     {
         QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(current.row(),1)).value(Qt::DisplayRole).toString();
         QString headertext = ui.tableWidget->model()->headerData(current.column(),Qt::Horizontal,Qt::DisplayRole).toString();
@@ -543,6 +543,7 @@ void AP2DataPlot2D::removeGraphLeft()
     disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
 }
+
 void AP2DataPlot2D::showOnlyClicked()
 {
     if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
@@ -555,9 +556,10 @@ void AP2DataPlot2D::showOnlyClicked()
     m_tableFilterProxyModel->setFilterKeyColumn(1);
     m_showOnlyActive = true;
 }
+
 void AP2DataPlot2D::showAllClicked()
 {
-    m_tableFilterProxyModel->setFilterRegExp("");
+    disableTableFilter();
     m_showOnlyActive = false;
 }
 
@@ -1604,15 +1606,30 @@ void AP2DataPlot2D::sortItemChanged(QTreeWidgetItem* item,int col)
 void AP2DataPlot2D::sortAcceptClicked()
 {
     QString sortstring = "";
-    for (int i=0;i<m_tableFilterList.size();i++)
+    // All elements selected -> filter is disabled
+    if (ui.sortSelectTreeWidget->topLevelItemCount() == m_tableFilterList.size())
     {
-        sortstring += m_tableFilterList.at(i) + ((i == m_tableFilterList.size()-1) ? "" : "|");
+        disableTableFilter();
+        m_showOnlyActive = false;
     }
-    m_tableFilterProxyModel->setFilterRegExp(sortstring);
-    m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
-    m_tableFilterProxyModel->setFilterKeyColumn(1);
+    // one or more elements selected -> RegEx must be used
+    else
+    {
+        // It is VERY important to disable the filtering prior to set up a new one
+        // If this is not done the regex filter gets terribly slow!!!
+        disableTableFilter();
+        for (int i=0;i<m_tableFilterList.size();i++)
+        {
+            sortstring += m_tableFilterList.at(i) + ((i == m_tableFilterList.size()-1) ? "" : "|");
+        }
+        m_tableFilterProxyModel->setFilterRegExp(sortstring);
+        m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
+        m_tableFilterProxyModel->setFilterKeyColumn(1);
+    }
+
     ui.tableSortGroupBox->setVisible(false);
     ui.sortShowPushButton->setText("Show Sort");
+    m_showOnlyActive = true;
 }
 
 void AP2DataPlot2D::sortCancelClicked()
@@ -1703,3 +1720,12 @@ void AP2DataPlot2D::logToKmlClicked()
     }
 }
 
+void AP2DataPlot2D::disableTableFilter()
+{
+    // The order of the statements is important to be fast on huge logs (15MB)
+    // It does not really disable the filter but sets the rules to get a fast
+    // result without any filtering
+    m_tableFilterProxyModel->setFilterKeyColumn(0);
+    m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
+    m_tableFilterProxyModel->setFilterFixedString("");
+}

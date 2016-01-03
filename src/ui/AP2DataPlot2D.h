@@ -151,6 +151,13 @@ private:
     int getStatusTextPos();
     void plotTextArrow(int index, const QString& text, const QString& graph, QCheckBox *checkBox = NULL);
 
+    /**
+     * @brief This method disables the filtering of m_tableFilterProxyModel
+     *        After a call the table model will show all rows again.
+     */
+    void disableTableFilter();
+
+
 private:
     Ui::AP2DataPlot2D ui;
 
