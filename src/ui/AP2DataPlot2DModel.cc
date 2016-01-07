@@ -304,7 +304,6 @@ QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues()
     errorquery.prepare("SELECT * FROM 'ERR';");
     if (errorquery.exec())
     {
-        ErrorType lastErr;
         while (errorquery.next())
         {
             QSqlRecord record = errorquery.record();
@@ -315,11 +314,8 @@ QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues()
             {
                 QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?!";
             }
-            if (lastErr != error)
-            {
-                retval.insert(index,error);
-                lastErr = error;
-            }
+
+            retval.insert(index, error);
         }
     }
     else
