@@ -157,6 +157,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                         if (!typeToLengthMap.contains(type))
                         {
                             QLOG_DEBUG() << "AP2DataPlotThread::run(): No entry in typeToLengthMap for type:" << type;
+                            m_errorCount++;
                             break;
                         }
                         if (i+3+typeToLengthMap.value(type) >= block.size())
@@ -180,6 +181,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                             QString formatstr = typeToFormatMap.value(type);
                             QString labelstr = typeToLabelMap.value(type);
                             QStringList labelstrsplit = labelstr.split(",");
+                            bool noCorruptDataFound = true;
 
                             for (int j=0;j<formatstr.size();j++)
                             {
@@ -224,7 +226,16 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                 {
                                     float f;
                                     packetstream >> f;
-                                    valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),f));
+                                    if (f != f) // This tests for not a number
+                                    {
+                                        QLOG_WARN() << "Corrupted log data found - Graphing may not work as expected for data of type" << name;
+                                        noCorruptDataFound = false;
+                                        m_errorCount++;
+                                    }
+                                    else
+                                    {
+                                        valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),f));
+                                    }
                                 }
                                 else if (typeCode == 'n') //char(4)
                                 {
@@ -322,9 +333,10 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                 {
                                     //Unknown!
                                     QLOG_DEBUG() << "AP2DataPlotThread::run(): ERROR UNKNOWN DATA TYPE" << typeCode;
+                                    m_errorCount++;
                                 }
                             }
-                            if (valuepairlist.size() >= 1)
+                            if (noCorruptDataFound && (valuepairlist.size() >= 1))
                             {
                                 if (!m_dataModel->addRow(name,valuepairlist,index))
                                 {
@@ -365,6 +377,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                         else
                         {
                             QLOG_DEBUG() << "AP2DataPlotThread::run(): No query available for param category" << name;
+                            m_errorCount++;
                         }
                     }
 
@@ -379,6 +392,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
         if (nonpacketcounter > 0)
         {
             QLOG_DEBUG() << "AP2DataPlotThread::run(): Non packet bytes found in log file" << nonpacketcounter << "bytes filtered out. This may be a corrupt log";
+            m_errorCount++;
         }
     }
     if (!m_dataModel->endTransaction())

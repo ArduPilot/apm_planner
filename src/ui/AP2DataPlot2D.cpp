@@ -1190,7 +1190,7 @@ void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
 
     if (errors != 0)
     {
-        QMessageBox::information(this,"Warning","There were errors countered with " + QString::number(errors) + " lines in the log file. The data is potentially corrupt and incorrect");
+        QMessageBox::warning(this,"Warning","There were errors countered with " + QString::number(errors) + " lines in the log file. The data is potentially corrupt and incorrect");
     }
 
 
