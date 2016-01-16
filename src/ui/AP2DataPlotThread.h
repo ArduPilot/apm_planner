@@ -154,7 +154,6 @@ private:
     QString m_fileName;
     bool m_stop;
     int m_fieldCount;
-//    int m_errorCount;
     MAV_TYPE m_loadedLogType;
     MAVLinkDecoder *m_decoder;
     AP2DataPlot2DModel *m_dataModel;
