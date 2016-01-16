@@ -171,6 +171,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     ui.horizontalSplitter->setStretchFactor(0,20);
     ui.horizontalSplitter->setStretchFactor(1,1);
 
+    qRegisterMetaType<AP2DataPlotStatus>("AP2DataPlotStatus");
+
 }
 void AP2DataPlot2D::setExcelViewHidden(bool hidden)
 {
@@ -854,7 +856,7 @@ void AP2DataPlot2D::loadLog(QString filename)
     connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
     connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
-    connect(m_logLoaderThread,SIGNAL(done(int,MAV_TYPE)),this,SLOT(threadDone(int,MAV_TYPE)));
+    connect(m_logLoaderThread,SIGNAL(done(AP2DataPlotStatus,MAV_TYPE)),this,SLOT(threadDone(AP2DataPlotStatus,MAV_TYPE)));
     connect(m_logLoaderThread,SIGNAL(finished()),this,SLOT(threadTerminated()));
     connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     m_logLoaderThread->loadFile(filename);
@@ -1184,13 +1186,33 @@ void AP2DataPlot2D::plotTextArrow(int index, const QString &text, const QString&
     }
 }
 
-void AP2DataPlot2D::threadDone(int errors,MAV_TYPE type)
+void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
 {
     m_loadedLogMavType = type;
 
-    if (errors != 0)
+    if (state.getParsingState() != AP2DataPlotStatus::OK)
     {
-        QMessageBox::warning(this,"Warning","There were errors countered with " + QString::number(errors) + " lines in the log file. The data is potentially corrupt and incorrect");
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setWindowTitle("Warning");
+        msgBox.setText("Log parsing ended with errors.");
+
+        if (state.getParsingState() == AP2DataPlotStatus::FmtError)
+        {
+            msgBox.setInformativeText("There were errors only in format discription. Usually this is no problem.");
+        }
+        else if (state.getParsingState() == AP2DataPlotStatus::TruncationError)
+        {
+            msgBox.setInformativeText("The data was truncated!");
+        }
+        else
+        {
+            msgBox.setInformativeText("There were data errors / unreadable data in the log!"
+                                      " The data is potentially corrupt and incorrect.");
+        }
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.setDetailedText(state.getErrorText());
+        msgBox.exec();
     }
 
 

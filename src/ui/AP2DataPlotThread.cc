@@ -89,6 +89,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
         emit error(m_dataModel->getError());
         return;
     }
+
     while (!logfile.atEnd() && !m_stop)
     {
         int nonpacketcounter = 0;
@@ -131,12 +132,14 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
 
                         if (msg_type == 0x80)
                         {
-                            //Mesage is a format type, we don't want to include it
+                            //Message is a format type, we don't want to include it
                             continue;
                         }
                         if (format == "" || labels == "")
                         {
                             QLOG_DEBUG() << "AP2DataPlotThread::run(): empty format string or labels string for type" << msg_type << name;
+                            m_plotState.corruptFMTRead(index, name + " format data: Corrupt or missing. Message type is:0x" +
+                                                       QString::number(msg_type, 16));
                             continue;
                         }
                         if (!tables.contains(name)) {
@@ -157,7 +160,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                         if (!typeToLengthMap.contains(type))
                         {
                             QLOG_DEBUG() << "AP2DataPlotThread::run(): No entry in typeToLengthMap for type:" << type;
-                            m_errorCount++;
+                            m_plotState.corruptDataRead(index, "No length information for message type:0x" + QString::number(type, 16));
                             break;
                         }
                         if (i+3+typeToLengthMap.value(type) >= block.size())
@@ -175,7 +178,6 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                         QString name = typeToNameMap.value(type);
                         if (tables.contains(name))
                         {
-                            //QString linetoemit = typeToNameMap.value(type);
                             index++;
                             QList<QPair<QString,QVariant> > valuepairlist;
                             QString formatstr = typeToFormatMap.value(type);
@@ -230,7 +232,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                     {
                                         QLOG_WARN() << "Corrupted log data found - Graphing may not work as expected for data of type" << name;
                                         noCorruptDataFound = false;
-                                        m_errorCount++;
+                                        m_plotState.corruptDataRead(index, "Corrupt data element found when decoding " + name + " data.");
                                     }
                                     else
                                     {
@@ -333,7 +335,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                 {
                                     //Unknown!
                                     QLOG_DEBUG() << "AP2DataPlotThread::run(): ERROR UNKNOWN DATA TYPE" << typeCode;
-                                    m_errorCount++;
+                                    m_plotState.corruptDataRead(index, "Unknown data type: " + QString(typeCode) + " when decoding " + name);
                                 }
                             }
                             if (noCorruptDataFound && (valuepairlist.size() >= 1))
@@ -345,6 +347,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                     emit error(actualerror);
                                     return;
                                 }
+                                m_plotState.validDataRead();
                             }
 
                             if (type == paramtype && m_loadedLogType == MAV_TYPE_GENERIC)
@@ -377,7 +380,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                         else
                         {
                             QLOG_DEBUG() << "AP2DataPlotThread::run(): No query available for param category" << name;
-                            m_errorCount++;
+                            m_plotState.corruptDataRead(index, "No format information available for message type:0x" + QString::number(type, 16));
                         }
                     }
 
@@ -392,7 +395,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
         if (nonpacketcounter > 0)
         {
             QLOG_DEBUG() << "AP2DataPlotThread::run(): Non packet bytes found in log file" << nonpacketcounter << "bytes filtered out. This may be a corrupt log";
-            m_errorCount++;
+            m_plotState.corruptDataRead(index, "Non packet bytes found in log file " + QString::number(nonpacketcounter) + " bytes filtered out");
         }
     }
     if (!m_dataModel->endTransaction())
@@ -472,6 +475,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                 else
                 {
                     QLOG_ERROR() << "Error with line in plot log file:" << line;
+                    m_plotState.corruptFMTRead(index, "Too short FMT line in log file: " + line);
                 }
             }
             else
@@ -508,15 +512,13 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                         static QString chardef("nNZM");
                         if (typestr.size() != linesplit.size() - 1)
                         {
-                            //QLOG_DEBUG() << "Bound values for" << name << "count:" << nameToInsertQuery[name]->boundValues().values().size() << "actual" << linesplit.size() << typestr.size();
-                            //QLOG_DEBUG() << "Error in line:" << index << "param" << name << "parameter mismatch";
-                            m_errorCount++;
+                            QLOG_DEBUG() << "Error in line:" << index << "param" << name << "parameter mismatch";
+                            m_plotState.corruptDataRead(index, "Error in line:" + QString::number(index) +  " parameter mismatch for " + name + " data.");
                         }
                         else
                         {
                             QList<QPair<QString,QVariant> > valuepairlist;
                             QStringList valuestrlist = nameToValueList.value(name);
-                            //valuelist.append(QPair<QString,QVariant>("idx",unixtimemsec));
 
                             bool foundError = false;
                             for (int i = 1; i < linesplit.size(); i++)
@@ -543,6 +545,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                                     else
                                     {
                                         QLOG_DEBUG() << "Failed to convert " << valStr << " to an integer number.";
+                                        m_plotState.corruptDataRead(index, name + " data: Failed to convert " + valStr + " to an integer number.");
                                         foundError = true;
                                     }
                                 }
@@ -560,6 +563,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                                     else
                                     {
                                         QLOG_DEBUG() << "Failed to convert " << valStr << " to a floating point number.";
+                                        m_plotState.corruptDataRead(index, name + " data: Failed to convert " + valStr + " to a floating point number.");
                                         foundError = true;
                                     }
                                 }
@@ -573,6 +577,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                                     else
                                     {
                                         QLOG_DEBUG() << "Failed to convert " << valStr << " to an qint64 number.";
+                                        m_plotState.corruptDataRead(index, name + " data: Failed to convert " + valStr + " to an qint64 number.");
                                         foundError = true;
                                     }
                                 }
@@ -586,22 +591,18 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                                     else
                                     {
                                         QLOG_DEBUG() << "Failed to convert " << valStr << " to an quint64 number.";
+                                        m_plotState.corruptDataRead(index, name + " data: Failed to convert " + valStr + " to an quint64 number.");
                                         foundError = true;
                                     }
                                 }
                                 else
                                 {
                                     QLOG_DEBUG() << "AP2DataPlotThread::run(): Unknown data value found" << typeCode;
-                                    emit error(QString("Unknown data value found: %1").arg(typeCode));
+                                    m_plotState.corruptDataRead(index, name + " data: Unknown data value found: %1" + QString(typeCode));
                                     return;
                                 }
                             }
-                            if (foundError)
-                            {
-                                QLOG_DEBUG() << "Found an error on line " << index << ", skipping it.";
-                                ++m_errorCount;
-                            }
-                            else
+                            if (!foundError)
                             {
                                 if (valuepairlist.size() > 0)
                                 {
@@ -612,6 +613,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                                         emit error(actualerror);
                                         return;
                                     }
+                                    m_plotState.validDataRead();
                                 }
                             }
                         }
@@ -619,6 +621,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                     else
                     {
                         QLOG_DEBUG() << "Found line " << index << " with unknown command " << name << ", skipping...";
+                        m_plotState.corruptDataRead(index, name + " data: Found line with unknown command");
                     }
                 }
 
@@ -766,6 +769,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 default:
                                 {
                                     QLOG_ERROR() << "Unknown type:" << QString::number(fieldinfo.type);
+                                    m_plotState.corruptDataRead(i, name + " data: Unknown data type:" + QString::number(fieldinfo.type));
                                 }
                                 break;
                             }
@@ -802,6 +806,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                             emit error(actualerror);
                             return;
                         }
+                        m_plotState.validDataRead();
                     }
                 }
             }
@@ -819,7 +824,6 @@ void AP2DataPlotThread::run()
     Q_ASSERT(!isMainThread());
     emit startLoad();
     m_stop = false;
-    m_errorCount = 0;
     qint64 msecs = QDateTime::currentMSecsSinceEpoch();
 
     QFile logfile(m_fileName);
@@ -861,6 +865,41 @@ void AP2DataPlotThread::run()
     else
     {
         QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds -" << logfile.pos() << "of" << logfile.size() << "bytes used";
-        emit done(m_errorCount,m_loadedLogType);
+        emit done(m_plotState, m_loadedLogType);
     }
+}
+
+
+AP2DataPlotStatus::AP2DataPlotStatus() : m_parsingState(OK)
+{
+}
+
+void AP2DataPlotStatus::corruptDataRead(const int index, const QString &errorMessage)
+{
+    m_parsingState = TruncationError;
+    m_errors.push_back(errorEntry(index, errorMessage));
+}
+
+void AP2DataPlotStatus::corruptFMTRead(const int index, const QString &errorMessage)
+{
+    m_parsingState = FmtError;
+    m_errors.push_back(errorEntry(index, errorMessage));
+}
+
+AP2DataPlotStatus::parsingState AP2DataPlotStatus::getParsingState()
+{
+    return m_parsingState;
+}
+
+QString AP2DataPlotStatus::getErrorText()
+{
+    QString out;
+    QTextStream outStream(&out);
+
+    foreach (const errorEntry &entry, m_errors)
+    {
+        outStream << "Logline " << entry.first << ": " << entry.second << endl;
+    }
+    outStream << endl << " There were " << m_errors.size() << " errors during log parsing." << endl;
+    return out;
 }

@@ -85,7 +85,7 @@ private slots:
     //Cancel clicked on the graph loading thread progress dialog
     void progressDialogCanceled();
     //Graph loading thread finished
-    void threadDone(int errors,MAV_TYPE type);
+    void threadDone(AP2DataPlotStatus state, MAV_TYPE type);
     //Graph loading thread actually exited
     void threadTerminated();
     //Graph loading thread error
