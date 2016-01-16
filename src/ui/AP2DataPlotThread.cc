@@ -310,7 +310,6 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                 {
                                     qint32 val;
                                     packetstream >> val;
-                                    double latLonValue = val/1e7;
                                     valuepairlist.append(QPair<QString,QVariant>(labelstrsplit.at(j),val / 10000000.0));
                                 }
                                 else if (typeCode == 'M')
