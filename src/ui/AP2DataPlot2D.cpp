@@ -170,10 +170,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
 
     ui.horizontalSplitter->setStretchFactor(0,20);
     ui.horizontalSplitter->setStretchFactor(1,1);
-
-    qRegisterMetaType<AP2DataPlotStatus>("AP2DataPlotStatus");
-
 }
+
 void AP2DataPlot2D::setExcelViewHidden(bool hidden)
 {
     if (hidden)
@@ -1411,9 +1409,12 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
 void AP2DataPlot2D::threadError(QString errorstr)
 {
     QMessageBox::information(0,"Error",errorstr);
-    m_progressDialog->hide();
-    delete m_progressDialog;
-    m_progressDialog=0;
+    if (m_progressDialog)
+    {
+        m_progressDialog->hide();
+        delete m_progressDialog;
+        m_progressDialog=0;
+    }
     ui.dataSelectionScreen->clear();
     m_dataList.clear();
 }

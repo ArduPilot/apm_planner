@@ -47,11 +47,11 @@ This file is part of the APM_PLANNER project
 AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) :
     QThread(parent),
     m_decoder(NULL),
-    m_dataModel(model),
-    m_logStartTime(0)
+    m_dataModel(model)
 {
     QLOG_DEBUG() << "Created AP2DataPlotThread:" << this;
     qRegisterMetaType<MAV_TYPE>("MAV_TYPE");
+    qRegisterMetaType<AP2DataPlotStatus>("AP2DataPlotStatus");
 }
 
 AP2DataPlotThread::~AP2DataPlotThread()
@@ -603,7 +603,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                             }
                             if (!foundError)
                             {
-                                if (valuepairlist.size() > 0)
+                                if (valuepairlist.size() >= 1)
                                 {
                                     if (!m_dataModel->addRow(name,valuepairlist,index++))
                                     {
@@ -633,20 +633,16 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
         return;
     }
 }
+
 void AP2DataPlotThread::loadTLog(QFile &logfile)
 {
     m_loadedLogType = MAV_TYPE_GENERIC;
-
+    int nrOfEmptyMsg = 0;
     int bytesize = 0;
-    QByteArray timebuf;
-    qint64 lastLogTime = 0;
+    int index = 100;
     mavlink_message_t message;
     mavlink_status_t status;
-
-    QList<uint64_t*> mavlinkList;
-    m_fieldCount=0;
-    m_decoder = new MAVLinkDecoder();
-    QList<quint64> lastunixtimemseclist;
+    m_decoder = QSharedPointer<MAVLinkDecoder>(new MAVLinkDecoder());
 
     if (!m_dataModel->startTransaction())
     {
@@ -656,160 +652,134 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
     while (!logfile.atEnd() && !m_stop)
     {
         emit loadProgress(logfile.pos(),logfile.size());
-        QByteArray bytes = logfile.read(128);
-        bytesize+=128;
+        QByteArray bytes = logfile.read(8192);
+        bytesize += bytes.size();
 
         for (int i=0;i<bytes.size();i++)
         {
-            unsigned int decodeState = mavlink_parse_char(14, (uint8_t)(bytes[i]), &message, &status);
-            mavlink_status_t* status = mavlink_get_channel_status(14);
-            if (status->parse_state == MAVLINK_PARSE_STATE_GOT_STX)
+            unsigned int decodeState = mavlink_parse_char(14, static_cast<uint8_t>(bytes[i]), &message, &status);
+            if (decodeState == MAVLINK_FRAMING_OK)
             {
-                //last 8 bytes are our timestamp.
-                if (timebuf.length() >= 8)
+                // Good decode. Now check message name. If its "EMPTY" we cannot insert it into datamodel
+                // We will count those messages and inform the user.
+                QString name = m_decoder->getMessageName(message.msgid);
+                if (name != "EMPTY")
                 {
-                    quint64 logmsecs = quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-8))) << 56;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-7))) << 48;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-6))) << 40;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-5))) << 32;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-4))) << 24;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-3))) << 16;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-2))) << 8;
-                    logmsecs += quint64(static_cast<unsigned char>(timebuf.at(timebuf.length()-1))) << 0;
-                    lastLogTime = logmsecs;
-                    //QLOG_DEBUG() << "Attempt timestamp:" << lastLogTime;
-                }
-            }
-            if (decodeState != 1)
-            {
-                timebuf.append(bytes[i]);
-            }
-            else if (decodeState == 1) // This 'else' works as you need one more byte that the timestamp to satisfy. as would just with else removed
-            {
-                lastLogTime = lastLogTime / 100;
-                if (m_logStartTime == 0)
-                {
-                    m_logStartTime = lastLogTime;
-                }
-                //Valid message, clear the time buffer for next time
-                timebuf.clear();
-
-                //Good decode
-                if (message.sysid != 255) // [TODO] GCS packet is not always 255 sysid.
-                {
-                    uint64_t *target = (uint64_t*)malloc(message.len * 4);
-                    memcpy(target,message.payload64,message.len * 4);
-                    mavlinkList.append(target);
-                    QList<QPair<QString,QVariant> > retvals = m_decoder->receiveMessage(0,message);
-                    QString name = m_decoder->getMessageName(message.msgid);
-
-                    if (!m_dataModel->hasType(name))
+                    if (message.sysid != 255) // [TODO] GCS packet is not always 255 sysid.
                     {
-
-                        QList<QString> fieldnames = m_decoder->getFieldList(name);
-                        QStringList variablenames;
-                        QString typechars;
-                        for (int i=0;i<fieldnames.size();i++)
+                        QList<QPair<QString,QVariant> > retvals = m_decoder->receiveMessage(0,message);
+                        if (!m_dataModel->hasType(name))
                         {
-                            mavlink_field_info_t fieldinfo = m_decoder->getFieldInfo(name,fieldnames.at(i));
-                            variablenames <<  QString(fieldinfo.name);
-                            switch (fieldinfo.type)
+                            QList<QString> fieldnames = m_decoder->getFieldList(name);
+                            QStringList variablenames;
+                            QString typechars;
+                            for (int i=0;i<fieldnames.size();i++)
                             {
-                                case MAVLINK_TYPE_CHAR:
+                                mavlink_field_info_t fieldinfo = m_decoder->getFieldInfo(name,fieldnames.at(i));
+                                variablenames <<  QString(fieldinfo.name);
+                                switch (fieldinfo.type)
                                 {
-                                    typechars += "b";
+                                    case MAVLINK_TYPE_CHAR:
+                                    {
+                                        typechars += "b";
+                                    }
+                                    break;
+                                    case MAVLINK_TYPE_UINT8_T:
+                                    {
+                                        typechars += "B";
+                                    }
+                                    break;
+                                    case MAVLINK_TYPE_INT8_T:
+                                    {
+                                        typechars += "b";
+                                    }
+                                    break;
+                                    case MAVLINK_TYPE_UINT16_T:
+                                    {
+                                        typechars += "H";
+                                    }
+                                    break;
+                                    case MAVLINK_TYPE_INT16_T:
+                                    {
+                                        typechars += "h";
+                                    }
+                                    break;
+                                    case MAVLINK_TYPE_UINT32_T:
+                                    {
+                                        typechars += "I";
+                                    }
+                                        break;
+                                    case MAVLINK_TYPE_INT32_T:
+                                    {
+                                        typechars += "i";
+                                    }
+                                    break;
+                                    case MAVLINK_TYPE_FLOAT:
+                                    {
+                                        typechars += "f";
+                                    }
+                                    break;
+                                    case MAVLINK_TYPE_UINT64_T:
+                                    {
+                                        typechars += "Q";
+                                    }
+                                    break;
+                                    case MAVLINK_TYPE_INT64_T:
+                                    {
+                                        typechars += "q";
+                                    }
+                                    break;
+                                    default:
+                                    {
+                                        QLOG_ERROR() << "Unknown type:" << QString::number(fieldinfo.type);
+                                        m_plotState.corruptDataRead(i, name + " data: Unknown data type:" + QString::number(fieldinfo.type));
+                                    }
+                                    break;
                                 }
-                                break;
-                                case MAVLINK_TYPE_UINT8_T:
-                                {
-                                    typechars += "B";
-                                }
-                                break;
-                                case MAVLINK_TYPE_INT8_T:
-                                {
-                                    typechars += "b";
-                                }
-                                break;
-                                case MAVLINK_TYPE_UINT16_T:
-                                {
-                                    typechars += "H";
-                                }
-                                break;
-                                case MAVLINK_TYPE_INT16_T:
-                                {
-                                    typechars += "h";
-                                }
-                                break;
-                                case MAVLINK_TYPE_UINT32_T:
-                                {
-                                    typechars += "I";
-                                }
-                                break;
-                                case MAVLINK_TYPE_INT32_T:
-                                {
-                                    typechars += "i";
-                                }
-                                break;
-                                case MAVLINK_TYPE_FLOAT:
-                                {
-                                    typechars += "f";
-                                }
-                                break;
-                                case MAVLINK_TYPE_UINT64_T:
-                                {
-                                    typechars += "I";
-                                }
-                                break;
-                                case MAVLINK_TYPE_INT64_T:
-                                {
-                                    typechars += "i";
-                                }
-                                break;
-                                default:
-                                {
-                                    QLOG_ERROR() << "Unknown type:" << QString::number(fieldinfo.type);
-                                    m_plotState.corruptDataRead(i, name + " data: Unknown data type:" + QString::number(fieldinfo.type));
-                                }
-                                break;
+                            }
+
+                            if (!m_dataModel->addType(name,0,0,typechars,variablenames))
+                            {
+                                QString actualerror = m_dataModel->getError();
+                                m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                                emit error(actualerror);
+                                return;
                             }
                         }
 
-                        if (!m_dataModel->addType(name,0,0,typechars,variablenames))
+                        QList<QPair<QString,QVariant> > valuepairlist;
+                        for (int i=0;i<retvals.size();i++)
                         {
-                            QString actualerror = m_dataModel->getError();
-                            m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
-                            emit error(actualerror);
-                            return;
+                            valuepairlist.append(QPair<QString,QVariant>(retvals.at(i).first.split(".")[1],retvals.at(i).second));
                         }
-                    }
-
-                    quint64 unixtimemsec = (lastLogTime - m_logStartTime);
-
-                    while (lastunixtimemseclist.contains(unixtimemsec))
-                    {
-                        unixtimemsec += 1;
-                    }
-
-                    lastunixtimemseclist.append(unixtimemsec);
-                    QList<QPair<QString,QVariant> > valuepairlist;
-                    for (int i=0;i<retvals.size();i++)
-                    {
-                        valuepairlist.append(QPair<QString,QVariant>(retvals.at(i).first.split(".")[1],retvals.at(i).second.toLongLong()));
-                    }
-                    if (valuepairlist.size() > 1)
-                    {
-                        if (!m_dataModel->addRow(name,valuepairlist,unixtimemsec + 500)) // [TODO] offset index
+                        if (valuepairlist.size() >= 1)
                         {
-                            QString actualerror = m_dataModel->getError();
-                            m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
-                            emit error(actualerror);
-                            return;
+                            if (!m_dataModel->addRow(name,valuepairlist, index++))
+                            {
+                                QString actualerror = m_dataModel->getError();
+                                m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                                emit error(actualerror);
+                                return;
+                            }
+                            m_plotState.validDataRead();    // tell plot state that we have a valid message
                         }
-                        m_plotState.validDataRead();
                     }
                 }
+                else
+                {
+                    nrOfEmptyMsg++;
+                }
             }
+            else if (decodeState == MAVLINK_FRAMING_BAD_CRC)
+            {
+                m_plotState.corruptDataRead(index, "Bad CRC");
+            }
+
         }
+    }
+    if (nrOfEmptyMsg != 0) // Did we have messages named "EMPTY" ?
+    {
+        m_plotState.corruptDataRead(0, "Found " + QString::number(nrOfEmptyMsg) +" 'EMPTY' messages wich could not be processed");
     }
     if (!m_dataModel->endTransaction())
     {
