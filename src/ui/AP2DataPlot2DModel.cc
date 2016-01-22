@@ -60,9 +60,14 @@ This file is part of the APM_PLANNER project
  *  The types are defined by the format (in this case, BBfffff)
  *  inside AP2DataPlot2DModel::makeCreateTableString.
  */
+
 AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
     QAbstractTableModel(parent),
     m_databaseName(QUuid::createUuid().toString()),
+    m_allRowsHaveTime(false),
+    m_canUseTimeOnX(false),
+    m_minTime(0),
+    m_maxTime(0),
     m_rowCount(0),
     m_columnCount(0),
     m_currentRow(0),
@@ -217,9 +222,16 @@ QString AP2DataPlot2DModel::getFmtLine(const QString& name)
     }
     return "";
 }
-QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
+QMap<quint64,QString> AP2DataPlot2DModel::getModeValues(bool useTimeAsIndex)
 {
+    int indexColum = 0; // Default index is always colum 0
     QMap<quint64,QString> retval;
+
+    if (useTimeAsIndex)
+    {
+        indexColum = getChildColum("MODE",m_timeStampColumName);
+    }
+
     QSqlQuery modequery(m_sharedDb);
     modequery.prepare("SELECT * FROM 'MODE';");
     if (!modequery.exec())
@@ -239,7 +251,7 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
     while (modequery.next())
     {
         QSqlRecord record = modequery.record();
-        quint64 index = record.value(0).toLongLong();
+        quint64 index = record.value(indexColum).toLongLong();
         QString mode = "";
         if (record.contains("Mode"))
         {
@@ -297,9 +309,16 @@ QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
 }
 
 
-QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues()
+QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues(bool useTimeAsIndex)
 {
+    int indexColum = 0; // Default index is always colum 0
     QMap<quint64,ErrorType> retval;
+
+    if (useTimeAsIndex)
+    {
+       indexColum = getChildColum("ERR",m_timeStampColumName);
+    }
+
     QSqlQuery errorquery(m_sharedDb);
     errorquery.prepare("SELECT * FROM 'ERR';");
     if (errorquery.exec())
@@ -307,7 +326,7 @@ QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues()
         while (errorquery.next())
         {
             QSqlRecord record = errorquery.record();
-            quint64 index = static_cast<quint64>(record.value(0).toLongLong());
+            quint64 index = static_cast<quint64>(record.value(indexColum).toLongLong());
             ErrorType error;
 
             if (!error.setFromSqlRecord(record))
@@ -547,61 +566,53 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
     }
     return true;
 }
-QMap<quint64,QVariant> AP2DataPlot2DModel::getValues(const QString& parent,const QString& child)
+QMap<quint64,QVariant> AP2DataPlot2DModel::getValues(const QString& parent, const QString& child, bool useTimeAsIndex)
 {
-    int index = getChildIndex(parent,child);
+    int valueColum = getChildColum(parent,child);
+    int indexColum = 0; // Default index is always colum 0
+    QMap<quint64,QVariant> retval;
+
+    if (useTimeAsIndex)
+    {
+        indexColum = getChildColum(parent, m_timeStampColumName);
+    }
     QSqlQuery itemquery(m_sharedDb);
     itemquery.prepare("SELECT * FROM '" + parent + "';");
     itemquery.exec();
-    QMap<quint64,QVariant> retval;
     while (itemquery.next())
     {
         QSqlRecord record = itemquery.record();
-        quint64 graphindex = record.value(0).toLongLong();
-        QVariant graphvalue= record.value(index+1);
+        quint64 graphindex = record.value(indexColum).toLongLong();
+        QVariant graphvalue = record.value(valueColum);
         retval.insert(graphindex,graphvalue);
     }
+
     return retval;
 }
 
-int AP2DataPlot2DModel::getChildIndex(const QString& parent,const QString& child)
+int AP2DataPlot2DModel::getChildColum(const QString& parent,const QString& child)
 {
+    // From headerStringList we can determine which index (colum) is used for child data
+    // Be aware that the datarow in DB has always one colum more than the header strings
+    // cause of the added DB index.
+    if (!m_headerStringList.contains(parent))
+    {
+        return -1;  // looks like we do not have this data.
+    }
 
-    QSqlQuery tablequery(m_sharedDb);
-    //tablequery.prepare("SELECT * FROM '" + parent + "';");
-    if (!tablequery.prepare("SELECT * FROM 'FMT' WHERE name = '" + parent + "';"))
+    // Try to find child in header strings
+    QList<QString> headerStrings =  m_headerStringList.value(parent);
+    for (int i = 0; i < headerStrings.size(); i++)
     {
-        QLOG_DEBUG() << "Error preparing select:" + tablequery.lastError().text();
-        return -1;
-    }
-    if (!tablequery.exec())
-    {
-        QLOG_DEBUG() << "Error execing select:" + tablequery.lastError().text();
-        return -1;
-    }
-    if (!tablequery.next())
-    {
-        return -1;
-    }
-    QSqlRecord record = tablequery.record();
-    QStringList valuessplit = record.value(5).toString().split(","); //comma delimited list of names
-    bool found = false;
-    int index = 0;
-    for (int i=0;i<valuessplit.size();i++)
-    {
-        if (valuessplit.at(i) == child)
+        if (headerStrings[i] == child)
         {
-            found = true;
-            index = i;
-            i = valuessplit.size();
+            return i + 1;   // found! increase by one cause of index
         }
     }
-    if (!found)
-    {
-        return -1;
-    }
-    return index;
+
+    return -1;
 }
+
 bool AP2DataPlot2DModel::startTransaction()
 {
     if (!m_sharedDb.transaction())
@@ -835,4 +846,94 @@ quint64 AP2DataPlot2DModel::getLastIndex()
 quint64 AP2DataPlot2DModel::getFirstIndex()
 {
     return m_firstIndex;
+}
+
+void AP2DataPlot2DModel::setAllRowsHaveTime(bool allHaveTime, const QString &timeColumName)
+{
+    m_timeStampColumName = timeColumName;
+    m_allRowsHaveTime = allHaveTime;
+    m_canUseTimeOnX  = true;
+    m_canUseTimeOnX &= setUpMinTime();
+    m_canUseTimeOnX &= setUpMaxTime();
+}
+
+bool AP2DataPlot2DModel::getAllRowsHaveTime()
+{
+    return m_allRowsHaveTime;
+}
+
+bool AP2DataPlot2DModel::setUpMinTime()
+{
+    m_minTime = 0;    // force to be 0 in case of a failure
+    if (m_allRowsHaveTime)
+    {
+        QSqlQuery minTimeQuery(m_sharedDb);
+        minTimeQuery.prepare("SELECT " + m_timeStampColumName + " from 'STRT';");
+        if (!minTimeQuery.exec())
+        {
+            setError("Unable to exec getMinTime query: " + minTimeQuery.lastError().text());
+            return false;
+        }
+        if (!minTimeQuery.next())
+        {
+            setError("Result of getMinTime query was empty!");
+            return false;
+        }
+        m_minTime = minTimeQuery.value(0).toLongLong();
+        return true;
+    }
+    return false;
+}
+
+bool AP2DataPlot2DModel::setUpMaxTime()
+{
+    m_maxTime = 0; // Always force to 0
+    if (m_allRowsHaveTime)
+    {
+        QString maxTableName;
+        QSqlQuery maxTimeQuery(m_sharedDb);
+        maxTimeQuery.prepare("SELECT value FROM 'INDEX' WHERE idx = (select max(idx) from 'INDEX');");
+        if (!maxTimeQuery.exec())
+        {
+            setError("Unable to select max index from 'INDEX': " + maxTimeQuery.lastError().text());
+            return false;
+        }
+        if (!maxTimeQuery.next())
+        {
+            setError("Result of select max index from 'INDEX' was empty!");
+            return false;
+        }
+        maxTableName = maxTimeQuery.value(0).toString();
+
+        QSqlQuery maxTimeQuery2(m_sharedDb);
+        maxTimeQuery2.prepare("SELECT " + m_timeStampColumName + " FROM '" + maxTableName + "' WHERE idx = (select max(idx) from '" + maxTableName + "');");
+        if (!maxTimeQuery2.exec())
+        {
+            setError("Unable to select max " + m_timeStampColumName + " from " + maxTableName + ": " + maxTimeQuery2.lastError().text());
+            return false;
+        }
+        if (!maxTimeQuery2.next())
+        {
+            setError("Result of select max " + m_timeStampColumName + " from " + maxTableName + " query was empty!");
+            return false;
+        }
+        m_maxTime = maxTimeQuery2.value(0).toLongLong();
+        return true;
+    }
+    return false;
+}
+
+quint64 AP2DataPlot2DModel::getMinTime()
+{
+    return m_minTime;
+}
+
+quint64 AP2DataPlot2DModel::getMaxTime()
+{
+    return m_maxTime;
+}
+
+bool AP2DataPlot2DModel::canUseTimeOnX()
+{
+    return m_canUseTimeOnX && m_allRowsHaveTime;
 }

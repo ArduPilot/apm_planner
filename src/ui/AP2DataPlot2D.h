@@ -131,6 +131,7 @@ private slots:
     void modeCheckBoxClicked(bool checked);
     void errCheckBoxClicked(bool checked);
     void evCheckBoxClicked(bool checked);
+    void indexTypeCheckBoxClicked(bool checked);
     void sortItemChanged(QTreeWidgetItem* item,int col);
     void sortAcceptClicked();
     void sortCancelClicked();
@@ -151,11 +152,38 @@ private:
     int getStatusTextPos();
     void plotTextArrow(int index, const QString& text, const QString& graph, QCheckBox *checkBox = NULL);
 
+
     /**
      * @brief This method disables the filtering of m_tableFilterProxyModel
      *        After a call the table model will show all rows again.
      */
     void disableTableFilter();
+
+    /**
+     * @brief setupXAxisAndScroller sets up x axis and the horizontal scroller
+     *        to use the normal index (the artifical) or the time index regarding
+     *        to the value of m_useTimeOnX.
+     */
+    void setupXAxisAndScroller();
+
+    /**
+     * @brief removeTextArrows removes all text arrows of type graphName
+     *
+     * @param graphName - Name of the graph whose test arrows shall be removed
+     */
+    void removeTextArrows(const QString &graphName);
+
+    /**
+     * @brief insertModeArrows inserts mode text arrows into the graph
+     *        Uses normal or time index regarding of the value of m_useTimeOnX
+     */
+    void insertModeArrows();
+
+    /**
+     * @brief insertErrArrows inserts error text arrows into the graph
+     *        Uses normal or time index regarding of the value of m_useTimeOnX
+     */
+    void insertErrArrows();
 
 
 private:
@@ -173,6 +201,8 @@ private:
         QCPGraph *graph;
         QList<QCPAbstractItem*> itemList;
         QMap<double,QString> modeMap;
+
+        Graph() : isManualRange(false), isInGroup(false), axisIndex(0), axis(NULL), graph(NULL){}
     };
 
     QMap<QString,Graph> m_graphClassMap;
@@ -202,25 +232,24 @@ private:
     QCustomPlot *m_plot;
     QCPAxisRect *m_wideAxisRect;
     AP2DataPlotThread *m_logLoaderThread;
-    //DataSelectionScreen *m_dataSelectionScreen;
-    QStandardItemModel *m_model;
     bool m_logLoaded;
     //Current "index", X axis on graph. Used to keep all the graphs lined up.
     qint64 m_currentIndex;
     qint64 m_startIndex; //epoch msecs since graphing started
     QAction *m_addGraphAction;
     UASInterface *m_uas;
-    QProgressDialog *m_progressDialog;
+    QSharedPointer<QProgressDialog> m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
     //qint64 m_timeDiff;
     bool m_tlogReplayEnabled;
-
 
     qint64 m_scrollStartIndex; //Actual graph start
     qint64 m_scrollEndIndex; //Actual graph end
 
     LogDownloadDialog *m_logDownloadDialog;
     DroneshareUploadDialog *m_droneshareUploadDialog;
+
+    bool m_useTimeOnX;  /// True if x axis uses time index
 
     MAV_TYPE m_loadedLogMavType;
 

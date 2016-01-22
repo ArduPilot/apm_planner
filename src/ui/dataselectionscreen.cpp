@@ -91,6 +91,12 @@ void DataSelectionScreen::disableItem(QString name)
     QLOG_ERROR() << "No item found in DataSelectionScreen:disableItem:" << name;
 }
 
+void DataSelectionScreen::disableAllItems()
+{
+    // Its like perssing the button
+    clearSelectionButtonClicked();
+}
+
 void DataSelectionScreen::addItem(QString name)
 {
     if (name.contains(":"))

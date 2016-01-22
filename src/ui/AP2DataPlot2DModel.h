@@ -50,16 +50,69 @@ public:
     bool addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index);
     QMap<QString,QList<QString> > getFmtValues();
     QString getFmtLine(const QString& name);
-    QMap<quint64,QString> getModeValues();
-    QMap<quint64, ErrorType> getErrorValues();
+    QMap<quint64,QString> getModeValues(bool useTimeAsIndex);
+    QMap<quint64, ErrorType> getErrorValues(bool useTimeAsIndex);
     bool hasType(const QString& name);
-    QMap<quint64,QVariant> getValues(const QString& parent,const QString& child);
-    int getChildIndex(const QString& parent,const QString& child);
+    QMap<quint64,QVariant> getValues(const QString& parent, const QString& child, bool useTimeAsIndex);
+    int getChildColum(const QString& parent,const QString& child);
     QString getError() { return m_error; }
     bool endTransaction();
     bool startTransaction();
     quint64 getLastIndex();
     quint64 getFirstIndex();
+
+
+
+    /**
+     * @brief setAllRowsHaveTime should be called at the end of dataparsing
+     *        telling the model that all rows have a valid timestamp which has
+     *        to be determined by the parser as the model should know as less as
+     *        possible about the data stored inside. Due to the fact that the
+     *        parser knows about the name of the timefield he can also deliver
+     *        its name keeping the model as dynamic as possible.
+     *
+     * @param allHaveTime - set to true if parser found a timestamp in all rows.
+     * @param timeColumName - name of the DB coulum containing the timestamp.
+     */
+    void setAllRowsHaveTime(bool allHaveTime, const QString &timeColumName);
+
+    /**
+     * @brief getAllRowsHaveTime returns true if all rows in model have a
+     *        timestamp which does NOT imply that it is possible to use time
+     *        on x axis cause therefore you need min and max time too.
+     *
+     * @return true if all rows in model have a valid timestamp, false otherwise.
+     */
+    bool getAllRowsHaveTime();
+
+    /**
+     * @brief canUseTimeOnX returns true if the stored model has a valid
+     *        timebase eg. all rows have a valid timestamp AND min/max time
+     *        are valid. Should be used to determine whether it is possible
+     *        to use time on x axis. If this delivers true all methods taking
+     *        a 'useTimeAsIndex' parameter, like getValues(...) or getErrorValues(...)
+     *        will deliver a timestamp as index if 'useTimeAsIndex' was set to true.
+     *
+     * @return true - Using time values on x axis is possible, false otherwise
+     */
+    bool canUseTimeOnX();
+
+    /**
+     * @brief getMinTime delivers the minimum timestamp held in model if
+     *        the model has a valid timeline meaning all rows have a timestamp.
+     *
+     * @return - min timestamp if model has a valid timebase, 0 otherwise
+     */
+    quint64 getMinTime();
+
+    /**
+     * @brief getMinTime delivers the maximum timestamp held in model if
+     *        the model has a valid timeline meaning all rows have a timestamp.
+     *
+     * @return - max timestamp if model has a valid timebase, 0 otherwise
+     */
+    quint64 getMaxTime();
+
 
 public slots:
     void selectedRowChanged(QModelIndex current,QModelIndex previous);
@@ -78,6 +131,8 @@ private: //helpers
     void setError(QString error);
     QString makeCreateTableString(QString tablename, QString formatstr,QStringList variablestr);
     QString makeInsertTableString(QString tablename, QStringList variablestr);
+    bool setUpMinTime();
+    bool setUpMaxTime();
 
 private:
     QString m_error;
@@ -92,7 +147,13 @@ private:
     QMap<QString,queryPtr> m_msgNameToPrepearedInsertQuery;  /// Map holding prepared insert queries to speed up inserts
     QMap<QString,queryPtr> m_msgNameToPrepearedSelectQuery;  /// Map holding prepared select queries to speed up selects
 
-    int m_rowCount;         /// Stores the number of rows held in model.
+    bool m_allRowsHaveTime;         /// True if all rows have a timestamp
+    bool m_canUseTimeOnX;           /// True if all rows have time and min & max time could be selected
+    quint64 m_minTime;              /// smallest timestamp im model
+    quint64 m_maxTime;              /// biggest timestamp im model
+    QString m_timeStampColumName;   /// Name of the table colum holding the timestamp
+
+    int m_rowCount;                 /// Stores the number of rows held in model.
     int m_columnCount;
     int m_currentRow;
     int m_fmtIndex;

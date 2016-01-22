@@ -151,12 +151,13 @@ private:
     void loadTLog(QFile &logfile);
 
 private:
+    static const QString timeStampSearchKey;    /// Search Key when searching for timestamps
+
     QString m_fileName;
     bool m_stop;
     MAV_TYPE m_loadedLogType;
     QSharedPointer<MAVLinkDecoder> m_decoder;
     AP2DataPlot2DModel *m_dataModel;
-    QMap<QString,QString> m_msgNameToInsertQuery;
 
     AP2DataPlotStatus m_plotState;
 };

@@ -124,6 +124,19 @@
                 </property>
                </spacer>
               </item>
+              <item>
+               <widget class="QCheckBox" name="indexTypeCheckBox">
+                <property name="toolTip">
+                 <string extracomment="Switches between index or time on x axis"/>
+                </property>
+                <property name="toolTipDuration">
+                 <number>3</number>
+                </property>
+                <property name="text">
+                 <string>Use time on x-axis</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
