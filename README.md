@@ -29,8 +29,8 @@ To build on Mac OS X (10.6 or later):
 
 Install QT
 -----------
-1) Download Qt 5.2.1 or greater (Does not work with Qt4.x)
-   - you can verify the version by typing 'qmake -v' and it should report Qt 5.2.1 or greater as the version. 
+1) Download Qt 5.4.2 or greater (Does not work with Qt4.x)
+   - you can verify the version by typing 'qmake -v' and it should report Qt 5.4.2 or greater as the version. 
 
 2) Double click the package installer
 
@@ -47,6 +47,7 @@ Linux
 =====
 
 Building on Linux (tested against Ubuntu 14.04 LTS):
+(Needs update to use Qt5.4.2, 5.2.1 doesn't work anymore)
 
 (**NOTE:** There is an error in 14.04LTS with libxcb crashing sometimes, try this [fix](https://gist.github.com/slimsag/a26d838ccc4480ce21bc))
 
