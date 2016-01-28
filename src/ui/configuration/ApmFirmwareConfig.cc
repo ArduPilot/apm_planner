@@ -898,7 +898,8 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
             return "px4";
         }
         else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001
-                 || info.productIdentifier() == 0x0016 || info.description().contains("FMU v2.x") ) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
+                 || info.productIdentifier() == 0x0016 || info.description().contains("FMU v2.x") //0x0011 is the Pixhawk, 0x0001 is the bootloader.
+                 || info.description().contains("FMU v4.x") ) // v4.x is Pixracer
         {
             return "pixhawk";
         }
