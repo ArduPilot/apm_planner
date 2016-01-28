@@ -48,6 +48,8 @@ RangeFinderConfig::RangeFinderConfig(QWidget *parent) : AP2ConfigWidget(parent)
     ui.typeComboBox->addItem("PX4-I2C", 4 );
     ui.typeComboBox->addItem("PX4-PWM", 5 );
     ui.typeComboBox->addItem("BBB-PRU", 6 );
+    ui.typeComboBox->addItem("LightWare I2C", 7 );
+    ui.typeComboBox->addItem("LightWare serial", 8 );
 
     ui.functionComboBox->addItem("Linear", 0);
     ui.functionComboBox->addItem("Inverted", 1);
