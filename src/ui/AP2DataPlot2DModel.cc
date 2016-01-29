@@ -403,7 +403,7 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
     if (index.column() == 0)
     {
         // Column 0 is the DB index of the log data
-        return QVariant(QString::number(m_rowIndexToDBIndex[index.row()].first));
+        return QVariant(QString::number(m_rowIndexToDBIndex[index.row()].first - m_firstIndex));
     }
     if (index.column() == 1)
     {
