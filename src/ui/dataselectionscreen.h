@@ -15,7 +15,9 @@ public:
 	void clear();
     void enableItem(QString name);
     void disableItem(QString name);
-    void disableAllItems();
+    QList<QString> disableAllItems();
+    void enableItemList(QList<QString> &itemList);
+
 signals:
 	void itemEnabled(QString name);
 	void itemDisabled(QString name);
