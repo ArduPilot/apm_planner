@@ -1270,6 +1270,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
         child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
         child->setCheckState(0,Qt::Checked); // Set it checked, since all items are enabled by default
         ui.sortSelectTreeWidget->addTopLevelItem(child);
+        m_tableFilterList.append(name);
     }
 
     // Setup basic graph for all arrow plots -> MODE/ERR/EV
