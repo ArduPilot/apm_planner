@@ -1530,10 +1530,10 @@ void AP2DataPlot2D::indexTypeCheckBoxClicked(bool checked)
     if (m_useTimeOnX != checked)
     {
         m_useTimeOnX = checked;
-        // we have to remove all graphs when changing x-axis...
-        ui.dataSelectionScreen->disableAllItems();
+        // We have to remove all graphs when changing x-axis storing the active selection
+        QList<QString> reEnableList = ui.dataSelectionScreen->disableAllItems();
 
-        // ...and all arrows too
+        // And all arrows too
         removeTextArrows("MODE");
         removeTextArrows("ERR");
         removeTextArrows("EV");
@@ -1542,7 +1542,9 @@ void AP2DataPlot2D::indexTypeCheckBoxClicked(bool checked)
         m_statusTextPos = 0;    // reset text arrow length
         insertModeArrows();
         insertErrArrows();
-        // EV is still missing
+
+        // Graphs can be reenabled using previous stored selection
+        ui.dataSelectionScreen->enableItemList(reEnableList);
 
         // Re -set x axis, scroller and zoom
         setupXAxisAndScroller();
