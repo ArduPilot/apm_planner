@@ -709,7 +709,7 @@ void ApmFirmwareConfig::downloadFinished()
         m_arduinoUploader->loadFirmware(m_settings.name,filename);
 
     }
-    else if ((m_autopilotType == "px4-v4" || m_autopilotType == "px4-v2" || m_autopilotType == "px4" || m_autopilotType == "aerocore")
+    else if ((m_autopilotType == "px4-v4" || m_autopilotType == "px4-v2" || m_autopilotType == "px4" || m_autopilotType == "aerocore"))
     {
         if (m_px4uploader)
         {
@@ -883,13 +883,14 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
         {
             return "px4";
         }
-        else if ( info.description().contains("FMU v4.x") ) // v4.x is Pixracer
+        else if ( info.productIdentifier() == 0x0012 || info.description().contains("FMU v4.x") ) // v4.x is Pixracer
         {
             return "px4-v4";
         }
         else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001
                  || info.productIdentifier() == 0x0016 || info.description().contains("FMU v2.x")) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
         {
+            QLOG_DEBUG() << "Detected: " << info.description() << " :" << info.productIdentifier();
             return "px4-v2";
         }
         else
