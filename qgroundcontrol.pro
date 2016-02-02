@@ -449,8 +449,6 @@ FORMS += \
     src/uas/LogDownloadDialog.ui \
     src/ui/configuration/CompassMotorCalibrationDialog.ui \
     src/ui/MissionElevationDisplay.ui \
-    src/ui/DroneshareUploadDialog.ui \
-    src/ui/DroneshareDialog.ui \
     src/ui/uas/PreFlightCalibrationDialog.ui \
     src/ui/configuration/RadioFlashWizard.ui
 
@@ -664,11 +662,6 @@ HEADERS += \
     src/comm/MAVLinkProtocol.h \
     src/ui/MissionElevationDisplay.h \
     src/ui/GoogleElevationData.h \
-    src/ui/DroneshareUploadDialog.h \
-    src/ui/DroneshareUpload.h \
-    src/ui/DroneshareDialog.h \
-    src/ui/LoginDialog.h \
-    src/ui/DroneshareAPIBroker.h \
     src/comm/UASObject.h \
     src/comm/VehicleOverview.h \
     src/comm/RelPositionOverview.h \
@@ -886,11 +879,6 @@ SOURCES += src/main.cc \
     src/comm/MAVLinkProtocol.cc \
     src/ui/MissionElevationDisplay.cpp \
     src/ui/GoogleElevationData.cpp \
-    src/ui/DroneshareUploadDialog.cpp \
-    src/ui/DroneshareUpload.cpp \
-    src/ui/DroneshareDialog.cc \
-    src/ui/LoginDialog.cpp \
-    src/ui/DroneshareAPIBroker.cpp \
     src/comm/UASObject.cc \
     src/comm/VehicleOverview.cc \
     src/comm/RelPositionOverview.cc \

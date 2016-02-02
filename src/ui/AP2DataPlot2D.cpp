@@ -66,7 +66,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     m_axisGroupingDialog(NULL),
     m_tlogReplayEnabled(false),
     m_logDownloadDialog(NULL),
-    m_droneshareUploadDialog(NULL),
     m_useTimeOnX(false),
     m_loadedLogMavType(MAV_TYPE_ENUM_END),
     m_statusTextPos(0)
@@ -163,7 +162,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     ui.downloadPushButton->setEnabled(false);
     connect(ui.loadTLogButton,SIGNAL(clicked()),this,SLOT(replyTLogButtonClicked()));
 
-    connect(ui.droneshareButton, SIGNAL(clicked()), this, SLOT(droneshareButtonClicked()));
     connect(ui.exportPushButton,SIGNAL(clicked()),this,SLOT(exportButtonClicked()));
 
     ui.horizontalSplitter->setStretchFactor(0,20);
@@ -897,12 +895,6 @@ AP2DataPlot2D::~AP2DataPlot2D()
         delete m_axisGroupingDialog;
         m_axisGroupingDialog = NULL;
     }
-    if(m_droneshareUploadDialog)
-    {
-        m_droneshareUploadDialog->hide();
-        m_droneshareUploadDialog->deleteLater();
-        m_droneshareUploadDialog = NULL;
-    }
 
     for (int i=0;i<m_childGraphList.size();i++)
     {
@@ -1368,15 +1360,6 @@ void AP2DataPlot2D::closeLogDownloadDialog()
         m_logDownloadDialog->deleteLater();
         m_logDownloadDialog = NULL;
     }
-}
-
-void AP2DataPlot2D::droneshareButtonClicked()
-{
-    if(!m_droneshareUploadDialog){
-        m_droneshareUploadDialog = new DroneshareUploadDialog();
-    }
-    m_droneshareUploadDialog->show();
-    m_droneshareUploadDialog->raise();
 }
 
 void AP2DataPlot2D::exportButtonClicked()

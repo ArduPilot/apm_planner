@@ -21,7 +21,7 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 /**
  * @file
- *   @brief Droneshare API Query Object
+ *   @brief AutoUpdate Query Object
  *
  *   @author Bill Bonney <billbonney@communistech.com>
  */

@@ -34,7 +34,6 @@ This file is part of the APM_PLANNER project
 #include "MAVLinkDecoder.h"
 #include "kmlcreator.h"
 #include "qcustomplot.h"
-#include "DroneshareUploadDialog.h"
 
 #include "AP2DataPlotThread.h"
 #include "dataselectionscreen.h"
@@ -118,8 +117,6 @@ private slots:
     void verticalScrollMoved(int value);
     void xAxisChanged(QCPRange range);
     void replyTLogButtonClicked();
-
-    void droneshareButtonClicked();
 
     void exportButtonClicked();
     void exportDialogAccepted();
@@ -247,7 +244,6 @@ private:
     qint64 m_scrollEndIndex; //Actual graph end
 
     LogDownloadDialog *m_logDownloadDialog;
-    DroneshareUploadDialog *m_droneshareUploadDialog;
 
     bool m_useTimeOnX;  /// True if x axis uses time index
 

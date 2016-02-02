@@ -92,7 +92,6 @@ class QGCMAVLinkMessageSender;
 class QGCFirmwareUpdate;
 class QSplashScreen;
 class QGCStatusBar;
-class DroneshareDialog;
 
 /**
  * @brief Main Application Window
@@ -473,7 +472,6 @@ private slots:
     void autoUpdateCancelled(QString version);
     void showNoUpdateAvailDialog();
 
-    void showDroneshareDialog();
     void showTerminalConsole();
     void closeTerminalConsole();
 
@@ -494,7 +492,6 @@ private:
     AutoUpdateCheck m_autoUpdateCheck;
     AutoUpdateDialog* m_dialog;
 
-    DroneshareDialog* m_droneshareDialog;
     QDialog* m_terminalDialog;
 
 };
