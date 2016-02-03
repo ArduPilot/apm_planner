@@ -147,7 +147,7 @@ private:
     QSortFilterProxyModel *m_tableFilterProxyModel;
     QList<QString> m_tableFilterList;
     int getStatusTextPos();
-    void plotTextArrow(int index, const QString& text, const QString& graph, QCheckBox *checkBox = NULL);
+    void plotTextArrow(int index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = NULL);
 
 
     /**
@@ -171,17 +171,10 @@ private:
     void removeTextArrows(const QString &graphName);
 
     /**
-     * @brief insertModeArrows inserts mode text arrows into the graph
+     * @brief insertTextArrows inserts all text arrows into the graph
      *        Uses normal or time index regarding of the value of m_useTimeOnX
      */
-    void insertModeArrows();
-
-    /**
-     * @brief insertErrArrows inserts error text arrows into the graph
-     *        Uses normal or time index regarding of the value of m_useTimeOnX
-     */
-    void insertErrArrows();
-
+    void insertTextArrows();
 
 private:
     Ui::AP2DataPlot2D ui;
@@ -245,12 +238,15 @@ private:
 
     LogDownloadDialog *m_logDownloadDialog;
 
-    bool m_useTimeOnX;  /// True if x axis uses time index
-
     MAV_TYPE m_loadedLogMavType;
 
     QString m_filename;
     int m_statusTextPos;
+
+    bool m_useTimeOnX;                      /// True if x axis uses time index
+    QList<ErrorMessage> m_ErrMessages;      /// holds all Err Messages of the current loaded log
+    QList<ModeMessage> m_ModeMessages;      /// holds all Mode Messages of the current loaded log
+    QList<EventMessage> m_EventMessages;    /// holds all Event Messages of the current loaded log
 };
 
 #endif // AP2DATAPLOT2D_H

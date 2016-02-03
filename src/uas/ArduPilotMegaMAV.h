@@ -36,118 +36,10 @@ This file is part of the QGROUNDCONTROL project
 #include <QString>
 #include <QSqlDatabase>
 
-//
-// Auto Pilot modes
-// ----------------
-// Arduplane Flight Mode Defines
-
-class CustomMode {
-public:
-    CustomMode();
-    CustomMode(int aMode);
-    int modeAsInt();
-    virtual QString operator <<(int mode);
-    static QString colorForMode(int aMode);
-protected:
-    int m_mode;
-};
-
-class ApmPlane: public CustomMode {
-public:
-    static const int modeCount = 16;
-    enum planeMode {
-    MANUAL        = 0,
-    CIRCLE        = 1,
-    STABILIZE     = 2,
-    TRAINING      = 3,
-    ACRO          = 4,
-    FLY_BY_WIRE_A = 5,
-    FLY_BY_WIRE_B = 6,
-    CRUISE        = 7,
-    AUTOTUNE      = 8,
-    RESERVED_9    = 9,  // RESERVED FOR FUTURE USE
-    AUTO          = 10,
-    RTL           = 11,
-    LOITER        = 12,
-    RESERVED_13   = 13, // RESERVED FOR FUTURE USE
-    RESERVED_14   = 14, // RESERVED FOR FUTURE USE
-    GUIDED        = 15,
-    INITIALIZING  = 16
-    };
-
-public:
-    ApmPlane(planeMode aMode);
-    ApmPlane::planeMode mode();
-    static QString stringForMode(int aMode);
-};
-// Arducopter Flight Mode Defines
-
-class ApmCopter: public CustomMode {
-public:
-    static const int modeCount = 18;
-    enum copterMode {
-    STABILIZE   = 0,   // hold level position
-    ACRO        = 1,   // rate control
-    ALT_HOLD    = 2,   // AUTO control
-    AUTO        = 3,   // AUTO control
-    GUIDED      = 4,   // AUTO control
-    LOITER      = 5,   // Hold a single location
-    RTL         = 6,   // AUTO control
-    CIRCLE      = 7,   // AUTO control
-    POSITION    = 8,   // AUTO control
-    LAND        = 9,   // AUTO control
-    OF_LOITER   = 10,  // Hold a single location using optical flow
-                       // sensor
-    DRIFT       = 11,  // Drift 'Car Like' mode
-    RESERVED_12 = 12,  // RESERVED FOR FUTURE USE
-    SPORT       = 13,  // [TODO] Verify this is correct.
-    FLIP        = 14,
-    AUTOTUNE    = 15,
-    POS_HOLD    = 16, // HYBRID LOITER.
-    BRAKE       = 17
-    };
-
-public:
-    ApmCopter(copterMode aMode);
-    ApmCopter::copterMode mode();
-    static QString stringForMode(int aMode);
-};
-
-class ApmRover: public CustomMode {
-public:
-    static const int modeCount = 16;
-    enum roverMode {
-    MANUAL        = 0,
-    RESERVED_1    = 1, // RESERVED FOR FUTURE USE
-    LEARNING      = 2,
-    STEERING      = 3,
-    HOLD          = 4,
-    RESERVED_5    = 5, // RESERVED FOR FUTURE USE
-    RESERVED_6    = 6, // RESERVED FOR FUTURE USE
-    RESERVED_7    = 7, // RESERVED FOR FUTURE USE
-    RESERVED_8    = 8, // RESERVED FOR FUTURE USE
-    RESERVED_9    = 9, // RESERVED FOR FUTURE USE
-    AUTO          = 10,
-    RTL           = 11,
-    RESERVED_12   = 12, // RESERVED FOR FUTURE USE
-    RESERVED_13   = 13, // RESERVED FOR FUTURE USE
-    RESERVED_14   = 14, // RESERVED FOR FUTURE USE
-    GUIDED        = 15,
-    INITIALIZING  = 16,
-    };
-public:
-    ApmRover(roverMode aMode);
-    QString operator <<(roverMode aMode);
-    ApmRover::roverMode mode();
-    static QString stringForMode(int aMode);
-};
-
 class ArduPilotMegaMAV : public UAS
 {
     Q_OBJECT
 public:
-    static QString getNameFromEventId(int ecode);
-    static QPair<QString,QString> getErrText(int subsys,int ecode);
     ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id = 0);
     /** @brief Set camera mount stabilization modes */
     void setMountConfigure(unsigned char mode, bool stabilize_roll,bool stabilize_pitch,bool stabilize_yaw);
@@ -188,62 +80,406 @@ private:
 
 
 /**
- * @brief Class for making it easier to handle the errorcodes.
- *        This class implements everything which is needed to
- *        handle MAV Errors.
+ * @brief Base Class for all message types
  */
-class ErrorType
+class MessageBase
 {
 public:
 
-    ErrorType();
+    static const QString timeFieldName;
 
-    bool operator != (const ErrorType &rhs);
+    MessageBase();
 
-    /**
-     * @brief Getter for the Subsystem ID which emitted the error
-     * @return Subsystem ID
-     */
-    quint8 getSubsystemCode();
+    MessageBase(quint64 index, quint64 timeStamp);
+
+    virtual ~MessageBase(){}
 
     /**
-     * @brief Getter for the Errorcode emitted by the subsystem
-     * @return Errorcode
+     * @brief Getter for the index of this message
+     * @return The index
      */
-    quint8 getErrorCode();
+    virtual quint64 getIndex() const;
+
+    /**
+     * @brief Getter for the Time stamp of this message.
+     * @attention This value can countain 0 as not all logs
+     *            support a time stamp.
+     * @return  the time stamp or 0 if not supported by log
+     */
+    virtual quint64 getTimeStamp() const;
 
     /**
      * @brief Reads an QSqlRecord and sets the internal data.
-     *        The record should contain the colums "TimeUS",
-     *        "Subsys" and "ECode" in order to get an apropriate
-     *        returnvalue.
+     *        See derived types.
      * @param record[in] - Filled QSqlRecord
      * @return true - all Fields could be read
      *         false - not all data could be read
      */
-    bool setFromSqlRecord(const QSqlRecord &record);
+    virtual bool setFromSqlRecord(const QSqlRecord &record) = 0;
 
     /**
      * @brief Converts the ErrorCode into an uninterpreted string.
      *        Uinterpreted means it prints ErrorCode and SubSystem.
      * @return The uninterpreted Qstring
      */
-    QString toString() const;
+    virtual QString toString() const = 0;
+
+    /**
+     * @brief typeName returns the message type name.
+     * @return Type name string
+     */
+    virtual QString typeName() const = 0;
+
+    /**
+     * @brief typeColor returns an QColor object with the color associated
+     *        with the typ of the Message.
+     * @return Color for this type
+     */
+    virtual QColor typeColor() const = 0;
+
+protected:
+
+    quint64 m_Index;        /// DB Index of this message
+    quint64 m_TimeStamp;    /// Timestamp of this message
+};
+
+/**
+ * @brief Class for making it easier to handle the errorcodes.
+ *        This class implements everything which is needed to
+ *        handle MAV Errors.
+ */
+class ErrorMessage : public MessageBase
+{
+public:
+
+    static const QString messageTypeName;   /// Name of this message is 'ERR'
+
+    ErrorMessage();
+
+    ErrorMessage(quint64 index, quint64 timeStamp, quint8 subSys, quint8 errCode);
+
+    /**
+     * @brief Getter for the Subsystem ID which emitted the error
+     * @return Subsystem ID
+     */
+    quint8 getSubsystemCode() const;
+
+    /**
+     * @brief Getter for the Errorcode emitted by the subsystem
+     * @return Errorcode
+     */
+    quint8 getErrorCode() const;
+
+    /**
+     * @brief Reads an QSqlRecord and sets the internal data.
+     *        The record must contain an Index in colum 0 and the
+     *        colums "Subsys" and "ECode" in order to get a positive
+     *        return value. If the record conatins also a "TimeUS"
+     *        field the internal time stamp will be filled too.
+     *
+     * @param record[in] - Filled QSqlRecord
+     * @return true - all Fields could be read
+     *         false - not all data could be read
+     */
+    virtual bool setFromSqlRecord(const QSqlRecord &record);
+
+    /**
+     * @brief Converts the ErrorCode into an uninterpreted string.
+     *        Uinterpreted means it prints ErrorCode and SubSystem.
+     * @return The uninterpreted Qstring
+     */
+    virtual QString toString() const;
+
+    /**
+     * @brief typeName returns the message type name.
+     * @return Type name string
+     */
+    virtual QString typeName() const;
+
+    /**
+     * @brief typeColor returns an QColor object with the color associated
+     *        with the typ of the Message.
+     * @return Color for this type
+     */
+    virtual QColor typeColor() const;
+
 
 private:
 
-    quint8 SubSys;        /// Subsystem signaling the error
-    quint8 ErrorCode;     /// Errorcode of the Subsystem
+    quint8 m_SubSys;        /// Subsystem signaling the error
+    quint8 m_ErrorCode;     /// Errorcode of the Subsystem
+};
+
+
+/**
+ * @brief Class for making it easier to handle the mode messages.
+ *        This class implements everything which is needed to
+ *        handle MAV Mode messages.
+ */
+class ModeMessage : public MessageBase
+{
+public:
+    static const QString messageTypeName;   /// Name of this message is 'MODE'
+
+    ModeMessage();
+
+    ModeMessage(quint64 index, quint64 timeStamp, qint8 mode, quint8 modeNum);
+
+    /**
+     * @brief Getter for the Mode of this message
+     * @return Mode ID
+     */
+    qint8 getMode() const;
+
+    /**
+     * @brief Getter for the ModeNum of this message
+     * @return ModeNum ID
+     */
+    quint8 getModeNum() const;
+
+    /**
+     * @brief Reads an QSqlRecord and sets the internal data.
+     *        The record must contain an Index in colum 0 and the
+     *        colums "Mode" and "ModeNum" in order to get a positive
+     *        return value. If the record conatins also a "TimeUS"
+     *        field the internal time stamp will be filled too.
+     *
+     * @param record[in] - Filled QSqlRecord
+     * @return true - all Fields could be read
+     *         false - not all data could be read
+     */
+    virtual bool setFromSqlRecord(const QSqlRecord &record);
+
+    /**
+     * @brief Converts the ModeMessage into an uninterpreted string.
+     *        Uinterpreted means it prints Mode ID and ModNum ID.
+     * @return The uninterpreted Qstring
+     */
+    virtual QString toString() const;
+
+    /**
+     * @brief typeName returns the message type name.
+     * @return Type name string
+     */
+    virtual QString typeName() const;
+
+    /**
+     * @brief typeColor returns an QColor object with the color associated
+     *        with the typ of the Message.
+     * @return Color for this type
+     */
+    virtual QColor typeColor() const;
+
+private:
+
+    qint8 m_Mode;        /// Subsystem signaling the error
+    quint8 m_ModeNum;    /// Errorcode of the Subsystem
+};
+
+/**
+ * @brief Class for making it easier to handle the event messages.
+ *        This class implements everything which is needed to
+ *        handle MAV EV messages.
+ */
+class EventMessage : public MessageBase
+{
+public:
+
+    static const QString messageTypeName;   /// Name of this message is 'EV'
+
+    EventMessage();
+
+    EventMessage(quint64 index, quint64 timeStamp, quint8 eventID);
+
+    /**
+     * @brief Getter for the Event ID of this message
+     * @return Event ID
+     */
+    quint8 getEventID() const;
+
+    /**
+     * @brief Reads an QSqlRecord and sets the internal data.
+     *        The record must contain an Index in colum 0 and the
+     *        colums "Id" in order to get a positive return value.
+     *        If the record conatins also a "TimeUS"
+     *        field the internal time stamp will be filled too.
+     *
+     * @param record[in] - Filled QSqlRecord
+     * @return true - all Fields could be read
+     *         false - not all data could be readvirtual QString toString() const;
+     */
+    virtual bool setFromSqlRecord(const QSqlRecord &record);
+
+    /**
+     * @brief Converts the ModeMessage into an uninterpreted string.
+     *        Uinterpreted means it prints Mode ID and ModNum ID.
+     * @return The uninterpreted Qstring
+     */
+    virtual QString toString() const;
+
+    /**
+     * @brief typeName returns the message type name.
+     * @return Type name string
+     */
+    virtual QString typeName() const;
+
+    /**
+     * @brief typeColor returns an QColor object with the color associated
+     *        with the typ of the Message.
+     * @return Color for this type
+     */
+    virtual QColor typeColor() const;
+
+private:
+
+     quint8 m_EventID;    /// EventID
+};
+
+/**
+ *  Namespace for all copter related stuff
+ */
+namespace Copter
+{
+
+/**
+ * @brief The Mode enum holds all possible flying modes
+ *        of a copter
+ */
+enum Mode
+{
+    STABILIZE   = 0,
+    ACRO        = 1,
+    ALT_HOLD    = 2,
+    AUTO        = 3,
+    GUIDED      = 4,
+    LOITER      = 5,
+    RTL         = 6,
+    CIRCLE      = 7,
+    RESERVED_8  = 8,
+    LAND        = 9,
+    OF_LOITER   = 10,
+    DRIFT       = 11,
+    RESERVED_12 = 12,
+    SPORT       = 13,
+    FLIP        = 14,
+    AUTOTUNE    = 15,
+    POS_HOLD    = 16,
+    BRAKE       = 17,
+    LAST_MODE           // This must always be the last entry
 };
 
 /**
  * @brief Helper class for creating an interpreted output of
- *        all errors generated by copter logs
+ *        all messages generated by copter logs
  */
-class CopterErrorTypeFormatter
+class MessageFormatter
 {
 public:
-    static QString format(ErrorType &code);
+    static QString format(MessageBase *p_message);
+
+    static QString format(const ErrorMessage &message);
+
+    static QString format(const ModeMessage &message);
+
+    static QString format(const EventMessage &message);
 };
+
+} // namespace Copter
+
+/**
+ *  Namespace for all plane related stuff
+ */
+namespace Plane
+{
+
+/**
+ * @brief The Mode enum holds all possible flying modes
+ *        of a plane
+ */
+enum Mode
+{
+    MANUAL        = 0,
+    CIRCLE        = 1,
+    STABILIZE     = 2,
+    TRAINING      = 3,
+    ACRO          = 4,
+    FLY_BY_WIRE_A = 5,
+    FLY_BY_WIRE_B = 6,
+    CRUISE        = 7,
+    AUTOTUNE      = 8,
+    LAND          = 9,
+    AUTO          = 10,
+    RTL           = 11,
+    LOITER        = 12,
+    RESERVED_13   = 13, // RESERVED FOR FUTURE USE
+    RESERVED_14   = 14, // RESERVED FOR FUTURE USE
+    GUIDED        = 15,
+    INITIALIZING  = 16,
+    QSTABILIZE    = 17,
+    QHOVER        = 18,
+    QLOITER       = 19,
+    LAST_MODE           // This must always be the last entry
+};
+
+/**
+ * @brief Helper class for creating an interpreted output of
+ *        all messages generated by Plane logs
+ */
+class MessageFormatter
+{
+public:
+    static QString format(MessageBase *p_message);
+
+    static QString format(const ModeMessage &message);
+};
+
+} // namespace Plane
+
+/**
+ *  Namespace for all rover related stuff
+ */
+namespace Rover
+{
+
+/**
+ * @brief The Mode enum holds all possible driving Modes
+ *        of a rover
+ */
+enum Mode
+{
+    MANUAL        = 0,
+    RESERVED_1    = 1, // RESERVED FOR FUTURE USE
+    LEARNING      = 2,
+    STEERING      = 3,
+    HOLD          = 4,
+    RESERVED_5    = 5, // RESERVED FOR FUTURE USE
+    RESERVED_6    = 6, // RESERVED FOR FUTURE USE
+    RESERVED_7    = 7, // RESERVED FOR FUTURE USE
+    RESERVED_8    = 8, // RESERVED FOR FUTURE USE
+    RESERVED_9    = 9, // RESERVED FOR FUTURE USE
+    AUTO          = 10,
+    RTL           = 11,
+    RESERVED_12   = 12, // RESERVED FOR FUTURE USE
+    RESERVED_13   = 13, // RESERVED FOR FUTURE USE
+    RESERVED_14   = 14, // RESERVED FOR FUTURE USE
+    GUIDED        = 15,
+    INITIALIZING  = 16,
+    LAST_MODE           // This must always be the last entry
+};
+
+
+/**
+ * @brief Helper class for creating an interpreted output of
+ *        all messages generated by Rover logs
+ */
+class MessageFormatter
+{
+public:
+    static QString format(MessageBase *p_message);
+
+    static QString format(const ModeMessage &message);
+};
+
+} // Namespace Rover
 
 #endif // ARDUPILOTMAV_H

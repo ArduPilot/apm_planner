@@ -369,17 +369,17 @@ void APMToolBar::setModeText(const QString &text)
 
     switch (m_uas->getSystemType()){
     case MAV_TYPE_FIXED_WING:
-        inRTL = (customMode == ApmPlane::RTL);
+        inRTL = (customMode == Plane::RTL);
         break;
     case MAV_TYPE_QUADROTOR:
     case MAV_TYPE_HEXAROTOR:
     case MAV_TYPE_OCTOROTOR:
     case MAV_TYPE_TRICOPTER:
     case MAV_TYPE_HELICOPTER:
-        inRTL = (customMode == ApmCopter::RTL);
+        inRTL = (customMode == Copter::RTL);
         break;
     case MAV_TYPE_GROUND_ROVER:
-        inRTL = (customMode == ApmRover::RTL);
+        inRTL = (customMode == Rover::RTL);
         break;
     default:
         inRTL = false;
