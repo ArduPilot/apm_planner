@@ -56,11 +56,20 @@ void UASRawStatusView::hideEvent(QHideEvent *event)
 }
 void UASRawStatusView::updateTimerTick()
 {
+    QTableWidgetItem *item;
     for (QMap<QString,double>::const_iterator i=valueMap.constBegin();i!=valueMap.constEnd();i++)
     {
         if (nameToUpdateWidgetMap.contains(i.key()))
         {
-            nameToUpdateWidgetMap[i.key()]->setText(QString::number(i.value(),'f',4));
+            item = nameToUpdateWidgetMap[i.key()];
+            item->setText(QString::number(i.value(),'f',4));
+
+            QString key = i.key();
+            if (key.contains("."))
+            {
+                key = key.split(".")[1];
+            }
+            item->setToolTip(key + ": " + item->text());
         }
         else
         {
