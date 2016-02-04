@@ -44,6 +44,7 @@ void UASRawStatusView::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
     //Check every 2 seconds to see if we need an update
+    updateTableTimerTick();
     m_updateTimer->start(500);
     m_tableRefreshTimer->start(2000);
 }
