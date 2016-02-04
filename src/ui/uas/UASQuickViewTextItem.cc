@@ -1,6 +1,7 @@
 #include "UASQuickViewTextItem.h"
 #include "QsLog.h"
 #include <QVBoxLayout>
+#include <QToolTip>
 
 UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(parent)
 {
@@ -71,6 +72,10 @@ void UASQuickViewTextItem::setValue(double value)
     {
         valueLabel->setText(QString::number(value,'f',0));
     }
+
+    QString tip = titleLabel->text() + ": " + valueLabel->text();
+    valueLabel->setToolTip(tip);
+    titleLabel->setToolTip(tip);
 }
 
 void UASQuickViewTextItem::setTitle(QString title)
