@@ -1283,6 +1283,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setWindowTitle("Warning");
         msgBox.setText("Log parsing ended with errors.");
+        msgBox.addButton(QMessageBox::Ok);
 
         if (state.getParsingState() == AP2DataPlotStatus::FmtError)
         {
