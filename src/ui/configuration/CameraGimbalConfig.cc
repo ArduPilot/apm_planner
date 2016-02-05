@@ -401,7 +401,6 @@ void CameraGimbalConfig::updateCameraGimbalParams(QString& chPrefix, const QStri
         //We need to disable the old assignment first if chnaged
         QLOG_DEBUG() << "Set old " << chPrefix << " disabled";
         pm->setParameter(1, chPrefix + "_FUNCTION", static_cast<int>(RC_FUNCTION::Disabled));
-        outputChCombo->setCurrentIndex(0);
     }
 
     chPrefix = newChPrefix;
@@ -659,30 +658,46 @@ void CameraGimbalConfig::parameterChanged(int uas, int component, QString parame
 
 void CameraGimbalConfig::refreshRcFunctionComboxBox(QString rcChannelName, QVariant &value)
 {
-    QStringList rcChannelId = rcChannelName.split("_");
+    QStringList rcChannelIds = rcChannelName.split("_");
+    QString rcChannelId = rcChannelIds[0];
+
+    //in case another function takes over a used function...
+    if ( rcChannelId == m_rollPrefix && value.toInt() != 0 && value.toInt() != RC_FUNCTION::mount_roll ){
+        ui.rollChannelComboBox->setCurrentIndex(0);
+        updateRoll(0);
+    }else if ( rcChannelId == m_tiltPrefix && value.toInt() != 0 && value.toInt() != RC_FUNCTION::mount_tilt ){
+        ui.tiltChannelComboBox->setCurrentIndex(0);
+        updateTilt(0);
+    }else if ( rcChannelId == m_panPrefix && value.toInt() != 0 && value.toInt() != RC_FUNCTION::mount_pan ){
+        ui.panChannelComboBox->setCurrentIndex(0);
+        updatePan(0);
+    }else if ( rcChannelId == m_triggerPrefix && value.toInt() != 0 && value.toInt() != RC_FUNCTION::camera_trigger ){
+        ui.camTriggerOutChannelComboBox->setCurrentIndex(0);
+        updateCameraTriggerOutputCh(0);
+    }
 
     if (value.toInt() == RC_FUNCTION::camera_trigger)
     {
-        ui.camTriggerOutChannelComboBox->setCurrentIndex(ui.camTriggerOutChannelComboBox->findText(rcChannelId[0]));
-        m_triggerPrefix = rcChannelId[0];
+        ui.camTriggerOutChannelComboBox->setCurrentIndex(ui.camTriggerOutChannelComboBox->findText(rcChannelId));
+        m_triggerPrefix = rcChannelId;
         ui.camTriggerGroupBox->setEnabled(true);
     }
     else if (value.toInt() == RC_FUNCTION::mount_roll)
     {
-        ui.rollChannelComboBox->setCurrentIndex(ui.rollChannelComboBox->findText(rcChannelId[0]));
-        m_rollPrefix = rcChannelId[0];
+        ui.rollChannelComboBox->setCurrentIndex(ui.rollChannelComboBox->findText(rcChannelId));
+        m_rollPrefix = rcChannelId;
         ui.rollGroupBox->setEnabled(true);
     }
     else if (value.toInt() == RC_FUNCTION::mount_tilt)
     {
-        ui.tiltChannelComboBox->setCurrentIndex(ui.tiltChannelComboBox->findText(rcChannelId[0]));
-        m_tiltPrefix = rcChannelId[0];
+        ui.tiltChannelComboBox->setCurrentIndex(ui.tiltChannelComboBox->findText(rcChannelId));
+        m_tiltPrefix = rcChannelId;
         ui.tiltGroupBox->setEnabled(true);
     }
     else if (value.toInt() == RC_FUNCTION::mount_pan)
     {
-        ui.panChannelComboBox->setCurrentIndex(ui.panChannelComboBox->findText(rcChannelId[0]));
-        m_panPrefix = rcChannelId[0];
+        ui.panChannelComboBox->setCurrentIndex(ui.panChannelComboBox->findText(rcChannelId));
+        m_panPrefix = rcChannelId;
         ui.panGroupBox->setEnabled(true);
     }
 }
