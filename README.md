@@ -1,6 +1,11 @@
 APM Planner 2.0
 ===============
 
+**Support:**
+[ardupilot.com Support Forum for APM Planner 2.0](http://ardupilot.com/forum/viewtopic.php?f=82)
+
+Support is handled in the forum, we keep issues here known problems and enhancements
+
 Project:
 http://github.com/diydrones/apm_planner
 
