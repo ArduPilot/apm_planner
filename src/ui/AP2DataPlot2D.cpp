@@ -48,6 +48,7 @@ This file is part of the APM_PLANNER project
 #include "MainWindow.h"
 #include "AP2DataPlot2DModel.h"
 #include "ArduPilotMegaMAV.h"
+#include <QSettings>
 
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
@@ -167,6 +168,39 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
 
     ui.horizontalSplitter->setStretchFactor(0,20);
     ui.horizontalSplitter->setStretchFactor(1,1);
+
+    loadSettings();
+}
+
+
+void AP2DataPlot2D::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup("DATAPLOT_SETTINGS");
+    ui.jumpToLocationCheckBox->setChecked(settings.value("JUMP_TO_LOCATION", Qt::Unchecked).toBool());
+    ui.showValuesCheckBox->setChecked(settings.value("SHOW_VALUES", Qt::Unchecked).toBool());
+    ui.autoScrollCheckBox->setChecked(settings.value("AUTO_SCROLL", Qt::Unchecked).toBool());
+
+    ui.evDisplayCheckBox->setChecked(settings.value("SHOW_EV", Qt::Checked).toBool());
+    ui.errDisplayCheckBox->setChecked(settings.value("SHOW_ERR", Qt::Checked).toBool());
+    ui.modeDisplayCheckBox->setChecked(settings.value("SHOW_MODE", Qt::Checked).toBool());
+    settings.endGroup();
+}
+
+void AP2DataPlot2D::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup("DATAPLOT_SETTINGS");
+    settings.setValue("JUMP_TO_LOCATION", ui.jumpToLocationCheckBox->isChecked());
+    settings.setValue("SHOW_VALUES", ui.showValuesCheckBox->isChecked());
+    settings.setValue("AUTO_SCROLL", ui.autoScrollCheckBox->isChecked());
+
+    settings.setValue("SHOW_EV", ui.evDisplayCheckBox->isChecked());
+    settings.setValue("SHOW_ERR", ui.errDisplayCheckBox->isChecked());
+    settings.setValue("SHOW_MODE", ui.modeDisplayCheckBox->isChecked());
+
+
+    settings.sync();
 }
 
 void AP2DataPlot2D::setExcelViewHidden(bool hidden)
@@ -931,6 +965,7 @@ void AP2DataPlot2D::threadTerminated()
 
 AP2DataPlot2D::~AP2DataPlot2D()
 {
+    saveSettings();
     if (m_updateTimer)
     {
         m_updateTimer->stop();

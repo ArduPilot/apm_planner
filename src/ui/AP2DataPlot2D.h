@@ -77,6 +77,10 @@ private slots:
     void loadButtonClicked();
     void loadDialogAccepted();
 
+    //settings
+    void saveSettings();
+    void loadSettings();
+
     //Graph loading thread started
     void loadStarted();
     //Progress of graph loading thread
