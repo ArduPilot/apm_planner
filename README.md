@@ -6,18 +6,12 @@ APM Planner 2.0
 
 Support is handled in the forum, we keep issues here known problems and enhancements
 
-Project:
-http://github.com/diydrones/apm_planner
-
-Files:
-https://github.com/diydrones/apm_planner
-
-Credits:
-http://planner2.ardupilot.com/credits-and-contributors/
-
-Developer Chat: https://gitter.im/diydrones/apm_planner
+**Developer Chat:** https://gitter.im/diydrones/apm_planner
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/diydrones/apm_planner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+**Credits:**
+http://planner2.ardupilot.com/credits-and-contributors/
 
 [Waffle.io](https://waffle.io/diydrones/apm_planner) Progress Graph
 
