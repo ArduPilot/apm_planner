@@ -36,7 +36,7 @@ This file is part of the APM_PLANNER project
 #define NEW_MAVLINKDECODER_H
 
 #include "QsLog.h"
-#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include "mavlink.h"
 #include "LinkInterface.h"
 
 #include <QObject>

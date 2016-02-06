@@ -2,7 +2,7 @@
 #define ABSPOSITIONOVERVIEW_H
 
 #include <QObject>
-#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include "mavlink.h"
 #include "LinkInterface.h"
 
 
