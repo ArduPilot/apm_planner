@@ -222,102 +222,42 @@ QString AP2DataPlot2DModel::getFmtLine(const QString& name)
     }
     return "";
 }
-QMap<quint64,QString> AP2DataPlot2DModel::getModeValues(bool useTimeAsIndex)
-{
-    int indexColum = 0; // Default index is always colum 0
-    QMap<quint64,QString> retval;
 
-    if (useTimeAsIndex)
-    {
-        indexColum = getChildColum("MODE",m_timeStampColumName);
-    }
+
+QList<ModeMessage> AP2DataPlot2DModel::getModeValues()
+{
+    QList<ModeMessage> retval;
 
     QSqlQuery modequery(m_sharedDb);
     modequery.prepare("SELECT * FROM 'MODE';");
-    if (!modequery.exec())
+    if (modequery.exec())
     {
-        //No mode?
-        QLOG_DEBUG() << "Graph loaded with no mode table. Running anyway, but text modes will not be available";
-        modequery.prepare("SELECT * FROM 'HEARTBEAT';");
-        if (!modequery.exec())
+        while (modequery.next())
         {
-            QLOG_DEBUG() << "Graph loaded with no heartbeat either. No modes available";
+            ModeMessage mode;
+            QSqlRecord record = modequery.record();
+
+            if (!mode.setFromSqlRecord(record))
+            {
+                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?! "
+                             << "Modes might be corrupted.";
+            }
+            retval.push_back(mode);
         }
     }
-    QString lastmode = "";
-    MAV_TYPE foundtype = MAV_TYPE_GENERIC;
-    bool custom_mode = false;
-
-    while (modequery.next())
+    else
     {
-        QSqlRecord record = modequery.record();
-        quint64 index = record.value(indexColum).toLongLong();
-        QString mode = "";
-        if (record.contains("Mode"))
-        {
-            mode = record.value("Mode").toString();
-        }
-        else if (record.contains("custom_mode"))
-        {
-            custom_mode = true;
-            int modeint = record.value("custom_mode").toString().toInt();
-            if (foundtype == MAV_TYPE_GENERIC)
-            {
-                int type = record.value("type").toString().toInt();
-                foundtype = static_cast<MAV_TYPE>(type);
-            }
-            if (foundtype == MAV_TYPE_FIXED_WING)
-            {
-                mode = ApmPlane::stringForMode(modeint);
-            }
-            else if (foundtype == MAV_TYPE_QUADROTOR || foundtype == MAV_TYPE_COAXIAL || foundtype == MAV_TYPE_HELICOPTER || \
-                     foundtype == MAV_TYPE_HEXAROTOR || foundtype == MAV_TYPE_OCTOROTOR || foundtype == MAV_TYPE_TRICOPTER)
-            {
-                mode = ApmCopter::stringForMode(modeint);
-            }
-            else if (foundtype == MAV_TYPE_GROUND_ROVER)
-            {
-                mode = ApmRover::stringForMode(modeint);
-            }
-            else
-            {
-                mode = QString::number(static_cast<int>(modeint));
-            }
-        }
-        bool ok = false;
-
-        if (!ok && !custom_mode)
-        {
-            if (record.contains("ModeNum"))
-            {
-                mode = record.value("ModeNum").toString();
-            }
-            else
-            {
-                QLOG_DEBUG() << "Unable to determine Mode number in log" << record.value("Mode").toString();
-                mode = record.value("Mode").toString();
-            }
-        }
-        if (lastmode != mode)
-        {
-            retval.insert(index,mode);
-            lastmode = mode;
-        }
-
+        //MODEquery returned no result - No modes?
+        QLOG_DEBUG() << "Graph loaded with no mode table - strange!";
     }
+
     return retval;
 }
 
 
-QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues(bool useTimeAsIndex)
+QList<ErrorMessage> AP2DataPlot2DModel::getErrorValues()
 {
-    int indexColum = 0; // Default index is always colum 0
-    QMap<quint64,ErrorType> retval;
-
-    if (useTimeAsIndex)
-    {
-       indexColum = getChildColum("ERR",m_timeStampColumName);
-    }
+    QList<ErrorMessage> retval;
 
     QSqlQuery errorquery(m_sharedDb);
     errorquery.prepare("SELECT * FROM 'ERR';");
@@ -325,22 +265,51 @@ QMap<quint64,ErrorType> AP2DataPlot2DModel::getErrorValues(bool useTimeAsIndex)
     {
         while (errorquery.next())
         {
+            ErrorMessage error;
             QSqlRecord record = errorquery.record();
-            quint64 index = static_cast<quint64>(record.value(indexColum).toLongLong());
-            ErrorType error;
 
             if (!error.setFromSqlRecord(record))
             {
-                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?!";
+                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?! "
+                             << "Errors might be corrupted.";
             }
-
-            retval.insert(index, error);
+            retval.push_back(error);
         }
     }
     else
     {
         //Errorquery returned no result - No error?
         QLOG_DEBUG() << "Graph loaded with no error table. This is perfect!";
+    }
+
+    return retval;
+}
+
+QList<EventMessage> AP2DataPlot2DModel::getEventValues()
+{
+    QList<EventMessage> retval;
+
+    QSqlQuery eventquery(m_sharedDb);
+    eventquery.prepare("SELECT * FROM 'EV';");
+    if (eventquery.exec())
+    {
+        while (eventquery.next())
+        {
+            EventMessage event;
+            QSqlRecord record = eventquery.record();
+
+            if (!event.setFromSqlRecord(record))
+            {
+                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?! "
+                             << "Events might be corrupted.";
+            }
+            retval.push_back(event);
+        }
+    }
+    else
+    {
+        //Eventquery returned no result - No events?
+        QLOG_DEBUG() << "Graph loaded with no event table. This is strange!";
     }
 
     return retval;
@@ -403,7 +372,7 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
     if (index.column() == 0)
     {
         // Column 0 is the DB index of the log data
-        return QVariant(QString::number(m_rowIndexToDBIndex[index.row()].first - m_firstIndex));
+        return QVariant(QString::number(m_rowIndexToDBIndex[index.row()].first));
     }
     if (index.column() == 1)
     {

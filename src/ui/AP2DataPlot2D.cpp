@@ -66,9 +66,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     m_axisGroupingDialog(NULL),
     m_tlogReplayEnabled(false),
     m_logDownloadDialog(NULL),
-    m_useTimeOnX(false),
     m_loadedLogMavType(MAV_TYPE_ENUM_END),
-    m_statusTextPos(0)
+    m_statusTextPos(0),
+    m_useTimeOnX(false)
 {
     ui.setupUi(this);
 
@@ -393,6 +393,10 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
         {
             //Ignore ERR
         }
+        else if (m_graphClassMap.keys()[i] == "EV")
+        {
+            //Ignore EV
+        }
         else if (graph->data()->contains(key))
         {
             QString str = QString().sprintf( "%.9g", graph->data()->value(key).value);
@@ -681,7 +685,7 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
 
     int index = newmsec / 1000.0;
     m_graphClassMap["MODE"].modeMap[index] = text;
-    plotTextArrow(index, text, "MODE");
+    plotTextArrow(index, text, "MODE", QColor(0,0,0));
 
 }
 
@@ -1162,14 +1166,14 @@ void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
 
 int AP2DataPlot2D::getStatusTextPos()
 {
-    static const int numberOfPositions = 4;
+    static const int numberOfPositions = 7;
     m_statusTextPos++;
     if(m_statusTextPos > numberOfPositions)
         m_statusTextPos = 1;
     return m_statusTextPos;
 }
 
-void AP2DataPlot2D::plotTextArrow(int index, const QString &text, const QString& graph, QCheckBox* checkBox)
+void AP2DataPlot2D::plotTextArrow(int index, const QString &text, const QString& graph, const QColor &color, QCheckBox* checkBox)
 {
     QLOG_DEBUG() << "plotTextArrow:" << index << " to " << graph;
     int pos = getStatusTextPos();
@@ -1177,6 +1181,7 @@ void AP2DataPlot2D::plotTextArrow(int index, const QString &text, const QString&
 
     QCPItemText *itemtext = new QCPItemText(m_plot);
     itemtext->setText(text);
+    itemtext->setColor(color);
     itemtext->setPositionAlignment(Qt::AlignLeft | Qt::AlignBottom);
     itemtext->position->setAxes(xAxis,m_graphClassMap[graph].axis);
 
@@ -1185,6 +1190,7 @@ void AP2DataPlot2D::plotTextArrow(int index, const QString &text, const QString&
     QCPItemLine *itemline = new QCPItemLine(m_plot);
     m_graphClassMap[graph].itemList.append(itemline);
 
+    itemline->setPen(QPen(color));
     itemline->start->setAxes(xAxis, m_graphClassMap[graph].axis);
     itemline->start->setCoords(index, pos);
     itemline->end->setAxes(xAxis, m_graphClassMap[graph].axis);
@@ -1269,6 +1275,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
     yAxis->setVisible(false);
     yAxis->setLabel("MODE/ERR/EV");
+    yAxis->setRangeUpper(8.0);  // We have 7 different arrow lengths
     QCPGraph *mainGraph = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft, m_graphCount++));
 
     // Setup arrow plots. In a loaded log we always have MODE/ERR/EV
@@ -1280,18 +1287,17 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     m_graphNameList.append("MODE");
     m_graphClassMap["ERR"] = graph;
     m_graphNameList.append("ERR");
-    // EV is still missing
-//    m_graphClassMap["EV"] = graph;
-//    m_graphNameList.append("EV");
+    m_graphClassMap["EV"] = graph;
+    m_graphNameList.append("EV");
 
-    // Insert mode arrows
-    insertModeArrows();
-
-    // Insert Err arrows
-    insertErrArrows();
-
-    // Insert Ev arrows
-    // EV is still missing
+    // Load MODE messages
+    m_ModeMessages = m_tableModel->getModeValues(); //Must only be loaded once
+    // Load ERR messages
+    m_ErrMessages = m_tableModel->getErrorValues(); //Must only be loaded once
+    // Load EV messages
+    m_EventMessages = m_tableModel->getEventValues(); //Must only be loaded once
+    // Insert Text arrows for MODE ERR and EV messages
+    insertTextArrows();
 
     // Rescale axis and remove zoom
     mainGraph->rescaleValueAxis();
@@ -1501,7 +1507,6 @@ void AP2DataPlot2D::evCheckBoxClicked(bool checked)
     {
         return;
     }
-    m_graphClassMap.value("EV").graph->setVisible(checked);
     for (int i=0;i<m_graphClassMap["EV"].itemList.size();i++)
     {
         m_graphClassMap["EV"].itemList.at(i)->setVisible(checked);
@@ -1523,8 +1528,7 @@ void AP2DataPlot2D::indexTypeCheckBoxClicked(bool checked)
 
         // arrows can be inserted instantly again
         m_statusTextPos = 0;    // reset text arrow length
-        insertModeArrows();
-        insertErrArrows();
+        insertTextArrows();
 
         // Graphs can be reenabled using previous stored selection
         ui.dataSelectionScreen->enableItemList(reEnableList);
@@ -1715,97 +1719,58 @@ void AP2DataPlot2D::setupXAxisAndScroller()
     ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
 }
 
-void AP2DataPlot2D::insertModeArrows()
+void AP2DataPlot2D::insertTextArrows()
 {
-    QMap<quint64,QString> modes = m_tableModel->getModeValues(m_useTimeOnX);
-    if (modes.size() == 0)
+    typedef QPair<MessageBase *, QCheckBox *> msgCheckPair;
+    QMap<quint64, msgCheckPair> indexToMessage;
+
+    // First create a map with index to messageBase and its corresponding checkbox pointers
+    // The map will do the sorting for us. The sorting helps to paint the Arrows in the correct length.
+    for(QList<ModeMessage>::Iterator iter = m_ModeMessages.begin(); iter != m_ModeMessages.end(); ++iter)
     {
-        QLOG_DEBUG() << "Graph loaded with no mode table. Running anyway, but text modes will not be available";
+        ModeMessage &msg = *iter;
+        indexToMessage.insert(iter->getIndex(), msgCheckPair(dynamic_cast<MessageBase*>(&msg), ui.modeDisplayCheckBox));
     }
-    else
+    for(QList<EventMessage>::Iterator iter = m_EventMessages.begin(); iter != m_EventMessages.end(); ++iter)
     {
-        for (QMap<quint64,QString>::const_iterator i = modes.constBegin(); i != modes.constEnd(); i++)
+        EventMessage &msg = *iter;
+        indexToMessage.insert(iter->getIndex(), msgCheckPair(dynamic_cast<MessageBase*>(&msg), ui.evDisplayCheckBox));
+    }
+    for(QList<ErrorMessage>::Iterator iter = m_ErrMessages.begin(); iter != m_ErrMessages.end(); ++iter)
+    {
+        ErrorMessage &msg = *iter;
+        indexToMessage.insert(iter->getIndex(), msgCheckPair(dynamic_cast<MessageBase*>(&msg), ui.errDisplayCheckBox));
+    }
+
+    // Now iterate all elements call their formatter and paint their arrow
+    foreach (msgCheckPair msgCheck, indexToMessage)
+    {
+        quint64 index = m_useTimeOnX ? msgCheck.first->getTimeStamp() : msgCheck.first->getIndex();
+        QString string;
+        switch (m_loadedLogMavType)
         {
-            quint64 index = i.key();
-            QString mode = i.value();
-            bool ok = false;
-            int modeint = mode.toInt(&ok);
-            if (!ok)
-            {
-                QLOG_DEBUG() << "Unable to determine Mode number in log" << mode;
-            }
-            else
-            {
-                //It's an integer!
-                switch (m_loadedLogMavType)
-                {
-                    case MAV_TYPE_QUADROTOR:
-                    case MAV_TYPE_HEXAROTOR:
-                    case MAV_TYPE_OCTOROTOR:
-                    case MAV_TYPE_HELICOPTER:
-                    case MAV_TYPE_TRICOPTER:
-                    {
-                        mode = ApmCopter::stringForMode(modeint);
-                    }
-                    break;
-                    case MAV_TYPE_FIXED_WING:
-                    {
-                        mode = ApmPlane::stringForMode(modeint);
-                    }
-                    break;
-                    case MAV_TYPE_GROUND_ROVER:
-                    {
-                        mode = ApmRover::stringForMode(modeint);
-                    }
-                    break;
+            case MAV_TYPE_QUADROTOR:
+            case MAV_TYPE_HEXAROTOR:
+            case MAV_TYPE_OCTOROTOR:
+            case MAV_TYPE_HELICOPTER:
+            case MAV_TYPE_TRICOPTER:
+                string = Copter::MessageFormatter::format(msgCheck.first);
+                break;
 
-                    default:
-                    mode = QString().sprintf("Mode (%d)", modeint);
-                }
-            }
-            QLOG_DEBUG() << "Mode change at index" << index << "to" << mode;
-            plotTextArrow(index, mode, "MODE",ui.modeDisplayCheckBox);
-            m_graphClassMap["MODE"].modeMap[index] = mode;
+            case MAV_TYPE_FIXED_WING:
+                string = Plane::MessageFormatter::format(msgCheck.first);
+                break;
+
+            case MAV_TYPE_GROUND_ROVER:
+                string = Rover::MessageFormatter::format(msgCheck.first);
+                break;
+
+            default:
+                string = msgCheck.first->toString();
+                break;
         }
-    }
-}
-
-void AP2DataPlot2D::insertErrArrows()
-{
-    QMap<quint64, ErrorType> error = m_tableModel->getErrorValues(m_useTimeOnX);
-    if (error.size() == 0)
-    {
-        QLOG_DEBUG() << "Graph loaded with no error table. Running anyway, but text error will not be available";
-    }
-    else
-    {
-        for (QMap<quint64,ErrorType>::const_iterator i = error.constBegin(); i != error.constEnd(); i++)
-        {
-            quint64 index = i.key();
-            ErrorType err = i.value();
-
-            switch (m_loadedLogMavType)
-            {
-                case MAV_TYPE_QUADROTOR:
-                case MAV_TYPE_HEXAROTOR:
-                case MAV_TYPE_OCTOROTOR:
-                case MAV_TYPE_HELICOPTER:
-                case MAV_TYPE_TRICOPTER:
-                {
-                    QLOG_DEBUG() << "ERR change at index" << index << "to" << CopterErrorTypeFormatter::format(err);
-                    plotTextArrow(index, CopterErrorTypeFormatter::format(err), "ERR",ui.modeDisplayCheckBox);
-                    m_graphClassMap["ERR"].modeMap[index] = CopterErrorTypeFormatter::format(err);
-                    break;
-                }
-
-                default:
-                {
-                    QLOG_DEBUG() << "ERR change at index" << index << "to" << err.toString();
-                    plotTextArrow(index, err.toString(), "ERR",ui.modeDisplayCheckBox);
-                    m_graphClassMap["ERR"].modeMap[index] = err.toString();
-                    break;
-                }
-            }
-        }
+        QLOG_DEBUG() << msgCheck.first->typeName() << " change at index" << index << "to" << string;
+        plotTextArrow(index, string, msgCheck.first->typeName(), msgCheck.first->typeColor(), msgCheck.second);
+        m_graphClassMap[msgCheck.first->typeName()].modeMap[index] = string;
     }
 }
