@@ -58,7 +58,7 @@ Be sure to run apt-get update first
 sudo apt-get update
 sudo apt-get install qt5-qmake qt5-default \
   qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
-  libqt5svg5-dev qtdeclarative5-qtquick2-plugin
+  libqt5svg5-dev qtdeclarative5-qtquick2-plugin qtdeclarative5-controls-plugin
 sudo apt-get install git libsdl1.2-dev  libsndfile-dev \
   flite1-dev libssl-dev libudev-dev libsdl2-dev
 ```
