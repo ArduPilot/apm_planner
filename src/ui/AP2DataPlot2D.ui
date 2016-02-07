@@ -358,6 +358,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QCheckBox" name="jumpToLocationCheckBox">
+       <property name="text">
+        <string>Jump to location on Double Click</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="hideExcelView">
        <property name="text">
         <string>Hide Grid View</string>

@@ -112,6 +112,7 @@ private slots:
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
+    void plotDoubleClick(QMouseEvent * _t2);
     void plotMouseMove(QMouseEvent *evt);
     void horizontalScrollMoved(int value);
     void verticalScrollMoved(int value);

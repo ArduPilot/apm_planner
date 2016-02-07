@@ -92,6 +92,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(m_plot,SIGNAL(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)),this,SLOT(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)));
 
     connect(m_plot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(plotMouseMove(QMouseEvent*)));
+    connect(m_plot,SIGNAL(mouseDoubleClick(QMouseEvent*)),this,SLOT(plotDoubleClick(QMouseEvent*)));
 
     connect(ui.modeDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(modeCheckBoxClicked(bool)));
     connect(ui.errDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(errCheckBoxClicked(bool)));
@@ -324,6 +325,55 @@ void AP2DataPlot2D::verticalScrollMoved(int value)
     m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(center + (requestedrange/2.0));
     m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(center - (requestedrange/2.0));
     m_plot->replot();
+}
+
+void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt){
+    if (!ui.jumpToLocationCheckBox->isChecked())
+    {
+        return;
+    }
+
+
+    QString newresult = "";
+    for (int i=0;i<m_graphClassMap.keys().size();i++)
+    {
+
+        double key=0;
+        double val=0;
+        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
+        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
+        if (i == 0)
+        {
+            int position = floor(key);
+            int min = m_tableModel->getFirstIndex();
+            int max = m_tableModel->getLastIndex();
+
+            if ( position > max ){
+                ui.tableWidget->scrollToBottom();
+            }else if ( position < min ){
+                ui.tableWidget->scrollToTop();
+            }else{
+                //search for previous event (remember the table may be filtered)
+                QModelIndex sourceIndex = m_tableModel->index(position, 0-min);
+                QModelIndex index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+                while ( sourceIndex.row() >= min && !index.isValid() ){
+                    sourceIndex = m_tableModel->index(sourceIndex.row() - 1, 0);
+                    index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+                }
+
+                if ( !index.isValid() ){
+                    //couldn't find filtered index by looking back, try forward...
+                    sourceIndex = m_tableModel->index(position, 0);
+                    index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+                    while ( sourceIndex.row() <= max && !index.isValid() ){
+                        sourceIndex = m_tableModel->index(sourceIndex.row() + 1, 0);
+                        index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+                    }
+                }
+                ui.tableWidget->scrollTo(index);
+            }
+        }
+    }
 }
 
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
