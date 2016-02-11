@@ -48,6 +48,7 @@ This file is part of the APM_PLANNER project
 #include "MainWindow.h"
 #include "AP2DataPlot2DModel.h"
 #include "ArduPilotMegaMAV.h"
+#include <QSettings>
 
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
@@ -92,6 +93,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(m_plot,SIGNAL(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)),this,SLOT(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)));
 
     connect(m_plot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(plotMouseMove(QMouseEvent*)));
+    connect(m_plot,SIGNAL(mouseDoubleClick(QMouseEvent*)),this,SLOT(plotDoubleClick(QMouseEvent*)));
 
     connect(ui.modeDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(modeCheckBoxClicked(bool)));
     connect(ui.errDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(errCheckBoxClicked(bool)));
@@ -166,6 +168,39 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
 
     ui.horizontalSplitter->setStretchFactor(0,20);
     ui.horizontalSplitter->setStretchFactor(1,1);
+
+    loadSettings();
+}
+
+
+void AP2DataPlot2D::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup("DATAPLOT_SETTINGS");
+    ui.jumpToLocationCheckBox->setChecked(settings.value("JUMP_TO_LOCATION", Qt::Unchecked).toBool());
+    ui.showValuesCheckBox->setChecked(settings.value("SHOW_VALUES", Qt::Unchecked).toBool());
+    ui.autoScrollCheckBox->setChecked(settings.value("AUTO_SCROLL", Qt::Unchecked).toBool());
+
+    ui.evDisplayCheckBox->setChecked(settings.value("SHOW_EV", Qt::Checked).toBool());
+    ui.errDisplayCheckBox->setChecked(settings.value("SHOW_ERR", Qt::Checked).toBool());
+    ui.modeDisplayCheckBox->setChecked(settings.value("SHOW_MODE", Qt::Checked).toBool());
+    settings.endGroup();
+}
+
+void AP2DataPlot2D::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup("DATAPLOT_SETTINGS");
+    settings.setValue("JUMP_TO_LOCATION", ui.jumpToLocationCheckBox->isChecked());
+    settings.setValue("SHOW_VALUES", ui.showValuesCheckBox->isChecked());
+    settings.setValue("AUTO_SCROLL", ui.autoScrollCheckBox->isChecked());
+
+    settings.setValue("SHOW_EV", ui.evDisplayCheckBox->isChecked());
+    settings.setValue("SHOW_ERR", ui.errDisplayCheckBox->isChecked());
+    settings.setValue("SHOW_MODE", ui.modeDisplayCheckBox->isChecked());
+
+
+    settings.sync();
 }
 
 void AP2DataPlot2D::setExcelViewHidden(bool hidden)
@@ -326,6 +361,59 @@ void AP2DataPlot2D::verticalScrollMoved(int value)
     m_plot->replot();
 }
 
+void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt){
+    if (!ui.jumpToLocationCheckBox->isChecked() || m_useTimeOnX )
+    {
+        return;
+    }
+
+
+    QString newresult = "";
+    for (int i=0;i<m_graphClassMap.keys().size();i++)
+    {
+
+        double key=0;
+        double val=0;
+        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
+        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
+        if (i == 0)
+        {
+            int position = floor(key);
+            int min = m_tableModel->getFirstIndex();
+            int max = m_tableModel->getLastIndex();
+
+            if ( position > max ){
+                ui.tableWidget->scrollToBottom();
+                plotCurrentIndex(max);
+
+            }else if ( position < min ){
+                ui.tableWidget->scrollToTop();
+                plotCurrentIndex(min);
+            }else{
+                //search for previous event (remember the table may be filtered)
+                QModelIndex sourceIndex = m_tableModel->index(position-min, 0);
+                QModelIndex index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+                while ( sourceIndex.row() >= min && !index.isValid() ){
+                    sourceIndex = m_tableModel->index(sourceIndex.row() - 1, 0);
+                    index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+                }
+
+                if ( !index.isValid() ){
+                    //couldn't find filtered index by looking back, try forward...
+                    sourceIndex = m_tableModel->index(position-min, 0);
+                    index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+                    while ( sourceIndex.row() <= max && !index.isValid() ){
+                        sourceIndex = m_tableModel->index(sourceIndex.row() + 1, 0);
+                        index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+                    }
+                }
+                ui.tableWidget->setCurrentIndex(index);
+                ui.tableWidget->scrollTo(index);
+            }
+        }
+    }
+}
+
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 {
     if (!ui.showValuesCheckBox->isChecked())
@@ -484,10 +572,13 @@ void AP2DataPlot2D::addGraphLeft()
 }
 void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
+    plotCurrentIndex(m_tableFilterProxyModel->mapToSource(current).row() + m_tableModel->getFirstIndex());
+
     if (!current.isValid())
     {
         return;
     }
+
     m_tableModel->selectedRowChanged(m_tableFilterProxyModel->mapToSource(current),m_tableFilterProxyModel->mapToSource(previous));
 
     if (current.column() == 0 || current.column() == 1)
@@ -881,6 +972,7 @@ void AP2DataPlot2D::threadTerminated()
 
 AP2DataPlot2D::~AP2DataPlot2D()
 {
+    saveSettings();
     if (m_updateTimer)
     {
         m_updateTimer->stop();
@@ -1233,6 +1325,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setWindowTitle("Warning");
         msgBox.setText("Log parsing ended with errors.");
+        msgBox.addButton(QMessageBox::Ok);
 
         if (state.getParsingState() == AP2DataPlotStatus::FmtError)
         {
@@ -1287,6 +1380,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     m_graphNameList.append("MODE");
     m_graphClassMap["ERR"] = graph;
     m_graphNameList.append("ERR");
+
     m_graphClassMap["EV"] = graph;
     m_graphNameList.append("EV");
 
@@ -1298,6 +1392,9 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     m_EventMessages = m_tableModel->getEventValues(); //Must only be loaded once
     // Insert Text arrows for MODE ERR and EV messages
     insertTextArrows();
+
+    // insert time line
+    insertCurrentIndex();
 
     // Rescale axis and remove zoom
     mainGraph->rescaleValueAxis();
@@ -1717,6 +1814,33 @@ void AP2DataPlot2D::setupXAxisAndScroller()
     }
     ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
     ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
+}
+
+void AP2DataPlot2D::plotCurrentIndex(int index)
+{
+    if ( m_useTimeOnX )
+        return;
+
+    QLOG_DEBUG() << index;
+    m_timeLine->start->setCoords(index, 999999);
+    m_timeLine->end->setCoords(index, -999999);
+    //m_plot->replot();
+}
+void AP2DataPlot2D::insertCurrentIndex()
+{
+    if ( m_useTimeOnX )
+        return;
+    QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+    QCPAxis *yAxis = m_wideAxisRect->axis(QCPAxis::atLeft);
+
+    m_timeLine = new QCPItemLine(m_plot);
+    m_timeLine->start->setAxes(xAxis, yAxis);
+    m_timeLine->start->setCoords(0, 5);
+    m_timeLine->end->setAxes(xAxis, yAxis);
+    m_timeLine->end->setCoords(0, 0.0);
+    m_timeLine->setPen(QPen(QColor::fromRgb(255, 0, 0), 1));
+
+    m_plot->addItem(m_timeLine);
 }
 
 void AP2DataPlot2D::insertTextArrows()
