@@ -362,7 +362,7 @@ void AP2DataPlot2D::verticalScrollMoved(int value)
 }
 
 void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt){
-    if (!ui.jumpToLocationCheckBox->isChecked())
+    if (!ui.jumpToLocationCheckBox->isChecked() || m_useTimeOnX )
     {
         return;
     }
@@ -1818,6 +1818,9 @@ void AP2DataPlot2D::setupXAxisAndScroller()
 
 void AP2DataPlot2D::plotCurrentIndex(int index)
 {
+    if ( m_useTimeOnX )
+        return;
+
     QLOG_DEBUG() << index;
     m_timeLine->start->setCoords(index, 999999);
     m_timeLine->end->setCoords(index, -999999);
@@ -1825,6 +1828,8 @@ void AP2DataPlot2D::plotCurrentIndex(int index)
 }
 void AP2DataPlot2D::insertCurrentIndex()
 {
+    if ( m_useTimeOnX )
+        return;
     QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
     QCPAxis *yAxis = m_wideAxisRect->axis(QCPAxis::atLeft);
 
