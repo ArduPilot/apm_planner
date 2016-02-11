@@ -181,6 +181,17 @@ private:
      */
     void insertTextArrows();
 
+    /**
+     * @brief insertCurrentTime inserts a red line into the graph
+     */
+    void insertCurrentIndex();
+
+    /**
+     * @brief plotCurrentTime updates the current time red line position
+     */
+    void plotCurrentIndex(int index);
+
+
 private:
     Ui::AP2DataPlot2D ui;
 
@@ -252,6 +263,9 @@ private:
     QList<ErrorMessage> m_ErrMessages;      /// holds all Err Messages of the current loaded log
     QList<ModeMessage> m_ModeMessages;      /// holds all Mode Messages of the current loaded log
     QList<EventMessage> m_EventMessages;    /// holds all Event Messages of the current loaded log
+
+    //red time line
+    QCPItemLine *m_timeLine;
 };
 
 #endif // AP2DATAPLOT2D_H

@@ -384,11 +384,14 @@ void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt){
 
             if ( position > max ){
                 ui.tableWidget->scrollToBottom();
+                plotCurrentIndex(max);
+
             }else if ( position < min ){
                 ui.tableWidget->scrollToTop();
+                plotCurrentIndex(min);
             }else{
                 //search for previous event (remember the table may be filtered)
-                QModelIndex sourceIndex = m_tableModel->index(position, 0-min);
+                QModelIndex sourceIndex = m_tableModel->index(position-min, 0);
                 QModelIndex index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
                 while ( sourceIndex.row() >= min && !index.isValid() ){
                     sourceIndex = m_tableModel->index(sourceIndex.row() - 1, 0);
@@ -397,13 +400,14 @@ void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt){
 
                 if ( !index.isValid() ){
                     //couldn't find filtered index by looking back, try forward...
-                    sourceIndex = m_tableModel->index(position, 0);
+                    sourceIndex = m_tableModel->index(position-min, 0);
                     index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
                     while ( sourceIndex.row() <= max && !index.isValid() ){
                         sourceIndex = m_tableModel->index(sourceIndex.row() + 1, 0);
                         index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
                     }
                 }
+                ui.tableWidget->setCurrentIndex(index);
                 ui.tableWidget->scrollTo(index);
             }
         }
@@ -568,10 +572,13 @@ void AP2DataPlot2D::addGraphLeft()
 }
 void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
+    plotCurrentIndex(m_tableFilterProxyModel->mapToSource(current).row() + m_tableModel->getFirstIndex());
+
     if (!current.isValid())
     {
         return;
     }
+
     m_tableModel->selectedRowChanged(m_tableFilterProxyModel->mapToSource(current),m_tableFilterProxyModel->mapToSource(previous));
 
     if (current.column() == 0 || current.column() == 1)
@@ -1373,6 +1380,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     m_graphNameList.append("MODE");
     m_graphClassMap["ERR"] = graph;
     m_graphNameList.append("ERR");
+
     m_graphClassMap["EV"] = graph;
     m_graphNameList.append("EV");
 
@@ -1384,6 +1392,9 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     m_EventMessages = m_tableModel->getEventValues(); //Must only be loaded once
     // Insert Text arrows for MODE ERR and EV messages
     insertTextArrows();
+
+    // insert time line
+    insertCurrentIndex();
 
     // Rescale axis and remove zoom
     mainGraph->rescaleValueAxis();
@@ -1803,6 +1814,28 @@ void AP2DataPlot2D::setupXAxisAndScroller()
     }
     ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
     ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
+}
+
+void AP2DataPlot2D::plotCurrentIndex(int index)
+{
+    QLOG_DEBUG() << index;
+    m_timeLine->start->setCoords(index, 999999);
+    m_timeLine->end->setCoords(index, -999999);
+    //m_plot->replot();
+}
+void AP2DataPlot2D::insertCurrentIndex()
+{
+    QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
+    QCPAxis *yAxis = m_wideAxisRect->axis(QCPAxis::atLeft);
+
+    m_timeLine = new QCPItemLine(m_plot);
+    m_timeLine->start->setAxes(xAxis, yAxis);
+    m_timeLine->start->setCoords(0, 5);
+    m_timeLine->end->setAxes(xAxis, yAxis);
+    m_timeLine->end->setCoords(0, 0.0);
+    m_timeLine->setPen(QPen(QColor::fromRgb(255, 0, 0), 1));
+
+    m_plot->addItem(m_timeLine);
 }
 
 void AP2DataPlot2D::insertTextArrows()
