@@ -1178,23 +1178,26 @@ void AP2DataPlot2D::itemEnabled(QString name)
 
 void AP2DataPlot2D::itemDisabled(QString name)
 {
-    if (m_logLoaded)
+    if (m_graphClassMap.contains(name)) // only enabled items can be disabled
     {
-        name = name.mid(name.indexOf(":")+1);
-    }
-    for (int i=0;i<m_graphClassMap.value(name).itemList.size();i++)
-    {
-        m_plot->removeItem(m_graphClassMap.value(name).itemList.at(i));
-    }
-    m_wideAxisRect->removeAxis(m_graphClassMap.value(name).axis);
-    m_plot->removeGraph(m_graphClassMap.value(name).graph);
-    m_plot->replot();
-    m_graphClassMap.remove(name);
-    m_graphNameList.removeOne(name);
-    m_graphCount--;
-    if (m_axisGroupingDialog)
-    {
-        m_axisGroupingDialog->removeAxis(name);
+        if (m_logLoaded)
+        {
+            name = name.mid(name.indexOf(":")+1);
+        }
+        for (int i=0;i<m_graphClassMap.value(name).itemList.size();i++)
+        {
+            m_plot->removeItem(m_graphClassMap.value(name).itemList.at(i));
+        }
+        m_wideAxisRect->removeAxis(m_graphClassMap.value(name).axis);
+        m_plot->removeGraph(m_graphClassMap.value(name).graph);
+        m_plot->replot();
+        m_graphClassMap.remove(name);
+        m_graphNameList.removeOne(name);
+        m_graphCount--;
+        if (m_axisGroupingDialog)
+        {
+            m_axisGroupingDialog->removeAxis(name);
+        }
     }
 }
 
