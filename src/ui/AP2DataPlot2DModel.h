@@ -50,9 +50,7 @@ public:
     bool addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index);
     QMap<QString,QList<QString> > getFmtValues();
     QString getFmtLine(const QString& name);
-    QList<ModeMessage> getModeValues();
-    QList<ErrorMessage> getErrorValues();
-    QList<EventMessage> getEventValues();
+    void getMessagesOfType(const QString &type, QMap<quint64, MessageBase::Ptr> &indexToMessageMap);
     bool hasType(const QString& name);
     QMap<quint64,QVariant> getValues(const QString& parent, const QString& child, bool useTimeAsIndex);
     int getChildColum(const QString& parent,const QString& child);

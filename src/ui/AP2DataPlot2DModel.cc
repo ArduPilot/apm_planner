@@ -223,96 +223,30 @@ QString AP2DataPlot2DModel::getFmtLine(const QString& name)
     return "";
 }
 
-
-QList<ModeMessage> AP2DataPlot2DModel::getModeValues()
+void AP2DataPlot2DModel::getMessagesOfType(const QString &type, QMap<quint64, MessageBase::Ptr> &indexToMessageMap)
 {
-    QList<ModeMessage> retval;
-
-    QSqlQuery modequery(m_sharedDb);
-    modequery.prepare("SELECT * FROM 'MODE';");
-    if (modequery.exec())
+    QSqlQuery query(m_sharedDb);
+    query.prepare("SELECT * FROM '" + type + "';");
+    if (query.exec())
     {
-        while (modequery.next())
+        while (query.next())
         {
-            ModeMessage mode;
-            QSqlRecord record = modequery.record();
+            MessageBase::Ptr p_msg = MessageFactory::getMessageOfType(type);
+            QSqlRecord record = query.record();
 
-            if (!mode.setFromSqlRecord(record))
+            if (!p_msg->setFromSqlRecord(record))
             {
                 QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?! "
-                             << "Modes might be corrupted.";
+                             << "The data of type " << type << " might be corrupted.";
             }
-            retval.push_back(mode);
+            indexToMessageMap.insert(p_msg->getIndex(), p_msg);
         }
     }
     else
     {
-        //MODEquery returned no result - No modes?
-        QLOG_DEBUG() << "Graph loaded with no mode table - strange!";
+        //query returned no result
+        QLOG_DEBUG() << "Graph loaded with no table of type " << type << ". This is strange!";
     }
-
-    return retval;
-}
-
-
-QList<ErrorMessage> AP2DataPlot2DModel::getErrorValues()
-{
-    QList<ErrorMessage> retval;
-
-    QSqlQuery errorquery(m_sharedDb);
-    errorquery.prepare("SELECT * FROM 'ERR';");
-    if (errorquery.exec())
-    {
-        while (errorquery.next())
-        {
-            ErrorMessage error;
-            QSqlRecord record = errorquery.record();
-
-            if (!error.setFromSqlRecord(record))
-            {
-                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?! "
-                             << "Errors might be corrupted.";
-            }
-            retval.push_back(error);
-        }
-    }
-    else
-    {
-        //Errorquery returned no result - No error?
-        QLOG_DEBUG() << "Graph loaded with no error table. This is perfect!";
-    }
-
-    return retval;
-}
-
-QList<EventMessage> AP2DataPlot2DModel::getEventValues()
-{
-    QList<EventMessage> retval;
-
-    QSqlQuery eventquery(m_sharedDb);
-    eventquery.prepare("SELECT * FROM 'EV';");
-    if (eventquery.exec())
-    {
-        while (eventquery.next())
-        {
-            EventMessage event;
-            QSqlRecord record = eventquery.record();
-
-            if (!event.setFromSqlRecord(record))
-            {
-                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?! "
-                             << "Events might be corrupted.";
-            }
-            retval.push_back(event);
-        }
-    }
-    else
-    {
-        //Eventquery returned no result - No events?
-        QLOG_DEBUG() << "Graph loaded with no event table. This is strange!";
-    }
-
-    return retval;
 }
 
 
