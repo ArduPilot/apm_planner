@@ -92,9 +92,18 @@ public:
 
     static const QString timeFieldName;
 
+    typedef QSharedPointer<MessageBase> Ptr;
+
     MessageBase();
 
-    MessageBase(quint64 index, quint64 timeStamp);
+    /**
+     * @brief MessageBase constructor for setting all params
+     * @param index - Index of this message
+     * @param timeStamp - Time stamp of this message
+     * @param name - name of this message, used to identify type
+     * @param color - color associated with this message type
+     */
+    MessageBase(const quint64 index, const quint64 timeStamp, const QString &name, const QColor &color);
 
     virtual ~MessageBase(){}
 
@@ -132,19 +141,21 @@ public:
      * @brief typeName returns the message type name.
      * @return Type name string
      */
-    virtual QString typeName() const = 0;
+    virtual QString typeName() const;
 
     /**
      * @brief typeColor returns an QColor object with the color associated
      *        with the typ of the Message.
      * @return Color for this type
      */
-    virtual QColor typeColor() const = 0;
+    virtual QColor typeColor() const;
 
 protected:
 
     quint64 m_Index;        /// DB Index of this message
     quint64 m_TimeStamp;    /// Timestamp of this message
+    QString m_TypeName;     /// Name of this message
+    QColor  m_Color;        /// Color associated with this message
 };
 
 /**
@@ -156,11 +167,18 @@ class ErrorMessage : public MessageBase
 {
 public:
 
-    static const QString messageTypeName;   /// Name of this message is 'ERR'
+    static const QString TypeName;   /// Name of this message is 'ERR'
 
     ErrorMessage();
 
-    ErrorMessage(quint64 index, quint64 timeStamp, quint8 subSys, quint8 errCode);
+    /**
+     * @brief ErrorMessage Constructor for setting all internals
+     * @param index - Index of this message
+     * @param timeStamp - Time stamp of this message
+     * @param subSys - Subsys who emitted this error
+     * @param errCode - Errorcode emmitted by subsys
+     */
+    ErrorMessage(const quint64 index, const quint64 timeStamp, const quint8 subSys, const quint8 errCode);
 
     /**
      * @brief Getter for the Subsystem ID which emitted the error
@@ -194,20 +212,6 @@ public:
      */
     virtual QString toString() const;
 
-    /**
-     * @brief typeName returns the message type name.
-     * @return Type name string
-     */
-    virtual QString typeName() const;
-
-    /**
-     * @brief typeColor returns an QColor object with the color associated
-     *        with the typ of the Message.
-     * @return Color for this type
-     */
-    virtual QColor typeColor() const;
-
-
 private:
 
     quint8 m_SubSys;        /// Subsystem signaling the error
@@ -223,11 +227,18 @@ private:
 class ModeMessage : public MessageBase
 {
 public:
-    static const QString messageTypeName;   /// Name of this message is 'MODE'
+    static const QString TypeName;   /// Name of this message is 'MODE'
 
     ModeMessage();
 
-    ModeMessage(quint64 index, quint64 timeStamp, qint8 mode, quint8 modeNum);
+    /**
+     * @brief ModeMessage Costructor for setting all internals
+     * @param index - Index of this message
+     * @param timeStamp - Time stamp of this message
+     * @param mode - Mode of this message
+     * @param modeNum - Mode Num of this message (not used)
+     */
+    ModeMessage(const quint64 index, const quint64 timeStamp, const qint8 mode, const quint8 modeNum);
 
     /**
      * @brief Getter for the Mode of this message
@@ -261,19 +272,6 @@ public:
      */
     virtual QString toString() const;
 
-    /**
-     * @brief typeName returns the message type name.
-     * @return Type name string
-     */
-    virtual QString typeName() const;
-
-    /**
-     * @brief typeColor returns an QColor object with the color associated
-     *        with the typ of the Message.
-     * @return Color for this type
-     */
-    virtual QColor typeColor() const;
-
 private:
 
     qint8 m_Mode;        /// Subsystem signaling the error
@@ -289,11 +287,17 @@ class EventMessage : public MessageBase
 {
 public:
 
-    static const QString messageTypeName;   /// Name of this message is 'EV'
+    static const QString TypeName;   /// Name of this message is 'EV'
 
     EventMessage();
 
-    EventMessage(quint64 index, quint64 timeStamp, quint8 eventID);
+    /**
+     * @brief EventMessage Constructor for setting all internals
+     * @param index - Index of this message
+     * @param timeStamp - Time stamp of this message
+     * @param eventID - Event ID of this message
+     */
+    EventMessage(const quint64 index, const quint64 timeStamp, const quint8 eventID);
 
     /**
      * @brief Getter for the Event ID of this message
@@ -310,7 +314,7 @@ public:
      *
      * @param record[in] - Filled QSqlRecord
      * @return true - all Fields could be read
-     *         false - not all data could be readvirtual QString toString() const;
+     *         false - not all data could be read
      */
     virtual bool setFromSqlRecord(const QSqlRecord &record);
 
@@ -321,22 +325,68 @@ public:
      */
     virtual QString toString() const;
 
-    /**
-     * @brief typeName returns the message type name.
-     * @return Type name string
-     */
-    virtual QString typeName() const;
-
-    /**
-     * @brief typeColor returns an QColor object with the color associated
-     *        with the typ of the Message.
-     * @return Color for this type
-     */
-    virtual QColor typeColor() const;
-
 private:
 
      quint8 m_EventID;    /// EventID
+};
+
+/**
+ * @brief Class for making it easier to handle the Msg messages.
+ *        This class implements everything which is needed to
+ *        handle MAV MSG messages.
+ *        This class has no getter - use toString method instead.
+ */
+class MsgMessage : public MessageBase
+{
+public:
+
+    static const QString TypeName;   /// Name of this message is 'MSG'
+
+    MsgMessage();
+
+    /**
+     * @brief MsgMessage Constructor for setting all internals
+     * @param index - Index of this message
+     * @param timeStamp - Time stamp of this message
+     * @param eventID - Event ID of this message
+     */
+    MsgMessage(const quint64 index, const quint64 timeStamp, const QString &message);
+
+    /**
+     * @brief Reads an QSqlRecord and sets the internal data.
+     *        The record must contain an Index in colum 0 and the
+     *        colum "Msg" in order to get a positive return value.
+     *        If the record conatins also a "TimeUS"
+     *        field the internal time stamp will be filled too.
+     *
+     * @param record[in] - Filled QSqlRecord
+     * @return true - all Fields could be read
+     *         false - not all data could be read
+     */
+    virtual bool setFromSqlRecord(const QSqlRecord &record);
+
+    /**
+     * @brief Converts the MsgMessage into an uninterpreted string.
+     *        In this case there is nothing to interpret. The internal
+     *        string is directly returned.
+     * @return The uninterpreted Qstring
+     */
+    virtual QString toString() const;
+
+private:
+
+    QString m_Message; /// The 'message'
+
+};
+
+/**
+ * @brief The MessageFactory class should be used to construct
+ *        messages of every type by name.
+ */
+class MessageFactory
+{
+public:
+    static MessageBase::Ptr getMessageOfType(const QString &type);
 };
 
 /**
@@ -379,7 +429,7 @@ enum Mode
 class MessageFormatter
 {
 public:
-    static QString format(MessageBase *p_message);
+    static QString format(MessageBase::Ptr &p_message);
 
     static QString format(const ErrorMessage &message);
 
@@ -432,7 +482,7 @@ enum Mode
 class MessageFormatter
 {
 public:
-    static QString format(MessageBase *p_message);
+    static QString format(MessageBase::Ptr &p_message);
 
     static QString format(const ModeMessage &message);
 };
@@ -479,7 +529,7 @@ enum Mode
 class MessageFormatter
 {
 public:
-    static QString format(MessageBase *p_message);
+    static QString format(MessageBase::Ptr &p_message);
 
     static QString format(const ModeMessage &message);
 };
