@@ -398,7 +398,11 @@ const QString MessageBase::timeFieldName("TimeUS");
 MessageBase::MessageBase() : m_Index(0), m_TimeStamp(0)
 {}
 
-MessageBase::MessageBase(quint64 index, quint64 timeStamp) : m_Index(index), m_TimeStamp(timeStamp)
+MessageBase::MessageBase(const quint64 index, const quint64 timeStamp, const QString &name, const QColor &color) :
+    m_Index(index),
+    m_TimeStamp(timeStamp),
+    m_TypeName(name),
+    m_Color(color)
 {}
 
 quint64 MessageBase::getIndex() const
@@ -411,15 +415,29 @@ quint64 MessageBase::getTimeStamp() const
     return m_TimeStamp;
 }
 
+QString MessageBase::typeName() const
+{
+    return m_TypeName;
+}
+
+QColor MessageBase::typeColor() const
+{
+    return m_Color;
+}
+
 //********
 
-const QString ErrorMessage::messageTypeName("ERR");
+const QString ErrorMessage::TypeName("ERR");
 
 ErrorMessage::ErrorMessage() : m_SubSys(0), m_ErrorCode(0)
-{}
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(150,0,0);
+}
 
-ErrorMessage::ErrorMessage(quint64 index, quint64 timeStamp, quint8 subSys, quint8 errCode) :
-    MessageBase(index, timeStamp),
+ErrorMessage::ErrorMessage(const quint64 index, const quint64 timeStamp, const quint8 subSys, const quint8 errCode) :
+    MessageBase(index, timeStamp, TypeName, QColor(150,0,0)),
     m_SubSys(subSys),
     m_ErrorCode(errCode)
 {}
@@ -473,24 +491,19 @@ QString ErrorMessage::toString() const
     return output;
 }
 
-QString ErrorMessage::typeName() const
-{
-    return messageTypeName;
-}
-
-QColor ErrorMessage::typeColor() const
-{
-    return QColor(150,0,0);
-}
 //********
 
-const QString ModeMessage::messageTypeName("MODE");
+const QString ModeMessage::TypeName("MODE");
 
 ModeMessage::ModeMessage() : m_Mode(0), m_ModeNum(0)
-{}
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(50,125,0);
+}
 
-ModeMessage::ModeMessage(quint64 index, quint64 timeStamp, qint8 mode, quint8 modeNum) :
-    MessageBase(index, timeStamp),
+ModeMessage::ModeMessage(const quint64 index, const quint64 timeStamp, const qint8 mode, const quint8 modeNum) :
+    MessageBase(index, timeStamp, TypeName, QColor(50,125,0)),
     m_Mode(mode),
     m_ModeNum(modeNum)
 {}
@@ -543,24 +556,19 @@ QString ModeMessage::toString() const
     return output;
 }
 
-QString ModeMessage::typeName() const
-{
-    return messageTypeName;
-}
-
-QColor ModeMessage::typeColor() const
-{
-    return QColor(50,125,0);
-}
 //********
 
-const QString EventMessage::messageTypeName("EV");
+const QString EventMessage::TypeName("EV");
 
 EventMessage::EventMessage() : m_EventID(0)
-{}
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(0,0,125);
+}
 
-EventMessage::EventMessage(quint64 index, quint64 timeStamp, quint8 eventID) :
-    MessageBase(index, timeStamp),
+EventMessage::EventMessage(const quint64 index, const quint64 timeStamp, const quint8 eventID) :
+    MessageBase(index, timeStamp, TypeName, QColor(0,0,125)),
     m_EventID(eventID)
 {}
 
@@ -602,33 +610,98 @@ QString EventMessage::toString() const
     return output;
 }
 
-QString EventMessage::typeName() const
+//********
+
+const QString MsgMessage::TypeName("MSG");
+
+MsgMessage::MsgMessage()
 {
-    return messageTypeName;
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(0,0,0);
 }
 
-QColor EventMessage::typeColor() const
+MsgMessage::MsgMessage(const quint64 index, const quint64 timeStamp, const QString &message) :
+    MessageBase(index, timeStamp, TypeName, QColor(0,0,0)),
+    m_Message(message)
+{}
+
+bool MsgMessage::setFromSqlRecord(const QSqlRecord &record)
 {
-    return QColor(0,0,125);
+    bool rc1 = false;
+    bool rc2 = false;
+
+    if(record.value(0).isValid())
+    {
+        m_Index = static_cast<quint64>(record.value(0).toLongLong());
+        rc1 = true;
+    }
+    if (record.contains(timeFieldName))
+    {
+        m_TimeStamp = static_cast<quint64>(record.value(timeFieldName).toLongLong());
+        // TimeStamp does not influence the returncode as its optional
+    }
+    if (record.contains("Message"))
+    {
+        m_Message = record.value("Message").toString();
+        rc2 = true;
+    }
+
+    return rc1 && rc2;
 }
+
+QString MsgMessage::toString() const
+{
+    return m_Message;
+}
+
+//********
+
+MessageBase::Ptr MessageFactory::getMessageOfType(const QString &type)
+{
+    if (type == ErrorMessage::TypeName)
+    {
+        return MessageBase::Ptr(new ErrorMessage());
+    }
+    else if (type == ModeMessage::TypeName)
+    {
+        return MessageBase::Ptr(new ModeMessage());
+    }
+    else if (type == EventMessage::TypeName)
+    {
+        return MessageBase::Ptr(new EventMessage());
+    }
+    else if (type == MsgMessage::TypeName)
+    {
+        return MessageBase::Ptr(new MsgMessage());
+    }
+    QLOG_WARN() << "MessageFactory::getMessageOfType: No message of type '" << type << "' could be created";
+    return MessageBase::Ptr();
+}
+
 //******** Message Formatters ********
 
-QString Copter::MessageFormatter::format(MessageBase *p_message)
+QString Copter::MessageFormatter::format(MessageBase::Ptr &p_message)
 {
     QString retval("Unknown Type");
     if (p_message)
     {
-        if (p_message->typeName() == ErrorMessage::messageTypeName)
+        if (p_message->typeName() == ErrorMessage::TypeName)
         {
-            retval = format(*dynamic_cast<ErrorMessage*>(p_message));
+            // can use the internal pointer here avoiding dynamic pointer cast with refcount increase
+            retval = format(*dynamic_cast<ErrorMessage*>(p_message.data()));
         }
-        if (p_message->typeName() == ModeMessage::messageTypeName)
+        else if (p_message->typeName() == ModeMessage::TypeName)
         {
-            retval = format(*dynamic_cast<ModeMessage*>(p_message));
+            retval = format(*dynamic_cast<ModeMessage*>(p_message.data()));
         }
-        if (p_message->typeName() == EventMessage::messageTypeName)
+        else if (p_message->typeName() == EventMessage::TypeName)
         {
-            retval = format(*dynamic_cast<EventMessage*>(p_message));
+            retval = format(*dynamic_cast<EventMessage*>(p_message.data()));
+        }
+        else // The msgMessage does not need a formatter -> handled by else
+        {
+            retval = p_message->toString();
         }
     }
     else
@@ -723,9 +796,12 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
         break;
 
     case 10:
-        outputStream << "Flight-Mode "  << message.getErrorCode() <<" refused.";
+    {
+        ModeMessage tmpMsg(0, 0, message.getErrorCode(), 0);
+        outputStream << "Flight-Mode "  << Copter::MessageFormatter::format(tmpMsg) <<" refused.";
         EcodeUsed = true;
         break;
+    }
 
     case 11:
         outputStream << "GPS:";
@@ -1056,15 +1132,16 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
 }
 
 
-QString Plane::MessageFormatter::format(MessageBase *p_message)
+QString Plane::MessageFormatter::format(MessageBase::Ptr &p_message)
 {
     QString retval("Unknown Type");
     if (p_message)
     {
         // Only mode message formatter is implemented for planes
-        if (p_message->typeName() == ModeMessage::messageTypeName)
+        if (p_message->typeName() == ModeMessage::TypeName)
         {
-            retval = format(*dynamic_cast<ModeMessage*>(p_message));
+            // can use the internal pointer here avoiding dynamic pointer cast with refcount increase
+            retval = format(*dynamic_cast<ModeMessage*>(p_message.data()));
         }
         else
         {
@@ -1151,15 +1228,16 @@ QString Plane::MessageFormatter::format(const ModeMessage &message)
 }
 
 
-QString Rover::MessageFormatter::format(MessageBase *p_message)
+QString Rover::MessageFormatter::format(MessageBase::Ptr &p_message)
 {
     QString retval("Unknown Type");
     if (p_message)
     {
         // Only mode message formatter is implemented for rovers
-        if (p_message->typeName() == ModeMessage::messageTypeName)
+        if (p_message->typeName() == ModeMessage::TypeName)
         {
-            retval = format(*dynamic_cast<ModeMessage*>(p_message));
+            // can use the internal pointer here avoiding dynamic pointer cast with refcount increase
+            retval = format(*dynamic_cast<ModeMessage*>(p_message.data()));
         }
         else
         {

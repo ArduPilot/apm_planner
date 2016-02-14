@@ -96,6 +96,7 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(ui.modeDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(modeCheckBoxClicked(bool)));
     connect(ui.errDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(errCheckBoxClicked(bool)));
     connect(ui.evDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(evCheckBoxClicked(bool)));
+    connect(ui.msgDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(msgCheckBoxClicked(bool)));
     connect(ui.indexTypeCheckBox  ,SIGNAL(clicked(bool)),this,SLOT(indexTypeCheckBoxClicked(bool)));
     ui.indexTypeCheckBox->setVisible(false);
 
@@ -358,44 +359,42 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
                 newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
             }
         }
-        if (m_graphClassMap.keys()[i] == "MODE")
+        if (m_graphClassMap.keys()[i] == ModeMessage::TypeName)
         {
-            if (m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().size() > 1)
+            if (m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.keys().size() > 1)
             {
-                for (QMap<double,QString>::const_iterator modemapiterator = m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.constBegin();modemapiterator!=m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.constEnd();modemapiterator++)
+                for (QMap<double,QString>::const_iterator messagemapiterator = m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constBegin();messagemapiterator!=m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constEnd();messagemapiterator++)
                 {
-                    if (modemapiterator.key() < key)
+                    if (messagemapiterator.key() < key)
                     {
-                        if (modemapiterator==m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.constEnd()-1)
+                        if (messagemapiterator==m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constEnd()-1)
                         {
                             //We're at the end, use the end
-                            newresult.append(m_graphClassMap.keys()[i] + ": " + modemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                            newresult.append(m_graphClassMap.keys()[i] + ": " + messagemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
                         }
-                        else if ((modemapiterator+1).key() > key)
+                        else if ((messagemapiterator+1).key() > key)
                         {
                             //This only gets hit if we're not at the end, and we have the proper value
-                            newresult.append(m_graphClassMap.keys()[i] + ": " + modemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                            newresult.append(m_graphClassMap.keys()[i] + ": " + messagemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
                             break;
                         }
                     }
                 }
             }
-            else if (m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.keys().size() == 1)
+            else if (m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.keys().size() == 1)
             {
-                newresult.append(m_graphClassMap.keys()[i] + ": " + m_graphClassMap.value(m_graphClassMap.keys()[i]).modeMap.begin().value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                newresult.append(m_graphClassMap.keys()[i] + ": " + m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.begin().value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
             }
             else
             {
                 newresult.append(m_graphClassMap.keys()[i] + ": " + "Unknown" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
             }
         }
-        else if (m_graphClassMap.keys()[i] == "ERR")
+        else if ((m_graphClassMap.keys()[i] == ErrorMessage::TypeName) ||
+                 (m_graphClassMap.keys()[i] == EventMessage::TypeName) ||
+                 (m_graphClassMap.keys()[i] == MsgMessage::TypeName))
         {
-            //Ignore ERR
-        }
-        else if (m_graphClassMap.keys()[i] == "EV")
-        {
-            //Ignore EV
+            //Ignore ERR / EV / MSG
         }
         else if (graph->data()->contains(key))
         {
@@ -434,9 +433,10 @@ void AP2DataPlot2D::graphControlsButtonClicked()
         for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
         {
             //m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
-            if (!i.key().toLower().contains("mode") &&
-                !i.key().toLower().contains("err")  &&
-                !i.key().toLower().contains("ev"))
+            if (!i.key().contains(ModeMessage::TypeName) &&
+                !i.key().contains(ErrorMessage::TypeName)  &&
+                !i.key().contains(EventMessage::TypeName) &&
+                !i.key().contains(MsgMessage::TypeName))
             {
                 m_axisGroupingDialog->fullAxisUpdate(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().isManualRange,i.value().isInGroup,i.value().groupName);
             }
@@ -448,9 +448,10 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     connect(m_axisGroupingDialog,SIGNAL(graphColorsChanged(QMap<QString,QColor>)),this,SLOT(graphColorsChanged(QMap<QString,QColor>)));
     for (QMap<QString,Graph>::const_iterator i=m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
     {
-        if (!i.key().toLower().contains("mode") &&
-            !i.key().toLower().contains("err")  &&
-            !i.key().toLower().contains("ev"))
+        if (!i.key().contains(ModeMessage::TypeName) &&
+            !i.key().contains(ErrorMessage::TypeName)  &&
+            !i.key().contains(EventMessage::TypeName) &&
+            !i.key().contains(MsgMessage::TypeName))
         {
             m_axisGroupingDialog->addAxis(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().axis->labelColor());
         }
@@ -684,7 +685,7 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
     }
 
     int index = newmsec / 1000.0;
-    m_graphClassMap["MODE"].modeMap[index] = text;
+    m_graphClassMap["MODE"].messageMap[index] = text;
     plotTextArrow(index, text, "MODE", QColor(0,0,0));
 
 }
@@ -971,9 +972,10 @@ void AP2DataPlot2D::itemEnabled(QString name)
 
         if (m_axisGroupingDialog)
         {
-            if (!name.toLower().contains("mode") &&
-                !name.toLower().contains("err")  &&
-                !name.toLower().contains("ev"))
+            if (!name.contains(ModeMessage::TypeName) &&
+                !name.contains(ErrorMessage::TypeName)  &&
+                !name.contains(EventMessage::TypeName) &&
+                !name.contains(MsgMessage::TypeName))
             {
                 m_axisGroupingDialog->addAxis(name,yAxis->range().lower,yAxis->range().upper,color);
             }
@@ -1064,9 +1066,10 @@ void AP2DataPlot2D::itemEnabled(QString name)
             }
             if (m_axisGroupingDialog)
             {
-                if (!name.toLower().contains("mode") &&
-                    !name.toLower().contains("err")  &&
-                    !name.toLower().contains("ev"))
+                if (!name.contains(ModeMessage::TypeName) &&
+                    !name.contains(ErrorMessage::TypeName)  &&
+                    !name.contains(EventMessage::TypeName) &&
+                    !name.contains(MsgMessage::TypeName))
                 {
                     m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
                 }
@@ -1274,32 +1277,37 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
         m_tableFilterList.append(name);
     }
 
-    // Setup basic graph for all arrow plots -> MODE/ERR/EV
+    // Setup basic graph for all arrow plots -> MODE/ERR/EV/MSG
     QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
     yAxis->setVisible(false);
-    yAxis->setLabel("MODE/ERR/EV");
+    yAxis->setLabel("MODE/ERR/EV/MSG");
     yAxis->setRangeUpper(8.0);  // We have 7 different arrow lengths
     QCPGraph *mainGraph = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft, m_graphCount++));
 
-    // Setup arrow plots. In a loaded log we always have MODE/ERR/EV
+    // Setup arrow plots. In a loaded log we always have MODE/ERR/EV/MSG
     Graph graph;
     graph.axis = yAxis;
     graph.graph = mainGraph;
 
-    m_graphClassMap["MODE"] = graph;
-    m_graphNameList.append("MODE");
-    m_graphClassMap["ERR"] = graph;
-    m_graphNameList.append("ERR");
-    m_graphClassMap["EV"] = graph;
-    m_graphNameList.append("EV");
+    m_graphClassMap[ModeMessage::TypeName] = graph;
+    m_graphNameList.append(ModeMessage::TypeName);
+    m_graphClassMap[ErrorMessage::TypeName] = graph;
+    m_graphNameList.append(ErrorMessage::TypeName);
+    m_graphClassMap[EventMessage::TypeName] = graph;
+    m_graphNameList.append(EventMessage::TypeName);
+    m_graphClassMap[MsgMessage::TypeName] = graph;
+    m_graphNameList.append(MsgMessage::TypeName);
 
     // Load MODE messages
-    m_ModeMessages = m_tableModel->getModeValues(); //Must only be loaded once
+    m_tableModel->getMessagesOfType(ModeMessage::TypeName, m_indexToMessageMap); //Must only be loaded once
     // Load ERR messages
-    m_ErrMessages = m_tableModel->getErrorValues(); //Must only be loaded once
+    m_tableModel->getMessagesOfType(ErrorMessage::TypeName, m_indexToMessageMap); //Must only be loaded once
     // Load EV messages
-    m_EventMessages = m_tableModel->getEventValues(); //Must only be loaded once
-    // Insert Text arrows for MODE ERR and EV messages
+    m_tableModel->getMessagesOfType(EventMessage::TypeName, m_indexToMessageMap); //Must only be loaded once
+    // Load MSG messages
+    m_tableModel->getMessagesOfType(MsgMessage::TypeName, m_indexToMessageMap);   //Must only be loaded once
+
+    // Insert Text arrows for all messages in m_indexToMessageMap
     insertTextArrows();
 
     // Rescale axis and remove zoom
@@ -1482,37 +1490,33 @@ void AP2DataPlot2D::exportDialogAccepted()
 
 void AP2DataPlot2D::modeCheckBoxClicked(bool checked)
 {
-    if (!m_graphClassMap.contains("MODE"))
-    {
-        return;
-    }
-    for (int i=0;i<m_graphClassMap["MODE"].itemList.size();i++)
-    {
-        m_graphClassMap["MODE"].itemList.at(i)->setVisible(checked);
-    }
+    hideShowTextArrows(checked, ModeMessage::TypeName);
 }
 
 void AP2DataPlot2D::errCheckBoxClicked(bool checked)
 {
-    if (!m_graphClassMap.contains("ERR"))
-    {
-        return;
-    }
-    for (int i=0;i<m_graphClassMap["ERR"].itemList.size();i++)
-    {
-        m_graphClassMap["ERR"].itemList.at(i)->setVisible(checked);
-    }
+    hideShowTextArrows(checked, ErrorMessage::TypeName);
 }
 
 void AP2DataPlot2D::evCheckBoxClicked(bool checked)
 {
-    if (!m_graphClassMap.contains("EV"))
+    hideShowTextArrows(checked, EventMessage::TypeName);
+}
+
+void AP2DataPlot2D::msgCheckBoxClicked(bool checked)
+{
+    hideShowTextArrows(checked, MsgMessage::TypeName);
+}
+
+void AP2DataPlot2D::hideShowTextArrows(bool checked, const QString &type)
+{
+    if (!m_graphClassMap.contains(type))
     {
         return;
     }
-    for (int i=0;i<m_graphClassMap["EV"].itemList.size();i++)
+    for (int i=0;i<m_graphClassMap[type].itemList.size();i++)
     {
-        m_graphClassMap["EV"].itemList.at(i)->setVisible(checked);
+        m_graphClassMap[type].itemList.at(i)->setVisible(checked);
     }
 }
 
@@ -1525,9 +1529,10 @@ void AP2DataPlot2D::indexTypeCheckBoxClicked(bool checked)
         QList<QString> reEnableList = ui.dataSelectionScreen->disableAllItems();
 
         // And all arrows too
-        removeTextArrows("MODE");
-        removeTextArrows("ERR");
-        removeTextArrows("EV");
+        removeTextArrows(ModeMessage::TypeName);
+        removeTextArrows(ErrorMessage::TypeName);
+        removeTextArrows(EventMessage::TypeName);
+        removeTextArrows(MsgMessage::TypeName);
 
         // arrows can be inserted instantly again
         m_statusTextPos = 0;    // reset text arrow length
@@ -1724,31 +1729,11 @@ void AP2DataPlot2D::setupXAxisAndScroller()
 
 void AP2DataPlot2D::insertTextArrows()
 {
-    typedef QPair<MessageBase *, QCheckBox *> msgCheckPair;
-    QMap<quint64, msgCheckPair> indexToMessage;
 
-    // First create a map with index to messageBase and its corresponding checkbox pointers
-    // The map will do the sorting for us. The sorting helps to paint the Arrows in the correct length.
-    for(QList<ModeMessage>::Iterator iter = m_ModeMessages.begin(); iter != m_ModeMessages.end(); ++iter)
+    // Iterate all elements and call their formatter to create output string
+    foreach (MessageBase::Ptr p_msg, m_indexToMessageMap)
     {
-        ModeMessage &msg = *iter;
-        indexToMessage.insert(iter->getIndex(), msgCheckPair(dynamic_cast<MessageBase*>(&msg), ui.modeDisplayCheckBox));
-    }
-    for(QList<EventMessage>::Iterator iter = m_EventMessages.begin(); iter != m_EventMessages.end(); ++iter)
-    {
-        EventMessage &msg = *iter;
-        indexToMessage.insert(iter->getIndex(), msgCheckPair(dynamic_cast<MessageBase*>(&msg), ui.evDisplayCheckBox));
-    }
-    for(QList<ErrorMessage>::Iterator iter = m_ErrMessages.begin(); iter != m_ErrMessages.end(); ++iter)
-    {
-        ErrorMessage &msg = *iter;
-        indexToMessage.insert(iter->getIndex(), msgCheckPair(dynamic_cast<MessageBase*>(&msg), ui.errDisplayCheckBox));
-    }
-
-    // Now iterate all elements call their formatter and paint their arrow
-    foreach (msgCheckPair msgCheck, indexToMessage)
-    {
-        quint64 index = m_useTimeOnX ? msgCheck.first->getTimeStamp() : msgCheck.first->getIndex();
+        quint64 index = m_useTimeOnX ? p_msg->getTimeStamp() : p_msg->getIndex();
         QString string;
         switch (m_loadedLogMavType)
         {
@@ -1757,23 +1742,44 @@ void AP2DataPlot2D::insertTextArrows()
             case MAV_TYPE_OCTOROTOR:
             case MAV_TYPE_HELICOPTER:
             case MAV_TYPE_TRICOPTER:
-                string = Copter::MessageFormatter::format(msgCheck.first);
+                string = Copter::MessageFormatter::format(p_msg);
                 break;
 
             case MAV_TYPE_FIXED_WING:
-                string = Plane::MessageFormatter::format(msgCheck.first);
+                string = Plane::MessageFormatter::format(p_msg);
                 break;
 
             case MAV_TYPE_GROUND_ROVER:
-                string = Rover::MessageFormatter::format(msgCheck.first);
+                string = Rover::MessageFormatter::format(p_msg);
                 break;
 
             default:
-                string = msgCheck.first->toString();
+                string = p_msg->toString();
                 break;
         }
-        QLOG_DEBUG() << msgCheck.first->typeName() << " change at index" << index << "to" << string;
-        plotTextArrow(index, string, msgCheck.first->typeName(), msgCheck.first->typeColor(), msgCheck.second);
-        m_graphClassMap[msgCheck.first->typeName()].modeMap[index] = string;
+        QLOG_DEBUG() << p_msg->typeName() << " change at index" << index << "to" << string;
+
+        // select ui checkbox associated with the message type
+        QCheckBox *p_Check = NULL;
+        if (p_msg->typeName() == ModeMessage::TypeName)
+        {
+            p_Check = ui.modeDisplayCheckBox;
+        }
+        else if (p_msg->typeName() == ErrorMessage::TypeName)
+        {
+            p_Check = ui.errDisplayCheckBox;
+        }
+        else if (p_msg->typeName() == EventMessage::TypeName)
+        {
+            p_Check = ui.evDisplayCheckBox;
+        }
+        else if (p_msg->typeName() == MsgMessage::TypeName)
+        {
+            p_Check = ui.msgDisplayCheckBox;
+        }
+
+        // plot the text arrow
+        plotTextArrow(index, string, p_msg->typeName(), p_msg->typeColor(), p_Check);
+        m_graphClassMap[p_msg->typeName()].messageMap[index] = string;
     }
 }

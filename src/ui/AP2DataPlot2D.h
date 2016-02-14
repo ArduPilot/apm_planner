@@ -128,6 +128,7 @@ private slots:
     void modeCheckBoxClicked(bool checked);
     void errCheckBoxClicked(bool checked);
     void evCheckBoxClicked(bool checked);
+    void msgCheckBoxClicked(bool checked);
     void indexTypeCheckBoxClicked(bool checked);
     void sortItemChanged(QTreeWidgetItem* item,int col);
     void sortAcceptClicked();
@@ -151,6 +152,15 @@ private:
 
 
     /**
+     * @brief This method hides or shows the text arrows of type
+     *        garphName by changing their visability. Used by
+     *        checkbox handlers.
+     * @param show - true - make visible / false - hide them
+     * @param type - typename of text arrows to hide or show
+     */
+    void hideShowTextArrows(bool show, const QString &graphName);
+
+    /**
      * @brief This method disables the filtering of m_tableFilterProxyModel
      *        After a call the table model will show all rows again.
      */
@@ -171,7 +181,8 @@ private:
     void removeTextArrows(const QString &graphName);
 
     /**
-     * @brief insertTextArrows inserts all text arrows into the graph
+     * @brief insertTextArrows inserts messages stored in m_indexToMessageMap
+     *        as text arrows into the graph
      *        Uses normal or time index regarding of the value of m_useTimeOnX
      */
     void insertTextArrows();
@@ -190,7 +201,7 @@ private:
         QCPAxis *axis;
         QCPGraph *graph;
         QList<QCPAbstractItem*> itemList;
-        QMap<double,QString> modeMap;
+        QMap<double,QString> messageMap;
 
         Graph() : isManualRange(false), isInGroup(false), axisIndex(0), axis(NULL), graph(NULL){}
     };
@@ -244,9 +255,7 @@ private:
     int m_statusTextPos;
 
     bool m_useTimeOnX;                      /// True if x axis uses time index
-    QList<ErrorMessage> m_ErrMessages;      /// holds all Err Messages of the current loaded log
-    QList<ModeMessage> m_ModeMessages;      /// holds all Mode Messages of the current loaded log
-    QList<EventMessage> m_EventMessages;    /// holds all Event Messages of the current loaded log
+    QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    /// Map holding all Messages which are printed as arrows
 };
 
 #endif // AP2DATAPLOT2D_H
