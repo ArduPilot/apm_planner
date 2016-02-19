@@ -190,7 +190,6 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             {
                 //Calibration Sucessful\r"
                 ui.calibrateAccelButton->setText("Continue\nPress SpaceBar");
-                ui.calibrateAccelButton->setShortcut(QKeySequence(Qt::Key_Space));
             }
             ui.outputLabel->setText(text);
             m_accelAckCount++;
@@ -208,7 +207,6 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             MainWindow::instance()->toolBar().startAnimation();
             m_accelAckCount = 0;
             ui.calibrateAccelButton->setText("Calibrate\nAccelerometer");
-            ui.calibrateAccelButton->setShortcut(QKeySequence());
             m_isCalibrating = false;
         }
         else
