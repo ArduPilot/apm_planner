@@ -174,10 +174,10 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
     Q_UNUSED(uasid);
     Q_UNUSED(componentid);
 
-    if (severity <= MAV_SEVERITY_CRITICAL)
+    if (severity <= MAV_SEVERITY_ERROR)
     {
         //This is a calibration instruction
-        if (!m_isCalibrating || text.startsWith("PreArm:") || text.startsWith("EKF") || text.startsWith("Arm"))
+        if (!m_isCalibrating || text.startsWith("PreArm:") || text.startsWith("EKF") || text.startsWith("Arm") || text.startsWith("Initialising"))
         {
             // Don't show these warning messages
             return;
@@ -195,7 +195,7 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             ui.outputLabel->setText(text);
             m_accelAckCount++;
         }
-        else if (text.contains("Calibration successful") || text.contains("FAILED"))
+        else if (text.contains("Calibration successful") || text.contains("FAILED") || text.contains("Failed CMD: 241"))
         {
             //Calibration complete success or failure
             if (m_muted) { // turns audio back on, when you complete fail or success
