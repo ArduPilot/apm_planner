@@ -174,7 +174,7 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
     Q_UNUSED(uasid);
     Q_UNUSED(componentid);
 
-    if (severity <= MAV_SEVERITY_CRITICAL)
+    if (severity <= MAV_SEVERITY_ERROR)
     {
         //This is a calibration instruction
         if (!m_isCalibrating || text.startsWith("PreArm:") || text.startsWith("EKF") || text.startsWith("Arm") || text.startsWith("Initialising"))
