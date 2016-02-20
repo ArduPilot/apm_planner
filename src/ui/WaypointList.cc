@@ -440,6 +440,8 @@ void WaypointList::changeCurrentWaypoint(quint16 seq)
 // Request UASWaypointManager to set the new "current" and make sure all other waypoints are not "current"
 void WaypointList::currentWaypointEditableChanged(quint16 seq)
 {
+    if (seq > 0)
+    {
         WPM->setCurrentEditable(seq);
         const QList<Waypoint *> &waypoints = WPM->getWaypointEditableList();
 
@@ -460,30 +462,34 @@ void WaypointList::currentWaypointEditableChanged(quint16 seq)
                 }
             }
         }
+    }
 }
 
 // Update waypointViews to correctly indicate the new current waypoint
 void WaypointList::currentWaypointViewOnlyChanged(quint16 seq)
 {
-    // First update the edit list
-    currentWaypointEditableChanged(seq);
-
-    const QList<Waypoint *> &waypoints = WPM->getWaypointViewOnlyList();
-
-    if (seq < waypoints.count())
+    if (seq > 0)
     {
-        for(int i = 0; i < waypoints.count(); i++)
-        {
-            WaypointViewOnlyView* widget = wpViewOnlyViews.find(waypoints[i]).value();
-            if (!widget) continue;
+        // First update the edit list
+        currentWaypointEditableChanged(seq);
 
-            if (waypoints[i]->getId() == seq)
+        const QList<Waypoint *> &waypoints = WPM->getWaypointViewOnlyList();
+
+        if (seq < waypoints.count())
+        {
+            for(int i = 0; i < waypoints.count(); i++)
             {
-                widget->setCurrent(true);
-            }
-            else
-            {
-                widget->setCurrent(false);
+                WaypointViewOnlyView* widget = wpViewOnlyViews.find(waypoints[i]).value();
+                if (!widget) continue;
+
+                if (waypoints[i]->getId() == seq)
+                {
+                    widget->setCurrent(true);
+                }
+                else
+                {
+                    widget->setCurrent(false);
+                }
             }
         }
     }
