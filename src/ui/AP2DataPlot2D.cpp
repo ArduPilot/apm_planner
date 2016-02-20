@@ -100,7 +100,13 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(ui.evDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(evCheckBoxClicked(bool)));
     connect(ui.msgDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(msgCheckBoxClicked(bool)));
     connect(ui.indexTypeCheckBox  ,SIGNAL(clicked(bool)),this,SLOT(indexTypeCheckBoxClicked(bool)));
+    // Default invisible
+    ui.errDisplayCheckBox->setVisible(false);
+    ui.evDisplayCheckBox->setVisible(false);
+    ui.msgDisplayCheckBox->setVisible(false);
     ui.indexTypeCheckBox->setVisible(false);
+    ui.jumpToLocationCheckBox->setVisible(false);
+
 
     //ui.horizontalLayout_3->addWidget(m_plot);
     ui.verticalLayout_5->insertWidget(0,m_plot);
@@ -706,6 +712,8 @@ void AP2DataPlot2D::activeUASSet(UASInterface* uas)
     connect(m_uas,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
     connect(m_uas,SIGNAL(navModeChanged(int,int,QString)),this,SLOT(navModeChanged(int,int,QString)));
 
+    //textMessageReceived(uasId, message.compid, severity, text);
+
     connect(m_uas,SIGNAL(connected()),this,SLOT(connected()));
     connect(m_uas,SIGNAL(disconnected()),this,SLOT(disconnected()));
     connected();
@@ -753,6 +761,7 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
             connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
         }
         QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+        axis->setRangeUpper(8.0);  // We have 7 different arrow lengths
         axis->setLabelColor(color);
         axis->setTickLabelColor(color);
         axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
@@ -1430,6 +1439,13 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     ui.sortShowPushButton->setVisible(true);
     // the switch x axis check box shall only be active if model can handle timestamps
     ui.indexTypeCheckBox->setVisible(m_tableModel->canUseTimeOnX());
+
+    // All these functions are supported when log is loaded
+    ui.errDisplayCheckBox->setVisible(true);
+    ui.evDisplayCheckBox->setVisible(true);
+    ui.msgDisplayCheckBox->setVisible(true);
+    ui.jumpToLocationCheckBox->setVisible(true);
+
 }
 
 
