@@ -234,7 +234,8 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
                          break;
                  }
                  // repack message for further down the stack.s
-                 //message = mavlink_msg_statustext_pack(message.sysid,message.compid,&message,severity,b.data());
+                 mavlink_msg_statustext_pack(message.sysid,message.compid,&message,severity,b.data());
+
              }
 
         } break;
