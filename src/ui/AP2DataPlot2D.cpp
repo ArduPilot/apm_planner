@@ -374,9 +374,9 @@ void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt){
     {
 
         double key=0;
-        double val=0;
         QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
-        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
+        key = graph->keyAxis()->pixelToCoord(evt->x());
+
         if (i == 0)
         {
             int position = floor(key);
@@ -426,9 +426,8 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
     {
 
         double key=0;
-        double val=0;
         QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
-        graph->pixelsToCoords(evt->x(),evt->y(),key,val);
+        key = graph->keyAxis()->pixelToCoord(evt->x());
         if (i == 0)
         {
             if (m_logLoaded)
