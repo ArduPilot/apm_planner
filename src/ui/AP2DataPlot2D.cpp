@@ -1118,6 +1118,18 @@ void AP2DataPlot2D::itemEnabled(QString name)
             mainGraph1->rescaleKeyAxis();
             m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(xlist.at(0));
             m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(xlist.back());
+            yAxis->grid()->setVisible(true);
+        }
+        else if(m_graphCount == 3 )
+        {
+            // brute force
+            foreach (Graph graph, m_graphClassMap)
+            {
+                if (graph.axis != NULL)
+                {
+                    graph.axis->grid()->setVisible(false);
+                }
+            }
         }
 
         return;
@@ -1149,12 +1161,12 @@ void AP2DataPlot2D::itemEnabled(QString name)
             axis->setLabel(name);
             QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
             axis->setLabelColor(color);
-            axis->setTickLabelColor(color);
             axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
             QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
             m_graphNameList.append(name);
             mainGraph1->setData(xlist, ylist);
             mainGraph1->rescaleValueAxis();
+
             if (m_graphCount == 1)
             {
                 mainGraph1->rescaleKeyAxis();
@@ -1202,6 +1214,15 @@ void AP2DataPlot2D::itemDisabled(QString name)
         m_graphClassMap.remove(name);
         m_graphNameList.removeOne(name);
         m_graphCount--;
+        if (m_graphCount == 2)
+        {
+            // Show grid if only one graph left
+            QString lastGraph = m_graphNameList.back();
+            if (m_graphClassMap.contains(lastGraph))
+            {
+                m_graphClassMap.value(lastGraph).axis->grid()->setVisible(true);
+            }
+        }
         if (m_axisGroupingDialog)
         {
             m_axisGroupingDialog->removeAxis(name);
