@@ -752,40 +752,34 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
     }
     if (!m_graphClassMap.contains("MODE"))
     {
-        QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-        axis->setLabel("MODE");
+        QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+        yAxis->setVisible(false);
+        yAxis->setLabel("MODE");
+        yAxis->setRangeUpper(8.0);  // We have 7 different arrow lengths
+        QCPGraph *mainGraph = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
 
         if (m_graphCount > 0)
         {
-            connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),axis,SLOT(setRange(QCPRange)));
+            connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),yAxis,SLOT(setRange(QCPRange)));
         }
-        QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
-        axis->setRangeUpper(8.0);  // We have 7 different arrow lengths
-        axis->setLabelColor(color);
-        axis->setTickLabelColor(color);
-        axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
-        QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
+
+        Graph graph;
+        graph.axis = yAxis;
+        graph.graph = mainGraph;
+
+        m_graphClassMap["MODE"] = graph;
         m_graphNameList.append("MODE");
 
-        mainGraph1->setPen(QPen(color, 1));
-        Graph graph;
-        graph.axis = axis;
-        graph.groupName = "";
-        graph.graph=  mainGraph1;
-        graph.isInGroup = false;
-        graph.isManualRange = false;
-        m_graphClassMap["MODE"] = graph;
-
-        mainGraph1->rescaleValueAxis();
+        mainGraph->rescaleValueAxis();
         if (m_graphCount == 1)
         {
-            mainGraph1->rescaleKeyAxis();
+            mainGraph->rescaleKeyAxis();
         }
     }
 
     int index = newmsec / 1000.0;
     m_graphClassMap["MODE"].messageMap[index] = text;
-    plotTextArrow(index, text, "MODE", QColor(0,0,0));
+    plotTextArrow(index, text, "MODE", QColor(50,125,0), ui.modeDisplayCheckBox);
 
 }
 

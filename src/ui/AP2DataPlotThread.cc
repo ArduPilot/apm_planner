@@ -653,6 +653,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
     int nrOfEmptyMsg = 0;
     int bytesize = 0;
     int index = 100;
+    quint8 lastModeVal = 255;
     bool allRowsHaveTime = true;
     mavlink_message_t message;
     mavlink_status_t status;
@@ -663,6 +664,21 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
         emit error(m_dataModel->getError());
         return;
     }
+
+    // Tlog does not contain MODE messages the mode information ins transmitted in
+    // a heartbeat message. So we create the datatype for MODE here
+    QStringList modeVarNames;
+    modeVarNames.push_back(QString("Mode"));
+    modeVarNames.push_back(QString("ModeNum"));
+    modeVarNames.push_back(QString("Info"));
+    if (!m_dataModel->addType(ModeMessage::TypeName,0,0,"MBZ",modeVarNames))
+    {
+        QString actualerror = m_dataModel->getError();
+        m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+        emit error(actualerror);
+        return;
+    }
+
     while (!logfile.atEnd() && !m_stop)
     {
         emit loadProgress(logfile.pos(),logfile.size());
@@ -775,6 +791,42 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
                                 emit error(actualerror);
                                 return;
+                            }
+                            // Tlog does not contain MODE messages the mode information ins transmitted in
+                            // a heartbeat message. So here we extract MODE data from hertbeat
+                            if ((name == "HEARTBEAT") && (lastModeVal != static_cast<quint8>(valuepairlist[0].second.toInt())))
+                            {
+                                QList<QPair<QString,QVariant> > specialValuepairlist;
+                                // Extract MODE messages from heratbeat messages
+                                lastModeVal = static_cast<quint8>(valuepairlist[0].second.toInt());
+
+                                specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[0],lastModeVal));
+                                specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[1],lastModeVal));
+                                specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[2],"Generated Value"));
+                                if (!m_dataModel->addRow(ModeMessage::TypeName, specialValuepairlist, index++))
+                                {
+                                    QString actualerror = m_dataModel->getError();
+                                    m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                                    emit error(actualerror);
+                                    return;
+                                }
+
+                                // Mav type can be extracted from heartbeat too. So lets set the Mav type
+                                // if not already set
+                                if (m_loadedLogType == MAV_TYPE_GENERIC)
+                                {
+                                    // Name field is not always on same Index. So first search for the right position...
+                                    int typeIndex = 0;
+                                    for (int i = 0; i < valuepairlist.size(); ++i)
+                                    {
+                                        if (valuepairlist[i].first == "type")   // "type" field holds MAV_TYPE
+                                        {
+                                            typeIndex = i;
+                                            break;
+                                        }
+                                    }
+                                    m_loadedLogType = static_cast<MAV_TYPE>(valuepairlist[typeIndex].second.toInt());
+                                }
                             }
                             m_plotState.validDataRead();    // tell plot state that we have a valid message
                         }
