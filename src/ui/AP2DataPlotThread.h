@@ -151,7 +151,7 @@ private:
     void loadTLog(QFile &logfile);
 
 private:
-    static const QString timeStampSearchKey;    /// Search Key when searching for timestamps
+    static const QString c_timeStampSearchKey;    /// Search Key when searching for timestamps
 
     QString m_fileName;
     bool m_stop;

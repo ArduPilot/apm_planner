@@ -46,8 +46,8 @@ public:
     int columnCount(const QModelIndex& parent = QModelIndex() ) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-    bool addType(QString name,int type,int length,QString types,QStringList names);
-    bool addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index);
+    bool addType(const QString &name, const int type, const int length, const QString &types, const QStringList &names);
+    bool addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const quint64 index, const QString &timeColName);
     QMap<QString,QList<QString> > getFmtValues();
     QString getFmtLine(const QString& name);
     void getMessagesOfType(const QString &type, QMap<quint64, MessageBase::Ptr> &indexToMessageMap);
@@ -89,8 +89,8 @@ public:
      *        timebase eg. all rows have a valid timestamp AND min/max time
      *        are valid. Should be used to determine whether it is possible
      *        to use time on x axis. If this delivers true all methods taking
-     *        a 'useTimeAsIndex' parameter, like getValues(...) or getErrorValues(...)
-     *        will deliver a timestamp as index if 'useTimeAsIndex' was set to true.
+     *        a 'useTimeAsIndex' parameter, like getValues(...) will deliver
+     *        a timestamp as index if 'useTimeAsIndex' was set to true.
      *
      * @return true - Using time values on x axis is possible, false otherwise
      */
@@ -111,6 +111,16 @@ public:
      * @return - max timestamp if model has a valid timebase, 0 otherwise
      */
     quint64 getMaxTime();
+
+
+    /**
+     * @brief getNearestIndexForTimestamp delivers the row index which has the
+     *        smallest deviation in its timeStamp to the delivered timeValue.
+     *
+     * @param timevalue - The timeStamp to search for
+     * @return The index with the best timestamp match.
+     */
+    quint64 getNearestIndexForTimestamp(double timevalue);
 
 
 public slots:
@@ -152,6 +162,9 @@ private:
     quint64 m_maxTime;              /// biggest timestamp im model
     QString m_timeStampColumName;   /// Name of the table colum holding the timestamp
 
+    QList<QPair<quint64, quint64> > m_TimeIndexList;    /// List holding pairs of time stamp and table row index
+
+
     int m_rowCount;                 /// Stores the number of rows held in model.
     int m_columnCount;
     int m_currentRow;
@@ -165,11 +178,6 @@ private:
 
     mutable QVector<QVariant> m_prefetchedRowData;  /// holds the cached data used in data(...) method
     mutable QModelIndex m_prefetchedRowIndex;       /// Stores the index which which is actually in cache
-
-
-
-
-
 };
 
 

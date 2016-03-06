@@ -160,7 +160,7 @@ private:
     QSortFilterProxyModel *m_tableFilterProxyModel;
     QList<QString> m_tableFilterList;
     int getStatusTextPos();
-    void plotTextArrow(int index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = NULL);
+    void plotTextArrow(double index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = NULL);
 
     /**
      * @brief This method hides or shows the text arrows of type
@@ -206,7 +206,7 @@ private:
     /**
      * @brief plotCurrentTime updates the current time red line position
      */
-    void plotCurrentIndex(int index);
+    void plotCurrentIndex(double index);
 
 
 private:

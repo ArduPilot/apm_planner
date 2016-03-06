@@ -44,7 +44,7 @@ This file is part of the APM_PLANNER project
 #include "QGC.h"
 
 
-const QString AP2DataPlotThread::timeStampSearchKey("TimeUS");
+const QString AP2DataPlotThread::c_timeStampSearchKey("TimeUS");
 
 
 AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) :
@@ -148,7 +148,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                         }
                         if (!tables.contains(name)) {
                             // Check for rows having a timestamp
-                            allRowsHaveTime &= labels.contains(timeStampSearchKey, Qt::CaseInsensitive);
+                            allRowsHaveTime &= labels.contains(c_timeStampSearchKey, Qt::CaseInsensitive);
 
                             if (!m_dataModel->addType(name,msg_type,msg_length,format, labels.split(",")))
                             {
@@ -346,7 +346,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                             }
                             if (noCorruptDataFound && (valuepairlist.size() >= 1))
                             {
-                                if (!m_dataModel->addRow(name,valuepairlist,index))
+                                if (!m_dataModel->addRow(name, valuepairlist, index, c_timeStampSearchKey))
                                 {
                                     QString actualerror = m_dataModel->getError();
                                     m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
@@ -409,7 +409,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
         emit error(m_dataModel->getError());
         return;
     }
-    m_dataModel->setAllRowsHaveTime(allRowsHaveTime, timeStampSearchKey);
+    m_dataModel->setAllRowsHaveTime(allRowsHaveTime, c_timeStampSearchKey);
 }
 
 void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
@@ -470,7 +470,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                         }
 
                         // Check for rows having a timestamp
-                        allRowsHaveTime &= valuestr.contains(timeStampSearchKey, Qt::CaseInsensitive);
+                        allRowsHaveTime &= valuestr.contains(c_timeStampSearchKey, Qt::CaseInsensitive);
                         nameToValueList[type] = valuestr;
                         int type_id = linesplit[1].trimmed().toInt();
                         int length = linesplit[2].trimmed().toInt();
@@ -617,7 +617,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                             {
                                 if (valuepairlist.size() >= 1)
                                 {
-                                    if (!m_dataModel->addRow(name,valuepairlist,index++))
+                                    if (!m_dataModel->addRow(name,valuepairlist,index++,c_timeStampSearchKey))
                                     {
                                         QString actualerror = m_dataModel->getError();
                                         m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
@@ -644,7 +644,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
         emit error(m_dataModel->getError());
         return;
     }
-    m_dataModel->setAllRowsHaveTime(allRowsHaveTime, timeStampSearchKey);
+    m_dataModel->setAllRowsHaveTime(allRowsHaveTime, c_timeStampSearchKey);
 }
 
 void AP2DataPlotThread::loadTLog(QFile &logfile)
@@ -768,7 +768,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 }
                             }
                             // Check for rows having a timestamp
-                            allRowsHaveTime &= variablenames.contains(timeStampSearchKey, Qt::CaseInsensitive);
+                            allRowsHaveTime &= variablenames.contains(c_timeStampSearchKey, Qt::CaseInsensitive);
                             if (!m_dataModel->addType(name,0,0,typechars,variablenames))
                             {
                                 QString actualerror = m_dataModel->getError();
@@ -785,7 +785,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                         }
                         if (valuepairlist.size() >= 1)
                         {
-                            if (!m_dataModel->addRow(name,valuepairlist, index++))
+                            if (!m_dataModel->addRow(name,valuepairlist, index++, c_timeStampSearchKey))
                             {
                                 QString actualerror = m_dataModel->getError();
                                 m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
@@ -803,7 +803,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[0],lastModeVal));
                                 specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[1],lastModeVal));
                                 specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[2],"Generated Value"));
-                                if (!m_dataModel->addRow(ModeMessage::TypeName, specialValuepairlist, index++))
+                                if (!m_dataModel->addRow(ModeMessage::TypeName, specialValuepairlist, index++, c_timeStampSearchKey))
                                 {
                                     QString actualerror = m_dataModel->getError();
                                     m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
@@ -853,7 +853,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
         emit error(m_dataModel->getError());
         return;
     }
-    m_dataModel->setAllRowsHaveTime(allRowsHaveTime, timeStampSearchKey);
+    m_dataModel->setAllRowsHaveTime(allRowsHaveTime, c_timeStampSearchKey);
 }
 
 void AP2DataPlotThread::run()

@@ -389,7 +389,7 @@ bool AP2DataPlot2DModel::hasType(const QString& name)
     return m_msgNameToPrepearedInsertQuery.contains(name);
 }
 
-bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,QStringList names)
+bool AP2DataPlot2DModel::addType(const QString &name, int type, int length, const QString &types, const QStringList &names)
 {
     if (!m_msgNameToPrepearedInsertQuery.contains(name))
     {
@@ -535,7 +535,7 @@ bool AP2DataPlot2DModel::endTransaction()
     return true;
 }
 
-bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index)
+bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const quint64 index, const QString &timeColName)
 {
     if (m_firstIndex == 0)
     {
@@ -551,9 +551,15 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
         return false;
     }
     insertQuery->bindValue(":idx", index);
+    bool timeFound = false;
     for (int i=0;i<values.size();i++)
     {
         insertQuery->bindValue(":" + values.at(i).first, values.at(i).second);
+        if (!timeFound && (values.at(i).first == timeColName))
+        {
+            m_TimeIndexList.push_back(QPair<quint64, quint64>(values.at(i).second.toInt(), index));
+            timeFound = true;
+        }
     }
     if (!insertQuery->exec())
     {
@@ -839,4 +845,31 @@ quint64 AP2DataPlot2DModel::getMaxTime()
 bool AP2DataPlot2DModel::canUseTimeOnX()
 {
     return m_canUseTimeOnX && m_allRowsHaveTime;
+}
+
+quint64 AP2DataPlot2DModel::getNearestIndexForTimestamp(double timevalue)
+{
+    if (m_allRowsHaveTime)
+    {
+        quint64 intervalSize = m_TimeIndexList.size();
+        quint64 intervalStart = 0;
+        quint64 middle = 0;
+
+        while (intervalSize > 1)
+        {
+            middle = intervalStart + intervalSize / 2;
+            quint64 temp = m_TimeIndexList[middle].first;
+            if (timevalue > temp)
+            {
+                intervalStart = middle;
+            }
+            else if (timevalue == temp)
+            {
+                break;
+            }
+            intervalSize = intervalSize / 2;
+        }
+        return m_TimeIndexList[middle].second;
+    }
+    return 0;
 }

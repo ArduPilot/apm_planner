@@ -367,48 +367,66 @@ void AP2DataPlot2D::verticalScrollMoved(int value)
     m_plot->replot();
 }
 
-void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt){
-    if (!ui.jumpToLocationCheckBox->isChecked() || m_useTimeOnX )
+void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt)
+{
+    if (!ui.jumpToLocationCheckBox->isChecked())
     {
         return;
     }
 
-
-    QString newresult = "";
     for (int i=0;i<m_graphClassMap.keys().size();i++)
     {
 
-        double key=0;
+        double key = 0.0;
+        double timeStamp = 0.0;
         QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
         key = graph->keyAxis()->pixelToCoord(evt->x());
 
+        if (m_useTimeOnX)
+        {
+            // We scaled the time by timeDivisor when plotting the graph
+            // therefore we have to scale when searching for the original timestamp
+            timeStamp = key;
+            key = m_tableModel->getNearestIndexForTimestamp(timeStamp * timeDivisor);
+        }
+
         if (i == 0)
         {
-            int position = floor(key);
-            int min = m_tableModel->getFirstIndex();
-            int max = m_tableModel->getLastIndex();
+            quint64 position = floor(key);
+            quint64 min = m_tableModel->getFirstIndex();
+            quint64 max = m_tableModel->getLastIndex();
 
-            if ( position > max ){
+            if ( position > max )
+            {
                 ui.tableWidget->scrollToBottom();
-                plotCurrentIndex(max);
+                double plotPos = m_useTimeOnX ? m_tableModel->getMaxTime() : max;
+                plotCurrentIndex(plotPos);
 
-            }else if ( position < min ){
+            }
+            else if ( position < min )
+            {
                 ui.tableWidget->scrollToTop();
-                plotCurrentIndex(min);
-            }else{
+                double plotPos = m_useTimeOnX ? m_tableModel->getMinTime() : min;
+                plotCurrentIndex(plotPos);
+            }
+            else
+            {
                 //search for previous event (remember the table may be filtered)
                 QModelIndex sourceIndex = m_tableModel->index(position-min, 0);
                 QModelIndex index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-                while ( sourceIndex.row() >= min && !index.isValid() ){
+                while ( sourceIndex.row() >= static_cast<int>(min) && !index.isValid() )
+                {
                     sourceIndex = m_tableModel->index(sourceIndex.row() - 1, 0);
                     index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
                 }
 
-                if ( !index.isValid() ){
+                if ( !index.isValid() )
+                {
                     //couldn't find filtered index by looking back, try forward...
                     sourceIndex = m_tableModel->index(position-min, 0);
                     index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-                    while ( sourceIndex.row() <= max && !index.isValid() ){
+                    while ( sourceIndex.row() <= static_cast<int>(max) && !index.isValid() )
+                    {
                         sourceIndex = m_tableModel->index(sourceIndex.row() + 1, 0);
                         index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
                     }
@@ -577,11 +595,21 @@ void AP2DataPlot2D::addGraphLeft()
 }
 void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
-    plotCurrentIndex(m_tableFilterProxyModel->mapToSource(current).row() + m_tableModel->getFirstIndex());
-
     if (!current.isValid())
     {
         return;
+    }
+    quint64 index =  m_tableFilterProxyModel->mapToSource(current).row() + m_tableModel->getFirstIndex();
+
+    if (m_useTimeOnX)
+    {
+        // timestamp value of the current row is in colum 2
+        double item = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(current.row(),2)).value(Qt::DisplayRole).toInt();
+        plotCurrentIndex(item / timeDivisor);
+    }
+    else
+    {
+        plotCurrentIndex(index);
     }
 
     m_tableModel->selectedRowChanged(m_tableFilterProxyModel->mapToSource(current),m_tableFilterProxyModel->mapToSource(previous));
@@ -1297,7 +1325,7 @@ int AP2DataPlot2D::getStatusTextPos()
     return m_statusTextPos;
 }
 
-void AP2DataPlot2D::plotTextArrow(int index, const QString &text, const QString& graph, const QColor &color, QCheckBox* checkBox)
+void AP2DataPlot2D::plotTextArrow(double index, const QString &text, const QString& graph, const QColor &color, QCheckBox* checkBox)
 {
     QLOG_DEBUG() << "plotTextArrow:" << index << " to " << graph;
     int pos = getStatusTextPos();
@@ -1865,20 +1893,16 @@ void AP2DataPlot2D::setupXAxisAndScroller()
     ui.horizontalScrollBar->setMaximum(m_scrollEndIndex);
 }
 
-void AP2DataPlot2D::plotCurrentIndex(int index)
+void AP2DataPlot2D::plotCurrentIndex(double index)
 {
-    if ( m_useTimeOnX )
-        return;
-
     QLOG_DEBUG() << index;
     m_timeLine->start->setCoords(index, 999999);
     m_timeLine->end->setCoords(index, -999999);
     //m_plot->replot();
 }
+
 void AP2DataPlot2D::insertCurrentIndex()
 {
-    if ( m_useTimeOnX )
-        return;
     QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
     QCPAxis *yAxis = m_wideAxisRect->axis(QCPAxis::atLeft);
 
@@ -1898,7 +1922,7 @@ void AP2DataPlot2D::insertTextArrows()
     // Iterate all elements and call their formatter to create output string
     foreach (MessageBase::Ptr p_msg, m_indexToMessageMap)
     {
-        quint64 index = m_useTimeOnX ? p_msg->getTimeStamp() / timeDivisor : p_msg->getIndex();
+        double index = m_useTimeOnX ? p_msg->getTimeStamp() / timeDivisor : p_msg->getIndex();
         QString string;
         switch (m_loadedLogMavType)
         {
