@@ -325,7 +325,7 @@ void AP2DataPlot2D::xAxisChanged(QCPRange range)
 void AP2DataPlot2D::horizontalScrollMoved(int value)
 {
     double test = qAbs(m_wideAxisRect->axis(QCPAxis::atBottom)->range().center()-value);
-    if (test  > 1) // if user is dragging plot, we don't want to replot twice
+    if (test  > 0.01) // if user is dragging plot, we don't want to replot twice
     {
       m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(value,m_wideAxisRect->axis(QCPAxis::atBottom)->range().size(), Qt::AlignCenter);
       m_plot->replot();
@@ -439,7 +439,7 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
             {
                 if (m_useTimeOnX)
                 {
-                    newresult.append("Time us: " + QString::number(key,'f',0) + "\n");
+                    newresult.append("Time s: " + QString::number(key,'f',3) + "\n");
                 }
                 else
                 {
@@ -1044,7 +1044,14 @@ void AP2DataPlot2D::itemEnabled(QString name)
                 double graphvalue = i.value().toDouble();
                 ylist.append(graphvalue);
             }
-            xlist.append(i.key());
+            if(m_useTimeOnX)
+            {
+                xlist.append(static_cast<double>(i.key())/timeDivisor);
+            }
+            else
+            {
+                xlist.append(i.key());
+            }
 
         }
         QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
@@ -1057,7 +1064,6 @@ void AP2DataPlot2D::itemEnabled(QString name)
         }
         QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
         yAxis->setLabelColor(color);
-        yAxis->setTickLabelColor(color);
         yAxis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
         m_graphNameList.append(name);
@@ -1076,10 +1082,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         mainGraph1->setPen(QPen(color, 1));
         Graph graph;
         graph.axis = yAxis;
-        graph.groupName = "";
         graph.graph=  mainGraph1;
-        graph.isInGroup = false;
-        graph.isManualRange = false;
         m_graphClassMap[name] = graph;
         if (isstr)
         {
@@ -1114,6 +1117,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         {
             mainGraph1->rescaleKeyAxis();
             m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(xlist.at(0));
+            m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(xlist.back());
         }
 
         return;
@@ -1649,14 +1653,18 @@ void AP2DataPlot2D::indexTypeCheckBoxClicked(bool checked)
         ui.dataSelectionScreen->enableItemList(reEnableList);
 
         // Re -set x axis, scroller and zoom
-        setupXAxisAndScroller();
-        double requestedrange = static_cast<double>(m_scrollEndIndex - m_scrollStartIndex);
         disconnect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
-        m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(m_scrollStartIndex, requestedrange);
-        connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
-        m_plot->replot();
+        disconnect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
+        disconnect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
 
+        setupXAxisAndScroller();
+        m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(m_scrollStartIndex, m_scrollEndIndex);
+        m_plot->replot();
         ui.verticalScrollBar->setValue(ui.verticalScrollBar->maximum());
+
+        connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
+        connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
+        connect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
     }
 }
 
@@ -1817,17 +1825,19 @@ void AP2DataPlot2D::setupXAxisAndScroller()
     // Setup X-Axis for time or index formatting
     QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
     xAxis->setNumberFormat("f");
-    xAxis->setNumberPrecision(0);
+
     if (m_tableModel->canUseTimeOnX() && m_useTimeOnX)
     {
-        m_scrollStartIndex = m_tableModel->getMinTime();
-        m_scrollEndIndex = m_tableModel->getMaxTime();
-        xAxis->setLabel("Time us");
+        m_scrollStartIndex = m_tableModel->getMinTime() / timeDivisor;
+        m_scrollEndIndex = m_tableModel->getMaxTime() / timeDivisor;
+        xAxis->setNumberPrecision(2);
+        xAxis->setLabel("Time s");
     }
     else
     {
         m_scrollStartIndex = m_tableModel->getFirstIndex();
         m_scrollEndIndex = m_tableModel->getLastIndex();
+        xAxis->setNumberPrecision(0);
         xAxis->setLabel("Index");
     }
     ui.horizontalScrollBar->setMinimum(m_scrollStartIndex);
@@ -1867,7 +1877,7 @@ void AP2DataPlot2D::insertTextArrows()
     // Iterate all elements and call their formatter to create output string
     foreach (MessageBase::Ptr p_msg, m_indexToMessageMap)
     {
-        quint64 index = m_useTimeOnX ? p_msg->getTimeStamp() : p_msg->getIndex();
+        quint64 index = m_useTimeOnX ? p_msg->getTimeStamp() / timeDivisor : p_msg->getIndex();
         QString string;
         switch (m_loadedLogMavType)
         {

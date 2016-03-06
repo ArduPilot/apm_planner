@@ -147,6 +147,13 @@ private slots:
     void setExcelViewHidden(bool hidden);
 
 private:
+
+    /**
+     * @brief timeDivisor Used for X-Axis scaling when using time axis
+     *        avoiding insanely high numbers on legend
+     */
+    static const double timeDivisor = 1000000.0;    //!< scales micro seconds to seconds
+
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
     AP2DataPlot2DModel *m_tableModel;
@@ -154,7 +161,6 @@ private:
     QList<QString> m_tableFilterList;
     int getStatusTextPos();
     void plotTextArrow(int index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = NULL);
-
 
     /**
      * @brief This method hides or shows the text arrows of type
