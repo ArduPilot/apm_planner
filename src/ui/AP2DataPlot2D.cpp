@@ -52,6 +52,8 @@ This file is part of the APM_PLANNER project
 
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
+const double AP2DataPlot2D::c_timeDivisor = 1000000.0;
+
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
     m_updateTimer(NULL),
     m_showOnlyActive(false),
@@ -387,7 +389,7 @@ void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt)
             // We scaled the time by timeDivisor when plotting the graph
             // therefore we have to scale when searching for the original timestamp
             timeStamp = key;
-            key = m_tableModel->getNearestIndexForTimestamp(timeStamp * timeDivisor);
+            key = m_tableModel->getNearestIndexForTimestamp(timeStamp * c_timeDivisor);
         }
 
         if (i == 0)
@@ -605,7 +607,7 @@ void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
     {
         // timestamp value of the current row is in colum 2
         double item = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(current.row(),2)).value(Qt::DisplayRole).toInt();
-        plotCurrentIndex(item / timeDivisor);
+        plotCurrentIndex(item / c_timeDivisor);
     }
     else
     {
@@ -1074,7 +1076,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             }
             if(m_useTimeOnX)
             {
-                xlist.append(static_cast<double>(i.key())/timeDivisor);
+                xlist.append(static_cast<double>(i.key())/c_timeDivisor);
             }
             else
             {
@@ -1877,8 +1879,8 @@ void AP2DataPlot2D::setupXAxisAndScroller()
 
     if (m_tableModel->canUseTimeOnX() && m_useTimeOnX)
     {
-        m_scrollStartIndex = m_tableModel->getMinTime() / timeDivisor;
-        m_scrollEndIndex = m_tableModel->getMaxTime() / timeDivisor;
+        m_scrollStartIndex = m_tableModel->getMinTime() / c_timeDivisor;
+        m_scrollEndIndex = m_tableModel->getMaxTime() / c_timeDivisor;
         xAxis->setNumberPrecision(2);
         xAxis->setLabel("Time s");
     }
@@ -1922,7 +1924,7 @@ void AP2DataPlot2D::insertTextArrows()
     // Iterate all elements and call their formatter to create output string
     foreach (MessageBase::Ptr p_msg, m_indexToMessageMap)
     {
-        double index = m_useTimeOnX ? p_msg->getTimeStamp() / timeDivisor : p_msg->getIndex();
+        double index = m_useTimeOnX ? p_msg->getTimeStamp() / c_timeDivisor : p_msg->getIndex();
         QString string;
         switch (m_loadedLogMavType)
         {

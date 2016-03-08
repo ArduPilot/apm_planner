@@ -152,7 +152,7 @@ private:
      * @brief timeDivisor Used for X-Axis scaling when using time axis
      *        avoiding insanely high numbers on legend
      */
-    static const double timeDivisor = 1000000.0;    //!< scales micro seconds to seconds
+    static const double c_timeDivisor;    //!< scales micro seconds to seconds
 
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
