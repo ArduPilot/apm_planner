@@ -149,7 +149,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     ui.tableWidget->addAction(m_addGraphAction);
     connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft()));
 
-    //ui.tableWidget->setVisible(false);
     setExcelViewHidden(true);
     ui.tableWidget->verticalHeader()->setDefaultSectionSize(ui.tableWidget->fontMetrics().height() + ROW_HEIGHT_PADDING);
     ui.hideExcelView->setVisible(false);
@@ -207,7 +206,6 @@ void AP2DataPlot2D::saveSettings()
     settings.setValue("SHOW_ERR", ui.errDisplayCheckBox->isChecked());
     settings.setValue("SHOW_MODE", ui.modeDisplayCheckBox->isChecked());
 
-
     settings.sync();
 }
 
@@ -224,6 +222,7 @@ void AP2DataPlot2D::setExcelViewHidden(bool hidden)
         ui.sortShowPushButton->setVisible(true);
     }
 }
+
 void AP2DataPlot2D::graphColorsChanged(QMap<QString,QColor> colormap)
 {
     for (QMap<QString,QColor>::const_iterator i = colormap.constBegin();i!=colormap.constEnd();i++)
@@ -308,8 +307,6 @@ void AP2DataPlot2D::replyTLogButtonClicked()
         m_tlogReplayEnabled = true;
         ui.loadTLogButton->setText("Disable Log Playback");
     }
-
-
 }
 
 void AP2DataPlot2D::xAxisChanged(QCPRange range)
@@ -334,6 +331,7 @@ void AP2DataPlot2D::horizontalScrollMoved(int value)
     }
     return;
 }
+
 void AP2DataPlot2D::showEvent(QShowEvent *evt)
 {
     if (m_updateTimer)
@@ -376,67 +374,59 @@ void AP2DataPlot2D::plotDoubleClick(QMouseEvent * evt)
         return;
     }
 
-    for (int i=0;i<m_graphClassMap.keys().size();i++)
+    double key = 0.0;
+    double timeStamp = 0.0;
+    QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[0]).graph;
+    key = graph->keyAxis()->pixelToCoord(evt->x());
+
+    if (m_useTimeOnX)
     {
+        // We scaled the time by timeDivisor when plotting the graph
+        // therefore we have to scale when searching for the original timestamp
+        timeStamp = key;
+        key = m_tableModel->getNearestIndexForTimestamp(timeStamp * c_timeDivisor);
+    }
 
-        double key = 0.0;
-        double timeStamp = 0.0;
-        QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
-        key = graph->keyAxis()->pixelToCoord(evt->x());
+    quint64 position = floor(key);
+    quint64 min = m_tableModel->getFirstIndex();
+    quint64 max = m_tableModel->getLastIndex();
 
-        if (m_useTimeOnX)
+    if ( position > max )
+    {
+        ui.tableWidget->scrollToBottom();
+        double plotPos = m_useTimeOnX ? m_tableModel->getMaxTime() : max;
+        plotCurrentIndex(plotPos);
+    }
+    else if ( position < min )
+    {
+        ui.tableWidget->scrollToTop();
+        double plotPos = m_useTimeOnX ? m_tableModel->getMinTime() : min;
+        plotCurrentIndex(plotPos);
+    }
+    else
+    {
+        //search for previous event (remember the table may be filtered)
+        QModelIndex sourceIndex = m_tableModel->index(position-min, 0);
+        QModelIndex index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+        while ( sourceIndex.row() >= static_cast<int>(min) && !index.isValid() )
         {
-            // We scaled the time by timeDivisor when plotting the graph
-            // therefore we have to scale when searching for the original timestamp
-            timeStamp = key;
-            key = m_tableModel->getNearestIndexForTimestamp(timeStamp * c_timeDivisor);
+            sourceIndex = m_tableModel->index(sourceIndex.row() - 1, 0);
+            index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
         }
 
-        if (i == 0)
+        if ( !index.isValid() )
         {
-            quint64 position = floor(key);
-            quint64 min = m_tableModel->getFirstIndex();
-            quint64 max = m_tableModel->getLastIndex();
-
-            if ( position > max )
+            //couldn't find filtered index by looking back, try forward...
+            sourceIndex = m_tableModel->index(position-min, 0);
+            index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
+            while ( sourceIndex.row() <= static_cast<int>(max) && !index.isValid() )
             {
-                ui.tableWidget->scrollToBottom();
-                double plotPos = m_useTimeOnX ? m_tableModel->getMaxTime() : max;
-                plotCurrentIndex(plotPos);
-
-            }
-            else if ( position < min )
-            {
-                ui.tableWidget->scrollToTop();
-                double plotPos = m_useTimeOnX ? m_tableModel->getMinTime() : min;
-                plotCurrentIndex(plotPos);
-            }
-            else
-            {
-                //search for previous event (remember the table may be filtered)
-                QModelIndex sourceIndex = m_tableModel->index(position-min, 0);
-                QModelIndex index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-                while ( sourceIndex.row() >= static_cast<int>(min) && !index.isValid() )
-                {
-                    sourceIndex = m_tableModel->index(sourceIndex.row() - 1, 0);
-                    index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-                }
-
-                if ( !index.isValid() )
-                {
-                    //couldn't find filtered index by looking back, try forward...
-                    sourceIndex = m_tableModel->index(position-min, 0);
-                    index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-                    while ( sourceIndex.row() <= static_cast<int>(max) && !index.isValid() )
-                    {
-                        sourceIndex = m_tableModel->index(sourceIndex.row() + 1, 0);
-                        index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-                    }
-                }
-                ui.tableWidget->setCurrentIndex(index);
-                ui.tableWidget->scrollTo(index);
+                sourceIndex = m_tableModel->index(sourceIndex.row() + 1, 0);
+                index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
             }
         }
+        ui.tableWidget->setCurrentIndex(index);
+        ui.tableWidget->scrollTo(index);
     }
 }
 
@@ -949,10 +939,8 @@ void AP2DataPlot2D::loadDialogAccepted()
     plot->setAttribute(Qt::WA_DeleteOnClose,true);
     plot->show();
     plot->loadLog(m_filename);
-
-    //loadLog(m_filename);
-
 }
+
 void AP2DataPlot2D::loadLog(QString filename)
 {
     m_logLoaded = true;
@@ -968,7 +956,7 @@ void AP2DataPlot2D::loadLog(QString filename)
     }
     m_plot->replot();
     m_graphClassMap.clear();
-    m_graphCount=0;
+    m_graphCount = 0;
     m_dataList.clear();
 
     QString shortfilename =filename.mid(filename.lastIndexOf("/")+1);
@@ -1039,16 +1027,6 @@ void AP2DataPlot2D::itemEnabled(QString name)
     {
         QString parent = name.split(".")[0];
         QString child = name.split(".")[1];
-        /*if (!m_sharedDb.isOpen())
-        {
-            if (!m_sharedDb.open())
-            {
-                //emit error("Unable to open database: " + m_sharedDb.lastError().text());
-                QMessageBox::information(0,"Error","Error opening DB");
-                return;
-            }
-        }*/
-
         bool isstr = false;
         QList<QPair<double,QString> > strlist;
         QVector<double> xlist;
@@ -1144,7 +1122,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
                 m_axisGroupingDialog->addAxis(name,yAxis->range().lower,yAxis->range().upper,color);
             }
         }
-
+        // Graph 1 is the text arrow graph Graph 2 is the first 'line graph'
         if (m_graphCount <= 2)
         {
             mainGraph1->rescaleKeyAxis();
@@ -1152,6 +1130,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(xlist.back());
             yAxis->grid()->setVisible(true);
         }
+        // as soon as 2 'line graphs' are visible remove the grid
         else if(m_graphCount == 3 )
         {
             // brute force
@@ -1217,10 +1196,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
             }
             Graph graph;
             graph.axis = axis;
-            graph.groupName = "";
             graph.graph=  mainGraph1;
-            graph.isInGroup = false;
-            graph.isManualRange = false;
             m_graphClassMap[name] = graph;
 
             mainGraph1->setPen(QPen(color, 1));
@@ -1246,6 +1222,8 @@ void AP2DataPlot2D::itemDisabled(QString name)
         m_graphClassMap.remove(name);
         m_graphNameList.removeOne(name);
         m_graphCount--;
+        // first graph is the one for the text arrows, so the second
+        // is the first 'line graph'
         if (m_graphCount == 2)
         {
             // Show grid if only one graph left
@@ -1282,7 +1260,7 @@ void AP2DataPlot2D::clearGraph()
         m_axisGroupingDialog->hide();
     }
     m_graphClassMap.clear();
-    m_graphCount=0;
+    m_graphCount = 0;
     m_dataList.clear();
 
     if (m_logLoaded)
@@ -1429,6 +1407,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     }
 
     // Setup basic graph for all arrow plots -> MODE/ERR/EV/MSG
+    // This is graph one!
     QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
     yAxis->setVisible(false);
     yAxis->setLabel("MODE/ERR/EV/MSG");
