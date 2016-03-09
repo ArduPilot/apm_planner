@@ -1098,18 +1098,8 @@ void AP2DataPlot2D::itemEnabled(QString name)
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
         m_graphNameList.append(name);
         QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
-
-        if (m_axisGroupingDialog)
-        {
-            if (!name.contains(ModeMessage::TypeName) &&
-                !name.contains(ErrorMessage::TypeName)  &&
-                !name.contains(EventMessage::TypeName) &&
-                !name.contains(MsgMessage::TypeName))
-            {
-                m_axisGroupingDialog->addAxis(name,yAxis->range().lower,yAxis->range().upper,color);
-            }
-        }
         mainGraph1->setPen(QPen(color, 1));
+
         Graph graph;
         graph.axis = yAxis;
         graph.graph=  mainGraph1;
@@ -1143,6 +1133,18 @@ void AP2DataPlot2D::itemEnabled(QString name)
             mainGraph1->setData(xlist, ylist);
         }
         mainGraph1->rescaleValueAxis();
+
+        if (m_axisGroupingDialog)
+        {
+            if (!name.contains(ModeMessage::TypeName) &&
+                !name.contains(ErrorMessage::TypeName)  &&
+                !name.contains(EventMessage::TypeName) &&
+                !name.contains(MsgMessage::TypeName))
+            {
+                m_axisGroupingDialog->addAxis(name,yAxis->range().lower,yAxis->range().upper,color);
+            }
+        }
+
         if (m_graphCount <= 2)
         {
             mainGraph1->rescaleKeyAxis();
