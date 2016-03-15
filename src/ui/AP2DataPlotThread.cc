@@ -781,7 +781,15 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                         QList<QPair<QString,QVariant> > valuepairlist;
                         for (int i=0;i<retvals.size();i++)
                         {
-                            valuepairlist.append(QPair<QString,QVariant>(retvals.at(i).first.split(".")[1],retvals.at(i).second));
+                            QStringList list = retvals.at(i).first.split(".");
+                            if (list.size() >= 2)
+                            {
+                                valuepairlist.append(QPair<QString,QVariant>(list[1],retvals.at(i).second));
+                            }
+                            else
+                            {
+                                m_plotState.corruptDataRead(index, "Missing type information. Message:" + retvals.at(i).first + ":" + retvals.at(i).second.toString());
+                            }
                         }
                         if (valuepairlist.size() >= 1)
                         {
