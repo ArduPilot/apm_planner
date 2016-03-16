@@ -33,7 +33,7 @@ This file is part of the APM_PLANNER project
 #include <QObject>
 #include <QtNetwork>
 
-const QString AUTOUPDATE_VERSION_OBJECT_LOCATION = "http://firmware.diydrones.com/Tools/APMPlanner/";
+const QString AUTOUPDATE_VERSION_OBJECT_LOCATION = "http://firmware.ardupilot.org/Tools/APMPlanner/";
 const QString AUTOUPDATE_VERSION_OBJECT_NAME = "apm_planner_version.json";
 
 class AutoUpdateCheck : public QObject
