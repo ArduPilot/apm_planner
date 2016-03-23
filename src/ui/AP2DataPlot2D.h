@@ -148,12 +148,6 @@ private slots:
 
 private:
 
-    /**
-     * @brief timeDivisor Used for X-Axis scaling when using time axis
-     *        avoiding insanely high numbers on legend
-     */
-    static const double c_timeDivisor;    //!< scales micro seconds to seconds
-
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
     AP2DataPlot2DModel *m_tableModel;

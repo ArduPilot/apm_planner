@@ -231,10 +231,10 @@ void AP2DataPlot2DModel::getMessagesOfType(const QString &type, QMap<quint64, Me
     {
         while (query.next())
         {
-            MessageBase::Ptr p_msg = MessageFactory::getMessageOfType(type);
+            MessageBase::Ptr p_msg = MessageFactory::getMessageOfType(type, m_timeStampColumName);
             QSqlRecord record = query.record();
 
-            if (!p_msg->setFromSqlRecord(record))
+            if (!p_msg->setFromSqlRecord(record, m_tsScaleDivisor))
             {
                 QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?! "
                              << "The data of type " << type << " might be corrupted.";
@@ -389,16 +389,12 @@ bool AP2DataPlot2DModel::hasType(const QString& name)
     return m_msgNameToPrepearedInsertQuery.contains(name);
 }
 
-bool AP2DataPlot2DModel::addType(const QString &name, int type, int length, const QString &types, const QStringList &names)
+bool AP2DataPlot2DModel::addType(const QString &name, const unsigned int type, const int length, const QString &types, const QStringList &names)
 {
     if (!m_msgNameToPrepearedInsertQuery.contains(name))
     {
         QString createstring = makeCreateTableString(name,types,names);
-        QString variablenames = "";
-        for (int i=0;i<names.size();i++)
-        {
-            variablenames += names.at(i) + ((i < names.size()-1) ? "," : "");
-        }
+        QString variablenames = names.join(",");
         QString insertstring = makeInsertTableString(name,names);
 
         //if (!query->prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (:idx,:typeid,:length,:name,:format,:val);"))
@@ -461,19 +457,15 @@ bool AP2DataPlot2DModel::addType(const QString &name, int type, int length, cons
     }
     if (!m_headerStringList.contains(name))
     {
-        m_headerStringList.insert(name,QList<QString>());
-        foreach (QString val,names)
-        {
-            m_headerStringList[name].append(val);
-        }
+        m_headerStringList.insert(name, names);
     }
     return true;
 }
-QMap<quint64,QVariant> AP2DataPlot2DModel::getValues(const QString& parent, const QString& child, bool useTimeAsIndex)
+QMap<double,QVariant> AP2DataPlot2DModel::getValues(const QString& parent, const QString& child, bool useTimeAsIndex)
 {
     int valueColum = getChildColum(parent,child);
     int indexColum = 0; // Default index is always colum 0
-    QMap<quint64,QVariant> retval;
+    QMap<double,QVariant> retval;
 
     if (useTimeAsIndex)
     {
@@ -485,7 +477,7 @@ QMap<quint64,QVariant> AP2DataPlot2DModel::getValues(const QString& parent, cons
     while (itemquery.next())
     {
         QSqlRecord record = itemquery.record();
-        quint64 graphindex = record.value(indexColum).toLongLong();
+        double graphindex = useTimeAsIndex ? record.value(indexColum).toDouble() / m_tsScaleDivisor : record.value(indexColum).toDouble();
         QVariant graphvalue = record.value(valueColum);
         retval.insert(graphindex,graphvalue);
     }
@@ -535,7 +527,7 @@ bool AP2DataPlot2DModel::endTransaction()
     return true;
 }
 
-bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const quint64 index, const QString &timeColName)
+bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const int index, const QString &timeColName)
 {
     if (m_firstIndex == 0)
     {
@@ -757,13 +749,14 @@ quint64 AP2DataPlot2DModel::getFirstIndex()
     return m_firstIndex;
 }
 
-void AP2DataPlot2DModel::setAllRowsHaveTime(bool allHaveTime, const QString &timeColumName)
+void AP2DataPlot2DModel::setAllRowsHaveTime(bool allHaveTime, const QString &timeColumName, const double scaling)
 {
     m_timeStampColumName = timeColumName;
+    m_tsScaleDivisor = scaling;
     m_allRowsHaveTime = allHaveTime;
     m_canUseTimeOnX  = true;
-    m_canUseTimeOnX &= setUpMinTime();
     m_canUseTimeOnX &= setUpMaxTime();
+    setUpMinTime();     // if this fails min time will be set to 0 whih is OK
 }
 
 bool AP2DataPlot2DModel::getAllRowsHaveTime()
@@ -847,23 +840,29 @@ bool AP2DataPlot2DModel::canUseTimeOnX()
     return m_canUseTimeOnX && m_allRowsHaveTime;
 }
 
-quint64 AP2DataPlot2DModel::getNearestIndexForTimestamp(double timevalue)
+double AP2DataPlot2DModel::getTimeDivisor()
+{
+    return m_tsScaleDivisor;
+}
+
+quint64 AP2DataPlot2DModel::getNearestIndexForTimestamp(const double timevalue)
 {
     if (m_allRowsHaveTime)
     {
-        quint64 intervalSize = m_TimeIndexList.size();
-        quint64 intervalStart = 0;
-        quint64 middle = 0;
+        quint64 time = static_cast<quint64>(m_tsScaleDivisor * timevalue);
+        int intervalSize = m_TimeIndexList.size();
+        int intervalStart = 0;
+        int middle = 0;
 
         while (intervalSize > 1)
         {
             middle = intervalStart + intervalSize / 2;
             quint64 temp = m_TimeIndexList[middle].first;
-            if (timevalue > temp)
+            if (time > temp)
             {
                 intervalStart = middle;
             }
-            else if (timevalue == temp)
+            else if (time == temp)
             {
                 break;
             }
