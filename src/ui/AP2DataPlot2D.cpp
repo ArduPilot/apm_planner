@@ -69,7 +69,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     m_logDownloadDialog(NULL),
     m_loadedLogMavType(MAV_TYPE_ENUM_END),
     m_statusTextPos(0),
-    m_useTimeOnX(false)
+    m_useTimeOnX(false),
+    m_lastHorizontalScrollerVal(0),
+    m_KmlExport(false)
 {
     ui.setupUi(this);
 
@@ -81,7 +83,8 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     connect(ui.sortInvertSelectPushButton,SIGNAL(clicked()),this,SLOT(sortSelectInvertClicked()));
     ui.tableSortGroupBox->setVisible(false);
     ui.sortShowPushButton->setVisible(false);
-    ui.exportPushButton->setVisible(false);
+    ui.exportLogButton->setVisible(false);
+    ui.exportKmlButton->setVisible(false);
 
     QDateTime utc = QDateTime::currentDateTimeUtc();
     utc.setTimeSpec(Qt::LocalTime);
@@ -169,7 +172,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     ui.downloadPushButton->setEnabled(false);
     connect(ui.loadTLogButton,SIGNAL(clicked()),this,SLOT(replyTLogButtonClicked()));
 
-    connect(ui.exportPushButton,SIGNAL(clicked()),this,SLOT(exportButtonClicked()));
+    // Export buttons
+    connect(ui.exportLogButton, SIGNAL(clicked()), this, SLOT(exportLogClicked()));
+    connect(ui.exportKmlButton, SIGNAL(clicked()), this, SLOT(exportKmlClicked()));
 
     ui.horizontalSplitter->setStretchFactor(0,20);
     ui.horizontalSplitter->setStretchFactor(1,1);
@@ -965,8 +970,7 @@ void AP2DataPlot2D::loadLog(QString filename)
 
     QString shortfilename =filename.mid(filename.lastIndexOf("/")+1);
     setWindowTitle(tr("Graph: %1").arg(shortfilename));
-    ui.toKMLPushButton->setDisabled(true);
-    ui.exportPushButton->setVisible(true);
+    ui.toKMLPushButton->setVisible(false);
 
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
@@ -1469,6 +1473,9 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     setExcelViewHidden(false);
     ui.hideExcelView->setVisible(true);
     ui.sortShowPushButton->setVisible(true);
+    ui.exportLogButton->setVisible(true);
+    ui.exportKmlButton->setVisible(true);
+
     // the switch x axis check box shall only be active if model can handle timestamps
     ui.indexTypeCheckBox->setVisible(m_tableModel->canUseTimeOnX());
 
@@ -1526,6 +1533,18 @@ void AP2DataPlot2D::closeLogDownloadDialog()
     }
 }
 
+void AP2DataPlot2D::exportLogClicked()
+{
+    m_KmlExport = false;
+    exportButtonClicked();
+}
+
+void AP2DataPlot2D::exportKmlClicked()
+{
+    m_KmlExport = true;
+    exportButtonClicked();
+}
+
 void AP2DataPlot2D::exportButtonClicked()
 {
     if (!m_logLoaded)
@@ -1539,25 +1558,18 @@ void AP2DataPlot2D::exportButtonClicked()
         return;
     }
 
-    /*if (!m_sharedDb.isOpen())
-    {
-        if (!m_sharedDb.open())
-        {
-            //emit error("Unable to open database: " + m_sharedDb.lastError().text());
-            QMessageBox::information(0,"Error","Error opening DB");
-            return;
-        }
-    }*/
+    QString exportExtension = m_KmlExport ? ".kml" : ".log";
 
     //remove current extension
-    QString exportFilename = m_filename.replace(".bin",".log", Qt::CaseInsensitive); // remove extension
+    QString exportFilename = m_filename.replace(".bin",exportExtension, Qt::CaseInsensitive); // remove extension
     QFileDialog *dialog = new QFileDialog(this,"Save Log File",QGC::logDirectory());
     dialog->setAcceptMode(QFileDialog::AcceptSave);
-    dialog->setNameFilter("*.log");
+    dialog->setNameFilter("*" + exportExtension);
     dialog->selectFile(exportFilename);
     QLOG_DEBUG() << " Suggested Export Filename: " << exportFilename;
     dialog->open(this,SLOT(exportDialogAccepted()));
 }
+
 void AP2DataPlot2D::exportDialogAccepted()
 {
     QElapsedTimer timer1;
@@ -1574,12 +1586,24 @@ void AP2DataPlot2D::exportDialogAccepted()
     QString outputFileName = dialog->selectedFiles().at(0);
     dialog->close();
 
-    QFile outputfile(outputFileName);
-    if (!outputfile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+    QFile outputfile;
+    kml::KMLCreator kmlExporter;
+
+    if (m_KmlExport)
     {
-        QMessageBox::information(this,"Error","Unable to open output file: " + outputfile.errorString());
-        return;
+
+        kmlExporter.start(outputFileName);
     }
+    else
+    {
+        outputfile.setFileName(outputFileName);
+        if (!outputfile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        {
+            QMessageBox::information(this,"Error","Unable to open output file: " + outputfile.errorString());
+            return;
+        }
+    }
+
     QProgressDialog *progressDialog = new QProgressDialog("Exporting File","Cancel",0,100,this);
     progressDialog->setWindowModality(Qt::WindowModal);
     progressDialog->show();
@@ -1596,7 +1620,14 @@ void AP2DataPlot2D::exportDialogAccepted()
             formatheader += line + "\r\n";
         }
     }
-    outputfile.write(formatheader.toLatin1());
+    if (m_KmlExport)
+    {
+        kmlExporter.processLine(formatheader);
+    }
+    else
+    {
+        outputfile.write(formatheader.toLatin1());
+    }
 
     for (int i=0;i<m_tableModel->rowCount();i++)
     {
@@ -1609,7 +1640,14 @@ void AP2DataPlot2D::exportDialogAccepted()
             line += ", " + val.toString();
             val = m_tableModel->data(m_tableModel->index(i,j++));
         }
-        outputfile.write(line.append("\r\n").toLatin1());
+        if (m_KmlExport)
+        {
+            kmlExporter.processLine(line.append("\r\n"));
+        }
+        else
+        {
+            outputfile.write(line.append("\r\n").toLatin1());
+        }
         if (i % 5)
         {
             progressDialog->setValue(100.0 * ((double)i / (double)m_tableModel->rowCount()));
@@ -1626,13 +1664,22 @@ void AP2DataPlot2D::exportDialogAccepted()
         }
     }
 
-    outputfile.close();
+    if (m_KmlExport)
+    {
+        QString generated = kmlExporter.finish(true);
+
+        QString msg = QString("Generated %1.").arg(generated);
+        QMessageBox::information(this, "Log to KML", msg);
+    }
+    else
+    {
+        outputfile.close();
+    }
     progressDialog->hide();
     progressDialog->deleteLater();
     progressDialog=NULL;
 
     QLOG_DEBUG() << "Log export took " << timer1.elapsed() << "ms";
-
 }
 
 void AP2DataPlot2D::modeCheckBoxClicked(bool checked)
