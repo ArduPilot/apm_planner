@@ -123,6 +123,8 @@ private slots:
     void xAxisChanged(QCPRange range);
     void replyTLogButtonClicked();
 
+    void exportLogClicked();
+    void exportKmlClicked();
     void exportButtonClicked();
     void exportDialogAccepted();
 
@@ -275,7 +277,8 @@ private:
     QCPItemLine *m_timeLine;
 
     QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    /// Map holding all Messages which are printed as arrows
-    int m_lastHorizontalScrollerVal;
+    int m_lastHorizontalScrollerVal;                        /// Used to avoid multiple calls with same value
+    bool m_KmlExport;                                       /// True if exporting to Kml
 
 };
 
