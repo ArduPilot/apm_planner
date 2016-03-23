@@ -275,6 +275,7 @@ private:
     QCPItemLine *m_timeLine;
 
     QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    /// Map holding all Messages which are printed as arrows
+    int m_lastHorizontalScrollerVal;
 
 };
 

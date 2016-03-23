@@ -309,25 +309,31 @@ void AP2DataPlot2D::replyTLogButtonClicked()
 
 void AP2DataPlot2D::xAxisChanged(QCPRange range)
 {
+    disconnect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
+    disconnect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
+    disconnect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
+
     ui.horizontalScrollBar->setValue(qRound(range.center())); // adjust position of scroll bar slider
     ui.horizontalScrollBar->setPageStep(qRound(range.size())); // adjust size of scroll bar slider
     double totalrange = m_scrollEndIndex - m_scrollStartIndex;
     double currentrange = range.upper - range.lower;
+    ui.verticalScrollBar->setValue(100.0 * (currentrange / totalrange));
 
-    disconnect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
-    ui.verticalScrollBar->setValue(100 * (currentrange / totalrange));
+    connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
+    connect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
     connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
 }
 
 void AP2DataPlot2D::horizontalScrollMoved(int value)
 {
-    double test = qAbs(m_wideAxisRect->axis(QCPAxis::atBottom)->range().center()-value);
-    if (test  > 0.01) // if user is dragging plot, we don't want to replot twice
+    if (value != m_lastHorizontalScrollerVal)
     {
-      m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(value,m_wideAxisRect->axis(QCPAxis::atBottom)->range().size(), Qt::AlignCenter);
-      m_plot->replot();
+        m_lastHorizontalScrollerVal = value;
+        disconnect(m_wideAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
+        m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(value,m_wideAxisRect->axis(QCPAxis::atBottom)->range().size(), Qt::AlignCenter);
+        m_plot->replot();
+        connect(m_wideAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
     }
-    return;
 }
 
 void AP2DataPlot2D::showEvent(QShowEvent *evt)
