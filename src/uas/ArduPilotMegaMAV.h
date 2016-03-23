@@ -90,8 +90,6 @@ class MessageBase
 {
 public:
 
-    static const QString timeFieldName;
-
     typedef QSharedPointer<MessageBase> Ptr;
 
     MessageBase();
@@ -99,11 +97,11 @@ public:
     /**
      * @brief MessageBase constructor for setting all params
      * @param index - Index of this message
-     * @param timeStamp - Time stamp of this message
+     * @param timeStamp - Time stamp of this message. Double cause it should be in seconds
      * @param name - name of this message, used to identify type
      * @param color - color associated with this message type
      */
-    MessageBase(const quint64 index, const quint64 timeStamp, const QString &name, const QColor &color);
+    MessageBase(const quint32 index, const double timeStamp, const QString &name, const QColor &color);
 
     virtual ~MessageBase(){}
 
@@ -111,24 +109,22 @@ public:
      * @brief Getter for the index of this message
      * @return The index
      */
-    virtual quint64 getIndex() const;
+    virtual quint32 getIndex() const;
 
     /**
      * @brief Getter for the Time stamp of this message.
-     * @attention This value can countain 0 as not all logs
-     *            support a time stamp.
-     * @return  the time stamp or 0 if not supported by log
+     * @return The time stamp as double in seconds
      */
-    virtual quint64 getTimeStamp() const;
+    virtual double getTimeStamp() const;
 
     /**
      * @brief Reads an QSqlRecord and sets the internal data.
      *        See derived types.
      * @param record[in] - Filled QSqlRecord
-     * @return true - all Fields could be read
-     *         false - not all data could be read
+     * @param timeDivider[in] - Devider to scale the timestamp to seconds
+     * @return true - all Fields could be read, false otherwise
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record) = 0;
+    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider) = 0;
 
     /**
      * @brief Converts the ErrorCode into an uninterpreted string.
@@ -152,9 +148,10 @@ public:
 
 protected:
 
-    quint64 m_Index;        /// DB Index of this message
-    quint64 m_TimeStamp;    /// Timestamp of this message
+    quint32 m_Index;        /// DB Index of this message
+    double  m_TimeStamp;    /// Timestamp of this message. Should be in seconds
     QString m_TypeName;     /// Name of this message
+    QString m_TimeFieldName;/// Name of the Timefield
     QColor  m_Color;        /// Color associated with this message
 };
 
@@ -172,38 +169,46 @@ public:
     ErrorMessage();
 
     /**
+      * @brief ErrorMessage Constructor for setting name of the timefield
+      *        used by the setFromSqlRecord() method
+      * @param TimeFieldName - name of the timefield used for parsing the SQL record
+      */
+    ErrorMessage(const QString &TimeFieldName);
+
+    /**
      * @brief ErrorMessage Constructor for setting all internals
      * @param index - Index of this message
-     * @param timeStamp - Time stamp of this message
+     * @param timeStamp - Time stamp of this message as double in seconds
      * @param subSys - Subsys who emitted this error
-     * @param errCode - Errorcode emmitted by subsys
+     * @param errCode - Errorcode emitted by subsys
      */
-    ErrorMessage(const quint64 index, const quint64 timeStamp, const quint8 subSys, const quint8 errCode);
+    ErrorMessage(const quint32 index, const double timeStamp, const quint32 subSys, const quint32 errCode);
 
     /**
      * @brief Getter for the Subsystem ID which emitted the error
      * @return Subsystem ID
      */
-    quint8 getSubsystemCode() const;
+    quint32 getSubsystemCode() const;
 
     /**
      * @brief Getter for the Errorcode emitted by the subsystem
      * @return Errorcode
      */
-    quint8 getErrorCode() const;
+    quint32 getErrorCode() const;
 
     /**
      * @brief Reads an QSqlRecord and sets the internal data.
      *        The record must contain an Index in colum 0 and the
-     *        colums "Subsys" and "ECode" in order to get a positive
-     *        return value. If the record conatins also a "TimeUS"
-     *        field the internal time stamp will be filled too.
+     *        colums m_TimeFieldName, "Subsys" and "ECode" in order
+     *        to get a positive return value. The timeDivider should
+     *        scale the time stamp to seconds.
      *
      * @param record[in] - Filled QSqlRecord
+     * @param timeDivider[in] - Devider to scale the timestamp to seconds
      * @return true - all Fields could be read
      *         false - not all data could be read
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record);
+    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
 
     /**
      * @brief Converts the ErrorCode into an uninterpreted string.
@@ -214,8 +219,8 @@ public:
 
 private:
 
-    quint8 m_SubSys;        /// Subsystem signaling the error
-    quint8 m_ErrorCode;     /// Errorcode of the Subsystem
+    quint32 m_SubSys;        /// Subsystem signaling the error
+    quint32 m_ErrorCode;     /// Errorcode of the Subsystem
 };
 
 
@@ -232,38 +237,46 @@ public:
     ModeMessage();
 
     /**
+      * @brief ModeMessage Constructor for setting name of the timefield
+      *        used by the setFromSqlRecord() method
+      * @param TimeFieldName - name of the timefield used for parsing the SQL record
+      */
+    ModeMessage(const QString &TimeFieldName);
+
+    /**
      * @brief ModeMessage Costructor for setting all internals
      * @param index - Index of this message
-     * @param timeStamp - Time stamp of this message
+     * @param timeStamp - Time stamp of this message should be in seconds
      * @param mode - Mode of this message
      * @param modeNum - Mode Num of this message (not used)
      */
-    ModeMessage(const quint64 index, const quint64 timeStamp, const qint8 mode, const quint8 modeNum);
+    ModeMessage(const quint32 index, const double timeStamp, const quint32 mode, const quint32 modeNum);
 
     /**
      * @brief Getter for the Mode of this message
      * @return Mode ID
      */
-    qint8 getMode() const;
+    quint32 getMode() const;
 
     /**
      * @brief Getter for the ModeNum of this message
      * @return ModeNum ID
      */
-    quint8 getModeNum() const;
+    quint32 getModeNum() const;
 
     /**
      * @brief Reads an QSqlRecord and sets the internal data.
      *        The record must contain an Index in colum 0 and the
-     *        colums "Mode" and "ModeNum" in order to get a positive
-     *        return value. If the record conatins also a "TimeUS"
-     *        field the internal time stamp will be filled too.
+     *        colums m_TimeFieldName, "Mode" and "ModeNum" in order
+     *        to get a positive return value. The timeDivider should
+     *        scale the time stamp to seconds.
      *
      * @param record[in] - Filled QSqlRecord
+     * * @param timeDivider[in] - Devider to scale the timestamp to seconds
      * @return true - all Fields could be read
      *         false - not all data could be read
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record);
+    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
 
     /**
      * @brief Converts the ModeMessage into an uninterpreted string.
@@ -274,8 +287,8 @@ public:
 
 private:
 
-    qint8 m_Mode;        /// Subsystem signaling the error
-    quint8 m_ModeNum;    /// Errorcode of the Subsystem
+    quint32 m_Mode;        /// Subsystem signaling the error
+    quint32 m_ModeNum;    /// Errorcode of the Subsystem
 };
 
 /**
@@ -292,31 +305,39 @@ public:
     EventMessage();
 
     /**
+      * @brief EventMessage Constructor for setting name of the timefield
+      *        used by the setFromSqlRecord() method
+      * @param TimeFieldName - name of the timefield used for parsing the SQL record
+      */
+    EventMessage(const QString &TimeFieldName);
+
+    /**
      * @brief EventMessage Constructor for setting all internals
      * @param index - Index of this message
-     * @param timeStamp - Time stamp of this message
+     * @param timeStamp - Time stamp of this message should be in seconds
      * @param eventID - Event ID of this message
      */
-    EventMessage(const quint64 index, const quint64 timeStamp, const quint8 eventID);
+    EventMessage(const quint32 index, const double timeStamp, const quint32 eventID);
 
     /**
      * @brief Getter for the Event ID of this message
      * @return Event ID
      */
-    quint8 getEventID() const;
+    quint32 getEventID() const;
 
     /**
      * @brief Reads an QSqlRecord and sets the internal data.
      *        The record must contain an Index in colum 0 and the
-     *        colums "Id" in order to get a positive return value.
-     *        If the record conatins also a "TimeUS"
-     *        field the internal time stamp will be filled too.
+     *        colums m_TimeFieldName and "Id" in order to get a
+     *        positive return value. The timeDivider should
+     *        scale the time stamp to seconds.
      *
      * @param record[in] - Filled QSqlRecord
+     * * @param timeDivider[in] - Devider to scale the timestamp to seconds
      * @return true - all Fields could be read
      *         false - not all data could be read
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record);
+    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
 
     /**
      * @brief Converts the ModeMessage into an uninterpreted string.
@@ -327,7 +348,7 @@ public:
 
 private:
 
-     quint8 m_EventID;    /// EventID
+     quint32 m_EventID;    /// EventID
 };
 
 /**
@@ -345,25 +366,34 @@ public:
     MsgMessage();
 
     /**
+      * @brief MsgMessage Constructor for setting name of the timefield
+      *        used by the setFromSqlRecord() method
+      * @param TimeFieldName - name of the timefield used for parsing the SQL record
+      */
+    MsgMessage(const QString &TimeFieldName);
+
+
+    /**
      * @brief MsgMessage Constructor for setting all internals
      * @param index - Index of this message
-     * @param timeStamp - Time stamp of this message
+     * @param timeStamp - Time stamp of this message should be in seconds
      * @param eventID - Event ID of this message
      */
-    MsgMessage(const quint64 index, const quint64 timeStamp, const QString &message);
+    MsgMessage(const quint32 index, const double timeStamp, const QString &message);
 
     /**
      * @brief Reads an QSqlRecord and sets the internal data.
      *        The record must contain an Index in colum 0 and the
-     *        colum "Msg" in order to get a positive return value.
-     *        If the record conatins also a "TimeUS"
-     *        field the internal time stamp will be filled too.
+     *        colum m_TimeFieldName and "Msg" in order to get a
+     *        positive return value. The timeDivider should
+     *        scale the time stamp to seconds.
      *
      * @param record[in] - Filled QSqlRecord
+     * @param timeDivider[in] - Devider to scale the timestamp to seconds
      * @return true - all Fields could be read
      *         false - not all data could be read
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record);
+    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
 
     /**
      * @brief Converts the MsgMessage into an uninterpreted string.
@@ -376,7 +406,6 @@ public:
 private:
 
     QString m_Message; /// The 'message'
-
 };
 
 /**
@@ -386,7 +415,7 @@ private:
 class MessageFactory
 {
 public:
-    static MessageBase::Ptr getMessageOfType(const QString &type);
+    static MessageBase::Ptr getMessageOfType(const QString &type, const QString &TimeFieldName);
 };
 
 /**

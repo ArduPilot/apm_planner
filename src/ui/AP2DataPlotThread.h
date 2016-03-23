@@ -142,24 +142,60 @@ signals:
     void lineRead(QString line);
 
 private:
+    typedef QPair<QString, double> tsNameToScalingType; /// Pair holding timestamp name an its scaling
+
+    /**
+     * @brief The typeDescriptor struct
+     *        Used to hold all data needed to describe a message type
+     */
+    struct typeDescriptor
+    {
+        int m_length;       /// Length of the message
+        QString m_name;     /// Name of the message
+        QString m_format;   /// Format string like "QbbI"
+        QString m_labels;   /// Name of each value in message. Comma seperated like "lat,lon,time"
+
+        typeDescriptor() : m_length(0){}
+        typeDescriptor(int length, const QString &name, const QString &format, const QString &labels) :
+            m_length(length), m_name(name), m_format(format), m_labels(labels){}
+    };
+
     void run(); // from QThread;
     bool isMainThread();
 
-    void loadDataFieldsFromValues();
     void loadBinaryLog(QFile &logfile);
     void loadAsciiLog(QFile &logfile);
     void loadTLog(QFile &logfile);
 
+    /**
+     * @brief addTimeToDescriptor - helper function for parsing. Extends a type descriptor to hold
+     *        a timestamp
+     */
+    void addTimeToDescriptor(const tsNameToScalingType &timeStampSearchKey, typeDescriptor &desc);
+
+    /**
+     * @brief adaptGPSDescriptor - helper function for parsing. Manipulates a GPS type descriptor
+     *        by renaming old time stamp name and adding a new one. Needed cause the GPS time does not
+     *        match other times
+     */
+    void adaptGPSDescriptor(QMap<unsigned int, typeDescriptor> &typeToDescriptorMap, typeDescriptor &desc, const tsNameToScalingType &timeStampSearchKey, unsigned char msg_type);
+
+    /**
+     * @brief adaptGPSDescriptor - helper function for parsing. Manipulates a GPS type descriptor
+     *        by renaming old time stamp name and adding a new one. Needed cause the GPS time does not
+     *        match other times
+     */
+    bool adaptGPSDescriptor(QMap<QString, typeDescriptor> &nameToDescriptorMap, typeDescriptor &desc, const tsNameToScalingType &timeStampSearchKey);
 private:
-    static const QString c_timeStampSearchKey;    /// Search Key when searching for timestamps
 
     QString m_fileName;
     bool m_stop;
     MAV_TYPE m_loadedLogType;
-    QSharedPointer<MAVLinkDecoder> m_decoder;
     AP2DataPlot2DModel *m_dataModel;
 
     AP2DataPlotStatus m_plotState;
+    QList<tsNameToScalingType> m_possibleTimestamps;
+
 };
 
 
