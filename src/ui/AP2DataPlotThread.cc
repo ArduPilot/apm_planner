@@ -1032,16 +1032,14 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 if (m_loadedLogType == MAV_TYPE_GENERIC)
                                 {
                                     // Name field is not always on same Index. So first search for the right position...
-                                    int typeIndex = 0;
                                     for (int i = 0; i < valuepairlist.size(); ++i)
                                     {
                                         if (valuepairlist[i].first == "type")   // "type" field holds MAV_TYPE
                                         {
-                                            typeIndex = i;
+                                            m_loadedLogType = static_cast<MAV_TYPE>(valuepairlist[i].second.toInt());
                                             break;
                                         }
                                     }
-                                    m_loadedLogType = static_cast<MAV_TYPE>(valuepairlist[typeIndex].second.toInt());
                                 }
                             }
                             m_plotState.validDataRead();    // tell plot state that we have a valid message
