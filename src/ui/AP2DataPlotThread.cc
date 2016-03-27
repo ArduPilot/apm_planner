@@ -876,6 +876,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                         QList<QPair<QString,QVariant> > retvals = decoder->receiveMessage(0,message);
                         if (!m_dataModel->hasType(desc.m_name))
                         {
+                            // If we don't have a format description by now extract and store it
                             QList<QString> fieldnames = decoder->getFieldList(desc.m_name);
                             QStringList variablenames;
                             for (int i=0;i<fieldnames.size();i++)
@@ -944,6 +945,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                             }
                             desc.m_labels = variablenames.join(",");    // complete descriptor
 
+                            // Handle time stamps
                             if (timeStampSearchKey.first.size() != 0)
                             {
                                 // Now check if the actual message conains a timestamp if not add it
@@ -964,6 +966,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                             }
                         }
 
+                        // Read packet data if there is something
                         QList<QPair<QString,QVariant> > valuepairlist;
                         for (int i=0;i<retvals.size();i++)
                         {
@@ -977,6 +980,8 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 m_plotState.corruptDataRead(index, "Missing type information. Message:" + retvals.at(i).first + ":" + retvals.at(i).second.toString());
                             }
                         }
+
+                        // Check if we have some valid data to store
                         if (valuepairlist.size() >= 1)
                         {
                             // check if a synthetic timestamp has to added
@@ -984,22 +989,39 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                             {
                                 if (timeStampHasToBeAdded.contains(desc.m_name))
                                 {
-                                    valuepairlist.prepend(QPair<QString, QVariant>(timeStampSearchKey.first, ++lastValidTS));
+                                    valuepairlist.prepend(QPair<QString, QVariant>(timeStampSearchKey.first, lastValidTS));
                                 }
                                 // if not store actual time stamp
                                 else
                                 {
-                                    typedef QPair<QString, QVariant> valuePairType;
-                                    foreach (valuePairType valuePair, valuepairlist)
+                                    QList<QPair<QString,QVariant> >::Iterator iter;
+                                    for (iter = valuepairlist.begin(); iter != valuepairlist.end(); ++iter)
                                     {
-                                        if (valuePair.first == timeStampSearchKey.first)
+                                        if (iter->first == timeStampSearchKey.first)
                                         {
-                                            lastValidTS = static_cast<quint64>(valuePair.second.toLongLong());
+                                            quint64 tempVal = static_cast<quint64>(iter->second.toULongLong());
+                                            // check if time is increasing
+                                            if (tempVal >= lastValidTS)
+                                            {
+                                                lastValidTS = tempVal;
+                                            }
+                                            else
+                                            {
+                                                QLOG_ERROR() << "Corrupt data read: Time is not increasing! Last valid time stamp:"
+                                                             << QString::number(lastValidTS) << " actual read time stamp is:"
+                                                             << QString::number(tempVal);
+                                                m_plotState.corruptDataRead(index, "Log time is not increasing! Last Time:" +
+                                                                            QString::number(lastValidTS) + " new Time:" +
+                                                                            QString::number(tempVal));
+                                                // if not increasing set to last valid value
+                                                iter->second = lastValidTS;
+                                            }
                                             break;
                                         }
                                     }
                                 }
                             }
+                            // Time handling done - store the data in model
                             if (!m_dataModel->addRow(desc.m_name,valuepairlist, index++, timeStampSearchKey.first))
                             {
                                 QString actualerror = m_dataModel->getError();
