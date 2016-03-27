@@ -102,7 +102,7 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     activeUASSet(UASManager::instance()->getActiveUAS());
 
     QNetworkAccessManager *man = new QNetworkAccessManager(this);
-    QNetworkReply *reply = man->get(QNetworkRequest(QUrl("http://autotest.diydrones.com/Parameters/apm.pdef.xml")));
+    QNetworkReply *reply = man->get(QNetworkRequest(QUrl("http://autotest.ardupilot.org/Parameters/apm.pdef.xml")));
     connect(reply,SIGNAL(finished()),this,SLOT(apmParamNetworkReplyFinished()));
 
     // Setup Parameter Progress bars
