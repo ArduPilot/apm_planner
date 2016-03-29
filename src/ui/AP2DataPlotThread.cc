@@ -410,26 +410,8 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                 }
                             }
                             // check if a synthetic timestamp has to added
-                            if (timeStampHasToBeAdded.size() > 0)
-                            {
-                                if (timeStampHasToBeAdded.contains(type))
-                                {
-                                    valuepairlist.prepend(QPair<QString, QVariant>(m_timeStamp.m_name, ++lastValidTS));
-                                }
-                                // if not store actual time stamp
-                                else
-                                {
-                                    typedef QPair<QString, QVariant> valuePairType;
-                                    foreach (const valuePairType &valuePair, valuepairlist)
-                                    {
-                                        if (valuePair.first == m_timeStamp.m_name)
-                                        {
-                                            lastValidTS = static_cast<quint64>(valuePair.second.toLongLong());
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+                            handleMissingTimeStamps(timeStampHasToBeAdded, type, valuepairlist, lastValidTS, index);
+
                             if (noCorruptDataFound && (valuepairlist.size() >= 1))
                             {
                                 if (!m_dataModel->addRow(name, valuepairlist, index, m_timeStamp.m_name))
@@ -765,26 +747,8 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
                             if (!foundError)
                             {
                                 // check if a synthetic timestamp has to added
-                                if (timeStampHasToBeAdded.size() > 0)
-                                {
-                                    if (timeStampHasToBeAdded.contains(name))
-                                    {
-                                        valuepairlist.prepend(QPair<QString, QVariant>(m_timeStamp.m_name, ++lastValidTS));
-                                    }
-                                    // if not store actual time stamp
-                                    else
-                                    {
-                                        typedef QPair<QString, QVariant> valuePairType;
-                                        foreach (const valuePairType &valuePair, valuepairlist)
-                                        {
-                                            if (valuePair.first == m_timeStamp.m_name)
-                                            {
-                                                lastValidTS = static_cast<quint64>(valuePair.second.toLongLong());
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
+                                handleMissingTimeStamps(timeStampHasToBeAdded, name, valuepairlist, lastValidTS, index);
+
                                 if (valuepairlist.size() >= 1)
                                 {
                                     if (!m_dataModel->addRow(name,valuepairlist,index++, m_timeStamp.m_name))
@@ -816,6 +780,7 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
     }
     m_dataModel->setAllRowsHaveTime(true, m_timeStamp.m_name , m_timeStamp.m_divisor);
 }
+
 
 void AP2DataPlotThread::loadTLog(QFile &logfile)
 {
@@ -984,43 +949,8 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                         if (valuepairlist.size() >= 1)
                         {
                             // check if a synthetic timestamp has to added
-                            if (timeStampHasToBeAdded.size() > 0)
-                            {
-                                if (timeStampHasToBeAdded.contains(desc.m_name))
-                                {
-                                    valuepairlist.prepend(QPair<QString, QVariant>(m_timeStamp.m_name, lastValidTS));
-                                }
-                                // if not store actual time stamp
-                                else
-                                {
-                                    QList<QPair<QString,QVariant> >::Iterator iter;
-                                    for (iter = valuepairlist.begin(); iter != valuepairlist.end(); ++iter)
-                                    {
-                                        if (iter->first == m_timeStamp.m_name)
-                                        {
-                                            quint64 tempVal = static_cast<quint64>(iter->second.toULongLong());
-                                            // check if time is increasing
-                                            if (tempVal >= lastValidTS)
-                                            {
-                                                lastValidTS = tempVal;
-                                            }
-                                            else
-                                            {
-                                                QLOG_ERROR() << "Corrupt data read: Time is not increasing! Last valid time stamp:"
-                                                             << QString::number(lastValidTS) << " actual read time stamp is:"
-                                                             << QString::number(tempVal);
-                                                m_plotState.corruptDataRead(index, "Log time is not increasing! Last Time:" +
-                                                                            QString::number(lastValidTS) + " new Time:" +
-                                                                            QString::number(tempVal));
-                                                // if not increasing set to last valid value
-                                                iter->second = lastValidTS;
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            // Time handling done - store the data in model
+                            handleMissingTimeStamps(timeStampHasToBeAdded, desc.m_name, valuepairlist, lastValidTS, index);
+
                             if (!m_dataModel->addRow(desc.m_name,valuepairlist, index++, m_timeStamp.m_name))
                             {
                                 QString actualerror = m_dataModel->getError();
@@ -1197,6 +1127,72 @@ bool AP2DataPlotThread::adaptGPSDescriptor(QMap<QString, typeDescriptor> &nameTo
     desc.m_format.prepend("Q");     // Add timestamp format code to format string
     desc.m_length += 8;
     return true;
+}
+
+void AP2DataPlotThread::handleMissingTimeStamps(const QStringList &timeStampHasToBeAdded, const QString &name,
+                                                QList<QPair<QString,QVariant> > &valuepairlist,
+                                                quint64 &lastValidTS, const int index)
+{
+    if (timeStampHasToBeAdded.size() > 0)
+    {
+        if (timeStampHasToBeAdded.contains(name))
+        {
+            valuepairlist.prepend(QPair<QString, QVariant>(m_timeStamp.m_name, lastValidTS));
+        }
+        // if not store actual time stamp
+        else
+        {
+            getTimeStamp(valuepairlist, index, lastValidTS);
+        }
+    }
+}
+
+void AP2DataPlotThread::handleMissingTimeStamps(const QList<unsigned int> &timeStampHasToBeAdded, const unsigned char type,
+                                                QList<QPair<QString,QVariant> > &valuepairlist,
+                                                quint64 &lastValidTS, const int index)
+{
+    if (timeStampHasToBeAdded.size() > 0)
+    {
+        if (timeStampHasToBeAdded.contains(type))
+        {
+            valuepairlist.prepend(QPair<QString, QVariant>(m_timeStamp.m_name, lastValidTS));
+        }
+        // if not store actual time stamp
+        else
+        {
+            getTimeStamp(valuepairlist, index, lastValidTS);
+        }
+    }
+}
+
+void AP2DataPlotThread::getTimeStamp(QList<QPair<QString,QVariant> > &valuepairlist, const int index, quint64 &lastValidTS)
+{
+    // find value pair with time stamp name
+    QList<QPair<QString,QVariant> >::Iterator iter;
+    for (iter = valuepairlist.begin(); iter != valuepairlist.end(); ++iter)
+    {
+        if (iter->first == m_timeStamp.m_name)
+        {   // found!
+            quint64 tempVal = static_cast<quint64>(iter->second.toULongLong());
+            // check if time is increasing
+            if (tempVal >= lastValidTS)
+            {
+                lastValidTS = tempVal;
+            }
+            else
+            {
+                QLOG_ERROR() << "Corrupt data read: Time is not increasing! Last valid time stamp:"
+                             << QString::number(lastValidTS) << " actual read time stamp is:"
+                             << QString::number(tempVal);
+                m_plotState.corruptDataRead(index, "Log time is not increasing! Last Time:" +
+                                            QString::number(lastValidTS) + " new Time:" +
+                                            QString::number(tempVal));
+                // if not increasing set to last valid value
+                iter->second = lastValidTS;
+            }
+            break;
+        }
+    }
 }
 
 //*************

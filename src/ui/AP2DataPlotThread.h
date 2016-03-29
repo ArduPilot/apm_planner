@@ -197,6 +197,33 @@ private:
      *        match other times
      */
     bool adaptGPSDescriptor(QMap<QString, typeDescriptor> &nameToDescriptorMap, typeDescriptor &desc);
+
+    /**
+     * @brief handleMissingTimeStamps - helper function for parsing. Checks if a timestamp has to be added
+     *        and adds it if needed. If the data already contains a valid time stamp its value is stored
+     *        in lastValidTS. lastValidTS is used to set the time stamp of the data which lacks it.
+     *
+     * @param timeStampHasToBeAdded - Collection holding all message keys of the messages wothout a time stamp
+     * @param desc - typeDescriptor of the actual message
+     * @param valuepairlist - extracted data pairs of the message
+     * @param lastValidTS - last valid time stamp
+     * @param index - actual parsing index
+     */
+    void handleMissingTimeStamps(const QStringList &timeStampHasToBeAdded, const QString &name, QList<QPair<QString,QVariant> > &valuepairlist,
+                                 quint64 &lastValidTS, const int index);
+
+    /**
+     * @brief handleMissingTimeStamps - helper for parsing.
+     * @see handleMissingTimeStamps
+     */
+    void handleMissingTimeStamps(const QList<unsigned int> &timeStampHasToBeAdded, const unsigned char type, QList<QPair<QString,QVariant> > &valuepairlist,
+                                 quint64 &lastValidTS, const int index);
+
+    /**
+     * @brief getTimeStamp - extracts a valid time stamp from valuepair list and sets lastValidTS.
+     *        checks if the time stamps are increasing. Used by handleMissingTimeStamps methods
+     */
+    void getTimeStamp(QList<QPair<QString,QVariant> > &valuepairlist, const int index, quint64 &lastValidTS);
 private:
 
     QString m_fileName;
@@ -207,6 +234,8 @@ private:
     AP2DataPlotStatus m_plotState;
     QList<timeStampType> m_possibleTimestamps;
     timeStampType m_timeStamp;
+
+
 
 };
 
