@@ -49,7 +49,7 @@ MAVLinkDecoder::MAVLinkDecoder(QObject *parent) : QObject(parent)
     // Allow system status
 //    messageFilter.insert(MAVLINK_MSG_ID_HEARTBEAT, false);
 //    messageFilter.insert(MAVLINK_MSG_ID_SYS_STATUS, false);
-    messageFilter.insert(MAVLINK_MSG_ID_STATUSTEXT, false);
+//    messageFilter.insert(MAVLINK_MSG_ID_STATUSTEXT, false);
     messageFilter.insert(MAVLINK_MSG_ID_COMMAND_LONG, false);
     messageFilter.insert(MAVLINK_MSG_ID_COMMAND_ACK, false);
     messageFilter.insert(MAVLINK_MSG_ID_PARAM_SET, false);
@@ -309,6 +309,7 @@ QPair<QString,QVariant> MAVLinkDecoder::emitFieldValue(mavlink_message_t* msg, i
             char* str = (char*)(m+messageInfo[msgid].fields[fieldid].wire_offset);
             // Enforce null termination
             str[messageInfo[msgid].fields[fieldid].array_length-1] = '\0';
+            retval.second = QString(str);
             QString string(name + ": " + str);
             if (!textMessageFilter.contains(msgid)) emit textMessageReceived(msg->sysid, msg->compid, 0, string);
         }
