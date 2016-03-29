@@ -127,7 +127,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                         desc.m_length = static_cast<int>(static_cast<unsigned>(packet.at(1)));    //Message length
                         desc.m_name   = packet.mid(2,4);    //Name of the message
                         desc.m_format = packet.mid(6,16);   //Format of the variables
-                        desc.m_labels = packet.mid(22,64); //comma delimited list of variable names.
+                        desc.m_labels = packet.mid(22,64);  //comma delimited list of variable names.
                         typeToDescriptorMap.insert(msg_type, desc); // store descriptor for parsing
 
                         if (desc.m_name == "PARM")
@@ -979,43 +979,50 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 emit error(actualerror);
                                 return;
                             }
+
                             // Tlog does not contain MODE messages the mode information ins transmitted in
                             // a heartbeat message. So here we extract MODE data from hertbeat
-                            if ((message.msgid == MAVLINK_MSG_ID_HEARTBEAT) && (lastModeVal != static_cast<quint8>(valuepairlist[1].second.toInt())))
+                            if ((message.msgid == MAVLINK_MSG_ID_HEARTBEAT) && (valuepairlist.size() > 1))
                             {
-                                QList<QPair<QString,QVariant> > specialValuepairlist;
-                                // Extract MODE messages from heratbeat messages
-                                lastModeVal = static_cast<quint8>(valuepairlist[1].second.toInt());
-
-                                specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[0], lastValidTS));
-                                specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[1], lastModeVal));
-                                specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[2], lastModeVal));
-                                specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[3], "Generated Value"));
-                                if (!m_dataModel->addRow(ModeMessage::TypeName, specialValuepairlist, index++, m_timeStamp.m_name))
+                                // Only if mode val has canged
+                                if (lastModeVal != static_cast<quint8>(valuepairlist[1].second.toInt()))
                                 {
-                                    QString actualerror = m_dataModel->getError();
-                                    m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
-                                    emit error(actualerror);
-                                    return;
-                                }
+                                    QList<QPair<QString,QVariant> > specialValuepairlist;
+                                    // Extract MODE messages from heratbeat messages
+                                    lastModeVal = static_cast<quint8>(valuepairlist[1].second.toInt());
 
-                                // Mav type can be extracted from heartbeat too. So lets set the Mav type
-                                // if not already set
-                                if (m_loadedLogType == MAV_TYPE_GENERIC)
-                                {
-                                    // Name field is not always on same Index. So first search for the right position...
-                                    for (int i = 0; i < valuepairlist.size(); ++i)
+                                    specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[0], lastValidTS));
+                                    specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[1], lastModeVal));
+                                    specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[2], lastModeVal));
+                                    specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[3], "Generated Value"));
+                                    if (!m_dataModel->addRow(ModeMessage::TypeName, specialValuepairlist, index++, m_timeStamp.m_name))
                                     {
-                                        if (valuepairlist[i].first == "type")   // "type" field holds MAV_TYPE
+                                        QString actualerror = m_dataModel->getError();
+                                        m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                                        emit error(actualerror);
+                                        return;
+                                    }
+
+                                    // Mav type can be extracted from heartbeat too. So lets set the Mav type
+                                    // if not already set
+                                    if (m_loadedLogType == MAV_TYPE_GENERIC)
+                                    {
+                                        // Name field is not always on same Index. So first search for the right position...
+                                        for (int i = 0; i < valuepairlist.size(); ++i)
                                         {
-                                            m_loadedLogType = static_cast<MAV_TYPE>(valuepairlist[i].second.toInt());
-                                            break;
+                                            if (valuepairlist[i].first == "type")   // "type" field holds MAV_TYPE
+                                            {
+                                                m_loadedLogType = static_cast<MAV_TYPE>(valuepairlist[i].second.toInt());
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
-                            if(message.msgid == MAVLINK_MSG_ID_STATUSTEXT)
+
+                            if((message.msgid == MAVLINK_MSG_ID_STATUSTEXT) && (valuepairlist.size() > 2))
                             {
+                                // Create a MsgMessage from STATUSTEXT
                                 QList<QPair<QString,QVariant> > specialValuepairlist;
                                 specialValuepairlist.append(QPair<QString, QVariant>(msgVarNames[0], lastValidTS));
                                 specialValuepairlist.append(QPair<QString, QVariant>(msgVarNames[1], valuepairlist[2].second));
@@ -1028,7 +1035,6 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                     return;
                                 }
                             }
-
                             m_plotState.validDataRead();    // tell plot state that we have a valid message
                         }
                     }
