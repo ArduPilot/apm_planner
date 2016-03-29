@@ -142,7 +142,18 @@ signals:
     void lineRead(QString line);
 
 private:
-    typedef QPair<QString, double> tsNameToScalingType; /// Pair holding timestamp name an its scaling
+    /**
+     * @brief The timeStampType struct
+     *        Used to hold the name and the scaling of a time stamp.
+     */
+    struct timeStampType
+    {
+        QString m_name;     /// Name of the time stamp
+        double  m_divisor;  /// Divisor to scale time stamp to seconds
+
+        timeStampType() : m_divisor(0.0) {}
+        timeStampType(const QString &name, const double divisor) : m_name(name), m_divisor(divisor) {}
+    };
 
     /**
      * @brief The typeDescriptor struct
@@ -171,21 +182,21 @@ private:
      * @brief addTimeToDescriptor - helper function for parsing. Extends a type descriptor to hold
      *        a timestamp
      */
-    void addTimeToDescriptor(const tsNameToScalingType &timeStampSearchKey, typeDescriptor &desc);
+    void addTimeToDescriptor(typeDescriptor &desc);
 
     /**
      * @brief adaptGPSDescriptor - helper function for parsing. Manipulates a GPS type descriptor
      *        by renaming old time stamp name and adding a new one. Needed cause the GPS time does not
      *        match other times
      */
-    void adaptGPSDescriptor(QMap<unsigned int, typeDescriptor> &typeToDescriptorMap, typeDescriptor &desc, const tsNameToScalingType &timeStampSearchKey, unsigned char msg_type);
+    void adaptGPSDescriptor(QMap<unsigned int, typeDescriptor> &typeToDescriptorMap, typeDescriptor &desc, unsigned char msg_type);
 
     /**
      * @brief adaptGPSDescriptor - helper function for parsing. Manipulates a GPS type descriptor
      *        by renaming old time stamp name and adding a new one. Needed cause the GPS time does not
      *        match other times
      */
-    bool adaptGPSDescriptor(QMap<QString, typeDescriptor> &nameToDescriptorMap, typeDescriptor &desc, const tsNameToScalingType &timeStampSearchKey);
+    bool adaptGPSDescriptor(QMap<QString, typeDescriptor> &nameToDescriptorMap, typeDescriptor &desc);
 private:
 
     QString m_fileName;
@@ -194,7 +205,8 @@ private:
     AP2DataPlot2DModel *m_dataModel;
 
     AP2DataPlotStatus m_plotState;
-    QList<tsNameToScalingType> m_possibleTimestamps;
+    QList<timeStampType> m_possibleTimestamps;
+    timeStampType m_timeStamp;
 
 };
 
