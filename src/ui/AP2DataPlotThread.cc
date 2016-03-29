@@ -818,6 +818,20 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
         return;
     }
 
+    // Tlog does not contain MSG messages. The information is gathered from STATUSTEXT tlog
+    // messages. So we create the datatype for MSG here and put it into data model.
+    QStringList msgVarNames;
+    msgVarNames.push_back(QString(m_timeStamp.m_name));
+    msgVarNames.push_back(QString("Message"));
+    msgVarNames.push_back(QString("Info"));
+    if (!m_dataModel->addType(MsgMessage::TypeName,0,0,"QZZ",msgVarNames))
+    {
+        QString actualerror = m_dataModel->getError();
+        m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+        emit error(actualerror);
+        return;
+    }
+
     while (!logfile.atEnd() && !m_stop)
     {
         emit loadProgress(logfile.pos(),logfile.size());
@@ -851,7 +865,14 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 {
                                     case MAVLINK_TYPE_CHAR:
                                     {
-                                        desc.m_format += "b";
+                                        if (fieldinfo.array_length == 0)
+                                        {
+                                            desc.m_format += "b";   // it is a single byte
+                                        }
+                                        else
+                                        {
+                                            desc.m_format += "Z";   // everything else is a string
+                                        }
                                     }
                                     break;
                                     case MAVLINK_TYPE_UINT8_T:
@@ -960,7 +981,7 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                             }
                             // Tlog does not contain MODE messages the mode information ins transmitted in
                             // a heartbeat message. So here we extract MODE data from hertbeat
-                            if ((desc.m_name == "HEARTBEAT") && (lastModeVal != static_cast<quint8>(valuepairlist[1].second.toInt())))
+                            if ((message.msgid == MAVLINK_MSG_ID_HEARTBEAT) && (lastModeVal != static_cast<quint8>(valuepairlist[1].second.toInt())))
                             {
                                 QList<QPair<QString,QVariant> > specialValuepairlist;
                                 // Extract MODE messages from heratbeat messages
@@ -993,6 +1014,21 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                     }
                                 }
                             }
+                            if(message.msgid == MAVLINK_MSG_ID_STATUSTEXT)
+                            {
+                                QList<QPair<QString,QVariant> > specialValuepairlist;
+                                specialValuepairlist.append(QPair<QString, QVariant>(msgVarNames[0], lastValidTS));
+                                specialValuepairlist.append(QPair<QString, QVariant>(msgVarNames[1], valuepairlist[2].second));
+                                specialValuepairlist.append(QPair<QString, QVariant>(msgVarNames[2], "Generated Value"));
+                                if (!m_dataModel->addRow(MsgMessage::TypeName, specialValuepairlist, index++, m_timeStamp.m_name))
+                                {
+                                    QString actualerror = m_dataModel->getError();
+                                    m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
+                                    emit error(actualerror);
+                                    return;
+                                }
+                            }
+
                             m_plotState.validDataRead();    // tell plot state that we have a valid message
                         }
                     }
