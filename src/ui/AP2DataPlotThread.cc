@@ -1226,7 +1226,7 @@ void AP2DataPlotThread::getTimeStamp(QList<QPair<QString,QVariant> > &valuepairl
                 QLOG_ERROR() << "Corrupt data read: Time is not increasing! Last valid time stamp:"
                              << QString::number(lastValidTS) << " actual read time stamp is:"
                              << QString::number(tempVal);
-                m_plotState.corruptDataRead(index, "Log time is not increasing! Last Time:" +
+                m_plotState.corruptTimeRead(index, "Log time is not increasing! Last Time:" +
                                             QString::number(lastValidTS) + " new Time:" +
                                             QString::number(tempVal));
                 // if not increasing set to last valid value
@@ -1239,35 +1239,92 @@ void AP2DataPlotThread::getTimeStamp(QList<QPair<QString,QVariant> > &valuepairl
 
 //*************
 
-AP2DataPlotStatus::AP2DataPlotStatus() : m_parsingState(OK)
+AP2DataPlotStatus::AP2DataPlotStatus() : m_lastParsingState(OK), m_globalState(OK)
 {
 }
 
 void AP2DataPlotStatus::corruptDataRead(const int index, const QString &errorMessage)
 {
-    m_parsingState = TruncationError;
-    m_errors.push_back(errorEntry(index, errorMessage));
+    // When here we just know that we have an error but not if it is at the end
+    // or in the middle of the logfile. So we set truncation error. Data error will
+    // be set as soon as valid data is read again.
+    m_globalState = m_globalState == OK ? TruncationError : m_globalState;
+    m_lastParsingState = DataError;
+    errorEntry entry(m_lastParsingState, index, errorMessage);
+    m_errors.push_back(entry);
 }
 
 void AP2DataPlotStatus::corruptFMTRead(const int index, const QString &errorMessage)
 {
-    m_parsingState = FmtError;
-    m_errors.push_back(errorEntry(index, errorMessage));
+    m_globalState = m_globalState == OK ? FmtError : m_globalState;
+    m_lastParsingState = FmtError;
+    errorEntry entry(m_lastParsingState, index, errorMessage);
+    m_errors.push_back(entry);
 }
 
-AP2DataPlotStatus::parsingState AP2DataPlotStatus::getParsingState()
+void AP2DataPlotStatus::corruptTimeRead(const int index, const QString &errorMessage)
 {
-    return m_parsingState;
+    m_globalState = m_globalState == OK ? TimeError : m_globalState;
+    m_lastParsingState = TimeError;
+    errorEntry entry(m_lastParsingState, index, errorMessage);
+    m_errors.push_back(entry);
 }
 
-QString AP2DataPlotStatus::getErrorText()
+AP2DataPlotStatus::parsingState AP2DataPlotStatus::getParsingState() const
+{
+    return m_globalState;
+}
+
+
+QString AP2DataPlotStatus::getErrorOverview() const
+{
+    int timeErrorCount = 0;
+    int dataErrorCount = 0;
+    int fmtErrorCount  = 0;
+    int unknownErrorCount = 0;
+    QString out;
+    QTextStream outStream(&out);
+
+    foreach (const errorEntry &entry, m_errors)
+    {
+        switch (entry.m_state)
+        {
+        case OK:
+            break;
+        case FmtError:
+            fmtErrorCount++;
+            break;
+        case TimeError:
+            timeErrorCount++;
+            break;
+        case DataError:
+            dataErrorCount++;
+            break;
+        default:
+            unknownErrorCount++;
+            break;
+        }
+    }
+
+    if (fmtErrorCount     > 0) outStream << fmtErrorCount << " format corruptions" << endl;
+    if (timeErrorCount    > 0) outStream << timeErrorCount << " time corruptions" << endl;
+    if (dataErrorCount    > 0) outStream << dataErrorCount << " data corruptions" << endl;
+    if (unknownErrorCount > 0) outStream << unknownErrorCount << " unspecific corruptions" << endl;
+
+    return out;
+}
+
+QString AP2DataPlotStatus::getDetailedErrorText() const
 {
     QString out;
     QTextStream outStream(&out);
 
     foreach (const errorEntry &entry, m_errors)
     {
-        outStream << "Logline " << entry.first << ": " << entry.second << endl;
+        if (entry.m_state != OK)    // Only if a error
+        {
+            outStream << "Logline " << entry.m_index << ": " << entry.m_errortext << endl;
+        }
     }
     outStream << endl << " There were " << m_errors.size() << " errors during log parsing." << endl;
     return out;
