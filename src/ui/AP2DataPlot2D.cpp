@@ -1371,6 +1371,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     // Errorhandling
     if (state.getParsingState() != AP2DataPlotStatus::OK)
     {
+        QString infoString;
         QMessageBox msgBox;
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.setWindowTitle("Warning");
@@ -1379,19 +1380,24 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
 
         if (state.getParsingState() == AP2DataPlotStatus::FmtError)
         {
-            msgBox.setInformativeText("There were errors only in format discription. Usually this is no problem.");
+            infoString = "There were errors only in format discription. Usually this is no problem.\n\r";
         }
         else if (state.getParsingState() == AP2DataPlotStatus::TruncationError)
         {
-            msgBox.setInformativeText("The data was truncated!");
+            infoString = "The data was truncated!\n\r";
+        }
+        else if (state.getParsingState() == AP2DataPlotStatus::TimeError)
+        {
+            infoString = "The time data was currupted. Maybe plotting by time may not work.\n\r";
         }
         else
         {
-            msgBox.setInformativeText("There were data errors / unreadable data in the log!"
-                                      " The data is potentially corrupt and incorrect.");
+            infoString = "There were data errors / unreadable data in the log! The data is potentially corrupt and incorrect.\r";
         }
+
+        msgBox.setInformativeText(infoString + "Detected:\r" + state.getErrorOverview());
         msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.setDetailedText(state.getErrorText());
+        msgBox.setDetailedText(state.getDetailedErrorText());
         msgBox.exec();
     }
 
