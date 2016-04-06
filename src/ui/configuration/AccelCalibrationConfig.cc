@@ -174,6 +174,8 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
     Q_UNUSED(uasid);
     Q_UNUSED(componentid);
 
+    QLOG_DEBUG() << "Severity:" << severity << " text:" <<text;
+
     if (severity <= MAV_SEVERITY_CRITICAL)
     {
         //This is a calibration instruction

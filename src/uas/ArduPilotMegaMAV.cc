@@ -215,26 +215,30 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
 
             // Check is older APM and reset severity to correct MAVLINK spec.
             if (m_severityCompatibilityMode) {
-                 // Older APM detected, translate severity to MAVLink Standard severity
-                 // SEVERITY_LOW     =1 MAV_SEVERITY_WARNING = 4
-                 // SEVERITY_MEDIUM  =2 MAV_SEVERITY_ALERT   = 1
-                 // SEVERITY_HIGH    =3 MAV_SEVERITY_CRITICAL= 2
-                 switch (severity) {
-                     case 1: /*gcs_severity::SEVERITY_LOW:*/
-                         severity = MAV_SEVERITY_WARNING;
-                         break;
-                     case 2: /*gcs_severity::SEVERITY_MEDIUM*/
-                         severity = MAV_SEVERITY_ALERT;
-                         break;
-                     case 3: /*gcs_severity::SEVERITY_HIGH:*/
-                         severity = MAV_SEVERITY_CRITICAL;
-                         break;
-                     default:
-                         severity = MAV_SEVERITY_INFO;
-                         break;
-                 }
-                 // repack message for further down the stack.s
-                 mavlink_msg_statustext_pack(message.sysid,message.compid,&message,severity,b.data());
+                // Older APM detected, translate severity to MAVLink Standard severity
+                // SEVERITY_LOW     =1 MAV_SEVERITY_WARNING = 4
+                // SEVERITY_MEDIUM  =2 MAV_SEVERITY_ALERT   = 1
+                // SEVERITY_HIGH    =3 MAV_SEVERITY_CRITICAL= 2
+                // SEVERITY_USER_RESPONSE =5 MAV_SEVERITY_CRITICAL= 2
+                switch (severity) {
+                    case 1: /*gcs_severity::SEVERITY_LOW:*/
+                        severity = MAV_SEVERITY_WARNING;
+                        break;
+                    case 2: /*gcs_severity::SEVERITY_MEDIUM*/
+                        severity = MAV_SEVERITY_ALERT;
+                        break;
+                    case 3: /*gcs_severity::SEVERITY_HIGH:*/
+                        severity = MAV_SEVERITY_CRITICAL;
+                        break;
+                    case 5: /*gcs_severity::SEVERITY_USER_RESPONSE:*/
+                        severity = MAV_SEVERITY_CRITICAL;
+                        break;
+                    default:
+                        severity = MAV_SEVERITY_INFO;
+                        break;
+                }
+                // repack message for further down the stack.s
+                mavlink_msg_statustext_pack(message.sysid,message.compid,&message,severity,b.data());
 
              }
 
