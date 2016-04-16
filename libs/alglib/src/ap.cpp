@@ -92,18 +92,6 @@ __declspec(align(AE_LOCK_ALIGNMENT)) volatile ae_int64_t _ae_dbg_lock_yields = 0
 #endif
 
 /*
- * These declarations are used to ensure that
- * sizeof(ae_int32_t)==4, sizeof(ae_int64_t)==8, sizeof(ae_int_t)==sizeof(void*).
- * they will lead to syntax error otherwise (array size will be negative).
- *
- * you can remove them, if you want - they are not used anywhere.
- *
- */
-static char _ae_int32_t_must_be_32_bits_wide[1-2*((int)(sizeof(ae_int32_t))-4)*((int)(sizeof(ae_int32_t))-4)];
-static char _ae_int64_t_must_be_64_bits_wide[1-2*((int)(sizeof(ae_int64_t))-8)*((int)(sizeof(ae_int64_t))-8)];
-static char _ae_int_t_must_be_pointer_sized [1-2*((int)(sizeof(ae_int_t))-(int)sizeof(void*))*((int)(sizeof(ae_int_t))-(int)(sizeof(void*)))];  
-
-/*
  * This variable is used to prevent some tricky optimizations which may degrade multithreaded performance.
  * It is touched once in the ae_init_pool() function from smp.c in order to prevent optimizations.
  *
@@ -1519,26 +1507,31 @@ ae_bool ae_isneginf(double x,ae_state *state)
 
 double ae_fabs(double x,  ae_state *state)
 {
+    (void)state;
     return fabs(x);
 }
 
 ae_int_t ae_iabs(ae_int_t x, ae_state *state)
 {
+    (void)state;
     return x>=0 ? x : -x;
 }
 
 double ae_sqr(double x,  ae_state *state)
 {
+    (void)state;
     return x*x;
 }
 
 double ae_sqrt(double x, ae_state *state)
 {
+    (void)state;
     return sqrt(x);
 }
 
 ae_int_t ae_sign(double x, ae_state *state)
 {
+    (void)state;
     if( x>0 ) return  1;
     if( x<0 ) return -1;
     return 0;
@@ -1556,31 +1549,37 @@ ae_int_t ae_trunc(double x, ae_state *state)
 
 ae_int_t ae_ifloor(double x, ae_state *state)
 {
+    (void)state;
     return (ae_int_t)(floor(x));
 }
 
 ae_int_t ae_iceil(double x,  ae_state *state)
 {
+    (void)state;
     return (ae_int_t)(ceil(x));
 }
 
 ae_int_t ae_maxint(ae_int_t m1, ae_int_t m2, ae_state *state)
 {
+    (void)state;
     return m1>m2 ? m1 : m2;
 }
 
 ae_int_t ae_minint(ae_int_t m1, ae_int_t m2, ae_state *state)
 {
+    (void)state;
     return m1>m2 ? m2 : m1;
 }
 
 double ae_maxreal(double m1, double m2, ae_state *state)
 {
+    (void)state;
     return m1>m2 ? m1 : m2;
 }
 
 double ae_minreal(double m1, double m2, ae_state *state)
 {
+    (void)state;
     return m1>m2 ? m2 : m1;
 }
 
@@ -1606,6 +1605,7 @@ ae_int_t ae_debugrng()
 
 double ae_randomreal(ae_state *state)
 {
+    (void)state;
 #ifdef AE_DEBUGRNG
     return ae_debugrng()/2147483563.0;
 #else
@@ -1620,6 +1620,8 @@ double ae_randomreal(ae_state *state)
 
 ae_int_t ae_randominteger(ae_int_t maxv, ae_state *state)
 {
+    (void)state;
+
 #ifdef AE_DEBUGRNG
     return (ae_debugrng()-1)%maxv;
 #else
@@ -1629,65 +1631,78 @@ ae_int_t ae_randominteger(ae_int_t maxv, ae_state *state)
 
 double   ae_sin(double x, ae_state *state)
 {
+    (void)state;
     return sin(x);
 }
 
 double   ae_cos(double x, ae_state *state)
 {
+    (void)state;
     return cos(x);
 }
 
 double   ae_tan(double x, ae_state *state)
 {
+    (void)state;
     return tan(x);
 }
 
 double   ae_sinh(double x, ae_state *state)
 {
+    (void)state;
     return sinh(x);
 }
 
 double   ae_cosh(double x, ae_state *state)
 {
+    (void)state;
     return cosh(x);
 }
 double   ae_tanh(double x, ae_state *state)
 {
+    (void)state;
     return tanh(x);
 }
 
 double   ae_asin(double x, ae_state *state)
 {
+    (void)state;
     return asin(x);
 }
 
 double   ae_acos(double x, ae_state *state)
 {
+    (void)state;
     return acos(x);
 }
 
 double   ae_atan(double x, ae_state *state)
 {
+    (void)state;
     return atan(x);
 }
 
 double   ae_atan2(double y, double x, ae_state *state)
 {
+    (void)state;
     return atan2(y,x);
 }
 
 double   ae_log(double x, ae_state *state)
 {
+    (void)state;
     return log(x);
 }
 
 double   ae_pow(double x, double y, ae_state *state)
 {
+    (void)state;
     return pow(x,y);
 }
 
 double   ae_exp(double x, ae_state *state)
 {
+    (void)state;
     return exp(x);
 }
 
@@ -2380,6 +2395,8 @@ state       ALGLIB environment state
 ************************************************************************/
 void ae_bool2str(ae_bool v, char *buf, ae_state *state)
 {
+    (void)state;
+
     char c = v ? '1' : '0';
     ae_int_t i;
     for(i=0; i<AE_SER_ENTRY_LENGTH; i++)
@@ -2842,6 +2859,8 @@ void ae_free_lock(ae_lock *lock)
 {
 #if AE_OS==AE_POSIX
     pthread_mutex_destroy(&lock->mutex);
+#else
+    (void)lock;
 #endif
 }
 
@@ -3257,6 +3276,8 @@ void ae_shared_pool_clear_recycled(
     ae_shared_pool  *pool,
     ae_state        *state)
 {
+    (void)state;
+
     ae_shared_pool_entry *ptr, *tmp;
     
     /* clear recycled objects */
@@ -3296,6 +3317,8 @@ void ae_shared_pool_first_recycled(
     ae_smart_ptr    *pptr,
     ae_state        *state)
 {   
+    (void)state;
+
     /* modify internal enumeration counter */
     pool->enumeration_counter = pool->recycled_objects;
     
@@ -3335,6 +3358,8 @@ void ae_shared_pool_next_recycled(
     ae_smart_ptr    *pptr,
     ae_state        *state)
 {   
+    (void)state;
+
     /* exit on end of list */
     if( pool->enumeration_counter==NULL )
     {
@@ -3372,6 +3397,8 @@ void ae_shared_pool_reset(
     ae_shared_pool  *pool,
     ae_state        *state)
 {
+    (void)state;
+
     /* clear seed and lists */
     ae_shared_pool_internalclear(pool);
     
@@ -3399,6 +3426,7 @@ void ae_serializer_init(ae_serializer *serializer)
 
 void ae_serializer_clear(ae_serializer *serializer)
 {
+    (void)serializer;
 }
 
 void ae_serializer_alloc_start(ae_serializer *serializer)
@@ -3598,6 +3626,7 @@ void ae_serializer_unserialize_double(ae_serializer *serializer, double *v, ae_s
 
 void ae_serializer_stop(ae_serializer *serializer)
 {
+    (void)serializer;
 }
 
 
@@ -3622,6 +3651,8 @@ ae_complex ae_c_neg(ae_complex lhs)
 
 ae_complex ae_c_conj(ae_complex lhs, ae_state *state)
 {
+    (void)state;
+
     ae_complex result;
     result.x = +lhs.x;
     result.y = -lhs.y;
@@ -3630,6 +3661,8 @@ ae_complex ae_c_conj(ae_complex lhs, ae_state *state)
 
 ae_complex ae_c_sqr(ae_complex lhs, ae_state *state)
 {
+    (void)state;
+
     ae_complex result;
     result.x = lhs.x*lhs.x-lhs.y*lhs.y;
     result.y = 2*lhs.x*lhs.y;
@@ -3638,6 +3671,8 @@ ae_complex ae_c_sqr(ae_complex lhs, ae_state *state)
 
 double ae_c_abs(ae_complex z, ae_state *state)
 {
+    (void)state;
+
     double w;
     double xabs;
     double yabs;
@@ -4873,7 +4908,7 @@ std::string alglib::complex::tostring(int _dps) const
     return std::string("0");
 }
 
-const bool alglib::operator==(const alglib::complex& lhs, const alglib::complex& rhs)
+bool alglib::operator==(const alglib::complex& lhs, const alglib::complex& rhs)
 {
     volatile double x1 = lhs.x;
     volatile double x2 = rhs.x;
@@ -4882,7 +4917,7 @@ const bool alglib::operator==(const alglib::complex& lhs, const alglib::complex&
     return x1==x2 && y1==y2;
 }
 
-const bool alglib::operator!=(const alglib::complex& lhs, const alglib::complex& rhs)
+bool alglib::operator!=(const alglib::complex& lhs, const alglib::complex& rhs)
 { return !(lhs==rhs); }
 
 const alglib::complex alglib::operator+(const alglib::complex& lhs)
@@ -4995,6 +5030,8 @@ void alglib::setnworkers(alglib::ae_int_t nworkers)
 {
 #ifdef AE_HPC
     alglib_impl::ae_set_cores_to_use(nworkers);
+#else
+    (void)nworkers;
 #endif
 }
 

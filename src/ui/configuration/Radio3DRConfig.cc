@@ -210,7 +210,7 @@ void Radio3DRConfig::serialPortOpenFailure(int error, QString errorString)
 {
     Q_UNUSED(error);
     QLOG_ERROR() << "Serial Port Open Crtical Error!" << errorString;
-    QMessageBox::critical(this, tr("Serial Port"), "Cannot open serial port, please make sure you have your radio connected, and the corerct link selected)");
+    QMessageBox::critical(this, tr("Serial Port"), "Cannot open serial port, please make sure you have your radio connected, and the correct link selected)");
 }
 
 void Radio3DRConfig::setBaudRate(int index)
@@ -318,6 +318,8 @@ void Radio3DRConfig::updateRemoteComplete(int result)
             break;
         case resetRadioSettings:
             resetLocalRadioSettingsToDefaults();
+            break;
+        default:
             break;
         }
     }

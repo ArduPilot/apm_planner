@@ -126,8 +126,8 @@ QPointF SlugsPadCameraControl::ObtenerMarcacionDistanciaPixel(double lon1, doubl
     if(lon1<0) lon1= lon1*(-1);
     if(lon2<0) lon1= lon1*(-1);
 
-    cateto_opuesto = abs((lat1-lat2));
-    cateto_adyacente = abs((lon1-lon2));
+    cateto_opuesto = std::abs((lat1-lat2));
+    cateto_adyacente = std::abs((lon1-lon2));
 
     hipotenusa = sqrt(pow(cateto_opuesto,2) + pow(cateto_adyacente,2));
     //distancia = hipotenusa*60.0;

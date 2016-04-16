@@ -10,11 +10,11 @@
 
 QGCMAVLinkLogPlayer::QGCMAVLinkLogPlayer(QWidget *parent):
     QWidget(parent),
+    m_sliderDown(false),
+    m_isPlaying(false),
     ui(new Ui::QGCMAVLinkLogPlayer),
     m_logLink(NULL),
     m_logLoaded(false),
-    m_isPlaying(false),
-    m_sliderDown(false),
     m_mavlinkDecoder(NULL),
     m_mavlinkInspector(NULL)
 {

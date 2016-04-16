@@ -309,6 +309,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="mavLinkSeverityCompatCheckBox">
+           <property name="text">
+            <string>Enable Ardupilot Text Severity Compatibility Mode (pre-AC3.4)</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item row="4" column="0">
@@ -340,11 +347,6 @@
       </layout>
       <zorder>groupBox</zorder>
       <zorder>groupBox_2</zorder>
-      <zorder>horizontalSpacer</zorder>
-      <zorder>horizontalSpacer_2</zorder>
-      <zorder>horizontalSpacer_3</zorder>
-      <zorder>verticalSpacer_2</zorder>
-      <zorder>verticalSpacer</zorder>
      </widget>
      <widget class="QWidget" name="advanced">
       <attribute name="title">

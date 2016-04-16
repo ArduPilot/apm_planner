@@ -35,7 +35,7 @@ This file is part of the APM_PLANNER project
 #include <QSqlError>
 #include <QUuid>
 #include <QsLog.h>
-#include <ArduPilotMegaMAV.h>
+
 /*
  * This model holds everything in memory in a sqlite database.
  * There are two system tables, then unlimited number of message tables.
@@ -60,114 +60,65 @@ This file is part of the APM_PLANNER project
  *  The types are defined by the format (in this case, BBfffff)
  *  inside AP2DataPlot2DModel::makeCreateTableString.
  */
+
 AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
-    QAbstractTableModel(parent)
+    QAbstractTableModel(parent),
+    m_databaseName(QUuid::createUuid().toString()),
+    m_allRowsHaveTime(false),
+    m_canUseTimeOnX(false),
+    m_minTime(0),
+    m_maxTime(0),
+    m_rowCount(0),
+    m_columnCount(0),
+    m_currentRow(0),
+    m_fmtIndex(0),
+    m_firstIndex(0),
+    m_lastIndex(0)
 {
-    m_firstIndex = 0;
-    m_lastIndex = 0;
-    m_columnCount = 0;
-    m_databaseName = QUuid::createUuid().toString();
     m_sharedDb = QSqlDatabase::addDatabase("QSQLITE",m_databaseName);
     m_sharedDb.setDatabaseName(":memory:");
+
+    //  Open DB and start transaction
     if (!m_sharedDb.open())
     {
-     //   QMessageBox::information(0,"error","Error opening shared database " + m_sharedDb.lastError().text());
+        setError("Error opening shared database " + m_sharedDb.lastError().text());
         return;
     }
-
-    m_fmtIndex=0;
     if (!m_sharedDb.transaction())
     {
-       // emit error("Unable to start database transaction 1");
+        setError("Unable to start database transaction "  + m_sharedDb.lastError().text());
         return;
     }
 
+    // Create FMT Table and prepare insert query
     if (!createFMTTable())
     {
-        //Error already emitted.
-        return;
+        return; //Error already emitted.
     }
-    m_fmtInsertQuery = new QSqlQuery(m_sharedDb);
+    m_fmtInsertQuery = queryPtr(new QSqlQuery(m_sharedDb));
     if (!createFMTInsert(m_fmtInsertQuery))
     {
-        //emit error("Error preparing FMT insert statement: " + fmtinsertquery.lastError().text());
-        return;
+        return;  //Error already emitted.
     }
 
+    // Create index table and prepare insert query
     if (!createIndexTable())
     {
-        //Error already emitted.
-        return;
+        return;   //Error already emitted.
     }
-    m_indexinsertquery = new QSqlQuery(m_sharedDb);
+    m_indexinsertquery = queryPtr(new QSqlQuery(m_sharedDb));
     if (!createIndexInsert(m_indexinsertquery))
     {
-        //emit error("Error preparing INDEX insert statement: " + indexinsertquery.lastError().text());
-        return;
+        return;  //Error already emitted.
     }
 
-    QMap<QString,QSqlQuery*> nameToInsertQuery;
-    QMap<QString,QString> nameToTypeString;
     if (!m_sharedDb.commit())
     {
-       // emit error("Unable to commit database transaction 1");
+        setError("Unable to commit database transaction "  + m_sharedDb.lastError().text());
         return;
     }
-    //if (!m_sharedDb.transaction())
-    //{
-        //emit error("Unable to start database transaction 2");
-    //    return;
-    //}
-
-    QSqlQuery query(m_sharedDb);
-    if (!query.prepare("SELECT * FROM 'INDEX'"))
-    {
-        qDebug() << "Error preparing:" << query.lastError();
-    }
-    if (!query.exec())
-    {
-        qDebug() << "Error execing:" << query.lastError();
-    }
-    m_rowCount = 0;
-    while (query.next())
-    {
-        QString name = query.value("value").toString();
-        //m_rowToTableMap.insert(query.value("idx").toInt(),name);
-        quint64 idx = query.value("idx").toLongLong();
-
-        m_rowToTableMap.insert(m_rowCount,QPair<quint64,QString>(idx,name));
-        QSqlQuery fmtquery(m_sharedDb);
-        if (!m_headerStringList.contains(name))
-        {
-            if (!fmtquery.prepare("SELECT * FROM 'FMT' WHERE name = '" + name + "'"))
-            {
-                qDebug() << "Error selecting from fmt";
-            }
-            fmtquery.exec();
-            if (fmtquery.next())
-            {
-                m_headerStringList.insert(name,QList<QString>());
-                QStringList valsplit = fmtquery.value("val").toString().split(",");
-                foreach (QString val,valsplit)
-                {
-                    m_headerStringList[name].append(val);
-                }
-                QList<QString> list;
-                list.append(QString::number(m_rowCount));
-                list.append("FMT");
-                for (int i=1;i<fmtquery.record().count();i++)
-                {
-                    list.append(fmtquery.value(fmtquery.record().field(i).name()).toString());
-                }
-                m_fmtStringList.append(list);
-            }
-        }
-        m_rowCount++;
-    }
-
-    //"INSERT INTO 'FMT' (idx,typeid,length,name,format,val)
-
 }
+
 AP2DataPlot2DModel::~AP2DataPlot2DModel()
 {
     QSqlDatabase::removeDatabase(m_databaseName);
@@ -271,84 +222,33 @@ QString AP2DataPlot2DModel::getFmtLine(const QString& name)
     }
     return "";
 }
-QMap<quint64,QString> AP2DataPlot2DModel::getModeValues()
+
+void AP2DataPlot2DModel::getMessagesOfType(const QString &type, QMap<quint64, MessageBase::Ptr> &indexToMessageMap)
 {
-    QMap<quint64,QString> retval;
-    QSqlQuery modequery(m_sharedDb);
-    modequery.prepare("SELECT * FROM 'MODE';");
-    if (!modequery.exec())
+    QSqlQuery query(m_sharedDb);
+    query.prepare("SELECT * FROM '" + type + "';");
+    if (query.exec())
     {
-        //No mode?
-        QLOG_DEBUG() << "Graph loaded with no mode table. Running anyway, but text modes will not be available";
-        modequery.prepare("SELECT * FROM 'HEARTBEAT';");
-        if (!modequery.exec())
+        while (query.next())
         {
-            QLOG_DEBUG() << "Graph loaded with no heartbeat either. No modes available";
+            MessageBase::Ptr p_msg = MessageFactory::getMessageOfType(type, m_timeStampColumName);
+            QSqlRecord record = query.record();
+
+            if (!p_msg->setFromSqlRecord(record, m_tsScaleDivisor))
+            {
+                QLOG_DEBUG() << "Not all data could be read from SQL-Record. Schema mismatch?! "
+                             << "The data of type " << type << " might be corrupted.";
+            }
+            indexToMessageMap.insert(p_msg->getIndex(), p_msg);
         }
     }
-    QString lastmode = "";
-    MAV_TYPE foundtype = MAV_TYPE_GENERIC;
-    bool custom_mode = false;
-
-    while (modequery.next())
+    else
     {
-        QSqlRecord record = modequery.record();
-        quint64 index = record.value(0).toLongLong();
-        QString mode = "";
-        if (record.contains("Mode"))
-        {
-            mode = record.value("Mode").toString();
-        }
-        else if (record.contains("custom_mode"))
-        {
-            custom_mode = true;
-            int modeint = record.value("custom_mode").toString().toInt();
-            if (foundtype == MAV_TYPE_GENERIC)
-            {
-                int type = record.value("type").toString().toInt();
-                foundtype = static_cast<MAV_TYPE>(type);
-            }
-            if (foundtype == MAV_TYPE_FIXED_WING)
-            {
-                mode = ApmPlane::stringForMode(modeint);
-            }
-            else if (foundtype == MAV_TYPE_QUADROTOR || foundtype == MAV_TYPE_COAXIAL || foundtype == MAV_TYPE_HELICOPTER || \
-                     foundtype == MAV_TYPE_HEXAROTOR || foundtype == MAV_TYPE_OCTOROTOR || foundtype == MAV_TYPE_TRICOPTER)
-            {
-                mode = ApmCopter::stringForMode(modeint);
-            }
-            else if (foundtype == MAV_TYPE_GROUND_ROVER)
-            {
-                mode = ApmRover::stringForMode(modeint);
-            }
-            else
-            {
-                mode = QString::number(static_cast<int>(modeint));
-            }
-        }
-        bool ok = false;
-        int modeint = mode.toInt(&ok);
-        if (!ok && !custom_mode)
-        {
-            if (record.contains("ModeNum"))
-            {
-                mode = record.value("ModeNum").toString();
-            }
-            else
-            {
-                QLOG_DEBUG() << "Unable to determine Mode number in log" << record.value("Mode").toString();
-                mode = record.value("Mode").toString();
-            }
-        }
-        if (lastmode != mode)
-        {
-            retval.insert(index,mode);
-            lastmode = mode;
-        }
-
+        //query returned no result
+        QLOG_DEBUG() << "Graph loaded with no table of type " << type << ". This is strange!";
     }
-    return retval;
 }
+
 
 QVariant AP2DataPlot2DModel::headerData ( int section, Qt::Orientation orientation, int role) const
 {
@@ -378,75 +278,88 @@ QVariant AP2DataPlot2DModel::headerData ( int section, Qt::Orientation orientati
     }
     return m_currentHeaderItems.at(section-2);
 }
+
 int AP2DataPlot2DModel::rowCount( const QModelIndex & parent) const
 {
-     return m_rowCount;
+    Q_UNUSED(parent)
+    return m_rowCount;
 }
+
 int AP2DataPlot2DModel::columnCount ( const QModelIndex & parent) const
 {
+    Q_UNUSED(parent)
     return m_columnCount;
 }
+
 QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
 {
-    if (role != Qt::DisplayRole)
+    if ((role != Qt::DisplayRole) || !index.isValid())
     {
         return QVariant();
     }
-    if (!index.isValid())
+    if (index.row() >= m_rowCount)
     {
+        QLOG_ERROR() << "Accessing a Database row that does not exist! Row was: " << index.row();
         return QVariant();
-    }
-
-    quint64 tableindex = index.row();
-    if (m_rowToTableMap.contains(index.row()))
-    {
-        tableindex = m_rowToTableMap.value(index.row()).first;
-    } else {
     }
 
     if (index.column() == 0)
     {
-        if (index.row() < m_fmtStringList.size())
-        {
-            //Index is a FMT msg
-            return QString::number(index.row());
-        }
-        else
-        {
-            //Index is a normal table message, get the index from m_rowToTableMap
-            return QString::number(tableindex);
-        }
-    }
-
-    QString tablename = m_rowToTableMap.value(index.row()).second;
-    QSqlQuery tablequery(m_sharedDb);
-    QString val = QString::number(tableindex);
-    tablequery.prepare("SELECT * FROM " + tablename + " WHERE idx = " + val);
-    if (!tablequery.exec())
-    {
-        qDebug() << "Unable to exec table query:" << tablequery.lastError().text();
-        return QVariant();
-    }
-    if (!tablequery.next())
-    {
-        return QVariant();
-    }
-    if ((index.column()-1) >= tablequery.record().count())
-    {
-        return QVariant();
-    }
-    if (index.column() == 0)
-    {
-        return tablequery.value(0);
+        // Column 0 is the DB index of the log data
+        return QVariant(QString::number(m_rowIndexToDBIndex[index.row()].first));
     }
     if (index.column() == 1)
     {
-        return tablename;
+        // Column 1 is the name of the log data (ATT,ATUN...)
+        return QVariant(m_rowIndexToDBIndex[index.row()].second);
     }
-    return tablequery.value((index.column()-1));
+
+    // The data is mostly read row by row. This means first all columns of row 1 are read and then
+    // all columns of row 2 and than all colums of row 3 and so on.
+    // This cache reads a whole row from DB and caches it internally. All consecutive accesses to this
+    // row will be answered from the cache.
+    if (index.row() != m_prefetchedRowIndex.row())
+    {
+        m_prefetchedRowData.clear();
+        QString tableIndex = QString::number(m_rowIndexToDBIndex[index.row()].first);
+        QString tableName  = m_rowIndexToDBIndex[index.row()].second;
+
+        queryPtr selectRowQuery = m_msgNameToPrepearedSelectQuery.value(tableName);
+        selectRowQuery->bindValue(":val", tableIndex);
+        if (selectRowQuery->exec())
+        {
+            int recordCount = selectRowQuery->record().count();
+            if (!selectRowQuery->next())
+            {
+                return QVariant();
+            }
+            for (int i = 0; i < recordCount; ++i)
+            {
+                m_prefetchedRowData.push_back(selectRowQuery->value(i));
+            }
+            m_prefetchedRowIndex = index;
+            selectRowQuery->finish();   // must be called because we will reuse this query
+        }
+        else
+        {
+            qDebug() << "Unable to exec table query:" << selectRowQuery->lastError().text();
+        }
+    }
+
+    if ((index.column()-1) >= m_prefetchedRowData.size())
+    {
+        return QVariant();
+    }
+    return m_prefetchedRowData[index.column()-1];
 }
+
 void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex previous)
 {
+    Q_UNUSED(previous)
+    if (!current.isValid())
+    {
+        return;
+    }
     if (m_currentRow == current.row())
     {
         return;
@@ -459,11 +372,10 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
         return;
     }
     //Grab the index
-    int rowid = data(createIndex(current.row(),0)).toString().toInt();
 
-    if (m_rowToTableMap.contains(current.row()))
+    if (current.row() < m_rowCount)
     {
-        m_currentHeaderItems = m_headerStringList.value(m_rowToTableMap[current.row()].second);
+        m_currentHeaderItems = m_headerStringList.value(m_rowIndexToDBIndex[current.row()].second);
     }
     else
     {
@@ -471,21 +383,18 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
     }
     emit headerDataChanged(Qt::Horizontal,0,9);
 }
+
 bool AP2DataPlot2DModel::hasType(const QString& name)
 {
-    return m_msgNameToInsertQuery.contains(name);
+    return m_msgNameToPrepearedInsertQuery.contains(name);
 }
 
-bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,QStringList names)
+bool AP2DataPlot2DModel::addType(const QString &name, const unsigned int type, const int length, const QString &types, const QStringList &names)
 {
-    if (!m_msgNameToInsertQuery.contains(name))
+    if (!m_msgNameToPrepearedInsertQuery.contains(name))
     {
         QString createstring = makeCreateTableString(name,types,names);
-        QString variablenames = "";
-        for (int i=0;i<names.size();i++)
-        {
-            variablenames += names.at(i) + ((i < names.size()-1) ? "," : "");
-        }
+        QString variablenames = names.join(",");
         QString insertstring = makeInsertTableString(name,names);
 
         //if (!query->prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (:idx,:typeid,:length,:name,:format,:val);"))
@@ -516,7 +425,7 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
             return false;
         }
 
-        m_msgNameToInsertQuery.insert(name,insertstring.replace("insert or replace","insert"));
+        // Create table for measurement of type "name"
         QSqlQuery create(m_sharedDb);
         if (!create.prepare(createstring))
         {
@@ -528,73 +437,77 @@ bool AP2DataPlot2DModel::addType(QString name,int type,int length,QString types,
             setError("Unable to exec create: " + create.lastError().text());
             return false;
         }
+        // Prepare an insert query for the created table above and store it to speed up the inserting process later
+        queryPtr prepQuery = queryPtr(new QSqlQuery(m_sharedDb));
+        if (!prepQuery->prepare(insertstring.replace("insert or replace","insert")))
+        {
+            setError("Error preparing insertquery: " + name + " " + prepQuery->lastError().text());
+            return false;
+        }
+        m_msgNameToPrepearedInsertQuery.insert(name, prepQuery);
+        // And prepare a select query for rows of this table
+        prepQuery = queryPtr(new QSqlQuery(m_sharedDb));
+        if (!prepQuery->prepare("SELECT * FROM " + name + " WHERE idx = :val"))
+        {
+            setError("Error preparing select query: " + name + " " + prepQuery->lastError().text());
+            return false;
+        }
+        m_msgNameToPrepearedSelectQuery.insert(name, prepQuery);
+
     }
     if (!m_headerStringList.contains(name))
     {
-        m_headerStringList.insert(name,QList<QString>());
-        //QStringList valsplit = fmtquery.value("val").toString().split(",");
-        foreach (QString val,names)
-        {
-            m_headerStringList[name].append(val);
-        }
+        m_headerStringList.insert(name, names);
     }
     return true;
 }
-QMap<quint64,QVariant> AP2DataPlot2DModel::getValues(const QString& parent,const QString& child)
+QMap<double,QVariant> AP2DataPlot2DModel::getValues(const QString& parent, const QString& child, bool useTimeAsIndex)
 {
-    int index = getChildIndex(parent,child);
+    int valueColum = getChildColum(parent,child);
+    int indexColum = 0; // Default index is always colum 0
+    QMap<double,QVariant> retval;
+
+    if (useTimeAsIndex)
+    {
+        indexColum = getChildColum(parent, m_timeStampColumName);
+    }
     QSqlQuery itemquery(m_sharedDb);
     itemquery.prepare("SELECT * FROM '" + parent + "';");
     itemquery.exec();
-    QMap<quint64,QVariant> retval;
     while (itemquery.next())
     {
         QSqlRecord record = itemquery.record();
-        quint64 graphindex = record.value(0).toLongLong();
-        QVariant graphvalue= record.value(index+1);
+        double graphindex = useTimeAsIndex ? record.value(indexColum).toDouble() / m_tsScaleDivisor : record.value(indexColum).toDouble();
+        QVariant graphvalue = record.value(valueColum);
         retval.insert(graphindex,graphvalue);
     }
+
     return retval;
 }
 
-int AP2DataPlot2DModel::getChildIndex(const QString& parent,const QString& child)
+int AP2DataPlot2DModel::getChildColum(const QString& parent,const QString& child)
 {
+    // From headerStringList we can determine which index (colum) is used for child data
+    // Be aware that the datarow in DB has always one colum more than the header strings
+    // cause of the added DB index.
+    if (!m_headerStringList.contains(parent))
+    {
+        return -1;  // looks like we do not have this data.
+    }
 
-    QSqlQuery tablequery(m_sharedDb);
-    //tablequery.prepare("SELECT * FROM '" + parent + "';");
-    if (!tablequery.prepare("SELECT * FROM 'FMT' WHERE name = '" + parent + "';"))
+    // Try to find child in header strings
+    QList<QString> headerStrings =  m_headerStringList.value(parent);
+    for (int i = 0; i < headerStrings.size(); i++)
     {
-        QLOG_DEBUG() << "Error preparing select:" + tablequery.lastError().text();
-        return -1;
-    }
-    if (!tablequery.exec())
-    {
-        QLOG_DEBUG() << "Error execing select:" + tablequery.lastError().text();
-        return -1;
-    }
-    if (!tablequery.next())
-    {
-        return -1;
-    }
-    QSqlRecord record = tablequery.record();
-    QStringList valuessplit = record.value(5).toString().split(","); //comma delimited list of names
-    bool found = false;
-    int index = 0;
-    for (int i=0;i<valuessplit.size();i++)
-    {
-        if (valuessplit.at(i) == child)
+        if (headerStrings[i] == child)
         {
-            found = true;
-            index = i;
-            i = valuessplit.size();
+            return i + 1;   // found! increase by one cause of index
         }
     }
-    if (!found)
-    {
-        return -1;
-    }
-    return index;
+
+    return -1;
 }
+
 bool AP2DataPlot2DModel::startTransaction()
 {
     if (!m_sharedDb.transaction())
@@ -614,37 +527,42 @@ bool AP2DataPlot2DModel::endTransaction()
     return true;
 }
 
-bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  values,quint64 index)
+bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const int index, const QString &timeColName)
 {
     if (m_firstIndex == 0)
     {
         m_firstIndex = index;
     }
     m_lastIndex = index;
-    //Add a row to a previously defined message type, NAME.Jy   Th
-    QSqlQuery query(m_sharedDb);
-    if (m_msgNameToInsertQuery.contains(name))
+
+    //Add a row to a previously defined message type using the already prepared insert query
+    queryPtr insertQuery = m_msgNameToPrepearedInsertQuery.value(name);
+    if (!insertQuery)
     {
-        if (!query.prepare(m_msgNameToInsertQuery.value(name)))
-        {
-           setError("Unable to prepare query: " + query.lastError().text());
-           return false;
-        }
+        setError("No prepared insert query available for message: " + name);
+        return false;
     }
-    query.bindValue(QString(":idx"),index);
+    insertQuery->bindValue(":idx", index);
+    bool timeFound = false;
     for (int i=0;i<values.size();i++)
     {
-        query.bindValue(QString(":") + values.at(i).first,values.at(i).second);
+        insertQuery->bindValue(":" + values.at(i).first, values.at(i).second);
+        if (!timeFound && (values.at(i).first == timeColName))
+        {
+            m_TimeIndexList.push_back(QPair<quint64, quint64>(values.at(i).second.toInt(), index));
+            timeFound = true;
+        }
     }
-    if (!query.exec())
+    if (!insertQuery->exec())
     {
-        setError("Error execing insert query: " + query.lastError().text());
+        setError("Error execing insert query: " + insertQuery->lastError().text());
         return false;
     }
     else
     {
-        m_indexinsertquery->bindValue(":idx",index);
-        m_indexinsertquery->bindValue(":value",name);
+        insertQuery->finish();  // must be called in case of a reusage of this query
+        m_indexinsertquery->bindValue(":idx", index);
+        m_indexinsertquery->bindValue(":value", name);
         if (!m_indexinsertquery->exec())
         {
             setError("Error execing:" + m_indexinsertquery->executedQuery() + " error was " + m_indexinsertquery->lastError().text());
@@ -659,14 +577,10 @@ bool AP2DataPlot2DModel::addRow(QString name,QList<QPair<QString,QVariant> >  va
     {
         m_columnCount = values.size() +2;
     }
-    m_rowToTableMap.insert(m_rowCount++,QPair<quint64,QString>(index,name));
-   // if (!m_sharedDb.commit())
-   // {
-   //     setError("Error commiting to database " + m_sharedDb.lastError().text());
-   //     return false;
-   // }
-    return true;
 
+    m_rowIndexToDBIndex.push_back(QPair<quint64,QString>(index,name));
+    m_rowCount++;
+    return true;
 }
 QString AP2DataPlot2DModel::makeCreateTableString(QString tablename, QString formatstr,QStringList variablestr)
 {
@@ -750,7 +664,7 @@ QString AP2DataPlot2DModel::makeCreateTableString(QString tablename, QString for
         }
         else
         {
-        QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << typeCode;
+            QLOG_DEBUG() << "AP2DataPlotThread::makeCreateTableString(): NEW UNKNOWN VALUE" << typeCode;
         }
     }
     mktable.append(");");
@@ -787,7 +701,7 @@ bool AP2DataPlot2DModel::createFMTTable()
     }
     return true;
 }
-bool AP2DataPlot2DModel::createFMTInsert(QSqlQuery *query)
+bool AP2DataPlot2DModel::createFMTInsert(queryPtr &query)
 {
     if (!query->prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (:idx,:typeid,:length,:name,:format,:val);"))
     {
@@ -811,7 +725,7 @@ bool AP2DataPlot2DModel::createIndexTable()
     }
     return true;
 }
-bool AP2DataPlot2DModel::createIndexInsert(QSqlQuery *query)
+bool AP2DataPlot2DModel::createIndexInsert(queryPtr &query)
 {
     if (!query->prepare("INSERT INTO 'INDEX' (idx,value) values (:idx,:value);"))
     {
@@ -833,4 +747,128 @@ quint64 AP2DataPlot2DModel::getLastIndex()
 quint64 AP2DataPlot2DModel::getFirstIndex()
 {
     return m_firstIndex;
+}
+
+void AP2DataPlot2DModel::setAllRowsHaveTime(bool allHaveTime, const QString &timeColumName, const double scaling)
+{
+    m_timeStampColumName = timeColumName;
+    m_tsScaleDivisor = scaling;
+    m_allRowsHaveTime = allHaveTime;
+    m_canUseTimeOnX  = true;
+    m_canUseTimeOnX &= setUpMaxTime();
+    setUpMinTime();     // if this fails min time will be set to 0 whih is OK
+}
+
+bool AP2DataPlot2DModel::getAllRowsHaveTime()
+{
+    return m_allRowsHaveTime;
+}
+
+bool AP2DataPlot2DModel::setUpMinTime()
+{
+    m_minTime = 0;    // force to be 0 in case of a failure
+    if (m_allRowsHaveTime)
+    {
+        QSqlQuery minTimeQuery(m_sharedDb);
+        minTimeQuery.prepare("SELECT " + m_timeStampColumName + " from 'STRT';");
+        if (!minTimeQuery.exec())
+        {
+            setError("Unable to exec getMinTime query: " + minTimeQuery.lastError().text());
+            return false;
+        }
+        if (!minTimeQuery.next())
+        {
+            setError("Result of getMinTime query was empty!");
+            return false;
+        }
+        m_minTime = minTimeQuery.value(0).toLongLong();
+        return true;
+    }
+    return false;
+}
+
+bool AP2DataPlot2DModel::setUpMaxTime()
+{
+    m_maxTime = 0; // Always force to 0
+    if (m_allRowsHaveTime)
+    {
+        QString maxTableName;
+        QSqlQuery maxTimeQuery(m_sharedDb);
+        maxTimeQuery.prepare("SELECT value FROM 'INDEX' WHERE idx = (select max(idx) from 'INDEX');");
+        if (!maxTimeQuery.exec())
+        {
+            setError("Unable to select max index from 'INDEX': " + maxTimeQuery.lastError().text());
+            return false;
+        }
+        if (!maxTimeQuery.next())
+        {
+            setError("Result of select max index from 'INDEX' was empty!");
+            return false;
+        }
+        maxTableName = maxTimeQuery.value(0).toString();
+
+        QSqlQuery maxTimeQuery2(m_sharedDb);
+        maxTimeQuery2.prepare("SELECT " + m_timeStampColumName + " FROM '" + maxTableName + "' WHERE idx = (select max(idx) from '" + maxTableName + "');");
+        if (!maxTimeQuery2.exec())
+        {
+            setError("Unable to select max " + m_timeStampColumName + " from " + maxTableName + ": " + maxTimeQuery2.lastError().text());
+            return false;
+        }
+        if (!maxTimeQuery2.next())
+        {
+            setError("Result of select max " + m_timeStampColumName + " from " + maxTableName + " query was empty!");
+            return false;
+        }
+        m_maxTime = maxTimeQuery2.value(0).toLongLong();
+        return true;
+    }
+    return false;
+}
+
+quint64 AP2DataPlot2DModel::getMinTime()
+{
+    return m_minTime;
+}
+
+quint64 AP2DataPlot2DModel::getMaxTime()
+{
+    return m_maxTime;
+}
+
+bool AP2DataPlot2DModel::canUseTimeOnX()
+{
+    return m_canUseTimeOnX && m_allRowsHaveTime;
+}
+
+double AP2DataPlot2DModel::getTimeDivisor()
+{
+    return m_tsScaleDivisor;
+}
+
+quint64 AP2DataPlot2DModel::getNearestIndexForTimestamp(const double timevalue)
+{
+    if (m_allRowsHaveTime)
+    {
+        quint64 time = static_cast<quint64>(m_tsScaleDivisor * timevalue);
+        int intervalSize = m_TimeIndexList.size();
+        int intervalStart = 0;
+        int middle = 0;
+
+        while (intervalSize > 1)
+        {
+            middle = intervalStart + intervalSize / 2;
+            quint64 temp = m_TimeIndexList[middle].first;
+            if (time > temp)
+            {
+                intervalStart = middle;
+            }
+            else if (time == temp)
+            {
+                break;
+            }
+            intervalSize = intervalSize / 2;
+        }
+        return m_TimeIndexList[middle].second;
+    }
+    return 0;
 }

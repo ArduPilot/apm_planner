@@ -270,7 +270,6 @@
                  </layout>
                 </item>
                </layout>
-               <zorder></zorder>
               </widget>
              </item>
              <item row="1" column="0">
@@ -879,7 +878,6 @@
                  </layout>
                 </item>
                </layout>
-               <zorder></zorder>
               </widget>
              </item>
             </layout>

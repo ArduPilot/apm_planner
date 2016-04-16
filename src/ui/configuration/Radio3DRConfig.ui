@@ -1038,7 +1038,6 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
   <zorder>label</zorder>
-  <zorder></zorder>
  </widget>
  <resources/>
  <connections/>

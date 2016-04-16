@@ -254,9 +254,6 @@ void BatteryMonitorConfig::activeUASSet(UASInterface *uas)
     connect(uas,SIGNAL(batteryChanged(UASInterface*,double,double,double,int)),this,SLOT(batteryChanged(UASInterface*,double,double,double,int)));
 
 }
-void BatteryMonitorConfig::alertOnLowClicked(bool checked)
-{
-}
 
 void BatteryMonitorConfig::calcDividerSet()
 {

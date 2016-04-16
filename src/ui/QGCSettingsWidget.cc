@@ -36,6 +36,8 @@ QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
 
 void QGCSettingsWidget::showEvent(QShowEvent *evt)
 {
+    Q_UNUSED(evt)
+
     if (!m_init)
     {
         m_init = true;
@@ -120,6 +122,11 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
 
         ui->hideDonateButtonCheckBox->setChecked(settings.value("USER_DONATED", false).toBool());
         connect(ui->hideDonateButtonCheckBox, SIGNAL(clicked(bool)), this, SLOT(setHideDonateButton(bool)));
+
+        settings.beginGroup("ARDUPILOT");
+        ui->mavLinkSeverityCompatCheckBox->setChecked(settings.value("STATUSTEXT_COMPAT_MODE", false).toBool());
+        settings.endGroup();
+        connect(ui->mavLinkSeverityCompatCheckBox, SIGNAL(clicked(bool)), this, SLOT(setMavlinkSeverityCompatibility(bool)));
     }
 }
 
@@ -294,5 +301,14 @@ void QGCSettingsWidget::setHideDonateButton(bool state)
 {
     QSettings settings;
     settings.setValue("USER_DONATED", state);
+    settings.sync();
+}
+
+void QGCSettingsWidget::setMavlinkSeverityCompatibility(bool state)
+{
+    QSettings settings;
+    settings.beginGroup("ARDUPILOT");
+    settings.setValue("STATUSTEXT_COMPAT_MODE", state);
+    settings.endGroup();
     settings.sync();
 }

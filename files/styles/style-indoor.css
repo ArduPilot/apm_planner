@@ -22,7 +22,6 @@ QSplitter::handle:vertical {
 QToolTip {
     background-color: #3D5368;
     border: 0px solid #379AC3;
-    margin: 3px;
     border-radius: 3px;
     color: #DDDDDF;
 }

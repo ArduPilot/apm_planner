@@ -14,6 +14,7 @@ DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
 DataSelectionScreen::~DataSelectionScreen()
 {
 }
+
 void DataSelectionScreen::clearSelectionButtonClicked()
 {
     QList<QTreeWidgetItem*> items = ui.treeWidget->findItems("",Qt::MatchContains | Qt::MatchRecursive);
@@ -28,7 +29,7 @@ void DataSelectionScreen::clearSelectionButtonClicked()
             }
         }
     }
-
+    m_enabledList.clear();
 }
 
 void DataSelectionScreen::enableItem(QString name)
@@ -50,7 +51,6 @@ void DataSelectionScreen::enableItem(QString name)
                 {
                     items[i]->setCheckState(0,Qt::Checked);
                     ui.treeWidget->scrollToItem(items[i]);
-                    m_enabledList.append(name);
                 }
                 return;
             }
@@ -82,13 +82,29 @@ void DataSelectionScreen::disableItem(QString name)
                 if (items[i]->checkState(0) != Qt::Unchecked)
                 {
                     items[i]->setCheckState(0,Qt::Unchecked);
-                    m_enabledList.removeOne(name);
                     return;
                 }
             }
         }
     }
     QLOG_ERROR() << "No item found in DataSelectionScreen:disableItem:" << name;
+}
+
+QList<QString> DataSelectionScreen::disableAllItems()
+{
+    // Store enabled List for returning
+    QList<QString> tempList(m_enabledList);
+    // Clear all selected items - its like perssing the clear button
+    clearSelectionButtonClicked();
+    return tempList;
+}
+
+void DataSelectionScreen::enableItemList(QList<QString> &itemList)
+{
+    foreach (QString item, itemList)
+    {
+        enableItem(item);
+    }
 }
 
 void DataSelectionScreen::addItem(QString name)
@@ -128,6 +144,7 @@ void DataSelectionScreen::addItem(QString name)
 }
 void DataSelectionScreen::onItemChanged(QTreeWidgetItem* item,int column)
 {
+    Q_UNUSED(column)
     if (!item->parent())
     {
         return;

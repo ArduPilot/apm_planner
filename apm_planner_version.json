@@ -5,20 +5,20 @@
         {
             "platform": "osx",
             "type": "stable",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.18_osx.dmg",
-            "name" : "apm_planner_2.0.18_osx.dmg",
-            "version" : "2.0.18",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.20_osx.dmg",
+            "name" : "apm_planner_2.0.20_osx.dmg",
+            "version" : "2.0.20",
             "sha" : "",
-            "date" : "2015-07-25"
+            "date" : "2016-03-17"
         },
         {
             "platform": "win",
             "type": "stable",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.18_win.exe",
-            "name" : "apm_planner_2.0.18_win.exe",
-            "version": "2.0.18",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/apm_planner_2.0.20_win.exe",
+            "name" : "apm_planner_2.0.20_win.exe",
+            "version": "2.0.20",
             "sha" : "",
-            "date" : "2015-07-25"
+            "date" : "2015-03-17"
         },
         {
             "platform": "ubuntu_trusty",
@@ -41,20 +41,20 @@
         {
             "platform": "osx",
             "type": "beta",
-            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.19-rc4_osx.dmg",
-            "name" : "apm_planner_2.0.19-rc4_osx.dmg",
-            "version" : "2.0.19-rc4",
+            "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.20_osx.dmg",
+            "name" : "apm_planner_2.0.20_osx.dmg",
+            "version" : "2.0.20",
             "sha" : "",
-            "date" : "2015-10-20"
+            "date" : "2016-03-17"
         },
         {
             "platform": "win",
             "type": "beta",
             "url": "http://firmware.diydrones.com/Tools/APMPlanner/beta/apm_planner_2.0.19-rc4_win.exe",
-            "name" : "apm_planner_2.0.19-rc4_win.exe",
-            "version": "2.0.19-rc4",
+            "name" : "apm_planner_2.0.20_win.exe",
+            "version": "2.0.20",
             "sha" : "",
-            "date" : "2015-10-20"
+            "date" : "2016-03-17"
         },
         {
             "platform": "ubuntu_trusty",

@@ -20,7 +20,6 @@ protected:
 private:
     UASQuickViewTextLabel *titleLabel;
     UASQuickViewTextLabel *valueLabel;
-    QSpacerItem *spacerItem;
 };
 
 #endif // UASQUICKVIEWTEXTITEM_H

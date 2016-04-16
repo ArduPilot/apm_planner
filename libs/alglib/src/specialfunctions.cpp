@@ -5238,7 +5238,7 @@ static void bessel_besselmfirstcheb(double c,
      double* b2,
      ae_state *_state)
 {
-
+    (void)_state;
 
     *b0 = c;
     *b1 = 0.0;
@@ -5259,7 +5259,7 @@ static void bessel_besselmnextcheb(double x,
      double* b2,
      ae_state *_state)
 {
-
+    (void)_state;
 
     *b2 = *b1;
     *b1 = *b0;
@@ -5279,7 +5279,7 @@ static void bessel_besselm1firstcheb(double c,
      double* b2,
      ae_state *_state)
 {
-
+    (void)_state;
 
     *b0 = c;
     *b1 = 0.0;
@@ -5300,7 +5300,7 @@ static void bessel_besselm1nextcheb(double x,
      double* b2,
      ae_state *_state)
 {
-
+    (void)_state;
 
     *b2 = *b1;
     *b1 = *b0;
@@ -5313,6 +5313,8 @@ static void bessel_besselasympt0(double x,
      double* qzero,
      ae_state *_state)
 {
+    (void)_state;
+
     double xsq;
     double p2;
     double q2;
@@ -5361,6 +5363,8 @@ static void bessel_besselasympt1(double x,
      double* qzero,
      ae_state *_state)
 {
+    (void)_state;
+
     double xsq;
     double p2;
     double q2;
@@ -6648,6 +6652,8 @@ double chebyshevcalculate(ae_int_t r,
      double x,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     double a;
     double b;
@@ -6720,6 +6726,8 @@ double chebyshevsum(/* Real    */ ae_vector* c,
      double x,
      ae_state *_state)
 {
+    (void)_state;
+
     double b1;
     double b2;
     ae_int_t i;
@@ -7004,6 +7012,8 @@ Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
 *************************************************************************/
 double dawsonintegral(double x, ae_state *_state)
 {
+    (void)_state;
+
     double x2;
     double y;
     ae_int_t sg;
@@ -8295,6 +8305,8 @@ Result:
 *************************************************************************/
 double hermitecalculate(ae_int_t n, double x, ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     double a;
     double b;
@@ -8354,6 +8366,8 @@ double hermitesum(/* Real    */ ae_vector* c,
      double x,
      ae_state *_state)
 {
+    (void)_state;
+
     double b1;
     double b2;
     ae_int_t i;
@@ -8553,6 +8567,8 @@ Result:
 *************************************************************************/
 double laguerrecalculate(ae_int_t n, double x, ae_state *_state)
 {
+    (void)_state;
+
     double a;
     double b;
     double i;
@@ -8595,6 +8611,8 @@ double laguerresum(/* Real    */ ae_vector* c,
      double x,
      ae_state *_state)
 {
+    (void)_state;
+
     double b1;
     double b2;
     ae_int_t i;
@@ -8654,6 +8672,8 @@ Result:
 *************************************************************************/
 double legendrecalculate(ae_int_t n, double x, ae_state *_state)
 {
+    (void)_state;
+
     double a;
     double b;
     ae_int_t i;
@@ -8701,6 +8721,8 @@ double legendresum(/* Real    */ ae_vector* c,
      double x,
      ae_state *_state)
 {
+    (void)_state;
+
     double b1;
     double b2;
     ae_int_t i;
@@ -9624,7 +9646,7 @@ static void trigintegrals_chebiterationshichi(double x,
      double* b2,
      ae_state *_state)
 {
-
+    (void)_state;
 
     *b2 = *b1;
     *b1 = *b0;

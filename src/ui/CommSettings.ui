@@ -230,7 +230,6 @@
   <zorder>connectionStatusLabel</zorder>
   <zorder>advCheckBox</zorder>
   <zorder>protocolTypeGroupBox</zorder>
-  <zorder>verticalSpacer</zorder>
  </widget>
  <resources/>
  <connections>

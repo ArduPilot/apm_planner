@@ -48,7 +48,9 @@ This file is part of the QGROUNDCONTROL project
 #include "UASControlWidget.h"
 #include "UASInfoWidget.h"
 #include "WaypointList.h"
+#if (defined ENABLE_CAMRAVIW)
 #include "CameraView.h"
+#endif // ENABLE_CAMRAVIW
 #include "UASListWidget.h"
 //#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"
@@ -90,7 +92,6 @@ class QGCMAVLinkMessageSender;
 class QGCFirmwareUpdate;
 class QSplashScreen;
 class QGCStatusBar;
-class DroneshareDialog;
 
 /**
  * @brief Main Application Window
@@ -471,7 +472,6 @@ private slots:
     void autoUpdateCancelled(QString version);
     void showNoUpdateAvailDialog();
 
-    void showDroneshareDialog();
     void showTerminalConsole();
     void closeTerminalConsole();
 
@@ -492,7 +492,6 @@ private:
     AutoUpdateCheck m_autoUpdateCheck;
     AutoUpdateDialog* m_dialog;
 
-    DroneshareDialog* m_droneshareDialog;
     QDialog* m_terminalDialog;
 
 };

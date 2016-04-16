@@ -33,7 +33,17 @@ This file is part of the QGROUNDCONTROL project
 
 #include <cmath>
 #include <string.h>
+#include "src/QGC.h"
 #include <QSettings>
+
+/* For safty set video mode to be 640*480 by default
+ *
+ * Change the array index to switch different resolutions
+ * More settings in <Freenect.h>
+ */
+const freenect_frame_mode FREENECT_VIDEO_RGB_MEDIUM = supported_video_modes[1];
+const freenect_frame_mode FREENECT_DEPTH_11_BIT_MEDIUM = supported_depth_modes[0];
+
 
 Freenect::Freenect()
     : context(NULL)
@@ -116,10 +126,13 @@ Freenect::init(int userDeviceNumber)
     if (freenect_set_led(device, LED_RED) != 0) {
         return false;
     }
-    if (freenect_set_video_format(device, FREENECT_VIDEO_RGB) != 0) {
+
+    if (freenect_set_video_mode(device, FREENECT_VIDEO_RGB_MEDIUM) != 0) {
+    //if (freenect_set_video_format(device, FREENECT_VIDEO_RGB) != 0) {
         return false;
     }
-    if (freenect_set_depth_format(device, FREENECT_DEPTH_11BIT) != 0) {
+    if (freenect_set_depth_mode(device, FREENECT_DEPTH_11_BIT_MEDIUM) != 0) {
+    //if (freenect_set_depth_format(device, FREENECT_DEPTH_11BIT) != 0) {
         return false;
     }
     freenect_set_video_callback(device, videoCallback);

@@ -471,13 +471,10 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 playArmStateChangedAudioMessage(systemIsArmed);
             }
 
-            bool stateHasChanged = false;
-            bool modeHasChanged = false;
             bool customModeHasChanged = false;
 
             if ((state.system_status != static_cast<uint8_t>(this->status))) {
                 QLOG_DEBUG() << "UAS: new system_status" << state.system_status;
-                stateHasChanged = true;
                 this->status = static_cast<uint8_t>(state.system_status);
                 getStatusForCode((int)state.system_status, uasState, stateDescription);
                 emit statusChanged(this, uasState, stateDescription);
@@ -488,7 +485,6 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             receivedMode = true;
             if (base_mode != state.base_mode) {
                 QLOG_DEBUG() << "UAS: new base mode " << state.base_mode;
-                modeHasChanged = true;
                 receivedMode = true;
                 base_mode = state.base_mode;
                 shortModeText = getShortModeTextFor(base_mode);
@@ -1052,7 +1048,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_mission_item_reached_t wpr;
             mavlink_msg_mission_item_reached_decode(&message, &wpr);
             waypointManager.handleWaypointReached(message.sysid, message.compid, &wpr);
-            QString text = QString("System %1 reached waypoint %2").arg(getUASName()).arg(wpr.seq);
+            QString text = QString("%1 reached waypoint %2").arg(getUASName()).arg(wpr.seq);
             GAudioOutput::instance()->say(text);
             emit textMessageReceived(message.sysid, message.compid, 0, text);
         }
@@ -2450,21 +2446,21 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
         // TODO: This is a hack for MAV_AUTOPILOT_ARDUPILOTMEGA until the new version of MAVLink and a fix for their param handling.
         if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA)
         {
-            switch (value.type())
+            switch (static_cast<QMetaType::Type>(value.type()))
             {
-            case QVariant::Char:
+            case QMetaType::QChar:
                 union_value.param_float = static_cast<char>(value.toChar().toLatin1());
                 p.param_type = MAV_PARAM_TYPE_INT8;
                 break;
-            case QVariant::Int:
+            case QMetaType::Int:
                 union_value.param_float = value.toInt();
                 p.param_type = MAV_PARAM_TYPE_INT32;
                 break;
-            case QVariant::UInt:
+            case QMetaType::UInt:
                 union_value.param_float = value.toUInt();
                 p.param_type = MAV_PARAM_TYPE_UINT32;
                 break;
-            case QVariant::Double:
+            case QMetaType::Double:
             case QMetaType::Float:
                 union_value.param_float = value.toFloat();
                 p.param_type = MAV_PARAM_TYPE_REAL32;
@@ -2476,21 +2472,21 @@ void UAS::setParameter(const int compId, const QString& paramId, const QVariant&
         }
         else
         {
-            switch (value.type())
+            switch (static_cast<QMetaType::Type>(value.type()))
             {
-            case QVariant::Char:
+            case QMetaType::QChar:
                 union_value.param_int8 = static_cast<unsigned char>(value.toChar().toLatin1());
                 p.param_type = MAV_PARAM_TYPE_INT8;
                 break;
-            case QVariant::Int:
+            case QMetaType::Int:
                 union_value.param_int32 = value.toInt();
                 p.param_type = MAV_PARAM_TYPE_INT32;
                 break;
-            case QVariant::UInt:
+            case QMetaType::UInt:
                 union_value.param_uint32 = value.toUInt();
                 p.param_type = MAV_PARAM_TYPE_UINT32;
                 break;
-            case QVariant::Double:
+            case QMetaType::Double:
             case QMetaType::Float:
                 union_value.param_float = value.toFloat();
                 p.param_type = MAV_PARAM_TYPE_REAL32;
@@ -3001,24 +2997,6 @@ uint16_t UAS::scaleJoystickToRC(double v, int channel) const
     return ppm;
 }
 
-void UAS::setManual6DOFControlCommands(double x, double y, double z, double roll, double pitch, double yaw)
-{
-    // If system has manual inputs enabled and is armed
-    if(((base_mode & MAV_MODE_FLAG_DECODE_POSITION_MANUAL) && (base_mode & MAV_MODE_FLAG_DECODE_POSITION_SAFETY)) || (base_mode & MAV_MODE_FLAG_HIL_ENABLED))
-    {
-//        mavlink_message_t message;
-//        mavlink_msg_setpoint_6dof_pack(systemId, componentId, &message, this->uasId, (float)x, (float)y, (float)z, (float)roll, (float)pitch, (float)yaw);
-//        sendMessage(message);
-//        QLOG_DEBUG() << __FILE__ << __LINE__ << ": SENT 6DOF CONTROL MESSAGE: x" << x << " y: " << y << " z: " << z << " roll: " << roll << " pitch: " << pitch << " yaw: " << yaw;
-
-//        //emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
-    }
-    else
-    {
-        QLOG_DEBUG() << "3DMOUSE/MANUAL CONTROL: IGNORING COMMANDS: Set mode to MANUAL to send 3DMouse commands first";
-    }
-}
-
 void UAS::logRequestList(uint16_t start, uint16_t end)
 {
     QLOG_DEBUG() << "send logRequestList start:" << start << " end:" << end;
@@ -3246,31 +3224,6 @@ void UAS::enableHilJSBSim(bool enable, QString options)
     {
         stopHil();
     }
-}
-
-/**
-* If enabled, connect the X-plane gear link.
-*/
-void UAS::enableHilXPlane(bool enable)
-{
-//    QGCXPlaneLink* link = dynamic_cast<QGCXPlaneLink*>(simulation);
-//    if (!link || !simulation) {
-//        if (simulation) {
-//            stopHil();
-//            delete simulation;
-//        }
-//        QLOG_DEBUG() << "CREATED NEW XPLANE LINK";
-//        simulation = new QGCXPlaneLink(this);
-//    }
-//    // Connect X-Plane Link
-//    if (enable)
-//    {
-//        startHil();
-//    }
-//    else
-//    {
-//        stopHil();
-//    }
 }
 
 /**

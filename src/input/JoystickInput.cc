@@ -72,7 +72,7 @@ const QString JoystickInput::getActiveJoystickId()
     return QString::fromStdString(joystickId);
 }
 
-const int JoystickInput::getNumberOfButtons() const
+int JoystickInput::getNumberOfButtons() const
 {
     return SDL_JoystickNumButtons(joystick);
 }
@@ -295,11 +295,11 @@ bool JoystickInput::sdlJoystickUpdate(unsigned timeout)
     if (SDL_TICKS_PASSED(ticks, valuesTicks + timeout))
         goto yes;
 
-    if (abs(currentThrustValue - thrustValue) > abs(thrustValue * 0.01)
-        || abs(currentXValue - xValue) > abs(xValue * 0.01)
-        || abs(currentYValue - yValue) > abs(yValue * 0.01)
-        || abs(currentYawValue - yawValue) > abs(yawValue * 0.01)
-        || abs(currentHatValue - hatValue) > abs(hatValue * 0.01))
+    if (abs(currentThrustValue - thrustValue) > std::abs(thrustValue * 0.01)
+        || abs(currentXValue - xValue) > std::abs(xValue * 0.01)
+        || abs(currentYValue - yValue) > std::abs(yValue * 0.01)
+        || abs(currentYawValue - yawValue) > std::abs(yawValue * 0.01)
+        || abs(currentHatValue - hatValue) > std::abs(hatValue * 0.01))
     {
         goto yes;
     }

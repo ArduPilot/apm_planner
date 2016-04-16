@@ -129,7 +129,6 @@ private:
 
 private:
 	bool hardwareConnect(void);
-    void restartConnection();
 
     bool                _running;
     QMutex              _mutex;

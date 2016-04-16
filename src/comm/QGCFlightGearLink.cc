@@ -320,28 +320,6 @@ void QGCFlightGearLink::readBytes()
         ymag_ned = ymag_ned / tempMagLength;
         zmag_ned = zmag_ned / tempMagLength;
 
-        //transform magnetic measurement to body frame coordinates
-        double cosPhi = cos(roll);
-        double sinPhi = sin(roll);
-        double cosThe = cos(pitch);
-        double sinThe = sin(pitch);
-        double cosPsi = cos(yaw);
-        double sinPsi = sin(yaw);
-
-        float R_B_N[3][3];
-
-        R_B_N[0][0] = cosThe * cosPsi;
-        R_B_N[0][1] = -cosPhi * sinPsi + sinPhi * sinThe * cosPsi;
-        R_B_N[0][2] = sinPhi * sinPsi + cosPhi * sinThe * cosPsi;
-
-		R_B_N[1][0] = cosThe * sinPsi;
-		R_B_N[1][1] = cosPhi * cosPsi + sinPhi * sinThe * sinPsi;
-		R_B_N[1][2] = -sinPhi * cosPsi + cosPhi * sinThe * sinPsi;
-
-		R_B_N[2][0] = -sinThe;
-		R_B_N[2][1] = sinPhi * cosThe;
-		R_B_N[2][2] = cosPhi * cosThe;
-
         QMatrix3x3 R_B_N_M;// = Eigen::Map<Eigen::Matrix3f>((float*)R_B_N).eval();
 
         QVector3D mag_ned(xmag_ned, ymag_ned, zmag_ned);

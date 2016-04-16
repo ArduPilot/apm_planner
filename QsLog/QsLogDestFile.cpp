@@ -122,10 +122,10 @@ void QsLogging::SizeRotationStrategy::setBackupCount(int backups)
 
 
 QsLogging::LaunchRotationStrategy::LaunchRotationStrategy()
-    : mCurrentSizeInBytes(0)
+    : mFirstFile(true)
+    , mCurrentSizeInBytes(0)
     , mMaxSizeInBytes(0)
     , mBackupsCount(0)
-    , mFirstFile(true)
 {
 }
 

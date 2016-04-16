@@ -25,6 +25,7 @@ Rectangle {
     property bool enableBackgroundVideo: false
     property string statusMessage: ""
     property bool showStatusMessage: false
+    property color statusMessageColor: statusMessageIndicator.messageColor
 
 
 
@@ -105,6 +106,7 @@ Rectangle {
         id: statusMessageIndicator
         anchors.fill: parent
         message: statusMessage
+        messageColor: statusMessageColor;
         visible: showStatusMessage
     }
 

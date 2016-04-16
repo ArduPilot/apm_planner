@@ -29,27 +29,49 @@ message(Qt version $$[QT_VERSION])
 # to allow us to easily modify suported build types in one place instead of duplicated throughout
 # the project file.
 
+DEFINES+=DISABLE_3DMOUSE    # Disable 3D mice support for now
+#DEFINES+=ENABLE_CAMRAVIEW   # Example to include camraview
+
 linux-g++-64 {
     message(Linux build x64_86)
     CONFIG += LinuxBuild
     DEFINES += Q_LINUX_64
+    DEFINES += FLITE_AUDIO_ENABLED
+
     DISTRO = $$system(lsb_release -i)
+
     contains( DISTRO, "Ubuntu" ) {
-         DEFINES += Q_UBUNTU
+        message(Ubuntu Build)
+        DEFINES += Q_UBUNTU
     }
+
+    contains( DISTRO, "Arch" ) {
+        message(ArchLinux Build)
+        DEFINES += Q_ARCHLINUX
+    }
+
 } else: linux-g++ {
     message(Linux build x86)
     CONFIG += LinuxBuild
     DEFINES += Q_LINUX_32
+    DEFINES += FLITE_AUDIO_ENABLED
+
     DISTRO = $$system(lsb_release -i)
+
     contains( DISTRO, "Ubuntu" ) {
-         DEFINES += Q_UBUNTU
+        message(ArchLinux Build)
+        DEFINES += Q_UBUNTU
     }
 
-} else : win32-msvc2008 | win32-msvc2010 | win32-msvc2012 {
+    contains( DISTRO, "Arch" ) {
+        message(ArchLinux Build)
+        DEFINES += Q_ARCHLINUX
+    }
+
+} else : win32-msvc2012 | win32-msvc2013 {
     message(Windows build)
     CONFIG += WindowsBuild
-}  else : win32-x-g++|win64-x-g++ {
+}  else : win32-g++|win64-g++ {
     message(Windows Cross Build)
     CONFIG += WindowsCrossBuild
 } else : macx-clang | macx-g++ {
@@ -113,11 +135,12 @@ QT += network \
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
-!NOTOUCH {
-    gittouch.commands = touch qgroundcontrol.pro
-    QMAKE_EXTRA_TARGETS += gittouch
-    POST_TARGETDEPS += gittouch
-}
+#Not sure what we were doing here, will have to ask
+#!NOTOUCH {
+#    gittouch.commands = touch qgroundcontrol.pro
+#    QMAKE_EXTRA_TARGETS += gittouch
+#    POST_TARGETDEPS += gittouch
+#}
 
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
@@ -143,7 +166,7 @@ MacBuild {
     QMAKE_INFO_PLIST = Custom-Info.plist
     CONFIG += x86_64
     CONFIG -= x86
-#    QMAKE_MAC_SDK = macosx10.11 # Required for Xcode7.0
+    QMAKE_MAC_SDK = macosx10.11 # Required for Xcode7.0
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     ICON = $$BASEDIR/files/APMIcons/icon.icns
     QMAKE_INFO_PLIST = APMPlanner.plist   # Sets the pretty name for the build
@@ -426,8 +449,6 @@ FORMS += \
     src/uas/LogDownloadDialog.ui \
     src/ui/configuration/CompassMotorCalibrationDialog.ui \
     src/ui/MissionElevationDisplay.ui \
-    src/ui/DroneshareUploadDialog.ui \
-    src/ui/DroneshareDialog.ui \
     src/ui/uas/PreFlightCalibrationDialog.ui \
     src/ui/configuration/RadioFlashWizard.ui
 
@@ -454,9 +475,6 @@ HEADERS += \
     src/ui/HUD.h \
     src/configuration.h \
     src/ui/uas/UASView.h \
-#if defined(CAMERAVIEW)
-    src/ui/CameraView.h \
-#endif
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
     src/comm/UDPClientLink.h \
@@ -644,11 +662,6 @@ HEADERS += \
     src/comm/MAVLinkProtocol.h \
     src/ui/MissionElevationDisplay.h \
     src/ui/GoogleElevationData.h \
-    src/ui/DroneshareUploadDialog.h \
-    src/ui/DroneshareUpload.h \
-    src/ui/DroneshareDialog.h \
-    src/ui/LoginDialog.h \
-    src/ui/DroneshareAPIBroker.h \
     src/comm/UASObject.h \
     src/comm/VehicleOverview.h \
     src/comm/RelPositionOverview.h \
@@ -681,9 +694,6 @@ SOURCES += src/main.cc \
     src/ui/uas/UASInfoWidget.cc \
     src/ui/HUD.cc \
     src/ui/uas/UASView.cc \
-#ifdef CAMERAVIEW
-    src/ui/CameraView.cc \
-#endif
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
     src/comm/UDPClientLink.cc \
@@ -869,11 +879,6 @@ SOURCES += src/main.cc \
     src/comm/MAVLinkProtocol.cc \
     src/ui/MissionElevationDisplay.cpp \
     src/ui/GoogleElevationData.cpp \
-    src/ui/DroneshareUploadDialog.cpp \
-    src/ui/DroneshareUpload.cpp \
-    src/ui/DroneshareDialog.cc \
-    src/ui/LoginDialog.cpp \
-    src/ui/DroneshareAPIBroker.cpp \
     src/comm/UASObject.cc \
     src/comm/VehicleOverview.cc \
     src/comm/RelPositionOverview.cc \
@@ -893,10 +898,18 @@ MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sens
     QT +=  webkit webkitwidgets
     HEADERS +=  src/ui/map3D/QGCWebPage.h
     SOURCES +=  src/ui/map3D/QGCWebPage.cc
-
 } else {
     message(Skipping support for Google Earth)
 }
+
+contains(DEFINES, ENABLE_CAMRAVIEW){
+    message(Including support for Camera View)
+    HEADERS += src/ui/CameraView.h
+    SOURCES += src/ui/CameraView.cc
+} else {
+    message(Skipping support for Camera View)
+}
+
 
 OTHER_FILES += \
     qml/components/DigitalDisplay.qml \

@@ -102,7 +102,7 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     activeUASSet(UASManager::instance()->getActiveUAS());
 
     QNetworkAccessManager *man = new QNetworkAccessManager(this);
-    QNetworkReply *reply = man->get(QNetworkRequest(QUrl("http://autotest.diydrones.com/Parameters/apm.pdef.xml")));
+    QNetworkReply *reply = man->get(QNetworkRequest(QUrl("http://autotest.ardupilot.org/Parameters/apm.pdef.xml")));
     connect(reply,SIGNAL(finished()),this,SLOT(apmParamNetworkReplyFinished()));
 
     // Setup Parameter Progress bars
@@ -549,18 +549,10 @@ void ApmSoftwareConfig::populateTimerTick()
 
 }
 
-void ApmSoftwareConfig::writeParameter(int component, QString parameterName, QVariant value)
-{
-    QLOG_DEBUG() << "ASC writeParameter";
-}
-
-void ApmSoftwareConfig::readParameter(int component, QString parameterName, QVariant value)
-{
-    QLOG_DEBUG() << "ASC readParameter";
-}
-
 void ApmSoftwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
 {
+    Q_UNUSED(component)
+
     QString countString;
     // Create progress of downloading all parameters for UI
     switch (m_paramDownloadState){
