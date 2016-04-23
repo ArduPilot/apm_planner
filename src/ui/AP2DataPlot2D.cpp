@@ -1617,6 +1617,7 @@ void AP2DataPlot2D::exportDialogAccepted()
 
     QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format,Columns\r\n";
     QMap<QString,QList<QString> > fmtlist = m_tableModel->getFmtValues();
+
     for (QMap<QString,QList<QString> >::const_iterator i = fmtlist.constBegin();i!=fmtlist.constEnd();i++)
     {
         QString fmtname = i.key();
@@ -1624,14 +1625,14 @@ void AP2DataPlot2D::exportDialogAccepted()
         if (line != "")
         {
             formatheader += line + "\r\n";
+
+            if (m_KmlExport) {
+                kmlExporter.processLine(line);
+            }
         }
     }
-    if (m_KmlExport)
-    {
-        kmlExporter.processLine(formatheader);
-    }
-    else
-    {
+
+    if (!m_KmlExport) {
         outputfile.write(formatheader.toLatin1());
     }
 
