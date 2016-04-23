@@ -193,6 +193,7 @@ void KMLCreator::processLine(QString &line) {
     else if(line.indexOf("GPS,") == 0) {
         FormatLine fl = m_formatLines.value("GPS");
         if(fl.hasData()) {
+
             GPSRecord gps = GPSRecord::from(fl, line);
 
             if(gps.hasData()) {
