@@ -9,7 +9,7 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     layout->setSpacing(0);
     layout->setMargin(0);
     titleLabel = new UASQuickViewTextLabel(this);
-   //titleLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+    //titleLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     titleLabel->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
     this->layout()->addWidget(titleLabel);
     valueLabel = new UASQuickViewTextLabel(this);
@@ -25,10 +25,14 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     titlefont.setPixelSize(this->height() / 4.0);
     valueLabel->setFontSize(this->height() / 2.0);
     titleLabel->setFontSize(this->height() / 4.0);
-    QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+    int h = rand()%259;  // hue (degrees), red is 0, green is 120, and blue is 240
+    int s = 192;  // saturation, 0 to 255, the bigger it is, the stronger the color is
+    int v = 218;  // value, 0 to 255, represents lightness or brightness, 0 is black
+    QColor color = QColor::fromHsv(h, s, v);
     titleLabel->setFontColor(color);
     valueLabel->setFontColor(color);
 }
+
 QString UASQuickViewTextItem::value()
 {
     return valueLabel->text();
