@@ -33,6 +33,7 @@ This file is part of the APM_PLANNER project
 #include <QThread>
 #include <QVariantMap>
 #include <QSqlDatabase>
+#include <QSemaphore>
 #include "MAVLinkDecoder.h"
 #include "AP2DataPlot2DModel.h"
 #include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
@@ -173,6 +174,17 @@ public:
     void loadFile(const QString& file);
     void stopLoad() { m_stop = true; }
 
+    /**
+     * @brief allowToTerminate is part of a workaround for a crash resulting
+     *        from an unknown effect in QFontEngineFT which randomly happens
+     *        if this thread terminates before the method is finished which
+     *        is triggered through a signal. allowToTerminate is used by the
+     *        method which signalled to tell that its done.
+     * @attention This method has to be called to allow the thread to terminate
+     *            the thread will wait forever if not called.
+     */
+    void allowToTerminate() {m_workAroundSemaphore.release(1);}
+
 signals:
     void startLoad();
     void loadProgress(qint64 pos,qint64 size);
@@ -274,6 +286,13 @@ private:
     AP2DataPlotStatus m_plotState;
     QList<timeStampType> m_possibleTimestamps;
     timeStampType m_timeStamp;
+
+    /**
+     * @brief m_workAroundSemaphore is part of the workaround @see allowToTerminate
+     *        is used for too. It is used to block the thread until allowToTerminate
+     *        is called
+     */
+    QSemaphore m_workAroundSemaphore;
 
 
 

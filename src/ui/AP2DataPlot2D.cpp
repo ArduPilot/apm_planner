@@ -1000,6 +1000,7 @@ void AP2DataPlot2D::threadTerminated()
 
 AP2DataPlot2D::~AP2DataPlot2D()
 {
+    QLOG_DEBUG() << "AP2DataPlot2D::~AP2DataPlot2D()";
     saveSettings();
     if (m_updateTimer)
     {
@@ -1009,6 +1010,7 @@ AP2DataPlot2D::~AP2DataPlot2D()
     }
     if (m_logLoaderThread)
     {
+        m_logLoaderThread->allowToTerminate();  // without this call the loader cannot terminate
         m_logLoaderThread->stopLoad();
         m_logLoaderThread->deleteLater();
         m_logLoaderThread = NULL;
@@ -1251,6 +1253,7 @@ void AP2DataPlot2D::itemDisabled(QString name)
 void AP2DataPlot2D::progressDialogCanceled()
 {
     m_logLoaderThread->stopLoad();
+    m_logLoaderThread->allowToTerminate();  // without this call the loader cannot terminate
 }
 
 void AP2DataPlot2D::clearGraph()
@@ -1494,6 +1497,8 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     // Enable double clicking of graph
     connect(m_plot,SIGNAL(mouseDoubleClick(QMouseEvent*)),this,SLOT(plotDoubleClick(QMouseEvent*)));
 
+    QLOG_DEBUG() << "Calling allowToTerminate()";
+    m_logLoaderThread->allowToTerminate(); // without this call the loader cannot terminate
 }
 
 

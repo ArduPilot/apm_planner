@@ -1115,6 +1115,11 @@ void AP2DataPlotThread::run()
         QLOG_INFO() << "Plot Log loading took" << (QDateTime::currentMSecsSinceEpoch() - msecs) / 1000.0 << "seconds -" << logfile.pos() << "of" << logfile.size() << "bytes used";
         emit done(m_plotState, m_loadedLogType);
     }
+    // this is part of a workaround wich is needed to prevent this thread from terminating
+    // until it is allowToTerminate is called. The sleep shall make sure that allowToTerminate
+    // can finish before this thread terminates
+    m_workAroundSemaphore.acquire(1);
+    usleep(10);
 }
 
 void AP2DataPlotThread::addTimeToDescriptor(typeDescriptor &desc)
