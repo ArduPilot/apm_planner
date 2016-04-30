@@ -43,6 +43,8 @@ This file is part of the APM_PLANNER project
 #include "QsLog.h"
 #include "QGC.h"
 
+#include <QTextBlock>
+
 
 AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) :
     QThread(parent),
@@ -52,6 +54,9 @@ AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) 
     QLOG_DEBUG() << "Created AP2DataPlotThread:" << this;
     qRegisterMetaType<MAV_TYPE>("MAV_TYPE");
     qRegisterMetaType<AP2DataPlotStatus>("AP2DataPlotStatus");
+    qRegisterMetaType<QTextBlock>("QTextBlock");
+    qRegisterMetaType<QTextCursor>("QTextCursor");
+
 
     // flash logs and exported logs can have different timestamps
     m_possibleTimestamps.push_back(timeStampType("TimeUS", 1000000.0));
