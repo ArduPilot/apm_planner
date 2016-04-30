@@ -53,6 +53,7 @@ This file is part of the APM_PLANNER project
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
+    m_tableModel(NULL),
     m_updateTimer(NULL),
     m_showOnlyActive(false),
     m_graphCount(0),
@@ -1029,6 +1030,9 @@ AP2DataPlot2D::~AP2DataPlot2D()
 
     delete m_plot;
     m_plot = NULL;
+
+    delete m_tableModel;
+    m_tableModel = NULL;
 }
 
 void AP2DataPlot2D::itemEnabled(QString name)
