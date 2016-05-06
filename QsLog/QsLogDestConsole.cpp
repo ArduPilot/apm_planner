@@ -29,31 +29,11 @@
 
 #if defined(Q_OS_WIN)
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <Windows.h>
 void QsDebugOutput::output( const QString& message )
 {
    OutputDebugStringW(reinterpret_cast<const WCHAR*>(message.utf16()));
    OutputDebugStringW(L"\n");
-}
-#elif defined(Q_OS_SYMBIAN)
-#include <e32debug.h>
-void QsDebugOutput::output( const QString& message )
-{
-    const int maxPrintSize = 256;
-    if (message.size() <= maxPrintSize) {
-        TPtrC16 symbianMessage(reinterpret_cast<const TUint16*>(message.utf16()));
-        RDebug::RawPrint(symbianMessage);
-    } else {
-        QString slicedMessage = message;
-        while (!slicedMessage.isEmpty()) {
-            const int sliceSize = qMin(maxPrintSize, slicedMessage.size());
-            const QString slice = slicedMessage.left(sliceSize);
-            slicedMessage.remove(0, sliceSize);
-
-            TPtrC16 symbianSlice(reinterpret_cast<const TUint16*>(slice.utf16()));
-            RDebug::RawPrint(symbianSlice);
-        }
-    }
 }
 #elif defined(Q_OS_UNIX)
 #include <cstdio>

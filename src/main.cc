@@ -62,6 +62,7 @@ void msgHandler( QtMsgType type, const char* msg )
  * @return exit code, 0 for normal exit and !=0 for error cases
  */
 
+
 int main(int argc, char *argv[])
 {
 // install the message handler
@@ -77,7 +78,10 @@ int main(int argc, char *argv[])
     const QString sLogPath(QDir(QGC::appDataDirectory()).filePath("log.txt"));
 
     QsLogging::DestinationPtr fileDestination(
-       QsLogging::DestinationFactory::MakeFileDestination(sLogPath, true, 0, 5) );
+    QsLogging::DestinationFactory::MakeFileDestination(sLogPath,
+                                                       QsLogging::LogRotationOption::EnableLogRotation,
+                                                       QsLogging::MaxSizeBytes(0),
+                                                        QsLogging::MaxOldLogCount(5)) );
     QsLogging::DestinationPtr debugDestination(
        QsLogging::DestinationFactory::MakeDebugOutputDestination() );
     logger.addDestination(debugDestination);

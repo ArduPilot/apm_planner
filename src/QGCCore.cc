@@ -75,6 +75,13 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
     this->setOrganizationDomain("com.diydrones");
 
     m_mouseWheelFilter = new QGCMouseWheelEventFilter(this);
+
+    connect(this, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
+}
+
+void QGCCore::aboutToQuit()
+{
+    QsLogging::Logger::instance().destroyInstance();
 }
 
 void QGCCore::initialize()
@@ -87,6 +94,10 @@ void QGCCore::initialize()
     QLOG_INFO() << "APPLICATION_VERSION:" << define2string(QGC_APPLICATION_VERSION);
     QLOG_INFO() << "APP_PLATFORM:" << define2string(APP_PLATFORM);
     QLOG_INFO() << "APP_TYPE:" << define2string(APP_TYPE);
+
+//    QsLogging::Logger::instance().des
+    // Logging Cleanup
+//    connect(this, SIGNAL(aboutToQuit()), SLOT(QsLogging::Logger::instance().
 
     // Check application settings
     // clear them if they mismatch

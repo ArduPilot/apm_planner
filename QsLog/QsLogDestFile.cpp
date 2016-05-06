@@ -30,7 +30,6 @@
 #include <iostream>
 
 const int QsLogging::SizeRotationStrategy::MaxBackupCount = 10;
-const int QsLogging::LaunchRotationStrategy::MaxBackupCount = 10;
 
 QsLogging::RotationStrategy::~RotationStrategy()
 {
@@ -114,93 +113,6 @@ void QsLogging::SizeRotationStrategy::setMaximumSizeInBytes(qint64 size)
 }
 
 void QsLogging::SizeRotationStrategy::setBackupCount(int backups)
-{
-    Q_ASSERT(backups >= 0);
-    mBackupsCount = qMin(backups, SizeRotationStrategy::MaxBackupCount);
-}
-
-
-
-QsLogging::LaunchRotationStrategy::LaunchRotationStrategy()
-    : mFirstFile(true)
-    , mCurrentSizeInBytes(0)
-    , mMaxSizeInBytes(0)
-    , mBackupsCount(0)
-{
-}
-
-void QsLogging::LaunchRotationStrategy::setInitialInfo(const QFile &file)
-{
-    mFileName = file.fileName();
-    mCurrentSizeInBytes = file.size();
-}
-
-void QsLogging::LaunchRotationStrategy::includeMessageInCalculation(const QString &message)
-{
-    mCurrentSizeInBytes += message.toUtf8().size();
-}
-
-bool QsLogging::LaunchRotationStrategy::shouldRotate()
-{
-    return mFirstFile;
-}
-
-// Algorithm assumes backups will be named filename.X, where 1 <= X <= mBackupsCount.
-// All X's will be shifted up.
-void QsLogging::LaunchRotationStrategy::rotate()
-{
-    mFirstFile = false;
-    if (!mBackupsCount) {
-        if (!QFile::remove(mFileName))
-            std::cerr << "QsLog: backup delete failed " << qPrintable(mFileName);
-        return;
-    }
-
-     // 1. find the last existing backup than can be shifted up
-     const QString logNamePattern = mFileName + QString::fromUtf8(".%1");
-     int lastExistingBackupIndex = 0;
-     for (int i = 1;i <= mBackupsCount;++i) {
-         const QString backupFileName = logNamePattern.arg(i);
-         if (QFile::exists(backupFileName))
-             lastExistingBackupIndex = qMin(i, mBackupsCount - 1);
-         else
-             break;
-     }
-
-     // 2. shift up
-     for (int i = lastExistingBackupIndex;i >= 1;--i) {
-         const QString oldName = logNamePattern.arg(i);
-         const QString newName = logNamePattern.arg(i + 1);
-         QFile::remove(newName);
-         const bool renamed = QFile::rename(oldName, newName);
-         if (!renamed) {
-             std::cerr << "QsLog: could not rename backup " << qPrintable(oldName)
-                       << " to " << qPrintable(newName);
-         }
-     }
-
-     // 3. rename current log file
-     const QString newName = logNamePattern.arg(1);
-     if (QFile::exists(newName))
-         QFile::remove(newName);
-     if (!QFile::rename(mFileName, newName)) {
-         std::cerr << "QsLog: could not rename log " << qPrintable(mFileName)
-                   << " to " << qPrintable(newName);
-     }
-}
-
-QIODevice::OpenMode QsLogging::LaunchRotationStrategy::recommendedOpenModeFlag()
-{
-    return QIODevice::Truncate;
-}
-
-void QsLogging::LaunchRotationStrategy::setMaximumSizeInBytes(qint64 size)
-{
-    Q_ASSERT(size >= 0);
-    mMaxSizeInBytes = size;
-}
-
-void QsLogging::LaunchRotationStrategy::setBackupCount(int backups)
 {
     Q_ASSERT(backups >= 0);
     mBackupsCount = qMin(backups, SizeRotationStrategy::MaxBackupCount);

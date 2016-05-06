@@ -31,39 +31,46 @@
 #include <QDebug>
 #include <QString>
 
-#define QS_LOG_VERSION "2.0b1"
+#define QS_LOG_VERSION "2.0b3"
 
 namespace QsLogging
 {
 class Destination;
 class LoggerImpl; // d pointer
 
-class Logger
+class QSLOG_SHARED_OBJECT Logger
 {
 public:
-    static Logger& instance()
-    {
-        static Logger staticLog;
-        return staticLog;
-    }
+    static Logger& instance();
+    static void destroyInstance();
+    static Level levelFromLogMessage(const QString& logMessage, bool* conversionSucceeded = 0);
+
+    ~Logger();
 
     //! Adds a log message destination. Don't add null destinations.
     void addDestination(DestinationPtr destination);
-    //! Removes a log message destination.
-    void delDestination(Destination *destination);
     //! Logging at a level < 'newLevel' will be ignored
     void setLoggingLevel(Level newLevel);
     //! The default level is INFO
     Level loggingLevel() const;
+    //! Set to false to disable timestamp inclusion in log messages
+    void setIncludeTimestamp(bool e);
+    //! Default value is true.
+    bool includeTimestamp() const;
+    //! Set to false to disable log level inclusion in log messages
+    void setIncludeLogLevel(bool l);
+    //! Default value is true.
+    bool includeLogLevel() const;
 
     //! The helper forwards the streaming to QDebug and builds the final
     //! log message.
-    class Helper
+    class QSLOG_SHARED_OBJECT Helper
     {
     public:
         explicit Helper(Level logLevel) :
             level(logLevel),
-            qtDebug(&buffer) {}
+            qtDebug(&buffer)
+        {}
         ~Helper();
         QDebug& stream(){ return qtDebug; }
 
@@ -73,13 +80,12 @@ public:
         Level level;
         QString buffer;
         QDebug qtDebug;
-    };
+	};
 
 private:
     Logger();
-    Logger(const Logger&);
-    Logger& operator=(const Logger&);
-    ~Logger();
+    Logger(const Logger&);            // not available
+    Logger& operator=(const Logger&); // not available
 
     void enqueueWrite(const QString& message, Level level);
     void write(const QString& message, Level level);

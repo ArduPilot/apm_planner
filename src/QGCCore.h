@@ -63,6 +63,9 @@ public:
     void initialize();
     QGCMouseWheelEventFilter *getMouseWheelFilter() { return m_mouseWheelFilter; }
 
+public slots:
+    void aboutToQuit();
+
 protected:
     void startLinkManager();
 

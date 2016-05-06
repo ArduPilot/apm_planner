@@ -26,27 +26,25 @@
 #include "QsLogDest.h"
 #include "QsLogDestConsole.h"
 #include "QsLogDestFile.h"
+#include "QsLogDestFunctor.h"
 #include <QString>
 
 namespace QsLogging
 {
 
-//! destination factory
-DestinationPtr DestinationFactory::MakeFileDestination(const QString& filePath, bool enableRotation,
-                                                       qint64 sizeInBytesToRotateAfter, int oldLogsToKeep)
+Destination::~Destination()
 {
-    if (enableRotation && sizeInBytesToRotateAfter > 0) {
-        QScopedPointer<SizeRotationStrategy> logRotation(new SizeRotationStrategy);
-        logRotation->setMaximumSizeInBytes(sizeInBytesToRotateAfter);
-        logRotation->setBackupCount(oldLogsToKeep);
+}
 
-        return DestinationPtr(new FileDestination(filePath, RotationStrategyPtr(logRotation.take())));
-    }
-    else if (enableRotation)
-    {
-        QScopedPointer<LaunchRotationStrategy> logRotation(new LaunchRotationStrategy);
-        logRotation->setMaximumSizeInBytes(sizeInBytesToRotateAfter);
-        logRotation->setBackupCount(oldLogsToKeep);
+//! destination factory
+DestinationPtr DestinationFactory::MakeFileDestination(const QString& filePath,
+    LogRotationOption rotation, const MaxSizeBytes &sizeInBytesToRotateAfter,
+    const MaxOldLogCount &oldLogsToKeep)
+{
+    if (EnableLogRotation == rotation) {
+        QScopedPointer<SizeRotationStrategy> logRotation(new SizeRotationStrategy);
+        logRotation->setMaximumSizeInBytes(sizeInBytesToRotateAfter.size);
+        logRotation->setBackupCount(oldLogsToKeep.count);
 
         return DestinationPtr(new FileDestination(filePath, RotationStrategyPtr(logRotation.take())));
     }
@@ -57,6 +55,16 @@ DestinationPtr DestinationFactory::MakeFileDestination(const QString& filePath, 
 DestinationPtr DestinationFactory::MakeDebugOutputDestination()
 {
     return DestinationPtr(new DebugOutputDestination);
+}
+
+DestinationPtr DestinationFactory::MakeFunctorDestination(QsLogging::Destination::LogFunction f)
+{
+    return DestinationPtr(new FunctorDestination(f));
+}
+
+DestinationPtr DestinationFactory::MakeFunctorDestination(QObject *receiver, const char *member)
+{
+    return DestinationPtr(new FunctorDestination(receiver, member));
 }
 
 } // end namespace

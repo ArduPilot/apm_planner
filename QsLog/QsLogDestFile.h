@@ -80,30 +80,6 @@ private:
     int mBackupsCount;
 };
 
-// Rotates after each launch of the application.
-class LaunchRotationStrategy : public RotationStrategy
-{
-public:
-    LaunchRotationStrategy();
-    static const int MaxBackupCount;
-
-    virtual void setInitialInfo(const QFile &file);
-    virtual void includeMessageInCalculation(const QString &message);
-    virtual bool shouldRotate();
-    virtual void rotate();
-    virtual QIODevice::OpenMode recommendedOpenModeFlag();
-
-    void setMaximumSizeInBytes(qint64 size);
-    void setBackupCount(int backups);
-
-private:
-    bool mFirstFile;
-    QString mFileName;
-    qint64 mCurrentSizeInBytes;
-    qint64 mMaxSizeInBytes;
-    int mBackupsCount;
-};
-
 typedef QSharedPointer<RotationStrategy> RotationStrategyPtr;
 
 // file message sink

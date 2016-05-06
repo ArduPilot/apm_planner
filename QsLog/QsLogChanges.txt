@@ -1,3 +1,36 @@
+-------------------
+QsLog version 2.0b4
+Fixes:
+Fixed file name case error for Linux.
+
+Misc:
+* Moved to separate git repository.
+
+-------------------
+QsLog version 2.0b3
+
+Changes:
+* added functor logging destination (thanks to Omar Carey for providing a patch)
+
+-------------------
+QsLog version 2.0b2
+
+Changes:
+* function signature redefinition for file destination creation
+* added shared library build configuration. Credit goes to Xavier Lamien <laxathom@fedoraproject.org>
+for the Linux-specific config.
+* removed Symbian support
+* this version does not guarantee support for Nokia N9 devices, although it should in theory still
+work with them
+* workaround for Issue 8 - when used from an executable and a plugin QsLog only logs from the
+executable.
+* utility function to parse the level from an existing log message
+
+Known issues:
+* The current version will crash at program exit when using QS_LOG_SEPARATE_THREAD and linking
+with QsLog dynamically.
+
+-------------------
 QsLog version 2.0b1
 
 Changes:

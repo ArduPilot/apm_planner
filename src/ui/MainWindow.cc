@@ -418,22 +418,10 @@ MainWindow::~MainWindow()
         }
     }
     // Delete all UAS objects
-
-
-    if (debugOutput)
-    {
-        QsLogging::Logger::instance().delDestination(debugOutput);
-        //delete debugOutput;
-        //debugOutput->hide();
-        //debugOutput->deleteLater();
-    }
     for (int i=0;i<commsWidgetList.size();i++)
     {
         commsWidgetList[i]->deleteLater();
     }
-
-
-
 }
 
 void MainWindow::disableTLogReplayBar()
