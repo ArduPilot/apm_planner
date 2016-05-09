@@ -15,7 +15,7 @@
 	<key>CFBundleExecutable</key>
 	<string>apmplanner2</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.diydrones.apmplanner2</string>
+    <string>org.ardupilot.apmplanner2</string>
 	<key>CFBundleName</key>
 	<string>APM Planner 2.0</string>
 </dict>

@@ -71,8 +71,8 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
     // Set application name
     this->setApplicationName(QGC_APPLICATION_NAME);
     this->setApplicationVersion(QGC_APPLICATION_VERSION);
-    this->setOrganizationName(QLatin1String("diydrones"));
-    this->setOrganizationDomain("com.diydrones");
+    this->setOrganizationName(QLatin1String("ardupilot"));
+    this->setOrganizationDomain("org.ardupilot");
 
     m_mouseWheelFilter = new QGCMouseWheelEventFilter(this);
 
