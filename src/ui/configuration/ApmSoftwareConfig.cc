@@ -25,14 +25,15 @@ This file is part of the APM_PLANNER project
 #include <QXmlStreamReader>
 #include <QDir>
 #include <QFile>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QNetworkRequest>
 #include <QSettings>
+#include <QMessageBox>
+
+static const int MAX_REDIRECT_COUNT = 2;
 
 ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
-    m_paramDownloadCount(0)
+    m_paramDownloadCount(0),
+    m_redirectCount(0)
 {
     m_uas=0;
     ui.setupUi(this);
@@ -101,9 +102,9 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
-    QNetworkAccessManager *man = new QNetworkAccessManager(this);
-    QNetworkReply *reply = man->get(QNetworkRequest(QUrl("http://autotest.ardupilot.org/Parameters/apm.pdef.xml")));
-    connect(reply,SIGNAL(finished()),this,SLOT(apmParamNetworkReplyFinished()));
+    m_url = QUrl("http://autotest.ardupilot.org/Parameters/apm.pdef.xml");
+    m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
+    connect(m_networkReply,SIGNAL(finished()),this,SLOT(apmParamNetworkReplyFinished()));
 
     // Setup Parameter Progress bars
     ui.globalParamProgressBar->setRange(0,100);
@@ -130,28 +131,50 @@ void ApmSoftwareConfig::advModeChanged(bool state)
 void ApmSoftwareConfig::apmParamNetworkReplyFinished()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
-    if (!reply)
-    {
+    if (!reply) {
         return;
     }
-    if (reply->error() != 0 || reply->bytesAvailable() == 0)
-    {
+
+    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
+    if (reply->error()) {
         //Error condition, don't attempt to rewrite the file
         QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to retrieve pdef.xml file! Error num:" << reply->error() << ":" << reply->errorString();
         return;
-    }
-    QByteArray apmpdef = reply->readAll();
-    m_apmPdefFilename = QDir(QGC::appDataDirectory()).filePath("apm.pdef.xml");
-    QFile file(m_apmPdefFilename);
-    if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
-    {
-        QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to open" << file.fileName() << "for writing";
-        return;
-    }
-    file.write(apmpdef);
-    file.flush();
-    file.close();
 
+    } else if (!redirectionTarget.isNull()) {
+        QUrl newUrl = m_url.resolved(redirectionTarget.toUrl());
+        m_redirectCount++;
+        if ( m_redirectCount >= MAX_REDIRECT_COUNT ) {
+            // Pormpt user is more than 2 redirects to avoid circular endless reidrects blowing up
+            if (QMessageBox::question(this, tr("HTTP"),
+                                        tr("Redirect to %1 ?").arg(newUrl.toString()),
+                                        QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+                QLOG_WARN() << "Stop redirection at user request";
+                return;
+            }
+        }
+        m_url = newUrl;
+        m_networkReply->deleteLater();
+        m_networkReply = NULL;
+        m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
+        connect(m_networkReply, SIGNAL(finished()), this, SLOT(apmParamNetworkReplyFinished()));
+        return;
+
+    } else {
+        QByteArray apmpdef = reply->readAll();
+        m_apmPdefFilename = QDir(QGC::appDataDirectory()).filePath("apm.pdef.xml");
+        QFile file(m_apmPdefFilename);
+        if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+            QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to open" << file.fileName() << "for writing";
+            return;
+        }
+        file.write(apmpdef);
+        file.flush();
+        file.close();
+    }
+    m_networkReply->deleteLater();
+    m_networkReply = NULL;
 }
 
 ApmSoftwareConfig::~ApmSoftwareConfig()

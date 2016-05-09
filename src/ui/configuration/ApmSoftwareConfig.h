@@ -46,6 +46,9 @@ This file is part of the APM_PLANNER project
 #include "UASInterface.h"
 #include "UASManager.h"
 #include "QGCSettingsWidget.h"
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 
 class ApmSoftwareConfig : public QWidget
 {
@@ -116,6 +119,11 @@ private:
     int m_paramTotalCount;
 
     bool m_isAdvancedMode;
+
+    QUrl m_url;
+    QNetworkAccessManager m_networkAccessManager;
+    QNetworkReply* m_networkReply;
+    int m_redirectCount;
 };
 
 #endif // APMSOFTWARECONFIG_H
