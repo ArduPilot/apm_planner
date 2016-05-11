@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     QsLogging::DestinationPtr fileDestination(
     QsLogging::DestinationFactory::MakeFileDestination(sLogPath,
                                                        QsLogging::EnableLogRotation,
-                                                       QsLogging::MaxSizeBytes(0),
+                                                       QsLogging::MaxSizeBytes(10*(1024*1024)), // 10MBytes
                                                         QsLogging::MaxOldLogCount(5)) );
     QsLogging::DestinationPtr debugDestination(
        QsLogging::DestinationFactory::MakeDebugOutputDestination() );
