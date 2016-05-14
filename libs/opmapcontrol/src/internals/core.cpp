@@ -44,10 +44,13 @@ namespace internals {
     zoom(0),
     isDragging(false),
     TooltipTextPadding(10,10),
+    mapType(static_cast<MapType::Types>(0)),
     loaderLimit(5),
     maxzoom(21),
     runningThreads(0),
-    started(false)
+    started(false),
+    Width(0),
+    Height(0)
     {
         mousewheelzoomtype=MouseWheelZoomType::MousePositionAndCenter;
         SetProjection(new MercatorProjection());
