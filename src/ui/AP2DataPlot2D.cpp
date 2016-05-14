@@ -1310,7 +1310,10 @@ void AP2DataPlot2D::loadStarted()
 
 void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
 {
-    m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
+    if (m_progressDialog)
+    {
+        m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
+    }
 }
 
 int AP2DataPlot2D::getStatusTextPos()
@@ -1482,7 +1485,6 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     connect(ui.tableWidget->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(selectedRowChanged(QModelIndex,QModelIndex)));
 
     m_progressDialog->hide();
-    m_progressDialog.reset();
     setExcelViewHidden(false);
     ui.hideExcelView->setVisible(true);
     ui.sortShowPushButton->setVisible(true);
@@ -1512,7 +1514,6 @@ void AP2DataPlot2D::threadError(QString errorstr)
     if (m_progressDialog)
     {
         m_progressDialog->hide();
-        m_progressDialog.reset();
     }
     ui.dataSelectionScreen->clear();
     m_dataList.clear();
