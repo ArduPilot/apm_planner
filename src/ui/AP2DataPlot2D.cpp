@@ -996,6 +996,7 @@ void AP2DataPlot2D::loadLog(QString filename)
 void AP2DataPlot2D::threadTerminated()
 {
     QLOG_DEBUG() << "AP2DataPlot2D::threadTerminated = " << m_logLoaderThread;
+    m_progressDialog.reset();
     m_logLoaderThread->deleteLater();
     m_logLoaderThread = NULL;
 }
@@ -1260,8 +1261,11 @@ void AP2DataPlot2D::itemDisabled(QString name)
 
 void AP2DataPlot2D::progressDialogCanceled()
 {
-    m_logLoaderThread->stopLoad();
-    m_logLoaderThread->allowToTerminate();  // without this call the loader cannot terminate
+    if (m_logLoaderThread)
+    {
+        m_logLoaderThread->stopLoad();
+        m_logLoaderThread->allowToTerminate();  // without this call the loader cannot terminate
+    }
 }
 
 void AP2DataPlot2D::clearGraph()
