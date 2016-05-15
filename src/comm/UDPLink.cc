@@ -45,6 +45,7 @@ This file is part of the QGROUNDCONTROL project
 UDPLink::UDPLink(QHostAddress host, quint16 port) :
     socket(NULL),
     connectState(false),
+    _shouldRestartConnection(false),
     _running(false)
 {
     this->host = host;

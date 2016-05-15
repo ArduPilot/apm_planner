@@ -54,6 +54,7 @@ This file is part of the APM_PLANNER project
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
     m_tableModel(NULL),
+    m_tableFilterProxyModel(NULL),
     m_updateTimer(NULL),
     m_showOnlyActive(false),
     m_graphCount(0),
@@ -995,6 +996,7 @@ void AP2DataPlot2D::loadLog(QString filename)
 void AP2DataPlot2D::threadTerminated()
 {
     QLOG_DEBUG() << "AP2DataPlot2D::threadTerminated = " << m_logLoaderThread;
+    m_progressDialog.reset();
     m_logLoaderThread->deleteLater();
     m_logLoaderThread = NULL;
 }
@@ -1033,6 +1035,9 @@ AP2DataPlot2D::~AP2DataPlot2D()
 
     delete m_tableModel;
     m_tableModel = NULL;
+
+    delete m_tableFilterProxyModel;
+    m_tableFilterProxyModel = NULL;
 }
 
 void AP2DataPlot2D::itemEnabled(QString name)
@@ -1256,8 +1261,11 @@ void AP2DataPlot2D::itemDisabled(QString name)
 
 void AP2DataPlot2D::progressDialogCanceled()
 {
-    m_logLoaderThread->stopLoad();
-    m_logLoaderThread->allowToTerminate();  // without this call the loader cannot terminate
+    if (m_logLoaderThread)
+    {
+        m_logLoaderThread->stopLoad();
+        m_logLoaderThread->allowToTerminate();  // without this call the loader cannot terminate
+    }
 }
 
 void AP2DataPlot2D::clearGraph()
@@ -1310,7 +1318,10 @@ void AP2DataPlot2D::loadStarted()
 
 void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
 {
-    m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
+    if (m_progressDialog)
+    {
+        m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
+    }
 }
 
 int AP2DataPlot2D::getStatusTextPos()
@@ -1482,7 +1493,6 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     connect(ui.tableWidget->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(selectedRowChanged(QModelIndex,QModelIndex)));
 
     m_progressDialog->hide();
-    m_progressDialog.reset();
     setExcelViewHidden(false);
     ui.hideExcelView->setVisible(true);
     ui.sortShowPushButton->setVisible(true);
@@ -1512,7 +1522,6 @@ void AP2DataPlot2D::threadError(QString errorstr)
     if (m_progressDialog)
     {
         m_progressDialog->hide();
-        m_progressDialog.reset();
     }
     ui.dataSelectionScreen->clear();
     m_dataList.clear();
