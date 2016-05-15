@@ -54,6 +54,7 @@ This file is part of the APM_PLANNER project
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
     m_tableModel(NULL),
+    m_tableFilterProxyModel(NULL),
     m_updateTimer(NULL),
     m_showOnlyActive(false),
     m_graphCount(0),
@@ -1033,6 +1034,9 @@ AP2DataPlot2D::~AP2DataPlot2D()
 
     delete m_tableModel;
     m_tableModel = NULL;
+
+    delete m_tableFilterProxyModel;
+    m_tableFilterProxyModel = NULL;
 }
 
 void AP2DataPlot2D::itemEnabled(QString name)
