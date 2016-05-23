@@ -72,20 +72,22 @@ int main(int argc, char *argv[])
 
     QGCCore core(argc, argv);
     // init the logging mechanism
-    QsLogging::Logger& logger = QsLogging::Logger::instance();
-    logger.setLoggingLevel(QsLogging::DebugLevel);
 
-    const QString sLogPath(QDir(QGC::appDataDirectory()).filePath("log.txt"));
+    // disabled due to issue #941
+//    QsLogging::Logger& logger = QsLogging::Logger::instance();
+//    logger.setLoggingLevel(QsLogging::DebugLevel);
 
-    QsLogging::DestinationPtr fileDestination(
-    QsLogging::DestinationFactory::MakeFileDestination(sLogPath,
-                                                       QsLogging::EnableLogRotation,
-                                                       QsLogging::MaxSizeBytes(10*(1024*1024)), // 10MBytes
-                                                        QsLogging::MaxOldLogCount(5)) );
-    QsLogging::DestinationPtr debugDestination(
-       QsLogging::DestinationFactory::MakeDebugOutputDestination() );
-    logger.addDestination(debugDestination);
-    logger.addDestination(fileDestination);
+//    const QString sLogPath(QDir(QGC::appDataDirectory()).filePath("log.txt"));
+
+//    QsLogging::DestinationPtr fileDestination(
+//    QsLogging::DestinationFactory::MakeFileDestination(sLogPath,
+//                                                       QsLogging::EnableLogRotation,
+//                                                       QsLogging::MaxSizeBytes(0),
+//                                                        QsLogging::MaxOldLogCount(5)) );
+//    QsLogging::DestinationPtr debugDestination(
+//       QsLogging::DestinationFactory::MakeDebugOutputDestination() );
+//    logger.addDestination(debugDestination);
+//    logger.addDestination(fileDestination);
 
     // This is required to start the logger
     core.initialize();

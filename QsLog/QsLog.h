@@ -30,6 +30,7 @@
 #include "QsLogDest.h"
 #include <QDebug>
 #include <QString>
+#include <QDateTime>
 
 #define QS_LOG_VERSION "2.0b3"
 
@@ -101,42 +102,31 @@ private:
 //! in the log output.
 #ifndef QS_LOG_LINE_NUMBERS
 #define QLOG_TRACE() \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::TraceLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::TraceLevel).stream()
+    if(1){} \
+    else qDebug() << "TRACE" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
 #define QLOG_DEBUG() \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::DebugLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::DebugLevel).stream()
+    qDebug() << "DEBUG" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
 #define QLOG_INFO()  \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::InfoLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::InfoLevel).stream()
+    qInfo() << "INFO " << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
 #define QLOG_WARN()  \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::WarnLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::WarnLevel).stream()
+    qWarning() << "WARN " << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
 #define QLOG_ERROR() \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::ErrorLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::ErrorLevel).stream()
+    qCritical() << "ERROR" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
 #define QLOG_FATAL() \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::FatalLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::FatalLevel).stream()
+    qCritical() << "FATAL" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
 #else
 #define QLOG_TRACE() \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::TraceLevel) {} \
-    else  QsLogging::Logger::Helper(QsLogging::TraceLevel).stream() << __FILE__ << '@' << __LINE__
+    qDebug() << __FILE__ << '@' << __LINE__
 #define QLOG_DEBUG() \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::DebugLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::DebugLevel).stream() << __FILE__ << '@' << __LINE__
+    qDebug() << __FILE__ << '@' << __LINE__
 #define QLOG_INFO()  \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::InfoLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::InfoLevel).stream() << __FILE__ << '@' << __LINE__
+    qInfo() << __FILE__ << '@' << __LINE__
 #define QLOG_WARN()  \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::WarnLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::WarnLevel).stream() << __FILE__ << '@' << __LINE__
+    qWarning() << __FILE__ << '@' << __LINE__
 #define QLOG_ERROR() \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::ErrorLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::ErrorLevel).stream() << __FILE__ << '@' << __LINE__
+    qCritical() << __FILE__ << '@' << __LINE__
 #define QLOG_FATAL() \
-    if (QsLogging::Logger::instance().loggingLevel() > QsLogging::FatalLevel) {} \
-    else QsLogging::Logger::Helper(QsLogging::FatalLevel).stream() << __FILE__ << '@' << __LINE__
+    qCritical() << __FILE__ << '@' << __LINE__
 #endif
 
 #ifdef QS_LOG_DISABLE
