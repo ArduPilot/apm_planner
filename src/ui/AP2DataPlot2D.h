@@ -257,7 +257,7 @@ private:
     qint64 m_startIndex; //epoch msecs since graphing started
     QAction *m_addGraphAction;
     UASInterface *m_uas;
-    QProgressDialog *m_progressDialog;
+    QSharedPointer<QProgressDialog> m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
     //qint64 m_timeDiff;
     bool m_tlogReplayEnabled;

@@ -66,7 +66,6 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     m_startIndex(0),
     m_addGraphAction(NULL),
     m_uas(NULL),
-    m_progressDialog(NULL),
     m_axisGroupingDialog(NULL),
     m_tlogReplayEnabled(false),
     m_logDownloadDialog(NULL),
@@ -1024,11 +1023,6 @@ AP2DataPlot2D::~AP2DataPlot2D()
         delete m_axisGroupingDialog;
         m_axisGroupingDialog = NULL;
     }
-    if (m_progressDialog)
-    {
-        m_progressDialog->deleteLater();
-        m_progressDialog = NULL;
-    }
 
     for (int i=0;i<m_childGraphList.size();i++)
     {
@@ -1309,13 +1303,11 @@ void AP2DataPlot2D::clearGraph()
 
 void AP2DataPlot2D::loadStarted()
 {
-    m_progressDialog = new QProgressDialog("Loading File","Cancel",0,100,this);
+    m_progressDialog = QSharedPointer<QProgressDialog>(new QProgressDialog("Loading File","Cancel",0,100,this), &QObject::deleteLater);
     m_progressDialog->setWindowModality(Qt::WindowModal);
-    connect(m_progressDialog,SIGNAL(canceled()),this,SLOT(progressDialogCanceled()));
+    connect(m_progressDialog.data(),SIGNAL(canceled()),this,SLOT(progressDialogCanceled()));
     m_progressDialog->show();
     QApplication::processEvents();
-    //ui.tableWidget->clear();
-    //ui.tableWidget->setRowCount(0);
 }
 
 void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
@@ -1495,8 +1487,7 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     connect(ui.tableWidget->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(selectedRowChanged(QModelIndex,QModelIndex)));
 
     m_progressDialog->hide();
-    m_progressDialog->deleteLater();
-    m_progressDialog = NULL;
+    m_progressDialog.clear();
 
     setExcelViewHidden(false);
     ui.hideExcelView->setVisible(true);
@@ -1524,12 +1515,6 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
 void AP2DataPlot2D::threadError(QString errorstr)
 {
     QMessageBox::information(0,"Error",errorstr);
-    if (m_progressDialog)
-    {
-        m_progressDialog->hide();
-        m_progressDialog->deleteLater();
-        m_progressDialog = NULL;
-    }
     ui.dataSelectionScreen->clear();
     m_dataList.clear();
     this->close();
