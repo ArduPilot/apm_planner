@@ -1084,7 +1084,15 @@ void AP2DataPlot2D::itemEnabled(QString name)
         {
             connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),yAxis,SLOT(setRange(QCPRange)));
         }
-        QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+        // use golden ratio for evenly distributed colors
+        double golden_ratio_conjugate = 0.618033988749895;
+        double h = ((double)rand() / (double)(RAND_MAX));
+        h = h + golden_ratio_conjugate;
+        h = fmod(h, 1);     // hue
+        double s = 0.75;    // saturation
+        double v = 0.8516;  // value
+        QColor color = QColor::fromHsvF(h, s, v);
+        //QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
         yAxis->setLabelColor(color);
         yAxis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
