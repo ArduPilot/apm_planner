@@ -25,10 +25,14 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     titlefont.setPixelSize(this->height() / 4.0);
     valueLabel->setFontSize(this->height() / 2.0);
     titleLabel->setFontSize(this->height() / 4.0);
-    int h = rand()%259;  // hue (degrees), red is 0, green is 120, and blue is 240
-    int s = 192;  // saturation, 0 to 255, the bigger it is, the stronger the color is
-    int v = 218;  // value, 0 to 255, represents lightness or brightness, 0 is black
-    QColor color = QColor::fromHsv(h, s, v);
+    // use golden ratio for evenly distributed colors
+    double golden_ratio_conjugate = 0.618033988749895;
+    double h = ((double)rand() / (double)(RAND_MAX));
+    h = h + golden_ratio_conjugate;
+    h = fmod(h, 1);     // hue, 0.0 - 1.0
+    double s = 0.75;    // saturation, the bigger it is, the stronger the color is
+    double v = 0.8516;  // value, represents lightness or brightness, 0 is black
+    QColor color = QColor::fromHsvF(h, s, v);
     titleLabel->setFontColor(color);
     valueLabel->setFontColor(color);
 }
