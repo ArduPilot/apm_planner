@@ -33,6 +33,7 @@ This file is part of the QGROUNDCONTROL project
 #include "configuration.h"
 #include "QsLog.h"
 #include <QtWidgets/QApplication>
+#include <fstream>
 
 /* SDL does ugly things to main() */
 #ifdef main
@@ -51,8 +52,29 @@ void msgHandler( QtMsgType type, const char* msg )
     std::cerr << output.toStdString() << std::endl;
     if( type == QtFatalMsg ) abort();
 }
-
 #endif
+
+// Path for file logging
+static QString sLogPath;
+
+// Message handler for logging provides console and file output
+// The handler itself has to be reentrant and threadsafe!
+void loggingMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
+{
+    // The message handler has to be thread safe
+    static QMutex mutex;
+    QMutexLocker localLoc(&mutex);
+
+    static std::ofstream logFile(sLogPath.toStdString().c_str(), std::ofstream::out | std::ofstream::app);
+
+    if(logFile)
+    {
+        logFile << qPrintable(qFormatLogMessage(type, context, message)) << std::endl;
+    }
+
+    fprintf(stderr, "%s\n", qPrintable(qFormatLogMessage(type, context, message)));
+}
+
 
 /**
  * @brief Starts the application
@@ -61,8 +83,6 @@ void msgHandler( QtMsgType type, const char* msg )
  * @param argv Commandline arguments
  * @return exit code, 0 for normal exit and !=0 for error cases
  */
-
-
 int main(int argc, char *argv[])
 {
 // install the message handler
@@ -70,7 +90,7 @@ int main(int argc, char *argv[])
     //qInstallMsgHandler( msgHandler );
 #endif
 
-    QGCCore core(argc, argv);
+
     // init the logging mechanism
 #ifdef ENABLE_QS_LOG
     // disabled due to issue #941
@@ -88,9 +108,43 @@ int main(int argc, char *argv[])
        QsLogging::DestinationFactory::MakeDebugOutputDestination() );
     logger.addDestination(debugDestination);
     logger.addDestination(fileDestination);
-#endif
-    // This is required to start the logger
-    core.initialize();
 
+#else
+    // create filename and path for logfile like "apmlog_20160529.txt"
+    // one logfile for every day. Size is not limited
+    QString logFileName("apmlog_");
+    logFileName.append(QDateTime::currentDateTime().toString("yyyyMMdd"));
+    logFileName.append(".txt");
+    sLogPath = QString(QDir(QGC::appDataDirectory()).filePath(logFileName));
+
+    // Just keep the 5 recent logfiles and delete the rest.
+    QDir logDirectory(QGC::appDataDirectory(), "apmlog*", QDir::Name, QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot);
+    QStringList logFileList(logDirectory.entryList());
+    // As the file list is sorted we can delete index 0 cause its the oldest one
+    while(logFileList.size() > 5)
+    {
+        logDirectory.remove(logFileList.at(0));
+        logFileList.pop_front();
+    }
+
+    // Add sperator for better orientation in Logfiles
+    std::ofstream logFile(sLogPath.toStdString().c_str(), std::ofstream::out | std::ofstream::app);
+    if (logFile)
+    {
+        logFile << std::endl << std::endl << "**************************************************" << std::endl << std::endl;
+        logFile.close();
+    }
+
+    // set up logging pattern
+    QString logPattern("[%{time yyyyMMdd h:mm:ss.zzz} %{if-debug}DEBUG%{endif}%{if-info}INFO %{endif}%{if-warning}WARN %{endif}%{if-critical}ERROR%{endif}%{if-fatal}FATAL%{endif}] - %{message}");
+    qSetMessagePattern(logPattern);
+
+    // install the message handler for logging
+    qInstallMessageHandler(loggingMessageHandler);
+#endif
+
+    // start the application
+    QGCCore core(argc, argv);
+    core.initialize();
     return core.exec();
 }

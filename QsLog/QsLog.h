@@ -149,17 +149,17 @@ private:
 #ifndef QS_LOG_LINE_NUMBERS
 #define QLOG_TRACE() \
     if(1){} \
-    else qDebug() << "TRACE" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
+    else qDebug()
 #define QLOG_DEBUG() \
-    qDebug() << "DEBUG" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
+    qDebug()
 #define QLOG_INFO()  \
-    qInfo() << "INFO " << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
+    qInfo()
 #define QLOG_WARN()  \
-    qWarning() << "WARN " << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
+    qWarning()
 #define QLOG_ERROR() \
-    qCritical() << "ERROR" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
+    qCritical()
 #define QLOG_FATAL() \
-    qCritical() << "FATAL" << QDateTime::currentDateTime().toString("yyyy-MM-ddThh:mm:ss.zzz")
+    qCritical()
 #else
 #define QLOG_TRACE() \
     qDebug() << __FILE__ << '@' << __LINE__
