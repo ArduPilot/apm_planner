@@ -1096,7 +1096,6 @@ void AP2DataPlot2D::itemEnabled(QString name)
         double s = 0.75;    // saturation
         double v = 0.8516;  // value
         QColor color = QColor::fromHsvF(h, s, v);
-        //QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
         yAxis->setLabelColor(color);
         yAxis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
