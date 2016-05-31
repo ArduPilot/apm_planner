@@ -121,6 +121,14 @@ AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
 
 AP2DataPlot2DModel::~AP2DataPlot2DModel()
 {
+
+    m_msgNameToPrepearedInsertQuery.clear();
+    m_msgNameToPrepearedSelectQuery.clear();
+
+    m_indexinsertquery.reset();
+    m_fmtInsertQuery.reset();
+
+    m_sharedDb.close();
     QSqlDatabase::removeDatabase(m_databaseName);
 }
 
@@ -338,12 +346,12 @@ QVariant AP2DataPlot2DModel::data ( const QModelIndex & index, int role) const
                 m_prefetchedRowData.push_back(selectRowQuery->value(i));
             }
             m_prefetchedRowIndex = index;
-            selectRowQuery->finish();   // must be called because we will reuse this query
         }
         else
         {
             qDebug() << "Unable to exec table query:" << selectRowQuery->lastError().text();
         }
+        selectRowQuery->finish();   // Should be called in case of reusage
     }
 
     if ((index.column()-1) >= m_prefetchedRowData.size())
@@ -417,6 +425,8 @@ bool AP2DataPlot2DModel::addType(const QString &name, const unsigned int type, c
             setError("FAILED TO FMT: " + m_fmtInsertQuery->lastError().text());
             return false;
         }
+        m_fmtInsertQuery->finish(); // should be called in case of reusage
+
         m_indexinsertquery->bindValue(":idx",m_fmtIndex-1);
         m_indexinsertquery->bindValue(":value","FMT");
         if (!m_indexinsertquery->exec())
@@ -424,6 +434,7 @@ bool AP2DataPlot2DModel::addType(const QString &name, const unsigned int type, c
             setError("Error execing index: " + name + " " + m_indexinsertquery->lastError().text());
             return false;
         }
+        m_indexinsertquery->finish();   // should be called in case of reusage
 
         // Create table for measurement of type "name"
         QSqlQuery create(m_sharedDb);
@@ -560,7 +571,7 @@ bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,Q
     }
     else
     {
-        insertQuery->finish();  // must be called in case of a reusage of this query
+
         m_indexinsertquery->bindValue(":idx", index);
         m_indexinsertquery->bindValue(":value", name);
         if (!m_indexinsertquery->exec())
@@ -569,6 +580,10 @@ bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,Q
             return false;
         }
     }
+
+
+    insertQuery->finish();          // should be called in case of reusage
+    m_indexinsertquery->finish();   // should be called in case of reusage
 
     // Our table model is larger than the number of columns we insert:
     // +1 for the index column (in column 0)
