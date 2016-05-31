@@ -153,7 +153,6 @@ private: //helpers
 private:
     QString m_error;
     QString m_databaseName;
-    QSqlDatabase m_sharedDb;
     QVector<QPair<quint64,QString> > m_rowIndexToDBIndex;   /// stores relation between Table row index
                                                             /// and DB index and DB table name
     QMap<QString,QList<QString> > m_headerStringList;
