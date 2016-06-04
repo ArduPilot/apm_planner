@@ -442,7 +442,8 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
                                     }
                                 }
                                 //...and then use it to check the values.
-                                if (valuepairlist[nameIndex].second == "RATE_RLL_P" || valuepairlist[nameIndex].second == "H_SWASH_PLATE")
+                                if (valuepairlist[nameIndex].second == "RATE_RLL_P" || valuepairlist[nameIndex].second == "H_SWASH_PLATE"
+                                        || valuepairlist[nameIndex].second == "ATC_RAT_RLL_P" ) // ATC_RAT_RLL_P Used in AC3.4+
                                 {
                                     m_loadedLogType = MAV_TYPE_QUADROTOR;
                                 }
@@ -507,7 +508,9 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
         emit lineRead(line);
         if (m_loadedLogType == MAV_TYPE_GENERIC)
         {
-            if ((line.contains(APM_COPTER_REXP) || (line.contains("PARM") && (line.contains("RATE_RLL_P") || line.contains("H_SWASH_PLATE")))))
+            if ((line.contains(APM_COPTER_REXP) || (line.contains("PARM")
+                                                    && (line.contains("RATE_RLL_P") || line.contains("H_SWASH_PLATE")
+                                                        || line.contains("ATC_RAT_RLL_P") ) ))) // ATC_RAT_RLL_P Used in AC3.4+
             {
                 m_loadedLogType = MAV_TYPE_QUADROTOR;
             }
