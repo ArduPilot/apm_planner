@@ -136,7 +136,13 @@ int main(int argc, char *argv[])
     }
 
     // set up logging pattern
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    // QT < 5.5.x does not support qInfo() logging macro and no info-formatting too
+    QString logPattern("[%{time yyyyMMdd h:mm:ss.zzz} %{if-debug}DEBUG%{endif}%{if-warning}WARN %{endif}%{if-critical}ERROR%{endif}%{if-fatal}FATAL%{endif}] - %{message}");
+#else
     QString logPattern("[%{time yyyyMMdd h:mm:ss.zzz} %{if-debug}DEBUG%{endif}%{if-info}INFO %{endif}%{if-warning}WARN %{endif}%{if-critical}ERROR%{endif}%{if-fatal}FATAL%{endif}] - %{message}");
+#endif
+
     qSetMessagePattern(logPattern);
 
     // install the message handler for logging

@@ -18,6 +18,7 @@
 #define LOGGING_H
 
 #include <QDebug>
+#include <QtGlobal>
 
 // Defines for configuring the used loglevels
 // just uncomment if you want to hide one level
@@ -44,7 +45,11 @@
 #ifdef NO_INFO
     #define QLOG_INFO()  if(1){} else qInfo()
 #else
-    #define QLOG_INFO() qInfo()
+    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+        #define QLOG_INFO() qDebug()
+    #else
+        #define QLOG_INFO() qInfo()
+    #endif
 #endif
 
 #ifdef NO_WARN
