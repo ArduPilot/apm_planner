@@ -67,12 +67,13 @@ void loggingMessageHandler(QtMsgType type, const QMessageLogContext &context, co
 
     static std::ofstream logFile(sLogPath.toStdString().c_str(), std::ofstream::out | std::ofstream::app);
 
+    QString outMessage(qFormatLogMessage(type, context, message));  // just format only once
     if(logFile)
     {
-        logFile << qPrintable(qFormatLogMessage(type, context, message)) << std::endl;
+        logFile << qPrintable(outMessage) << std::endl;
     }
 
-    fprintf(stderr, "%s\n", qPrintable(qFormatLogMessage(type, context, message)));
+    fprintf(stderr, "%s\n", qPrintable(outMessage));
 }
 
 
@@ -90,26 +91,7 @@ int main(int argc, char *argv[])
     //qInstallMsgHandler( msgHandler );
 #endif
 
-
-    // init the logging mechanism
-#ifdef ENABLE_QS_LOG
-    // disabled due to issue #941
-    QsLogging::Logger& logger = QsLogging::Logger::instance();
-    logger.setLoggingLevel(QsLogging::DebugLevel);
-
-    const QString sLogPath(QDir(QGC::appDataDirectory()).filePath("log.txt"));
-
-    QsLogging::DestinationPtr fileDestination(
-    QsLogging::DestinationFactory::MakeFileDestination(sLogPath,
-                                                       QsLogging::EnableLogRotation,
-                                                       QsLogging::MaxSizeBytes(0),
-                                                        QsLogging::MaxOldLogCount(5)) );
-    QsLogging::DestinationPtr debugDestination(
-       QsLogging::DestinationFactory::MakeDebugOutputDestination() );
-    logger.addDestination(debugDestination);
-    logger.addDestination(fileDestination);
-
-#else
+    // Init logging
     // create filename and path for logfile like "apmlog_20160529.txt"
     // one logfile for every day. Size is not limited
     QString logFileName("apmlog_");
@@ -147,7 +129,6 @@ int main(int argc, char *argv[])
 
     // install the message handler for logging
     qInstallMessageHandler(loggingMessageHandler);
-#endif
 
     // start the application
     QGCCore core(argc, argv);
