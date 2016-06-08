@@ -23,7 +23,7 @@ This file is part of the APM_PLANNER project
 #include "BatteryMonitorConfig.h"
 #include <QMessageBox>
 #include <QPushButton>
-#include "QsLog.h"
+#include "logging.h"
 
 BatteryPreset::BatteryPreset(const QString &title, BatteryMonitor batteryMonitor,
                              int voltPin, float voltDivider,

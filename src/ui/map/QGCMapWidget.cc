@@ -1,5 +1,5 @@
 #include "QGCMapWidget.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "QGCMapToolBar.h"
 #include "UASInterface.h"
 #include "UASManager.h"

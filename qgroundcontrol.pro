@@ -147,10 +147,7 @@ DEFINES += _TTY_NOWARN_
 
 #Turn on camera view
 #DEFINES += AMERAVIEW
-#
-# Logging Library
-#
-include (QsLog/QsLog.pri)
+
 #include (libs/mavlink/include/mavlink/v1.0-qt/mavlink.pri)
 #
 # OS Specific settings
@@ -674,7 +671,8 @@ HEADERS += \
     src/comm/LinkManagerFactory.h \
     src/ui/VibrationMonitor.h \
     src/ui/EKFMonitor.h \
-    src/Settings.h
+    src/Settings.h \
+    src/logging.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \

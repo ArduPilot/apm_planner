@@ -28,7 +28,7 @@ This file is part of the QGROUNDCONTROL project
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
  *
  */
-#include "QsLog.h"
+#include "logging.h"
 #include "LinkManager.h"
 //#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"

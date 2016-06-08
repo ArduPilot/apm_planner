@@ -34,7 +34,7 @@ This file is part of the APM_PLANNER project
 #include <QSqlField>
 #include <QSqlError>
 #include <QUuid>
-#include <QsLog.h>
+#include <logging.h>
 
 /*
  * This model holds everything in memory in a sqlite database.

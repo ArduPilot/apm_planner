@@ -32,7 +32,7 @@ This file is part of the PIXHAWK project
 #include "UASInfoWidget.h"
 #include "UASManager.h"
 #include "QGC.h"
-#include "QsLog.h"
+#include "logging.h"
 
 #include <QtGlobal>
 #include <float.h>

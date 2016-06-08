@@ -1,7 +1,7 @@
 #include "dataselectionscreen.h"
 #include <QCheckBox>
 #include <QVBoxLayout>
-#include <QsLog.h>
+#include <logging.h>
 #include <GraphTreeWidgetItem.h>
 DataSelectionScreen::DataSelectionScreen(QWidget *parent) : QWidget(parent)
 {

@@ -1,5 +1,5 @@
 
-#include "QsLog.h"
+#include "logging.h"
 
 #include "JoystickWidget.h"
 #include "ui_JoystickWidget.h"

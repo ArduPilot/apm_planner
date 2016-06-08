@@ -2,19 +2,17 @@
 #define DEBUGOUTPUT_H
 
 #include <QWidget>
-#include <QsLogDestConsole.h>
 #include "ui_DebugOutput.h"
 #define define2string_p(x) #x
 #define define2string(x) define2string_p(x)
-class DebugOutput : public QWidget, public QsLogging::Destination
+class DebugOutput : public QWidget
 {
     Q_OBJECT
     
 public:
     explicit DebugOutput(QWidget *parent = 0);
     ~DebugOutput();
-    void write(const QString& message, QsLogging::Level level);
-    bool isValid() { return true; }
+    void write(const QString& message);
 private slots:
     void onTopCheckBoxChecked(bool checked);
     void copyToClipboardButtonClicked();

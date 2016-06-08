@@ -1,7 +1,7 @@
 
 #include "QGCParamSlider.h"
 #include "ui_QGCParamSlider.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "UASInterface.h"
 #include "UASManager.h"
 

@@ -29,7 +29,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "ArduPilotMegaMAV.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "GAudioOutput.h"
 #include "LinkManager.h"
 

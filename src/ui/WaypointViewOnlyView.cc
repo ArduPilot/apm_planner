@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "WaypointViewOnlyView.h"
 #include "ui_WaypointViewOnlyView.h"
 

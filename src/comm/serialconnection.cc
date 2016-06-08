@@ -31,7 +31,7 @@ This file is part of the APM_PLANNER project
 
 
 #include "serialconnection.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QtSerialPort/qserialportinfo.h>
 #include <QSettings>
 #include <QStringList>

@@ -26,7 +26,7 @@ This file is part of the QGROUNDCONTROL project
  *   @brief Implementation of class MainWindow
  *   @author Lorenz Meier <mail@qgroundcontrol.org>
  */
-#include "QsLog.h"
+#include "logging.h"
 #include "dockwidgettitlebareventfilter.h"
 #include "QGC.h"
 #include "MAVLinkSimulationLink.h"
@@ -630,8 +630,9 @@ void MainWindow::buildCommonWidgets()
 
     if (!debugOutput)
     {
-        debugOutput = new DebugOutput();
-        QsLogging::Logger::instance().addDestination(QsLogging::DestinationPtr(debugOutput));
+        // TODO convert to new logging system
+//        debugOutput = new DebugOutput();
+//        QsLogging::Logger::instance().addDestination(QsLogging::DestinationPtr(debugOutput));
     }
 
     // Dock widgets

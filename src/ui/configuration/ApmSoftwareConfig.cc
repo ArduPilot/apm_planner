@@ -21,7 +21,7 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 
 #include "ApmSoftwareConfig.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QXmlStreamReader>
 #include <QDir>
 #include <QFile>

@@ -31,7 +31,7 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCCore.h"
 #include "MainWindow.h"
 #include "configuration.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QtWidgets/QApplication>
 #include <fstream>
 

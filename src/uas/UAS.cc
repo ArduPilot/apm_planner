@@ -9,7 +9,7 @@
  *
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "UAS.h"
 #include "LinkInterface.h"
 #include "UASManager.h"

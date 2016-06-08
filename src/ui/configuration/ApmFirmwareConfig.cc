@@ -22,7 +22,7 @@ This file is part of the APM_PLANNER project
 
 #include "ArduPilotMegaMAV.h"
 #include "ApmFirmwareConfig.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "LinkManager.h"
 #include "LinkInterface.h"
 #include <QtSerialPort/qserialportinfo.h>

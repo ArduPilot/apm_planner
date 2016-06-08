@@ -28,7 +28,7 @@ This file is part of the APM_PLANNER project
  *
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "FrameTypeConfig.h"
 #include "DownloadRemoteParamsDialog.h"
 #include "ParamCompareDialog.h"

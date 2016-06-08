@@ -10,7 +10,7 @@
  *
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "JoystickInput.h"
 #include "UAS.h"
 #include "QGC.h"

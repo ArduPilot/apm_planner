@@ -30,7 +30,7 @@ This file is part of the PIXHAWK project
 
 #include "UASView.h"
 #include "ui_UASView.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "QGC.h"
 #include "UASManager.h"
 #include "UASWaypointManager.h"

@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "ArduPilotMegaMAV.h"
 #include "ApmUiHelpers.h"
 #include "UASActionsWidget.h"

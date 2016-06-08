@@ -20,7 +20,7 @@ This file is part of the QGROUNDCONTROL project
     along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
-#include "QsLog.h"
+#include "logging.h"
 #include "QGCToolBar.h"
 #include "UASManager.h"
 #include "MainWindow.h"

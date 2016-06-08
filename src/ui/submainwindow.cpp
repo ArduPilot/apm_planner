@@ -1,5 +1,5 @@
 #include "submainwindow.h"
-#include "QsLog.h"
+#include "logging.h"
 
 
 SubMainWindow::SubMainWindow(QWidget *parent) : QMainWindow(parent)

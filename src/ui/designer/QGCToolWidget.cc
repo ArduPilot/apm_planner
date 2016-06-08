@@ -1,6 +1,6 @@
 #include "QGCToolWidget.h"
 #include "ui_QGCToolWidget.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "QGCParamSlider.h"
 #include "QGCComboBox.h"
 #include "QGCTextLabel.h"

@@ -40,7 +40,7 @@ This file is part of the APM_PLANNER project
 #include <QByteArray>
 #include <QDataStream>
 #include "MAVLinkDecoder.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "QGC.h"
 
 #include <QTextBlock>

@@ -29,7 +29,7 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "UASWaypointManager.h"
 #include "UAS.h"
 #include "mavlink_types.h"

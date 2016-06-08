@@ -2,7 +2,7 @@
 // It also needs the __STDC_LIMIT_MACROS macro defined in order to include them (done
 // in qgroundcontrol.pri).
 
-#include "QsLog.h"
+#include "logging.h"
 #include "QGCVehicleConfig.h"
 #include "UASManager.h"
 #include "QGC.h"

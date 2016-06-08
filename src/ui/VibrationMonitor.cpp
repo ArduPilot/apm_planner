@@ -19,7 +19,7 @@ This file is part of the APM_PLANNER project
     along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
-#include "QsLog.h"
+#include "logging.h"
 #include "VibrationMonitor.h"
 
 #include "configuration.h"

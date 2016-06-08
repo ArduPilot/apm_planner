@@ -26,7 +26,7 @@ This file is part of the QGROUNDCONTROL project
  *   @author Lorenz Meier <mail@qgroundcontrol.org>
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "DownloadRemoteParamsDialog.h"
 #include "QGCParamWidget.h"
 #include "UASInterface.h"

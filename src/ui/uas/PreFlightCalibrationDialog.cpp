@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "PreFlightCalibrationDialog.h"
 #include "ui_PreFlightCalibrationDialog.h"
 

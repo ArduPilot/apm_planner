@@ -30,7 +30,7 @@ This file is part of the PIXHAWK project
 *   @author Christian Schluchter <schluchc@ee.ethz.ch>
 */
 
-#include "QsLog.h"
+#include "logging.h"
 #include <cmath>
 
 #include "MAVLinkSimulationWaypointPlanner.h"

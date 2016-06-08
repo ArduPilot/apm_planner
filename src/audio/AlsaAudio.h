@@ -34,7 +34,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QSettings>
 #include <QThread>
 #include <QQueue>
-#include "QsLog.h"
+#include "logging.h"
 
 #ifdef Q_OS_LINUX
 #include <alsa/asoundlib.h>

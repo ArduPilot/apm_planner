@@ -1,6 +1,6 @@
 #include "QGCTextLabel.h"
 #include "ui_QGCTextLabel.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "MAVLinkProtocol.h"
 #include "UASManager.h"
 

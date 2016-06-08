@@ -32,7 +32,7 @@ This file is part of the QGROUNDCONTROL project
 #include "WatchdogView.h"
 #include "WatchdogProcessView.h"
 #include "ui_WatchdogControl.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "PxQuadMAV.h"
 #include "UASManager.h"
 

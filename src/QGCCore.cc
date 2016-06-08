@@ -30,7 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "QGCCore.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "configuration.h"
 #include "QGC.h"
 #include "MainWindow.h"
@@ -81,7 +81,6 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
 
 void QGCCore::aboutToQuit()
 {
-    QsLogging::Logger::instance().destroyInstance();
 }
 
 void QGCCore::initialize()
@@ -95,9 +94,6 @@ void QGCCore::initialize()
     QLOG_INFO() << "APP_PLATFORM:" << define2string(APP_PLATFORM);
     QLOG_INFO() << "APP_TYPE:" << define2string(APP_TYPE);
 
-//    QsLogging::Logger::instance().des
-    // Logging Cleanup
-//    connect(this, SIGNAL(aboutToQuit()), SLOT(QsLogging::Logger::instance().
 
     // Check application settings
     // clear them if they mismatch

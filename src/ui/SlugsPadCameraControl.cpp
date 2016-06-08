@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "SlugsPadCameraControl.h"
 #include "ui_SlugsPadCameraControl.h"
 

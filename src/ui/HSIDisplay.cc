@@ -30,7 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "HSIDisplay.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "UASManager.h"
 #include "QGC.h"
 #include "Waypoint.h"

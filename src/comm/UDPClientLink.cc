@@ -27,7 +27,7 @@ This file is part of the APMPLANNER2 project
  *
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "UDPClientLink.h"
 #include "LinkManager.h"
 #include "QGC.h"

@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "MainWindow.h"
 #include "QGCMAVLinkLogPlayer.h"
 #include "QGC.h"

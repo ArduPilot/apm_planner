@@ -11,7 +11,7 @@
 #include <openssl/ssl.h>
 #endif
 
-#include "QsLog.h"
+#include "logging.h"
 
 #define CERT_OF_A_FAILED "Certificate of Authenticity check failed! Please check with your autopilot hardware supplier for support."
 #define CERT_OF_A_PUB_KEY_FAILED "Certificate of Authenticity failed COA check! Public Key is not valid."

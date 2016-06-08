@@ -20,7 +20,7 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 
-#include "QsLog.h"
+#include "logging.h"
 #include "MainWindow.h"
 #include "SerialSettingsDialog.h"
 #include "Radio3DRConfig.h"

@@ -1,6 +1,6 @@
 #include "QGCComboBox.h"
 #include "ui_QGCComboBox.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "UASInterface.h"
 #include "UASManager.h"
 

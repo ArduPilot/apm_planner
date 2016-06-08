@@ -1,5 +1,5 @@
 #include "Waypoint2DIcon.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "opmapcontrol.h"
 #include "QGC.h"
 #include <QPainter>

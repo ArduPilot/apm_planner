@@ -23,7 +23,7 @@ This file is part of the APM_PLANNER project
 #include "AdvParameterList.h"
 #include "DownloadRemoteParamsDialog.h"
 #include "ParamCompareDialog.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QTableWidgetItem>
 #include <QInputDialog>
 #include <QFileDialog>

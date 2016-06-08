@@ -19,7 +19,7 @@ This file is part of the APM_PLANNER project
     along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
-#include "QsLog.h"
+#include "logging.h"
 #include "FlightModeConfig.h"
 #include "ArduPilotMegaMAV.h"
 #include "ApmUiHelpers.h"

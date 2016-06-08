@@ -21,7 +21,7 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 
 #include "GeoFenceConfig.h"
-#include "QsLog.h"
+#include "logging.h"
 
 #define TO_METERS 100.0f
 #define TO_CENTIMETERS 100.0f

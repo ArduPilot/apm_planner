@@ -2,7 +2,7 @@
 
 #include <QScrollBar>
 
-DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent), QsLogging::Destination()
+DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
     ui.hashLineEdit->setText(define2string(GIT_HASH));
@@ -14,9 +14,8 @@ DebugOutput::DebugOutput(QWidget *parent) : QWidget(parent), QsLogging::Destinat
 DebugOutput::~DebugOutput()
 {
 }
-void DebugOutput::write(const QString& message, QsLogging::Level level)
+void DebugOutput::write(const QString& message)
 {
-    Q_UNUSED(level)
     ui.textBrowser->append(message);
     if (ui.autoScrollCheckBox->isChecked())
     {

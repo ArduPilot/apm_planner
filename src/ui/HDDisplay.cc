@@ -11,7 +11,7 @@
 
 #include "HDDisplay.h"
 
-#include "QsLog.h"
+#include "logging.h"
 #include "UASManager.h"
 #include "ui_HDDisplay.h"
 #include "MG.h"

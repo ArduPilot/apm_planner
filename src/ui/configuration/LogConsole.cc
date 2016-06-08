@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "MainWindow.h"
 #include "LogConsole.h"
 #include "ui_LogConsole.h"

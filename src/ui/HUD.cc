@@ -32,7 +32,7 @@ This file is part of the QGROUNDCONTROL project
 
 
 
-#include "QsLog.h"
+#include "logging.h"
 #include "UASManager.h"
 #include "UAS.h"
 #include "HUD.h"

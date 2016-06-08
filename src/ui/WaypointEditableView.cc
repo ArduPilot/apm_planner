@@ -29,7 +29,7 @@ This file is part of the QGROUNDCONTROL project
  *   @author Bill Bonney <billbonney@communistech.com>
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "WaypointEditableView.h"
 #include "ui_WaypointEditableView.h"
 

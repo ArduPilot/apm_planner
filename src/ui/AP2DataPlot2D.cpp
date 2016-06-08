@@ -27,7 +27,7 @@ This file is part of the APM_PLANNER project
  */
 
 
-#include "QsLog.h"
+#include "logging.h"
 #include "AP2DataPlot2D.h"
 #include "LogDownloadDialog.h"
 #include <QFileDialog>
@@ -43,7 +43,6 @@ This file is part of the APM_PLANNER project
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlError>
-#include <QsLog.h>
 #include <QStandardItemModel>
 #include "MainWindow.h"
 #include "AP2DataPlot2DModel.h"

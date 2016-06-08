@@ -1,5 +1,5 @@
 #include "UASQuickViewTextItem.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QVBoxLayout>
 #include <math.h>
 
