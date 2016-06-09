@@ -139,14 +139,15 @@ SectionEnd
 
 Section "OpenSSL" OPENSSL
   SetOutPath $INSTDIR
-  File vcredist_x86.exe
-  DetailPrint "Installing MSVC2012 runtime"
-  ExecWait "$INSTDIR\vcredist_x86.exe /q /norestart"
   NSISdl::download http://firmware.diydrones.com/Tools/APMPlanner/supportinstalls/Win32OpenSSL_Light-1_0_0l.exe Win32OpenSSL_Light-1_0_0l.exe
   ExecWait "Win32OpenSSL_Light-1_0_0l.exe /verysilent /sp-"
 SectionEnd
 
 section "64-bit Drivers" DRIVERS_64
+  SetOutPath $INSTDIR
+  File vc_redist.x64.exe
+  DetailPrint "Installing MSVC2015 runtime"
+  ExecWait "$INSTDIR\vc_redist.x64.exe /q /norestart"
   SetOutPath $INSTDIR\Drivers
   File "..\Drivers\Arduino MEGA 2560.cat"
   File "..\Drivers\Arduino MEGA 2560.inf"
@@ -159,6 +160,10 @@ section "64-bit Drivers" DRIVERS_64
 sectionEND
 
 section "32-bit Drivers" DRIVERS_32
+  SetOutPath $INSTDIR
+  File vc_redist.x86.exe
+  DetailPrint "Installing MSVC2015 runtime"
+  ExecWait "$INSTDIR\vc_redist.x86.exe /q /norestart"
   SetOutPath $INSTDIR\Drivers
   File "..\Drivers\Arduino MEGA 2560.cat"
   File "..\Drivers\Arduino MEGA 2560.inf"
@@ -183,7 +188,6 @@ Section "Qt components" QT_FILES
   File ${RELEASE_DIR}\Qt5Core.dll
   File ${RELEASE_DIR}\Qt5Gui.dll
   File ${RELEASE_DIR}\Qt5Network.dll
-  File ${RELEASE_DIR}\Qt5OpenGL.dll
   File ${RELEASE_DIR}\Qt5Qml.dll
   File ${RELEASE_DIR}\Qt5Quick.dll
   File ${RELEASE_DIR}\Qt5Script.dll
@@ -214,7 +218,6 @@ Section "Uninstall"
   Delete $INSTDIR\msvcr1*.dll
   Delete $INSTDIR\Qt5Network.dll
   Delete $INSTDIR\Qt5Widgets.dll
-  Delete $INSTDIR\Qt5OpenGL.dll
   Delete $INSTDIR\Qt5Quick.dll
   Delete $INSTDIR\Qt5Qml.dll
   Delete $INSTDIR\Qt5Sql.dll
@@ -222,7 +225,8 @@ Section "Uninstall"
   Delete $INSTDIR\Qt5Svg.dll
   Delete $INSTDIR\Qt5Test.dll
   Delete $INSTDIR\Qt5SerialPort.dll
-  Delete $INSTDIR\vcredist_x86.exe
+  Delete $INSTDIR\vc_redist.x86.exe
+  Delete $INSTDIR\vc_redist.x64.exe
 
   ExecWait "$INSTDIR\drmingw.exe -u"
   Delete $INSTDIR\drmingw.exe"
