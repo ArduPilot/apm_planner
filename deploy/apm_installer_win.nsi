@@ -82,7 +82,7 @@
 Name "APM Planner 2"
 
 !ifndef QTDIR
-  !define QTDIR "C:/Qt/Qt5.4.2/5.4/msvc2012_opengl"
+  !define QTDIR "D:\Qt\Qt5.5.1_msvc2013\5.5\msvc2013"
 !endif
 !ifndef RELEASE_DIR
   !define RELEASE_DIR "..\release"
@@ -139,31 +139,34 @@ SectionEnd
 
 Section "OpenSSL" OPENSSL
   SetOutPath $INSTDIR
-  File vcredist_x86.exe
-  DetailPrint "Installing MSVC2012 runtime"
-  ExecWait "$INSTDIR\vcredist_x86.exe /q /norestart"
-  NSISdl::download http://firmware.diydrones.com/Tools/APMPlanner/supportinstalls/Win32OpenSSL_Light-1_0_0l.exe Win32OpenSSL_Light-1_0_0l.exe
+  NSISdl::download http://firmware.ardupilot.org/Tools/APMPlanner/supportinstalls/Win32OpenSSL_Light-1_0_0l.exe Win32OpenSSL_Light-1_0_0l.exe
   ExecWait "Win32OpenSSL_Light-1_0_0l.exe /verysilent /sp-"
 SectionEnd
 
 section "64-bit Drivers" DRIVERS_64
+  SetOutPath $INSTDIR
+  File VC_redist.x64.exe
+  DetailPrint "Installing MSVC2015 runtime x64"
+  ExecWait "$INSTDIR\VC_redist.x64.exe /q /norestart"
   SetOutPath $INSTDIR\Drivers
   File "..\Drivers\Arduino MEGA 2560.cat"
   File "..\Drivers\Arduino MEGA 2560.inf"
   File "..\Drivers\dpinst.xml"
   File "..\Drivers\DPInstx64.exe"
-  File "..\Drivers\DPInstx86.exe"
   File "..\Drivers\px4fmu_2.0.0.3.cat"
   File "..\Drivers\px4fmu_2.0.0.3.inf"
   ExecWait "$INSTDIR\Drivers\DPInstx64.exe /LM /SW"
 sectionEND
 
 section "32-bit Drivers" DRIVERS_32
+  SetOutPath $INSTDIR
+  File VC_redist.x86.exe
+  DetailPrint "Installing MSVC2015 runtime x86"
+  ExecWait "$INSTDIR\VC_redist.x86.exe /q /norestart"
   SetOutPath $INSTDIR\Drivers
   File "..\Drivers\Arduino MEGA 2560.cat"
   File "..\Drivers\Arduino MEGA 2560.inf"
   File "..\Drivers\dpinst.xml"
-  File "..\Drivers\DPInstx64.exe"
   File "..\Drivers\DPInstx86.exe"
   File "..\Drivers\px4fmu_2.0.0.3.cat"
   File "..\Drivers\px4fmu_2.0.0.3.inf"
@@ -175,15 +178,13 @@ Section "Qt components" QT_FILES
   SetOutPath $INSTDIR\qml
   !include qt_install_qml.list
   SetOutPath $INSTDIR
-  File ${RELEASE_DIR}\icudt5*.dll
-  File ${RELEASE_DIR}\icuin5*.dll
-  File ${RELEASE_DIR}\icuuc5*.dll
+  File ${RELEASE_DIR}\libEGL.dll
+  File ${RELEASE_DIR}\libGLESV2.dll
   File ${RELEASE_DIR}\msvcp1*.dll
   File ${RELEASE_DIR}\msvcr1*.dll
   File ${RELEASE_DIR}\Qt5Core.dll
   File ${RELEASE_DIR}\Qt5Gui.dll
   File ${RELEASE_DIR}\Qt5Network.dll
-  File ${RELEASE_DIR}\Qt5OpenGL.dll
   File ${RELEASE_DIR}\Qt5Qml.dll
   File ${RELEASE_DIR}\Qt5Quick.dll
   File ${RELEASE_DIR}\Qt5Script.dll
@@ -205,24 +206,23 @@ Section "Uninstall"
   Delete $INSTDIR\libxbee.dll
   Delete $INSTDIR\APMPlanner2_uninstall.exe
 
-  Delete $INSTDIR\Qt5Gui.dll
-  Delete $INSTDIR\Qt5Core.dll
-  Delete $INSTDIR\icuin5*.dll
-  Delete $INSTDIR\icuuc5*.dll
-  Delete $INSTDIR\icudt5*.dll
+  Delete $INSTDIR\libEGL.dll
+  Delete $INSTDIR\libGLESV2.dll
   Delete $INSTDIR\msvcp1*.dll
   Delete $INSTDIR\msvcr1*.dll
+  Delete $INSTDIR\Qt5Core.dll
+  Delete $INSTDIR\Qt5Gui.dll
   Delete $INSTDIR\Qt5Network.dll
-  Delete $INSTDIR\Qt5Widgets.dll
-  Delete $INSTDIR\Qt5OpenGL.dll
-  Delete $INSTDIR\Qt5Quick.dll
   Delete $INSTDIR\Qt5Qml.dll
+  Delete $INSTDIR\Qt5Quick.dll
   Delete $INSTDIR\Qt5Sql.dll
   Delete $INSTDIR\Qt5Script.dll
   Delete $INSTDIR\Qt5Svg.dll
   Delete $INSTDIR\Qt5Test.dll
   Delete $INSTDIR\Qt5SerialPort.dll
-  Delete $INSTDIR\vcredist_x86.exe
+  Delete $INSTDIR\Qt5Widgets.dll
+  Delete $INSTDIR\VC_redist.x86.exe
+  Delete $INSTDIR\VC_redist.x64.exe
 
   ExecWait "$INSTDIR\drmingw.exe -u"
   Delete $INSTDIR\drmingw.exe"
@@ -258,11 +258,11 @@ SectionEnd
 Function .onInit
   #Enable the proper sections, and set selection for JIT to off
   ${If} ${RunningX64}
-    SectionSetFlags ${DRIVERS_32}  ${SF_RO}
+    SectionSetFlags ${DRIVERS_32} ${SF_RO}
     SectionSetFlags ${DRIVERS_64} ${SF_SELECTED}
   ${Else}
     SectionSetFlags ${DRIVERS_64} ${SF_RO}
-    SectionSetFlags ${DRIVERS_32}  ${SF_SELECTED}
+    SectionSetFlags ${DRIVERS_32} ${SF_SELECTED}
   ${EndIf}
   SectionSetFlags ${APM_FILES} ${SF_SELECTED}
   SectionSetFlags ${JIT_DEBUGGER} 0
