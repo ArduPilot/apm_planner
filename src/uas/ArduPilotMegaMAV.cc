@@ -759,7 +759,7 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
 {
     // SubSys ans ErrorCode interpretation was taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 24.01.2016
+    // last verification 09.06.2016
 
     QString output;
     QTextStream outputStream(&output);
@@ -923,6 +923,58 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
         outputStream << "CPU:";
         break;
 
+    case 20:
+        outputStream << "FS-ADSB:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 21:
+        outputStream << "Terrain:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Missing Terrain Data";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 22:
+        outputStream << "Navigation:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Failed to set destination";
+            EcodeUsed = true;
+        }
+        else if (message.getErrorCode() == 3)
+        {
+            outputStream << "Restarted RTL";
+            EcodeUsed = true;
+        }
+        else if (message.getErrorCode() == 4)
+        {
+            outputStream << "Failed Circle init";
+            EcodeUsed = true;
+        }
+        else if (message.getErrorCode() == 5)
+        {
+            outputStream << "Destination outside fence";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 23:
+        outputStream << "FS-Terrain:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+
     default:
         outputStream << "SubSys:" << message.getErrorCode() << " ECode:" << message.getErrorCode();
         EcodeUsed = true;
@@ -959,7 +1011,7 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
 {
     // Interpretation taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 24.01.2016
+    // last verification 09.06.2016
 
     QString output;
     QTextStream outputStream(&output);
@@ -1011,6 +1063,9 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
     case Copter::BRAKE:
         outputStream << "Brake";
         break;
+    case Copter::THROW:
+        outputStream << "Throw";
+        break;
     default:
         outputStream << "Unknown Mode:" << message.getMode();
         break;
@@ -1022,13 +1077,22 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
 {
     // Interpretation taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 24.01.2016
+    // last verification 09.06.2016
 
     QString output;
     QTextStream outputStream(&output);
 
     switch(message.getEventID())
     {
+    case 7:
+        outputStream << "AP-State";
+        break;
+    case 8:
+        outputStream << "System time set";
+        break;
+    case 9:
+        outputStream << "Init simple bearing";
+        break;
     case 10:
         outputStream << "Armed";
         break;
@@ -1099,7 +1163,7 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
         outputStream << "Save Trim";
         break;
     case 39:
-        outputStream << "Add WP";
+        outputStream << "Save/Add WP";
         break;
     case 40:
         outputStream << "WP Clear Mission RTL";
@@ -1150,10 +1214,10 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
         outputStream << "Motor emergency stop clear";
         break;
     case 56:
-        outputStream << "Motor interlock enable";
+        outputStream << "Motor interlock disabled";
         break;
     case 57:
-        outputStream << "Motor interlock disable";
+        outputStream << "Motor interlock enabled";
         break;
     case 58:
         outputStream << "Motor runup complete";         // heli only

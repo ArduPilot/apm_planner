@@ -448,6 +448,7 @@ enum Mode
     AUTOTUNE    = 15,
     POS_HOLD    = 16,
     BRAKE       = 17,
+    THROW       = 18,
     LAST_MODE           // This must always be the last entry
 };
 
