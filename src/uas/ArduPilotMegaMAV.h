@@ -248,9 +248,10 @@ public:
      * @param index - Index of this message
      * @param timeStamp - Time stamp of this message should be in seconds
      * @param mode - Mode of this message
-     * @param modeNum - Mode Num of this message (not used)
+     * @param modeNum - Mode Num of this message
+     * @param reason - Reason ID leading to this mode change (since AC 3.4)
      */
-    ModeMessage(const quint32 index, const double timeStamp, const quint32 mode, const quint32 modeNum);
+    ModeMessage(const quint32 index, const double timeStamp, const quint32 mode, const quint32 modeNum, const quint32 reason);
 
     /**
      * @brief Getter for the Mode of this message
@@ -265,6 +266,12 @@ public:
     quint32 getModeNum() const;
 
     /**
+     * @brief Getter for the mode change reason (since AC 3.4)
+     * @return mode change reason ID
+     */
+    quint32 getReason() const;
+
+    /**
      * @brief Reads an QSqlRecord and sets the internal data.
      *        The record must contain an Index in colum 0 and the
      *        colums m_TimeFieldName, "Mode" and "ModeNum" in order
@@ -272,9 +279,9 @@ public:
      *        scale the time stamp to seconds.
      *
      * @param record[in] - Filled QSqlRecord
-     * * @param timeDivider[in] - Devider to scale the timestamp to seconds
-     * @return true - all Fields could be read
-     *         false - not all data could be read
+     * @param timeDivider[in] - Divider to scale the timestamp to seconds
+     * @return true - all mandatory Fields could be read
+     *         false - not all mandatory data could be read
      */
     virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
 
@@ -287,8 +294,9 @@ public:
 
 private:
 
-    quint32 m_Mode;        /// Subsystem signaling the error
-    quint32 m_ModeNum;    /// Errorcode of the Subsystem
+    quint32 m_Mode;        /// Mode ID
+    quint32 m_ModeNum;     /// ModeNum ID (unused)
+    quint32 m_Reason;      /// Mode change ID
 };
 
 /**

@@ -322,7 +322,7 @@ QString ArduPilotMegaMAV::getCustomModeText()
 {
     QLOG_DEBUG() << "APM: getCustomModeText()";
     QString customModeString;
-    ModeMessage mode(0, 0, custom_mode, 0);
+    ModeMessage mode(0, 0, custom_mode, 0, 0);
 
     if (isFixedWing()){
         customModeString = Plane::MessageFormatter::format(mode);
@@ -509,14 +509,14 @@ QString ErrorMessage::toString() const
 
 const QString ModeMessage::TypeName("MODE");
 
-ModeMessage::ModeMessage() : m_Mode(0), m_ModeNum(0)
+ModeMessage::ModeMessage() : m_Mode(0), m_ModeNum(0), m_Reason(0)
 {
     // Set up base class vars for this message
     m_TypeName = TypeName;
     m_Color    = QColor(50,125,0);
 }
 
-ModeMessage::ModeMessage(const QString &TimeFieldName) : m_Mode(0), m_ModeNum(0)
+ModeMessage::ModeMessage(const QString &TimeFieldName) : m_Mode(0), m_ModeNum(0), m_Reason(0)
 {
     // Set up base class vars for this message
     m_TypeName = TypeName;
@@ -524,10 +524,11 @@ ModeMessage::ModeMessage(const QString &TimeFieldName) : m_Mode(0), m_ModeNum(0)
     m_TimeFieldName = TimeFieldName;
 }
 
-ModeMessage::ModeMessage(const quint32 index, const double timeStamp, const quint32 mode, const quint32 modeNum) :
+ModeMessage::ModeMessage(const quint32 index, const double timeStamp, const quint32 mode, const quint32 modeNum, const quint32 reason) :
     MessageBase(index, timeStamp, TypeName, QColor(50,125,0)),
     m_Mode(mode),
-    m_ModeNum(modeNum)
+    m_ModeNum(modeNum),
+    m_Reason(reason)
 {}
 
 quint32 ModeMessage::getMode() const
@@ -538,6 +539,11 @@ quint32 ModeMessage::getMode() const
 quint32 ModeMessage::getModeNum() const
 {
     return m_ModeNum;
+}
+
+quint32 ModeMessage::getReason() const
+{
+    return m_Reason;
 }
 
 bool ModeMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
@@ -567,6 +573,11 @@ bool ModeMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDi
         m_ModeNum = static_cast<quint32>(record.value("ModeNum").toUInt());
        // ModeNum does not influence the returncode as its optional
     }
+    if (record.contains("Rsn"))
+    {
+        m_Reason = static_cast<quint32>(record.value("Rsn").toUInt());
+       // Reason does not influence the returncode as its optional. Came with AC 3.4
+    }
 
     return rc1 && rc2 && rc3;
 }
@@ -576,7 +587,7 @@ QString ModeMessage::toString() const
     QString output;
     QTextStream outputStream(&output);
 
-    outputStream << " Mode:" << m_Mode << " ModeNum:" << m_ModeNum;
+    outputStream << " Mode:" << m_Mode << " ModeNum:" << m_ModeNum << " Reason:" << m_Reason;
     return output;
 }
 
@@ -841,7 +852,7 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
 
     case 10:
     {
-        ModeMessage tmpMsg(0, 0, message.getErrorCode(), 0);
+        ModeMessage tmpMsg(0, 0, message.getErrorCode(), 0, 0);
         outputStream << "Flight-Mode "  << Copter::MessageFormatter::format(tmpMsg) <<" refused.";
         EcodeUsed = true;
         break;
@@ -1070,6 +1081,59 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
         outputStream << "Unknown Mode:" << message.getMode();
         break;
     }
+
+    // only if we have a valid reason
+    if (message.getReason() != 0)
+    {
+        outputStream << endl << "by " ;
+
+        switch (message.getReason())
+        {
+        case 1:
+            outputStream << "radio";
+            break;
+        case 2:
+            outputStream << "GCS cmd";
+            break;
+        case 3:
+            outputStream << "radio FS";
+            break;
+        case 4:
+            outputStream << "battery FS";
+            break;
+        case 5:
+            outputStream << "GCS FS";
+            break;
+        case 6:
+            outputStream << "EKF FS";
+            break;
+        case 7:
+            outputStream << "GPS Glitch";
+            break;
+        case 8:
+            outputStream << "mission end";
+            break;
+        case 9:
+            outputStream << "throttle land escape";
+            break;
+        case 10:
+            outputStream << "fence breach";
+            break;
+        case 11:
+            outputStream << "terrain FS";
+            break;
+        case 12:
+            outputStream << "brake timeout";
+            break;
+        case 13:
+            outputStream << "Flip complete";
+            break;
+        default:
+            outputStream << "unknown reason:" << message.getReason();
+            break;
+        }
+    }
+
     return output;
 }
 
