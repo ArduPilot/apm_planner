@@ -70,10 +70,12 @@ void loggingMessageHandler(QtMsgType type, const QMessageLogContext &context, co
     QString outMessage(qFormatLogMessage(type, context, message));  // just format only once
     if(logFile)
     {
-        logFile << qPrintable(outMessage) << std::endl;
+        logFile << qPrintable(outMessage) << std::endl; // log to file
     }
 
-    fprintf(stderr, "%s\n", qPrintable(outMessage));
+    LogWindowSingleton::instance().write(outMessage);   // log to debug window
+
+    fprintf(stderr, "%s\n", qPrintable(outMessage));    // log to console
 }
 
 
