@@ -90,8 +90,14 @@ void SerialConnection::portError(QSerialPort::SerialPortError serialPortError)
             }
         }
     case QSerialPort::ResourceError:
-        disconnect();
-        break;
+        {
+            // In case of error disconnect from error signal to avoid endless looping
+            // if another error is signalled while disconnecting
+            QObject::disconnect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
+                                this, SLOT(portError(QSerialPort::SerialPortError)));
+            disconnect();
+            break;
+        }
     case QSerialPort::NotOpen:
     case QSerialPort::OpenError:
     default:
@@ -415,6 +421,7 @@ bool SerialConnection::disconnect()
     QLOG_DEBUG() << "SerialConnection::disconnect()" << m_port;
     if (m_port)
     {
+
         m_port->close();
         m_port->deleteLater();
         m_port = 0;
