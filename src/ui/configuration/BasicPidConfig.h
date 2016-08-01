@@ -39,12 +39,30 @@ private slots:
     void tHValueChanged(QString name,int value);
     void rcFeelValueChanged(QString name, int value);
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
+
+private:
+    void showEvent(QShowEvent *evt);
+    void hideEvent(QHideEvent *evt);
+
+    void requestParameterUpdate();
+
 private:
     Ui::BasicPidConfig ui;
     ParamWidget *m_rcFeelWidget;
     ParamWidget *m_throttleHoverWidget;
     ParamWidget *m_rollPitchRateWidget;
     ParamWidget *m_throttleAccelWidget;
+
+    QString rate_rll_p;
+    QString rate_rll_i;
+    QString rate_rll_d;
+
+    QString rate_pit_p;
+    QString rate_pit_i;
+    QString rate_pit_d;
+
+    QString thr_accel_p;
+    QString thr_accel_i;
 };
 
 #endif // BASICPIDCONFIG_H
