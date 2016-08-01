@@ -59,7 +59,7 @@ linux-g++-64 {
     DISTRO = $$system(lsb_release -i)
 
     contains( DISTRO, "Ubuntu" ) {
-        message(ArchLinux Build)
+        message(Ubuntu Build)
         DEFINES += Q_UBUNTU
     }
 
