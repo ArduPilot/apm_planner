@@ -54,7 +54,7 @@ BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
     m_throttleAccelWidget = new ParamWidget("ThrottleAccel",this);
     ui.verticalLayout->insertWidget(3,m_throttleAccelWidget);
     connect(m_throttleAccelWidget,SIGNAL(doubleValueChanged(QString,double)),this,SLOT(tAValueChanged(QString,double)));
-    m_throttleAccelWidget->setupDouble(QString("Throttle Accel"),
+    m_throttleAccelWidget->setupDouble(QString("Throttle Sensitivity (Throttle Accel)"),
                                        "Slide to the right to climb more aggressively or slide to the left to climb more gently.",0.75,0.3,1.0,0.05);
     m_throttleAccelWidget->show();
 
