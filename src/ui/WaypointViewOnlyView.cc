@@ -512,6 +512,13 @@ void WaypointViewOnlyView::updateValues()
         break;
     }
 
+    case MAV_CMD_DO_SET_REVERSE:
+    {
+        m_ui->displayBar->setText(QString("Set Reverse: %1 ").arg(wp->getParam1() > 0.0 ? "Reverse" : "Forward"));
+        break;
+    }
+
+
 #ifdef MAVLINK_ENABLED_PIXHAWK
     case MAV_CMD_DO_START_SEARCH:
     {

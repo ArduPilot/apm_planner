@@ -67,6 +67,7 @@ class QGCMissionDoSetCamTriggDistance;
 class QGCMissionDoChangeSpeed;
 class QGCMissionDoStartSearch;
 class QGCMissionDoFinishSearch;
+class QGCMissionDoSetReverse;
 class QGCMissionConditionDelay;
 class QGCMissionConditionYaw;
 class QGCMissionConditionDistance;

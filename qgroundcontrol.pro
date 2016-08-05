@@ -372,6 +372,7 @@ FORMS += \
     src/ui/mission/QGCMissionDoSetCamTriggDist.ui \
     src/ui/mission/QGCMissionDoSetHome.ui \
     src/ui/mission/QGCMissionDoSetRelay.ui \
+    src/ui/mission/QGCMissionDoSetReverse.ui \
     src/ui/mission/QGCMissionDoSetROI.ui \
     src/ui/mission/QGCMissionDoMountControl.ui \
     src/ui/mission/QGCMissionDoRepeatRelay.ui \
@@ -551,6 +552,7 @@ HEADERS += \
     src/ui/mission/QGCMissionDoSetCamTriggDist.h \
     src/ui/mission/QGCMissionDoSetHome.h \
     src/ui/mission/QGCMissionDoSetRelay.h \
+    src/ui/mission/QGCMissionDoSetReverse.h \
     src/ui/mission/QGCMissionDoSetROI.h \
     src/ui/mission/QGCMissionDoMountControl.h \
     src/ui/mission/QGCMissionDoRepeatRelay.h \
@@ -770,6 +772,7 @@ SOURCES += src/main.cc \
     src/ui/mission/QGCMissionDoSetCamTriggDist.cc \
     src/ui/mission/QGCMissionDoSetHome.cc \
     src/ui/mission/QGCMissionDoSetRelay.cc \
+    src/ui/mission/QGCMissionDoSetReverse.cc \
     src/ui/mission/QGCMissionDoSetROI.cc \
     src/ui/mission/QGCMissionDoMountControl.cc \
     src/ui/mission/QGCMissionDoRepeatRelay.cc \

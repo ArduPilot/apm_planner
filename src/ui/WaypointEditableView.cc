@@ -62,6 +62,7 @@ This file is part of the QGROUNDCONTROL project
 #include "mission/QGCMissionDoChangeSpeed.h"
 #include "mission/QGCMissionDoStartSearch.h"
 #include "mission/QGCMissionDoFinishSearch.h"
+#include "mission/QGCMissionDoSetReverse.h"
 // Other
 #include "mission/QGCMissionOther.h"
 
@@ -122,6 +123,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->insertSeparator(9999);
 //        m_ui->comboBox_action->addItem(tr("DO commands"));
         m_ui->comboBox_action->addItem(tr("Jump to Index"),MAV_CMD_DO_JUMP);
+        m_ui->comboBox_action->addItem(tr("Set Reverse"),MAV_CMD_DO_SET_REVERSE);
         m_ui->comboBox_action->addItem(tr("Set Servo"), MAV_CMD_DO_SET_SERVO);
         m_ui->comboBox_action->addItem(tr("Repeat Servo"), MAV_CMD_DO_REPEAT_SERVO);
         m_ui->comboBox_action->addItem(tr("Digicam Control"), MAV_CMD_DO_DIGICAM_CONTROL);
@@ -338,6 +340,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
         break;
     case MAV_CMD_DO_MOUNT_CONTROL:
         missionWidget = new QGCMissionDoMountControl(this);
+        break;
+    case MAV_CMD_DO_SET_REVERSE:
+        missionWidget = new QGCMissionDoSetReverse(this);
         break;
 
  #ifdef MAVLINK_ENABLED_PIXHAWK
