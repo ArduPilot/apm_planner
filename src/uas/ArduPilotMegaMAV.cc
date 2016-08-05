@@ -237,16 +237,28 @@ void ArduPilotMegaMAV::adjustSeverity(mavlink_message_t* message) const
     // lets make QGC happy with right severity values
     mavlink_statustext_t statusText;
     mavlink_msg_statustext_decode(message, &statusText);
+
+    // Older APM detected, translate severity to MAVLink Standard severity
+    // SEVERITY_LOW     =1 MAV_SEVERITY_WARNING = 4
+    // SEVERITY_MEDIUM  =2 MAV_SEVERITY_ALERT   = 1
+    // SEVERITY_HIGH    =3 MAV_SEVERITY_CRITICAL= 2
+    // SEVERITY_USER_RESPONSE =5 MAV_SEVERITY_CRITICAL= 2
+
     switch(statusText.severity) {
-    case MAV_SEVERITY_ALERT:    /* SEVERITY_LOW according to old codes */
+    case 1:     /* gcs_severity::SEVERITY_LOW according to old codes */
         statusText.severity = MAV_SEVERITY_WARNING;
         break;
-    case MAV_SEVERITY_CRITICAL: /*SEVERITY_MEDIUM according to old codes  */
+    case 2:     /* gcs_severity::SEVERITY_MEDIUM according to old codes  */
         statusText.severity = MAV_SEVERITY_ALERT;
         break;
-    case MAV_SEVERITY_ERROR:    /*SEVERITY_HIGH according to old codes */
+    case 3:     /* gcs_severity::SEVERITY_HIGH  according to old codes */
         statusText.severity = MAV_SEVERITY_CRITICAL;
         break;
+    case 5: /*gcs_severity::SEVERITY_USER_RESPONSE according to old codes*/
+        statusText.severity = MAV_SEVERITY_CRITICAL;
+        break;
+    default:
+        statusText.severity = MAV_SEVERITY_INFO;
     }
 
     mavlink_msg_statustext_encode(message->sysid, message->compid, message, &statusText);
