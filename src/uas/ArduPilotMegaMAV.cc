@@ -33,7 +33,6 @@ This file is part of the QGROUNDCONTROL project
 #include "GAudioOutput.h"
 #include "LinkManager.h"
 
-
 #ifndef MAVLINK_MSG_ID_MOUNT_CONFIGURE
 #include "ardupilotmega/mavlink_msg_mount_configure.h"
 #endif
@@ -79,7 +78,7 @@ void ArduPilotMegaMAV::loadSettings()
 {
     QSettings settings;
     settings.beginGroup("ARDUPILOT");
-    m_severityCompatibilityMode = settings.value("STATUSTEXT_COMPAT_MODE",false).toBool();
+//    m_severityCompatibilityMode = settings.value("STATUSTEXT_COMPAT_MODE",false).toBool();
     settings.endGroup();
 }
 
@@ -87,7 +86,7 @@ void ArduPilotMegaMAV::saveSettings()
 {
     QSettings settings;
     settings.beginGroup("ARDUPILOT");
-    settings.setValue("STATUSTEXT_COMPAT_MODE",m_severityCompatibilityMode);
+//    settings.setValue("STATUSTEXT_COMPAT_MODE",m_severityCompatibilityMode);
     settings.endGroup();
     settings.sync();
 }
@@ -201,46 +200,26 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             mavlink_msg_statustext_get_text(&message, b.data());
             // Ensure NUL-termination
             b[b.length()-1] = '\0';
-            QString text = QString(b);
+            QString messageText = QString(b);
             int severity = mavlink_msg_statustext_get_severity(&message);
-            QLOG_INFO() << "STATUS TEXT:" << severity << ":" << text;
+            QLOG_INFO() << "STATUS TEXT:" << severity << ":" << messageText;
 
-            if (text.contains(APM_COPTER_REXP) || text.contains(APM_PLANE_REXP)
-                    || text.contains(APM_ROVER_REXP)) {
-                QLOG_DEBUG() << "APM Version String detected:" << text;
-                // Process Version and keep.
+            if (!messageText.contains(APM_SOLO_REXP)) {
+                if (messageText.contains(APM_COPTER_REXP) || messageText.contains(APM_PLANE_REXP)
+                        || messageText.contains(APM_ROVER_REXP)) {
+                    QLOG_DEBUG() << "APM Version String detected:" << messageText;
+                    m_firmwareVersion.parseVersion(messageText);
+                    // Process Version and keep.
+                    m_severityCompatibilityMode = _isTextSeverityAdjustmentNeeded(m_firmwareVersion);
 
-                emit versionDetected(text);
+                    emit versionDetected(messageText);
+                }
             }
 
             // Check is older APM and reset severity to correct MAVLINK spec.
             if (m_severityCompatibilityMode) {
-                // Older APM detected, translate severity to MAVLink Standard severity
-                // SEVERITY_LOW     =1 MAV_SEVERITY_WARNING = 4
-                // SEVERITY_MEDIUM  =2 MAV_SEVERITY_ALERT   = 1
-                // SEVERITY_HIGH    =3 MAV_SEVERITY_CRITICAL= 2
-                // SEVERITY_USER_RESPONSE =5 MAV_SEVERITY_CRITICAL= 2
-                switch (severity) {
-                    case 1: /*gcs_severity::SEVERITY_LOW:*/
-                        severity = MAV_SEVERITY_WARNING;
-                        break;
-                    case 2: /*gcs_severity::SEVERITY_MEDIUM*/
-                        severity = MAV_SEVERITY_ALERT;
-                        break;
-                    case 3: /*gcs_severity::SEVERITY_HIGH:*/
-                        severity = MAV_SEVERITY_CRITICAL;
-                        break;
-                    case 5: /*gcs_severity::SEVERITY_USER_RESPONSE:*/
-                        severity = MAV_SEVERITY_CRITICAL;
-                        break;
-                    default:
-                        severity = MAV_SEVERITY_INFO;
-                        break;
-                }
-                // repack message for further down the stack.s
-                mavlink_msg_statustext_pack(message.sysid,message.compid,&message,severity,b.data());
-
-             }
+                adjustSeverity(&message);
+            }
 
         } break;
         default:
@@ -252,6 +231,55 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
     // default Bea
     UAS::receiveMessage(link, message);
 }
+
+void ArduPilotMegaMAV::adjustSeverity(mavlink_message_t* message) const
+{
+    // lets make QGC happy with right severity values
+    mavlink_statustext_t statusText;
+    mavlink_msg_statustext_decode(message, &statusText);
+    switch(statusText.severity) {
+    case MAV_SEVERITY_ALERT:    /* SEVERITY_LOW according to old codes */
+        statusText.severity = MAV_SEVERITY_WARNING;
+        break;
+    case MAV_SEVERITY_CRITICAL: /*SEVERITY_MEDIUM according to old codes  */
+        statusText.severity = MAV_SEVERITY_ALERT;
+        break;
+    case MAV_SEVERITY_ERROR:    /*SEVERITY_HIGH according to old codes */
+        statusText.severity = MAV_SEVERITY_CRITICAL;
+        break;
+    }
+
+    mavlink_msg_statustext_encode(message->sysid, message->compid, message, &statusText);
+}
+
+bool ArduPilotMegaMAV::_isTextSeverityAdjustmentNeeded(const APMFirmwareVersion& firmwareVersion)
+{
+    if (!firmwareVersion.isValid()) {
+        return false;
+    }
+
+    bool adjustmentNeeded = false;
+    if (firmwareVersion.vehicleType().contains(APM_COPTER_REXP)) {
+        if (firmwareVersion < APMFirmwareVersion(MIN_COPTER_VERSION_WITH_CORRECT_SEVERITY_MSGS)) {
+            adjustmentNeeded = true;
+        }
+    } else if (firmwareVersion.vehicleType().contains(APM_PLANE_REXP)) {
+        if (firmwareVersion < APMFirmwareVersion(MIN_PLANE_VERSION_WITH_CORRECT_SEVERITY_MSGS)) {
+            adjustmentNeeded = true;
+        }
+    } else if (firmwareVersion.vehicleType().contains(APM_ROVER_REXP)) {
+        if (firmwareVersion < APMFirmwareVersion(MIN_ROVER_VERSION_WITH_CORRECT_SEVERITY_MSGS)) {
+            adjustmentNeeded = true;
+        }
+    } else if (firmwareVersion.vehicleType().contains(APM_SUB_REXP)) {
+        if (firmwareVersion < APMFirmwareVersion(MIN_SUB_VERSION_WITH_CORRECT_SEVERITY_MSGS)) {
+            adjustmentNeeded = true;
+        }
+    }
+
+    return adjustmentNeeded;
+}
+
 void ArduPilotMegaMAV::setMountConfigure(unsigned char mode, bool stabilize_roll,bool stabilize_pitch,bool stabilize_yaw)
 {
     //Only supported by APM

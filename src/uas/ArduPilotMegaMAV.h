@@ -33,8 +33,29 @@ This file is part of the QGROUNDCONTROL project
 #define ARDUPILOTMEGAMAV_H
 
 #include "UAS.h"
+#include "APMFirmwareVersion.h"
 #include <QString>
 #include <QSqlDatabase>
+
+static const QRegExp APM_COPTER_REXP("^(ArduCopter|APM:Copter)");
+static const QRegExp APM_SOLO_REXP("^(APM:Copter solo-)");
+static const QRegExp APM_PLANE_REXP("^(ArduPlane|APM:Plane)");
+static const QRegExp APM_ROVER_REXP("^(ArduRover|APM:Rover)");
+static const QRegExp APM_SUB_REXP("^(ArduSub|APM:Sub)");
+static const QRegExp APM_PX4NUTTX_REXP("^PX4: .*NuttX: .*");
+static const QRegExp APM_FRAME_REXP("^Frame: ");
+static const QRegExp APM_SYSID_REXP("^PX4v2 ");
+
+// Regex to parse version text coming from APM, gives out firmware type, major, minor and patch level numbers
+static const QRegExp VERSION_REXP("^(APM:Copter|APM:Plane|APM:Rover|APM:Sub|ArduCopter|ArduPlane|ArduRover|ArduSub) +[vV](\\d*)\\.*(\\d*)*\\.*(\\d*)*");
+
+// minimum firmware versions that don't suffer from mavlink severity inversion bug.
+// https://github.com/diydrones/apm_planner/issues/788
+static const QString MIN_SOLO_VERSION_WITH_CORRECT_SEVERITY_MSGS("APM:Copter solo-1.2.0");
+static const QString MIN_COPTER_VERSION_WITH_CORRECT_SEVERITY_MSGS("APM:Copter V3.4.0");
+static const QString MIN_PLANE_VERSION_WITH_CORRECT_SEVERITY_MSGS("APM:Plane V3.4.0");
+static const QString MIN_SUB_VERSION_WITH_CORRECT_SEVERITY_MSGS("APM:Sub V3.4.0");
+static const QString MIN_ROVER_VERSION_WITH_CORRECT_SEVERITY_MSGS("APM:Rover V2.6.0");
 
 class ArduPilotMegaMAV : public UAS
 {
@@ -53,6 +74,8 @@ public:
 
     void loadSettings();
     void saveSettings();
+
+    void adjustSeverity(mavlink_message_t* message) const;
 
 signals:
     void versionDetected(QString versionString);
@@ -76,10 +99,13 @@ private slots:
 
 private:
     void createNewMAVLinkLog(uint8_t type);
+    static bool _isTextSeverityAdjustmentNeeded(const APMFirmwareVersion& firmwareVersion);
+
 
 private:
     QTimer *txReqTimer;
     bool m_severityCompatibilityMode;
+    APMFirmwareVersion m_firmwareVersion;
 };
 
 
