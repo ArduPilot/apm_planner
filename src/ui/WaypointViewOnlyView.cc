@@ -483,9 +483,35 @@ void WaypointViewOnlyView::updateValues()
     }
     case MAV_CMD_DO_SET_ROI:
     {
-        m_ui->displayBar->setText(QString("ROI at lat:%1. lon: %2").arg(wp->getLatitude()).arg(wp->getLongitude()));
+        m_ui->displayBar->setText(QString("ROI at (<b>lat</b> %1<sup>o</sup>, <b>lon</b> %2<sup>o</sup>)")
+                                  .arg(wp->getLatitude(),0, 'f', 7).arg(wp->getLongitude(),0, 'f', 7));
         break;
     }
+    case MAV_CMD_DO_DIGICAM_CONTROL:
+    {
+        QString lockStateString = "...";
+        int lockState = static_cast<int>(wp->getParam5());
+        switch (lockState) {
+            case 0: // Re-lock
+                lockStateString = "Re-lock";
+            break;
+            case 1: // Ignore
+                lockStateString = "Ignore";
+            break;
+            case 2: // Lock
+                lockStateString = "Lock";
+            break;
+            default:
+                lockStateString = "unknown lock state";
+        }
+
+        m_ui->displayBar->setText(QString("DigiCamControl %1 focus: %2 shutter: %3")
+                                  .arg(wp->getParam1() > 0.0 ? "on" : "off")
+                                  .arg(lockStateString)
+                                  .arg(wp->getParam5() > 0.0 ? "trigger" : "..."));
+        break;
+    }
+
 #ifdef MAVLINK_ENABLED_PIXHAWK
     case MAV_CMD_DO_START_SEARCH:
     {
