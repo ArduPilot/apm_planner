@@ -77,6 +77,8 @@ public:
 
     void adjustSeverity(mavlink_message_t* message) const;
 
+    bool useSeverityCompatibilityMode() {return m_severityCompatibilityMode;}
+
 signals:
     void versionDetected(QString versionString);
 

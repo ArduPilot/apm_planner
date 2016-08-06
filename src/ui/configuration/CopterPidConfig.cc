@@ -23,6 +23,7 @@ This file is part of the APM_PLANNER project
 #include "CopterPidConfig.h"
 
 #include "QGCCore.h"
+#include "ArduPilotMegaMAV.h"
 
 CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
@@ -157,10 +158,12 @@ CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 void CopterPidConfig::mapParamNamesToBox() {
 
     // AC3.4+ param name compatibility
-    QSettings settings;
-    bool preAC34compatmode = settings.value("STATUSTEXT_COMPAT_MODE", false).toBool();
+    ArduPilotMegaMAV* apmMav = static_cast<ArduPilotMegaMAV*>(m_uas);
+    if (apmMav == NULL) {
+        return;
+    }
 
-    if (!preAC34compatmode) { // AC3.4+ paramter names
+    if (!apmMav->useSeverityCompatibilityMode()) { // AC3.4+ paramter names
         stb_rll_p        = "ATC_ANG_RLL_P";    // "STB_RLL_P"
         stb_pit_p        = "ATC_ANG_PIT_P";    // "STB_PIT_P"
         stb_yaw_p        = "ATC_ANG_YAW_P";    // "STB_YAW_P"
