@@ -309,13 +309,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QCheckBox" name="mavLinkSeverityCompatCheckBox">
-           <property name="text">
-            <string>Enable Ardupilot Text Severity Compatibility Mode (pre-AC3.4)</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </item>
        <item row="4" column="0">
