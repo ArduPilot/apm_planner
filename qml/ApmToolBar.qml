@@ -75,7 +75,7 @@ Rectangle {
             console.log("Donate invisible");
             donateView.visible = false;
         } else {
-            console.log("Donate visbile");
+            console.log("Donate visible");
             donateView.visible = true;
         }
     }
