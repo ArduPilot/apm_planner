@@ -100,7 +100,7 @@ private:
     Ui::JoystickWidget *m_ui;
     JoystickInput* joystick;  ///< Reference to the joystick
 
-    int m_buttonStates[11];
+    int m_buttonStates[64];
 
     QString m_buttonPressedMessage;
 
