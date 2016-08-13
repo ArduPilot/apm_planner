@@ -63,6 +63,8 @@ private:
 
     QString thr_accel_p;
     QString thr_accel_i;
+
+    bool m_use_mot_thst_hover; // if AC3.4-rc2+ use this varible set.
 };
 
 #endif // BASICPIDCONFIG_H

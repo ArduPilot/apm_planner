@@ -25,7 +25,8 @@ This file is part of the APM_PLANNER project
 #include "ParamWidget.h"
 #include <QSettings>
 
-BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
+BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_use_mot_thst_hover(false)
 {
     ui.setupUi(this);
 
@@ -44,11 +45,11 @@ BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
                                        "Slide to the right if the copter is sluggish or slide to the left if the copter is twitchy.",0.15,0.08,0.4,0.01);
     m_rollPitchRateWidget->show();
 
-    m_throttleHoverWidget = new ParamWidget("ThrottleHover",this);
+    m_throttleHoverWidget = new ParamWidget("ThrottleHover (%)",this);
     ui.verticalLayout->insertWidget(2,m_throttleHoverWidget);
     connect(m_throttleHoverWidget,SIGNAL(intValueChanged(QString,int)),this,SLOT(tHValueChanged(QString,int)));
     m_throttleHoverWidget->setupInt(QString("Throttle Hover "),
-                                    "How much throttle is needed to maintain a steady hover.",480,300,700);
+                                    "How much throttle is needed to maintain a steady hover.",48,25,80);
     m_throttleHoverWidget->show();
 
     m_throttleAccelWidget = new ParamWidget("ThrottleAccel",this);
@@ -105,7 +106,10 @@ void BasicPidConfig::requestParameterUpdate()
             << thr_accel_p
             << thr_accel_i
             << "THR_MID"
+            << "MOT_THST_HOVER"
             << "RC_FEEL_RP";
+
+    m_use_mot_thst_hover = false; // Set true is MOT_THST_HOVER retruns a value.
 
     QLOG_DEBUG() << "Basic Tuning Params (fetch): " << params;
 
@@ -164,7 +168,17 @@ void BasicPidConfig::tHValueChanged(QString name,int value)
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->getParamManager()->setParameter(1,"THR_MID",value);
+
+    if (m_use_mot_thst_hover) {
+        float mot_thst_hover = value / 100.0;
+        QLOG_DEBUG() << "mot_thst_hover: " << mot_thst_hover;
+        m_uas->getParamManager()->setParameter(1,"MOT_THST_HOVER", mot_thst_hover);
+    } else {
+        float throtle_mid = value * 10.0;
+        QLOG_DEBUG() << "throttle_mid: " << throtle_mid;
+        m_uas->getParamManager()->setParameter(1,"THR_MID", throtle_mid);
+    }
+
 }
 
 void BasicPidConfig::rcFeelValueChanged(QString name, int value)
@@ -200,8 +214,15 @@ void BasicPidConfig::parameterChanged(int uas, int component, QString parameterN
     }
     else if (parameterName == "THR_MID")
     {
-         QLOG_DEBUG() << "BasicPID: THR_MID:" << value.toInt();
-        m_throttleHoverWidget->setValue(value.toInt());
+        QLOG_DEBUG() << "BasicPID: " << parameterName << ":" << value.toInt();
+        m_throttleHoverWidget->setValue(value.toFloat() / 10.0);
+        m_use_mot_thst_hover = false;
+    }
+    else if (parameterName == "MOT_THST_HOVER")
+    {
+        QLOG_DEBUG() << "BasicPID: " << parameterName << ":" << value.toFloat();
+        m_throttleHoverWidget->setValue(value.toFloat() * 100.0);
+        m_use_mot_thst_hover = true;
     }
     else if (parameterName == "RC_FEEL_RP")
     {
