@@ -163,6 +163,7 @@ MacBuild {
     QMAKE_INFO_PLIST = Custom-Info.plist
     CONFIG += x86_64
     CONFIG -= x86
+    CONFIG += c++11 #C++11 support
     QMAKE_MAC_SDK = macosx10.11 # Required for Xcode7.0
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     ICON = $$BASEDIR/files/APMIcons/icon.icns
