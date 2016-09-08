@@ -20,7 +20,7 @@ BuildRequires:      flite-devel
 BuildRequires:      libsndfile-devel
 BuildRequires:      openssl-devel
 BuildRequires:      zlib-devel
-URL:                https://github.com/diydrones/apm_planner
+URL:                https://github.com/ArduPilot/apm_planner
 ExcludeArch:        s390 s390x
 
 %description

@@ -4,7 +4,7 @@ Version:            1
 Release:            1
 License:            BSD
 Group:              System Environment/Base
-URL:                https://github.com/diydrones/apm_planner
+URL:                https://github.com/ArduPilot/apm_planner
 Source1:            diydrones.repo
 
 %description
