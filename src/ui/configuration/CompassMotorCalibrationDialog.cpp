@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "qcustomplot.h"
 #include "UASInterface.h"
 #include "UAS.h"

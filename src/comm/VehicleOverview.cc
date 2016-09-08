@@ -1,9 +1,20 @@
 #include "VehicleOverview.h"
 #include <QVariant>
 #include "QGC.h"
-VehicleOverview::VehicleOverview(QObject *parent) : QObject(parent)
+VehicleOverview::VehicleOverview(QObject *parent) : QObject(parent),
+    m_vibrationX(0),
+    m_vibrationY(0),
+    m_vibrationZ(0),
+    m_clipping0(0),
+    m_clipping1(0),
+    m_clipping2(0),
+    m_ekfFlags(0),
+    m_velocity_variance(0),
+    m_pos_horiz_variance(0),
+    m_pos_vert_variance(0),
+    m_compass_variance(0),
+    m_terrain_alt_variance(0)
 {
-
 }
 
 VehicleOverview::~VehicleOverview()
@@ -11,16 +22,10 @@ VehicleOverview::~VehicleOverview()
 
 }
 
-//Heartbeat
-//sys_status
-//system_time
-//NAV_CONTROLLER_OUTPUT
-//RADIO_STATUS
-//POWER_STATUS
-//BATTERY_STATUS
-//STATUSTEXT
 void VehicleOverview::parseHeartbeat(LinkInterface* link,const mavlink_message_t &message, const mavlink_heartbeat_t &state)
 {
+    Q_UNUSED(link)
+    Q_UNUSED(message)
     // Set new type if it has changed
     if (m_type != state.type)
     {
@@ -69,12 +74,15 @@ void VehicleOverview::parseHeartbeat(LinkInterface* link,const mavlink_message_t
     }
 
 }
-void VehicleOverview::parseBattery(LinkInterface *link, const mavlink_message_t &message, const mavlink_battery_status_t &state)
+void VehicleOverview::parseBattery(LinkInterface *link, const mavlink_battery_status_t &state)
 {
-
+    Q_UNUSED(state)
+    Q_UNUSED(link)
 }
-void VehicleOverview::parseSysStatus(LinkInterface *link, const mavlink_message_t &message, const mavlink_sys_status_t &state)
+
+void VehicleOverview::parseSysStatus(LinkInterface *link, const mavlink_sys_status_t &state)
 {
+    Q_UNUSED(link)
     this->setOnboardControlSensorsEnabled(state.onboard_control_sensors_enabled);
     this->setOnboardControlSensorsHealth(state.onboard_control_sensors_health);
     this->setOnboardControlSensorsPresent(state.onboard_control_sensors_present);
@@ -105,17 +113,53 @@ void VehicleOverview::messageReceived(LinkInterface* link,mavlink_message_t mess
         {
             mavlink_battery_status_t state;
             mavlink_msg_battery_status_decode(&message,&state);
-            parseBattery(link,message,state);
+            parseBattery(link,state);
             break;
         }
         case MAVLINK_MSG_ID_SYS_STATUS:
         {
             mavlink_sys_status_t state;
             mavlink_msg_sys_status_decode(&message,&state);
-            parseSysStatus(link,message,state);
+            parseSysStatus(link,state);
+            break;
+        }
+        case MAVLINK_MSG_ID_VIBRATION:
+        {
+            mavlink_vibration_t vibration;
+            mavlink_msg_vibration_decode(&message, &vibration);
+            parseVibration(link,vibration);
+            break;
+        }
+        case MAVLINK_MSG_ID_EKF_STATUS_REPORT:
+        {
+            mavlink_ekf_status_report_t report;
+            mavlink_msg_ekf_status_report_decode(&message, &report);
+            parseEkfStatusReport(link,report);
             break;
         }
 
-
     }
+}
+
+void VehicleOverview::parseVibration(LinkInterface *link, const mavlink_vibration_t &vibration)
+{
+    Q_UNUSED(link);
+    setVibrationX(vibration.vibration_x);
+    setVibrationY(vibration.vibration_y);
+    setVibrationZ(vibration.vibration_z);
+
+    setClipping0(vibration.clipping_0);
+    setClipping1(vibration.clipping_1);
+    setClipping2(vibration.clipping_2);
+}
+
+void VehicleOverview::parseEkfStatusReport(LinkInterface *link, const mavlink_ekf_status_report_t &report)
+{
+    Q_UNUSED(link);
+    setEkfFlags(report.flags);
+    setEkfPosHorizVariance(report.pos_horiz_variance);
+    setEkfPosVertVariance(report.pos_vert_variance);
+    setEkfComapssVariance(report.compass_variance);
+    setEkfVelocityVariance(report.velocity_variance);
+    setEkfTerrainAltVariance(report.terrain_alt_variance);
 }

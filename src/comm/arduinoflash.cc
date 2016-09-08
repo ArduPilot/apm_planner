@@ -31,7 +31,9 @@ This file is part of the APM_PLANNER project
 #include "arduinoflash.h"
 #include <QDebug>
 #include "arduino_intelhex.h"
-#include "QsLog.h"
+#include "logging.h"
+
+
 #define GET_SIG_ONE QByteArray().append(0x1B).append((char)0x00).append((char)0x00).append((char)0x00).append((char)0x00)
 #define GET_SIG_TWO QByteArray().append(0x1B).append((char)0x00).append((char)0x00).append((char)0x00).append((char)0x01)
 #define GET_SIG_THREE QByteArray().append(0x1B).append((char)0x00).append((char)0x00).append((char)0x00).append((char)0x02)
@@ -79,7 +81,13 @@ void ArduinoFlash::run()
         emit debugUpdate("Hex file loaded: " + QString::number(hex.size()) + " bytes");
     }
     m_port = new QSerialPort();
+#if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
+    // temp fix Qt5.4.1 issue on OSX
+    // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
+    m_port->setPortName("/dev/cu." + m_comPort);
+#else
     m_port->setPortName(m_comPort);
+#endif
     if (!m_port->open(QIODevice::ReadWrite))
     {
         emit firmwareUploadError("Unable to open COM port: " + m_port->portName());

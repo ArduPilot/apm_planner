@@ -52,6 +52,11 @@ private slots:
     void rateIChanged(double value);
     void rateDChanged(double value);
     void rateIMAXChanged(double value);
+
+private:
+    void showEvent(QShowEvent *evt);
+    void requestParameterUpdate();
+
 private:
     bool m_pitchRollLocked;
     QList<QPair<int,QString> > m_ch6ValueToTextList;

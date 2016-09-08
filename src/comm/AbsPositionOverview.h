@@ -22,9 +22,6 @@ public:
     Q_PROPERTY(unsigned int satellites_visible READ getSatellitesVisible WRITE setSatellitesVisible NOTIFY satellitesVisibleChanged)
 
     Q_PROPERTY(unsigned int time_boot_ms READ getTimeBootMs WRITE setTimeBootMs NOTIFY timeBootMsChanged)
-    Q_PROPERTY(int lat READ getLat WRITE setLat NOTIFY latChanged)
-    Q_PROPERTY(int lon READ getLon WRITE setLon NOTIFY lonChanged)
-    Q_PROPERTY(int alt READ getAlt WRITE setAlt NOTIFY altChanged)
     Q_PROPERTY(int relative_alt READ getRelativeAlt WRITE setRelativeAlt NOTIFY relativeAltChanged)
     Q_PROPERTY(int vx READ getVx WRITE setVx NOTIFY vxChanged)
     Q_PROPERTY(int vy READ getVy WRITE setVy NOTIFY vyChanged)

@@ -2,7 +2,7 @@
 // It also needs the __STDC_LIMIT_MACROS macro defined in order to include them (done
 // in qgroundcontrol.pri).
 
-#include "QsLog.h"
+#include "logging.h"
 #include "QGCVehicleConfig.h"
 #include "UASManager.h"
 #include "QGC.h"
@@ -161,12 +161,12 @@ void QGCVehicleConfig::toggleCalibrationRC(bool enabled)
 void QGCVehicleConfig::setTrimPositions()
 {
     // Set trim to min if stick is close to min
-    if (abs(rcValue[rcMapping[3]] - rcMin[rcMapping[3]]) < 100)
+    if (std::abs(rcValue[rcMapping[3]] - rcMin[rcMapping[3]]) < 100)
     {
         rcTrim[rcMapping[3]] = rcMin[rcMapping[3]];   // throttle
     }
     // Set trim to max if stick is close to max
-    else if (abs(rcValue[rcMapping[3]] - rcMax[rcMapping[3]]) < 100)
+    else if (std::abs(rcValue[rcMapping[3]] - rcMax[rcMapping[3]]) < 100)
     {
         rcTrim[rcMapping[3]] = rcMax[rcMapping[3]];   // throttle
     }

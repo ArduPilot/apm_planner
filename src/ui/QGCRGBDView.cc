@@ -1,4 +1,4 @@
-#include"QsLog.h"
+#include "logging.h"
 #include "QGCRGBDView.h"
 #include "UASManager.h"
 

@@ -21,7 +21,7 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 
-#include "QsLog.h"
+#include "logging.h"
 #include "configuration.h"
 #include "ParamCompareDialog.h"
 #include "ui_ParamCompareDialog.h"

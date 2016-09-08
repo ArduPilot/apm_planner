@@ -29,10 +29,9 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "ArduPilotMegaMAV.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "GAudioOutput.h"
 #include "LinkManager.h"
-
 
 #ifndef MAVLINK_MSG_ID_MOUNT_CONFIGURE
 #include "ardupilotmega/mavlink_msg_mount_configure.h"
@@ -46,237 +45,12 @@ This file is part of the QGROUNDCONTROL project
 #include <QDir>
 #include <QDesktopServices>
 #include <QSettings>
+#include <QSqlRecord>
 
-CustomMode::CustomMode()
-{
-}
-
-CustomMode::CustomMode(int aMode)
-{
-    m_mode = aMode;
-}
-
-int CustomMode::modeAsInt()
-{
-    return m_mode;
-}
-
-QString CustomMode::operator <<(int aMode)
-{
-    return QString::number(aMode);
-}
-
-QString CustomMode::colorForMode(int aMode)
-{
-    const uint numberOfKmlColors = 16;
-    const QString kmlColors[] = {"FFFF00FF"
-        , "FF00FF00"
-        , "FFFF0000"
-        , "FFFF2323"
-        , "FFFFCE00"
-        , "FF00CEFF"
-        , "FF009900"
-        , "FF33FFCC"
-        , "FF0000FF"
-        , "FFFFAAAA"
-        , "FFABABAB"
-        , "FF99FF33"
-        , "FF66CC99"
-        , "FFCC3300"
-        , "FF0066FF"};
-
-    if ((sizeof(kmlColors)/sizeof(const char*)) > aMode*numberOfKmlColors ){
-        QLOG_ERROR() << "ColorForMode: not enough colors, so wrapping to 1st color";
-        aMode -= numberOfKmlColors;
-    }
-    return kmlColors[aMode];
-}
-
-ApmPlane::ApmPlane(planeMode aMode) : CustomMode(aMode)
-{
-}
-
-ApmPlane::planeMode ApmPlane::mode()
-{
-    return static_cast<ApmPlane::planeMode>(m_mode);
-}
-
-QString ApmPlane::stringForMode(int aMode)
-{
-    switch(static_cast<planeMode>(aMode)) {
-    case MANUAL:
-        return "Manual";
-        break;
-    case CIRCLE:
-        return "Circle";
-        break;
-    case STABILIZE:
-        return "Stabilize";
-        break;
-    case TRAINING:
-        return "Training";
-        break;
-    case FLY_BY_WIRE_A:
-        return "FBW A";
-        break;
-    case FLY_BY_WIRE_B:
-        return "FBW B";
-        break;
-    case AUTO:
-        return "Auto";
-        break;
-    case RTL:
-        return "RTL";
-        break;
-    case LOITER:
-        return "Loiter";
-        break;
-    case GUIDED:
-        return "Guided";
-        break;
-    case INITIALIZING:
-        return "Initializing";
-        break;
-    case ACRO:
-        return "Acro";
-        break;
-    case CRUISE:
-        return "Cruise";
-        break;
-    case AUTOTUNE:
-        return "Auto Tune";
-        break;
-    case RESERVED_9:
-    case RESERVED_13:
-    case RESERVED_14:
-        return "Reserved";
-    default:
-        return QString().sprintf("Mode (%d)", aMode);
-    }
-}
-
-ApmCopter::ApmCopter(copterMode aMode) : CustomMode(aMode)
-{
-}
-
-ApmCopter::copterMode ApmCopter::mode()
-{
-    return static_cast<ApmCopter::copterMode>(m_mode);
-}
-
-QString ApmCopter::stringForMode(int aMode) {
-    switch(static_cast<copterMode>(aMode)) {
-    case STABILIZE:
-        return "Stabilize";
-        break;
-    case ACRO:
-        return "Acro";
-        break;
-    case ALT_HOLD:
-        return "Alt Hold";
-        break;
-    case AUTO:
-        return "Auto";
-        break;
-    case GUIDED:
-        return "Guided";
-        break;
-    case LOITER:
-        return "Loiter";
-        break;
-    case RTL:
-        return "RTL";
-        break;
-    case CIRCLE:
-        return "Circle";
-        break;
-    case POSITION:
-        return QString().sprintf("Position (%d)", aMode);
-        break;
-    case LAND:
-        return "Land";
-        break;
-    case OF_LOITER:
-        return "OF Loiter";
-        break;
-    case DRIFT:
-        return "Drift";
-        break;
-    case SPORT:
-        return "Sport";
-        break;
-    case RESERVED_12:
-        return "Reserved";
-        break;
-    case POS_HOLD:
-        return "Pos Hold";
-        break;
-    case AUTOTUNE:
-        return "Autotune";
-        break;
-    case FLIP:
-        return "Flip";
-        break;
-    case BRAKE:
-        return "Brake";
-        break;
-    default:
-        return QString().sprintf("Mode (%d)", aMode);
-    }
-}
-
-ApmRover::ApmRover(roverMode aMode) : CustomMode(aMode)
-{
-}
-
-ApmRover::roverMode ApmRover::mode()
-{
-    return static_cast<ApmRover::roverMode>(m_mode);
-}
-
-QString ApmRover::stringForMode(int aMode) {
-    switch(static_cast<roverMode>(aMode)) {
-    case MANUAL:
-        return "Manual";
-        break;
-    case LEARNING:
-        return "Learning";
-        break;
-    case STEERING:
-        return "Steering";
-        break;
-    case HOLD:
-        return "Hold";
-        break;
-    case AUTO:
-        return "Auto";
-        break;
-    case RTL:
-        return "RTL";
-        break;
-    case GUIDED:
-        return "Guided";
-        break;
-    case INITIALIZING:
-        return "Initializing";
-        break;
-    case RESERVED_1:
-    case RESERVED_5:
-    case RESERVED_6:
-    case RESERVED_7:
-    case RESERVED_8:
-    case RESERVED_9:
-    case RESERVED_12:
-    case RESERVED_13:
-    case RESERVED_14:
-    default:
-        return QString().sprintf("Mode (%d)", aMode);
-    }
-}
 
 ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
-    UAS(mavlink, id)//,
-    // place other initializers here
+    UAS(mavlink, id),
+    m_severityCompatibilityMode(false)
 {
     //This does not seem to work. Manually request each stream type at a specified rate.
     // Ask for all streams at 4 Hz
@@ -296,6 +70,25 @@ ArduPilotMegaMAV::ArduPilotMegaMAV(MAVLinkProtocol* mavlink, int id) :
 
     connect(this, SIGNAL(heartbeatTimeout(bool,uint)),
             this, SLOT(heartbeatTimeout(bool,uint)));
+
+    loadSettings();
+}
+
+void ArduPilotMegaMAV::loadSettings()
+{
+    QSettings settings;
+    settings.beginGroup("ARDUPILOT");
+//    m_severityCompatibilityMode = settings.value("STATUSTEXT_COMPAT_MODE",false).toBool();
+    settings.endGroup();
+}
+
+void ArduPilotMegaMAV::saveSettings()
+{
+    QSettings settings;
+    settings.beginGroup("ARDUPILOT");
+//    settings.setValue("STATUSTEXT_COMPAT_MODE",m_severityCompatibilityMode);
+    settings.endGroup();
+    settings.sync();
 }
 
 void ArduPilotMegaMAV::RequestAllDataStreams()
@@ -391,7 +184,6 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
 {
     // Let UAS handle the default message set
     //qDebug() << "Message type:" << message.sysid << message.msgid;
-    UAS::receiveMessage(link, message);
 
     if (message.sysid == uasId) {
         // Handle your special messages
@@ -408,14 +200,25 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             mavlink_msg_statustext_get_text(&message, b.data());
             // Ensure NUL-termination
             b[b.length()-1] = '\0';
-            QString text = QString(b);
+            QString messageText = QString(b);
             int severity = mavlink_msg_statustext_get_severity(&message);
-            QLOG_INFO() << "STATUS TEXT:" << severity << ":" << text;
+            QLOG_INFO() << "STATUS TEXT:" << severity << ":" << messageText;
 
-            if (text.startsWith("ArduCopter") || text.startsWith("ArduPlane")
-                    || text.startsWith("ArduRover")) {
-                QLOG_DEBUG() << "APM Version String detected:" << text;
-                emit versionDetected(text);
+            if (!messageText.contains(APM_SOLO_REXP)) {
+                if (messageText.contains(APM_COPTER_REXP) || messageText.contains(APM_PLANE_REXP)
+                        || messageText.contains(APM_ROVER_REXP)) {
+                    QLOG_DEBUG() << "APM Version String detected:" << messageText;
+                    m_firmwareVersion.parseVersion(messageText);
+                    // Process Version and keep.
+                    m_severityCompatibilityMode = _isTextSeverityAdjustmentNeeded(m_firmwareVersion);
+
+                    emit versionDetected(messageText);
+                }
+            }
+
+            // Check is older APM and reset severity to correct MAVLINK spec.
+            if (m_severityCompatibilityMode) {
+                adjustSeverity(&message);
             }
 
         } break;
@@ -424,7 +227,71 @@ void ArduPilotMegaMAV::receiveMessage(LinkInterface* link, mavlink_message_t mes
             break;
         }
     }
+
+    // default Bea
+    UAS::receiveMessage(link, message);
 }
+
+void ArduPilotMegaMAV::adjustSeverity(mavlink_message_t* message) const
+{
+    // lets make QGC happy with right severity values
+    mavlink_statustext_t statusText;
+    mavlink_msg_statustext_decode(message, &statusText);
+
+    // Older APM detected, translate severity to MAVLink Standard severity
+    // SEVERITY_LOW     =1 MAV_SEVERITY_WARNING = 4
+    // SEVERITY_MEDIUM  =2 MAV_SEVERITY_ALERT   = 1
+    // SEVERITY_HIGH    =3 MAV_SEVERITY_CRITICAL= 2
+    // SEVERITY_USER_RESPONSE =5 MAV_SEVERITY_CRITICAL= 2
+
+    switch(statusText.severity) {
+    case 1:     /* gcs_severity::SEVERITY_LOW according to old codes */
+        statusText.severity = MAV_SEVERITY_WARNING;
+        break;
+    case 2:     /* gcs_severity::SEVERITY_MEDIUM according to old codes  */
+        statusText.severity = MAV_SEVERITY_ALERT;
+        break;
+    case 3:     /* gcs_severity::SEVERITY_HIGH  according to old codes */
+        statusText.severity = MAV_SEVERITY_CRITICAL;
+        break;
+    case 5: /*gcs_severity::SEVERITY_USER_RESPONSE according to old codes*/
+        statusText.severity = MAV_SEVERITY_CRITICAL;
+        break;
+    default:
+        statusText.severity = MAV_SEVERITY_INFO;
+    }
+
+    mavlink_msg_statustext_encode(message->sysid, message->compid, message, &statusText);
+}
+
+bool ArduPilotMegaMAV::_isTextSeverityAdjustmentNeeded(const APMFirmwareVersion& firmwareVersion)
+{
+    if (!firmwareVersion.isValid()) {
+        return false;
+    }
+
+    bool adjustmentNeeded = false;
+    if (firmwareVersion.vehicleType().contains(APM_COPTER_REXP)) {
+        if (firmwareVersion < APMFirmwareVersion(MIN_COPTER_VERSION_WITH_CORRECT_SEVERITY_MSGS)) {
+            adjustmentNeeded = true;
+        }
+    } else if (firmwareVersion.vehicleType().contains(APM_PLANE_REXP)) {
+        if (firmwareVersion < APMFirmwareVersion(MIN_PLANE_VERSION_WITH_CORRECT_SEVERITY_MSGS)) {
+            adjustmentNeeded = true;
+        }
+    } else if (firmwareVersion.vehicleType().contains(APM_ROVER_REXP)) {
+        if (firmwareVersion < APMFirmwareVersion(MIN_ROVER_VERSION_WITH_CORRECT_SEVERITY_MSGS)) {
+            adjustmentNeeded = true;
+        }
+    } else if (firmwareVersion.vehicleType().contains(APM_SUB_REXP)) {
+        if (firmwareVersion < APMFirmwareVersion(MIN_SUB_VERSION_WITH_CORRECT_SEVERITY_MSGS)) {
+            adjustmentNeeded = true;
+        }
+    }
+
+    return adjustmentNeeded;
+}
+
 void ArduPilotMegaMAV::setMountConfigure(unsigned char mode, bool stabilize_roll,bool stabilize_pitch,bool stabilize_yaw)
 {
     //Only supported by APM
@@ -495,15 +362,16 @@ QString ArduPilotMegaMAV::getCustomModeText()
 {
     QLOG_DEBUG() << "APM: getCustomModeText()";
     QString customModeString;
+    ModeMessage mode(0, 0, custom_mode, 0, 0);
 
     if (isFixedWing()){
-        customModeString = ApmPlane::stringForMode(custom_mode);
+        customModeString = Plane::MessageFormatter::format(mode);
 
     } else if (isMultirotor()){
-        customModeString = ApmCopter::stringForMode(custom_mode);
+        customModeString = Copter::MessageFormatter::format(mode);
 
     } else if (isGroundRover()){
-        customModeString = ApmRover::stringForMode(custom_mode);
+        customModeString = Rover::MessageFormatter::format(mode);
 
     } else if (getSystemType() == MAV_TYPE_ANTENNA_TRACKER ){
         customModeString = tr("Ant Tracker");
@@ -531,7 +399,7 @@ void ArduPilotMegaMAV::textMessageReceived(int /*uasid*/, int /*componentid*/, i
         QString audioString = "Pre-arm check:" + text.remove("PreArm:");
         GAudioOutput::instance()->say(audioString, severity);
     } else if (text.startsWith("Arm:")){
-        QString audioString = "Please press and hold safety switch";
+        QString audioString = "Arm check:" + text.remove("Arm:");
         GAudioOutput::instance()->say(audioString, severity);
     }
 }
@@ -567,394 +435,1078 @@ void ArduPilotMegaMAV::playArmStateChangedAudioMessage(bool armedState)
     GAudioOutput::instance()->say(QString("system %1 is %2").arg(QString::number(getUASID()),armedPhrase));
 }
 
-QString ArduPilotMegaMAV::getNameFromEventId(int ecode)
+
+//******************* Classes for Sepcial message handling **************************
+
+MessageBase::MessageBase() : m_Index(0), m_TimeStamp(0)
+{}
+
+MessageBase::MessageBase(const quint32 index, const double timeStamp, const QString &name, const QColor &color) :
+    m_Index(index),
+    m_TimeStamp(timeStamp),
+    m_TypeName(name),
+    m_Color(color)
+{}
+
+quint32 MessageBase::getIndex() const
 {
-    QString ecodestring = "";
-    if (ecode == 10)
+    return m_Index;
+}
+
+double MessageBase::getTimeStamp() const
+{
+    return m_TimeStamp;
+}
+
+QString MessageBase::typeName() const
+{
+    return m_TypeName;
+}
+
+QColor MessageBase::typeColor() const
+{
+    return m_Color;
+}
+
+//********
+
+const QString ErrorMessage::TypeName("ERR");
+
+ErrorMessage::ErrorMessage() : m_SubSys(0), m_ErrorCode(0)
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(150,0,0);
+}
+
+ErrorMessage::ErrorMessage(const QString &TimeFieldName) : m_SubSys(0), m_ErrorCode(0)
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(150,0,0);
+    m_TimeFieldName = TimeFieldName;
+}
+
+
+ErrorMessage::ErrorMessage(const quint32 index, const double timeStamp, const quint32 subSys, const quint32 errCode) :
+    MessageBase(index, timeStamp, TypeName, QColor(150,0,0)),
+    m_SubSys(subSys),
+    m_ErrorCode(errCode)
+{}
+
+quint32 ErrorMessage::getSubsystemCode() const
+{
+    return m_SubSys;
+}
+
+quint32 ErrorMessage::getErrorCode() const
+{
+    return m_ErrorCode;
+}
+
+bool ErrorMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
+{
+    bool rc1 = false;
+    bool rc2 = false;
+    bool rc3 = false;
+    bool rc4 = false;
+
+    if(record.value(0).isValid())
     {
-        ecodestring = "Armed";
+        m_Index = static_cast<quint32>(record.value(0).toUInt());
+        rc1 = true;
     }
-    else if (ecode == 11)
+    if (record.contains(m_TimeFieldName))
     {
-        ecodestring = "Disrmed";
+        m_TimeStamp = record.value(m_TimeFieldName).toDouble();
+        m_TimeStamp /= timeDivider;
+        rc2 = true;
     }
-    else if (ecode == 15)
+    if (record.contains("Subsys"))
     {
-        ecodestring = "Auto-Armed";
+        m_SubSys = static_cast<quint32>(record.value("Subsys").toUInt());
+        rc3 = true;
     }
-    else if (ecode == 16)
+    if (record.contains("ECode"))
     {
-        ecodestring = "Takeoff";
+        m_ErrorCode = static_cast<quint32>(record.value("ECode").toUInt());
+        rc4 = true;
     }
-    else if (ecode == 17)
+
+    return rc1 && rc2 && rc3 && rc4;
+}
+
+QString ErrorMessage::toString() const
+{
+    QString output;
+    QTextStream outputStream(&output);
+
+    outputStream << " Subsystem:" << m_SubSys << " Errorcode:" << m_ErrorCode;
+    return output;
+}
+
+//********
+
+const QString ModeMessage::TypeName("MODE");
+
+ModeMessage::ModeMessage() : m_Mode(0), m_ModeNum(0), m_Reason(0)
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(50,125,0);
+}
+
+ModeMessage::ModeMessage(const QString &TimeFieldName) : m_Mode(0), m_ModeNum(0), m_Reason(0)
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(50,125,0);
+    m_TimeFieldName = TimeFieldName;
+}
+
+ModeMessage::ModeMessage(const quint32 index, const double timeStamp, const quint32 mode, const quint32 modeNum, const quint32 reason) :
+    MessageBase(index, timeStamp, TypeName, QColor(50,125,0)),
+    m_Mode(mode),
+    m_ModeNum(modeNum),
+    m_Reason(reason)
+{}
+
+quint32 ModeMessage::getMode() const
+{
+    return m_Mode;
+}
+
+quint32 ModeMessage::getModeNum() const
+{
+    return m_ModeNum;
+}
+
+quint32 ModeMessage::getReason() const
+{
+    return m_Reason;
+}
+
+bool ModeMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
+{
+    bool rc1 = false;
+    bool rc2 = false;
+    bool rc3 = false;
+
+    if(record.value(0).isValid())
     {
-        ecodestring = "Land Complete Maybe";
+        m_Index = static_cast<quint32>(record.value(0).toUInt());
+        rc1 = true;
     }
-    else if (ecode == 18)
+    if (record.contains(m_TimeFieldName))
     {
-        ecodestring = "Land Complete";
+        m_TimeStamp = record.value(m_TimeFieldName).toDouble();
+        m_TimeStamp /= timeDivider;
+        rc2 = true;
     }
-    else if (ecode == 19)
+    if (record.contains("Mode"))
     {
-        ecodestring = "Lost GPS";
+        m_Mode = static_cast<quint32>(record.value("Mode").toUInt());
+        rc3 = true;
     }
-    else if (ecode == 25)
+    if (record.contains("ModeNum"))
     {
-        ecodestring = "Home Set";
+        m_ModeNum = static_cast<quint32>(record.value("ModeNum").toUInt());
+       // ModeNum does not influence the returncode as its optional
     }
-    else if (ecode == 28)
+    if (record.contains("Rsn"))
     {
-        ecodestring = "Not Landed";
+        m_Reason = static_cast<quint32>(record.value("Rsn").toUInt());
+       // Reason does not influence the returncode as its optional. Came with AC 3.4
     }
-    else if (ecode == 30)
+
+    return rc1 && rc2 && rc3;
+}
+
+QString ModeMessage::toString() const
+{
+    QString output;
+    QTextStream outputStream(&output);
+
+    outputStream << " Mode:" << m_Mode << " ModeNum:" << m_ModeNum << " Reason:" << m_Reason;
+    return output;
+}
+
+//********
+
+const QString EventMessage::TypeName("EV");
+
+EventMessage::EventMessage() : m_EventID(0)
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(0,0,125);
+}
+
+EventMessage::EventMessage(const QString &TimeFieldName) : m_EventID(0)
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(0,0,125);
+    m_TimeFieldName = TimeFieldName;
+}
+
+EventMessage::EventMessage(const quint32 index, const double timeStamp, const quint32 eventID) :
+    MessageBase(index, timeStamp, TypeName, QColor(0,0,125)),
+    m_EventID(eventID)
+{}
+
+quint32 EventMessage::getEventID() const
+{
+    return m_EventID;
+}
+
+bool EventMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
+{
+    bool rc1 = false;
+    bool rc2 = false;
+    bool rc3 = false;
+
+    if(record.value(0).isValid())
     {
-        ecodestring = "Autotune Initialized";
+        m_Index = static_cast<quint32>(record.value(0).toUInt());
+        rc1 = true;
     }
-    else if (ecode == 31)
+    if (record.contains(m_TimeFieldName))
     {
-        ecodestring = "Autotune Off";
+        m_TimeStamp = record.value(m_TimeFieldName).toDouble();
+        m_TimeStamp /= timeDivider;
+        rc2 = true;
     }
-    else if (ecode == 32)
+    if (record.contains("Id"))
     {
-        ecodestring = "Autotune Restart";
+        m_EventID = static_cast<quint32>(record.value("Id").toUInt());
+        rc3 = true;
     }
-    else if (ecode == 33)
+
+    return rc1 && rc2 && rc3;
+}
+
+QString EventMessage::toString() const
+{
+    QString output;
+    QTextStream outputStream(&output);
+
+    outputStream << " Event ID:" << m_EventID;
+    return output;
+}
+
+//********
+
+const QString MsgMessage::TypeName("MSG");
+
+MsgMessage::MsgMessage()
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(0,0,0);
+}
+
+MsgMessage::MsgMessage(const QString &TimeFieldName)
+{
+    // Set up base class vars for this message
+    m_TypeName = TypeName;
+    m_Color    = QColor(0,0,0);
+    m_TimeFieldName = TimeFieldName;
+}
+
+MsgMessage::MsgMessage(const quint32 index, const double timeStamp, const QString &message) :
+    MessageBase(index, timeStamp, TypeName, QColor(0,0,0)),
+    m_Message(message)
+{}
+
+bool MsgMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
+{
+    bool rc1 = false;
+    bool rc2 = false;
+    bool rc3 = false;
+
+    if(record.value(0).isValid())
     {
-        ecodestring = "Autotune Success";
+        m_Index = static_cast<quint32>(record.value(0).toUInt());
+        rc1 = true;
     }
-    else if (ecode == 34)
+    if (record.contains(m_TimeFieldName))
     {
-        ecodestring = "Autotune Failed";
+        m_TimeStamp = record.value(m_TimeFieldName).toDouble();
+        m_TimeStamp /= timeDivider;
+        rc2 = true;
     }
-    else if (ecode == 35)
+    if (record.contains("Message"))
     {
-        ecodestring = "Autotune Reached Limit";
+        m_Message = record.value("Message").toString();
+        rc3 = true;
     }
-    else if (ecode == 36)
+
+    return rc1 && rc2 && rc3;
+}
+
+QString MsgMessage::toString() const
+{
+    return m_Message;
+}
+
+//********
+
+MessageBase::Ptr MessageFactory::getMessageOfType(const QString &type, const QString &TimeFieldName)
+{
+    if (type == ErrorMessage::TypeName)
     {
-        ecodestring = "Autotune Pilot Testing";
+        return MessageBase::Ptr(new ErrorMessage(TimeFieldName));
     }
-    else if (ecode == 37)
+    else if (type == ModeMessage::TypeName)
     {
-        ecodestring = "Autotune Saved Gains";
+        return MessageBase::Ptr(new ModeMessage(TimeFieldName));
     }
-    else if (ecode == 38)
+    else if (type == EventMessage::TypeName)
     {
-        ecodestring = "Save Trim";
+        return MessageBase::Ptr(new EventMessage(TimeFieldName));
     }
-    else if (ecode == 39)
+    else if (type == MsgMessage::TypeName)
     {
-        ecodestring = "Add WP";
+        return MessageBase::Ptr(new MsgMessage(TimeFieldName));
     }
-    else if (ecode == 40)
+    QLOG_WARN() << "MessageFactory::getMessageOfType: No message of type '" << type << "' could be created";
+    return MessageBase::Ptr();
+}
+
+//******** Message Formatters ********
+
+QString Copter::MessageFormatter::format(MessageBase::Ptr &p_message)
+{
+    QString retval("Unknown Type");
+    if (p_message)
     {
-        ecodestring = "WP Clear Mission RTL";
-    }
-    else if (ecode == 41)
-    {
-        ecodestring = "Fence Enable";
-    }
-    else if (ecode == 42)
-    {
-        ecodestring = "Fence Disable";
-    }
-    else if (ecode == 49)
-    {
-        ecodestring = "Parachute Disabled";
-    }
-    else if (ecode == 50)
-    {
-        ecodestring = "Parachute Enabled";
-    }
-    else if (ecode == 51)
-    {
-        ecodestring = "Parachute Released";
+        if (p_message->typeName() == ErrorMessage::TypeName)
+        {
+            // can use the internal pointer here avoiding dynamic pointer cast with refcount increase
+            retval = format(*dynamic_cast<ErrorMessage*>(p_message.data()));
+        }
+        else if (p_message->typeName() == ModeMessage::TypeName)
+        {
+            retval = format(*dynamic_cast<ModeMessage*>(p_message.data()));
+        }
+        else if (p_message->typeName() == EventMessage::TypeName)
+        {
+            retval = format(*dynamic_cast<EventMessage*>(p_message.data()));
+        }
+        else // The msgMessage does not need a formatter -> handled by else
+        {
+            retval = p_message->toString();
+        }
     }
     else
     {
-        return "Event: " + QString::number(ecode);
-    }
-    return ecodestring;
-
-}
-
-QPair<QString,QString> ArduPilotMegaMAV::getErrText(int subsys,int ecode)
-{
-    QString ecodeinvalid = "Invalid error code";
-    QPair<QString,QString> retval;
-    retval.first = "E" + QString::number(subsys) + ": Unknown Subsystem";
-    retval.second = "E" + QString::number(ecode) + ": Unknown Error Code";
-    if (subsys == 2)
-    {
-        //Radio
-        retval.first = "S2: Radio";
-        if (ecode == 0)
-        {
-            //Error resolved
-            retval.second = "E0: PPM Encoder error resolved";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Lame Frame, no updates from PPM encoder";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 3)
-    {
-        //Compass
-        retval.first = "S3: Compass";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Error resolved";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: Compass failed to initialized";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Failure when trying to read a value";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 4)
-    {
-        //Optical flow
-        retval.first = "S4: Optical Flow";
-        if (ecode == 1)
-        {
-            retval.second = "E1: Failed to initialize";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 5)
-    {
-        //throttle
-        retval.first = "S5: Throttle";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Error Resolved";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: Throttle below FS_THR_VALUE";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 6)
-    {
-        //Battery
-        retval.first = "S6: Battery";
-        if (ecode == 1)
-        {
-            retval.second = "E1: Voltage below LOW_VOLT/BATT_CAPACITY exceeded";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 7)
-    {
-        //GPS
-        retval.first = "E7: GPS";
-        if (ecode == 0)
-        {
-            retval.second = "E0: GPS Lock Restored";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: GPS Lock Lost";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 8)
-    {
-        //GCS
-        retval.first = "E8: Ground Control Station";
-        if (ecode == 0)
-        {
-            retval.second = "E0: GCS Updates restored";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: GCS joystick updates lost";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 9)
-    {
-        //Optical flow
-        retval.first = "E9: Fence";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Vehicle back within fence";
-        }
-        else if (ecode == 1)
-        {
-            retval.second = "E1: Altitude fence breached";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Circular fence breached";
-        }
-        else if (ecode == 3)
-        {
-            retval.second = "E3: Altitude AND Circular fences breached";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 10)
-    {
-        //Flight Mode
-        retval.first = "E10: Flight Mode";
-        retval.second = "E " + QString::number(ecode) + ": Vehicle unable to enter flight mode";
-    }
-    else if (subsys == 11)
-    {
-        //GPS
-        retval.first = "E11: GPS Glitch";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Glitch Cleared";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: GPS Glick Detected";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 12)
-    {
-        retval.first = "E12: Crash Check";
-        if (ecode == 1)
-        {
-            retval.second = "E1: Crash Detected";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 13)
-    {
-        retval.first = "E13: Flip";
-        if (ecode == 2)
-        {
-            retval.second = "E2: Flip Abandoned";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 14)
-    {
-        retval.first = "E14: Auto Tune";
-        if (ecode == 2)
-        {
-            retval.second = "E2: Bad Gains";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 15)
-    {
-        retval.first = "E15: Parachute";
-        if (ecode == 2)
-        {
-            retval.second = "E2: Too low to deploy";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 16)
-    {
-        retval.first = "E16: EKF/InertialNav Check";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Bad Variance Cleared";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Bad Variance";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 17)
-    {
-        retval.first = "E17: EKF/InertialNav Failure";
-        if (ecode == 2)
-        {
-            retval.second = "E2: EKF Failsafe Triggered";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
-    }
-    else if (subsys == 18)
-    {
-        retval.first = "E18: Baro Glitch";
-        if (ecode == 0)
-        {
-            retval.second = "E0: Baro Glitch Cleared";
-        }
-        else if (ecode == 2)
-        {
-            retval.second = "E2: Baro Glitch";
-        }
-        else if (ecode == -1)
-        {
-            //No ecode registered
-            retval.second = ecodeinvalid;
-        }
+        QLOG_ERROR() << "CopterMessageFormatter::format() called with nullpointer";
     }
     return retval;
+}
+
+QString Copter::MessageFormatter::format(const ErrorMessage &message)
+{
+    // SubSys ans ErrorCode interpretation was taken from
+    // Ardupilot/ArduCopter/defines.h
+    // last verification 09.06.2016
+
+    QString output;
+    QTextStream outputStream(&output);
+
+    bool EcodeUsed = false;
+
+    switch (message.getSubsystemCode())
+    {
+    case 1:
+        outputStream << "Main:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Ins-Delay";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 2:
+        outputStream << "Radio:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Late Frame detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 3:
+        outputStream << "Compass:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Failed to read data";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 4:
+        outputStream << "OptFlow:";
+        break;
+
+    case 5:
+        outputStream << "FS-Radio:";
+        break;
+
+    case 6:
+        outputStream << "FS-Batt:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 7:
+        outputStream << "FS-GPS:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 8:
+        outputStream << "FS-GCS:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 9:
+        outputStream << "FS-Fence:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 10:
+    {
+        ModeMessage tmpMsg(0, 0, message.getErrorCode(), 0, 0);
+        outputStream << "Flight-Mode "  << Copter::MessageFormatter::format(tmpMsg) <<" refused.";
+        EcodeUsed = true;
+        break;
+    }
+
+    case 11:
+        outputStream << "GPS:";
+        break;
+
+    case 12:
+        outputStream << "Crash-Check:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Crash Detected";
+            EcodeUsed = true;
+        }
+        else if (message.getErrorCode() == 2)
+        {
+            outputStream << "Control Lost";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 13:
+        outputStream << "FLIP:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Abandoned";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 14:
+        outputStream << "Autotune:";
+        break;
+
+    case 15:
+        outputStream << "Parachute:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Too low to eject";
+            EcodeUsed = true;
+        }
+        else if (message.getErrorCode() == 3)
+        {
+            outputStream << "Copter Landed";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 16:
+        outputStream << "EKF-Check:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Bad Variance detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 17:
+        outputStream << "FS-EKF-INAV:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 18:
+        outputStream << "Baro:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Glitch detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 19:
+        outputStream << "CPU:";
+        break;
+
+    case 20:
+        outputStream << "FS-ADSB:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 21:
+        outputStream << "Terrain:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Missing Terrain Data";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 22:
+        outputStream << "Navigation:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Failed to set destination";
+            EcodeUsed = true;
+        }
+        else if (message.getErrorCode() == 3)
+        {
+            outputStream << "Restarted RTL";
+            EcodeUsed = true;
+        }
+        else if (message.getErrorCode() == 4)
+        {
+            outputStream << "Failed Circle init";
+            EcodeUsed = true;
+        }
+        else if (message.getErrorCode() == 5)
+        {
+            outputStream << "Destination outside fence";
+            EcodeUsed = true;
+        }
+        break;
+
+    case 23:
+        outputStream << "FS-Terrain:";
+        if (message.getErrorCode() == 1)
+        {
+            outputStream << "Detected";
+            EcodeUsed = true;
+        }
+        break;
+
+
+    default:
+        outputStream << "SubSys:" << message.getErrorCode() << " ECode:" << message.getErrorCode();
+        EcodeUsed = true;
+        break;
+
+    }
+
+    if (!EcodeUsed)
+    {
+        switch (message.getErrorCode())
+        {
+        case 0:
+            outputStream << "Everything OK!";
+            break;
+
+        case 1:
+            outputStream << "Failed to init";
+            break;
+
+        case 4:
+            outputStream << "Is Unhealthy";
+            break;
+
+        default:
+            outputStream << "Unknown ErrorCode(" << message.getErrorCode() << ")";
+            break;
+        }
+    }
+
+    return output;
+}
+
+QString Copter::MessageFormatter::format(const ModeMessage &message)
+{
+    // Interpretation taken from
+    // Ardupilot/ArduCopter/defines.h
+    // last verification 09.06.2016
+
+    QString output;
+    QTextStream outputStream(&output);
+
+    switch (message.getMode())
+    {
+    case Copter::STABILIZE:
+        outputStream << "Stabilize";
+        break;
+    case Copter::ACRO:
+        outputStream << "Acro";
+        break;
+    case Copter::ALT_HOLD:
+        outputStream << "Alt Hold";
+        break;
+    case Copter::AUTO:
+        outputStream << "Auto";
+        break;
+    case Copter::GUIDED:
+        outputStream << "Guided";
+        break;
+    case Copter::LOITER:
+        outputStream << "Loiter";
+        break;
+    case Copter::RTL:
+        outputStream << "RTL";
+        break;
+    case Copter::CIRCLE:
+        outputStream << "Circle";
+        break;
+    case Copter::LAND:
+        outputStream << "Land";
+        break;
+    case Copter::DRIFT:
+        outputStream << "Drift";
+        break;
+    case Copter::SPORT:
+        outputStream << "Sport";
+        break;
+    case Copter::FLIP:
+        outputStream << "Flip";
+        break;
+    case Copter::AUTOTUNE:
+        outputStream << "Auto Tune";
+        break;
+    case Copter::POS_HOLD:
+        outputStream << "Pos Hold";
+        break;
+    case Copter::BRAKE:
+        outputStream << "Brake";
+        break;
+    case Copter::THROW:
+        outputStream << "Throw";
+        break;
+    default:
+        outputStream << "Unknown Mode:" << message.getMode();
+        break;
+    }
+
+    // only if we have a valid reason
+    if (message.getReason() != 0)
+    {
+        outputStream << endl << "by " ;
+
+        switch (message.getReason())
+        {
+        case 1:
+            outputStream << "radio";
+            break;
+        case 2:
+            outputStream << "GCS cmd";
+            break;
+        case 3:
+            outputStream << "radio FS";
+            break;
+        case 4:
+            outputStream << "battery FS";
+            break;
+        case 5:
+            outputStream << "GCS FS";
+            break;
+        case 6:
+            outputStream << "EKF FS";
+            break;
+        case 7:
+            outputStream << "GPS Glitch";
+            break;
+        case 8:
+            outputStream << "mission end";
+            break;
+        case 9:
+            outputStream << "throttle land escape";
+            break;
+        case 10:
+            outputStream << "fence breach";
+            break;
+        case 11:
+            outputStream << "terrain FS";
+            break;
+        case 12:
+            outputStream << "brake timeout";
+            break;
+        case 13:
+            outputStream << "Flip complete";
+            break;
+        default:
+            outputStream << "unknown reason:" << message.getReason();
+            break;
+        }
+    }
+
+    return output;
+}
+
+QString Copter::MessageFormatter::format(const EventMessage &message)
+{
+    // Interpretation taken from
+    // Ardupilot/ArduCopter/defines.h
+    // last verification 09.06.2016
+
+    QString output;
+    QTextStream outputStream(&output);
+
+    switch(message.getEventID())
+    {
+    case 7:
+        outputStream << "AP-State";
+        break;
+    case 8:
+        outputStream << "System time set";
+        break;
+    case 9:
+        outputStream << "Init simple bearing";
+        break;
+    case 10:
+        outputStream << "Armed";
+        break;
+    case 11:
+        outputStream << "Disarmed";
+        break;
+    case 15:
+        outputStream << "Auto-Armed";
+        break;
+    case 16:
+        outputStream << "Takeoff";
+        break;
+    case 17:
+        outputStream << "Land Complete Maybe";
+        break;
+    case 18:
+        outputStream << "Land Complete";
+        break;
+    case 19:
+        outputStream << "Lost GPS";
+        break;
+    case 21:
+        outputStream << "Flip Start";
+        break;
+    case 22:
+        outputStream << "Flip End";
+        break;
+    case 25:
+        outputStream << "Home Set";
+        break;
+    case 26:
+        outputStream << "Simple Mode ON";
+        break;
+    case 27:
+        outputStream << "Simple Mode OFF";
+        break;
+    case 28:
+        outputStream << "Not Landed";
+        break;
+    case 29:
+        outputStream << "SuperSimple Mode ON";
+        break;
+    case 30:
+        outputStream << "Autotune Initialized";
+        break;
+    case 31:
+        outputStream << "Autotune Off";
+        break;
+    case 32:
+        outputStream << "Autotune Restart";
+        break;
+    case 33:
+        outputStream << "Autotune Success";
+        break;
+    case 34:
+        outputStream << "Autotune Failed";
+        break;
+    case 35:
+        outputStream << "Autotune Reached Limit";
+        break;
+    case 36:
+        outputStream << "Autotune Pilot Testing";
+        break;
+    case 37:
+        outputStream << "Autotune Saved Gains";
+        break;
+    case 38:
+        outputStream << "Save Trim";
+        break;
+    case 39:
+        outputStream << "Save/Add WP";
+        break;
+    case 40:
+        outputStream << "WP Clear Mission RTL";
+        break;
+    case 41:
+        outputStream << "Fence enable";
+        break;
+    case 42:
+        outputStream << "Fence disable";
+        break;
+    case 43:
+        outputStream << "Acro Trainer disabled";
+        break;
+    case 44:
+        outputStream << "Acro Trainer leveling";
+        break;
+    case 45:
+        outputStream << "Acro Trainer limited";
+        break;
+    case 46:
+        outputStream << "EPM grab";
+        break;
+    case 47:
+        outputStream << "EPM realease";
+        break;
+    case 48:
+        outputStream << "EPM neutral";      // Deprecated
+        break;
+    case 49:
+        outputStream << "Parachute disabled";
+        break;
+    case 50:
+        outputStream << "Parachute enabled";
+        break;
+    case 51:
+        outputStream << "Parachute released";
+        break;
+    case 52:
+        outputStream << "Landing gear delpoyed";
+        break;
+    case 53:
+        outputStream << "Landing gear retracted";
+        break;
+    case 54:
+        outputStream << "Motor emergency stop";
+        break;
+    case 55:
+        outputStream << "Motor emergency stop clear";
+        break;
+    case 56:
+        outputStream << "Motor interlock disabled";
+        break;
+    case 57:
+        outputStream << "Motor interlock enabled";
+        break;
+    case 58:
+        outputStream << "Motor runup complete";         // heli only
+        break;
+    case 59:
+        outputStream << "Motor speed below critical";   // heli only
+        break;
+    case 60:
+        outputStream << "EKF alt reset";
+        break;
+    case 61:
+        outputStream << "Land cancelled by pilot";
+        break;
+    default:
+        outputStream << "Unknown Event: " << message.getEventID();
+        break;
+    }
+
+    return output;
+}
+
+
+QString Plane::MessageFormatter::format(MessageBase::Ptr &p_message)
+{
+    QString retval("Unknown Type");
+    if (p_message)
+    {
+        // Only mode message formatter is implemented for planes
+        if (p_message->typeName() == ModeMessage::TypeName)
+        {
+            // can use the internal pointer here avoiding dynamic pointer cast with refcount increase
+            retval = format(*dynamic_cast<ModeMessage*>(p_message.data()));
+        }
+        else
+        {
+            retval = p_message->toString();
+        }
+    }
+    else
+    {
+        QLOG_ERROR() << "PlaneMessageFormatter::format() called with nullpointer";
+    }
+    return retval;
+}
+
+QString Plane::MessageFormatter::format(const ModeMessage &message)
+{
+    // Interpretation taken from
+    // Ardupilot/ArduPlane/defines.h
+    // last verification 24.01.2016
+
+    QString output;
+    QTextStream outputStream(&output);
+
+    switch (message.getMode())
+    {
+    case Plane::MANUAL:
+        outputStream << "Manual";
+        break;
+    case Plane::CIRCLE:
+        outputStream << "Circle";
+        break;
+    case Plane::STABILIZE:
+        outputStream << "Stabilize";
+        break;
+    case Plane::TRAINING:
+        outputStream << "Training";
+        break;
+    case Plane::ACRO:
+        outputStream << "Acro";
+        break;
+    case Plane::FLY_BY_WIRE_A:
+        outputStream << "Fly by wire A";
+        break;
+    case Plane::FLY_BY_WIRE_B:
+        outputStream << "Fly by wire B";
+        break;
+    case Plane::CRUISE:
+        outputStream << "Cruise";
+        break;
+    case Plane::AUTOTUNE:
+        outputStream << "Autotune";
+        break;
+    case Plane::LAND:
+        outputStream << "Land";
+        break;
+    case Plane::AUTO:
+        outputStream << "Auto";
+        break;
+    case Plane::RTL:
+        outputStream << "RTL";
+        break;
+    case Plane::LOITER:
+        outputStream << "Loiter";
+        break;
+    case Plane::GUIDED:
+        outputStream << "Guided";
+        break;
+    case Plane::INITIALIZING:
+        outputStream << "Initialising";
+        break;
+    case Plane::QSTABILIZE:
+        outputStream << "QStabilize";
+        break;
+    case Plane::QHOVER:
+        outputStream << "QHover";
+        break;
+    case Plane::QLOITER:
+        outputStream << "QLoiter";
+        break;
+    case Plane::QLAND:
+        outputStream << "QLand";
+        break;
+    case Plane::QRTL:
+        outputStream << "QRTL";
+        break;
+    default:
+        outputStream << "Unknown Mode:" << message.getMode();
+        break;
+    }
+    return output;
+}
+
+
+QString Rover::MessageFormatter::format(MessageBase::Ptr &p_message)
+{
+    QString retval("Unknown Type");
+    if (p_message)
+    {
+        // Only mode message formatter is implemented for rovers
+        if (p_message->typeName() == ModeMessage::TypeName)
+        {
+            // can use the internal pointer here avoiding dynamic pointer cast with refcount increase
+            retval = format(*dynamic_cast<ModeMessage*>(p_message.data()));
+        }
+        else
+        {
+            retval = p_message->toString();
+        }
+    }
+    else
+    {
+        QLOG_ERROR() << "RoverMessageFormatter::format() called with nullpointer";
+    }
+    return retval;
+}
+
+QString Rover::MessageFormatter::format(const ModeMessage &message)
+{
+    // Interpretation taken from
+    // Ardupilot/APMRover2/defines.h
+    // last verification 24.01.2016
+
+    QString output;
+    QTextStream outputStream(&output);
+
+    switch (message.getMode())
+    {
+    case Rover::MANUAL:
+        outputStream << "Manual";
+        break;
+    case Rover::LEARNING:
+        outputStream << "Learning";
+        break;
+    case Rover::STEERING:
+        outputStream << "Steering";
+        break;
+    case Rover::HOLD:
+        outputStream << "Hold";
+        break;
+    case Rover::AUTO:
+        outputStream << "Auto";
+        break;
+    case Rover::RTL:
+        outputStream << "RTL";
+        break;
+    case Rover::GUIDED:
+        outputStream << "Guided";
+        break;
+    case Rover::INITIALIZING:
+        outputStream << "Initialising";
+        break;
+    default:
+        outputStream << "Unknown Mode:" << message.getMode();
+        break;
+    }
+    return output;
 }

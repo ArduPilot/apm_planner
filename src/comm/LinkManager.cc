@@ -124,7 +124,6 @@ void LinkManager::loadSettings()
     for (int i=0;i<linkssize;i++)
     {
         settings.setArrayIndex(i);
-        int linkid = settings.value("linkid").toInt();
         QString type = settings.value("type").toString();
         if (type == "SERIAL_LINK")
         {
@@ -156,10 +155,11 @@ void LinkManager::loadSettings()
         }
         else if (type == "TCP_LINK")
         {
-            QString host = settings.value("host").toString();
+            QHostAddress hostAddress = QHostAddress(settings.value("host").toString());
+            QString hostName = settings.value("hostname").toString();
             int port = settings.value("port").toInt();
             bool asServer = settings.value("asServer").toBool();
-            LinkManagerFactory::addTcpConnection(QHostAddress(host),port,asServer);
+            LinkManagerFactory::addTcpConnection(hostAddress, hostName, port, asServer);
         }
         else if (type == "UDP_CLIENT_LINK")
         {
@@ -223,6 +223,7 @@ void LinkManager::saveSettings()
             TCPLink *link = qobject_cast<TCPLink*>(i.value());
             settings.setValue("type","TCP_LINK");
             settings.setValue("host",link->getHostAddress().toString());
+            settings.setValue("hostname",link->getName());
             settings.setValue("port",link->getPort());
             settings.setValue("asServer",link->isServer());
         }
@@ -619,6 +620,7 @@ void LinkManager::linkConnected(LinkInterface* link)
 
 void LinkManager::linkDisonnected(LinkInterface* link)
 {
+    QLOG_DEBUG() << "LinkManager::linkDisonnected: " << link->getName() << link->getId();
     emit linkChanged(link->getId());
 }
 
@@ -629,6 +631,7 @@ void LinkManager::linkErrorRec(LinkInterface *link,QString errorstring)
 
 void LinkManager::linkTimeoutTriggered(LinkInterface *link)
 {
+    Q_UNUSED(link)
     //Link has had a timeout
     //Disabled until it is fixed and more more robust - MLC
     //emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");

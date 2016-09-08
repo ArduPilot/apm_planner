@@ -29,7 +29,7 @@ This file is part of the APM_PLANNER project
  */
 
 #include "ApmToolBar.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "LinkManager.h"
 #include "MainWindow.h"
 #include "ArduPilotMegaMAV.h"
@@ -38,8 +38,9 @@ This file is part of the APM_PLANNER project
 #include <QTimer>
 #include <QQuickItem>
 #include <QQmlEngine>
+
 APMToolBar::APMToolBar(QWindow *parent):
-    QQuickView(parent), m_uas(NULL), m_disableOverride(false)
+    QQuickView(parent), m_uas(NULL), m_disableOverride(false), m_currentLinkId(0)
 {
     // Configure our QML object
     QLOG_DEBUG() << "qmlBaseDir" << QGC::shareDirectory();
@@ -52,6 +53,9 @@ APMToolBar::APMToolBar(QWindow *parent):
     }
     engine()->addImportPath("qml/"); //For local or win32 builds
     engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+    // access to ini file from QML
+    rootContext()->setContextProperty("Settings", &m_settings);
+
     setSource(url);
     QLOG_DEBUG() << "QML Status:" << status();
     if (status() == QQuickView::Error)
@@ -89,11 +93,13 @@ APMToolBar::APMToolBar(QWindow *parent):
     }
 
     connect(&m_heartbeatTimer, SIGNAL(timeout()), this, SLOT(stopHeartbeat()));
+
     QSettings settings;
     settings.beginGroup("QGC_MAINWINDOW");
     if (settings.contains("ADVANCED_MODE"))
     {
-       QMetaObject::invokeMethod(rootObject(),"setAdvancedMode", Q_ARG(QVariant, settings.value("ADVANCED_MODE").toBool()));
+        bool isAdvanced = settings.value("ADVANCED_MODE").toBool();
+        checkAdvancedMode(isAdvanced);
     }
     connect(LinkManager::instance(),SIGNAL(linkChanged(int)),this,SLOT(updateLinkDisplay(int)));
 
@@ -264,6 +270,7 @@ void APMToolBar::selectDonateView()
     QLOG_DEBUG() << "APMToolBar: selectDonateView";
     QString donateUrl = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UKV3U28LVDGN4";
     QDesktopServices::openUrl(QUrl(donateUrl));
+
 }
 
 void APMToolBar::selectPlotView()
@@ -362,17 +369,17 @@ void APMToolBar::setModeText(const QString &text)
 
     switch (m_uas->getSystemType()){
     case MAV_TYPE_FIXED_WING:
-        inRTL = (customMode == ApmPlane::RTL);
+        inRTL = (customMode == Plane::RTL);
         break;
     case MAV_TYPE_QUADROTOR:
     case MAV_TYPE_HEXAROTOR:
     case MAV_TYPE_OCTOROTOR:
     case MAV_TYPE_TRICOPTER:
     case MAV_TYPE_HELICOPTER:
-        inRTL = (customMode == ApmCopter::RTL);
+        inRTL = (customMode == Copter::RTL);
         break;
     case MAV_TYPE_GROUND_ROVER:
-        inRTL = (customMode == ApmRover::RTL);
+        inRTL = (customMode == Rover::RTL);
         break;
     default:
         inRTL = false;

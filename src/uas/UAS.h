@@ -829,7 +829,6 @@ public slots:
     /** @brief Enable / disable HIL */
     void enableHilFlightGear(bool enable, QString options, bool sensorHil, QObject * configuration);
     void enableHilJSBSim(bool enable, QString options);
-    void enableHilXPlane(bool enable);
 
     /** @brief Send the full HIL state to the MAV */
     void sendHilState(quint64 time_us, float roll, float pitch, float yaw, float rollRotationRate,
@@ -907,9 +906,6 @@ public slots:
     void setManualControlCommands(double roll, double pitch, double yaw, double thrust, int xHat, int yHat, int buttons);
     /** @brief Receive a button pressed event from an input device, e.g. joystick */
     void receiveButton(int buttonIndex);
-
-    /** @brief Set the values for the 6dof manual control of the vehicle */
-    void setManual6DOFControlCommands(double x, double y, double z, double roll, double pitch, double yaw);
 
     /** @brief Add a link associated with this robot */
     void addLink(LinkInterface* link);
@@ -1075,8 +1071,14 @@ protected:
     quint64 lastSendTimeGPS;     ///< Last HIL GPS message sent
     quint64 lastSendTimeSensors;
 
+    QList< QPair<int, QString> >  paramRequestQueue;
+
+    QTimer m_parameterSendTimer;
+
 
 protected slots:
+    void requestNextParamFromQueue();
+
     /** @brief Write settings to disk */
     void writeSettings();
     /** @brief Read settings from disk */

@@ -37,20 +37,17 @@
 ///
 ///     @author Don Gagne <don@thegagnes.com>
 
-TCPLink::TCPLink(QHostAddress hostAddress, quint16 socketPort, bool asServer) :
+TCPLink::TCPLink(const QHostAddress &hostAddress, const QString &hostName, quint16 socketPort, bool asServer) :
+    _name(hostName),
     _hostAddress(hostAddress),
     _port(socketPort),
     _asServer(asServer),
     _socket(NULL)
 {
     _server.setMaxPendingConnections(1);
-
     _linkId = getNextLinkId();
-    _resetName();
-
     QObject::connect(&_server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-
-    qDebug() << "TCP Created " << _name;
+    qDebug() << "TCP Created " << _hostAddress.toString();
 }
 
 TCPLink::~TCPLink()
@@ -64,7 +61,7 @@ void TCPLink::run()
 	exec();
 }
 
-void TCPLink::setHostAddress(QHostAddress hostAddress)
+void TCPLink::setHostAddress(const QHostAddress &hostAddress)
 {
     bool reconnect = false;
 
@@ -72,14 +69,18 @@ void TCPLink::setHostAddress(QHostAddress hostAddress)
 		disconnect();
 		reconnect = true;
 	}
-
-	_hostAddress = hostAddress;
+    _hostAddress = hostAddress;
     emit linkChanged(this);
-    _resetName();
 
 	if (reconnect) {
 		connect();
 	}
+}
+
+void TCPLink::setHostName(const QString& hostName)
+{
+    _name = hostName;
+    emit nameChanged(_name);
 }
 
 void TCPLink::setPort(int port)
@@ -93,7 +94,6 @@ void TCPLink::setPort(int port)
 
 	_port = port;
     emit linkChanged(this);
-    _resetName();
 
 	if (reconnect) {
 		connect();
@@ -114,7 +114,6 @@ void TCPLink::setAsServer(bool asServer)
 
     _asServer = asServer;
     emit linkChanged(this);
-    _resetName();
 
     if (reconnect) {
         connect();
@@ -221,7 +220,7 @@ bool TCPLink::disconnect()
 
 void TCPLink::_socketDisconnected()
 {
-    qDebug() << _name << ": disconnected";
+    qDebug() << _hostAddress.toString() << ": disconnected";
 
     Q_ASSERT(_socket);
 
@@ -262,7 +261,7 @@ void TCPLink::newConnection()
     if (_socket == NULL)
         return;
 
-    qDebug() << _name << ": new connection";
+    qDebug() << _hostAddress.toString() << ": new connection";
 
     QObject::connect(_socket, SIGNAL(readyRead()), this, SLOT(readBytes()));
     QObject::connect(_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(_socketError(QAbstractSocket::SocketError)));
@@ -311,7 +310,7 @@ bool TCPLink::_hardwareConnect(void)
             // Whether a failed connection emits an error signal or not is platform specific.
             // So in cases where it is not emitted, we emit one ourselves.
             if (errorSpy.count() == 0) {
-                emit communicationError(getName(), "Connection failed");
+                emit communicationError(getName(), "Connection Failed");
             }
             delete _socket;
             _socket = NULL;
@@ -349,12 +348,20 @@ int TCPLink::getId() const
 
 QString TCPLink::getName() const
 {
-    return _name;
+    if (_name.isEmpty()){
+        return _hostAddress.toString();
+    } else {
+        return _name;
+    }
 }
 
 QString TCPLink::getShortName() const
 {
-    return _hostAddress.toString();
+    if (_name.isEmpty()){
+        return _hostAddress.toString();
+    } else {
+        return _name;
+    }
 }
 
 QString TCPLink::getDetail() const

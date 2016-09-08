@@ -12,7 +12,7 @@
 #include <QtCore/qmath.h>
 //#include <cmath>
 
-static const float SEPARATE_COMPASS_ASPECTRATIO = 3.0f/4.0f;
+//static const float SEPARATE_COMPASS_ASPECTRATIO = 3.0f/4.0f;
 static const float LINEWIDTH = 0.0036f;
 static const float SMALL_TEXT_SIZE = 0.028f;
 static const float MEDIUM_TEXT_SIZE = SMALL_TEXT_SIZE*1.2f;
@@ -49,10 +49,10 @@ static const int PITCH_SCALE_HALFRANGE = 15;
 
 static const int  COMPASS_DISK_MAJORTICK = 10;
 static const int  COMPASS_DISK_ARROWTICK = 45;
-static const float COMPASS_DISK_MAJORLINEWIDTH = 0.006;
-static const float COMPASS_DISK_MINORLINEWIDTH = 0.004;
+//static const float COMPASS_DISK_MAJORLINEWIDTH = 0.006;
+//static const float COMPASS_DISK_MINORLINEWIDTH = 0.004;
 static const int  COMPASS_DISK_RESOLUTION = 10;
-static const float COMPASS_SEPARATE_DISK_RESOLUTION = 5;
+//static const float COMPASS_SEPARATE_DISK_RESOLUTION = 5;
 static const float COMPASS_DISK_MARKERWIDTH = 0.2;
 static const float COMPASS_DISK_MARKERHEIGHT = 0.133;
 
@@ -71,11 +71,11 @@ static const int ALTIMETER_LINEAR_MAJOR_RESOLUTION = 10;
 
 // Projected: An experiment. Make tape appear projected from a cylinder, like a French "drum" style gauge.
 // The altitude difference between top and bottom of scale
-static const int ALTIMETER_PROJECTED_SPAN = 50;
+//static const int ALTIMETER_PROJECTED_SPAN = 50;
 // every 5 meters there is a tick mark
-static const int ALTIMETER_PROJECTED_RESOLUTION = 5;
+//static const int ALTIMETER_PROJECTED_RESOLUTION = 5;
 // every 10 meters there is a number
-static const int ALTIMETER_PROJECTED_MAJOR_RESOLUTION = 10;
+//static const int ALTIMETER_PROJECTED_MAJOR_RESOLUTION = 10;
 // min. and max. vertical velocity
 
 // min. and max. vertical velocity
@@ -337,7 +337,7 @@ void PrimaryFlightDisplay::setActiveUAS(UASInterface* uas)
 void PrimaryFlightDisplay::uasTextMessage(int uasid, int componentid, int severity, QString text)
 {
     Q_UNUSED(componentid);
-    if (text.contains("PreArm") || severity == 3)
+    if (text.contains("PreArm") || severity <= MAV_SEVERITY_CRITICAL)
     {
         if (preArmMessageTimer->isActive())
         {
@@ -673,6 +673,8 @@ void PrimaryFlightDisplay::drawPitchScale(
         bool drawNumbersRight
         ) {
 
+    Q_UNUSED(intrusion)
+
     float displayPitch = this->pitch;
     if (displayPitch == UNKNOWN_ATTITUDE)
         displayPitch = 0;
@@ -702,7 +704,7 @@ void PrimaryFlightDisplay::drawPitchScale(
             // f(p) = (90-p) * 1/(90-PITCH_SCALE_WIDTHREDUCTION_FROM)
             // or PITCH_SCALE_WIDTHREDUCTION + f(pitch) - f(pitch) * PITCH_SCALE_WIDTHREDUCTION
             // or PITCH_SCALE_WIDTHREDUCTION (1-f(pitch)) + f(pitch)
-            int fromVertical = abs(pitch>=0 ? 90-pitch : -90-pitch);
+            int fromVertical = std::abs(pitch>=0 ? 90-pitch : -90-pitch);
             float temp = fromVertical * 1/(90.0f-PITCH_SCALE_WIDTHREDUCTION_FROM);
             linewidth *= (PITCH_SCALE_WIDTHREDUCTION * (1-temp) + temp);
         }
@@ -933,7 +935,7 @@ void PrimaryFlightDisplay::drawAICompassDisk(QPainter& painter, QRectF area, flo
         // TODO : Sign might be wrong?
         // TODO : The case where error exceeds max. Truncate to max. and make that visible somehow.
         bool errorBeyondRadius = false;
-        if (abs(navigationCrosstrackError) > CROSSTRACK_MAX) {
+        if (std::abs(navigationCrosstrackError) > CROSSTRACK_MAX) {
             errorBeyondRadius = true;
             navigationCrosstrackError = navigationCrosstrackError>0 ? CROSSTRACK_MAX : -CROSSTRACK_MAX;
         }
@@ -1053,7 +1055,7 @@ void PrimaryFlightDisplay::drawAltimeter(
     vv = vv/4;
     if (vv != UNKNOWN_ALTITUDE) {
     float vvPixHeight = -vv/ALTIMETER_VVI_SPAN * effectiveHalfHeight;
-    if (abs (vvPixHeight)<markerHalfHeight) return; // hidden behind marker.
+    if (std::abs(vvPixHeight)<markerHalfHeight) return; // hidden behind marker.
 
     float vvSign = vvPixHeight>0 ? 1 : -1; // reverse y sign
 
@@ -1063,7 +1065,7 @@ void PrimaryFlightDisplay::drawAltimeter(
     painter.drawLine(vvArrowBegin, vvArrowEnd);
 
     // Yeah this is a repitition of above code but we are goigd to trash it all anyway, so no fix.
-    float vvArowHeadSize = abs(vvPixHeight - markerHalfHeight*vvSign);
+    float vvArowHeadSize = std::abs(vvPixHeight - markerHalfHeight*vvSign);
     if (vvArowHeadSize > w*ALTIMETER_VVI_WIDTH/3) vvArowHeadSize = w*ALTIMETER_VVI_WIDTH/3;
 
     float xcenter = rightEdge-w*ALTIMETER_VVI_WIDTH/2;

@@ -26,7 +26,7 @@ This file is part of the QGROUNDCONTROL project
  *   @brief Implementation of class MainWindow
  *   @author Lorenz Meier <mail@qgroundcontrol.org>
  */
-#include "QsLog.h"
+#include "logging.h"
 #include "dockwidgettitlebareventfilter.h"
 #include "QGC.h"
 #include "MAVLinkSimulationLink.h"
@@ -52,6 +52,8 @@ This file is part of the QGROUNDCONTROL project
 #include "UASRawStatusView.h"
 #include "PrimaryFlightDisplay.h"
 #include "PrimaryFlightDisplayQML.h"
+#include "VibrationMonitor.h"
+#include "EKFMonitor.h"
 #include "ApmToolBar.h"
 #include "SerialSettingsDialog.h"
 #include "TerminalConsole.h"
@@ -64,7 +66,6 @@ This file is part of the QGROUNDCONTROL project
 #endif
 
 #include "AboutDialog.h"
-#include "DroneshareDialog.h"
 
 // FIXME Move
 #include "PxQuadMAV.h"
@@ -84,6 +85,45 @@ This file is part of the QGROUNDCONTROL project
 #include <QGCHilFlightGearConfiguration.h>
 
 #define PFD_QML
+
+
+LogWindowSingleton &LogWindowSingleton::instance()
+{
+   static LogWindowSingleton instance;
+   return instance;
+}
+
+void LogWindowSingleton::write(const QString &message)
+{
+   if (!m_debugPtr.isNull())
+   {
+      if (!m_outPutBuffer.empty())
+      {
+         foreach (QString string, m_outPutBuffer)
+         {
+            m_debugPtr->write(string);
+         }
+         m_outPutBuffer.clear();
+         m_startupBuffering = false;
+      }
+      m_debugPtr->write(message);
+   }
+   else if (m_startupBuffering)
+   {
+      m_outPutBuffer.append(message);
+   }
+}
+
+void LogWindowSingleton::setDebugOutput(DebugOutput::Ptr outputPtr)
+{
+   m_debugPtr = outputPtr;
+}
+
+void LogWindowSingleton::removeDebugOutput()
+{
+   m_debugPtr.clear();
+}
+
 
 MainWindow* MainWindow::instance(QSplashScreen* screen)
 {
@@ -122,6 +162,11 @@ bool MainWindow::lowPowerModeEnabled()
     return lowPowerMode;
 }
 
+bool MainWindow::autoProxyModeEnabled()
+{
+    return autoProxyMode;
+}
+
 /**
 * Create new mainwindow. The constructor instantiates all parts of the user
 * interface. It does NOT show the mainwindow. To display it, call the show()
@@ -136,7 +181,6 @@ MainWindow::MainWindow(QWidget *parent):
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
     m_heartbeatEnabled(true),
-    m_droneshareDialog(NULL),
     m_terminalDialog(NULL)
 {
     QLOG_DEBUG() << "Creating MainWindow";
@@ -275,6 +319,9 @@ MainWindow::MainWindow(QWidget *parent):
     // Set low power mode
     enableLowPowerMode(lowPowerMode);
 
+    // Set Automatic use of system Proxies
+    enableAutoProxyMode(autoProxyMode);
+
     // Initialize window state
     windowStateVal = windowState();
 
@@ -360,12 +407,6 @@ MainWindow::MainWindow(QWidget *parent):
     connect(&m_autoUpdateCheck, SIGNAL(noUpdateAvailable()),
             this, SLOT(showNoUpdateAvailDialog()));
 
-    // Trigger Droneshare Notificaton
-    QSettings settings;
-    settings.beginGroup("QGC_MAINWINDOW");
-    if(settings.value("DRONESHARE_NOTIFICATION_ENABLED",true).toBool()){
-        QTimer::singleShot(11000, this, SLOT(showDroneshareDialog()));
-    }
     settings.endGroup();
 
 }
@@ -416,22 +457,13 @@ MainWindow::~MainWindow()
         }
     }
     // Delete all UAS objects
-
-
-    if (debugOutput)
-    {
-        QsLogging::Logger::instance().delDestination(debugOutput);
-        //delete debugOutput;
-        //debugOutput->hide();
-        //debugOutput->deleteLater();
-    }
     for (int i=0;i<commsWidgetList.size();i++)
     {
         commsWidgetList[i]->deleteLater();
     }
 
-
-
+    // Force the singleton to release the debug widget
+    LogWindowSingleton::instance().removeDebugOutput();
 }
 
 void MainWindow::disableTLogReplayBar()
@@ -640,8 +672,8 @@ void MainWindow::buildCommonWidgets()
 
     if (!debugOutput)
     {
-        debugOutput = new DebugOutput();
-        QsLogging::Logger::instance().addDestination(QsLogging::DestinationPtr(debugOutput));
+       debugOutput = DebugOutput::Ptr(new DebugOutput);
+       LogWindowSingleton::instance().setDebugOutput(debugOutput);
     }
 
     // Dock widgets
@@ -731,6 +763,20 @@ void MainWindow::buildCommonWidgets()
         menuToDockNameMap[tempAction] = "PRIMARY_FLIGHT_DISPLAY_DOCKWIDGET";
     }
 #endif
+
+    { // Adds the Vibration Monitor Tool
+        QAction* tempAction = ui.menuTools->addAction(tr("Vibration Monitor"));
+        tempAction->setCheckable(true);
+        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+        menuToDockNameMap[tempAction] = "VIBRATION_MONITOR_DOCKWIDGET";
+    }
+
+    { // Adds the EKF Monitor Tool
+        QAction* tempAction = ui.menuTools->addAction(tr("EKF Monitor"));
+        tempAction->setCheckable(true);
+        connect(tempAction,SIGNAL(triggered(bool)),this, SLOT(showTool(bool)));
+        menuToDockNameMap[tempAction] = "EKF_MONITOR_DOCKWIDGET";
+    }
 
     QGCTabbedInfoView *infoview = new QGCTabbedInfoView(this);
     infoview->addSource(mavlinkDecoder);
@@ -874,6 +920,14 @@ void MainWindow::loadDockWidget(QString name)
     else if (name == "MISSION_ELEVATION_DOCKWIDGET")
     {
         createDockWidget(centerStack->currentWidget(),new MissionElevationDisplay(this),tr("Mission Elevation"),"MISSION_ELEVATION_DOCKWIDGET",currentView,Qt::TopDockWidgetArea);
+    }
+    else if (name == "VIBRATION_MONITOR_DOCKWIDGET")
+    {
+        createDockWidget(centerStack->currentWidget(),new VibrationMonitor(this),tr("Vibration Monitor"),"VIBRATION_MONITOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
+    }
+    else if (name == "EKF_MONITOR_DOCKWIDGET")
+    {
+        createDockWidget(centerStack->currentWidget(),new EKFMonitor(this),tr("EKF Monitor"),"EKF_MONITOR_DOCKWIDGET",currentView,Qt::RightDockWidgetArea);
     }
     else if (name == "MAVLINK_INSPECTOR_DOCKWIDGET")
     {
@@ -1236,6 +1290,7 @@ void MainWindow::loadSettings()
     currentStyle = (QGC_MAINWINDOW_STYLE)settings.value("CURRENT_STYLE", QGC_MAINWINDOW_STYLE_OUTDOOR).toInt();
     currentView= static_cast<VIEW_SECTIONS>(settings.value("CURRENT_VIEW", VIEW_FLIGHT).toInt());
     lowPowerMode = settings.value("LOW_POWER_MODE", false).toBool();
+    autoProxyMode = settings.value("AUTO_PROXY_MODE", false).toBool();
     dockWidgetTitleBarEnabled = settings.value("DOCK_WIDGET_TITLEBARS", true).toBool();
     isAdvancedMode = settings.value("ADVANCED_MODE", false).toBool();
     enableHeartbeat(settings.value("HEARTBEATS_ENABLED",true).toBool());
@@ -1249,6 +1304,7 @@ void MainWindow::storeSettings()
     settings.setValue("AUTO_RECONNECT", autoReconnect);
     settings.setValue("CURRENT_STYLE", currentStyle);
     settings.setValue("LOW_POWER_MODE", lowPowerMode);
+    settings.setValue("AUTO_PROXY_MODE", autoProxyMode);
     settings.setValue("ADVANCED_MODE", isAdvancedMode);
     settings.setValue("HEARTBEATS_ENABLED",m_heartbeatEnabled);
     settings.endGroup();
@@ -1363,6 +1419,41 @@ void MainWindow::enableDockWidgetTitleBars(bool enabled)
 void MainWindow::enableAutoReconnect(bool enabled)
 {
     autoReconnect = enabled;
+}
+
+void MainWindow::enableAutoProxyMode(bool enabled)
+{
+    if (enabled)
+    {
+        QLOG_INFO() << "NETWORK_PROXY:" << "Attempting to enable System Network Proxies";
+        QNetworkProxyFactory::setUseSystemConfiguration(true);
+
+        // Check for proxy used for well known external URL
+        QNetworkProxyQuery npq(QUrl("http://www.google.com"));
+        QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+
+        if (listOfProxies.size() &&
+                QNetworkProxy::NoProxy != listOfProxies[0].type())
+        {
+            QLOG_INFO() << "NETWORK_PROXY:" << "System Proxies in use for external urls";
+            autoProxyMode = enabled;
+        }
+        else
+        {
+            QLOG_ERROR() << "NETWORK_PROXY:" << "No System Proxies found in environment";
+            QNetworkProxyFactory::setUseSystemConfiguration(false);
+        }
+    }
+    else
+    {
+        QLOG_INFO() << "NETWORK_PROXY:" << "Disabling System Network Proxies";
+        QNetworkProxyFactory::setUseSystemConfiguration(false);
+
+        autoProxyMode = enabled;
+    }
+
+    // Ensure the checkbox is in-sync with the current value
+    emit autoProxyChanged(autoProxyMode);
 }
 
 void MainWindow::loadNativeStyle()
@@ -1686,7 +1777,7 @@ void MainWindow::connectCommonActions()
         ui.menuNetwork->menuAction()->setVisible(false);
     }
 
-    connect(ui.actionDebug_Console,SIGNAL(triggered()),debugOutput,SLOT(show()));
+    connect(ui.actionDebug_Console,SIGNAL(triggered()),debugOutput.data(),SLOT(show()));
     connect(ui.actionSimulate, SIGNAL(triggered(bool)), this, SLOT(simulateLink(bool)));
 
     //Disable simulation view until we ensure it's operational.
@@ -1792,7 +1883,7 @@ void MainWindow::addLink()
     }
     else if (send->data() == LinkInterface::TCP_LINK)
     {
-        newid = LinkManagerFactory::addTcpConnection(QHostAddress::LocalHost,5555,false);
+        newid = LinkManagerFactory::addTcpConnection(QHostAddress::LocalHost, "", 5760, false);
     }
     else if (send->data() == LinkInterface::UDP_LINK)
     {
@@ -1839,6 +1930,8 @@ void MainWindow::addLink(int linkid)
 
 void MainWindow::linkError(int linkid,QString errorstring)
 {
+    Q_UNUSED(linkid)
+
     QWidget* parent = QApplication::activeWindow();
     if (!parent) {
         parent = this;
@@ -2395,15 +2488,6 @@ void MainWindow::enableHeartbeat(bool enabled)
             UASManager::instance()->getUASList().at(i)->setHeartbeatEnabled(enabled);
         }
         storeSettings();
-    }
-}
-
-void MainWindow::showDroneshareDialog()
-{
-    if(!m_droneshareDialog){
-        m_droneshareDialog = new DroneshareDialog(this);
-        m_droneshareDialog->show();
-        m_droneshareDialog->raise();
     }
 }
 

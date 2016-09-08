@@ -15,12 +15,16 @@ public:
 	void clear();
     void enableItem(QString name);
     void disableItem(QString name);
+    QList<QString> disableAllItems();
+    void enableItemList(QList<QString> &itemList);
+
 signals:
 	void itemEnabled(QString name);
 	void itemDisabled(QString name);
 private slots:
-    void onItemChanged(QTreeWidgetItem* item,int column);
     void clearSelectionButtonClicked();
+    void onItemChanged(QTreeWidgetItem* item,int column);
+
 private:
     QMap<QString,QString> m_nameToSysId;
     QList<QWidget*> m_itemList;

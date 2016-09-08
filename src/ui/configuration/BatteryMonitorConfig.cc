@@ -23,7 +23,7 @@ This file is part of the APM_PLANNER project
 #include "BatteryMonitorConfig.h"
 #include <QMessageBox>
 #include <QPushButton>
-#include "QsLog.h"
+#include "logging.h"
 
 BatteryPreset::BatteryPreset(const QString &title, BatteryMonitor batteryMonitor,
                              int voltPin, float voltDivider,
@@ -253,9 +253,6 @@ void BatteryMonitorConfig::activeUASSet(UASInterface *uas)
     }
     connect(uas,SIGNAL(batteryChanged(UASInterface*,double,double,double,int)),this,SLOT(batteryChanged(UASInterface*,double,double,double,int)));
 
-}
-void BatteryMonitorConfig::alertOnLowClicked(bool checked)
-{
 }
 
 void BatteryMonitorConfig::calcDividerSet()

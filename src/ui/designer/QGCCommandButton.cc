@@ -1,6 +1,6 @@
 #include "QGCCommandButton.h"
 #include "ui_QGCCommandButton.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "MAVLinkProtocol.h"
 #include "UASManager.h"
 #include <QDockWidget>
@@ -59,6 +59,7 @@ QGCCommandButton::QGCCommandButton(QWidget *parent) :
     ui->editCommandComboBox->addItem("MAV_CMD_NAV_LOITER_UNLIM", MAV_CMD_NAV_LOITER_UNLIM);
     ui->editCommandComboBox->addItem("MAV_CMD_NAV_LOITER_TURNS", MAV_CMD_NAV_LOITER_TURNS);
     ui->editCommandComboBox->addItem("MAV_CMD_NAV_LOITER_TIME", MAV_CMD_NAV_LOITER_TIME);
+    ui->editCommandComboBox->addItem("MAV_CMD_NAV_LOITER_TO_ALT", MAV_CMD_NAV_LOITER_TO_ALT);
     ui->editCommandComboBox->addItem("MAV_CMD_NAV_RETURN_TO_LAUNCH", MAV_CMD_NAV_RETURN_TO_LAUNCH);
     ui->editCommandComboBox->addItem("MAV_CMD_NAV_LAND", MAV_CMD_NAV_LAND);
     ui->editCommandComboBox->addItem("MAV_CMD_NAV_TAKEOFF", MAV_CMD_NAV_TAKEOFF);

@@ -27,7 +27,7 @@ This file is part of the APMPLANNER2 project
  *
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "UDPClientLink.h"
 #include "LinkManager.h"
 #include "QGC.h"
@@ -270,7 +270,7 @@ QString UDPClientLink::getName() const
 
 QString UDPClientLink::getShortName() const
 {
-    return _targetHost.toString();
+    return QString("UDP %1").arg(_targetHost.toString());
 }
 
 QString UDPClientLink::getDetail() const

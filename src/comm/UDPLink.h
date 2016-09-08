@@ -38,6 +38,9 @@ This file is part of the QGROUNDCONTROL project
 #include <QUdpSocket>
 #include <LinkInterface.h>
 #include <configuration.h>
+#include <QQueue>
+#include <QByteArray>
+#include <QNetworkProxy>
 
 class UDPLink : public LinkInterface
 {
@@ -109,13 +112,14 @@ public slots:
     bool connect();
     bool disconnect();
 
-protected:
+private:
     QString name;
     QHostAddress host;
     quint16 port;
     int id;
     QUdpSocket* socket;
     bool connectState;
+    bool _shouldRestartConnection;
     QList<QHostAddress> hosts;
     QList<quint16> ports;
 
@@ -126,8 +130,13 @@ protected:
 private:
 	bool hardwareConnect(void);
 
-signals:
-    //Signals are defined by LinkInterface
+    bool                _running;
+    QMutex              _mutex;
+    QQueue<QByteArray*> _outQueue;
+
+    bool _dequeBytes    ();
+    void _sendBytes     (const char* data, qint64 size);
+
 
 };
 

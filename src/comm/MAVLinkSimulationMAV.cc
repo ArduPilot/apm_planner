@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "MAVLinkSimulationMAV.h"
 
 #include <cmath>

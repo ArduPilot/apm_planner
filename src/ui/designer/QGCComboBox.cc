@@ -1,6 +1,6 @@
 #include "QGCComboBox.h"
 #include "ui_QGCComboBox.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "UASInterface.h"
 #include "UASManager.h"
 
@@ -479,18 +479,18 @@ void QGCComboBox::comboBoxIndexChanged(QString val)
     {
         parameterName = comboBoxTextToParamMap.value(ui->editOptionComboBox->currentText());
     }
-    switch (parameterValue.type())
+    switch (static_cast<QMetaType::Type>(parameterValue.type()))
     {
-    case QVariant::Char:
+    case QMetaType::QChar:
         parameterValue = QVariant(QChar((unsigned char)comboBoxTextToValMap[val]));
         break;
-    case QVariant::Int:
+    case QMetaType::Int:
         parameterValue = (int)comboBoxTextToValMap[val];
         break;
-    case QVariant::UInt:
+    case QMetaType::UInt:
         parameterValue = (unsigned int)comboBoxTextToValMap[val];
         break;
-    case QVariant::Double:
+    case QMetaType::Double:
     case QMetaType::Float:
         parameterValue =(float)comboBoxTextToValMap[val];
         break;

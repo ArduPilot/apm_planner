@@ -23,6 +23,7 @@ This file is part of the APM_PLANNER project
 #include "CopterPidConfig.h"
 
 #include "QGCCore.h"
+#include "ArduPilotMegaMAV.h"
 
 CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {
@@ -51,54 +52,7 @@ CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
     connect(ui.rateRollDSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateDChanged(double)));
     connect(ui.rateRollIMAXSpinBox,SIGNAL(valueChanged(double)),this,SLOT(rateIMAXChanged(double)));
 
-
-    m_nameToBoxMap["STB_RLL_P"] = ui.stabilRollPSpinBox;
-    m_nameToBoxMap["STB_PIT_P"] = ui.stabilPitchPSpinBox;
-    m_nameToBoxMap["STB_YAW_P"] = ui.stabilYawPSpinBox;
-    m_nameToBoxMap["POS_XY_P"] = ui.posXYPSpinBox;
-
-    m_nameToBoxMap["RATE_RLL_P"] = ui.rateRollPSpinBox;
-    m_nameToBoxMap["RATE_RLL_I"] = ui.rateRollISpinBox;
-    m_nameToBoxMap["RATE_RLL_D"] = ui.rateRollDSpinBox;
-    m_nameToBoxMap["RATE_RLL_FILT_HZ"] = ui.rateRollFiltHzSpinBox;
-    m_nameToBoxMap["RATE_RLL_IMAX"] = ui.rateRollIMAXSpinBox;
-
-    m_nameToBoxMap["RATE_PIT_P"] = ui.ratePitchPSpinBox;
-    m_nameToBoxMap["RATE_PIT_I"] = ui.ratePitchISpinBox;
-    m_nameToBoxMap["RATE_PIT_D"] = ui.ratePitchDSpinBox;
-    m_nameToBoxMap["RATE_PIT_FILT_HZ"] = ui.ratePitchFiltHzSpinBox;
-    m_nameToBoxMap["RATE_PIT_IMAX"] = ui.ratePitchIMAXSpinBox;
-
-    m_nameToBoxMap["RATE_YAW_P"] = ui.rateYawPSpinBox;
-    m_nameToBoxMap["RATE_YAW_I"] = ui.rateYawISpinBox;
-    m_nameToBoxMap["RATE_YAW_D"] = ui.rateYawDSpinBox;
-    m_nameToBoxMap["RATE_YAW_FILT_HZ"] = ui.rateYawFiltHzSpinBox;
-    m_nameToBoxMap["RATE_YAW_IMAX"] = ui.rateYawIMAXSpinBox;
-
-    m_nameToBoxMap["VEL_XY_P"] = ui.velXYPSpinBox;
-    m_nameToBoxMap["VEL_XY_I"] = ui.velXYISpinBox;
-    m_nameToBoxMap["VEL_XY_IMAX"] = ui.velXYIMAXSpinBox;
-    m_nameToBoxMap["VEL_XY_FILT_HZ"] = ui.velXYFiltHzSpinBox;
-
-    m_nameToBoxMap["ACCEL_Z_P"] = ui.accelZPSpinBox;
-    m_nameToBoxMap["ACCEL_Z_I"] = ui.accelZISpinBox;
-    m_nameToBoxMap["ACCEL_Z_IMAX"] = ui.accelZIMAXSpinBox;
-    m_nameToBoxMap["ACCEL_Z_FILT_HZ"] = ui.accelZFiltHzSpinBox;
-
-    m_nameToBoxMap["VEL_Z_P"] = ui.velZPSpinBox;
-
-    m_nameToBoxMap["POS_Z_P"] = ui.posZPSpinBox;
-
-    m_nameToBoxMap["POS_XY_P"] = ui.posXYPSpinBox;
-
-    m_nameToBoxMap["WPNAV_SPEED"] = ui.wpNavSpeedSpinBox;
-    m_nameToBoxMap["WPNAV_RADIUS"] = ui.wpNavRadiusSpinBox;
-    m_nameToBoxMap["WPNAV_SPEED_DN"] = ui.wpNavSpeedDownSpinBox;
-    m_nameToBoxMap["WPNAV_LOIT_SPEED"] = ui.wpNavLoiterSpeedSpinBox;
-    m_nameToBoxMap["WPNAV_SPEED_UP"] = ui.wpNavSpeedUpSpinBox;
-
-    //m_nameToBoxMap["TUNE_HIGH"] = ui.ch6MaxSpinBox;
-   // m_nameToBoxMap["TUNE_LOW"] = ui.ch6MinSpinBox;
+    mapParamNamesToBox();
 
     connect(ui.writePushButton,SIGNAL(clicked()),this,SLOT(writeButtonClicked()));
     connect(ui.refreshPushButton,SIGNAL(clicked()),this,SLOT(refreshButtonClicked()));
@@ -200,6 +154,121 @@ CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 
     initConnections();
 }
+
+void CopterPidConfig::mapParamNamesToBox() {
+
+    // AC3.4+ param name compatibility
+    ArduPilotMegaMAV* apmMav = static_cast<ArduPilotMegaMAV*>(m_uas);
+    if (apmMav == NULL) {
+        return;
+    }
+
+    if (!apmMav->useSeverityCompatibilityMode()) { // AC3.4+ paramter names
+        stb_rll_p        = "ATC_ANG_RLL_P";    // "STB_RLL_P"
+        stb_pit_p        = "ATC_ANG_PIT_P";    // "STB_PIT_P"
+        stb_yaw_p        = "ATC_ANG_YAW_P";    // "STB_YAW_P"
+
+        rate_rll_p       = "ATC_RAT_RLL_P";    // "RATE_RLL_P"
+        rate_rll_i       = "ATC_RAT_RLL_I";    // "RATE_RLL_I"
+        rate_rll_imax    = "ATC_RAT_RLL_IMAX"; // "RATE_RLL_IMAX"
+        rate_rll_d       = "ATC_RAT_RLL_D";    // "RATE_RLL_D"
+        rate_rll_filt_hz = "ATC_RAT_RLL_FILT"; // "RATE_RLL_FILT_HZ"
+
+        rate_pit_p       = "ATC_RAT_PIT_P";    // "RATE_PIT_P"
+        rate_pit_i       = "ATC_RAT_PIT_I";    // "RATE_PIT_I"
+        rate_pit_imax    = "ATC_RAT_PIT_IMAX"; // "RATE_PIT_IMAX"
+        rate_pit_d       = "ATC_RAT_PIT_D";    // "RATE_PIT_D"
+        rate_pit_filt_hz = "ATC_RAT_PIT_FILT"; // "RATE_PIT_FILT_HZ"
+
+        rate_yaw_p       = "ATC_RAT_YAW_P";    // "RATE_YAW_P"
+        rate_yaw_i       = "ATC_RAT_YAW_I";    // "RATE_YAW_I"
+        rate_yaw_imax    = "ATC_RAT_YAW_IMAX"; // "RATE_YAW_IMAX"
+        rate_yaw_d       = "ATC_RAT_YAW_D";    // "RATE_YAW_D"
+        rate_yaw_filt_hz = "ATC_RAT_YAW_FILT"; // "RATE_YAW_FILT"
+
+    } else {
+        stb_rll_p        = "STB_RLL_P";
+        stb_pit_p        = "STB_PIT_P";
+        stb_yaw_p        = "STB_YAW_P";
+
+        rate_rll_p       = "RATE_RLL_P";
+        rate_rll_i       = "RATE_RLL_I";
+        rate_rll_imax    = "RATE_RLL_IMAX";
+        rate_rll_d       = "RATE_RLL_D";
+        rate_rll_filt_hz = "RATE_RLL_FILT_HZ";
+
+        rate_pit_p       = "RATE_PIT_P";
+        rate_pit_i       = "RATE_PIT_I";
+        rate_pit_imax    = "RATE_PIT_IMAX";
+        rate_pit_d       = "RATE_PIT_D";
+        rate_pit_filt_hz = "RATE_PIT_FILT_HZ";
+
+        rate_yaw_p       = "RATE_YAW_P";
+        rate_yaw_i       = "RATE_YAW_I";
+        rate_yaw_imax    = "RATE_YAW_IMAX";
+        rate_yaw_d       = "RATE_YAW_D";
+        rate_yaw_filt_hz = "RATE_YAW_FILT_HZ";
+    }
+
+    m_nameToBoxMap[stb_rll_p] = ui.stabilRollPSpinBox;
+    m_nameToBoxMap[stb_pit_p] = ui.stabilPitchPSpinBox;
+    m_nameToBoxMap[stb_yaw_p] = ui.stabilYawPSpinBox;
+
+    m_nameToBoxMap[rate_rll_p] = ui.rateRollPSpinBox;
+    m_nameToBoxMap[rate_rll_i] = ui.rateRollISpinBox;
+    m_nameToBoxMap[rate_rll_d] = ui.rateRollDSpinBox;
+    m_nameToBoxMap[rate_rll_filt_hz] = ui.rateRollFiltHzSpinBox;
+    m_nameToBoxMap[rate_rll_imax] = ui.rateRollIMAXSpinBox;
+
+    m_nameToBoxMap[rate_pit_p] = ui.ratePitchPSpinBox;
+    m_nameToBoxMap[rate_pit_i] = ui.ratePitchISpinBox;
+    m_nameToBoxMap[rate_pit_d] = ui.ratePitchDSpinBox;
+    m_nameToBoxMap[rate_pit_filt_hz] = ui.ratePitchFiltHzSpinBox;
+    m_nameToBoxMap[rate_pit_imax] = ui.ratePitchIMAXSpinBox;
+
+    m_nameToBoxMap[rate_yaw_p] = ui.rateYawPSpinBox;
+    m_nameToBoxMap[rate_yaw_i] = ui.rateYawISpinBox;
+    m_nameToBoxMap[rate_yaw_d] = ui.rateYawDSpinBox;
+    m_nameToBoxMap[rate_yaw_filt_hz] = ui.rateYawFiltHzSpinBox;
+    m_nameToBoxMap[rate_yaw_imax] = ui.rateYawIMAXSpinBox;
+
+    m_nameToBoxMap["VEL_XY_P"] = ui.velXYPSpinBox;
+    m_nameToBoxMap["VEL_XY_I"] = ui.velXYISpinBox;
+    m_nameToBoxMap["VEL_XY_IMAX"] = ui.velXYIMAXSpinBox;
+    m_nameToBoxMap["VEL_XY_FILT_HZ"] = ui.velXYFiltHzSpinBox;
+
+    m_nameToBoxMap["ACCEL_Z_P"] = ui.accelZPSpinBox;
+    m_nameToBoxMap["ACCEL_Z_I"] = ui.accelZISpinBox;
+    m_nameToBoxMap["ACCEL_Z_D"] = ui.accelZDSpinBox;
+    m_nameToBoxMap["ACCEL_Z_IMAX"] = ui.accelZIMAXSpinBox;
+    m_nameToBoxMap["ACCEL_Z_FILT"] = ui.accelZFiltHzSpinBox;
+
+    m_nameToBoxMap["VEL_Z_P"] = ui.velZPSpinBox;
+
+    m_nameToBoxMap["POS_Z_P"] = ui.posZPSpinBox;
+
+    m_nameToBoxMap["POS_XY_P"] = ui.posXYPSpinBox;
+
+    m_nameToBoxMap["WPNAV_SPEED"] = ui.wpNavSpeedSpinBox;
+    m_nameToBoxMap["WPNAV_RADIUS"] = ui.wpNavRadiusSpinBox;
+    m_nameToBoxMap["WPNAV_SPEED_DN"] = ui.wpNavSpeedDownSpinBox;
+    m_nameToBoxMap["WPNAV_LOIT_SPEED"] = ui.wpNavLoiterSpeedSpinBox;
+    m_nameToBoxMap["WPNAV_SPEED_UP"] = ui.wpNavSpeedUpSpinBox;
+
+    //m_nameToBoxMap["TUNE_HIGH"] = ui.ch6MaxSpinBox;
+   // m_nameToBoxMap["TUNE_LOW"] = ui.ch6MinSpinBox;
+}
+
+void CopterPidConfig::requestParameterUpdate() {
+    QStringList params = m_nameToBoxMap.keys();
+    QLOG_DEBUG() << "Copter PID Params (fetch): " << params;
+
+    QGCUASParamManager *pm = m_uas->getParamManager();
+    foreach(QString parameter, params) {
+        pm->requestParameterUpdate(1, parameter);
+    };
+}
+
 void CopterPidConfig::lockCheckBoxClicked(bool checked)
 {
     m_pitchRollLocked = checked;
@@ -265,25 +334,39 @@ void CopterPidConfig::rateIMAXChanged(double value)
     }
 }
 
+void CopterPidConfig::showEvent(QShowEvent *evt){
+    mapParamNamesToBox();
+    requestParameterUpdate();
+    QWidget::showEvent(evt);
+}
+
 CopterPidConfig::~CopterPidConfig()
 {
 }
+
 void CopterPidConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas)
+    Q_UNUSED(component)
+
     if (m_nameToBoxMap.contains(parameterName))
     {
         m_nameToBoxMap[parameterName]->setValue(value.toDouble());
+        m_nameToBoxMap[parameterName]->setEnabled(true);
     }
     else if (parameterName == "TUNE_HIGH")
     {
         ui.ch6MaxSpinBox->setValue(value.toDouble() / 1000.0);
+        ui.ch6MaxSpinBox->setEnabled(true);
     }
     else if (parameterName == "TUNE_LOW")
     {
         ui.ch6MinSpinBox->setValue(value.toDouble() / 1000.0);
+        ui.ch6MinSpinBox->setEnabled(true);
     }
     else if (parameterName == "TUNE")
     {
+        ui.ch6OptComboBox->setEnabled(true);
         for (int i=0;i<m_ch6ValueToTextList.size();i++)
         {
             if (m_ch6ValueToTextList[i].first == value.toInt())
@@ -294,6 +377,7 @@ void CopterPidConfig::parameterChanged(int uas, int component, QString parameter
     }
     else if (parameterName == "CH7_OPT")
     {
+        ui.ch7OptComboBox->setEnabled(true);
         for (int i=0;i<m_ch78ValueToTextList.size();i++)
         {
             if (m_ch78ValueToTextList[i].first == value.toInt())
@@ -304,6 +388,7 @@ void CopterPidConfig::parameterChanged(int uas, int component, QString parameter
     }
     else if (parameterName == "CH8_OPT")
     {
+        ui.ch8OptComboBox->setEnabled(true);
         for (int i=0;i<m_ch78ValueToTextList.size();i++)
         {
             if (m_ch78ValueToTextList[i].first == value.toInt())

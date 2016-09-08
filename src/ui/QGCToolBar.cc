@@ -20,7 +20,7 @@ This file is part of the QGROUNDCONTROL project
     along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
 
 ======================================================================*/
-#include "QsLog.h"
+#include "logging.h"
 #include "QGCToolBar.h"
 #include "UASManager.h"
 #include "MainWindow.h"
@@ -616,6 +616,7 @@ void QGCToolBar::updateLinkState(bool connected)
 
 void QGCToolBar::connectLink(bool connect)
 {
+    Q_UNUSED(connect)
     // No serial port yet present
     // XXX magic number
     /*if (connect && LinkManager::instance()->getLinks().count() < 3)

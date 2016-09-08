@@ -54,8 +54,6 @@ protected:
     uint8_t compid;
     unsigned int setpointDelay;
     float yawTolerance;
-    bool verbose;
-    bool debug;
     bool silent;
 
     void send_waypoint_ack(uint8_t target_systemid, uint8_t target_compid, uint8_t type);

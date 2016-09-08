@@ -29,7 +29,7 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "Waypoint.h"
 #include <QStringList>
 

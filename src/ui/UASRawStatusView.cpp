@@ -44,6 +44,7 @@ void UASRawStatusView::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
     //Check every 2 seconds to see if we need an update
+    updateTableTimerTick();
     m_updateTimer->start(500);
     m_tableRefreshTimer->start(2000);
 }
@@ -72,6 +73,7 @@ void UASRawStatusView::updateTimerTick()
 
 void UASRawStatusView::addSource(MAVLinkDecoder *decoder)
 {
+    Q_UNUSED(decoder)
    // connect(decoder,SIGNAL(valueChanged(int,QString,QString,QVariant,quint64)),this,SLOT(valueChanged(int,QString,QString,QVariant,quint64)));
 }
 void UASRawStatusView::valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant value, const quint64 msec)
@@ -95,6 +97,8 @@ void UASRawStatusView::valueChanged(const int uasId, const QString& name, const 
 }
 void UASRawStatusView::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event)
+
     m_tableDirty = true;
 }
 

@@ -23,7 +23,7 @@ This file is part of the APM_PLANNER project
 #ifndef RADIO3DRCONFIG_H
 #define RADIO3DRCONFIG_H
 
-#include "QsLog.h"
+#include "logging.h"
 #include "SerialSettingsDialog.h"
 #include "Radio3DRSettings.h"
 #include <QtSerialPort/qserialport.h>

@@ -26,7 +26,7 @@ This file is part of the APM_PLANNER project
  *   @author Bill Bonney <billbonney@communistech.com>
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "AutoUpdateCheck.h"
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValue>

@@ -7,10 +7,11 @@
 #include <QJsonObject>
 #include <QProcess>
 #include <QApplication>
-#ifndef Q_OS_WIN
+#if defined(OPENSSL)
 #include <openssl/ssl.h>
 #endif
-#include "QsLog.h"
+
+#include "logging.h"
 
 #define CERT_OF_A_FAILED "Certificate of Authenticity check failed! Please check with your autopilot hardware supplier for support."
 #define CERT_OF_A_PUB_KEY_FAILED "Certificate of Authenticity failed COA check! Public Key is not valid."
@@ -285,7 +286,7 @@ void PX4FirmwareUploader::kickOffTriggered()
     m_port = new QSerialPort();
     connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()));
 
-#ifdef Q_OS_MACX
+#if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
     // temp fix Qt5.4.1 issue on OSX
     // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
     m_port->setPortName("/dev/cu." + m_portToUse);
@@ -626,7 +627,7 @@ bool PX4FirmwareUploader::verifyOtp()
 
 bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& signature, const QString& publicKey)
 {
-#ifndef Q_OS_WIN
+#if defined(OPENSSL)
     QByteArray bytes = QByteArray::fromBase64(publicKey.toUtf8());
 
     BIO *bi = BIO_new(BIO_s_mem());
@@ -652,6 +653,10 @@ bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& s
         QLOG_DEBUG() << "COA verification successful with public key" << publicKey;
         return true;
     }
+#else
+    Q_UNUSED(serial)
+    Q_UNUSED(signature)
+    Q_UNUSED(publicKey)
 #endif
     return false;
 }
@@ -667,6 +672,28 @@ void PX4FirmwareUploader::portReadyRead()
             return;
         }
     }
+//    else if (m_currentState == REQ_DEVICE_INFO)
+//    {
+//        if (m_waitingForSync)
+//        {
+//            if (getSync())
+//            {
+//                m_waitingForSync = false;
+//                if (!reqNextDeviceInfo())
+//                {
+//            //Al device info req's are done, request OTP
+//                    m_currentState = REQ_OTP;
+//                    emit statusUpdate("Requesting CoA");
+//                    reqNextOtpAddress();
+//                }
+//            }
+//        }
+//        else if (readDeviceInfo())
+//        {
+//            m_waitingForSync = true;
+//            portReadyRead(); //Check for sync before popping out.
+//        }
+//    }
     else if (m_currentState == REQ_DEVICE_INFO)
     {
         if (m_waitingForSync)
@@ -676,40 +703,18 @@ void PX4FirmwareUploader::portReadyRead()
                 m_waitingForSync = false;
                 if (!reqNextDeviceInfo())
                 {
-            //Al device info req's are done, request OTP
-                    m_currentState = REQ_OTP;
-                    emit statusUpdate("Requesting CoA");
-                    reqNextOtpAddress();
+                    //Al device info req's are done
+                    QLOG_INFO() << "Device Info read complete";
+                    emit statusUpdate("Requesting board Serial Number");
+                    m_currentState = REQ_SN;
+                    reqNextSNAddress();
                 }
             }
         }
         else if (readDeviceInfo())
         {
             m_waitingForSync = true;
-        portReadyRead(); //Check for sync before popping out.
-        }
-    }
-    else if (m_currentState == REQ_OTP)
-    {
-        if (m_waitingForSync)
-        {
-            if (getSync())
-            {
-                m_waitingForSync = false;
-                if (!reqNextOtpAddress())
-                {
-                    QLOG_INFO() << "OTP read complete";
-                    emit statusUpdate("Requesting board Serial Number");
-                    emit OTP(m_otpBytes.toHex());
-                    m_currentState = REQ_SN;
-                    reqNextSNAddress();
-                }
-            }
-        }
-        else if (readOtp())
-        {
-            m_waitingForSync = true;
-        portReadyRead();  //Check for sync before popping out.
+            portReadyRead();  //Check for sync before popping out.
         }
     }
     else if (m_currentState == REQ_SN)
@@ -721,12 +726,8 @@ void PX4FirmwareUploader::portReadyRead()
                 m_waitingForSync = false;
                 if (!reqNextSNAddress())
                 {
-                    QLOG_INFO() << "SN read complete";
+                    QLOG_INFO() << "SN read complete"; 
                     emit serialNumber(m_snBytes.toHex());
-                    if (!verifyOtp())
-                    {
-            //Warnings have already been emitted here, no need for more
-                    }
                     emit statusUpdate("Erasing board");
                     reqErase();
                     return;

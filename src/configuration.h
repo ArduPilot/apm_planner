@@ -15,7 +15,7 @@
 #define WITH_TEXT_TO_SPEECH 1
 
 #define QGC_APPLICATION_NAME "APM Planner"
-#define QGC_APPLICATION_VERSION "v2.0.18-rc2"
+#define QGC_APPLICATION_VERSION "v2.0.23-rc4"
 #define APP_DATA_DIRECTORY "/apmplanner2"
 #define LOG_DIRECTORY "/dataflashLogs"
 #define PARAMETER_DIRECTORY "/parameters"
@@ -49,8 +49,8 @@ namespace QGC
 
 {
 const QString APPNAME = "APMPLANNER2";
-const QString COMPANYNAME = "DIYDRONES";
-const int APPLICATIONVERSION = 2018; // 2.0.18 [TODO] we should deprecate this version definition
+const QString COMPANYNAME = "ARDUPILOT";
+const int APPLICATIONVERSION = 2023; // 2.0.23 [TODO] we should deprecate this version definition
 
     inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();

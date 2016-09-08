@@ -7,5 +7,7 @@ UASQuickViewItem::UASQuickViewItem(QWidget *parent) : QWidget(parent)
 }
 void UASQuickViewItem::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event)
+
     emit showSelectDialog(title());
 }

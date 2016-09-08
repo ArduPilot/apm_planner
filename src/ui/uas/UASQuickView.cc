@@ -1,7 +1,7 @@
 #include "UASQuickView.h"
 #include "UASQuickViewItemSelect.h"
 #include "UASQuickViewTextItem.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QMetaMethod>
 #include <QSettings>
 #include <QInputDialog>

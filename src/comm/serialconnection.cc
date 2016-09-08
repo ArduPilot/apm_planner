@@ -31,7 +31,7 @@ This file is part of the APM_PLANNER project
 
 
 #include "serialconnection.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QtSerialPort/qserialportinfo.h>
 #include <QSettings>
 #include <QStringList>
@@ -90,8 +90,14 @@ void SerialConnection::portError(QSerialPort::SerialPortError serialPortError)
             }
         }
     case QSerialPort::ResourceError:
-        disconnect();
-        break;
+        {
+            // In case of error disconnect from error signal to avoid endless looping
+            // if another error is signalled while disconnecting
+            QObject::disconnect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
+                                this, SLOT(portError(QSerialPort::SerialPortError)));
+            disconnect();
+            break;
+        }
     case QSerialPort::NotOpen:
     case QSerialPort::OpenError:
     default:
@@ -286,7 +292,7 @@ bool SerialConnection::connect()
     QObject::connect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
                      this, SLOT(portError(QSerialPort::SerialPortError)), Qt::UniqueConnection);
 
-#ifdef Q_OS_MACX
+#if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
     // temp fix Qt5.4.1 issue on OSX
     // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
     m_port->setPortName("/dev/cu." + m_portName);
@@ -415,6 +421,7 @@ bool SerialConnection::disconnect()
     QLOG_DEBUG() << "SerialConnection::disconnect()" << m_port;
     if (m_port)
     {
+
         m_port->close();
         m_port->deleteLater();
         m_port = 0;

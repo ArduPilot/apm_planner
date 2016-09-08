@@ -29,7 +29,7 @@ This file is part of the QGROUNDCONTROL project
  *   @author Bill Bonney <billbonney@communistech.com>
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "WaypointEditableView.h"
 #include "ui_WaypointEditableView.h"
 
@@ -43,6 +43,7 @@ This file is part of the QGROUNDCONTROL project
 #include "mission/QGCMissionNavTakeoff.h"
 #include "mission/QGCMissionNavSweep.h"
 #include "mission/QGCMissionNavContinueChangeAlt.h"
+#include "mission/QGCMissionNavLoiterToAlt.h"
 // Condition Commands
 #include "mission/QGCMissionConditionDelay.h"
 #include "mission/QGCMissionConditionYaw.h"
@@ -61,6 +62,7 @@ This file is part of the QGROUNDCONTROL project
 #include "mission/QGCMissionDoChangeSpeed.h"
 #include "mission/QGCMissionDoStartSearch.h"
 #include "mission/QGCMissionDoFinishSearch.h"
+#include "mission/QGCMissionDoSetReverse.h"
 // Other
 #include "mission/QGCMissionOther.h"
 
@@ -107,6 +109,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->addItem(tr("Ret. to Launch"),MAV_CMD_NAV_RETURN_TO_LAUNCH);
         m_ui->comboBox_action->addItem(tr("Land"),MAV_CMD_NAV_LAND);
         m_ui->comboBox_action->addItem(tr("Change Alt & cont."),MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT);
+        m_ui->comboBox_action->addItem(tr("Loiter to Alt."),MAV_CMD_NAV_LOITER_TO_ALT);
         //m_ui->comboBox_action->addItem(tr("NAV: Target"),MAV_CMD_NAV_TARGET);
 
         // IF Commands
@@ -120,6 +123,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
         m_ui->comboBox_action->insertSeparator(9999);
 //        m_ui->comboBox_action->addItem(tr("DO commands"));
         m_ui->comboBox_action->addItem(tr("Jump to Index"),MAV_CMD_DO_JUMP);
+        m_ui->comboBox_action->addItem(tr("Set Reverse"),MAV_CMD_DO_SET_REVERSE);
         m_ui->comboBox_action->addItem(tr("Set Servo"), MAV_CMD_DO_SET_SERVO);
         m_ui->comboBox_action->addItem(tr("Repeat Servo"), MAV_CMD_DO_REPEAT_SERVO);
         m_ui->comboBox_action->addItem(tr("Digicam Control"), MAV_CMD_DO_DIGICAM_CONTROL);
@@ -292,6 +296,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
     case MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT:
         missionWidget = new QGCMissionNavContinueChangeAlt(this);
         break;
+    case MAV_CMD_NAV_LOITER_TO_ALT:
+        missionWidget = new QGCMissionNavLoiterToAlt(this);
+        break;
     case MAV_CMD_CONDITION_DELAY:
         missionWidget = new QGCMissionConditionDelay(this);
         break;
@@ -333,6 +340,9 @@ QWidget* WaypointEditableView::createActionWidget(int action)
         break;
     case MAV_CMD_DO_MOUNT_CONTROL:
         missionWidget = new QGCMissionDoMountControl(this);
+        break;
+    case MAV_CMD_DO_SET_REVERSE:
+        missionWidget = new QGCMissionDoSetReverse(this);
         break;
 
  #ifdef MAVLINK_ENABLED_PIXHAWK
@@ -391,32 +401,24 @@ void WaypointEditableView::changedCurrent(int state)
     }
 }
 
-void WaypointEditableView::updateValues()
+void WaypointEditableView::blockAllSpinBoxSignals(const bool shallBlock)
 {
-    // Check if we just lost the wp, delete the widget
-    // accordingly
-    if (!wp) {
-        deleteLater();
-        return;
-    }
+    QObjectList allChildrenToBlock(children());
+    allChildrenToBlock.append(m_ui->customActionWidget->children());
 
-    //wp->blockSignals(true);
-
-    // Deactivate all QDoubleSpinBox signals due to
-    // unwanted rounding effects
-    for (int j = 0; j  < children().size(); ++j)
+    for (int j = 0; j  < allChildrenToBlock.size(); ++j)
     {
         // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(children().at(j));
+        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(allChildrenToBlock.at(j));
         if (spin)
         {
             //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
-            spin->blockSignals(true);
+            spin->blockSignals(shallBlock);
         }
         else
         {
             // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(children().at(j));
+            QWidget* item = dynamic_cast<QWidget*>(allChildrenToBlock.at(j));
             if (item)
             {
                 //QLOG_DEBUG() << "FOUND WIDGET BOX";
@@ -427,44 +429,26 @@ void WaypointEditableView::updateValues()
                     if (spin)
                     {
                         //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(true);
+                        spin->blockSignals(shallBlock);
                     }
                 }
             }
         }
     }
+}
 
-    // Block all custom action widget actions
-    for (int j = 0; j  < m_ui->customActionWidget->children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(m_ui->customActionWidget->children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << j;
-            spin->blockSignals(true);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(m_ui->customActionWidget->children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "CUSTOM ACTIONS FOUND WIDGET BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                        //QLOG_DEBUG() << "DEACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(true);
-                    }
-                }
-            }
-        }
+void WaypointEditableView::updateValues()
+{
+    // Check if we just lost the wp, delete the widget
+    // accordingly
+    if (!wp) {
+        deleteLater();
+        return;
     }
 
+    // Deactivate all QDoubleSpinBox signals due to
+    // unwanted rounding effects
+    blockAllSpinBoxSignals(true);
 
     // update frame
     MAV_FRAME frame = wp->getFrame();
@@ -510,10 +494,6 @@ void WaypointEditableView::updateValues()
         m_ui->autoContinue->setChecked(wp->getAutoContinue());
     }
     m_ui->idLabel->setText(QString("%1").arg(wp->getId()));
-
-
-
-    QColor backGroundColor = QGC::colorBackground;
 
     static int lastId = -1;
     int currId = wp->getId() % 2;
@@ -562,68 +542,7 @@ void WaypointEditableView::updateValues()
 
     // Activate all QDoubleSpinBox signals due to
     // unwanted rounding effects
-    for (int j = 0; j  < children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << j;
-            spin->blockSignals(false);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QGroupBox* item = dynamic_cast<QGroupBox*>(children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "FOUND GROUP BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                        //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(false);
-                    }
-                }
-            }
-        }
-    }
-
-    // Unblock all custom action widget actions
-    for (int j = 0; j  < m_ui->customActionWidget->children().size(); ++j)
-    {
-        // Store only QGCToolWidgetItems
-        QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(m_ui->customActionWidget->children().at(j));
-        if (spin)
-        {
-            //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << j;
-            spin->blockSignals(false);
-        }
-        else
-        {
-            // Store only QGCToolWidgetItems
-            QWidget* item = dynamic_cast<QWidget*>(m_ui->customActionWidget->children().at(j));
-            if (item)
-            {
-                //QLOG_DEBUG() << "FOUND WIDGET BOX";
-                for (int k = 0; k  < item->children().size(); ++k)
-                {
-                    // Store only QGCToolWidgetItems
-                    QDoubleSpinBox* spin = dynamic_cast<QDoubleSpinBox*>(item->children().at(k));
-                    if (spin)
-                    {
-                       //QLOG_DEBUG() << "ACTIVATED SPINBOX #" << k;
-                        spin->blockSignals(false);
-                    }
-                }
-            }
-        }
-    }
-
-//    wp->blockSignals(false);
+    blockAllSpinBoxSignals(false);
 }
 
 void WaypointEditableView::setCurrent(bool state)

@@ -147,6 +147,8 @@ ParamWidget::~ParamWidget()
 
 void ParamWidget::setupInt(QString title,QString description,int value,int min,int max)
 {
+    Q_UNUSED(value)
+
     type = INT;
     ui.titleLabel->setText("<h3>" + title + "</h3>");
     ui.descriptionLabel->setText(description);
@@ -176,6 +178,8 @@ void ParamWidget::setupInt(QString title,QString description,int value,int min,i
 
 void ParamWidget::setupDouble(QString title,QString description,double value,double min,double max,double increment)
 {
+    Q_UNUSED(value)
+
     type = DOUBLE;
     ui.titleLabel->setText("<h3>" + title + "</h3>");
     ui.descriptionLabel->setText(description);

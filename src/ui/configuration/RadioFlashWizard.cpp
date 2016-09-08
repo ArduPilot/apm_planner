@@ -24,7 +24,7 @@ This file is part of the APM_PLANNER project
 #include "RadioFlashWizard.h"
 #include "ui_RadioFlashWizard.h"
 
-#include "QsLog.h"
+#include "logging.h"
 #include "QGC.h"
 
 #include <QDir>

@@ -1405,6 +1405,7 @@ void hqrndseed(ae_int_t s1,
      hqrndstate* state,
      ae_state *_state)
 {
+    (void)_state;
 
     _hqrndstate_clear(state);
 
@@ -1814,6 +1815,9 @@ static ae_int_t hqrnd_hqrndintegerbase(hqrndstate* state,
 
 ae_bool _hqrndstate_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     hqrndstate *p = (hqrndstate*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -1822,6 +1826,9 @@ ae_bool _hqrndstate_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _hqrndstate_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     hqrndstate *dst = (hqrndstate*)_dst;
     hqrndstate *src = (hqrndstate*)_src;
     dst->s1 = src->s1;
@@ -3425,7 +3432,7 @@ static void nearestneighbor_kdtreeallocdatasetindependent(kdtree* kdt,
      ae_int_t ny,
      ae_state *_state)
 {
-
+    (void)ny;
 
     ae_assert(kdt->n>0, "KDTreeAllocDatasetIndependent: internal error", _state);
     ae_vector_set_length(&kdt->x, nx, _state);
@@ -3481,7 +3488,7 @@ static void nearestneighbor_kdtreealloctemporaries(kdtree* kdt,
      ae_int_t ny,
      ae_state *_state)
 {
-
+    (void)ny;
 
     ae_assert(n>0, "KDTreeAllocTemporaries: internal error", _state);
     ae_vector_set_length(&kdt->x, nx, _state);

@@ -1,12 +1,12 @@
 #ifndef MAVLINK_TYPES_H_
 #define MAVLINK_TYPES_H_
 
-// Visual Studio versions before 2013 don't conform to C99.
-#if (defined _MSC_VER) && (_MSC_VER < 1800)
-#include <stdint.h>
-#else
-#include <inttypes.h>
+// Visual Studio versions before 2010 don't have stdint.h, so we just error out.
+#if (defined _MSC_VER) && (_MSC_VER < 1600)
+#error "The C-MAVLink implementation requires Visual Studio 2010 or greater"
 #endif
+
+#include <stdint.h>
 
 // Macro to define packed structures
 #ifdef __GNUC__
@@ -80,7 +80,8 @@ typedef struct param_union {
  * and the bits pulled out using the shifts/masks.
 */
 MAVPACKED(
-typedef union {
+typedef struct param_union_extended {
+    union {
     struct {
         uint8_t is_double:1;
         uint8_t mavlink_type:7;
@@ -97,6 +98,7 @@ typedef union {
         };
     };
     uint8_t data[8];
+    };
 }) mavlink_param_union_double_t;
 
 /**
@@ -198,8 +200,15 @@ typedef enum {
     MAVLINK_PARSE_STATE_GOT_COMPID,
     MAVLINK_PARSE_STATE_GOT_MSGID,
     MAVLINK_PARSE_STATE_GOT_PAYLOAD,
-    MAVLINK_PARSE_STATE_GOT_CRC1
+    MAVLINK_PARSE_STATE_GOT_CRC1,
+    MAVLINK_PARSE_STATE_GOT_BAD_CRC1
 } mavlink_parse_state_t; ///< The state machine for the comm parser
+
+typedef enum {
+    MAVLINK_FRAMING_INCOMPLETE=0,
+    MAVLINK_FRAMING_OK=1,
+    MAVLINK_FRAMING_BAD_CRC=2
+} mavlink_framing_t;
 
 typedef struct __mavlink_status {
     uint8_t msg_received;               ///< Number of received messages

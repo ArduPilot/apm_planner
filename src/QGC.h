@@ -1,24 +1,24 @@
 /*=====================================================================
- 
+
  QGroundControl Open Source Ground Control Station
- 
+
  (c) 2009 - 2011 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
- 
+
  This file is part of the QGROUNDCONTROL project
- 
+
  QGROUNDCONTROL is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
- 
+
  QGROUNDCONTROL is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with QGROUNDCONTROL. If not, see <http://www.gnu.org/licenses/>.
- 
+
  ======================================================================*/
 
 #ifndef QGC_H
@@ -34,34 +34,29 @@
 #define define2string_p(x) #x
 #define define2string(x) define2string_p(x)
 
-/* Windows fixes */
-#ifdef _MSC_VER
-/* Needed define for Eigen */
-//#define NOMINMAX
-#include <limits>
-template<typename T>
-inline bool isnan(T value)
-{
-    return value != value;
+#if defined(_MSC_VER) && (_MSC_VER<1800)
+        #include <limits>
 
-}
+        template<typename T>
+        inline bool isnan(T value){
+            return value != value;
+        }
 
-// requires #include <limits>
-template<typename T>
-inline bool isinf(T value)
-{
-    return (value == std::numeric_limits<T>::infinity() || (-1*value) == std::numeric_limits<T>::infinity()) && std::numeric_limits<T>::has_infinity;
-}
+        template<typename T>
+        inline bool isinf(T value){
+            return (value == std::numeric_limits<T>::infinity() || (-1*value) == std::numeric_limits<T>::infinity()) && std::numeric_limits<T>::has_infinity;
+        }
 #else
-#include <cmath>
-#if defined(Q_OS_MACX) || defined(Q_OS_WIN)
-#ifndef isnan
-#define isnan(x) std::isnan(x)
-#endif
-#ifndef isinf
-#define isinf(x) std::isinf(x)
-#endif
-#endif
+    #include <cmath>
+
+    #if defined(Q_OS_MACX) || defined(Q_OS_WIN)
+        #ifndef isnan
+            #define isnan(x) std::isnan(x)
+        #endif
+        #ifndef isinf
+            #define isinf(x) std::isinf(x)
+        #endif
+    #endif
 #endif
 
 namespace QGC

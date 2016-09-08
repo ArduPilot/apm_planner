@@ -1,3 +1,401 @@
+Release Notes - APM Planner  2.0.20 - 2014-03-18
+
+0b4ab40:  build: update to 2.0.20 - Bill Bonney
+a17c2e6:  FirmwareUpdate: rename to http://firmware.ardupilot.org - Bill Bonney
+0a10d8b:  build: update to release 2.0.19 - Bill Bonney
+23458d2:  Graph View: Basic fix for #916 - Arne-W
+8b0ab7f:  Graph View: small refactoring - Arne-W
+0eafed2:  Graph View: Moved code for adding axis to grouping dialog. Fixes #859 - Arne-W
+181b0a5:  Build fix for C++03 - Arne-W
+45ee104:  Graph View: Enabled vertical cursor when using time on x-axis - Arne-W
+99486d4:  Graph View: Added value grid if only one graph enabled - Arne-W
+959a736:  Graph View: Changed scaling of legend when in time x-axis mode - Arne-W
+ec5a49a:  Graph View: Fixed crash when doubleclick into graph while in tlog replay - Arne-W
+8e4cc97:  Graph View: Mode text arrows now work for loaded Tlogs too. Fixes #668 - Arne-W
+19c59aa:  Merge pull request #910 from Arne-W/pull_NewFix_661 - Bill Bonney
+2295cc4:  Merge pull request #908 from Arne-W/pull_hideUnusedCheckBoxes - Bill Bonney
+cf44484:  Merge pull request #906 from Arne-W/Update_Graphic_framwork - Bill Bonney
+6bfba99:  Graph View: BugFix for crash while replaying tlog - Arne-W
+712ae4a:  Graph View: Hide checkboxes in tlog view which have no effect. - Arne-W
+9cfddc3:  Updated graphic framework to QCustomPlot V1.3.2 - Arne-W
+3239d99:  Config: prevent space from double-registering clicks. - Andre Kjellstrup
+ea74341:  Config: revert MAV_SEVERITY_ERROR change - Bill Bonney
+1b62bf5:  Config: accelerometer calibration fix - Andre Kjellstrup
+7df9025:  ArduPilot: Fix Severity (part1) - Bill Bonney
+aae8d0a:  Graph View: Add text arrows for MSG messages - Fixes #898 - Arne-W
+5939254:  Graph View: Prevent Crash due to disabling an item that was not enabled (not in graph class map) - Arne-W
+d5bd651:  Graph View: disable clicking/red line when time on X axis - Ben van Klinken
+5f61808:  Graph View: put red line at currently selected table row - Ben van Klinken
+e8e161d:  Graphing: save the various checkbox state - Ben van Klinken
+ed1d180:  Graphing: add ok button to warning screen - Ben van Klinken
+20c182f:  Graphing: jump to location on double click - Ben van Klinken
+40eb821:  Info View Raw Status: show table immediately - Ben van Klinken
+1c516c6:  QT Styles: QToolTip visibility - Ben van Klinken
+0b579a8:  Graph View: Implemented Event plotting and unified handling of "MODE,ERR,EV" messages Fixes #870 - Arne-W
+c41ea0d:  Radio3DRConfig: typo in error - Ben van Klinken
+4a4bda6:  StatusText: Fix severity to be MAVLink Standard - Bill Bonney
+bb87b1f:  Reformat Links - Bill Bonney
+d71a4a7:  Update README.md - Bill Bonney
+c7a7ec3:  DroneShare: Remove Support - Bill Bonney
+48a8d61:  Build: Update version object - Bill Bonney
+68485d7:  Build: Update to 2.0.19-rc5 - Bill Bonney
+eab51ee:  Maps Widget: Update Google API Version 2016-01-31 - Bill Bonney
+b0d0fa0:  Graph View: Graph selection will be saved when switching x-Axis. Partly fixes #881 - Arne-W
+bca0d75:  Graph View: Bugfix for table sorting did not work correctly when used first time - Arne-W
+c2d4e15:  Graph View: Fixed TableView does not start at 0 - Arne-W
+8d8c1e8:  RangeFinderConfig: Add LightWare rangefinder support. - mirkix
+aa1c2d0:  PX4Firmware: Added product identifier 0x0012 = v4 - Bill Bonney
+ddb4af9:  PX4Firmware: Update to download PX4-v4 firmware - Bill Bonney
+9487762:  PX4Firmware: Disable OTP read - Bill Bonney
+359422f:  Update README.md - Bill Bonney
+f9fc68b:  Graph View: Support for plotting data vs. time if all data has microsec timestamp - Arne-W
+e12527f:  Graph View: Crash fixing and restructuring of TLOG parsing - Arne-W
+394bc17:  Graph View: Removed unused, already commented variable. - Arne-W
+bd5249a:  Graph View: Fixed warning (Fixes #875) - Arne-W
+758a0f2:  Graph View:Create more detailed error message on corrupt log file loading. - Arne-W
+73e11a1:  Graph View: Allow all Errors to be shown - Arne-W
+2c95046:  Graph View: Better handling of corrupted logfiles Fixes #868 - Arne-W
+72c65dd:  Graph View: Speed up table filtering - Arne-W
+126f7fc:  Graph View: Speed up log export restructured - Arne-W
+36cd961:  Graph View: Moved member init to initializer list - Arne-W
+bbaa3f7:  Graph View: Removed useless include - Arne-W
+1092d9a:  Graph View: Double the speed of binary log parsing. - Arne-W
+3004012:  Graph View: fixed naming convention for Text Stream - Bill Bonney
+a55fdca:  Graph: impoved description of ERROR_SUBSYSTEM_FLIGHT_MODE - Andre Kjellstrup
+2f8c4b6:  Build: Update OSX to use Xcode 7.x 10.11 SDK - Bill Bonney
+0711381:  Build: Fix wrong message - Bill Bonney
+786e9c6:  Graph View: Remove commented out lines - Bill Bonney
+ad4fc58:  Graph View: Fixed sanity check in dataFromPrefetchedRow(). - Arne-W
+a0578ba:  Graph View: Speed up binary log parsing and log exporting. - Arne-W
+e13097b:  Graph View: Bugfix: Log Export not complete Fixes #796 - Arne-W
+a59c555:  Graph: tooltip will show coordinates, milliseconds better - Andre Kjellstrup
+4d67d34:  Build: Make Flite Audio optional - Bill Bonney
+f23fc66:  Build: Remove MSVC2010 from supported compilers - Mark Sutherland
+a662992:  Build: Cleaner check for MSVC def and version - Mark Sutherland
+788e20c:  Fix Compiler Warnings: un-initialized variables and std::abs - Bill Bonney
+e673c46:  Fix compiler warnings: Qt Ui Invalid z-order assignment (issue #40) - Markus Reitboeck
+7919d78:  Fix compiler warnings: removed set but unused variables (issue #40) - Markus Reitboeck
+35a4097:  Fix compiler warning: unused parameter (issue #40) - Markus Reitboeck
+0795d16:  Fix compiler warning: unused parameter (issue #40) - Markus Reitboeck
+7000f6e:  Fix compiler warning: unused parameter in libs (issue #40) - Markus Reitboeck
+6c9f161:  Fix compiler warning: enumeration value not handled in switch (issue #40) - Markus Reitboeck
+84ac262:  Fix compiler warning: deleting object of polymorphic class type which has non-virtual destructor (issue #40) - Markus Reitboeck
+28fab89:  Fix compiler warnings: case value 38 not in enumerated type QVariant::Type and comparison between enum QVariant::Type and enum QMetaType::Type - Markus Reitboeck
+71c7fc4:  Fix compiler warning: ignored qualifiers (issue #40) - Markus Reitboeck
+20d41e1:  Fix compiler warning: suggest explicit braces to avoid ambiguous else (issue #40) - Markus Reitboeck
+db25ab1:  Fix compiler warning unused but set variable and unused variable (issue #40) - Markus Reitboeck
+46f0d04:  Fix compiler warning initalization sequence (issue #40) - Markus Reitboeck
+6f4ec1f:  Audio: Fix #834: Revert "Audio: Fixes #812 Port to flite2" - Markus Reitboeck
+41e9ab6:  Freenect: fix libfreenect working with APM serveral bugs and updates serveral function names - xros
+c160fc5:  3DR Radio: Fix Python script dependence on TIMEOUT (fix via @xros) - Bill Bonney
+8a29a0d:  Graph View: Removed errortype inheritance. - Arne-W
+3c90c75:  Graph View:Introduced Type herachy for ErrorTypes - Arne-W
+3a264f1:  Graph View: Moved ErrorType class to mav section. - Arne-W
+31f6ed0:  Graph View: Changed std::stringstream to QTextstream. - Arne-W
+c5a5689:  Graph View: Make errors show up like the mode does - Arne-W
+69161a7:  Build: Add back isnan and isinf defs for MSVC2012 - Mark Sutherland
+39478ea:  Documentation: Update Windows README section - Mark Sutherland
+ae16ecb:  Build: Windows MSVC2013 and MinGW work - Mark Sutherland
+0719d67:  Graph: Add support for logs with Q (64bit data types) - Bill Bonney
+98c08f1:  Firmware Update: Fix Product recognition for Ubuntu - Andre Kjellstrup
+16489dd:  Firmware Update: Fix new Product Idenitfier reported on Ubuntu - Bill Bonney
+50b2f53:  build: Fixes #767 Use SDL version 2.0.3 instead for native Windows builds - Dave C
+3aa4f3d:  build: Fixes #767 Replace SDL2 x64 dll with x86 dll - Dave C
+8d60b71:  Waypoint Manager: improvement: use QT built-in function to delete list of pointers - Markus Reitboeck
+6ca8ce6:  Waypoint Manager: Fixes #808 - segfault when loading mission file - Markus Reitboeck
+92e3afa:  build: cache working envs for windows build (almost) - Bill Bonney
+1e29055:  build: update to ignore gstreamer libs - Bill Bonney
+e8665ed:  Windows NSIS script : Needed updates - Dave C
+eeca772:  Build: update windows git commands - Bill Bonney
+6437a98:  Build: Remove G3D and webkit dependency - Bill Bonney
+8c676b6:  Build: Fix OSX and Windows dependencies - Bill Bonney
+51911be:  Build: Add qml dependencies to config - Bill Bonney
+0ce96ed:  Merge branch 'map_improvements' of https://github.com/mrpilot2/apm_planner into mrpilot2-map_improvements - Bill Bonney
+bc92870:  Update dependencies for ubuntu buillds - Bill Bonney
+6eb79fc:  Mission Widget: refactoring - merge child items that are searched for SpinBox in one list to fix duplicate for loop - Markus Reitboeck
+d933af4:  Mission Widget: refactoring - remove unused variable - Markus Reitboeck
+ed19592:  Mission Widget: refactoring - remove duplicate code when blocking/unblocking SpinBox signals - Markus Reitboeck
+b0172b7:  Map Widget: refactoring - removed old unused code - Markus Reitboeck
+c222de7:  Map Widget: Fixes #691 - dragging multiple waypoints - Markus Reitboeck
+faded5a:  Build: Release 2.0.19-rc4 - Bill Bonney
+d7c904a:  UAS: Fix queue of requested parameters not emptying. - Bill Bonney
+fc042ba:  Config View: Fix default tab to be General - Bill Bonney
+ccd1fea:  AP2DataPlot2DModel: corrections to facilitate export of data to .log - Peter Barker
+4dcd8d7:  Serial Ports: Fix Qt5.5 reverting serial port naming to pre Qt5.4.1 - Bill Bonney
+3ed2b4f:  Config View: Add Extra1 label for clarity - Bill Bonney
+8f4a7ef:  UDP Link: Fixes #802 Dont use QObjects in different threads - Tomaz Canabrava
+1c4dded:  Version Detection: Fix match of version for name changes - Bill Bonney
+8fdbd34:  CameraView: make GL header optional for OSX - Bill Bonney
+9a75aff:  Graph View: Fixes #815 Color not being set - Bill Bonney
+5f0890a:  Audio: Fixes #812 Port to flite2 - Tomaz Canabrava
+7b3aa04:  UAS: Fixes #813 misleading message arming audio warning. - mirkix
+8082f85:  Firmware Update: Fixes #814 infinite recursion while loading MainWindow v2 - Tomaz Canabrava
+3d236d1:  Mission Widget: Add support for NAV_LOITER_TO_ALT - Andre Kjellstrup
+e65fbf7:  General: Fixed some build issues on Qt 5.5.0 on AOSC GNU/Linux - Icenowy
+d676bbc:  Build: Update to 2.0.19-rc3 - Bill Bonney
+a151dfe:  Donate Button: Made the button more prominent. - Bill Bonney
+447157d:  APM TooBar: Changes to Donation button - Bill Bonney
+7484a20:  Vehicle Info: Fix double property declaration - Bill Bonney
+df93e5e:  Build: Fixes to support Xcode 7.0 with Qt5.4.2 - Bill Bonney
+283b400:  Build: Fix beta release to go to 2.0.18 - Bill Bonney
+1234d59:  Vibration Monitor: Added Key - Bill Bonney
+98d0b57:  EKF Monitor: Added Key - Bill Bonney
+41ac966:  EKF Monitor: Additions to connect EKF STATUS REPORT DATA - Bill Bonney
+fc455ed:  EKF Monitor: Change name to BarGauge - Bill Bonney
+8aaf3d2:  Vibration Monitor: Rename VibrationGauge to BarGauge - Bill Bonney
+bb2ee6b:  EKF Monitor: Create EKF Monitor Widget - Bill Bonney
+c085ca2:  Vibration Monitor: Add Vibration Widget to Tool Widgets Menu - Bill Bonney
+e09a0de:  Vibration Monitor: Simple Text readout - Bill Bonney
+d4f9729:  Vibration Monitor: Create Widget Fraemwork - Bill Bonney
+71456bc:  UI Framework: Enable use of Network Proxies - Mark D Horn
+20f7b8f:  UDP Link: Fixes issue with UDP connections and Qt5.4.2+ - Bill Bonney
+b51d430:  Firmware Update: Fix Arduino uploader for Qt5.2.x OSX defect - Bill Bonney
+b0fa90c:  UAS: Fixes #776 Radio RSSI argument missing - Bill Bonney
+1754f8b:  Serial Link: Fix UI Layout - Bill Bonney
+8e8263c:  UDP Link: Fix layout - Bill Bonney
+88dda5c:  TCP Link: Add hostname lookup - Bill Bonney
+12ab123:  MAVLink: Update to MAVLink dated Wed Jun 17 14:19:15 2015 - Bill Bonney
+2879e48:  UAS: Queue requested parameters - walmis
+341be4c:  CopterPidConfig: Disable fields if parameters are not fetched properly. Add Z Accel D field - walmis
+aa71f47:  Graph View: Fixes #774 Integer Division impacting resolution - Bill Bonney
+280e79e:  Release: Update 2.0.18 release notes - Bill Bonney
+f7a04f8:  config: update version object for AP2 2.0.18 release - Bill Bonney
+51b6aa9:  configuration: Update to 2.0.18 release - Bill Bonney
+245fb82:  Graph View: Use int conversion for QString::number() - Bill Bonney
+70b9a58:  Graph View: Fix conversion issue - Bill Bonney
+f6823e2:  UDP Link: Improve naming - Bill Bonney
+2f30aa0:  Camera Setup: Add extra RC channel selectors to support up to 16 channels - Александр Фролов
+62cb360:  Map Widget: Update Google API versions - Bill Bonney
+1afd084:  APM Toolbar: Add Donate Button to Toolbar and Menu Item - Bill Bonney
+8809381:  Serial Ports: stop scanning when ports have been selected - Bill Bonney
+cdf3a7c:  3DR Radio Config: Stop scanning serial ports until view shown - Bill Bonney
+b996db6:  Full Parameter View: Fix locale to use ‘decimal’ only - Bill Bonney
+a6f3219:  Full Parameter View: Fix inconsistency when param update refreshed - Bill Bonney
+02c8069:  build: fixed radio uplaoder problem in Linux build - martinjuju
+fc9fca0:  Graph View: correct FMT header in plain-text export - Peter Barker
+e193313:  Range Finder: Add BBB-PRU support - mirkix
+54df6c6:  Radio Calibration: lower minimum PWM value - Lucas De Marchi
+7b34a00:  Firmware Upload: Add support for Gumstix AeroCore. - Andrew C. Smith
+0b76f70:  APM: Add Brake mode - Bill Bonney
+c3d06ab:  Comms UI: Remove automatic dismiss of TCP link - Bill Bonney
+1b22a3c:  Map Widget: Fixes #701 Add auto map caching option - Mark Sutherland
+14c0ff5:  Elevation Widget: added distance from previous WP. - Andre Kjellstrup
+0703c8d:  Extended Tuning: Fixes #755 WP NAV/LOITER SPEED swapped - Bill Bonney
+c59edad:  Map Widget: Add 3D+DGPS and 3D+RTK to Fix label - mirkix
+d7e38a9:  Build: update autoudpate object - Bill Bonney
+c0ee96c:  Main View: fixed #605 - Markus Reitboeck
+44ea50a:  README: Add note about libxcb crashing on 14.04LTS - Bill Bonney
+230b768:  RPM-packaged Yum repository configuration files - Александр Фролов
+d7af33d:  Repository base URL fixed - Александр Фролов
+54fd6cd:  Yum repository support - Александр Фролов
+0b4ab40:  build: update to 2.0.20 - Bill Bonney
+a17c2e6:  FirmwareUpdate: rename to http://firmware.ardupilot.org - Bill Bonney
+0a10d8b:  build: update to release 2.0.19 - Bill Bonney
+23458d2:  Graph View: Basic fix for #916 - Arne-W
+8b0ab7f:  Graph View: small refactoring - Arne-W
+0eafed2:  Graph View: Moved code for adding axis to grouping dialog. Fixes #859 - Arne-W
+181b0a5:  Build fix for C++03 - Arne-W
+45ee104:  Graph View: Enabled vertical cursor when using time on x-axis - Arne-W
+99486d4:  Graph View: Added value grid if only one graph enabled - Arne-W
+959a736:  Graph View: Changed scaling of legend when in time x-axis mode - Arne-W
+ec5a49a:  Graph View: Fixed crash when doubleclick into graph while in tlog replay - Arne-W
+8e4cc97:  Graph View: Mode text arrows now work for loaded Tlogs too. Fixes #668 - Arne-W
+19c59aa:  Merge pull request #910 from Arne-W/pull_NewFix_661 - Bill Bonney
+2295cc4:  Merge pull request #908 from Arne-W/pull_hideUnusedCheckBoxes - Bill Bonney
+cf44484:  Merge pull request #906 from Arne-W/Update_Graphic_framwork - Bill Bonney
+6bfba99:  Graph View: BugFix for crash while replaying tlog - Arne-W
+712ae4a:  Graph View: Hide checkboxes in tlog view which have no effect. - Arne-W
+9cfddc3:  Updated graphic framework to QCustomPlot V1.3.2 - Arne-W
+3239d99:  Config: prevent space from double-registering clicks. - Andre Kjellstrup
+ea74341:  Config: revert MAV_SEVERITY_ERROR change - Bill Bonney
+1b62bf5:  Config: accelerometer calibration fix - Andre Kjellstrup
+7df9025:  ArduPilot: Fix Severity (part1) - Bill Bonney
+aae8d0a:  Graph View: Add text arrows for MSG messages - Fixes #898 - Arne-W
+5939254:  Graph View: Prevent Crash due to disabling an item that was not enabled (not in graph class map) - Arne-W
+d5bd651:  Graph View: disable clicking/red line when time on X axis - Ben van Klinken
+5f61808:  Graph View: put red line at currently selected table row - Ben van Klinken
+e8e161d:  Graphing: save the various checkbox state - Ben van Klinken
+ed1d180:  Graphing: add ok button to warning screen - Ben van Klinken
+20c182f:  Graphing: jump to location on double click - Ben van Klinken
+40eb821:  Info View Raw Status: show table immediately - Ben van Klinken
+1c516c6:  QT Styles: QToolTip visibility - Ben van Klinken
+0b579a8:  Graph View: Implemented Event plotting and unified handling of "MODE,ERR,EV" messages Fixes #870 - Arne-W
+c41ea0d:  Radio3DRConfig: typo in error - Ben van Klinken
+4a4bda6:  StatusText: Fix severity to be MAVLink Standard - Bill Bonney
+bb87b1f:  Reformat Links - Bill Bonney
+d71a4a7:  Update README.md - Bill Bonney
+c7a7ec3:  DroneShare: Remove Support - Bill Bonney
+48a8d61:  Build: Update version object - Bill Bonney
+68485d7:  Build: Update to 2.0.19-rc5 - Bill Bonney
+eab51ee:  Maps Widget: Update Google API Version 2016-01-31 - Bill Bonney
+b0d0fa0:  Graph View: Graph selection will be saved when switching x-Axis. Partly fixes #881 - Arne-W
+bca0d75:  Graph View: Bugfix for table sorting did not work correctly when used first time - Arne-W
+c2d4e15:  Graph View: Fixed TableView does not start at 0 - Arne-W
+8d8c1e8:  RangeFinderConfig: Add LightWare rangefinder support. - mirkix
+aa1c2d0:  PX4Firmware: Added product identifier 0x0012 = v4 - Bill Bonney
+ddb4af9:  PX4Firmware: Update to download PX4-v4 firmware - Bill Bonney
+9487762:  PX4Firmware: Disable OTP read - Bill Bonney
+359422f:  Update README.md - Bill Bonney
+f9fc68b:  Graph View: Support for plotting data vs. time if all data has microsec timestamp - Arne-W
+e12527f:  Graph View: Crash fixing and restructuring of TLOG parsing - Arne-W
+394bc17:  Graph View: Removed unused, already commented variable. - Arne-W
+bd5249a:  Graph View: Fixed warning (Fixes #875) - Arne-W
+758a0f2:  Graph View:Create more detailed error message on corrupt log file loading. - Arne-W
+73e11a1:  Graph View: Allow all Errors to be shown - Arne-W
+2c95046:  Graph View: Better handling of corrupted logfiles Fixes #868 - Arne-W
+72c65dd:  Graph View: Speed up table filtering - Arne-W
+126f7fc:  Graph View: Speed up log export restructured - Arne-W
+36cd961:  Graph View: Moved member init to initializer list - Arne-W
+bbaa3f7:  Graph View: Removed useless include - Arne-W
+1092d9a:  Graph View: Double the speed of binary log parsing. - Arne-W
+3004012:  Graph View: fixed naming convention for Text Stream - Bill Bonney
+a55fdca:  Graph: impoved description of ERROR_SUBSYSTEM_FLIGHT_MODE - Andre Kjellstrup
+2f8c4b6:  Build: Update OSX to use Xcode 7.x 10.11 SDK - Bill Bonney
+0711381:  Build: Fix wrong message - Bill Bonney
+786e9c6:  Graph View: Remove commented out lines - Bill Bonney
+ad4fc58:  Graph View: Fixed sanity check in dataFromPrefetchedRow(). - Arne-W
+a0578ba:  Graph View: Speed up binary log parsing and log exporting. - Arne-W
+e13097b:  Graph View: Bugfix: Log Export not complete Fixes #796 - Arne-W
+a59c555:  Graph: tooltip will show coordinates, milliseconds better - Andre Kjellstrup
+4d67d34:  Build: Make Flite Audio optional - Bill Bonney
+f23fc66:  Build: Remove MSVC2010 from supported compilers - Mark Sutherland
+a662992:  Build: Cleaner check for MSVC def and version - Mark Sutherland
+788e20c:  Fix Compiler Warnings: un-initialized variables and std::abs - Bill Bonney
+e673c46:  Fix compiler warnings: Qt Ui Invalid z-order assignment (issue #40) - Markus Reitboeck
+7919d78:  Fix compiler warnings: removed set but unused variables (issue #40) - Markus Reitboeck
+35a4097:  Fix compiler warning: unused parameter (issue #40) - Markus Reitboeck
+0795d16:  Fix compiler warning: unused parameter (issue #40) - Markus Reitboeck
+7000f6e:  Fix compiler warning: unused parameter in libs (issue #40) - Markus Reitboeck
+6c9f161:  Fix compiler warning: enumeration value not handled in switch (issue #40) - Markus Reitboeck
+84ac262:  Fix compiler warning: deleting object of polymorphic class type which has non-virtual destructor (issue #40) - Markus Reitboeck
+28fab89:  Fix compiler warnings: case value 38 not in enumerated type QVariant::Type and comparison between enum QVariant::Type and enum QMetaType::Type - Markus Reitboeck
+71c7fc4:  Fix compiler warning: ignored qualifiers (issue #40) - Markus Reitboeck
+20d41e1:  Fix compiler warning: suggest explicit braces to avoid ambiguous else (issue #40) - Markus Reitboeck
+db25ab1:  Fix compiler warning unused but set variable and unused variable (issue #40) - Markus Reitboeck
+46f0d04:  Fix compiler warning initalization sequence (issue #40) - Markus Reitboeck
+6f4ec1f:  Audio: Fix #834: Revert "Audio: Fixes #812 Port to flite2" - Markus Reitboeck
+41e9ab6:  Freenect: fix libfreenect working with APM serveral bugs and updates serveral function names - xros
+c160fc5:  3DR Radio: Fix Python script dependence on TIMEOUT (fix via @xros) - Bill Bonney
+8a29a0d:  Graph View: Removed errortype inheritance. - Arne-W
+3c90c75:  Graph View:Introduced Type herachy for ErrorTypes - Arne-W
+3a264f1:  Graph View: Moved ErrorType class to mav section. - Arne-W
+31f6ed0:  Graph View: Changed std::stringstream to QTextstream. - Arne-W
+c5a5689:  Graph View: Make errors show up like the mode does - Arne-W
+69161a7:  Build: Add back isnan and isinf defs for MSVC2012 - Mark Sutherland
+39478ea:  Documentation: Update Windows README section - Mark Sutherland
+ae16ecb:  Build: Windows MSVC2013 and MinGW work - Mark Sutherland
+0719d67:  Graph: Add support for logs with Q (64bit data types) - Bill Bonney
+98c08f1:  Firmware Update: Fix Product recognition for Ubuntu - Andre Kjellstrup
+16489dd:  Firmware Update: Fix new Product Idenitfier reported on Ubuntu - Bill Bonney
+50b2f53:  build: Fixes #767 Use SDL version 2.0.3 instead for native Windows builds - Dave C
+3aa4f3d:  build: Fixes #767 Replace SDL2 x64 dll with x86 dll - Dave C
+8d60b71:  Waypoint Manager: improvement: use QT built-in function to delete list of pointers - Markus Reitboeck
+6ca8ce6:  Waypoint Manager: Fixes #808 - segfault when loading mission file - Markus Reitboeck
+92e3afa:  build: cache working envs for windows build (almost) - Bill Bonney
+1e29055:  build: update to ignore gstreamer libs - Bill Bonney
+e8665ed:  Windows NSIS script : Needed updates - Dave C
+eeca772:  Build: update windows git commands - Bill Bonney
+6437a98:  Build: Remove G3D and webkit dependency - Bill Bonney
+8c676b6:  Build: Fix OSX and Windows dependencies - Bill Bonney
+51911be:  Build: Add qml dependencies to config - Bill Bonney
+0ce96ed:  Merge branch 'map_improvements' of https://github.com/mrpilot2/apm_planner into mrpilot2-map_improvements - Bill Bonney
+bc92870:  Update dependencies for ubuntu buillds - Bill Bonney
+6eb79fc:  Mission Widget: refactoring - merge child items that are searched for SpinBox in one list to fix duplicate for loop - Markus Reitboeck
+d933af4:  Mission Widget: refactoring - remove unused variable - Markus Reitboeck
+ed19592:  Mission Widget: refactoring - remove duplicate code when blocking/unblocking SpinBox signals - Markus Reitboeck
+b0172b7:  Map Widget: refactoring - removed old unused code - Markus Reitboeck
+c222de7:  Map Widget: Fixes #691 - dragging multiple waypoints - Markus Reitboeck
+faded5a:  Build: Release 2.0.19-rc4 - Bill Bonney
+d7c904a:  UAS: Fix queue of requested parameters not emptying. - Bill Bonney
+fc042ba:  Config View: Fix default tab to be General - Bill Bonney
+ccd1fea:  AP2DataPlot2DModel: corrections to facilitate export of data to .log - Peter Barker
+4dcd8d7:  Serial Ports: Fix Qt5.5 reverting serial port naming to pre Qt5.4.1 - Bill Bonney
+3ed2b4f:  Config View: Add Extra1 label for clarity - Bill Bonney
+8f4a7ef:  UDP Link: Fixes #802 Dont use QObjects in different threads - Tomaz Canabrava
+1c4dded:  Version Detection: Fix match of version for name changes - Bill Bonney
+8fdbd34:  CameraView: make GL header optional for OSX - Bill Bonney
+9a75aff:  Graph View: Fixes #815 Color not being set - Bill Bonney
+5f0890a:  Audio: Fixes #812 Port to flite2 - Tomaz Canabrava
+7b3aa04:  UAS: Fixes #813 misleading message arming audio warning. - mirkix
+8082f85:  Firmware Update: Fixes #814 infinite recursion while loading MainWindow v2 - Tomaz Canabrava
+3d236d1:  Mission Widget: Add support for NAV_LOITER_TO_ALT - Andre Kjellstrup
+e65fbf7:  General: Fixed some build issues on Qt 5.5.0 on AOSC GNU/Linux - Icenowy
+d676bbc:  Build: Update to 2.0.19-rc3 - Bill Bonney
+a151dfe:  Donate Button: Made the button more prominent. - Bill Bonney
+447157d:  APM TooBar: Changes to Donation button - Bill Bonney
+7484a20:  Vehicle Info: Fix double property declaration - Bill Bonney
+df93e5e:  Build: Fixes to support Xcode 7.0 with Qt5.4.2 - Bill Bonney
+283b400:  Build: Fix beta release to go to 2.0.18 - Bill Bonney
+1234d59:  Vibration Monitor: Added Key - Bill Bonney
+98d0b57:  EKF Monitor: Added Key - Bill Bonney
+41ac966:  EKF Monitor: Additions to connect EKF STATUS REPORT DATA - Bill Bonney
+fc455ed:  EKF Monitor: Change name to BarGauge - Bill Bonney
+8aaf3d2:  Vibration Monitor: Rename VibrationGauge to BarGauge - Bill Bonney
+bb2ee6b:  EKF Monitor: Create EKF Monitor Widget - Bill Bonney
+c085ca2:  Vibration Monitor: Add Vibration Widget to Tool Widgets Menu - Bill Bonney
+e09a0de:  Vibration Monitor: Simple Text readout - Bill Bonney
+d4f9729:  Vibration Monitor: Create Widget Fraemwork - Bill Bonney
+71456bc:  UI Framework: Enable use of Network Proxies - Mark D Horn
+20f7b8f:  UDP Link: Fixes issue with UDP connections and Qt5.4.2+ - Bill Bonney
+b51d430:  Firmware Update: Fix Arduino uploader for Qt5.2.x OSX defect - Bill Bonney
+b0fa90c:  UAS: Fixes #776 Radio RSSI argument missing - Bill Bonney
+1754f8b:  Serial Link: Fix UI Layout - Bill Bonney
+8e8263c:  UDP Link: Fix layout - Bill Bonney
+88dda5c:  TCP Link: Add hostname lookup - Bill Bonney
+12ab123:  MAVLink: Update to MAVLink dated Wed Jun 17 14:19:15 2015 - Bill Bonney
+2879e48:  UAS: Queue requested parameters - walmis
+341be4c:  CopterPidConfig: Disable fields if parameters are not fetched properly. Add Z Accel D field - walmis
+aa71f47:  Graph View: Fixes #774 Integer Division impacting resolution - Bill Bonney
+
+
+Release Notes - APM Planner  2.0.18 - 2015-07-25
+
+51b6aa9:  configuration: Update to 2.0.18 release - Bill Bonney
+245fb82:  Graph View: Use int conversion for QString::number() - Bill Bonney
+70b9a58:  Graph View: Fix conversion issue - Bill Bonney
+f6823e2:  UDP Link: Improve naming - Bill Bonney
+2f30aa0:  Camera Setup: Add extra RC channel selectors to support up to 16 channels - Александр Фролов
+62cb360:  Map Widget: Update Google API versions - Bill Bonney
+1afd084:  APM Toolbar: Add Donate Button to Toolbar and Menu Item - Bill Bonney
+8809381:  Serial Ports: stop scanning when ports have been selected - Bill Bonney
+cdf3a7c:  3DR Radio Config: Stop scanning serial ports until view shown - Bill Bonney
+b996db6:  Full Parameter View: Fix locale to use ‘decimal’ only - Bill Bonney
+a6f3219:  Full Parameter View: Fix inconsistency when param update refreshed - Bill Bonney
+02c8069:  build: fixed radio uplaoder problem in Linux build - martinjuju
+fc9fca0:  Graph View: correct FMT header in plain-text export - Peter Barker
+e193313:  Range Finder: Add BBB-PRU support - mirkix
+54df6c6:  Radio Calibration: lower minimum PWM value - Lucas De Marchi
+7b34a00:  Firmware Upload: Add support for Gumstix AeroCore. - Andrew C. Smith
+0b76f70:  APM: Add Brake mode - Bill Bonney
+c3d06ab:  Comms UI: Remove automatic dismiss of TCP link - Bill Bonney
+1b22a3c:  Map Widget: Fixes #701 Add auto map caching option - Mark Sutherland
+14c0ff5:  Elevation Widget: added distance from previous WP. - Andre Kjellstrup
+0703c8d:  Extended Tuning: Fixes #755 WP NAV/LOITER SPEED swapped - Bill Bonney
+c59edad:  Map Widget: Add 3D+DGPS and 3D+RTK to Fix label - mirkix
+d7e38a9:  Build: update autoudpate object - Bill Bonney
+c0ee96c:  Main View: fixed #605 - Markus Reitboeck
+44ea50a:  README: Add note about libxcb crashing on 14.04LTS - Bill Bonney
+230b768:  RPM-packaged Yum repository configuration files - Александр Фролов
+d7af33d:  Repository base URL fixed - Александр Фролов
+54fd6cd:  Yum repository support - Александр Фролов
+
+Release Notes - APM Planner  2.0.18-rc2 - 2015-06-17
+
+65caf45:  configuration: Update to 2.0.18-rc2 release - Bill Bonney
+a1ed6d2:  Joystick Support: bugfix: moved init method back to run method to allow initializing a joystick during runtime - Markus Reitboeck
+6ff6926:  Joystick Widget: removed init() as it locks startup (requires fix) - Bill Bonney
+8ec23e8:  Joystick Widget: improvement: create joystick buttons dynamically as there are joysticks with more than 11 buttons - Markus Reitboeck
+cb87b43:  Joystick Widget: improvement: change button label color only if the button state changes - Markus Reitboeck
+2062769:  Joystick Widget: bugfix: There are 11 joystick button labels displayed - Markus Reitboeck
+d68d913:  Joystick Mapping: Fixes #718 Add 'save settings' feature - Markus Reitboeck
+a52fca0:  Settings Widget: added window title for file location dialog - mrpilot
+3d59a75:  Settings Widget: disable file locations text fields because user input in these fields is not applied - mrpilot
+16c408d:  Settings Widget: added support to change missions directory - mrpilot
+87d11d3:  General Settings: Fixes #730 default directory always created - mrpilot
+bca8b5c:  Extended Tuning: Fixes #733 Stab Roll/Pitch reversed - Bill Bonney
+d368575:  configuration: Update json version object to 2.0.18-rc1 - Bill Bonney
+0743f5f:  Release: Update 2.0.18-rc1 release notes - Bill Bonney
+
 Release Notes - APM Planner  2.0.18-rc1 - 2015-06-08
 
 e5405e1:  configuration: Update to 2.0.18-rc1 release - Bill Bonney
@@ -1059,5 +1457,4 @@ a3a7a94:  Change so a popup lets the user know when parameters have been loaded 
 4bd963f:  Addition of message in PFD showing PreArm failures when tryign to arm MAV - Michael Carpenter
 
 see http://github.com/diydrones/apm_planner for a full list of the commits before 2013-12-26
-
 

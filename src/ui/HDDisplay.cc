@@ -11,7 +11,7 @@
 
 #include "HDDisplay.h"
 
-#include "QsLog.h"
+#include "logging.h"
 #include "UASManager.h"
 #include "ui_HDDisplay.h"
 #include "MG.h"
@@ -123,12 +123,15 @@ HDDisplay::HDDisplay(QStringList* plotList, QString title, QWidget *parent) :
     fontDatabase = QFontDatabase();
     const QString fontFileName = ":/general/vera.ttf"; ///< Font file is part of the QRC file and compiled into the app
     const QString fontFamilyName = "Bitstream Vera Sans";
-    if(!QFile::exists(fontFileName)) QLOG_DEBUG() << "ERROR! font file: " << fontFileName << " DOES NOT EXIST!";
+    if(!QFile::exists(fontFileName)) {
+        QLOG_DEBUG() << "ERROR! font file: " << fontFileName << " DOES NOT EXIST!";
+    }
 
     fontDatabase.addApplicationFont(fontFileName);
     font = fontDatabase.font(fontFamilyName, "Roman", qMax(5, (int)(10*scalingFactor*1.2f+0.5f)));
-    if (font.family() != fontFamilyName) QLOG_DEBUG() << "ERROR! Font not loaded: " << fontFamilyName;
-
+    if (font.family() != fontFamilyName) {
+        QLOG_DEBUG() << "ERROR! Font not loaded: " << fontFamilyName;
+    }
     // Connect with UAS
     connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(setActiveUAS(UASInterface*)), Qt::UniqueConnection);
     setActiveUAS(UASManager::instance()->getActiveUAS());

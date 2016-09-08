@@ -54,12 +54,42 @@ private slots:
     void rateIChanged(double value);
     void rateDChanged(double value);
     void rateIMAXChanged(double value);
+
+private:
+    void showEvent(QShowEvent *evt);
+
+    void mapParamNamesToBox();
+    void requestParameterUpdate();
+
 private:
     bool m_pitchRollLocked;
     QList<QPair<int,QString> > m_ch6ValueToTextList;
     QList<QPair<int,QString> > m_ch78ValueToTextList;
     QMap<QString,QDoubleSpinBox*> m_nameToBoxMap;
     Ui::CopterPidConfig ui;
+
+    QString stb_rll_p;
+    QString stb_pit_p;
+    QString stb_yaw_p;
+
+    QString rate_rll_p;
+    QString rate_rll_i;
+    QString rate_rll_imax;
+    QString rate_rll_d;
+    QString rate_rll_filt_hz;
+
+    QString rate_pit_p;
+    QString rate_pit_i;
+    QString rate_pit_imax;
+    QString rate_pit_d;
+    QString rate_pit_filt_hz;
+
+    QString rate_yaw_p;
+    QString rate_yaw_i;
+    QString rate_yaw_imax;
+    QString rate_yaw_d;
+    QString rate_yaw_filt_hz;
+
 };
 
 #endif // COPTERPIDCONFIG_H

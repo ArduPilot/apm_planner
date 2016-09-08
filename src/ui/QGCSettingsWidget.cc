@@ -36,6 +36,8 @@ QGCSettingsWidget::QGCSettingsWidget(QWidget *parent, Qt::WindowFlags flags) :
 
 void QGCSettingsWidget::showEvent(QShowEvent *evt)
 {
+    Q_UNUSED(evt)
+
     if (!m_init)
     {
         m_init = true;
@@ -51,6 +53,11 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         // Low power mode
         ui->lowPowerCheckBox->setChecked(MainWindow::instance()->lowPowerModeEnabled());
         connect(ui->lowPowerCheckBox, SIGNAL(clicked(bool)), MainWindow::instance(), SLOT(enableLowPowerMode(bool)));
+
+        // Automatic use of system Proxies
+        ui->autoProxyCheckBox->setChecked(MainWindow::instance()->autoProxyModeEnabled());
+        connect(ui->autoProxyCheckBox, SIGNAL(clicked(bool)), MainWindow::instance(), SLOT(enableAutoProxyMode(bool)));
+        connect(MainWindow::instance(), SIGNAL(autoProxyChanged(bool)), ui->autoProxyCheckBox, SLOT(setChecked(bool)));
 
         //Dock widget title bars
         ui->titleBarCheckBox->setChecked(MainWindow::instance()->dockWidgetTitleBarsEnabled());
@@ -112,6 +119,9 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         }
         settings.endGroup();
         connect(ui->enableBetaReleaseCheckBox, SIGNAL(clicked(bool)), this, SLOT(setBetaRelease(bool)));
+
+        ui->hideDonateButtonCheckBox->setChecked(settings.value("USER_DONATED", false).toBool());
+        connect(ui->hideDonateButtonCheckBox, SIGNAL(clicked(bool)), this, SLOT(setHideDonateButton(bool)));
     }
 }
 
@@ -279,5 +289,12 @@ void QGCSettingsWidget::setBetaRelease(bool state)
         type = "stable";
     }
     settings.setValue("RELEASE_TYPE", type);
+    settings.sync();
+}
+
+void QGCSettingsWidget::setHideDonateButton(bool state)
+{
+    QSettings settings;
+    settings.setValue("USER_DONATED", state);
     settings.sync();
 }
