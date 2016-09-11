@@ -404,6 +404,10 @@ bool AP2DataPlot2DModel::addType(const QString &name, const unsigned int type, c
         QString variablenames = names.join(",");
         QString insertstring = makeInsertTableString(name,names);
 
+        // HACK: This line allows inserting a FMT message after inserting some data.
+        // without this a late FMT message would lead to an index failure.
+        m_fmtIndex = m_fmtIndex > m_lastIndex  ? m_fmtIndex : m_lastIndex + 1;
+
         //if (!query->prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (:idx,:typeid,:length,:name,:format,:val);"))
         m_fmtInsertQuery->bindValue(":idx",m_fmtIndex++);
         m_fmtInsertQuery->bindValue(":typeid",type);

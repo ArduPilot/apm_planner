@@ -175,7 +175,7 @@ private:
     int m_rowCount;                 /// Stores the number of rows held in model.
     int m_columnCount;
     int m_currentRow;
-    int m_fmtIndex;
+    quint64 m_fmtIndex;
 
     quint64 m_firstIndex;
     quint64 m_lastIndex;
