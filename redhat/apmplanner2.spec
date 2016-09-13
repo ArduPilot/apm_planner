@@ -1,11 +1,11 @@
 Summary:            APM Planner - Micro Air Vehicle Groundstation
 Name:               apmplanner2
-Version:            2.0.16
-Release:            rc1.32.gc208324%{?dist}
+Version:            0.0.1
+Release:            %{?dist}
 License:            GPLv3
 Group:              Applications/Science/Engineering
 Source:             %{name}-%{version}.tar.gz
-#Patch0:             %{name}-0.patch
+Patch0:             %{name}-0.patch
 BuildRequires:      make
 BuildRequires:      mesa-libGL-devel
 BuildRequires:      qt5-qtbase-devel >= 5.2
@@ -16,12 +16,14 @@ BuildRequires:      qt5-qtsvg-devel >= 5.2
 BuildRequires:      qt5-qtwebkit-devel >= 5.2
 BuildRequires:      SDL2-devel >= 2.0
 BuildRequires:      alsa-lib-devel
-BuildRequires:      flite-devel
+#BuildRequires:      flite-devel
 BuildRequires:      libsndfile-devel
 BuildRequires:      openssl-devel
 BuildRequires:      zlib-devel
 URL:                https://github.com/ArduPilot/apm_planner
 ExcludeArch:        s390 s390x
+
+%global debug_package %{nil}
 
 %description
 

@@ -1,0 +1,11 @@
+--- a/qgroundcontrol.pro
++++ b/qgroundcontrol.pro
+@@ -38,7 +38,7 @@ linux-g++-64 {
+     DEFINES += Q_LINUX_64
+     DEFINES += FLITE_AUDIO_ENABLED
+
+-    DISTRO = $$system(lsb_release -i)
++    DISTRO = $$system(cat /etc/system-release)
+
+     contains( DISTRO, "Ubuntu" ) {
+         message(Ubuntu Build)
