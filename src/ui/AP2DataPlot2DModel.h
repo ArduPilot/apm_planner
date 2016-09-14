@@ -151,6 +151,8 @@ private: //helpers
     bool setUpMaxTime();
 
 private:
+    static const int s_DataRowOffset = 500;     /// Index offset for first data row. This allows max 499 FMT rows!
+
     QString m_error;
     QString m_databaseName;
     QVector<QPair<quint64,QString> > m_rowIndexToDBIndex;   /// stores relation between Table row index
@@ -175,10 +177,9 @@ private:
     int m_rowCount;                 /// Stores the number of rows held in model.
     int m_columnCount;
     int m_currentRow;
-    int m_fmtIndex;
+    int m_fmtIndex;         /// Index for FMT (type) rows
 
-    quint64 m_firstIndex;
-    quint64 m_lastIndex;
+    quint64 m_lastIndex;    /// holds last data row index increases when adding row
 
     queryPtr m_indexinsertquery;
     queryPtr m_fmtInsertQuery;

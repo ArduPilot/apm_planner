@@ -72,8 +72,7 @@ AP2DataPlot2DModel::AP2DataPlot2DModel(QObject *parent) :
     m_columnCount(0),
     m_currentRow(0),
     m_fmtIndex(0),
-    m_firstIndex(0),
-    m_lastIndex(0)
+    m_lastIndex(s_DataRowOffset)    // must be initialized with offset as there shall be a s_DataRowOffset to fmtIndex
 {
     // It is not allowed to hold DB as member. Otherwise it cannot be removed leading to resouce leaks.
     // use only locals and get the DB with QSqlDatabase::database(m_databaseName)!!
@@ -371,12 +370,7 @@ void AP2DataPlot2DModel::selectedRowChanged(QModelIndex current,QModelIndex prev
         return;
     }
     m_currentRow = current.row();
-    if (current.row() < m_fmtStringList.size())
-    {
-        m_currentHeaderItems = QList<QString>();
-        emit headerDataChanged(Qt::Horizontal,0,9);
-        return;
-    }
+
     //Grab the index
 
     if (current.row() < m_rowCount)
@@ -405,7 +399,7 @@ bool AP2DataPlot2DModel::addType(const QString &name, const unsigned int type, c
         QString insertstring = makeInsertTableString(name,names);
 
         //if (!query->prepare("INSERT INTO 'FMT' (idx,typeid,length,name,format,val) values (:idx,:typeid,:length,:name,:format,:val);"))
-        m_fmtInsertQuery->bindValue(":idx",m_fmtIndex++);
+        m_fmtInsertQuery->bindValue(":idx",m_fmtIndex);
         m_fmtInsertQuery->bindValue(":typeid",type);
         m_fmtInsertQuery->bindValue(":length",length);
         m_fmtInsertQuery->bindValue(":name",name);
@@ -413,7 +407,7 @@ bool AP2DataPlot2DModel::addType(const QString &name, const unsigned int type, c
         m_fmtInsertQuery->bindValue(":val",variablenames);
         QList<QString> list;
         list.append("FMT");
-        list.append(QString::number(m_fmtIndex-1));
+        list.append(QString::number(m_fmtIndex));
         list.append(QString::number(type));
         list.append(QString::number(length));
         list.append(types);
@@ -426,7 +420,7 @@ bool AP2DataPlot2DModel::addType(const QString &name, const unsigned int type, c
         }
         m_fmtInsertQuery->finish(); // should be called in case of reusage
 
-        m_indexinsertquery->bindValue(":idx",m_fmtIndex-1);
+        m_indexinsertquery->bindValue(":idx",m_fmtIndex++);
         m_indexinsertquery->bindValue(":value","FMT");
         if (!m_indexinsertquery->exec())
         {
@@ -543,11 +537,6 @@ bool AP2DataPlot2DModel::endTransaction()
 
 bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const int index, const QString &timeColName)
 {
-    if (m_firstIndex == 0)
-    {
-        m_firstIndex = index;
-    }
-    m_lastIndex = index;
 
     //Add a row to a previously defined message type using the already prepared insert query
     queryPtr insertQuery = m_msgNameToPrepearedInsertQuery.value(name);
@@ -556,14 +545,14 @@ bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,Q
         setError("No prepared insert query available for message: " + name);
         return false;
     }
-    insertQuery->bindValue(":idx", index);
+    insertQuery->bindValue(":idx", m_lastIndex);
     bool timeFound = false;
     for (int i=0;i<values.size();i++)
     {
         insertQuery->bindValue(":" + values.at(i).first, values.at(i).second);
         if (!timeFound && (values.at(i).first == timeColName))
         {
-            m_TimeIndexList.push_back(QPair<quint64, quint64>(values.at(i).second.toInt(), index));
+            m_TimeIndexList.push_back(QPair<quint64, quint64>(values.at(i).second.toInt(), m_lastIndex));
             timeFound = true;
         }
     }
@@ -575,7 +564,7 @@ bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,Q
     else
     {
 
-        m_indexinsertquery->bindValue(":idx", index);
+        m_indexinsertquery->bindValue(":idx", m_lastIndex);
         m_indexinsertquery->bindValue(":value", name);
         if (!m_indexinsertquery->exec())
         {
@@ -596,7 +585,7 @@ bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,Q
         m_columnCount = values.size() +2;
     }
 
-    m_rowIndexToDBIndex.push_back(QPair<quint64,QString>(index,name));
+    m_rowIndexToDBIndex.push_back(QPair<quint64,QString>(m_lastIndex++,name));
     m_rowCount++;
     return true;
 }
@@ -773,7 +762,7 @@ quint64 AP2DataPlot2DModel::getLastIndex()
 
 quint64 AP2DataPlot2DModel::getFirstIndex()
 {
-    return m_firstIndex;
+    return s_DataRowOffset;
 }
 
 void AP2DataPlot2DModel::setAllRowsHaveTime(bool allHaveTime, const QString &timeColumName, const double scaling)
