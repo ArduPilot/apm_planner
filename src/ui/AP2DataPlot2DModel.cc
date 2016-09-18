@@ -535,7 +535,7 @@ bool AP2DataPlot2DModel::endTransaction()
     return true;
 }
 
-bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const int index, const QString &timeColName)
+bool AP2DataPlot2DModel::addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const QString &timeColName)
 {
 
     //Add a row to a previously defined message type using the already prepared insert query

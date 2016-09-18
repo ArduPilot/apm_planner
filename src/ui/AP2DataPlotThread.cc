@@ -419,7 +419,7 @@ void AP2DataPlotThread::loadBinaryLog(QFile &logfile)
 
                             if (noCorruptDataFound && (valuepairlist.size() >= 1))
                             {
-                                if (!m_dataModel->addRow(name, valuepairlist, index, m_timeStamp.m_name))
+                                if (!m_dataModel->addRow(name, valuepairlist, m_timeStamp.m_name))
                                 {
                                     QString actualerror = m_dataModel->getError();
                                     m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
@@ -759,13 +759,14 @@ void AP2DataPlotThread::loadAsciiLog(QFile &logfile)
 
                                 if (valuepairlist.size() >= 1)
                                 {
-                                    if (!m_dataModel->addRow(name,valuepairlist,index++, m_timeStamp.m_name))
+                                    if (!m_dataModel->addRow(name,valuepairlist, m_timeStamp.m_name))
                                     {
                                         QString actualerror = m_dataModel->getError();
                                         m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
                                         emit error(actualerror);
                                         return;
                                     }
+                                    index++;
                                     m_plotState.validDataRead();
                                 }
                             }
@@ -980,13 +981,14 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                             // check if a synthetic timestamp has to added
                             handleMissingTimeStamps(timeStampHasToBeAdded, desc.m_name, valuepairlist, lastValidTS, index);
 
-                            if (!m_dataModel->addRow(desc.m_name,valuepairlist, index++, m_timeStamp.m_name))
+                            if (!m_dataModel->addRow(desc.m_name,valuepairlist, m_timeStamp.m_name))
                             {
                                 QString actualerror = m_dataModel->getError();
                                 m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
                                 emit error(actualerror);
                                 return;
                             }
+                            index++;
 
                             // Tlog does not contain MODE messages the mode information ins transmitted in
                             // a heartbeat message. So here we extract MODE data from hertbeat
@@ -1003,13 +1005,14 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                     specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[1], lastModeVal));
                                     specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[2], lastModeVal));
                                     specialValuepairlist.append(QPair<QString, QVariant>(modeVarNames[3], "Generated Value"));
-                                    if (!m_dataModel->addRow(ModeMessage::TypeName, specialValuepairlist, index++, m_timeStamp.m_name))
+                                    if (!m_dataModel->addRow(ModeMessage::TypeName, specialValuepairlist, m_timeStamp.m_name))
                                     {
                                         QString actualerror = m_dataModel->getError();
                                         m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
                                         emit error(actualerror);
                                         return;
                                     }
+                                    index++;
 
                                     // Mav type can be extracted from heartbeat too. So lets set the Mav type
                                     // if not already set
@@ -1035,13 +1038,14 @@ void AP2DataPlotThread::loadTLog(QFile &logfile)
                                 specialValuepairlist.append(QPair<QString, QVariant>(msgVarNames[0], lastValidTS));
                                 specialValuepairlist.append(QPair<QString, QVariant>(msgVarNames[1], valuepairlist[2].second));
                                 specialValuepairlist.append(QPair<QString, QVariant>(msgVarNames[2], "Generated Value"));
-                                if (!m_dataModel->addRow(MsgMessage::TypeName, specialValuepairlist, index++, m_timeStamp.m_name))
+                                if (!m_dataModel->addRow(MsgMessage::TypeName, specialValuepairlist, m_timeStamp.m_name))
                                 {
                                     QString actualerror = m_dataModel->getError();
                                     m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
                                     emit error(actualerror);
                                     return;
                                 }
+                                index++;
                             }
                             m_plotState.validDataRead();    // tell plot state that we have a valid message
                         }

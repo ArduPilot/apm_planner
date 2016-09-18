@@ -47,7 +47,7 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole ) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
     bool addType(const QString &name, const unsigned int type, const int length, const QString &types, const QStringList &names);
-    bool addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const int index, const QString &timeColName);
+    bool addRow(const QString &name, const QList<QPair<QString,QVariant> >  &values, const QString &timeColName);
     QMap<QString,QList<QString> > getFmtValues();
     QString getFmtLine(const QString& name);
     void getMessagesOfType(const QString &type, QMap<quint64, MessageBase::Ptr> &indexToMessageMap);
