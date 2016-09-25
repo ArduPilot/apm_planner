@@ -1,6 +1,6 @@
 # -------------------------------------------------
 # APM Planner - Micro Air Vehicle Groundstation
-# Please see our website at <http://ardupilot.com>
+# Please see our website at <http://ardupilot.org>
 # Maintainer:
 # Bill Bonney <billbonney@communitech.com>
 # Based of QGroundControl by Lorenz Meier <lm@inf.ethz.ch>
