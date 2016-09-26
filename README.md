@@ -37,7 +37,7 @@ Build APM Planner
 --------------------
 1) From the terminal go to the `apm_planner` directory created when you cloned the repository.
 
-2) Run `qmake -spec macx-g++ qgroundcontrol.pro`
+2) Run `qmake -spec macx-g++ apm_planner.pro`
 
 3) Run `make -j8`
 
@@ -86,7 +86,7 @@ git clone https://github.com/diydrones/apm_planner
 
 ```
 cd ~/workspace/apm_planner
-qmake qgroundcontrol.pro
+qmake apm_planner.pro
 make
 ```
 
