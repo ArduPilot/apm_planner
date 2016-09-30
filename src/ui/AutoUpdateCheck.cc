@@ -83,21 +83,35 @@ void AutoUpdateCheck::cancelDownload()
 
 void AutoUpdateCheck::httpFinished()
 {
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     QLOG_DEBUG() << "AutoUpdateCheck::httpFinished()";
     if (m_httpRequestAborted) {
-        m_networkReply->deleteLater();
-        m_networkReply = NULL;
+        reply->deleteLater();
+        reply = NULL;
         return;
     }
 
+    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
     // Finished donwloading the version information
-    if (m_networkReply->error()) {
+    if (reply->error()) {
         // [TODO] cleanup download failed
 #ifdef QT_DEBUG
         QMessageBox::information(NULL, tr("HTTP"),
                                  tr("Download failed: %1.")
                                  .arg(m_networkReply->errorString()));
 #endif
+    } else if (!redirectionTarget.isNull()) {
+        QUrl newUrl = reply->url().resolved(redirectionTarget.toUrl());
+        QNetworkReply* newReply = m_networkAccessManager.get(QNetworkRequest(newUrl));
+        QLOG_DEBUG() << "Redirecting to " << newUrl;
+
+        connect(newReply, SIGNAL(finished()), this, SLOT(httpFinished()));
+        connect(newReply, SIGNAL(downloadProgress(qint64,qint64)),
+                this, SLOT(updateDataReadProgress(qint64,qint64)));
+        reply->deleteLater();
+        m_networkReply = newReply;
+        return;
     } else {
         // Process downloadeed object
         processDownloadedVersionObject(QString(m_networkReply->readAll()));
