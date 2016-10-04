@@ -228,7 +228,7 @@ bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QSt
             oldBuildSubMoniker = versionEx2.cap(2);
     }
 
-    QLOG_DEBUG() << "Verison Compare:" <<QString().sprintf(" New Version %d.%d.%d compared to Old Version %d.%d.%d",
+    QLOG_DEBUG() << "Version Compare:" <<QString().sprintf("New Version %d.%d.%d compared to Old Version %d.%d.%d",
                                                  newMajor,newMinor,newBuild, currentMajor, currentMinor,currentBuild);
     if (newMajor>currentMajor){
         // A Major release
