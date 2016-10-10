@@ -322,7 +322,7 @@ void WaypointList::addEditable(bool onCurrentPosition)
 //        wp->blockSignals(true);
         MAV_FRAME frame = static_cast<MAV_FRAME>(WPM->getFrameRecommendation());
         wp->setFrame(frame);
-        if (frame == MAV_FRAME_GLOBAL || frame == MAV_FRAME_GLOBAL_RELATIVE_ALT)
+        if (wp->isGlobalFrame())
         {
             wp->setLatitude(last->getLatitude());
             wp->setLongitude(last->getLongitude());

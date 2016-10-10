@@ -159,6 +159,7 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
     ui.missionGroupBox->setDisabled(false);
     ui.altitudeTypeComboBox->addItem(tr("Relative (AGL)"), MAV_FRAME_GLOBAL_RELATIVE_ALT);
     ui.altitudeTypeComboBox->addItem(tr("Absolute (ASL)"), MAV_FRAME_GLOBAL);
+    ui.altitudeTypeComboBox->addItem(tr("Terrain (AGL)"), MAV_FRAME_GLOBAL_TERRAIN_ALT);
     ui.shortcutGroupBox->setDisabled(false);
     ui.altitudeDoubleSpinBox->setValue(50.0f); // set a default altitude
 
