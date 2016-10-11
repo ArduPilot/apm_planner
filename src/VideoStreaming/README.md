@@ -1,11 +1,11 @@
-# QGroundControl
+# APM Planner 2.0
 
 ## Video Streaming
 
-For supported platforms, QGroundControl implements an UDP RTP video streaming receiver in its Main Flight Display. It uses GStreamer and a stripped down version of QtGstreamer.
+For supported platforms, APM Planner implements an UDP RTP video streaming receiver in its Main Flight Display. It uses GStreamer and a stripped down version of QtGstreamer.
 To build video streaming support, you will need to install the GStreamer development packages for the desired target platform.
 
-If you do have the proper GStreamer development libraries installed where QGC looks for it, the QGC build system will automatically use it and build video streaming support. If you would like to disable video streaming support, you can add **DISABLE_VIDEOSTREAMING** to the **DEFINES** build variable.
+If you do have the proper GStreamer development libraries installed where AP2 looks for it, the AP2 build system will automatically use it and build video streaming support. If you would like to disable video streaming support, you can add **DISABLE_VIDEOSTREAMING** to the **DEFINES** build variable.
 
 ### Pipeline
 
@@ -15,7 +15,7 @@ For the time being, the pipeline is somewhat hardcoded, using h.264. It's best t
 gst-launch-1.0 uvch264src initial-bitrate=1000000 average-bitrate=1000000 iframe-period=1000 device=/dev/video0 name=src auto-start=true src.vidsrc ! video/x-h264,width=1920,height=1080,framerate=24/1 ! h264parse ! rtph264pay ! udpsink host=xxx.xxx.xxx.xxx port=5000
 ```
 
-Where xxx.xxx.xxx.xxx is the IP address where QGC is running. You may tweak the bitrate, the resolution and the FPS based on your needs and/or available bandwidth.
+Where xxx.xxx.xxx.xxx is the IP address where AP2 is running. You may tweak the bitrate, the resolution and the FPS based on your needs and/or available bandwidth.
 
 On the receiving end, if you want to test it from the command line, you can use something like:
 ```
@@ -34,11 +34,11 @@ The build system is setup to use pkgconfig and it will find the necessary header
 
 ### Mac OS
 
-Download the gstreamer framework from here: http://gstreamer.freedesktop.org/data/pkg/osx. The current version, as this is written is 1.5.2.
+Download the gstreamer framework from here: http://gstreamer.freedesktop.org/data/pkg/osx. The current version is 1.9.90, but was developed against 1.5.x+
 
 You need two packages:
-- [gstreamer-1.0-devel-1.5.2-x86_64.pkg](http://gstreamer.freedesktop.org/data/pkg/osx/1.5.2/gstreamer-1.0-devel-1.5.2-x86_64.pkg)
-- [gstreamer-1.0-1.5.2-x86_64.pkg](http://gstreamer.freedesktop.org/data/pkg/osx/1.5.2/gstreamer-1.0-1.5.2-x86_64.pkg)
+- [gstreamer-1.0-devel-1.9.90-x86_64.pkg](https://gstreamer.freedesktop.org/data/pkg/osx/1.9.90/gstreamer-1.0-devel-1.9.90-x86_64.pkg)
+- [gstreamer-1.0-1.9.90-x86_64.pkg](https://gstreamer.freedesktop.org/data/pkg/osx/1.9.90/gstreamer-1.0-1.9.90-x86_64.pkg)
 
 The installer places them under /Library/Frameworks/GStreamer.framework, which is where the QGC build system will look for it. That's all that is needed. When you build QGC and it finds the gstreamer framework, it automatically builds video streaming support.
 
@@ -46,16 +46,6 @@ The installer places them under /Library/Frameworks/GStreamer.framework, which i
 ```
 export PATH=$PATH:/Library/Frameworks/GStreamer.framework/Commands
 ```
-
-### iOS
-
-TODO: Binaries found in http://gstreamer.freedesktop.org/data/pkg/ios
-(work in progress)
-
-### Android
-
-TODO: Binaries found in http://gstreamer.freedesktop.org/data/pkg/android
-(work in progress)
 
 ### Windows
 
