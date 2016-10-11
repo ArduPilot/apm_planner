@@ -1,6 +1,6 @@
 #include "QGCCommandButton.h"
 #include "ui_QGCCommandButton.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "MAVLinkProtocol.h"
 #include "UASManager.h"
 #include <QDockWidget>

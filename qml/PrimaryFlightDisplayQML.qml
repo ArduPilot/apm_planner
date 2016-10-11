@@ -29,6 +29,7 @@ Rectangle {
     property bool enableBackgroundVideo: false
     property string statusMessage: ""
     property bool showStatusMessage: false
+    property color statusMessageColor: statusMessageIndicator.messageColor
 
     function activeUasSet() {
         rollPitchIndicator.rollAngle = Qt.binding(function() { return relpositionoverview.roll})
@@ -142,6 +143,7 @@ Rectangle {
         id: statusMessageIndicator
         anchors.fill: parent
         message: statusMessage
+        messageColor: statusMessageColor;
         visible: showStatusMessage
     }
 

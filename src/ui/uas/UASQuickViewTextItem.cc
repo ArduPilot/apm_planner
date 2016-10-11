@@ -1,6 +1,7 @@
 #include "UASQuickViewTextItem.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QVBoxLayout>
+#include <math.h>
 
 UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(parent)
 {
@@ -9,7 +10,7 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     layout->setSpacing(0);
     layout->setMargin(0);
     titleLabel = new UASQuickViewTextLabel(this);
-   //titleLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+    //titleLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     titleLabel->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
     this->layout()->addWidget(titleLabel);
     valueLabel = new UASQuickViewTextLabel(this);
@@ -25,10 +26,18 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     titlefont.setPixelSize(this->height() / 4.0);
     valueLabel->setFontSize(this->height() / 2.0);
     titleLabel->setFontSize(this->height() / 4.0);
-    QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+    // use golden ratio for evenly distributed colors
+    double golden_ratio_conjugate = 0.618033988749895;
+    double h = ((double)rand() / (double)(RAND_MAX));
+    h = h + golden_ratio_conjugate;
+    h = fmod(h, 1.0);     // hue, 0.0 - 1.0
+    double s = 0.75;    // saturation, the bigger it is, the stronger the color is
+    double v = 0.8516;  // value, represents lightness or brightness, 0 is black
+    QColor color = QColor::fromHsvF(h, s, v);
     titleLabel->setFontColor(color);
     valueLabel->setFontColor(color);
 }
+
 QString UASQuickViewTextItem::value()
 {
     return valueLabel->text();
@@ -135,6 +144,7 @@ void UASQuickViewTextItem::setValuePixelSize(int size)
 
 void UASQuickViewTextItem::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event)
     return;
     QFont valuefont = valueLabel->font();
     QFont titlefont = titleLabel->font();

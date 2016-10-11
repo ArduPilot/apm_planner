@@ -42,10 +42,10 @@ namespace core {
 //        VersionGoogleLabels = "h@132";
 //        VersionGoogleTerrain = "t@125,r@132";
         // Google version strings
-        VersionGoogleMap = "m@313";
-        VersionGoogleSatellite = "177";
-        VersionGoogleLabels = "h@313";
-        VersionGoogleTerrain = "t@132,r@313";
+        VersionGoogleMap = "m@359";
+        VersionGoogleSatellite = "698";
+        VersionGoogleLabels = "h@359";
+        VersionGoogleTerrain = "t@359,r@359";
         SecGoogleWord = "Galileo";
 
         // Google (China) version strings

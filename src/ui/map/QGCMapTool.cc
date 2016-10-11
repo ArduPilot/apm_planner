@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "UASInterface.h"
 #include "UASManager.h"
 #include "UAS.h"

@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "configuration.h"
 #include "globalobject.h"
 #include <QSettings>

@@ -27,13 +27,13 @@ This file is part of the APM_PLANNER project
  *   @author Michael Carpenter <malcom2073@gmail.com>
  *
  */
-#include "QsLog.h"
+#include "logging.h"
 #include "ApmHardwareConfig.h"
 
 ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
+    m_uas(NULL),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
-    m_uas(NULL),
     m_mandatory(false)
 {
     ui.setupUi(this);
@@ -393,6 +393,7 @@ void ApmHardwareConfig::toggleButtonsShown(bool show)
 void ApmHardwareConfig::parameterChanged(int uas, int component, int parameterCount, int parameterId,
                                          QString parameterName, QVariant value)
 {
+    Q_UNUSED(component)
 
     QString countString;
     // Create progress of downloading all parameters for UI

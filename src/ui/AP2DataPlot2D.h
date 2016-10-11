@@ -34,7 +34,6 @@ This file is part of the APM_PLANNER project
 #include "MAVLinkDecoder.h"
 #include "kmlcreator.h"
 #include "qcustomplot.h"
-#include "DroneshareUploadDialog.h"
 
 #include "AP2DataPlotThread.h"
 #include "dataselectionscreen.h"
@@ -78,6 +77,10 @@ private slots:
     void loadButtonClicked();
     void loadDialogAccepted();
 
+    //settings
+    void saveSettings();
+    void loadSettings();
+
     //Graph loading thread started
     void loadStarted();
     //Progress of graph loading thread
@@ -85,7 +88,7 @@ private slots:
     //Cancel clicked on the graph loading thread progress dialog
     void progressDialogCanceled();
     //Graph loading thread finished
-    void threadDone(int errors,MAV_TYPE type);
+    void threadDone(AP2DataPlotStatus state, MAV_TYPE type);
     //Graph loading thread actually exited
     void threadTerminated();
     //Graph loading thread error
@@ -113,14 +116,15 @@ private slots:
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
+    void plotDoubleClick(QMouseEvent * _t2);
     void plotMouseMove(QMouseEvent *evt);
     void horizontalScrollMoved(int value);
     void verticalScrollMoved(int value);
     void xAxisChanged(QCPRange range);
     void replyTLogButtonClicked();
 
-    void droneshareButtonClicked();
-
+    void exportLogClicked();
+    void exportKmlClicked();
     void exportButtonClicked();
     void exportDialogAccepted();
 
@@ -131,6 +135,8 @@ private slots:
     void modeCheckBoxClicked(bool checked);
     void errCheckBoxClicked(bool checked);
     void evCheckBoxClicked(bool checked);
+    void msgCheckBoxClicked(bool checked);
+    void indexTypeCheckBoxClicked(bool checked);
     void sortItemChanged(QTreeWidgetItem* item,int col);
     void sortAcceptClicked();
     void sortCancelClicked();
@@ -143,13 +149,61 @@ private slots:
     void setExcelViewHidden(bool hidden);
 
 private:
+
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
     AP2DataPlot2DModel *m_tableModel;
     QSortFilterProxyModel *m_tableFilterProxyModel;
     QList<QString> m_tableFilterList;
     int getStatusTextPos();
-    void plotTextArrow(int index, const QString& text, const QString& graph, QCheckBox *checkBox = NULL);
+    void plotTextArrow(double index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = NULL);
+
+    /**
+     * @brief This method hides or shows the text arrows of type
+     *        garphName by changing their visability. Used by
+     *        checkbox handlers.
+     * @param show - true - make visible / false - hide them
+     * @param type - typename of text arrows to hide or show
+     */
+    void hideShowTextArrows(bool show, const QString &graphName);
+
+    /**
+     * @brief This method disables the filtering of m_tableFilterProxyModel
+     *        After a call the table model will show all rows again.
+     */
+    void disableTableFilter();
+
+    /**
+     * @brief setupXAxisAndScroller sets up x axis and the horizontal scroller
+     *        to use the normal index (the artifical) or the time index regarding
+     *        to the value of m_useTimeOnX.
+     */
+    void setupXAxisAndScroller();
+
+    /**
+     * @brief removeTextArrows removes all text arrows of type graphName
+     *
+     * @param graphName - Name of the graph whose test arrows shall be removed
+     */
+    void removeTextArrows(const QString &graphName);
+
+    /**
+     * @brief insertTextArrows inserts messages stored in m_indexToMessageMap
+     *        as text arrows into the graph
+     *        Uses normal or time index regarding of the value of m_useTimeOnX
+     */
+    void insertTextArrows();
+
+    /**
+     * @brief insertCurrentTime inserts a red line into the graph
+     */
+    void insertCurrentIndex();
+
+    /**
+     * @brief plotCurrentTime updates the current time red line position
+     */
+    void plotCurrentIndex(double index);
+
 
 private:
     Ui::AP2DataPlot2D ui;
@@ -165,7 +219,9 @@ private:
         QCPAxis *axis;
         QCPGraph *graph;
         QList<QCPAbstractItem*> itemList;
-        QMap<double,QString> modeMap;
+        QMap<double,QString> messageMap;
+
+        Graph() : isManualRange(false), isInGroup(false), axisIndex(0), axis(NULL), graph(NULL){}
     };
 
     QMap<QString,Graph> m_graphClassMap;
@@ -195,30 +251,35 @@ private:
     QCustomPlot *m_plot;
     QCPAxisRect *m_wideAxisRect;
     AP2DataPlotThread *m_logLoaderThread;
-    //DataSelectionScreen *m_dataSelectionScreen;
-    QStandardItemModel *m_model;
     bool m_logLoaded;
     //Current "index", X axis on graph. Used to keep all the graphs lined up.
     qint64 m_currentIndex;
     qint64 m_startIndex; //epoch msecs since graphing started
     QAction *m_addGraphAction;
     UASInterface *m_uas;
-    QProgressDialog *m_progressDialog;
+    QSharedPointer<QProgressDialog> m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
     //qint64 m_timeDiff;
     bool m_tlogReplayEnabled;
-
 
     qint64 m_scrollStartIndex; //Actual graph start
     qint64 m_scrollEndIndex; //Actual graph end
 
     LogDownloadDialog *m_logDownloadDialog;
-    DroneshareUploadDialog *m_droneshareUploadDialog;
 
     MAV_TYPE m_loadedLogMavType;
 
     QString m_filename;
     int m_statusTextPos;
+
+    bool m_useTimeOnX;                      /// True if x axis uses time index
+    //red time line
+    QCPItemLine *m_timeLine;
+
+    QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    /// Map holding all Messages which are printed as arrows
+    int m_lastHorizontalScrollerVal;                        /// Used to avoid multiple calls with same value
+    bool m_KmlExport;                                       /// True if exporting to Kml
+
 };
 
 #endif // AP2DATAPLOT2D_H

@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
    <property name="spacing">
     <number>5</number>
    </property>
@@ -41,6 +41,57 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
+   <item>
+    <widget class="QDoubleSpinBox" name="param1SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>135</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="prefix">
+      <string extracomment="0 = off 1 = on">off/on </string>
+     </property>
+     <property name="suffix">
+      <string/>
+     </property>
+     <property name="decimals">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDoubleSpinBox" name="param4SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>135</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="prefix">
+      <string extracomment="0=Relock 1=Ignore 2=Lock ">Focus Lock </string>
+     </property>
+     <property name="decimals">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDoubleSpinBox" name="param5SpinBox">
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="prefix">
+      <string extracomment="&gt;0 to trigger"> Shutter </string>
+     </property>
+     <property name="decimals">
+      <number>0</number>
+     </property>
+    </widget>
+   </item>
    <item>
     <spacer name="horizontalSpacer">
      <property name="orientation">

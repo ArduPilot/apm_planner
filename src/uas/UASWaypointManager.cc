@@ -29,7 +29,7 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include "QsLog.h"
+#include "logging.h"
 #include "UASWaypointManager.h"
 #include "UAS.h"
 #include "mavlink_types.h"
@@ -129,7 +129,7 @@ void UASWaypointManager::handleGlobalPositionChanged(UASInterface* mav, double l
     Q_UNUSED(alt);
     Q_UNUSED(lon);
     Q_UNUSED(lat);
-    if (waypointsEditable.count() > 0 && currentWaypointEditable && (currentWaypointEditable->getFrame() == MAV_FRAME_GLOBAL || currentWaypointEditable->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT))
+    if (waypointsEditable.count() > 0 && currentWaypointEditable && currentWaypointEditable->isGlobalFrame())
     {
         // TODO FIXME Calculate distance
         double dist = 0;
@@ -145,11 +145,8 @@ void UASWaypointManager::handleWaypointCount(quint8 systemId, quint8 compId, qui
 
         //Clear the old edit-list before receiving the new one
         if (read_to_edit == true){
-            while(waypointsEditable.count()>0) {
-                Waypoint *t = waypointsEditable[0];
-                waypointsEditable.removeAt(0);
-                delete t;
-            }
+            qDeleteAll(waypointsEditable);
+            waypointsEditable.clear();
             emit waypointEditableListChanged();
         }
 
@@ -526,11 +523,11 @@ void UASWaypointManager::loadWaypoints(const QString &loadFile)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    while(waypointsEditable.count()>0) {
-        Waypoint *t = waypointsEditable[0];
-        waypointsEditable.removeAt(0);
-        delete t;
-    }
+    qDeleteAll(waypointsEditable);
+    waypointsEditable.clear();
+
+    emit waypointEditableListChanged();
+    emit waypointEditableListChanged(uasid);
 
     QTextStream in(&file);
 
@@ -596,7 +593,7 @@ const QList<Waypoint *> UASWaypointManager::getGlobalFrameWaypointList()
     QList<Waypoint*> wps;
     foreach (Waypoint* wp, waypointsEditable)
     {
-        if (wp->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT)
+        if (wp->isGlobalFrame())
         {
             wps.append(wp);
         }
@@ -612,7 +609,7 @@ const QList<Waypoint *> UASWaypointManager::getGlobalFrameAndNavTypeWaypointList
     QList<Waypoint*> wps;
     foreach (Waypoint* wp, waypointsEditable)
     {
-        if ((wp->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && (wp->isNavigationType() || (wp->visibleOnMapWidget())))
+        if ((wp->isGlobalFrame()) && (wp->isNavigationType() || (wp->visibleOnMapWidget())))
         {
             if(wp->visibleOnMapWidget() && onlypath) // we need waypoints only to draw the path on map
                 continue;
@@ -649,7 +646,7 @@ int UASWaypointManager::getGlobalFrameIndexOf(Waypoint* wp)
     // counting only those in global frame
     int i = 0;
     foreach (Waypoint* p, waypointsEditable) {
-        if (p->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT)
+        if (p->isGlobalFrame())
         {
             if (p == wp)
             {
@@ -668,7 +665,7 @@ int UASWaypointManager::getGlobalFrameAndNavTypeIndexOf(Waypoint* wp)
     // counting only those in global frame
     int i = 0;
     foreach (Waypoint* p, waypointsEditable) {
-        if ((p->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && p->isNavigationType())
+        if (p->isGlobalFrame() && p->isNavigationType())
         {
             if (p == wp)
             {
@@ -708,7 +705,7 @@ int UASWaypointManager::getGlobalFrameCount()
     int i = 0;
     foreach (Waypoint* p, waypointsEditable)
     {
-        if (p->getFrame() == MAV_FRAME_GLOBAL || p->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT)
+        if (p->isGlobalFrame())
         {
             i++;
         }
@@ -723,7 +720,7 @@ int UASWaypointManager::getGlobalFrameAndNavTypeCount()
     // counting only those in global frame
     int i = 0;
     foreach (Waypoint* p, waypointsEditable) {
-        if ((p->getFrame() == MAV_FRAME_GLOBAL || p->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && p->isNavigationType())
+        if (p->isGlobalFrame() && p->isNavigationType())
         {
             i++;
         }
@@ -814,11 +811,8 @@ void UASWaypointManager::readWaypoints(bool readToEdit)
 
 
         //Clear the old view-list before receiving the new one
-        while(waypointsViewOnly.size()>0) {
-            Waypoint *t = waypointsViewOnly[0];
-            waypointsViewOnly.removeAt(0);
-            delete t;
-        }
+        qDeleteAll(waypointsViewOnly);
+        waypointsViewOnly.clear();
         emit waypointViewOnlyListChanged();
         /* THIS PART WAS MOVED TO handleWaypointCount. THE EDIT-LIST SHOULD NOT BE CLEARED UNLESS THERE IS A RESPONSE FROM UAV.
         //Clear the old edit-list before receiving the new one

@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "SlugsDataSensorView.h"
 #include "ui_SlugsDataSensorView.h"
 

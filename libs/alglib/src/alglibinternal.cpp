@@ -379,6 +379,8 @@ This function returns value of COND.
 *************************************************************************/
 ae_bool seterrorflag(ae_bool* flag, ae_bool cond, ae_state *_state)
 {
+    (void)_state;
+
     ae_bool result;
 
 
@@ -427,7 +429,8 @@ variables).
 *************************************************************************/
 void touchint(ae_int_t* a, ae_state *_state)
 {
-
+    (void)a;
+    (void)_state;
 
 }
 
@@ -442,7 +445,8 @@ variables).
 *************************************************************************/
 void touchreal(double* a, ae_state *_state)
 {
-
+    (void)a;
+    (void)_state;
 
 }
 
@@ -455,6 +459,7 @@ The function convert integer value to real value.
 *************************************************************************/
 double inttoreal(ae_int_t a, ae_state *_state)
 {
+    (void)_state;
     double result;
 
 
@@ -758,6 +763,7 @@ or both are False).
 *************************************************************************/
 ae_bool aresameboolean(ae_bool v1, ae_bool v2, ae_state *_state)
 {
+    (void)_state;
     ae_bool result;
 
 
@@ -1388,6 +1394,7 @@ No overflow is generated in any case.
 *************************************************************************/
 double safeminposrv(double x, double y, double v, ae_state *_state)
 {
+    (void)_state;
     double r;
     double result;
 
@@ -1547,7 +1554,7 @@ This function is used to increment value of integer variable
 *************************************************************************/
 void inc(ae_int_t* v, ae_state *_state)
 {
-
+    (void)_state;
 
     *v = *v+1;
 }
@@ -1558,7 +1565,7 @@ This function is used to decrement value of integer variable
 *************************************************************************/
 void dec(ae_int_t* v, ae_state *_state)
 {
-
+    (void)_state;
 
     *v = *v-1;
 }
@@ -1572,7 +1579,7 @@ It is used by some algorithms to decrease value of internal counters.
 *************************************************************************/
 void countdown(ae_int_t* v, ae_state *_state)
 {
-
+    (void)_state;
 
     if( *v>0 )
     {
@@ -1593,6 +1600,7 @@ void countdown(ae_int_t* v, ae_state *_state)
 *************************************************************************/
 double boundval(double x, double b1, double b2, ae_state *_state)
 {
+    (void)_state;
     double result;
 
 
@@ -1616,7 +1624,9 @@ Allocation of serializer: complex value
 *************************************************************************/
 void alloccomplex(ae_serializer* s, ae_complex v, ae_state *_state)
 {
-
+    (void)s;
+    (void)v;
+    (void)_state;
 
     ae_serializer_alloc_entry(s);
     ae_serializer_alloc_entry(s);
@@ -1657,6 +1667,8 @@ void allocrealarray(ae_serializer* s,
      ae_int_t n,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
 
 
@@ -1730,6 +1742,8 @@ void allocintegerarray(ae_serializer* s,
      ae_int_t n,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
 
 
@@ -1804,6 +1818,8 @@ void allocrealmatrix(ae_serializer* s,
      ae_int_t n1,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t j;
 
@@ -1986,6 +2002,8 @@ ae_int_t recsearch(/* Integer */ ae_vector* a,
      /* Integer */ ae_vector* b,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t mididx;
     ae_int_t cflag;
     ae_int_t k;
@@ -2209,6 +2227,9 @@ void _apbuffers_destroy(void* _p)
 
 ae_bool _sboolean_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     sboolean *p = (sboolean*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -2217,6 +2238,9 @@ ae_bool _sboolean_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _sboolean_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     sboolean *dst = (sboolean*)_dst;
     sboolean *src = (sboolean*)_src;
     dst->val = src->val;
@@ -2276,6 +2300,9 @@ void _sbooleanarray_destroy(void* _p)
 
 ae_bool _sinteger_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     sinteger *p = (sinteger*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -2284,6 +2311,9 @@ ae_bool _sinteger_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _sinteger_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     sinteger *dst = (sinteger*)_dst;
     sinteger *src = (sinteger*)_src;
     dst->val = src->val;
@@ -2343,6 +2373,9 @@ void _sintegerarray_destroy(void* _p)
 
 ae_bool _sreal_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     sreal *p = (sreal*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -2351,6 +2384,9 @@ ae_bool _sreal_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _sreal_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     sreal *dst = (sreal*)_dst;
     sreal *src = (sreal*)_src;
     dst->val = src->val;
@@ -2410,6 +2446,9 @@ void _srealarray_destroy(void* _p)
 
 ae_bool _scomplex_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     scomplex *p = (scomplex*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -2418,6 +2457,9 @@ ae_bool _scomplex_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _scomplex_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)_state;
+    (void)make_automatic;
+
     scomplex *dst = (scomplex*)_dst;
     scomplex *src = (scomplex*)_src;
     dst->val = src->val;
@@ -2479,6 +2521,8 @@ void _scomplexarray_destroy(void* _p)
 
 ae_int_t getrdfserializationcode(ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -2489,6 +2533,8 @@ ae_int_t getrdfserializationcode(ae_state *_state)
 
 ae_int_t getkdtreeserializationcode(ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -2499,6 +2545,8 @@ ae_int_t getkdtreeserializationcode(ae_state *_state)
 
 ae_int_t getmlpserializationcode(ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -2509,6 +2557,8 @@ ae_int_t getmlpserializationcode(ae_state *_state)
 
 ae_int_t getmlpeserializationcode(ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -2519,6 +2569,8 @@ ae_int_t getmlpeserializationcode(ae_state *_state)
 
 ae_int_t getrbfserializationcode(ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -2956,6 +3008,8 @@ void tagsortmiddleir(/* Integer */ ae_vector* a,
      ae_int_t n,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t k;
     ae_int_t t;
@@ -3070,6 +3124,8 @@ void tagheappushi(/* Real    */ ae_vector* a,
      ae_int_t vb,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t j;
     ae_int_t k;
     double v;
@@ -3151,6 +3207,8 @@ void tagheapreplacetopi(/* Real    */ ae_vector* a,
      ae_int_t vb,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t j;
     ae_int_t k1;
     ae_int_t k2;
@@ -3318,6 +3376,8 @@ ae_int_t lowerbound(/* Real    */ ae_vector* a,
      double t,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t l;
     ae_int_t half;
     ae_int_t first;
@@ -3363,6 +3423,8 @@ ae_int_t upperbound(/* Real    */ ae_vector* a,
      double t,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t l;
     ae_int_t half;
     ae_int_t first;
@@ -4070,6 +4132,7 @@ ae_bool cmatrixrank1f(ae_int_t m,
      ae_int_t iv,
      ae_state *_state)
 {
+    (void)_state;
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4100,6 +4163,7 @@ ae_bool rmatrixrank1f(ae_int_t m,
      ae_int_t iv,
      ae_state *_state)
 {
+    (void)_state;
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4131,6 +4195,17 @@ ae_bool cmatrixmvf(ae_int_t m,
      ae_int_t iy,
      ae_state *_state)
 {
+    (void)m;
+    (void)n;
+    (void)a;
+    (void)ia;
+    (void)ja;
+    (void)opa;
+    (void)x;
+    (void)ix;
+    (void)y;
+    (void)iy;
+    (void)_state;
     ae_bool result;
 
 
@@ -4158,6 +4233,18 @@ ae_bool rmatrixmvf(ae_int_t m,
      ae_int_t iy,
      ae_state *_state)
 {
+    (void)m;
+    (void)n;
+    (void)a;
+    (void)ia;
+    (void)ja;
+    (void)opa;
+    (void)x;
+    (void)ix;
+    (void)y;
+    (void)iy;
+    (void)_state;
+
     ae_bool result;
 
 
@@ -4186,6 +4273,7 @@ ae_bool cmatrixrighttrsmf(ae_int_t m,
      ae_int_t j2,
      ae_state *_state)
 {
+    (void)_state;
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4218,6 +4306,8 @@ ae_bool cmatrixlefttrsmf(ae_int_t m,
      ae_int_t j2,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4250,6 +4340,8 @@ ae_bool rmatrixrighttrsmf(ae_int_t m,
      ae_int_t j2,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4282,6 +4374,8 @@ ae_bool rmatrixlefttrsmf(ae_int_t m,
      ae_int_t j2,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4315,6 +4409,8 @@ ae_bool cmatrixsyrkf(ae_int_t n,
      ae_bool isupper,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4348,6 +4444,8 @@ ae_bool rmatrixsyrkf(ae_int_t n,
      ae_bool isupper,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4385,6 +4483,8 @@ ae_bool rmatrixgemmf(ae_int_t m,
      ae_int_t jc,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -4422,6 +4522,8 @@ ae_bool cmatrixgemmf(ae_int_t m,
      ae_int_t jc,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_ABLAS
     ae_bool result;
 
@@ -6025,7 +6127,22 @@ ae_bool rmatrixsyrkmkl(ae_int_t n,
      ae_bool isupper,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_MKL
+    (void)n;
+    (void)k;
+    (void)alpha;
+    (void)a;
+    (void)ia;
+    (void)ja;
+    (void)optypea;
+    (void)beta;
+    (void)c;
+    (void)ic;
+    (void)jc;
+    (void)isupper;
+
     ae_bool result;
 
 
@@ -6063,6 +6180,23 @@ ae_bool rmatrixgemmmkl(ae_int_t m,
      ae_state *_state)
 {
 #ifndef ALGLIB_INTERCEPTS_MKL
+    (void)m;
+    (void)n;
+    (void)k;
+    (void)alpha;
+    (void)a;
+    (void)ia;
+    (void)ja;
+    (void)optypea;
+    (void)b;
+    (void)ib;
+    (void)jb;
+    (void)optypeb;
+    (void)beta;
+    (void)c;
+    (void)ic;
+    (void)jc;
+    (void)_state;
     ae_bool result;
 
 
@@ -6650,6 +6784,7 @@ void hermitianmatrixvectormultiply(/* Complex */ ae_matrix* a,
      /* Complex */ ae_vector* y,
      ae_state *_state)
 {
+    (void)_state;
     ae_int_t i;
     ae_int_t ba1;
     ae_int_t by1;
@@ -6956,6 +7091,7 @@ void applyreflectionfromtheleft(/* Real    */ ae_matrix* c,
      /* Real    */ ae_vector* work,
      ae_state *_state)
 {
+    (void)_state;
     double t;
     ae_int_t i;
 
@@ -7027,6 +7163,8 @@ void applyreflectionfromtheright(/* Real    */ ae_matrix* c,
      /* Real    */ ae_vector* work,
      ae_state *_state)
 {
+    (void)work;
+
     double t;
     ae_int_t i;
     ae_int_t vm;
@@ -7303,6 +7441,8 @@ void complexapplyreflectionfromtheright(/* Complex */ ae_matrix* c,
      /* Complex */ ae_vector* work,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_complex t;
     ae_int_t i;
     ae_int_t vm;
@@ -7449,6 +7589,8 @@ void symmetricrank2update(/* Real    */ ae_matrix* a,
      double alpha,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_int_t tp1;
     ae_int_t tp2;
@@ -7524,6 +7666,8 @@ void applyrotationsfromtheleft(ae_bool isforward,
      /* Real    */ ae_vector* work,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t j;
     ae_int_t jp1;
     double ctemp;
@@ -7662,6 +7806,8 @@ void applyrotationsfromtheright(ae_bool isforward,
      /* Real    */ ae_vector* work,
      ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t j;
     ae_int_t jp1;
     double ctemp;
@@ -9078,6 +9224,8 @@ static double hsschur_extschursign(double a, double b, ae_state *_state)
 
 static ae_int_t hsschur_extschursigntoone(double b, ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t result;
 
 
@@ -10837,7 +10985,21 @@ ae_bool hpcchunkedgradient(/* Real    */ ae_vector* weights,
      ae_bool naturalerrorfunc,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_SSE2
+    (void)weights;
+    (void)structinfo;
+    (void)columnmeans;
+    (void)columnsigmas;
+    (void)xy;
+    (void)cstart;
+    (void)csize;
+    (void)batch4buf;
+    (void)hpcbuf;
+    (void)e;
+    (void)naturalerrorfunc;
+
     ae_bool result;
 
 
@@ -10864,7 +11026,17 @@ ae_bool hpcchunkedprocess(/* Real    */ ae_vector* weights,
      /* Real    */ ae_vector* hpcbuf,
      ae_state *_state)
 {
+    (void)_state;
 #ifndef ALGLIB_INTERCEPTS_SSE2
+    (void)weights;
+    (void)structinfo;
+    (void)columnmeans;
+    (void)columnsigmas;
+    (void)xy;
+    (void)cstart;
+    (void)csize;
+    (void)batch4buf;
+    (void)hpcbuf;
     ae_bool result;
 
 
@@ -10888,7 +11060,12 @@ static ae_bool hpccores_hpcpreparechunkedgradientx(/* Real    */ ae_vector* weig
      /* Real    */ ae_vector* hpcbuf,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_SSE2
+    (void)weights;
+    (void)wcount;
+    (void)hpcbuf;
     ae_bool result;
 
 
@@ -10912,7 +11089,13 @@ static ae_bool hpccores_hpcfinalizechunkedgradientx(/* Real    */ ae_vector* buf
      /* Real    */ ae_vector* grad,
      ae_state *_state)
 {
+    (void)_state;
+
 #ifndef ALGLIB_INTERCEPTS_SSE2
+    (void)buf;
+    (void)wcount;
+    (void)grad;
+
     ae_bool result;
 
 
@@ -11891,6 +12074,8 @@ This is rcomm-based search function
 *************************************************************************/
 ae_bool armijoiteration(armijostate* state, ae_state *_state)
 {
+    (void)_state;
+
     double v;
     ae_int_t n;
     ae_bool result;
@@ -12148,7 +12333,7 @@ void armijoresults(armijostate* state,
      double* f,
      ae_state *_state)
 {
-
+    (void)_state;
 
     *info = state->info;
     *stp = state->stplen;
@@ -12423,6 +12608,9 @@ static void linmin_mcstep(double* stx,
 
 ae_bool _linminstate_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    (void)make_automatic;
+    (void)_state;
+
     linminstate *p = (linminstate*)_p;
     ae_touch_ptr((void*)p);
     return ae_true;
@@ -12431,6 +12619,9 @@ ae_bool _linminstate_init(void* _p, ae_state *_state, ae_bool make_automatic)
 
 ae_bool _linminstate_init_copy(void* _dst, void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    (void)make_automatic;
+    (void)_state;
+
     linminstate *dst = (linminstate*)_dst;
     linminstate *src = (linminstate*)_src;
     dst->brackt = src->brackt;
@@ -12672,6 +12863,8 @@ void findprimitiverootandinverse(ae_int_t n,
 
 static ae_bool ntheory_isprime(ae_int_t n, ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t p;
     ae_bool result;
 
@@ -12969,6 +13162,10 @@ void ftbasefactorize(ae_int_t n,
      ae_int_t* n2,
      ae_state *_state)
 {
+    (void)n;
+    (void)tasktype;
+    (void)_state;
+
     ae_int_t j;
 
     *n1 = 0;
@@ -13037,6 +13234,8 @@ Is number smooth?
 *************************************************************************/
 ae_bool ftbaseissmooth(ae_int_t n, ae_state *_state)
 {
+    (void)_state;
+
     ae_int_t i;
     ae_bool result;
 
@@ -14926,6 +15125,9 @@ static void ftbase_ftbluesteinsfft(fasttransformplan* plan,
      /* Real    */ ae_vector* bufd,
      ae_state *_state)
 {
+    (void)bufb;
+    (void)bufd;
+
     ae_int_t op;
     ae_int_t i;
     double x;
@@ -15042,6 +15244,8 @@ static void ftbase_ftprecomputeradersfft(ae_int_t n,
      ae_int_t offs,
      ae_state *_state)
 {
+    (void)rq;
+
     ae_frame _frame_block;
     ae_int_t q;
     fasttransformplan plan;
@@ -15239,6 +15443,8 @@ static void ftbase_ftfactorize(ae_int_t n,
      ae_int_t* n2,
      ae_state *_state)
 {
+    (void)isroot;
+
     ae_int_t j;
     ae_int_t k;
 

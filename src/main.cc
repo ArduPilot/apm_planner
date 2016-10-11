@@ -31,8 +31,9 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCCore.h"
 #include "MainWindow.h"
 #include "configuration.h"
-#include "QsLog.h"
+#include "logging.h"
 #include <QtWidgets/QApplication>
+#include <fstream>
 
 /* SDL does ugly things to main() */
 #ifdef main
@@ -51,8 +52,32 @@ void msgHandler( QtMsgType type, const char* msg )
     std::cerr << output.toStdString() << std::endl;
     if( type == QtFatalMsg ) abort();
 }
-
 #endif
+
+// Path for file logging
+static QString sLogPath;
+
+// Message handler for logging provides console and file output
+// The handler itself has to be reentrant and threadsafe!
+void loggingMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
+{
+    // The message handler has to be thread safe
+    static QMutex mutex;
+    QMutexLocker localLoc(&mutex);
+
+    static std::ofstream logFile(sLogPath.toStdString().c_str(), std::ofstream::out | std::ofstream::app);
+
+    QString outMessage(qFormatLogMessage(type, context, message));  // just format only once
+    if(logFile)
+    {
+        logFile << qPrintable(outMessage) << std::endl; // log to file
+    }
+
+    LogWindowSingleton::instance().write(outMessage);   // log to debug window
+
+    fprintf(stderr, "%s\n", qPrintable(outMessage));    // log to console
+}
+
 
 /**
  * @brief Starts the application
@@ -61,7 +86,6 @@ void msgHandler( QtMsgType type, const char* msg )
  * @param argv Commandline arguments
  * @return exit code, 0 for normal exit and !=0 for error cases
  */
-
 int main(int argc, char *argv[])
 {
 // install the message handler
@@ -69,22 +93,47 @@ int main(int argc, char *argv[])
     //qInstallMsgHandler( msgHandler );
 #endif
 
+    // Init logging
+    // create filename and path for logfile like "apmlog_20160529.txt"
+    // one logfile for every day. Size is not limited
+    QString logFileName("apmlog_");
+    logFileName.append(QDateTime::currentDateTime().toString("yyyyMMdd"));
+    logFileName.append(".txt");
+    sLogPath = QString(QDir(QGC::appDataDirectory()).filePath(logFileName));
+
+    // Just keep the 5 recent logfiles and delete the rest.
+    QDir logDirectory(QGC::appDataDirectory(), "apmlog*", QDir::Name, QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot);
+    QStringList logFileList(logDirectory.entryList());
+    // As the file list is sorted we can delete index 0 cause its the oldest one
+    while(logFileList.size() > 5)
+    {
+        logDirectory.remove(logFileList.at(0));
+        logFileList.pop_front();
+    }
+
+    // Add sperator for better orientation in Logfiles
+    std::ofstream logFile(sLogPath.toStdString().c_str(), std::ofstream::out | std::ofstream::app);
+    if (logFile)
+    {
+        logFile << std::endl << std::endl << "**************************************************" << std::endl << std::endl;
+        logFile.close();
+    }
+
+    // set up logging pattern
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    // QT < 5.5.x does not support qInfo() logging macro and no info-formatting too
+    QString logPattern("[%{time yyyyMMdd h:mm:ss.zzz} %{if-debug}DEBUG%{endif}%{if-warning}WARN %{endif}%{if-critical}ERROR%{endif}%{if-fatal}FATAL%{endif}] - %{message}");
+#else
+    QString logPattern("[%{time yyyyMMdd h:mm:ss.zzz} %{if-debug}DEBUG%{endif}%{if-info}INFO %{endif}%{if-warning}WARN %{endif}%{if-critical}ERROR%{endif}%{if-fatal}FATAL%{endif}] - %{message}");
+#endif
+
+    qSetMessagePattern(logPattern);
+
+    // install the message handler for logging
+    qInstallMessageHandler(loggingMessageHandler);
+
+    // start the application
     QGCCore core(argc, argv);
-    // init the logging mechanism
-    QsLogging::Logger& logger = QsLogging::Logger::instance();
-    logger.setLoggingLevel(QsLogging::DebugLevel);
-
-    const QString sLogPath(QDir(QGC::appDataDirectory()).filePath("log.txt"));
-
-    QsLogging::DestinationPtr fileDestination(
-       QsLogging::DestinationFactory::MakeFileDestination(sLogPath, true, 0, 5) );
-    QsLogging::DestinationPtr debugDestination(
-       QsLogging::DestinationFactory::MakeDebugOutputDestination() );
-    logger.addDestination(debugDestination);
-    logger.addDestination(fileDestination);
-
-    // This is required to start the logger
     core.initialize();
-
     return core.exec();
 }

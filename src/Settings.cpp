@@ -1,5 +1,5 @@
 #include "Settings.h"
-#include "QsLog.h"
+#include "logging.h"
 
 Settings::Settings(QObject *parent) :
     QObject(parent)

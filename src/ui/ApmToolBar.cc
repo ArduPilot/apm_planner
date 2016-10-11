@@ -29,7 +29,7 @@ This file is part of the APM_PLANNER project
  */
 
 #include "ApmToolBar.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "LinkManager.h"
 #include "MainWindow.h"
 #include "ArduPilotMegaMAV.h"
@@ -40,7 +40,7 @@ This file is part of the APM_PLANNER project
 #include <QQmlEngine>
 
 APMToolBar::APMToolBar(QWindow *parent):
-    QQuickView(parent), m_uas(NULL), m_disableOverride(false)
+    QQuickView(parent), m_uas(NULL), m_disableOverride(false), m_currentLinkId(0)
 {
     // Configure our QML object
     QLOG_DEBUG() << "qmlBaseDir" << QGC::shareDirectory();
@@ -369,17 +369,17 @@ void APMToolBar::setModeText(const QString &text)
 
     switch (m_uas->getSystemType()){
     case MAV_TYPE_FIXED_WING:
-        inRTL = (customMode == ApmPlane::RTL);
+        inRTL = (customMode == Plane::RTL);
         break;
     case MAV_TYPE_QUADROTOR:
     case MAV_TYPE_HEXAROTOR:
     case MAV_TYPE_OCTOROTOR:
     case MAV_TYPE_TRICOPTER:
     case MAV_TYPE_HELICOPTER:
-        inRTL = (customMode == ApmCopter::RTL);
+        inRTL = (customMode == Copter::RTL);
         break;
     case MAV_TYPE_GROUND_ROVER:
-        inRTL = (customMode == ApmRover::RTL);
+        inRTL = (customMode == Rover::RTL);
         break;
     default:
         inRTL = false;

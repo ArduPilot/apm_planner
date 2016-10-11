@@ -188,6 +188,22 @@ ArduCopterPidConfig::ArduCopterPidConfig(QWidget *parent) : AP2ConfigWidget(pare
 
     initConnections();
 }
+
+void ArduCopterPidConfig::showEvent(QShowEvent *evt){
+    requestParameterUpdate();
+    QWidget::showEvent(evt);
+}
+
+void ArduCopterPidConfig::requestParameterUpdate() {
+    QStringList params = m_nameToBoxMap.keys();
+    QLOG_DEBUG() << "ArduCopter PID Params (fetch): " << params;
+
+    QGCUASParamManager *pm = m_uas->getParamManager();
+    foreach(QString parameter, params) {
+        pm->requestParameterUpdate(1, parameter);
+    };
+}
+
 void ArduCopterPidConfig::lockCheckBoxClicked(bool checked)
 {
     m_pitchRollLocked = checked;
@@ -258,6 +274,9 @@ ArduCopterPidConfig::~ArduCopterPidConfig()
 }
 void ArduCopterPidConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
+    Q_UNUSED(uas)
+    Q_UNUSED(component)
+
     if (m_nameToBoxMap.contains(parameterName))
     {
         m_nameToBoxMap[parameterName]->setValue(value.toDouble());

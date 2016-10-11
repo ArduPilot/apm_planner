@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "ArduPilotMegaMAV.h"
 #include "ApmUiHelpers.h"
 #include "UASActionsWidget.h"
@@ -31,6 +31,7 @@ void UASActionsWidget::setupApmPlaneModes()
     ui.actionComboBox->addItem("Preflight Calibration", MAV_CMD_PREFLIGHT_CALIBRATION);
     ui.actionComboBox->addItem("Mission Start", MAV_CMD_MISSION_START);
     ui.actionComboBox->addItem("Preflight Reboot", MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
+    ui.actionComboBox->addItem("Trigger Camera", MAV_CMD_DO_DIGICAM_CONTROL);
 
 }
 
@@ -56,6 +57,7 @@ void UASActionsWidget::setupApmCopterModes()
     ui.actionComboBox->addItem("Preflight Calibration", MAV_CMD_PREFLIGHT_CALIBRATION);
     ui.actionComboBox->addItem("Mission Start", MAV_CMD_MISSION_START);
     ui.actionComboBox->addItem("Preflight Reboot", MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
+    ui.actionComboBox->addItem("Trigger Camera", MAV_CMD_DO_DIGICAM_CONTROL);
 }
 
 void UASActionsWidget::setupApmRoverModes()
@@ -80,6 +82,7 @@ void UASActionsWidget::setupApmRoverModes()
     ui.actionComboBox->addItem("Preflight Calibration", MAV_CMD_PREFLIGHT_CALIBRATION);
     ui.actionComboBox->addItem("Mission Start", MAV_CMD_MISSION_START);
     ui.actionComboBox->addItem("Preflight Reboot", MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN);
+    ui.actionComboBox->addItem("Trigger Camera", MAV_CMD_DO_DIGICAM_CONTROL);
 
 }
 
@@ -156,6 +159,7 @@ void UASActionsWidget::activeUASSet(UASInterface *uas)
     ui.missionGroupBox->setDisabled(false);
     ui.altitudeTypeComboBox->addItem(tr("Relative (AGL)"), MAV_FRAME_GLOBAL_RELATIVE_ALT);
     ui.altitudeTypeComboBox->addItem(tr("Absolute (ASL)"), MAV_FRAME_GLOBAL);
+    ui.altitudeTypeComboBox->addItem(tr("Terrain (AGL)"), MAV_FRAME_GLOBAL_TERRAIN_ALT);
     ui.shortcutGroupBox->setDisabled(false);
     ui.altitudeDoubleSpinBox->setValue(50.0f); // set a default altitude
 
@@ -580,6 +584,26 @@ void UASActionsWidget::sendApmPlaneCommand(MAV_CMD command)
 
     } break;
 
+    case MAV_CMD_DO_DIGICAM_CONTROL: {
+        // Take a photo
+        Q_ASSERT(command == MAV_CMD_DO_DIGICAM_CONTROL);
+        QLOG_INFO() << "MAV_CMD_DO_DIGICAM_CONTROL";
+
+        int confirm = 1;
+        float param1 = 0.0; // | Session control e.g. show/hide lens
+        float param2 = 0.0; // | Zoom's absolute position
+        float param3 = 0.0; // | Zooming step value to offset zoom from the current position
+        float param4 = 0.0; // | Focus Locking, Unlocking or Re-locking
+        float param5 = 1.0; // | Shooting Command
+        float param6 = 0.0; // | Command Identity
+        float param7 = 0.0; // | Empty|
+        int component = MAV_COMP_ID_PRIMARY;
+        m_uas->executeCommand(command,
+                              confirm, param1, param2, param3,
+                              param4, param5, param6, param7, component);
+
+    } break;
+
     default:
         QLOG_INFO() << "sendApmPlaneCommand: Unknown Command " << command;
     }
@@ -679,6 +703,26 @@ void UASActionsWidget::sendApmCopterCommand(MAV_CMD command)
 
     } break;
 
+    case MAV_CMD_DO_DIGICAM_CONTROL: {
+        // Take a photo
+        Q_ASSERT(command == MAV_CMD_DO_DIGICAM_CONTROL);
+        QLOG_INFO() << "MAV_CMD_DO_DIGICAM_CONTROL";
+
+        int confirm = 1;
+        float param1 = 0.0; // | Session control e.g. show/hide lens
+        float param2 = 0.0; // | Zoom's absolute position
+        float param3 = 0.0; // | Zooming step value to offset zoom from the current position
+        float param4 = 0.0; // | Focus Locking, Unlocking or Re-locking
+        float param5 = 1.0; // | Shooting Command
+        float param6 = 0.0; // | Command Identity
+        float param7 = 0.0; // | Empty|
+        int component = MAV_COMP_ID_PRIMARY;
+        m_uas->executeCommand(command,
+                              confirm, param1, param2, param3,
+                              param4, param5, param6, param7, component);
+
+    } break;
+
     default:
         QLOG_INFO() << "sendApmCopterCommand: Unknown Command " << command;
     }
@@ -760,6 +804,26 @@ void UASActionsWidget::sendApmRoverCommand(MAV_CMD command)
 
     } break;
 
+    case MAV_CMD_DO_DIGICAM_CONTROL: {
+        // Take a photo
+        Q_ASSERT(command == MAV_CMD_DO_DIGICAM_CONTROL);
+        QLOG_INFO() << "MAV_CMD_DO_DIGICAM_CONTROL";
+
+        int confirm = 1;
+        float param1 = 0.0; // | Session control e.g. show/hide lens
+        float param2 = 0.0; // | Zoom's absolute position
+        float param3 = 0.0; // | Zooming step value to offset zoom from the current position
+        float param4 = 0.0; // | Focus Locking, Unlocking or Re-locking
+        float param5 = 1.0; // | Shooting Command
+        float param6 = 0.0; // | Command Identity
+        float param7 = 0.0; // | Empty|
+        int component = MAV_COMP_ID_PRIMARY;
+        m_uas->executeCommand(command,
+                              confirm, param1, param2, param3,
+                              param4, param5, param6, param7, component);
+
+    } break;
+
     default:
         QLOG_INFO() << "sendApmRoverCommand: Unknown Command " << command;
     }
@@ -827,6 +891,8 @@ void UASActionsWidget::parameterChanged(int uas, int component, int parameterCou
 
 void UASActionsWidget::contextMenuEvent(QContextMenuEvent *event)
 {
+    Q_UNUSED(event)
+
     QLOG_DEBUG() << "contextMenuEvent";
 
     if(m_uas == NULL)

@@ -124,7 +124,6 @@ void LinkManager::loadSettings()
     for (int i=0;i<linkssize;i++)
     {
         settings.setArrayIndex(i);
-        int linkid = settings.value("linkid").toInt();
         QString type = settings.value("type").toString();
         if (type == "SERIAL_LINK")
         {
@@ -632,6 +631,7 @@ void LinkManager::linkErrorRec(LinkInterface *link,QString errorstring)
 
 void LinkManager::linkTimeoutTriggered(LinkInterface *link)
 {
+    Q_UNUSED(link)
     //Link has had a timeout
     //Disabled until it is fixed and more more robust - MLC
     //emit linkError(link->getId(),"Connected to link, but unable to receive any mavlink packets, (link is silent). Disconnecting");

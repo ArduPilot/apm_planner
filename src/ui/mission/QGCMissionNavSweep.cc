@@ -58,6 +58,7 @@ void QGCMissionNavSweep::updateFrame(MAV_FRAME frame)
         break;
     case MAV_FRAME_GLOBAL:
     case MAV_FRAME_GLOBAL_RELATIVE_ALT:
+    case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         this->ui->posN1SpinBox->hide();
         this->ui->posE1SpinBox->hide();
         this->ui->posN2SpinBox->hide();

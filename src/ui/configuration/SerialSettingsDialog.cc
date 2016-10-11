@@ -32,7 +32,7 @@ This file is part of the APM_PLANNER project
  * Copyright (C) 2012 Laszlo Papp <lpapp@kde.org>
  *
  */
-#include "QsLog.h"
+#include "logging.h"
 #include "SerialSettingsDialog.h"
 #include "TerminalConsole.h"
 #include "ui_SerialSettingsDialog.h"

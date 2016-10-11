@@ -48,7 +48,9 @@ This file is part of the QGROUNDCONTROL project
 #include "UASControlWidget.h"
 #include "UASInfoWidget.h"
 #include "WaypointList.h"
+#if (defined ENABLE_CAMRAVIW)
 #include "CameraView.h"
+#endif // ENABLE_CAMRAVIW
 #include "UASListWidget.h"
 //#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"
@@ -66,7 +68,7 @@ This file is part of the QGROUNDCONTROL project
 #include "WatchdogControl.h"
 #include "HSIDisplay.h"
 #include "opmapcontrol.h"
-#if (defined Q_OS_MAC) | (defined _MSC_VER)
+#if (defined GOGGLEEARTH) && ((defined Q_OS_MAC) | (defined _MSC_VER))
 #include "QGCGoogleEarthView.h"
 #endif
 #include "QGCToolBar.h"
@@ -90,7 +92,67 @@ class QGCMAVLinkMessageSender;
 class QGCFirmwareUpdate;
 class QSplashScreen;
 class QGCStatusBar;
-class DroneshareDialog;
+
+/**
+ * @brief The LogWindowSingleton class is a helper class providing
+ *        an entry point to the debug console widget used by the
+ *        loggingMessageHandler. Due to the fact that the debug widget
+ *        is created in MainWindow::buildCommonWidgets() it is not
+ *        available when the messagehandler is created and installed.
+ *        This class provides a write method which is available directly
+ *        after the start of APM-Planner and a message buffering for
+ *        all logmessages wich are printet before the debug console widget
+ *        becomes available.
+ *
+ * @attention This class is NOT thread safe nor is it reentrant.
+ *            Should only be used by the loggingMessageHandler
+ */
+class LogWindowSingleton
+{
+public:
+    /**
+     * @brief instance method providing the static entry
+     *        for the loggingMessageHandler.
+     *
+     * @return A reference to the LogWindowSingleton.
+     */
+    static LogWindowSingleton &instance();
+
+    /**
+     * @brief The write method writes the "message" to the debug
+     *        widget, buffering all messages until the debug widget
+     *        is created.
+     * @param message - QString containing the message to print.
+     */
+    void write(const QString &message);
+
+    /**
+     * @brief setDebugOutput must be called after creating the
+     *        DebugOutput widget.
+     * @param outputPtr - SmartPointer to the DebugOutput widget object.
+     */
+    void setDebugOutput(DebugOutput::Ptr outputPtr);
+
+    /**
+     * @brief removeDebugOutput must be called when the program terminates
+     *        in order to release the DebugOutput widget object. Should be
+     *        done before the MainWindow terminates eg. in DTOR
+     */
+    void removeDebugOutput();
+
+private:
+    /**
+     * @brief LogWindowSingleton CTOR must be private.
+     */
+    LogWindowSingleton() : m_startupBuffering(true) {}
+
+    DebugOutput::Ptr m_debugPtr;    /// SmartPointer to the DebugOutput widget
+    QStringList m_outPutBuffer;     /// Buffer for startup buffering
+    bool m_startupBuffering;        /// Used to avoid buffering after a removeDebugOutput call
+};
+
+
+
 
 /**
  * @brief Main Application Window
@@ -370,7 +432,7 @@ protected:
     QPointer<SubMainWindow> engineeringView;
     QPointer<SubMainWindow> simView;
     QPointer<SubMainWindow> terminalView;
-    QPointer<DebugOutput> debugOutput;
+    DebugOutput::Ptr debugOutput;
 
     // Center widgets
     //QPointer<HUD> hudWidget;
@@ -381,7 +443,7 @@ protected:
 #ifdef QGC_OSG_ENABLED
     QPointer<QWidget> q3DWidget;
 #endif
-#if (defined _MSC_VER) || (defined Q_OS_MAC)
+#if (defined GOOGLEEARTH) && ((defined _MSC_VER) || (defined Q_OS_MAC))
     QPointer<QGCGoogleEarthView> earthWidget;
 #endif
     QPointer<QGCFirmwareUpdate> firmwareUpdateWidget;
@@ -471,7 +533,6 @@ private slots:
     void autoUpdateCancelled(QString version);
     void showNoUpdateAvailDialog();
 
-    void showDroneshareDialog();
     void showTerminalConsole();
     void closeTerminalConsole();
 
@@ -492,7 +553,6 @@ private:
     AutoUpdateCheck m_autoUpdateCheck;
     AutoUpdateDialog* m_dialog;
 
-    DroneshareDialog* m_droneshareDialog;
     QDialog* m_terminalDialog;
 
 };

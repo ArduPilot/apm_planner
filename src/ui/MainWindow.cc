@@ -26,7 +26,7 @@ This file is part of the QGROUNDCONTROL project
  *   @brief Implementation of class MainWindow
  *   @author Lorenz Meier <mail@qgroundcontrol.org>
  */
-#include "QsLog.h"
+#include "logging.h"
 #include "dockwidgettitlebareventfilter.h"
 #include "QGC.h"
 #include "MAVLinkSimulationLink.h"
@@ -66,7 +66,6 @@ This file is part of the QGROUNDCONTROL project
 #endif
 
 #include "AboutDialog.h"
-#include "DroneshareDialog.h"
 
 // FIXME Move
 #include "PxQuadMAV.h"
@@ -86,6 +85,45 @@ This file is part of the QGROUNDCONTROL project
 #include <QGCHilFlightGearConfiguration.h>
 
 #define PFD_QML
+
+
+LogWindowSingleton &LogWindowSingleton::instance()
+{
+   static LogWindowSingleton instance;
+   return instance;
+}
+
+void LogWindowSingleton::write(const QString &message)
+{
+   if (!m_debugPtr.isNull())
+   {
+      if (!m_outPutBuffer.empty())
+      {
+         foreach (QString string, m_outPutBuffer)
+         {
+            m_debugPtr->write(string);
+         }
+         m_outPutBuffer.clear();
+         m_startupBuffering = false;
+      }
+      m_debugPtr->write(message);
+   }
+   else if (m_startupBuffering)
+   {
+      m_outPutBuffer.append(message);
+   }
+}
+
+void LogWindowSingleton::setDebugOutput(DebugOutput::Ptr outputPtr)
+{
+   m_debugPtr = outputPtr;
+}
+
+void LogWindowSingleton::removeDebugOutput()
+{
+   m_debugPtr.clear();
+}
+
 
 MainWindow* MainWindow::instance(QSplashScreen* screen)
 {
@@ -143,7 +181,6 @@ MainWindow::MainWindow(QWidget *parent):
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
     m_heartbeatEnabled(true),
-    m_droneshareDialog(NULL),
     m_terminalDialog(NULL)
 {
     QLOG_DEBUG() << "Creating MainWindow";
@@ -370,12 +407,6 @@ MainWindow::MainWindow(QWidget *parent):
     connect(&m_autoUpdateCheck, SIGNAL(noUpdateAvailable()),
             this, SLOT(showNoUpdateAvailDialog()));
 
-    // Trigger Droneshare Notificaton
-    QSettings settings;
-    settings.beginGroup("QGC_MAINWINDOW");
-    if(settings.value("DRONESHARE_NOTIFICATION_ENABLED",true).toBool()){
-        QTimer::singleShot(11000, this, SLOT(showDroneshareDialog()));
-    }
     settings.endGroup();
 
 }
@@ -426,22 +457,13 @@ MainWindow::~MainWindow()
         }
     }
     // Delete all UAS objects
-
-
-    if (debugOutput)
-    {
-        QsLogging::Logger::instance().delDestination(debugOutput);
-        //delete debugOutput;
-        //debugOutput->hide();
-        //debugOutput->deleteLater();
-    }
     for (int i=0;i<commsWidgetList.size();i++)
     {
         commsWidgetList[i]->deleteLater();
     }
 
-
-
+    // Force the singleton to release the debug widget
+    LogWindowSingleton::instance().removeDebugOutput();
 }
 
 void MainWindow::disableTLogReplayBar()
@@ -650,8 +672,8 @@ void MainWindow::buildCommonWidgets()
 
     if (!debugOutput)
     {
-        debugOutput = new DebugOutput();
-        QsLogging::Logger::instance().addDestination(QsLogging::DestinationPtr(debugOutput));
+       debugOutput = DebugOutput::Ptr(new DebugOutput);
+       LogWindowSingleton::instance().setDebugOutput(debugOutput);
     }
 
     // Dock widgets
@@ -1755,7 +1777,7 @@ void MainWindow::connectCommonActions()
         ui.menuNetwork->menuAction()->setVisible(false);
     }
 
-    connect(ui.actionDebug_Console,SIGNAL(triggered()),debugOutput,SLOT(show()));
+    connect(ui.actionDebug_Console,SIGNAL(triggered()),debugOutput.data(),SLOT(show()));
     connect(ui.actionSimulate, SIGNAL(triggered(bool)), this, SLOT(simulateLink(bool)));
 
     //Disable simulation view until we ensure it's operational.
@@ -1908,6 +1930,8 @@ void MainWindow::addLink(int linkid)
 
 void MainWindow::linkError(int linkid,QString errorstring)
 {
+    Q_UNUSED(linkid)
+
     QWidget* parent = QApplication::activeWindow();
     if (!parent) {
         parent = this;
@@ -2464,15 +2488,6 @@ void MainWindow::enableHeartbeat(bool enabled)
             UASManager::instance()->getUASList().at(i)->setHeartbeatEnabled(enabled);
         }
         storeSettings();
-    }
-}
-
-void MainWindow::showDroneshareDialog()
-{
-    if(!m_droneshareDialog){
-        m_droneshareDialog = new DroneshareDialog(this);
-        m_droneshareDialog->show();
-        m_droneshareDialog->raise();
     }
 }
 

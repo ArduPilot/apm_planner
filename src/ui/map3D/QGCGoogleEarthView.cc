@@ -231,7 +231,7 @@ void QGCGoogleEarthView::setActiveUAS(UASInterface* uas)
 void QGCGoogleEarthView::updateWaypoint(int uas, Waypoint* wp)
 {
     // Only accept waypoints in global coordinate frame
-    if ((wp->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && wp->isNavigationType())
+    if (wp->isGlobalFrame() && wp->isNavigationType())
     {
         // We're good, this is a global waypoint
 

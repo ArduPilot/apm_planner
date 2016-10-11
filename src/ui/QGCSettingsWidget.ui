@@ -340,11 +340,6 @@
       </layout>
       <zorder>groupBox</zorder>
       <zorder>groupBox_2</zorder>
-      <zorder>horizontalSpacer</zorder>
-      <zorder>horizontalSpacer_2</zorder>
-      <zorder>horizontalSpacer_3</zorder>
-      <zorder>verticalSpacer_2</zorder>
-      <zorder>verticalSpacer</zorder>
      </widget>
      <widget class="QWidget" name="advanced">
       <attribute name="title">

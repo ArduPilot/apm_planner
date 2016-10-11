@@ -30,7 +30,7 @@ This file is part of the QGROUNDCONTROL project
  */
 
 #include "QGCCore.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "configuration.h"
 #include "QGC.h"
 #include "MainWindow.h"
@@ -79,11 +79,10 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
     // Set application name
     this->setApplicationName(QGC_APPLICATION_NAME);
     this->setApplicationVersion(QGC_APPLICATION_VERSION);
-    this->setOrganizationName(QLatin1String("diydrones"));
-    this->setOrganizationDomain("com.diydrones");
+    this->setOrganizationName(QLatin1String("ardupilot"));
+    this->setOrganizationDomain("org.ardupilot");
 
     m_mouseWheelFilter = new QGCMouseWheelEventFilter(this);
-
     //----------------------------------------------------------------
     //-- Video Streaming
 #if defined(QGC_GST_STREAMING)
@@ -118,6 +117,12 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
     }
     GST_PLUGIN_STATIC_REGISTER(QTVIDEOSINK_NAME);
 #endif
+    connect(this, SIGNAL(aboutToQuit()), this, SLOT(aboutToQuit()));
+}
+
+void QGCCore::aboutToQuit()
+{
+
 }
 
 void QGCCore::initialize()
@@ -130,6 +135,7 @@ void QGCCore::initialize()
     QLOG_INFO() << "APPLICATION_VERSION:" << define2string(QGC_APPLICATION_VERSION);
     QLOG_INFO() << "APP_PLATFORM:" << define2string(APP_PLATFORM);
     QLOG_INFO() << "APP_TYPE:" << define2string(APP_TYPE);
+
 
     // Check application settings
     // clear them if they mismatch

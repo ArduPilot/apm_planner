@@ -50,6 +50,7 @@ void QGCMissionNavLoiterToAlt::updateFrame(MAV_FRAME frame)
         break;
     case MAV_FRAME_GLOBAL:
     case MAV_FRAME_GLOBAL_RELATIVE_ALT:
+    case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         this->ui->posNSpinBox->hide();
         this->ui->posESpinBox->hide();
         this->ui->posDSpinBox->hide();

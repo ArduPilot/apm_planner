@@ -29,7 +29,7 @@ This file is part of the APM_PLANNER project
  */
 
 #include "RadioCalibrationConfig.h"
-#include "QsLog.h"
+#include "logging.h"
 #include "QGCMouseWheelEventFilter.h"
 #include <QMessageBox>
 #include <QSettings>

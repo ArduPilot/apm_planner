@@ -1,4 +1,4 @@
-#include "QsLog.h"
+#include "logging.h"
 #include "Radio3DRSettings.h"
 #include <QtSerialPort/qserialport.h>
 #include <QtSerialPort/qserialportinfo.h>

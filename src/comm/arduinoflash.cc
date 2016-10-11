@@ -31,7 +31,9 @@ This file is part of the APM_PLANNER project
 #include "arduinoflash.h"
 #include <QDebug>
 #include "arduino_intelhex.h"
-#include "QsLog.h"
+#include "logging.h"
+
+
 #define GET_SIG_ONE QByteArray().append(0x1B).append((char)0x00).append((char)0x00).append((char)0x00).append((char)0x00)
 #define GET_SIG_TWO QByteArray().append(0x1B).append((char)0x00).append((char)0x00).append((char)0x00).append((char)0x01)
 #define GET_SIG_THREE QByteArray().append(0x1B).append((char)0x00).append((char)0x00).append((char)0x00).append((char)0x02)
