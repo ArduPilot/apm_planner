@@ -18,11 +18,11 @@ namespace kml {
  * @brief A GPS record from a log file.
  */
 struct GPSRecord: DataLine {
-    QString hdop() { return values.value("HDop"); }
-    QString lat() { return values.value("Lat"); }
-    QString lng() { return values.value("Lng"); }
-    QString alt() { return values.value("Alt"); }
-    QString relAlt() { return values.value("RelAlt"); }
+    QString hdop()  { return values.value("HDop"); }
+    QString lat()   { return values.value("Lat"); }
+    QString lng()   { return values.value("Lng"); }
+    QString alt()   { return values.value("Alt"); }
+    QString relAlt(){ return values.value("RelAlt").isEmpty() ? values.value("RAlt") : values.value("RelAlt");}
     QString speed() { return values.value("Spd"); }
 
     virtual bool hasData() {
@@ -43,13 +43,13 @@ struct GPSRecord: DataLine {
  * @brief An ATT record from a log file.
  */
 struct Attitude: DataLine {
-    QString rollIn() { return values.value("RollIn"); }
-    QString roll() { return values.value("Roll"); }
-    QString pitchIn() { return values.value("PitchIn"); }
-    QString pitch() { return values.value("Pitch"); }
-    QString yawIn() { return values.value("YawIn"); }
-    QString yaw() { return values.value("Yaw"); }
-    QString navYaw() { return values.value("NavYaw"); }
+    QString rollIn()  { return values.value("RollIn").isEmpty() ? values.value("DesRoll") : values.value("RollIn"); }
+    QString roll()    { return values.value("Roll"); }
+    QString pitchIn() { return values.value("PitchIn").isEmpty() ? values.value("DesPitch") : values.value("PitchIn"); }
+    QString pitch()   { return values.value("Pitch"); }
+    QString yawIn()   { return values.value("YawIn").isEmpty() ? values.value("DesYaw") : values.value("YawIn"); }
+    QString yaw()     { return values.value("Yaw"); }
+    QString navYaw()  { return values.value("NavYaw"); }
 
     virtual bool hasData() {
         return (values.value("Roll").length() > 0);
