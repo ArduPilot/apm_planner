@@ -924,7 +924,7 @@ void AP2DataPlot2D::loadButtonClicked()
             this->close();
         }
     } else {
-        QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.tlog);;All Files (*.*)");
+        QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.BIN *.tlog);;All Files (*.*)");
         dialog->setFileMode(QFileDialog::ExistingFile);
         dialog->open(this, SLOT(loadDialogAccepted()));
     }
