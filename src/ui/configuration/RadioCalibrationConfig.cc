@@ -123,6 +123,10 @@ RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     ui.elevonOutputComboBox->addItem("Up Down");
     ui.elevonOutputComboBox->addItem("Down Up");
     ui.elevonOutputComboBox->addItem("Down Down");
+    ui.elevonOutputComboBox->addItem("Up Up Swap");
+    ui.elevonOutputComboBox->addItem("Up Down Swap");
+    ui.elevonOutputComboBox->addItem("Down Up Swap");
+    ui.elevonOutputComboBox->addItem("Down Down Swap");
     connect(ui.elevonOutputComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(elevonOutput()));
 
     connect(ui.modeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(modeIndexChanged(int)));
