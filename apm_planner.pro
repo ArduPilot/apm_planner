@@ -677,7 +677,11 @@ HEADERS += \
     src/ui/EKFMonitor.h \
     src/Settings.h \
     src/logging.h \
-    src/uas/APMFirmwareVersion.h
+    src/uas/APMFirmwareVersion.h \
+    src/ui/LogParser/BinLogParser.h \
+    src/ui/LogParser/ILogParser.h \
+    src/ui/LogParser/IParserCallback.h \
+    src/ui/LogParser/AP2DataPlotStatus.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -896,7 +900,9 @@ SOURCES += src/main.cc \
     src/ui/VibrationMonitor.cpp \
     src/ui/EKFMonitor.cpp \
     src/Settings.cpp \
-    src/uas/APMFirmwareVersion.cpp
+    src/uas/APMFirmwareVersion.cpp \
+    src/ui/LogParser/BinLogParser.cpp \
+    src/ui/LogParser/AP2DataPlotStatus.cpp
 
 MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
     message(Including support for Google Earth)
