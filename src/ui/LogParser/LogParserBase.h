@@ -160,7 +160,7 @@ protected:
      * @param valuepairlist - value pair list to read the timestamp from
      * @param timeStampIndex - Index in list where the timestamp resides
      */
-    void readTimeStamp(QList<NameValuePair> &valuepairlist, const int timeStampIndex);
+    void readTimeStamp(QList<NameValuePair> &valuepairlist, const typeDescriptor &desc);
 
     /**
      * @brief detectMavType tries to detect the MAV type from the data in a

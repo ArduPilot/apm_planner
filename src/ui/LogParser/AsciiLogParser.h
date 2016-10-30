@@ -53,7 +53,7 @@ public:
     explicit AsciiLogParser(AP2DataPlot2DModel *model, IParserCallback *object);
 
     /**
-     * @brief ~BinLogParser - DTOR
+     * @brief ~AsciiLogParser - DTOR
      */
     virtual ~AsciiLogParser();
 
@@ -94,6 +94,7 @@ private:
     int m_noMessageBytes;               /// Dropped bytes during parsing
 
     QList<asciiDescriptor> m_descriptorForDeferredStorage; /// temp list for storing descriptors without a timestamp field
+
 
     /**
      * @brief parseFMTMessage parses a FMT message into a asciiDescriptor.

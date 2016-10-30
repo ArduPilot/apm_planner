@@ -83,7 +83,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
 
     if(!m_dataModel || !m_callbackObject)
     {
-        QLOG_ERROR() << "BinLogParser::BinLogParser - No valid datamodel or callback object - parsing stopped";
+        QLOG_ERROR() << "BinLogParser::parse - No valid datamodel or callback object - parsing stopped";
         return m_logLoadingState;
     }
 
@@ -93,7 +93,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
         return m_logLoadingState;
     }
 
-    int noMessageBytes = 0;
+    int noMessageBytes = 0;     // to count all bytes that could no be parsed
 
     while(!logfile.atEnd() && !m_stop)
     {
@@ -114,7 +114,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
                 noMessageBytes++;
                 continue;
             }
-
+            // Format (FMT) message
             if(m_messageType == s_FMTMessageType)
             {
                 binDescriptor descriptor;
@@ -165,6 +165,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
                     }
                     else
                     {
+                        QLOG_WARN() << "BinLogParser::parse - No values within data message";
                         m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
                                                           "No values within data message");
                     }
@@ -176,6 +177,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
             }
             else
             {
+                QLOG_WARN() << "Read data without having a valid format descriptor - Message type is " << QString::number(m_messageType);
                 m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
                                                   "Read data without having a valid format descriptor - "
                                                   "Message type is " + QString::number(m_messageType));
@@ -230,6 +232,7 @@ bool BinLogParser::parseFMTMessage(binDescriptor &desc)
     }
     m_dataPos += s_FMTLabelsSize;
 
+    // remove successful parsed data from data block
     m_dataBlock.remove(0, m_dataPos);
     m_dataPos = 0;
     return true;
@@ -446,7 +449,7 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
             break;
         }
     }
-
+    // remove the successful parsed data from the data block
     m_dataBlock.remove(0, desc.m_length + m_dataPos - s_HeaderOffset);
     m_dataPos = 0;
 

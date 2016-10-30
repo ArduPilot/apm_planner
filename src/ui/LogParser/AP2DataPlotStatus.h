@@ -39,7 +39,8 @@ This file is part of the APM_PLANNER project
  * @brief The AP2DataPlotStatus class is a helper class desinged as status type for
  *        the log parsing.
  *        It contains the final state of parsing as well as all error strings inserted
- *        with the corruptDataRead() or corruptFMTRead() methods during the parsing process.
+ *        with the corruptDataRead(), corruptFMTRead() etc. methods during the parsing
+ *        process.
  */
 class AP2DataPlotStatus
 {
@@ -118,7 +119,8 @@ public:
      * @brief setNoMessageBytes
      *        Stores the number of bytes which could not be parsed and adds
      *        them to the output
-     * @param noMessageBytes
+     *
+     * @param noMessageBytes - number of bytes which could not be parsed
      */
     void setNoMessageBytes(const int noMessageBytes);
 

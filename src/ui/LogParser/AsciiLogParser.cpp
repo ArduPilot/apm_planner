@@ -99,7 +99,6 @@ AP2DataPlotStatus AsciiLogParser::parse(QFile &logfile)
     {
         m_callbackObject->onProgress(logfile.pos(),logfile.size());
         QString line = logfile.readLine();
-        // TODO check - here was an emit of line!
         line = line.remove(QChar('\n'));
         line = line.remove(QChar('\r'));
         m_tokensToParse.clear();
@@ -161,8 +160,9 @@ AP2DataPlotStatus AsciiLogParser::parse(QFile &logfile)
                     }
                     else
                     {
+                        QLOG_DEBUG() << "AsciiLogParser::parse():No values within data message " + descriptor.m_name;
                         m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
-                                                          "No values within data message");
+                                                          "No values within data message " + descriptor.m_name);
                         m_noMessageBytes += line.size();
                     }
                 }
@@ -358,9 +358,9 @@ bool AsciiLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairLi
             else
             {
                 QLOG_DEBUG() << "AsciiLogParser::parseDataByDescriptor(): Failed to convert " << token
-                             << " to an float number.";
+                             << " to a float number.";
                 m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), desc.m_name + " data: Failed to convert " +
-                                                  token + " to an float number.");
+                                                  token + " to a float number.");
                 return false; // we don't have to go further because if one token is missing we cannot store the message in DB
             }
         }

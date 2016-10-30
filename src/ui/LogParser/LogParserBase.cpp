@@ -140,7 +140,7 @@ bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairLi
     }
     else
     {
-        readTimeStamp(NameValuePairList, desc.m_timeStampIndex);
+        readTimeStamp(NameValuePairList, desc);
     }
 
     if (!m_dataModel->addRow(desc.m_name, NameValuePairList, m_activeTimestamp.m_name))
@@ -155,10 +155,10 @@ bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairLi
     return true;
 }
 
-void LogParserBase::readTimeStamp(QList<NameValuePair> &valuepairlist, const int timeStampIndex)
+void LogParserBase::readTimeStamp(QList<NameValuePair> &valuepairlist, const typeDescriptor &desc)
 {
 
-    quint64 tempVal = static_cast<quint64>(valuepairlist.at(timeStampIndex).second.toULongLong());
+    quint64 tempVal = static_cast<quint64>(valuepairlist.at(desc.m_timeStampIndex).second.toULongLong());
     // check if time is increasing
     if (tempVal >= m_lastValidTimeStamp)
     {
@@ -178,17 +178,17 @@ void LogParserBase::readTimeStamp(QList<NameValuePair> &valuepairlist, const int
             QLOG_WARN() << "Supressing further time is not increasing messages....";
             ++m_timeErrorCount;
         }
-        m_logLoadingState.corruptTimeRead(m_MessageCounter, "Log time is not increasing! Last Time:" +
+        m_logLoadingState.corruptTimeRead(static_cast<int>(m_MessageCounter), "Log time is not increasing! Last Time:" +
                                           QString::number(m_lastValidTimeStamp) + " new Time:" +
                                           QString::number(tempVal));
         // if not increasing set to last valid value
-        valuepairlist[timeStampIndex].second = m_lastValidTimeStamp;
+        valuepairlist[desc.m_timeStampIndex].second = m_lastValidTimeStamp;
     }
 }
 
 void LogParserBase::detectMavType(const QList<NameValuePair> &valuepairlist)
 {
-    // Name field is not always on same Index. So first search for the right position...
+    // Name field in bin logs is not always on same Index. So first search for the right position.
     int nameIndex = 0;
     for (int i = 0; i < valuepairlist.size(); ++i)
     {
@@ -197,20 +197,30 @@ void LogParserBase::detectMavType(const QList<NameValuePair> &valuepairlist)
             nameIndex = i;
             break;
         }
+        // in tlogs the mav type can be directly read
+        if (valuepairlist[i].first == "type")   // "type" field holds MAV_TYPE
+        {
+            m_loadedLogType = static_cast<MAV_TYPE>(valuepairlist[i].second.toInt());
+            break;
+        }
     }
-    //...and then use it to check the values.
-    if (valuepairlist[nameIndex].second == "RATE_RLL_P" || valuepairlist[nameIndex].second == "H_SWASH_PLATE"
-            || valuepairlist[nameIndex].second == "ATC_RAT_RLL_P" ) // ATC_RAT_RLL_P Used in AC3.4+
+
+    // check again - avoid overwrite in case of tlog file
+    if(m_loadedLogType == MAV_TYPE_GENERIC)
     {
-        m_loadedLogType = MAV_TYPE_QUADROTOR;
-    }
-    else if (valuepairlist[nameIndex].second == "PTCH2SRV_P")
-    {
-        m_loadedLogType = MAV_TYPE_FIXED_WING;
-    }
-    else if (valuepairlist[nameIndex].second == "SKID_STEER_OUT")
-    {
-        m_loadedLogType = MAV_TYPE_GROUND_ROVER;
+        if (valuepairlist[nameIndex].second == "RATE_RLL_P" || valuepairlist[nameIndex].second == "H_SWASH_PLATE"
+                || valuepairlist[nameIndex].second == "ATC_RAT_RLL_P" ) // ATC_RAT_RLL_P Used in AC3.4+
+        {
+            m_loadedLogType = MAV_TYPE_QUADROTOR;
+        }
+        else if (valuepairlist[nameIndex].second == "PTCH2SRV_P")
+        {
+            m_loadedLogType = MAV_TYPE_FIXED_WING;
+        }
+        else if (valuepairlist[nameIndex].second == "SKID_STEER_OUT")
+        {
+            m_loadedLogType = MAV_TYPE_GROUND_ROVER;
+        }
     }
 
     if(m_loadedLogType != MAV_TYPE_GENERIC)

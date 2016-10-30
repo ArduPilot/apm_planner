@@ -88,16 +88,13 @@ private slots:
     //Cancel clicked on the graph loading thread progress dialog
     void progressDialogCanceled();
     //Graph loading thread finished
-    void threadDone(AP2DataPlotStatus state, MAV_TYPE type);
+    void threadDone(AP2DataPlotStatus state);
     //Graph loading thread actually exited
     void threadTerminated();
     //Graph loading thread error
     void threadError(QString errorstr);
 
-    //Payload decoded from the graph loading thread
-    void payloadDecoded(int index,QString name,QVariantMap map);
-
-    //Called to remove an item from the graph
+     //Called to remove an item from the graph
     void itemDisabled(QString name);
     //Called to add an item to the graph
     void itemEnabled(QString name);
@@ -235,8 +232,6 @@ private:
     QMap<QString,QString> m_tableHeaderNameMap;
     //Graph name to list of values for "online" mode
     QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
-    //Map from graph name to list of values for "offline" mode
-    QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
     QList<QString> loglines;
     QSqlDatabase m_sharedDb;
     int currentIndex;

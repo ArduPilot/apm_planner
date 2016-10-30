@@ -20,7 +20,7 @@ This file is part of the APM_PLANNER project
 
 ======================================================================*/
 /**
- * @file ilogparser.h
+ * @file ILogParser.h
  * @author Arne Wischmann <wischmann-a@gmx.de>
  * @date 14 Jul 2016
  * @brief File providing an interface for log parsers

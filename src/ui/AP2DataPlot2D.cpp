@@ -967,7 +967,6 @@ void AP2DataPlot2D::loadLog(QString filename)
     m_plot->replot();
     m_graphClassMap.clear();
     m_graphCount = 0;
-    m_dataList.clear();
 
     QString shortfilename =filename.mid(filename.lastIndexOf("/")+1);
     setWindowTitle(tr("Graph: %1").arg(shortfilename));
@@ -986,9 +985,8 @@ void AP2DataPlot2D::loadLog(QString filename)
     connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
     connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
     connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
-    connect(m_logLoaderThread,SIGNAL(done(AP2DataPlotStatus,MAV_TYPE)),this,SLOT(threadDone(AP2DataPlotStatus,MAV_TYPE)));
+    connect(m_logLoaderThread,SIGNAL(done(AP2DataPlotStatus)),this,SLOT(threadDone(AP2DataPlotStatus)));
     connect(m_logLoaderThread,SIGNAL(finished()),this,SLOT(threadTerminated()));
-    connect(m_logLoaderThread,SIGNAL(payloadDecoded(int,QString,QVariantMap)),this,SLOT(payloadDecoded(int,QString,QVariantMap)));
     m_logLoaderThread->loadFile(filename);
 }
 
@@ -1011,7 +1009,6 @@ AP2DataPlot2D::~AP2DataPlot2D()
     }
     if (m_logLoaderThread)
     {
-        m_logLoaderThread->allowToTerminate();  // without this call the loader cannot terminate
         m_logLoaderThread->stopLoad();
         m_logLoaderThread->deleteLater();
         m_logLoaderThread = NULL;
@@ -1267,7 +1264,6 @@ void AP2DataPlot2D::itemDisabled(QString name)
 void AP2DataPlot2D::progressDialogCanceled()
 {
     m_logLoaderThread->stopLoad();
-    m_logLoaderThread->allowToTerminate();  // without this call the loader cannot terminate
 }
 
 void AP2DataPlot2D::clearGraph()
@@ -1286,7 +1282,6 @@ void AP2DataPlot2D::clearGraph()
     }
     m_graphClassMap.clear();
     m_graphCount = 0;
-    m_dataList.clear();
 
     if (m_logLoaded)
     {
@@ -1382,9 +1377,9 @@ void AP2DataPlot2D::removeTextArrows(const QString &graphName)
     }
 }
 
-void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
+void AP2DataPlot2D::threadDone(AP2DataPlotStatus state)
 {
-    m_loadedLogMavType = type;
+    m_loadedLogMavType = state.getMavType();
 
     // Errorhandling
     if (state.getParsingState() != AP2DataPlotStatus::OK)
@@ -1513,8 +1508,6 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state, MAV_TYPE type)
     // Enable double clicking of graph
     connect(m_plot,SIGNAL(mouseDoubleClick(QMouseEvent*)),this,SLOT(plotDoubleClick(QMouseEvent*)));
 
-    QLOG_DEBUG() << "Calling allowToTerminate()";
-    m_logLoaderThread->allowToTerminate(); // without this call the loader cannot terminate
 }
 
 
@@ -1522,17 +1515,7 @@ void AP2DataPlot2D::threadError(QString errorstr)
 {
     QMessageBox::information(0,"Error",errorstr);
     ui.dataSelectionScreen->clear();
-    m_dataList.clear();
     this->close();
-}
-
-void AP2DataPlot2D::payloadDecoded(int index,QString name,QVariantMap map)
-{
-    if (!m_dataList.contains(name))
-    {
-        m_dataList[name] = QList<QPair<int,QVariantMap> >();
-    }
-    m_dataList[name].append(QPair<int,QVariantMap>(index,map));
 }
 
 void AP2DataPlot2D::showLogDownloadDialog()
