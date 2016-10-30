@@ -110,8 +110,6 @@ private:
     void run(); // from QThread;
     bool isMainThread();
 
-    void loadBinaryLog(QFile &logfile);
-    void loadAsciiLog(QFile &logfile);
     void loadTLog(QFile &logfile);
 
     /**

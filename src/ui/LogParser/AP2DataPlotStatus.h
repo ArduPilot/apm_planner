@@ -114,6 +114,12 @@ public:
      */
     void corruptTimeRead(const int index, const QString &errorMessage);
 
+    /**
+     * @brief setNoMessageBytes
+     *        Stores the number of bytes which could not be parsed and adds
+     *        them to the output
+     * @param noMessageBytes
+     */
     void setNoMessageBytes(const int noMessageBytes);
 
     /**

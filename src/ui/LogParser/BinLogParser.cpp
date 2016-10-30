@@ -22,6 +22,7 @@ This file is part of the APM_PLANNER project
 /**
  * @file BinLogParser.cpp
  * @author Arne Wischmann <wischmann-a@gmx.de>
+ * @author Michael Carpenter <malcom2073@gmail.com>
  * @date 14 Jul 2016
  * @brief File providing implementation for the binary log parser
  */
@@ -29,73 +30,26 @@ This file is part of the APM_PLANNER project
 #include "BinLogParser.h"
 #include "logging.h"
 
-BinLogParser::typeDescriptor::typeDescriptor() : m_ID(0xFF), m_length(0), m_hasTimeStamp(false), m_timeStampIndex(0)
-{}
-
-void BinLogParser::typeDescriptor::finalize(const timeStampType &timeStamp)
-{
-    int tempIndex = m_labels.indexOf(timeStamp.m_name);
-
-    if(tempIndex != -1)
-    {
-        m_hasTimeStamp = true;
-        m_timeStampIndex = tempIndex;
-    }
-}
-
-void BinLogParser::typeDescriptor::addTimeStampField(const BinLogParser::timeStampType &timeStamp)
-{
-    // Add timestamp name to label list
-    m_labels.push_front(timeStamp.m_name);
-    // Add timestamp format code to format string
-    m_format.prepend('Q');
-    // and increase the length by 8 bytes ('Q' is a quint_64)
-    m_length += 8;
-
-    m_hasTimeStamp = true;
-    m_timeStampIndex = 0;
-}
-
-void BinLogParser::typeDescriptor::replaceLabelName(const QString &oldName, const QString newName)
-{
-    int tempIndex = m_labels.indexOf(oldName);
-
-    if(tempIndex != -1)
-    {
-        m_labels[tempIndex] = newName;
-    }
-}
-
-QString BinLogParser::typeDescriptor::getLabelAtIndex(int index) const
-{
-    return index < m_labels.size() ? m_labels.at(index) : QString("NoLabel");
-}
-
-bool BinLogParser::typeDescriptor::hasNoTimestamp() const
-{
-    return !m_hasTimeStamp;
-}
-
-bool BinLogParser::typeDescriptor::isValid() const
+bool BinLogParser::binDescriptor::isValid() const
 {
     // Special handling for FMT messages as they are corrupt in some logs. This is not a real
     // problem as the FMT is parsed by a fixed scheme at the moment.
-    if(m_ID == s_FMTMessageType)
+    if(m_ID == BinLogParser::s_FMTMessageType)
     {
         if(m_format.size() != m_labels.size())
         {
-            QLOG_WARN() << "typeDescriptor::valid() Corrupt FMT descriptor found - known bug in some logs - "
+            QLOG_WARN() << "binDescriptor::valid() Corrupt FMT descriptor found - known bug in some logs - "
                         << "trying to ignore...";
         }
         return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() > 0) && (m_labels.size() > 0);
     }
     // STRT message has also a special behaviour as it has no data fields in older logs.
-    else if(m_ID == s_STRTMessageType)
+    else if(m_ID == BinLogParser::s_STRTMessageType)
     {
         if(m_format.size() == 0 && m_length == 3)
         {
-            QLOG_WARN() << "typeDescriptor::valid() Corrupt STRT descriptor found - known bug in some logs - "
+            QLOG_WARN() << "binDescriptor::valid() Corrupt STRT descriptor found - known bug in some logs - "
                         << "trying to ignore...";
         }
         return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
@@ -111,29 +65,11 @@ bool BinLogParser::typeDescriptor::isValid() const
 //*****************************************
 
 BinLogParser::BinLogParser(AP2DataPlot2DModel *model, IParserCallback *object) :
-    m_callbackObject(object),
-    m_dataModel(model),
+    LogParserBase (model, object),
     m_dataPos(0),
-    m_messageType(0),
-    m_MessageCounter(0),
-    m_stop(false),
-    m_loadedLogType(MAV_TYPE_GENERIC),
-    m_timeErrorCount(0),
-    m_lastValidTimeStamp(0)
+    m_messageType(0)
 {
     QLOG_DEBUG() << "BinLogParser::BinLogParser - CTOR";
-    if(m_dataModel == 0)
-    {
-        QLOG_ERROR() << "BinLogParser::BinLogParser - No valid datamodel - parsing will not be possible";
-    }
-    if(m_callbackObject == 0)
-    {
-        QLOG_ERROR() << "BinLogParser::BinLogParser - No valid callback object - parsing will not be possible";
-    }
-
-    // flash logs can have different timestamps
-    m_possibleTimestamps.push_back(timeStampType("TimeUS", 1000000.0));
-    m_possibleTimestamps.push_back(timeStampType("TimeMS", 1000.0));
 }
 
 BinLogParser::~BinLogParser()
@@ -181,7 +117,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
 
             if(m_messageType == s_FMTMessageType)
             {
-                typeDescriptor descriptor;
+                binDescriptor descriptor;
                 if(parseFMTMessage(descriptor))
                 {
                     if(descriptor.m_name == "GPS")
@@ -201,6 +137,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
                     else
                     {
                         checkForValidTimestamp(descriptor);
+                        m_descriptorForDeferredStorage.push_back(descriptor);
                     }
                 }
                 else
@@ -212,7 +149,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
             else if(m_typeToDescriptorMap.contains(m_messageType))
             {
                 QList<NameValuePair> NameValuePairList;
-                typeDescriptor descriptor = m_typeToDescriptorMap.value(m_messageType);
+                binDescriptor descriptor = m_typeToDescriptorMap.value(m_messageType);
                 if(parseDataByDescriptor(NameValuePairList, descriptor))
                 {
                     if(NameValuePairList.size() >= 1)   // need at least one element
@@ -261,12 +198,6 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
     return m_logLoadingState;
 }
 
-void BinLogParser::stopParsing()
-{
-    QLOG_DEBUG() << "BinLogParser::stopParsing";
-    m_stop = true;
-}
-
 bool BinLogParser::headerIsValid()
 {
     if((static_cast<quint8>(m_dataBlock.at(m_dataPos++)) == s_StartByte1) &&
@@ -279,7 +210,7 @@ bool BinLogParser::headerIsValid()
     return false;
 }
 
-bool BinLogParser::parseFMTMessage(typeDescriptor &desc)
+bool BinLogParser::parseFMTMessage(binDescriptor &desc)
 {
     desc.m_ID     = static_cast<quint8>(m_dataBlock.at(m_dataPos++));
     desc.m_length = static_cast<quint8>(m_dataBlock.at(m_dataPos++));
@@ -304,7 +235,7 @@ bool BinLogParser::parseFMTMessage(typeDescriptor &desc)
     return true;
 }
 
-bool BinLogParser::storeDescriptor(typeDescriptor desc)
+bool BinLogParser::storeDescriptor(binDescriptor desc)
 {
     if(desc.isValid())
     {
@@ -345,7 +276,7 @@ bool BinLogParser::storeDescriptor(typeDescriptor desc)
     return true;
 }
 
-bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc)
+bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList, const binDescriptor &desc)
 {
 
     if((m_dataBlock.size() - m_dataPos) < (desc.m_length - s_HeaderOffset))
@@ -403,7 +334,7 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
         {
             float val;
             packetstream >> val;
-            if (val != val) // This tests for not a number
+            if (isinf(val) || isnan(val))
             {
                 QLOG_WARN() << "Corrupted log data found - Graphing may not work as expected for data of type " << desc.m_name;
                 m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
@@ -522,57 +453,18 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
     return true;
 }
 
-bool BinLogParser::storeNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc)
-{
-    if(desc.hasNoTimestamp())
-    {
-        NameValuePairList.prepend(NameValuePair(m_activeTimestamp.m_name, m_lastValidTimeStamp));
-    }
-    else
-    {
-        readTimeStamp(NameValuePairList, desc.m_timeStampIndex);
-    }
-
-    if (!m_dataModel->addRow(desc.m_name, NameValuePairList, m_activeTimestamp.m_name))
-    {
-        QString currentError = m_dataModel->getError();
-        m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
-        m_callbackObject->onError(currentError);
-        return false;
-    }
-    m_MessageCounter++;
-    m_logLoadingState.validDataRead();
-    return true;
-}
-
-
-void BinLogParser::checkForValidTimestamp(typeDescriptor &desc)
-{
-    foreach(const timeStampType &timeStamp, m_possibleTimestamps)
-    {
-        if (desc.m_labels.contains(timeStamp.m_name))
-        {
-            m_activeTimestamp = timeStamp;
-            break;
-        }
-    }
-    if(m_activeTimestamp.valid())
-    {
-        desc.finalize(m_activeTimestamp);
-    }
-    m_descriptorForDeferredStorage.push_back(desc);
-}
-
-
-bool BinLogParser::extendedStoreDescriptor(const typeDescriptor &desc)
+bool BinLogParser::extendedStoreDescriptor(const binDescriptor &desc)
 {
     bool rc = true;
-    foreach (const typeDescriptor &descriptor, m_descriptorForDeferredStorage)
+    if(m_descriptorForDeferredStorage.size() > 0)
     {
-        bool localRc = storeDescriptor(descriptor);
-        rc = rc && localRc;
+        foreach (const binDescriptor &descriptor, m_descriptorForDeferredStorage)
+        {
+            bool localRc = storeDescriptor(descriptor);
+            rc = rc && localRc;
+        }
+        m_descriptorForDeferredStorage.clear();
     }
-    m_descriptorForDeferredStorage.clear();
     if (rc)
     {
         rc = storeDescriptor(desc);
@@ -580,68 +472,3 @@ bool BinLogParser::extendedStoreDescriptor(const typeDescriptor &desc)
     return rc;
 }
 
-
-void BinLogParser::readTimeStamp(QList<NameValuePair> &valuepairlist, const int timeStampIndex)
-{
-
-    quint64 tempVal = static_cast<quint64>(valuepairlist.at(timeStampIndex).second.toULongLong());
-    // check if time is increasing
-    if (tempVal >= m_lastValidTimeStamp)
-    {
-        m_lastValidTimeStamp = tempVal;
-    }
-    else
-    {
-        if(m_timeErrorCount < 50)
-        {
-            QLOG_WARN() << "Corrupt data read: Time is not increasing! Last valid time stamp:"
-                         << QString::number(m_lastValidTimeStamp) << " actual read time stamp is:"
-                         << QString::number(tempVal);
-            ++m_timeErrorCount;
-        }
-        else if(m_timeErrorCount < 51)
-        {
-            QLOG_WARN() << "Supressing further time is not increasing messages....";
-            ++m_timeErrorCount;
-        }
-        m_logLoadingState.corruptTimeRead(m_MessageCounter, "Log time is not increasing! Last Time:" +
-                                          QString::number(m_lastValidTimeStamp) + " new Time:" +
-                                          QString::number(tempVal));
-        // if not increasing set to last valid value
-        valuepairlist[timeStampIndex].second = m_lastValidTimeStamp;
-    }
-}
-
-
-void BinLogParser::detectMavType(const QList<NameValuePair> &valuepairlist)
-{
-    // Name field is not always on same Index. So first search for the right position...
-    int nameIndex = 0;
-    for (int i = 0; i < valuepairlist.size(); ++i)
-    {
-        if (valuepairlist[i].first == "Name")
-        {
-            nameIndex = i;
-            break;
-        }
-    }
-    //...and then use it to check the values.
-    if (valuepairlist[nameIndex].second == "RATE_RLL_P" || valuepairlist[nameIndex].second == "H_SWASH_PLATE"
-            || valuepairlist[nameIndex].second == "ATC_RAT_RLL_P" ) // ATC_RAT_RLL_P Used in AC3.4+
-    {
-        m_loadedLogType = MAV_TYPE_QUADROTOR;
-    }
-    else if (valuepairlist[nameIndex].second == "PTCH2SRV_P")
-    {
-        m_loadedLogType = MAV_TYPE_FIXED_WING;
-    }
-    else if (valuepairlist[nameIndex].second == "SKID_STEER_OUT")
-    {
-        m_loadedLogType = MAV_TYPE_GROUND_ROVER;
-    }
-
-    if(m_loadedLogType != MAV_TYPE_GENERIC)
-    {
-        m_logLoadingState.setMavType(m_loadedLogType);
-    }
-}

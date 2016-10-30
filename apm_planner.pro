@@ -681,7 +681,9 @@ HEADERS += \
     src/ui/LogParser/BinLogParser.h \
     src/ui/LogParser/ILogParser.h \
     src/ui/LogParser/IParserCallback.h \
-    src/ui/LogParser/AP2DataPlotStatus.h
+    src/ui/LogParser/AP2DataPlotStatus.h \
+    src/ui/LogParser/AsciiLogParser.h \
+    src/ui/LogParser/LogParserBase.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -902,7 +904,9 @@ SOURCES += src/main.cc \
     src/Settings.cpp \
     src/uas/APMFirmwareVersion.cpp \
     src/ui/LogParser/BinLogParser.cpp \
-    src/ui/LogParser/AP2DataPlotStatus.cpp
+    src/ui/LogParser/AP2DataPlotStatus.cpp \
+    src/ui/LogParser/AsciiLogParser.cpp \
+    src/ui/LogParser/LogParserBase.cpp
 
 MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
     message(Including support for Google Earth)
