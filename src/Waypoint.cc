@@ -80,7 +80,18 @@ Waypoint::~Waypoint()
 
 bool Waypoint::isNavigationType()
 {
-    return (action < MAV_CMD_NAV_LAST);
+
+        if (action < MAV_CMD_NAV_LAST){
+
+            if (action == MAV_CMD_NAV_TAKEOFF) {
+                // TakeOff Command can be bot NAV or NonNAV
+                return isValidLocation();
+            }
+
+            if (action != MAV_CMD_NAV_ROI) // Odd NAV command out
+                return true;
+        }
+        return false;
 }
 
 bool Waypoint::isGlobalFrame() const
@@ -111,12 +122,31 @@ bool Waypoint::isRelativeAlt() const
     }
 }
 
+bool Waypoint::isValidLocation() const
+{
+    if (isGlobalFrame()){
+        if ( getLatitude() < -90.0 || getLatitude() > 90.0
+             || getLongitude() < -180.0 || getLongitude() > 180.0) {
+            return false;
+        }
+
+        if ( getLatitude() == 0.0 || getLongitude() == 0.0) {
+            return false; // zero Long/Lat is seldom a valid point.
+        }
+
+    } else if (isLocalFrame()) {
+        // TODO: Validate Local Frame coords
+        return true;
+    }
+    return true;
+}
+
 bool Waypoint::isLocalFrame() const
 {
     switch (frame) {
     case MAV_FRAME_LOCAL_NED:
     case MAV_FRAME_LOCAL_ENU:
-//    case MAV_FRAME_LOCAL_OFFSET_NED: // ??
+    case MAV_FRAME_LOCAL_OFFSET_NED:
         return true;
     default:
         return false;
