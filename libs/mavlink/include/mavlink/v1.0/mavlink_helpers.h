@@ -66,12 +66,14 @@ MAVLINK_HELPER void mavlink_reset_channel_status(uint8_t chan)
  */
 #if MAVLINK_CRC_EXTRA
 MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
-						      uint8_t chan, uint8_t length, uint8_t crc_extra)
+						      uint8_t chan, uint8_t min_length, uint8_t length, uint8_t crc_extra)
 #else
 MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
 						      uint8_t chan, uint8_t length)
 #endif
 {
+	// This is only used for the v2 protocol and we silence it here
+	(void)min_length;
 	// This code part is the same for all messages;
 	msg->magic = MAVLINK_STX;
 	msg->len = length;
@@ -97,9 +99,9 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, ui
  */
 #if MAVLINK_CRC_EXTRA
 MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
-						 uint8_t length, uint8_t crc_extra)
+						 uint8_t min_length, uint8_t length, uint8_t crc_extra)
 {
-	return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, length, crc_extra);
+    return mavlink_finalize_message_chan(msg, system_id, component_id, MAVLINK_COMM_0, min_length, length, crc_extra);
 }
 #else
 MAVLINK_HELPER uint16_t mavlink_finalize_message(mavlink_message_t* msg, uint8_t system_id, uint8_t component_id, 
@@ -117,7 +119,7 @@ MAVLINK_HELPER void _mavlink_send_uart(mavlink_channel_t chan, const char *buf, 
  */
 #if MAVLINK_CRC_EXTRA
 MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t msgid, const char *packet, 
-						    uint8_t length, uint8_t crc_extra)
+						    uint8_t min_length, uint8_t length, uint8_t crc_extra)
 #else
 MAVLINK_HELPER void _mav_finalize_message_chan_send(mavlink_channel_t chan, uint8_t msgid, const char *packet, uint8_t length)
 #endif
