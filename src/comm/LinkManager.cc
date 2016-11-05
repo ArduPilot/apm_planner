@@ -513,22 +513,22 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
         uas = mav;
     }
     break;
-    case MAV_AUTOPILOT_PIXHAWK:
-    {
-        PxQuadMAV* mav = new PxQuadMAV(0, sysid);
-        // Set the system type
-        mav->setSystemType((int)heartbeat->type);
-        // Connect this robot to the UAS object
-        // it is IMPORTANT here to use the right object type,
-        // else the slot of the parent object is called (and thus the special
-        // packets never reach their goal)
-        connect(mavlink, SIGNAL(messageReceived(LinkInterface*, mavlink_message_t)), mav, SLOT(receiveMessage(LinkInterface*, mavlink_message_t)));
-#ifdef QGC_PROTOBUF_ENABLED
-        connect(mavlink, SIGNAL(extendedMessageReceived(LinkInterface*, std::tr1::shared_ptr<google::protobuf::Message>)), mav, SLOT(receiveExtendedMessage(LinkInterface*, std::tr1::shared_ptr<google::protobuf::Message>)));
-#endif
-        uas = mav;
-    }
-    break;
+//    case MAV_AUTOPILOT_PX4:
+//    {
+//        PxQuadMAV* mav = new PxQuadMAV(0, sysid);
+//        // Set the system type
+//        mav->setSystemType((int)heartbeat->type);
+//        // Connect this robot to the UAS object
+//        // it is IMPORTANT here to use the right object type,
+//        // else the slot of the parent object is called (and thus the special
+//        // packets never reach their goal)
+//        connect(mavlink, SIGNAL(messageReceived(LinkInterface*, mavlink_message_t)), mav, SLOT(receiveMessage(LinkInterface*, mavlink_message_t)));
+//#ifdef QGC_PROTOBUF_ENABLED
+//        connect(mavlink, SIGNAL(extendedMessageReceived(LinkInterface*, std::tr1::shared_ptr<google::protobuf::Message>)), mav, SLOT(receiveExtendedMessage(LinkInterface*, std::tr1::shared_ptr<google::protobuf::Message>)));
+//#endif
+//        uas = mav;
+//    }
+//    break;
     case MAV_AUTOPILOT_SLUGS:
     {
         SlugsMAV* mav = new SlugsMAV(0, sysid);
