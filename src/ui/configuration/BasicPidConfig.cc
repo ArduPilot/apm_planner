@@ -23,6 +23,7 @@ This file is part of the APM_PLANNER project
 #include <logging.h>
 #include "BasicPidConfig.h"
 #include "ParamWidget.h"
+#include "ArduPilotMegaMAV.h"
 #include <QSettings>
 
 BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent),
@@ -59,7 +60,7 @@ BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent),
                                        "Slide to the right to climb more aggressively or slide to the left to climb more gently.",0.75,0.3,1.0,0.05);
     m_throttleAccelWidget->show();
 
-    mapParamNamesToBox();
+    mapParamNames();
     initConnections();
 }
 
