@@ -44,6 +44,7 @@ private:
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
 
+    void mapParamNames();
     void requestParameterUpdate();
 
 private:
