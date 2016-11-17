@@ -22,7 +22,6 @@ struct GPSRecord: DataLine {
     QString lat()   { return values.value("Lat"); }
     QString lng()   { return values.value("Lng"); }
     QString alt()   { return values.value("Alt"); }
-    QString relAlt(){ return values.value("RelAlt").isEmpty() ? values.value("RAlt") : values.value("RelAlt");}
     QString speed() { return values.value("Spd"); }
 
     virtual bool hasData() {
@@ -30,7 +29,7 @@ struct GPSRecord: DataLine {
     }
 
     QString toStringForKml() {
-        QString str = QString("%1,%2,%3").arg(lng(), lat(), relAlt());
+        QString str = QString("%1,%2,%3").arg(lng(), lat(), alt());
         return str;
     }
 
