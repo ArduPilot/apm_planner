@@ -85,6 +85,20 @@ signals:
     void receiveLossChanged(int id,float value);
     void messageReceived(LinkInterface *link,mavlink_message_t message);
 
+    /**
+     * @brief Emitted if a new radio status packet received
+     *
+     * @param rxerrors receive errors
+     * @param fixed count of error corrected packets
+     * @param rssi local signal strength in dBm
+     * @param remrssi remote signal strength in dBm
+     * @param txbuf how full the tx buffer is as a percentage
+     * @param noise background noise level
+     * @param remnoise remote background noise level
+     */
+    void radioStatusChanged(LinkInterface* link, unsigned rxerrors, unsigned fixed, int rssi, int remrssi,
+    unsigned txbuf, unsigned noise, unsigned remnoise);
+
 public slots:
     void receiveBytes(LinkInterface* link, QByteArray b);
 };
