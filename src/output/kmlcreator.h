@@ -1,6 +1,7 @@
 #ifndef KMLCREATOR_H
 #define KMLCREATOR_H
 
+#include "mavlink.h"
 #include <qstring.h>
 #include <qlist.h>
 #include <QHash>
@@ -65,6 +66,8 @@ struct Attitude: DataLine {
  */
 struct CommandedWaypoint: DataLine {
 
+    int index() { return values.value("CNum").toInt(); }
+    MAV_CMD commandId() { return (MAV_CMD)values.value("CId").toInt(); }
     QString lat() { return values.value("Lat"); }
     QString lng() { return values.value("Lng"); }
     QString alt() { return values.value("Alt"); }
@@ -76,6 +79,20 @@ struct CommandedWaypoint: DataLine {
     QString toStringForKml() {
         QString str = QString("%1,%2,%3").arg(lng(), lat(), alt());
         return str;
+    }
+
+    bool isNavigationCommand() {
+
+        if (commandId() < MAV_CMD_NAV_LAST) {
+
+            if ((lat() == "0") || (lng() == "0")) {
+                return false; // Lat/Lng 0.0,0.0 is invalid
+            }
+            return true;
+
+        } else {
+            return false;
+        }
     }
 
     static CommandedWaypoint from(FormatLine& format, QString& line);

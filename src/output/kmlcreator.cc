@@ -413,8 +413,11 @@ QString KMLCreator::finish(bool kmz) {
 void KMLCreator::writeWaypointsPlacemarkElement(QXmlStreamWriter &writer) {
     QString coordString;
     foreach(CommandedWaypoint c, m_waypoints) {
-        coordString += c.toStringForKml();
-        coordString += " ";
+        if ( c.isNavigationCommand() ) {
+            // Add waypoints that are NAV points.
+            coordString += c.toStringForKml();
+            coordString += " ";
+        }
     }
 
     writer.writeStartElement("Placemark");
