@@ -148,7 +148,6 @@ DEFINES += _TTY_NOWARN_
 #Turn on camera view
 #DEFINES += AMERAVIEW
 
-#include (libs/mavlink/include/mavlink/v1.0-qt/mavlink.pri)
 #
 # OS Specific settings
 #
