@@ -44,13 +44,6 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCUASParamManager.h"
 #include "RadioCalibration/RadioCalibrationData.h"
 
-#ifdef QGC_PROTOBUF_ENABLED
-#include <tr1/memory>
-#ifdef QGC_USE_PIXHAWK_MESSAGES
-#include <pixhawk/pixhawk.pb.h>
-#endif
-#endif
-
 enum BatteryType
 {
     NICD = 0,

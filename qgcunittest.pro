@@ -400,14 +400,7 @@ contains(DEPENDENCIES_PRESENT, osg) {
         src/ui/map3D/TerrainParamDialog.h \
         src/ui/map3D/ImageryParamDialog.h
 }
-contains(DEPENDENCIES_PRESENT, protobuf):contains(MAVLINK_CONF, pixhawk) {
-    message("Including headers for Protocol Buffers")
 
-    # Enable only if protobuf is available
-    HEADERS += libs/mavlink/include/v1.0/pixhawk/pixhawk.pb.h \
-        src/ui/map3D/ObstacleGroupNode.h \
-        src/ui/map3D/GLOverlayGeode.h
-}
 contains(DEPENDENCIES_PRESENT, libfreenect) { 
     message("Including headers for libfreenect")
     
