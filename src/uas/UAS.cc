@@ -1348,6 +1348,15 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit rangeFinderUpdate(this, rangeFinder.distance, rangeFinder.voltage);
         }
             break;
+
+        case MAVLINK_MSG_ID_TERRAIN_REQUEST:
+        {
+            mavlink_terrain_request_t terrainRequest;
+            mavlink_msg_terrain_request_decode(&message, &terrainRequest);
+
+            QLOG_INFO() << QString("Terrain Request: lat%1,lon%2 %3").arg(terrainRequest.lat).arg(terrainRequest.lon).arg(terrainRequest.grid_spacing);
+        }
+
         // Messages to ignore
         case MAVLINK_MSG_ID_RAW_PRESSURE:
         case MAVLINK_MSG_ID_SCALED_PRESSURE:
