@@ -35,10 +35,10 @@ This file is part of the APM_PLANNER project
 #include "LogParser/TlogParser.h"
 
 
-AP2DataPlotThread::AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent) :
+AP2DataPlotThread::AP2DataPlotThread(LogdataStorage::Ptr storagePtr, QObject *parent) :
     QThread(parent),
     m_stop(false),
-    m_dataModel(model),
+    m_dataStoragePtr(storagePtr),
     mp_logParser(0)
 {
     QLOG_DEBUG() << "Created AP2DataPlotThread:" << this;
@@ -104,7 +104,7 @@ void AP2DataPlotThread::run()
     if (m_fileName.toLower().endsWith(".bin"))
     {
         //It's a binary file
-        BinLogParser parser(m_dataModel, this);
+        BinLogParser parser(m_dataStoragePtr, this);
         mp_logParser = &parser;
         plotState = parser.parse(logfile);
         mp_logParser = 0;
@@ -112,7 +112,7 @@ void AP2DataPlotThread::run()
     else if (m_fileName.toLower().endsWith(".log"))
     {
         //It's a ascii log.
-        AsciiLogParser parser(m_dataModel, this);
+        AsciiLogParser parser(m_dataStoragePtr, this);
         mp_logParser = &parser;
         plotState = parser.parse(logfile);
         mp_logParser = 0;
@@ -120,7 +120,7 @@ void AP2DataPlotThread::run()
     else if (m_fileName.toLower().endsWith(".tlog"))
     {
         //It's a tlog
-        TlogParser parser(m_dataModel, this);
+        TlogParser parser(m_dataStoragePtr, this);
         mp_logParser = &parser;
         plotState = parser.parse(logfile);
         mp_logParser = 0;

@@ -38,7 +38,6 @@ This file is part of the APM_PLANNER project
 #include "AP2DataPlotThread.h"
 #include "dataselectionscreen.h"
 #include "AP2DataPlotAxisDialog.h"
-#include "AP2DataPlot2DModel.h"
 #include "ui_AP2DataPlot2D.h"
 
 #include <QWidget>
@@ -47,6 +46,8 @@ This file is part of the APM_PLANNER project
 #include <QTextBrowser>
 #include <QSqlDatabase>
 #include <QStandardItemModel>
+
+#include "LogdataStorage.h"
 
 class LogDownloadDialog;
 
@@ -113,7 +114,7 @@ private slots:
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
-    void plotDoubleClick(QMouseEvent * _t2);
+    void plotDoubleClick(QMouseEvent *event);
     void plotMouseMove(QMouseEvent *evt);
     void horizontalScrollMoved(int value);
     void verticalScrollMoved(int value);
@@ -149,7 +150,9 @@ private:
 
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
-    AP2DataPlot2DModel *m_tableModel;
+
+    LogdataStorage::Ptr m_dataStoragePtr;
+
     QSortFilterProxyModel *m_tableFilterProxyModel;
     QList<QString> m_tableFilterList;
     int getStatusTextPos();

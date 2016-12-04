@@ -83,9 +83,9 @@ bool LogParserBase::typeDescriptor::isValid() const
 
 //*****************************************
 
-LogParserBase::LogParserBase(AP2DataPlot2DModel *model, IParserCallback *object):
+LogParserBase::LogParserBase(LogdataStorage::Ptr storagePtr, IParserCallback *object):
     m_callbackObject(object),
-    m_dataModel(model),
+    m_dataStoragePtr(storagePtr),
     m_stop(false),
     m_MessageCounter(0),
     m_timeErrorCount(0),
@@ -93,7 +93,7 @@ LogParserBase::LogParserBase(AP2DataPlot2DModel *model, IParserCallback *object)
     m_lastValidTimeStamp(0)
 {
     QLOG_DEBUG() << "LogParserBase::LogParserBase - CTOR";
-    if(m_dataModel == 0)
+    if(!m_dataStoragePtr)
     {
         QLOG_ERROR() << "LogParserBase::LogParserBase - No valid datamodel - parsing will not be possible";
     }
@@ -143,11 +143,9 @@ bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairLi
         readTimeStamp(NameValuePairList, desc);
     }
 
-    if (!m_dataModel->addRow(desc.m_name, NameValuePairList, m_activeTimestamp.m_name))
+    if(!m_dataStoragePtr->addDataRow(desc.m_name, NameValuePairList))
     {
-        QString currentError = m_dataModel->getError();
-        m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
-        m_callbackObject->onError(currentError);
+        m_callbackObject->onError(m_dataStoragePtr->getError());
         return false;
     }
     m_MessageCounter++;

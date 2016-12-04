@@ -667,7 +667,6 @@ HEADERS += \
     src/comm/RelPositionOverview.h \
     src/comm/AbsPositionOverview.h \
     src/comm/MissionOverview.h \
-    src/ui/AP2DataPlot2DModel.h \
     src/ui/uas/PreFlightCalibrationDialog.h \
     src/ui/configuration/RadioFlashWizard.h \
     src/ui/GraphTreeWidgetItem.h \
@@ -683,7 +682,8 @@ HEADERS += \
     src/ui/LogParser/AP2DataPlotStatus.h \
     src/ui/LogParser/AsciiLogParser.h \
     src/ui/LogParser/LogParserBase.h \
-    src/ui/LogParser/TlogParser.h
+    src/ui/LogParser/TlogParser.h \
+    src/ui/LogdataStorage.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -894,7 +894,6 @@ SOURCES += src/main.cc \
     src/comm/RelPositionOverview.cc \
     src/comm/AbsPositionOverview.cc \
     src/comm/MissionOverview.cc \
-    src/ui/AP2DataPlot2DModel.cc \
     src/ui/uas/PreFlightCalibrationDialog.cpp \
     src/ui/configuration/RadioFlashWizard.cpp \
     src/ui/GraphTreeWidgetItem.cc \
@@ -907,7 +906,8 @@ SOURCES += src/main.cc \
     src/ui/LogParser/AP2DataPlotStatus.cpp \
     src/ui/LogParser/AsciiLogParser.cpp \
     src/ui/LogParser/LogParserBase.cpp \
-    src/ui/LogParser/TlogParser.cpp
+    src/ui/LogParser/TlogParser.cpp \
+    src/ui/LogdataStorage.cpp
 
 MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
     message(Including support for Google Earth)

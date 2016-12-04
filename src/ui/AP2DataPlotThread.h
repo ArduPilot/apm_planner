@@ -32,9 +32,10 @@ This file is part of the APM_PLANNER project
 #define AP2DATAPLOTTHREAD_H
 
 #include <QThread>
-#include "AP2DataPlot2DModel.h"
 #include "LogParser/IParserCallback.h"
 #include "LogParser/ILogParser.h"
+
+#include "LogdataStorage.h"
 
 /**
  * @brief The AP2DataPlotThread class provides the infrastucture for log parsing.
@@ -49,7 +50,7 @@ public:
      * @brief AP2DataPlotThread - CTOR
      * @param model - Pointer to the AP2DataPlot2DModel data stucture
      */
-    explicit AP2DataPlotThread(AP2DataPlot2DModel *model, QObject *parent = 0);
+    explicit AP2DataPlotThread(LogdataStorage::Ptr storagePtr, QObject *parent = 0);
 
     /**
      * @brief ~AP2DataPlotThread - DTOR
@@ -89,7 +90,8 @@ private:
     QString m_fileName;     /// Filename of the file to be parsed
     bool m_stop;            /// true if parsing shall be stopped
 
-    AP2DataPlot2DModel *m_dataModel;    /// Pointer to the datamodel for storing the data
+    LogdataStorage::Ptr m_dataStoragePtr;   /// Pointer to the datamodel for storing the data
+
     ILogParser         *mp_logParser;   /// Pointer to active parser use to pass stop command
 
     void run();             /// from QThread - the thread;

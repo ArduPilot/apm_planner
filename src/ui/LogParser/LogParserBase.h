@@ -31,7 +31,7 @@ This file is part of the APM_PLANNER project
 
 #include "ILogParser.h"
 #include "IParserCallback.h"
-#include "AP2DataPlot2DModel.h"
+#include "LogdataStorage.h"
 
 /**
  * @brief The LogParserBase class provides a base class for all log
@@ -42,10 +42,10 @@ class LogParserBase : public ILogParser
 public:
     /**
      * @brief LogParserBase - CTOR
-     * @param model - Pointer to a valid AP2DataPlot2DModel used for data storage
+     * @param storagePtr - Pointer to a valid LogdataStorage used for data storage
      * @param object - Pointer to a valid call back interface
      */
-    explicit LogParserBase(AP2DataPlot2DModel *model, IParserCallback *object);
+    explicit LogParserBase(LogdataStorage::Ptr storagePtr, IParserCallback *object);
 
     /**
      * @brief ~LogParserBase - DTOR
@@ -125,7 +125,7 @@ protected:
     typedef QPair<QString, QVariant> NameValuePair;          /// Type holding Lablestring and its value
 
     IParserCallback *m_callbackObject;      /// Pointer to callback interface.
-    AP2DataPlot2DModel *m_dataModel;        /// Pointer to the datamodel for storing the data
+    LogdataStorage::Ptr m_dataStoragePtr;   /// Pointer to the datamodel for storing the data
 
     bool m_stop;                            /// Flag indicating to stop parsing
     quint64 m_MessageCounter;               /// Simple counter showing number of message wich is currently parsed

@@ -64,8 +64,8 @@ bool BinLogParser::binDescriptor::isValid() const
 
 //*****************************************
 
-BinLogParser::BinLogParser(AP2DataPlot2DModel *model, IParserCallback *object) :
-    LogParserBase (model, object),
+BinLogParser::BinLogParser(LogdataStorage::Ptr storagePtr, IParserCallback *object) :
+    LogParserBase (storagePtr, object),
     m_dataPos(0),
     m_messageType(0)
 {
@@ -81,15 +81,9 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
 {
     QLOG_DEBUG() << "BinLogParser::parse:" << logfile.fileName();
 
-    if(!m_dataModel || !m_callbackObject)
+    if(!m_dataStoragePtr || !m_callbackObject)
     {
-        QLOG_ERROR() << "BinLogParser::parse - No valid datamodel or callback object - parsing stopped";
-        return m_logLoadingState;
-    }
-
-    if(!m_dataModel->startTransaction())
-    {
-        m_callbackObject->onError(m_dataModel->getError());
+        QLOG_ERROR() << "BinLogParser::parse - No valid datastorage or callback object - parsing stopped";
         return m_logLoadingState;
     }
 
@@ -190,13 +184,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
         m_logLoadingState.setNoMessageBytes(noMessageBytes);
     }
 
-    if (!m_dataModel->endTransaction())
-    {
-        m_callbackObject->onError(m_dataModel->getError());
-        return m_logLoadingState;
-    }
-    m_dataModel->setAllRowsHaveTime(true, m_activeTimestamp.m_name, m_activeTimestamp.m_divisor);
-
+    m_dataStoragePtr->setTimeStamp(m_activeTimestamp.m_name, m_activeTimestamp.m_divisor);
     return m_logLoadingState;
 }
 
@@ -253,13 +241,7 @@ bool BinLogParser::storeDescriptor(binDescriptor desc)
                     desc.addTimeStampField(m_activeTimestamp);
                 }
 
-                if (!m_dataModel->addType(desc.m_name, desc.m_ID, desc.m_length, desc.m_format, desc.m_labels))
-                {
-                    QString currentError = m_dataModel->getError();
-                    m_dataModel->endTransaction(); //endTransaction can re-set the error if it errors, but we should try it anyway.
-                    m_callbackObject->onError(currentError);
-                    return false;
-                }
+                m_dataStoragePtr->addDataType(desc.m_name, desc.m_ID, desc.m_length, desc.m_format, desc.m_labels, desc.m_timeStampIndex);
                 m_MessageCounter++;
             }
         }

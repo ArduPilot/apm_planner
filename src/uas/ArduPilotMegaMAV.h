@@ -118,7 +118,8 @@ class MessageBase
 {
 public:
 
-    typedef QSharedPointer<MessageBase> Ptr;
+    typedef QSharedPointer<MessageBase> Ptr;            /// Shared pointer type
+    typedef QPair<QString, QVariant> NameValuePair;     /// Pair of names and values
 
     MessageBase();
 
@@ -146,13 +147,13 @@ public:
     virtual double getTimeStamp() const;
 
     /**
-     * @brief Reads an QSqlRecord and sets the internal data.
-     *        See derived types.
-     * @param record[in] - Filled QSqlRecord
-     * @param timeDivider[in] - Devider to scale the timestamp to seconds
-     * @return true - all Fields could be read, false otherwise
+     * @brief setFromNameValuPairList - Reads a list of NameValuePairs which should contain the name
+     *        and the value of each measurement and sets the internal data accordingly
+     * @param values - List of name value pairs
+     * @param timeDivider - divider for timestamp value
+     * @return true - success, false otherwise (data was not added)
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider) = 0;
+    virtual bool setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider) = 0;
 
     /**
      * @brief Converts the ErrorCode into an uninterpreted string.
@@ -225,18 +226,17 @@ public:
     quint32 getErrorCode() const;
 
     /**
-     * @brief Reads an QSqlRecord and sets the internal data.
-     *        The record must contain an Index in colum 0 and the
-     *        colums m_TimeFieldName, "Subsys" and "ECode" in order
-     *        to get a positive return value. The timeDivider should
-     *        scale the time stamp to seconds.
+     * @brief Reads an list of NameValuePairs and sets the internal data.
+     *        The list must contain a pairs with name "Index", m_TimeFieldName,
+     *        "ECode" and "Subsys" in order to get a positive return value.
+     *        The timeDivider should scale the time stamp to seconds.
      *
-     * @param record[in] - Filled QSqlRecord
+     * @param values[in] - Filled list with NameValuePairs
      * @param timeDivider[in] - Devider to scale the timestamp to seconds
      * @return true - all Fields could be read
      *         false - not all data could be read
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
+    virtual bool setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider);
 
     /**
      * @brief Converts the ErrorCode into an uninterpreted string.
@@ -300,18 +300,17 @@ public:
     quint32 getReason() const;
 
     /**
-     * @brief Reads an QSqlRecord and sets the internal data.
-     *        The record must contain an Index in colum 0 and the
-     *        colums m_TimeFieldName, "Mode" and "ModeNum" in order
-     *        to get a positive return value. The timeDivider should
-     *        scale the time stamp to seconds.
+     * @brief Reads a QList of NameValuePair and sets the internal data.
+     *        The list must contain a pairs with name "Index", m_TimeFieldName,
+     *        "Mode" and "ModeNum" in order to get a positive return value.
+     *        The timeDivider should scale the time stamp to seconds.
      *
-     * @param record[in] - Filled QSqlRecord
+     * @param values[in] - Filled list with NameValuePairs
      * @param timeDivider[in] - Divider to scale the timestamp to seconds
      * @return true - all mandatory Fields could be read
      *         false - not all mandatory data could be read
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
+    virtual bool setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider);
 
     /**
      * @brief Converts the ModeMessage into an uninterpreted string.
@@ -362,18 +361,17 @@ public:
     quint32 getEventID() const;
 
     /**
-     * @brief Reads an QSqlRecord and sets the internal data.
-     *        The record must contain an Index in colum 0 and the
-     *        colums m_TimeFieldName and "Id" in order to get a
-     *        positive return value. The timeDivider should
-     *        scale the time stamp to seconds.
+     * @brief Reads a QList of NameValuePair and sets the internal data.
+     *        The list must contain a pairs with name "Index", m_TimeFieldName
+     *        and "Id" in order to get a positive return value.
+     *        The timeDivider should scale the time stamp to seconds.
      *
-     * @param record[in] - Filled QSqlRecord
-     * * @param timeDivider[in] - Devider to scale the timestamp to seconds
+     * @param values[in] - Filled list with NameValuePairs
+     * @param timeDivider[in] - Devider to scale the timestamp to seconds
      * @return true - all Fields could be read
      *         false - not all data could be read
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
+    virtual bool setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider);
 
     /**
      * @brief Converts the ModeMessage into an uninterpreted string.
@@ -418,18 +416,17 @@ public:
     MsgMessage(const quint32 index, const double timeStamp, const QString &message);
 
     /**
-     * @brief Reads an QSqlRecord and sets the internal data.
-     *        The record must contain an Index in colum 0 and the
-     *        colum m_TimeFieldName and "Msg" in order to get a
-     *        positive return value. The timeDivider should
-     *        scale the time stamp to seconds.
+     * @brief Reads a QList of NameValuePair and sets the internal data.
+     *        The list must contain a pairs with name "Index", m_TimeFieldName
+     *        and "Msg" in order to get a positive return value.
+     *        The timeDivider should scale the time stamp to seconds.
      *
-     * @param record[in] - Filled QSqlRecord
+     * @param values[in] - Filled list with NameValuePairs
      * @param timeDivider[in] - Devider to scale the timestamp to seconds
      * @return true - all Fields could be read
      *         false - not all data could be read
      */
-    virtual bool setFromSqlRecord(const QSqlRecord &record, const double timeDivider);
+    virtual bool setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider);
 
     /**
      * @brief Converts the MsgMessage into an uninterpreted string.
@@ -451,7 +448,15 @@ private:
 class MessageFactory
 {
 public:
-    static MessageBase::Ptr getMessageOfType(const QString &type, const QString &TimeFieldName);
+    /**
+     * @brief CreateMessageOfType - creates a filled entry of type "type"
+     * @param type - Name of the message to be created
+     * @param values - Data values for setting up the entry
+     * @param timeFieldName - Name of the time filed in data model
+     * @param timeDivider - Divider for the time stamp to scale to seconds
+     * @return  - smartpointer to new Message
+     */
+    static MessageBase::Ptr CreateMessageOfType(const QString &type, const QList<QPair<QString, QVariant> > &values, const QString &timeFieldName, const double &timeDivider);
 };
 
 /**
