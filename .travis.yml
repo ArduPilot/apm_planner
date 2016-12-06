@@ -1,0 +1,58 @@
+language: cpp
+
+env:
+  global:
+    - CCACHE_CPP2=1
+    - CCACHE_DISABLE=1
+    - JOBS=4
+    # - QT_FATAL_WARNINGS=1
+    - SHADOW_BUILD_DIR=/tmp/shadow_build_dir
+
+matrix:
+    fast_finish: true
+    include:
+        # - os: linux
+        #   dist: trusty
+        #   env: SPEC=linux-g++-64 CONFIG=installer
+        #   sudo: required
+        - os: linux
+          dist: xenial
+          env: SPEC=linux-g++-64 CONFIG=debug
+          sudo: required
+        # - os: osx
+        #   osx_image: xcode8
+        #   env: SPEC=macx-clang CONFIG=debug
+        #   sudo: required
+        # - os: osx
+        #   osx_image: xcode8
+        #   env: SPEC=macx-clang CONFIG=installer
+        #   sudo: required
+        # - os: osx
+        #   osx_image: xcode8
+        #   env: SPEC=macx-ios-clang CONFIG=release
+        #   sudo: false
+
+addons:
+    apt:
+        packages:
+        - ccache
+        - flite1-dev
+        - libqt5svg5-dev
+        - libsdl2-dev
+        - libsdl1.2-dev
+        - libsndfile-dev
+        - libssl-dev
+        - libudev-dev
+        - qt5-make
+        - qt5-default
+        - qtdeclarative5-qtquick2-plugin
+
+script:
+    # run qmake
+    - mkdir ${SHADOW_BUILD_DIR} && cd ${SHADOW_BUILD_DIR}
+    - qmake -r ${TRAVIS_BUILD_DIR}/apm_planner.pro CONFIG+=${CONFIG} -spec ${SPEC}
+
+    # compile
+    make -j$JOBS
+    #- ccache -s
+
