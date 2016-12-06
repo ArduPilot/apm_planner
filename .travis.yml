@@ -1,0 +1,49 @@
+language: cpp
+dist: trusty
+sudo: required
+
+env:
+  global:
+    - CCACHE_CPP2=1
+    - CCACHE_DISABLE=1
+    - JOBS=4
+    # - QT_FATAL_WARNINGS=1
+    - SHADOW_BUILD_DIR=/tmp/shadow_build_dir
+    - SPEC=linux-g++-64 CONFIG=debug
+
+addons:
+    apt:
+        packages:
+        - ccache
+        - flite1-dev
+        # - libqt5svg5-dev
+        - libsdl2-dev
+        - libsdl1.2-dev
+        - libsndfile-dev
+        - libssl-dev
+        - libudev-dev
+        # - qt5-make
+        # - qt5-default
+        # - qtdeclarative5-qtquick2-plugin
+        - wget
+
+install:
+    # linux dependencies: qt
+    -   if [ "${SPEC}" = "linux-g++-64" ]; then
+            wget http://firmware.ardupilot.org/Tools/APMPlanner/support_files/Qt5.5.1-linux-min.tar.bz2 &&
+            tar jxf Qt5.5.1-linux-min.tar.bz2 -C /tmp &&
+            export PATH=/tmp/Qt/5.5/gcc_64/bin:$PATH &&
+            export DISPLAY=:99.0 &&
+            sh -e /etc/init.d/xvfb start
+            ;
+        fi
+
+script:
+    # run qmake
+    - mkdir ${SHADOW_BUILD_DIR} && cd ${SHADOW_BUILD_DIR}
+    - qmake -r ${TRAVIS_BUILD_DIR}/apm_planner.pro CONFIG+=${CONFIG} -spec ${SPEC}
+
+    # compile
+    - make -j$JOBS
+    #- ccache -s
+
