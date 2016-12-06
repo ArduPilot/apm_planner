@@ -53,6 +53,6 @@ script:
     - qmake -r ${TRAVIS_BUILD_DIR}/apm_planner.pro CONFIG+=${CONFIG} -spec ${SPEC}
 
     # compile
-    make -j$JOBS
+    - make -j$JOBS
     #- ccache -s
 
