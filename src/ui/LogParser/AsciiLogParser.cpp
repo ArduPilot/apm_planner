@@ -148,7 +148,7 @@ AP2DataPlotStatus AsciiLogParser::parse(QFile &logfile)
                         {
                             return m_logLoadingState;
                         }
-                        if((m_loadedLogType == MAV_TYPE_GENERIC) && (descriptor.m_name == "PARM"))
+                        if(m_loadedLogType == MAV_TYPE_GENERIC)
                         {
                             detectMavType(NameValuePairList);
                         }
