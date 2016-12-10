@@ -310,24 +310,44 @@ bool TlogParser::storeDescriptor(tlogDescriptor desc)
 bool TlogParser::decodeData(const mavlink_message_t &mavlinkMessage, QList<NameValuePair> &NameValuePairList)
 {
     QList<NameValuePair> decodedMessage = m_mavDecoderPtr->receiveMessage(0, mavlinkMessage);
-    for (int i = 0; i < decodedMessage.size(); ++i)
+    if(!decodedMessage.empty())
     {
-        QStringList list = decodedMessage.at(i).first.split(".");
-        if (list.size() >= 2)
+        // Copy data
+        for (int i = 0; i < decodedMessage.size(); ++i)
         {
-            NameValuePairList.append(NameValuePair(list[1], decodedMessage.at(i).second));
+            QStringList list = decodedMessage.at(i).first.split(".");
+            if (list.size() >= 2)   // There must be at least 2 elements
+            {
+                NameValuePairList.append(NameValuePair(list[1], decodedMessage.at(i).second));
+            }
+            else
+            {
+                QLOG_WARN() << "Missing data type information. Message:" << decodedMessage.at(i).first <<  ":"
+                            << decodedMessage.at(i).second.toString();
+                m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
+                                                  "Missing data type information. Message:" + decodedMessage.at(i).first +
+                                                  ":" + decodedMessage.at(i).second.toString());
+                return false;
+            }
         }
-        else
+
+        // Verify data matches descriptor - simple size check
+        QString typeName = m_mavDecoderPtr->getMessageName(mavlinkMessage.msgid);
+        tlogDescriptor descriptor = m_nameToDescriptorMap.value(typeName);
+        if(NameValuePairList.size() != descriptor.m_labels.size())
         {
-            QLOG_WARN() << "Missing data type information. Message:" << decodedMessage.at(i).first <<  ":"
-                        << decodedMessage.at(i).second.toString();
+            QLOG_WARN() << "Number of received values does not match number defined in type. Type:"
+                        << typeName << " Expected:" << descriptor.m_labels.size() << " got:"
+                        << NameValuePairList.size() << ". Dropping message.";
             m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
-                                              "Missing data type information. Message:" + decodedMessage.at(i).first +
-                                              ":" + decodedMessage.at(i).second.toString());
+                                              "Number of received values does not match number defined in type. Type:"
+                                              + typeName + " Expected:" + QString::number(descriptor.m_labels.size()) + " got:"
+                                              + QString::number(NameValuePairList.size()) + ". Dropping message.");
             return false;
         }
+        return true;    // everything is ok
     }
-    return NameValuePairList.size() > 0 ? true : false;
+    return false;   // No data
 }
 
 bool TlogParser::extractModeMessage(const QList<NameValuePair> &NameValuePairList)
