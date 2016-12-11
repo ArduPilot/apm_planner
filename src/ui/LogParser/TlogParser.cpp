@@ -338,12 +338,13 @@ bool TlogParser::decodeData(const mavlink_message_t &mavlinkMessage, QList<NameV
         {
             QLOG_WARN() << "Number of received values does not match number defined in type. Type:"
                         << typeName << " Expected:" << descriptor.m_labels.size() << " got:"
-                        << NameValuePairList.size() << ". Dropping message.";
+                        << NameValuePairList.size() << ". Repairing message.";
             m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
                                               "Number of received values does not match number defined in type. Type:"
                                               + typeName + " Expected:" + QString::number(descriptor.m_labels.size()) + " got:"
-                                              + QString::number(NameValuePairList.size()) + ". Dropping message.");
-            return false;
+                                              + QString::number(NameValuePairList.size()) + ". Repairing message.");
+
+            return repairMessage(NameValuePairList, descriptor) ? true : false;
         }
         return true;    // everything is ok
     }
@@ -397,6 +398,34 @@ bool TlogParser::extractMsgMessage(const QList<NameValuePair> &NameValuePairList
     else
     {
         m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "MSG message extraction from statustext failed. Not enough elements.");
+    }
+    return true;
+}
+
+bool TlogParser::repairMessage(QList<NameValuePair> &NameValuePairList, const tlogDescriptor &descriptor)
+{
+    QList<NameValuePair> originalList(NameValuePairList);
+    NameValuePairList.clear();
+    // reconstruct message based on descriptor
+    foreach(const QString &label, descriptor.m_labels)
+    {
+        bool found = false;
+        for(QList<NameValuePair>::Iterator iter = originalList.begin(); iter != originalList.end(); ++iter)
+        {
+            if(label == iter->first) // does this value exist in original message?
+            {
+                NameValuePairList.append(*iter);
+                originalList.erase(iter);
+                found = true;
+                break;
+            }
+        }
+
+        if(!found)
+        {
+            NameValuePair pair(label, QVariant(0));
+            NameValuePairList.append(pair);
+        }
     }
     return true;
 }
