@@ -134,6 +134,23 @@ void LogParserBase::checkForValidTimestamp(typeDescriptor &desc)
 
 bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc)
 {
+    bool wasNotRepaired = true;
+    // Verify data matches descriptor - simple size check
+    if(NameValuePairList.size() != desc.m_labels.size())
+    {
+        QLOG_WARN() << "Number of received values does not match number defined in type. Type:"
+                    << desc.m_name << " Expected:" << desc.m_labels.size() << " got:"
+                    << NameValuePairList.size() << ". Repairing message.";
+        m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
+                                          "Number of received values does not match number defined in type. Type:"
+                                          + desc.m_name + " Expected:" + QString::number(desc.m_labels.size()) + " got:"
+                                          + QString::number(NameValuePairList.size()) + ". Repairing message.");
+
+        repairMessage(NameValuePairList, desc);
+        wasNotRepaired = false;
+    }
+
+    // Set or read timestamp
     if(desc.hasNoTimestamp())
     {
         NameValuePairList.prepend(NameValuePair(m_activeTimestamp.m_name, m_highestTimestamp));
@@ -148,8 +165,12 @@ bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairLi
         m_callbackObject->onError(m_dataStoragePtr->getError());
         return false;
     }
+
+    if(wasNotRepaired)
+    {
+        m_logLoadingState.validDataRead();
+    }
     m_MessageCounter++;
-    m_logLoadingState.validDataRead();
     return true;
 }
 
@@ -235,3 +256,31 @@ void LogParserBase::detectMavType(const QList<NameValuePair> &valuepairlist)
     }
 }
 
+bool LogParserBase::repairMessage(QList<NameValuePair> &NameValuePairList, const typeDescriptor &descriptor)
+{
+    QList<NameValuePair> originalList(NameValuePairList);
+    NameValuePairList.clear();
+    // reconstruct message based on descriptor
+    foreach(const QString &label, descriptor.m_labels)
+    {
+        bool found = false;
+        for(QList<NameValuePair>::Iterator iter = originalList.begin(); iter != originalList.end(); ++iter)
+        {
+            if(label == iter->first) // does this value exist in original message?
+            {
+                NameValuePairList.append(*iter);
+                originalList.erase(iter);
+                found = true;
+                break;
+            }
+        }
+
+        if(!found)
+        {
+            // this value is missing in message add one with value 0
+            NameValuePair pair(label, QVariant(0));
+            NameValuePairList.append(pair);
+        }
+    }
+    return true;
+}

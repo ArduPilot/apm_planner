@@ -170,6 +170,16 @@ protected:
      */
     void detectMavType(const QList<NameValuePair> &valuepairlist);
 
+    /**
+     * @brief repairMessage tries to repair a message to match the descriptor.
+     *        Missing fields will be added and set to 0. If there are too many fields
+     *        they are cut.
+     * @param NameValuePairList - list that needs repair.
+     * @param descriptor - descriptor describing the message type.
+     * @return true - message is ok, false otherwise.
+     */
+    bool repairMessage(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc);
+
 };
 
 #endif // LOGPARSERBASE_H

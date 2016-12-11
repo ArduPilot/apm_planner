@@ -309,45 +309,29 @@ bool TlogParser::storeDescriptor(tlogDescriptor desc)
 bool TlogParser::decodeData(const mavlink_message_t &mavlinkMessage, QList<NameValuePair> &NameValuePairList)
 {
     QList<NameValuePair> decodedMessage = m_mavDecoderPtr->receiveMessage(0, mavlinkMessage);
-    if(!decodedMessage.empty())
+    if(decodedMessage.empty())
     {
-        // Copy data
-        for (int i = 0; i < decodedMessage.size(); ++i)
-        {
-            QStringList list = decodedMessage.at(i).first.split(".");
-            if (list.size() >= 2)   // There must be at least 2 elements
-            {
-                NameValuePairList.append(NameValuePair(list[1], decodedMessage.at(i).second));
-            }
-            else
-            {
-                QLOG_WARN() << "Missing data type information. Message:" << decodedMessage.at(i).first <<  ":"
-                            << decodedMessage.at(i).second.toString();
-                m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
-                                                  "Missing data type information. Message:" + decodedMessage.at(i).first +
-                                                  ":" + decodedMessage.at(i).second.toString());
-                return false;
-            }
-        }
-
-        // Verify data matches descriptor - simple size check
-        QString typeName = m_mavDecoderPtr->getMessageName(mavlinkMessage.msgid);
-        tlogDescriptor descriptor = m_nameToDescriptorMap.value(typeName);
-        if(NameValuePairList.size() != descriptor.m_labels.size())
-        {
-            QLOG_WARN() << "Number of received values does not match number defined in type. Type:"
-                        << typeName << " Expected:" << descriptor.m_labels.size() << " got:"
-                        << NameValuePairList.size() << ". Repairing message.";
-            m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
-                                              "Number of received values does not match number defined in type. Type:"
-                                              + typeName + " Expected:" + QString::number(descriptor.m_labels.size()) + " got:"
-                                              + QString::number(NameValuePairList.size()) + ". Repairing message.");
-
-            return repairMessage(NameValuePairList, descriptor) ? true : false;
-        }
-        return true;    // everything is ok
+        return false;   // No data
     }
-    return false;   // No data
+    // Copy data
+    for (int i = 0; i < decodedMessage.size(); ++i)
+    {
+        QStringList list = decodedMessage.at(i).first.split(".");
+        if (list.size() >= 2)   // There must be at least 2 elements
+        {
+            NameValuePairList.append(NameValuePair(list[1], decodedMessage.at(i).second));
+        }
+        else
+        {
+            QLOG_WARN() << "Missing data type information. Message:" << decodedMessage.at(i).first <<  ":"
+                        << decodedMessage.at(i).second.toString();
+            m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
+                                              "Missing data type information. Message:" + decodedMessage.at(i).first +
+                                              ":" + decodedMessage.at(i).second.toString());
+            return false;
+        }
+    }
+    return true;    // everything is ok
 }
 
 bool TlogParser::extractModeMessage(const QList<NameValuePair> &NameValuePairList)
@@ -401,31 +385,3 @@ bool TlogParser::extractMsgMessage(const QList<NameValuePair> &NameValuePairList
     return true;
 }
 
-bool TlogParser::repairMessage(QList<NameValuePair> &NameValuePairList, const tlogDescriptor &descriptor)
-{
-    QList<NameValuePair> originalList(NameValuePairList);
-    NameValuePairList.clear();
-    // reconstruct message based on descriptor
-    foreach(const QString &label, descriptor.m_labels)
-    {
-        bool found = false;
-        for(QList<NameValuePair>::Iterator iter = originalList.begin(); iter != originalList.end(); ++iter)
-        {
-            if(label == iter->first) // does this value exist in original message?
-            {
-                NameValuePairList.append(*iter);
-                originalList.erase(iter);
-                found = true;
-                break;
-            }
-        }
-
-        if(!found)
-        {
-            // this value is missing in message add one with value 0
-            NameValuePair pair(label, QVariant(0));
-            NameValuePairList.append(pair);
-        }
-    }
-    return true;
-}
