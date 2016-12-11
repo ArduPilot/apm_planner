@@ -173,7 +173,7 @@ void LogParserBase::readTimeStamp(QList<NameValuePair> &valuepairlist, const typ
     {
         if(m_timeErrorCount < 50)
         {
-            QLOG_WARN() << "Corrupt data read: Time is not increasing! Last valid time stamp:"
+            QLOG_WARN() << "Corrupt data read: Time for " << desc.m_name << " is not increasing! Last valid time stamp:"
                         << QString::number(m_lastValidTimePerType[desc.m_name]) << " actual read time stamp is:"
                         << QString::number(tempVal);
 
@@ -184,9 +184,9 @@ void LogParserBase::readTimeStamp(QList<NameValuePair> &valuepairlist, const typ
             QLOG_WARN() << "Supressing further time is not increasing messages....";
             ++m_timeErrorCount;
         }
-        m_logLoadingState.corruptTimeRead(static_cast<int>(m_MessageCounter), "Log time is not increasing! Last Time:" +
-                                          QString::number(m_lastValidTimePerType[desc.m_name]) + " new Time:" +
-                                          QString::number(tempVal));
+        m_logLoadingState.corruptTimeRead(static_cast<int>(m_MessageCounter), "Log time for " + desc.m_name +
+                                          " is not increasing! Last Time:" + QString::number(m_lastValidTimePerType[desc.m_name]) +
+                                          " new Time:" + QString::number(tempVal));
         // if not increasing set to last valid value
         valuepairlist[desc.m_timeStampIndex].second = m_lastValidTimePerType[desc.m_name];
     }

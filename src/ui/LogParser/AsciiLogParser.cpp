@@ -238,7 +238,6 @@ bool AsciiLogParser::storeDescriptor(asciiDescriptor desc)
                 }
 
                 m_dataStoragePtr->addDataType(desc.m_name, desc.m_ID, desc.m_length, desc.m_format, desc.m_labels, desc.m_timeStampIndex);
-                m_MessageCounter++;
             }
         }
         else

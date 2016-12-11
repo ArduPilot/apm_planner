@@ -296,7 +296,6 @@ bool TlogParser::storeDescriptor(tlogDescriptor desc)
         }
 
         m_dataStoragePtr->addDataType(desc.m_name, desc.m_ID, desc.m_length, desc.m_format, desc.m_labels, desc.m_timeStampIndex);
-        m_MessageCounter++;
     }
     else
     {
@@ -423,6 +422,7 @@ bool TlogParser::repairMessage(QList<NameValuePair> &NameValuePairList, const tl
 
         if(!found)
         {
+            // this value is missing in message add one with value 0
             NameValuePair pair(label, QVariant(0));
             NameValuePairList.append(pair);
         }
