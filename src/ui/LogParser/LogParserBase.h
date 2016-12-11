@@ -136,7 +136,8 @@ protected:
 
     QList<timeStampType> m_possibleTimestamps;            /// List of possible timestamps. Filled in CTOR
     timeStampType m_activeTimestamp;                      /// the detected timestamp used for parsing
-    quint64 m_lastValidTimeStamp;                         /// Contains always the last valid timestamp
+    QHash<QString, quint64> m_lastValidTimePerType;       /// Contains the last valid timestamp for each type (which have a timestamp)
+    quint64 m_highestTimestamp;                           /// Contains always the biggest timestamp
 
 
     /**
