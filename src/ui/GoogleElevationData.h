@@ -55,7 +55,7 @@ private slots:
     void updateDataReadProgress(qint64 bytesRead, qint64 totalBytes);
 
 private:
-    void processDownloadedObject(const QString& jsonObject);
+    void processDownloadedObject(const QByteArray &data);
 
 private:
     QUrl m_url;
