@@ -51,7 +51,7 @@ LogdataStorage::LogdataStorage() :
     m_columCount(0),
     m_currentRow(0),
     m_timeDivisor(0.0),
-    m_minTimeStamp(ULONG_LONG_MAX),
+    m_minTimeStamp(ULLONG_MAX),
     m_maxTimeStamp(0)
 {
     QLOG_DEBUG() << "LogdataStorage::LogdataStorage()";
