@@ -60,7 +60,7 @@ private:
     void startFileDownloadRequest(QUrl url);
     void startParamListDownloadRequest(QUrl url);
     void manualListSetup();
-    void processDownloadedVersionObject(const QString& listObject);
+    void processDownloadedVersionObject(const QByteArray& data);
 
 private:
     Ui::DownloadRemoteParamsDialog *ui;
