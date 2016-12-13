@@ -126,7 +126,6 @@ QT += network \
     sql \
     widgets \
     serialport \
-    script\
     quick \
     printsupport \
     qml \
