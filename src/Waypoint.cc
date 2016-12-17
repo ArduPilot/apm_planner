@@ -218,7 +218,7 @@ void Waypoint::setId(quint16 id)
 
 void Waypoint::setX(double x)
 {
-    if (!isinf(x) && !isnan(x) && isLocalFrame())
+    if (!qIsInf(x) && !qIsNaN(x) && isLocalFrame())
     {
         this->x = x;
         emit changed(this);
@@ -227,7 +227,7 @@ void Waypoint::setX(double x)
 
 void Waypoint::setY(double y)
 {
-    if (!isinf(y) && !isnan(y) && isLocalFrame())
+    if (!qIsInf(y) && !qIsNaN(y) && isLocalFrame())
     {
         this->y = y;
         emit changed(this);
@@ -236,7 +236,7 @@ void Waypoint::setY(double y)
 
 void Waypoint::setZ(double z)
 {
-    if (!isinf(z) && !isnan(z) && isLocalFrame())
+    if (!qIsInf(z) && !qIsNaN(z) && isLocalFrame())
     {
         this->z = z;
         emit changed(this);

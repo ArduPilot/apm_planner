@@ -333,7 +333,7 @@ bool AsciiLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairLi
         {
             bool ok = false;
             double value = token.toDouble(&ok);
-            if(ok && !isinf(value) && !isnan(value))
+            if(ok && !qIsInf(value) && !qIsNaN(value))
             {
                 NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), value));
             }
