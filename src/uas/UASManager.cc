@@ -73,8 +73,8 @@ bool UASManager::setHomePosition(double lat, double lon, double alt)
     // Checking for NaN and infitiny
     // and checking for borders
     bool changed = false;
-    if (!isnan(lat) && !isnan(lon) && !isnan(alt)
-        && !isinf(lat) && !isinf(lon) && !isinf(alt)
+    if (!qIsNaN(lat) && !qIsNaN(lon) && !qIsNaN(alt)
+        && !qIsInf(lat) && !qIsInf(lon) && !qIsInf(alt)
         && lat <= 90.0 && lat >= -90.0 && lon <= 180.0 && lon >= -180.0)
         {
 
