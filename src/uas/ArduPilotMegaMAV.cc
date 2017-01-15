@@ -834,7 +834,7 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
 {
     // SubSys ans ErrorCode interpretation was taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 09.06.2016
+    // last verification 17.01.2017
 
     QString output;
     QTextStream outputStream(&output);
@@ -1049,9 +1049,12 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
         }
         break;
 
+    case 24:
+        outputStream << "EKF primary:";
+        break;
 
     default:
-        outputStream << "SubSys:" << message.getErrorCode() << " ECode:" << message.getErrorCode();
+        outputStream << "SubSys:" << message.getSubsystemCode() << " ECode:" << message.getErrorCode();
         EcodeUsed = true;
         break;
 
@@ -1086,7 +1089,7 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
 {
     // Interpretation taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 09.06.2016
+    // last verification 17.01.2017
 
     QString output;
     QTextStream outputStream(&output);
@@ -1141,6 +1144,12 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
     case Copter::THROW:
         outputStream << "Throw";
         break;
+    case Copter::AVOID_ADSB:
+        outputStream << "Avoid-ADSB";
+        break;
+    case Copter::GUIDED_NOGPS:
+        outputStream << "Guided no GPS";
+        break;
     default:
         outputStream << "Unknown Mode:" << message.getMode();
         break;
@@ -1192,6 +1201,15 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
         case 13:
             outputStream << "Flip complete";
             break;
+        case 14:
+            outputStream << "Avoidance";
+            break;
+        case 15:
+            outputStream << "Avoidance recovery";
+            break;
+        case 16:
+            outputStream << "Throw complete";
+            break;
         default:
             outputStream << "unknown reason:" << message.getReason();
             break;
@@ -1205,7 +1223,7 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
 {
     // Interpretation taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 09.06.2016
+    // last verification 17.01.2017
 
     QString output;
     QTextStream outputStream(&output);
@@ -1358,6 +1376,21 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
         break;
     case 61:
         outputStream << "Land cancelled by pilot";
+        break;
+    case 62:
+        outputStream << "EKF yaw reset";
+        break;
+    case 63:
+        outputStream << "Avoidance ADSB enable";
+        break;
+    case 64:
+        outputStream << "Avoidance ADSB disable";
+        break;
+    case 65:
+        outputStream << "Avoidance proximity enable";
+        break;
+    case 66:
+        outputStream << "Avoidance proximity disable";
         break;
     default:
         outputStream << "Unknown Event: " << message.getEventID();
