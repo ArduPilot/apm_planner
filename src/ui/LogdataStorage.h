@@ -136,9 +136,11 @@ public:
     /**
      * @brief getFmtValues delivers a map of all data types with a list of the names of
      *        the values. For example: (IMU,[TimeMs, GyrX, GyrY...])
+     * @param - filterStringValues - if true all data with string payload are suppressed,
+     *          can be used for the plot selection tree, cause strings cannot be plotted
      * @return - the map containing the data. Only types which have data are listed.
      */
-    virtual QMap<QString, QStringList> getFmtValues() const;
+    virtual QMap<QString, QStringList> getFmtValues(const bool filterStringValues) const;
 
     // TODO This must be removed as this function does NOT belong to the storage. It should be moved to the
     // logfile exporter class as soon as this class exists!!! For now just for convenience!
@@ -153,6 +155,17 @@ public:
      * @return The data Vector
      */
     virtual QVector<QPair<double, QVariant> > getValues(const QString &parent, const QString &child, const bool useTimeAsIndex) const;
+
+    /**
+     * @brief getValues - delivers the X and Y values of one type for plotting. Due to the fact that the values
+     *        are delivered as double no string values can be fetched with this method.
+     * @param name - The name of the type containig the measurement like "IMU.GyrX"
+     * @param useTimeAsIndex - true - use time in index
+     * @param xValues - reference of a vector for storing the X-Values
+     * @param yValues - reference of a vector for storing the Y-Values
+     * @return true - data found, false otherwise
+     */
+    virtual bool getValues(const QString &name, const bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const;
 
     /**
      * @brief getMinTimeStamp - getter for the smallest timestamp in log

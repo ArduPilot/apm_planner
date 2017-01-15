@@ -221,7 +221,7 @@ double LogdataStorage::getTimeDivisor() const
     return m_timeDivisor;
 }
 
-QMap<QString, QStringList> LogdataStorage::getFmtValues() const
+QMap<QString, QStringList> LogdataStorage::getFmtValues(const bool filterStringValues) const
 {
     QMap<QString, QStringList> fmtValueMap; //using a map to get alphabetically sorting
 
@@ -229,7 +229,13 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues() const
     {
         if(m_dataStorage.count(typeName))   // only types we have data for
         {
-            fmtValueMap.insert(typeName, m_typeStorage[typeName].m_labels);
+            // n N Z are string types - those cannot be plotted
+            if(!filterStringValues || !(m_typeStorage[typeName].m_format.contains('n') ||
+                 m_typeStorage[typeName].m_format.contains('N') ||
+                 m_typeStorage[typeName].m_format.contains('Z')))
+            {
+                fmtValueMap.insert(typeName, m_typeStorage[typeName].m_labels);
+            }
         }
     }
 
@@ -279,6 +285,41 @@ QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &paren
     }
 
     return data;
+}
+
+bool LogdataStorage::getValues(const QString &name, const bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const
+{
+    QStringList splitName = name.split(".");
+    if(splitName.size() != 2)
+    {
+        return false;
+    }
+
+    if(!m_typeStorage.count(splitName.at(0)) || !m_dataStorage.count(splitName.at(0)))
+    {
+        return false;    // don't have this type or no data for this type
+    }
+
+    int valueIndex = m_typeStorage[splitName.at(0)].m_labels.indexOf(splitName.at(1));
+    int timeStampIndex = m_typeStorage[splitName.at(0)].m_timeStampIndex;
+
+    if(valueIndex == -1)
+    {
+        return false;    // don't have this value type
+    }
+
+    xValues.clear();
+    xValues.reserve(m_dataStorage[splitName.at(0)].size());
+    yValues.clear();
+    yValues.reserve(m_dataStorage[splitName.at(0)].size());
+
+    foreach(const IndexValueRow &row, m_dataStorage[splitName.at(0)])
+    {
+        xValues.push_back(useTimeAsIndex ? row.m_values.at(timeStampIndex).toDouble() / m_timeDivisor : row.m_index);
+        yValues.push_back(row.m_values.at(valueIndex).toDouble());
+    }
+
+    return true;
 }
 
 double LogdataStorage::getMinTimeStamp() const
