@@ -1033,37 +1033,16 @@ void AP2DataPlot2D::itemEnabled(QString name)
 {
     if (m_logLoaded)
     {
-        QString parent = name.split(".")[0];
-        QString child = name.split(".")[1];
-        bool isstr = false;
-        QList<QPair<double,QString> > strlist;
         QVector<double> xlist;
         QVector<double> ylist;
-        QVector<QPair<double, QVariant> > values = m_dataStoragePtr->getValues(parent, child, m_useTimeOnX);
-        if (values.size() == 0)
+        if (!m_dataStoragePtr->getValues(name, m_useTimeOnX, xlist, ylist))
         {
             //No values!
             m_graphCount++; //Prevent crash when it tries to disable
             ui.dataSelectionScreen->disableItem(name);
             return;
         }
-        for (QVector<QPair<double, QVariant> >::const_iterator i = values.constBegin(); i != values.constEnd(); ++i)
-        {
-            if (i->second.type() == QVariant::String)
-            {
-                QString graphvaluestr = i->second.toString();
-                strlist.append(QPair<double,QString>(i->first,graphvaluestr));
-                isstr = true;
-            }
-            else
-            {
-                double graphvalue = i->second.toDouble();
-                ylist.append(graphvalue);
-            }
 
-            xlist.append(i->first);
-
-        }
         QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
         yAxis->setLabel(name);
         yAxis->setNumberFormat("gb");
@@ -1074,7 +1053,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         }
         // use golden ratio for evenly distributed colors
         double golden_ratio_conjugate = 0.618033988749895;
-        double h = ((double)rand() / (double)(RAND_MAX));
+        double h = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
         h = h + golden_ratio_conjugate;
         h = fmod(h, 1);     // hue
         double s = 0.75;    // saturation
@@ -1084,41 +1063,14 @@ void AP2DataPlot2D::itemEnabled(QString name)
         yAxis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
         m_graphNameList.append(name);
-        QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
         mainGraph1->setPen(QPen(color, 1));
 
         Graph graph;
         graph.axis = yAxis;
         graph.graph=  mainGraph1;
         m_graphClassMap[name] = graph;
-        if (isstr)
-        {
-            for (int i=0;i<strlist.size();i++)
-            {
-                QCPItemText *itemtext = new QCPItemText(m_plot);
-                itemtext->setText(strlist.at(i).second);
-                itemtext->position->setAxes(xAxis,yAxis);
-                itemtext->position->setCoords(strlist.at(i).first,2.0);
-                m_plot->addItem(itemtext);
-                graph.itemList.append(itemtext);
 
-                QCPItemLine *itemline = new QCPItemLine(m_plot);
-                graph.itemList.append(itemline);
-                itemline->start->setParentAnchor(itemtext->bottom);
-                itemline->start->setAxes(xAxis, yAxis);
-                itemline->start->setCoords(0.0, 0.0);
-                itemline->end->setAxes(xAxis, yAxis);
-                itemline->end->setCoords(strlist.at(i).first, 0.0);
-                itemline->setTail(QCPLineEnding::esDisc);
-                itemline->setHead(QCPLineEnding::esSpikeArrow);
-                m_plot->addItem(itemline);
-
-            }
-        }
-        else
-        {
-            mainGraph1->setData(xlist, ylist);
-        }
+        mainGraph1->setData(xlist, ylist);
         mainGraph1->rescaleValueAxis();
 
         if (m_axisGroupingDialog)
@@ -1405,8 +1357,8 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state)
     // First setup X-axis and scroller
     setupXAxisAndScroller();
 
-    // Insert data into tree view
-    QMap<QString, QStringList> fmtlist = m_dataStoragePtr->getFmtValues();
+    // Insert data into tree view suppressing all measurements containing Strings as values
+    QMap<QString, QStringList> fmtlist = m_dataStoragePtr->getFmtValues(true);
     for (QMap<QString, QStringList>::const_iterator i=fmtlist.constBegin();i!=fmtlist.constEnd();++i)
     {
         QString name = i.key();
@@ -1414,11 +1366,18 @@ void AP2DataPlot2D::threadDone(AP2DataPlotStatus state)
         {
             ui.dataSelectionScreen->addItem(name + "." + i.value().at(j));
         }
-        QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << name);
+    }
+
+    // Insert data into sorting including all measurements with string data
+    fmtlist.clear();
+    fmtlist = m_dataStoragePtr->getFmtValues(false);
+    for (QMap<QString, QStringList>::const_iterator i=fmtlist.constBegin();i!=fmtlist.constEnd();++i)
+    {
+        QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << i.key());
         child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
-        child->setCheckState(0,Qt::Checked); // Set it checked, since all items are enabled by default
+        child->setCheckState(0, Qt::Checked); // Set it checked, since all items are enabled by default
         ui.sortSelectTreeWidget->addTopLevelItem(child);
-        m_tableFilterList.append(name);
+        m_tableFilterList.append(i.key());
     }
 
     // Setup basic graph for all arrow plots -> MODE/ERR/EV/MSG
@@ -1601,7 +1560,7 @@ void AP2DataPlot2D::exportDialogAccepted()
     QApplication::processEvents();
 
     QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format,Columns\r\n";
-    QMap<QString,QStringList> fmtlist = m_dataStoragePtr->getFmtValues();
+    QMap<QString,QStringList> fmtlist = m_dataStoragePtr->getFmtValues(false);
     QMap<QString,QStringList>::const_iterator iter;
     for (iter = fmtlist.constBegin(); iter!=fmtlist.constEnd(); ++iter)
     {
