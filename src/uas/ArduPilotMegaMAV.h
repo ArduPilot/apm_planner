@@ -490,6 +490,8 @@ enum Mode
     POS_HOLD    = 16,
     BRAKE       = 17,
     THROW       = 18,
+    AVOID_ADSB  = 19,
+    GUIDED_NOGPS= 20,
     LAST_MODE           // This must always be the last entry
 };
 
