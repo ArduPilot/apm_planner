@@ -47,7 +47,7 @@ This file is part of the APM_PLANNER project
 #include <QSqlDatabase>
 #include <QStandardItemModel>
 
-#include "LogdataStorage.h"
+#include "Loghandling/LogdataStorage.h"
 
 class LogDownloadDialog;
 
