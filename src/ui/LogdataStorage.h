@@ -97,8 +97,8 @@ public:
      *
      * @return - true success, false otherwise (data was not added)
      */
-    virtual bool addDataType(const QString &typeName, const unsigned int typeID, const int typeLength,
-                             const QString &typeFormat, const QStringList &typeLabels, const int timeColum);
+    virtual bool addDataType(const QString &typeName, unsigned int typeID, int typeLength,
+                             const QString &typeFormat, const QStringList &typeLabels, int timeColum);
 
     /**
      * @brief addDataRow adds a data row - a list of pairs of string and value - to the data storage.
@@ -115,7 +115,7 @@ public:
      *        It is needed to emit the right header data for the selected row.
      * @param current - QModelIndex holding the current row.
      */
-    virtual void selectedRowChanged(QModelIndex current);
+    virtual void selectedRowChanged(const QModelIndex &current);
 
     /**
      * @brief setTimeStamp - sets the time stamp type of the datamodel. It will be used
@@ -125,7 +125,7 @@ public:
      * @param timeStampName - name of the timestamp field. All types MUST have the same.
      * @param divisor - divisor used to scale the Time stamps to seconds
      */
-    virtual void setTimeStamp(const QString &timeStampName, const double &divisor);
+    virtual void setTimeStamp(const QString &timeStampName, double divisor);
 
     /**
      * @brief getTimeDivisor - Getter for the divisor for time stamps
@@ -140,7 +140,7 @@ public:
      *          can be used for the plot selection tree, cause strings cannot be plotted
      * @return - the map containing the data. Only types which have data are listed.
      */
-    virtual QMap<QString, QStringList> getFmtValues(const bool filterStringValues) const;
+    virtual QMap<QString, QStringList> getFmtValues(bool filterStringValues) const;
 
     // TODO This must be removed as this function does NOT belong to the storage. It should be moved to the
     // logfile exporter class as soon as this class exists!!! For now just for convenience!
@@ -154,7 +154,7 @@ public:
      * @param useTimeAsIndex - true - use time in index
      * @return The data Vector
      */
-    virtual QVector<QPair<double, QVariant> > getValues(const QString &parent, const QString &child, const bool useTimeAsIndex) const;
+    virtual QVector<QPair<double, QVariant> > getValues(const QString &parent, const QString &child, bool useTimeAsIndex) const;
 
     /**
      * @brief getValues - delivers the X and Y values of one type for plotting. Due to the fact that the values
@@ -165,7 +165,7 @@ public:
      * @param yValues - reference of a vector for storing the Y-Values
      * @return true - data found, false otherwise
      */
-    virtual bool getValues(const QString &name, const bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const;
+    virtual bool getValues(const QString &name, bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const;
 
     /**
      * @brief getMinTimeStamp - getter for the smallest timestamp in log
@@ -187,7 +187,7 @@ public:
      * @param timevalue - The timeStamp to search for
      * @return The index with the best timestamp match.
      */
-    virtual int getNearestIndexForTimestamp(const double timevalue) const;
+    virtual int getNearestIndexForTimestamp(double timevalue) const;
 
     /**
      * @brief getMessagesOfType fetches the special messages (ModeMessage, ErrorMessage,

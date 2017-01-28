@@ -1053,7 +1053,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         }
         // use golden ratio for evenly distributed colors
         double golden_ratio_conjugate = 0.618033988749895;
-        double h = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
+        double h = (static_cast<double>(rand()) / RAND_MAX);
         h = h + golden_ratio_conjugate;
         h = fmod(h, 1);     // hue
         double s = 0.75;    // saturation
