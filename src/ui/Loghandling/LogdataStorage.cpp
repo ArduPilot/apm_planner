@@ -242,20 +242,15 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues(bool filterStringValues)
     return fmtValueMap;
 }
 
-QString LogdataStorage::getFmtLine(const QString &name) const
+QVector<LogdataStorage::dataType> LogdataStorage::getAllDataTypes() const
 {
-    QString fmtLine;
-    if(!m_typeStorage.count(name))
+    QVector<dataType> dataTypes;
+    foreach(const QString &name, m_indexToTypeRow)
     {
-        return fmtLine;
+        dataTypes.push_back(m_typeStorage.value(name));
     }
 
-    const dataType &tempType = m_typeStorage[name];
-    QTextStream fmtStream(&fmtLine);
-    fmtStream << "FMT," << tempType.m_ID << "," << tempType.m_length << "," << tempType.m_name << ","
-              << tempType.m_format << "," << tempType.m_labels.join(",");
-
-    return  fmtLine;
+    return dataTypes;
 }
 
 QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &parent, const QString &child, bool useTimeAsIndex) const
@@ -321,6 +316,22 @@ bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector
 
     return true;
 }
+
+void LogdataStorage::getDataRow(const int index, QString &name, QVector<QVariant> &measurements) const
+{
+    if(index < m_indexToDataRow.size())
+    {
+        TypeIndexPair indexPair = m_indexToDataRow[index];
+        name = indexPair.first;
+        measurements = m_dataStorage.value(name).at(indexPair.second).m_values;
+    }
+    else
+    {
+        name.clear();
+        measurements.clear();
+    }
+}
+
 
 double LogdataStorage::getMinTimeStamp() const
 {

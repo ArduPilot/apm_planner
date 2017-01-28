@@ -56,6 +56,28 @@ public:
     typedef QSharedPointer<LogdataStorage> Ptr;
 
     /**
+     * @brief The dataType struct holds all data describing a datatype
+     */
+    struct dataType
+    {
+        QString m_name;         /// Name of the type
+        unsigned int m_ID;      /// ID of the type
+        int m_length;           /// Length in bytes
+        QString m_format;       /// format string like "QBB"
+        QStringList m_labels;   /// Lable (name) of each column
+        int m_timeStampIndex;   /// Index of the time stamp field - for faster access
+
+        dataType() : m_ID(0xFF), m_length(0), m_timeStampIndex(0)
+        {}
+
+        dataType(const QString &name, const unsigned int ID, const int length,
+                 const QString &format, const QStringList &labels, const int timeColum) :
+            m_name(name), m_ID(ID), m_length(length),
+            m_format(format), m_labels(labels), m_timeStampIndex(timeColum)
+        {}
+    };
+
+    /**
      * @brief LogdataStorage - CTOR
      */
     explicit LogdataStorage();
@@ -142,9 +164,12 @@ public:
      */
     virtual QMap<QString, QStringList> getFmtValues(bool filterStringValues) const;
 
-    // TODO This must be removed as this function does NOT belong to the storage. It should be moved to the
-    // logfile exporter class as soon as this class exists!!! For now just for convenience!
-    virtual QString getFmtLine(const QString &name) const;
+    /**
+     * @brief getAllDataTypes delivers a vector of all dataTypes probably stored in this datamodel.
+     *        Mainly used for exporting.
+     * @return Vector with all data types in the same order they were stored.
+     */
+    virtual QVector<dataType> getAllDataTypes() const;
 
     /**
      * @brief getValues - delivers a vector of measurements of one type. The pair contains an index on first
@@ -166,6 +191,14 @@ public:
      * @return true - data found, false otherwise
      */
     virtual bool getValues(const QString &name, bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const;
+
+    /**
+     * @brief getDataRow - gets a whole data row like it was written into the model.
+     * @param index - Index of the row to be fetched.
+     * @param name - conatains the name of the value after the call.
+     * @param measurements - contains the measurements of this index after the call.
+     */
+    virtual void getDataRow(const int index, QString &name, QVector<QVariant> &measurements) const;
 
     /**
      * @brief getMinTimeStamp - getter for the smallest timestamp in log
@@ -230,28 +263,7 @@ private:
 
     typedef QVector<IndexValueRow> ValueTable;            /// Type holding all data rows of a specific type
 
-    /**
-     * @brief The dataType struct holds all data describing a datatype
-     */
-    struct dataType
-    {
-        QString m_name;         /// Name of the type
-        unsigned int m_ID;      /// ID of the type
-        int m_length;           /// Length in bytes
-        QString m_format;       /// format string like "QBB"
-        QStringList m_labels;   /// Lable (name) of each column
-        int m_timeStampIndex;   /// Index of the time stamp field - for faster access
 
-        dataType() : m_ID(0xFF), m_length(0), m_timeStampIndex(0)
-        {}
-
-        dataType(const QString &name, const unsigned int ID, const int length,
-                 const QString &format, const QStringList &labels, const int timeColum) :
-            m_name(name), m_ID(ID), m_length(length),
-            m_format(format), m_labels(labels), m_timeStampIndex(timeColum)
-        {}
-
-    };
 
     int m_columCount;           /// Holds the maximum column count of all rows
     int m_currentRow;           /// The current selected row in table
