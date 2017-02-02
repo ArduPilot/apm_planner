@@ -242,7 +242,7 @@ private:
     // Helper Variables
     int m_freqStepSize; // 100 for 433Mhz, 1000 for 915/868Mhz & 1 for RFD900,
 
-    QPointer<QSerialPort> m_serialPort;
+    QScopedPointer<QSerialPort> m_serialPort;
     int m_retryCount;
     QString m_rxBuffer;
     QTimer m_timer;

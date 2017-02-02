@@ -227,9 +227,12 @@ void Radio3DRConfig::setLink(int index)
     {
         return;
     }
-    m_settings.name = ui.linkPortComboBox->itemData(index).toStringList()[0];
-    QLOG_INFO() << "Changed Link to:" << m_settings.name;
-
+    QString tempName = ui.linkPortComboBox->itemData(index).toStringList()[0];
+    if(m_settings.name != tempName)
+    {
+        m_settings.name = tempName;
+        QLOG_INFO() << "Changed Link to:" << m_settings.name;
+    }
 }
 
 void Radio3DRConfig::readRadioSettings()
@@ -294,6 +297,7 @@ void Radio3DRConfig::updateLocalComplete(int result)
 
     if (result == 0){ // reboot for both reset and write states
         m_radioSettings->rebootRemoteRadio();
+        thread()->usleep(300000);   // wait a little until reset is sent
         m_radioSettings->rebootLocalRadio();
     }
 
@@ -413,6 +417,9 @@ void Radio3DRConfig::remoteReadComplete(Radio3DREeprom& eeprom, bool success)
         ui.dutyCycleSpinBox_remote->setValue(eeprom.dutyCyle());
         ui.lbtRssiSpinBox_remote->setValue(eeprom.lbtRssi());
         ui.numChannelsSpinBox_remote->setValue(eeprom.numChannels());
+
+        setupFrequencyComboBox(*ui.minFreqComboBox_remote, eeprom.frequencyCode());
+        setupFrequencyComboBox(*ui.maxFreqComboBox_remote, eeprom.frequencyCode());
 
         int lowFreqIndex = ui.minFreqComboBox_remote->findData(eeprom.minFreq());
         if (lowFreqIndex == -1){
