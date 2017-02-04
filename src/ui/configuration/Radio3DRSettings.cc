@@ -246,7 +246,7 @@ QString Radio3DREeprom::deviceIdString()
 Radio3DRSettings::Radio3DRSettings(QObject *parent) :
     QObject(parent),
     m_state(none),
-    m_serialPort(NULL),
+    m_serialPort(),
     m_retryCount(0)
 {
     //  Command Set for 3DR SiK Radios
@@ -298,17 +298,18 @@ Radio3DRSettings::~Radio3DRSettings()
 
 bool Radio3DRSettings::openSerialPort(SerialSettings settings)
 {
-    if (m_serialPort == NULL){
+    if (!m_serialPort){
         m_serialPort.reset(new QSerialPort(settings.name, this));
-
         if (!m_serialPort){
             emit localReadComplete(m_localRadio, false);
             emit updateLocalStatus(tr("FAILED to create serial port"));
             return false;
         }
     }
-
-    closeSerialPort();
+    else
+    {
+        closeSerialPort();
+    }
 
 #if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
     // temp fix Qt5.4.1 issue on OSX
@@ -332,7 +333,12 @@ bool Radio3DRSettings::openSerialPort(SerialSettings settings)
                 && m_serialPort->setParity(settings.parity)
                 && m_serialPort->setStopBits(settings.stopBits)) {
             QLOG_INFO() << "Port Configured with success";
-            connect( m_serialPort.data(), SIGNAL(destoyed()), this, SLOT(deleteSerialPort()));
+            connect(m_serialPort.data(), SIGNAL(error(QSerialPort::SerialPortError)), this,
+                    SLOT(handleError(QSerialPort::SerialPortError)));
+
+            connect(m_serialPort.data(), SIGNAL(readyRead()), this, SLOT(readData()));
+            m_state = enterCommandMode;
+            return true;
         } else {
             QLOG_ERROR() << "Port Configured with FAIL";
             emit localReadComplete(m_localRadio, false);
@@ -341,28 +347,19 @@ bool Radio3DRSettings::openSerialPort(SerialSettings settings)
             closeSerialPort();
             return false;
         }
-
-        connect(m_serialPort.data(), SIGNAL(error(QSerialPort::SerialPortError)), this,
-                SLOT(handleError(QSerialPort::SerialPortError)));
-
-        connect(m_serialPort.data(), SIGNAL(readyRead()), this, SLOT(readData()));
-        m_state = enterCommandMode;
-        return true;
     } else {
         // Abort
         QLOG_DEBUG() << "Radio3DRSettings Serial Port Open FAILURE!" << m_serialPort->errorString();
         emit serialPortOpenFailure(m_serialPort->error(), m_serialPort->errorString());
         closeSerialPort();
-        return false;
     }
-
     return false;
 }
 
 void Radio3DRSettings::closeSerialPort()
 {
-    QLOG_DEBUG() << "Close Serial Port:" << m_serialPort->portName() << m_serialPort;
-    if (m_serialPort){
+    if (m_serialPort && m_serialPort->isOpen()){
+        QLOG_DEBUG() << "Close Serial Port:" << m_serialPort->portName() << m_serialPort.data();
         m_serialPort->write("ATO\r\n"); // leave command mode - just to be sure
         m_serialPort->flush();
         m_serialPort->close();
@@ -370,14 +367,12 @@ void Radio3DRSettings::closeSerialPort()
     m_retryCount = 0;   // when we close the port the retry must be reset
 }
 
-void Radio3DRSettings::deleteSerialPort()
-{
-    QLOG_INFO() << "Delete Serial Port:" << m_serialPort->portName() << m_serialPort;
-    m_serialPort.reset();
-}
-
 void Radio3DRSettings::readData()
 {
+    // Sanity check
+    if(!m_serialPort){
+        return;
+    }
     // read raw data
     QByteArray data;
     if(m_serialPort->canReadLine()){
@@ -683,12 +678,16 @@ void Radio3DRSettings::readData()
 
 void Radio3DRSettings::writeEscapeSeqeunce()
 {
+    // sanity check
+    if(!m_serialPort){
+        return;
+    }
     QLOG_DEBUG() << "Radio3DRSettings::writeEscapeSeqeunce()";
     disconnect(&m_timer, SIGNAL(timeout()), this, SLOT(writeEscapeSeqeunce()));
     emit updateLocalStatus(tr("entering command mode"));
     if (m_state == enterCommandMode){
         if (m_retryCount++ < 3) {
-            QLOG_INFO() << "Retry " << m_retryCount;
+            QLOG_INFO() << "Try " << m_retryCount;
             m_serialPort->write("\r\n");
             m_serialPort->flush();
             connect(&m_timer, SIGNAL(timeout()), this, SLOT(writeEscapeSeqeunceNow()), Qt::UniqueConnection);
@@ -707,7 +706,9 @@ void Radio3DRSettings::writeEscapeSeqeunce()
 void Radio3DRSettings::writeEscapeSeqeunceNow()
 {
     disconnect(&m_timer, SIGNAL(timeout()), this, SLOT(writeEscapeSeqeunceNow()));
-    if (m_serialPort == NULL) return;
+    if (!m_serialPort){
+        return;
+    }
 
     QLOG_DEBUG() << "Radio3DRSettings::writeEscapeSeqeunceNow()";
     m_serialPort->write("\x2B\x2B\x2B"); // +++
@@ -827,7 +828,7 @@ void Radio3DRSettings::readRemoteSettingsStrings()
 void Radio3DRSettings::writeLocalSettings(Radio3DREeprom eepromSettings)
 {
     QLOG_DEBUG() << "Radio3DRSettings::writeLocalSettings()";
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -842,7 +843,7 @@ void Radio3DRSettings::writeRemoteSettings(Radio3DREeprom eepromSettings)
 {
     QLOG_DEBUG() << "Radio3DRSettings::writeRemoteSettings()";
 
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -855,30 +856,44 @@ void Radio3DRSettings::writeRemoteSettings(Radio3DREeprom eepromSettings)
 
 void Radio3DRSettings::readLocalRssi()
 {
-    QLOG_DEBUG() << "readLocalRssi";
-    m_serialPort->write("ATI7\r\n");
-    m_state = readRssiLocal;
-
+    if(m_serialPort && m_serialPort->isOpen()){
+        QLOG_DEBUG() << "readLocalRssi";
+        m_serialPort->write("ATI7\r\n");
+        m_state = readRssiLocal;
+    }
 }
 
 void Radio3DRSettings::readRemoteRssi()
 {
-    QLOG_DEBUG() << "readRemoteRssi";
-    m_serialPort->write("RTI7\r\n");
-    m_state = readRssiRemote;
+    if(m_serialPort && m_serialPort->isOpen()){
+        QLOG_DEBUG() << "readRemoteRssi";
+        m_serialPort->write("RTI7\r\n");
+        m_state = readRssiRemote;
+    }
 }
 
 void Radio3DRSettings::handleError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError) {
-        QLOG_ERROR() << "Crtical Error!" << m_serialPort->errorString();
-        m_serialPort.reset();
+        if(m_serialPort){
+            QLOG_ERROR() << "Crtical Error " << m_serialPort->errorString();
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.setWindowTitle("Critical");
+            msgBox.setText("Serial port error:\r\n" + m_serialPort->errorString());
+            msgBox.addButton(QMessageBox::Ok);
+            msgBox.setDefaultButton(QMessageBox::Ok);
+            msgBox.exec();
+            m_serialPort.reset();
+        } else {
+            QLOG_ERROR() << "Crtical Error - Received error without opened serial port!?" ;
+        }
     }
 }
 
 void Radio3DRSettings::resetLocalRadioToDefaults()
 {
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -891,7 +906,7 @@ void Radio3DRSettings::resetLocalRadioToDefaults()
 
 void Radio3DRSettings::resetRemoteRadioToDefaults()
 {
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -904,7 +919,7 @@ void Radio3DRSettings::resetRemoteRadioToDefaults()
 
 void Radio3DRSettings::rebootLocalRadio()
 {
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -919,7 +934,7 @@ void Radio3DRSettings::rebootLocalRadio()
 
 void Radio3DRSettings::rebootRemoteRadio()
 {
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }

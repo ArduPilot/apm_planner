@@ -226,9 +226,6 @@ public slots:
     void readRemoteTimeout();
     void handleError(QSerialPort::SerialPortError error);
 
-private slots:
-    void deleteSerialPort();
-
 private:
     void closeSerialPort();
 

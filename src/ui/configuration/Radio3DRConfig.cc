@@ -103,7 +103,7 @@ void Radio3DRConfig::fillPortsInfo(QComboBox &comboBox)
 
         int found = comboBox.findData(list);
         if ((found == -1)&& (info.manufacturer().contains("FTDI") || info.manufacturer().contains("Silicon Labs"))) {
-            QLOG_INFO() << "Inserting " << list.first();
+            QLOG_INFO() << "Found " << list.first();
             comboBox.insertItem(0,list[0], list);
         } else {
             // Do nothing as the port is already listed
