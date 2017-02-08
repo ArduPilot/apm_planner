@@ -1,6 +1,8 @@
 APM Planner 2.0
 ===============
 
+**Travis CI Build:**  [![Build Status](https://travis-ci.org/ArduPilot/apm_planner.svg?branch=master)](https://travis-ci.org/ArduPilot/apm_planner)
+
 **Support:**
 [ardupilot.com Support Forum for APM Planner 2.0](http://ardupilot.com/forum/viewtopic.php?f=82)
 
@@ -37,7 +39,7 @@ Build APM Planner
 --------------------
 1) From the terminal go to the `apm_planner` directory created when you cloned the repository.
 
-2) Run `qmake -spec macx-g++ qgroundcontrol.pro`
+2) Run `qmake -spec macx-g++ apm_planner.pro`
 
 3) Run `make -j8`
 
@@ -86,7 +88,7 @@ git clone https://github.com/diydrones/apm_planner
 
 ```
 cd ~/workspace/apm_planner
-qmake qgroundcontrol.pro
+qmake apm_planner.pro
 make
 ```
 

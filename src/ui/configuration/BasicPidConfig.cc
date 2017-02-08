@@ -23,6 +23,7 @@ This file is part of the APM_PLANNER project
 #include <logging.h>
 #include "BasicPidConfig.h"
 #include "ParamWidget.h"
+#include "ArduPilotMegaMAV.h"
 #include <QSettings>
 
 BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent),
@@ -59,35 +60,7 @@ BasicPidConfig::BasicPidConfig(QWidget *parent) : AP2ConfigWidget(parent),
                                        "Slide to the right to climb more aggressively or slide to the left to climb more gently.",0.75,0.3,1.0,0.05);
     m_throttleAccelWidget->show();
 
-    // AC3.4+ param name compatibility
-    QSettings settings;
-    bool preAC34compatmode = settings.value("STATUSTEXT_COMPAT_MODE", false).toBool();
-
-    if (preAC34compatmode) {
-        rate_rll_p = "RATE_RLL_P";
-        rate_rll_i = "RATE_RLL_I";
-        rate_rll_d = "RATE_RLL_D";
-
-        rate_pit_p = "RATE_PIT_P";
-        rate_pit_i = "RATE_PIT_I";
-        rate_pit_d = "RATE_PIT_D";
-
-        thr_accel_p = "THR_ACCEL_P";
-        thr_accel_i = "THR_ACCEL_I";
-    } else {
-        // New AC3.4 tuning param names.
-        rate_rll_p = "ATC_RAT_RLL_P"; //  "RATE_RLL_P";
-        rate_rll_i = "ATC_RAT_RLL_I"; //  "RATE_RLL_I";
-        rate_rll_d = "ATC_RAT_RLL_D"; //  "RATE_RLL_D";
-
-        rate_pit_p = "ATC_RAT_PIT_P"; //  "RATE_PIT_P";
-        rate_pit_i = "ATC_RAT_PIT_I"; //  "RATE_PIT_I";
-        rate_pit_d = "ATC_RAT_PIT_D"; //  "RATE_PIT_D";
-
-        thr_accel_p = "ACCEL_Z_P"; // THR_ACCEL_P
-        thr_accel_i = "ACCEL_Z_I"; // THR_ACCEL_I
-    }
-
+    mapParamNames();
     initConnections();
 }
 
@@ -119,8 +92,45 @@ void BasicPidConfig::requestParameterUpdate()
     };
 }
 
+void BasicPidConfig::mapParamNames()
+{
+
+    // AC3.4+ param name compatibility
+    ArduPilotMegaMAV* apmMav = static_cast<ArduPilotMegaMAV*>(m_uas);
+    if (apmMav == NULL) {
+        return;
+    }
+
+    // AC3.4+ param name compatibility
+    if (!apmMav->useSeverityCompatibilityMode()) {
+        rate_rll_p = "RATE_RLL_P";
+        rate_rll_i = "RATE_RLL_I";
+        rate_rll_d = "RATE_RLL_D";
+
+        rate_pit_p = "RATE_PIT_P";
+        rate_pit_i = "RATE_PIT_I";
+        rate_pit_d = "RATE_PIT_D";
+
+        thr_accel_p = "THR_ACCEL_P";
+        thr_accel_i = "THR_ACCEL_I";
+    } else {
+        // New AC3.4 tuning param names.
+        rate_rll_p = "ATC_RAT_RLL_P"; //  "RATE_RLL_P";
+        rate_rll_i = "ATC_RAT_RLL_I"; //  "RATE_RLL_I";
+        rate_rll_d = "ATC_RAT_RLL_D"; //  "RATE_RLL_D";
+
+        rate_pit_p = "ATC_RAT_PIT_P"; //  "RATE_PIT_P";
+        rate_pit_i = "ATC_RAT_PIT_I"; //  "RATE_PIT_I";
+        rate_pit_d = "ATC_RAT_PIT_D"; //  "RATE_PIT_D";
+
+        thr_accel_p = "ACCEL_Z_P"; // THR_ACCEL_P
+        thr_accel_i = "ACCEL_Z_I"; // THR_ACCEL_I
+    }
+}
+
 void BasicPidConfig::showEvent(QShowEvent *evt)
 {
+    mapParamNames();
     requestParameterUpdate();
     QWidget::showEvent(evt);
 }

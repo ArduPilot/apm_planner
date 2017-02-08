@@ -567,7 +567,7 @@ void MAVLinkSimulationLink::mainloop()
         typeCounter++;
 
         // Pack message and get size of encoded byte string
-        mavlink_msg_heartbeat_pack(systemId, componentId, &msg, mavType, MAV_AUTOPILOT_PIXHAWK, system.base_mode, system.custom_mode, system.system_status);
+        mavlink_msg_heartbeat_pack(systemId, componentId, &msg, mavType, MAV_AUTOPILOT_PX4, system.base_mode, system.custom_mode, system.system_status);
         // Allocate buffer with packet data
         bufferlength = mavlink_msg_to_send_buffer(buffer, &msg);
         QLOG_TRACE() << "CRC:" << msg.checksum;
@@ -606,7 +606,7 @@ void MAVLinkSimulationLink::mainloop()
 //        // HEARTBEAT VEHICLE 3
 
 //        // Pack message and get size of encoded byte string
-//        mavlink_msg_heartbeat_pack(60, componentId, &msg, MAV_FIXED_WING, MAV_AUTOPILOT_PIXHAWK);
+//        mavlink_msg_heartbeat_pack(60, componentId, &msg, MAV_FIXED_WING, MAV_AUTOPILOT_PX4);
 //        // Allocate buffer with packet data
 //        bufferlength = mavlink_msg_to_send_buffer(buffer, &msg);
 //        //add data into datastream

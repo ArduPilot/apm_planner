@@ -1254,17 +1254,12 @@ void HSIDisplay::drawWaypoints(QPainter& painter)
             const Waypoint *w = list.at(i);
             QPointF in;
             // Use local coordinates as-is.
-            int frameRef = w->getFrame();
-            if (frameRef == MAV_FRAME_LOCAL_NED)
+            if (w->isLocalFrame())
             {
                 in = QPointF(w->getX(), w->getY());
             }
-            else if (frameRef == MAV_FRAME_LOCAL_ENU)
-            {
-                in = QPointF(w->getY(), w->getX());
-            }
             // Convert global coordinates into the local ENU frame, then display them.
-            else if (frameRef == MAV_FRAME_GLOBAL || frameRef == MAV_FRAME_GLOBAL_RELATIVE_ALT) {
+            else if (w->isGlobalFrame()) {
                 // Get the position of the GPS origin for the MAV.
 
                 // Transform the lat/lon for this waypoint into the local frame

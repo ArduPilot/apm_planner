@@ -187,7 +187,7 @@ void ApmFirmwareConfig::populateSerialPorts()
             {
                 ui.linkComboBox->insertItem(0,list[0], list);
             }
-            QLOG_DEBUG() << "Inserting " << list.first();
+            QLOG_TRACE() << "Inserting " << list.first();
         }
     }
     for (int i=0;i<ui.linkComboBox->count();i++)
@@ -658,6 +658,9 @@ void ApmFirmwareConfig::downloadFinished()
     {
         return;
     }
+
+    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
     if (reply->error() != QNetworkReply::NoError)
     {
         //Something went wrong when downloading the firmware.
@@ -666,7 +669,20 @@ void ApmFirmwareConfig::downloadFinished()
         ui.textBrowser->append("Error Number: " + QString::number(reply->error()));
         ui.textBrowser->append("Error Text: " + reply->errorString());
         return;
+
+    } else if (!redirectionTarget.isNull()) {
+        QUrl newUrl = reply->url().resolved(redirectionTarget.toUrl());
+        QNetworkReply* newReply = m_networkManager->get(QNetworkRequest(newUrl));
+        QLOG_DEBUG() << "Redirecting to " << newUrl;
+
+        ui.textBrowser->append("redirect to " + newUrl.toString());
+        connect(newReply,SIGNAL(finished()),this,SLOT(downloadFinished()));
+        connect(newReply,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+        connect(newReply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
+        reply->deleteLater();
+        return;
     }
+
     QByteArray hex = reply->readAll();
     m_tempFirmwareFile = new QTemporaryFile();
     m_tempFirmwareFile->open();
@@ -860,7 +876,7 @@ void ApmFirmwareConfig::setLink(int index)
                 QString platform = processPortInfo(info);
                 if (platform != "Unknown" && (m_autopilotType != platform || blank)){
                     requestFirmwares(m_firmwareType, platform);
-                    QLOG_DEBUG() << platform << " Detected";
+                    QLOG_TRACE() << platform << " Detected";
                 }
             }
         }
@@ -890,7 +906,7 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
         else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001
                  || info.productIdentifier() == 0x0016 || info.description().contains("FMU v2.x")) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
         {
-            QLOG_DEBUG() << "Detected: " << info.description() << " :" << info.productIdentifier();
+            QLOG_TRACE() << "Detected: " << info.description() << " :" << info.productIdentifier();
             return "px4-v2";
         }
         else
@@ -935,10 +951,28 @@ void ApmFirmwareConfig::firmwareListFinished()
     QString replystr = reply->readAll();
     QString outstr = "";
 
-    if (reply->error() != QNetworkReply::NoError)
-    {
+    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
+    if (reply->error() != QNetworkReply::NoError) {
         QLOG_DEBUG() << "firmwareListFinished error: " << reply->error() << reply->errorString();
+        return;
+
+    } else if (!redirectionTarget.isNull()) {
+        QUrl newUrl = reply->url().resolved(redirectionTarget.toUrl());
+        QNetworkReply* newReply = m_networkManager->get(QNetworkRequest(newUrl));
+//        if (QMessageBox::question(this, tr("HTTP"),
+//                                  tr("Redirect to %1 ?").arg(newUrl.toString()),
+//                                  QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+//            reply->deleteLater();
+        QLOG_DEBUG() << "Redirecting to " << newUrl;
+        connect(newReply,SIGNAL(finished()),this,SLOT(firmwareListFinished()));
+        connect(newReply,SIGNAL(error(QNetworkReply::NetworkError)),
+                this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
+        return;
+//        }
     }
+    // Success.
+
     QString cmpstr = "";
     QString labelstr = "";
     QString apmver = "";

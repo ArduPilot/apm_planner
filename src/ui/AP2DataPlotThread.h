@@ -1,7 +1,7 @@
 /*===================================================================
 APM_PLANNER Open Source Ground Control Station
 
-(c) 2015 APM_PLANNER PROJECT <http://www.diydrones.com>
+(c) 2016 APM_PLANNER PROJECT <http://www.ardupilot.com>
 
 This file is part of the APM_PLANNER project
 
@@ -24,6 +24,7 @@ This file is part of the APM_PLANNER project
  *   @brief AP2DataPlot log loader thread
  *
  *   @author Michael Carpenter <malcom2073@gmail.com>
+ *   @author Arne Wischmann <wischmann-a@gmx.de>
  */
 
 
@@ -31,270 +32,70 @@ This file is part of the APM_PLANNER project
 #define AP2DATAPLOTTHREAD_H
 
 #include <QThread>
-#include <QVariantMap>
-#include <QSqlDatabase>
-#include <QSemaphore>
-#include "MAVLinkDecoder.h"
-#include "AP2DataPlot2DModel.h"
-#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include "LogParser/IParserCallback.h"
+#include "LogParser/ILogParser.h"
+
+#include "LogdataStorage.h"
 
 /**
- * @brief The AP2DataPlotStatus class is a helper class desinged as status type for
- *        the log parsing.
- *        It contains the final state of parsing as well as all error strings inserted
- *        with the corruptDataRead() or corruptFMTRead() methods during the parsing process.
+ * @brief The AP2DataPlotThread class provides the infrastucture for log parsing.
+ *        It handles the thread and the signals and selects the parser type.
  */
-class AP2DataPlotStatus
-{
-public:
-
-    /**
-     * @brief The parsingState enum
-     *        All possible parsing states
-     */
-    enum parsingState
-    {
-        OK,                 /// Perfect result
-        FmtError,           /// Corrupt Format description.
-        TruncationError,    /// The log was truncated due to errors @ the end
-        TimeError,          /// The log contains corrupt time data
-        DataError           /// Data can be corrupted or incomplete
-    };
-
-    /**
-     * @brief AP2DataPlotStatus CTOR
-     */
-    AP2DataPlotStatus();
-
-    /**
-     * @brief validDataRead
-     *        Shall be called if a logline was read successful. Used to
-     *        determine if the error(s) are only at the end of the log.
-     *        Should be inline due to the high calling frequency.
-     */
-    inline void validDataRead()
-    {
-        // Rows with time errors will stored too, so they have to handeled like
-        // the OK ones.
-        if (!((m_lastParsingState == OK)||(m_lastParsingState == TimeError)))
-        {
-            // insert entry with state OK to mark data is ok.
-            m_errors.push_back(errorEntry());
-            m_lastParsingState = OK;
-            // When here we know we had an error and now data is OK again
-            // Set to data error as we cannot predict whats wrong
-            m_globalState = DataError;
-        }
-    }
-
-    /**
-     * @brief corruptDataRead
-     *        Shall be called when ever an error occurs while parsing
-     *        a data package.
-     *
-     * @param index - The log index the error occured
-     * @param errorMessage - Error message describing the error reason
-     */
-    void corruptDataRead(const int index, const QString &errorMessage);
-
-    /**
-     * @brief corruptFMTRead
-     *        Shall be called when ever an error occurs while parsing
-     *        a format package.
-     *
-     * @param index - The log index the error occured
-     * @param errorMessage - Error message describing the error reason
-     */
-    void corruptFMTRead(const int index, const QString &errorMessage);
-
-    /**
-     * @brief corruptTimeRead
-     *        Shall be called when ever a time error occurs while parsing
-     *        any data.
-     *
-     * @param index - The log index the error occured
-     * @param errorMessage - Error message describing the error reason
-     */
-    void corruptTimeRead(const int index, const QString &errorMessage);
-
-    /**
-     * @brief getParsingState
-     *        Delivers the final state of the log parsing. The value
-     *        is only valid if parsing is finished.
-     *FmtError
-     * @return - The parsing state - @see parsingState
-     */
-    parsingState getParsingState() const;
-
-    /**
-     * @brief getErrorOverview
-     *        Creates an overview of errors occured. Type and number are listed
-     * @return
-     */
-    QString getErrorOverview() const;
-
-    /**
-     * @brief getDetailedErrorText
-     *        Creates a text containing all errormessages inserted during
-     *        parsing. One line for each error.
-     *
-     * @return - multi line string with all error messages.
-     */
-    QString getDetailedErrorText() const;
-
-private:
-    /**
-     * @brief The errorEntry struct
-     *        holds all data describing the error
-     */
-    struct errorEntry
-    {
-        parsingState m_state;
-        int m_index;
-        QString m_errortext;
-
-        errorEntry() : m_state(OK), m_index(0){}
-        errorEntry(const parsingState state, const int index, const QString &text) :
-                   m_state(state), m_index(index), m_errortext(text) {}
-    };
-
-    parsingState m_lastParsingState;        /// The internal parsing state since last call
-    parsingState m_globalState;             /// Reflecting the overall parsing state
-    QVector<errorEntry> m_errors;           /// For storing all error entries
-};
-
-
-class AP2DataPlotThread : public QThread
+class AP2DataPlotThread : public QThread, public IParserCallback
 {
     Q_OBJECT
 public:
-    explicit AP2DataPlotThread(AP2DataPlot2DModel *model,QObject *parent = 0);
+
+    /**
+     * @brief AP2DataPlotThread - CTOR
+     * @param model - Pointer to the AP2DataPlot2DModel data stucture
+     */
+    explicit AP2DataPlotThread(LogdataStorage::Ptr storagePtr, QObject *parent = 0);
+
+    /**
+     * @brief ~AP2DataPlotThread - DTOR
+     */
     ~AP2DataPlotThread();
 
+    /**
+     * @brief loadFile starts the parsing of file
+     * @param file - filename of the file to parse
+     */
     void loadFile(const QString& file);
-    void stopLoad() { m_stop = true; }
 
     /**
-     * @brief allowToTerminate is part of a workaround for a crash resulting
-     *        from an unknown effect in QFontEngineFT which randomly happens
-     *        if this thread terminates before the method is finished which
-     *        is triggered through a signal. allowToTerminate is used by the
-     *        method which signalled to tell that its done.
-     * @attention This method has to be called to allow the thread to terminate
-     *            the thread will wait forever if not called.
+     * @brief stopLoad stops the parsing process and forces
+     *        the parser to return immediately
      */
-    void allowToTerminate() {m_workAroundSemaphore.release(1);}
+    void stopLoad();
+
+    /**
+     * @copydoc IParserCallback::onProgress
+     */
+    virtual void onProgress(const qint64 pos, const qint64 size);
+
+    /**
+     * @copydoc IParserCallback::onError
+     */
+    virtual void onError(const QString &errorMsg);
 
 signals:
-    void startLoad();
-    void loadProgress(qint64 pos,qint64 size);
-    void payloadDecoded(int index,QString name,QVariantMap map);
-    void done(AP2DataPlotStatus state,MAV_TYPE type);
-    void error(QString errorstr);
-    void lineRead(QString line);
+    void startLoad();                           /// Emited as soon as log parsing starts
+    void loadProgress(qint64 pos,qint64 size);  /// Emited to show parsing progress
+    void done(AP2DataPlotStatus state);         /// Emited as soon as the parsing is done
+    void error(QString errorstr);               /// Emited on parsing error
 
 private:
-    /**
-     * @brief The timeStampType struct
-     *        Used to hold the name and the scaling of a time stamp.
-     */
-    struct timeStampType
-    {
-        QString m_name;     /// Name of the time stamp
-        double  m_divisor;  /// Divisor to scale time stamp to seconds
 
-        timeStampType() : m_divisor(0.0) {}
-        timeStampType(const QString &name, const double divisor) : m_name(name), m_divisor(divisor) {}
-    };
+    QString m_fileName;     /// Filename of the file to be parsed
+    bool m_stop;            /// true if parsing shall be stopped
 
-    /**
-     * @brief The typeDescriptor struct
-     *        Used to hold all data needed to describe a message type
-     */
-    struct typeDescriptor
-    {
-        int m_length;       /// Length of the message
-        QString m_name;     /// Name of the message
-        QString m_format;   /// Format string like "QbbI"
-        QString m_labels;   /// Name of each value in message. Comma seperated like "lat,lon,time"
+    LogdataStorage::Ptr m_dataStoragePtr;   /// Pointer to the datamodel for storing the data
 
-        typeDescriptor() : m_length(0){}
-        typeDescriptor(int length, const QString &name, const QString &format, const QString &labels) :
-            m_length(length), m_name(name), m_format(format), m_labels(labels){}
-    };
+    ILogParser         *mp_logParser;   /// Pointer to active parser use to pass stop command
 
-    void run(); // from QThread;
+    void run();             /// from QThread - the thread;
     bool isMainThread();
-
-    void loadBinaryLog(QFile &logfile);
-    void loadAsciiLog(QFile &logfile);
-    void loadTLog(QFile &logfile);
-
-    /**
-     * @brief addTimeToDescriptor - helper function for parsing. Extends a type descriptor to hold
-     *        a timestamp
-     */
-    void addTimeToDescriptor(typeDescriptor &desc);
-
-    /**
-     * @brief adaptGPSDescriptor - helper function for parsing. Manipulates a GPS type descriptor
-     *        by renaming old time stamp name and adding a new one. Needed cause the GPS time does not
-     *        match other times
-     */
-    void adaptGPSDescriptor(QMap<unsigned int, typeDescriptor> &typeToDescriptorMap, typeDescriptor &desc, unsigned char msg_type);
-
-    /**
-     * @brief adaptGPSDescriptor - helper function for parsing. Manipulates a GPS type descriptor
-     *        by renaming old time stamp name and adding a new one. Needed cause the GPS time does not
-     *        match other times
-     */
-    bool adaptGPSDescriptor(QMap<QString, typeDescriptor> &nameToDescriptorMap, typeDescriptor &desc);
-
-    /**
-     * @brief handleMissingTimeStamps - helper function for parsing. Checks if a timestamp has to be added
-     *        and adds it if needed. If the data already contains a valid time stamp its value is stored
-     *        in lastValidTS. lastValidTS is used to set the time stamp of the data which lacks it.
-     *
-     * @param timeStampHasToBeAdded - Collection holding all message keys of the messages wothout a time stamp
-     * @param desc - typeDescriptor of the actual message
-     * @param valuepairlist - extracted data pairs of the message
-     * @param lastValidTS - last valid time stamp
-     * @param index - actual parsing index
-     */
-    void handleMissingTimeStamps(const QStringList &timeStampHasToBeAdded, const QString &name, QList<QPair<QString,QVariant> > &valuepairlist,
-                                 quint64 &lastValidTS, const int index);
-
-    /**
-     * @brief handleMissingTimeStamps - helper for parsing.
-     * @see handleMissingTimeStamps
-     */
-    void handleMissingTimeStamps(const QList<unsigned int> &timeStampHasToBeAdded, const unsigned char type, QList<QPair<QString,QVariant> > &valuepairlist,
-                                 quint64 &lastValidTS, const int index);
-
-    /**
-     * @brief getTimeStamp - extracts a valid time stamp from valuepair list and sets lastValidTS.
-     *        checks if the time stamps are increasing. Used by handleMissingTimeStamps methods
-     */
-    void getTimeStamp(QList<QPair<QString,QVariant> > &valuepairlist, const int index, quint64 &lastValidTS);
-private:
-
-    QString m_fileName;
-    bool m_stop;
-    MAV_TYPE m_loadedLogType;
-    AP2DataPlot2DModel *m_dataModel;
-
-    AP2DataPlotStatus m_plotState;
-    QList<timeStampType> m_possibleTimestamps;
-    timeStampType m_timeStamp;
-
-    /**
-     * @brief m_workAroundSemaphore is part of the workaround @see allowToTerminate
-     *        is used for too. It is used to block the thread until allowToTerminate
-     *        is called
-     */
-    QSemaphore m_workAroundSemaphore;
-
-
 
 };
 

@@ -119,86 +119,33 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 }
             }
 
-#if defined(QGC_PROTOBUF_ENABLED)
-
-            if (message.msgid == MAVLINK_MSG_ID_EXTENDED_MESSAGE)
+            if(message.msgid == MAVLINK_MSG_ID_RADIO_STATUS)
             {
-                mavlink_extended_message_t extended_message;
+                // process telemetry status message
+                mavlink_radio_status_t rstatus;
+                mavlink_msg_radio_status_decode(&message, &rstatus);
+                int rssi = rstatus.rssi,
+                    remrssi = rstatus.remrssi;
+                // 3DR Si1k radio needs rssi fields to be converted to dBm
+                if (message.sysid == '3' && message.compid == 'D') {
+                    /* Per the Si1K datasheet figure 23.25 and SI AN474 code
+                     * samples the relationship between the RSSI register
+                     * and received power is as follows:
+                     *
+                     *                       10
+                     * inputPower = rssi * ------ 127
+                     *                       19
+                     *
+                     * Additionally limit to the only realistic range [-120,0] dBm
+                     */
+                    rssi    = qMin(qMax(qRound(static_cast<qreal>(rssi)    / 1.9 - 127.0), - 120), 0);
+                    remrssi = qMin(qMax(qRound(static_cast<qreal>(remrssi) / 1.9 - 127.0), - 120), 0);
 
-                extended_message.base_msg = message;
-
-                // read extended header
-                uint8_t* payload = reinterpret_cast<uint8_t*>(message.payload64);
-
-                memcpy(&extended_message.extended_payload_len, payload + 3, 4);
-
-                // Check if message is valid
-                if
-                 (b.size() != MAVLINK_NUM_NON_PAYLOAD_BYTES+MAVLINK_EXTENDED_HEADER_LEN+ extended_message.extended_payload_len)
-                {
-                    //invalid message
-                    QLOG_DEBUG() << "GOT INVALID EXTENDED MESSAGE, ABORTING";
-                    return;
-                }
-
-                const uint8_t* extended_payload = reinterpret_cast<const uint8_t*>(b.constData()) + MAVLINK_NUM_NON_PAYLOAD_BYTES + MAVLINK_EXTENDED_HEADER_LEN;
-
-                // copy extended payload data
-                memcpy(extended_message.extended_payload, extended_payload, extended_message.extended_payload_len);
-
-#if defined(QGC_USE_PIXHAWK_MESSAGES)
-
-                if (protobufManager.cacheFragment(extended_message))
-                {
-                    std::tr1::shared_ptr<google::protobuf::Message> protobuf_msg;
-
-                    if (protobufManager.getMessage(protobuf_msg))
-                    {
-                        const google::protobuf::Descriptor* descriptor = protobuf_msg->GetDescriptor();
-                        if (!descriptor)
-                        {
-                            continue;
-                        }
-
-                        const google::protobuf::FieldDescriptor* headerField = descriptor->FindFieldByName("header");
-                        if (!headerField)
-                        {
-                            continue;
-                        }
-
-                        const google::protobuf::Descriptor* headerDescriptor = headerField->message_type();
-                        if (!headerDescriptor)
-                        {
-                            continue;
-                        }
-
-                        const google::protobuf::FieldDescriptor* sourceSysIdField = headerDescriptor->FindFieldByName("source_sysid");
-                        if (!sourceSysIdField)
-                        {
-                            continue;
-                        }
-
-                        const google::protobuf::Reflection* reflection = protobuf_msg->GetReflection();
-                        const google::protobuf::Message& headerMsg = reflection->GetMessage(*protobuf_msg, headerField);
-                        const google::protobuf::Reflection* headerReflection = headerMsg.GetReflection();
-
-                        int source_sysid = headerReflection->GetInt32(headerMsg, sourceSysIdField);
-
-                        UASInterface* uas = UASManager::instance()->getUASForId(source_sysid);
-
-                        if (uas != NULL)
-                        {
-                            emit extendedMessageReceived(link, protobuf_msg);
-                        }
-                    }
-                }
-#endif
-
-                position += extended_message.extended_payload_len;
-
-                continue;
+                } else {
+                    rssi = (int8_t) rstatus.rssi;
+                    remrssi = (int8_t) rstatus.remrssi;
+                }                
             }
-#endif
 
             // Log data
             if (m_loggingEnabled && m_logfile)

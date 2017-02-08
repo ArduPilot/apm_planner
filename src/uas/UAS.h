@@ -117,7 +117,11 @@ public:
     {
         groundSpeed = val;
         emit groundSpeedChanged(val,"groundSpeed");
-        emit valueChanged(this->uasId,"groundSpeed","m/s",QVariant(val),getUnixTime());
+        QString unitName = "Ground Speed";
+        emit valueChanged(this->uasId,statusMetric().arg(unitName),"m/s",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusMetric().arg(unitName),"km/h",QVariant(val*3.6),getUnixTime());
+        emit valueChanged(this->uasId,statusImperial().arg(unitName),"mi/h",QVariant(val*2.2369362921),getUnixTime());
+        emit valueChanged(this->uasId,statusMetric().arg(unitName),"kn",QVariant(val*1.9438444924),getUnixTime());
     }
     double getGroundSpeed() const
     {
@@ -128,7 +132,11 @@ public:
     {
         airSpeed = val;
         emit airSpeedChanged(val,"airSpeed");
-        emit valueChanged(this->uasId,"airSpeed","m/s",QVariant(val),getUnixTime());
+        QString unitName = "Air Speed";
+        emit valueChanged(this->uasId,statusMetric().arg(unitName),"m/s",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusMetric().arg(unitName),"km/h",QVariant(val*3.6),getUnixTime());
+        emit valueChanged(this->uasId,statusImperial().arg(unitName),"mi/h",QVariant(val*2.2369362921),getUnixTime());
+        emit valueChanged(this->uasId,statusMetric().arg(unitName),"kn",QVariant(val*1.9438444924),getUnixTime());
     }
 
     double getAirSpeed() const
@@ -140,7 +148,7 @@ public:
     {
         localX = val;
         emit localXChanged(val,"localX");
-        emit valueChanged(this->uasId,"localX","m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusName().arg("localX"),"m",QVariant(val),getUnixTime());
     }
 
     double getLocalX() const
@@ -152,7 +160,7 @@ public:
     {
         localY = val;
         emit localYChanged(val,"localY");
-        emit valueChanged(this->uasId,"localY","m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusName().arg("localY"),"m",QVariant(val),getUnixTime());
     }
     double getLocalY() const
     {
@@ -163,7 +171,7 @@ public:
     {
         localZ = val;
         emit localZChanged(val,"localZ");
-        emit valueChanged(this->uasId,"localZ","m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusName().arg("localZ"),"m",QVariant(val),getUnixTime());
     }
     double getLocalZ() const
     {
@@ -174,7 +182,7 @@ public:
     {
         latitude = val;
         emit latitudeChanged(val,"latitude");
-        emit valueChanged(this->uasId,"latitude","deg",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusName().arg("Latitude"),"deg",QVariant(val),getUnixTime());
     }
 
     double getLatitude() const
@@ -186,7 +194,7 @@ public:
     {
         longitude = val;
         emit longitudeChanged(val,"longitude");
-        emit valueChanged(this->uasId,"longitude","deg",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusName().arg("Longitude"),"deg",QVariant(val),getUnixTime());
     }
 
     double getLongitude() const
@@ -194,11 +202,14 @@ public:
         return longitude;
     }
 
+
     void setAltitudeAMSL(double val)
     {
         altitudeAMSL = val;
         emit altitudeAMSLChanged(val, "altitudeAMSL");
-        emit valueChanged(this->uasId,"altitudeAMSL","m",QVariant(val),getUnixTime());
+        QString unitName = "Alt MSL";
+        emit valueChanged(this->uasId,statusMetric().arg(unitName),"m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusImperial().arg(unitName),"ft",QVariant(val*3.280839895),getUnixTime());
     }
 
     double getAltitudeAMSL() const
@@ -210,7 +221,9 @@ public:
     {
         altitudeRelative = val;
         emit altitudeRelativeChanged(val, "altitudeRelative");
-        emit valueChanged(this->uasId,"altitudeRelative","m",QVariant(val),getUnixTime());
+        QString unitName = "Alt REL";
+        emit valueChanged(this->uasId,statusMetric().arg(unitName),"m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusImperial().arg(unitName),"ft",QVariant(val*3.280839895),getUnixTime());
     }
 
     double getAltitudeRelative() const
@@ -218,11 +231,62 @@ public:
         return altitudeRelative;
     }
 
+    // GPS RAW values
+    void setGPSLatitude(double val)
+    {
+        latitude_gps = val;
+        emit valueChanged(this->uasId,statusGPS().arg("GPS Lat"),"deg",QVariant(val),getUnixTime());
+    }
+
+    double getGPSLatitude() const
+    {
+        return longitude_gps;
+    }
+
+    void setGPSLongitude(double val)
+    {
+        longitude_gps = val;
+        emit valueChanged(this->uasId,statusGPS().arg("GPS Lng"),"deg",QVariant(val),getUnixTime());
+    }
+
+    double getGPSLongitude() const
+    {
+        return longitude_gps;
+    }
+
+    void setGPSAltitude(double val)
+    {
+        altitude_gps = val;
+        QString unitName = "GPS Alt MSL";
+        emit valueChanged(this->uasId,statusGPS().arg(unitName),"m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusGPS().arg(unitName),"ft",QVariant(val*3.280839895),getUnixTime());
+    }
+
+    double getGPSAltitude() const
+    {
+        return altitude_gps;
+    }
+
+    void setGPSVelocity(double val)
+    {
+        velocity_gps = val;
+        QString unitName = "GPS Velocity";
+        emit valueChanged(this->uasId,statusGPS().arg(unitName),"m/s",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusGPS().arg(unitName),"km/h",QVariant(val*3.6),getUnixTime());
+        emit valueChanged(this->uasId,statusGPS().arg(unitName),"mi/h",QVariant(val*2.2369362921),getUnixTime());
+        emit valueChanged(this->uasId,statusGPS().arg(unitName),"kn",QVariant(val*1.9438444924),getUnixTime());
+    }
+
+    double getGPSVelocity() const
+    {
+        return velocity_gps;
+    }
+
     void setSatelliteCount(double val)
     {
         m_satelliteCount = val;
         emit satelliteCountChanged(val,"satelliteCount");
-        emit valueChanged(this->uasId,"satelliteCount","m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusGPS().arg("GPS Sats"),"n",QVariant(val),getUnixTime());
     }
 
     int getSatelliteCount() const
@@ -234,7 +298,7 @@ public:
     {
         m_gps_hdop = val;
         emit gpsHdopChanged(val,"GPS HDOP");
-        emit valueChanged(this->uasId,"GPS HDOP","m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusGPS().arg("GPS HDOP"),"",QVariant(val),getUnixTime());
     }
 
     double getGpsHdop() const
@@ -245,8 +309,8 @@ public:
     void setGpsFix(int val)
     {
         m_gps_fix = val;
-        emit gpsFixChanged(val,"GPS FIX");
-        emit valueChanged(this->uasId,"GPS FIX","",QVariant(val),getUnixTime());
+        emit gpsFixChanged(val,"GPS Fix");
+        emit valueChanged(this->uasId,statusGPS().arg("GPS Fix"),"",QVariant(val),getUnixTime());
     }
 
     double getGpsFix() const
@@ -286,7 +350,7 @@ public:
     {
         distToWaypoint = val;
         emit distToWaypointChanged(val,"distToWaypoint");
-        emit valueChanged(this->uasId,"distToWaypoint","m",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusName().arg("distToWaypoint"),"m",QVariant(val),getUnixTime());
     }
 
     double getDistToWaypoint() const
@@ -298,7 +362,7 @@ public:
     {
         bearingToWaypoint = val;
         emit bearingToWaypointChanged(val,"bearingToWaypoint");
-        emit valueChanged(this->uasId,"bearingToWaypoint","deg",QVariant(val),getUnixTime());
+        emit valueChanged(this->uasId,statusName().arg("bearingToWaypoint"),"deg",QVariant(val),getUnixTime());
     }
 
     double getBearingToWaypoint() const
@@ -350,65 +414,6 @@ public:
     {
         return nedAttGlobalOffset;
     }
-
-#if defined(QGC_PROTOBUF_ENABLED) && defined(QGC_USE_PIXHAWK_MESSAGES)
-    px::GLOverlay getOverlay()
-    {
-        QMutexLocker locker(&overlayMutex);
-        return overlay;
-    }
-
-    px::GLOverlay getOverlay(qreal& receivedTimestamp)
-    {
-        receivedTimestamp = receivedOverlayTimestamp;
-        QMutexLocker locker(&overlayMutex);
-        return overlay;
-    }
-
-    px::ObstacleList getObstacleList() {
-        QMutexLocker locker(&obstacleListMutex);
-        return obstacleList;
-    }
-
-    px::ObstacleList getObstacleList(qreal& receivedTimestamp) {
-        receivedTimestamp = receivedObstacleListTimestamp;
-        QMutexLocker locker(&obstacleListMutex);
-        return obstacleList;
-    }
-
-    px::Path getPath() {
-        QMutexLocker locker(&pathMutex);
-        return path;
-    }
-
-    px::Path getPath(qreal& receivedTimestamp) {
-        receivedTimestamp = receivedPathTimestamp;
-        QMutexLocker locker(&pathMutex);
-        return path;
-    }
-
-    px::PointCloudXYZRGB getPointCloud() {
-        QMutexLocker locker(&pointCloudMutex);
-        return pointCloud;
-    }
-
-    px::PointCloudXYZRGB getPointCloud(qreal& receivedTimestamp) {
-        receivedTimestamp = receivedPointCloudTimestamp;
-        QMutexLocker locker(&pointCloudMutex);
-        return pointCloud;
-    }
-
-    px::RGBDImage getRGBDImage() {
-        QMutexLocker locker(&rgbdImageMutex);
-        return rgbdImage;
-    }
-
-    px::RGBDImage getRGBDImage(qreal& receivedTimestamp) {
-        receivedTimestamp = receivedRGBDImageTimestamp;
-        QMutexLocker locker(&rgbdImageMutex);
-        return rgbdImage;
-    }
-#endif
 
     friend class UASWaypointManager;
 
@@ -500,6 +505,7 @@ protected: //COMMENTS FOR TEST UNIT
     double latitude_gps;        ///< Global latitude as estimated by raw GPS
     double longitude_gps;       ///< Global longitude as estimated by raw GPS
     double altitude_gps;        ///< Global altitude as estimated by raw GPS
+    double velocity_gps;        ///< Global velocity as estimated by raw GPS
     double speedX;              ///< True speed in X axis
     double speedY;              ///< True speed in Y axis
     double speedZ;              ///< True speed in Z axis
@@ -537,28 +543,6 @@ protected: //COMMENTS FOR TEST UNIT
     quint64 imageStart;
     bool blockHomePositionChanges;   ///< Block changes to the home position
     bool receivedMode;          ///< True if mode was retrieved from current conenction to UAS
-
-#if defined(QGC_PROTOBUF_ENABLED) && defined(QGC_USE_PIXHAWK_MESSAGES)
-    px::GLOverlay overlay;
-    QMutex overlayMutex;
-    qreal receivedOverlayTimestamp;
-
-    px::ObstacleList obstacleList;
-    QMutex obstacleListMutex;
-    qreal receivedObstacleListTimestamp;
-
-    px::Path path;
-    QMutex pathMutex;
-    qreal receivedPathTimestamp;
-
-    px::PointCloudXYZRGB pointCloud;
-    QMutex pointCloudMutex;
-    qreal receivedPointCloudTimestamp;
-
-    px::RGBDImage rgbdImage;
-    QMutex rgbdImageMutex;
-    qreal receivedRGBDImageTimestamp;
-#endif
 
     /// PARAMETERS
     QMap<int, QMap<QString, QVariant>* > parameters; ///< All parameters
@@ -723,9 +707,9 @@ public:
         case MAV_AUTOPILOT_GENERIC:
             return "GENERIC";
             break;
-        case MAV_AUTOPILOT_PIXHAWK:
-            return "PIXHAWK";
-            break;
+//        case MAV_AUTOPILOT_PIXHAWK:
+//            return "PIXHAWK";
+//            break;
         case MAV_AUTOPILOT_SLUGS:
             return "SLUGS";
             break;
@@ -1083,6 +1067,12 @@ protected slots:
     void writeSettings();
     /** @brief Read settings from disk */
     void readSettings();
+
+private:
+    QString statusName() const;
+    QString statusMetric() const;
+    QString statusImperial() const;
+    QString statusGPS() const;
 };
 
 

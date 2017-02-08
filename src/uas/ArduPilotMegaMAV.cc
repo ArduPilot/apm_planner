@@ -487,7 +487,6 @@ ErrorMessage::ErrorMessage(const QString &TimeFieldName) : m_SubSys(0), m_ErrorC
     m_TimeFieldName = TimeFieldName;
 }
 
-
 ErrorMessage::ErrorMessage(const quint32 index, const double timeStamp, const quint32 subSys, const quint32 errCode) :
     MessageBase(index, timeStamp, TypeName, QColor(150,0,0)),
     m_SubSys(subSys),
@@ -504,35 +503,37 @@ quint32 ErrorMessage::getErrorCode() const
     return m_ErrorCode;
 }
 
-bool ErrorMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
+bool ErrorMessage::setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider)
 {
     bool rc1 = false;
     bool rc2 = false;
     bool rc3 = false;
     bool rc4 = false;
 
-    if(record.value(0).isValid())
+    for(int i = 0; i < values.size(); ++i)
     {
-        m_Index = static_cast<quint32>(record.value(0).toUInt());
-        rc1 = true;
+        if(values.at(i).first == "Index")
+        {
+            m_Index = values.at(i).second.toUInt();
+            rc1 = true;
+        }
+        else if(values.at(i).first == m_TimeFieldName)
+        {
+            m_TimeStamp = values.at(i).second.toDouble();
+            m_TimeStamp /= timeDivider;
+            rc2 = true;
+        }
+        else if(values.at(i).first == "ECode")
+        {
+            m_ErrorCode = values.at(i).second.toUInt();
+            rc3 = true;
+        }
+        else if(values.at(i).first == "Subsys")
+        {
+            m_SubSys = values.at(i).second.toUInt();
+            rc4 = true;
+        }
     }
-    if (record.contains(m_TimeFieldName))
-    {
-        m_TimeStamp = record.value(m_TimeFieldName).toDouble();
-        m_TimeStamp /= timeDivider;
-        rc2 = true;
-    }
-    if (record.contains("Subsys"))
-    {
-        m_SubSys = static_cast<quint32>(record.value("Subsys").toUInt());
-        rc3 = true;
-    }
-    if (record.contains("ECode"))
-    {
-        m_ErrorCode = static_cast<quint32>(record.value("ECode").toUInt());
-        rc4 = true;
-    }
-
     return rc1 && rc2 && rc3 && rc4;
 }
 
@@ -586,41 +587,44 @@ quint32 ModeMessage::getReason() const
     return m_Reason;
 }
 
-bool ModeMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
+bool ModeMessage::setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider)
 {
     bool rc1 = false;
     bool rc2 = false;
     bool rc3 = false;
 
-    if(record.value(0).isValid())
+    for(int i = 0; i < values.size(); ++i)
     {
-        m_Index = static_cast<quint32>(record.value(0).toUInt());
-        rc1 = true;
+        if(values.at(i).first == "Index")
+        {
+            m_Index = values.at(i).second.toUInt();
+            rc2 = true;
+        }
+        else if(values.at(i).first == m_TimeFieldName)
+        {
+            m_TimeStamp = values.at(i).second.toDouble();
+            m_TimeStamp /= timeDivider;
+            rc3 = true;
+        }
+        else if(values.at(i).first == "Mode")
+        {
+            m_Mode = values.at(i).second.toUInt();
+            rc1 = true;
+        }
+        else if(values.at(i).first == "ModeNum")
+        {
+            m_ModeNum = values.at(i).second.toUInt();
+            // ModeNum does not influence the returncode as its optional
+        }
+        else if(values.at(i).first == "Rsn")
+        {
+            m_Reason = values.at(i).second.toUInt();
+            // Reason does not influence the returncode as its optional. Came with AC 3.4
+        }
     }
-    if (record.contains(m_TimeFieldName))
-    {
-        m_TimeStamp = record.value(m_TimeFieldName).toDouble();
-        m_TimeStamp /= timeDivider;
-        rc2 = true;
-    }
-    if (record.contains("Mode"))
-    {
-        m_Mode = static_cast<quint32>(record.value("Mode").toUInt());
-        rc3 = true;
-    }
-    if (record.contains("ModeNum"))
-    {
-        m_ModeNum = static_cast<quint32>(record.value("ModeNum").toUInt());
-       // ModeNum does not influence the returncode as its optional
-    }
-    if (record.contains("Rsn"))
-    {
-        m_Reason = static_cast<quint32>(record.value("Rsn").toUInt());
-       // Reason does not influence the returncode as its optional. Came with AC 3.4
-    }
-
     return rc1 && rc2 && rc3;
 }
+
 
 QString ModeMessage::toString() const
 {
@@ -660,29 +664,31 @@ quint32 EventMessage::getEventID() const
     return m_EventID;
 }
 
-bool EventMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
+bool EventMessage::setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider)
 {
     bool rc1 = false;
     bool rc2 = false;
     bool rc3 = false;
 
-    if(record.value(0).isValid())
+    for(int i = 0; i < values.size(); ++i)
     {
-        m_Index = static_cast<quint32>(record.value(0).toUInt());
-        rc1 = true;
+        if(values.at(i).first == "Index")
+        {
+            m_Index = values.at(i).second.toUInt();
+            rc1 = true;
+        }
+        else if(values.at(i).first == m_TimeFieldName)
+        {
+            m_TimeStamp = values.at(i).second.toUInt();
+            m_TimeStamp /= timeDivider;
+            rc2 = true;
+        }
+        else if(values.at(i).first == "Id")
+        {
+            m_EventID = values.at(i).second.toUInt();
+            rc3 = true;
+        }
     }
-    if (record.contains(m_TimeFieldName))
-    {
-        m_TimeStamp = record.value(m_TimeFieldName).toDouble();
-        m_TimeStamp /= timeDivider;
-        rc2 = true;
-    }
-    if (record.contains("Id"))
-    {
-        m_EventID = static_cast<quint32>(record.value("Id").toUInt());
-        rc3 = true;
-    }
-
     return rc1 && rc2 && rc3;
 }
 
@@ -719,29 +725,31 @@ MsgMessage::MsgMessage(const quint32 index, const double timeStamp, const QStrin
     m_Message(message)
 {}
 
-bool MsgMessage::setFromSqlRecord(const QSqlRecord &record, const double timeDivider)
+bool MsgMessage::setFromNameValuePairList(const QList<NameValuePair> &values, const double timeDivider)
 {
     bool rc1 = false;
     bool rc2 = false;
     bool rc3 = false;
 
-    if(record.value(0).isValid())
+    for(int i = 0; i < values.size(); ++i)
     {
-        m_Index = static_cast<quint32>(record.value(0).toUInt());
-        rc1 = true;
+        if(values.at(i).first == "Index")
+        {
+            m_Index = values.at(i).second.toUInt();
+            rc1 = true;
+        }
+        else if(values.at(i).first == m_TimeFieldName)
+        {
+            m_TimeStamp = values.at(i).second.toUInt();
+            m_TimeStamp /= timeDivider;
+            rc2 = true;
+        }
+        else if(values.at(i).first == "Message")
+        {
+            m_Message = values.at(i).second.toString();
+            rc3 = true;
+        }
     }
-    if (record.contains(m_TimeFieldName))
-    {
-        m_TimeStamp = record.value(m_TimeFieldName).toDouble();
-        m_TimeStamp /= timeDivider;
-        rc2 = true;
-    }
-    if (record.contains("Message"))
-    {
-        m_Message = record.value("Message").toString();
-        rc3 = true;
-    }
-
     return rc1 && rc2 && rc3;
 }
 
@@ -752,27 +760,43 @@ QString MsgMessage::toString() const
 
 //********
 
-MessageBase::Ptr MessageFactory::getMessageOfType(const QString &type, const QString &TimeFieldName)
+MessageBase::Ptr MessageFactory::CreateMessageOfType(const QString &type, const QList<QPair<QString, QVariant> > &values, const QString &timeFieldName, const double &timeDivider)
 {
+    MessageBase::Ptr messagePtr;
+
     if (type == ErrorMessage::TypeName)
     {
-        return MessageBase::Ptr(new ErrorMessage(TimeFieldName));
+        messagePtr = MessageBase::Ptr(new ErrorMessage(timeFieldName));
     }
     else if (type == ModeMessage::TypeName)
     {
-        return MessageBase::Ptr(new ModeMessage(TimeFieldName));
+        messagePtr = MessageBase::Ptr(new ModeMessage(timeFieldName));
     }
     else if (type == EventMessage::TypeName)
     {
-        return MessageBase::Ptr(new EventMessage(TimeFieldName));
+        messagePtr = MessageBase::Ptr(new EventMessage(timeFieldName));
     }
     else if (type == MsgMessage::TypeName)
     {
-        return MessageBase::Ptr(new MsgMessage(TimeFieldName));
+        messagePtr = MessageBase::Ptr(new MsgMessage(timeFieldName));
     }
-    QLOG_WARN() << "MessageFactory::getMessageOfType: No message of type '" << type << "' could be created";
-    return MessageBase::Ptr();
+
+    if(!messagePtr)
+    {
+        QLOG_WARN() << "MessageFactory::CreateMessageOfType: No message of type '" << type << "' could be created";
+        return MessageBase::Ptr();
+    }
+    else
+    {
+        if(!messagePtr->setFromNameValuePairList(values, timeDivider))
+        {
+            QLOG_WARN() << "MessageFactory::CreateMessageOfType: Not all data could be read from variant list "
+                        << "The data of type " << type << " might be corrupted.";
+        }
+        return messagePtr;
+    }
 }
+
 
 //******** Message Formatters ********
 
@@ -810,7 +834,7 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
 {
     // SubSys ans ErrorCode interpretation was taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 09.06.2016
+    // last verification 17.01.2017
 
     QString output;
     QTextStream outputStream(&output);
@@ -1025,9 +1049,12 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
         }
         break;
 
+    case 24:
+        outputStream << "EKF primary:";
+        break;
 
     default:
-        outputStream << "SubSys:" << message.getErrorCode() << " ECode:" << message.getErrorCode();
+        outputStream << "SubSys:" << message.getSubsystemCode() << " ECode:" << message.getErrorCode();
         EcodeUsed = true;
         break;
 
@@ -1062,7 +1089,7 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
 {
     // Interpretation taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 09.06.2016
+    // last verification 17.01.2017
 
     QString output;
     QTextStream outputStream(&output);
@@ -1117,6 +1144,12 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
     case Copter::THROW:
         outputStream << "Throw";
         break;
+    case Copter::AVOID_ADSB:
+        outputStream << "Avoid-ADSB";
+        break;
+    case Copter::GUIDED_NOGPS:
+        outputStream << "Guided no GPS";
+        break;
     default:
         outputStream << "Unknown Mode:" << message.getMode();
         break;
@@ -1168,6 +1201,15 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
         case 13:
             outputStream << "Flip complete";
             break;
+        case 14:
+            outputStream << "Avoidance";
+            break;
+        case 15:
+            outputStream << "Avoidance recovery";
+            break;
+        case 16:
+            outputStream << "Throw complete";
+            break;
         default:
             outputStream << "unknown reason:" << message.getReason();
             break;
@@ -1181,7 +1223,7 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
 {
     // Interpretation taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 09.06.2016
+    // last verification 17.01.2017
 
     QString output;
     QTextStream outputStream(&output);
@@ -1334,6 +1376,21 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
         break;
     case 61:
         outputStream << "Land cancelled by pilot";
+        break;
+    case 62:
+        outputStream << "EKF yaw reset";
+        break;
+    case 63:
+        outputStream << "Avoidance ADSB enable";
+        break;
+    case 64:
+        outputStream << "Avoidance ADSB disable";
+        break;
+    case 65:
+        outputStream << "Avoidance proximity enable";
+        break;
+    case 66:
+        outputStream << "Avoidance proximity disable";
         break;
     default:
         outputStream << "Unknown Event: " << message.getEventID();

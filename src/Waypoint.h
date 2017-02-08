@@ -129,6 +129,11 @@ public:
     /** @brief Returns true for waypoint witch also visible on map */
     bool visibleOnMapWidget();
 
+    bool isGlobalFrame() const;
+    bool isLocalFrame() const;
+    bool isRelativeAlt() const;
+    bool isValidLocation() const;
+
     void save(QTextStream &saveStream);
     bool load(QTextStream &loadStream);
 

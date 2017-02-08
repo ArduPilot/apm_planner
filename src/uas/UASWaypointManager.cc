@@ -129,7 +129,7 @@ void UASWaypointManager::handleGlobalPositionChanged(UASInterface* mav, double l
     Q_UNUSED(alt);
     Q_UNUSED(lon);
     Q_UNUSED(lat);
-    if (waypointsEditable.count() > 0 && currentWaypointEditable && (currentWaypointEditable->getFrame() == MAV_FRAME_GLOBAL || currentWaypointEditable->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT))
+    if (waypointsEditable.count() > 0 && currentWaypointEditable && currentWaypointEditable->isGlobalFrame())
     {
         // TODO FIXME Calculate distance
         double dist = 0;
@@ -593,7 +593,7 @@ const QList<Waypoint *> UASWaypointManager::getGlobalFrameWaypointList()
     QList<Waypoint*> wps;
     foreach (Waypoint* wp, waypointsEditable)
     {
-        if (wp->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT)
+        if (wp->isGlobalFrame())
         {
             wps.append(wp);
         }
@@ -609,7 +609,7 @@ const QList<Waypoint *> UASWaypointManager::getGlobalFrameAndNavTypeWaypointList
     QList<Waypoint*> wps;
     foreach (Waypoint* wp, waypointsEditable)
     {
-        if ((wp->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && (wp->isNavigationType() || (wp->visibleOnMapWidget())))
+        if ((wp->isGlobalFrame()) && (wp->isNavigationType() || (wp->visibleOnMapWidget())))
         {
             if(wp->visibleOnMapWidget() && onlypath) // we need waypoints only to draw the path on map
                 continue;
@@ -646,7 +646,7 @@ int UASWaypointManager::getGlobalFrameIndexOf(Waypoint* wp)
     // counting only those in global frame
     int i = 0;
     foreach (Waypoint* p, waypointsEditable) {
-        if (p->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT)
+        if (p->isGlobalFrame())
         {
             if (p == wp)
             {
@@ -665,7 +665,7 @@ int UASWaypointManager::getGlobalFrameAndNavTypeIndexOf(Waypoint* wp)
     // counting only those in global frame
     int i = 0;
     foreach (Waypoint* p, waypointsEditable) {
-        if ((p->getFrame() == MAV_FRAME_GLOBAL || wp->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && p->isNavigationType())
+        if (p->isGlobalFrame() && p->isNavigationType())
         {
             if (p == wp)
             {
@@ -705,7 +705,7 @@ int UASWaypointManager::getGlobalFrameCount()
     int i = 0;
     foreach (Waypoint* p, waypointsEditable)
     {
-        if (p->getFrame() == MAV_FRAME_GLOBAL || p->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT)
+        if (p->isGlobalFrame())
         {
             i++;
         }
@@ -720,7 +720,7 @@ int UASWaypointManager::getGlobalFrameAndNavTypeCount()
     // counting only those in global frame
     int i = 0;
     foreach (Waypoint* p, waypointsEditable) {
-        if ((p->getFrame() == MAV_FRAME_GLOBAL || p->getFrame() == MAV_FRAME_GLOBAL_RELATIVE_ALT) && p->isNavigationType())
+        if (p->isGlobalFrame() && p->isNavigationType())
         {
             i++;
         }

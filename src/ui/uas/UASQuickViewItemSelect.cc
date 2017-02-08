@@ -50,9 +50,13 @@ void UASQuickViewItemSelect::addItem(QString item,bool enabled)
         ui.stackedWidget->widget(col)->layout()->addWidget(titlelabel);
 
         //Ensure that GCS Status gets the top slot
-        if (category == "GCS Status")
+        if ((category == "GCS Status")||(category == "GCS Metric")
+                ||(category == "GCS Imperial")||(category == "GCS GPS"))
         {
-            ui.listWidget->insertItem(0,"----------");
+            if (m_isFirstTime) {
+                ui.listWidget->insertItem(0,"--------------");
+                m_isFirstTime = false;
+            }
             ui.listWidget->insertItem(0,category);
         }
         else

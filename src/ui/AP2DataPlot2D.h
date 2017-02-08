@@ -38,7 +38,6 @@ This file is part of the APM_PLANNER project
 #include "AP2DataPlotThread.h"
 #include "dataselectionscreen.h"
 #include "AP2DataPlotAxisDialog.h"
-#include "AP2DataPlot2DModel.h"
 #include "ui_AP2DataPlot2D.h"
 
 #include <QWidget>
@@ -47,6 +46,8 @@ This file is part of the APM_PLANNER project
 #include <QTextBrowser>
 #include <QSqlDatabase>
 #include <QStandardItemModel>
+
+#include "LogdataStorage.h"
 
 class LogDownloadDialog;
 
@@ -88,16 +89,13 @@ private slots:
     //Cancel clicked on the graph loading thread progress dialog
     void progressDialogCanceled();
     //Graph loading thread finished
-    void threadDone(AP2DataPlotStatus state, MAV_TYPE type);
+    void threadDone(AP2DataPlotStatus state);
     //Graph loading thread actually exited
     void threadTerminated();
     //Graph loading thread error
     void threadError(QString errorstr);
 
-    //Payload decoded from the graph loading thread
-    void payloadDecoded(int index,QString name,QVariantMap map);
-
-    //Called to remove an item from the graph
+     //Called to remove an item from the graph
     void itemDisabled(QString name);
     //Called to add an item to the graph
     void itemEnabled(QString name);
@@ -116,7 +114,7 @@ private slots:
     void showOnlyClicked();
     void showAllClicked();
     void graphControlsButtonClicked();
-    void plotDoubleClick(QMouseEvent * _t2);
+    void plotDoubleClick(QMouseEvent *event);
     void plotMouseMove(QMouseEvent *evt);
     void horizontalScrollMoved(int value);
     void verticalScrollMoved(int value);
@@ -152,7 +150,9 @@ private:
 
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
-    AP2DataPlot2DModel *m_tableModel;
+
+    LogdataStorage::Ptr m_dataStoragePtr;
+
     QSortFilterProxyModel *m_tableFilterProxyModel;
     QList<QString> m_tableFilterList;
     int getStatusTextPos();
@@ -235,8 +235,6 @@ private:
     QMap<QString,QString> m_tableHeaderNameMap;
     //Graph name to list of values for "online" mode
     QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
-    //Map from graph name to list of values for "offline" mode
-    QMap<QString,QList<QPair<int,QVariantMap> > > m_dataList;
     QList<QString> loglines;
     QSqlDatabase m_sharedDb;
     int currentIndex;

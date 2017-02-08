@@ -325,6 +325,26 @@ bool UAS::getSelected() const
     return (UASManager::instance()->getActiveUAS() == this);
 }
 
+QString UAS::statusName() const
+{
+    return QString("M%1:GCS Status.%2").arg(systemId);
+}
+
+QString UAS::statusMetric() const
+{
+    return QString("M%1:GCS Metric.%2").arg(systemId);
+}
+
+QString UAS::statusImperial() const
+{
+    return QString("M%1:GCS Imperial.%2").arg(systemId);
+}
+
+QString UAS::statusGPS() const
+{
+    return QString("M%1:GCS GPS.%2").arg(systemId);
+}
+
 void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 {
     if (!link) return;
@@ -515,18 +535,17 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
             // Prepare for sending data to the realtime plotter, which is every field excluding onboard_control_sensors_present.
             quint64 time = getUnixTime();
-            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
-            emit valueChanged(uasId, name.arg("Sensors Enabled"), "bits", state.onboard_control_sensors_enabled, time);
-            emit valueChanged(uasId, name.arg("Sensors Health"), "bits", state.onboard_control_sensors_health, time);
-            emit valueChanged(uasId, name.arg("Comms Errors"), "-", state.errors_comm, time);
-            emit valueChanged(uasId, name.arg("Errors Count 1"), "-", state.errors_count1, time);
-            emit valueChanged(uasId, name.arg("Errors Count 2"), "-", state.errors_count2, time);
-            emit valueChanged(uasId, name.arg("Errors Count 3"), "-", state.errors_count3, time);
-            emit valueChanged(uasId, name.arg("Errors Count 4"), "-", state.errors_count4, time);
+            emit valueChanged(uasId, statusName().arg("Sensors Enabled"), "bits", state.onboard_control_sensors_enabled, time);
+            emit valueChanged(uasId, statusName().arg("Sensors Health"), "bits", state.onboard_control_sensors_health, time);
+            emit valueChanged(uasId, statusName().arg("Comms Errors"), "-", state.errors_comm, time);
+            emit valueChanged(uasId, statusName().arg("Errors Count 1"), "-", state.errors_count1, time);
+            emit valueChanged(uasId, statusName().arg("Errors Count 2"), "-", state.errors_count2, time);
+            emit valueChanged(uasId, statusName().arg("Errors Count 3"), "-", state.errors_count3, time);
+            emit valueChanged(uasId, statusName().arg("Errors Count 4"), "-", state.errors_count4, time);
 
 			// Process CPU load.
             emit loadChanged(this,state.load/10.0);
-            emit valueChanged(uasId, name.arg("CPU Load"), "%", state.load/10.0, time);
+            emit valueChanged(uasId, statusName().arg("CPU Load"), "%", state.load/10.0, time);
 
 			// Battery charge/time remaining/voltage calculations
             currentVoltage = state.voltage_battery/1000.0;
@@ -564,14 +583,14 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit batteryChanged(this, lpVoltage, currentCurrent, getChargeLevel(), timeRemaining);
             // emit voltageChanged(message.sysid, currentVoltage);
 
-            emit valueChanged(uasId, name.arg("Battery"), "%", state.battery_remaining, time);
-            emit valueChanged(uasId, name.arg("Voltage"), "V", state.voltage_battery/1000.0, time);
+            emit valueChanged(uasId, statusName().arg("Battery"), "%", state.battery_remaining, time);
+            emit valueChanged(uasId, statusName().arg("Voltage"), "V", state.voltage_battery/1000.0, time);
 
 			// And if the battery current draw is measured, log that also.
 			if (state.current_battery != -1)
 			{
                 currentCurrent = ((double)state.current_battery)/100.0;
-                emit valueChanged(uasId, name.arg("Current"), "A", currentCurrent, time);
+                emit valueChanged(uasId, statusName().arg("Current"), "A", currentCurrent, time);
 			}
 
             // LOW BATTERY ALARM
@@ -601,7 +620,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 				state.drop_rate_comm = 10000;
 			}
             emit dropRateChanged(this->getUASID(), state.drop_rate_comm/100.0);
-            emit valueChanged(uasId, name.arg("Comms Drop Rate"), "%", state.drop_rate_comm/100.0, time);
+            emit valueChanged(uasId, statusName().arg("Comms Drop Rate"), "%", state.drop_rate_comm/100.0, time);
 		}
             break;
         case MAVLINK_MSG_ID_ATTITUDE:
@@ -624,10 +643,9 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 emit attitudeChanged(this, getRoll(), getPitch(), getYaw(), time);
                 emit attitudeRotationRatesChanged(uasId, attitude.rollspeed, attitude.pitchspeed, attitude.yawspeed, time);
 
-                QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
-                emit valueChanged(uasId,name.arg("Roll"),"deg",QVariant(getRoll() * (180.0/M_PI)),time);
-                emit valueChanged(uasId,name.arg("Pitch"),"deg",QVariant(getPitch() * (180.0/M_PI)),time);
-                emit valueChanged(uasId,name.arg("Yaw"),"deg",QVariant(getYaw() * (180.0/M_PI)),time);
+                emit valueChanged(uasId,statusName().arg("Roll"),"deg",QVariant(getRoll() * (180.0/M_PI)),time);
+                emit valueChanged(uasId,statusName().arg("Pitch"),"deg",QVariant(getPitch() * (180.0/M_PI)),time);
+                emit valueChanged(uasId,statusName().arg("Yaw"),"deg",QVariant(getYaw() * (180.0/M_PI)),time);
             }
         }
             break;
@@ -724,14 +742,15 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 setYaw(QGC::limitAngleToPMPId((((double)hud.heading)/180.0)*M_PI));
                 emit attitudeChanged(this, getRoll(), getPitch(), getYaw(), time);
             }
-            setAltitudeAMSL(hud.alt);
-            setGroundSpeed(hud.groundspeed);
-            if (!isnan(hud.airspeed))
+//            setAltitudeAMSL(hud.alt);
+//            setGroundSpeed(hud.groundspeed);
+            if (!qIsNaN(hud.airspeed))
                 setAirSpeed(hud.airspeed);
 
-            speedZ = -hud.climb;
-            emit altitudeChanged(this, altitudeAMSL, altitudeRelative, -speedZ, time);
-            emit speedChanged(this, groundSpeed, airSpeed, time);
+//            speedZ = -hud.climb;
+//            if (!globalEstimatorActive)
+//            emit altitudeChanged(this, altitudeAMSL, altitudeRelative, -speedZ, time);
+//            emit speedChanged(this, groundSpeed, airSpeed, time);
         }
             break;
         case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
@@ -792,14 +811,8 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             setAltitudeAMSL(pos.alt/1000.0);
             setAltitudeRelative(pos.relative_alt/1000.0);
 			
-            //valueChanged(uasId, str.arg(vect.address+(i*2)), "ui16", mem1[i], time);
-            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
-            emit valueChanged(uasId,name.arg("Latitude"),"deg",QVariant((double)pos.lat / (double(1E7))),time);
-            emit valueChanged(uasId,name.arg("Longitude"),"deg",QVariant((double)pos.lon / (double(1E7))),time);
-            emit valueChanged(uasId,name.arg("Altitude (GPS)"),"m",QVariant((double)pos.alt / 1000.0),time);
-            emit valueChanged(uasId,name.arg("Altitude (REL)"),"m",QVariant((double)pos.relative_alt / 1000.0),time);
-            emit valueChanged(uasId,name.arg("Heading (GPS)"),"degs",QVariant((double)pos.hdg),time);
-            emit valueChanged(uasId,name.arg("Climb"),"m/s",QVariant((double)pos.vz / 100.0),time);
+            emit valueChanged(uasId,statusName().arg("Heading"),"degs",QVariant((double)pos.hdg),time);
+            emit valueChanged(uasId,statusName().arg("Climb"),"m/s",QVariant((double)pos.vz / 100.0),time);
 
             globalEstimatorActive = true;
 
@@ -833,7 +846,6 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_msg_gps_raw_int_decode(&message, &pos);
 
             quint64 time = getUnixTime(pos.time_usec);
-            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
 
             emit gpsLocalizationChanged(this, pos.fix_type);
             // TODO: track localization state not only for gps but also for other loc. sources
@@ -846,20 +858,18 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             setSatelliteCount(pos.satellites_visible);
             setGpsHdop(pos.eph/100.0);
             setGpsFix(pos.fix_type);
+            setGPSVelocity(pos.vel/100.0);
 
             // emit raw GPS message
-            latitude_gps = pos.lat/(double)1E7;
-            longitude_gps = pos.lon/(double)1E7;
-            altitude_gps = pos.alt/1000.0;
+            setGPSLatitude(pos.lat/(double)1E7);
+            setGPSLongitude(pos.lon/(double)1E7);
+            setGPSAltitude(pos.alt/1000.0);
+            emit valueChanged(this->uasId,statusGPS().arg("GPS COG"),"deg",QVariant(pos.cog/100.0),getUnixTime());
 
             if (pos.fix_type > 2)
             {
                 positionLock = true;
                 isGlobalPositionKnown = true;
-
-                latitude_gps = pos.lat/(double)1E7;
-                longitude_gps = pos.lon/(double)1E7;
-                altitude_gps = pos.alt/1000.0;
 
                 // If no GLOBAL_POSITION_INT messages ever received, use these raw GPS values instead.
                 if (!globalEstimatorActive) {
@@ -869,26 +879,18 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                     emit globalPositionChanged(this, getLatitude(), getLongitude(), getAltitudeAMSL(), time);
                     emit altitudeChanged(this, altitudeAMSL, altitudeRelative, -speedZ, time);
                 
-                    double vel = pos.vel/100.0;
                     // Smaller than threshold and not NaN
-                    if ((vel < 1000000) && !isnan(vel) && !isinf(vel))
+                    if ((velocity_gps < 1000000) && !qIsNaN(velocity_gps) && !qIsInf(velocity_gps))
                     {
-                        setGroundSpeed(vel);
+                        setGroundSpeed(velocity_gps);
                         emit speedChanged(this, groundSpeed, airSpeed, time);
-                        emit valueChanged(uasId,name.arg("GPS Velocity"),"m/s",QVariant(vel),time);
                     }
                     else
                     {
-                        emit textMessageReceived(uasId, message.compid, 255, QString("GCS ERROR: RECEIVED INVALID SPEED OF %1 m/s").arg(vel));
+                        emit textMessageReceived(uasId, message.compid, 255, QString("GCS ERROR: RECEIVED INVALID SPEED OF %1 m/s").arg(velocity_gps));
                     }
                 }
             }
-
-            emit valueChanged(uasId,name.arg("GPS Fix"),"",pos.fix_type,time);
-            emit valueChanged(uasId,name.arg("GPS Sats"),"",pos.satellites_visible,time);
-            emit valueChanged(uasId,name.arg("GPS HDOP"),"m", pos.eph/100.0,time);
-            emit valueChanged(uasId,name.arg("GPS COG"),"",pos.cog/100.0,time);
-
         }
             break;
         case MAVLINK_MSG_ID_GPS_STATUS:
@@ -1295,11 +1297,11 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_radio_t radio;
             mavlink_msg_radio_decode(&message, &radio);
             emit radioMessageUpdate(this, radio);
-            QString name = QString("M%1:GCS Status.%2").arg(message.sysid);
-            emit valueChanged(uasId, name.arg("Radio RSSI"), "", radio.rssi, time);
-            emit valueChanged(uasId, name.arg("Radio REM RSSI"), "", radio.remrssi, time);
-            emit valueChanged(uasId, name.arg("Radio noise"), "", radio.noise, time);
-            emit valueChanged(uasId, name.arg("Radio REM noise"), "", radio.remnoise, time);
+
+            emit valueChanged(uasId, statusName().arg("Radio RSSI"), "", radio.rssi, time);
+            emit valueChanged(uasId, statusName().arg("Radio REM RSSI"), "", radio.remrssi, time);
+            emit valueChanged(uasId, statusName().arg("Radio noise"), "", radio.noise, time);
+            emit valueChanged(uasId, statusName().arg("Radio REM noise"), "", radio.remnoise, time);
         }
             break;
         // MAVLink Log donwload messages
@@ -1348,6 +1350,15 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit rangeFinderUpdate(this, rangeFinder.distance, rangeFinder.voltage);
         }
             break;
+
+        case MAVLINK_MSG_ID_TERRAIN_REQUEST:
+        {
+            mavlink_terrain_request_t terrainRequest;
+            mavlink_msg_terrain_request_decode(&message, &terrainRequest);
+
+            QLOG_INFO() << QString("Terrain Request: lat%1,lon%2 %3").arg(terrainRequest.lat).arg(terrainRequest.lon).arg(terrainRequest.grid_spacing);
+        }
+
         // Messages to ignore
         case MAVLINK_MSG_ID_RAW_PRESSURE:
         case MAVLINK_MSG_ID_SCALED_PRESSURE:
@@ -1963,7 +1974,7 @@ void UAS::sendMessage(LinkInterface* link, mavlink_message_t message)
     // Write message into buffer, prepending start sign
     int len = mavlink_msg_to_send_buffer(buffer, &message);
     static uint8_t messageKeys[256] = MAVLINK_MESSAGE_CRCS;
-    mavlink_finalize_message_chan(&message, systemId, componentId, link->getId(), message.len, messageKeys[message.msgid]);
+    mavlink_finalize_message_chan(&message, systemId, componentId, link->getId(), 0, message.len, messageKeys[message.msgid]);
 
     // If link is connected
     if (link->isConnected())

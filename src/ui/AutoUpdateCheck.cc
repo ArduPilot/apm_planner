@@ -28,9 +28,8 @@ This file is part of the APM_PLANNER project
 
 #include "logging.h"
 #include "AutoUpdateCheck.h"
-#include <QtScript/QScriptEngine>
-#include <QtScript/QScriptValue>
-#include <QtScript/QScriptValueIterator>
+#include <QJsonParseError>
+#include <QJsonObject>
 #include <QMessageBox>
 #include <QSettings>
 #include "QGC.h"
@@ -83,57 +82,63 @@ void AutoUpdateCheck::cancelDownload()
 
 void AutoUpdateCheck::httpFinished()
 {
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     QLOG_DEBUG() << "AutoUpdateCheck::httpFinished()";
     if (m_httpRequestAborted) {
-        m_networkReply->deleteLater();
-        m_networkReply = NULL;
+        reply->deleteLater();
+        reply = NULL;
         return;
     }
 
+    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+
     // Finished donwloading the version information
-    if (m_networkReply->error()) {
+    if (reply->error()) {
         // [TODO] cleanup download failed
 #ifdef QT_DEBUG
         QMessageBox::information(NULL, tr("HTTP"),
                                  tr("Download failed: %1.")
                                  .arg(m_networkReply->errorString()));
 #endif
+    } else if (!redirectionTarget.isNull()) {
+        QUrl newUrl = reply->url().resolved(redirectionTarget.toUrl());
+        QNetworkReply* newReply = m_networkAccessManager.get(QNetworkRequest(newUrl));
+        QLOG_DEBUG() << "Redirecting to " << newUrl;
+
+        connect(newReply, SIGNAL(finished()), this, SLOT(httpFinished()));
+        connect(newReply, SIGNAL(downloadProgress(qint64,qint64)),
+                this, SLOT(updateDataReadProgress(qint64,qint64)));
+        reply->deleteLater();
+        m_networkReply = newReply;
+        return;
     } else {
         // Process downloadeed object
-        processDownloadedVersionObject(QString(m_networkReply->readAll()));
+        processDownloadedVersionObject(m_networkReply->readAll());
     }
 
     m_networkReply->deleteLater();
     m_networkReply = NULL;
 }
 
-void AutoUpdateCheck::processDownloadedVersionObject(const QString &versionObject)
+void AutoUpdateCheck::processDownloadedVersionObject(const QByteArray& versionObject)
 {
-    QScriptSyntaxCheckResult syntaxCheck = QScriptEngine::checkSyntax(versionObject);
-    QScriptEngine engine;
-    QScriptValue result = engine.evaluate("("+versionObject+")");
-
-    if (engine.hasUncaughtException()){
+    QJsonParseError jsonParseError;
+    QJsonDocument jdoc = QJsonDocument::fromJson(versionObject, &jsonParseError);
+    if (jsonParseError.error != QJsonParseError::NoError){
+        QLOG_ERROR() << "Unable to open json version object: " << jsonParseError.errorString();
         QLOG_ERROR() << "Error evaluating version object";
-        QLOG_ERROR() << "Error @line#" << engine.uncaughtExceptionLineNumber();
-        QLOG_ERROR() << "Backtrace:" << engine.uncaughtExceptionBacktrace();
-        QLOG_ERROR() << "Syntax Check:" << syntaxCheck.errorMessage();
-        QLOG_ERROR() << "Syntax Check line:" << syntaxCheck.errorLineNumber()
-                     << " col:" << syntaxCheck.errorColumnNumber();
         return;
     }
+    QJsonObject json = jdoc.object();
 
-    QScriptValue entries = result.property("releases");
-    QScriptValueIterator it(entries);
-    while (it.hasNext()){
-        it.next();
-        QScriptValue entry = it.value();
-
-        QString platform = entry.property("platform").toString();
-        QString type = entry.property("type").toString();
-        QString version = entry.property("version").toString();
-        QString name = entry.property("name").toString();
-        QString locationUrl = entry.property("url").toString();
+    QJsonArray releases = json["releases"].toArray();
+    foreach(QJsonValue release, releases){
+        const QJsonObject& releaseObject = release.toObject();
+        QString platform = releaseObject["platform"].toString();
+        QString type = releaseObject["type"].toString();
+        QString version = releaseObject["version"].toString();
+        QString name = releaseObject["name"].toString();
+        QString locationUrl = releaseObject["url"].toString();
 
         if ((platform == define2string(APP_PLATFORM)) && (type == m_releaseType)){
             if (compareVersionStrings(version,QGC_APPLICATION_VERSION)){

@@ -354,19 +354,19 @@ void PrimaryFlightDisplay::updateAttitude(UASInterface* uas, double roll, double
     Q_UNUSED(uas);
     Q_UNUSED(timestamp);
         // Called from UAS.cc l. 616
-        if (isnan(roll) || isinf(roll)) {
+        if (qIsNaN(roll) || qIsInf(roll)) {
             this->roll = UNKNOWN_ATTITUDE;
         } else {
             this->roll = roll * (180.0 / M_PI);
         }
 
-        if (isnan(pitch) || isinf(pitch)) {
+        if (qIsNaN(pitch) || qIsInf(pitch)) {
             this->pitch = UNKNOWN_ATTITUDE;
         } else {
             this->pitch = pitch * (180.0 / M_PI);
         }
 
-        if (isnan(yaw) || isinf(yaw)) {
+        if (qIsNaN(yaw) || qIsInf(yaw)) {
             this->heading = UNKNOWN_ATTITUDE;
         } else {
             yaw = yaw * (180.0 / M_PI);
@@ -929,7 +929,7 @@ void PrimaryFlightDisplay::drawAICompassDisk(QPainter& painter, QRectF area, flo
 //  navigationCrosstrackError = 500;
 
     // The CDI
-    if (shouldDisplayNavigationData() && navigationTargetBearing != UNKNOWN_ATTITUDE && !isinf(navigationCrosstrackError)) {
+    if (shouldDisplayNavigationData() && navigationTargetBearing != UNKNOWN_ATTITUDE && !qIsInf(navigationCrosstrackError)) {
         painter.resetTransform();
         painter.translate(area.center());
         // TODO : Sign might be wrong?

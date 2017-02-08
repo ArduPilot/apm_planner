@@ -126,6 +126,7 @@ void WaypointViewOnlyView::updateValues()
     switch (wp->getFrame())
     {
     case MAV_FRAME_GLOBAL:
+    case MAV_FRAME_GLOBAL_INT:
     {
         m_ui->frameLabel->setText(QString("Abs.Alt"));
         break;
@@ -141,8 +142,15 @@ void WaypointViewOnlyView::updateValues()
         break;
     }
     case MAV_FRAME_GLOBAL_RELATIVE_ALT:
+    case MAV_FRAME_GLOBAL_RELATIVE_ALT_INT:
     {
         m_ui->frameLabel->setText(QString("Rel.Alt"));
+        break;
+    }
+    case MAV_FRAME_GLOBAL_TERRAIN_ALT:
+    case MAV_FRAME_GLOBAL_TERRAIN_ALT_INT:
+    {
+        m_ui->frameLabel->setText(QString("Ter.Alt"));
         break;
     }
     case MAV_FRAME_LOCAL_ENU:
@@ -177,6 +185,7 @@ void WaypointViewOnlyView::updateValues()
     {
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
@@ -214,6 +223,7 @@ void WaypointViewOnlyView::updateValues()
     {
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
@@ -250,6 +260,7 @@ void WaypointViewOnlyView::updateValues()
     {
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
@@ -316,6 +327,7 @@ void WaypointViewOnlyView::updateValues()
     {
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
@@ -349,6 +361,7 @@ void WaypointViewOnlyView::updateValues()
     {
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
@@ -387,6 +400,7 @@ void WaypointViewOnlyView::updateValues()
     {        
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
@@ -406,6 +420,7 @@ void WaypointViewOnlyView::updateValues()
     {        
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
@@ -426,6 +441,7 @@ void WaypointViewOnlyView::updateValues()
     {
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {
@@ -534,6 +550,7 @@ void WaypointViewOnlyView::updateValues()
     {
         switch (wp->getFrame())
         {
+        case MAV_FRAME_GLOBAL_TERRAIN_ALT:
         case MAV_FRAME_GLOBAL_RELATIVE_ALT:
         case MAV_FRAME_GLOBAL:
         {

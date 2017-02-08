@@ -1,6 +1,7 @@
 #ifndef KMLCREATOR_H
 #define KMLCREATOR_H
 
+#include "mavlink.h"
 #include <qstring.h>
 #include <qlist.h>
 #include <QHash>
@@ -18,11 +19,10 @@ namespace kml {
  * @brief A GPS record from a log file.
  */
 struct GPSRecord: DataLine {
-    QString hdop() { return values.value("HDop"); }
-    QString lat() { return values.value("Lat"); }
-    QString lng() { return values.value("Lng"); }
-    QString alt() { return values.value("Alt"); }
-    QString relAlt() { return values.value("RelAlt"); }
+    QString hdop()  { return values.value("HDop"); }
+    QString lat()   { return values.value("Lat"); }
+    QString lng()   { return values.value("Lng"); }
+    QString alt()   { return values.value("Alt"); }
     QString speed() { return values.value("Spd"); }
 
     virtual bool hasData() {
@@ -30,7 +30,7 @@ struct GPSRecord: DataLine {
     }
 
     QString toStringForKml() {
-        QString str = QString("%1,%2,%3").arg(lng(), lat(), relAlt());
+        QString str = QString("%1,%2,%3").arg(lng(), lat(), alt());
         return str;
     }
 
@@ -43,13 +43,13 @@ struct GPSRecord: DataLine {
  * @brief An ATT record from a log file.
  */
 struct Attitude: DataLine {
-    QString rollIn() { return values.value("RollIn"); }
-    QString roll() { return values.value("Roll"); }
-    QString pitchIn() { return values.value("PitchIn"); }
-    QString pitch() { return values.value("Pitch"); }
-    QString yawIn() { return values.value("YawIn"); }
-    QString yaw() { return values.value("Yaw"); }
-    QString navYaw() { return values.value("NavYaw"); }
+    QString rollIn()  { return values.value("RollIn").isEmpty() ? values.value("DesRoll") : values.value("RollIn"); }
+    QString roll()    { return values.value("Roll"); }
+    QString pitchIn() { return values.value("PitchIn").isEmpty() ? values.value("DesPitch") : values.value("PitchIn"); }
+    QString pitch()   { return values.value("Pitch"); }
+    QString yawIn()   { return values.value("YawIn").isEmpty() ? values.value("DesYaw") : values.value("YawIn"); }
+    QString yaw()     { return values.value("Yaw"); }
+    QString navYaw()  { return values.value("NavYaw"); }
 
     virtual bool hasData() {
         return (values.value("Roll").length() > 0);
@@ -66,6 +66,8 @@ struct Attitude: DataLine {
  */
 struct CommandedWaypoint: DataLine {
 
+    int index() { return values.value("CNum").toInt(); }
+    MAV_CMD commandId() { return (MAV_CMD)values.value("CId").toInt(); }
     QString lat() { return values.value("Lat"); }
     QString lng() { return values.value("Lng"); }
     QString alt() { return values.value("Alt"); }
@@ -77,6 +79,20 @@ struct CommandedWaypoint: DataLine {
     QString toStringForKml() {
         QString str = QString("%1,%2,%3").arg(lng(), lat(), alt());
         return str;
+    }
+
+    bool isNavigationCommand() {
+
+        if (commandId() < MAV_CMD_NAV_LAST) {
+
+            if ((lat() == "0") || (lng() == "0")) {
+                return false; // Lat/Lng 0.0,0.0 is invalid
+            }
+            return true;
+
+        } else {
+            return false;
+        }
     }
 
     static CommandedWaypoint from(FormatLine& format, QString& line);

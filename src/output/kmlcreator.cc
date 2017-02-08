@@ -1,6 +1,7 @@
 #include "logging.h"
 
 #include "kmlcreator.h"
+#include "ArduPilotMegaMAV.h"
 
 #include <qstringlist.h>
 #include <QFile>
@@ -75,11 +76,11 @@ static float distanceBetween(float hereLat, float hereLng, float thereLat, float
  * @return a color value suitable for use in a KML file.
  */
 static QString getColorFor(QString &str) {
-    QLOG_DEBUG() << "str=" << str;
+    QLOG_DEBUG() << "str=" << str.toUpper();
 
     int i = 0;
     while(kModesToColors[i][0] != "") {
-        if(str == kModesToColors[i][0]) {
+        if(str.toUpper() == kModesToColors[i][0]) {
             return kModesToColors[i][1];
         }
 
@@ -90,9 +91,25 @@ static QString getColorFor(QString &str) {
 }
 
 static QString toModeString(QString &line) {
+
     QStringList parts = line.split(QRegExp(","), QString::KeepEmptyParts);
 
-    if(parts.length() > 2) {
+    // TODO: Need to add Mode: DataLine object to fix
+    // MODE, 82081720, 5, 5, 1 // New Message with time
+    // MODE, ALT_HOLD, 516     // Old message
+
+    if(parts.length() > 3) {
+        QString modeString = parts[2].trimmed();
+        bool ok = false;
+        int mode = modeString.toInt(&ok);
+        if (ok) {
+            ModeMessage modeMsg(0, 0, mode, 0, 0);
+            return Copter::MessageFormatter::format(modeMsg);
+        } else {
+            return QString("Mode(%1)").arg(modeString);
+        }
+
+    } else if(parts.length() == 3) {
         return parts[1].trimmed();
     }
 
@@ -140,7 +157,7 @@ void SummaryData::add(GPSRecord &gps) {
         topSpeed = speed;
     }
 
-    float alt = gps.relAlt().toFloat();
+    float alt = gps.alt().toFloat();
     if(alt > highestAltitude) {
         highestAltitude = alt;
     }
@@ -396,8 +413,11 @@ QString KMLCreator::finish(bool kmz) {
 void KMLCreator::writeWaypointsPlacemarkElement(QXmlStreamWriter &writer) {
     QString coordString;
     foreach(CommandedWaypoint c, m_waypoints) {
-        coordString += c.toStringForKml();
-        coordString += " ";
+        if ( c.isNavigationCommand() ) {
+            // Add waypoints that are NAV points.
+            coordString += c.toStringForKml();
+            coordString += " ";
+        }
     }
 
     writer.writeStartElement("Placemark");
@@ -429,7 +449,7 @@ static QString descriptionData(Placemark *p, GPSRecord &c) {
     QHash<QString, QString> m;
 
     m["Speed"] = c.speed();
-    m["Alt"] = c.relAlt();
+    m["Alt"] = c.alt();
     m["HDOP"] = c.hdop();
 
     if(p->mAttitudes.length() > 0) {
@@ -475,12 +495,12 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
             }
 
             writer.writeStartElement("Model");
-                writer.writeTextElement("altitudeMode", "relativeToGround");
+                writer.writeTextElement("altitudeMode", "absolute");
 
                 writer.writeStartElement("Location");
                     writer.writeTextElement("latitude", c.lat());
                     writer.writeTextElement("longitude", c.lng());
-                    writer.writeTextElement("altitude", c.relAlt());
+                    writer.writeTextElement("altitude", c.alt());
                 writer.writeEndElement(); // Location
 
                 if(p->mAttitudes.size() > 0) {
@@ -530,7 +550,7 @@ void KMLCreator::writeLogPlacemarkElement(QXmlStreamWriter &writer, Placemark *p
 
     writer.writeStartElement("LineString");
     writer.writeTextElement("extrude", "1");
-    writer.writeTextElement("altitudeMode", "relativeToGround");
+    writer.writeTextElement("altitudeMode", "absolute");
 
     QString coords;
     foreach(GPSRecord c, p->mPoints) {

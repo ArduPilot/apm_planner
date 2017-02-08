@@ -48,11 +48,6 @@
 #include "QGC.h"
 #include "gpl.h"
 
-#if defined(QGC_PROTOBUF_ENABLED) && defined(QGC_USE_PIXHAWK_MESSAGES)
-#include <tr1/memory>
-#include <pixhawk/pixhawk.pb.h>
-#endif
-
 Pixhawk3DWidget::Pixhawk3DWidget(QWidget* parent)
  : kMessageTimeout(4.0)
  , mMode(DEFAULT_MODE)

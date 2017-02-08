@@ -146,6 +146,7 @@ WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     // add frames
     m_ui->comboBox_frame->addItem("Abs.Alt",MAV_FRAME_GLOBAL);
     m_ui->comboBox_frame->addItem("Rel.Alt", MAV_FRAME_GLOBAL_RELATIVE_ALT);
+    m_ui->comboBox_frame->addItem("Ter.Alt", MAV_FRAME_GLOBAL_TERRAIN_ALT); // A relative alt above terrain.
 //    m_ui->comboBox_frame->addItem("Local(NED)",MAV_FRAME_LOCAL_NED); // [TODO] Not supported on APM
     m_ui->comboBox_frame->addItem("Mission",MAV_FRAME_MISSION);
 

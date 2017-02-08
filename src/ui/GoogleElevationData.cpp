@@ -25,9 +25,8 @@ This file is part of the APM_PLANNER project
 #include "Waypoint.h"
 
 #include <QString>
-#include <QtScript/QScriptEngine>
-#include <QtScript/QScriptValue>
-#include <QtScript/QScriptValueIterator>
+#include <QJsonParseError>
+#include <QJsonObject>
 #include <QMessageBox>
 
 GoogleElevationData::GoogleElevationData(QObject *parent) :
@@ -65,7 +64,7 @@ void GoogleElevationData::httpFinished()
                                  .arg(m_networkReply->errorString()));
     } else {
         // Process downloadeed object
-        processDownloadedObject(QString(m_networkReply->readAll()));
+        processDownloadedObject(m_networkReply->readAll());
     }
 
     m_networkReply->deleteLater();
@@ -130,36 +129,28 @@ void GoogleElevationData::requestElevationData(const QList<Waypoint *> &waypoint
             this, SLOT(updateDataReadProgress(qint64,qint64)));
 }
 
-void GoogleElevationData::processDownloadedObject(const QString &jsonObject)
+void GoogleElevationData::processDownloadedObject(const QByteArray& data)
 {
-    QLOG_TRACE() << "Elevation Response: " << jsonObject;
-    QScriptSyntaxCheckResult syntaxCheck = QScriptEngine::checkSyntax(jsonObject);
-    QScriptEngine engine;
-    QScriptValue result = engine.evaluate("("+jsonObject+")");
-
-    if (engine.hasUncaughtException()){
+    QJsonParseError jsonParseError;
+    QJsonDocument jdoc = QJsonDocument::fromJson(data, &jsonParseError);
+    if (jsonParseError.error != QJsonParseError::NoError){
+        QLOG_ERROR() << "Unable to open json version object: " << jsonParseError.errorString();
         QLOG_ERROR() << "Error evaluating version object";
-        QLOG_ERROR() << "Error @line#" << engine.uncaughtExceptionLineNumber();
-        QLOG_ERROR() << "Backtrace:" << engine.uncaughtExceptionBacktrace();
-        QLOG_ERROR() << "Syntax Check:" << syntaxCheck.errorMessage();
-        QLOG_ERROR() << "Syntax Check line:" << syntaxCheck.errorLineNumber()
-                     << " col:" << syntaxCheck.errorColumnNumber();
         return;
     }
+    QJsonObject json = jdoc.object();
 
     QList<Waypoint*> elevationWaypoints;
     double averageResolution = 0.0;
 
-    QScriptValue entries = result.property("results");
-    QScriptValueIterator it(entries);
-    while (it.hasNext()){
-        it.next();
-        QScriptValue entry = it.value();
+    QJsonArray entries = json["results"].toArray();
+    foreach(QJsonValue entry, entries){
+        const QJsonObject& entryObject = entry.toObject();
 
-        double elevation = entry.property("elevation").toNumber();
-        double latitude = entry.property("location").property("lat").toNumber();
-        double longitude = entry.property("location").property("lng").toNumber();
-        double resolution = entry.property("resolution").toNumber();
+        double elevation = entryObject["elevation"].toDouble();
+        double latitude = entryObject["location"].toObject()["lat"].toDouble();
+        double longitude = entryObject["location"].toObject()["lng"].toDouble();
+        double resolution = entryObject["resolution"].toDouble();
 
         QLOG_DEBUG() << "elevation loc: " << latitude << "," << longitude;
         QLOG_DEBUG() << "elevation alt" << elevationWaypoints.count() << ":" << elevation;

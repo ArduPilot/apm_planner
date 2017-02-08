@@ -27,9 +27,8 @@ This file is part of the APM_PLANNER project
 #include <QFile>
 #include <QFileDialog>
 #include <QTimer>
-#include <QtScript/QScriptEngine>
-#include <QtScript/QScriptValue>
-#include <QtScript/QScriptValueIterator>
+#include <QJsonParseError>
+#include <QJsonObject>
 #include "DownloadRemoteParamsDialog.h"
 #include "ui_DownloadRemoteParamsDialog.h"
 
@@ -310,36 +309,29 @@ void DownloadRemoteParamsDialog::httpParamListFinished()
 #endif
     } else {
         // Process downloadeed object
-        processDownloadedVersionObject(QString(m_networkReply->readAll()));
+        processDownloadedVersionObject(m_networkReply->readAll());
     }
 
     m_networkReply->deleteLater();
     m_networkReply = NULL;
 }
 
-void DownloadRemoteParamsDialog::processDownloadedVersionObject(const QString &listObject)
+void DownloadRemoteParamsDialog::processDownloadedVersionObject(const QByteArray& data)
 {
-    QScriptSyntaxCheckResult syntaxCheck = QScriptEngine::checkSyntax(listObject);
-    QScriptEngine engine;
-    QScriptValue result = engine.evaluate("("+listObject+")");
-
-    if (engine.hasUncaughtException()){
+    QJsonParseError jsonParseError;
+    QJsonDocument jdoc = QJsonDocument::fromJson(data, &jsonParseError);
+    if (jsonParseError.error != QJsonParseError::NoError){
+        QLOG_ERROR() << "Unable to open json version object: " << jsonParseError.errorString();
         QLOG_ERROR() << "Error evaluating version object";
-        QLOG_ERROR() << "Error @line#" << engine.uncaughtExceptionLineNumber();
-        QLOG_ERROR() << "Backtrace:" << engine.uncaughtExceptionBacktrace();
-        QLOG_ERROR() << "Syntax Check:" << syntaxCheck.errorMessage();
-        QLOG_ERROR() << "Syntax Check line:" << syntaxCheck.errorLineNumber()
-                     << " col:" << syntaxCheck.errorColumnNumber();
         return;
     }
+    QJsonObject json = jdoc.object();
 
-    QScriptValue entries = result;
-    QScriptValueIterator it(entries);
-    while (it.hasNext()){
-        it.next();
-        QScriptValue entry = it.value();
+    QJsonArray entries = json["results"].toArray();
+    foreach(QJsonValue entry, entries){
+        const QJsonObject& entryObject = entry.toObject();
 
-        QString paramFile = entry.property("name").toString();
+        QString paramFile = entryObject["name"].toString();
         QLOG_DEBUG() << " param file name found:" << paramFile;
 
         QListWidgetItem *item = new QListWidgetItem(paramFile.section('.',0,0), ui->listWidget);

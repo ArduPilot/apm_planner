@@ -32,8 +32,8 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
     if (uasPropertyValueMap.size() == 0)
     {
         m_columnCount = 2;
-        valueEnabled("GCS Status.Altitude (GPS) (m)");
-        valueEnabled("GCS Status.Altitude (REL) (m)");
+        valueEnabled("GCS Metric.Alt MSL (m)");
+        valueEnabled("GCS Metric.Alt REL (m)");
         valueEnabled("GCS Status.Roll (deg)");
         valueEnabled("GCS Status.Pitch (deg)");
         valueEnabled("GCS Status.Yaw (deg)");
@@ -41,9 +41,9 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
         valueEnabled("GCS Status.Voltage (V)");
         valueEnabled("GCS Status.Current (A)");
         valueEnabled("GCS Status.Battery (%)");
-        valueEnabled("GCS Status.GPS Fix ()");
-        valueEnabled("GCS Status.GPS Sats ()");
-        valueEnabled("GCS Status.GPS HDOP (m)");
+        valueEnabled("GCS GPS.GPS Fix ()");
+        valueEnabled("GCS GPS.GPS Sats (n)");
+        valueEnabled("GCS GPS.GPS HDOP ()");
         saveSettings();
     }
 

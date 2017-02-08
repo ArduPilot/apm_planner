@@ -63,7 +63,7 @@ public slots:
 private:
     void loadSettings();
     void writeSettings();
-    void processDownloadedVersionObject(const QString& versionObject);
+    void processDownloadedVersionObject(const QByteArray& versionObject);
     bool compareVersionStrings(const QString& newVersion, const QString& currentVersion);
 
 private:
