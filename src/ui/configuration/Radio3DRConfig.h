@@ -1,7 +1,7 @@
 /*===================================================================
 APM_PLANNER Open Source Ground Control Station
 
-(c) 2013 APM_PLANNER PROJECT <http://www.diydrones.com>
+(c) 2013-2017 APM_PLANNER PROJECT <http://www.diydrones.com>
 
 This file is part of the APM_PLANNER project
 
@@ -51,6 +51,7 @@ protected:
 
 private slots:
     void serialPortOpenFailure(int error, QString errorString);
+    void serialConnectionFailure(QString errorString);
 
     void setBaudRate(int index);
     void setLink(int index);
@@ -72,8 +73,8 @@ private slots:
     void localReadComplete(Radio3DREeprom& eeprom, bool success);
     void remoteReadComplete(Radio3DREeprom& eeprom, bool success);
 
-    void updateLocalStatus(QString status);
-    void updateRemoteStatus(QString status);
+    void updateLocalStatus(QString status, Radio3DRSettings::stateColor color);
+    void updateRemoteStatus(QString status, Radio3DRSettings::stateColor color);
     void updateLocalComplete(int result);
     void updateRemoteComplete(int result);
     void updateLocalRssi(QString status);
@@ -91,6 +92,12 @@ private:
     void addMavLinkLowLatencyComboBoxConfig(QComboBox &comboBox);
     void setupFrequencyComboBox(QComboBox& comboBox, int freqCode);
     void addRtsCtsComboBoxConfig(QComboBox &comboBox);
+
+    /**
+     * @brief setButtonState - enable / disable the buttons
+     * @param disabled - true disable, false enable
+     */
+    void setButtonState(bool disabled);
 
 private:
     Ui::Radio3DRConfig ui;
