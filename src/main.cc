@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_WIN
     //qInstallMsgHandler( msgHandler );
 #endif
+    // Init application
+    QGCCore core(argc, argv);
 
     // Init logging
     // create filename and path for logfile like "apmlog_20160529.txt"
@@ -133,7 +135,6 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(loggingMessageHandler);
 
     // start the application
-    QGCCore core(argc, argv);
     core.initialize();
     return core.exec();
 }
