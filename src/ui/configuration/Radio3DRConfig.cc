@@ -1,7 +1,7 @@
 /*===================================================================
 APM_PLANNER Open Source Ground Control Station
 
-(c) 2013 APM_PLANNER PROJECT <http://www.diydrones.com>
+(c) 2013-2017 APM_PLANNER PROJECT <http://www.diydrones.com>
 
 This file is part of the APM_PLANNER project
 
@@ -45,7 +45,6 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
     ui.settingsButton->setEnabled(true);
 
     addBaudComboBoxConfig(ui.baudPortComboBox);
-    fillPortsInfo(*ui.linkPortComboBox);
     m_settings.name = ui.linkPortComboBox->currentText();
 
     addRadioBaudComboBoxConfig(*ui.baudComboBox);
@@ -59,6 +58,10 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
 
     addMavLinkComboBoxConfig(*ui.mavLinkComboBox_remote);
 
+    setButtonState(true); // start with buttons disabled
+
+    populateSerialPorts();
+
     loadSavedSerialSettings();
 
     initConnections();
@@ -69,6 +72,8 @@ Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
 
 Radio3DRConfig::~Radio3DRConfig()
 {
+    delete m_settingsDialog;
+    delete m_radioSettings;
 }
 
 void Radio3DRConfig::addBaudComboBoxConfig(QComboBox *comboBox)
@@ -103,7 +108,7 @@ void Radio3DRConfig::fillPortsInfo(QComboBox &comboBox)
 
         int found = comboBox.findData(list);
         if ((found == -1)&& (info.manufacturer().contains("FTDI") || info.manufacturer().contains("Silicon Labs"))) {
-            QLOG_INFO() << "Inserting " << list.first();
+            QLOG_INFO() << "Found " << list.first();
             comboBox.insertItem(0,list[0], list);
         } else {
             // Do nothing as the port is already listed
@@ -117,8 +122,18 @@ void Radio3DRConfig::fillPortsInfo(QComboBox &comboBox)
             break;
         }
     }
-    setLink(comboBox.currentIndex());
-    connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    if(comboBox.count() == 0)
+    {
+       // no interface found
+       comboBox.insertItem(0, "None", QStringList());
+       setButtonState(true);
+    }
+    else
+    {
+       setLink(comboBox.currentIndex());
+       setButtonState(false);
+       connect(&comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+    }
 }
 
 void Radio3DRConfig::loadSavedSerialSettings()
@@ -180,8 +195,9 @@ void Radio3DRConfig::hideEvent(QHideEvent *event)
     QLOG_DEBUG() << "3DR Radio Stop Serial Port Scanning";
     m_timer.stop();
     saveSerialSettings();
-    QLOG_DEBUG() << "3DR Radio Remove Conenction to Serial Port";
+    QLOG_DEBUG() << "3DR Radio Remove Connection to Serial Port";
     delete m_radioSettings;
+    resetUI();
     MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
 
@@ -213,6 +229,15 @@ void Radio3DRConfig::serialPortOpenFailure(int error, QString errorString)
     QMessageBox::critical(this, tr("Serial Port"), "Cannot open serial port, please make sure you have your radio connected, and the correct link selected)");
 }
 
+void Radio3DRConfig::serialConnectionFailure(QString errorString)
+{
+   QLOG_ERROR() << "Crtical Error " << errorString;
+   // disable buttons
+   setButtonState(true);
+   // restart serial port scanning
+   m_timer.start();
+}
+
 void Radio3DRConfig::setBaudRate(int index)
 {
     m_settings.baudRate = static_cast<QSerialPort::BaudRate>(
@@ -227,9 +252,12 @@ void Radio3DRConfig::setLink(int index)
     {
         return;
     }
-    m_settings.name = ui.linkPortComboBox->itemData(index).toStringList()[0];
-    QLOG_INFO() << "Changed Link to:" << m_settings.name;
-
+    QString tempName = ui.linkPortComboBox->itemData(index).toStringList()[0];
+    if(m_settings.name != tempName)
+    {
+        m_settings.name = tempName;
+        QLOG_INFO() << "Changed Link to:" << m_settings.name;
+    }
 }
 
 void Radio3DRConfig::readRadioSettings()
@@ -244,10 +272,12 @@ void Radio3DRConfig::readRadioSettings()
                 this, SLOT(remoteReadComplete(Radio3DREeprom&, bool)));
         connect(m_radioSettings, SIGNAL(serialPortOpenFailure(int,QString)),
                 this, SLOT(serialPortOpenFailure(int, QString)));
-        connect(m_radioSettings, SIGNAL(updateLocalStatus(QString)),
-                this, SLOT(updateLocalStatus(QString)));
-        connect(m_radioSettings, SIGNAL(updateRemoteStatus(QString)),
-                this, SLOT(updateRemoteStatus(QString)));
+        connect(m_radioSettings, SIGNAL(serialConnectionFailure(QString)),
+                this, SLOT(serialConnectionFailure(QString)));
+        connect(m_radioSettings, SIGNAL(updateLocalStatus(QString, Radio3DRSettings::stateColor)),
+                this, SLOT(updateLocalStatus(QString, Radio3DRSettings::stateColor)));
+        connect(m_radioSettings, SIGNAL(updateRemoteStatus(QString, Radio3DRSettings::stateColor)),
+                this, SLOT(updateRemoteStatus(QString, Radio3DRSettings::stateColor)));
         connect(m_radioSettings, SIGNAL(updateLocalComplete(int)),
                 this, SLOT(updateLocalComplete(int)));
         connect(m_radioSettings, SIGNAL(updateRemoteComplete(int)),
@@ -268,15 +298,17 @@ void Radio3DRConfig::readRadioSettings()
     }
 }
 
-void Radio3DRConfig::updateLocalStatus(QString status)
+void Radio3DRConfig::updateLocalStatus(QString status, Radio3DRSettings::stateColor color)
 {
     QLOG_DEBUG() << "local status:" << status;
+    ui.localStatus->setStyleSheet("QLabel { color : " + Radio3DRSettings::stateColorToString(color) + "; }");
     ui.localStatus->setText(tr("<b>STATUS:</b> ") + status);
 }
 
-void Radio3DRConfig::updateRemoteStatus(QString status)
+void Radio3DRConfig::updateRemoteStatus(QString status, Radio3DRSettings::stateColor color)
 {
     QLOG_DEBUG() << "remote status:" << status;
+    ui.remoteStatus->setStyleSheet("QLabel { color : " + Radio3DRSettings::stateColorToString(color) + "; }");
     ui.remoteStatus->setText(tr("<b>STATUS:</b> ") + status);
 }
 
@@ -285,8 +317,10 @@ void Radio3DRConfig::updateLocalComplete(int result)
     QString status;
     if (result != 0){
             status = "FAILED";
+            ui.localStatus->setStyleSheet("QLabel { color : red; }");
     } else {
             status = "SUCCESS";
+            ui.localStatus->setStyleSheet("QLabel { color : green; }");
     }
 
     QLOG_DEBUG() << "local status:" << status;
@@ -294,6 +328,7 @@ void Radio3DRConfig::updateLocalComplete(int result)
 
     if (result == 0){ // reboot for both reset and write states
         m_radioSettings->rebootRemoteRadio();
+        thread()->usleep(300000);   // wait a little until reset is sent
         m_radioSettings->rebootLocalRadio();
     }
 
@@ -303,9 +338,11 @@ void Radio3DRConfig::updateRemoteComplete(int result)
 {
     QString status;
     if (result != 0){
-            status = "FAILED";
+        status = "FAILED";
+        ui.remoteStatus->setStyleSheet("QLabel { color : red; }");
     } else {
-            status = "SUCCESS";
+        status = "SUCCESS";
+        ui.remoteStatus->setStyleSheet("QLabel { color : green; }");
     }
 
     QLOG_DEBUG() << "remote status:" << status;
@@ -371,7 +408,6 @@ void Radio3DRConfig::localReadComplete(Radio3DREeprom& eeprom, bool success)
         ui.maxWindowSpinBox->setValue(eeprom.maxWindow());
 
         ui.rtsCtsComboBox->setCurrentIndex(ui.rtsCtsComboBox->findData(eeprom.rtsCts()));
-
     }
 }
 
@@ -379,10 +415,12 @@ void Radio3DRConfig::resetUI()
 {
     ui.versionLabel->setText("");
     ui.rssiTextEdit->setText("");
+    ui.localStatus->setStyleSheet("QLabel { color : black; }");
     ui.localStatus->setText(tr("STATUS:"));
 
     ui.versionLabel_remote->setText("");
     ui.rssiTextEdit_remote->setText("");
+    ui.remoteStatus->setStyleSheet("QLabel { color : black; }");
     ui.remoteStatus->setText(tr("STATUS:"));
 }
 
@@ -413,6 +451,9 @@ void Radio3DRConfig::remoteReadComplete(Radio3DREeprom& eeprom, bool success)
         ui.dutyCycleSpinBox_remote->setValue(eeprom.dutyCyle());
         ui.lbtRssiSpinBox_remote->setValue(eeprom.lbtRssi());
         ui.numChannelsSpinBox_remote->setValue(eeprom.numChannels());
+
+        setupFrequencyComboBox(*ui.minFreqComboBox_remote, eeprom.frequencyCode());
+        setupFrequencyComboBox(*ui.maxFreqComboBox_remote, eeprom.frequencyCode());
 
         int lowFreqIndex = ui.minFreqComboBox_remote->findData(eeprom.minFreq());
         if (lowFreqIndex == -1){
@@ -619,6 +660,7 @@ void Radio3DRConfig::setupFrequencyComboBox(QComboBox &comboBox, int freqCode )
         minFreq = 849000;
         maxFreq = 889000;
         freqStepSize = 1000;
+        break;
     default:
         minFreq = 1;    // this supports RFD900, RFD900A, RFD900U, RFD900P
         maxFreq = 30;
@@ -654,5 +696,14 @@ void Radio3DRConfig::flashButtonClicked()
     QLOG_DEBUG() << "Radio Flash Wizard Started";
     RadioFlashWizard* flashRadioWizard = new RadioFlashWizard(this);
     flashRadioWizard->exec();
+}
+
+void Radio3DRConfig::setButtonState(bool disabled)
+{
+   ui.loadSettingsButton->setDisabled(disabled);
+   ui.saveSettingsButton->setDisabled(disabled);
+   ui.resetDefaultsButton->setDisabled(disabled);
+   ui.flashPushButton->setDisabled(disabled);
+   ui.copyToRemoteButton->setDisabled(disabled);
 }
 

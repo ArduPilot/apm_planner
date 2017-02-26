@@ -1,3 +1,25 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2013-2017 APM_PLANNER PROJECT <http://www.ardupilot.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+
 #ifndef RADIO3DRSETTINGS_H
 #define RADIO3DRSETTINGS_H
 
@@ -165,35 +187,39 @@ class Radio3DRSettings : public QObject
 {
     Q_OBJECT
 
-    enum State { none, sendEscapeSequence, enterCommandMode,
-                 readLocalVersion, readLocalFrequency, readLocalParams,
-                 readRemoteVersion, readRemoteFrequency,
-                 readRemoteParams,
-                 writeLocalParams,
-                 writeRemoteParams,
-                 readRssiLocal, readRssiRemote,
-                 writeRemoteFactorySettings,
-                 writeRemoteEepromValues,
-                 writeLocalFactorySettings,
-                 writeLocalEepromValues,
-                 rebootLocal,
-                 rebootRemote,
-                 complete, portOpen, error };
-
 public:
+    /**
+     * @brief The stateColor enum will be emitted by the update status
+     *        methods to allow the receiver an approbiate coloring of the
+     *        output
+     */
+    enum stateColor {
+       black,
+       green,
+       red
+    };
+
+    /**
+     * @brief stateColorToString - converts a stateColor enum to a string
+     * @param color - Color enum wich shall be converted
+     * @return - the sting representation of the color
+     */
+    static QString stateColorToString(stateColor color);
+
     explicit Radio3DRSettings(QObject *parent = 0);
     virtual ~Radio3DRSettings();
     
 signals:
     void serialPortOpenFailure(int error, QString errorString);
+    void serialConnectionFailure(QString errorString);
     void startReadLocalParams();
     void startReadRemoteParams();
     void localReadComplete(Radio3DREeprom& eeprom, bool success);
     void remoteReadComplete(Radio3DREeprom& eeprom, bool success);
     void updateLocalComplete(int error);
     void updateRemoteComplete(int error);
-    void updateLocalStatus(QString status);
-    void updateRemoteStatus(QString status);
+    void updateLocalStatus(QString status, Radio3DRSettings::stateColor color);
+    void updateRemoteStatus(QString status, Radio3DRSettings::stateColor color);
     void updateLocalRssi(QString status);
     void updateRemoteRssi(QString status);
 
@@ -226,11 +252,23 @@ public slots:
     void readRemoteTimeout();
     void handleError(QSerialPort::SerialPortError error);
 
-private slots:
-    void deleteSerialPort();
-
 private:
     void closeSerialPort();
+
+    enum State { none, sendEscapeSequence, enterCommandMode,
+                 readLocalVersion, readLocalFrequency, readLocalParams,
+                 readRemoteVersion, readRemoteFrequency,
+                 readRemoteParams,
+                 writeLocalParams,
+                 writeRemoteParams,
+                 readRssiLocal, readRssiRemote,
+                 writeRemoteFactorySettings,
+                 writeRemoteEepromValues,
+                 writeLocalFactorySettings,
+                 writeLocalEepromValues,
+                 rebootLocal,
+                 rebootRemote,
+                 complete, portOpen, error };
 
 private:
     State m_state;
@@ -242,7 +280,7 @@ private:
     // Helper Variables
     int m_freqStepSize; // 100 for 433Mhz, 1000 for 915/868Mhz & 1 for RFD900,
 
-    QPointer<QSerialPort> m_serialPort;
+    QScopedPointer<QSerialPort> m_serialPort;
     int m_retryCount;
     QString m_rxBuffer;
     QTimer m_timer;

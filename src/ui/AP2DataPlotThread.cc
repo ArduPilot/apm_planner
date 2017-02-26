@@ -30,9 +30,9 @@ This file is part of the APM_PLANNER project
 #include <QTextBlock>
 #include "AP2DataPlotThread.h"
 #include "logging.h"
-#include "LogParser/BinLogParser.h"
-#include "LogParser/AsciiLogParser.h"
-#include "LogParser/TlogParser.h"
+#include "Loghandling/BinLogParser.h"
+#include "Loghandling/AsciiLogParser.h"
+#include "Loghandling/TlogParser.h"
 
 
 AP2DataPlotThread::AP2DataPlotThread(LogdataStorage::Ptr storagePtr, QObject *parent) :

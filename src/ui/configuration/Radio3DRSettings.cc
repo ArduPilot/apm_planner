@@ -1,3 +1,25 @@
+/*===================================================================
+APM_PLANNER Open Source Ground Control Station
+
+(c) 2013-2017 APM_PLANNER PROJECT <http://www.ardupilot.com>
+
+This file is part of the APM_PLANNER project
+
+    APM_PLANNER is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    APM_PLANNER is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with APM_PLANNER. If not, see <http://www.gnu.org/licenses/>.
+
+======================================================================*/
+
 #include "logging.h"
 #include "Radio3DRSettings.h"
 #include <QtSerialPort/qserialport.h>
@@ -246,7 +268,7 @@ QString Radio3DREeprom::deviceIdString()
 Radio3DRSettings::Radio3DRSettings(QObject *parent) :
     QObject(parent),
     m_state(none),
-    m_serialPort(NULL),
+    m_serialPort(),
     m_retryCount(0)
 {
     //  Command Set for 3DR SiK Radios
@@ -293,23 +315,22 @@ Radio3DRSettings::Radio3DRSettings(QObject *parent) :
 
 Radio3DRSettings::~Radio3DRSettings()
 {
-    if (m_serialPort) m_serialPort->close();
-    delete m_serialPort;
+    closeSerialPort();
 }
 
 bool Radio3DRSettings::openSerialPort(SerialSettings settings)
 {
-    if (m_serialPort == NULL){
-        m_serialPort = new QSerialPort(settings.name, this);
-
+    if (!m_serialPort){
+        m_serialPort.reset(new QSerialPort(settings.name, this));
         if (!m_serialPort){
-            emit localReadComplete(m_localRadio, false);
-            emit updateLocalStatus(tr("FAILED to create serial port"));
+            emit updateLocalStatus(tr("FAILED to create serial port"), red);
             return false;
         }
     }
-
-    m_serialPort->close();
+    else
+    {
+        closeSerialPort();
+    }
 
 #if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
     // temp fix Qt5.4.1 issue on OSX
@@ -333,56 +354,71 @@ bool Radio3DRSettings::openSerialPort(SerialSettings settings)
                 && m_serialPort->setParity(settings.parity)
                 && m_serialPort->setStopBits(settings.stopBits)) {
             QLOG_INFO() << "Port Configured with success";
-            connect( m_serialPort, SIGNAL(destoyed()), this, SLOT(deleteSerialPort()));
+            connect(m_serialPort.data(), SIGNAL(error(QSerialPort::SerialPortError)), this,
+                    SLOT(handleError(QSerialPort::SerialPortError)));
+
+            connect(m_serialPort.data(), SIGNAL(readyRead()), this, SLOT(readData()));
+            m_state = enterCommandMode;
+            return true;
         } else {
-            QLOG_ERROR() << "Port Configured with FAIL";
-            emit localReadComplete(m_localRadio, false);
-            emit updateRemoteStatus(tr("FAILED to configure serial port"));
+            QLOG_ERROR() << "Radio3DRSettings Serial Port Configuration FAILURE! " << m_serialPort->errorString();
+            emit updateLocalStatus(tr("FAILED to configure serial port"), red);
             emit serialPortOpenFailure(m_serialPort->error(), m_serialPort->errorString());
             closeSerialPort();
             return false;
         }
-
-        connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this,
-                SLOT(handleError(QSerialPort::SerialPortError)));
-
-        connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(readData()));
-        m_state = enterCommandMode;
-        return true;
     } else {
         // Abort
-        QLOG_DEBUG() << "Radio3DRSettings Serial Port Open FAILURE!" << m_serialPort->errorString();
+        QLOG_DEBUG() << "Radio3DRSettings Serial Port Open FAILURE! " << m_serialPort->errorString();
         emit serialPortOpenFailure(m_serialPort->error(), m_serialPort->errorString());
+        emit updateLocalStatus(tr("FAILED to open serial port"), red);
         closeSerialPort();
-        return false;
     }
-
     return false;
 }
 
 void Radio3DRSettings::closeSerialPort()
 {
-    QLOG_DEBUG() << "Close Serial Port:" << m_serialPort->portName() << m_serialPort;
-    if (m_serialPort){
+    if (m_serialPort && m_serialPort->isOpen()){
+        QLOG_DEBUG() << "Close Serial Port:" << m_serialPort->portName() << m_serialPort.data();
+        m_serialPort->write("ATO\r\n"); // leave command mode - just to be sure
         m_serialPort->flush();
         m_serialPort->close();
     }
-}
-
-void Radio3DRSettings::deleteSerialPort()
-{
-    QLOG_INFO() << "Delete Serial Port:" << m_serialPort->portName() << m_serialPort;
-    if(m_serialPort) delete m_serialPort;
+    m_retryCount = 0;   // when we close the port the retry must be reset
 }
 
 void Radio3DRSettings::readData()
 {
-    if(!m_serialPort->canReadLine()){
-        QLOG_TRACE() << "read data: cannot read line";
+    // Sanity check
+    if(!m_serialPort){
         return;
     }
+    // read raw data
+    QByteArray data;
+    if(m_serialPort->canReadLine()){
+        data = m_serialPort->readLine();  // normally we can wait for a \n
+    }
+    else if((m_state == rebootLocal) && (m_serialPort->bytesAvailable() >= 3)){
+        data = m_serialPort->readAll();     // in case of a reset ATZ has not always a \n
+    }
+    else {
+        return; // no data
+    }
 
-    QString currentLine(m_serialPort->readLine());
+    // filter all unwanted ascii characters
+    QString currentLine;
+    foreach(const char &character, data)
+    {
+        if((static_cast<quint8>(character) < 128) &&        // above 128 there are only graphics
+                ((static_cast<quint8>(character) > 31) ||   // below 31 only control chars
+                 (static_cast<quint8>(character) == 10) ||  // but we need linefeed
+                 (static_cast<quint8>(character) == 13)))   // and carriage return
+        {
+            currentLine.append(character);
+        }
+    }
+
     QLOG_DEBUG() << "Radio readData currentline:" << currentLine;
 
     if(currentLine.contains("+++")){
@@ -393,14 +429,23 @@ void Radio3DRSettings::readData()
 //        m_serialPort->write("\r\n");
 //        m_serialPort->flush();
         m_timer.stop();
-        emit updateLocalStatus(tr("Already in Command Mode"));
+        emit updateLocalStatus(tr("Already in Command Mode"), black);
         readLocalVersionString();
         return;
     }
 
     if(currentLine.contains("RTZ")){
-        // Rebooting remote, now reboot local radio.
-        m_serialPort->write("ATZ\r\n");
+        // Rebooted remote
+        QLOG_DEBUG() << "Resetted remote radio";
+        return;
+    }
+
+    if(currentLine.contains("ATZ")){
+        // Rebooted local -> read all data again
+        QLOG_DEBUG() << "Resetted local radio - Refresh all data.";
+        m_state = enterCommandMode;
+        m_retryCount = 0;
+        writeEscapeSeqeunce();
         return;
     }
 
@@ -422,7 +467,7 @@ void Radio3DRSettings::readData()
         if (currentLine.contains("OK")){
             m_timer.stop();
             QLOG_INFO() << "3DR Radio: Entered Command Mode";
-            emit updateLocalStatus(tr("Entered Command mode"));
+            emit updateLocalStatus(tr("Entered Command mode"), black);
 //            m_serialPort->write("AT&T\r\n");
             readLocalVersionString();
         }
@@ -430,11 +475,11 @@ void Radio3DRSettings::readData()
 
     case writeLocalParams: {
         if (currentLine.contains("OK")){
-            emit updateLocalStatus(tr("param %1 written ok").arg(m_paramIndexSend));
+            emit updateLocalStatus(tr("param %1 written ok").arg(m_paramIndexSend), black);
             m_paramIndexSend++;
 
             if (m_paramIndexSend > m_newLocalRadio.numberOfParams()){
-                emit updateLocalStatus(tr("param write complete"));
+                emit updateLocalStatus(tr("param write complete"), green);
                 m_state = writeLocalEepromValues;
                 m_serialPort->write("AT&W\r\n");
                 return;
@@ -445,7 +490,7 @@ void Radio3DRSettings::readData()
             m_serialPort->write(m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend).toLatin1());
 
         } else {
-            emit updateLocalStatus(tr("param %1 failed write").arg(m_paramIndexSend));
+            emit updateLocalStatus(tr("param %1 failed write").arg(m_paramIndexSend), black);
             QLOG_ERROR() << "FAILED Writing Local Param:"
                          << m_newLocalRadio.formattedParameter(Radio3DREeprom::local, m_paramIndexSend);
             // [ToDo] Can retry at this point
@@ -454,11 +499,11 @@ void Radio3DRSettings::readData()
 
     case writeRemoteParams: {
         if (currentLine.contains("OK")){
-            emit updateRemoteStatus(tr("param %1 written ok").arg(m_paramIndexSend));
+            emit updateRemoteStatus(tr("param %1 written ok").arg(m_paramIndexSend), black);
             m_paramIndexSend++;
 
             if (m_paramIndexSend > m_newRemoteRadio.numberOfParams()){
-                emit updateRemoteStatus(tr("param write complete"));
+                emit updateRemoteStatus(tr("param write complete"), green);
                 // Now write to eeprom and reset
                 m_state = writeRemoteEepromValues;
                 m_serialPort->write("RT&W\r\n");
@@ -470,7 +515,7 @@ void Radio3DRSettings::readData()
             m_serialPort->write(m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote, m_paramIndexSend).toLatin1());
 
         } else {
-            emit updateRemoteStatus(tr("param %1 failed write").arg(m_paramIndexSend));
+            emit updateRemoteStatus(tr("param %1 failed write").arg(m_paramIndexSend), black);
             QLOG_ERROR() << "FAILED Writing Remote Param:"
                          << m_newRemoteRadio.formattedParameter(Radio3DREeprom::remote,m_paramIndexSend);
             // [ToDo] Can retry at this point
@@ -479,21 +524,21 @@ void Radio3DRSettings::readData()
 
     case writeRemoteFactorySettings: {
         if (currentLine.contains("OK")){
-            emit updateRemoteStatus(tr("Reset to factory Settings"));
+            emit updateRemoteStatus(tr("Reset to factory Settings"), black);
             m_serialPort->write("RT&F\r\n"); // Write eeprom settings
             m_state = writeRemoteEepromValues;
         } else {
-            emit updateRemoteStatus(tr("Failed to reset to factory settings"));
+            emit updateRemoteStatus(tr("Failed to reset to factory settings"), red);
             m_state = error;
         }
     } break;
 
     case writeRemoteEepromValues: {
         if (currentLine.contains("OK")){
-            emit updateRemoteStatus(tr("Saved to EEPROM"));
+            emit updateRemoteStatus(tr("Saved to EEPROM"), black);
             emit updateRemoteComplete(0); // 0 == SUCCESS
         } else {
-            emit updateRemoteStatus(tr("Failed to save settings to eeprom"));
+            emit updateRemoteStatus(tr("Failed to save settings to eeprom"), black);
             emit updateRemoteComplete(-1); // -1 == FAILED
             m_state = error;
         }
@@ -501,24 +546,24 @@ void Radio3DRSettings::readData()
 
     case writeLocalFactorySettings: {
         if (currentLine.contains("OK")){
-            emit updateLocalStatus(tr("Reset to factory Settings"));
+            emit updateLocalStatus(tr("Reset to factory Settings"), black);
             m_serialPort->write("AT&F\r\n"); // Write eeprom settings
             m_state = writeLocalEepromValues;
         } else {
-            emit updateLocalStatus(tr("Failed to reset to factory settings"));
+            emit updateLocalStatus(tr("Failed to reset to factory settings"), red);
             m_state = error;
         }
     } break;
 
     case writeLocalEepromValues: {
         if (currentLine.contains("OK")){
-            emit updateLocalStatus(tr("Saved to EEPROM"));
-            emit updateLocalComplete(0); // 0 == SUCCESS
             m_state = none;
+            emit updateLocalStatus(tr("Saved to EEPROM"), black);
+            emit updateLocalComplete(0); // 0 == SUCCESS
         } else {
-            emit updateLocalStatus(tr("Failed to save settings to EEPROM"));
-            emit updateLocalComplete(-1); // -1 == FAILED
             m_state = error;
+            emit updateLocalStatus(tr("Failed to save settings to EEPROM"), black);
+            emit updateLocalComplete(-1); // -1 == FAILED
         }
     } break;
 
@@ -529,12 +574,11 @@ void Radio3DRSettings::readData()
             if (!m_localRadio.setVersion(currentLine)) {
                 // Failed to read Version
                 QLOG_DEBUG() << " Failed to Read Version";
-                emit localReadComplete(m_localRadio, false);
-                emit updateLocalStatus(tr("FAILED"));
+                emit updateLocalStatus(tr("FAILED"), red);
                 closeSerialPort();
                 m_state = error;
             } else {
-                emit updateLocalStatus(tr("Read local radio version"));
+                emit updateLocalStatus(tr("Read local radio version"), black);
                 readLocalRadioFrequency();
             }
         }
@@ -544,12 +588,11 @@ void Radio3DRSettings::readData()
         if(currentLine.toInt() > 0){
             int freqCode = currentLine.toInt();
             QLOG_DEBUG() << "Read Local Freq:" << QString().sprintf("0x%x",freqCode);
-            emit updateLocalStatus(tr("read local radio frequency"));
+            emit updateLocalStatus(tr("read local radio frequency"), black);
             m_localRadio.setRadioFreqCode(freqCode);
             readLocalSettingsStrings();
         } else {
-            emit localReadComplete(m_localRadio, false);
-            emit updateLocalStatus(tr("FAILED"));
+            emit updateLocalStatus(tr("FAILED"), red);
             closeSerialPort();
             m_state = error;
         }
@@ -564,7 +607,7 @@ void Radio3DRSettings::readData()
         };
         if (currentLine.contains(m_localRadio.endParam())) {
             // All data received
-            emit updateLocalStatus(tr("SUCCESS"));
+            emit updateLocalStatus(tr("SUCCESS"), green);
             emit localReadComplete(m_localRadio, true);
             readLocalRssi();
         }; // else wait for more
@@ -572,18 +615,18 @@ void Radio3DRSettings::readData()
 
     case readRemoteVersion:{
         m_timerReadWrite.stop();
+        disconnect(&m_timerReadWrite, SIGNAL(timeout()), this , SLOT(readRemoteTimeout()));
         QRegExp rx("^SiK\\s+(.*)\\s+on\\s+(.*)");
         if(currentLine.contains(rx)) {
             QLOG_INFO() << "3DR Remote Radio: Version" << currentLine;
             if (!m_remoteRadio.setVersion(currentLine)) {
                 // Failed to read Version
                 QLOG_DEBUG() << " Failed to Read Version";
-                emit remoteReadComplete(m_remoteRadio, false);
-                emit updateRemoteStatus(tr("FAILED"));
+                emit updateRemoteStatus(tr("FAILED"), red);
                 closeSerialPort();
                 m_state = error;
             } else {
-                emit updateRemoteStatus(tr("Remote Version read"));
+                emit updateRemoteStatus(tr("Remote Version read"), black);
                 readRemoteRadioFrequency();
             }
         }
@@ -593,12 +636,11 @@ void Radio3DRSettings::readData()
         if(currentLine.toInt() > 0){
             int freqCode = currentLine.toInt();
             QLOG_DEBUG() << "Read Remote Freq:" << QString().sprintf("0x%x",freqCode);
-            emit updateRemoteStatus(tr("Read remote radio frequency"));
+            emit updateRemoteStatus(tr("Read remote radio frequency"), black);
             m_remoteRadio.setRadioFreqCode(freqCode);
             readRemoteSettingsStrings();
         } else {
-            emit remoteReadComplete(m_localRadio, false);
-            emit updateRemoteStatus(tr("FAILED"));
+            emit updateRemoteStatus(tr("FAILED"), red);
             closeSerialPort();
             m_state = error;
         }
@@ -615,9 +657,8 @@ void Radio3DRSettings::readData()
         };
         if (currentLine.contains(m_remoteRadio.endParam())) {
             // All data received
-            emit updateRemoteStatus(tr("SUCCESS"));
+            emit updateRemoteStatus(tr("SUCCESS"), green);
             emit remoteReadComplete(m_remoteRadio, true);
-//            closeSerialPort();
             // Start the RSSI reading
             readRemoteRssi();
         };
@@ -653,24 +694,25 @@ void Radio3DRSettings::readData()
 
 void Radio3DRSettings::writeEscapeSeqeunce()
 {
-    QLOG_DEBUG() << "Radio3DRSettings::writeEscapeSeqeunce()";
+    // sanity check
+    if(!m_serialPort){
+        return;
+    }
+    QLOG_DEBUG() << "Radio3DRSettings::writeEscapeSequence()";
     disconnect(&m_timer, SIGNAL(timeout()), this, SLOT(writeEscapeSeqeunce()));
-    emit updateLocalStatus(tr("entering command mode"));
+    emit updateLocalStatus(tr("entering command mode"), black);
     if (m_state == enterCommandMode){
         if (m_retryCount++ < 3) {
-            QLOG_INFO() << "Retry " << m_retryCount;
+            QLOG_INFO() << "Try " << m_retryCount;
             m_serialPort->write("\r\n");
             m_serialPort->flush();
             connect(&m_timer, SIGNAL(timeout()), this, SLOT(writeEscapeSeqeunceNow()), Qt::UniqueConnection);
             m_timer.start(1100);
         } else {
-            m_retryCount = 0;
             closeSerialPort();
             m_state = error; // Quit any more retries
-            emit localReadComplete(m_localRadio, false);
-            emit remoteReadComplete(m_remoteRadio, false);
-            emit updateLocalStatus(tr("FAILED"));
-            emit updateRemoteStatus(tr("FAILED"));
+            emit updateLocalStatus(tr("FAILED"), red);
+            emit updateRemoteStatus(tr("FAILED"), red);
         }
     }
 }
@@ -678,9 +720,11 @@ void Radio3DRSettings::writeEscapeSeqeunce()
 void Radio3DRSettings::writeEscapeSeqeunceNow()
 {
     disconnect(&m_timer, SIGNAL(timeout()), this, SLOT(writeEscapeSeqeunceNow()));
-    if (m_serialPort == NULL) return;
+    if (!m_serialPort){
+        return;
+    }
 
-    QLOG_DEBUG() << "Radio3DRSettings::writeEscapeSeqeunceNow()";
+    QLOG_DEBUG() << "Radio3DRSettings::writeEscapeSequenceNow()";
     m_serialPort->write("\x2B\x2B\x2B"); // +++
     m_serialPort->flush();
 
@@ -692,7 +736,7 @@ void Radio3DRSettings::writeEscapeSeqeunceNow()
 void Radio3DRSettings::readLocalVersionString()
 {
     QLOG_DEBUG() << "Radio3DRSettings::readLocalVersionString()";
-    emit updateLocalStatus(tr("Read local radio version"));
+    emit updateLocalStatus(tr("Read local radio version"), black);
     if (m_serialPort && m_serialPort->isOpen()){
         // start state machine
         m_serialPort->write("ATI0\r\n");
@@ -700,15 +744,14 @@ void Radio3DRSettings::readLocalVersionString()
         m_state = readLocalVersion;
     } else {
         m_state = error;
-        emit localReadComplete(m_localRadio, false);
-        emit updateRemoteStatus(tr("FAILED"));
+        emit updateRemoteStatus(tr("FAILED"), red);
     }
 }
 
 void Radio3DRSettings::readRemoteVersionString()
 {
     QLOG_DEBUG() << "Radio3DRSettings::readRemoteVersionString()";
-    emit updateRemoteStatus(tr("Reading remote version"));
+    emit updateRemoteStatus(tr("Reading remote version"), black);
     if (m_serialPort && m_serialPort->isOpen()){
         // start state machine
         m_serialPort->write("RTI0\r\n");
@@ -718,8 +761,7 @@ void Radio3DRSettings::readRemoteVersionString()
         m_timerReadWrite.start(500);
     } else {
         m_state = error;
-        emit remoteReadComplete(m_remoteRadio, false);
-        emit updateRemoteStatus(tr("FAILED"));
+        emit updateRemoteStatus(tr("FAILED"), red);
     }
 }
 
@@ -727,14 +769,14 @@ void Radio3DRSettings::readRemoteTimeout()
 {
     // No remote so read local radio.
     QLOG_DEBUG() << " Failed to Read Remote Version";
-    emit remoteReadComplete(m_remoteRadio, false);
-    emit updateRemoteStatus(tr("FAILED"));
+    disconnect(&m_timerReadWrite, SIGNAL(timeout()), this , SLOT(readRemoteTimeout()));
+    emit updateRemoteStatus(tr("FAILED"), red);
 }
 
 void Radio3DRSettings::readLocalRadioFrequency()
 {
     QLOG_DEBUG() << "Radio3DRSettings::readLocalRadioFrequency()";
-    emit updateLocalStatus(tr("Read local radio frequency"));
+    emit updateLocalStatus(tr("Read local radio frequency"), black);
     if (m_serialPort && m_serialPort->isOpen()){
         // start state machine
         m_serialPort->write("ATI3\r\n");
@@ -742,15 +784,14 @@ void Radio3DRSettings::readLocalRadioFrequency()
         m_state = readLocalFrequency;
     } else {
         m_state = error;
-        emit localReadComplete(m_localRadio, false);
-        emit updateLocalStatus(tr("FAILED"));
+        emit updateLocalStatus(tr("FAILED"), red);
     }
 }
 
 void Radio3DRSettings::readRemoteRadioFrequency()
 {
     QLOG_DEBUG() << "Radio3DRSettings::readRemoteRadioFrequency()";
-    emit updateRemoteStatus(tr("Read remote radio frequency"));
+    emit updateRemoteStatus(tr("Read remote radio frequency"), black);
     if (m_serialPort && m_serialPort->isOpen()){
         // start state machine
         m_serialPort->write("RTI3\r\n");
@@ -758,38 +799,35 @@ void Radio3DRSettings::readRemoteRadioFrequency()
         m_state = readRemoteFrequency;
     } else {
         m_state = error;
-        emit remoteReadComplete(m_remoteRadio, false);
-        emit updateRemoteStatus(tr("FAILED"));
+        emit updateRemoteStatus(tr("FAILED"), red);
     }
 }
 
 void Radio3DRSettings::readLocalSettingsStrings()
 {
     QLOG_DEBUG() << "Radio3DRSettings::readLocalSettingsStrings()";
-    emit updateLocalStatus(tr("Read local radio eeprom values"));
+    emit updateLocalStatus(tr("Read local radio eeprom values"), black);
     if (m_serialPort && m_serialPort->isOpen()){
         m_serialPort->write("ATI5\r\n"); // Request all EEPROM params
         m_serialPort->flush();
         m_state = readLocalParams;
     } else {
         m_state = error;
-        emit localReadComplete(m_localRadio, false);
-        emit updateLocalStatus(tr("FAILED"));
+        emit updateLocalStatus(tr("FAILED"), red);
     }
 }
 
 void Radio3DRSettings::readRemoteSettingsStrings()
 {
     QLOG_DEBUG() << "Radio3DRSettings::readRemoteSettingsStrings()";
-    emit updateRemoteStatus(tr("Read remote radio eeprom values"));
+    emit updateRemoteStatus(tr("Read remote radio eeprom values"), black);
     if (m_serialPort && m_serialPort->isOpen()){
         m_serialPort->write("RTI5\r\n"); // Request all EEPROM params
         m_serialPort->flush();
         m_state = readRemoteParams;
     } else {
         m_state = error;
-        emit remoteReadComplete(m_remoteRadio, false);
-        emit updateRemoteStatus(tr("FAILED"));
+        emit updateRemoteStatus(tr("FAILED"), red);
     }
 }
 
@@ -797,7 +835,7 @@ void Radio3DRSettings::readRemoteSettingsStrings()
 void Radio3DRSettings::writeLocalSettings(Radio3DREeprom eepromSettings)
 {
     QLOG_DEBUG() << "Radio3DRSettings::writeLocalSettings()";
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -812,7 +850,7 @@ void Radio3DRSettings::writeRemoteSettings(Radio3DREeprom eepromSettings)
 {
     QLOG_DEBUG() << "Radio3DRSettings::writeRemoteSettings()";
 
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -825,30 +863,48 @@ void Radio3DRSettings::writeRemoteSettings(Radio3DREeprom eepromSettings)
 
 void Radio3DRSettings::readLocalRssi()
 {
-    QLOG_DEBUG() << "readLocalRssi";
-    m_serialPort->write("ATI7\r\n");
-    m_state = readRssiLocal;
-
+    if(m_serialPort && m_serialPort->isOpen()){
+        QLOG_DEBUG() << "readLocalRssi";
+        m_serialPort->write("ATI7\r\n");
+        m_state = readRssiLocal;
+    }
 }
 
 void Radio3DRSettings::readRemoteRssi()
 {
-    QLOG_DEBUG() << "readRemoteRssi";
-    m_serialPort->write("RTI7\r\n");
-    m_state = readRssiRemote;
+    if(m_serialPort && m_serialPort->isOpen()){
+        QLOG_DEBUG() << "readRemoteRssi";
+        m_serialPort->write("RTI7\r\n");
+        m_state = readRssiRemote;
+    }
 }
 
 void Radio3DRSettings::handleError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError) {
-        QLOG_ERROR() << "Crtical Error!" << m_serialPort->errorString();
-        closeSerialPort();
+        // disconnect signals immediately to avoid that accidentally sent data triggers call of this method again
+        disconnect(&m_timer, SIGNAL(timeout()), this, SLOT(writeEscapeSeqeunceNow()));
+        disconnect(m_serialPort.data(), SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(handleError(QSerialPort::SerialPortError)));
+        disconnect(m_serialPort.data(), SIGNAL(readyRead()), this, SLOT(readData()));
+
+        if(m_serialPort){
+            emit serialConnectionFailure(m_serialPort->errorString());
+            emit updateLocalStatus(tr("Serial connection lost"), red);
+            m_retryCount = 0;
+            m_serialPort.reset();
+        } else {
+            QLOG_ERROR() << "Crtical Error - Received error without opened serial port!?" ;
+        }
+    }
+    else if(error != QSerialPort::NoError)
+    {
+       QLOG_WARN() << "Serial Port Error " << m_serialPort->errorString();
     }
 }
 
 void Radio3DRSettings::resetLocalRadioToDefaults()
 {
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -861,7 +917,7 @@ void Radio3DRSettings::resetLocalRadioToDefaults()
 
 void Radio3DRSettings::resetRemoteRadioToDefaults()
 {
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
@@ -874,12 +930,12 @@ void Radio3DRSettings::resetRemoteRadioToDefaults()
 
 void Radio3DRSettings::rebootLocalRadio()
 {
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
     QLOG_INFO() << "Reboot local radio";
-
+    emit updateLocalStatus(tr("Send reset - waiting for reconnect"), black);
     m_serialPort->flush();
     m_serialPort->write("ATZ\r\n");
     m_serialPort->flush();
@@ -889,15 +945,35 @@ void Radio3DRSettings::rebootLocalRadio()
 
 void Radio3DRSettings::rebootRemoteRadio()
 {
-    if (!m_serialPort->isOpen()) {
+    if (!m_serialPort || !m_serialPort->isOpen()) {
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
     QLOG_INFO() << "Reboot remote radio";
-
+    emit updateRemoteStatus(tr("Send reset - waiting for reconnect"), black);
     m_serialPort->flush();
     m_serialPort->write("RTZ\r\n");
     m_serialPort->flush();
     m_state = rebootRemote;
 
+}
+
+QString Radio3DRSettings::stateColorToString(stateColor color)
+{
+    QString colorString("black");
+    switch (color)
+    {
+        case black:
+            colorString = "black";
+            break;
+
+        case green:
+            colorString = "green";
+            break;
+
+        case red:
+            colorString = "red";
+            break;
+    }
+    return colorString;
 }

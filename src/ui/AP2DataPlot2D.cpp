@@ -48,6 +48,8 @@ This file is part of the APM_PLANNER project
 #include "ArduPilotMegaMAV.h"
 #include <QSettings>
 
+#include "Loghandling/LogExporter.h"
+
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
@@ -1053,7 +1055,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         }
         // use golden ratio for evenly distributed colors
         double golden_ratio_conjugate = 0.618033988749895;
-        double h = (static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
+        double h = (static_cast<double>(rand()) / RAND_MAX);
         h = h + golden_ratio_conjugate;
         h = fmod(h, 1);     // hue
         double s = 0.75;    // saturation
@@ -1536,99 +1538,16 @@ void AP2DataPlot2D::exportDialogAccepted()
     QString outputFileName = dialog->selectedFiles().at(0);
     dialog->close();
 
-    QFile outputfile;
-    kml::KMLCreator kmlExporter;
-
-    if (m_KmlExport)
+    if(m_KmlExport)
     {
-
-        kmlExporter.start(outputFileName);
+        KmlLogExporter kmlExporter(this);
+        kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
     }
     else
     {
-        outputfile.setFileName(outputFileName);
-        if (!outputfile.open(QIODevice::ReadWrite | QIODevice::Truncate))
-        {
-            QMessageBox::information(this,"Error","Unable to open output file: " + outputfile.errorString());
-            return;
-        }
+        AsciiLogExporter asciiExporter(this);
+        asciiExporter.exportToFile(outputFileName, m_dataStoragePtr);
     }
-
-    QProgressDialog *progressDialog = new QProgressDialog("Exporting File","Cancel",0,100,this);
-    progressDialog->setWindowModality(Qt::WindowModal);
-    progressDialog->show();
-    QApplication::processEvents();
-
-    QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format,Columns\r\n";
-    QMap<QString,QStringList> fmtlist = m_dataStoragePtr->getFmtValues(false);
-    QMap<QString,QStringList>::const_iterator iter;
-    for (iter = fmtlist.constBegin(); iter!=fmtlist.constEnd(); ++iter)
-    {
-        QString fmtname = iter.key();
-        QString line = m_dataStoragePtr->getFmtLine(fmtname);
-        if (line != "")
-        {
-            formatheader += line + "\r\n";
-
-            if (m_KmlExport) {
-                kmlExporter.processLine(line);
-            }
-        }
-    }
-
-    if (!m_KmlExport) {
-        outputfile.write(formatheader.toLatin1());
-    }
-
-    for (int i = 0; i < m_dataStoragePtr->rowCount(); ++i)
-    {
-        int j=1;
-        QVariant val = m_dataStoragePtr->data(m_dataStoragePtr->index(i,j++));
-        QString line = val.toString();
-        val = m_dataStoragePtr->data(m_dataStoragePtr->index(i,j++));
-        while (!val.isNull())
-        {
-            line += ", " + val.toString();
-            val = m_dataStoragePtr->data(m_dataStoragePtr->index(i,j++));
-        }
-        if (m_KmlExport)
-        {
-            kmlExporter.processLine(line.append("\r\n"));
-        }
-        else
-        {
-            outputfile.write(line.append("\r\n").toLatin1());
-        }
-        if (i % 5)
-        {
-            progressDialog->setValue(100.0 * ((double)i / (double)m_dataStoragePtr->rowCount()));
-        }
-        QApplication::processEvents();
-        if (progressDialog->wasCanceled())
-        {
-            outputfile.close();
-            progressDialog->hide();
-            progressDialog->deleteLater();
-            progressDialog=NULL;
-            QMessageBox::information(0,"Warning","Export was canceled");
-            return;
-        }
-    }
-
-    if (m_KmlExport)
-    {
-        QString generated = kmlExporter.finish(true);
-
-        QString msg = QString("Generated %1.").arg(generated);
-        QMessageBox::information(this, "Log to KML", msg);
-    }
-    else
-    {
-        outputfile.close();
-    }
-    progressDialog->hide();
-    progressDialog->deleteLater();
-    progressDialog=NULL;
 
     QLOG_DEBUG() << "Log export took " << timer1.elapsed() << "ms";
 }

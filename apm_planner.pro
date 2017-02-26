@@ -675,14 +675,15 @@ HEADERS += \
     src/Settings.h \
     src/logging.h \
     src/uas/APMFirmwareVersion.h \
-    src/ui/LogParser/BinLogParser.h \
-    src/ui/LogParser/ILogParser.h \
-    src/ui/LogParser/IParserCallback.h \
-    src/ui/LogParser/AP2DataPlotStatus.h \
-    src/ui/LogParser/AsciiLogParser.h \
-    src/ui/LogParser/LogParserBase.h \
-    src/ui/LogParser/TlogParser.h \
-    src/ui/LogdataStorage.h
+    src/ui/Loghandling/BinLogParser.h \
+    src/ui/Loghandling/ILogParser.h \
+    src/ui/Loghandling/IParserCallback.h \
+    src/ui/Loghandling/AP2DataPlotStatus.h \
+    src/ui/Loghandling/AsciiLogParser.h \
+    src/ui/Loghandling/LogParserBase.h \
+    src/ui/Loghandling/TlogParser.h \
+    src/ui/Loghandling/LogdataStorage.h \
+    src/ui/Loghandling/LogExporter.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -901,12 +902,13 @@ SOURCES += src/main.cc \
     src/ui/EKFMonitor.cpp \
     src/Settings.cpp \
     src/uas/APMFirmwareVersion.cpp \
-    src/ui/LogParser/BinLogParser.cpp \
-    src/ui/LogParser/AP2DataPlotStatus.cpp \
-    src/ui/LogParser/AsciiLogParser.cpp \
-    src/ui/LogParser/LogParserBase.cpp \
-    src/ui/LogParser/TlogParser.cpp \
-    src/ui/LogdataStorage.cpp
+    src/ui/Loghandling/BinLogParser.cpp \
+    src/ui/Loghandling/AP2DataPlotStatus.cpp \
+    src/ui/Loghandling/AsciiLogParser.cpp \
+    src/ui/Loghandling/LogParserBase.cpp \
+    src/ui/Loghandling/TlogParser.cpp \
+    src/ui/Loghandling/LogdataStorage.cpp \
+    src/ui/Loghandling/LogExporter.cpp
 
 MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
     message(Including support for Google Earth)

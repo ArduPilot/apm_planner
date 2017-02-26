@@ -32,10 +32,10 @@ This file is part of the APM_PLANNER project
 #define AP2DATAPLOTTHREAD_H
 
 #include <QThread>
-#include "LogParser/IParserCallback.h"
-#include "LogParser/ILogParser.h"
+#include "Loghandling/IParserCallback.h"
+#include "Loghandling/ILogParser.h"
 
-#include "LogdataStorage.h"
+#include "Loghandling/LogdataStorage.h"
 
 /**
  * @brief The AP2DataPlotThread class provides the infrastucture for log parsing.

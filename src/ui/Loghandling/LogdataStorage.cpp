@@ -131,8 +131,8 @@ QVariant LogdataStorage::headerData(int column, Qt::Orientation orientation, int
     return QVariant(m_typeStorage[typeIndex.first].m_labels[column - s_ColumnOffset]);
 }
 
-bool LogdataStorage::addDataType(const QString &typeName, const unsigned int typeID, const int typeLength,
-                                 const QString &typeFormat, const QStringList &typeLabels, const int timeColum)
+bool LogdataStorage::addDataType(const QString &typeName, unsigned int typeID, int typeLength,
+                                 const QString &typeFormat, const QStringList &typeLabels, int timeColum)
 {
     // set up colum count - the storage adds s_ColumOffset colums to the data.
     // One for the index and one for the name.
@@ -196,7 +196,7 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
     return true;
 }
 
-void LogdataStorage::selectedRowChanged(QModelIndex current)
+void LogdataStorage::selectedRowChanged(const QModelIndex &current)
 {
     if (!current.isValid() || (m_currentRow == current.row()))
     {
@@ -206,7 +206,7 @@ void LogdataStorage::selectedRowChanged(QModelIndex current)
     emit headerDataChanged(Qt::Horizontal,0,9);
 }
 
-void LogdataStorage::setTimeStamp(const QString &timeStampName, const double &divisor)
+void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
 {
     m_timeStampName = timeStampName;
     m_timeDivisor = divisor;
@@ -221,7 +221,7 @@ double LogdataStorage::getTimeDivisor() const
     return m_timeDivisor;
 }
 
-QMap<QString, QStringList> LogdataStorage::getFmtValues(const bool filterStringValues) const
+QMap<QString, QStringList> LogdataStorage::getFmtValues(bool filterStringValues) const
 {
     QMap<QString, QStringList> fmtValueMap; //using a map to get alphabetically sorting
 
@@ -242,23 +242,18 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues(const bool filterStringV
     return fmtValueMap;
 }
 
-QString LogdataStorage::getFmtLine(const QString &name) const
+QVector<LogdataStorage::dataType> LogdataStorage::getAllDataTypes() const
 {
-    QString fmtLine;
-    if(!m_typeStorage.count(name))
+    QVector<dataType> dataTypes;
+    foreach(const QString &name, m_indexToTypeRow)
     {
-        return fmtLine;
+        dataTypes.push_back(m_typeStorage.value(name));
     }
 
-    const dataType &tempType = m_typeStorage[name];
-    QTextStream fmtStream(&fmtLine);
-    fmtStream << "FMT," << tempType.m_ID << "," << tempType.m_length << "," << tempType.m_name << ","
-              << tempType.m_format << "," << tempType.m_labels.join(",");
-
-    return  fmtLine;
+    return dataTypes;
 }
 
-QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &parent, const QString &child, const bool useTimeAsIndex) const
+QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &parent, const QString &child, bool useTimeAsIndex) const
 {
     QVector<QPair<double, QVariant> > data;
 
@@ -287,7 +282,7 @@ QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &paren
     return data;
 }
 
-bool LogdataStorage::getValues(const QString &name, const bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const
+bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const
 {
     QStringList splitName = name.split(".");
     if(splitName.size() != 2)
@@ -322,6 +317,22 @@ bool LogdataStorage::getValues(const QString &name, const bool useTimeAsIndex, Q
     return true;
 }
 
+void LogdataStorage::getDataRow(const int index, QString &name, QVector<QVariant> &measurements) const
+{
+    if(index < m_indexToDataRow.size())
+    {
+        TypeIndexPair indexPair = m_indexToDataRow[index];
+        name = indexPair.first;
+        measurements = m_dataStorage.value(name).at(indexPair.second).m_values;
+    }
+    else
+    {
+        name.clear();
+        measurements.clear();
+    }
+}
+
+
 double LogdataStorage::getMinTimeStamp() const
 {
     return static_cast<double>(m_minTimeStamp) / m_timeDivisor;
@@ -332,7 +343,7 @@ double LogdataStorage::getMaxTimeStamp() const
     return static_cast<double>(m_maxTimeStamp) / m_timeDivisor;
 }
 
-int LogdataStorage::getNearestIndexForTimestamp(const double timevalue) const
+int LogdataStorage::getNearestIndexForTimestamp(double timevalue) const
 {
     quint64 timeToFind = static_cast<quint64>(m_timeDivisor * timevalue);
     int intervalSize = m_TimeToIndexList.size();
