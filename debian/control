@@ -3,7 +3,7 @@ Section: science
 Priority: extra
 Maintainer: APM Planner Developers <stephen_dade@hotmail.com>
 Vcs-Git: git://git.github.org/diydrones/apm_planner.git
-Build-Depends: git-buildpackage, debhelper, phonon, qt5-qmake, libqt5gui5, libqt5multimedia5, libqt5network5, libqt5opengl5-dev, libqt5positioning5, libqt5printsupport5, libqt5qml5, libqt5quick5, libqt5script5, libqt5svg5, libqt5sql5, libqt5webkit5, libqt5webkit5-qmlwebkitplugin | qml-module-qtwebkit, libqt5widgets5, libqt5xml5, libqt5declarative5, qtcreator, libsdl1.2-dev, libflite1, flite1-dev, build-essential, libopenscenegraph-dev, libssl-dev, libudev-dev, libc6, git, libsndfile1-dev, qt5-default, qtscript5-dev, libqt5webkit5-dev, libqt5serialport5-dev, libqt5svg5-dev, libsdl2-dev
+Build-Depends: git-buildpackage, debhelper, phonon, qt5-qmake, libqt5gui5, libqt5multimedia5, libqt5network5, libqt5opengl5-dev, libqt5positioning5, libqt5printsupport5, libqt5qml5, libqt5quick5, libqt5script5, libqt5svg5, libqt5sql5, libqt5webkit5, libqt5webkit5-qmlwebkitplugin | qml-module-qtwebkit, libqt5widgets5, libqt5xml5, libqt5declarative5, qtcreator, libsdl1.2-dev, libflite1, flite1-dev, build-essential, libopenscenegraph-dev, libssl-dev, libudev-dev, libc6, git, libsndfile1-dev, qt5-default, qtscript5-dev, libqt5webkit5-dev, libqt5serialport5-dev, libqt5svg5-dev, libsdl2-dev, python-serial, python-pexpect
 Homepage: https://github.com/diydrones/apm_planner
 Standards-Version: 3.9.4
 
