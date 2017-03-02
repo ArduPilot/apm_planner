@@ -37,6 +37,8 @@ addons:
         # - qt5-default
         # - qtdeclarative5-qtquick2-plugin
         - wget
+        - python-serial
+        - python-pexpect
 
 install:
     # linux dependencies: qt
