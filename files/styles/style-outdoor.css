@@ -196,9 +196,35 @@ QMainWindow::separator:hover {
 	background: rgb(0, 0, 255);
 }
 
-QMenu::item::selected {
-	background: rgb(200, 200, 200);
+QMenu {
+    border: 1px solid #379AC3;
+    background: black;
+    color: white;
 }
+
+QMenu::separator {
+     height: 1px;
+     background: #379AC3;
+     margin-top: 8px;
+     margin-bottom: 4px;
+     margin-left: 5px;
+     margin-right: 5px;
+ }
+
+QMenuBar {
+    background: black;
+    color: white;
+}
+
+QMenuBar::item {
+    background: black;
+    color: white;
+}
+
+QMenu::item::selected {
+        background: rgb(100, 100, 100);
+}
+
 QMenuBar::item:disabled {
 	border: none;
 	background: none;

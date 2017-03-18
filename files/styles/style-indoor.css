@@ -333,6 +333,8 @@ QToolButton:pressed {
 
 QMenu {
     border: 1px solid #379AC3;
+    background: black;
+    color: white;
 }
 
 QMenu::separator {
@@ -343,6 +345,18 @@ QMenu::separator {
      margin-left: 5px;
      margin-right: 5px;
  }
+
+QMenuBar {
+    background: black;
+}
+
+QMenuBar::item {
+    background: black;
+}
+
+QMenu::item::selected {
+        background: rgb(100, 100, 100);
+}
 
 QMenuBar::item:disabled {
     border: none;
