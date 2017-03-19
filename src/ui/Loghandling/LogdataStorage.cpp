@@ -346,25 +346,39 @@ double LogdataStorage::getMaxTimeStamp() const
 int LogdataStorage::getNearestIndexForTimestamp(double timevalue) const
 {
     quint64 timeToFind = static_cast<quint64>(m_timeDivisor * timevalue);
-    int intervalSize = m_TimeToIndexList.size();
-    int intervalStart = 0;
-    int middle = 0;
+    float intervalSize = m_TimeToIndexList.size();
+    float intervalStart = 0;
+    float middle = 0;
+    int   index = 0;
 
-    while (intervalSize > 1)
+    // first check if timevalue is within our range
+    if(m_TimeToIndexList.first().first > timeToFind)
     {
-        middle = intervalStart + intervalSize / 2;
-        quint64 tempTime = m_TimeToIndexList[middle].first;
-        if (timeToFind > tempTime)
-        {
-            intervalStart = middle;
-        }
-        else if (timeToFind == tempTime)
-        {
-            break;
-        }
-        intervalSize = intervalSize / 2;
+        return 0;   // timevalue too small deliver index 0
     }
-    return m_TimeToIndexList[middle].second;
+    else if(m_TimeToIndexList.last().first < timeToFind)
+    {
+        return m_TimeToIndexList.size();    // timevalue too big deliver last index.
+    }
+    else
+    {
+        while (intervalSize > 1)
+        {
+            middle = intervalStart + intervalSize / 2;
+            index = static_cast<int>(middle + 0.5f);
+            quint64 tempTime = m_TimeToIndexList[index].first;
+            if (timeToFind > tempTime)
+            {
+                intervalStart = middle;
+            }
+            else if (timeToFind == tempTime)
+            {
+                break;
+            }
+            intervalSize = intervalSize / 2;
+        }
+    }
+    return m_TimeToIndexList[index].second;
 }
 
 void LogdataStorage::getMessagesOfType(const QString &type, QMap<quint64, MessageBase::Ptr> &indexToMessageMap) const

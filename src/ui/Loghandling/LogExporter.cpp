@@ -64,7 +64,7 @@ bool LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::Ptr 
     QApplication::processEvents();
 
     // Export header data
-    QString formatheader = "FMT, 128, 89, FMT, BBnNZ, Type,Length,Name,Format,Columns";
+    QString formatheader = "FMT,128,89,FMT,BBnNZ,Type,Length,Name,Format,Columns";
     writeLine(formatheader);
 
     QVector<LogdataStorage::dataType> allDataTypesInModel;
@@ -107,6 +107,7 @@ bool LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::Ptr 
         }
     }
 
+    progressDialogPtr->hide();
     endExport();
     return true;
 }
@@ -150,8 +151,8 @@ void AsciiLogExporter::writeLine(QString &line)
 
 void AsciiLogExporter::endExport()
 {
-    QString msg = QString("Successfull exported to %1.").arg(m_outputFile.fileName());
-    QMessageBox::information(0, "Log to KML", msg);
+    QString msg = QString("Successfull exported to %1").arg(m_outputFile.fileName());
+    QMessageBox::information(0, "Export log", msg);
     QLOG_DEBUG() << msg;
     m_outputFile.close();
 }
@@ -189,5 +190,5 @@ void KmlLogExporter::endExport()
     QString generated = m_kmlExporter.finish(true);
     QString msg = QString("Successfull exported to %1.").arg(generated);
     QLOG_DEBUG() << msg;
-    QMessageBox::information(0, "Log to KML", msg);
+    QMessageBox::information(0, "Export KML", msg);
 }

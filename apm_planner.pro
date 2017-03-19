@@ -448,7 +448,8 @@ FORMS += \
     src/ui/configuration/CompassMotorCalibrationDialog.ui \
     src/ui/MissionElevationDisplay.ui \
     src/ui/uas/PreFlightCalibrationDialog.ui \
-    src/ui/configuration/RadioFlashWizard.ui
+    src/ui/configuration/RadioFlashWizard.ui \
+    src/ui/LogAnalysis.ui
 
 HEADERS += \
     src/MG.h \
@@ -683,7 +684,8 @@ HEADERS += \
     src/ui/Loghandling/LogParserBase.h \
     src/ui/Loghandling/TlogParser.h \
     src/ui/Loghandling/LogdataStorage.h \
-    src/ui/Loghandling/LogExporter.h
+    src/ui/Loghandling/LogExporter.h \
+    src/ui/Loghandling/LogAnalysis.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -908,7 +910,8 @@ SOURCES += src/main.cc \
     src/ui/Loghandling/LogParserBase.cpp \
     src/ui/Loghandling/TlogParser.cpp \
     src/ui/Loghandling/LogdataStorage.cpp \
-    src/ui/Loghandling/LogExporter.cpp
+    src/ui/Loghandling/LogExporter.cpp \
+    src/ui/Loghandling/LogAnalysis.cpp
 
 MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
     message(Including support for Google Earth)
