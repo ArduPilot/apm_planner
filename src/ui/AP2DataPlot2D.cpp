@@ -122,11 +122,12 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     m_wideAxisRect->axis(QCPAxis::atRight, 0)->setTickLabels(false);
     m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft,0));
 
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeSpec(Qt::UTC);
+    // set time format of x-axis
+    QSharedPointer<QCPAxisTickerDateTime> dateTicker(new QCPAxisTickerDateTime);
+    dateTicker->setDateTimeFormat("hh:mm:ss");
+    dateTicker->setDateTimeSpec(Qt::UTC);
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTicker(dateTicker);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
-
 
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect);
 
@@ -447,10 +448,9 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
     QString newresult = "";
     for (int i=0;i<m_graphClassMap.keys().size();i++)
     {
-
-        double key=0;
         QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
-        key = graph->keyAxis()->pixelToCoord(evt->x());
+        double key   = graph->keyAxis()->pixelToCoord(evt->x());
+        int keyIndex = graph->findBegin(key);
         if (i == 0)
         {
             if (m_logLoaded)
@@ -475,19 +475,12 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
             {
                 for (QMap<double,QString>::const_iterator messagemapiterator = m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constBegin();messagemapiterator!=m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constEnd();messagemapiterator++)
                 {
-                    if (messagemapiterator.key() < key)
+                    if ((messagemapiterator.key() < key) && ((messagemapiterator+1).key() > key))
                     {
-                        if (messagemapiterator==m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constEnd()-1)
-                        {
-                            //We're at the end, use the end
-                            newresult.append(m_graphClassMap.keys()[i] + ": " + messagemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-                        }
-                        else if ((messagemapiterator+1).key() > key)
-                        {
-                            //This only gets hit if we're not at the end, and we have the proper value
-                            newresult.append(m_graphClassMap.keys()[i] + ": " + messagemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-                            break;
-                        }
+                        //This only gets hit if we're not at the end, and we have the proper value
+                        QStringList splitValue = messagemapiterator.value().split("\n");    // to remove the "by Radio" info
+                        newresult.append(m_graphClassMap.keys()[i] + ": " + splitValue[0] + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                        break;
                     }
                 }
             }
@@ -506,19 +499,14 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
         {
             //Ignore ERR / EV / MSG
         }
-        else if (graph->data()->contains(key))
+        else if(keyIndex)
         {
-            QString str = QString().sprintf( "%.9g", graph->data()->value(key).value);
-            newresult.append(m_graphClassMap.keys()[i] + ": " + str + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-        }
-        else if (graph->data()->lowerBound(key) != graph->data()->constEnd())
-        {
-        	QString str = QString().sprintf( "%.9g", graph->data()->lowerBound(key).value().value);
+            QString str = QString().sprintf( "%.9g", graph->dataMainValue(keyIndex));
             newresult.append(m_graphClassMap.keys()[i] + ": " + str + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
         else
         {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + "ERR" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            newresult.append(m_graphClassMap.keys()[i] + ": " + "NONE" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
     }
     QToolTip::showText(QPoint(evt->globalPos().x() + m_plot->x(),evt->globalPos().y()+m_plot->y()),newresult);
@@ -858,7 +846,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         {
             for (QMap<QString,Graph>::const_iterator i = m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
             {
-                i.value().graph->removeData(0,m_onlineValueTimeoutList[0].second);
+//                i.value().graph->removeData(0,m_onlineValueTimeoutList[0].second);
             }
             m_onlineValueTimeoutList.removeAt(0);
         }
@@ -971,8 +959,12 @@ void AP2DataPlot2D::loadLog(QString filename)
     setWindowTitle(tr("Graph: %1").arg(shortfilename));
     ui.toKMLPushButton->setVisible(false);
 
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
+    QSharedPointer<QCPAxisTickerFixed> fixedTicker(new QCPAxisTickerFixed);
+    fixedTicker->setTickStep(1.0);
+    fixedTicker->setScaleStrategy(QCPAxisTickerFixed::ssMultiples);
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTicker(fixedTicker);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
+
     ui.autoScrollCheckBox->setChecked(false);
     ui.loadOfflineLogButton->setText("Close Log");
     ui.loadTLogButton->setVisible(false);
@@ -1232,10 +1224,12 @@ void AP2DataPlot2D::clearGraph()
         ui.loadOfflineLogButton->setText("Open Log");
         ui.hideExcelView->setVisible(false);
         ui.hideExcelView->setChecked(false);
-        //ui.tableWidget->setVisible(false);
         setExcelViewHidden(true);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
+
+        QSharedPointer<QCPAxisTickerDateTime> dateTicker(new QCPAxisTickerDateTime);
+        dateTicker->setDateTimeFormat("hh:mm:ss");
+        dateTicker->setDateTimeSpec(Qt::UTC);
+        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTicker(dateTicker);
         m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
     }
     m_currentIndex = QDateTime::currentMSecsSinceEpoch();
@@ -1294,10 +1288,7 @@ void AP2DataPlot2D::plotTextArrow(double index, const QString &text, const QStri
     itemline->end->setCoords(index, 0.0);
     itemline->setTail(QCPLineEnding::esDisc);
     itemline->setHead(QCPLineEnding::esSpikeArrow);
-
-    m_plot->addItem(itemline);
     itemtext->position->setCoords(itemline->start->coords());
-    m_plot->addItem(itemtext);
 
     if (checkBox && !checkBox->isChecked())
     {
@@ -1817,7 +1808,7 @@ void AP2DataPlot2D::insertCurrentIndex()
     m_timeLine->end->setCoords(0, 0.0);
     m_timeLine->setPen(QPen(QColor::fromRgb(255, 0, 0), 1));
 
-    m_plot->addItem(m_timeLine);
+//    m_plot->addItem(m_timeLine);
 }
 
 void AP2DataPlot2D::insertTextArrows()

@@ -199,7 +199,7 @@ int MissionElevationDisplay::plotElevationGraph(QList<Waypoint *> waypointList, 
     double homeAlt = 0.0;
     QCustomPlot* customplot = ui->customPlot;
     QCPGraph* graph = customplot->graph(graphId);
-    graph->clearData();
+    graph->data()->clear();
 
     foreach(Waypoint* wp, waypointList){
         double lower = 0.0, upper = 0.0;
@@ -266,7 +266,6 @@ void MissionElevationDisplay::addWaypointLabels()
         itemTracer->setGraph(customPlot->graph(ElevationGraphMissionId));
         itemTracer->setStyle(QCPItemTracer::tsNone);
         itemTracer->setGraphKey(totalDistance);
-        customPlot->addItem(itemTracer);
 
         QCPItemText *itemText = new QCPItemText(customPlot);
         itemText->setText("WP" + (QString::number(wp->getId())) + " (+" + (QString::number(distance,'f', 1)) +"m)");
