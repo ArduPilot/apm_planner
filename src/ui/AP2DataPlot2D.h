@@ -56,9 +56,8 @@ class AP2DataPlot2D : public QWidget
     Q_OBJECT
     
 public:
-    explicit AP2DataPlot2D(QWidget *parent = 0,bool isIndependant = false);
+    explicit AP2DataPlot2D(QWidget *parent = 0);
     ~AP2DataPlot2D();
-    void loadLog(QString filename);
 
 public slots:
     void showLogDownloadDialog();
@@ -82,20 +81,7 @@ private slots:
     void saveSettings();
     void loadSettings();
 
-    //Graph loading thread started
-    void loadStarted();
-    //Progress of graph loading thread
-    void loadProgress(qint64 pos,qint64 size);
-    //Cancel clicked on the graph loading thread progress dialog
-    void progressDialogCanceled();
-    //Graph loading thread finished
-    void threadDone(AP2DataPlotStatus state);
-    //Graph loading thread actually exited
-    void threadTerminated();
-    //Graph loading thread error
-    void threadError(QString errorstr);
-
-     //Called to remove an item from the graph
+    //Called to remove an item from the graph
     void itemDisabled(QString name);
     //Called to add an item to the graph
     void itemEnabled(QString name);
@@ -108,53 +94,27 @@ private slots:
     void navModeChanged(int uasid, int mode, const QString& text);
 
     void autoScrollClicked(bool checked);
-    void addGraphLeft();
-    void removeGraphLeft();
     void axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,QMouseEvent* evt);
-    void showOnlyClicked();
-    void showAllClicked();
     void graphControlsButtonClicked();
-    void plotDoubleClick(QMouseEvent *event);
     void plotMouseMove(QMouseEvent *evt);
     void horizontalScrollMoved(int value);
     void verticalScrollMoved(int value);
     void xAxisChanged(QCPRange range);
     void replyTLogButtonClicked();
 
-    void exportLogClicked();
-    void exportKmlClicked();
-    void exportButtonClicked();
-    void exportDialogAccepted();
-
     void graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList);
     void graphColorsChanged(QMap<QString,QColor> colormap);
-    void selectedRowChanged(QModelIndex current,QModelIndex previous);
 
     void modeCheckBoxClicked(bool checked);
-    void errCheckBoxClicked(bool checked);
-    void evCheckBoxClicked(bool checked);
-    void msgCheckBoxClicked(bool checked);
-    void indexTypeCheckBoxClicked(bool checked);
-    void sortItemChanged(QTreeWidgetItem* item,int col);
-    void sortAcceptClicked();
-    void sortCancelClicked();
-    void showSortButtonClicked();
-    void sortSelectAllClicked();
-    void sortSelectInvertClicked();
 
     void childGraphDestroyed(QObject *obj);
-
-    void setExcelViewHidden(bool hidden);
 
 private:
 
     void showEvent(QShowEvent *evt);
     void hideEvent(QHideEvent *evt);
 
-    LogdataStorage::Ptr m_dataStoragePtr;
 
-    QSortFilterProxyModel *m_tableFilterProxyModel;
-    QList<QString> m_tableFilterList;
     int getStatusTextPos();
     void plotTextArrow(double index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = NULL);
 
@@ -168,42 +128,11 @@ private:
     void hideShowTextArrows(bool show, const QString &graphName);
 
     /**
-     * @brief This method disables the filtering of m_tableFilterProxyModel
-     *        After a call the table model will show all rows again.
-     */
-    void disableTableFilter();
-
-    /**
-     * @brief setupXAxisAndScroller sets up x axis and the horizontal scroller
-     *        to use the normal index (the artifical) or the time index regarding
-     *        to the value of m_useTimeOnX.
-     */
-    void setupXAxisAndScroller();
-
-    /**
      * @brief removeTextArrows removes all text arrows of type graphName
      *
      * @param graphName - Name of the graph whose test arrows shall be removed
      */
     void removeTextArrows(const QString &graphName);
-
-    /**
-     * @brief insertTextArrows inserts messages stored in m_indexToMessageMap
-     *        as text arrows into the graph
-     *        Uses normal or time index regarding of the value of m_useTimeOnX
-     */
-    void insertTextArrows();
-
-    /**
-     * @brief insertCurrentTime inserts a red line into the graph
-     */
-    void insertCurrentIndex();
-
-    /**
-     * @brief plotCurrentTime updates the current time red line position
-     */
-    void plotCurrentIndex(double index);
-
 
 private:
     Ui::AP2DataPlot2D ui;
@@ -226,38 +155,29 @@ private:
 
     QMap<QString,Graph> m_graphClassMap;
 
-    bool m_showOnlyActive;
     //Map of group name to a list of graph titles
     QMap<QString,QList<QString> > m_graphGrouping;
     //Map from group titles to the value axis range.
     QMap<QString,QCPRange> m_graphGroupRanges;
-    //Map from the spreadsheet view row name (ATT,GPS,etc), to the header names (roll,pitch,yaw or long,lat,alt)
-    QMap<QString,QString> m_tableHeaderNameMap;
     //Graph name to list of values for "online" mode
     QMap<QString,QList<QPair<double,double> > > m_onlineValueMap;
-    QList<QString> loglines;
-    QSqlDatabase m_sharedDb;
-    int currentIndex;
-
+    // Child windows which were opened by open log
     QList<QWidget*> m_childGraphList;
 
     QList<QPair<qint64,double> > m_onlineValueTimeoutList;
 
     //List of graph names, used in m_axisList, m_graphMap,m_graphToGroupMap and the like as the graph name
     QList<QString> m_graphNameList;
+    // number of active graphs
     int m_graphCount;
     QCustomPlot *m_plot;
     QCPAxisRect *m_wideAxisRect;
-    AP2DataPlotThread *m_logLoaderThread;
-    bool m_logLoaded;
     //Current "index", X axis on graph. Used to keep all the graphs lined up.
     qint64 m_currentIndex;
     qint64 m_startIndex; //epoch msecs since graphing started
     QAction *m_addGraphAction;
     UASInterface *m_uas;
-    QSharedPointer<QProgressDialog> m_progressDialog;
     AP2DataPlotAxisDialog *m_axisGroupingDialog;
-    //qint64 m_timeDiff;
     bool m_tlogReplayEnabled;
 
     qint64 m_scrollStartIndex; //Actual graph start
@@ -265,18 +185,9 @@ private:
 
     LogDownloadDialog *m_logDownloadDialog;
 
-    MAV_TYPE m_loadedLogMavType;
-
-    QString m_filename;
     int m_statusTextPos;
 
-    bool m_useTimeOnX;                      /// True if x axis uses time index
-    //red time line
-    QCPItemLine *m_timeLine;
-
-    QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    /// Map holding all Messages which are printed as arrows
     int m_lastHorizontalScrollerVal;                        /// Used to avoid multiple calls with same value
-    bool m_KmlExport;                                       /// True if exporting to Kml
 
 };
 
