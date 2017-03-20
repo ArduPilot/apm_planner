@@ -641,7 +641,7 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
     m_loadedLogMavType = status.getMavType();
 
     // close progress window
-    m_loadProgressDialog->hide();
+    m_loadProgressDialog->close();
     m_loadProgressDialog.reset();
 
     // status handling
