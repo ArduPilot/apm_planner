@@ -2,7 +2,7 @@
 Type=Application
 Name=APM Planner 2
 GenericName=apmplanner2
-Exec=apmplanner2
+Exec=apmplanner2.sh
 Terminal=false
 Categories=Education;Robotics;
 Comment=A UAV Ground Station
