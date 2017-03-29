@@ -79,6 +79,8 @@ public:
 
     bool useSeverityCompatibilityMode() {return m_severityCompatibilityMode;}
 
+    APMFirmwareVersion getFirmwareVersion() {return m_firmwareVersion;}
+
 signals:
     void versionDetected(QString versionString);
 
