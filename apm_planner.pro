@@ -449,7 +449,9 @@ FORMS += \
     src/ui/MissionElevationDisplay.ui \
     src/ui/uas/PreFlightCalibrationDialog.ui \
     src/ui/configuration/RadioFlashWizard.ui \
-    src/ui/LogAnalysis.ui
+    src/ui/LogAnalysis.ui \
+    src/ui/configuration/FrameTypeConfigOld.ui \
+    src/ui/configuration/FrameTypeConfigNew.ui
 
 HEADERS += \
     src/MG.h \
