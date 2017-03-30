@@ -203,6 +203,8 @@ private slots:
     void FrameClassY6Selected();
     void FrameClassHeliSelected();
     void FrameClassTriSelected();
+    void FrameClassSingleSelected();
+    void FrameClassCoaxSelected();
 
     /**
      * @brief FrameType button handlers
@@ -223,10 +225,10 @@ private:
     int m_frameType;
 
     /**
-     * @brief enableButtons - En / Disables all buttons.
+     * @brief enableClassButtons - En / Disables all frame class buttons.
      * @param enabled - true enable, false disable.
      */
-    void enableButtons(bool enabled);
+    void enableClassButtons(bool enabled);
 
     /**
      * @brief enableTypeWidgets - Makes the frame type buttons visible / invisible

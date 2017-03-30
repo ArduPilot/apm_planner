@@ -6,525 +6,36 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>949</width>
-    <height>703</height>
+    <width>1000</width>
+    <height>629</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="horizontalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>40</y>
-     <width>794</width>
-     <height>98</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QPushButton" name="quadBtn">
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 	border: 1px solid black;
-    margin: 3px;
-	border-radius: 2px;
-	padding-top: 4px;
-	padding-left: 8px;
-	padding-right: 8px;
-	padding-bottom: 4px;
-	background-color: 0
-}
-
-QPushButton:pressed {
-	border-width: 1px dashed #F0F0F0
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../../qgroundcontrol.qrc">
-        <normaloff>:/files/images/firmware/quadx.png</normaloff>:/files/images/firmware/quadx.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>80</width>
-        <height>80</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="hexaBtn">
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 	border: 1px solid black;
-    margin: 3px;
-	border-radius: 2px;
-	padding-top: 4px;
-	padding-left: 8px;
-	padding-right: 8px;
-	padding-bottom: 4px;
-	background-color: 0
-}
-
-QPushButton:pressed {
-	border-width: 1px dashed #F0F0F0
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../../qgroundcontrol.qrc">
-        <normaloff>:/files/images/firmware/hexax.png</normaloff>:/files/images/firmware/hexax.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>80</width>
-        <height>80</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="octaBtn">
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 	border: 1px solid black;
-    margin: 3px;
-	border-radius: 2px;
-	padding-top: 4px;
-	padding-left: 8px;
-	padding-right: 8px;
-	padding-bottom: 4px;
-	background-color: 0
-}
-
-QPushButton:pressed {
-	border-width: 1px dashed #F0F0F0
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../../qgroundcontrol.qrc">
-        <normaloff>:/files/images/firmware/octax.png</normaloff>:/files/images/firmware/octax.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>80</width>
-        <height>80</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="octaQuadBtn">
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 	border: 1px solid black;
-    margin: 3px;
-	border-radius: 2px;
-	padding-top: 4px;
-	padding-left: 8px;
-	padding-right: 8px;
-	padding-bottom: 4px;
-	background-color: 0
-}
-
-QPushButton:pressed {
-	border-width: 1px dashed #F0F0F0
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../../qgroundcontrol.qrc">
-        <normaloff>:/files/images/firmware/octx.png</normaloff>:/files/images/firmware/octx.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>80</width>
-        <height>80</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="Y6Btn">
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 	border: 1px solid black;
-    margin: 3px;
-	border-radius: 2px;
-	padding-top: 4px;
-	padding-left: 8px;
-	padding-right: 8px;
-	padding-bottom: 4px;
-	background-color: 0
-}
-
-QPushButton:pressed {
-	border-width: 1px dashed #F0F0F0
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../../qgroundcontrol.qrc">
-        <normaloff>:/files/images/firmware/hexay.png</normaloff>:/files/images/firmware/hexay.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>80</width>
-        <height>80</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="heliBtn">
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 	border: 1px solid black;
-    margin: 3px;
-	border-radius: 2px;
-	padding-top: 4px;
-	padding-left: 8px;
-	padding-right: 8px;
-	padding-bottom: 4px;
-	background-color: 0
-}
-
-QPushButton:pressed {
-	border-width: 1px dashed #F0F0F0
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../../qgroundcontrol.qrc">
-        <normaloff>:/files/images/firmware/heli.png</normaloff>:/files/images/firmware/heli.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>80</width>
-        <height>80</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="triBtn">
-      <property name="styleSheet">
-       <string notr="true">QPushButton {
- 	border: 1px solid black;
-    margin: 3px;
-	border-radius: 2px;
-	padding-top: 4px;
-	padding-left: 8px;
-	padding-right: 8px;
-	padding-bottom: 4px;
-	background-color: 0
-}
-
-QPushButton:pressed {
-	border-width: 1px dashed #F0F0F0
-}</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../../qgroundcontrol.qrc">
-        <normaloff>:/files/images/firmware/triy.png</normaloff>:/files/images/firmware/triy.png</iconset>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>80</width>
-        <height>80</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>160</y>
-     <width>791</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Quad</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_4">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Hexa</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_2">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Octa</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_3">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>OctaQuad</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_5">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Y6</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_6">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Heli</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label_7">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Tri</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="horizontalLayoutWidget_2">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>140</y>
-     <width>871</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <item>
-     <widget class="QRadioButton" name="quadRadioBtn">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QRadioButton" name="hexaRadioBtn">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QRadioButton" name="octaRadionbtn">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QRadioButton" name="octaQuadRadioBtn">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QRadioButton" name="Y6RadioBtn">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QRadioButton" name="heliRadioBtn">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QRadioButton" name="triRadioBtn">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QLabel" name="label_8">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>10</y>
-     <width>161</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;h2&gt;FrameClass&lt;/h2&gt;</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_9">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>190</y>
-     <width>121</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;h2&gt;FrameType&lt;/h2&gt;</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>220</y>
+     <x>150</x>
+     <y>180</y>
      <width>701</width>
-     <height>421</height>
+     <height>441</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="6,18,18,18,18,18">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="label_9">
+      <property name="text">
+       <string>&lt;h2&gt;Frame Type&lt;/h2&gt;</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
     <item>
      <widget class="QWidget" name="plusWidget" native="true">
       <widget class="QWidget" name="layoutWidget_1">
@@ -569,7 +80,7 @@ QPushButton:pressed {
 }</string>
           </property>
           <property name="text">
-           <string/>
+           <string>Single Copter    Coax Copter</string>
           </property>
           <property name="icon">
            <iconset resource="../../../qgroundcontrol.qrc">
@@ -928,6 +439,695 @@ QPushButton:pressed {
     </item>
    </layout>
   </widget>
+  <widget class="QWidget" name="verticalLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>981</width>
+     <height>159</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QLabel" name="label_8">
+      <property name="text">
+       <string>&lt;h2&gt;Frame Class&lt;/h2&gt;</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="quadBtn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../qgroundcontrol.qrc">
+          <normaloff>:/files/images/firmware/quadx.png</normaloff>:/files/images/firmware/quadx.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>75</width>
+          <height>75</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="hexaBtn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../qgroundcontrol.qrc">
+          <normaloff>:/files/images/firmware/hexax.png</normaloff>:/files/images/firmware/hexax.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>75</width>
+          <height>75</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="octaBtn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../qgroundcontrol.qrc">
+          <normaloff>:/files/images/firmware/octax.png</normaloff>:/files/images/firmware/octax.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>75</width>
+          <height>75</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="octaQuadBtn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../qgroundcontrol.qrc">
+          <normaloff>:/files/images/firmware/octx.png</normaloff>:/files/images/firmware/octx.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>75</width>
+          <height>75</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Y6Btn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../qgroundcontrol.qrc">
+          <normaloff>:/files/images/firmware/hexay.png</normaloff>:/files/images/firmware/hexay.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>75</width>
+          <height>75</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="heliBtn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../qgroundcontrol.qrc">
+          <normaloff>:/files/images/firmware/heli.png</normaloff>:/files/images/firmware/heli.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>75</width>
+          <height>75</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="triBtn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../../../qgroundcontrol.qrc">
+          <normaloff>:/files/images/firmware/triy.png</normaloff>:/files/images/firmware/triy.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>75</width>
+          <height>75</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="singleBtn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string>Single Copter</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="coaxBtn">
+        <property name="minimumSize">
+         <size>
+          <width>95</width>
+          <height>95</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+ 	border: 1px solid black;
+    margin: 3px;
+	border-radius: 2px;
+	padding-top: 4px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+	background-color: 0
+}
+
+QPushButton:pressed {
+	border-width: 1px dashed #F0F0F0
+}</string>
+        </property>
+        <property name="text">
+         <string>Coax Copter</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>50</number>
+      </property>
+      <property name="leftMargin">
+       <number>25</number>
+      </property>
+      <item>
+       <widget class="QRadioButton" name="quadRadioBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="hexaRadioBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="octaRadionbtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="octaQuadRadioBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="Y6RadioBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="heliRadioBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="triRadioBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="singleRadioBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="coaxRadioBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>14</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Quad</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Hexa</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Octa</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>OctaQuad</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Y6</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_6">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Heli</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_7">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Tri</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_10">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Single</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_11">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Coax</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <resources>
   <include location="../../../qgroundcontrol.qrc"/>
@@ -940,12 +1140,12 @@ QPushButton:pressed {
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>115</x>
-     <y>58</y>
+     <x>67</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
-     <x>124</x>
-     <y>140</y>
+     <x>91</x>
+     <y>130</y>
     </hint>
    </hints>
   </connection>
@@ -960,8 +1160,8 @@ QPushButton:pressed {
      <y>63</y>
     </hint>
     <hint type="destinationlabel">
-     <x>217</x>
-     <y>137</y>
+     <x>197</x>
+     <y>130</y>
     </hint>
    </hints>
   </connection>
@@ -976,8 +1176,8 @@ QPushButton:pressed {
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>310</x>
-     <y>140</y>
+     <x>303</x>
+     <y>130</y>
     </hint>
    </hints>
   </connection>
@@ -1008,8 +1208,8 @@ QPushButton:pressed {
      <y>46</y>
     </hint>
     <hint type="destinationlabel">
-     <x>501</x>
-     <y>137</y>
+     <x>515</x>
+     <y>130</y>
     </hint>
    </hints>
   </connection>
@@ -1024,8 +1224,8 @@ QPushButton:pressed {
      <y>64</y>
     </hint>
     <hint type="destinationlabel">
-     <x>596</x>
-     <y>140</y>
+     <x>621</x>
+     <y>130</y>
     </hint>
    </hints>
   </connection>
@@ -1040,8 +1240,8 @@ QPushButton:pressed {
      <y>54</y>
     </hint>
     <hint type="destinationlabel">
-     <x>691</x>
-     <y>137</y>
+     <x>727</x>
+     <y>130</y>
     </hint>
    </hints>
   </connection>
@@ -1052,12 +1252,12 @@ QPushButton:pressed {
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>222</x>
-     <y>260</y>
+     <x>407</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel">
-     <x>127</x>
-     <y>265</y>
+     <x>228</x>
+     <y>258</y>
     </hint>
    </hints>
   </connection>
@@ -1068,12 +1268,12 @@ QPushButton:pressed {
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>233</x>
-     <y>361</y>
+     <x>418</x>
+     <y>367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>127</x>
-     <y>344</y>
+     <x>228</x>
+     <y>339</y>
     </hint>
    </hints>
   </connection>
@@ -1088,8 +1288,8 @@ QPushButton:pressed {
      <y>439</y>
     </hint>
     <hint type="destinationlabel">
-     <x>130</x>
-     <y>437</y>
+     <x>227</x>
+     <y>421</y>
     </hint>
    </hints>
   </connection>
@@ -1104,8 +1304,8 @@ QPushButton:pressed {
      <y>432</y>
     </hint>
     <hint type="destinationlabel">
-     <x>442</x>
-     <y>431</y>
+     <x>570</x>
+     <y>421</y>
     </hint>
    </hints>
   </connection>
@@ -1120,8 +1320,8 @@ QPushButton:pressed {
      <y>529</y>
     </hint>
     <hint type="destinationlabel">
-     <x>129</x>
-     <y>517</y>
+     <x>227</x>
+     <y>505</y>
     </hint>
    </hints>
   </connection>
@@ -1136,8 +1336,8 @@ QPushButton:pressed {
      <y>528</y>
     </hint>
     <hint type="destinationlabel">
-     <x>466</x>
-     <y>520</y>
+     <x>570</x>
+     <y>505</y>
     </hint>
    </hints>
   </connection>
@@ -1148,12 +1348,44 @@ QPushButton:pressed {
    <slot>click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>390</x>
-     <y>621</y>
+     <x>575</x>
+     <y>614</y>
     </hint>
     <hint type="destinationlabel">
-     <x>130</x>
-     <y>609</y>
+     <x>228</x>
+     <y>586</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>singleBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>singleRadioBtn</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>833</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>827</x>
+     <y>141</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>coaxBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>coaxRadioBtn</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>938</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>934</x>
+     <y>143</y>
     </hint>
    </hints>
   </connection>
