@@ -290,9 +290,10 @@ FrameTypeConfigNew::FrameTypeConfigNew(UASInterface *uasInterface, QWidget *pare
     ui.setupUi(this);
 
     // Default - buttons disabled and Widges invisible
-    enableButtons(false);
+    enableClassButtons(false);
     enableTypeWidgets(false, false, false, false, false);
 
+    // connect frame class buttons
     connect(ui.quadRadioBtn, SIGNAL(clicked()), this, SLOT(FrameClassQuadSelected()));
     connect(ui.hexaRadioBtn, SIGNAL(clicked()), this, SLOT(FrameClassHexaSelected()));
     connect(ui.octaRadionbtn, SIGNAL(clicked()), this, SLOT(FrameClassOctaSelected()));
@@ -300,7 +301,10 @@ FrameTypeConfigNew::FrameTypeConfigNew(UASInterface *uasInterface, QWidget *pare
     connect(ui.Y6RadioBtn, SIGNAL(clicked()), this, SLOT(FrameClassY6Selected()));
     connect(ui.heliRadioBtn, SIGNAL(clicked()), this, SLOT(FrameClassHeliSelected()));
     connect(ui.triRadioBtn, SIGNAL(clicked()), this, SLOT(FrameClassTriSelected()));
+    connect(ui.singleRadioBtn, SIGNAL(clicked()), this, SLOT(FrameClassSingleSelected()));
+    connect(ui.coaxRadioBtn, SIGNAL(clicked()), this, SLOT(FrameClassCoaxSelected()));
 
+    // connect frame type buttons
     connect(ui.plusRadioBtn, SIGNAL(clicked()), this, SLOT(FrameTypePlusSelected()));
     connect(ui.XRadioBtn, SIGNAL(clicked()), this, SLOT(FrameTypeXSelected()));
     connect(ui.hRadioBtn, SIGNAL(clicked()), this, SLOT(FrameTypeHSelected()));
@@ -321,7 +325,7 @@ void FrameTypeConfigNew::setFrameType(int frameClass, int frameType)
     m_frameClass = frameClass;
     m_frameType  = frameType;
 
-    enableButtons(true);
+    enableClassButtons(true);
 
     switch(m_frameClass)
     {
@@ -352,6 +356,14 @@ void FrameTypeConfigNew::setFrameType(int frameClass, int frameType)
         case FRAME_CLASS_TRI:
             ui.triRadioBtn->setChecked(true);
             enableTypeWidgets(false, true, false, false, false);
+            break;
+        case FRAME_CLASS_SINGLE:
+            ui.singleRadioBtn->setChecked(true);
+            enableTypeWidgets(true, false, false, false, false);
+            break;
+        case FRAME_CLASS_COAX:
+            ui.coaxRadioBtn->setChecked(true);
+            enableTypeWidgets(true, false, false, false, false);
             break;
         case FRAME_CLASS_UNDEFINED:
             enableTypeWidgets(false, false, false, false, false);
@@ -388,42 +400,63 @@ void FrameTypeConfigNew::FrameClassQuadSelected()
 {
     m_frameClass = FRAME_CLASS_QUAD;
     enableTypeWidgets(true, true, true, true, false);   // enable: plus, X, HV, AVTail
+    FrameTypePlusSelected();    // set default frame type to avoid unallowed selections when switching classes
 }
 
 void FrameTypeConfigNew::FrameClassHexaSelected()
 {
     m_frameClass = FRAME_CLASS_HEXA;
     enableTypeWidgets(true, true, false, false, false); // enable: plus, X
+    FrameTypePlusSelected();    // set default frame type to avoid unallowed selections when switching classes
 }
 
 void FrameTypeConfigNew::FrameClassOctaSelected()
 {
     m_frameClass = FRAME_CLASS_OCTA;
     enableTypeWidgets(true, true, true, false, false);  // enable: plus, X, HV
+    FrameTypePlusSelected();    // set default frame type to avoid unallowed selections when switching classes
 }
 
 void FrameTypeConfigNew::FrameClassOctaQuadSelected()
 {
     m_frameClass = FRAME_CLASS_OCTAQUAD;
     enableTypeWidgets(true, true, true, false, false);  // enable: plus, X, HV
+    FrameTypePlusSelected();    // set default frame type to avoid unallowed selections when switching classes
 }
 
 void FrameTypeConfigNew::FrameClassY6Selected()
 {
     m_frameClass = FRAME_CLASS_Y6;
     enableTypeWidgets(false, true, false, false, true); // enable: X, Y6B
+    FrameTypeXSelected();    // set default frame type to avoid unallowed selections when switching classes
 }
 
 void FrameTypeConfigNew::FrameClassHeliSelected()
 {
     m_frameClass = FRAME_CLASS_HELI;
     enableTypeWidgets(true, false, false, false, false);    // enable: plus
+    FrameTypePlusSelected();    // set default frame type to avoid unallowed selections when switching classes
 }
 
 void FrameTypeConfigNew::FrameClassTriSelected()
 {
     m_frameClass = FRAME_CLASS_TRI;
     enableTypeWidgets(false, true, false, false, false); // enable: X
+    FrameTypeXSelected();    // set default frame type to avoid unallowed selections when switching classes
+}
+
+void FrameTypeConfigNew::FrameClassSingleSelected()
+{
+    m_frameClass = FRAME_CLASS_SINGLE;
+    enableTypeWidgets(true, false, false, false, false);    // enable: plus
+    FrameTypePlusSelected();    // set default frame type to avoid unallowed selections when switching classes
+}
+
+void FrameTypeConfigNew::FrameClassCoaxSelected()
+{
+    m_frameClass = FRAME_CLASS_COAX;
+    enableTypeWidgets(true, false, false, false, false);    // enable: plus
+    FrameTypePlusSelected();    // set default frame type to avoid unallowed selections when switching classes
 }
 
 void FrameTypeConfigNew::FrameTypePlusSelected()
@@ -468,7 +501,7 @@ void FrameTypeConfigNew::FrameTypeY6BSelected()
     writeFrameParams();
 }
 
-void FrameTypeConfigNew::enableButtons(bool enabled)
+void FrameTypeConfigNew::enableClassButtons(bool enabled)
 {
     ui.quadRadioBtn->setEnabled(enabled);
     ui.hexaRadioBtn->setEnabled(enabled);
@@ -477,6 +510,8 @@ void FrameTypeConfigNew::enableButtons(bool enabled)
     ui.Y6RadioBtn->setEnabled(enabled);
     ui.heliRadioBtn->setEnabled(enabled);
     ui.triRadioBtn->setEnabled(enabled);
+    ui.singleRadioBtn->setEnabled(enabled);
+    ui.coaxRadioBtn->setEnabled(enabled);
 }
 
 void FrameTypeConfigNew::enableTypeWidgets(bool plus, bool X, bool HV, bool AVTail, bool Y6B)
@@ -490,15 +525,19 @@ void FrameTypeConfigNew::enableTypeWidgets(bool plus, bool X, bool HV, bool AVTa
 
 void FrameTypeConfigNew::writeFrameParams()
 {
-    if (!m_uasInterface)
+    if((m_frameClass != FrameTypeConfig::FRAME_INIT_VALUE) && (m_frameType != FrameTypeConfig::FRAME_INIT_VALUE))
     {
-        QLOG_ERROR() << "No MAV connected - cannot set FRAME type";
-        enableButtons(false);
-        enableTypeWidgets(false, false, false, false, false);
-        return;
+        if (!m_uasInterface)
+        {
+            QLOG_ERROR() << "No MAV connected - cannot set FRAME type";
+            enableClassButtons(false);
+            enableTypeWidgets(false, false, false, false, false);
+            return;
+        }
+        QLOG_DEBUG() << "FrameTypeConfigNew::writeFrameParams - FRAME_CLASS:" << m_frameClass << " FRAME_TYPE:" << m_frameType;
+        m_uasInterface->getParamManager()->setParameter(1, "FRAME_CLASS", QVariant(m_frameClass));
+        m_uasInterface->getParamManager()->setParameter(1, "FRAME_TYPE", QVariant(m_frameType));
     }
-    m_uasInterface->getParamManager()->setParameter(1, "FRAME_CLASS", QVariant(m_frameClass));
-    m_uasInterface->getParamManager()->setParameter(1, "FRAME_TYPE", QVariant(m_frameType));
 }
 
 
