@@ -350,19 +350,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="showValuesCheckBox">
+      <widget class="QPushButton" name="filterShowPushButton">
        <property name="text">
-        <string>Show Values Under Mouse</string>
+        <string>Table Filter</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="hideTableWidgetCheckBox">
+      <widget class="QCheckBox" name="showValuesCheckBox">
        <property name="text">
-        <string>Hide Table View</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
+        <string>Show Values Under Mouse</string>
        </property>
       </widget>
      </item>
@@ -392,13 +389,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="filterShowPushButton">
-       <property name="text">
-        <string>Show filter</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
