@@ -320,7 +320,23 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
             packetstream >> val;
             if (qIsInf(val) || qIsNaN(val))
             {
-                QLOG_WARN() << "Corrupted log data found - Graphing may not work as expected for data of type " << desc.m_name;
+                QLOG_WARN() << "Corrupted log data found - float resolves to NAN - Graphing may not work as expected for data of type " << desc.m_name;
+                m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
+                NameValuePairList.clear();
+                break;
+            }
+            else
+            {
+                NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
+            }
+        }
+        else if (typeCode == 'd')
+        {
+            double val;
+            packetstream >> val;
+            if (qIsInf(val) || qIsNaN(val))
+            {
+                QLOG_WARN() << "Corrupted log data found - double resolves to NAN - Graphing may not work as expected for data of type " << desc.m_name;
                 m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
                 NameValuePairList.clear();
                 break;
