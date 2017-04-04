@@ -210,8 +210,7 @@ void QGCMapWidget::showEvent(QShowEvent* event)
     SetShowUAV(false);
     loadSettings();
 
-    // Pass on to parent widget
-    OPMapWidget::showEvent(event);
+
 
 
 
@@ -260,6 +259,9 @@ void QGCMapWidget::showEvent(QShowEvent* event)
     updateTimer.start(maxUpdateInterval*1000);
     // Update all UAV positions
     updateGlobalPosition();
+
+    // Pass on to parent widget
+    OPMapWidget::showEvent(event);
 }
 
 void QGCMapWidget::hideEvent(QHideEvent* event)
@@ -720,7 +722,7 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
     // Not in cycle, block now from entering it
     firingWaypointChange = wp;
 
-    QLOG_DEBUG() << "UPDATING WP FROM MAP" << wp->getId();
+    QLOG_TRACE() << "UPDATING WP FROM MAP" << wp->getId();
 
     // Update WP values
     internals::PointLatLng pos = waypoint->Coord();
