@@ -55,7 +55,8 @@ Waypoint::Waypoint(quint16 _id, double _x, double _y, double _z, double _param1,
 }
 
 Waypoint::Waypoint(const Waypoint& waypoint)
-    : id(waypoint.getId()),
+    : QObject(),
+      id(waypoint.getId()),
       x(waypoint.getX()),
       y(waypoint.getY()),
       z(waypoint.getZ()),

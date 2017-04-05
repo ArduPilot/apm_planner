@@ -267,33 +267,6 @@ void Waypoint2DIcon::drawIcon()
     }
 }
 
-void Waypoint2DIcon::SetShowNumber(const bool &value)
-{
-    shownumber=value;
-    if((numberI == NULL) && value)
-    {
-        Q_ASSERT(numberIBG == NULL);
-        numberI=new QGraphicsSimpleTextItem(this);
-        numberIBG=new QGraphicsRectItem(this);
-        numberIBG->setBrush(Qt::black);
-        numberIBG->setOpacity(0.5);
-        numberI->setZValue(3);
-        numberI->setPen(QPen(QGC::colorCyan));
-        numberI->setPos(5,-picture.height());
-        numberIBG->setPos(5,-picture.height());
-        numberI->setText(QString::number(number));
-        numberIBG->setRect(numberI->boundingRect().adjusted(-2,0,1,0));
-    }
-    else if (!value && numberI)
-    {
-        delete numberI;
-        numberI = NULL;
-        delete numberIBG;
-        numberIBG = NULL;
-    }
-    this->update();
-}
-
 void Waypoint2DIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(option);
@@ -329,7 +302,7 @@ void Waypoint2DIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     }
     if ((waypoint) && ((waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TO_ALT) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_UNLIM) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TIME) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TURNS)))
     {
-        QLOG_DEBUG() << "DRAW LOITER" ;
+        QLOG_TRACE() << "DRAW LOITER" ;
         QPen penDash(color);
         penDash.setWidth(1);
         //penDash.setStyle(Qt::DotLine);

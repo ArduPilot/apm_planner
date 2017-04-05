@@ -26,6 +26,7 @@
 */
 #include "waypointitem.h"
 #include <QGraphicsSceneMouseEvent>
+#include <logging.h>
 namespace mapcontrol
 {
     WayPointItem::WayPointItem(const internals::PointLatLng &coord,double const& altitude, MapGraphicItem *map) :
@@ -39,24 +40,33 @@ namespace mapcontrol
         reached(false),
         description(""),
         shownumber(true),
-        isDragging(false),
         altitude(altitude), // sets a 10m default just in case
         heading(0),
-        number(0),
-        m_mouseDown(false)
+        number(0)
     {
         picture.load(QString::fromUtf8(":/markers/images/marker.png"));
-        number=WayPointItem::snumber;
-        ++WayPointItem::snumber;
-        this->setFlag(QGraphicsItem::ItemIsMovable,true);
-        this->setFlag(QGraphicsItem::ItemIgnoresTransformations,true);
-        this->setFlag(QGraphicsItem::ItemIsSelectable,true);
-       // transf.translate(picture.width()/2,picture.height());
-       // this->setTransform(transf);
+        number=WayPointItem::snumber++;
+        setFlag(QGraphicsItem::ItemIsMovable,true);
+        setFlag(QGraphicsItem::ItemIgnoresTransformations,true);
+        setFlag(QGraphicsItem::ItemIsSelectable,true);
         SetShowNumber(shownumber);
         RefreshToolTip();
         RefreshPos();
+        setAcceptedMouseButtons(Qt::LeftButton);
+
+        text   = new QGraphicsSimpleTextItem(this);
+        text->setPen(QPen(Qt::red));
+        text->setPos(10,-picture.height());
+        text->setZValue(3);
+        text->setVisible(false);
+
+        textBG = new QGraphicsRectItem(this);
+        textBG->setBrush(QColor(255, 255, 255, 128));
+        textBG->setOpacity(0.5);
+        textBG->setPos(10,-picture.height());
+        textBG->setVisible(false);
     }
+
     WayPointItem::WayPointItem(const internals::PointLatLng &coord,double const& altitude, const QString &description, MapGraphicItem *map) :
         map(map),
         autoreachedEnabled(true),
@@ -68,22 +78,40 @@ namespace mapcontrol
         reached(false),
         description(description),
         shownumber(true),
-        isDragging(false),
         altitude(altitude), // sets a 10m default just in case
         heading(0),
         number(0)
     {
         picture.load(QString::fromUtf8(":/markers/images/marker.png"));
-        number=WayPointItem::snumber;
-        ++WayPointItem::snumber;
-        this->setFlag(QGraphicsItem::ItemIsMovable,true);
-        this->setFlag(QGraphicsItem::ItemIgnoresTransformations,true);
-        this->setFlag(QGraphicsItem::ItemIsSelectable,true);
-       //transf.translate(picture.width()/2,picture.height());
-       // this->setTransform(transf);
+        number=WayPointItem::snumber++;
+        setFlag(QGraphicsItem::ItemIsMovable,true);
+        setFlag(QGraphicsItem::ItemIgnoresTransformations,true);
+        setFlag(QGraphicsItem::ItemIsSelectable,true);
         SetShowNumber(shownumber);
         RefreshToolTip();
         RefreshPos();
+        setAcceptedMouseButtons(Qt::AllButtons);
+
+        // TODO have fun with colors....
+        text = new QGraphicsSimpleTextItem(this);
+//        text->setPen(QPen(Qt::red));
+        text->setBrush(QBrush(Qt::red));
+        text->setPos(10,-picture.height());
+        text->setZValue(3);
+        text->setVisible(false);
+
+        textBG = new QGraphicsRectItem(this);
+        textBG->setBrush(QColor(255, 255, 255, 200));
+        textBG->setOpacity(0.8);
+        textBG->setPos(10,-picture.height());
+        textBG->setVisible(false);
+    }
+
+    WayPointItem::~WayPointItem()
+    {
+        WayPointItem::snumber--;
+        delete text;
+        delete textBG;
     }
 
     QRectF WayPointItem::boundingRect() const
@@ -101,68 +129,49 @@ namespace mapcontrol
             painter->drawRect(QRectF(-picture.width()/2,-picture.height(),picture.width()-1,picture.height()-1));
         }
     }
+
     void WayPointItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
-        if(event->button()==Qt::LeftButton)
+        if(event->button() == Qt::LeftButton)
         {
-            if (m_mouseDown)
-            {
-                //Mouse is already pressed
-                return;
-            }
-            m_mouseDown = true;
-            Q_ASSERT(text == NULL);
-            Q_ASSERT(textBG == NULL);
-
-            text=new QGraphicsSimpleTextItem(this);
-            textBG=new QGraphicsRectItem(this);
-
-            textBG->setBrush(QColor(255, 255, 255, 128));
-            textBG->setOpacity(0.5);
-
-            text->setPen(QPen(Qt::red));
-            text->setPos(10,-picture.height());
-            textBG->setPos(10,-picture.height());
-            text->setZValue(3);
+            text->setVisible(true);
+            textBG->setVisible(true);
             RefreshToolTip();
-            isDragging=true;
+            QGraphicsItem::mousePressEvent(event);
         }
-        QGraphicsItem::mousePressEvent(event);
+        else if(event->button() == Qt::RightButton)
+        {
+            // Deselect if the right button was pressed too
+            text->setVisible(false);
+            textBG->setVisible(false);
+            RefreshToolTip();
+            emit WPValuesChanged(this);
+            QGraphicsItem::mouseReleaseEvent(event);
+        }
     }
+
     void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
-        if(event->button()==Qt::LeftButton)
+        if(event->button() == Qt::LeftButton)
         {
-            m_mouseDown = false;
-            delete text;
-            text = NULL;
-            delete textBG;
-            textBG = NULL;
-            coord=map->FromLocalToLatLng(this->pos().x(),this->pos().y());
-            QString coord_str = " " + QString::number(coord.Lat(), 'f', 6) + "   " + QString::number(coord.Lng(), 'f', 6);
-            // qDebug() << "WP MOVE:" << coord_str << __FILE__ << __LINE__;
-            isDragging=false;
+            text->setVisible(false);
+            textBG->setVisible(false);
             RefreshToolTip();
-
             emit WPValuesChanged(this);
+            QGraphicsItem::mouseReleaseEvent(event);
         }
-        QGraphicsItem::mouseReleaseEvent(event);
     }
+
     void WayPointItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     {
-
-        if(isDragging)
-        {
-            coord=map->FromLocalToLatLng(this->pos().x(),this->pos().y());
-            QString coord_str = " " + QString::number(coord.Lat(), 'f', 6) + "   " + QString::number(coord.Lng(), 'f', 6);
-            text->setText(coord_str);
-            // qDebug() << "WP DRAG:" << coord_str << __FILE__ << __LINE__;
-            textBG->setRect(text->boundingRect());
-
-            emit WPValuesChanged(this);
-        }
-            QGraphicsItem::mouseMoveEvent(event);
+        coord = map->FromLocalToLatLng(this->pos().x(),this->pos().y());
+        QString coord_str = " " + QString::number(coord.Lat(), 'f', 6) + "   " + QString::number(coord.Lng(), 'f', 6);
+        text->setText(coord_str);
+        textBG->setRect(text->boundingRect());
+        emit WPValuesChanged(this);
+        QGraphicsItem::mouseMoveEvent(event);
     }
+
     void WayPointItem::SetAltitude(const double &value)
     {
         altitude=value;
@@ -218,29 +227,6 @@ namespace mapcontrol
     }
     void WayPointItem::SetShowNumber(const bool &value)
     {
-//        shownumber=value;
-//        if((numberI==0) && value)
-//        {
-//            numberI=new QGraphicsSimpleTextItem(this);
-//            numberIBG=new QGraphicsRectItem(this);
-//            numberIBG->setBrush(Qt::white);
-//            numberIBG->setOpacity(0.5);
-//            numberI->setZValue(3);
-//            numberI->setPen(QPen(Qt::blue));
-//            numberI->setPos(0,-13-picture.height());
-//            numberIBG->setPos(0,-13-picture.height());
-//            numberI->setText(QString::number(number));
-//            numberIBG->setRect(numberI->boundingRect().adjusted(-2,0,1,0));
-//        }
-//        else if (!value && numberI)
-//        {
-//            delete numberI;
-//            delete numberIBG;
-//        }
-//        this->update();
-
-
-
         shownumber=value;
         if((numberI==NULL) && value)
         {
@@ -318,10 +304,7 @@ namespace mapcontrol
         return Type;
     }
 
-    WayPointItem::~WayPointItem()
-    {
-        --WayPointItem::snumber;
-    }
+
     void WayPointItem::RefreshPos()
     {
         core::Point point=map->FromLatLngToLocal(coord);
