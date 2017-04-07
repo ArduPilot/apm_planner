@@ -173,6 +173,7 @@ namespace internals {
                                         QMutex m;
                                         m.lock();
                                         wait.wait(&m,500);
+                                        m.unlock();
                                     }
                                 }
                             }
