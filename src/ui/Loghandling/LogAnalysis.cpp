@@ -287,7 +287,6 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     m_plotPtr->replot();
 
     // connect to default signals
-    connect(ui.hideTableWidgetCheckBox, SIGNAL(clicked(bool)), this, SLOT(hideTableView(bool)));
     connect(ui.showValuesCheckBox,      SIGNAL(clicked(bool)), this, SLOT(showValueUnderMouseClicked(bool)));
     connect(ui.modeDisplayCheckBox,     SIGNAL(clicked(bool)), this, SLOT(modeCheckboxClicked(bool)));
     connect(ui.evDisplayCheckBox,       SIGNAL(clicked(bool)), this, SLOT(eventCheckboxClicked(bool)));
@@ -308,6 +307,7 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     connect(ui.exportKmlButton, SIGNAL(clicked()), this, SLOT(exportKmlClicked()));
     connect(ui.graphControlsPushButton, SIGNAL(clicked()), this, SLOT(graphControlsButtonClicked()));
     connect(ui.resetScalingPushButton, SIGNAL(clicked()), this, SLOT(resetValueScaling()));
+    connect(ui.splitter, SIGNAL(splitterMoved(int, int)), this, SLOT(tableSplitterMoved(int, int)));
 
     loadSettings();
 }
@@ -566,7 +566,6 @@ void LogAnalysis::loadSettings()
     ui.errDisplayCheckBox->setChecked(settings.value("SHOW_ERR", Qt::Checked).toBool());
     ui.evDisplayCheckBox->setChecked(settings.value("SHOW_EV", Qt::Checked).toBool());
     ui.msgDisplayCheckBox->setChecked(settings.value("SHOW_MSG", Qt::Checked).toBool());
-    ui.hideTableWidgetCheckBox->setChecked(settings.value("HIDE_TABLE_VIEW", Qt::Checked).toBool());
     ui.showValuesCheckBox->setChecked(settings.value("SHOW_VALUES", Qt::Unchecked).toBool());
     settings.endGroup();
 }
@@ -579,7 +578,6 @@ void LogAnalysis::saveSettings()
     settings.setValue("SHOW_ERR", ui.errDisplayCheckBox->isChecked());
     settings.setValue("SHOW_EV", ui.evDisplayCheckBox->isChecked());
     settings.setValue("SHOW_MSG", ui.msgDisplayCheckBox->isChecked());
-    settings.setValue("HIDE_TABLE_VIEW", ui.hideTableWidgetCheckBox->isChecked());
     settings.setValue("SHOW_VALUES", ui.showValuesCheckBox->isChecked());
     settings.endGroup();
 }
@@ -589,12 +587,12 @@ void LogAnalysis::hideTableView(bool hide)
     if (hide)
     {
         ui.splitter->setSizes(QList<int>() << 1 << 0);
-        ui.filterShowPushButton->setVisible(false);
+        ui.filterShowPushButton->setDisabled(true);
     }
     else
     {
         ui.splitter->setSizes(QList<int>() << 1 << 1);
-        ui.filterShowPushButton->setVisible(true);
+        ui.filterShowPushButton->setDisabled(false);
     }
 }
 
@@ -740,8 +738,8 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
         connect(m_plotPtr.data(), SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(plotMouseMove(QMouseEvent*)));
     }
 
-    // Show the table according to checkbox state
-    if(!ui.hideTableWidgetCheckBox->isChecked())  hideTableView(false);
+    // Show the table view
+    hideTableView(false);
 
     // Enable only the layers that are enabled by their checkbox
     if(ui.modeDisplayCheckBox->isChecked()) m_plotPtr->layer(ModeMessage::TypeName)->setVisible(true);
@@ -1010,13 +1008,11 @@ void LogAnalysis::filterAcceptClicked()
     }
 
     ui.tableFilterGroupBox->setVisible(false);
-    ui.filterShowPushButton->setText("Show Filter");
 }
 
 void LogAnalysis::filterCancelClicked()
 {
     ui.tableFilterGroupBox->setVisible(false);
-    ui.filterShowPushButton->setText("Show Filter");
 }
 
 void LogAnalysis::showFilterButtonClicked()
@@ -1024,12 +1020,10 @@ void LogAnalysis::showFilterButtonClicked()
     if (ui.tableFilterGroupBox->isVisible())
     {
         ui.tableFilterGroupBox->setVisible(false);
-        ui.filterShowPushButton->setText("Show Filter");
     }
     else
     {
         ui.tableFilterGroupBox->setVisible(true);
-        ui.filterShowPushButton->setText("Hide Filter");
     }
 }
 
@@ -1212,6 +1206,7 @@ void LogAnalysis::plotMouseMove(QMouseEvent *evt)
     QString out;
     QTextStream outStream(&out);
 
+    // Create 1st line of the mouse over tooltip
     double viewableRange = (m_plotPtr->xAxis->range().upper - m_plotPtr->xAxis->range().lower);
     double xValue = m_plotPtr->axisRect()->axis(QCPAxis::atBottom)->pixelToCoord(evt->x());
     double offset = viewableRange / 100;   // an offset of 1 percent
@@ -1235,6 +1230,7 @@ void LogAnalysis::plotMouseMove(QMouseEvent *evt)
         }
     }
 
+    // and now the data of all enabled graphs
     outStream.setRealNumberNotation(QTextStream::FixedNotation);
     QHash<QString, GraphElements>::Iterator iter;
     for(iter = m_activeGraphs.begin(); iter != m_activeGraphs.end(); ++iter)
@@ -1404,6 +1400,28 @@ void LogAnalysis::enableTableCursor(bool enable)
     else
     {
         removeSimpleCursor();
+    }
+}
+
+void LogAnalysis::tableSplitterMoved(int pos, int index)
+{
+    Q_UNUSED(pos);
+    Q_UNUSED(index);
+
+    if(ui.tableWidget->size().height() > 0) // table view is visible
+    {
+        // set the buttons accordingly
+        if(!ui.filterShowPushButton->isEnabled())
+        {
+            ui.filterShowPushButton->setDisabled(false);
+        }
+    }
+    else
+    {
+        if(ui.filterShowPushButton->isEnabled())
+        {
+            ui.filterShowPushButton->setDisabled(true);
+        }
     }
 }
 
