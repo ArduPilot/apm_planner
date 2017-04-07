@@ -21,6 +21,9 @@ class WaypointNavigation
 {
 private:
 
+    static const int s_PointsWithStraightPath[];    /// All this waypoints can not have a spline
+    static const int s_PointsWithStraightPathSize;
+
     /**
      * @brief Calculate the (hermite cubic) spline interpreation
      *        at time t ([0, 1]) between points p0 with velocity m0,

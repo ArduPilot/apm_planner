@@ -50,10 +50,13 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
       current_state(WP_IDLE),
       current_partner_systemid(0),
       current_partner_compid(MAV_COMP_ID_PRIMARY),
+      read_to_edit(false),
       currentWaypointEditable(NULL),
       protocol_timer(this),
-      m_defaultAcceptanceRadius(5.0f),
-      m_defaultRelativeAlt(0.0f)
+      standalone(false),
+      uasid(0),
+      m_defaultAcceptanceRadius(5.0),
+      m_defaultRelativeAlt(0.0)
 {
     if (uas)
     {

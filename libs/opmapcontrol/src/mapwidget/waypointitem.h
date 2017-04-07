@@ -40,7 +40,7 @@ namespace mapcontrol
 *
 * @class WayPointItem waypointitem.h "waypointitem.h"
 */
-class WayPointItem:public QObject,public QGraphicsItem
+class WayPointItem: public QObject, public QGraphicsItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
@@ -65,6 +65,10 @@ public:
     * @return
     */
     WayPointItem(internals::PointLatLng const& coord,double const& altitude,QString const& description,MapGraphicItem* map);
+
+    virtual ~WayPointItem();
+
+
     /**
     * @brief Returns the WayPoint description
     *
@@ -147,8 +151,6 @@ public:
     */
     void SetHeading(float const& value);
 
-    bool isDraggingActive() const { return isDragging; }
-
     int type() const;
     virtual QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -156,7 +158,7 @@ public:
     void RefreshPos();
     void RefreshToolTip();
     QPixmap picture;
-~WayPointItem();
+
 
     static int snumber;
 protected:
@@ -175,11 +177,9 @@ protected:
     bool reached;
     QString description;
     bool shownumber;
-    bool isDragging;
     double altitude;
     float heading;
     int number;
-    bool m_mouseDown;
 
 public slots:
     /**

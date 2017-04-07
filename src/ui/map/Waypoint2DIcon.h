@@ -34,10 +34,7 @@ public:
     void drawIcon();
     /** @brief Draw the icon on a QPainter device (map) */
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    /** @brief Enable and format the waypoint number display */
-    void SetShowNumber(const bool &value);
 
-public:
     void updateWaypoint();
 
 protected:
@@ -47,8 +44,6 @@ protected:
     bool showAcceptanceRadius;
     bool showOrbit;
     QColor color;
-//    QSize size;
-
 };
 
 #endif // WAYPOINT2DICON_H
