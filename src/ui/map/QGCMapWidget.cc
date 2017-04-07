@@ -248,7 +248,7 @@ void QGCMapWidget::showEvent(QShowEvent* event)
 
         // Connect map updates to the adapter slots
         connect(this, SIGNAL(WPValuesChanged(WayPointItem*)), this, SLOT(handleMapWaypointEdit(WayPointItem*)));
-        connect(map, SIGNAL(mapChanged()), this, SLOT(redrawWaypointLines()));
+
 
         // Start timer
         connect(&updateTimer, SIGNAL(timeout()), this, SLOT(updateGlobalPosition()));
@@ -371,13 +371,6 @@ void QGCMapWidget::addUAS(UASInterface* uas)
 
     connect(uas, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(updateGlobalPosition(UASInterface*,double,double,double,quint64)));
     connect(uas, SIGNAL(systemSpecsChanged(int)), this, SLOT(updateSystemSpecs(int)));
-    if (!waypointLines.value(uas->getUASID(), NULL)) {
-        waypointLines.insert(uas->getUASID(), new QGraphicsItemGroup(map));
-    } else {
-        foreach (QGraphicsItem* item, waypointLines.value(uas->getUASID())->childItems()) {
-            delete item;
-        }
-    }
 }
 
 void QGCMapWidget::activeUASSet(UASInterface* uas)
@@ -400,6 +393,7 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
         disconnect(currWPManager, SIGNAL(waypointEditableChanged(int, Waypoint*)), this, SLOT(updateWaypoint(int,Waypoint*)));
         disconnect(this, SIGNAL(waypointCreated(Waypoint*)), currWPManager, SLOT(addWaypointEditable(Waypoint*)));
         disconnect(this, SIGNAL(waypointChanged(Waypoint*)), currWPManager, SLOT(notifyOfChangeEditable(Waypoint*)));
+        disconnect(map, SIGNAL(mapChanged()), this, SLOT(redrawWaypointLines()));
 
         QGraphicsItemGroup* group = waypointLine(this->uas ? this->uas->getUASID() : 0);
         if (group)
@@ -407,7 +401,9 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
             // Delete existing waypoint lines
             foreach (QGraphicsItem* item, group->childItems())
             {
+                group->removeFromGroup(item);
                 delete item;
+                item = 0;
             }
         }
     }
@@ -424,6 +420,7 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
     connect(currWPManager, SIGNAL(waypointEditableChanged(int, Waypoint*)), this, SLOT(updateWaypoint(int,Waypoint*)));
     connect(this, SIGNAL(waypointCreated(Waypoint*)), currWPManager, SLOT(addWaypointEditable(Waypoint*)));
     connect(this, SIGNAL(waypointChanged(Waypoint*)), currWPManager, SLOT(notifyOfChangeEditable(Waypoint*)));
+    connect(map, SIGNAL(mapChanged()), this, SLOT(redrawWaypointLines()));
 }
 
 /**
@@ -720,7 +717,7 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
     // Not in cycle, block now from entering it
     firingWaypointChange = wp;
 
-    QLOG_DEBUG() << "UPDATING WP FROM MAP" << wp->getId();
+    QLOG_TRACE() << "UPDATING WP FROM MAP" << wp->getId();
 
     // Update WP values
     internals::PointLatLng pos = waypoint->Coord();
@@ -842,7 +839,7 @@ void QGCMapWidget::redrawWaypointLines()
 
 void QGCMapWidget::redrawWaypointLines(int uas)
 {
-//    QLOG_DEBUG() << "REDRAW WAYPOINT LINES FOR UAS" << uas;
+    QLOG_TRACE() << "REDRAW WAYPOINT LINES FOR UAS" << uas;
 
     if (!currWPManager)
         return;
@@ -927,6 +924,6 @@ void QGCMapWidget::updateWaypointList(int uas)
             }
         }
 
-        redrawWaypointLines(uas);
+//        redrawWaypointLines(uas);
     }
 }

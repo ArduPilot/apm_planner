@@ -302,7 +302,7 @@ void Waypoint2DIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     }
     if ((waypoint) && ((waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TO_ALT) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_UNLIM) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TIME) || (waypoint->getAction() == (int)MAV_CMD_NAV_LOITER_TURNS)))
     {
-        QLOG_DEBUG() << "DRAW LOITER" ;
+        QLOG_TRACE() << "DRAW LOITER" ;
         QPen penDash(color);
         penDash.setWidth(1);
         //penDash.setStyle(Qt::DotLine);
