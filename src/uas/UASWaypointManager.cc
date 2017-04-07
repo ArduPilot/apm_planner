@@ -86,21 +86,27 @@ void UASWaypointManager::timeout()
         emit updateStatusString(tr("Timeout, retrying (retries left: %1)").arg(current_retries));
 
         if (current_state == WP_GETLIST) {
+            QLOG_WARN() << "Timeout requesting waypoint count - retrying.";
             sendWaypointRequestList();
         } else if (current_state == WP_GETLIST_GETWPS) {
+            QLOG_WARN() << "Timeout requesting waypoints - retrying.";
             sendWaypointRequest(current_wp_id);
         } else if (current_state == WP_SENDLIST) {
+            QLOG_WARN() << "Timeout sending waypoint count - retrying.";
             sendWaypointCount();
         } else if (current_state == WP_SENDLIST_SENDWPS) {
+            QLOG_WARN() << "Timeout sending waypoints - retrying.";
             sendWaypoint(current_wp_id);
         } else if (current_state == WP_CLEARLIST) {
+            QLOG_WARN() << "Timeout sending waypoint clear - retrying.";
             sendWaypointClearAll();
         } else if (current_state == WP_SETCURRENT) {
+            QLOG_WARN() << "Timeout sending set current waypoint - retrying.";
             sendWaypointSetCurrent(current_wp_id);
         }
     } else {
         protocol_timer.stop();
-
+        QLOG_WARN() << "Finally timed out - going to idle. Current state was:" << current_state;
         emit updateStatusString("Operation timed out.");
 
         current_state = WP_IDLE;
@@ -168,9 +174,11 @@ void UASWaypointManager::handleWaypointCount(quint8 systemId, quint8 compId, qui
             current_partner_compid = MAV_COMP_ID_PRIMARY;
         }
 
+        QLOG_DEBUG() << "handleWaypointCount() - Number of waypoints to fetch is " << current_count;
+
 
     } else {
-        QLOG_DEBUG() << "Rejecting message, check mismatch: current_state: " << current_state
+        QLOG_DEBUG() << "handleWaypointCount() - Rejecting message, check mismatch: current_state: " << current_state
                      << " == " << WP_GETLIST
                      << ", system id " << current_partner_systemid
                      << " == " << systemId
@@ -181,11 +189,12 @@ void UASWaypointManager::handleWaypointCount(quint8 systemId, quint8 compId, qui
 
 void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_mission_item_t *wp)
 {
-    if (systemId == current_partner_systemid && current_state == WP_GETLIST_GETWPS && wp->seq == current_wp_id) {
-        protocol_timer.start(PROTOCOL_TIMEOUT_MS);
-        current_retries = PROTOCOL_MAX_RETRIES;
+    if (systemId == current_partner_systemid && current_state == WP_GETLIST_GETWPS) {
 
         if(wp->seq == current_wp_id) {
+
+            protocol_timer.start(PROTOCOL_TIMEOUT_MS);
+            current_retries = PROTOCOL_MAX_RETRIES;
 
             Waypoint *lwp_vo = new Waypoint(wp->seq, wp->x, wp->y, wp->z, wp->param1, wp->param2, wp->param3, wp->param4, wp->autocontinue, wp->current, (MAV_FRAME) wp->frame, (MAV_CMD) wp->command);
             addWaypointViewOnly(lwp_vo);
@@ -197,7 +206,7 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
                 if (wp->current == 1) currentWaypointEditable = lwp_ed;
             }
 
-
+            QLOG_DEBUG() << "handleWaypoint() - Received waypoint " << current_wp_id;
             //get next waypoint
             current_wp_id++;
 
@@ -218,14 +227,16 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
                 QTime time = QTime::currentTime();
                 QString timeString = time.toString();
                 emit updateStatusString(tr("done. (updated at %1)").arg(timeString));
+                QLOG_DEBUG() << "handleWaypoint() - Received all waypoints ";
 
             }
         } else {
             emit updateStatusString(tr("Waypoint ID mismatch, rejecting waypoint"));
+            QLOG_DEBUG() << "handleWaypoint() - Waypoint ID mismatch (expected " << current_wp_id << " got " << wp->seq <<  "), rejecting waypoint for system id " << current_partner_systemid;
         }
     } else {
-        QLOG_DEBUG() << "Rejecting message, check mismatch: current_state: " << current_state
-                     << " == " << WP_GETLIST
+        QLOG_DEBUG() << "handleWaypoint() - Rejecting message, check mismatch: current_state: " << current_state
+                     << " == " << WP_GETLIST_GETWPS
                      << ", system id " << current_partner_systemid
                      << " == " << systemId
                      << ", comp id " << current_partner_compid
@@ -261,11 +272,12 @@ void UASWaypointManager::handleWaypointRequest(quint8 systemId, quint8 compId, m
             current_wp_id = wpr->seq;
             sendWaypoint(current_wp_id);
         } else {
-            //TODO: Error message or something
+            QLOG_DEBUG() << "System id:" << current_partner_systemid << "requested waypoint which does not exist."
+                         << " Requested waypoint ID:" << wpr->seq << " max waypoint ID:" << waypoint_buffer.size() - 1;
         }
     } else {
-        QLOG_DEBUG() << "Rejecting message, check mismatch: current_state: " << current_state
-                     << " == " << WP_GETLIST
+        QLOG_DEBUG() << "handleWaypointRequest() - Rejecting message, check mismatch: current_state: " << current_state
+                     << " == " << WP_SENDLIST << " or " << WP_SENDLIST_SENDWPS
                      << ", system id " << current_partner_systemid
                      << " == " << systemId
                      << ", comp id " << current_partner_compid
