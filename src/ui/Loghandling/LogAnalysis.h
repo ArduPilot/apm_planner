@@ -253,11 +253,11 @@ private:
     struct GroupElement
     {
         QString m_groupName;        /// group name
-        double m_upper;             /// upper range value
         double m_lower;             /// lower range value
+        double m_upper;             /// upper range value
         QStringList m_graphList;    /// list of graph names beloging to this group
 
-        GroupElement() : m_upper(0.0), m_lower(0.0) {}
+        GroupElement() : m_lower(std::numeric_limits<double>::max()), m_upper(m_lower * -1) {}
     };
 
     /**
