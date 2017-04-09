@@ -127,6 +127,10 @@ private:
     void cleanUp();
     bool versionIsGreaterThan(QString verstr,double version);
 
+    void hideFirmwareButtons();
+
+    void makeNetworkRequest(const QUrl &url);
+
 private:
     bool m_throwPropSpinWarning;
     QProgressDialog *m_replugRequestMessageBox;
@@ -175,6 +179,7 @@ private:
     QString m_currentVersionString;
     QString m_lastVersionSkipped;
     bool m_isAdvancedMode;
+    int m_activeNetworkRequests;
 };
 
 #endif // APMFIRMWARECONFIG_H

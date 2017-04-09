@@ -25,6 +25,8 @@ public:
         bool manual;
         double min;
         double max;
+
+        GraphRange() : isgrouped(false), manual(false), min(0.0), max(0.0) {}
     };
 
     explicit AP2DataPlotAxisDialog(QWidget *parent = 0);

@@ -39,53 +39,31 @@ This file is part of the APM_PLANNER project
 #include "UAS.h"
 #include "UASManager.h"
 #include <QToolTip>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlRecord>
-#include <QSqlError>
 #include <QStandardItemModel>
 #include "MainWindow.h"
 #include "ArduPilotMegaMAV.h"
 #include <QSettings>
 
 #include "Loghandling/LogExporter.h"
+#include "Loghandling/LogAnalysis.h"
 
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
-AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(parent),
-    m_tableFilterProxyModel(NULL),
+AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
     m_updateTimer(NULL),
-    m_showOnlyActive(false),
     m_graphCount(0),
     m_plot(NULL),
     m_wideAxisRect(NULL),
-    m_logLoaderThread(NULL),
-    m_logLoaded(false),
     m_currentIndex(0),
     m_startIndex(0),
-    m_addGraphAction(NULL),
     m_uas(NULL),
     m_axisGroupingDialog(NULL),
     m_tlogReplayEnabled(false),
     m_logDownloadDialog(NULL),
-    m_loadedLogMavType(MAV_TYPE_ENUM_END),
     m_statusTextPos(0),
-    m_useTimeOnX(false),
-    m_lastHorizontalScrollerVal(0),
-    m_KmlExport(false)
+    m_lastHorizontalScrollerVal(0)
 {
     ui.setupUi(this);
-
-    connect(ui.sortSelectTreeWidget,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(sortItemChanged(QTreeWidgetItem*,int)));
-    connect(ui.sortAcceptPushButton,SIGNAL(clicked()),this,SLOT(sortAcceptClicked()));
-    connect(ui.sortCancelPushButton,SIGNAL(clicked()),this,SLOT(sortCancelClicked()));
-    connect(ui.sortShowPushButton,SIGNAL(clicked()),this,SLOT(showSortButtonClicked()));
-    connect(ui.sortSelectAllPushButton,SIGNAL(clicked()),this,SLOT(sortSelectAllClicked()));
-    connect(ui.sortInvertSelectPushButton,SIGNAL(clicked()),this,SLOT(sortSelectInvertClicked()));
-    ui.tableSortGroupBox->setVisible(false);
-    ui.sortShowPushButton->setVisible(false);
-    ui.exportLogButton->setVisible(false);
-    ui.exportKmlButton->setVisible(false);
 
     QDateTime utc = QDateTime::currentDateTimeUtc();
     utc.setTimeSpec(Qt::LocalTime);
@@ -95,23 +73,9 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     m_plot->setInteraction(QCP::iRangeZoom, true);
 
     connect(m_plot,SIGNAL(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)),this,SLOT(axisDoubleClick(QCPAxis*,QCPAxis::SelectablePart,QMouseEvent*)));
-
     connect(m_plot,SIGNAL(mouseMove(QMouseEvent*)),this,SLOT(plotMouseMove(QMouseEvent*)));
-
     connect(ui.modeDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(modeCheckBoxClicked(bool)));
-    connect(ui.errDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(errCheckBoxClicked(bool)));
-    connect(ui.evDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(evCheckBoxClicked(bool)));
-    connect(ui.msgDisplayCheckBox,SIGNAL(clicked(bool)),this,SLOT(msgCheckBoxClicked(bool)));
-    connect(ui.indexTypeCheckBox  ,SIGNAL(clicked(bool)),this,SLOT(indexTypeCheckBoxClicked(bool)));
-    // Default invisible
-    ui.errDisplayCheckBox->setVisible(false);
-    ui.evDisplayCheckBox->setVisible(false);
-    ui.msgDisplayCheckBox->setVisible(false);
-    ui.indexTypeCheckBox->setVisible(false);
-    ui.jumpToLocationCheckBox->setVisible(false);
 
-
-    //ui.horizontalLayout_3->addWidget(m_plot);
     ui.verticalLayout_5->insertWidget(0,m_plot);
 
     m_plot->show();
@@ -122,42 +86,29 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     m_wideAxisRect->axis(QCPAxis::atRight, 0)->setTickLabels(false);
     m_wideAxisRect->removeAxis(m_wideAxisRect->axis(QCPAxis::atLeft,0));
 
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeSpec(Qt::UTC);
+    // set time format of x-axis
+    QSharedPointer<QCPAxisTickerDateTime> dateTicker(new QCPAxisTickerDateTime);
+    dateTicker->setDateTimeFormat("hh:mm:ss");
+    dateTicker->setDateTimeSpec(Qt::UTC);
+    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTicker(dateTicker);
     m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
-
 
     m_plot->plotLayout()->addElement(0, 0, m_wideAxisRect);
 
     QCPMarginGroup *marginGroup = new QCPMarginGroup(m_plot);
     m_wideAxisRect->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
 
-    connect(ui.dataSelectionScreen,SIGNAL(itemEnabled(QString)),this,SLOT(itemEnabled(QString)));
-    connect( ui.dataSelectionScreen,SIGNAL(itemDisabled(QString)),this,SLOT(itemDisabled(QString)));
+    connect(ui.dataSelectionScreen, SIGNAL(itemEnabled(QString)),  this, SLOT(itemEnabled(QString)));
+    connect(ui.dataSelectionScreen, SIGNAL(itemDisabled(QString)), this, SLOT(itemDisabled(QString)));
 
     ui.horizontalLayout_3->setStretch(0,5);
     ui.horizontalLayout_3->setStretch(1,1);
 
-    if (!isIndependant)
-    {
-        connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
-        activeUASSet(UASManager::instance()->getActiveUAS());
-    }
-
-    ui.tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
-
-    m_addGraphAction = new QAction("Add To Graph",0);
-    ui.tableWidget->addAction(m_addGraphAction);
-    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft()));
-
-    setExcelViewHidden(true);
-    ui.tableWidget->verticalHeader()->setDefaultSectionSize(ui.tableWidget->fontMetrics().height() + ROW_HEIGHT_PADDING);
-    ui.hideExcelView->setVisible(false);
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+    activeUASSet(UASManager::instance()->getActiveUAS());
 
     connect(ui.loadOfflineLogButton,SIGNAL(clicked()),this,SLOT(loadButtonClicked()));
     connect(ui.autoScrollCheckBox,SIGNAL(clicked(bool)),this,SLOT(autoScrollClicked(bool)));
-    connect(ui.hideExcelView,SIGNAL(clicked(bool)),this,SLOT(setExcelViewHidden(bool)));
     //connect(ui.tableWidget,SIGNAL(currentCellChanged(int,int,int,int)),this,SLOT(tableCellChanged(int,int,int,int)));
 
     connect(ui.graphControlsPushButton,SIGNAL(clicked()),this,SLOT(graphControlsButtonClicked()));
@@ -173,27 +124,18 @@ AP2DataPlot2D::AP2DataPlot2D(QWidget *parent,bool isIndependant) : QWidget(paren
     ui.downloadPushButton->setEnabled(false);
     connect(ui.loadTLogButton,SIGNAL(clicked()),this,SLOT(replyTLogButtonClicked()));
 
-    // Export buttons
-    connect(ui.exportLogButton, SIGNAL(clicked()), this, SLOT(exportLogClicked()));
-    connect(ui.exportKmlButton, SIGNAL(clicked()), this, SLOT(exportKmlClicked()));
-
     ui.horizontalSplitter->setStretchFactor(0,20);
     ui.horizontalSplitter->setStretchFactor(1,1);
 
     loadSettings();
 }
 
-
 void AP2DataPlot2D::loadSettings()
 {
     QSettings settings;
     settings.beginGroup("DATAPLOT_SETTINGS");
-    ui.jumpToLocationCheckBox->setChecked(settings.value("JUMP_TO_LOCATION", Qt::Unchecked).toBool());
     ui.showValuesCheckBox->setChecked(settings.value("SHOW_VALUES", Qt::Unchecked).toBool());
     ui.autoScrollCheckBox->setChecked(settings.value("AUTO_SCROLL", Qt::Unchecked).toBool());
-
-    ui.evDisplayCheckBox->setChecked(settings.value("SHOW_EV", Qt::Checked).toBool());
-    ui.errDisplayCheckBox->setChecked(settings.value("SHOW_ERR", Qt::Checked).toBool());
     ui.modeDisplayCheckBox->setChecked(settings.value("SHOW_MODE", Qt::Checked).toBool());
     settings.endGroup();
 }
@@ -202,29 +144,10 @@ void AP2DataPlot2D::saveSettings()
 {
     QSettings settings;
     settings.beginGroup("DATAPLOT_SETTINGS");
-    settings.setValue("JUMP_TO_LOCATION", ui.jumpToLocationCheckBox->isChecked());
     settings.setValue("SHOW_VALUES", ui.showValuesCheckBox->isChecked());
     settings.setValue("AUTO_SCROLL", ui.autoScrollCheckBox->isChecked());
-
-    settings.setValue("SHOW_EV", ui.evDisplayCheckBox->isChecked());
-    settings.setValue("SHOW_ERR", ui.errDisplayCheckBox->isChecked());
     settings.setValue("SHOW_MODE", ui.modeDisplayCheckBox->isChecked());
-
     settings.sync();
-}
-
-void AP2DataPlot2D::setExcelViewHidden(bool hidden)
-{
-    if (hidden)
-    {
-        ui.splitter->setSizes(QList<int>() << 1 << 0);
-        ui.sortShowPushButton->setVisible(false);
-    }
-    else
-    {
-        ui.splitter->setSizes(QList<int>() << 1 << 1);
-        ui.sortShowPushButton->setVisible(true);
-    }
 }
 
 void AP2DataPlot2D::graphColorsChanged(QMap<QString,QColor> colormap)
@@ -377,67 +300,6 @@ void AP2DataPlot2D::verticalScrollMoved(int value)
     m_plot->replot();
 }
 
-void AP2DataPlot2D::plotDoubleClick(QMouseEvent *event)
-{
-    if (!ui.jumpToLocationCheckBox->isChecked())
-    {
-        return;
-    }
-
-    double key = 0.0;
-    double timeStamp = 0.0;
-    QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[0]).graph;
-    key = graph->keyAxis()->pixelToCoord(event->x());
-
-    if (m_useTimeOnX)
-    {
-        timeStamp = key;
-        key = m_dataStoragePtr->getNearestIndexForTimestamp(timeStamp);
-    }
-
-    quint64 position = static_cast<quint64>(floor(key));
-    quint64 min = 0;
-    quint64 max = static_cast<quint64>(m_dataStoragePtr->rowCount());
-
-    if ( position > max )
-    {
-        ui.tableWidget->scrollToBottom();
-        double plotPos = m_useTimeOnX ? m_dataStoragePtr->getMaxTimeStamp() : max;
-        plotCurrentIndex(plotPos);
-    }
-    else if ( position < min )
-    {
-        ui.tableWidget->scrollToTop();
-        double plotPos = m_useTimeOnX ? m_dataStoragePtr->getMinTimeStamp() : min;
-        plotCurrentIndex(plotPos);
-    }
-    else
-    {
-        //search for previous event (remember the table may be filtered)
-        QModelIndex sourceIndex = m_dataStoragePtr->index(position - min, 0);
-        QModelIndex index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-        while ( sourceIndex.row() >= static_cast<int>(min) && !index.isValid() )
-        {
-            sourceIndex = m_dataStoragePtr->index(sourceIndex.row() - 1, 0);
-            index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-        }
-
-        if ( !index.isValid() )
-        {
-            //couldn't find filtered index by looking back, try forward...
-            sourceIndex = m_dataStoragePtr->index(position - min, 0);
-            index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-            while ( sourceIndex.row() <= static_cast<int>(max) && !index.isValid() )
-            {
-                sourceIndex = m_dataStoragePtr->index(sourceIndex.row() + 1, 0);
-                index = m_tableFilterProxyModel->mapFromSource(sourceIndex);
-            }
-        }
-        ui.tableWidget->setCurrentIndex(index);
-        ui.tableWidget->scrollTo(index);
-    }
-}
-
 void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
 {
     if (!ui.showValuesCheckBox->isChecked())
@@ -447,27 +309,12 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
     QString newresult = "";
     for (int i=0;i<m_graphClassMap.keys().size();i++)
     {
-
-        double key=0;
         QCPGraph *graph = m_graphClassMap.value(m_graphClassMap.keys()[i]).graph;
-        key = graph->keyAxis()->pixelToCoord(evt->x());
+        double key   = graph->keyAxis()->pixelToCoord(evt->x());
+        int keyIndex = graph->findBegin(key);
         if (i == 0)
         {
-            if (m_logLoaded)
-            {
-                if (m_useTimeOnX)
-                {
-                    newresult.append("Time s: " + QString::number(key,'f',3) + "\n");
-                }
-                else
-                {
-                    newresult.append("Log Line: " + QString::number(key,'f',0) + "\n");
-                }
-            }
-            else
-            {
-                newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
-            }
+            newresult.append("Time: " + QDateTime::fromMSecsSinceEpoch(key * 1000.0).toString("hh:mm:ss") + "\n");
         }
         if (m_graphClassMap.keys()[i] == ModeMessage::TypeName)
         {
@@ -475,19 +322,12 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
             {
                 for (QMap<double,QString>::const_iterator messagemapiterator = m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constBegin();messagemapiterator!=m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constEnd();messagemapiterator++)
                 {
-                    if (messagemapiterator.key() < key)
+                    if ((messagemapiterator.key() < key) && ((messagemapiterator+1).key() > key))
                     {
-                        if (messagemapiterator==m_graphClassMap.value(m_graphClassMap.keys()[i]).messageMap.constEnd()-1)
-                        {
-                            //We're at the end, use the end
-                            newresult.append(m_graphClassMap.keys()[i] + ": " + messagemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-                        }
-                        else if ((messagemapiterator+1).key() > key)
-                        {
-                            //This only gets hit if we're not at the end, and we have the proper value
-                            newresult.append(m_graphClassMap.keys()[i] + ": " + messagemapiterator.value() + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-                            break;
-                        }
+                        //This only gets hit if we're not at the end, and we have the proper value
+                        QStringList splitValue = messagemapiterator.value().split("\n");    // to remove the "by Radio" info
+                        newresult.append(m_graphClassMap.keys()[i] + ": " + splitValue[0] + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+                        break;
                     }
                 }
             }
@@ -506,19 +346,14 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
         {
             //Ignore ERR / EV / MSG
         }
-        else if (graph->data()->contains(key))
+        else if(keyIndex)
         {
-            QString str = QString().sprintf( "%.9g", graph->data()->value(key).value);
-            newresult.append(m_graphClassMap.keys()[i] + ": " + str + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
-        }
-        else if (graph->data()->lowerBound(key) != graph->data()->constEnd())
-        {
-        	QString str = QString().sprintf( "%.9g", graph->data()->lowerBound(key).value().value);
+            QString str = QString().sprintf( "%.9g", graph->dataMainValue(keyIndex));
             newresult.append(m_graphClassMap.keys()[i] + ": " + str + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
         else
         {
-            newresult.append(m_graphClassMap.keys()[i] + ": " + "ERR" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
+            newresult.append(m_graphClassMap.keys()[i] + ": " + "NONE" + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
     }
     QToolTip::showText(QPoint(evt->globalPos().x() + m_plot->x(),evt->globalPos().y()+m_plot->y()),newresult);
@@ -531,6 +366,7 @@ void AP2DataPlot2D::axisDoubleClick(QCPAxis* axis,QCPAxis::SelectablePart part,Q
     Q_UNUSED(evt)
     graphControlsButtonClicked();
 }
+
 void AP2DataPlot2D::graphControlsButtonClicked()
 {
     if (m_axisGroupingDialog)
@@ -570,136 +406,6 @@ void AP2DataPlot2D::graphControlsButtonClicked()
     QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::Show));
     QApplication::postEvent(m_axisGroupingDialog, new QEvent(QEvent::WindowActivate));
 }
-
-
-
-void AP2DataPlot2D::addGraphLeft()
-{
-    if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
-    {
-        return;
-    }
-
-    QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
-    QString headertext = ui.tableWidget->model()->headerData(ui.tableWidget->selectionModel()->selectedIndexes().at(0).column(),Qt::Horizontal,Qt::DisplayRole).toString();
-    ui.dataSelectionScreen->enableItem(itemtext + "." + headertext);
-    //Whenever we add a graph, make the button a remove, since there is no selectedItemChanged signal if they re-click it
-    //It's an enabled
-    m_addGraphAction->setText("Remove From Graph");
-    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft()));
-
-}
-void AP2DataPlot2D::selectedRowChanged(QModelIndex current,QModelIndex previous)
-{
-    Q_UNUSED(previous);
-    if (!current.isValid())
-    {
-        return;
-    }
-    quint64 index =  m_tableFilterProxyModel->mapToSource(current).row();
-
-    if (m_useTimeOnX)
-    {
-        // timestamp value of the current row is in colum 2
-        double item = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(current.row(),2)).value(Qt::DisplayRole).toInt();
-        plotCurrentIndex(item / m_dataStoragePtr->getTimeDivisor());
-    }
-    else
-    {
-        plotCurrentIndex(index);
-    }
-
-    m_dataStoragePtr->selectedRowChanged(m_tableFilterProxyModel->mapToSource(current));
-
-    if (current.column() == 0 || current.column() == 1)
-    {
-        //This is column 0 or 1, index and name
-        if (m_showOnlyActive)
-        {
-            m_addGraphAction->setText("Show All");
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-            connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-        }
-        else
-        {
-            m_addGraphAction->setText("Show only these rows");
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-            connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-        }
-    }
-    else if (ui.tableWidget->selectionModel()->selectedIndexes().size() != 0)
-    {
-        QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(current.row(),1)).value(Qt::DisplayRole).toString();
-        QString headertext = ui.tableWidget->model()->headerData(current.column(),Qt::Horizontal,Qt::DisplayRole).toString();
-        QString label = itemtext + "." + headertext;
-        if (m_graphClassMap.contains(label))
-        {
-            //It's an enabled
-            m_addGraphAction->setText("Remove From Graph");
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-            connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft()));
-        }
-        else
-        {
-            m_addGraphAction->setText("Add To Graph");
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-            disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-            connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
-        }
-    }
-}
-void AP2DataPlot2D::removeGraphLeft()
-{
-    if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
-    {
-        return;
-    }
-    QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
-    QString headertext = ui.tableWidget->model()->headerData(ui.tableWidget->selectionModel()->selectedIndexes().at(0).column(),Qt::Horizontal,Qt::DisplayRole).toString();
-    QString label = itemtext + "." + headertext;
-    ui.dataSelectionScreen->disableItem(itemtext + "." + headertext);
-    m_addGraphAction->setText("Add To Graph");
-    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Disconnect from everything
-    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(removeGraphLeft())); //Disconnect from everything
-    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showOnlyClicked()));
-    disconnect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(showAllClicked()));
-    connect(m_addGraphAction,SIGNAL(triggered()),this,SLOT(addGraphLeft())); //Add addgraphleft
-}
-
-void AP2DataPlot2D::showOnlyClicked()
-{
-    if (ui.tableWidget->selectionModel()->selectedIndexes().size() == 0)
-    {
-        return;
-    }
-    QString itemtext = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(ui.tableWidget->selectionModel()->selectedIndexes().at(0).row(),1)).value(Qt::DisplayRole).toString();
-    m_tableFilterProxyModel->setFilterFixedString(itemtext);
-    m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
-    m_tableFilterProxyModel->setFilterKeyColumn(1);
-    m_showOnlyActive = true;
-}
-
-void AP2DataPlot2D::showAllClicked()
-{
-    disableTableFilter();
-    m_showOnlyActive = false;
-}
-
 
 void AP2DataPlot2D::autoScrollClicked(bool checked)
 {
@@ -764,11 +470,7 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
     {
         return;
     }
-    if (m_logLoaded)
-    {
-        //If a log is currently loaded, we don't care about incoming data.
-        return;
-    }
+
     qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
     m_currentIndex = msec_current;
     qint64 newmsec = (msec_current - m_startIndex);// + m_timeDiff;
@@ -778,37 +480,23 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
         m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower + diff);
         m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper((newmsec / 1000.0));
     }
-    if (!m_graphClassMap.contains("MODE"))
+
+    if(!m_graphClassMap.contains(ModeMessage::TypeName))
     {
-        QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-        yAxis->setVisible(false);
-        yAxis->setLabel("MODE");
-        yAxis->setRangeUpper(8.0);  // We have 7 different arrow lengths
-        QCPGraph *mainGraph = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
-
-        if (m_graphCount > 0)
-        {
-            connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),yAxis,SLOT(setRange(QCPRange)));
-        }
-
-        Graph graph;
-        graph.axis = yAxis;
-        graph.graph = mainGraph;
-
-        m_graphClassMap["MODE"] = graph;
-        m_graphNameList.append("MODE");
-
-        mainGraph->rescaleValueAxis();
-        if (m_graphCount == 1)
-        {
-            mainGraph->rescaleKeyAxis();
-        }
+        // create a graph with an invisible y-axis for the text arrows (mavlink has only mode)
+        Graph arrowGraph;
+        arrowGraph.axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+        arrowGraph.axis->setVisible(false);
+        arrowGraph.axis->setRangeUpper(8.0);
+        arrowGraph.graph = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft, m_graphCount++));
+        arrowGraph.graph->rescaleValueAxis();
+        m_graphClassMap.insert(ModeMessage::TypeName, arrowGraph);
+        m_graphNameList.append(ModeMessage::TypeName);
     }
 
     int index = newmsec / 1000.0;
-    m_graphClassMap["MODE"].messageMap[index] = text;
-    plotTextArrow(index, text, "MODE", QColor(50,125,0), ui.modeDisplayCheckBox);
-
+    m_graphClassMap[ModeMessage::TypeName].messageMap[index] = text;
+    plotTextArrow(index, text, ModeMessage::TypeName, QColor(50,125,0), ui.modeDisplayCheckBox);
 }
 
 void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QString& unit, const double value, const quint64 msec,bool integer)
@@ -819,11 +507,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     {
         return;
     }
-    if (m_logLoaded)
-    {
-        //If a log is currently loaded, we don't care about incoming data.
-        return;
-    }
+
     QString propername  = name.mid(name.indexOf(":")+1);
     if (!m_onlineValueMap.contains(propername))
     {
@@ -858,7 +542,7 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         {
             for (QMap<QString,Graph>::const_iterator i = m_graphClassMap.constBegin();i!=m_graphClassMap.constEnd();i++)
             {
-                i.value().graph->removeData(0,m_onlineValueTimeoutList[0].second);
+//                i.value().graph->removeData(0,m_onlineValueTimeoutList[0].second);
             }
             m_onlineValueTimeoutList.removeAt(0);
         }
@@ -917,16 +601,9 @@ void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QSt
 
 void AP2DataPlot2D::loadButtonClicked()
 {
-    if (m_logLoaded){
-        if (this->parent() == NULL){
-            //Good to close out
-            this->close();
-        }
-    } else {
-        QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.BIN *.tlog);;All Files (*.*)");
-        dialog->setFileMode(QFileDialog::ExistingFile);
-        dialog->open(this, SLOT(loadDialogAccepted()));
-    }
+    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.BIN *.tlog);;All Files (*.*)");
+    dialog->setFileMode(QFileDialog::ExistingFile);
+    dialog->open(this, SLOT(loadDialogAccepted()));
 }
 
 void AP2DataPlot2D::loadDialogAccepted()
@@ -940,60 +617,16 @@ void AP2DataPlot2D::loadDialogAccepted()
     {
         return;
     }
-    m_filename = dialog->selectedFiles().first();
+    QString filename = dialog->selectedFiles().first();
 
-    AP2DataPlot2D *plot = new AP2DataPlot2D(0,true);
-    connect(plot,SIGNAL(destroyed(QObject*)),this,SLOT(childGraphDestroyed(QObject*)));
-    m_childGraphList.append(plot);
-    plot->setAttribute(Qt::WA_DeleteOnClose,true);
-    plot->show();
-    plot->loadLog(m_filename);
-}
-
-void AP2DataPlot2D::loadLog(QString filename)
-{
-    m_logLoaded = true;
-    for (int i=0;i<m_graphNameList.size();i++)
-    {
-        m_wideAxisRect->removeAxis(m_graphClassMap.value(m_graphNameList[i]).axis);
-        m_plot->removeGraph(m_graphClassMap.value(m_graphNameList[i]).graph);
-    }
-    ui.dataSelectionScreen->clear();
-    if (m_axisGroupingDialog)
-    {
-        m_axisGroupingDialog->clear();
-    }
-    m_plot->replot();
-    m_graphClassMap.clear();
-    m_graphCount = 0;
-
-    QString shortfilename =filename.mid(filename.lastIndexOf("/")+1);
-    setWindowTitle(tr("Graph: %1").arg(shortfilename));
-    ui.toKMLPushButton->setVisible(false);
-
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltNumber);
-    m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100);
-    ui.autoScrollCheckBox->setChecked(false);
-    ui.loadOfflineLogButton->setText("Close Log");
-    ui.loadTLogButton->setVisible(false);
-    ui.downloadPushButton->setVisible(false);
-    ui.autoScrollCheckBox->setVisible(false);
-
-    m_dataStoragePtr = LogdataStorage::Ptr(new LogdataStorage());
-    m_logLoaderThread = new AP2DataPlotThread(m_dataStoragePtr);
-    connect(m_logLoaderThread,SIGNAL(startLoad()),this,SLOT(loadStarted()));
-    connect(m_logLoaderThread,SIGNAL(loadProgress(qint64,qint64)),this,SLOT(loadProgress(qint64,qint64)));
-    connect(m_logLoaderThread,SIGNAL(error(QString)),this,SLOT(threadError(QString)));
-    connect(m_logLoaderThread,SIGNAL(done(AP2DataPlotStatus)),this,SLOT(threadDone(AP2DataPlotStatus)));
-    connect(m_logLoaderThread,SIGNAL(finished()),this,SLOT(threadTerminated()));
-    m_logLoaderThread->loadFile(filename);
-}
-
-void AP2DataPlot2D::threadTerminated()
-{
-    QLOG_DEBUG() << "AP2DataPlot2D::threadTerminated = " << m_logLoaderThread;
-    m_logLoaderThread->deleteLater();
-    m_logLoaderThread = NULL;
+    LogAnalysis *pAnalyze = new LogAnalysis(0);
+    m_childGraphList.append(pAnalyze);
+    connect(pAnalyze, SIGNAL(destroyed(QObject*)), this, SLOT(childGraphDestroyed(QObject*)));
+    pAnalyze->setAttribute(Qt::WA_DeleteOnClose, true);
+    pAnalyze->show();
+    pAnalyze->activateWindow();
+    pAnalyze->raise();
+    pAnalyze->loadLog(filename);
 }
 
 AP2DataPlot2D::~AP2DataPlot2D()
@@ -1005,12 +638,6 @@ AP2DataPlot2D::~AP2DataPlot2D()
         m_updateTimer->stop();
         m_updateTimer->deleteLater();
         m_updateTimer = NULL;
-    }
-    if (m_logLoaderThread)
-    {
-        m_logLoaderThread->stopLoad();
-        m_logLoaderThread->deleteLater();
-        m_logLoaderThread = NULL;
     }
     if (m_axisGroupingDialog)
     {
@@ -1026,144 +653,63 @@ AP2DataPlot2D::~AP2DataPlot2D()
 
     delete m_plot;
     m_plot = NULL;
-
-    delete m_tableFilterProxyModel;
-    m_tableFilterProxyModel = NULL;
 }
 
 void AP2DataPlot2D::itemEnabled(QString name)
 {
-    if (m_logLoaded)
+    if (m_onlineValueMap.contains(name))
     {
         QVector<double> xlist;
         QVector<double> ylist;
-        if (!m_dataStoragePtr->getValues(name, m_useTimeOnX, xlist, ylist))
-        {
-            //No values!
-            m_graphCount++; //Prevent crash when it tries to disable
-            ui.dataSelectionScreen->disableItem(name);
-            return;
-        }
 
-        QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-        yAxis->setLabel(name);
-        yAxis->setNumberFormat("gb");
-
-        if (m_graphCount > 0)
+        float min = m_onlineValueMap[name][0].second;
+        float max = m_onlineValueMap[name][0].second;
+        for (int j=0;j<m_onlineValueMap[name].size();j++)
         {
-            connect(m_wideAxisRect->axis(QCPAxis::atLeft,0),SIGNAL(rangeChanged(QCPRange)),yAxis,SLOT(setRange(QCPRange)));
+            xlist.append(m_onlineValueMap[name][j].first);
+            double val = m_onlineValueMap[name][j].second;
+            if (val > max)
+            {
+                max = val;
+            }
+            if (val < min)
+            {
+                min = val;
+            }
+            ylist.append(val);
         }
-        // use golden ratio for evenly distributed colors
-        double golden_ratio_conjugate = 0.618033988749895;
-        double h = (static_cast<double>(rand()) / RAND_MAX);
-        h = h + golden_ratio_conjugate;
-        h = fmod(h, 1);     // hue
-        double s = 0.75;    // saturation
-        double v = 0.8516;  // value
-        QColor color = QColor::fromHsvF(h, s, v);
-        yAxis->setLabelColor(color);
-        yAxis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+        QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
+        axis->setLabel(name);
+        QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
+        axis->setLabelColor(color);
+        axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
         m_graphNameList.append(name);
-        mainGraph1->setPen(QPen(color, 1));
-
-        Graph graph;
-        graph.axis = yAxis;
-        graph.graph=  mainGraph1;
-        m_graphClassMap[name] = graph;
-
         mainGraph1->setData(xlist, ylist);
         mainGraph1->rescaleValueAxis();
 
+        if (m_graphCount == 1)
+        {
+            mainGraph1->rescaleKeyAxis();
+            //m_scrollStartIndex = m_currentIndex;
+            //ui.horizontalScrollBar->setMinimum(m_timeDiff);
+        }
         if (m_axisGroupingDialog)
         {
             if (!name.contains(ModeMessage::TypeName) &&
-                !name.contains(ErrorMessage::TypeName)  &&
-                !name.contains(EventMessage::TypeName) &&
-                !name.contains(MsgMessage::TypeName))
-            {
-                m_axisGroupingDialog->addAxis(name,yAxis->range().lower,yAxis->range().upper,color);
-            }
-        }
-        // Graph 1 is the text arrow graph Graph 2 is the first 'line graph'
-        if (m_graphCount <= 2)
-        {
-            mainGraph1->rescaleKeyAxis();
-            m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeLower(xlist.at(0));
-            m_wideAxisRect->axis(QCPAxis::atBottom)->setRangeUpper(xlist.back());
-            yAxis->grid()->setVisible(true);
-        }
-        // as soon as 2 'line graphs' are visible remove the grid
-        else if(m_graphCount == 3 )
-        {
-            // brute force
-            foreach (Graph graph, m_graphClassMap)
-            {
-                if (graph.axis != NULL)
-                {
-                    graph.axis->grid()->setVisible(false);
-                }
-            }
-        }
-
-        return;
-    } //if (m_logLoaded)
-    else
-    {
-        if (m_onlineValueMap.contains(name))
-        {
-            QVector<double> xlist;
-            QVector<double> ylist;
-
-            float min = m_onlineValueMap[name][0].second;
-            float max = m_onlineValueMap[name][0].second;
-            for (int j=0;j<m_onlineValueMap[name].size();j++)
-            {
-                xlist.append(m_onlineValueMap[name][j].first);
-                double val = m_onlineValueMap[name][j].second;
-                if (val > max)
-                {
-                    max = val;
-                }
-                if (val < min)
-                {
-                    min = val;
-                }
-                ylist.append(val);
-            }
-            QCPAxis *axis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-            axis->setLabel(name);
-            QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
-            axis->setLabelColor(color);
-            axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
-            QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
-            m_graphNameList.append(name);
-            mainGraph1->setData(xlist, ylist);
-            mainGraph1->rescaleValueAxis();
-
-            if (m_graphCount == 1)
-            {
-                mainGraph1->rescaleKeyAxis();
-                //m_scrollStartIndex = m_currentIndex;
-                //ui.horizontalScrollBar->setMinimum(m_timeDiff);
-            }
-            if (m_axisGroupingDialog)
-            {
-                if (!name.contains(ModeMessage::TypeName) &&
                     !name.contains(ErrorMessage::TypeName)  &&
                     !name.contains(EventMessage::TypeName) &&
                     !name.contains(MsgMessage::TypeName))
-                {
-                    m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
-                }
+            {
+                m_axisGroupingDialog->addAxis(name,axis->range().lower,axis->range().upper,color);
             }
-            Graph graph;
-            graph.axis = axis;
-            graph.graph=  mainGraph1;
-            m_graphClassMap[name] = graph;
-
-            mainGraph1->setPen(QPen(color, 1));
         }
+        Graph graph;
+        graph.axis = axis;
+        graph.graph=  mainGraph1;
+        m_graphClassMap[name] = graph;
+
+        mainGraph1->setPen(QPen(color, 1));
     }
 }
 
@@ -1171,10 +717,6 @@ void AP2DataPlot2D::itemDisabled(QString name)
 {
     if (m_graphClassMap.contains(name)) // only enabled items can be disabled
     {
-        if (m_logLoaded)
-        {
-            name = name.mid(name.indexOf(":")+1);
-        }
         for (int i=0;i<m_graphClassMap.value(name).itemList.size();i++)
         {
             m_plot->removeItem(m_graphClassMap.value(name).itemList.at(i));
@@ -1203,11 +745,6 @@ void AP2DataPlot2D::itemDisabled(QString name)
     }
 }
 
-void AP2DataPlot2D::progressDialogCanceled()
-{
-    m_logLoaderThread->stopLoad();
-}
-
 void AP2DataPlot2D::clearGraph()
 {
     //Clear the graph
@@ -1223,42 +760,13 @@ void AP2DataPlot2D::clearGraph()
         m_axisGroupingDialog->hide();
     }
     m_graphClassMap.clear();
+    m_graphNameList.clear();
     m_graphCount = 0;
 
-    if (m_logLoaded)
-    {
-        //Unload the log.
-        m_logLoaded = false;
-        ui.loadOfflineLogButton->setText("Open Log");
-        ui.hideExcelView->setVisible(false);
-        ui.hideExcelView->setChecked(false);
-        //ui.tableWidget->setVisible(false);
-        setExcelViewHidden(true);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setTickLabelType(QCPAxis::ltDateTime);
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setDateTimeFormat("hh:mm:ss");
-        m_wideAxisRect->axis(QCPAxis::atBottom, 0)->setRange(0,100); //Default range of 0-100 milliseconds?
-    }
     m_currentIndex = QDateTime::currentMSecsSinceEpoch();
     m_startIndex = m_currentIndex;
     m_onlineValueMap.clear();
     m_plot->replot();
-}
-
-void AP2DataPlot2D::loadStarted()
-{
-    m_progressDialog = QSharedPointer<QProgressDialog>(new QProgressDialog("Loading File","Cancel",0,100,this), &QObject::deleteLater);
-    m_progressDialog->setWindowModality(Qt::WindowModal);
-    connect(m_progressDialog.data(),SIGNAL(canceled()),this,SLOT(progressDialogCanceled()));
-    m_progressDialog->show();
-    QApplication::processEvents();
-}
-
-void AP2DataPlot2D::loadProgress(qint64 pos,qint64 size)
-{
-    if (m_progressDialog)
-    {
-        m_progressDialog->setValue(((double)pos / (double)size) * 100.0);
-    }
 }
 
 int AP2DataPlot2D::getStatusTextPos()
@@ -1294,10 +802,7 @@ void AP2DataPlot2D::plotTextArrow(double index, const QString &text, const QStri
     itemline->end->setCoords(index, 0.0);
     itemline->setTail(QCPLineEnding::esDisc);
     itemline->setHead(QCPLineEnding::esSpikeArrow);
-
-    m_plot->addItem(itemline);
     itemtext->position->setCoords(itemline->start->coords());
-    m_plot->addItem(itemtext);
 
     if (checkBox && !checkBox->isChecked())
     {
@@ -1317,152 +822,6 @@ void AP2DataPlot2D::removeTextArrows(const QString &graphName)
         }
         m_graphClassMap[graphName].itemList.clear();
     }
-}
-
-void AP2DataPlot2D::threadDone(AP2DataPlotStatus state)
-{
-    m_loadedLogMavType = state.getMavType();
-
-    // Errorhandling
-    if (state.getParsingState() != AP2DataPlotStatus::OK)
-    {
-        QString infoString;
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setWindowTitle("Warning");
-        msgBox.setText("Log parsing ended with errors.");
-        msgBox.addButton(QMessageBox::Ok);
-
-        if (state.getParsingState() == AP2DataPlotStatus::FmtError)
-        {
-            infoString = "There were errors only in format discription. Usually this is no problem.\n\r";
-        }
-        else if (state.getParsingState() == AP2DataPlotStatus::TruncationError)
-        {
-            infoString = "The data was truncated!\n\r";
-        }
-        else if (state.getParsingState() == AP2DataPlotStatus::TimeError)
-        {
-            infoString = "The time data was currupted. Maybe plotting by time may not work.\n\r";
-        }
-        else
-        {
-            infoString = "There were data errors / unreadable data in the log! The data is potentially corrupt and incorrect.\r";
-        }
-
-        msgBox.setInformativeText(infoString + "Detected:\r" + state.getErrorOverview());
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.setDetailedText(state.getDetailedErrorText());
-        msgBox.exec();
-    }
-
-    // First setup X-axis and scroller
-    setupXAxisAndScroller();
-
-    // Insert data into tree view suppressing all measurements containing Strings as values
-    QMap<QString, QStringList> fmtlist = m_dataStoragePtr->getFmtValues(true);
-    for (QMap<QString, QStringList>::const_iterator i=fmtlist.constBegin();i!=fmtlist.constEnd();++i)
-    {
-        QString name = i.key();
-        for (int j=0;j<i.value().size();j++)
-        {
-            ui.dataSelectionScreen->addItem(name + "." + i.value().at(j));
-        }
-    }
-
-    // Insert data into sorting including all measurements with string data
-    fmtlist.clear();
-    fmtlist = m_dataStoragePtr->getFmtValues(false);
-    for (QMap<QString, QStringList>::const_iterator i=fmtlist.constBegin();i!=fmtlist.constEnd();++i)
-    {
-        QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << i.key());
-        child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
-        child->setCheckState(0, Qt::Checked); // Set it checked, since all items are enabled by default
-        ui.sortSelectTreeWidget->addTopLevelItem(child);
-        m_tableFilterList.append(i.key());
-    }
-
-    // Setup basic graph for all arrow plots -> MODE/ERR/EV/MSG
-    // This is graph one!
-    QCPAxis *yAxis = m_wideAxisRect->addAxis(QCPAxis::atLeft);
-    yAxis->setVisible(false);
-    yAxis->setLabel("MODE/ERR/EV/MSG");
-    yAxis->setRangeUpper(8.0);  // We have 7 different arrow lengths
-    QCPGraph *mainGraph = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft, m_graphCount++));
-
-    // Setup arrow plots. In a loaded log we always have MODE/ERR/EV/MSG
-    Graph graph;
-    graph.axis = yAxis;
-    graph.graph = mainGraph;
-
-    m_graphClassMap[ModeMessage::TypeName] = graph;
-    m_graphNameList.append(ModeMessage::TypeName);
-    m_graphClassMap[ErrorMessage::TypeName] = graph;
-    m_graphNameList.append(ErrorMessage::TypeName);
-    m_graphClassMap[EventMessage::TypeName] = graph;
-    m_graphNameList.append(EventMessage::TypeName);
-    m_graphClassMap[MsgMessage::TypeName] = graph;
-    m_graphNameList.append(MsgMessage::TypeName);
-
-    // Load MODE messages
-    m_dataStoragePtr->getMessagesOfType(ModeMessage::TypeName, m_indexToMessageMap); //Must only be loaded once
-    // Load ERR messages
-    m_dataStoragePtr->getMessagesOfType(ErrorMessage::TypeName, m_indexToMessageMap); //Must only be loaded once
-    // Load EV messages
-    m_dataStoragePtr->getMessagesOfType(EventMessage::TypeName, m_indexToMessageMap); //Must only be loaded once
-    // Load MSG messages
-    m_dataStoragePtr->getMessagesOfType(MsgMessage::TypeName, m_indexToMessageMap);   //Must only be loaded once
-
-    // Insert Text arrows for all messages in m_indexToMessageMap
-    insertTextArrows();
-
-    // insert time line
-    insertCurrentIndex();
-
-    // Rescale axis and remove zoom
-    mainGraph->rescaleValueAxis();
-    mainGraph->rescaleKeyAxis();
-    double requestedrange = static_cast<double>(m_scrollEndIndex - m_scrollStartIndex);
-    disconnect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
-    m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(m_scrollStartIndex, requestedrange);
-    connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
-    m_plot->replot();
-
-    ui.verticalScrollBar->setValue(ui.verticalScrollBar->maximum());
-
-    // Set up proxy for table filtering
-    m_tableFilterProxyModel = new QSortFilterProxyModel(this);
-    m_tableFilterProxyModel->setSourceModel(m_dataStoragePtr.data());
-    ui.tableWidget->setModel(m_tableFilterProxyModel);
-    connect(ui.tableWidget->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),this,SLOT(selectedRowChanged(QModelIndex,QModelIndex)));
-
-    m_progressDialog->hide();
-    m_progressDialog.clear();
-
-    setExcelViewHidden(false);
-    ui.hideExcelView->setVisible(true);
-    ui.sortShowPushButton->setVisible(true);
-    ui.exportLogButton->setVisible(true);
-    ui.exportKmlButton->setVisible(true);
-
-    // All these functions are supported when log is loaded
-    ui.indexTypeCheckBox->setVisible(true);
-    ui.errDisplayCheckBox->setVisible(true);
-    ui.evDisplayCheckBox->setVisible(true);
-    ui.msgDisplayCheckBox->setVisible(true);
-    ui.jumpToLocationCheckBox->setVisible(true);
-
-    // Enable double clicking of graph
-    connect(m_plot,SIGNAL(mouseDoubleClick(QMouseEvent*)),this,SLOT(plotDoubleClick(QMouseEvent*)));
-
-}
-
-
-void AP2DataPlot2D::threadError(QString errorstr)
-{
-    QMessageBox::information(0,"Error",errorstr);
-    ui.dataSelectionScreen->clear();
-    this->close();
 }
 
 void AP2DataPlot2D::showLogDownloadDialog()
@@ -1485,91 +844,9 @@ void AP2DataPlot2D::closeLogDownloadDialog()
     }
 }
 
-void AP2DataPlot2D::exportLogClicked()
-{
-    m_KmlExport = false;
-    exportButtonClicked();
-}
-
-void AP2DataPlot2D::exportKmlClicked()
-{
-    m_KmlExport = true;
-    exportButtonClicked();
-}
-
-void AP2DataPlot2D::exportButtonClicked()
-{
-    if (!m_logLoaded)
-    {
-        QMessageBox::information(this,"Error","You must have a log loaded before attempting to export");
-        return;
-    }
-
-    if (m_filename.endsWith(".log")){
-        QMessageBox::information(this,"Error","Cannot export a dataflash log!");
-        return;
-    }
-
-    QString exportExtension = m_KmlExport ? ".kml" : ".log";
-
-    //remove current extension
-    QString exportFilename = m_filename.replace(".bin",exportExtension, Qt::CaseInsensitive); // remove extension
-    QFileDialog *dialog = new QFileDialog(this,"Save Log File",QGC::logDirectory());
-    dialog->setAcceptMode(QFileDialog::AcceptSave);
-    dialog->setNameFilter("*" + exportExtension);
-    dialog->selectFile(exportFilename);
-    QLOG_DEBUG() << " Suggested Export Filename: " << exportFilename;
-    dialog->open(this,SLOT(exportDialogAccepted()));
-}
-
-void AP2DataPlot2D::exportDialogAccepted()
-{
-    QElapsedTimer timer1;
-    timer1.start();
-    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
-    if (!dialog)
-    {
-        return;
-    }
-    if (dialog->selectedFiles().size() == 0)
-    {
-        return;
-    }
-    QString outputFileName = dialog->selectedFiles().at(0);
-    dialog->close();
-
-    if(m_KmlExport)
-    {
-        KmlLogExporter kmlExporter(this);
-        kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
-    }
-    else
-    {
-        AsciiLogExporter asciiExporter(this);
-        asciiExporter.exportToFile(outputFileName, m_dataStoragePtr);
-    }
-
-    QLOG_DEBUG() << "Log export took " << timer1.elapsed() << "ms";
-}
-
 void AP2DataPlot2D::modeCheckBoxClicked(bool checked)
 {
     hideShowTextArrows(checked, ModeMessage::TypeName);
-}
-
-void AP2DataPlot2D::errCheckBoxClicked(bool checked)
-{
-    hideShowTextArrows(checked, ErrorMessage::TypeName);
-}
-
-void AP2DataPlot2D::evCheckBoxClicked(bool checked)
-{
-    hideShowTextArrows(checked, EventMessage::TypeName);
-}
-
-void AP2DataPlot2D::msgCheckBoxClicked(bool checked)
-{
-    hideShowTextArrows(checked, MsgMessage::TypeName);
 }
 
 void AP2DataPlot2D::hideShowTextArrows(bool checked, const QString &type)
@@ -1584,139 +861,6 @@ void AP2DataPlot2D::hideShowTextArrows(bool checked, const QString &type)
     }
 }
 
-void AP2DataPlot2D::indexTypeCheckBoxClicked(bool checked)
-{
-    if (m_useTimeOnX != checked)
-    {
-        m_useTimeOnX = checked;
-        // We have to remove all graphs when changing x-axis storing the active selection
-        QList<QString> reEnableList = ui.dataSelectionScreen->disableAllItems();
-
-        // And all arrows too
-        removeTextArrows(ModeMessage::TypeName);
-        removeTextArrows(ErrorMessage::TypeName);
-        removeTextArrows(EventMessage::TypeName);
-        removeTextArrows(MsgMessage::TypeName);
-
-        // arrows can be inserted instantly again
-        m_statusTextPos = 0;    // reset text arrow length
-        insertTextArrows();
-
-        // Graphs can be reenabled using previous stored selection
-        ui.dataSelectionScreen->enableItemList(reEnableList);
-
-        // Re -set x axis, scroller and zoom
-        disconnect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
-        disconnect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
-        disconnect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
-
-        setupXAxisAndScroller();
-        m_wideAxisRect->axis(QCPAxis::atBottom)->setRange(m_scrollStartIndex, m_scrollEndIndex);
-        m_plot->replot();
-        ui.verticalScrollBar->setValue(ui.verticalScrollBar->maximum());
-
-        connect(ui.verticalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(verticalScrollMoved(int)));
-        connect(ui.horizontalScrollBar,SIGNAL(sliderMoved(int)),this,SLOT(horizontalScrollMoved(int)));
-        connect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
-    }
-}
-
-void AP2DataPlot2D::sortItemChanged(QTreeWidgetItem* item,int col)
-{
-    Q_UNUSED(col)
-	//Sorting item changed.
-	if (!item)
-	{
-		return;
-	}
-	QString msgname = item->text(0);
-	if (item->checkState(0) == Qt::Checked)
-	{
-		if (!m_tableFilterList.contains(msgname))
-		{
-			m_tableFilterList.append(msgname);
-		}
-	}
-	else
-	{
-		if (m_tableFilterList.contains(msgname))
-		{
-			m_tableFilterList.removeOne(msgname);
-		}
-	}
-}
-void AP2DataPlot2D::sortAcceptClicked()
-{
-    QString sortstring = "";
-    // All elements selected -> filter is disabled
-    if (ui.sortSelectTreeWidget->topLevelItemCount() == m_tableFilterList.size())
-    {
-        disableTableFilter();
-        m_showOnlyActive = false;
-    }
-    // one or more elements selected -> RegEx must be used
-    else
-    {
-        // It is VERY important to disable the filtering prior to set up a new one
-        // If this is not done the regex filter gets terribly slow!!!
-        disableTableFilter();
-        for (int i=0;i<m_tableFilterList.size();i++)
-        {
-            sortstring += m_tableFilterList.at(i) + ((i == m_tableFilterList.size()-1) ? "" : "|");
-        }
-        m_tableFilterProxyModel->setFilterRegExp(sortstring);
-        m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
-        m_tableFilterProxyModel->setFilterKeyColumn(1);
-    }
-
-    ui.tableSortGroupBox->setVisible(false);
-    ui.sortShowPushButton->setText("Show Sort");
-    m_showOnlyActive = true;
-}
-
-void AP2DataPlot2D::sortCancelClicked()
-{
-    ui.tableSortGroupBox->setVisible(false);
-    ui.sortShowPushButton->setText("Show Sort");
-}
-void AP2DataPlot2D::showSortButtonClicked()
-{
-    if (ui.tableSortGroupBox->isVisible())
-    {
-        ui.tableSortGroupBox->setVisible(false);
-        ui.sortShowPushButton->setText("Show Sort");
-    }
-    else
-    {
-        ui.tableSortGroupBox->setVisible(true);
-        ui.sortShowPushButton->setText("Hide Sort");
-    }
-}
-void AP2DataPlot2D::sortSelectAllClicked()
-{
-    for (int i=0;i<ui.sortSelectTreeWidget->topLevelItemCount();i++)
-    {
-        if (ui.sortSelectTreeWidget->topLevelItem(i)->checkState(0) != Qt::Checked)
-        {
-            ui.sortSelectTreeWidget->topLevelItem(i)->setCheckState(0,Qt::Checked);
-        }
-    }
-}
-
-void AP2DataPlot2D::sortSelectInvertClicked()
-{
-    for (int i=0;i<ui.sortSelectTreeWidget->topLevelItemCount();i++)
-    {
-        if (ui.sortSelectTreeWidget->topLevelItem(i)->checkState(0) == Qt::Checked)
-        {
-            ui.sortSelectTreeWidget->topLevelItem(i)->setCheckState(0,Qt::Unchecked);
-        }
-        else
-        {
-            ui.sortSelectTreeWidget->topLevelItem(i)->setCheckState(0,Qt::Checked);
-        }
-    }
-}
 void AP2DataPlot2D::childGraphDestroyed(QObject *obj)
 {
     QWidget *plot = qobject_cast<QWidget*>(obj);
@@ -1762,117 +906,3 @@ void AP2DataPlot2D::logToKmlClicked()
     }
 }
 
-void AP2DataPlot2D::disableTableFilter()
-{
-    // The order of the statements is important to be fast on huge logs (15MB)
-    // It does not really disable the filter but sets the rules to get a fast
-    // result without any filtering
-    m_tableFilterProxyModel->setFilterKeyColumn(0);
-    m_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
-    m_tableFilterProxyModel->setFilterFixedString("");
-}
-
-
-void AP2DataPlot2D::setupXAxisAndScroller()
-{
-    // Setup X-Axis for time or index formatting
-    QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
-    xAxis->setNumberFormat("f");
-
-    if (m_useTimeOnX)
-    {
-        m_scrollStartIndex = static_cast<qint64>(m_dataStoragePtr->getMinTimeStamp());
-        m_scrollEndIndex = static_cast<qint64>(m_dataStoragePtr->getMaxTimeStamp());
-        xAxis->setNumberPrecision(2);
-        xAxis->setLabel("Time s");
-    }
-    else
-    {
-        m_scrollStartIndex = 0;
-        m_scrollEndIndex = m_dataStoragePtr->rowCount();
-        xAxis->setNumberPrecision(0);
-        xAxis->setLabel("Index");
-    }
-    ui.horizontalScrollBar->setMinimum(static_cast<int>(m_scrollStartIndex));
-    ui.horizontalScrollBar->setMaximum(static_cast<int>(m_scrollEndIndex));
-}
-
-void AP2DataPlot2D::plotCurrentIndex(double index)
-{
-    QLOG_DEBUG() << index;
-    m_timeLine->start->setCoords(index, 999999);
-    m_timeLine->end->setCoords(index, -999999);
-    //m_plot->replot();
-}
-
-void AP2DataPlot2D::insertCurrentIndex()
-{
-    QCPAxis *xAxis = m_wideAxisRect->axis(QCPAxis::atBottom);
-    QCPAxis *yAxis = m_wideAxisRect->axis(QCPAxis::atLeft);
-
-    m_timeLine = new QCPItemLine(m_plot);
-    m_timeLine->start->setAxes(xAxis, yAxis);
-    m_timeLine->start->setCoords(0, 5);
-    m_timeLine->end->setAxes(xAxis, yAxis);
-    m_timeLine->end->setCoords(0, 0.0);
-    m_timeLine->setPen(QPen(QColor::fromRgb(255, 0, 0), 1));
-
-    m_plot->addItem(m_timeLine);
-}
-
-void AP2DataPlot2D::insertTextArrows()
-{
-
-    // Iterate all elements and call their formatter to create output string
-    foreach (MessageBase::Ptr p_msg, m_indexToMessageMap)
-    {
-        double index = m_useTimeOnX ? p_msg->getTimeStamp() : p_msg->getIndex();
-        QString string;
-        switch (m_loadedLogMavType)
-        {
-            case MAV_TYPE_QUADROTOR:
-            case MAV_TYPE_HEXAROTOR:
-            case MAV_TYPE_OCTOROTOR:
-            case MAV_TYPE_HELICOPTER:
-            case MAV_TYPE_TRICOPTER:
-                string = Copter::MessageFormatter::format(p_msg);
-                break;
-
-            case MAV_TYPE_FIXED_WING:
-                string = Plane::MessageFormatter::format(p_msg);
-                break;
-
-            case MAV_TYPE_GROUND_ROVER:
-                string = Rover::MessageFormatter::format(p_msg);
-                break;
-
-            default:
-                string = p_msg->toString();
-                break;
-        }
-        QLOG_DEBUG() << p_msg->typeName() << " change at index" << index << "to" << string;
-
-        // select ui checkbox associated with the message type
-        QCheckBox *p_Check = NULL;
-        if (p_msg->typeName() == ModeMessage::TypeName)
-        {
-            p_Check = ui.modeDisplayCheckBox;
-        }
-        else if (p_msg->typeName() == ErrorMessage::TypeName)
-        {
-            p_Check = ui.errDisplayCheckBox;
-        }
-        else if (p_msg->typeName() == EventMessage::TypeName)
-        {
-            p_Check = ui.evDisplayCheckBox;
-        }
-        else if (p_msg->typeName() == MsgMessage::TypeName)
-        {
-            p_Check = ui.msgDisplayCheckBox;
-        }
-
-        // plot the text arrow
-        plotTextArrow(index, string, p_msg->typeName(), p_msg->typeColor(), p_Check);
-        m_graphClassMap[p_msg->typeName()].messageMap[index] = string;
-    }
-}

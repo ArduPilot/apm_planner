@@ -81,7 +81,7 @@ public:
 
 signals:
     void startLoad();                           /// Emited as soon as log parsing starts
-    void loadProgress(qint64 pos,qint64 size);  /// Emited to show parsing progress
+    void loadProgress(qint64 pos, qint64 size); /// Emited to show parsing progress
     void done(AP2DataPlotStatus state);         /// Emited as soon as the parsing is done
     void error(QString errorstr);               /// Emited on parsing error
 

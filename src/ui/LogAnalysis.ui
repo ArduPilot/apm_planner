@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AP2DataPlot2D</class>
- <widget class="QWidget" name="AP2DataPlot2D">
+ <class>LogAnalysis</class>
+ <widget class="QWidget" name="LogAnalysis">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -92,6 +92,36 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="errDisplayCheckBox">
+                <property name="text">
+                 <string>Show ERR</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="evDisplayCheckBox">
+                <property name="text">
+                 <string>Show EV</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="msgDisplayCheckBox">
+                <property name="text">
+                 <string>Show MSG</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_3">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -103,6 +133,19 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="indexTypeCheckBox">
+                <property name="toolTip">
+                 <string extracomment="Switches between index or time on x axis"/>
+                </property>
+                <property name="toolTipDuration">
+                 <number>3</number>
+                </property>
+                <property name="text">
+                 <string>Use time on x-axis</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -164,6 +207,88 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="5,1">
+        <item>
+         <widget class="QTableView" name="tableWidget"/>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="tableFilterGroupBox">
+          <property name="title">
+           <string>Table filter</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
+            <number>3</number>
+           </property>
+           <item>
+            <widget class="QTreeWidget" name="filterSelectTreeWidget">
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QPushButton" name="filterAcceptPushButton">
+               <property name="text">
+                <string>Accept</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="filterCancelPushButton">
+               <property name="text">
+                <string>Cancel</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="filterSelectAllPushButton">
+               <property name="text">
+                <string>Select All</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="filterInvertSelectPushButton">
+               <property name="text">
+                <string>Invert Select</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
      <widget class="DataSelectionScreen" name="dataSelectionScreen" native="true">
       <property name="minimumSize">
@@ -194,37 +319,33 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="downloadPushButton">
+      <widget class="QPushButton" name="exportLogButton">
        <property name="text">
-        <string>Download Log</string>
+        <string>Export log</string>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+S</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="loadOfflineLogButton">
+      <widget class="QPushButton" name="exportKmlButton">
        <property name="text">
-        <string>Open Log</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadTLogButton">
-       <property name="text">
-        <string>Enable Log Playback</string>
+        <string>Export Kml</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="graphControlsPushButton">
        <property name="text">
-        <string>Graph Controls</string>
+        <string>Advanced Scaling</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="autoScrollCheckBox">
+      <widget class="QPushButton" name="resetScalingPushButton">
        <property name="text">
-        <string>Auto Scroll With Data</string>
+        <string>Reset Scaling</string>
        </property>
       </widget>
      </item>
@@ -236,9 +357,26 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="toKMLPushButton">
+      <widget class="QCheckBox" name="hideTableWidgetCheckBox">
        <property name="text">
-        <string>Log to Google Earth File</string>
+        <string>Hide Table View</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="tableCursorCheckBox">
+       <property name="text">
+        <string>Show Table Cursor</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="rangeCursorCheckBox">
+       <property name="text">
+        <string>Show Range Cursor</string>
        </property>
       </widget>
      </item>
@@ -254,6 +392,13 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="filterShowPushButton">
+       <property name="text">
+        <string>Show filter</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

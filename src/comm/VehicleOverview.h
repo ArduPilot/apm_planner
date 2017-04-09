@@ -83,7 +83,7 @@ class VehicleOverview : public QObject
     Q_PROPERTY(double ekf_velocity_variance READ getEkfVelocityVariance NOTIFY ekfVelocityVarianceChanged)
     Q_PROPERTY(double ekf_pos_horiz_variance READ getEkfPosHorizVariance NOTIFY ekfPosHorizVarianceChanged)
     Q_PROPERTY(double ekf_pos_vert_variance READ getEkfPosVertVariance NOTIFY ekfPosVertVarianceChanged)
-    Q_PROPERTY(double ekf_compass_varaince READ getEkfComapssVariance NOTIFY ekfCompassVarianceChanged)
+    Q_PROPERTY(double ekf_compass_variance READ getEkfComapssVariance NOTIFY ekfCompassVarianceChanged)
     Q_PROPERTY(double ekf_terrain_alt_variance READ getEkfTerrainAltVariance NOTIFY ekfTerrainAltVarianceChanged)
 
 public:
@@ -221,7 +221,7 @@ public:
     void setEkfFlags(uint16_t newFlags) { if (m_ekfFlags != newFlags) { m_ekfFlags = newFlags; emit ekfFlagsChanged(m_ekfFlags); }}
     void setEkfVelocityVariance(float newValue) { if (m_velocity_variance != newValue) { m_velocity_variance = newValue; emit ekfVelocityVarianceChanged(newValue); }}
     void setEkfPosHorizVariance(float newValue) { if (m_pos_horiz_variance != newValue) { m_pos_horiz_variance = newValue; emit ekfPosHorizVarianceChanged(newValue); }}
-    void setEkfPosVertVariance(float newValue) { if (m_pos_horiz_variance != newValue) { m_pos_horiz_variance = newValue; emit ekfPosVertVarianceChanged(newValue); }}
+    void setEkfPosVertVariance(float newValue) { if (m_pos_vert_variance != newValue) { m_pos_vert_variance = newValue; emit ekfPosVertVarianceChanged(newValue); }}
     void setEkfComapssVariance(float newValue) { if (m_compass_variance != newValue) { m_compass_variance = newValue; emit ekfCompassVarianceChanged(newValue); }}
     void setEkfTerrainAltVariance(float newValue) { if (m_terrain_alt_variance != newValue) { m_terrain_alt_variance = newValue; emit ekfTerrainAltVarianceChanged(newValue); }}
 

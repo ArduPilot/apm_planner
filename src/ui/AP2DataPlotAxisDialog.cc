@@ -183,6 +183,8 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
         {
             graph.group = group;
             graph.isgrouped = true;
+            graph.min = ui->graphTableWidget->item(i,3)->text().toDouble();
+            graph.max = ui->graphTableWidget->item(i,4)->text().toDouble();
             checkbox->setChecked(true);
             emit graphAutoRange(name);
             emit graphAddedToGroup(name,group,m_graphScaleMap.value(name));

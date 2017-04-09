@@ -62,7 +62,7 @@ sudo apt-get install qt5-qmake qt5-default \
   qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
   libqt5svg5-dev qtdeclarative5-qtquick2-plugin
 sudo apt-get install git libsdl1.2-dev  libsndfile-dev \
-  flite1-dev libssl-dev libudev-dev libsdl2-dev
+  flite1-dev libssl-dev libudev-dev libsdl2-dev python-serial python-pexpect
 ```
 
 In Fedora (tested against Fedora 21), use:
@@ -71,7 +71,7 @@ In Fedora (tested against Fedora 21), use:
 sudo yum update
 sudo yum install qt-devel qt5-qtscript-devel \
   qt5-qtwebkit-devel qt5-qtserialport-devel qt5-qtsvg-devel \
-  qt5-qtdeclarative-devel qt5-qtquick1-devel
+  qt5-qtdeclarative-devel qt5-qtquick1-devel python-serial python-pexpect
 
 sudo yum install SDL-devel libsndfile-devel \
   flite-devel openssl-devel libudev-devel SDL2-devel

@@ -92,6 +92,19 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_WIN
     //qInstallMsgHandler( msgHandler );
 #endif
+
+#ifdef Q_OS_LINUX
+    // Part of a fix for "#646 Primary Flight Display acts as a CPU hog..." wich consumed lots
+    // of cpu cylcles when APM-Plannner is used on machines with Intel Graphics.
+    // The complete fix needs the environment variable "QSG_RENDER_LOOP=threaded" to be set before
+    // APM-Planner is started in order to work correctly.
+    // Be aware that setting only the environment variable seems to fix the problem, but without
+    // this code change the application could crash or hang after a while.
+    // see https://forum.qt.io/topic/68721/high-cpu-usage/4
+    // MUST be called before construction of QApplication - in our case QGCCore.
+    QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
+#endif
+
     // Init application
     QGCCore core(argc, argv);
 
