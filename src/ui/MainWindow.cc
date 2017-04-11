@@ -387,7 +387,7 @@ MainWindow::MainWindow(QWidget *parent):
             {
                 QMessageBox msgBox;
                 msgBox.setIcon(QMessageBox::Information);
-                msgBox.setInformativeText(tr("The current user does not have the correct permissions to access serial devices. Use \"sudo adduser <username> dialout\" and then log out and in again"));
+                msgBox.setInformativeText(tr("The current user does not have the correct permissions to access serial devices. Use \"sudo usermod -a -G dialout $USER\" and then log out and in again"));
                 msgBox.setStandardButtons(QMessageBox::Ok);
                 msgBox.setDefaultButton(QMessageBox::Ok);
                 msgBox.exec();
