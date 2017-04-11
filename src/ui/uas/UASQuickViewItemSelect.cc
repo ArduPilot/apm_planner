@@ -1,14 +1,18 @@
 #include "UASQuickViewItemSelect.h"
 #include <QLabel>
 #include <QCheckBox>
-UASQuickViewItemSelect::UASQuickViewItemSelect(bool singleonly,QWidget *parent) : QWidget(parent)
+
+UASQuickViewItemSelect::UASQuickViewItemSelect(bool singleonly,QWidget *parent) :
+    QWidget(parent),
+    currrow(0),
+    currcol(0),
+    m_isSingleOnly(singleonly),
+    m_isFirstTime(true)
 {
     ui.setupUi(this);
-    currcol = 0;
-    currrow = 0;
-    m_isSingleOnly = singleonly;
     connect(ui.listWidget,SIGNAL(currentRowChanged(int)),this,SLOT(listItemChanged(int)));
 }
+
 void UASQuickViewItemSelect::listItemChanged(int item)
 {
     if (item == -1 || ui.listWidget->count() == 0)
