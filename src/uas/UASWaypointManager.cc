@@ -226,9 +226,6 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
 
                 protocol_timer.stop();
                 emit readGlobalWPFromUAS(false);
-                // now we have all waypoints - tell the world
-                emit waypointEditableListChanged();
-                emit waypointEditableListChanged(uasid);
 
                 QTime time = QTime::currentTime();
                 QString timeString = time.toString();
@@ -431,8 +428,8 @@ void UASWaypointManager::addWaypointEditable(Waypoint *wp, bool enforceFirstActi
         connect(wp, SIGNAL(changed(Waypoint*)), this, SLOT(notifyOfChangeEditable(Waypoint*)));
 
         // Moved to caller - if all waypoints are received.
-//        emit waypointEditableListChanged();
-//        emit waypointEditableListChanged(uasid);
+        emit waypointEditableListChanged();
+        emit waypointEditableListChanged(uasid);
     }
 }
 
