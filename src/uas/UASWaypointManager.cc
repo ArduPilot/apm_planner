@@ -56,7 +56,8 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
       standalone(false),
       uasid(0),
       m_defaultAcceptanceRadius(5.0),
-      m_defaultRelativeAlt(0.0)
+      m_defaultRelativeAlt(0.0),
+      waypointIDHandled(65534) // nobody will have a waypoint list with 65534 waypoints.
 {
     if (uas)
     {
@@ -221,6 +222,7 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
                 current_wp_id = 0;
                 current_partner_systemid = 0;
                 current_partner_compid = MAV_COMP_ID_PRIMARY;
+                waypointIDHandled = 65534;  // Set to invalid value.
 
                 protocol_timer.stop();
                 emit readGlobalWPFromUAS(false);
@@ -319,9 +321,14 @@ void UASWaypointManager::handleWaypointCurrent(quint8 systemId, quint8 compId, m
                 }
             }
         }
-        emit updateStatusString(QString("New current waypoint %1").arg(wpc->seq));
-        //emit update to UI widgets
-        emit currentWaypointChanged(wpc->seq);
+        if(waypointIDHandled != wpc->seq)
+        {
+            waypointIDHandled = wpc->seq;
+//            emit updateStatusString(QString("New current waypoint %1").arg(wpc->seq));
+            QLOG_INFO() << QString("New current waypoint %1").arg(wpc->seq);
+            //emit update to UI widgets
+            emit currentWaypointChanged(wpc->seq);
+        }
     }
 }
 

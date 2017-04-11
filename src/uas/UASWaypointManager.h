@@ -188,6 +188,8 @@ private:
 
     double m_defaultAcceptanceRadius;                 ///< Default Acceptance Radius in meters
     double m_defaultRelativeAlt;                      ///< Default relative alt in meters
+
+    quint16 waypointIDHandled;
 };
 
 #endif // UASWAYPOINTMANAGER_H
