@@ -31,6 +31,7 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     connect(currWPManager, SIGNAL(waypointEditableChanged(int, Waypoint*)), this, SLOT(updateWaypoint(int,Waypoint*)));
     connect(this, SIGNAL(waypointCreated(Waypoint*)), currWPManager, SLOT(addWaypointEditable(Waypoint*)));
     connect(this, SIGNAL(waypointChanged(Waypoint*)), currWPManager, SLOT(notifyOfChangeEditable(Waypoint*)));
+    connect(map, SIGNAL(mapChanged()), this, SLOT(redrawWaypointLines()));
     offlineMode = true;
     // Widget is inactive until shown
     defaultGuidedRelativeAlt = 100.0; // Default set to 100m
@@ -393,7 +394,6 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
         disconnect(currWPManager, SIGNAL(waypointEditableChanged(int, Waypoint*)), this, SLOT(updateWaypoint(int,Waypoint*)));
         disconnect(this, SIGNAL(waypointCreated(Waypoint*)), currWPManager, SLOT(addWaypointEditable(Waypoint*)));
         disconnect(this, SIGNAL(waypointChanged(Waypoint*)), currWPManager, SLOT(notifyOfChangeEditable(Waypoint*)));
-        disconnect(map, SIGNAL(mapChanged()), this, SLOT(redrawWaypointLines()));
 
         QGraphicsItemGroup* group = waypointLine(this->uas ? this->uas->getUASID() : 0);
         if (group)
@@ -420,7 +420,7 @@ void QGCMapWidget::activeUASSet(UASInterface* uas)
     connect(currWPManager, SIGNAL(waypointEditableChanged(int, Waypoint*)), this, SLOT(updateWaypoint(int,Waypoint*)));
     connect(this, SIGNAL(waypointCreated(Waypoint*)), currWPManager, SLOT(addWaypointEditable(Waypoint*)));
     connect(this, SIGNAL(waypointChanged(Waypoint*)), currWPManager, SLOT(notifyOfChangeEditable(Waypoint*)));
-    connect(map, SIGNAL(mapChanged()), this, SLOT(redrawWaypointLines()));
+
 }
 
 /**
