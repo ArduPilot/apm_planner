@@ -184,7 +184,9 @@ QString SummaryData::summarize() {
 }
 
 KMLCreator::KMLCreator():
-    m_summary(new SummaryData()) {
+    m_summary(new SummaryData()),
+    m_newGPSMessage(false)
+{
 }
 
 KMLCreator::~KMLCreator() {
@@ -200,7 +202,8 @@ void KMLCreator::start(QString &fn) {
     m_placemarks.append(pm);
 }
 
-void KMLCreator::processLine(QString &line) {
+void KMLCreator::processLine(QString &line)
+{
     if(line.indexOf("FMT,") == 0) {
         FormatLine fl = FormatLine::from(line);
         if(fl.hasData()) {
@@ -214,6 +217,7 @@ void KMLCreator::processLine(QString &line) {
 
             if(gps.hasData()) {
                 m_summary->add(gps);
+                m_newGPSMessage = true;
 
                 Placemark* pm = lastPlacemark();
                 if(pm) {
@@ -228,12 +232,17 @@ void KMLCreator::processLine(QString &line) {
             }
         }
     }
-    else if(line.indexOf("ATT,") == 0) {
+    // we have a lot more "ATT" messages than "GPS" messages. In order to have a one on one relation
+    // between the two messages we only take one new "ATT" message as soon as we have received a "GPS"
+    // message. Its a very raw correlation but better than nothing. (Better would be timestamp matching).
+    // Nevertheless due to this hack its possible to give the plane model in Google earth the right heading.
+    else if((line.indexOf("ATT,") == 0) && m_newGPSMessage) {
         FormatLine fl = m_formatLines.value("ATT");
         if(fl.hasData()) {
             Attitude att = Attitude::from(fl, line);
 
             if(att.hasData()) {
+                m_newGPSMessage = false;
                 Placemark* pm = lastPlacemark();
                 if(pm) {
                     pm->add(att);
@@ -463,7 +472,7 @@ static QString descriptionData(Placemark *p, GPSRecord &c) {
         m["Yaw"] = a.yaw();
     }
 
-    QString s("<![CDATA[\r\n<table>");
+    QString s("<![CDATA[<table>");
 
     QHashIterator<QString, QString> iter(m);
     while(iter.hasNext()) {
@@ -474,7 +483,7 @@ static QString descriptionData(Placemark *p, GPSRecord &c) {
         s += QString("<tr><td><b>%1:</b></td><td>%2</td></tr>").arg(key).arg(value);
     }
 
-    s += "</table>\r\n]]>";
+    s += "</table>]]>";
 
     return s;
 }
@@ -484,6 +493,7 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
         return;
     }
 
+    int index = 0;
     foreach(GPSRecord c, p->mPoints) {
         writer.writeStartElement("Placemark");
             writer.writeTextElement("name", QString("Plane %1").arg(idx++));
@@ -503,8 +513,12 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
                     writer.writeTextElement("altitude", c.alt());
                 writer.writeEndElement(); // Location
 
-                if(p->mAttitudes.size() > 0) {
-                    Attitude a = p->mAttitudes.at(0);
+                int attitudeSize = p->mAttitudes.size();
+                if(attitudeSize > 0)
+                {
+                    int attitudeIndex = index < attitudeSize ? index : attitudeSize - 1;
+
+                    Attitude a = p->mAttitudes.at(attitudeIndex);
 
                     QString yaw = (p->mode == "AUTO")? a.navYaw(): a.yaw();
 
@@ -528,6 +542,7 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
             writer.writeEndElement(); // Model
 
         writer.writeEndElement(); // Placemark
+        ++index;
     }
 }
 
