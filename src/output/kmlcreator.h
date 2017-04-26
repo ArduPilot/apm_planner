@@ -172,6 +172,8 @@ private:
     QList<CommandedWaypoint> m_waypoints;
     QHash<QString, FormatLine> m_formatLines;
     SummaryData* m_summary;
+
+    bool m_newGPSMessage;
 };
 
 } // namespace kml
