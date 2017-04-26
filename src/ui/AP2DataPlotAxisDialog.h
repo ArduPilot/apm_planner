@@ -32,7 +32,7 @@ public:
     explicit AP2DataPlotAxisDialog(QWidget *parent = 0);
     ~AP2DataPlotAxisDialog();
     void addAxis(QString name,double lower, double upper,QColor color);
-    void fullAxisUpdate(QString name,double lower, double upper,bool ismanual, bool isingroup, QString groupname);
+    void fullAxisUpdate(const QString &name, double lower, double upper, bool ismanual, bool isingroup, const QString &groupname, const QColor &color);
     void updateAxis(QString name,double lower, double upper);
     void removeAxis(QString name);
     void clear();
