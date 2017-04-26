@@ -45,7 +45,7 @@ This file is part of the APM_PLANNER project
 #include "AP2DataPlotAxisDialog.h"
 #include "common/common.h"
 #include "ui_LogAnalysis.h"
-
+#include "PresetManager.h"
 
 /**
  * @brief The LogAnalysisCursor class defines a cursor line (vertical selectable, movable line in plot).
@@ -228,9 +228,7 @@ private:
     static const QString s_CursorLayerName;     /// Name for the cursor layer
 
     static const int s_ROW_HEIGHT_PADDING = 3;  /// Number of additional pixels over font height for each row for the table view.
-    static const int s_TextArrowPositions = 7;  /// Max number of different positions for the test arrows
-
-    typedef QMap<QString, QStringList> fmtMapType;  /// type for handling fmt values from datamodel
+    static const int s_TextArrowPositions = 12;  /// Max number of different positions for the test arrows
 
     /**
      * @brief The GraphElements struct holds all needed information about an active graph
@@ -273,16 +271,24 @@ private:
         RangeValues() : m_min(std::numeric_limits<double>::max()), m_max(m_min * -1), m_average(0.0), m_measurements(0) {}
     };
 
+    typedef QMap<QString, QStringList> fmtMapType;          /// type for handling fmt values from datamodel
+    typedef QHash<QString, GraphElements> activeGraphType;  /// type for handling active graph container
+
+
+
     Ui::LogAnalysis ui;     /// The user interface
 
     QScopedPointer<QCustomPlot>  m_plotPtr;            /// Scoped pointer to QCustomplot
     LogdataStorage::Ptr          m_dataStoragePtr;     /// Shared pointer to data storage
 
+    QScopedPointer<QMenuBar, QScopedPointerDeleteLater> m_menuBarPtr;        /// Scoped pointer to the menu bar
+    QScopedPointer<PresetManager, QScopedPointerDeleteLater> m_presetMgrPtr; /// Scoped pointer to the preset manager
+
     QScopedPointer<AP2DataPlotThread, QScopedPointerDeleteLater> m_loaderThreadPtr;        /// Scoped pointer to AP2DataPlotThread
     QScopedPointer<QProgressDialog, QScopedPointerDeleteLater>   m_loadProgressDialog;     /// Scoped pointer to load progress window
     QScopedPointer<AP2DataPlotAxisDialog, QScopedPointerDeleteLater> m_axisGroupingDialog; /// Scoped pointer to axis grouping dialog
 
-    QHash<QString, GraphElements> m_activeGraphs;           /// Holds all active graphs
+    activeGraphType m_activeGraphs;                         /// Holds all active graphs
     QHash<QString, RangeValues> m_rangeValuesStorage;       /// If there is a range cursor the range values are stored here.
     QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    /// Map holding all Messages which are printed as arrows
     GraphElements m_arrowGraph;                             /// The text arrows have an own graph
@@ -355,6 +361,15 @@ private:
      *                       At the moment this means the state of the checkboxes
      */
     void saveSettings();
+
+    /**
+     * @brief presetToRangeConverter - Converts a presetElementVec to a list of graph ranges
+     *        making it possible to use the graphGroupingChanged() method to apply a preset.
+     *        Moreover this method also sets the colors of the graph as stored in the presets.
+     * @param preset - the preset vector containing the preset data
+     * @return - a GraphRange list wich can be given to graphGroupingChanged() method.
+     */
+    QList<AP2DataPlotAxisDialog::GraphRange> presetToRangeConverter(const PresetManager::presetElementVec &preset);
 
 private slots:
 
@@ -542,6 +557,13 @@ private slots:
     void graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList);
 
     /**
+     * @brief graphColorsChanged - handles the graphColorsChanged() signal from the grouping
+     *        dialog.
+     * @param colorlist - map of graph names and their colors.
+     */
+    void graphColorsChanged(QMap<QString,QColor> colorlist);
+
+    /**
      * @brief contextMenuRequest - handles the customContextMenuRequested() signal from
      *        qCustomPlot on right click. It handles the cursor enabling/disabling.
      * @param pos - Pos where the context menu opens. Used to place the cursors initially.
@@ -594,13 +616,27 @@ private slots:
     void enableTableCursor(bool enable);
 
     /**
-     * @brief tableSplitterMoved - is called when the table splitter is moved. Used
-     *        to detect if the table view gets completely hidden and set the buttons
-     *        accordingly
-     * @param pos - unused
-     * @param index - unused
+     * @brief storeGraphSettingsPressed - is called when the store Settings button is pressed.
+     *        Stores the active graphs and their settings into ini file.
      */
-    void tableSplitterMoved(int pos, int index);
+    void storeGraphSettingsPressed();
+
+    /**
+     * @brief applyGraphSettingsPressed - is called when the apply settings button is pressed.
+     *        Applies the data stored with storeGraphSettingsPressed() to the current LogAnalysis window.
+     */
+    void applyGraphSettingsPressed();
+
+    /**
+     * @brief analysisPresetSelected - is called when the preset manager selects a new preset. It does
+     *        everything to apply the preset to the graph.
+     */
+    void analysisPresetSelected(PresetManager::presetElementVec preset);
+
+    /**
+     * @brief addCurrentViewToPreset - applies the current graph view to the preset manager
+     */
+    void addCurrentViewToPreset();
 
 };
 

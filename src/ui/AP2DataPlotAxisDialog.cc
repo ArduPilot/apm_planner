@@ -190,7 +190,8 @@ void AP2DataPlotAxisDialog::applyButtonClicked()
             emit graphAddedToGroup(name,group,m_graphScaleMap.value(name));
         }
         graphRangeList.append(graph);
-        graphColorList[name] = ui->graphTableWidget->item(i,0)->backgroundColor();
+        QBrush brush = ui->graphTableWidget->item(i,0)->background();
+        graphColorList[name] = brush.color();
     }
     emit graphGroupingChanged(graphRangeList);
     emit graphColorsChanged(graphColorList);
@@ -358,8 +359,9 @@ void AP2DataPlotAxisDialog::updateAxis(QString name,double lower, double upper)
     }
 }
 
-void AP2DataPlotAxisDialog::fullAxisUpdate(QString name,double lower, double upper,bool ismanual, bool isingroup, QString groupname)
+void AP2DataPlotAxisDialog::fullAxisUpdate(const QString &name, double lower, double upper, bool ismanual, bool isingroup, const QString &groupname, const QColor &color)
 {
+
     if (!m_rangeMap.contains(name))
     {
         m_rangeMap[name] = QPair<double,double>();
@@ -372,13 +374,15 @@ void AP2DataPlotAxisDialog::fullAxisUpdate(QString name,double lower, double upp
         {
             if (ui->graphTableWidget->item(i,1)->text() == name)
             {
+                QBrush brush(color);
+                ui->graphTableWidget->item(i,0)->setBackground(brush);
+
                 QCheckBox *checkbox = qobject_cast<QCheckBox*>(ui->graphTableWidget->cellWidget(i,5));
                 if (checkbox)
                 {
                     if (ismanual)
                     {
                         checkbox->setChecked(false);
-                        return;
                     }
                     else
                     {
