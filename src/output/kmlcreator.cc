@@ -495,13 +495,39 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
 
     int index = 0;
     foreach(GPSRecord c, p->mPoints) {
+        std::string week_ms_str = c.msec().toStdString();
+        const char *tschar = week_ms_str.c_str();
+        char* endptr;
+        uint32_t week_ms = strtoul(tschar, &endptr, 10);
+
+        bool status;
+        // weeks since 6 Jan 1980
+        int week = c.week().toInt(&status);
+        int utc_offset = (10*52*7+17)*24*60*60 + 27;  // 10 years, 17 days and 27 seconds
+
+        // seconds since 1970
+        time_t unixsec = utc_offset;
+        unixsec += 7*week*24*60*60 + (week_ms / 1000);
+
+        struct tm *dtim;
+        dtim = gmtime(&unixsec);
+
+        char tstring[80];
+        strftime(tstring, 80, "%FT%TZ", dtim);
+        QLOG_DEBUG() <<  c.week() << " " << c.msec() << " " << tstring;
+
         writer.writeStartElement("Placemark");
+            writer.writeStartElement("TimeStamp");
+                writer.writeTextElement("when", tstring);
+            writer.writeEndElement(); // TimeStamp
+
             writer.writeTextElement("name", QString("Plane %1").arg(idx++));
             writer.writeTextElement("visibility", "0");
 
             QString desc = descriptionData(p, c);
             if(!desc.isEmpty()) {
-                writer.writeTextElement("description", desc);
+//                writer.writeTextElement("description", desc);
+                writer.writeTextElement("description", "hdop:" + c.hdop());
             }
 
             writer.writeStartElement("Model");
@@ -524,8 +550,9 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
 
                     writer.writeStartElement("Orientation");
                     writer.writeTextElement("heading", yaw);
-                        writer.writeTextElement("tilt", a.pitch());
-                        writer.writeTextElement("roll", a.roll());
+                    bool status;
+                        writer.writeTextElement("tilt", QString::number(-a.pitch().toFloat(&status)));
+                        writer.writeTextElement("roll", QString::number(-a.roll().toFloat(&status)));
                     writer.writeEndElement(); // Orientation
                 }
 
