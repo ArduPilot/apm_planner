@@ -11,6 +11,12 @@
 
 #include "logdata.h"
 
+// these definitions should match those in ardupilot/libraries/AP_GPS/AP_GPS.h
+// the number of GPS leap seconds
+#define GPS_LEAPSECONDS 18ULL
+#define UNIX_OFFSET     (315964800ULL - GPS_LEAPSECONDS)
+#define SEC_PER_WEEK    (7ULL * 86400ULL)
+
 class QFile;
 
 namespace kml {
@@ -24,9 +30,13 @@ struct GPSRecord: DataLine {
     QString lng()   { return values.value("Lng"); }
     QString alt()   { return values.value("Alt"); }
     QString speed() { return values.value("Spd"); }
+    QString week()  { return values.value("GWk"); }
+    QString msec()  { return values.value("GMS"); }
 
     virtual bool hasData() {
-        return (values.value("Lat").length() > 0);
+        bool status;
+        int week = values.value("GWk").toInt(&status);
+        return status && (week > 0);
     }
 
     QString toStringForKml() {
@@ -35,6 +45,17 @@ struct GPSRecord: DataLine {
     }
 
     static GPSRecord from(FormatLine& format, QString& line);
+
+    qint64 getUtcTime() {
+        // msec since start of week (max value is 2^29.17, so it just fits in a signed 32 bit int)
+        int32_t week_ms = this->msec().toInt();
+        // weeks since 6 Jan 1980
+        int32_t week = this->week().toInt();
+
+        // this is the offset as defined in ardupilot/libraries/AP_GPS/AP_GPS.h
+        qint64 utc_msec = UNIX_OFFSET * 1000LL + week * SEC_PER_WEEK * 1000LL + week_ms;
+        return utc_msec;
+    }
 
     virtual ~GPSRecord() {}
 };
@@ -58,6 +79,74 @@ struct Attitude: DataLine {
     static Attitude from(FormatLine& format, QString& line);
 
     virtual ~Attitude() {}
+};
+
+/**
+ * @brief An AHR2 record from a log file.
+ */
+struct AHR2: DataLine {
+    QString roll()    { return values.value("Roll"); }
+    QString pitch()   { return values.value("Pitch"); }
+    QString yaw()     { return values.value("Yaw"); }
+    QString alt()  { return values.value("Alt"); }
+    QString lat()   { return values.value("Lat"); }
+    QString lng()   { return values.value("Lng"); }
+
+    virtual bool hasData() {
+        return (values.value("Roll").length() > 0);
+    }
+
+    static AHR2 from(FormatLine& format, QString& line);
+
+    virtual ~AHR2() {}
+};
+
+/**
+ * @brief An XKQ1 record from a log file.
+ */
+struct XKQ1: DataLine {
+public:
+    float q1, q2, q3, q4;
+
+    virtual bool hasData() {
+        bool ok;
+        q1 = values.value("Q1").toFloat(&ok);
+        if (!ok) return false;
+        q2 = values.value("Q2").toFloat(&ok);
+        if (!ok) return false;
+        q3 = values.value("Q3").toFloat(&ok);
+        if (!ok) return false;
+        q4 = values.value("Q4").toFloat(&ok);
+        return ok;
+    }
+
+    static XKQ1 from(FormatLine& format, QString& line);
+
+    virtual ~XKQ1() {}
+};
+
+/**
+ * @brief An NKQ1 record from a log file.
+ */
+struct NKQ1: DataLine {
+public:
+    float q1, q2, q3, q4;
+
+    virtual bool hasData() {
+        bool ok;
+        q1 = values.value("Q1").toFloat(&ok);
+        if (!ok) return false;
+        q2 = values.value("Q2").toFloat(&ok);
+        if (!ok) return false;
+        q3 = values.value("Q3").toFloat(&ok);
+        if (!ok) return false;
+        q4 = values.value("Q4").toFloat(&ok);
+        return ok;
+    }
+
+    static NKQ1 from(FormatLine& format, QString& line);
+
+    virtual ~NKQ1() {}
 };
 
 /**
@@ -166,6 +255,8 @@ private:
     void writeLogPlacemarkElement(QXmlStreamWriter &, Placemark *);
     void writePlanePlacemarkElement(QXmlStreamWriter &, Placemark *, int &);
     void writeWaypointsPlacemarkElement(QXmlStreamWriter &);
+    void endLogPlaceMark(int seq, qint64 startUtc, qint64 endUtc,
+            QString& coords, QXmlStreamWriter& writer, Placemark* p);
 
     QString m_filename;
     QList<Placemark *> m_placemarks;
@@ -173,7 +264,17 @@ private:
     QHash<QString, FormatLine> m_formatLines;
     SummaryData* m_summary;
 
-    bool m_newGPSMessage;
+    // save one Attitude and one quaternion record between GPS records
+    XKQ1 m_xkq1;
+    NKQ1 m_nkq1;
+    AHR2 m_ahr2;
+    Attitude m_att;
+
+    bool m_newXKQ1;
+    bool m_newNKQ1;
+    bool m_newAHR2;
+    bool m_newATT;
+
 };
 
 } // namespace kml
