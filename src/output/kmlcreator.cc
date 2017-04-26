@@ -472,19 +472,15 @@ static QString descriptionData(Placemark *p, GPSRecord &c) {
         m["Yaw"] = a.yaw();
     }
 
-    QString s("<![CDATA[<table>");
-
+    QString s;
     QHashIterator<QString, QString> iter(m);
     while(iter.hasNext()) {
         iter.next();
         QString key = iter.key();
         QString value = iter.value();
 
-        s += QString("<tr><td><b>%1:</b></td><td>%2</td></tr>").arg(key).arg(value);
+        s += QString("<b>%1:</b>%2<br>").arg(key).arg(value);
     }
-
-    s += "</table>]]>";
-
     return s;
 }
 
@@ -526,8 +522,9 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
 
             QString desc = descriptionData(p, c);
             if(!desc.isEmpty()) {
-//                writer.writeTextElement("description", desc);
-                writer.writeTextElement("description", "hdop:" + c.hdop());
+                writer.writeStartElement("description");
+                writer.writeCDATA(desc);
+                writer.writeEndElement(); // description
             }
 
             writer.writeStartElement("Model");
@@ -545,14 +542,15 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
                     int attitudeIndex = index < attitudeSize ? index : attitudeSize - 1;
 
                     Attitude a = p->mAttitudes.at(attitudeIndex);
-
                     QString yaw = (p->mode == "AUTO")? a.navYaw(): a.yaw();
 
                     writer.writeStartElement("Orientation");
                     writer.writeTextElement("heading", yaw);
-                    bool status;
-                        writer.writeTextElement("tilt", QString::number(-a.pitch().toFloat(&status)));
-                        writer.writeTextElement("roll", QString::number(-a.roll().toFloat(&status)));
+                        // the sign of tilt and roll has to be changed
+                        QString signChangedPitch = QString::number(a.pitch().toDouble() * -1);
+                        QString signChangedRoll = QString::number(a.roll().toDouble() * -1);
+                        writer.writeTextElement("tilt", signChangedPitch);
+                        writer.writeTextElement("roll", signChangedRoll);
                     writer.writeEndElement(); // Orientation
                 }
 
