@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <QWaitCondition>
 #include <QMutex>
+#include <QQuaternion>
 #include <quazip.h>
 #include <math.h>
 
@@ -95,6 +96,7 @@ static QString toModeString(QString &line) {
     QStringList parts = line.split(QRegExp(","), QString::KeepEmptyParts);
 
     // TODO: Need to add Mode: DataLine object to fix
+    // ... create a ModeRecord:DataLine class and take vehicle type into account
     // MODE, 82081720, 5, 5, 1 // New Message with time
     // MODE, ALT_HOLD, 516     // Old message
 
@@ -132,6 +134,52 @@ Attitude Attitude::from(FormatLine &format, QString &line) {
     Attitude a;
     a.readFields(format, line);
     return a;
+}
+
+AHR2 AHR2::from(FormatLine &format, QString &line) {
+    AHR2 a;
+    a.readFields(format, line);
+    return a;
+}
+
+NKQ1 NKQ1::from(FormatLine &format, QString &line) {
+    NKQ1 a;
+    a.readFields(format, line);
+    return a;
+}
+
+XKQ1 XKQ1::from(FormatLine &format, QString &line) {
+    XKQ1 a;
+    a.readFields(format, line);
+    return a;
+}
+
+static Attitude attFromAHR2(AHR2& ah) {
+    Attitude a;
+    a.values.insert("Roll", ah.roll());
+    a.values.insert("Pitch", ah.pitch());
+    a.values.insert("Yaw", ah.yaw());
+    a.values.insert("DesRoll", "0.0");
+    a.values.insert("DesPitch", "0.0");
+    a.values.insert("DesYaw", "0.0");
+    return a;
+}
+
+static Attitude attFromNKQ1(NKQ1& q) {
+    QQuaternion quat(q.q1, q.q2, q.q3, q.q4);
+    QVector3D euler = quat.toEulerAngles();
+    Attitude a;
+    a.values.insert("Roll", QString::number(euler.x(), 'f', 5));
+    a.values.insert("Pitch", QString::number(euler.y(), 'f', 5));
+    a.values.insert("Yaw", QString::number(euler.z(), 'f', 5));
+    a.values.insert("DesRoll", "0.0");
+    a.values.insert("DesPitch", "0.0");
+    a.values.insert("DesYaw", "0.0");
+    return a;
+}
+
+static Attitude attFromXKQ1(XKQ1& q) {
+    return attFromNKQ1((NKQ1&) q);
 }
 
 Placemark::Placemark(QString t, QString m, QString clr):
@@ -185,7 +233,10 @@ QString SummaryData::summarize() {
 
 KMLCreator::KMLCreator():
     m_summary(new SummaryData()),
-    m_newGPSMessage(false)
+    m_newXKQ1(false),
+    m_newNKQ1(false),
+    m_newAHR2(false),
+    m_newATT(false)
 {
 }
 
@@ -210,14 +261,44 @@ void KMLCreator::processLine(QString &line)
             m_formatLines[fl.name] = fl;
         }
     }
+    // we have a lot more messages containing attitude than "GPS" messages. In order to have a one on one relation
+    // between the two messages we save one of the most recent attitude messages for each "GPS"
+    // message. Its a very raw correlation but better than nothing. (Better would be timestamp matching).
+    // Nevertheless due to this hack its possible to give the plane model in Google earth the right heading.
     else if(line.indexOf("GPS,") == 0) {
+        Placemark* pm = lastPlacemark();
+        if(!pm) {
+            QLOG_WARN() << "No placemark";
+        }
+        else {
+            // use attitude with highest priority: EKF3, EKF2, AHR2, ATT
+            if (m_newXKQ1) {
+                m_att = attFromXKQ1(m_xkq1);
+                pm->add(m_att);
+            }
+            else if (m_newNKQ1) {
+                Attitude att = attFromNKQ1(m_nkq1);
+                pm->add(att);
+            }
+            else if (m_newAHR2) {
+                Attitude att = attFromAHR2(m_ahr2);
+                pm->add(att);
+            }
+            else if (m_newATT) {
+                pm->add(m_att);
+            }
+        }
+        m_newXKQ1 = false;
+        m_newNKQ1 = false;
+        m_newAHR2 = false;
+        m_newATT = false;
+
         FormatLine fl = m_formatLines.value("GPS");
         if(fl.hasData()) {
             GPSRecord gps = GPSRecord::from(fl, line);
 
             if(gps.hasData()) {
                 m_summary->add(gps);
-                m_newGPSMessage = true;
 
                 Placemark* pm = lastPlacemark();
                 if(pm) {
@@ -228,28 +309,51 @@ void KMLCreator::processLine(QString &line)
                 }
             }
             else {
-                QLOG_WARN() << "Coord has no data";
+                QLOG_WARN() << "GPS message has no data";
             }
         }
     }
-    // we have a lot more "ATT" messages than "GPS" messages. In order to have a one on one relation
-    // between the two messages we only take one new "ATT" message as soon as we have received a "GPS"
-    // message. Its a very raw correlation but better than nothing. (Better would be timestamp matching).
-    // Nevertheless due to this hack its possible to give the plane model in Google earth the right heading.
-    else if((line.indexOf("ATT,") == 0) && m_newGPSMessage) {
+    // prefer EKF3 quaternion to EKF2
+    // EKF3 quaternion attitude
+    else if((line.indexOf("XKQ1,") == 0)) {
+
+        FormatLine fl = m_formatLines.value("XKQ1");
+        if(fl.hasData()) {
+            m_xkq1 = XKQ1::from(fl, line);
+
+            if(m_xkq1.hasData()) {
+                m_newXKQ1 = true;
+            }
+        }
+    }
+    // EKF2 quaternion attitude
+    else if((line.indexOf("NKQ1,") == 0)) {
+        FormatLine fl = m_formatLines.value("NKQ1");
+        if(fl.hasData()) {
+            m_nkq1 = NKQ1::from(fl, line);
+
+            if(m_nkq1.hasData()) {
+                m_newNKQ1 = true;
+            }
+        }
+    }
+    else if((line.indexOf("AHR2,") == 0)) {
+        FormatLine fl = m_formatLines.value("AHR2");
+        if(fl.hasData()) {
+            m_ahr2 = AHR2::from(fl, line);
+
+            if(m_ahr2.hasData()) {
+                m_newAHR2 = true;
+            }
+        }
+    }
+    else if((line.indexOf("ATT,") == 0)) {
         FormatLine fl = m_formatLines.value("ATT");
         if(fl.hasData()) {
-            Attitude att = Attitude::from(fl, line);
+            m_att = Attitude::from(fl, line);
 
-            if(att.hasData()) {
-                m_newGPSMessage = false;
-                Placemark* pm = lastPlacemark();
-                if(pm) {
-                    pm->add(att);
-                }
-                else {
-                    QLOG_WARN() << "No placemark";
-                }
+            if(m_att.hasData()) {
+                m_newATT = true;
             }
         }
     }
@@ -262,11 +366,12 @@ void KMLCreator::processLine(QString &line)
                 m_waypoints.append(wp);
             }
             else {
-                QLOG_WARN() << "Coord has no data";
+                QLOG_WARN() << "CMD message has no data";
             }
         }
     }
     else if(line.indexOf("MODE,") == 0) {
+        FormatLine fl = m_formatLines.value("MODE");
         // Time for a new placemark
         QString mode = toModeString(line);
         if(!mode.isEmpty()) {
@@ -484,6 +589,16 @@ static QString descriptionData(Placemark *p, GPSRecord &c) {
     return s;
 }
 
+static QString descriptionData(Placemark *p, Attitude &c) {
+
+    return c.values.value("TimeUS");
+}
+
+QString utc2KmlTimeStamp(qint64 utc_msec) {
+    QDateTime time = QDateTime::fromMSecsSinceEpoch(utc_msec);
+    return time.toString(Qt::ISODate);
+}
+
 void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark *p, int &idx) {
     if(!p) {
         return;
@@ -491,7 +606,12 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
 
     int index = 0;
     foreach(GPSRecord c, p->mPoints) {
+
         writer.writeStartElement("Placemark");
+            writer.writeStartElement("TimeStamp");
+                writer.writeTextElement("when", utc2KmlTimeStamp(c.getUtcTime()));
+            writer.writeEndElement(); // TimeStamp
+
             writer.writeTextElement("name", QString("Plane %1").arg(idx++));
             writer.writeTextElement("visibility", "0");
 
@@ -520,7 +640,7 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
                     QString yaw = (p->mode == "AUTO")? a.navYaw(): a.yaw();
 
                     writer.writeStartElement("Orientation");
-                        writer.writeTextElement("heading", yaw);
+                    writer.writeTextElement("heading", yaw);
                         // the sign of tilt and roll has to be changed
                         QString signChangedPitch = QString::number(a.pitch().toDouble() * -1);
                         QString signChangedRoll = QString::number(a.roll().toDouble() * -1);
@@ -530,9 +650,9 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
                 }
 
                 writer.writeStartElement("Scale");
-                    writer.writeTextElement("x", "1");
-                    writer.writeTextElement("y", "1");
-                    writer.writeTextElement("x", "1");
+                    writer.writeTextElement("x", ".5");
+                    writer.writeTextElement("y", ".5");
+                    writer.writeTextElement("z", ".5");
                 writer.writeEndElement(); // Scale
 
                 writer.writeStartElement("Link");
@@ -546,13 +666,18 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
     }
 }
 
-void KMLCreator::writeLogPlacemarkElement(QXmlStreamWriter &writer, Placemark *p) {
-    if(!p) {
-        return;
-    }
+// end current Placemark
+void KMLCreator::endLogPlaceMark(int seq, qint64 startUtc, qint64 endUtc,
+        QString& coords, QXmlStreamWriter& writer, Placemark* p) {
 
-    writer.writeStartElement("Placemark");
-    writer.writeTextElement("name", p->title);
+    writer.writeStartElement("TimeSpan");
+
+    writer.writeTextElement("begin", utc2KmlTimeStamp(startUtc));
+    writer.writeTextElement("end", utc2KmlTimeStamp(endUtc));
+    writer.writeEndElement(); // TimeSpan
+
+    writer.writeTextElement("name", p->title + ": " + QString::number(seq));
+    writer.writeTextElement("description", utc2KmlTimeStamp(startUtc));
     writer.writeTextElement("styleUrl", "#yellowLineGreenPoly");
 
     writer.writeStartElement("Style");
@@ -561,22 +686,49 @@ void KMLCreator::writeLogPlacemarkElement(QXmlStreamWriter &writer, Placemark *p
         writer.writeTextElement("colorMode", "normal");
         writer.writeTextElement("width", "2");
         writer.writeEndElement(); // LineStyle
-    writer.writeEndElement();
+    writer.writeEndElement(); // Style
 
     writer.writeStartElement("LineString");
-    writer.writeTextElement("extrude", "1");
     writer.writeTextElement("altitudeMode", "absolute");
+    writer.writeTextElement("coordinates", coords);
+    writer.writeEndElement(); // LineString
 
-    QString coords;
-    foreach(GPSRecord c, p->mPoints) {
-        coords += c.toStringForKml();
-        coords += " ";
+    writer.writeEndElement(); // Placemark
+}
+
+void KMLCreator::writeLogPlacemarkElement(QXmlStreamWriter &writer, Placemark *p) {
+    if(!p || p->mPoints.size()==0) {
+        return;
     }
 
-    writer.writeTextElement("coordinates", coords);
+    // for each 1000 milliseconds of data, create a Placemark representing that segment of the trajectory
+    QString coords("\n");
+    QString lastCoords;
+    qint64 startUtc=0, endUtc=0;
+    int seq=0;
+    foreach(GPSRecord c, p->mPoints) {
+        if (startUtc == 0) {
+            startUtc = c.getUtcTime();
+            // create first Placemark
+            writer.writeStartElement("Placemark");
+        }
+        if (endUtc >= startUtc+1000) {
+            // end current Placemark
+            endLogPlaceMark(seq++, startUtc, endUtc, coords, writer, p);
+            // leave the last set of coordinates in the buffer so that segments are contiguous
+            coords.clear();
+            coords += lastCoords + "\n";
 
-    writer.writeEndElement(); // LineString
-    writer.writeEndElement(); // Placemark
+            // start a new Placemark
+            startUtc = endUtc;
+            writer.writeStartElement("Placemark");
+        }
+        lastCoords = c.toStringForKml();
+        coords += lastCoords + "\n";
+        endUtc = c.getUtcTime();
+    }
+    // end current Placemark
+    endLogPlaceMark(seq, startUtc, endUtc, coords, writer, p);
 }
 
 } // namespace kml
