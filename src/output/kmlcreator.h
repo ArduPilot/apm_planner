@@ -1,6 +1,7 @@
 #ifndef KMLCREATOR_H
 #define KMLCREATOR_H
 
+#include "logging.h"
 #include "mavlink.h"
 #include <qstring.h>
 #include <qlist.h>
@@ -14,7 +15,7 @@
 // these definitions should match those in ardupilot/libraries/AP_GPS/AP_GPS.h
 // the number of GPS leap seconds
 #define GPS_LEAPSECONDS 18ULL
-#define UNIX_OFFSET     (315964800ULL - GPS_LEAPSECONDS)
+#define UNIX_OFFSET_SEC (315964800ULL - GPS_LEAPSECONDS)
 #define SEC_PER_WEEK    (7ULL * 86400ULL)
 
 class QFile;
@@ -32,6 +33,7 @@ struct GPSRecord: DataLine {
     QString speed() { return values.value("Spd"); }
     QString week()  { return values.value("GWk"); }
     QString msec()  { return values.value("GMS"); }
+    QString timeUS()  { return values.value("TimeUS"); }
 
     virtual bool hasData() {
         bool status;
@@ -46,18 +48,54 @@ struct GPSRecord: DataLine {
 
     static GPSRecord from(FormatLine& format, QString& line);
 
-    qint64 getUtcTime() {
+    qint64 getUtc_ms() {
         // msec since start of week (max value is 2^29.17, so it just fits in a signed 32 bit int)
         int32_t week_ms = this->msec().toInt();
         // weeks since 6 Jan 1980
         int32_t week = this->week().toInt();
 
         // this is the offset as defined in ardupilot/libraries/AP_GPS/AP_GPS.h
-        qint64 utc_msec = UNIX_OFFSET * 1000LL + week * SEC_PER_WEEK * 1000LL + week_ms;
+        qint64 utc_msec = UNIX_OFFSET_SEC * 1000LL + week * SEC_PER_WEEK * 1000LL + week_ms;
         return utc_msec;
     }
 
+    void setUtCTime(qint64 timeUS) {
+        // convert to msec
+        qint64 utc = timeUS / 1000LL;
+        // offset to GPS epoch
+        utc = utc - (UNIX_OFFSET_SEC * 1000LL);
+
+        int32_t week = utc / (SEC_PER_WEEK * 1000LL);
+        int32_t week_ms = utc - week * SEC_PER_WEEK * 1000LL;
+
+        values.remove("GWk");
+        values.remove("GMS");
+
+        values.insert("GWk", QString::number(week));
+        values.insert("GMS", QString::number(week_ms));
+    }
+
     virtual ~GPSRecord() {}
+};
+
+/**
+ * @brief A POS record from a log file.
+ */
+struct POSRecord: DataLine {
+    QString lat()  { return values.value("Lat"); }
+    QString lng()    { return values.value("Lng"); }
+    QString alt() { return values.value("Alt"); }
+    QString relHomeAlt()   { return values.value("RelHomeAlt"); }
+    QString relOriginAlt()   { return values.value("RelOriginAlt"); }
+    QString timeUS()   { return values.value("TimeUS"); }
+
+    virtual bool hasData() {
+        return (values.value("Lat").length() > 0);
+    }
+
+    static POSRecord from(FormatLine& format, QString& line);
+
+    virtual ~POSRecord() {}
 };
 
 /**
@@ -198,12 +236,14 @@ struct Placemark {
     QString color;
     QList<GPSRecord> mPoints;
     QList<Attitude> mAttitudes;
+    QList<Attitude> mAttQuat;
 
     Placemark(QString t, QString m, QString clr);
     ~Placemark();
 
     Placemark& add(GPSRecord &p);
     Placemark& add(Attitude &a);
+    Placemark& addquat(Attitude &a);
 };
 
 struct SummaryData {
@@ -254,6 +294,7 @@ private:
 
     void writeLogPlacemarkElement(QXmlStreamWriter &, Placemark *);
     void writePlanePlacemarkElement(QXmlStreamWriter &, Placemark *, int &);
+    void writePlanePlacemarkElementQ(QXmlStreamWriter &, Placemark *, int &);
     void writeWaypointsPlacemarkElement(QXmlStreamWriter &);
     void endLogPlaceMark(int seq, qint64 startUtc, qint64 endUtc,
             QString& coords, QXmlStreamWriter& writer, Placemark* p);

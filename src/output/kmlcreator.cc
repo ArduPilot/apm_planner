@@ -124,6 +124,12 @@ GPSRecord GPSRecord::from(FormatLine& format, QString &line) {
     return c;
 }
 
+POSRecord POSRecord::from(FormatLine& format, QString &line) {
+    POSRecord c;
+    c.readFields(format, line);
+    return c;
+}
+
 CommandedWaypoint CommandedWaypoint::from(FormatLine &format, QString &line) {
     CommandedWaypoint c;
     c.readFields(format, line);
@@ -154,6 +160,16 @@ XKQ1 XKQ1::from(FormatLine &format, QString &line) {
     return a;
 }
 
+static GPSRecord gpsFromPOS(POSRecord& pos, qint64 gpsOffset) {
+    GPSRecord a;
+    a.values.insert("Lat", pos.lat());
+    a.values.insert("Lng", pos.lng());
+    a.values.insert("Alt", pos.alt());
+    a.values.insert("TimeUS", pos.timeUS());
+    a.setUtCTime(pos.timeUS().toInt() + gpsOffset);
+    return a;
+}
+
 static Attitude attFromAHR2(AHR2& ah) {
     Attitude a;
     a.values.insert("Roll", ah.roll());
@@ -165,13 +181,66 @@ static Attitude attFromAHR2(AHR2& ah) {
     return a;
 }
 
+// get euler roll angle
+float get_euler_roll(QQuaternion& q)
+{
+    return (atan2f(2.0f*(q.scalar()*q.x() + q.y()*q.z()), 1.0f - 2.0f*(q.x()*q.x() + q.y()*q.y())));
+}
+
+// get euler pitch angle
+float get_euler_pitch(QQuaternion& q)
+{
+    return asinf(2.0f*(q.scalar()*q.y() - q.z()*q.x()));
+}
+
+// get euler yaw angle
+float get_euler_yaw(QQuaternion& q)
+{
+    return atan2f(2.0f*(q.scalar()*q.z() + q.x()*q.y()), 1.0f - 2.0f*(q.y()*q.y() + q.z()*q.z()));
+}
+
+// create eulers from a quaternion
+void quat_to_euler(QQuaternion& q, float &roll, float &pitch, float &yaw)
+{
+    float rad2deg = 180 / M_PI;
+    roll = rad2deg * get_euler_roll(q);
+    pitch = rad2deg * get_euler_pitch(q);
+    yaw = rad2deg * get_euler_yaw(q);
+}
+
 static Attitude attFromNKQ1(NKQ1& q) {
     QQuaternion quat(q.q1, q.q2, q.q3, q.q4);
-    QVector3D euler = quat.toEulerAngles();
+    float roll, pitch, yaw;
+    quat_to_euler(quat, roll, pitch, yaw);
+
+    // special handling for pitch angles near 90 degrees
+    if (abs(pitch) > 80) {
+
+        // rotate quaternion by 90 degrees in pitch
+        quat *= QQuaternion::fromAxisAndAngle(0, 1, 0, -90);
+
+        // get rotated euler angles
+        // Qt Euler angles are ordered [pitch, yaw, roll] instead of RPY (xyz fixed)
+        // so use the logic from AP_Math.cpp instead
+        quat_to_euler(quat, roll, pitch, yaw);
+
+        // then rotate back
+        if (pitch < 0) {
+            pitch += 90;
+        }
+        else {
+            pitch = 90 - pitch;
+            roll += 180;
+            if (roll > 180) roll -= 360;
+            yaw += 180;
+            if (yaw > 180) yaw -= 360;
+        }
+    }
+
     Attitude a;
-    a.values.insert("Roll", QString::number(euler.x(), 'f', 5));
-    a.values.insert("Pitch", QString::number(euler.y(), 'f', 5));
-    a.values.insert("Yaw", QString::number(euler.z(), 'f', 5));
+    a.values.insert("Roll", QString::number(roll, 'f', 5));
+    a.values.insert("Pitch", QString::number(pitch, 'f', 5));
+    a.values.insert("Yaw", QString::number(yaw, 'f', 5));
     a.values.insert("DesRoll", "0.0");
     a.values.insert("DesPitch", "0.0");
     a.values.insert("DesYaw", "0.0");
@@ -196,6 +265,11 @@ Placemark& Placemark::add(GPSRecord &p) {
 
 Placemark& Placemark::add(Attitude &a) {
     mAttitudes.append(a);
+    return *this;
+}
+
+Placemark& Placemark::addquat(Attitude &a) {
+    mAttQuat.append(a);
     return *this;
 }
 
@@ -255,36 +329,46 @@ void KMLCreator::start(QString &fn) {
 
 void KMLCreator::processLine(QString &line)
 {
+    static qint64 gpsOffset = 0;
     if(line.indexOf("FMT,") == 0) {
         FormatLine fl = FormatLine::from(line);
         if(fl.hasData()) {
             m_formatLines[fl.name] = fl;
         }
     }
-    // we have a lot more messages containing attitude than "GPS" messages. In order to have a one on one relation
-    // between the two messages we save one of the most recent attitude messages for each "GPS"
-    // message. Its a very raw correlation but better than nothing. (Better would be timestamp matching).
-    // Nevertheless due to this hack its possible to give the plane model in Google earth the right heading.
     else if(line.indexOf("GPS,") == 0) {
+        // calculate offset from GPS time to TimeUS timestamp
+        // This is used in function gpsFromPOS to construct a "fake" GPS record from an attitude record
+        FormatLine fl = m_formatLines.value("GPS");
+        if(fl.hasData()) {
+            GPSRecord gps = GPSRecord::from(fl, line);
+            if(gps.hasData()) {
+                qint64 timeUS = gps.timeUS().toInt();
+                qint64 utc_ms = gps.getUtc_ms();
+                gpsOffset = utc_ms * 1000LL - timeUS;
+            }
+            else {
+                QLOG_WARN() << "GPS message has no data";
+            }
+        }
+    }
+    // POS, ATT, AHR2, NKQ1, and XKQ1 messages are all logged at 25Hz (by default).
+    else if(line.indexOf("POS,") == 0 && (gpsOffset > 0)) {
         Placemark* pm = lastPlacemark();
         if(!pm) {
             QLOG_WARN() << "No placemark";
         }
         else {
-            // use attitude with highest priority: EKF3, EKF2, AHR2, ATT
+            // use last read attitude with highest priority: EKF3, EKF2, AHR2, ATT
             if (m_newXKQ1) {
-                m_att = attFromXKQ1(m_xkq1);
-                pm->add(m_att);
+                Attitude att = attFromXKQ1(m_xkq1);
+                pm->addquat(att);
             }
             else if (m_newNKQ1) {
                 Attitude att = attFromNKQ1(m_nkq1);
-                pm->add(att);
+                pm->addquat(att);
             }
-            else if (m_newAHR2) {
-                Attitude att = attFromAHR2(m_ahr2);
-                pm->add(att);
-            }
-            else if (m_newATT) {
+            if (m_newATT) {
                 pm->add(m_att);
             }
         }
@@ -293,9 +377,10 @@ void KMLCreator::processLine(QString &line)
         m_newAHR2 = false;
         m_newATT = false;
 
-        FormatLine fl = m_formatLines.value("GPS");
+        FormatLine fl = m_formatLines.value("POS");
         if(fl.hasData()) {
-            GPSRecord gps = GPSRecord::from(fl, line);
+            POSRecord pos = POSRecord::from(fl, line);
+            GPSRecord gps = gpsFromPOS(pos, gpsOffset);
 
             if(gps.hasData()) {
                 m_summary->add(gps);
@@ -313,7 +398,6 @@ void KMLCreator::processLine(QString &line)
             }
         }
     }
-    // prefer EKF3 quaternion to EKF2
     // EKF3 quaternion attitude
     else if((line.indexOf("XKQ1,") == 0)) {
 
@@ -445,11 +529,24 @@ QString KMLCreator::finish(bool kmz) {
      * Planes element
      */
     writer.writeStartElement("Folder");
-    writer.writeTextElement("name", "Planes");
+    writer.writeTextElement("name", "Attitudes");
 
     int idx = 0;
     foreach(Placemark *pm, m_placemarks) {
         writePlanePlacemarkElement(writer, pm, idx);
+    }
+
+    writer.writeEndElement(); // Folder
+
+    /*
+     * Planes element (quaternion)
+     */
+    writer.writeStartElement("Folder");
+    writer.writeTextElement("name", "EKFattitudes");
+
+    idx = 0;
+    foreach(Placemark *pm, m_placemarks) {
+        writePlanePlacemarkElementQ(writer, pm, idx);
     }
 
     writer.writeEndElement(); // Folder
@@ -594,9 +691,19 @@ static QString descriptionData(Placemark *p, Attitude &c) {
     return c.values.value("TimeUS");
 }
 
+static QString descriptionData2(Placemark *p, Attitude &att) {
+    QString s;
+    s.append("Roll: " + att.roll());
+    s.append("\nPitch: " + att.pitch());
+    s.append("\nYaw: " + att.yaw());
+    return s;
+}
+
 QString utc2KmlTimeStamp(qint64 utc_msec) {
     QDateTime time = QDateTime::fromMSecsSinceEpoch(utc_msec);
-    return time.toString(Qt::ISODate);
+    // Qt::ISODateWithMs is not defined?
+    int msec = utc_msec - (utc_msec / 1000) * 1000;
+    return time.toString(Qt::ISODate) + "." + QString::number(msec);
 }
 
 void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark *p, int &idx) {
@@ -607,61 +714,143 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
     int index = 0;
     foreach(GPSRecord c, p->mPoints) {
 
-        writer.writeStartElement("Placemark");
-            writer.writeStartElement("TimeStamp");
-                writer.writeTextElement("when", utc2KmlTimeStamp(c.getUtcTime()));
-            writer.writeEndElement(); // TimeStamp
+        // decimate by 5 to reduce the default logging rate to 5Hz
+        if ((index %5) == 0) {
+            writer.writeStartElement("Placemark");
+            QString dateTime = utc2KmlTimeStamp(c.getUtc_ms());
+                writer.writeStartElement("TimeStamp");
+                    writer.writeTextElement("when", dateTime);
+                writer.writeEndElement(); // TimeStamp
 
-            writer.writeTextElement("name", QString("Plane %1").arg(idx++));
-            writer.writeTextElement("visibility", "0");
+                qint64 timeUS = c.timeUS().toInt();
+                double ts_sec = (double)timeUS / 1e6;
+                QString timeLabel = dateTime.mid(dateTime.indexOf('T')+1, 12);
+                writer.writeTextElement("name", QString("Plane %1").arg(idx++) + ": " + QString::number(ts_sec,'f',3) + ": " + timeLabel);
+                writer.writeTextElement("visibility", "0");
 
-            QString desc = descriptionData(p, c);
-            if(!desc.isEmpty()) {
-                writer.writeStartElement("description");
-                writer.writeCDATA(desc);
-                writer.writeEndElement(); // description
-            }
-
-            writer.writeStartElement("Model");
-                writer.writeTextElement("altitudeMode", "absolute");
-
-                writer.writeStartElement("Location");
-                    writer.writeTextElement("latitude", c.lat());
-                    writer.writeTextElement("longitude", c.lng());
-                    writer.writeTextElement("altitude", c.alt());
-                writer.writeEndElement(); // Location
-
-                int attitudeSize = p->mAttitudes.size();
-                if(attitudeSize > 0)
-                {
-                    int attitudeIndex = index < attitudeSize ? index : attitudeSize - 1;
-
-                    Attitude a = p->mAttitudes.at(attitudeIndex);
-                    QString yaw = (p->mode == "AUTO")? a.navYaw(): a.yaw();
-
-                    writer.writeStartElement("Orientation");
-                    writer.writeTextElement("heading", yaw);
-                        // the sign of tilt and roll has to be changed
-                        QString signChangedPitch = QString::number(a.pitch().toDouble() * -1);
-                        QString signChangedRoll = QString::number(a.roll().toDouble() * -1);
-                        writer.writeTextElement("tilt", signChangedPitch);
-                        writer.writeTextElement("roll", signChangedRoll);
-                    writer.writeEndElement(); // Orientation
+                QString desc = descriptionData(p, c);
+                if(!desc.isEmpty()) {
+                    writer.writeStartElement("description");
+                    writer.writeCDATA(desc);
+                    writer.writeEndElement(); // description
                 }
 
-                writer.writeStartElement("Scale");
-                    writer.writeTextElement("x", ".5");
-                    writer.writeTextElement("y", ".5");
-                    writer.writeTextElement("z", ".5");
-                writer.writeEndElement(); // Scale
+                writer.writeStartElement("Model");
+                    writer.writeTextElement("altitudeMode", "absolute");
 
-                writer.writeStartElement("Link");
-                    writer.writeTextElement("href", "block_plane_0.dae");
-                writer.writeEndElement(); // Link
+                    writer.writeStartElement("Location");
+                        writer.writeTextElement("latitude", c.lat());
+                        writer.writeTextElement("longitude", c.lng());
+                        writer.writeTextElement("altitude", c.alt());
+                    writer.writeEndElement(); // Location
 
-            writer.writeEndElement(); // Model
+                    int attitudeSize = p->mAttitudes.size();
+                    if(attitudeSize > 0)
+                    {
+                        int attitudeIndex = index < attitudeSize ? index : attitudeSize - 1;
 
-        writer.writeEndElement(); // Placemark
+                        Attitude a = p->mAttitudes.at(attitudeIndex);
+                        QString yaw = (p->mode == "AUTO")? a.navYaw(): a.yaw();
+
+                        writer.writeStartElement("Orientation");
+                        writer.writeTextElement("heading", yaw);
+                            // the sign of tilt and roll has to be changed
+                            QString signChangedPitch = QString::number(a.pitch().toDouble() * -1);
+                            QString signChangedRoll = QString::number(a.roll().toDouble() * -1);
+                            writer.writeTextElement("tilt", signChangedPitch);
+                            writer.writeTextElement("roll", signChangedRoll);
+                        writer.writeEndElement(); // Orientation
+                    }
+
+                    writer.writeStartElement("Scale");
+                        writer.writeTextElement("x", ".5");
+                        writer.writeTextElement("y", ".5");
+                        writer.writeTextElement("z", ".5");
+                    writer.writeEndElement(); // Scale
+
+                    writer.writeStartElement("Link");
+                        writer.writeTextElement("href", "block_plane_0.dae");
+                    writer.writeEndElement(); // Link
+
+                writer.writeEndElement(); // Model
+
+            writer.writeEndElement(); // Placemark
+        }
+        ++index;
+    }
+}
+
+void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark *p, int &idx) {
+    if(!p) {
+        return;
+    }
+
+    // repeat using quaternion attitude
+    int index = 0;
+    Attitude att;
+    foreach(GPSRecord c, p->mPoints) {
+
+        // decimate by 5 to reduce the default logging rate to 5Hz
+        if ((index % 5) == 0) {
+            writer.writeStartElement("Placemark");
+                writer.writeStartElement("TimeStamp");
+                    writer.writeTextElement("when", utc2KmlTimeStamp(c.getUtc_ms()));
+                writer.writeEndElement(); // TimeStamp
+
+                qint64 timeUS = c.timeUS().toInt();
+                double ts_sec = (double)timeUS / 1e6;
+                writer.writeTextElement("name", QString("Plane %1").arg(idx++) + ": " + QString::number(ts_sec,'f',3));
+                writer.writeTextElement("visibility", "0");
+
+                writer.writeStartElement("Model");
+                    writer.writeTextElement("altitudeMode", "absolute");
+
+                    writer.writeStartElement("Location");
+                        writer.writeTextElement("latitude", c.lat());
+                        writer.writeTextElement("longitude", c.lng());
+                        writer.writeTextElement("altitude", c.alt());
+                    writer.writeEndElement(); // Location
+
+                    int attitudeSize = p->mAttQuat.size();
+                    if(attitudeSize > 0)
+                    {
+                        int attitudeIndex = index < attitudeSize ? index : attitudeSize - 1;
+
+                        att = p->mAttQuat.at(attitudeIndex);
+                        QString yaw = (p->mode == "AUTO")? att.navYaw(): att.yaw();
+
+                        writer.writeStartElement("Orientation");
+                        writer.writeTextElement("heading", yaw);
+                            // the sign of tilt and roll has to be changed
+                            QString signChangedPitch = QString::number(att.pitch().toDouble() * -1);
+                            QString signChangedRoll = QString::number(att.roll().toDouble() * -1);
+                            writer.writeTextElement("tilt", signChangedPitch);
+                            writer.writeTextElement("roll", signChangedRoll);
+                        writer.writeEndElement(); // Orientation
+                    }
+
+                    writer.writeStartElement("Scale");
+                        writer.writeTextElement("x", ".5");
+                        writer.writeTextElement("y", ".5");
+                        writer.writeTextElement("z", ".5");
+                    writer.writeEndElement(); // Scale
+
+                    writer.writeStartElement("Link");
+                        writer.writeTextElement("href", "block_plane_0.dae");
+                    writer.writeEndElement(); // Link
+
+                writer.writeEndElement(); // Model
+
+                QString desc = descriptionData2(p, att);
+                if(!desc.isEmpty()) {
+                    writer.writeStartElement("description");
+                    writer.writeCDATA(desc);
+                    writer.writeEndElement(); // description
+                }
+
+
+            writer.writeEndElement(); // Placemark
+        }
         ++index;
     }
 }
@@ -708,7 +897,7 @@ void KMLCreator::writeLogPlacemarkElement(QXmlStreamWriter &writer, Placemark *p
     int seq=0;
     foreach(GPSRecord c, p->mPoints) {
         if (startUtc == 0) {
-            startUtc = c.getUtcTime();
+            startUtc = c.getUtc_ms();
             // create first Placemark
             writer.writeStartElement("Placemark");
         }
@@ -725,7 +914,7 @@ void KMLCreator::writeLogPlacemarkElement(QXmlStreamWriter &writer, Placemark *p
         }
         lastCoords = c.toStringForKml();
         coords += lastCoords + "\n";
-        endUtc = c.getUtcTime();
+        endUtc = c.getUtc_ms();
     }
     // end current Placemark
     endLogPlaceMark(seq, startUtc, endUtc, coords, writer, p);
