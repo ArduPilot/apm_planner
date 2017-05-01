@@ -24,9 +24,13 @@ struct GPSRecord: DataLine {
     QString lng()   { return values.value("Lng"); }
     QString alt()   { return values.value("Alt"); }
     QString speed() { return values.value("Spd"); }
+    QString week()  { return values.value("GWk"); }
+    QString msec()  { return values.value("GMS"); }
 
     virtual bool hasData() {
-        return (values.value("Lat").length() > 0);
+        bool status;
+        int week = values.value("GWk").toInt(&status);
+        return status && (week > 0);
     }
 
     QString toStringForKml() {
@@ -172,6 +176,8 @@ private:
     QList<CommandedWaypoint> m_waypoints;
     QHash<QString, FormatLine> m_formatLines;
     SummaryData* m_summary;
+
+    bool m_newGPSMessage;
 };
 
 } // namespace kml
