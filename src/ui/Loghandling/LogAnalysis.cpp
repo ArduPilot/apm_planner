@@ -1184,7 +1184,7 @@ void LogAnalysis::exportDialogAccepted()
 
     if(m_kmlExport)
     {
-        KmlLogExporter kmlExporter(this);
+        KmlLogExporter kmlExporter(this, m_loadedLogMavType);
         kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
     }
     else
