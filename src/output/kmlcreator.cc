@@ -77,7 +77,6 @@ static float distanceBetween(float hereLat, float hereLng, float thereLat, float
  * @return a color value suitable for use in a KML file.
  */
 static QString getColorFor(QString &str) {
-    QLOG_DEBUG() << "str=" << str.toUpper();
 
     int i = 0;
     while(kModesToColors[i][0] != "") {
@@ -91,31 +90,39 @@ static QString getColorFor(QString &str) {
     return QString("FF00F000");
 }
 
-static QString toModeString(QString &line) {
+static QString toModeString(const MAV_TYPE mav_type, const QString &modeString) {
 
-    QStringList parts = line.split(QRegExp(","), QString::KeepEmptyParts);
+    QString string;
+    bool ok = false;
+    int mode = modeString.toInt(&ok);
+    if (ok) {
+        ModeMessage modeMsg(0, 0, mode, 0, 0);
+        switch (mav_type)
+        {
+            case MAV_TYPE_QUADROTOR:
+            case MAV_TYPE_HEXAROTOR:
+            case MAV_TYPE_OCTOROTOR:
+            case MAV_TYPE_HELICOPTER:
+            case MAV_TYPE_TRICOPTER:
+                string = Copter::MessageFormatter::format(modeMsg);
+                break;
 
-    // TODO: Need to add Mode: DataLine object to fix
-    // ... create a ModeRecord:DataLine class and take vehicle type into account
-    // MODE, 82081720, 5, 5, 1 // New Message with time
-    // MODE, ALT_HOLD, 516     // Old message
+            case MAV_TYPE_FIXED_WING:
+                string = Plane::MessageFormatter::format(modeMsg);
+                break;
 
-    if(parts.length() > 3) {
-        QString modeString = parts[2].trimmed();
-        bool ok = false;
-        int mode = modeString.toInt(&ok);
-        if (ok) {
-            ModeMessage modeMsg(0, 0, mode, 0, 0);
-            return Copter::MessageFormatter::format(modeMsg);
-        } else {
-            return QString("Mode(%1)").arg(modeString);
+            case MAV_TYPE_GROUND_ROVER:
+                string = Rover::MessageFormatter::format(modeMsg);
+                break;
+
+            default:
+                string = modeMsg.toString();
+                break;
         }
-
-    } else if(parts.length() == 3) {
-        return parts[1].trimmed();
+    } else {
+        string = QString("Mode(%1)").arg(modeString);
     }
-
-    return QString();
+    return string;
 }
 
 GPSRecord GPSRecord::from(FormatLine& format, QString &line) {
@@ -167,17 +174,6 @@ static GPSRecord gpsFromPOS(POSRecord& pos, qint64 gpsOffset) {
     a.values.insert("Alt", pos.alt());
     a.values.insert("TimeUS", pos.timeUS());
     a.setUtCTime(pos.timeUS().toInt() + gpsOffset);
-    return a;
-}
-
-static Attitude attFromAHR2(AHR2& ah) {
-    Attitude a;
-    a.values.insert("Roll", ah.roll());
-    a.values.insert("Pitch", ah.pitch());
-    a.values.insert("Yaw", ah.yaw());
-    a.values.insert("DesRoll", "0.0");
-    a.values.insert("DesPitch", "0.0");
-    a.values.insert("DesYaw", "0.0");
     return a;
 }
 
@@ -305,12 +301,23 @@ QString SummaryData::summarize() {
     return s;
 }
 
-KMLCreator::KMLCreator():
+KMLCreator::KMLCreator() :
     m_summary(new SummaryData()),
     m_newXKQ1(false),
     m_newNKQ1(false),
     m_newAHR2(false),
-    m_newATT(false)
+    m_newATT(false),
+    m_mav_type((MAV_TYPE)0)
+{
+}
+
+KMLCreator::KMLCreator(MAV_TYPE mav_type) :
+    m_summary(new SummaryData()),
+    m_newXKQ1(false),
+    m_newNKQ1(false),
+    m_newAHR2(false),
+    m_newATT(false),
+    m_mav_type(mav_type)
 {
 }
 
@@ -456,13 +463,17 @@ void KMLCreator::processLine(QString &line)
     }
     else if(line.indexOf("MODE,") == 0) {
         FormatLine fl = m_formatLines.value("MODE");
-        // Time for a new placemark
-        QString mode = toModeString(line);
-        if(!mode.isEmpty()) {
-            QString title = QString("Flight Mode %1").arg(mode.trimmed());
-            QString color = getColorFor(mode);
-            Placemark *pm = new Placemark(title, mode, color);
-            m_placemarks.append(pm);
+        if(fl.hasData()) {
+            ModeRecord mrec = ModeRecord::from(fl, line);
+            if (mrec.hasData()) {
+                // Time for a new placemark
+                QString mode = toModeString(m_mav_type, mrec.modeNum());
+                QString title = QString("Flight Mode %1").arg(mode.trimmed());
+                QLOG_DEBUG() << "MAV_TYPE: " << m_mav_type << ", flight mode: " << mrec.modeNum().toInt() << ": " << mode;
+                QString color = getColorFor(mode);
+                Placemark *pm = new Placemark(title, mode, color);
+                m_placemarks.append(pm);
+            }
         }
     }
 }
@@ -686,12 +697,7 @@ static QString descriptionData(Placemark *p, GPSRecord &c) {
     return s;
 }
 
-static QString descriptionData(Placemark *p, Attitude &c) {
-
-    return c.values.value("TimeUS");
-}
-
-static QString descriptionData2(Placemark *p, Attitude &att) {
+static QString RPYdescription(Attitude &att) {
     QString s;
     s.append("Roll: " + att.roll());
     s.append("\nPitch: " + att.pitch());
@@ -785,13 +791,14 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
         return;
     }
 
-    // repeat using quaternion attitude
+    // generate placemarks for quaternion attitudes
     int index = 0;
     Attitude att;
     foreach(GPSRecord c, p->mPoints) {
 
         // decimate by 5 to reduce the default logging rate to 5Hz
         if ((index % 5) == 0) {
+            QString dateTime = utc2KmlTimeStamp(c.getUtc_ms());
             writer.writeStartElement("Placemark");
                 writer.writeStartElement("TimeStamp");
                     writer.writeTextElement("when", utc2KmlTimeStamp(c.getUtc_ms()));
@@ -799,7 +806,8 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
 
                 qint64 timeUS = c.timeUS().toInt();
                 double ts_sec = (double)timeUS / 1e6;
-                writer.writeTextElement("name", QString("Plane %1").arg(idx++) + ": " + QString::number(ts_sec,'f',3));
+                QString timeLabel = dateTime.mid(dateTime.indexOf('T')+1, 12);
+                writer.writeTextElement("name", QString("Plane %1").arg(idx++) + ": " + QString::number(ts_sec,'f',3) + ": " + timeLabel);
                 writer.writeTextElement("visibility", "0");
 
                 writer.writeStartElement("Model");
@@ -811,23 +819,18 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
                         writer.writeTextElement("altitude", c.alt());
                     writer.writeEndElement(); // Location
 
-                    int attitudeSize = p->mAttQuat.size();
-                    if(attitudeSize > 0)
-                    {
-                        int attitudeIndex = index < attitudeSize ? index : attitudeSize - 1;
+                    if (index >= p->mAttQuat.size()) break;
+                    att = p->mAttQuat.at(index);
+                    QString yaw = att.yaw();
 
-                        att = p->mAttQuat.at(attitudeIndex);
-                        QString yaw = (p->mode == "AUTO")? att.navYaw(): att.yaw();
-
-                        writer.writeStartElement("Orientation");
-                        writer.writeTextElement("heading", yaw);
-                            // the sign of tilt and roll has to be changed
-                            QString signChangedPitch = QString::number(att.pitch().toDouble() * -1);
-                            QString signChangedRoll = QString::number(att.roll().toDouble() * -1);
-                            writer.writeTextElement("tilt", signChangedPitch);
-                            writer.writeTextElement("roll", signChangedRoll);
-                        writer.writeEndElement(); // Orientation
-                    }
+                    writer.writeStartElement("Orientation");
+                    writer.writeTextElement("heading", yaw);
+                        // the sign of tilt and roll has to be changed
+                        QString signChangedPitch = QString::number(att.pitch().toDouble() * -1);
+                        QString signChangedRoll = QString::number(att.roll().toDouble() * -1);
+                        writer.writeTextElement("tilt", signChangedPitch);
+                        writer.writeTextElement("roll", signChangedRoll);
+                    writer.writeEndElement(); // Orientation
 
                     writer.writeStartElement("Scale");
                         writer.writeTextElement("x", ".5");
@@ -841,7 +844,7 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
 
                 writer.writeEndElement(); // Model
 
-                QString desc = descriptionData2(p, att);
+                QString desc = RPYdescription(att);
                 if(!desc.isEmpty()) {
                     writer.writeStartElement("description");
                     writer.writeCDATA(desc);

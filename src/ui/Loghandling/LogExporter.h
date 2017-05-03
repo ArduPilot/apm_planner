@@ -34,9 +34,10 @@ This file is part of the APM_PLANNER project
 
 #include "LogdataStorage.h"
 #include "src/output/kmlcreator.h"
+#include "common/common.h"
 
 /**
- * @brief The LogExporterBase class - for different log exporters. It handeles
+ * @brief The LogExporterBase class - for different log exporters. It handles
  *        the exporting workflow for every line oriented export.
  *        It provides a progress dialog with a cancel button.
  */
@@ -163,7 +164,7 @@ public:
      * @brief KmlLogExporter - CTOR
      * @param parent - Parent widget needed for progress and info windows.
      */
-    KmlLogExporter(QWidget *parent);
+    KmlLogExporter(QWidget *parent, MAV_TYPE mav_type);
 
     /**
      * @brief ~KmlLogExporter - DTOR

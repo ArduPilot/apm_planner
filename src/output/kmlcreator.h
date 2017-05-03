@@ -79,6 +79,27 @@ struct GPSRecord: DataLine {
 };
 
 /**
+ * @brief A MODE record from a log file.
+ */
+struct ModeRecord: DataLine {
+    QString modeNum()   { return values.value("ModeNum"); }
+    QString timeUS()    { return values.value("TimeUS"); }
+
+    virtual bool hasData() {
+        return (values.value("ModeNum").length() > 0);
+    }
+
+    static ModeRecord from(FormatLine& format, QString& line) {
+        ModeRecord rec;
+        rec.readFields(format, line);
+        return rec;
+    }
+
+    virtual ~ModeRecord() {}
+};
+
+
+/**
  * @brief A POS record from a log file.
  */
 struct POSRecord: DataLine {
@@ -280,14 +301,16 @@ struct SummaryData {
  */
 class KMLCreator {
 public:
-    KMLCreator();
-    ~KMLCreator();
-
     void start(QString &fn);
 
     void processLine(QString &line);
 
     QString finish(bool kmz = false);
+
+    KMLCreator();
+    KMLCreator(MAV_TYPE mav_type);
+
+    virtual ~KMLCreator();
 
 private:
     Placemark *lastPlacemark();
@@ -316,6 +339,7 @@ private:
     bool m_newAHR2;
     bool m_newATT;
 
+    MAV_TYPE m_mav_type;
 };
 
 } // namespace kml
