@@ -315,6 +315,7 @@ public:
 private:
     Placemark *lastPlacemark();
 
+    void writePathElement(QXmlStreamWriter &writer, Placemark *p);
     void writeLogPlacemarkElement(QXmlStreamWriter &, Placemark *);
     void writePlanePlacemarkElement(QXmlStreamWriter &, Placemark *, int &);
     void writePlanePlacemarkElementQ(QXmlStreamWriter &, Placemark *, int &);

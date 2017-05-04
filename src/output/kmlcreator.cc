@@ -528,7 +528,20 @@ QString KMLCreator::finish(bool kmz) {
     writer.writeTextElement("description", m_summary->summarize());
 
     /*
-     * Flight log
+     * Flight path (complete)
+     */
+    foreach(Placemark *pm, m_placemarks) {
+        writePathElement(writer, pm);
+    }
+
+    writer.writeEndElement(); // Folder
+
+    writer.writeStartElement("Folder");
+    writer.writeTextElement("name", "Flight Path (segmented)");
+    writer.writeTextElement("description", m_summary->summarize());
+
+    /*
+     * Flight path (segmented)
      */
     foreach(Placemark *pm, m_placemarks) {
         writeLogPlacemarkElement(writer, pm);
@@ -856,6 +869,49 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
         }
         ++index;
     }
+}
+
+// create a Placemark element containing the entire trajectory
+void KMLCreator::writePathElement(QXmlStreamWriter &writer, Placemark *p) {
+    if(!p || p->mPoints.size()==0) {
+        return;
+    }
+
+    // construct list of lat/lng/alt coordinates
+    QString coords("\n");
+    qint64 endUtc = p->mPoints.last().getUtc_ms();
+    qint64 startUtc = p->mPoints.first().getUtc_ms();
+
+    foreach(GPSRecord c, p->mPoints) {
+        coords += c.toStringForKml() + "\n";
+    }
+
+    // create Placemark element
+    writer.writeStartElement("Placemark");
+
+    writer.writeStartElement("TimeSpan");
+    writer.writeTextElement("begin", utc2KmlTimeStamp(startUtc));
+    writer.writeTextElement("end", utc2KmlTimeStamp(endUtc));
+    writer.writeEndElement(); // TimeSpan
+
+    writer.writeTextElement("name", "flight path");
+    writer.writeTextElement("description", utc2KmlTimeStamp(startUtc) + ", " + utc2KmlTimeStamp(endUtc));
+    writer.writeTextElement("styleUrl", "#yellowLineGreenPoly");
+
+    writer.writeStartElement("Style");
+        writer.writeStartElement("LineStyle");
+        writer.writeTextElement("color", "3F7F7F7F");
+        writer.writeTextElement("colorMode", "normal");
+        writer.writeTextElement("width", "2");
+        writer.writeEndElement(); // LineStyle
+    writer.writeEndElement(); // Style
+
+    writer.writeStartElement("LineString");
+    writer.writeTextElement("altitudeMode", "absolute");
+    writer.writeTextElement("coordinates", coords);
+    writer.writeEndElement(); // LineString
+
+    writer.writeEndElement(); // Placemark
 }
 
 // end current Placemark
