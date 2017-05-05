@@ -308,7 +308,7 @@ public:
     QString finish(bool kmz = false);
 
     KMLCreator();
-    KMLCreator(MAV_TYPE mav_type);
+    KMLCreator(MAV_TYPE mav_type, double iconInterval);
 
     virtual ~KMLCreator();
 
@@ -341,6 +341,7 @@ private:
     bool m_newATT;
 
     MAV_TYPE m_mav_type;
+    double m_iconInterval;
 };
 
 } // namespace kml

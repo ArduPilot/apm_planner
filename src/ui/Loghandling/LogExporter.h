@@ -164,7 +164,7 @@ public:
      * @brief KmlLogExporter - CTOR
      * @param parent - Parent widget needed for progress and info windows.
      */
-    KmlLogExporter(QWidget *parent, MAV_TYPE mav_type);
+    KmlLogExporter(QWidget *parent, MAV_TYPE mav_type, double iconInterval);
 
     /**
      * @brief ~KmlLogExporter - DTOR

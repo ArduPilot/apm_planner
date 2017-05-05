@@ -1162,6 +1162,10 @@ void LogAnalysis::exportAsciiLogClicked()
 
 void LogAnalysis::exportKmlClicked()
 {
+    bool ok;
+    m_iconInterval = QInputDialog::getDouble(this, tr("QInputDialog::getDouble()"),
+                                         tr("icon interval (metres):"), 2, .1, 100, 1, &ok);
+    if (!ok) m_iconInterval = 2;
     doExport(true);
 }
 
@@ -1184,7 +1188,9 @@ void LogAnalysis::exportDialogAccepted()
 
     if(m_kmlExport)
     {
-        KmlLogExporter kmlExporter(this, m_loadedLogMavType);
+        QLOG_DEBUG() << "iconInterval: " << m_iconInterval;
+
+        KmlLogExporter kmlExporter(this, m_loadedLogMavType, m_iconInterval);
         kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
     }
     else

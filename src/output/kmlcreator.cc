@@ -311,13 +311,14 @@ KMLCreator::KMLCreator() :
 {
 }
 
-KMLCreator::KMLCreator(MAV_TYPE mav_type) :
+KMLCreator::KMLCreator(MAV_TYPE mav_type, double iconInterval) :
     m_summary(new SummaryData()),
     m_newXKQ1(false),
     m_newNKQ1(false),
     m_newAHR2(false),
     m_newATT(false),
-    m_mav_type(mav_type)
+    m_mav_type(mav_type),
+    m_iconInterval(iconInterval)
 {
 }
 
@@ -800,17 +801,26 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
 }
 
 void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark *p, int &idx) {
-    if(!p) {
+    if(!p || p->mPoints.size()==0) {
         return;
     }
 
     // generate placemarks for quaternion attitudes
     int index = 0;
     Attitude att;
+    double distance;
+    GPSRecord gps = p->mPoints.at(0);
+    float curLat = gps.lat().toFloat();
+    float curLng = gps.lng().toFloat();
+
     foreach(GPSRecord c, p->mPoints) {
 
-        // decimate by 5 to reduce the default logging rate to 5Hz
-        if ((index % 5) == 0) {
+        float newLat = c.lat().toFloat();
+        float newLng = c.lng().toFloat();
+        distance = 1000 * distanceBetween(curLat, curLng, newLat, newLng);
+        if (distance > m_iconInterval) {
+            curLat = newLat;
+            curLng = newLng;
             QString dateTime = utc2KmlTimeStamp(c.getUtc_ms());
             writer.writeStartElement("Placemark");
                 writer.writeStartElement("TimeStamp");
