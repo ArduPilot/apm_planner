@@ -307,6 +307,8 @@ private:
     int    m_statusTextPos;          /// Counter for giving text arrows a different length
     int m_lastHorizontalScrollVal;   /// Stores the last value of the horizontal scroller
     bool m_kmlExport;                /// True if export shall be in kml (google earth) format
+    double m_iconInterval;           /// minimum kml plane icon interval in metres
+
     double m_cursorXAxisRange;       /// X axis range of the cursors.
 
     LogAnalysisCursor *mp_cursorSimple;     /// Pointer to the simple cursor only valid if visible
