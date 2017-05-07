@@ -1164,7 +1164,7 @@ void LogAnalysis::exportKmlClicked()
 {
     bool ok;
     m_iconInterval = QInputDialog::getDouble(this, tr("QInputDialog::getDouble()"),
-                                         tr("icon interval (metres):"), 2, .1, 100, 1, &ok);
+                                         tr("icon interval (metres):"), 2, 0, 100, 3, &ok);
     if (!ok) m_iconInterval = 2;
     doExport(true);
 }
