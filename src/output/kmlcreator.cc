@@ -210,6 +210,7 @@ static Attitude attFromNKQ1(NKQ1& q) {
     quat_to_euler(quat, roll, pitch, yaw);
 
     // special handling for pitch angles near 90 degrees
+    // Google Earth KML orientations are sometimes incorrect without this
     if (abs(pitch) > 80) {
 
         // rotate quaternion by 90 degrees in pitch
@@ -252,6 +253,11 @@ Placemark::Placemark(QString t, QString m, QString clr):
 }
 
 Placemark::~Placemark() {
+}
+
+Placemark& Placemark::addgps(GPSRecord &p) {
+    mGPS.append(p);
+    return *this;
 }
 
 Placemark& Placemark::add(GPSRecord &p) {
@@ -354,6 +360,15 @@ void KMLCreator::processLine(QString &line)
                 qint64 timeUS = gps.timeUS().toInt();
                 qint64 utc_ms = gps.getUtc_ms();
                 gpsOffset = utc_ms * 1000LL - timeUS;
+                m_summary->add(gps);
+
+                Placemark* pm = lastPlacemark();
+                if(pm) {
+                    pm->addgps(gps);
+                }
+                else {
+                    QLOG_WARN() << "No placemark";
+                }
             }
             else {
                 QLOG_WARN() << "GPS message has no data";
@@ -745,7 +760,7 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
                 qint64 timeUS = c.timeUS().toInt();
                 double ts_sec = (double)timeUS / 1e6;
                 QString timeLabel = dateTime.mid(dateTime.indexOf('T')+1, 12);
-                writer.writeTextElement("name", QString("Plane %1").arg(idx++) + ": " + QString::number(ts_sec,'f',3) + ": " + timeLabel);
+                writer.writeTextElement("name", QString("%1: %2: %3: %4").arg(p->title, QString::number(idx++), QString::number(ts_sec,'f',3), timeLabel));
                 writer.writeTextElement("visibility", "0");
 
                 QString desc = descriptionData(p, c);
@@ -815,6 +830,8 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
 
     foreach(GPSRecord c, p->mPoints) {
 
+        if (index >= p->mAttQuat.size()) break;
+
         float newLat = c.lat().toFloat();
         float newLng = c.lng().toFloat();
         distance = 1000 * distanceBetween(curLat, curLng, newLat, newLng);
@@ -822,6 +839,7 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
             curLat = newLat;
             curLng = newLng;
             QString dateTime = utc2KmlTimeStamp(c.getUtc_ms());
+
             writer.writeStartElement("Placemark");
                 writer.writeStartElement("TimeStamp");
                     writer.writeTextElement("when", utc2KmlTimeStamp(c.getUtc_ms()));
@@ -842,7 +860,6 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
                         writer.writeTextElement("altitude", c.alt());
                     writer.writeEndElement(); // Location
 
-                    if (index >= p->mAttQuat.size()) break;
                     att = p->mAttQuat.at(index);
                     QString yaw = att.yaw();
 
@@ -883,16 +900,16 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
 
 // create a Placemark element containing the entire trajectory
 void KMLCreator::writePathElement(QXmlStreamWriter &writer, Placemark *p) {
-    if(!p || p->mPoints.size()==0) {
+    if(!p || p->mGPS.size()==0) {
         return;
     }
 
     // construct list of lat/lng/alt coordinates
     QString coords("\n");
-    qint64 endUtc = p->mPoints.last().getUtc_ms();
-    qint64 startUtc = p->mPoints.first().getUtc_ms();
+    qint64 endUtc = p->mGPS.last().getUtc_ms();
+    qint64 startUtc = p->mGPS.first().getUtc_ms();
 
-    foreach(GPSRecord c, p->mPoints) {
+    foreach(GPSRecord c, p->mGPS) {
         coords += c.toStringForKml() + "\n";
     }
 
@@ -904,13 +921,13 @@ void KMLCreator::writePathElement(QXmlStreamWriter &writer, Placemark *p) {
     writer.writeTextElement("end", utc2KmlTimeStamp(endUtc));
     writer.writeEndElement(); // TimeSpan
 
-    writer.writeTextElement("name", "flight path");
+    writer.writeTextElement("name", p->title);
     writer.writeTextElement("description", utc2KmlTimeStamp(startUtc) + ", " + utc2KmlTimeStamp(endUtc));
     writer.writeTextElement("styleUrl", "#yellowLineGreenPoly");
 
     writer.writeStartElement("Style");
         writer.writeStartElement("LineStyle");
-        writer.writeTextElement("color", "3F7F7F7F");
+        writer.writeTextElement("color", p->color); //"7FAFAFAF");
         writer.writeTextElement("colorMode", "normal");
         writer.writeTextElement("width", "2");
         writer.writeEndElement(); // LineStyle

@@ -31,13 +31,36 @@ struct GPSRecord: DataLine {
     QString lng()   { return values.value("Lng"); }
     QString alt()   { return values.value("Alt"); }
     QString speed() { return values.value("Spd"); }
-    QString week()  { return values.value("GWk"); }
-    QString msec()  { return values.value("GMS"); }
-    QString timeUS()  { return values.value("TimeUS"); }
+
+    // older logs have TimeMS instead of TimeUS; Also GMS->GPSTimeMS and GWk->Week
+    QString msec()  {
+        if (values.contains("GMS")) {
+            return values.value("GMS");
+        }
+        else {
+            return values.value("GPSTimeMS");
+        }
+    }
+    QString week()  {
+        if (values.contains("GWk")) {
+            return values.value("GWk");
+        }
+        else {
+            return values.value("Week");
+        }
+    }
+    QString timeUS()  {
+        if (values.contains("TimeUS")) {
+            return values.value("TimeUS");
+        }
+        else {
+            return values.value("TimeMS") + "000";
+        }
+    }
 
     virtual bool hasData() {
         bool status;
-        int week = values.value("GWk").toInt(&status);
+        int week = this->week().toInt(&status);
         return status && (week > 0);
     }
 
@@ -82,11 +105,19 @@ struct GPSRecord: DataLine {
  * @brief A MODE record from a log file.
  */
 struct ModeRecord: DataLine {
-    QString modeNum()   { return values.value("ModeNum"); }
+    QString modeNum()   {
+        if (values.contains("ModeNum")) {
+            return values.value("ModeNum");
+        }
+        else {
+            return values.value("Mode");
+        }
+    }
+
     QString timeUS()    { return values.value("TimeUS"); }
 
     virtual bool hasData() {
-        return (values.value("ModeNum").length() > 0);
+        return (modeNum().length() > 0);
     }
 
     static ModeRecord from(FormatLine& format, QString& line) {
@@ -256,6 +287,7 @@ struct Placemark {
     QString mode;
     QString color;
     QList<GPSRecord> mPoints;
+    QList<GPSRecord> mGPS;
     QList<Attitude> mAttitudes;
     QList<Attitude> mAttQuat;
 
@@ -263,6 +295,7 @@ struct Placemark {
     ~Placemark();
 
     Placemark& add(GPSRecord &p);
+    Placemark& addgps(GPSRecord &p);
     Placemark& add(Attitude &a);
     Placemark& addquat(Attitude &a);
 };
