@@ -31,6 +31,8 @@ struct GPSRecord: DataLine {
     QString lng()   { return values.value("Lng"); }
     QString alt()   { return values.value("Alt"); }
     QString speed() { return values.value("Spd"); }
+    QString crs()   { return values.value("GCrs"); }
+    QString vz()    { return values.value("VZ"); }
 
     // older logs have TimeMS instead of TimeUS; Also GMS->GPSTimeMS and GWk->Week
     QString msec()  {

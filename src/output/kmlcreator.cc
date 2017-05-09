@@ -24,11 +24,14 @@ static const QString kModesToColors[][2] = {
     // Colors are expressed in aabbggrr.
     {"AUTO", "FFFF00FF"},       // Plane/Copter/Rover
     {"STABILIZE", "FF00FF00"},  // Plane/Copter
+    {"QSTABILIZE", "FF00FF00"}, // QuadPlane
     {"LOITER", "FFFF0000"},     // Plane/Copter
     {"OF_LOITER", "FFFF2323"},  // Copter
     {"RTL", "FFFFCE00"},        // Plane/Copter/Rover
     {"ALT_HOLD", "FF00CEFF"},   // Copter
+    {"QHOVER", "FF00CEFF"},     // QuadPlane
     {"LAND", "FF009900"},       // Plane/Copter
+    {"QLAND", "FF009900"},      // Plane/Copter
     {"CIRCLE", "FF33FFCC"},     // Plane/Copter
     {"ACRO", "FF0000FF"},       // Plane/Copter
     {"GUIDED", "FFFFAAAA"},     // Plane/Copter/Rover
@@ -40,6 +43,7 @@ static const QString kModesToColors[][2] = {
     {"AUTOTUNE", "FF99FF33"},   // Plane/Copter
     {"FLIP", "FF66CC99"},       // Copter
     {"MANUAL", "FF00FF00"},     // Plane/Rover
+    {"FLY BY WIRE A", "FFFFAAAA"},     // QuadPlane
     {"LEARNING", "FFFF0000"},   // Rover
     {"STEERING", "FFFF2323"},   // Rover
     {"HOLD", "FF00CEFF"},       // Rover
@@ -167,13 +171,19 @@ XKQ1 XKQ1::from(FormatLine &format, QString &line) {
     return a;
 }
 
-static GPSRecord gpsFromPOS(POSRecord& pos, qint64 gpsOffset) {
+static GPSRecord gpsFromPOS(POSRecord& pos, qint64 gpsOffset, QList<GPSRecord> gpsList) {
     GPSRecord a;
     a.values.insert("Lat", pos.lat());
     a.values.insert("Lng", pos.lng());
     a.values.insert("Alt", pos.alt());
     a.values.insert("TimeUS", pos.timeUS());
     a.setUtCTime(pos.timeUS().toInt() + gpsOffset);
+    if (!gpsList.isEmpty()) {
+        GPSRecord gps = gpsList.last();
+        a.values.insert("Spd", gps.speed());
+        a.values.insert("GCrs", gps.crs());
+        a.values.insert("VZ", gps.vz());
+    }
     return a;
 }
 
@@ -403,7 +413,8 @@ void KMLCreator::processLine(QString &line)
         FormatLine fl = m_formatLines.value("POS");
         if(fl.hasData()) {
             POSRecord pos = POSRecord::from(fl, line);
-            GPSRecord gps = gpsFromPOS(pos, gpsOffset);
+            // create a gps record using attitude from POS and other data from most recent GPS msg
+            GPSRecord gps = gpsFromPOS(pos, gpsOffset, pm->mGPS);
 
             if(gps.hasData()) {
                 m_summary->add(gps);
@@ -485,8 +496,8 @@ void KMLCreator::processLine(QString &line)
                 // Time for a new placemark
                 QString mode = toModeString(m_mav_type, mrec.modeNum());
                 QString title = QString("Flight Mode %1").arg(mode.trimmed());
-                QLOG_DEBUG() << "MAV_TYPE: " << m_mav_type << ", flight mode: " << mrec.modeNum().toInt() << ": " << mode;
                 QString color = getColorFor(mode);
+                QLOG_DEBUG() << "MAV_TYPE: " << m_mav_type << ", flight mode: " << mrec.modeNum().toInt() << ": " << mode << ", color: " << color;
                 Placemark *pm = new Placemark(title, mode, color);
                 m_placemarks.append(pm);
             }
@@ -726,11 +737,17 @@ static QString descriptionData(Placemark *p, GPSRecord &c) {
     return s;
 }
 
-static QString RPYdescription(Attitude &att) {
+static QString RPYdescription(Attitude &att, GPSRecord &gps) {
     QString s;
-    s.append("Roll: " + att.roll());
-    s.append("\nPitch: " + att.pitch());
-    s.append("\nYaw: " + att.yaw());
+    s.append(QString("RPY: %1, %2, %3\n")
+             .arg(att.roll().toFloat(),6,'f',1)
+             .arg(att.pitch().toFloat(),6,'f',1)
+             .arg(att.yaw().toFloat(),6,'f',1));
+    s.append(QString("Alt: %1\nSpeed: %2\nCourse: %3\nvZ: %4")
+             .arg(gps.alt().toFloat(),6,'f',1)
+             .arg(gps.speed().toFloat(),6,'f',1)
+             .arg(gps.crs().toFloat(),6,'f',1)
+             .arg(gps.vz().toFloat(),6,'f',1));
     return s;
 }
 
@@ -760,7 +777,7 @@ void KMLCreator::writePlanePlacemarkElement(QXmlStreamWriter &writer, Placemark 
                 qint64 timeUS = c.timeUS().toInt();
                 double ts_sec = (double)timeUS / 1e6;
                 QString timeLabel = dateTime.mid(dateTime.indexOf('T')+1, 12);
-                writer.writeTextElement("name", QString("%1: %2: %3: %4").arg(p->title, QString::number(idx++), QString::number(ts_sec,'f',3), timeLabel));
+                writer.writeTextElement("name", QString("%1: %2: %3: %4").arg(p->title).arg(idx++).arg(ts_sec,5,'f',3).arg(timeLabel));
                 writer.writeTextElement("visibility", "0");
 
                 QString desc = descriptionData(p, c);
@@ -848,7 +865,7 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
                 qint64 timeUS = c.timeUS().toInt();
                 double ts_sec = (double)timeUS / 1e6;
                 QString timeLabel = dateTime.mid(dateTime.indexOf('T')+1, 12);
-                writer.writeTextElement("name", QString("Plane %1").arg(idx++) + ": " + QString::number(ts_sec,'f',3) + ": " + timeLabel);
+                writer.writeTextElement("name", QString("%1: %2: %3: %4").arg(p->title).arg(idx++).arg(ts_sec,5,'f',3).arg(timeLabel));
                 writer.writeTextElement("visibility", "0");
 
                 writer.writeStartElement("Model");
@@ -884,7 +901,7 @@ void KMLCreator::writePlanePlacemarkElementQ(QXmlStreamWriter &writer, Placemark
 
                 writer.writeEndElement(); // Model
 
-                QString desc = RPYdescription(att);
+                QString desc = RPYdescription(att, c);
                 if(!desc.isEmpty()) {
                     writer.writeStartElement("description");
                     writer.writeCDATA(desc);
