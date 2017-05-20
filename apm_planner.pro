@@ -48,6 +48,8 @@ linux-g++-64 {
     contains( DISTRO, "Arch" ) {
         message(ArchLinux Build)
         DEFINES += Q_ARCHLINUX
+        INCLUDEPATH += /usr/include/openssl-1.0
+        LIBRARYPATH += /usr/lib/openssl-1.0
     }
 
 } else: linux-g++ {
@@ -66,6 +68,8 @@ linux-g++-64 {
     contains( DISTRO, "Arch" ) {
         message(ArchLinux Build)
         DEFINES += Q_ARCHLINUX
+        INCLUDEPATH += /usr/include/openssl-1.0
+        LIBRARYPATH += /usr/lib/openssl-1.0
     }
 
 } else : win32-msvc2012 | win32-msvc2013 {
