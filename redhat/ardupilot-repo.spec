@@ -1,14 +1,14 @@
-Summary:            DIY Drones Repository Configuration
-Name:               diydrones-repo
+Summary:            ArduPilot Repository Configuration
+Name:               ardupilot-repo
 Version:            1
 Release:            1
-License:            BSD
+License:            WTFPL
 Group:              System Environment/Base
-URL:                https://github.com/diydrones/apm_planner
-Source1:            diydrones.repo
+URL:                https://github.com/ArduPilot/apm_planner
+Source1:            ardupilot.repo
 
 %description
-Enable DIY Drones repository on your box.
+Enable ArduPilot repository on your box.
 
 %prep
 echo "Nothing to prep"

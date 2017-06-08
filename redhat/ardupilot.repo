@@ -1,32 +1,32 @@
-[diydrones]
-name=DIY Drones - $basearch
+[ArduPilot]
+name=ArduPilot - $basearch
 failovermethod=priority
-baseurl=http://www.froller.net/diydrones/$basearch
+baseurl=http://www.froller.net/ArduPilot/$basearch
 #metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch
 enabled=1
 metadata_expire=7d
 gpgcheck=0
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-diydrones-$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ArduPilot-$basearch
 skip_if_unavailable=False
 
-[diydrones-debuginfo]
-name=DIY Drones - $basearch - Debug
+[ArduPilot-debuginfo]
+name=ArduPilot - $basearch - Debug
 failovermethod=priority
-baseurl=http://www.froller.net/diydrones/$basearch/debug/
+baseurl=http://www.froller.net/ArduPilot/$basearch/debug/
 #metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-debug-$releasever&arch=$basearch
 enabled=0
 #metadata_expire=7d
 gpgcheck=0
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-diydrones-$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ArduPilot-$basearch
 skip_if_unavailable=False
 
-[diydrones-source]
-name=DIY Drones - Source
+[AtduPilot-source]
+name=ArduPilot - Source
 failovermethod=priority
-baseurl=http://www.froller.net/diydrones/SRPMS/
+baseurl=http://www.froller.net/ArduPilot/SRPMS/
 #metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-source-$releasever&arch=$basearch
 enabled=0
 #metadata_expire=7d
 gpgcheck=0
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-diydrones-$basearch
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ArduPilot-$basearch
 skip_if_unavailable=False
