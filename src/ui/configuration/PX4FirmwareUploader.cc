@@ -9,6 +9,16 @@
 #include <QApplication>
 #if defined(OPENSSL)
 #include <openssl/ssl.h>
+
+// from https://rt.cpan.org/Public/Bug/Display.html?id=118345
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+#define EVP_PKEY_get0_RSA(pkey) ((pkey)->pkey.rsa)
+#define EVP_PKEY_get0_DSA(pkey) ((pkey)->pkey.dsa)
+#ifndef OPENSSL_NO_EC
+#define EVP_PKEY_get0_EC_KEY(pkey) ((pkey)->pkey.ec)
+#endif
+#endif
+
 #endif
 
 #include "logging.h"
@@ -641,7 +651,7 @@ bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& s
         return false;
     }
 
-    int verify = RSA_verify(NID_sha1,(unsigned char*)serial.data(),serial.size(),(unsigned char*)signature.data(),signature.size(),pkey->pkey.rsa);
+    int verify = RSA_verify(NID_sha1,(unsigned char*)serial.data(),serial.size(),(unsigned char*)signature.data(),signature.size(),EVP_PKEY_get0_RSA(pkey));
     if (verify)
     {
         //Failed!
