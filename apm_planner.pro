@@ -36,40 +36,54 @@ linux-g++-64 {
     message(Linux build x64_86)
     CONFIG += LinuxBuild
     DEFINES += Q_LINUX_64
-    DEFINES += FLITE_AUDIO_ENABLED
 
     DISTRO = $$system(lsb_release -i)
+    REDHAT_RELEASE = $$system(cat /etc/redhat_release)
 
     contains( DISTRO, "Ubuntu" ) {
         message(Ubuntu Build)
         DEFINES += Q_UBUNTU
+        DEFINES += FLITE_AUDIO_ENABLED
     }
 
     contains( DISTRO, "Arch" ) {
         message(ArchLinux Build)
         DEFINES += Q_ARCHLINUX
+        DEFINES += FLITE_AUDIO_ENABLED
         INCLUDEPATH += /usr/include/openssl-1.0
         LIBRARYPATH += /usr/lib/openssl-1.0
+    }
+
+    contains( REDHAT_RELEASE, "Fedora" ) {
+        message(Fedora Build)
+        DEFINES += Q_FEDORA
     }
 
 } else: linux-g++ {
     message(Linux build x86)
     CONFIG += LinuxBuild
     DEFINES += Q_LINUX_32
-    DEFINES += FLITE_AUDIO_ENABLED
 
     DISTRO = $$system(lsb_release -i)
+    REDHAT_RELEASE = $$system(cat /etc/redhat_release)
 
     contains( DISTRO, "Ubuntu" ) {
         message(Ubuntu Build)
         DEFINES += Q_UBUNTU
+        DEFINES += FLITE_AUDIO_ENABLED
     }
 
     contains( DISTRO, "Arch" ) {
         message(ArchLinux Build)
         DEFINES += Q_ARCHLINUX
+        DEFINES += FLITE_AUDIO_ENABLED
         INCLUDEPATH += /usr/include/openssl-1.0
         LIBRARYPATH += /usr/lib/openssl-1.0
+    }
+
+    contains( REDHAT_RELEASE, "Fedora" ) {
+        message(Fedora Build)
+        DEFINES += Q_FEDORA
     }
 
 } else : win32-msvc2012 | win32-msvc2013 {
