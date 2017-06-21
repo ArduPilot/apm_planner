@@ -25,24 +25,48 @@
 
 message(Qt version $$[QT_VERSION])
 
-# Setup our supported build types. We do this once here and then use the defined config scopes
-# to allow us to easily modify suported build types in one place instead of duplicated throughout
-# the project file.
+# Setup our supported build types. We do this once here and then use the
+# defined config scopes to allow us to easily modify suported build types in
+# one place instead of duplicated throughout the project file.
 
 DEFINES+=DISABLE_3DMOUSE    # Disable 3D mice support for now
 #DEFINES+=ENABLE_CAMRAVIEW   # Example to include camraview
 
-linux-g++-64 {
-    message(Linux build x64_86)
+load(configure)
+
+linux-g++-64 | linux-g++ {
     CONFIG += LinuxBuild
-    DEFINES += Q_LINUX_64
-    DEFINES += FLITE_AUDIO_ENABLED
 
     DISTRO = $$system(lsb_release -i)
+    REDHAT_RELEASE = $$system(cat /etc/redhat-release)
+
+    qtCompileTest(has_flite)
+
+    linux-g++-64 {
+        message(Linux build x86_64)
+        DEFINES += Q_LINUX_64
+    }
+
+    linux-g++ {
+        message(Linux build x86)
+        DEFINES += Q_LINUX_32
+    }
+
+    CONFIG(config_has_flite) {
+        message(Enabling flite audio support)
+        DEFINES += FLITE_AUDIO_ENABLED
+    }
 
     contains( DISTRO, "Ubuntu" ) {
         message(Ubuntu Build)
         DEFINES += Q_UBUNTU
+	CONFIG += DebianIntegration
+    }
+
+    contains ( Distro, "Debian" ) {
+        message(Debian Build)
+        DEFINES += Q_DEBIAN
+	CONFIG += DebianIntegration
     }
 
     contains( DISTRO, "Arch" ) {
@@ -52,26 +76,10 @@ linux-g++-64 {
         LIBRARYPATH += /usr/lib/openssl-1.0
     }
 
-} else: linux-g++ {
-    message(Linux build x86)
-    CONFIG += LinuxBuild
-    DEFINES += Q_LINUX_32
-    DEFINES += FLITE_AUDIO_ENABLED
-
-    DISTRO = $$system(lsb_release -i)
-
-    contains( DISTRO, "Ubuntu" ) {
-        message(Ubuntu Build)
-        DEFINES += Q_UBUNTU
+    contains( REDHAT_RELEASE, "Fedora" ) {
+        message(Fedora Build)
+        DEFINES += Q_FEDORA
     }
-
-    contains( DISTRO, "Arch" ) {
-        message(ArchLinux Build)
-        DEFINES += Q_ARCHLINUX
-        INCLUDEPATH += /usr/include/openssl-1.0
-        LIBRARYPATH += /usr/lib/openssl-1.0
-    }
-
 } else : win32-msvc2012 | win32-msvc2013 {
     message(Windows build)
     CONFIG += WindowsBuild

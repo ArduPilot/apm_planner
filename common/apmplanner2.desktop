@@ -2,9 +2,9 @@
 Type=Application
 Name=APM Planner 2
 GenericName=apmplanner2
-Exec=apmplanner2.sh
+Exec=/usr/bin/apmplanner2
 Terminal=false
 Categories=Education;Robotics;
-Comment=A UAV Ground Station
+Comment=An open-source ground station application for MAVlink based autopilots
 Icon=/usr/share/APMPlanner2/files/APMIcons/ap_rc.png
 
