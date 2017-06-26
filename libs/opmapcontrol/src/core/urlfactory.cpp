@@ -108,7 +108,7 @@ namespace core {
             qDebug()<<"Correct GoogleVersion";
 #endif //DEBUG_URLFACTORY
             setIsCorrectGoogleVersions(true);
-            QString url = "http://maps.google.com";
+            QString url = "http://maps.google.com/maps/api/js?v=3.2&sensor=false";
 
             qheader.setUrl(QUrl(url));
             qheader.setRawHeader("User-Agent",UserAgent);
@@ -147,7 +147,7 @@ namespace core {
                 qDebug()<<"TryCorrectGoogleVersions, VersionGoogleLabels: "<<VersionGoogleLabels;
 #endif //DEBUG_URLFACTORY
             }
-            reg=QRegExp("\"*http://khm\\D?\\d.google.com/kh/v=(\\d*)",Qt::CaseInsensitive);
+            reg=QRegExp("\"*https://khms\\D?\\d.google.com/kh\\?v=(\\d*)",Qt::CaseInsensitive);
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
