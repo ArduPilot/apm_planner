@@ -33,10 +33,14 @@
 #define APP_PLATFORM osx
 #elif defined(Q_LINUX_64) && defined(Q_UBUNTU)
 #define APP_PLATFORM ubuntu64
+#elif defined(Q_LINUX_64) && defined(Q_ARCHLINUX)
+#define APP_PLATFORM archlinux64
 #elif defined(Q_LINUX_64)
 #define APP_PLATFORM debian64
 #elif defined(Q_OS_LINUX) && defined(Q_UBUNTU)
 #define APP_PLATFORM ubuntu32
+#elif defined(Q_LINUX_64) && defined(Q_ARCHLINUX)
+#define APP_PLATFORM archlinux32
 #elif defined(Q_OS_LINUX)
 #define APP_PLATFORM debian32
 #else

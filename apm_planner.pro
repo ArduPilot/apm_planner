@@ -48,6 +48,8 @@ linux-g++-64 {
     contains( DISTRO, "Arch" ) {
         message(ArchLinux Build)
         DEFINES += Q_ARCHLINUX
+        INCLUDEPATH += /usr/include/openssl-1.0
+        LIBRARYPATH += /usr/lib/openssl-1.0
     }
 
 } else: linux-g++ {
@@ -66,6 +68,8 @@ linux-g++-64 {
     contains( DISTRO, "Arch" ) {
         message(ArchLinux Build)
         DEFINES += Q_ARCHLINUX
+        INCLUDEPATH += /usr/include/openssl-1.0
+        LIBRARYPATH += /usr/lib/openssl-1.0
     }
 
 } else : win32-msvc2012 | win32-msvc2013 {
@@ -687,7 +691,8 @@ HEADERS += \
     src/ui/Loghandling/TlogParser.h \
     src/ui/Loghandling/LogdataStorage.h \
     src/ui/Loghandling/LogExporter.h \
-    src/ui/Loghandling/LogAnalysis.h
+    src/ui/Loghandling/LogAnalysis.h \
+    src/ui/Loghandling/PresetManager.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -913,7 +918,8 @@ SOURCES += src/main.cc \
     src/ui/Loghandling/TlogParser.cpp \
     src/ui/Loghandling/LogdataStorage.cpp \
     src/ui/Loghandling/LogExporter.cpp \
-    src/ui/Loghandling/LogAnalysis.cpp
+    src/ui/Loghandling/LogAnalysis.cpp \
+    src/ui/Loghandling/PresetManager.cpp
 
 MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
     message(Including support for Google Earth)

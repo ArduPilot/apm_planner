@@ -27,7 +27,7 @@ QGCMapTool::QGCMapTool(QWidget *parent) :
     connect(ui->zoomSlider, SIGNAL(valueChanged(int)), this, SLOT(setMapZoom(int)));
     connect(ui->map, SIGNAL(zoomChanged(int)), this, SLOT(setZoom(int)));
 
-    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
+    connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)), Qt::UniqueConnection);
 
     if (UASManager::instance()->getActiveUAS())
     {

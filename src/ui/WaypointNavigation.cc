@@ -3,6 +3,11 @@
 
 #include "WaypointNavigation.h"
 
+
+const int WaypointNavigation::s_PointsWithStraightPath[]   = {MAV_CMD_NAV_WAYPOINT, MAV_CMD_NAV_LOITER_UNLIM, MAV_CMD_NAV_LOITER_TURNS, MAV_CMD_NAV_LOITER_TO_ALT,
+                                                              MAV_CMD_NAV_LOITER_TIME, MAV_CMD_NAV_LAND, MAV_CMD_NAV_TAKEOFF};
+const int WaypointNavigation::s_PointsWithStraightPathSize = sizeof(s_PointsWithStraightPath) / sizeof(s_PointsWithStraightPath[0]);
+
 /*static*/ QPointF
 WaypointNavigation::p(float t,
                       const QPointF& p0,
@@ -40,32 +45,26 @@ WaypointNavigation::path(QList<Waypoint*>& waypoints,
     if (waypoints.size() == 1)
         return path;
 
-    QList<int> wayPointsWithPath; // This QList of waypoints for a path to be drawn.
-    wayPointsWithPath << MAV_CMD_NAV_WAYPOINT // Here corresponding Waypoints can be added or removed.
-                      << MAV_CMD_NAV_LOITER_UNLIM
-                      << MAV_CMD_NAV_LOITER_TURNS
-                      << MAV_CMD_NAV_LOITER_TO_ALT
-                      << MAV_CMD_NAV_LOITER_TIME
-                      << MAV_CMD_NAV_LAND
-                      << MAV_CMD_NAV_TAKEOFF;
-
     QPointF m1; // spline velocity at destination
     for (int i = 1; i < waypoints.size(); ++i)
     {
         const Waypoint& wp1 = *waypoints[i];
         QPointF p1 = toQPointF(wp1, map);
 
-        if (wayPointsWithPath.contains(wp1.getAction()))
+        if(std::count(s_PointsWithStraightPath, s_PointsWithStraightPath + s_PointsWithStraightPathSize, wp1.getAction()))
         {
+            // this is a straight waypoint line - add to path and go on
             path.lineTo(p1);
             continue;
         }
 
         if (wp1.getAction() != MAV_CMD_NAV_SPLINE_WAYPOINT)
         {
+            // not straight not spline - do nothing
             continue;
         }
 
+        // Must be a spline waypoint...
         const Waypoint& wp0 = *waypoints[i-1];
         QPointF p0 = toQPointF(wp0, map);
         const Waypoint& wp2 = i < waypoints.size() - 1 ? *waypoints[i+1] : *waypoints[i];

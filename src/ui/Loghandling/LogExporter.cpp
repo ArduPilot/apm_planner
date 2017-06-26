@@ -159,7 +159,8 @@ void AsciiLogExporter::endExport()
 
 //***********************************************************************
 
-KmlLogExporter::KmlLogExporter(QWidget *parent) : LogExporterBase (parent)
+KmlLogExporter::KmlLogExporter(QWidget *parent, MAV_TYPE mav_type, double iconInterval) :
+    LogExporterBase (parent), m_kmlExporter(mav_type, iconInterval)
 {
     QLOG_DEBUG() << "KmlLogExporter::KmlLogExporter()";
 }

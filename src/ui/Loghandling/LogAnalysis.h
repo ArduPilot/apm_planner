@@ -45,7 +45,7 @@ This file is part of the APM_PLANNER project
 #include "AP2DataPlotAxisDialog.h"
 #include "common/common.h"
 #include "ui_LogAnalysis.h"
-
+#include "PresetManager.h"
 
 /**
  * @brief The LogAnalysisCursor class defines a cursor line (vertical selectable, movable line in plot).
@@ -228,9 +228,7 @@ private:
     static const QString s_CursorLayerName;     /// Name for the cursor layer
 
     static const int s_ROW_HEIGHT_PADDING = 3;  /// Number of additional pixels over font height for each row for the table view.
-    static const int s_TextArrowPositions = 7;  /// Max number of different positions for the test arrows
-
-    typedef QMap<QString, QStringList> fmtMapType;  /// type for handling fmt values from datamodel
+    static const int s_TextArrowPositions = 12;  /// Max number of different positions for the test arrows
 
     /**
      * @brief The GraphElements struct holds all needed information about an active graph
@@ -253,11 +251,11 @@ private:
     struct GroupElement
     {
         QString m_groupName;        /// group name
-        double m_upper;             /// upper range value
         double m_lower;             /// lower range value
+        double m_upper;             /// upper range value
         QStringList m_graphList;    /// list of graph names beloging to this group
 
-        GroupElement() : m_upper(0.0), m_lower(0.0) {}
+        GroupElement() : m_lower(std::numeric_limits<double>::max()), m_upper(m_lower * -1) {}
     };
 
     /**
@@ -273,16 +271,24 @@ private:
         RangeValues() : m_min(std::numeric_limits<double>::max()), m_max(m_min * -1), m_average(0.0), m_measurements(0) {}
     };
 
+    typedef QMap<QString, QStringList> fmtMapType;          /// type for handling fmt values from datamodel
+    typedef QHash<QString, GraphElements> activeGraphType;  /// type for handling active graph container
+
+
+
     Ui::LogAnalysis ui;     /// The user interface
 
     QScopedPointer<QCustomPlot>  m_plotPtr;            /// Scoped pointer to QCustomplot
     LogdataStorage::Ptr          m_dataStoragePtr;     /// Shared pointer to data storage
 
+    QScopedPointer<QMenuBar, QScopedPointerDeleteLater> m_menuBarPtr;        /// Scoped pointer to the menu bar
+    QScopedPointer<PresetManager, QScopedPointerDeleteLater> m_presetMgrPtr; /// Scoped pointer to the preset manager
+
     QScopedPointer<AP2DataPlotThread, QScopedPointerDeleteLater> m_loaderThreadPtr;        /// Scoped pointer to AP2DataPlotThread
     QScopedPointer<QProgressDialog, QScopedPointerDeleteLater>   m_loadProgressDialog;     /// Scoped pointer to load progress window
     QScopedPointer<AP2DataPlotAxisDialog, QScopedPointerDeleteLater> m_axisGroupingDialog; /// Scoped pointer to axis grouping dialog
 
-    QHash<QString, GraphElements> m_activeGraphs;           /// Holds all active graphs
+    activeGraphType m_activeGraphs;                         /// Holds all active graphs
     QHash<QString, RangeValues> m_rangeValuesStorage;       /// If there is a range cursor the range values are stored here.
     QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    /// Map holding all Messages which are printed as arrows
     GraphElements m_arrowGraph;                             /// The text arrows have an own graph
@@ -301,6 +307,8 @@ private:
     int    m_statusTextPos;          /// Counter for giving text arrows a different length
     int m_lastHorizontalScrollVal;   /// Stores the last value of the horizontal scroller
     bool m_kmlExport;                /// True if export shall be in kml (google earth) format
+    double m_iconInterval;           /// minimum kml plane icon interval in metres
+
     double m_cursorXAxisRange;       /// X axis range of the cursors.
 
     LogAnalysisCursor *mp_cursorSimple;     /// Pointer to the simple cursor only valid if visible
@@ -356,11 +364,20 @@ private:
      */
     void saveSettings();
 
+    /**
+     * @brief presetToRangeConverter - Converts a presetElementVec to a list of graph ranges
+     *        making it possible to use the graphGroupingChanged() method to apply a preset.
+     *        Moreover this method also sets the colors of the graph as stored in the presets.
+     * @param preset - the preset vector containing the preset data
+     * @return - a GraphRange list wich can be given to graphGroupingChanged() method.
+     */
+    QList<AP2DataPlotAxisDialog::GraphRange> presetToRangeConverter(const PresetManager::presetElementVec &preset);
+
 private slots:
 
     /**
      * @brief hideTableView - hides / shows the table view
-     * @param hide - true: hide table view, false: show table view
+     * @param hide - true: hide table view, flase: show table view
      */
     void hideTableView(bool hide);
 
@@ -542,6 +559,13 @@ private slots:
     void graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList);
 
     /**
+     * @brief graphColorsChanged - handles the graphColorsChanged() signal from the grouping
+     *        dialog.
+     * @param colorlist - map of graph names and their colors.
+     */
+    void graphColorsChanged(QMap<QString,QColor> colorlist);
+
+    /**
      * @brief contextMenuRequest - handles the customContextMenuRequested() signal from
      *        qCustomPlot on right click. It handles the cursor enabling/disabling.
      * @param pos - Pos where the context menu opens. Used to place the cursors initially.
@@ -592,6 +616,29 @@ private slots:
      * @param enable - true checkbox is checked, false unchecked
      */
     void enableTableCursor(bool enable);
+
+    /**
+     * @brief storeGraphSettingsPressed - is called when the store Settings button is pressed.
+     *        Stores the active graphs and their settings into ini file.
+     */
+    void storeGraphSettingsPressed();
+
+    /**
+     * @brief applyGraphSettingsPressed - is called when the apply settings button is pressed.
+     *        Applies the data stored with storeGraphSettingsPressed() to the current LogAnalysis window.
+     */
+    void applyGraphSettingsPressed();
+
+    /**
+     * @brief analysisPresetSelected - is called when the preset manager selects a new preset. It does
+     *        everything to apply the preset to the graph.
+     */
+    void analysisPresetSelected(PresetManager::presetElementVec preset);
+
+    /**
+     * @brief addCurrentViewToPreset - applies the current graph view to the preset manager
+     */
+    void addCurrentViewToPreset();
 
 };
 

@@ -384,7 +384,7 @@ void AP2DataPlot2D::graphControlsButtonClicked()
                 !i.key().contains(EventMessage::TypeName) &&
                 !i.key().contains(MsgMessage::TypeName))
             {
-                m_axisGroupingDialog->fullAxisUpdate(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().isManualRange,i.value().isInGroup,i.value().groupName);
+                m_axisGroupingDialog->fullAxisUpdate(i.key(),i.value().axis->range().lower,i.value().axis->range().upper,i.value().isManualRange,i.value().isInGroup,i.value().groupName, i.value().graph->brush().color());
             }
         }
         return;

@@ -18,7 +18,7 @@ public:
 
 private:
     bool m_isSingleOnly;
-    bool m_isFirstTime = true;
+    bool m_isFirstTime;
     QMap<QString,int> m_categoryToIndexMap;
     QMap<QCheckBox*,QString> m_checkboxToValueMap;
     QList<QCheckBox*> m_checkBoxList;

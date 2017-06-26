@@ -32,6 +32,7 @@ This file is part of the APM_PLANNER project
 
 #include "ArduPilotMegaMAV.h"
 #include "Loghandling/LogExporter.h"
+#include "Loghandling/PresetManager.h"
 
 
 
@@ -42,7 +43,7 @@ LogAnalysisCursor::LogAnalysisCursor(QCustomPlot *parentPlot, double xPosition, 
     m_type(type),
     mp_otherCursor(0)
 {
-    QLOG_DEBUG() << "LogAnalysisCursor::LogAnalysisCursor - CTOR - type " << type;
+    QLOG_TRACE() << "LogAnalysisCursor::LogAnalysisCursor - CTOR - type " << type;
     point1->setCoords(m_currentPos, 1);
     point2->setCoords(m_currentPos, 0);
     setSelectable(true);
@@ -51,7 +52,7 @@ LogAnalysisCursor::LogAnalysisCursor(QCustomPlot *parentPlot, double xPosition, 
 
 LogAnalysisCursor::~LogAnalysisCursor()
 {
-    QLOG_DEBUG() << "LogAnalysisCursor::~LogAnalysisCursor - DTOR - type " << m_type;
+    QLOG_TRACE() << "LogAnalysisCursor::~LogAnalysisCursor - DTOR - type " << m_type;
 }
 
 void LogAnalysisCursor::setOtherCursor(LogAnalysisCursor *pCursor)
@@ -159,12 +160,12 @@ void LogAnalysisCursor::wheelEvent(QWheelEvent *event)
 
 LogAnalysisAxis::LogAnalysisAxis(QCPAxisRect *axisRect, AxisType type) : QCPAxis(axisRect, type)
 {
-    QLOG_DEBUG() << "LogAnalysisAxis::LogAnalysisAxis - CTOR";
+    QLOG_TRACE() << "LogAnalysisAxis::LogAnalysisAxis - CTOR";
 }
 
 LogAnalysisAxis::~LogAnalysisAxis()
 {
-    QLOG_DEBUG() << "LogAnalysisAxis::~LogAnalysisAxis - DTOR";
+    QLOG_TRACE() << "LogAnalysisAxis::~LogAnalysisAxis - DTOR";
 }
 
 void LogAnalysisAxis::wheelEvent(QWheelEvent *event)
@@ -211,6 +212,24 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
 {
     QLOG_DEBUG() << "LogAnalysis::LogAnalysis - CTOR";
     ui.setupUi(this);
+
+    // add menu bar
+    m_menuBarPtr.reset(new QMenuBar(this));
+    QMenu *exportMenu = new QMenu("Export...", this);
+    m_menuBarPtr->addMenu(exportMenu);
+    // add ascii export to menu
+    QAction *p_Action = exportMenu->addAction("Export to Ascii log file");
+    connect(p_Action, SIGNAL(triggered()), this, SLOT(exportAsciiLogClicked()));
+    // add KMZ export to menu
+    p_Action = exportMenu->addAction("Export to KML/KMZ file");
+    connect(p_Action, SIGNAL(triggered()), this, SLOT(exportKmlClicked()));
+
+    // create preset menu and give it to preset manager
+    m_presetMgrPtr.reset(new PresetManager(this, m_menuBarPtr.data()));
+    connect(m_presetMgrPtr.data(), SIGNAL(newPresetSelected(PresetManager::presetElementVec)), this, SLOT(analysisPresetSelected(PresetManager::presetElementVec)));
+
+    // add menubar to window
+    layout()->setMenuBar(m_menuBarPtr.data());
 
     // create QCustomPlot
     m_plotPtr.reset(new QCustomPlot(ui.widget));
@@ -280,6 +299,7 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     m_axisGroupingDialog.reset(new AP2DataPlotAxisDialog());
     m_axisGroupingDialog->hide();
     connect(m_axisGroupingDialog.data(), SIGNAL(graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange>)), this, SLOT(graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange>)));
+    connect(m_axisGroupingDialog.data(), SIGNAL(graphColorsChanged(QMap<QString,QColor>)), this, SLOT(graphColorsChanged(QMap<QString,QColor>)));
 
     // setup policy and connect slot for context menu popup
     m_plotPtr->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -287,7 +307,6 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     m_plotPtr->replot();
 
     // connect to default signals
-    connect(ui.hideTableWidgetCheckBox, SIGNAL(clicked(bool)), this, SLOT(hideTableView(bool)));
     connect(ui.showValuesCheckBox,      SIGNAL(clicked(bool)), this, SLOT(showValueUnderMouseClicked(bool)));
     connect(ui.modeDisplayCheckBox,     SIGNAL(clicked(bool)), this, SLOT(modeCheckboxClicked(bool)));
     connect(ui.evDisplayCheckBox,       SIGNAL(clicked(bool)), this, SLOT(eventCheckboxClicked(bool)));
@@ -304,12 +323,16 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     connect(ui.filterSelectAllPushButton,SIGNAL(clicked()),this,SLOT(filterSelectAllClicked()));
     connect(ui.filterInvertSelectPushButton,SIGNAL(clicked()),this,SLOT(filterSelectInvertClicked()));
 
-    connect(ui.exportLogButton, SIGNAL(clicked()), this, SLOT(exportAsciiLogClicked()));
-    connect(ui.exportKmlButton, SIGNAL(clicked()), this, SLOT(exportKmlClicked()));
     connect(ui.graphControlsPushButton, SIGNAL(clicked()), this, SLOT(graphControlsButtonClicked()));
     connect(ui.resetScalingPushButton, SIGNAL(clicked()), this, SLOT(resetValueScaling()));
 
+    connect(ui.storeGraphSettingsButton, SIGNAL(clicked()), this, SLOT(storeGraphSettingsPressed()));
+    connect(ui.applyGraphSettingsButton, SIGNAL(clicked()), this, SLOT(applyGraphSettingsPressed()));
+    connect(ui.storeToPresetPushBtn, SIGNAL(clicked()), this, SLOT(addCurrentViewToPreset()));
+
     loadSettings();
+
+    setStyleSheet("QToolTip {background: #ffffdf}");
 }
 
 LogAnalysis::~LogAnalysis()
@@ -324,7 +347,8 @@ void LogAnalysis::loadLog(QString filename)
     m_filename = filename;
     // setup window name
     QString shortfilename = filename.mid(filename.lastIndexOf("/")+1);
-    setWindowTitle(tr("Graph: %1").arg(shortfilename));
+    QString presetName = m_presetMgrPtr->getFileInfo().fileName();
+    setWindowTitle(tr("Graph: %1 [%2]").arg(shortfilename).arg(presetName));
 
     // create datastorage, loader thread and connect the signals
     m_dataStoragePtr = LogdataStorage::Ptr(new LogdataStorage());
@@ -412,13 +436,15 @@ void LogAnalysis::cursorRangeChange()
 {
     if(mp_cursorLeft && mp_cursorRight)
     {
+        // get cursor positions and range
         m_rangeValuesStorage.clear();
         double leftPos  = mp_cursorLeft->getCurrentXPos();
         double rightPos = mp_cursorRight->getCurrentXPos();
 
         m_cursorXAxisRange = rightPos - leftPos;
 
-        QHash<QString, GraphElements>::Iterator iter;
+        // Calculate range values for every active graph
+        activeGraphType::Iterator iter;
         for(iter = m_activeGraphs.begin(); iter != m_activeGraphs.end(); ++iter)
         {
             QSharedPointer<QCPGraphDataContainer> dataPtr = iter->p_graph->data();
@@ -566,8 +592,8 @@ void LogAnalysis::loadSettings()
     ui.errDisplayCheckBox->setChecked(settings.value("SHOW_ERR", Qt::Checked).toBool());
     ui.evDisplayCheckBox->setChecked(settings.value("SHOW_EV", Qt::Checked).toBool());
     ui.msgDisplayCheckBox->setChecked(settings.value("SHOW_MSG", Qt::Checked).toBool());
-    ui.hideTableWidgetCheckBox->setChecked(settings.value("HIDE_TABLE_VIEW", Qt::Checked).toBool());
     ui.showValuesCheckBox->setChecked(settings.value("SHOW_VALUES", Qt::Unchecked).toBool());
+    m_presetMgrPtr->setFileName(settings.value("PRESET_FILE").toString());
     settings.endGroup();
 }
 
@@ -579,9 +605,55 @@ void LogAnalysis::saveSettings()
     settings.setValue("SHOW_ERR", ui.errDisplayCheckBox->isChecked());
     settings.setValue("SHOW_EV", ui.evDisplayCheckBox->isChecked());
     settings.setValue("SHOW_MSG", ui.msgDisplayCheckBox->isChecked());
-    settings.setValue("HIDE_TABLE_VIEW", ui.hideTableWidgetCheckBox->isChecked());
     settings.setValue("SHOW_VALUES", ui.showValuesCheckBox->isChecked());
+
+    QFileInfo fileInfo = m_presetMgrPtr->getFileInfo();
+    QString filePath;
+    if(!fileInfo.fileName().isEmpty())  // if fileName is empty absoluteFilePath() delivers unpredicted values
+    {
+        filePath = fileInfo.absoluteFilePath();
+    }
+    settings.setValue("PRESET_FILE", filePath);
     settings.endGroup();
+}
+
+QList<AP2DataPlotAxisDialog::GraphRange> LogAnalysis::presetToRangeConverter(const PresetManager::presetElementVec &preset)
+{
+    QList<AP2DataPlotAxisDialog::GraphRange> graphRanges;
+
+    for(int i = 0; i < preset.size(); ++i)
+    {
+        if(m_activeGraphs.contains(preset.at(i).m_graph))    // the element is enabled?
+        {
+            GraphElements &element = m_activeGraphs[preset.at(i).m_graph];
+            element.p_graph->setPen(QPen(preset.at(i).m_color, 1));
+            element.p_yAxis->setLabelColor(preset.at(i).m_color);
+            element.p_yAxis->setTickLabelColor(preset.at(i).m_color);
+
+            AP2DataPlotAxisDialog::GraphRange range;
+            range.graph = preset.at(i).m_graph;
+            if(preset.at(i).m_manualRange)
+            {
+                range.manual = true;
+                range.max = preset.at(i).m_range.upper;
+                range.min = preset.at(i).m_range.lower;
+            }
+            else if(preset.at(i).m_group.size() > 0)
+            {
+                range.isgrouped = true;
+                range.group = preset.at(i).m_group;
+                range.max = element.p_yAxis->range().upper; // As the graph is already autoscaled (done when enabling) we just use the autoscaled min / max.
+                range.min = element.p_yAxis->range().lower;
+            }
+
+            graphRanges.push_back(range);
+        }
+        else
+        {
+            QLOG_WARN() << "The graph " << preset.at(i).m_graph << " was not found! Could not apply settings.";
+        }
+    }
+    return graphRanges;
 }
 
 void LogAnalysis::hideTableView(bool hide)
@@ -589,12 +661,12 @@ void LogAnalysis::hideTableView(bool hide)
     if (hide)
     {
         ui.splitter->setSizes(QList<int>() << 1 << 0);
-        ui.filterShowPushButton->setVisible(false);
+        ui.filterShowPushButton->setDisabled(true);
     }
     else
     {
         ui.splitter->setSizes(QList<int>() << 1 << 1);
-        ui.filterShowPushButton->setVisible(true);
+        ui.filterShowPushButton->setDisabled(false);
     }
 }
 
@@ -710,7 +782,7 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
     // create an invisible y-axis for the text arrows
     m_arrowGraph.p_yAxis = m_plotPtr->axisRect()->addAxis(QCPAxis::atLeft);
     m_arrowGraph.p_yAxis->setVisible(false);
-    m_arrowGraph.p_yAxis->setRangeUpper(8.0);
+    m_arrowGraph.p_yAxis->setRangeUpper(s_TextArrowPositions + 1);  // The last text shall not be on upper border (+1)
     // Load MODE, ERR, EV, MSG messages from datamodel
     m_dataStoragePtr->getMessagesOfType(ModeMessage::TypeName, m_indexToMessageMap);
     m_dataStoragePtr->getMessagesOfType(ErrorMessage::TypeName, m_indexToMessageMap);
@@ -740,8 +812,8 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
         connect(m_plotPtr.data(), SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(plotMouseMove(QMouseEvent*)));
     }
 
-    // Show the table according to checkbox state
-    if(!ui.hideTableWidgetCheckBox->isChecked())  hideTableView(false);
+    // Show the table view
+    hideTableView(false);
 
     // Enable only the layers that are enabled by their checkbox
     if(ui.modeDisplayCheckBox->isChecked()) m_plotPtr->layer(ModeMessage::TypeName)->setVisible(true);
@@ -1010,13 +1082,11 @@ void LogAnalysis::filterAcceptClicked()
     }
 
     ui.tableFilterGroupBox->setVisible(false);
-    ui.filterShowPushButton->setText("Show Filter");
 }
 
 void LogAnalysis::filterCancelClicked()
 {
     ui.tableFilterGroupBox->setVisible(false);
-    ui.filterShowPushButton->setText("Show Filter");
 }
 
 void LogAnalysis::showFilterButtonClicked()
@@ -1024,12 +1094,10 @@ void LogAnalysis::showFilterButtonClicked()
     if (ui.tableFilterGroupBox->isVisible())
     {
         ui.tableFilterGroupBox->setVisible(false);
-        ui.filterShowPushButton->setText("Show Filter");
     }
     else
     {
         ui.tableFilterGroupBox->setVisible(true);
-        ui.filterShowPushButton->setText("Hide Filter");
     }
 }
 
@@ -1094,6 +1162,10 @@ void LogAnalysis::exportAsciiLogClicked()
 
 void LogAnalysis::exportKmlClicked()
 {
+    bool ok;
+    m_iconInterval = QInputDialog::getDouble(this, tr("QInputDialog::getDouble()"),
+                                         tr("icon interval (metres):"), 2, 0, 100, 3, &ok);
+    if (!ok) m_iconInterval = 2;
     doExport(true);
 }
 
@@ -1116,7 +1188,9 @@ void LogAnalysis::exportDialogAccepted()
 
     if(m_kmlExport)
     {
-        KmlLogExporter kmlExporter(this);
+        QLOG_DEBUG() << "iconInterval: " << m_iconInterval;
+
+        KmlLogExporter kmlExporter(this, m_loadedLogMavType, m_iconInterval);
         kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
     }
     else
@@ -1130,10 +1204,11 @@ void LogAnalysis::exportDialogAccepted()
 
 void LogAnalysis::graphControlsButtonClicked()
 {
-    QHash<QString, GraphElements>::const_iterator iter;
+    activeGraphType::const_iterator iter;
     for (iter = m_activeGraphs.constBegin(); iter != m_activeGraphs.constEnd() ; ++iter)
     {
-        m_axisGroupingDialog->fullAxisUpdate(iter.key(), iter.value().p_yAxis->range().lower, iter.value().p_yAxis->range().upper, iter.value().m_manualRange, iter.value().m_inGroup, iter.value().m_groupName);
+        m_axisGroupingDialog->fullAxisUpdate(iter.key(), iter->p_yAxis->range().lower, iter->p_yAxis->range().upper,
+                                             iter->m_manualRange, iter->m_inGroup, iter->m_groupName, iter->p_graph->pen().color());
     }
 
     m_axisGroupingDialog->show();
@@ -1144,7 +1219,7 @@ void LogAnalysis::graphControlsButtonClicked()
 void LogAnalysis::graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> graphRangeList)
 {
     // first reset all active elements to their default state
-    QHash<QString, GraphElements>::iterator iter;
+    activeGraphType::iterator iter;
     for (iter = m_activeGraphs.begin(); iter != m_activeGraphs.end() ; ++iter)
     {
         if(iter->m_inGroup || iter->m_manualRange)
@@ -1163,7 +1238,7 @@ void LogAnalysis::graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> 
     {
         if(range.isgrouped)
         {
-            GroupElement &groupElement = groupingMap[range.group];
+            GroupElement &groupElement = groupingMap[range.group];  // yes, if doesn't exist just create a new one.
             groupElement.m_groupName = range.group;
             groupElement.m_upper = groupElement.m_upper < range.max ? range.max : groupElement.m_upper;
             groupElement.m_lower = groupElement.m_lower > range.min ? range.min : groupElement.m_lower;
@@ -1206,12 +1281,30 @@ void LogAnalysis::graphGroupingChanged(QList<AP2DataPlotAxisDialog::GraphRange> 
     m_plotPtr->replot();
 }
 
+void LogAnalysis::graphColorsChanged(QMap<QString,QColor> colorlist)
+{
+    QMap<QString,QColor>::ConstIterator iter;
+    for(iter = colorlist.constBegin(); iter != colorlist.constEnd(); ++iter)
+    {
+        if(m_activeGraphs.contains(iter.key()))
+        {
+            GraphElements &element = m_activeGraphs[iter.key()];
+            element.p_graph->setPen(QPen(*iter, 1));
+            element.p_yAxis->setLabelColor(*iter);
+            element.p_yAxis->setTickLabelColor(*iter);
+        }
+    }
+
+    m_plotPtr->replot();
+}
+
 void LogAnalysis::plotMouseMove(QMouseEvent *evt)
 {
     bool insideCursorRange = false;
     QString out;
     QTextStream outStream(&out);
 
+    // Create 1st line of the mouse over tooltip
     double viewableRange = (m_plotPtr->xAxis->range().upper - m_plotPtr->xAxis->range().lower);
     double xValue = m_plotPtr->axisRect()->axis(QCPAxis::atBottom)->pixelToCoord(evt->x());
     double offset = viewableRange / 100;   // an offset of 1 percent
@@ -1235,8 +1328,9 @@ void LogAnalysis::plotMouseMove(QMouseEvent *evt)
         }
     }
 
+    // and now the data of all enabled graphs
     outStream.setRealNumberNotation(QTextStream::FixedNotation);
-    QHash<QString, GraphElements>::Iterator iter;
+    activeGraphType::Iterator iter;
     for(iter = m_activeGraphs.begin(); iter != m_activeGraphs.end(); ++iter)
     {
         outStream.setRealNumberPrecision(3);
@@ -1369,7 +1463,7 @@ void LogAnalysis::removeRangeCursors()
 void LogAnalysis::resetValueScaling()
 {
     // reset all active elements to their default state
-    QHash<QString, GraphElements>::iterator iter;
+    activeGraphType::iterator iter;
     for (iter = m_activeGraphs.begin(); iter != m_activeGraphs.end() ; ++iter)
     {
         if(iter->m_inGroup || iter->m_manualRange)
@@ -1407,4 +1501,111 @@ void LogAnalysis::enableTableCursor(bool enable)
     }
 }
 
+void LogAnalysis::storeGraphSettingsPressed()
+{
+    QLOG_DEBUG() << "LogAnalysis::storeGraphSettingsPressed()";
 
+    activeGraphType::iterator iter;
+    PresetManager::presetElementVec preset;
+    // iterate all visible graphs and store their setting
+    for(iter = m_activeGraphs.begin(); iter != m_activeGraphs.end(); ++iter)
+    {
+        PresetManager::presetElement element;
+        element.m_graph = iter.key();
+        element.m_color = iter->p_graph->pen().color();
+        if(iter->m_manualRange)
+        {   // y-axis scaling is only stored if graph is in manual range...
+            element.m_manualRange = true;
+            element.m_range = iter->p_yAxis->range();
+        }
+        else if(iter->m_inGroup)
+        {   //... or in group range
+            element.m_group = iter->m_groupName;
+            element.m_range = iter->p_yAxis->range();
+        }
+
+        preset.push_back(element);
+    }
+    m_presetMgrPtr->saveSpecialSet(preset, ui.indexTypeCheckBox->isChecked());
+}
+
+void LogAnalysis::applyGraphSettingsPressed()
+{
+    QLOG_DEBUG() << "LogAnalysis::applyGraphSettingsPressed()";
+
+    // get preset from manager
+    PresetManager::presetElementVec preset;
+    bool usesTimeAxis = m_presetMgrPtr->loadSpecialSet(preset);
+
+    // disable all open graphs
+    ui.dataSelectionScreen->disableAllItems();
+    // X-Axis settings
+    ui.indexTypeCheckBox->setChecked(usesTimeAxis);
+    indexTypeCheckBoxClicked(usesTimeAxis);
+
+    // the enabling has to be done in 2 steps.
+    // first enable all graphs stored in the settings.
+    // Second configure then enabled graphs color and range
+
+    // Create list with enabled graphs and enable them
+    QStringList enabledGraphList;
+    for(int i = 0; i < preset.size(); ++i)
+    {
+        enabledGraphList.push_back(preset.at(i).m_graph);
+    }
+    ui.dataSelectionScreen->enableItemList(enabledGraphList);
+
+    // convert preset to ranges and use grouping changed method to scale the graph
+    QList<AP2DataPlotAxisDialog::GraphRange> graphRanges;
+    graphRanges = presetToRangeConverter(preset);
+    graphGroupingChanged(graphRanges);
+}
+
+void LogAnalysis::analysisPresetSelected(PresetManager::presetElementVec preset)
+{
+    QLOG_DEBUG() << "LogAnalysis::analysisPresetSelected()";
+    // first clear the graph
+    ui.dataSelectionScreen->disableAllItems();
+
+    // Create list with enabled graphs and enable them
+    QStringList enabledGraphList;
+    for(int i = 0; i < preset.size(); ++i)
+    {
+        enabledGraphList.push_back(preset.at(i).m_graph);
+    }
+    ui.dataSelectionScreen->enableItemList(enabledGraphList);
+
+    // now set range and color
+    // convert preset to ranges and use grouping changed method to scale the graph
+    QList<AP2DataPlotAxisDialog::GraphRange> graphRanges;
+    graphRanges = presetToRangeConverter(preset);
+    graphGroupingChanged(graphRanges);
+}
+
+void LogAnalysis::addCurrentViewToPreset()
+{
+    QLOG_DEBUG() << "LogAnalysis::addCurrentViewToPreset()";
+
+    activeGraphType::iterator iter;
+    PresetManager::presetElementVec preset;
+    for(iter = m_activeGraphs.begin(); iter != m_activeGraphs.end(); ++iter)
+    {
+        PresetManager::presetElement element;
+        element.m_graph = iter.key();
+        element.m_color = iter->p_graph->pen().color();
+        if(iter->m_manualRange)
+        {   // y-axis scaling is only stored if graph is in manual range...
+            element.m_manualRange = true;
+            element.m_range = iter->p_yAxis->range();
+        }
+        else if(iter->m_inGroup)
+        {   //... or in group range
+            element.m_group = iter->m_groupName;
+            element.m_range = iter->p_yAxis->range();
+        }
+
+        preset.push_back(element);
+    }
+
+    m_presetMgrPtr->addToCurrentPresets(preset);
+}
