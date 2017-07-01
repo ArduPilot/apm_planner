@@ -1542,10 +1542,10 @@ void MainWindow::selectStylesheetDialogAccepted()
 void MainWindow::reloadStylesheet()
 {
     // Load style sheet
-    QFile* styleSheet = new QFile(styleFileName);
+    QScopedPointer<QFile> styleSheet(new QFile(styleFileName));
     if (!styleSheet->exists())
     {
-        styleSheet = new QFile(":files/styles/style-outdoor.css");
+        styleSheet.reset(new QFile(":files/styles/style-outdoor.css"));
     }
     if (styleSheet->open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -1563,7 +1563,6 @@ void MainWindow::reloadStylesheet()
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.exec();
     }
-    delete styleSheet;
 }
 
 /**
