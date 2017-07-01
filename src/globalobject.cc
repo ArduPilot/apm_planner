@@ -196,32 +196,36 @@ QString GlobalObject::shareDirectory()
 #elif defined(Q_OS_MAC)
     return QCoreApplication::applicationDirPath();
 #else
+    // I am no sure if really need this code to determine the application path.
+    // Will not remove it cause I do not want to create a regression.
+    // On Linux (Ubuntu 16.04) it just uses "return QCoreApplication::applicationDirPath();"
+    // like on Mac Os.
     QDir settingsDir = QDir(QDir::currentPath());
     if(settingsDir.exists("data") && settingsDir.exists("qml"))
     {
         return  settingsDir.absolutePath();
     }
+
     settingsDir.cdUp();
     settingsDir.cd("./share/APMPlanner2");
     if(settingsDir.exists("data") && settingsDir.exists("qml"))
     {
-        QString tmp = settingsDir.absolutePath();
         return  settingsDir.absolutePath();
     }
+
     settingsDir = QDir("/usr/share/APMPlanner2");
     if(settingsDir.exists("data") && settingsDir.exists("qml"))
     {
-        QString tmp = settingsDir.absolutePath();
         return  settingsDir.absolutePath();
     }
+
     settingsDir = QDir("/usr/local/share/APMPlanner2");
     if(settingsDir.exists("data") && settingsDir.exists("qml"))
     {
-        QString tmp = settingsDir.absolutePath();
         return  settingsDir.absolutePath();
     }
     //else
-    return QDir(QDir::currentPath()).absolutePath();
+    return QCoreApplication::applicationDirPath();
 
 #endif
 }
