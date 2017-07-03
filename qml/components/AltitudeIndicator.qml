@@ -19,6 +19,8 @@ import QtQuick 2.0
 Rectangle {
     id: root
     property real alt: 0
+    property real maxAlt: 1000
+    property real minAlt: -200
     property real graticuleSpacing: 45-graticuleHeight
     property real graticuleAlt: 10 //metres
     property real graticuleHeight: 2
@@ -31,6 +33,16 @@ Rectangle {
     smooth: true
     border.color: "black"
     color: Qt.rgba(0,0,0,0.2)
+
+    function makeGraticule(){
+        var length = (maxAlt - minAlt) / graticuleAlt + 1;
+        var array = new Array(length);
+        for (var i = 0; i < length; i++){
+            array[i] = maxAlt - i * graticuleAlt;
+        }
+        return array;
+    }
+
     Column{
         id: altColumn
         anchors.horizontalCenter: parent.horizontalCenter
@@ -38,10 +50,8 @@ Rectangle {
         spacing: graticuleSpacing
 
         Repeater {
-            model: [ "200", "190", "180", "170", "160", "150", "140","130","120",
-                    "110", "100", "90", "80", "70", "60", "50", "40", "30", "20", "10", "0",
-                    "-10", "-20", "-30", "-40", "-50" , "-60", "-70", "-80", "-90" , "-100",
-                    "-110", "-120", "-130", "-140", "-150" , "-160", "-170", "-180", "-190", "-200"]
+            model: makeGraticule()
+
             Rectangle { // Graticule Light
                 id:graticuleLight
                 width: root.width
@@ -62,7 +72,7 @@ Rectangle {
             }
         }
         transform: Translate {
-            y: alt*(graticuleSpacing+graticuleHeight)/graticuleAlt
+            y: (alt-(maxAlt+minAlt)/2)*(graticuleSpacing+graticuleHeight)/graticuleAlt
         }
     }
 
