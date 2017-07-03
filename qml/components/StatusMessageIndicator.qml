@@ -43,6 +43,9 @@ Rectangle {
         text: message
         smooth: true
         font.pointSize: 24
+        wrapMode: Text.Wrap
+        width: parent.width
+        horizontalAlignment: Text.AlignHCenter
     }
 
     SequentialAnimation on border.color {
