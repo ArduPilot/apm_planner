@@ -46,18 +46,17 @@ namespace core {
         placemarkCache = cache + "PlacemarkCache/";
         ImageCache.setGtileCache(value);
     }
+
     QString Cache::CacheLocation()
     {
         return cache;
     }
+
     Cache::Cache()
     {
-        if(cache.isNull()|cache.isEmpty())
-        {
-            cache = QDir::homePath() + "/mapscache/";
-            setCacheLocation(cache);
-        }
+
     }
+
     QString Cache::GetGeocoderFromCache(const QString &urlEnd)
     {
 #ifdef DEBUG_GetGeocoderFromCache
@@ -87,6 +86,7 @@ namespace core {
 #endif
         return ret;
     }
+
     void Cache::CacheGeocoder(const QString &urlEnd, const QString &content)
     {
         QString ret=QString::null;
@@ -126,6 +126,7 @@ namespace core {
             stream<<content;
         }
     }
+
     QString Cache::GetPlacemarkFromCache(const QString &urlEnd)
     {
 #ifdef DEBUG_CACHE
