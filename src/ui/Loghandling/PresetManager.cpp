@@ -92,6 +92,7 @@ void PresetManager::saveSpecialSet(const presetElementVec &preset, bool usesTime
     // access. This guarantees that a saved set is immediate loadable from another analysis window.
     QSettings graphSettings;
     graphSettings.beginGroup("LOGANALYSIS");
+    graphSettings.remove("");   // removes all entries from this group
 
     graphSettings.beginWriteArray("GRAPH_ELEMENTS");
     for(int i = 0; i < preset.size(); ++i)
