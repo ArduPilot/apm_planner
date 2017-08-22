@@ -72,7 +72,7 @@ In Fedora (tested against Fedora 21), use:
 sudo yum update
 sudo yum install qt-devel qt5-qtscript-devel \
   qt5-qtwebkit-devel qt5-qtserialport-devel qt5-qtsvg-devel \
-  qt5-qtdeclarative-devel qt5-qtquick1-devel python-serial python-pexpect
+  qt5-qtdeclarative-devel qt5-qtquick1-devel pyserial python-pexpect
 
 sudo yum install SDL-devel libsndfile-devel \
   flite-devel openssl-devel libudev-devel SDL2-devel
