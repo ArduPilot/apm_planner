@@ -15,13 +15,13 @@ WaypointViewOnlyView::WaypointViewOnlyView(Waypoint* wp, QWidget *parent) :
 }
 
 void WaypointViewOnlyView::changedAutoContinue(int state)
-{    
+{
     bool new_value = false;
     if (state != 0)
     {
         new_value = true;
     }
-    wp->setAutocontinue(new_value);    
+    wp->setAutocontinue(new_value);
     emit changeAutoContinue(wp->getId(),new_value);
 }
 
@@ -30,7 +30,7 @@ void WaypointViewOnlyView::changedCurrent(int state)
 {
     Q_UNUSED(state);
     //QLOG_DEBUG() << "Trof: WaypointViewOnlyView::changedCurrent(" << state << ") ID:" << wp->getId();
-    m_ui->current->blockSignals(true);    
+    m_ui->current->blockSignals(true);
 
     if (m_ui->current->isChecked() == false)
     {
@@ -59,7 +59,7 @@ void WaypointViewOnlyView::changedCurrent(int state)
 void WaypointViewOnlyView::setCurrent(bool state)
 //This is a slot receiving signals from UASWaypointManager. The state given here is the true representation of what the "current" waypoint on UAV is.
 {
-    m_ui->current->blockSignals(true);    
+    m_ui->current->blockSignals(true);
     if (state == true)
     {
         wp->setCurrent(true);
@@ -169,7 +169,7 @@ void WaypointViewOnlyView::updateValues()
     if (m_ui->current->isChecked() != wp->getCurrent())
     {
         m_ui->current->blockSignals(true);
-        m_ui->current->setChecked(wp->getCurrent());        
+        m_ui->current->setChecked(wp->getCurrent());
         m_ui->current->blockSignals(false);
     }
     if (m_ui->autoContinue->isChecked() != wp->getAutoContinue())
@@ -397,7 +397,7 @@ void WaypointViewOnlyView::updateValues()
         break;
     }
     case MAV_CMD_NAV_LAND:
-    {        
+    {
         switch (wp->getFrame())
         {
         case MAV_FRAME_GLOBAL_TERRAIN_ALT:
@@ -417,7 +417,7 @@ void WaypointViewOnlyView::updateValues()
         break;
     }
     case MAV_CMD_NAV_TAKEOFF:
-    {        
+    {
         switch (wp->getFrame())
         {
         case MAV_FRAME_GLOBAL_TERRAIN_ALT:
@@ -461,11 +461,11 @@ void WaypointViewOnlyView::updateValues()
     case MAV_CMD_DO_SET_CAM_TRIGG_DIST:
         if (wp->getParam1()>0)
         {
-        	m_ui->displayBar->setText(QString("Set camera trigging by distance to <b>%1</b> meters.").arg(wp->getParam1()));
+        	m_ui->displayBar->setText(QString("Set camera triggering by distance to <b>%1</b> meters.").arg(wp->getParam1()));
         }
         else
         {
-        	m_ui->displayBar->setText(QString("Camera trigging by distance disabled."));
+        	m_ui->displayBar->setText(QString("Camera triggering by distance disabled."));
         }
         break;
     case MAV_CMD_DO_CHANGE_SPEED:
