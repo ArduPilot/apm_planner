@@ -120,7 +120,10 @@ private:
 
     bool m_isAdvancedMode;
 
+    QList<QPair<QUrl, QString> > pdef_urls;
+
     QUrl m_url;
+    QString m_pdef_filename;
     QNetworkAccessManager m_networkAccessManager;
     QNetworkReply* m_networkReply;
     int m_redirectCount;
