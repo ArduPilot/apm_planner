@@ -17,11 +17,26 @@ Vagrant.configure(2) do |config|
   end
 
   $config_shell = <<-'SHELL'
-     sudo apt-get update -y
+     set -e
+     set -x
+
+     sudo apt-get update
      sudo apt-get dist-upgrade -y
      sudo apt-get install -y ccache wget git build-essential
-     sudo apt-get install -y flite1-dev libsdl2-dev libsdl1.2-dev libsndfile-dev libssl-dev libudev-dev
 
+
+     sudo apt-get install -y libglu1-mesa-dev
+
+     sudo aptitude install -y flite1-dev libsdl2-dev libsdl1.2-dev libsndfile-dev libssl-dev libudev-dev
+
+     # taken from README.md
+     sudo apt-get install -y qt5-qmake qt5-default \
+        qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
+        libqt5svg5-dev qtdeclarative5-qtquick2-plugin libqt5serialport5-dev \
+        libqt5opengl5-dev
+     sudo apt-get install -y git libsdl1.2-dev  libsndfile-dev \
+        flite1-dev libssl-dev libudev-dev libsdl2-dev python-serial \
+        python-pexpect
 
      # taken from travis.yml
      echo 'Initialising submodules'
