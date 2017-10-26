@@ -102,7 +102,27 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
-    m_url = QUrl("http://autotest.ardupilot.org/Parameters/apm.pdef.xml");
+    // create a list of URLs/saved-filenames of parameters to fetch:
+    QList<QPair<QString, QString> > pdef_vehicle_dirs;
+    pdef_vehicle_dirs.append(QPair<QString,QString>(QString("ArduPlane"),
+                                   QString("arduplane.pdef.xml")));
+    pdef_vehicle_dirs.append(QPair<QString,QString>(QString("ArduCopter"),
+                                   QString("arducopter.pdef.xml")));
+    pdef_vehicle_dirs.append(QPair<QString,QString>(QString("APMrover2"),
+                                   QString("ardurover.pdef.xml")));
+
+    const QString param_basepath = "http://autotest.ardupilot.org/Parameters";
+    for (QList<QPair<QString,QString> >::iterator i=pdef_vehicle_dirs.begin(); i != pdef_vehicle_dirs.end(); i++)
+    {
+        QPair<QString, QString> pdef_info = *i;
+        pdef_urls.append(QPair<QUrl,QString>(QUrl(param_basepath + "/" + pdef_info.first + "/apm.pdef.xml"), pdef_info.second));
+    }
+
+    // start to fetch list of parameter files:
+    QPair<QUrl, QString> next = pdef_urls.takeFirst();
+    m_url = next.first;
+    m_pdef_filename = next.second;
+
     m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
     connect(m_networkReply,SIGNAL(finished()),this,SLOT(apmParamNetworkReplyFinished()));
 
@@ -163,7 +183,12 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished()
 
     } else {
         QByteArray apmpdef = reply->readAll();
-        m_apmPdefFilename = QDir(QGC::appDataDirectory()).filePath("apm.pdef.xml");
+
+        QDir autopilotdir(QGC::shareDirectory() + "/files/" + "ardupilotmega");
+        m_apmPdefFilename = autopilotdir.absolutePath() + "/" + m_pdef_filename;
+
+        QLOG_DEBUG() << "Writing (" << m_url.url() << ") to (" << m_apmPdefFilename <<")";
+
         QFile file(m_apmPdefFilename);
         if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
             QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to open" << file.fileName() << "for writing";
@@ -175,6 +200,14 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished()
     }
     m_networkReply->deleteLater();
     m_networkReply = NULL;
+
+    if (!pdef_urls.isEmpty()) {
+        QPair<QUrl, QString> next = pdef_urls.takeFirst();
+        m_url = next.first;
+        m_pdef_filename = next.second;
+        m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
+        connect(m_networkReply, SIGNAL(finished()), this, SLOT(apmParamNetworkReplyFinished()));
+    }
 }
 
 ApmSoftwareConfig::~ApmSoftwareConfig()
@@ -270,17 +303,21 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     ui.advParamListButton->setVisible(true);
 
     QString compare = "";
+    QString vehicle_pdef_filename = "";
     if (uas->isFixedWing())
     {
         compare = "ArduPlane";
+        vehicle_pdef_filename = "arduplane.pdef.xml";
     }
     else if (uas->isMultirotor())
     {
         compare = "ArduCopter";
+        vehicle_pdef_filename = "arducopter.pdef.xml";
     }
     else if (uas->isGroundRover())
     {
         compare = "APMRover2";
+        vehicle_pdef_filename = "ardurover.pdef.xml";
     }
 
     uasConnected();
@@ -290,11 +327,12 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
 #else
     QString appDataDir = getenv("HOME");
 #endif
-    m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml");
+    QDir autopilotdir(QGC::shareDirectory() + "/files/" + uas->getAutopilotTypeName().toLower());
+    m_apmPdefFilename = autopilotdir.absolutePath() + "/" + vehicle_pdef_filename;
+
     if (!QFile::exists(m_apmPdefFilename))
     {
-        QDir autopilotdir(QGC::shareDirectory() + "/files/" + uas->getAutopilotTypeName().toLower());
-        m_apmPdefFilename = autopilotdir.absolutePath() + "/arduplane.pdef.xml";
+        m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml");
     }
 
     QFile xmlfile(m_apmPdefFilename);
@@ -302,6 +340,8 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
     {
         return;
     }
+
+    QLOG_DEBUG() << "Using (" << m_apmPdefFilename << ") for parameters";
 
     QXmlStreamReader xml(xmlfile.readAll());
     xmlfile.close();
