@@ -917,6 +917,15 @@ void LogAnalysis::itemEnabled(QString name)
         return;
     }
 
+    // HACK - a graph with only one value is not plottet. So we add a second point with same value
+    // which forces the graph to plot a short line. Moreover the mouse over which is handeled by
+    // the plotMouseMove(QMouseEvent *evt) method delivers always NONE for a graph with only one point.
+    if(xlist.size() == 1)
+    {
+        xlist.append(xlist[0]++);
+        ylist.append(ylist[0]);
+    }
+
     m_plotPtr->setCurrentLayer("main");     // All plots are on main layer
     QCPAxisRect *axisRect = m_plotPtr->axisRect();
 
