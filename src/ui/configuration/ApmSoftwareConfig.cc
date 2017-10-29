@@ -30,6 +30,8 @@ This file is part of the APM_PLANNER project
 
 static const int MAX_REDIRECT_COUNT = 2;
 
+const QString ApmSoftwareConfig::s_xmlSubFolder("ardupilotmega");
+
 ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     m_paramDownloadState(none),
     m_paramDownloadCount(0),
@@ -184,8 +186,15 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished()
     } else {
         QByteArray apmpdef = reply->readAll();
 
-        QDir autopilotdir(QGC::shareDirectory() + "/files/" + "ardupilotmega");
-        m_apmPdefFilename = autopilotdir.absolutePath() + "/" + m_pdef_filename;
+        QDir autopilotdir(QGC::appDataDirectory());
+        autopilotdir.mkpath(s_xmlSubFolder);
+        if(!autopilotdir.cd(s_xmlSubFolder))
+        {
+            QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to change path to " << autopilotdir.absolutePath().append("/ardupilotmega");
+            return;
+        }
+
+        m_apmPdefFilename = autopilotdir.filePath(m_pdef_filename);
 
         QLOG_DEBUG() << "Writing (" << m_url.url() << ") to (" << m_apmPdefFilename <<")";
 
@@ -327,17 +336,20 @@ void ApmSoftwareConfig::activeUASSet(UASInterface *uas)
 #else
     QString appDataDir = getenv("HOME");
 #endif
-    QDir autopilotdir(QGC::shareDirectory() + "/files/" + uas->getAutopilotTypeName().toLower());
-    m_apmPdefFilename = autopilotdir.absolutePath() + "/" + vehicle_pdef_filename;
-
-    if (!QFile::exists(m_apmPdefFilename))
+    QDir autopilotdir(QGC::appDataDirectory());
+    if(autopilotdir.cd(s_xmlSubFolder))
     {
-        m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml");
+        m_apmPdefFilename = autopilotdir.filePath(vehicle_pdef_filename);
+    }
+    else
+    {
+        m_apmPdefFilename = QDir(appDataDir + "/apmplanner2").filePath("apm.pdef.xml"); // Fall back
     }
 
     QFile xmlfile(m_apmPdefFilename);
-    if (xmlfile.exists() && !xmlfile.open(QIODevice::ReadOnly))
+    if (!xmlfile.exists() || !xmlfile.open(QIODevice::ReadOnly))
     {
+        QLOG_DEBUG() << "Xml file (" << m_apmPdefFilename << ") does not exist! - No parameter description available.";
         return;
     }
 

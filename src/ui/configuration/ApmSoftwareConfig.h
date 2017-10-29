@@ -77,6 +77,8 @@ private slots:
 
 private:
 
+    static const QString s_xmlSubFolder;
+
     //Parameter from XML
     class ParamConfig
     {
