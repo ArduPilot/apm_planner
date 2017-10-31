@@ -88,9 +88,10 @@ LogParserBase::LogParserBase(LogdataStorage::Ptr storagePtr, IParserCallback *ob
     m_dataStoragePtr(storagePtr),
     m_stop(false),
     m_MessageCounter(0),
-    m_timeErrorCount(0),
     m_loadedLogType(MAV_TYPE_GENERIC),
-    m_highestTimestamp(0)
+    m_timeErrorCount(0),
+    m_highestTimestamp(0),
+    m_timestampOffset(0)
 {
     QLOG_DEBUG() << "LogParserBase::LogParserBase - CTOR";
     if(!m_dataStoragePtr)
@@ -157,7 +158,7 @@ bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairLi
     }
     else
     {
-        readTimeStamp(NameValuePairList, desc);
+        handleTimeStamp(NameValuePairList, desc);
     }
 
     if(!m_dataStoragePtr->addDataRow(desc.m_name, NameValuePairList))
@@ -174,10 +175,14 @@ bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairLi
     return true;
 }
 
-void LogParserBase::readTimeStamp(QList<NameValuePair> &valuepairlist, const typeDescriptor &desc)
+void LogParserBase::handleTimeStamp(QList<NameValuePair> &valuepairlist, const typeDescriptor &desc)
 {
-
+    // read time stamp value, add time offset of prepending flight (if there was one), and store it back.
+    // Due to this we always have a increasing time value
     quint64 tempVal = static_cast<quint64>(valuepairlist.at(desc.m_timeStampIndex).second.toULongLong());
+    tempVal += m_timestampOffset;
+    valuepairlist[desc.m_timeStampIndex].second = tempVal;
+
     if(!m_lastValidTimePerType.contains(desc.m_name))
     {
         m_lastValidTimePerType.insert(desc.m_name, 0);
@@ -190,7 +195,8 @@ void LogParserBase::readTimeStamp(QList<NameValuePair> &valuepairlist, const typ
     {
         m_lastValidTimePerType[desc.m_name] = tempVal;
     }
-    else
+    // All time jumps < 60 sec shall be treated as error
+    else if(tempVal >= m_lastValidTimePerType[desc.m_name] - 60 * m_activeTimestamp.m_divisor)
     {
         if(m_timeErrorCount < 50)
         {
@@ -210,6 +216,16 @@ void LogParserBase::readTimeStamp(QList<NameValuePair> &valuepairlist, const typ
                                           " new Time:" + QString::number(tempVal));
         // if not increasing set to last valid value
         valuepairlist[desc.m_timeStampIndex].second = m_lastValidTimePerType[desc.m_name];
+    }
+    else
+    {
+        QLOG_INFO() << "Log Start over detected - setting time offset to " << m_highestTimestamp;
+        m_timestampOffset = m_highestTimestamp;
+        tempVal += m_timestampOffset;
+        m_highestTimestamp = tempVal;
+
+        m_lastValidTimePerType[desc.m_name] = tempVal;
+        valuepairlist[desc.m_timeStampIndex].second = tempVal;
     }
 }
 
@@ -283,4 +299,9 @@ bool LogParserBase::repairMessage(QList<NameValuePair> &NameValuePairList, const
         }
     }
     return true;
+}
+
+quint64 LogParserBase::nextValidTimestamp()
+{
+    return m_highestTimestamp - m_timestampOffset;
 }
