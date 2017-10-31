@@ -347,7 +347,7 @@ bool TlogParser::extractModeMessage(const QList<NameValuePair> &NameValuePairLis
         // Extract MODE messages from heartbeat messages
         m_lastModeVal = static_cast<quint8>(NameValuePairList[1].second.toInt());
 
-        modeValuePairlist.append(QPair<QString, QVariant>(modeDesc.m_labels[0], m_highestTimestamp));
+        modeValuePairlist.append(QPair<QString, QVariant>(modeDesc.m_labels[0], nextValidTimestamp()));
         modeValuePairlist.append(QPair<QString, QVariant>(modeDesc.m_labels[1], m_lastModeVal));
         modeValuePairlist.append(QPair<QString, QVariant>(modeDesc.m_labels[2], m_lastModeVal));
         modeValuePairlist.append(QPair<QString, QVariant>(modeDesc.m_labels[3], "Generated from heartbeat"));
@@ -370,7 +370,7 @@ bool TlogParser::extractMsgMessage(const QList<NameValuePair> &NameValuePairList
 
     if((msgDesc.m_labels.size() >= 2) && (NameValuePairList.size() >= 2))
     {
-        msgValuePairlist.append(QPair<QString, QVariant>(msgDesc.m_labels[0], m_highestTimestamp));
+        msgValuePairlist.append(QPair<QString, QVariant>(msgDesc.m_labels[0], nextValidTimestamp()));
         msgValuePairlist.append(QPair<QString, QVariant>(msgDesc.m_labels[1], NameValuePairList[2].second));
         msgValuePairlist.append(QPair<QString, QVariant>(msgDesc.m_labels[2], "Generated from statustext"));
         if (!storeNameValuePairList(msgValuePairlist, msgDesc))

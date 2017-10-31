@@ -129,15 +129,11 @@ protected:
 
     bool m_stop;                            /// Flag indicating to stop parsing
     quint64 m_MessageCounter;               /// Simple counter showing number of message wich is currently parsed
-    int m_timeErrorCount;                   /// Counter for time errors used to avoid log flooding
 
     MAV_TYPE m_loadedLogType;               /// Mav type of the log - will be populated during parsing
     AP2DataPlotStatus m_logLoadingState;    /// State of the parser
 
-    QList<timeStampType> m_possibleTimestamps;            /// List of possible timestamps. Filled in CTOR
-    timeStampType m_activeTimestamp;                      /// the detected timestamp used for parsing
-    QHash<QString, quint64> m_lastValidTimePerType;       /// Contains the last valid timestamp for each type (which have a timestamp)
-    quint64 m_highestTimestamp;                           /// Contains always the biggest timestamp
+    timeStampType m_activeTimestamp;        /// the detected timestamp used for parsing
 
 
     /**
@@ -157,11 +153,12 @@ protected:
     bool storeNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc);
 
     /**
-     * @brief readTimeStamp reads the current timestamp from the value pair list
-     * @param valuepairlist - value pair list to read the timestamp from
-     * @param timeStampIndex - Index in list where the timestamp resides
+     * @brief handleTimeStamp does all time stamp handling. It checks if the time is increasing and
+     *        if not it handles error generation and offset management.
+     * @param valuepairlist - value pair list to read/store the timestamp.
+     * @param timeStampIndex - Index in list where the timestamp resides.
      */
-    void readTimeStamp(QList<NameValuePair> &valuepairlist, const typeDescriptor &desc);
+    void handleTimeStamp(QList<NameValuePair> &valuepairlist, const typeDescriptor &desc);
 
     /**
      * @brief detectMavType tries to detect the MAV type from the data in a
@@ -180,6 +177,22 @@ protected:
      */
     bool repairMessage(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc);
 
+    /**
+     * @brief nextValidTimestamp delivers a valid time stamp that can be added to messages. Offset
+     *        handling is done later so its important to use this method to get a good timestamp.
+     *
+     * @return - valid time stamp
+     */
+    quint64 nextValidTimestamp();
+
+
+private:
+    int m_timeErrorCount;                            /// Counter for time errors used to avoid log flooding
+
+    QList<timeStampType> m_possibleTimestamps;       /// List of possible timestamps. Filled in CTOR
+    QHash<QString, quint64> m_lastValidTimePerType;  /// Contains the last valid timestamp for each type (which have a timestamp)
+    quint64 m_highestTimestamp;                      /// Contains always the biggest timestamp
+    quint64 m_timestampOffset;                       /// Holds a timestamp offset in case the log contains 2 or more flights
 };
 
 #endif // LOGPARSERBASE_H
