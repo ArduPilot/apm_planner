@@ -34,7 +34,8 @@ static const struct {
     { "ArcGIS Map", MapType::ArcGIS_Map },
     { "ArcGIS Terrain", MapType::ArcGIS_Terrain },
     { "ArcGIS World Topo", MapType::ArcGIS_WorldTopo },
-    { "Statkart Topo2", MapType::Statkart_Topo2 }
+    { "Statkart Topo2", MapType::Statkart_Topo2 },
+    { "Eniro N,S,F,D,P", MapType::Eniro_Topo }
 };
 
 static const size_t sNumMapTypes = sizeof(sMapTypes) / sizeof(sMapTypes[0]);
