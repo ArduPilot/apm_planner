@@ -487,6 +487,11 @@ namespace core {
                         return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo2&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
                     }
                     break;
+        case MapType::Eniro_Topo:
+                    {
+                        return QString("http://map.eniro.com/geowebcache/service/tms1.0.0/map/%1/%2/%3.png").arg(zoom).arg(pos.X()).arg((1<<zoom)-1-pos.Y());
+                    }
+                    break;
         default:
             break;
         }
