@@ -115,6 +115,10 @@ QVariant LogdataStorage::headerData(int column, Qt::Orientation orientation, int
     {
         return QVariant();
     }
+    if (m_indexToDataRow.empty())
+    {
+        return QVariant("No Data");  // corner case - we do not have any data
+    }
     if (column == 0)
     {
         return QVariant("Index");   // first colum is always the index
