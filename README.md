@@ -21,7 +21,7 @@ http://planner2.ardupilot.com/credits-and-contributors/
 
 Documentation
 =============
-see http://planner2.ardupilot.com
+see http://ardupilot.org/planner2/
 
 Mac OS X
 ========
