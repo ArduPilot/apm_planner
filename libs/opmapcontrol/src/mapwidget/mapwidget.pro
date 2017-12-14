@@ -1,9 +1,13 @@
 TEMPLATE = lib
 TARGET = opmapwidget
 DEFINES += OPMAPWIDGET_LIBRARY
-include(../../../../openpilotgcslibrary.pri)
 
-# DESTDIR = ../build
+OBJECTS_DIR = objs
+DESTDIR = ../build
+
+#QMAKE_CXXFLAGS += -fsanitize=address -fno-omit-frame-pointer
+#QMAKE_LFLAGS += -fsanitize=address -fno-omit-frame-pointer
+
 SOURCES += mapgraphicitem.cpp \
     opmapwidget.cpp \
     configuration.cpp \
@@ -22,14 +26,12 @@ LIBS += -L../build \
     -lcore
 
 # order of linking matters
-include(../../../utils/utils.pri)
 
 POST_TARGETDEPS  += ../build/libcore.a
 POST_TARGETDEPS  += ../build/libinternals.a
 
 HEADERS += mapgraphicitem.h \
     opmapwidget.h \
-    configuration.h \
     waypointitem.h \
     uavitem.h \
     gpsitem.h \
@@ -39,7 +41,8 @@ HEADERS += mapgraphicitem.h \
     homeitem.h \
     mapripform.h \
     mapripper.h \
-    traillineitem.h
+    traillineitem.h \
+    omapconfiguration.h
 QT += opengl
 QT += network
 QT += sql
