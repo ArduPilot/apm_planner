@@ -26,7 +26,6 @@
 */
 #include "waypointitem.h"
 #include <QGraphicsSceneMouseEvent>
-#include <logging.h>
 namespace mapcontrol
 {
     WayPointItem::WayPointItem(const internals::PointLatLng &coord,double const& altitude, MapGraphicItem *map) :
