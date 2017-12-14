@@ -3,11 +3,7 @@ TARGET = opmapwidget
 DEFINES += OPMAPWIDGET_LIBRARY
 
 OBJECTS_DIR = objs
-DESTDIR = ../build
-
-#QMAKE_CXXFLAGS += -fsanitize=address -fno-omit-frame-pointer
-#QMAKE_LFLAGS += -fsanitize=address -fno-omit-frame-pointer
-
+#DESTDIR = ../build
 SOURCES += mapgraphicitem.cpp \
     opmapwidget.cpp \
     configuration.cpp \
