@@ -42,6 +42,7 @@ namespace internals {
     minOfTiles(0,0),
     maxOfTiles(0,0),
     zoom(0),
+    projection(nullptr),
     isDragging(false),
     TooltipTextPadding(10,10),
     mapType(static_cast<MapType::Types>(0)),
@@ -65,6 +66,9 @@ namespace internals {
     Core::~Core()
     {
         ProcessLoadTaskCallback.waitForDone();
+        Matrix.Clear();
+        if (projection)
+            delete projection;
     }
 
     void Core::run()
