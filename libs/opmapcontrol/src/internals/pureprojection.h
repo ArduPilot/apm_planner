@@ -44,6 +44,8 @@ class PureProjection
 
 
 public:
+    virtual ~PureProjection() {}
+
     virtual Size TileSize()const=0;
 
     virtual double Axis()const=0;
