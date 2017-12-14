@@ -42,7 +42,7 @@ namespace internals {
     minOfTiles(0,0),
     maxOfTiles(0,0),
     zoom(0),
-    projection(nullptr),
+    projection(0),
     isDragging(false),
     TooltipTextPadding(10,10),
     mapType(static_cast<MapType::Types>(0)),
