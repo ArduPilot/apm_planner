@@ -67,8 +67,8 @@ namespace internals {
     {
         ProcessLoadTaskCallback.waitForDone();
         Matrix.Clear();
-        if (projection)
-            delete projection;
+        delete projection;
+        projection = 0;
     }
 
     void Core::run()
