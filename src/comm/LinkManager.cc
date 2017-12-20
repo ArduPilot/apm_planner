@@ -149,7 +149,7 @@ void LinkManager::loadSettings()
                 settings.setArrayIndex(j);
                 QString host = settings.value("host").toString();
                 int port = settings.value("port").toInt();
-                iface->addHost(tr("%1:%2").arg(host, port));
+                iface->addHost(tr("%1:%2").arg(host).arg(port));
             }
             settings.endArray(); // HOSTS
         }
