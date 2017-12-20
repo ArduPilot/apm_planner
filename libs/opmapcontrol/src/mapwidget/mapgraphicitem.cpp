@@ -24,11 +24,9 @@
 * with this program; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
-#include "uavitem.h"
-#include "gpsitem.h"
-#include "homeitem.h"
+#include "graphicsitem.h"
 #include "mapgraphicitem.h"
-#include "waypointlineitem.h"
+#include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
 namespace mapcontrol
@@ -87,40 +85,14 @@ namespace mapcontrol
     void MapGraphicItem::Core_OnNeedInvalidation()
     {
         this->update();
-        foreach(QGraphicsItem* i,this->childItems())
-        {
-            WayPointItem* w=qgraphicsitem_cast<WayPointItem*>(i);
-            if(w)
-                w->RefreshPos();
-            UAVItem* ww=qgraphicsitem_cast<UAVItem*>(i);
-            if(ww)
-                ww->RefreshPos();
-            HomeItem* www=qgraphicsitem_cast<HomeItem*>(i);
-            if(www)
-                www->RefreshPos();
-            GPSItem* wwww=qgraphicsitem_cast<GPSItem*>(i);
-            if(wwww)
-                wwww->RefreshPos();
-
-            emit mapChanged();
-        }
+        ChildPosRefresh();
     }
     void MapGraphicItem::ChildPosRefresh()
     {
         foreach(QGraphicsItem* i,this->childItems())
         {
-            WayPointItem* w=qgraphicsitem_cast<WayPointItem*>(i);
-            if(w)
+            if (GraphicsItem* w = dynamic_cast<GraphicsItem*>(i))
                 w->RefreshPos();
-            UAVItem* ww=qgraphicsitem_cast<UAVItem*>(i);
-            if(ww)
-                ww->RefreshPos();
-            HomeItem* www=qgraphicsitem_cast<HomeItem*>(i);
-            if(www)
-                www->RefreshPos();
-            GPSItem* wwww=qgraphicsitem_cast<GPSItem*>(i);
-            if(wwww)
-                wwww->RefreshPos();
 
             emit mapChanged();
         }

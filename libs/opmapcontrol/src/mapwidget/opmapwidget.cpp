@@ -276,7 +276,7 @@ namespace mapcontrol
     ////////////////WAYPOINT////////////////////////
     WayPointItem* OPMapWidget::WPCreate()
     {
-        WayPointItem* item=new WayPointItem(this->CurrentPosition(),0,map);
+        WayPointItem* item = new WayPointItem(this->CurrentPosition(), 0, map, this);
         ConnectWP(item);
         item->setParentItem(map);
         return item;
@@ -317,21 +317,21 @@ namespace mapcontrol
     }
     WayPointItem* OPMapWidget::WPCreate(internals::PointLatLng const& coord,int const& altitude)
     {
-        WayPointItem* item=new WayPointItem(coord,altitude,map);
+        WayPointItem* item = new WayPointItem(coord, altitude, map, this);
         ConnectWP(item);
         item->setParentItem(map);
         return item;
     }
     WayPointItem* OPMapWidget::WPCreate(internals::PointLatLng const& coord,int const& altitude, QString const& description)
     {
-        WayPointItem* item=new WayPointItem(coord,altitude,description,map);
+        WayPointItem* item = new WayPointItem(coord, altitude, map, this, description);
         ConnectWP(item);
         item->setParentItem(map);
         return item;
     }
     WayPointItem* OPMapWidget::WPInsert(const int &position)
     {
-        WayPointItem* item=new WayPointItem(this->CurrentPosition(),0,map);
+        WayPointItem* item = new WayPointItem(this->CurrentPosition(), 0, map, this);
         item->SetNumber(position);
         ConnectWP(item);
         item->setParentItem(map);
@@ -348,7 +348,7 @@ namespace mapcontrol
     }
     WayPointItem* OPMapWidget::WPInsert(internals::PointLatLng const& coord,int const& altitude,const int &position)
     {
-        WayPointItem* item=new WayPointItem(coord,altitude,map);
+        WayPointItem* item = new WayPointItem(coord, altitude, map, this);
         item->SetNumber(position);
         ConnectWP(item);
         item->setParentItem(map);
@@ -357,7 +357,7 @@ namespace mapcontrol
     }
     WayPointItem* OPMapWidget::WPInsert(internals::PointLatLng const& coord,int const& altitude, QString const& description,const int &position)
     {
-        WayPointItem* item=new WayPointItem(coord,altitude,description,map);
+        WayPointItem* item = new WayPointItem(coord, altitude, map, this, description);
         item->SetNumber(position);
         ConnectWP(item);
         item->setParentItem(map);

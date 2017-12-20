@@ -27,22 +27,18 @@
 #ifndef HOMEITEM_H
 #define HOMEITEM_H
 
-#include <QGraphicsItem>
-#include <QPainter>
-#include <QLabel>
-#include "../internals/pointlatlng.h"
-#include <QObject>
-#include "opmapwidget.h"
+#include "graphicsitem.h"
+#include "graphicsusertypes.h"
+
 namespace mapcontrol
 {
-
-    class HomeItem:public QObject,public QGraphicsItem
+    class HomeItem : public GraphicsItem
     {
         Q_OBJECT
         Q_INTERFACES(QGraphicsItem)
     public:
-                enum { Type = UserType + 4 };
-        HomeItem(MapGraphicItem* map,OPMapWidget* parent);
+        enum { Type = usertypes::HOMEITEM };
+        HomeItem(MapGraphicItem* map, OPMapWidget* parent);
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                     QWidget *widget);
         QRectF boundingRect() const;
@@ -58,11 +54,6 @@ namespace mapcontrol
         void SetAltitude(int const& value){altitude=value;}
         int Altitude()const{return altitude;}
     private:
-        MapGraphicItem* map;
-        OPMapWidget* mapwidget;
-        QPixmap pic;
-        core::Point localposition;
-        internals::PointLatLng coord;
         bool showsafearea;
         int safearea;
         int localsafearea;

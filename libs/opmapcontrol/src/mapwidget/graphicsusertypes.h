@@ -1,9 +1,9 @@
 /**
 ******************************************************************************
 *
-* @file       traillineitem.h
-* @author     The OpenPilot Team, http://www.openpilot.org Copyright (C) 2010.
-* @brief      A graphicsItem representing a WayPoint
+* @file       graphicsusertypes.h
+* @author     Dino Hüllmann
+* @brief      User type definitions for QGraphicsItems
 * @see        The GNU Public License (GPL) Version 3
 * @defgroup   OPMapWidget
 * @{
@@ -24,40 +24,23 @@
 * with this program; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
-#ifndef TAILLINEITEM_H
-#define TAILLINEITEM_H
+#ifndef GRAPHICSUSERTYPES_H
+#define GRAPHICSUSERTYPES_H
 
 #include <QGraphicsItem>
-#include <QPainter>
-#include <QLabel>
-#include "../internals/pointlatlng.h"
-#include <QObject>
-#include "graphicsusertypes.h"
 
 namespace mapcontrol
 {
-
-    class TrailLineItem:public QObject,public QGraphicsLineItem
+    namespace usertypes
     {
-        Q_OBJECT
-        Q_INTERFACES(QGraphicsItem)
-    public:
-                enum { Type = usertypes::TRAILLINEITEM };
-        TrailLineItem(internals::PointLatLng const& coord1,internals::PointLatLng const& coord2, QBrush color, QGraphicsItem* parent);
-        int type() const;
-      //  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-       //             QWidget *widget);
-        internals::PointLatLng coord1;
-        internals::PointLatLng coord2;
-    private:
-        QBrush m_brush;
+        constexpr int WAYPOINTITEM     = QGraphicsItem::UserType + 1;
+        constexpr int UAVITEM          = QGraphicsItem::UserType + 2;
+        constexpr int TRAILITEM        = QGraphicsItem::UserType + 3;
+        constexpr int HOMEITEM         = QGraphicsItem::UserType + 4;
+        constexpr int GPSITEM          = QGraphicsItem::UserType + 5;
+        constexpr int WAYPOINTLINEITEM = QGraphicsItem::UserType + 6;
+        constexpr int TRAILLINEITEM    = QGraphicsItem::UserType + 7;
+    } // namespace usertypes
+} // namespace mapcontrol
 
-
-    public slots:
-
-    signals:
-
-    };
-}
-
-#endif // TAILLINEITEM_H
+#endif // GRAPHICSUSERTYPES_H

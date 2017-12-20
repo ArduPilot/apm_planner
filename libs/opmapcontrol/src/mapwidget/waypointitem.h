@@ -27,12 +27,9 @@
 #ifndef WAYPOINTITEM_H
 #define WAYPOINTITEM_H
 
-#include <QGraphicsItem>
-#include <QPainter>
-#include <QLabel>
-#include "../internals/pointlatlng.h"
-#include "mapgraphicitem.h"
-#include <QObject>
+#include "graphicsitem.h"
+#include "graphicsusertypes.h"
+
 namespace mapcontrol
 {
 /**
@@ -40,34 +37,25 @@ namespace mapcontrol
 *
 * @class WayPointItem waypointitem.h "waypointitem.h"
 */
-class WayPointItem: public QObject, public QGraphicsItem
+class WayPointItem : public GraphicsItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 public:
-    enum { Type = UserType + 1 };
+    enum { Type = usertypes::WAYPOINTITEM };
     /**
     * @brief Constructer
     *
     * @param coord coordinates in LatLng of the Waypoint
     * @param altitude altitude of the WayPoint
     * @param map pointer to map to use
+    * @param parent pointer to parent widget
+    * @param description description for the WayPoint
     * @return 
     */
-    WayPointItem(internals::PointLatLng const& coord,double const& altitude,MapGraphicItem* map);
-    /**
-    * @brief Constructer
-    *
-    * @param coord coordinates in LatLng of the WayPoint
-    * @param altitude altitude of the WayPoint
-    * @param description description fo the WayPoint
-    * @param map pointer to map to use
-    * @return
-    */
-    WayPointItem(internals::PointLatLng const& coord,double const& altitude,QString const& description,MapGraphicItem* map);
+    WayPointItem(internals::PointLatLng const& wp_coord, double const& altitude, MapGraphicItem* map, OPMapWidget* parent, QString const& description = "");
 
     virtual ~WayPointItem();
-
 
     /**
     * @brief Returns the WayPoint description
@@ -157,8 +145,6 @@ public:
                 QWidget *widget);
     void RefreshPos();
     void RefreshToolTip();
-    QPixmap picture;
-
 
     static int snumber;
 protected:
@@ -166,14 +152,12 @@ protected:
     void mousePressEvent ( QGraphicsSceneMouseEvent * event );
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
-    MapGraphicItem* map;
     bool autoreachedEnabled;    ///< If the waypoint should change appearance once it has been reached
     QGraphicsSimpleTextItem* text;
     QGraphicsRectItem* textBG;
     QGraphicsSimpleTextItem* numberI;
     QGraphicsRectItem* numberIBG;
     QTransform transf;
-    internals::PointLatLng coord;//coordinates of this WayPoint
     bool reached;
     QString description;
     bool shownumber;
