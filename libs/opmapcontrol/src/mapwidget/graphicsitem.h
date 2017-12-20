@@ -1,9 +1,9 @@
 /**
 ******************************************************************************
 *
-* @file       traillineitem.h
-* @author     The OpenPilot Team, http://www.openpilot.org Copyright (C) 2010.
-* @brief      A graphicsItem representing a WayPoint
+* @file       graphicsitem.h
+* @author     Dino Hüllmann
+* @brief      Base class for graphics items
 * @see        The GNU Public License (GPL) Version 3
 * @defgroup   OPMapWidget
 * @{
@@ -24,40 +24,41 @@
 * with this program; if not, write to the Free Software Foundation, Inc.,
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
-#ifndef TAILLINEITEM_H
-#define TAILLINEITEM_H
+#ifndef GRAPHICSITEM_H
+#define GRAPHICSITEM_H
 
-#include <QGraphicsItem>
-#include <QPainter>
-#include <QLabel>
-#include "../internals/pointlatlng.h"
 #include <QObject>
-#include "graphicsusertypes.h"
+#include <QGraphicsItem>
+#include "../internals/pointlatlng.h"
 
 namespace mapcontrol
 {
+    class MapGraphicItem;
+    class OPMapWidget;
 
-    class TrailLineItem:public QObject,public QGraphicsLineItem
+    /**
+     * @brief Base class for graphics items shown on the map
+     *
+     * @class GraphicsItem graphicsitem.h "graphicsitem.h"
+     */
+    class GraphicsItem : public QObject, public QGraphicsItem
     {
         Q_OBJECT
         Q_INTERFACES(QGraphicsItem)
     public:
-                enum { Type = usertypes::TRAILLINEITEM };
-        TrailLineItem(internals::PointLatLng const& coord1,internals::PointLatLng const& coord2, QBrush color, QGraphicsItem* parent);
-        int type() const;
-      //  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-       //             QWidget *widget);
-        internals::PointLatLng coord1;
-        internals::PointLatLng coord2;
-    private:
-        QBrush m_brush;
+        GraphicsItem(MapGraphicItem* map, OPMapWidget* parent)
+            : map(map), mapwidget(parent)
+        {}
 
+        virtual ~GraphicsItem() {}
 
-    public slots:
-
-    signals:
-
+        virtual void RefreshPos() = 0;
+    protected:
+        MapGraphicItem* map;
+        OPMapWidget* mapwidget;
+        QPixmap picture;
+        internals::PointLatLng coord;
     };
-}
+} // namespace mapcontrol
 
-#endif // TAILLINEITEM_H
+#endif // GRAPHICSITEM_H

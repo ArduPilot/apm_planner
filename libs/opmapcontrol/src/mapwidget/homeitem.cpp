@@ -25,14 +25,19 @@
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 #include "homeitem.h"
+#include "mapgraphicitem.h"
+#include "opmapwidget.h"
 namespace mapcontrol
 {
-    HomeItem::HomeItem(MapGraphicItem* map,OPMapWidget* parent):safe(true),map(map),mapwidget(parent),showsafearea(true),safearea(1000),altitude(0)
+    HomeItem::HomeItem(MapGraphicItem* map,OPMapWidget* parent) :
+        GraphicsItem(map, parent),
+        safe(true), showsafearea(true), safearea(1000),
+        altitude(0)
     {
-        pic.load(QString::fromUtf8(":/markers/images/home2.svg"));
-        pic=pic.scaled(30,30,Qt::IgnoreAspectRatio);
+        picture.load(QString::fromUtf8(":/markers/images/home2.svg"));
+        picture=picture.scaled(30,30,Qt::IgnoreAspectRatio);
         this->setFlag(QGraphicsItem::ItemIgnoresTransformations,true);
-        localposition=map->FromLatLngToLocal(mapwidget->CurrentPosition());
+        core::Point localposition = map->FromLatLngToLocal(mapwidget->CurrentPosition());
         this->setPos(localposition.X(),localposition.Y());
         this->setZValue(4);
         coord=internals::PointLatLng(50,50);
@@ -46,7 +51,7 @@ namespace mapcontrol
     {
         Q_UNUSED(option);
         Q_UNUSED(widget);
-        painter->drawPixmap(-pic.width()/2,-pic.height()/2,pic);
+        painter->drawPixmap(-picture.width()/2,-picture.height()/2,picture);
         if(showsafearea)
         {
             if(safe)
@@ -61,7 +66,7 @@ namespace mapcontrol
     QRectF HomeItem::boundingRect()const
     {
         if(!showsafearea)
-            return QRectF(-pic.width()/2,-pic.height()/2,pic.width(),pic.height());
+            return QRectF(-picture.width()/2,-picture.height()/2,picture.width(),picture.height());
         else
             return QRectF(-localsafearea,-localsafearea,localsafearea*2,localsafearea*2);
     }
@@ -74,7 +79,7 @@ namespace mapcontrol
     void HomeItem::RefreshPos()
     {
         prepareGeometryChange();
-        localposition=map->FromLatLngToLocal(coord);
+        core::Point localposition = map->FromLatLngToLocal(coord);
         this->setPos(localposition.X(),localposition.Y());
         if(showsafearea)
             localsafearea=safearea/map->Projection()->GetGroundResolution(map->ZoomTotal(),coord.Lat());

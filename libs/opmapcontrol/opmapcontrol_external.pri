@@ -61,7 +61,9 @@ HEADERS += libs/opmapcontrol/opmapcontrol.h \
            libs/opmapcontrol/src/internals/projections/platecarreeprojection.h \
            libs/opmapcontrol/src/internals/projections/platecarreeprojectionpergo.h \
            libs/opmapcontrol/src/mapwidget/waypointlineitem.h \
-    libs/opmapcontrol/src/mapwidget/omapconfiguration.h
+           libs/opmapcontrol/src/mapwidget/omapconfiguration.h \
+           libs/opmapcontrol/src/mapwidget/graphicsitem.h \
+           libs/opmapcontrol/src/mapwidget/graphicsusertypes.h
 FORMS += libs/opmapcontrol/src/mapwidget/mapripform.ui
 SOURCES += libs/opmapcontrol/src/core/alllayersoftype.cpp \
            libs/opmapcontrol/src/core/cache.cpp \

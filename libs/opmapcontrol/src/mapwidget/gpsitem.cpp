@@ -26,15 +26,21 @@
 */
 #include "../internals/pureprojection.h"
 #include "gpsitem.h"
+#include "mapgraphicitem.h"
+#include "opmapwidget.h"
+#include "trailitem.h"
+#include "traillineitem.h"
 namespace mapcontrol
 {
-    GPSItem::GPSItem(MapGraphicItem* map,OPMapWidget* parent,QString uavPic):map(map),mapwidget(parent),showtrail(true),showtrailline(true),trailtime(5),traildistance(50),autosetreached(true)
-    ,autosetdistance(100)
+    GPSItem::GPSItem(MapGraphicItem* map,OPMapWidget* parent,QString uavPic) :
+        GraphicsItem(map, parent),
+        showtrail(true), showtrailline(true), trailtime(5), traildistance(50),
+        autosetreached(true), autosetdistance(100)
     {
-        pic.load(uavPic);
+        picture.load(uavPic);
        // Don't scale but trust the image we are given
        // pic=pic.scaled(50,33,Qt::IgnoreAspectRatio);
-        localposition=map->FromLatLngToLocal(mapwidget->CurrentPosition());
+        core::Point localposition = map->FromLatLngToLocal(mapwidget->CurrentPosition());
         this->setPos(localposition.X(),localposition.Y());
         this->setZValue(4);
         trail=new QGraphicsItemGroup();
@@ -56,12 +62,12 @@ namespace mapcontrol
         Q_UNUSED(option);
         Q_UNUSED(widget);
        // painter->rotate(-90);
-        painter->drawPixmap(-pic.width()/2,-pic.height()/2,pic);
-       //   painter->drawRect(QRectF(-pic.width()/2,-pic.height()/2,pic.width()-1,pic.height()-1));
+        painter->drawPixmap(-picture.width()/2,-picture.height()/2,picture);
+       //   painter->drawRect(QRectF(-picture.width()/2,-picture.height()/2,picture.width()-1,picture.height()-1));
     }
     QRectF GPSItem::boundingRect()const
     {
-        return QRectF(-pic.width()/2,-pic.height()/2,pic.width(),pic.height());
+        return QRectF(-picture.width()/2,-picture.height()/2,picture.width(),picture.height());
     }
     void GPSItem::SetUAVPos(const internals::PointLatLng &position, const int &altitude)
     {
@@ -167,7 +173,7 @@ namespace mapcontrol
 
     void GPSItem::RefreshPos()
     {
-        localposition=map->FromLatLngToLocal(coord);
+        core::Point localposition = map->FromLatLngToLocal(coord);
         this->setPos(localposition.X(),localposition.Y());
         foreach(QGraphicsItem* i,trail->childItems())
         {
@@ -215,6 +221,6 @@ namespace mapcontrol
     }
     void GPSItem::SetUavPic(QString UAVPic)
     {
-        pic.load(":/uavs/images/"+UAVPic);
+        picture.load(":/uavs/images/"+UAVPic);
     }
 }

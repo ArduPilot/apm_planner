@@ -5,7 +5,7 @@
 #include <QPainter>
 
 Waypoint2DIcon::Waypoint2DIcon(mapcontrol::MapGraphicItem* map, mapcontrol::OPMapWidget* parent, qreal latitude, qreal longitude, qreal altitude, int listindex, QString name, QString description, int radius)
-    : mapcontrol::WayPointItem(internals::PointLatLng(latitude, longitude), altitude, description, map),
+    : mapcontrol::WayPointItem(internals::PointLatLng(latitude, longitude), altitude, map, parent, description),
     parent(parent),
     waypoint(NULL),
     radius(radius),
@@ -26,7 +26,7 @@ Waypoint2DIcon::Waypoint2DIcon(mapcontrol::MapGraphicItem* map, mapcontrol::OPMa
 }
 
 Waypoint2DIcon::Waypoint2DIcon(mapcontrol::MapGraphicItem* map, mapcontrol::OPMapWidget* parent, Waypoint* wp, const QColor& color, int listindex, int radius)
-    : mapcontrol::WayPointItem(internals::PointLatLng(wp->getLatitude(), wp->getLongitude()), wp->getAltitude(), wp->getDescription(), map),
+    : mapcontrol::WayPointItem(internals::PointLatLng(wp->getLatitude(), wp->getLongitude()), wp->getAltitude(), map, parent, wp->getDescription()),
     parent(parent),
     waypoint(wp),
     radius(radius),

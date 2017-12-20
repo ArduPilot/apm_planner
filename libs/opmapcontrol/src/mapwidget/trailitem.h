@@ -32,6 +32,7 @@
 #include <QLabel>
 #include "../internals/pointlatlng.h"
 #include <QObject>
+#include "graphicsusertypes.h"
 
 namespace mapcontrol
 {
@@ -41,7 +42,7 @@ namespace mapcontrol
         Q_OBJECT
         Q_INTERFACES(QGraphicsItem)
     public:
-                enum { Type = UserType + 3 };
+                enum { Type = usertypes::TRAILITEM };
         TrailItem(internals::PointLatLng const& coord,int const& altitude, QBrush color, QGraphicsItem* parent);
         void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                     QWidget *widget);
