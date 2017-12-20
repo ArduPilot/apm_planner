@@ -38,7 +38,9 @@ HEADERS += mapgraphicitem.h \
     mapripform.h \
     mapripper.h \
     traillineitem.h \
-    omapconfiguration.h
+    omapconfiguration.h \
+    graphicsitem.h \
+    graphicsusertypes.h
 QT += opengl
 QT += network
 QT += sql

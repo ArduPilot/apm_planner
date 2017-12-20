@@ -26,23 +26,26 @@
 */
 #include "waypointitem.h"
 #include <QGraphicsSceneMouseEvent>
+#include <QPainter>
+#include "mapgraphicitem.h"
+#include "../internals/pointlatlng.h"
 namespace mapcontrol
 {
-    WayPointItem::WayPointItem(const internals::PointLatLng &coord,double const& altitude, MapGraphicItem *map) :
-        map(map),
+    WayPointItem::WayPointItem(const internals::PointLatLng &wp_coord, double const& altitude, MapGraphicItem *map, OPMapWidget *parent, const QString &description) :
+        GraphicsItem(map, parent),
         autoreachedEnabled(true),
         text(NULL),
         textBG(NULL),
         numberI(NULL),
         numberIBG(NULL),
-        coord(coord),
         reached(false),
-        description(""),
+        description(description),
         shownumber(true),
         altitude(altitude), // sets a 10m default just in case
         heading(0),
         number(0)
     {
+        coord = wp_coord;
         picture.load(QString::fromUtf8(":/markers/images/marker.png"));
         number=WayPointItem::snumber++;
         setFlag(QGraphicsItem::ItemIsMovable,true);
@@ -53,57 +56,28 @@ namespace mapcontrol
         RefreshPos();
         setAcceptedMouseButtons(Qt::LeftButton);
 
-        text   = new QGraphicsSimpleTextItem(this);
-        text->setPen(QPen(Qt::red));
-        text->setPos(10,-picture.height());
-        text->setZValue(3);
-        text->setVisible(false);
-
-        textBG = new QGraphicsRectItem(this);
-        textBG->setBrush(QColor(255, 255, 255, 128));
-        textBG->setOpacity(0.5);
-        textBG->setPos(10,-picture.height());
-        textBG->setVisible(false);
-    }
-
-    WayPointItem::WayPointItem(const internals::PointLatLng &coord,double const& altitude, const QString &description, MapGraphicItem *map) :
-        map(map),
-        autoreachedEnabled(true),
-        text(NULL),
-        textBG(NULL),
-        numberI(NULL),
-        numberIBG(NULL),
-        coord(coord),
-        reached(false),
-        description(description),
-        shownumber(true),
-        altitude(altitude), // sets a 10m default just in case
-        heading(0),
-        number(0)
-    {
-        picture.load(QString::fromUtf8(":/markers/images/marker.png"));
-        number=WayPointItem::snumber++;
-        setFlag(QGraphicsItem::ItemIsMovable,true);
-        setFlag(QGraphicsItem::ItemIgnoresTransformations,true);
-        setFlag(QGraphicsItem::ItemIsSelectable,true);
-        SetShowNumber(shownumber);
-        RefreshToolTip();
-        RefreshPos();
-        setAcceptedMouseButtons(Qt::AllButtons);
-
-        // TODO have fun with colors....
         text = new QGraphicsSimpleTextItem(this);
-//        text->setPen(QPen(Qt::red));
-        text->setBrush(QBrush(Qt::red));
         text->setPos(10,-picture.height());
         text->setZValue(3);
         text->setVisible(false);
 
         textBG = new QGraphicsRectItem(this);
-        textBG->setBrush(QColor(255, 255, 255, 200));
-        textBG->setOpacity(0.8);
         textBG->setPos(10,-picture.height());
         textBG->setVisible(false);
+
+        if (description.isEmpty())
+        {
+            text->setPen(QPen(Qt::red));
+            textBG->setBrush(QColor(255, 255, 255, 128));
+            textBG->setOpacity(0.5);
+        }
+        else
+        {
+            text->setBrush(QBrush(Qt::red));
+
+            textBG->setBrush(QColor(255, 255, 255, 200));
+            textBG->setOpacity(0.8);
+        }
     }
 
     WayPointItem::~WayPointItem()

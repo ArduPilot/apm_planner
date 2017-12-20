@@ -27,35 +27,27 @@
 #ifndef UAVITEM_H
 #define UAVITEM_H
 
-#include <QGraphicsItem>
-#include <QPainter>
-#include <QLabel>
-#include "../internals/pointlatlng.h"
-#include "mapgraphicitem.h"
-#include "waypointitem.h"
-#include <QObject>
+#include <QTime>
+#include "graphicsitem.h"
+#include "graphicsusertypes.h"
 #include "uavmapfollowtype.h"
 #include "uavtrailtype.h"
-#include <QtSvg/QSvgRenderer>
-#include "opmapwidget.h"
-#include "trailitem.h"
-#include "traillineitem.h"
+
 namespace mapcontrol
 {
     class WayPointItem;
-    class OPMapWidget;
     /**
 * @brief A QGraphicsItem representing the UAV
 *
 * @class UAVItem uavitem.h "mapwidget/uavitem.h"
 */
-    class UAVItem:public QObject,public QGraphicsItem
+    class UAVItem : public GraphicsItem
     {
         Q_OBJECT
         Q_INTERFACES(QGraphicsItem)
     public:
-                enum { Type = UserType + 2 };
-        UAVItem(MapGraphicItem* map,OPMapWidget* parent, QString uavPic=QString::fromUtf8(":/uavs/images/mapquad.png"));
+        enum { Type = usertypes::UAVITEM };
+        UAVItem(MapGraphicItem* map, OPMapWidget* parent, QString uavPic=QString::fromUtf8(":/uavs/images/mapquad.png"));
         ~UAVItem();
         /**
         * @brief Sets the UAV position
@@ -194,19 +186,11 @@ namespace mapcontrol
 
         void SetUavPic(QString UAVPic);
 
-    protected:
-        QPixmap pic;
-
     private:
-        MapGraphicItem* map;
-
         int altitude;
         UAVMapFollowType::Types mapfollowtype;
         UAVTrailType::Types trailtype;
-        internals::PointLatLng coord;
         internals::PointLatLng lastcoord;
-        core::Point localposition;
-        OPMapWidget* mapwidget;
         QGraphicsItemGroup* trail;
         QGraphicsItemGroup * trailLine;
         internals::PointLatLng lasttrailline;

@@ -16,7 +16,7 @@ MAV2DIcon::MAV2DIcon(mapcontrol::MapGraphicItem* map,mapcontrol::OPMapWidget* pa
     uasid(uas->getUASID())
 {
     size = QSize(radius, radius);
-    pic = QPixmap(size);
+    picture = QPixmap(size);
     drawIcon();
 }
 
@@ -30,7 +30,7 @@ MAV2DIcon::MAV2DIcon(mapcontrol::MapGraphicItem* map, mapcontrol::OPMapWidget* p
     uasid(0)
 {
     size = QSize(radius, radius);
-    pic = QPixmap(size);
+    picture = QPixmap(size);
     drawIcon();
     SetUAVPos(internals::PointLatLng(lat, lon), alt, color);
 }
@@ -66,13 +66,13 @@ void MAV2DIcon::setYaw(float yaw)
 
 void MAV2DIcon::drawIcon()
 {
-    pic.fill(Qt::transparent);
-    QPainter painter(&pic);
+    picture.fill(Qt::transparent);
+    QPainter painter(&picture);
     painter.setRenderHint(QPainter::TextAntialiasing);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setRenderHint(QPainter::HighQualityAntialiasing);
 
-    radius = qMin(pic.width(), pic.height());
+    radius = qMin(picture.width(), picture.height());
 
     // Rotate by yaw
     painter.translate(radius/2, radius/2);

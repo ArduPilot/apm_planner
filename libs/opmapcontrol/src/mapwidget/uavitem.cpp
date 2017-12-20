@@ -26,17 +26,25 @@
 */
 #include "../internals/pureprojection.h"
 #include "uavitem.h"
+#include "mapgraphicitem.h"
+#include "opmapwidget.h"
+#include "trailitem.h"
+#include "traillineitem.h"
 namespace mapcontrol
 {
-    UAVItem::UAVItem(MapGraphicItem* map,OPMapWidget* parent,QString uavPic):map(map),mapwidget(parent),showtrail(true),showtrailline(true),trailtime(5),traildistance(20),autosetreached(true)
-    ,autosetdistance(100)
+    //UAVItem::UAVItem(MapGraphicItem* map,OPMapWidget* parent,QString uavPic):map(map),mapwidget(parent),showtrail(true),showtrailline(true),trailtime(5),traildistance(20),autosetreached(true)
+    //,autosetdistance(100)
+    UAVItem::UAVItem(MapGraphicItem* map,OPMapWidget* parent,QString uavPic) :
+        GraphicsItem(map, parent),
+        showtrail(true), showtrailline(true), trailtime(5), traildistance(20),
+        autosetreached(true), autosetdistance(100)
     {
         //QDir dir(":/uavs/images/");
         //QStringList list=dir.entryList();
-        pic.load(uavPic);
+        picture.load(uavPic);
        // Don't scale but trust the image we are given
-       // pic=pic.scaled(50,33,Qt::IgnoreAspectRatio);
-        localposition=map->FromLatLngToLocal(mapwidget->CurrentPosition());
+       // picture=picture.scaled(50,33,Qt::IgnoreAspectRatio);
+        core::Point localposition = map->FromLatLngToLocal(mapwidget->CurrentPosition());
         this->setPos(localposition.X(),localposition.Y());
         this->setZValue(4);
         trail=new QGraphicsItemGroup();
@@ -60,13 +68,13 @@ namespace mapcontrol
        // painter->rotate(-90);
         QPainter::RenderHints oldhints = painter->renderHints();
         painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-        painter->drawPixmap(-pic.width()/2,-pic.height()/2,pic);
+        painter->drawPixmap(-picture.width()/2,-picture.height()/2,picture);
         painter->setRenderHints(oldhints);
-       //   painter->drawRect(QRectF(-pic.width()/2,-pic.height()/2,pic.width()-1,pic.height()-1));
+       //   painter->drawRect(QRectF(-picture.width()/2,-picture.height()/2,picture.width()-1,picture.height()-1));
     }
     QRectF UAVItem::boundingRect()const
     {
-        return QRectF(-pic.width()/2,-pic.height()/2,pic.width(),pic.height());
+        return QRectF(-picture.width()/2,-picture.height()/2,picture.width(),picture.height());
     }
     void UAVItem::SetUAVPos(const internals::PointLatLng &position, const int &altitude, const QColor &color)
     {
@@ -171,7 +179,7 @@ namespace mapcontrol
 
     void UAVItem::RefreshPos()
     {
-        localposition=map->FromLatLngToLocal(coord);
+        core::Point localposition = map->FromLatLngToLocal(coord);
         this->setPos(localposition.X(),localposition.Y());
         foreach(QGraphicsItem* i,trail->childItems())
         {
@@ -218,6 +226,6 @@ namespace mapcontrol
     }
     void UAVItem::SetUavPic(QString UAVPic)
     {
-        pic.load(":/uavs/images/"+UAVPic);
+        picture.load(":/uavs/images/"+UAVPic);
     }
 }

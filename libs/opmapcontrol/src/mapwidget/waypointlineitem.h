@@ -3,6 +3,7 @@
 
 #include <QGraphicsLineItem>
 #include "../../opmapcontrol.h"
+#include "graphicsusertypes.h"
 
 namespace mapcontrol {
 class WaypointLineItem : public QObject,public QGraphicsLineItem
@@ -10,7 +11,7 @@ class WaypointLineItem : public QObject,public QGraphicsLineItem
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 public:
-    enum { Type = UserType + 7 };
+    enum { Type = usertypes::WAYPOINTLINEITEM };
     WaypointLineItem(WayPointItem* wp1, WayPointItem* wp2, QColor color=QColor(Qt::red), MapGraphicItem* parent=0);
     int type() const;
 
