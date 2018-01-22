@@ -64,10 +64,10 @@ public:
 
 private:
 
-    static const quint8 s_FMTMessageType = 0x80; /// Type Id of the format (FMT) message
+    static const quint8 s_FMTMessageType  = 0x80; /// Type Id of the format (FMT) message
     static const quint8 s_STRTMessageType = 0x0A; /// Type Id of the Start (STRT) message
 
-    static const int s_MinHeaderSize  = 5;       /// Minimal size to be able to start parsing
+    static const int s_MinHeaderSize = 5;        /// Minimal size to be able to start parsing
     static const int s_HeaderOffset  = 3;        /// byte offset after successful header parsing
     static const quint8 s_StartByte1 = 0xA3;     /// Startbyte 1 is always first byte in one message
     static const quint8 s_StartByte2 = 0x95;     /// Startbyte 2 is always second byte in one message
@@ -75,6 +75,9 @@ private:
     static const int s_FMTNameSize   = 4;        /// Size of the name field in FMT message
     static const int s_FMTFormatSize = 16;       /// Size of the format field in FMT message
     static const int s_FMTLabelsSize = 64;       /// Size of the comma delimited names field in FMT message
+
+    static const quint32 s_FloatSoftNaN  = 0x7FC04152;         /// Value to detect a quiet/soft float NaN from ardupilot
+    static const quint64 s_DoubleSoftNaN = 0x7FF952445550490A; /// Value to detect a quiet/soft double NaN from ardupilot
 
 
     /**

@@ -38,8 +38,7 @@ bool BinLogParser::binDescriptor::isValid() const
     {
         if(m_format.size() != m_labels.size())
         {
-            QLOG_WARN() << "binDescriptor::valid() Corrupt FMT descriptor found - known bug in some logs - "
-                        << "trying to ignore...";
+            QLOG_WARN() << "binDescriptor::valid() Corrupt FMT descriptor found - known bug in some logs";
         }
         return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() > 0) && (m_labels.size() > 0);
@@ -49,8 +48,7 @@ bool BinLogParser::binDescriptor::isValid() const
     {
         if(m_format.size() == 0 && m_length == 3)
         {
-            QLOG_WARN() << "binDescriptor::valid() Corrupt STRT descriptor found - known bug in some logs - "
-                        << "trying to ignore...";
+            QLOG_WARN() << "binDescriptor::valid() Corrupt STRT descriptor found - known bug in some logs";
         }
         return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() == m_labels.size());
@@ -180,7 +178,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
     }
     if (noMessageBytes > 0)
     {
-        QLOG_DEBUG() << "BinLogParser::parse(): Non packet bytes found in log file. " << noMessageBytes << " bytes filtered out. This may be a corrupt log";
+        QLOG_WARN() << "BinLogParser::parse(): Non packet bytes found in log file. " << noMessageBytes << " bytes filtered out. This may be a corrupt log";
         m_logLoadingState.setNoMessageBytes(noMessageBytes);
     }
 
@@ -271,8 +269,6 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
     QByteArray data = m_dataBlock.mid(m_dataPos, (desc.m_length - s_HeaderOffset));
     QDataStream packetstream(data);
     packetstream.setByteOrder(QDataStream::LittleEndian);
-    packetstream.setFloatingPointPrecision(QDataStream::SinglePrecision);
-
     NameValuePairList.clear();
 
     for (int i = 0; i < desc.m_format.size(); i++)
@@ -316,35 +312,47 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
         }
         else if (typeCode == 'f') //float
         {
+            // we want to read a float -> 4byte -> SinglePrecision
+            packetstream.setFloatingPointPrecision(QDataStream::SinglePrecision);
             float val;
             packetstream >> val;
-            if (qIsInf(val) || qIsNaN(val))
+
+            if (qIsNaN(val))
             {
-                QLOG_WARN() << "Corrupted log data found - float resolves to NAN - Graphing may not work as expected for data of type " << desc.m_name;
-                m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
-                NameValuePairList.clear();
-                break;
+                // Check if its a soft/quiet or a hard/signalling NaN
+                const quint32 *valPtr = reinterpret_cast<quint32*>(&val);
+                if (*valPtr != s_FloatSoftNaN)
+                {
+                    QLOG_WARN() << "Float resolves to hard NaN - This is a serious log error as data is corrupted."
+                                << "Graphing may not work as expected for data of type " << desc.m_name;
+                    m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
+                }
+                // in both cases store a Qt Quiet NaN in the data which can be handled correctly by the graphing toolset
+                val = static_cast<float>(qQNaN());
             }
-            else
-            {
-                NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
-            }
+            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
         }
         else if (typeCode == 'd')
         {
+            // we want to read a double -> 8byte -> DoublePrecision
+            packetstream.setFloatingPointPrecision(QDataStream::DoublePrecision);
             double val;
             packetstream >> val;
-            if (qIsInf(val) || qIsNaN(val))
+
+            if (qIsNaN(val))
             {
-                QLOG_WARN() << "Corrupted log data found - double resolves to NAN - Graphing may not work as expected for data of type " << desc.m_name;
-                m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
-                NameValuePairList.clear();
-                break;
+                // Check if its a soft/quiet or a hard/signalling NaN
+                const quint64 *valPtr = reinterpret_cast<quint64*>(&val);
+                if (*valPtr != s_DoubleSoftNaN)
+                {
+                    QLOG_WARN() << "Double resolves to hard NaN - This is a serious log error as data is corrupted."
+                                << "Graphing may not work as expected for data of type " << desc.m_name;
+                    m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
+                }
+                // in both cases store a Qt Quiet NaN in the data which can be handled correctly by the graphing toolset
+                val = qQNaN();
             }
-            else
-            {
-                NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
-            }
+            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
         }
         else if (typeCode == 'n') //char(4)
         {
@@ -440,7 +448,7 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
         else
         {
             //Unknown!
-            QLOG_DEBUG() << "BinLogParser::extractByDescriptor(): ERROR UNKNOWN DATA TYPE " << typeCode;
+            QLOG_WARN() << "BinLogParser::extractByDescriptor(): ERROR UNKNOWN DATA TYPE " << typeCode;
             m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Unknown data type: " + QString(typeCode) + " when decoding " + desc.m_name);
             NameValuePairList.clear();
             break;
