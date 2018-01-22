@@ -271,7 +271,6 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
     QByteArray data = m_dataBlock.mid(m_dataPos, (desc.m_length - s_HeaderOffset));
     QDataStream packetstream(data);
     packetstream.setByteOrder(QDataStream::LittleEndian);
-    packetstream.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
     NameValuePairList.clear();
 
@@ -316,14 +315,32 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
         }
         else if (typeCode == 'f') //float
         {
+            // we want to read a float -> 4byte -> SinglePrecision
+            packetstream.setFloatingPointPrecision(QDataStream::SinglePrecision);
             float val;
             packetstream >> val;
-            if (qIsInf(val) || qIsNaN(val))
+            quint32 *valPtr = reinterpret_cast<quint32*>(&val);
+
+            if ((*valPtr & s_FloatNaNDetector) == s_FloatNaNDetector) // detect if float evaluates to NaN
             {
-                QLOG_WARN() << "Corrupted log data found - float resolves to NAN - Graphing may not work as expected for data of type " << desc.m_name;
-                m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
-                NameValuePairList.clear();
-                break;
+                if (*valPtr == s_FloatSoftNaNDetector)
+                {
+                    QLOG_DEBUG() << "Float resolves to soft NaN - meaning this value contains no valid data!";
+
+                    // Store a Qt Quiet NaN in the data - should be handled correctly by the graphing toolset
+                    val = static_cast<float>(qQNaN());
+                    NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
+                }
+                else
+                {
+                    QLOG_WARN() << "Float resolves to hard NaN - This is a serious log error as data is corrupted."
+                                << "Graphing may not work as expected for data of type " << desc.m_name;
+                    m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
+
+                    // Here we store also a Qt Quiet NaN in the data
+                    val = static_cast<float>(qQNaN());
+                    NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
+                }
             }
             else
             {
@@ -332,14 +349,32 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
         }
         else if (typeCode == 'd')
         {
+            // we want to read a double -> 8byte -> DoublePrecision
+            packetstream.setFloatingPointPrecision(QDataStream::DoublePrecision);
             double val;
             packetstream >> val;
-            if (qIsInf(val) || qIsNaN(val))
+            quint64 *valPtr = reinterpret_cast<quint64*>(&val);
+
+            if ((*valPtr & s_DoubleNaNDetector) == s_DoubleNaNDetector) // detect if double evaluates to NaN
             {
-                QLOG_WARN() << "Corrupted log data found - double resolves to NAN - Graphing may not work as expected for data of type " << desc.m_name;
-                m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
-                NameValuePairList.clear();
-                break;
+                if (*valPtr == s_DoubleSoftNaNDetector)
+                {
+                    QLOG_DEBUG() << "Double resolves soft NaN - meaning this value contains no valid data!";
+
+                    // Store a Qt Quiet NaN in the data - should be handled correctly by the graphing toolset
+                    val = qQNaN();
+                    NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
+                }
+                else
+                {
+                    QLOG_WARN() << "Double resolves to hard NaN - This is a serious log error as data is corrupted."
+                                << "Graphing may not work as expected for data of type " << desc.m_name;
+                    m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), "Corrupt data element found when decoding " + desc.m_name + " data.");
+
+                    // Here we store also a Qt Quiet NaN in the data
+                    val = qQNaN();
+                    NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
+                }
             }
             else
             {
