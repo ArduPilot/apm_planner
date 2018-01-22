@@ -1008,6 +1008,7 @@ void QGCParamWidget::retransmissionGuardTick()
                 transmissionMissingWriteAckPackets.value(component)->clear();
             }
             statusLabel->setText(tr("TIMEOUT! MISSING: %1 read, %2 write.").arg(missingReadCount).arg(missingWriteCount));
+            QLOG_WARN() << tr("TIMEOUT! MISSING: %1 read, %2 write.").arg(missingReadCount).arg(missingWriteCount);
         }
 
         // Re-request at maximum retransmissionBurstRequestSize parameters at once
@@ -1025,6 +1026,7 @@ void QGCParamWidget::retransmissionGuardTick()
                         //QLOG_DEBUG() << __FILE__ << __LINE__ << "RETRANSMISSION GUARD REQUESTS RETRANSMISSION OF PARAM #" << id << "FROM COMPONENT #" << component;
                         emit requestParameter(component, id);
                         statusLabel->setText(tr("Requested retransmission of #%1").arg(id+1));
+                        QLOG_INFO() <<tr("Requested retransmission of #%1").arg(id+1);
                         count++;
                     } else {
                         break;
@@ -1101,11 +1103,15 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
     if (paramMin.contains(parameterName) && value.toDouble() < paramMin.value(parameterName))
     {
         statusLabel->setText(tr("REJ. %1 < min").arg(value.toDouble()));
+        QLOG_INFO() << "setParameter: Value for" << parameterName << "is too small." << value.toDouble()
+                    << "<" << paramMin.value(parameterName);
         return;
     }
     if (paramMax.contains(parameterName) && value.toDouble() > paramMax.value(parameterName))
     {
         statusLabel->setText(tr("REJ. %1 > max").arg(value.toDouble()));
+        QLOG_INFO() << "setParameter: Value for" << parameterName << "is too big." << value.toDouble()
+                    << ">" << paramMax.value(parameterName);
         return;
     }
 
@@ -1119,6 +1125,8 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
     if (parameterList->value(parameterName) == value)
     {
         statusLabel->setText(tr("REJ. %1 > max").arg(value.toDouble()));
+        QLOG_INFO() << "setParameter: Value for" << parameterName << "did not change." << value.toDouble()
+                    << "=" << parameterList->value(parameterName);
         return;
     }
 
