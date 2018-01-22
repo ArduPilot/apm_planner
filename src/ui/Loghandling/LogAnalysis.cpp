@@ -712,9 +712,9 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
     QLOG_DEBUG() << "LogAnalysis::logLoadingDone - Log loading is done.";
     m_loadedLogMavType = status.getMavType();
 
-    // close progress window
-    m_loadProgressDialog->close();
-    m_loadProgressDialog.reset();
+    // close progress window. When setting value of the progress window to 100 it will
+    // automatically close
+    m_loadProgressDialog->setValue(100);
 
     // status handling
     if (status.getParsingState() != AP2DataPlotStatus::OK)
