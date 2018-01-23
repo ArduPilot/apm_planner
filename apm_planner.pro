@@ -165,6 +165,7 @@ DEFINES += _TTY_NOWARN_
 
 RaspberryPiBuild {
    DEFINES -= CAMERAVIEW
+   CONFIG += c++11 #C++11 support
 }
 
 MacBuild {
@@ -189,6 +190,8 @@ MacBuild {
 }
 
 LinuxBuild {
+
+    CONFIG += c++11 #C++11 support
     DEFINES += __STDC_LIMIT_MACROS
 
     DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
@@ -201,6 +204,8 @@ LinuxBuild {
 }
 
 WindowsBuild {
+
+    CONFIG += c++11 #C++11 support
     DEFINES += __STDC_LIMIT_MACROS
 
     # Specify multi-process compilation within Visual Studio.
@@ -218,6 +223,8 @@ WindowsBuild {
 }
 
 WindowsCrossBuild {
+
+    CONFIG += c++11 #C++11 support
     QT += script
     # Windows version cross compiled on linux using
     DEFINES += __STDC_LIMIT_MACROS
