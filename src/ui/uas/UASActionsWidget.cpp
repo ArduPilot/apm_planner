@@ -354,38 +354,19 @@ void UASActionsWidget::changeSpeedClicked()
 
     QLOG_INFO() << "Change Vehicle Speed ";
 
-    if (m_uas->isMultirotor())
-    {
-        QLOG_INFO() << "APMCopter: setting WPNAV_SPEED: " << ui.speedDoubleSpinBox->value() * 100.0f;
-        m_uas->setParameter(1,"WPNAV_SPEED",
-                            QVariant((static_cast<float>(ui.speedDoubleSpinBox->value() * 100.0f))));
-        return;
-    }
-    else if (m_uas->isFixedWing())
-    {
-        // [TODO} need to add AirSpeed/GroundSpeed options here as well
-        QVariant variant;
-        if (m_uas->getParamManager()->getParameterValue(1,"ARSPD_ENABLE",variant))
-        {
-            if (variant.toInt() == 1)
-            {
-                QLOG_INFO() << "APMPlane: ARSPD_ENABLED setting TRIM_ARSPD_CN";
-                m_uas->setParameter(1,"TRIM_ARSPD_CN",
-                                    QVariant((static_cast<float>(ui.speedDoubleSpinBox->value() * 100.0f))));
-                return;
-            }
+	int confirm = 1;    // Confirm.
+	float param1 = 0.0; // Empty
+	float param2 = ui.speedDoubleSpinBox->value();
+	float param3 = 0.0; //
+	float param4 = 0.0; //
+	float param5 = 0.0; // Latitude
+	float param6 = 0.0; // Longitude
+	float param7 = 0.0; // Altitude
+	int component = MAV_COMP_ID_PRIMARY;
+	m_uas->executeCommand(MAV_CMD_DO_CHANGE_SPEED,
+						  confirm, param1, param2, param3,
+						  param4, param5, param6, param7, component);
 
-        }
-        QLOG_INFO() << "APMPlane: setting TRIM_ARSPD_CN";
-        m_uas->setParameter(1,"TRIM_ARSPD_CN",
-                            QVariant((static_cast<float>(ui.speedDoubleSpinBox->value() * 100.0f))));
-
-    } else if (m_uas->isGroundRover()) {
-        QLOG_INFO() << "APMCopter: setting CRUISE_SPEED: " << ui.speedDoubleSpinBox->value() * 100.0f;
-        m_uas->setParameter(1, "CRUISE_SPEED",
-                            QVariant((static_cast<float>(ui.speedDoubleSpinBox->value() * 100.0f))));
-
-    }
 }
 
 void UASActionsWidget::setMode()
