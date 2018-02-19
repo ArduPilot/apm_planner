@@ -9,6 +9,7 @@ env:
     # - QT_FATAL_WARNINGS=1
     - SHADOW_BUILD_DIR=/tmp/shadow_build_dir
     - SPEC=linux-g++-64 CONFIG=debug
+    - SUPPORT_FILES=http://firmware.ardupilot.org/Tools/APMPlanner/support_files
 
 matrix:
     fast_finish: true
@@ -18,7 +19,7 @@ matrix:
           env: SPEC=linux-g++-64 CONFIG=debug
           sudo: required
         - os: osx
-          osx_image: xcode8
+          osx_image: xcode9.2
           env: SPEC=macx-clang CONFIG=debug
           sudo: required
 
@@ -43,9 +44,9 @@ addons:
 install:
     # linux dependencies: qt
     -   if [ "${SPEC}" = "linux-g++-64" ]; then
-            wget http://firmware.ardupilot.org/Tools/APMPlanner/support_files/Qt5.5.1-linux-min.tar.bz2 &&
-            tar jxf Qt5.5.1-linux-min.tar.bz2 -C /tmp &&
-            export PATH=/tmp/Qt/5.5/gcc_64/bin:$PATH &&
+            wget --quiet ${SUPPORT_FILES}/Qt5.9.3-gcc_64-min.tar.bz2 &&
+            tar jxf Qt5.9.3-gcc_64-min.tar.bz2 -C /tmp &&
+            export PATH=/tmp/Qt5.9-gcc_64/5.9.3/gcc_64/bin:$PATH &&
             export DISPLAY=:99.0 &&
             sh -e /etc/init.d/xvfb start
             ;
@@ -53,13 +54,16 @@ install:
 
   # osx dependencies: qt
     -   if [ "${SPEC}" = "macx-clang" ]; then
-            wget http://firmware.ardupilot.org/Tools/APMPlanner/support_files/Qt5.5.1-mac-clang-min.tar.bz2 &&
-            tar jxf Qt5.5.1-mac-clang-min.tar.bz2 -C /tmp &&
-            export QT_DIR=Qt5.5-mac-clang/5.5/clang_64 &&
+            wget --quiet ${SUPPORT_FILES}/Qt5.9.3-clang_64-min.tar.bz2 &&
+            tar jxf Qt5.9.3-clang_64-min.tar.bz2 -C /tmp
+            ;
+        fi
+
+    -   if [ "${SPEC}" = "macx-clang" ]; then
+            export QT_DIR=Qt5.9-clang_64/5.9.3/clang_64 &&
             export QT_QPA_PLATFORM_PLUGIN_PATH=/tmp/$QT_DIR/plugins &&
             export QML2_IMPORT_PATH=/tmp/$QT_DIR/qml &&
-            export PATH=/tmp/$QT_DIR/bin:$PATH &&
-            tools/patch_qt_for_xcode8.sh
+            export PATH=/tmp/$QT_DIR/bin:$PATH
             ;
         fi
 

@@ -175,7 +175,7 @@ MacBuild {
     CONFIG += x86_64
     CONFIG -= x86
     CONFIG += c++11 #C++11 support
-    QMAKE_MAC_SDK = macosx10.12 # Required for Xcode7.0
+#    QMAKE_MAC_SDK = macosx10.13 # Required for build using Qt5.6.2 on High Sierra
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     ICON = $$BASEDIR/files/APMIcons/icon.icns
     QMAKE_INFO_PLIST = APMPlanner.plist   # Sets the pretty name for the build
