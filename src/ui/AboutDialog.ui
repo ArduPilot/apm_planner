@@ -19,7 +19,7 @@
      <x>16</x>
      <y>13</y>
      <width>441</width>
-     <height>140</height>
+     <height>150</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -73,7 +73,7 @@
       <item>
        <widget class="QLabel" name="linkLabel_2">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;credits:&lt;a href=&quot;http://planner2.ardupilot.org/credits-and-contributors/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://planner2.ardupilot.org/credits...&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;credits:&lt;a href=&quot;http://planner2.ardupilot.org/docs/credits-and-contributors.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://planner2.ardupilot.org/docs/cr...&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
