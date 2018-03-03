@@ -40,7 +40,9 @@ MAVLinkProtocol::MAVLinkProtocol():
     m_isOnline(true),
     m_loggingEnabled(false),
     m_logfile(NULL),
-    m_connectionManager(NULL)
+    m_connectionManager(NULL),
+    m_enable_version_check(false)
+
 {
 }
 

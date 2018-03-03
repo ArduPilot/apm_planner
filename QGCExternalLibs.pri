@@ -13,6 +13,36 @@ LinuxBuild {
 	}
 }
 
+
+# BSD Build settings
+
+OpenBSDBuild {
+ INCLUDEPATH += \
+                /usr/local/include \
+                /usr/local/include/SDL2 \
+                /usr/X11R6/include \
+                /usr/X11R6/include
+
+	LIBS += \
+	        -L/usr/lib \
+          -lSDL2 \
+          -L/usr/local/lib \
+          -L/usr/X11R6/lib
+
+    exists(/usr/local/include/flite/flite.h) {
+        message(Adding Flite Support)
+        LIBS += \
+            -lflite_cmu_us_kal \
+            -lflite_usenglish \
+            -lflite_cmulex \
+            -lflite
+    } else {
+        message(Skipping Flite Support)
+        DEFINES -= FLITE_AUDIO_ENABLED
+    }
+
+}
+
 #
 # Add in a few missing headers to windows
 #
