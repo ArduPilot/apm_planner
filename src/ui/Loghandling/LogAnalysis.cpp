@@ -1069,7 +1069,6 @@ void LogAnalysis::filterItemChanged(QTreeWidgetItem* item, int col)
 
 void LogAnalysis::filterAcceptClicked()
 {
-    QString sortstring = "";
     // All elements selected -> filter is disabled
     if (ui.filterSelectTreeWidget->topLevelItemCount() == m_tableFilterList.size())
     {
@@ -1081,11 +1080,9 @@ void LogAnalysis::filterAcceptClicked()
         // It is VERY important to disable the filtering prior to set up a new one
         // If this is not done the regex filter gets terribly slow!!!
         disableTableFilter();
-        for (int i=0;i<m_tableFilterList.size();i++)
-        {
-            sortstring += m_tableFilterList.at(i) + ((i == m_tableFilterList.size()-1) ? "" : "|");
-        }
-        mp_tableFilterProxyModel->setFilterRegExp(sortstring);
+        QString regex = m_tableFilterList.join("\\b|");  // Create regex like val1\b|val2\b|val3
+        regex.append("\\b");                             // append the final \b
+        mp_tableFilterProxyModel->setFilterRegExp(regex);
         mp_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
         mp_tableFilterProxyModel->setFilterKeyColumn(1);
     }
