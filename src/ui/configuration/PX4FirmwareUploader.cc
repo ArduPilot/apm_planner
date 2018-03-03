@@ -651,7 +651,9 @@ bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& s
         return false;
     }
 
-    int verify = RSA_verify(NID_sha1,(unsigned char*)serial.data(),serial.size(),(unsigned char*)signature.data(),signature.size(),EVP_PKEY_get0_RSA(pkey));
+    RSA *rsa_key = EVP_PKEY_get1_RSA(pkey);
+    int verify = RSA_verify(NID_sha1,(unsigned char*)serial.data(),serial.size(),(unsigned char*)signature.data(),signature.size(),rsa_key);
+    RSA_free(rsa_key);
     if (verify)
     {
         //Failed!

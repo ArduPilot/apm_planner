@@ -89,6 +89,13 @@ linux-g++-64 | linux-g++ {
 } else : macx-clang | macx-g++ {
     message(Mac build)
     CONFIG += MacBuild
+} else : openbsd-clang | openbsd-g++ {
+    message(OpenBSD build)
+
+    DEFINES += Q_OPENBSD
+
+    CONFIG += OpenBSDBuild
+
 } else {
     error(Unsupported build type)
 }
@@ -187,6 +194,22 @@ MacBuild {
 #    LIBS += -lssl -lcrypto
 #    LIBS +=
     LIBS += -framework ApplicationServices
+}
+
+
+OpenBSDBuild {
+
+    CONFIG += c++11 #C++11 support
+    DEFINES += __STDC_LIMIT_MACROS
+#    DEFINES += UDPLINK_DEBUG
+
+    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
+    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
+
+#    LIBS += -lsndfile
+    LIBS += -lz
+    LIBS += -lssl -lcrypto
+    DEFINES += OPENSSL
 }
 
 LinuxBuild {
