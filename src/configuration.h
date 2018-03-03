@@ -47,6 +47,8 @@
 #define APP_PLATFORM fedora32
 #elif defined(Q_OS_LINUX)
 #define APP_PLATFORM debian32
+#elif defined(Q_OPENBSD)
+#define APP_PLATFORM OpenBSD
 #else
 #define APP_PLATFORM win
 #endif

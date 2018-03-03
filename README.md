@@ -128,6 +128,41 @@ sudo make install
 ```
 This will place the binary in your /bin/ folder and corresponding files in /share/
 
+
+OpenBSD
+========
+
+To build on OpenBSD 6.2
+-------------------
+1) install dependencies
+
+```
+pkg_add qt5 libsndfile sdl sdl2 flite py-serial py-pexpect openssl git
+```
+
+2) Clone the apm_planner repo
+
+```
+git clone git@github.com:ArduPilot/apm_planner.git
+```
+
+3) Build the project
+
+```
+cd apm_planner
+```
+
+```
+qmake-qt5 apm_planner.pro
+```
+
+```
+make
+```
+
+If the project compiled without errors you will find the binary in ./release
+
+
 Windows
 =======
 
