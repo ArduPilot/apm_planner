@@ -71,7 +71,7 @@ Rectangle {
         // ie. terminalView.visible = state
         var donate = Settings.value("USER_DONATED", "false");
         console.log("Set Advanced Mode " + state + " USER_DONATED:" + donate);
-        if (donate === true){
+        if (donate === 'true'){
             console.log("Donate invisible");
             donateView.visible = false;
         } else {
