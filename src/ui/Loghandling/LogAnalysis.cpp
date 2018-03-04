@@ -118,7 +118,7 @@ void LogAnalysisCursor::mouseMoveEvent(QMouseEvent *event, const QPointF &startP
 
         point1->setCoords(m_currentPos, 1);
         point2->setCoords(m_currentPos, 0);
-        mParentPlot->replot();
+        mParentPlot->replot(QCustomPlot::rpQueuedReplot);
     }
 }
 
@@ -184,7 +184,7 @@ void LogAnalysisAxis::wheelEvent(QWheelEvent *event)
         {
             scaleRange(0.9, axisPos);
         }
-        mParentPlot->replot();
+        mParentPlot->replot(QCustomPlot::rpQueuedReplot);
     }
     else
     {
@@ -874,7 +874,7 @@ void LogAnalysis::verticalScrollMoved(int value)
     double requestedrange = (m_scrollEndIndex - m_scrollStartIndex) * percent;
     xAxis->setRangeUpper(center + (requestedrange/2.0));
     xAxis->setRangeLower(center - (requestedrange/2.0));
-    m_plotPtr->replot();
+    m_plotPtr->replot(QCustomPlot::rpQueuedReplot);
 }
 
 void LogAnalysis::horizontalScrollMoved(int value)
@@ -885,7 +885,7 @@ void LogAnalysis::horizontalScrollMoved(int value)
         m_lastHorizontalScrollVal = value;
         disconnect(xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
         xAxis->setRange(value, xAxis->range().size(), Qt::AlignCenter);
-        m_plotPtr->replot();
+        m_plotPtr->replot(QCustomPlot::rpQueuedReplot);
         connect(xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
     }
 }
