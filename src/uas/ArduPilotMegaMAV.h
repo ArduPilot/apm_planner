@@ -494,6 +494,8 @@ enum Mode
     THROW       = 18,
     AVOID_ADSB  = 19,
     GUIDED_NOGPS= 20,
+    SMART_RTL   = 21,
+    FLOWHOLD    = 22,
     LAST_MODE           // This must always be the last entry
 };
 

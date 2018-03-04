@@ -834,7 +834,7 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
 {
     // SubSys ans ErrorCode interpretation was taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 17.01.2017
+    // last verification 04.03.2018
 
     QString output;
     QTextStream outputStream(&output);
@@ -924,6 +924,11 @@ QString Copter::MessageFormatter::format(const ErrorMessage &message)
 
     case 11:
         outputStream << "GPS:";
+        if (message.getErrorCode() == 2)
+        {
+            outputStream << "Glitch detected";
+            EcodeUsed = true;
+        }
         break;
 
     case 12:
@@ -1089,7 +1094,7 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
 {
     // Interpretation taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 17.01.2017
+    // last verification 04.03.2018
 
     QString output;
     QTextStream outputStream(&output);
@@ -1149,6 +1154,12 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
         break;
     case Copter::GUIDED_NOGPS:
         outputStream << "Guided no GPS";
+        break;
+    case Copter::SMART_RTL:
+        outputStream << "Smart RTL";
+        break;
+    case Copter::FLOWHOLD:
+        outputStream << "Flowhold";
         break;
     default:
         outputStream << "Unknown Mode:" << message.getMode();
@@ -1210,6 +1221,12 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
         case 16:
             outputStream << "Throw complete";
             break;
+        case 17:
+            outputStream << "Flight termination";
+            break;
+        case 18:
+            outputStream << "Toy mode";
+            break;
         default:
             outputStream << "unknown reason:" << message.getReason();
             break;
@@ -1223,7 +1240,7 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
 {
     // Interpretation taken from
     // Ardupilot/ArduCopter/defines.h
-    // last verification 17.01.2017
+    // last verification 04.03.2018
 
     QString output;
     QTextStream outputStream(&output);
@@ -1391,6 +1408,18 @@ QString Copter::MessageFormatter::format(const EventMessage &message)
         break;
     case 66:
         outputStream << "Avoidance proximity disable";
+        break;
+    case 67:
+        outputStream << "Primary GPS changed";
+        break;
+    case 68:
+        outputStream << "Winch relaxed";
+        break;
+    case 69:
+        outputStream << "Winch length control";
+        break;
+    case 70:
+        outputStream << "Winch rate control";
         break;
     default:
         outputStream << "Unknown Event: " << message.getEventID();
