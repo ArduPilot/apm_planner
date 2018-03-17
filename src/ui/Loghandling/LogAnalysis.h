@@ -306,8 +306,6 @@ private:
     qint64 m_scrollEndIndex;         /// Current end index of the loaded log
     int    m_statusTextPos;          /// Counter for giving text arrows a different length
     int m_lastHorizontalScrollVal;   /// Stores the last value of the horizontal scroller
-    bool m_kmlExport;                /// True if export shall be in kml (google earth) format
-    double m_iconInterval;           /// minimum kml plane icon interval in metres
 
     double m_cursorXAxisRange;       /// X axis range of the cursors.
 
@@ -343,14 +341,6 @@ private:
      *        After a call the table model will show all rows again.
      */
     void disableTableFilter();
-
-    /**
-     * @brief doExport - Starts an export eg. opens the file dialog to select
-     *        the path to export to.
-     * @param kmlExport  @li true - do KML Export (google earth)
-     *                   @li false - do ascii export (simple ascii log, csv style)
-     */
-    void doExport(bool kmlExport);
 
     /**
      * @brief loadSettings - loads the settings for the log analysis window.
@@ -540,10 +530,14 @@ private slots:
     void exportKmlClicked();
 
     /**
-     * @brief exportDialogAccepted - called as soon as a file to export to was
-     *        selected. Starts the current export depending on m_kmlExport.
+     * @brief doExport - Starts an export eg. opens the file dialog to select
+     *        the path to export to.
+     * @param kmlExport  @li true - do KML Export (google earth)
+     *                   @li false - do ascii export (simple ascii log, csv style)
+     * @param iconInterval - only used by KML/KMZ export. Defines the minimum kml
+     *                       plane icon interval in meters
      */
-    void exportDialogAccepted();
+    void doExport(bool kmlExport, double iconInterval);
 
     /**
      * @brief graphControlsButtonClicked - opens the plot grouping dialog and sends
