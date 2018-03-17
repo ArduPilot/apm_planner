@@ -1004,6 +1004,10 @@ void LogAnalysis::indexTypeCheckBoxClicked(bool checked)
         mp_cursorRight = 0;       // clearItems() deletes the cursors!
         m_cursorXAxisRange = 0.0; // no cursor no range
 
+        // uncheck cursor checkboxes
+        ui.tableCursorCheckBox->setCheckState(Qt::Unchecked);
+        ui.rangeCursorCheckBox->setCheckState(Qt::Unchecked);
+
         // arrows can be inserted instantly again
         m_statusTextPos = 0;    // reset text arrow length
         insertTextArrows();
