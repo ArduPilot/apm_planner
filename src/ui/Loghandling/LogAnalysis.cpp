@@ -204,7 +204,6 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     m_scrollEndIndex(0),
     m_statusTextPos(0),
     m_lastHorizontalScrollVal(0),
-    m_kmlExport(false),
     m_cursorXAxisRange(0.0),
     mp_cursorSimple(0),
     mp_cursorLeft(0),
@@ -566,22 +565,6 @@ void LogAnalysis::disableTableFilter()
     mp_tableFilterProxyModel->setFilterKeyColumn(0);
     mp_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
     mp_tableFilterProxyModel->setFilterFixedString("");
-}
-
-void LogAnalysis::doExport(bool kmlExport)
-{
-    m_kmlExport = kmlExport;
-    QString exportExtension = kmlExport ? "kml" : "log";
-
-    // replace any extension by the export extension
-    QString exportFilename = m_filename.replace(QRegularExpression("\\w+$"), exportExtension);
-    QFileDialog *dialog = new QFileDialog(this, "Save Log File", QGC::logDirectory());
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setAcceptMode(QFileDialog::AcceptSave);
-    dialog->setNameFilter("*." + exportExtension);
-    dialog->selectFile(exportFilename);
-    QLOG_DEBUG() << "Suggested Export Filename: " << exportFilename;
-    dialog->open(this, SLOT(exportDialogAccepted()));
 }
 
 void LogAnalysis::loadSettings()
@@ -1163,54 +1146,59 @@ void LogAnalysis::selectedRowChanged(QModelIndex current, QModelIndex previous)
 
 void LogAnalysis::exportAsciiLogClicked()
 {
-    doExport(false);
+    doExport(false, 0.0);   // ascii export does not use the iconInterval
 }
 
 void LogAnalysis::exportKmlClicked()
 {
-    bool ok;
-    m_iconInterval = QInputDialog::getDouble(this, tr("QInputDialog::getDouble()"),
-                                         tr("icon interval (metres):"), 2, 0, 100, 3, &ok);
-    if (!ok) m_iconInterval = 2;
-    doExport(true);
+    bool ok = false;
+    double iconInterval = QInputDialog::getDouble(this, tr("Set icon interval"),
+                                         tr("Icon interval (meters):"), 2, 0, 100, 3, &ok);
+    if (!ok)
+    {   // user has cancelled the dialog
+        iconInterval = 2;
+    }
+    doExport(true, iconInterval);
 }
 
-void LogAnalysis::exportDialogAccepted()
+void LogAnalysis::doExport(bool kmlExport, double iconInterval)
 {
-    QElapsedTimer timer1;
-    timer1.start();
-    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
-    if (!dialog)
+    QString exportExtension = kmlExport ? "kml" : "log";
+    // for exporting use the name of the loaded log and replace any extension by the export extension
+    QString exportFilename = m_filename.replace(QRegularExpression("\\w+$"), exportExtension);
+
+    QFileDialog dialog(this, "Save Log File", QGC::logDirectory(), "Logformat (*.kml *.kmz *.log)");
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.selectFile(exportFilename);
+    QLOG_DEBUG() << "Suggested Export Filename: " << exportFilename;
+
+    if(dialog.exec())
     {
-        return;
-    }
-    if (dialog->selectedFiles().size() == 0)
-    {
-        return;
-    }
+        QTime timer;
+        QString result;
+        QString outputFileName = dialog.selectedFiles().at(0);
+        timer.start();
 
-    QString outputFileName = dialog->selectedFiles().at(0);
-    dialog->close();
+        if(kmlExport)
+        {
+            QLOG_DEBUG() << "iconInterval: " << iconInterval;
 
-    QString result;
+            KmlLogExporter kmlExporter(this, m_loadedLogMavType, iconInterval);
+            result = kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
+        }
+        else
+        {
+            AsciiLogExporter asciiExporter(this);
+            result = asciiExporter.exportToFile(outputFileName, m_dataStoragePtr);
+        }
 
-    if(m_kmlExport)
-    {
-        QLOG_DEBUG() << "iconInterval: " << m_iconInterval;
-
-        KmlLogExporter kmlExporter(this, m_loadedLogMavType, m_iconInterval);
-        result = kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
+        QLOG_DEBUG() << "Log export took " << timer.elapsed() << "ms";
+        QMessageBox::information(this,  "Information", result);
     }
     else
     {
-        AsciiLogExporter asciiExporter(this);
-        result = asciiExporter.exportToFile(outputFileName, m_dataStoragePtr);
+        QLOG_DEBUG() << "Logexporting cancelled";
     }
-
-    QLOG_DEBUG() << "Log export took " << timer1.elapsed() << "ms";
-
-    QMessageBox::information(this,  "Information", result);
-
 }
 
 void LogAnalysis::graphControlsButtonClicked()
