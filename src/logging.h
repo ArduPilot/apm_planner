@@ -19,56 +19,43 @@
 
 #include <QDebug>
 #include <QtGlobal>
+#include <QLoggingCategory>
 
-// Defines for configuring the used loglevels
-// just uncomment if you want to hide one level
+// Declare the base logging category - creation is done in main.cc
+Q_DECLARE_LOGGING_CATEGORY(apmGeneral);
+
+// Define for enabling trace logging. As trace logging is not supported
+// by the Qt logging framework the trace level is handeled by the debug level.
+// Disabling the NO_TRACE define enabes the trace logging
 #define NO_TRACE
-//#define NO_DEBUG
-//#define NO_INFO
-//#define NO_WARN
-//#define NO_ERROR
 
-
-// logging macros
+// logging macro
 #ifdef NO_TRACE
     #define QLOG_TRACE() if(1){} else qDebug()
 #else
-    #define QLOG_TRACE() qDebug()
+    #define QLOG_TRACE() qCDebug(apmGeneral)
 #endif
 
-#ifdef NO_DEBUG
-    #define QLOG_DEBUG() if(1){} else qDebug()
+
+// The loglevels which have a corresponding Qt logging class (debug, info, warning) can be disabled
+// by using the Qt defines (QT_NO_DEBUG_OUTPUT, QT_NO_INFO_OUTPUT, QT_NO_WARNING_OUTPUT) at
+// compile time.
+#define QLOG_DEBUG() qCDebug(apmGeneral)
+
+// Qt versions below 5.5.0 does not support qInfo() or qcinfo() logging
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    #define QLOG_INFO() qCDebug(apmGeneral)
 #else
-    #define QLOG_DEBUG() qDebug()
+    #define QLOG_INFO() qCInfo(apmGeneral)
 #endif
 
-#ifdef NO_INFO
-    #define QLOG_INFO()  if(1){} else qInfo()
-#else
-    #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
-        #define QLOG_INFO() qDebug()
-    #else
-        #define QLOG_INFO() qInfo()
-    #endif
-#endif
 
-#ifdef NO_WARN
-    #define QLOG_WARN()  if(1){} else qWarning()
-#else
-    #define QLOG_WARN() qWarning()
-#endif
+#define QLOG_WARN() qCWarning(apmGeneral)
 
-#ifdef NO_ERROR
-    #define QLOG_ERROR() if(1){} else qCritical()
-#else
-    #define QLOG_ERROR() qCritical()
-#endif
+#define QLOG_ERROR() qCCritical(apmGeneral)
 
-#ifdef NO_ERROR
-    #define QLOG_FATAL() if(1){} else qCritical()
-#else
-    #define QLOG_FATAL() qCritical()
-#endif
+#define QLOG_FATAL() qCCritical(apmGeneral)
+
 
 #endif // LOGGING_H
 
