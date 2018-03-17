@@ -40,6 +40,8 @@ This file is part of the QGROUNDCONTROL project
 #undef main
 #endif
 
+// Create the base logging category as defined in logging.h
+Q_LOGGING_CATEGORY(apmGeneral, "apm.general");
 
 // Install a message handler so you do not need
 // the MSFT debug tools installed to se
@@ -146,6 +148,9 @@ int main(int argc, char *argv[])
 
     // install the message handler for logging
     qInstallMessageHandler(loggingMessageHandler);
+
+    // Setup output for logging category
+    QLoggingCategory::setFilterRules(QStringLiteral("apm.general.debug=true"));
 
     // start the application
     core.initialize();
