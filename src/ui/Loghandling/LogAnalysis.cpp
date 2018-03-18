@@ -576,6 +576,10 @@ void LogAnalysis::loadSettings()
     ui.evDisplayCheckBox->setChecked(settings.value("SHOW_EV", Qt::Checked).toBool());
     ui.msgDisplayCheckBox->setChecked(settings.value("SHOW_MSG", Qt::Checked).toBool());
     ui.showValuesCheckBox->setChecked(settings.value("SHOW_VALUES", Qt::Unchecked).toBool());
+
+    m_useTimeOnXAxis = settings.value("USE_TIMEINDEX", Qt::Unchecked).toBool();
+    ui.indexTypeCheckBox->setChecked(m_useTimeOnXAxis);
+
     m_presetMgrPtr->setFileName(settings.value("PRESET_FILE").toString());
     settings.endGroup();
 }
@@ -589,6 +593,7 @@ void LogAnalysis::saveSettings()
     settings.setValue("SHOW_EV", ui.evDisplayCheckBox->isChecked());
     settings.setValue("SHOW_MSG", ui.msgDisplayCheckBox->isChecked());
     settings.setValue("SHOW_VALUES", ui.showValuesCheckBox->isChecked());
+    settings.setValue("USE_TIMEINDEX", ui.indexTypeCheckBox->isChecked());
 
     QFileInfo fileInfo = m_presetMgrPtr->getFileInfo();
     QString filePath;
