@@ -35,7 +35,7 @@ This file is part of the APM_PLANNER project
 
 static const QString DEFAULT_FIRMWARE_TYPE = "stable";
 static const QString DEFAULT_AUTOPILOT_HW_TYPE = "";
-static const QString DEFAULT_ARDUPILOT_FW_URL = "http://firmware.eu.ardupilot.org";
+static const QString DEFAULT_ARDUPILOT_FW_URL = "http://firmware.ardupilot.org";
 
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_throwPropSpinWarning(false),
