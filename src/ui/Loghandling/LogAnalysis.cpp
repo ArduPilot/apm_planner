@@ -1192,20 +1192,25 @@ void LogAnalysis::exportDialogAccepted()
     QString outputFileName = dialog->selectedFiles().at(0);
     dialog->close();
 
+    QString result;
+
     if(m_kmlExport)
     {
         QLOG_DEBUG() << "iconInterval: " << m_iconInterval;
 
         KmlLogExporter kmlExporter(this, m_loadedLogMavType, m_iconInterval);
-        kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
+        result = kmlExporter.exportToFile(outputFileName, m_dataStoragePtr);
     }
     else
     {
         AsciiLogExporter asciiExporter(this);
-        asciiExporter.exportToFile(outputFileName, m_dataStoragePtr);
+        result = asciiExporter.exportToFile(outputFileName, m_dataStoragePtr);
     }
 
     QLOG_DEBUG() << "Log export took " << timer1.elapsed() << "ms";
+
+    QMessageBox::information(this,  "Information", result);
+
 }
 
 void LogAnalysis::graphControlsButtonClicked()
