@@ -46,7 +46,7 @@ LogExporterBase::~LogExporterBase()
 }
 
 
-bool LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::Ptr dataStoragePtr)
+QString LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::Ptr dataStoragePtr)
 {
     typedef QScopedPointer<QProgressDialog, QScopedPointerDeleteLater> scopedDelLaterPtr;
 
@@ -54,7 +54,7 @@ bool LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::Ptr 
 
     if(!startExport(fileName))
     {
-        return false;
+        return m_ExportResult;
     }
 
     // create progress dialog
@@ -101,15 +101,16 @@ bool LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::Ptr 
         QApplication::processEvents();
         if(progressDialogPtr->wasCanceled())
         {
-            progressDialogPtr->hide();
-            QMessageBox::information(mp_parent,  "Warning", "Export was canceled");
-            return false;
+            progressDialogPtr->close();
+            m_ExportResult.append("Export was canceled by user");
+            QLOG_DEBUG() << m_ExportResult;
+            return m_ExportResult;
         }
     }
 
-    progressDialogPtr->hide();
+    progressDialogPtr->close();
     endExport();
-    return true;
+    return m_ExportResult;
 }
 
 //***********************************************************************
@@ -134,7 +135,8 @@ bool AsciiLogExporter::startExport(const QString &fileName)
     if (!m_outputFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {
         QLOG_WARN() << "AsciiLogExporter::startExport() unable to open file.";
-        QMessageBox::information(0, "Error","Unable to open output file: " + m_outputFile.errorString());
+        m_ExportResult.append("Unable to open output file: ");
+        m_ExportResult.append(m_outputFile.errorString());
         return false;
     }
     return true;
@@ -151,9 +153,9 @@ void AsciiLogExporter::writeLine(QString &line)
 
 void AsciiLogExporter::endExport()
 {
-    QString msg = QString("Successfull exported to %1").arg(m_outputFile.fileName());
-    QMessageBox::information(0, "Export log", msg);
-    QLOG_DEBUG() << msg;
+    m_ExportResult.append("Successfull exported to ");
+    m_ExportResult.append(m_outputFile.fileName());
+    QLOG_DEBUG() << m_ExportResult;
     m_outputFile.close();
 }
 
@@ -189,7 +191,7 @@ void KmlLogExporter::writeLine(QString &line)
 void KmlLogExporter::endExport()
 {
     QString generated = m_kmlExporter.finish(true);
-    QString msg = QString("Successfull exported to %1.").arg(generated);
-    QLOG_DEBUG() << msg;
-    QMessageBox::information(0, "Export KML", msg);
+    m_ExportResult.append("Successfull exported to ");
+    m_ExportResult.append(generated);
+    QLOG_DEBUG() << m_ExportResult;
 }

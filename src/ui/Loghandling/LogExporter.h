@@ -66,9 +66,13 @@ public:
      *        dataStoragePtr to a file with name fileName.
      * @param fileName - filename for the export
      * @param dataStoragePtr - shared pointer to a filled LogdataStorage
-     * @return true on success, false otherwise
+     * @return QString with information about the export. Can be shown to the user.
      */
-    bool exportToFile(const QString &fileName, LogdataStorage::Ptr dataStoragePtr);
+    QString exportToFile(const QString &fileName, LogdataStorage::Ptr dataStoragePtr);
+
+protected:
+
+    QString m_ExportResult; /// String containing the result of the export
 
 private:
 
