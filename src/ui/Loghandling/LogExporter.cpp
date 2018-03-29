@@ -189,7 +189,7 @@ void KmlLogExporter::writeLine(QString &line)
 void KmlLogExporter::endExport()
 {
     QString generated = m_kmlExporter.finish(true);
-    QString msg = QString("Successfull exported to %1.").arg(generated);
+    QString msg = QString("Successfully exported to %1.").arg(generated);
     QLOG_DEBUG() << msg;
     QMessageBox::information(0, "Export KML", msg);
 }

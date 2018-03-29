@@ -1192,6 +1192,14 @@ void LogAnalysis::exportDialogAccepted()
     QString outputFileName = dialog->selectedFiles().at(0);
     dialog->close();
 
+    // force kml extension
+    int dotindex = outputFileName.indexOf(".");
+    if (dotindex < 0) {
+        outputFileName.append(".kml");
+    } else {
+        outputFileName = outputFileName.left(dotindex).append(".kml");
+    }
+
     if(m_kmlExport)
     {
         QLOG_DEBUG() << "iconInterval: " << m_iconInterval;
