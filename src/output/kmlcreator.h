@@ -156,13 +156,13 @@ struct POSRecord: DataLine {
  * @brief An ATT record from a log file.
  */
 struct Attitude: DataLine {
-    QString rollIn()  { return values.value("RollIn").isEmpty() ? values.value("DesRoll") : values.value("RollIn"); }
-    QString roll()    { return values.value("Roll"); }
-    QString pitchIn() { return values.value("PitchIn").isEmpty() ? values.value("DesPitch") : values.value("PitchIn"); }
-    QString pitch()   { return values.value("Pitch"); }
-    QString yawIn()   { return values.value("YawIn").isEmpty() ? values.value("DesYaw") : values.value("YawIn"); }
-    QString yaw()     { return values.value("Yaw"); }
-    QString navYaw()  { return values.value("NavYaw"); }
+    QString rollIn()  const { return values.value("RollIn").isEmpty() ? values.value("DesRoll") : values.value("RollIn"); }
+    QString roll()    const { return values.value("Roll"); }
+    QString pitchIn() const { return values.value("PitchIn").isEmpty() ? values.value("DesPitch") : values.value("PitchIn"); }
+    QString pitch()   const { return values.value("Pitch"); }
+    QString yawIn()   const { return values.value("YawIn").isEmpty() ? values.value("DesYaw") : values.value("YawIn"); }
+    QString yaw()     const { return values.value("Yaw"); }
+    QString navYaw()  const { return values.value("NavYaw"); }
 
     virtual bool hasData() {
         return (values.value("Roll").length() > 0);
@@ -171,6 +171,22 @@ struct Attitude: DataLine {
     static Attitude from(FormatLine& format, QString& line);
 
     virtual ~Attitude() {}
+};
+
+/**
+ * @brief An AOA record from a log file.
+ */
+struct AoaSsa: DataLine {
+    QString AOA() const { return values.value("AOA"); }
+    QString SSA() const { return values.value("SSA"); }
+
+    virtual bool hasData() {
+        return (values.value("AOA").length() > 0);
+    }
+
+    static AoaSsa from(FormatLine& format, QString& line);
+
+    virtual ~AoaSsa() {}
 };
 
 /**
@@ -297,13 +313,15 @@ public:
     ManeuverData(){};
     ~ManeuverData(){};
 
-    void add(GPSRecord &p, Attitude &a) {
+    void add(GPSRecord &p, Attitude &a, AoaSsa &as) {
         this->mGPS.append(p);
         this->mAttitudes.append(a);
+        this->mAS.append(as);
     }
 
     QList<GPSRecord> mGPS;
     QList<Attitude> mAttitudes;
+    QList<AoaSsa> mAS;
 };
 
 /**
@@ -376,14 +394,12 @@ private:
     Placemark *lastPlacemark();
 
     void writePathElement(QXmlStreamWriter &writer, Placemark *p);
-    void writeManeuversElement(QXmlStreamWriter &, ManeuverData &);
+    void writeManeuversElement(QXmlStreamWriter &, ManeuverData &, float p_lp=0.95f, float sl_dur=3.0f);
+    void writeManeuverSegments(QXmlStreamWriter &, ManeuverData &, float p_lp=0.95f, float sl_dur=3.0f);
     void writePlanePlacemarkElement(QXmlStreamWriter &, Placemark *, int &);
     void writePlanePlacemarkElementQ(QXmlStreamWriter &, Placemark *, int &);
     void writeWaypointsPlacemarkElement(QXmlStreamWriter &);
-    void endLogPlaceMark(int seq, qint64 startUtc, qint64 endUtc,
-            QString& coords, QXmlStreamWriter& writer, Placemark* p);
-    void endLogPlaceMark(int seq, qint64 startUtc, qint64 endUtc,
-            QString& coords, QXmlStreamWriter& writer, QString& title, QString& color);
+    void endLogPlaceMark(int, qint64, qint64, QString, QString&, QXmlStreamWriter&, QString&, QString&);
 
     QString m_filename;
     QList<Placemark *> m_placemarks;
@@ -397,6 +413,7 @@ private:
     NKQ1 m_nkq1;
     AHR2 m_ahr2;
     Attitude m_att;
+    AoaSsa m_aoa;
 
     bool m_newXKQ1;
     bool m_newNKQ1;
