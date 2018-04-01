@@ -26,16 +26,16 @@ namespace kml {
  * @brief A GPS record from a log file.
  */
 struct GPSRecord: DataLine {
-    QString hdop()  { return values.value("HDop"); }
-    QString lat()   { return values.value("Lat"); }
-    QString lng()   { return values.value("Lng"); }
-    QString alt()   { return values.value("Alt"); }
-    QString speed() { return values.value("Spd"); }
-    QString crs()   { return values.value("GCrs"); }
-    QString vz()    { return values.value("VZ"); }
+    QString hdop()  const { return values.value("HDop"); }
+    QString lat()   const { return values.value("Lat"); }
+    QString lng()   const { return values.value("Lng"); }
+    QString alt()   const { return values.value("Alt"); }
+    QString speed() const { return values.value("Spd"); }
+    QString crs()   const { return values.value("GCrs"); }
+    QString vz()    const { return values.value("VZ"); }
 
     // older logs have TimeMS instead of TimeUS; Also GMS->GPSTimeMS and GWk->Week
-    QString msec()  {
+    QString msec() const {
         if (values.contains("GMS")) {
             return values.value("GMS");
         }
@@ -43,7 +43,7 @@ struct GPSRecord: DataLine {
             return values.value("GPSTimeMS");
         }
     }
-    QString week()  {
+    QString week() const {
         if (values.contains("GWk")) {
             return values.value("GWk");
         }
@@ -51,7 +51,7 @@ struct GPSRecord: DataLine {
             return values.value("Week");
         }
     }
-    QString timeUS()  {
+    QString timeUS() const {
         if (values.contains("TimeUS")) {
             return values.value("TimeUS");
         }
@@ -66,14 +66,14 @@ struct GPSRecord: DataLine {
         return status && (week > 0);
     }
 
-    QString toStringForKml() {
+    QString toStringForKml() const {
         QString str = QString("%1,%2,%3").arg(lng(), lat(), alt());
         return str;
     }
 
     static GPSRecord from(FormatLine& format, QString& line);
 
-    qint64 getUtc_ms() {
+    qint64 getUtc_ms() const {
         // msec since start of week (max value is 2^29.17, so it just fits in a signed 32 bit int)
         int32_t week_ms = this->msec().toInt();
         // weeks since 6 Jan 1980
@@ -156,13 +156,13 @@ struct POSRecord: DataLine {
  * @brief An ATT record from a log file.
  */
 struct Attitude: DataLine {
-    QString rollIn()  { return values.value("RollIn").isEmpty() ? values.value("DesRoll") : values.value("RollIn"); }
-    QString roll()    { return values.value("Roll"); }
-    QString pitchIn() { return values.value("PitchIn").isEmpty() ? values.value("DesPitch") : values.value("PitchIn"); }
-    QString pitch()   { return values.value("Pitch"); }
-    QString yawIn()   { return values.value("YawIn").isEmpty() ? values.value("DesYaw") : values.value("YawIn"); }
-    QString yaw()     { return values.value("Yaw"); }
-    QString navYaw()  { return values.value("NavYaw"); }
+    QString rollIn()  const { return values.value("RollIn").isEmpty() ? values.value("DesRoll") : values.value("RollIn"); }
+    QString roll()    const { return values.value("Roll"); }
+    QString pitchIn() const { return values.value("PitchIn").isEmpty() ? values.value("DesPitch") : values.value("PitchIn"); }
+    QString pitch()   const { return values.value("Pitch"); }
+    QString yawIn()   const { return values.value("YawIn").isEmpty() ? values.value("DesYaw") : values.value("YawIn"); }
+    QString yaw()     const { return values.value("Yaw"); }
+    QString navYaw()  const { return values.value("NavYaw"); }
 
     virtual bool hasData() {
         return (values.value("Roll").length() > 0);
@@ -171,6 +171,22 @@ struct Attitude: DataLine {
     static Attitude from(FormatLine& format, QString& line);
 
     virtual ~Attitude() {}
+};
+
+/**
+ * @brief An AOA record from a log file.
+ */
+struct AoaSsa: DataLine {
+    QString AOA() const { return values.value("AOA"); }
+    QString SSA() const { return values.value("SSA"); }
+
+    virtual bool hasData() {
+        return (values.value("AOA").length() > 0);
+    }
+
+    static AoaSsa from(FormatLine& format, QString& line);
+
+    virtual ~AoaSsa() {}
 };
 
 /**
@@ -282,6 +298,33 @@ struct CommandedWaypoint: DataLine {
 };
 
 /**
+ * @brief A container of data for aerobatic maneuver logs in a KML file.
+ * First pass through logfile calls processLine which creates a list of GPSRecord
+ * and associated POS attitude records in this struct.
+ * and marks
+ * the beginning and end of all "straight and level" flight segments.
+ * Each maneuver consists of all records from beginning of S&L segN to
+ * the end of S&L segN+1. Takeoff and landing are special; from start of
+ * log to beginning of S&L seg0 and from last S&L seg to end of log, respectively.
+ *
+ */
+class ManeuverData {
+public:
+    ManeuverData(){};
+    ~ManeuverData(){};
+
+    void add(GPSRecord &p, Attitude &a, AoaSsa &as) {
+        this->mGPS.append(p);
+        this->mAttitudes.append(a);
+        this->mAS.append(as);
+    }
+
+    QList<GPSRecord> mGPS;
+    QList<Attitude> mAttitudes;
+    QList<AoaSsa> mAS;
+};
+
+/**
  * @brief A container of data for creating Placemarks in a KML file.
  */
 struct Placemark {
@@ -351,15 +394,16 @@ private:
     Placemark *lastPlacemark();
 
     void writePathElement(QXmlStreamWriter &writer, Placemark *p);
-    void writeLogPlacemarkElement(QXmlStreamWriter &, Placemark *);
+    void writeManeuversElement(QXmlStreamWriter &, ManeuverData &, float p_lp=0.95f, float sl_dur=3.0f);
+    void writeManeuverSegments(QXmlStreamWriter &, ManeuverData &, float p_lp=0.95f, float sl_dur=3.0f);
     void writePlanePlacemarkElement(QXmlStreamWriter &, Placemark *, int &);
     void writePlanePlacemarkElementQ(QXmlStreamWriter &, Placemark *, int &);
     void writeWaypointsPlacemarkElement(QXmlStreamWriter &);
-    void endLogPlaceMark(int seq, qint64 startUtc, qint64 endUtc,
-            QString& coords, QXmlStreamWriter& writer, Placemark* p);
+    void endLogPlaceMark(int, qint64, qint64, QString, QString&, QXmlStreamWriter&, QString&, QString&);
 
     QString m_filename;
     QList<Placemark *> m_placemarks;
+    ManeuverData m_maneuverData;
     QList<CommandedWaypoint> m_waypoints;
     QHash<QString, FormatLine> m_formatLines;
     SummaryData* m_summary;
@@ -369,6 +413,7 @@ private:
     NKQ1 m_nkq1;
     AHR2 m_ahr2;
     Attitude m_att;
+    AoaSsa m_aoa;
 
     bool m_newXKQ1;
     bool m_newNKQ1;
