@@ -484,7 +484,7 @@ namespace core {
         case MapType::Statkart_Topo2:
                     {
 
-                        return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo2&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
+                        return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
                     }
                     break;
         case MapType::Eniro_Topo:
