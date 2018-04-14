@@ -34,7 +34,7 @@ static const struct {
     { "ArcGIS Map", MapType::ArcGIS_Map },
     { "ArcGIS Terrain", MapType::ArcGIS_Terrain },
     { "ArcGIS World Topo", MapType::ArcGIS_WorldTopo },
-    { "Statkart Topo2", MapType::Statkart_Topo2 },
+    { "Statkart Topo", MapType::Statkart_Topo },
     { "Eniro N,S,F,D,P", MapType::Eniro_Topo }
 };
 
