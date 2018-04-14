@@ -481,7 +481,7 @@ namespace core {
                 return QString("http://%1").arg(server)+QString("0%2.maps.yandex.ru/tiles?l=map&v=%3&x=%4&y=%5&z=%6").arg(GetServerNum(pos, 4)+1).arg(VersionYandexMap).arg(pos.X()).arg(pos.Y()).arg(zoom);
             }
             break;
-        case MapType::Statkart_Topo2:
+        case MapType::Statkart_Topo:
                     {
 
                         return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
