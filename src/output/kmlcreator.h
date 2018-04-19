@@ -324,6 +324,15 @@ public:
     QList<AoaSsa> mAS;
 };
 
+struct SegSpec {
+    SegSpec(int b, int e, qint64 sutc, qint64 eutc, float d): begin(b), end(e), beginUtc(sutc), endUtc(eutc), duration(d) {}
+    int begin;
+    int end;
+    qint64 beginUtc;
+    qint64 endUtc;
+    qint64 duration;
+};
+
 /**
  * @brief A container of data for creating Placemarks in a KML file.
  */
@@ -422,6 +431,8 @@ private:
 
     MAV_TYPE m_mav_type;
     double m_iconInterval;
+
+    QList<SegSpec *> seg_maneuvers(float sl_dur, float p_lp, ManeuverData &md);
 };
 
 } // namespace kml

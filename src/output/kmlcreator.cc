@@ -1050,23 +1050,8 @@ void KMLCreator::endLogPlaceMark(int seq, qint64 startUtc, qint64 endUtc, QStrin
     writer.writeEndElement(); // Placemark
 }
 
-void KMLCreator::writeManeuversElement(QXmlStreamWriter &writer, ManeuverData &md, float p_lp, float sl_dur) {
-    if(md.mGPS.size()==0) {
-        return;
-    }
-
-    // start a new Placemark at the middle of each straight and level (inverted or not) segment
-    // which is longer than x seconds. Name them maneuver N
-
-    // construct a list of straight & level start and end indexes
-    struct SegSpec {
-        SegSpec(int b, int e, qint64 sutc, qint64 eutc, float d): begin(b), end(e), beginUtc(sutc), endUtc(eutc), duration(d) {}
-        int begin;
-        int end;
-        qint64 beginUtc;
-        qint64 endUtc;
-        qint64 duration;
-    };
+QList<SegSpec *> KMLCreator::seg_maneuvers(float sl_dur, float p_lp, ManeuverData &md)
+{
     QList<SegSpec*> slSegments;
     int slBegin = 0;
     float avgRoll = 0;
@@ -1076,6 +1061,9 @@ void KMLCreator::writeManeuversElement(QXmlStreamWriter &writer, ManeuverData &m
     float pitchThresh = 15.0f; // 15 degrees
     bool sAndL = true;
     int listIndex = 0;
+    qint64 beginUtc;
+    qint64 endUtc;
+    qint64 duration;
     foreach(Attitude att, md.mAttitudes) {
         avgRoll += (1.0f - d) * (att.roll().toFloat() - avgRoll);
         avgPitch += (1.0f - d) * (att.pitch().toFloat() - avgPitch);
@@ -1085,25 +1073,45 @@ void KMLCreator::writeManeuversElement(QXmlStreamWriter &writer, ManeuverData &m
             if (!slcheck) {
                 // vehicle is no longer straight and level
                 // check segment duration
-                qint64 beginUtc = md.mGPS.at(slBegin).getUtc_ms();
-                qint64 endUtc = md.mGPS.at(listIndex).getUtc_ms();
-                qint64 duration = endUtc - beginUtc;
+                beginUtc = md.mGPS.at(slBegin).getUtc_ms();
+                endUtc = md.mGPS.at(listIndex).getUtc_ms();
+                duration = endUtc - beginUtc;
                 // if segment is longer than 3 seconds
                 if (duration > sl_dur) {
-                    // record this segment
+                    // record this segment and start a new one
                     slSegments.append(new SegSpec(slBegin, listIndex, beginUtc, endUtc, duration));
                 }
                 sAndL = false;
             }
         } else {
             if (slcheck) {
-                // vehicle is now straight and level
+                // vehicle is now straight and level; remember index into mAttitudes and mGPS
                 slBegin = listIndex;
                 sAndL = true;
             }
         }
         listIndex++;
     }
+    // record the last segment
+    listIndex--;
+    beginUtc = md.mGPS.at(slBegin).getUtc_ms();
+    endUtc = md.mGPS.at(listIndex).getUtc_ms();
+    duration = endUtc - beginUtc;
+    slSegments.append(new SegSpec(slBegin, listIndex, beginUtc, endUtc, duration));
+
+    return slSegments;
+}
+
+void KMLCreator::writeManeuversElement(QXmlStreamWriter &writer, ManeuverData &md, float p_lp, float sl_dur) {
+    if(md.mGPS.size()==0) {
+        return;
+    }
+
+    // start a new Placemark at the middle of each straight and level (inverted or not) segment
+    // which is longer than x seconds. Name them maneuver N
+
+    // construct a list of straight & level start and end indexes
+    QList<SegSpec*> slSegments = seg_maneuvers(sl_dur, p_lp, md);
 
     QString title("Maneuver");
     QString color("FF00FF00");
@@ -1148,51 +1156,7 @@ void KMLCreator::writeManeuverSegments(QXmlStreamWriter &writer, ManeuverData &m
     // which is longer than x seconds. Name them maneuver N
 
     // construct a list of straight & level start and end indexes
-    struct SegSpec {
-        SegSpec(int b, int e, qint64 sutc, qint64 eutc, float d): begin(b), end(e), beginUtc(sutc), endUtc(eutc), duration(d) {}
-        int begin;
-        int end;
-        qint64 beginUtc;
-        qint64 endUtc;
-        qint64 duration;
-    };
-    QList<SegSpec*> slSegments;
-    int slBegin = 0;
-    float avgRoll = 0;
-    float avgPitch = 0;
-    float d = p_lp; // single-pole IIR low pass filter
-    float rollThresh = 15.0f; // 15 degrees
-    float pitchThresh = 15.0f; // 15 degrees
-    bool sAndL = true;
-    int listIndex = 0;
-    foreach(Attitude att, md.mAttitudes) {
-        avgRoll += (1.0f - d) * (att.roll().toFloat() - avgRoll);
-        avgPitch += (1.0f - d) * (att.pitch().toFloat() - avgPitch);
-        bool slcheck = ((fabs(avgRoll) < rollThresh) || (fabs(avgRoll-3.1416f) < rollThresh)) &&
-                       (fabs(avgPitch) < pitchThresh);
-        if (sAndL) {
-            if (!slcheck) {
-                // vehicle is no longer straight and level
-                // check segment duration
-                qint64 beginUtc = md.mGPS.at(slBegin).getUtc_ms();
-                qint64 endUtc = md.mGPS.at(listIndex).getUtc_ms();
-                qint64 duration = endUtc - beginUtc;
-                // if segment is longer than 3 seconds
-                if (duration > sl_dur) {
-                    // record this segment
-                    slSegments.append(new SegSpec(slBegin, listIndex, beginUtc, endUtc, duration));
-                }
-                sAndL = false;
-            }
-        } else {
-            if (slcheck) {
-                // vehicle is now straight and level
-                slBegin = listIndex;
-                sAndL = true;
-            }
-        }
-        listIndex++;
-    }
+    QList<SegSpec*> slSegments = seg_maneuvers(sl_dur, p_lp, md);
 
     // make a folder containing a placemark for each small segment of the flightpath
     // each segment will be selectable with a description including RPY angles, AOA, SSA etc.
