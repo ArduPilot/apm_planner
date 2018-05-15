@@ -53,6 +53,8 @@ Building on Linux (tested against Ubuntu 14.04 LTS):
 
 (**NOTE:** There is an error in 14.04LTS with libxcb crashing sometimes, try this [fix](https://gist.github.com/slimsag/a26d838ccc4480ce21bc))
 
+(**NOTE:** If you are using 14:04LTS or other linux and instructions below are not working do it ['The Easy Way'](BUILD_EASY.md))
+
 1) Install the required packages: 
 
 Be sure to run apt-get update first
