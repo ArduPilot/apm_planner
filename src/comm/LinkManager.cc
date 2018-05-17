@@ -199,7 +199,8 @@ void LinkManager::saveSettings()
             UDPLink *link = qobject_cast<UDPLink*>(i.value());
             settings.setValue("type","UDP_LINK");
             settings.beginWriteArray("HOSTS");
-            for (int j=0;j<link->getHosts().size();j++)
+            // WARNING - HACK - we will only store the first HOST in list because the user cannot remove additional hosts
+            for (int j = 0; (j < link->getHosts().size()) && (j < 1); j++)
             {
                 settings.setArrayIndex(j);
                 settings.setValue("host",link->getHosts().at(j).toString());
@@ -359,7 +360,7 @@ void LinkManager::linkUpdated(LinkInterface *link)
 {
     emit linkChanged(link);
     emit linkChanged(link->getId());
-    saveSettings(); // [todo] may need to verify if this is needed always (refactor to link objects)
+//    saveSettings(); // TODO may need to verify if this is not needed
 }
 
 QString LinkManager::getLinkName(int linkid)
