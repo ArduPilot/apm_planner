@@ -290,7 +290,7 @@ qgcunittest:
 	Has the unittests for qgc
 settings: 
 	Parameter lists for alpha, bravo and charlie. 
-	Data for stereo, waypoints and radio calibrartion. 
+	Data for stereo, waypoints and radio calibration. 
 src:
 	Code for QGCCore, audio output, configuration, waypoints, main and log compressor.
 	apps - Code for mavlink generation and for a video application.
