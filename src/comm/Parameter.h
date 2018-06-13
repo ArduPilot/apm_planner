@@ -23,7 +23,7 @@ This file is part of the QGROUNDCONTROL project
 
 /**
  * @file
- *   @brief Parameter Object used to intefrace with an OpalRT Simulink Parameter
+ *   @brief Parameter Object used to interface with an OpalRT Simulink Parameter
      \see OpalLink
      \see OpalRT::ParameterList
  *   @author Bryan Godbolt <godbolt@ualberta.ca>
