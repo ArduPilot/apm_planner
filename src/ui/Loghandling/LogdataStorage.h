@@ -61,17 +61,17 @@ public:
     struct dataType
     {
         QString m_name;         /// Name of the type
-        unsigned int m_ID;      /// ID of the type
+        quint32 m_ID;           /// ID of the type
         int m_length;           /// Length in bytes
         QString m_format;       /// format string like "QBB"
         QStringList m_labels;   /// Lable (name) of each column
         int m_timeStampIndex;   /// Index of the time stamp field - for faster access
 
-        dataType() : m_ID(0xFF), m_length(0), m_timeStampIndex(0)
+        dataType() : m_ID(0xFFFFFFFF), m_length(0), m_timeStampIndex(0)
         {}
 
-        dataType(const QString &name, const unsigned int ID, const int length,
-                 const QString &format, const QStringList &labels, const int timeColum) :
+        dataType(const QString &name, quint32 ID, int length,
+                 const QString &format, const QStringList &labels, int timeColum) :
             m_name(name), m_ID(ID), m_length(length),
             m_format(format), m_labels(labels), m_timeStampIndex(timeColum)
         {}
@@ -119,7 +119,7 @@ public:
      *
      * @return - true success, false otherwise (data was not added)
      */
-    virtual bool addDataType(const QString &typeName, unsigned int typeID, int typeLength,
+    virtual bool addDataType(const QString &typeName, quint32 typeID, int typeLength,
                              const QString &typeFormat, const QStringList &typeLabels, int timeColum);
 
     /**

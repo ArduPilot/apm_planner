@@ -34,23 +34,30 @@ This file is part of the APM_PLANNER project
 
 bool TlogParser::tlogDescriptor::isValid() const
 {
-    return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
+    return (m_ID != s_InvalidID) && (m_length > 0) && (m_name.size() > 0) &&
            (m_format.size() > 0) && (m_format.size() == m_labels.size());
 }
 
 //*****************************************
 
 TlogParser::TlogParser(LogdataStorage::Ptr storagePtr, IParserCallback *object) :
+    QObject(),
     LogParserBase (storagePtr, object),
     m_mavDecoderPtr(new MAVLinkDecoder()),
-    m_lastModeVal(255)
+    m_lastModeVal(255),
+    mp_ReceiveData(nullptr)
 {
     QLOG_DEBUG() << "TlogParser::TlogParser - CTOR";
+    // connect to the callbacks of the mavlink deoder - all data is delivered through them
+    connect(m_mavDecoderPtr.data(), &MAVLinkDecoder::valueChanged, this, &TlogParser::newValue);
+    connect(m_mavDecoderPtr.data(), &MAVLinkDecoder::textMessageReceived, this, &TlogParser::newTextValue);
 }
 
 TlogParser::~TlogParser()
 {
     QLOG_DEBUG() << "TlogParser::TlogParser - DTOR";
+    disconnect(m_mavDecoderPtr.data(), &MAVLinkDecoder::valueChanged, this, &TlogParser::newValue);
+    disconnect(m_mavDecoderPtr.data(), &MAVLinkDecoder::textMessageReceived, this, &TlogParser::newTextValue);
 }
 
 AP2DataPlotStatus TlogParser::parse(QFile &logfile)
@@ -124,7 +131,6 @@ AP2DataPlotStatus TlogParser::parse(QFile &logfile)
                             {
                                 detectMavType(NameValuePairList);
                             }
-
                         }
                         // Special message handling - Statustext
                         else if(mavlinkMessage.msgid == MAVLINK_MSG_ID_STATUSTEXT)
@@ -196,11 +202,12 @@ bool TlogParser::parseDescriptor(tlogDescriptor &desc)
     for (int i = 0; i < fieldnames.size(); ++i)
     {
         mavlink_field_info_t fieldinfo = m_mavDecoderPtr->getFieldInfo(desc.m_name, fieldnames.at(i));
-        desc.m_labels.push_back(QString(fieldinfo.name));
+
         switch (fieldinfo.type)
         {
             case MAVLINK_TYPE_CHAR:
             {
+                desc.m_labels.push_back(fieldinfo.name);
                 if (fieldinfo.array_length == 0)
                 {
                     desc.m_format += "b";   // it is a single byte
@@ -215,62 +222,52 @@ bool TlogParser::parseDescriptor(tlogDescriptor &desc)
             break;
             case MAVLINK_TYPE_UINT8_T:
             {
-                desc.m_format += "B";
-                desc.m_length += 1;
+                 extractDescriptorDataFields(desc, fieldinfo, "B", 1);
             }
             break;
             case MAVLINK_TYPE_INT8_T:
             {
-                desc.m_format += "b";
-                desc.m_length += 1;
+                extractDescriptorDataFields(desc, fieldinfo, "b", 1);
             }
             break;
             case MAVLINK_TYPE_UINT16_T:
             {
-                desc.m_format += "H";
-                desc.m_length += 2;
+                extractDescriptorDataFields(desc, fieldinfo, "H", 2);
             }
             break;
             case MAVLINK_TYPE_INT16_T:
             {
-                desc.m_format += "h";
-                desc.m_length += 2;
+                extractDescriptorDataFields(desc, fieldinfo, "h", 2);
             }
             break;
             case MAVLINK_TYPE_UINT32_T:
             {
-                desc.m_format += "I";
-                desc.m_length += 4;
+                extractDescriptorDataFields(desc, fieldinfo, "I", 4);
             }
                 break;
             case MAVLINK_TYPE_INT32_T:
             {
-                desc.m_format += "i";
-                desc.m_length += 4;
+                extractDescriptorDataFields(desc, fieldinfo, "i", 4);
             }
             break;
             case MAVLINK_TYPE_FLOAT:
             {
-                desc.m_format += "f";
-                desc.m_length += 4;
+                extractDescriptorDataFields(desc, fieldinfo, "f", 4);
             }
             break;
             case MAVLINK_TYPE_DOUBLE:
             {
-                desc.m_format += "d";
-                desc.m_length += 8;
+                extractDescriptorDataFields(desc, fieldinfo, "d", 8);
             }
             break;
             case MAVLINK_TYPE_UINT64_T:
             {
-                desc.m_format += "Q";
-                desc.m_length += 8;
+                extractDescriptorDataFields(desc, fieldinfo, "Q", 8);
             }
             break;
             case MAVLINK_TYPE_INT64_T:
             {
-                desc.m_format += "q";
-                desc.m_length += 8;
+                extractDescriptorDataFields(desc, fieldinfo, "q", 8);
             }
             break;
             default:
@@ -284,6 +281,29 @@ bool TlogParser::parseDescriptor(tlogDescriptor &desc)
     }
     return true;
 }
+
+void TlogParser::extractDescriptorDataFields(tlogDescriptor &desc, const mavlink_field_info_t &fieldInfo, const QString &format, int size)
+{
+    if(fieldInfo.array_length == 0)
+    {
+        desc.m_labels.push_back(fieldInfo.name);
+        desc.m_format += format;
+        desc.m_length += size;
+    }
+    else
+    {
+        for (unsigned int i = 0; i < fieldInfo.array_length; ++i)
+        {
+            QString name(fieldInfo.name);
+            name.append('-');
+            name.append(QString::number(i));
+            desc.m_labels.push_back(name);
+            desc.m_format += format;
+            desc.m_length += size;
+        }
+    }
+}
+
 
 bool TlogParser::storeDescriptor(tlogDescriptor desc)
 {
@@ -308,30 +328,74 @@ bool TlogParser::storeDescriptor(tlogDescriptor desc)
 
 bool TlogParser::decodeData(const mavlink_message_t &mavlinkMessage, QList<NameValuePair> &NameValuePairList)
 {
-    QList<NameValuePair> decodedMessage = m_mavDecoderPtr->receiveMessage(0, mavlinkMessage);
-    if(decodedMessage.empty())
+    bool success = true;
+    mp_ReceiveData = &NameValuePairList;
+
+    m_mavDecoderPtr->decodeMessage(mavlinkMessage);
+
+    if(NameValuePairList.empty())
     {
-        return false;   // No data
+        success = false;
     }
-    // Copy data
-    for (int i = 0; i < decodedMessage.size(); ++i)
+
+    mp_ReceiveData = nullptr;
+    return success;
+}
+
+void TlogParser::newValue(const int uasId, const QString &name, const QString &unit, const QVariant &value, const quint64 msec)
+{
+    Q_UNUSED(uasId);
+    Q_UNUSED(msec);
+    Q_UNUSED(unit);
+
+    // the name of the expected data looks like this:
+    // "M1:RAW_IMU.time_usec" in standart case
+    // "M1:BATTERY_STATUS.voltages.0" in case of an array
+
+    if((mp_ReceiveData != nullptr) && value.isValid())
     {
-        QStringList list = decodedMessage.at(i).first.split(".");
-        if (list.size() >= 2)   // There must be at least 2 elements
-        {
-            NameValuePairList.append(NameValuePair(list[1], decodedMessage.at(i).second));
+        QStringList list = name.split(".");
+        if(list.size() == 2)
+        {   // handle standart data
+            mp_ReceiveData->append(NameValuePair(list[1], value));
+        }
+        else if(list.size() == 3)
+        {   // handle array data
+            QString name(list[1] + "-" + list[2]);
+            mp_ReceiveData->append(NameValuePair(name, value));
         }
         else
         {
-            QLOG_WARN() << "Missing data type information. Message:" << decodedMessage.at(i).first <<  ":"
-                        << decodedMessage.at(i).second.toString();
+            QLOG_WARN() << "Missing data type information. Message:" << name <<  ":"
+                        << value.toString();
             m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
-                                              "Missing data type information. Message:" + decodedMessage.at(i).first +
-                                              ":" + decodedMessage.at(i).second.toString());
-            return false;
+                                              "Missing data type information. Message:" + name +
+                                              ":" + value.toString());
         }
     }
-    return true;    // everything is ok
+}
+
+void TlogParser::newTextValue(int uasId, int componentId, int severity, const QString &text)
+{
+    Q_UNUSED(uasId);
+    Q_UNUSED(componentId);
+    Q_UNUSED(severity);
+
+    // The date we are expecting looks like this:
+    // M1:STATUSTEXT.text: ArduCopter V3.6-dev (12a53ed6)
+    // M1:STATUSTEXT.text: Frame: QUAD
+
+    if(mp_ReceiveData != nullptr && text.contains(':'))
+    {
+         // we remove the "M1:STATUSTEXT.text:" part
+        int index = text.indexOf(':') + 1;
+        index = text.indexOf(':', index) + 1;
+
+        if(index != -1)
+        {
+            mp_ReceiveData->append(NameValuePair("text", text.mid(index)));
+        }
+    }
 }
 
 bool TlogParser::extractModeMessage(const QList<NameValuePair> &NameValuePairList)

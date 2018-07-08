@@ -60,6 +60,8 @@ public:
     static LinkManager* instance();
     ~LinkManager();
 
+    void shutdown();    // Called when appplication exits
+
     void disableTimeouts(int index);
     void enableTimeouts(int index);
     void disableAllTimeouts();

@@ -508,12 +508,18 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
         return;
     }
 
-    QString propername  = name.mid(name.indexOf(":")+1);
+    QString propername;
+    QStringList parts = name.split(':');
+    if(parts.size() == 2)
+    {
+        // name looks like M1:ATTITUDE.Pitch or M1:BATTERY_STATUS.voltages.0
+        propername  = parts[1];
+    }
+
     if (!m_onlineValueMap.contains(propername))
     {
         ui.dataSelectionScreen->addItem(propername);
     }
-
 
     qint64 msec_current = QDateTime::currentMSecsSinceEpoch();
     m_currentIndex = msec_current;

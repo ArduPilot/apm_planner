@@ -29,7 +29,7 @@ This file is part of the APM_PLANNER project
 #include "LogParserBase.h"
 #include "logging.h"
 
-LogParserBase::typeDescriptor::typeDescriptor() : m_ID(0xFF), m_length(0), m_hasTimeStamp(false), m_timeStampIndex(0)
+LogParserBase::typeDescriptor::typeDescriptor() : m_ID(s_InvalidID), m_length(0), m_hasTimeStamp(false), m_timeStampIndex(0)
 {}
 
 void LogParserBase::typeDescriptor::finalize(const timeStampType &timeStamp)
@@ -98,7 +98,7 @@ LogParserBase::LogParserBase(LogdataStorage::Ptr storagePtr, IParserCallback *ob
     {
         QLOG_ERROR() << "LogParserBase::LogParserBase - No valid datamodel - parsing will not be possible";
     }
-    if(m_callbackObject == 0)
+    if(m_callbackObject == nullptr)
     {
         QLOG_ERROR() << "LogParserBase::LogParserBase - No valid callback object - parsing will not be possible";
     }

@@ -81,6 +81,7 @@ QGCCore::QGCCore(int &argc, char* argv[]) : QApplication(argc, argv)
 
 void QGCCore::aboutToQuit()
 {
+    LinkManager::instance()->shutdown();
 }
 
 void QGCCore::initialize()

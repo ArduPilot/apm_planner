@@ -42,7 +42,6 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCSettingsWidget.h"
 #include "QGCMapTool.h"
 #include "MAVLinkDecoder.h"
-#include "QGCMAVLinkMessageSender.h"
 #include "QGCRGBDView.h"
 #include "QGCFirmwareUpdate.h"
 #include "QGCStatusBar.h"
