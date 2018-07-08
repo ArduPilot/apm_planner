@@ -37,7 +37,7 @@ This file is part of the APM_PLANNER project
 #define NEW_MAVLINKPARSER_H
 
 #include <QThread>
-#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
 #include <QByteArray>
 #include "LinkInterface.h"
 #include <QFile>

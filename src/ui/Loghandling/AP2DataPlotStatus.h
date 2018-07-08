@@ -33,7 +33,7 @@ This file is part of the APM_PLANNER project
 #include <QString>
 #include <QVector>
 
-#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
 
 /**
  * @brief The AP2DataPlotStatus class is a helper class desinged as status type for

@@ -1,7 +1,7 @@
 #ifndef VEHICLEOVERVIEW_H
 #define VEHICLEOVERVIEW_H
 
-#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
 #include "LinkInterface.h"
 #include <QObject>
 

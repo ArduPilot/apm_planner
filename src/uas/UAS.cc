@@ -1973,8 +1973,8 @@ void UAS::sendMessage(LinkInterface* link, mavlink_message_t message)
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     // Write message into buffer, prepending start sign
     int len = mavlink_msg_to_send_buffer(buffer, &message);
-    static uint8_t messageKeys[256] = MAVLINK_MESSAGE_CRCS;
-    mavlink_finalize_message_chan(&message, systemId, componentId, link->getId(), 0, message.len, messageKeys[message.msgid]);
+    //static uint8_t messageKeys[256] = MAVLINK_MESSAGE_CRCS;
+    //mavlink_finalize_message_chan(&message, systemId, componentId, link->getId(), 0, message.len, messageKeys[message.msgid]);
 
     // If link is connected
     if (link->isConnected())
@@ -2890,7 +2890,7 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
             return;
         }
 
-        uint16_t chan_raw[8];
+        uint16_t chan_raw[18];
         memset(chan_raw, 0, sizeof(chan_raw));
 
         // looks like APM::Copter is not setting g.sysid_my_gcs to our systemId
@@ -2947,7 +2947,8 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
 
         mavlink_message_t message;
         mavlink_msg_rc_channels_override_pack(gcs, componentId, &message, uasId, MAV_COMP_ID_PRIMARY /* target_component */,
-                                              chan_raw[0], chan_raw[1], chan_raw[2], chan_raw[3], chan_raw[4], chan_raw[5], chan_raw[6], chan_raw[7]);
+                                              chan_raw[0], chan_raw[1], chan_raw[2], chan_raw[3], chan_raw[4], chan_raw[5], chan_raw[6], chan_raw[7], chan_raw[8], chan_raw[9],
+                                              chan_raw[10], chan_raw[11], chan_raw[12], chan_raw[13], chan_raw[14], chan_raw[15], chan_raw[16], chan_raw[17]);
         sendMessage(message);
 
         //emit attitudeThrustSetPointChanged(this, roll, pitch, yaw, thrust, QGC::groundTimeMilliseconds());
