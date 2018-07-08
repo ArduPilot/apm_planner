@@ -40,7 +40,7 @@ bool BinLogParser::binDescriptor::isValid() const
         {
             QLOG_WARN() << "binDescriptor::valid() Corrupt FMT descriptor found - known bug in some logs";
         }
-        return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
+        return (m_ID != s_InvalidID) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() > 0) && (m_labels.size() > 0);
     }
     // STRT message has also a special behaviour as it has no data fields in older logs.
@@ -50,12 +50,12 @@ bool BinLogParser::binDescriptor::isValid() const
         {
             QLOG_WARN() << "binDescriptor::valid() Corrupt STRT descriptor found - known bug in some logs";
         }
-        return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
+        return (m_ID != s_InvalidID) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() == m_labels.size());
     }
     else
     {
-        return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
+        return (m_ID != s_InvalidID) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() > 0) && (m_format.size() == m_labels.size());
     }
 }

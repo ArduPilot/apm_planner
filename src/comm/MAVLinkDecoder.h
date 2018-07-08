@@ -46,6 +46,7 @@ This file is part of the APM_PLANNER project
 #include <QVector>
 
 class ConnectionManager;
+class UASInterface;
 
 class MAVLinkDecoder : public QObject
 {
@@ -54,11 +55,11 @@ public:
     MAVLinkDecoder(QObject *parent=0);
     ~MAVLinkDecoder();
 
-    void passManager(ConnectionManager *manager) { m_connectionManager = manager; }
-    mavlink_field_info_t getFieldInfo(QString msgname,QString fieldname);
-    QList<QString> getFieldList(QString msgname);
-    QString getMessageName(uint8_t msgid);
+    mavlink_field_info_t getFieldInfo(const QString &msgname, const QString &fieldname) const;
+    QList<QString> getFieldList(const QString &msgname) const;
+    QString getMessageName(quint32 msgid) const;
     quint64 getUnixTimeFromMs(int systemID, quint64 time);
+    void decodeMessage(const mavlink_message_t &message);
 
 signals:
     void protocolStatusMessage(const QString& title, const QString& message);
@@ -67,37 +68,26 @@ signals:
     void receiveLossChanged(int id,float value);
 
 public slots:
-    QList<QPair<QString,QVariant> > receiveMessage(LinkInterface* link, mavlink_message_t message);
+    void receiveMessage(LinkInterface* link, mavlink_message_t message);
     void sendMessage(mavlink_message_t msg);
-    QPair<QString,QVariant> emitFieldValue(mavlink_message_t* msg, int fieldid, quint64 time);
+    void emitFieldValue(mavlink_message_t* msg, int fieldid, quint64 time);
 
 private:
-    int getSystemId() { return 252; }
-    int getComponentId() { return 1; }
 
-private:
-    bool m_loggingEnabled;
-    QFile *m_logfile;
-    ConnectionManager *m_connectionManager;
-    bool m_throwAwayGCSPackets;
-    bool m_enable_version_check;
-    bool versionMismatchIgnore;
-    QMap<int,qint64> totalReceiveCounter;
-    QMap<int,qint64> currReceiveCounter;
-    QMap<int,QMap<int,uint8_t> > lastIndex;
-    QMap<int,qint64> totalLossCounter;
-    QMap<int,qint64> currLossCounter;
-    bool m_multiplexingEnabled;
+    QHash<int,int> m_componentID;
+    QHash<int,bool> m_componentMulti;
+    QMap<quint32, bool> messageFilter;               ///< Message/field names not to emit
+    QMap<quint32, bool> textMessageFilter;           ///< Message/field names not to emit in text mode
 
-    QMap<int,int> componentID;
-    QMap<int,bool> componentMulti;
-    QMap<uint16_t, bool> messageFilter;               ///< Message/field names not to emit
-    QMap<uint16_t, bool> textMessageFilter;           ///< Message/field names not to emit in text mode
-    mavlink_message_t receivedMessages[256];    ///< Available / known messages
-    mavlink_message_info_t messageInfo[256];    ///< Message information
+    QHash<quint32, mavlink_message_info_t> messageInfo;
+    QHash<QString, quint32> m_messageNameToID;
+
     QMap<int,quint64> onboardTimeOffset;
     QMap<int,quint64> firstOnboardTime;
     QMap<int,quint64> onboardToGCSUnixTimeOffsetAndDelay;
+
+    bool m_localDecode;   /// true if decoding logfiles.
+    UASInterface *mp_uas; /// pointer to active UAS. Can be null.
 };
 
 #endif // NEW_MAVLINKDECODER_H

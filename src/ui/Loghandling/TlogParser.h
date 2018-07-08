@@ -39,8 +39,9 @@ This file is part of the APM_PLANNER project
  * @brief The TlogParser class is a parser for tlog ArduPilot
  *        logfiles (.tlog extension).
  */
-class TlogParser : public LogParserBase
+class TlogParser : public QObject, public LogParserBase
 {
+    Q_OBJECT
 public:
     /**
      * @brief TlogParser - CTOR
@@ -61,6 +62,25 @@ public:
      * @return - Detailed status of the parsing
      */
     virtual AP2DataPlotStatus parse(QFile &logfile);
+
+    /**
+     * @brief newValue - Callback for the mavlink decoder - called for every decoded value
+     * @param uasId - UAS ID
+     * @param name  - Name of the value
+     * @param unit  - Unit / data type
+     * @param value - the value itself
+     * @param msec  - some sort of timestamp
+     */
+    void newValue(const int uasId, const QString &name, const QString &unit, const QVariant &value, const quint64 msec);
+
+    /**
+     * @brief newTextValue - Callback for the mavlink decoder - called for every decoded string
+     * @param uasId         - UAS ID
+     * @param componentId   - Component ID
+     * @param severity      - severity
+     * @param text          - The text
+     */
+    void newTextValue(int uasId, int componentId, int severity, const QString &text);
 
 private:
 
@@ -84,6 +104,8 @@ private:
 
     quint8 m_lastModeVal;       /// holds the current mode used to detect changes
 
+    QList<NameValuePair> *mp_ReceiveData;  /// pointer to the data structure for receiving data
+
     /**
      * @brief addMissingDescriptors adds the missing type descriptors to the
      *        database. tlogs do not have a message for MODE or MSG messages
@@ -99,6 +121,17 @@ private:
      * @return - true - success, false - data could not be parsed
      */
     bool parseDescriptor(tlogDescriptor &desc);
+
+    /**
+     * @brief extractDataFields extracts the datafields of a descriptor. it is a helper
+     *        used by parseDescriptor method. Maily handles the differences between single
+     *        and array data.
+     * @param desc - The tlog descriptor to add the datatfiled info
+     * @param fieldInfo - the mavlink fieldinfo descriptor where the data is extracted from
+     * @param format - the format type for the field
+     * @param size - the size of the data field in bytes
+     */
+    void extractDescriptorDataFields(tlogDescriptor &desc, const mavlink_field_info_t &fieldInfo, const QString &format, int size);
 
     /**
      * @brief storeDescriptor validates the descriptor adds a time stamp field

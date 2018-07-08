@@ -85,6 +85,8 @@ protected:
     {
     public:
 
+        static constexpr quint32 s_InvalidID = 0xFFFFFFFF;
+
         typeDescriptor();
 
         virtual ~typeDescriptor() {}
@@ -113,7 +115,7 @@ protected:
         virtual bool hasNoTimestamp() const;
         virtual bool isValid() const;
 
-        quint8 m_ID;            /// ID of the message - mainly used for validation
+        quint32 m_ID;           /// ID of the message - mainly used for validation
         int m_length;           /// Length of the message
         QString m_name;         /// Name of the message
         QString m_format;       /// Format string like "QbbI"

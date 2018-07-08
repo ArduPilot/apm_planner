@@ -42,7 +42,7 @@ bool AsciiLogParser::asciiDescriptor::isValid() const
             QLOG_WARN() << "asciiDescriptor::valid() Corrupt FMT descriptor found - known bug in some logs - "
                         << "trying to ignore...";
         }
-        return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
+        return (m_ID != s_InvalidID) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() > 0) && (m_labels.size() > 0);
     }
     // STRT message has also a special behaviour as it has no data fields in older logs.
@@ -53,12 +53,12 @@ bool AsciiLogParser::asciiDescriptor::isValid() const
             QLOG_WARN() << "asciiDescriptor::valid() Corrupt STRT descriptor found - known bug in some logs - "
                         << "trying to ignore...";
         }
-        return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
+        return (m_ID != s_InvalidID) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() == m_labels.size());
     }
     else
     {
-        return (m_ID != 0xFF) && (m_length > 0) && (m_name.size() > 0) &&
+        return (m_ID != s_InvalidID) && (m_length > 0) && (m_name.size() > 0) &&
                (m_format.size() > 0) && (m_format.size() == m_labels.size());
     }
 }
@@ -199,7 +199,7 @@ bool AsciiLogParser::parseFMTMessage(asciiDescriptor &desc)
 {
     if(m_tokensToParse.size() >= s_MinFmtTokens)
     {
-        desc.m_ID = static_cast<quint8>(m_tokensToParse.at(s_IDIndex).trimmed().toUInt());
+        desc.m_ID = static_cast<quint32>(m_tokensToParse.at(s_IDIndex).trimmed().toUInt());
         desc.m_length = m_tokensToParse[s_LengthIndex].trimmed().toInt();
         desc.m_name   = m_tokensToParse[s_NameIndex].trimmed();
         desc.m_format = m_tokensToParse[s_FormatIndex].trimmed();

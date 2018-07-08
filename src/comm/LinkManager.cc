@@ -53,9 +53,11 @@ LinkManager* LinkManager::instance()
 }
 
 LinkManager::LinkManager(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_mavlinkDecoder(0),
+    m_mavlinkProtocol(0),
+    m_mavlinkLoggingEnabled(true)
 {
-    m_mavlinkLoggingEnabled = true;
     m_mavlinkDecoder = new MAVLinkDecoder(this);
     m_mavlinkProtocol = new MAVLinkProtocol();
     m_mavlinkProtocol->setConnectionManager(this);
@@ -106,10 +108,15 @@ void LinkManager::stopLogging()
 
 LinkManager::~LinkManager()
 {
-    m_mavlinkProtocol->setConnectionManager(NULL);
-    m_mavlinkProtocol->deleteLater();
-    m_mavlinkProtocol = NULL;
     saveSettings();
+}
+
+void LinkManager::shutdown()
+{  
+    m_mavlinkDecoder->deleteLater();
+    m_mavlinkDecoder = 0;
+    m_mavlinkProtocol->deleteLater();
+    m_mavlinkProtocol = 0;
 }
 
 void LinkManager::loadSettings()

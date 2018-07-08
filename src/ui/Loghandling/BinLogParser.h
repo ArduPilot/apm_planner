@@ -64,8 +64,8 @@ public:
 
 private:
 
-    static const quint8 s_FMTMessageType  = 0x80; /// Type Id of the format (FMT) message
-    static const quint8 s_STRTMessageType = 0x0A; /// Type Id of the Start (STRT) message
+    static const quint32 s_FMTMessageType  = 0x80; /// Type Id of the format (FMT) message
+    static const quint32 s_STRTMessageType = 0x0A; /// Type Id of the Start (STRT) message
 
     static const int s_MinHeaderSize = 5;        /// Minimal size to be able to start parsing
     static const int s_HeaderOffset  = 3;        /// byte offset after successful header parsing
@@ -92,9 +92,9 @@ private:
 
     QByteArray m_dataBlock;                 /// Data buffer for parsing.
     int m_dataPos;                          /// bytecounter for running through the data packet.
-    quint8 m_messageType;                   /// Holding type of the actual message.
+    quint32 m_messageType;                   /// Holding type of the actual message.
 
-    QHash<int, binDescriptor> m_typeToDescriptorMap;   /// hashMap storing a format descriptor for every message type
+    QHash<quint32, binDescriptor> m_typeToDescriptorMap;   /// hashMap storing a format descriptor for every message type
 
     QList<binDescriptor> m_descriptorForDeferredStorage; /// temp list for storing descriptors without a timestamp field
 

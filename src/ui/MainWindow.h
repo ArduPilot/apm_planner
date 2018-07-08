@@ -87,7 +87,6 @@ This file is part of the QGROUNDCONTROL project
 #include "DebugOutput.h"
 
 class QGCMapTool;
-class QGCMAVLinkMessageSender;
 class QGCFirmwareUpdate;
 class QSplashScreen;
 class QGCStatusBar;

@@ -28,6 +28,7 @@ This file is part of the APM_PLANNER project
  *          It will pass mavlink_message_t on to the UAS class for further parsing
  *
  *   @author Michael Carpenter <malcom2073@gmail.com>
+ *   @author Arne Wischmann <wischmann-a@gmx.de>
  *   @author QGROUNDCONTROL PROJECT - This code has GPLv3+ snippets from QGROUNDCONTROL, (c) 2009, 2010 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
  */
@@ -36,20 +37,22 @@ This file is part of the APM_PLANNER project
 #ifndef NEW_MAVLINKPARSER_H
 #define NEW_MAVLINKPARSER_H
 
-#include <QThread>
 #include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
 #include <QByteArray>
 #include "LinkInterface.h"
 #include <QFile>
 #include "QGC.h"
-#include <QDataStream>
 #include "UASInterface.h"
-//#include "MAVLinkDecoder.h"
+
 class LinkManager;
 class MAVLinkProtocol : public QObject
 {
     Q_OBJECT
+
 public:
+    constexpr static quint8 s_SystemID    = 252;
+    constexpr static quint8 s_ComponentID = 1;
+
     explicit MAVLinkProtocol();
     ~MAVLinkProtocol();
 
@@ -59,48 +62,30 @@ public:
     bool startLogging(const QString& filename);
     bool loggingEnabled() { return m_loggingEnabled; }
     void setOnline(bool isonline) { m_isOnline = isonline; }
+
+public slots:
+    void receiveBytes(LinkInterface* link, const QByteArray &dataBytes);
+
 private:
-    QMap<quint64,mavlink_message_t> m_mavlinkMsgBuffer;
-    void handleMessage(quint64 timeid,LinkInterface *link);
+    void handleMessage(LinkInterface *link, const mavlink_message_t &message);
     bool m_isOnline;
-    int getSystemId() { return 252; }
-    int getComponentId() { return 1; }
     bool m_loggingEnabled;
-    QFile *m_logfile;
+    QScopedPointer<QFile>m_ScopedLogfilePtr;
 
     bool m_throwAwayGCSPackets;
     LinkManager *m_connectionManager;
     bool versionMismatchIgnore;
-    QMap<int,qint64> totalReceiveCounter;
-    QMap<int,qint64> currReceiveCounter;
-    QMap<int,QMap<int,uint8_t> > lastIndex;
-    QMap<int,qint64> totalLossCounter;
-    QMap<int,qint64> currLossCounter;
+    QMap<int, qint64> totalReceiveCounter;
+    QMap<int, qint64> currReceiveCounter;
+    QMap<int,QMap<int, quint8> > lastIndex;
+    QMap<int, qint64> totalLossCounter;
+    QMap<int, qint64> currLossCounter;
     bool m_enable_version_check;
 
 signals:
     void protocolStatusMessage(const QString& title, const QString& message);
-    void valueChanged(const int uasId, const QString& name, const QString& unit, const QVariant& value, const quint64 msec);
-    void textMessageReceived(int uasid, int componentid, int severity, const QString& text);
     void receiveLossChanged(int id,float value);
     void messageReceived(LinkInterface *link,mavlink_message_t message);
-
-    /**
-     * @brief Emitted if a new radio status packet received
-     *
-     * @param rxerrors receive errors
-     * @param fixed count of error corrected packets
-     * @param rssi local signal strength in dBm
-     * @param remrssi remote signal strength in dBm
-     * @param txbuf how full the tx buffer is as a percentage
-     * @param noise background noise level
-     * @param remnoise remote background noise level
-     */
-    void radioStatusChanged(LinkInterface* link, unsigned rxerrors, unsigned fixed, int rssi, int remrssi,
-    unsigned txbuf, unsigned noise, unsigned remnoise);
-
-public slots:
-    void receiveBytes(LinkInterface* link, QByteArray b);
 };
 
 #endif // NEW_MAVLINKPARSER_H

@@ -135,7 +135,7 @@ QVariant LogdataStorage::headerData(int column, Qt::Orientation orientation, int
     return QVariant(m_typeStorage[typeIndex.first].m_labels[column - s_ColumnOffset]);
 }
 
-bool LogdataStorage::addDataType(const QString &typeName, unsigned int typeID, int typeLength,
+bool LogdataStorage::addDataType(const QString &typeName, quint32 typeID, int typeLength,
                                  const QString &typeFormat, const QStringList &typeLabels, int timeColum)
 {
     // set up colum count - the storage adds s_ColumOffset colums to the data.

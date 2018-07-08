@@ -117,17 +117,36 @@ void DataSelectionScreen::addItem(QString name)
     }
     if (name.contains("."))
     {
-        //It's a split name, "GCS Status.Roll" for instance.
-        QString shortname = name.split(".")[1];
-        QString groupname = name.split(".")[0];
-        QList<QTreeWidgetItem*> findlist = ui.treeWidget->findItems(groupname,Qt::MatchContains);
+        //Splitting name a every '.'
+        QStringList parts = name.split('.');
+        QString groupname;
+        QString shortname;
+
+        if(parts.size() == 2)
+        {
+            // name format is like "ATTITUDE.Pitch" -> groupname = ATTITUDE, shortname = Pitch
+            groupname = parts[0];
+            shortname = parts[1];
+        }
+        else if(parts.size() == 3)
+        {
+            // name format is like "BATTERY_STATUS.voltages.0" -> groupname = BATTERY_STATUS, shortname = voltages.0
+            groupname = parts[0];
+            shortname = parts[1] + "." + parts[2];
+        }
+        else
+        {
+            QLOG_INFO() << "Name schema mismatch dropping item.";
+            return;
+        }
+
+        QList<QTreeWidgetItem*> findlist = ui.treeWidget->findItems(groupname, Qt::MatchContains);
         if (findlist.size() > 0)
         {
             GraphTreeWidgetItem *child = new GraphTreeWidgetItem(QStringList() << shortname);
             child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
             child->setCheckState(0,Qt::Unchecked);
             findlist[0]->addChild(child);
-
         }
         else
         {
