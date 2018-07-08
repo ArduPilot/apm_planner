@@ -2,7 +2,7 @@
 #define UASOBJECT_H
 
 #include "LinkInterface.h"
-#include "libs/mavlink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
 
 #include "VehicleOverview.h"
 #include "RelPositionOverview.h"

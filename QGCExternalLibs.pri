@@ -52,10 +52,10 @@ WindowsBuild {
 }
 
 #
-# MAVLink (Set for MAVLink 1.0)
+# MAVLink (Set for MAVLink 2.0)
 #
 
-MAVLINKPATH_REL = libs/mavlink/include/mavlink/v1.0
+MAVLINKPATH_REL = libs/mavlink/include/mavlink/v2.0
 MAVLINKPATH = $$BASEDIR/$$MAVLINKPATH_REL
 MAVLINK_CONF = ardupilotmega
 DEFINES += MAVLINK_NO_DATA

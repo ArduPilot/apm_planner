@@ -65,7 +65,9 @@ MAVLinkDecoder::MAVLinkDecoder(QObject *parent) : QObject(parent)
     #ifdef MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE
     messageFilter.insert(MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE, false);
     #endif
+    #ifdef MAVLINK_MSG_ID_EXTENDED_MESSAGE
     messageFilter.insert(MAVLINK_MSG_ID_EXTENDED_MESSAGE, false);
+    #endif
 
     textMessageFilter.insert(MAVLINK_MSG_ID_DEBUG, false);
     textMessageFilter.insert(MAVLINK_MSG_ID_DEBUG_VECT, false);
