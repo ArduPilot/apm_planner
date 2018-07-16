@@ -48,7 +48,7 @@ public:
 //****************************************************
 
 LogdataStorage::LogdataStorage() :
-    m_columCount(0),
+    m_columnCount(0),
     m_currentRow(0),
     m_timeDivisor(0.0),
     m_minTimeStamp(ULLONG_MAX),
@@ -61,6 +61,10 @@ LogdataStorage::LogdataStorage() :
     m_dataStorage.reserve(50);
     m_TimeToIndexList.reserve(20000);
     m_indexToDataRow.reserve(20000);
+
+    // add some default data to the multiplier
+    m_multiplierStorage[45] = qQNaN();  // invalid / unused multiplier - missing in some logs therefore added here.
+    m_multiplierStorage[63] = qQNaN();  // unknown multiplier - missing in some logs therefore added here.
 }
 
 LogdataStorage::~LogdataStorage()
@@ -77,7 +81,7 @@ int LogdataStorage::rowCount(const QModelIndex &parent) const
 int LogdataStorage::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return m_columCount;
+    return m_columnCount;
 }
 
 QVariant LogdataStorage::data(const QModelIndex &index, int role) const
@@ -101,12 +105,31 @@ QVariant LogdataStorage::data(const QModelIndex &index, int role) const
         // Column 1 is the name of the log data (ATT,ATUN...)
         return QVariant(m_indexToDataRow[index.row()].first);
     }
+
     const TypeIndexPair &typeIndex = m_indexToDataRow[index.row()];
-    if(index.column() - s_ColumnOffset >= m_dataStorage[typeIndex.first].at(typeIndex.second).m_values.size())
+    const ValueTable &dataVect = m_dataStorage[typeIndex.first];
+    if(index.column() - s_ColumnOffset >= dataVect.at(typeIndex.second).m_values.size())
     {
         return QVariant(); // this data type does not have so much colums
     }
-    return QVariant(m_dataStorage[typeIndex.first].at(typeIndex.second).m_values.at(index.column() - s_ColumnOffset));
+
+    const dataType &type = m_typeStorage[typeIndex.first];
+    if((index.column() - s_ColumnOffset) < type.m_multipliers.size())   // do we have a multiplier??
+    {
+        const double &multi = type.m_multipliers.at(index.column() - s_ColumnOffset);
+        if(!qIsNaN(multi))     // unknown multiplier are NaNs
+        {
+            double temp = dataVect.at(typeIndex.second).m_values.at(index.column() - s_ColumnOffset).toDouble();
+            if(index.column() == 2)
+            {
+                // Column 2 is the time we want 6 decimals in this one.
+                return QString::number(temp * multi, 'f', 6);
+            }
+            return QVariant(temp * multi);
+        }
+    }
+    // If we do not have multipliers we do not need scaling
+    return dataVect.at(typeIndex.second).m_values.at(index.column() - s_ColumnOffset);
 }
 
 QVariant LogdataStorage::headerData(int column, Qt::Orientation orientation, int role) const
@@ -127,23 +150,26 @@ QVariant LogdataStorage::headerData(int column, Qt::Orientation orientation, int
     {
         return QVariant("MSG Type");    // second colum is always the message type
     }
+
     const TypeIndexPair &typeIndex = m_indexToDataRow[m_currentRow];
-    if ((column - s_ColumnOffset) >= m_typeStorage[typeIndex.first].m_labels.size())
+    const dataType &type = m_typeStorage[typeIndex.first];
+    if ((column - s_ColumnOffset) >= type.m_labels.size())
     {
         return QVariant("");    // this row does not have this column
     }
-    return QVariant(m_typeStorage[typeIndex.first].m_labels[column - s_ColumnOffset]);
+
+    return QVariant(getLabelName(column - s_ColumnOffset, type));
 }
 
 bool LogdataStorage::addDataType(const QString &typeName, quint32 typeID, int typeLength,
                                  const QString &typeFormat, const QStringList &typeLabels, int timeColum)
 {
-    // set up colum count - the storage adds s_ColumOffset colums to the data.
+    // set up column count - the storage adds s_ColumnOffset columns to the data.
     // One for the index and one for the name.
-    m_columCount = m_columCount < (typeLabels.size() + s_ColumnOffset) ? typeLabels.size() + s_ColumnOffset : m_columCount;
+    m_columnCount = m_columnCount < (typeLabels.size() + s_ColumnOffset) ? typeLabels.size() + s_ColumnOffset : m_columnCount;
 
     // create new type and store it
-    dataType NewType(typeName, typeID, typeLength, typeFormat, typeLabels, timeColum);
+    dataType NewType(typeName, typeID, typeLength, typeFormat, typeLabels, timeColumn);
     m_typeStorage.insert(typeName, NewType);
     // to be able to recreate the order we store the names in a vector.
     m_indexToTypeRow.push_back(typeName);
@@ -200,6 +226,22 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
     return true;
 }
 
+void LogdataStorage::addUnitData(quint8 unitID, const QString &unitName)
+{
+    m_unitStorage[unitID] = unitName;
+}
+
+void LogdataStorage::addMultiplierData(quint8 multiID, double multiplier)
+{
+    m_multiplierStorage[multiID] = multiplier;
+}
+
+void LogdataStorage::addMsgToUnitAndMultiplierData(quint32 typeID, const QByteArray &multiplierFieldInfo, const QByteArray &unitFieldInfo)
+{
+    m_typeIDToMultiplierFieldInfo[typeID] = multiplierFieldInfo;
+    m_typeIDToUnitFieldInfo[typeID] = unitFieldInfo;
+}
+
 void LogdataStorage::selectedRowChanged(const QModelIndex &current)
 {
     if (!current.isValid() || (m_currentRow == current.row()))
@@ -229,20 +271,22 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues(bool filterStringValues)
 {
     QMap<QString, QStringList> fmtValueMap; //using a map to get alphabetically sorting
 
-    foreach(const QString &typeName, m_indexToTypeRow)
+    for(const auto &type : m_typeStorage)
     {
-        if(m_dataStorage.count(typeName))   // only types we have data for
+        if(m_dataStorage.count(type.m_name))    // only types we have data for
         {
-            // n N Z are string types - those cannot be plotted
-            if(!filterStringValues || !(m_typeStorage[typeName].m_format.contains('n') ||
-                 m_typeStorage[typeName].m_format.contains('N') ||
-                 m_typeStorage[typeName].m_format.contains('Z')))
+            if(!filterStringValues ||           // n N Z are string types - those cannot be plotted
+               !(type.m_format.contains('n') || type.m_format.contains('N') || type.m_format.contains('Z')))
             {
-                fmtValueMap.insert(typeName, m_typeStorage[typeName].m_labels);
+                QStringList labelPlusUnit;
+                for(int i = 0; i < type.m_labels.size(); ++i)
+                {
+                    labelPlusUnit.append(getLabelName(i, type));
+                }
+                fmtValueMap.insert(type.m_name, labelPlusUnit);
             }
         }
     }
-
     return fmtValueMap;
 }
 
@@ -278,6 +322,7 @@ QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &paren
     data.reserve(m_dataStorage[parent].size());
     foreach(const IndexValueRow &row, m_dataStorage[parent])
     {
+        // TODO Add scaling!
         indexValuePair.first = useTimeAsIndex ? row.m_values.at(timeStampIndex).toDouble() / m_timeDivisor : row.m_index;
         indexValuePair.second = row.m_values.at(valueIndex);
         data.push_back(indexValuePair);
@@ -288,23 +333,29 @@ QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &paren
 
 bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const
 {
-    QStringList splitName = name.split(".");
+    auto splitName = name.split(".");
     if(splitName.size() != 2)
     {
-        return false;
+        return false;   // name is not valid - structure must be "part1.part2"
     }
-
     if(!m_typeStorage.count(splitName.at(0)) || !m_dataStorage.count(splitName.at(0)))
     {
         return false;    // don't have this type or no data for this type
     }
 
-    int valueIndex = m_typeStorage[splitName.at(0)].m_labels.indexOf(splitName.at(1));
-    int timeStampIndex = m_typeStorage[splitName.at(0)].m_timeStampIndex;
-
+    const auto &type = m_typeStorage[splitName.at(0)];
+    auto part1 = splitName.at(1).split(s_UnitParOpen).at(0).trimmed();  // Remove unit info like "[s]" from
+    const int valueIndex = type.m_labels.indexOf(part1);
     if(valueIndex == -1)
     {
         return false;    // don't have this value type
+    }
+
+    const int timeStampIndex = type.m_timeStampIndex;
+    double multiplier = qQNaN();                        // Unknown multiplier is always qQNaN
+    if(type.m_multipliers.size() >= valueIndex)
+    {
+        multiplier  = type.m_multipliers[valueIndex];
     }
 
     xValues.clear();
@@ -312,16 +363,23 @@ bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector
     yValues.clear();
     yValues.reserve(m_dataStorage[splitName.at(0)].size());
 
-    foreach(const IndexValueRow &row, m_dataStorage[splitName.at(0)])
+    for(const IndexValueRow &row: m_dataStorage[splitName.at(0)])
     {
         xValues.push_back(useTimeAsIndex ? row.m_values.at(timeStampIndex).toDouble() / m_timeDivisor : row.m_index);
-        yValues.push_back(row.m_values.at(valueIndex).toDouble());
+        if(!qIsNaN(multiplier))
+        {
+            yValues.push_back(row.m_values.at(valueIndex).toDouble() * multiplier);
+        }
+        else
+        {
+            yValues.push_back(row.m_values.at(valueIndex).toDouble());
+        }
     }
 
     return true;
 }
 
-void LogdataStorage::getDataRow(const int index, QString &name, QVector<QVariant> &measurements) const
+void LogdataStorage::getRawDataRow(int index, QString &name, QVector<QVariant> &measurements) const
 {
     if(index < m_indexToDataRow.size())
     {
@@ -395,7 +453,7 @@ void LogdataStorage::getMessagesOfType(const QString &type, QMap<quint64, Messag
 
     QList<NameValuePair> nameValueList;
 
-    foreach(const IndexValueRow &row, m_dataStorage[type])
+    for(const auto &row : m_dataStorage[type])
     {
         nameValueList.clear();
         nameValueList.append(NameValuePair("Index", row.m_index));  // Add Data index
@@ -413,7 +471,91 @@ void LogdataStorage::getMessagesOfType(const QString &type, QMap<quint64, Messag
     }
 }
 
-QString LogdataStorage::getError()
+QString LogdataStorage::getError() const
 {
     return m_errorText;
 }
+
+QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double divisor)
+{
+    QStringList errors;
+
+    // handle the unit and multiplier data if there is some
+    if(m_typeIDToMultiplierFieldInfo.size() != 0)
+    {
+        QHash<QString, dataType>::Iterator iter;
+        for(iter = m_typeStorage.begin(); iter != m_typeStorage.end(); ++iter)
+        {
+            unsigned int typeID = iter.value().m_ID;
+            // handle unit data
+            if(m_typeIDToUnitFieldInfo.contains(typeID))
+            {
+                for(const qint8 unitID : m_typeIDToUnitFieldInfo.value(typeID))
+                {
+                    if(m_unitStorage.contains(static_cast<quint8>(unitID)))
+                    {
+                        iter.value().m_units.push_back(m_unitStorage.value(static_cast<quint8>(unitID)));
+                    }
+                    else
+                    {
+                        QString error("Found unit ID " + QString::number(unitID) + " but no matching unit");
+                        errors.append(error);
+                    }
+                }
+            }
+            else
+            {
+                QString error("No unit description for data type " + iter.value().m_name + " found");
+                errors.append(error);
+            }
+            // handle multiplier data
+            if(m_typeIDToMultiplierFieldInfo.contains(typeID))
+            {
+                for(const qint8 multID : m_typeIDToMultiplierFieldInfo.value(typeID))
+                {
+                    if(m_multiplierStorage.contains(static_cast<quint8>(multID)))
+                    {
+                        iter.value().m_multipliers.append(m_multiplierStorage.value(static_cast<quint8>(multID)));
+                    }
+                    else
+                    {
+                        QString error("Found multiplier ID " + QString::number(multID) + " but no matching multiplier");
+                        errors.append(error);
+                    }
+                }
+            }
+            else
+            {
+                QString error("No multiplier description for data type " + iter.value().m_name + " found");
+                errors.append(error);
+            }
+        }
+    }
+
+    setTimeStamp(timeStampName, divisor);
+
+    return errors;
+}
+
+bool LogdataStorage::ModelIsScaled() const
+{
+    return m_typeIDToMultiplierFieldInfo.size() > 0;
+}
+
+QString LogdataStorage::getLabelName(int index, const dataType & type) const
+{
+    QString label = type.m_labels.at(index);
+    if(index < type.m_units.size())         // do we have a unit?
+    {
+        const QString &unit = type.m_units.at(index);
+        if(unit.size() != 0)    // only add if unit is not empty
+        {
+            label.append(' ');
+            label.append(s_UnitParOpen);
+            label.append(unit);
+            label.append(s_UnitParClose);
+        }
+    }
+    return label;
+}
+

@@ -65,7 +65,8 @@ bool BinLogParser::binDescriptor::isValid() const
 BinLogParser::BinLogParser(LogdataStorage::Ptr storagePtr, IParserCallback *object) :
     LogParserBase (storagePtr, object),
     m_dataPos(0),
-    m_messageType(0)
+    m_messageType(0),
+    m_hasUnitData(false)
 {
     QLOG_DEBUG() << "BinLogParser::BinLogParser - CTOR";
 }
@@ -146,7 +147,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
                 {
                     if(NameValuePairList.size() >= 1)   // need at least one element
                     {
-                        if(!storeNameValuePairList(NameValuePairList, descriptor))
+                        if(!extendedStoreNameValuePairList(NameValuePairList, descriptor))
                         {
                             return m_logLoadingState;
                         }
@@ -182,7 +183,20 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
         m_logLoadingState.setNoMessageBytes(noMessageBytes);
     }
 
-    m_dataStoragePtr->setTimeStamp(m_activeTimestamp.m_name, m_activeTimestamp.m_divisor);
+    if(m_hasUnitData)
+    {
+       QStringList errors = m_dataStoragePtr->setupUnitData(m_activeTimestamp.m_name, m_activeTimestamp.m_divisor);
+       for(const auto &error : errors)
+       {
+           QLOG_WARN() << error;
+           m_logLoadingState.corruptFMTRead(static_cast<int>(m_MessageCounter), "Unit or scaling error. " + error);
+       }
+    }
+    else
+    {
+        m_dataStoragePtr->setTimeStamp(m_activeTimestamp.m_name, m_activeTimestamp.m_divisor);
+    }
+
     return m_logLoadingState;
 }
 
@@ -401,31 +415,38 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
         {
             qint16 val;
             packetstream >> val;
-            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val / 100.0));
+            // backward compatibilty - if we have scaling data (ardupilot 3.6 and later) we use them when getting data out of storage
+            // without scaling info we do the scaling here
+            double scaledVal = m_hasUnitData ? val : val / 100.0;
+            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), scaledVal));
         }
         else if (typeCode == 'C') //uint16_t * 100
         {
             quint16 val;
             packetstream >> val;
-            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val / 100.0));
+            double scaledVal = m_hasUnitData ? val : val / 100.0;
+            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), scaledVal));
         }
         else if (typeCode == 'e') //int32_t * 100
         {
             qint32 val;
             packetstream >> val;
-            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val / 100.0));
+            double scaledVal = m_hasUnitData ? val : val / 100.0;
+            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), scaledVal));
         }
         else if (typeCode == 'E') //uint32_t * 100
         {
             quint32 val;
             packetstream >> val;
-            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val / 100.0));
+            double scaledVal = m_hasUnitData ? val : val / 100.0;
+            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), scaledVal));
         }
         else if (typeCode == 'L') //uint32_t GPS Lon/Lat * 10000000
         {
             qint32 val;
             packetstream >> val;
-            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val / 10000000.0));
+            double scaledVal = m_hasUnitData ? val : val / 10000000.0;
+            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), scaledVal));
         }
         else if (typeCode == 'M')
         {
@@ -466,7 +487,7 @@ bool BinLogParser::extendedStoreDescriptor(const binDescriptor &desc)
     bool rc = true;
     if(m_descriptorForDeferredStorage.size() > 0)
     {
-        foreach (const binDescriptor &descriptor, m_descriptorForDeferredStorage)
+        for(const auto &descriptor : m_descriptorForDeferredStorage)
         {
             bool localRc = storeDescriptor(descriptor);
             rc = rc && localRc;
@@ -478,5 +499,56 @@ bool BinLogParser::extendedStoreDescriptor(const binDescriptor &desc)
         rc = storeDescriptor(desc);
     }
     return rc;
+}
+
+bool BinLogParser::extendedStoreNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc)
+{
+    bool retCode = true;
+    // Store unit related information
+    if(desc.m_ID == s_UNITMessageType)
+    {
+        // Unit data contains unit ID on index 1 and Unit Name on index 2
+        quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
+        m_dataStoragePtr->addUnitData(id, NameValuePairList[2].second.toString());
+    }
+    else if(desc.m_ID == s_MULTMessageType)
+    {
+        // Multiplier data contains unit ID on index 1 and the multiplier on index 2
+        quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
+        double multi = NameValuePairList[2].second.toDouble();
+        // ID 45 and ID 63 are multipliers wich shuld not be used eg. unknown
+        if((id == 45) || (id == 63))
+        {
+            multi = qQNaN();    // we mark them with an NaN wich is easy to detect.
+        }
+        m_dataStoragePtr->addMultiplierData(id, multi);
+    }
+    else if(desc.m_ID == s_FMTUMessageType)
+    {
+        QByteArray multiplierField(NameValuePairList[3].second.toByteArray());
+        QByteArray unitField(NameValuePairList[2].second.toByteArray());
+        // number of elements in multiplier & unit should be the same
+        if(multiplierField.size() == unitField.size())
+        {
+            m_dataStoragePtr->addMsgToUnitAndMultiplierData(NameValuePairList[1].second.toUInt(), multiplierField, unitField);
+            m_hasUnitData = true;
+        }
+        else
+        {
+            QLOG_WARN() << "Unit and multiplier info have size mismatch. Number of elements should be the same. "
+                        << "Data of type " << NameValuePairList[1].second.toUInt() << " will have no scaling nor Unit info";
+
+            m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
+                              "Unit and multiplier info have size mismatch. Number of elements should be the same. Data of type "
+                              + QString::number(NameValuePairList[1].second.toUInt()) + " will have no scaling nor Unit info");
+            retCode = false;
+        }
+    }
+    else
+    {
+        retCode = storeNameValuePairList(NameValuePairList, desc);
+    }
+
+    return retCode;
 }
 
