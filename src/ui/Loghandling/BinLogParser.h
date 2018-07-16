@@ -64,8 +64,11 @@ public:
 
 private:
 
-    static const quint32 s_FMTMessageType  = 0x80; /// Type Id of the format (FMT) message
-    static const quint32 s_STRTMessageType = 0x0A; /// Type Id of the Start (STRT) message
+    static const quint8 s_FMTMessageType  = 0x80; /// Type Id of the format (FMT) message
+    static const quint8 s_STRTMessageType = 0x0A; /// Type Id of the Start (STRT) message
+    static const quint8 s_UNITMessageType = 0xE5; /// Type Id of the unit (UNIT) message
+    static const quint8 s_MULTMessageType = 0xE6; /// Type Id of the multiplier (MULT) message
+    static const quint8 s_FMTUMessageType = 0xE4; /// Type Id of the Format unit multiplier (FMTU) message
 
     static const int s_MinHeaderSize = 5;        /// Minimal size to be able to start parsing
     static const int s_HeaderOffset  = 3;        /// byte offset after successful header parsing
@@ -97,6 +100,8 @@ private:
     QHash<quint32, binDescriptor> m_typeToDescriptorMap;   /// hashMap storing a format descriptor for every message type
 
     QList<binDescriptor> m_descriptorForDeferredStorage; /// temp list for storing descriptors without a timestamp field
+
+    bool m_hasUnitData;                     /// True if parsed log contains unit data
 
     /**
      * @brief headerIsValid checks the first 2 start bytes
@@ -139,6 +144,16 @@ private:
      * @return
      */
     bool parseDataByDescriptor(QList<NameValuePair> &NameValuePairList, const binDescriptor &desc);
+
+    /**
+     * @brief extendedStoreNameValuePairList checks for the unit data types (UNIT, MULT, FMTU)
+     *        and inserts them correctly into the datamodel. All other data will be passed to
+     *        the storeNameValuePairList() method of the base class
+     * @param NameValuePairList to be stored
+     * @param desc - matching descriptor for this NameValuePairList
+     * @return true success, false otherwise
+     */
+    bool extendedStoreNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc);
 };
 
 #endif // BINLOGPARSER_H

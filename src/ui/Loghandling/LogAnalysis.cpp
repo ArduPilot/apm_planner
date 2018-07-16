@@ -897,6 +897,7 @@ void LogAnalysis::itemEnabled(QString name)
 {
     QVector<double> xlist;
     QVector<double> ylist;
+
     if (!m_dataStoragePtr->getValues(name, m_useTimeOnXAxis, xlist, ylist))
     {
         //No values!
@@ -960,7 +961,6 @@ void LogAnalysis::itemEnabled(QString name)
     {
         QCPAxis *yAxis = m_plotPtr->axisRect()->axis(QCPAxis::atLeft, 1);
         yAxis->grid()->setVisible(false);
-//        connect(yAxis, SIGNAL(rangeChanged(QCPRange)), newPlot.p_yAxis, SLOT(setRange(QCPRange)));    // TODO really not needed???
     }
 
     m_plotPtr->replot();
@@ -1140,7 +1140,11 @@ void LogAnalysis::selectedRowChanged(QModelIndex current, QModelIndex previous)
         {
             // timestamp value of the current row is in colum 2
             double item = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(current.row(), 2)).value(Qt::DisplayRole).toInt();
-            mp_cursorSimple->setCurrentXPos(item / m_dataStoragePtr->getTimeDivisor());
+            if(!m_dataStoragePtr->ModelIsScaled())
+            {
+                // If datamodel is NOT scaled we have to scale the timestamp.
+                mp_cursorSimple->setCurrentXPos(item / m_dataStoragePtr->getTimeDivisor());
+            }
         }
         else
         {

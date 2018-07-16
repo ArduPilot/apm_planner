@@ -84,7 +84,7 @@ QString LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::P
     QVector<QVariant> measurements;
     for(int i = 0; i < dataStoragePtr->rowCount(); ++i)
     {
-        dataStoragePtr->getDataRow(i, outputLine, measurements);
+        dataStoragePtr->getRawDataRow(i, outputLine, measurements);
         foreach(const QVariant &value, measurements)
         {
             outputLine.append(',');
