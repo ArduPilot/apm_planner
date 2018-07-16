@@ -244,7 +244,7 @@ bool TlogParser::parseDescriptor(tlogDescriptor &desc)
             {
                 extractDescriptorDataFields(desc, fieldinfo, "I", 4);
             }
-                break;
+            break;
             case MAVLINK_TYPE_INT32_T:
             {
                 extractDescriptorDataFields(desc, fieldinfo, "i", 4);
@@ -286,6 +286,7 @@ void TlogParser::extractDescriptorDataFields(tlogDescriptor &desc, const mavlink
 {
     if(fieldInfo.array_length == 0)
     {
+        // extract single value
         desc.m_labels.push_back(fieldInfo.name);
         desc.m_format += format;
         desc.m_length += size;
@@ -294,6 +295,7 @@ void TlogParser::extractDescriptorDataFields(tlogDescriptor &desc, const mavlink
     {
         for (unsigned int i = 0; i < fieldInfo.array_length; ++i)
         {
+            // extract array value
             QString name(fieldInfo.name);
             name.append('-');
             name.append(QString::number(i));
@@ -342,7 +344,7 @@ bool TlogParser::decodeData(const mavlink_message_t &mavlinkMessage, QList<NameV
     return success;
 }
 
-void TlogParser::newValue(const int uasId, const QString &name, const QString &unit, const QVariant &value, const quint64 msec)
+void TlogParser::newValue(int uasId, const QString &name, const QString &unit, const QVariant &value, quint64 msec)
 {
     Q_UNUSED(uasId);
     Q_UNUSED(msec);

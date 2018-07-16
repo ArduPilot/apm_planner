@@ -65,8 +65,7 @@ bool BinLogParser::binDescriptor::isValid() const
 BinLogParser::BinLogParser(LogdataStorage::Ptr storagePtr, IParserCallback *object) :
     LogParserBase (storagePtr, object),
     m_dataPos(0),
-    m_messageType(0),
-    m_hasUnitData(false)
+    m_messageType(0)
 {
     QLOG_DEBUG() << "BinLogParser::BinLogParser - CTOR";
 }
@@ -501,54 +500,5 @@ bool BinLogParser::extendedStoreDescriptor(const binDescriptor &desc)
     return rc;
 }
 
-bool BinLogParser::extendedStoreNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc)
-{
-    bool retCode = true;
-    // Store unit related information
-    if(desc.m_ID == s_UNITMessageType)
-    {
-        // Unit data contains unit ID on index 1 and Unit Name on index 2
-        quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
-        m_dataStoragePtr->addUnitData(id, NameValuePairList[2].second.toString());
-    }
-    else if(desc.m_ID == s_MULTMessageType)
-    {
-        // Multiplier data contains unit ID on index 1 and the multiplier on index 2
-        quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
-        double multi = NameValuePairList[2].second.toDouble();
-        // ID 45 and ID 63 are multipliers wich shuld not be used eg. unknown
-        if((id == 45) || (id == 63))
-        {
-            multi = qQNaN();    // we mark them with an NaN wich is easy to detect.
-        }
-        m_dataStoragePtr->addMultiplierData(id, multi);
-    }
-    else if(desc.m_ID == s_FMTUMessageType)
-    {
-        QByteArray multiplierField(NameValuePairList[3].second.toByteArray());
-        QByteArray unitField(NameValuePairList[2].second.toByteArray());
-        // number of elements in multiplier & unit should be the same
-        if(multiplierField.size() == unitField.size())
-        {
-            m_dataStoragePtr->addMsgToUnitAndMultiplierData(NameValuePairList[1].second.toUInt(), multiplierField, unitField);
-            m_hasUnitData = true;
-        }
-        else
-        {
-            QLOG_WARN() << "Unit and multiplier info have size mismatch. Number of elements should be the same. "
-                        << "Data of type " << NameValuePairList[1].second.toUInt() << " will have no scaling nor Unit info";
 
-            m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
-                              "Unit and multiplier info have size mismatch. Number of elements should be the same. Data of type "
-                              + QString::number(NameValuePairList[1].second.toUInt()) + " will have no scaling nor Unit info");
-            retCode = false;
-        }
-    }
-    else
-    {
-        retCode = storeNameValuePairList(NameValuePairList, desc);
-    }
-
-    return retCode;
-}
 

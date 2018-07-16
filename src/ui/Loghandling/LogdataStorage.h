@@ -73,7 +73,7 @@ public:
         {}
 
         dataType(const QString &name, quint32 ID, int length,
-                 const QString &format, const QStringList &labels, int timeColum) :
+                 const QString &format, const QStringList &labels, int timeColumn) :
             m_name(name), m_ID(ID), m_length(length),
             m_format(format), m_labels(labels), m_timeStampIndex(timeColumn)
         {}
@@ -124,13 +124,13 @@ public:
      * @param typeID - ID of the type to ba added
      * @param typeLength - Length of the type to ba added (bytes)
      * @param typeFormat - format string like "QbbI"
-     * @param typeLabels - List of labels for each value in message (colums).
+     * @param typeLabels - List of labels for each value in message (columns).
      * @param timeColumn - column index of the time stamp field
      *
      * @return - true success, false otherwise (data was not added)
      */
     virtual bool addDataType(const QString &typeName, quint32 typeID, int typeLength,
-                             const QString &typeFormat, const QStringList &typeLabels, int timeColum);
+                             const QString &typeFormat, const QStringList &typeLabels, int timeColumn);
 
     /**
      * @brief addDataRow adds a data row - a list of pairs of string and value - to the data storage.
@@ -242,6 +242,30 @@ public:
     virtual void getRawDataRow(int index, QString &name, QVector<QVariant> &measurements) const;
 
     /**
+     * @brief getUnitData - returns the unit data stored in model. Can be empty if no unit data
+     *        available. Used for exporting.
+     * @return - container holding id to unit data. As the order is not important we just use the
+     *           same format as in datamodel.
+     */
+    virtual QHash<quint8, QString> getUnitData() const;
+
+    /**
+     * @brief getMultiplierData - returns the multiplier data stored in model. Can be empty if no multiplier data
+     *        available. Used for exporting.
+     * @return - container holding id to multiplier data. As the order is not important we just use the
+     *           same format as in datamodel.
+     */
+    virtual QHash<quint8, double> getMultiplierData() const;
+
+    /**
+     * @brief getMsgToUnitAndMultiplierData - returns the unit and the multiplier indexes used by a special
+     *        message type
+     * @param typeID - message type ID to get the data for
+     * @return - mulriplier and unit data for the requested message ID
+     */
+    virtual QPair<QByteArray, QByteArray> getMsgToUnitAndMultiplierData(quint32 typeID) const;
+
+    /**
      * @brief getMinTimeStamp - getter for the smallest timestamp in log
      * @return - the smallest timestamp scaled to seconds
      */
@@ -344,8 +368,8 @@ private:
 
     QHash<quint8, QString> m_unitStorage;           /// Holds UNIT data and unit id (if available)
     QHash<quint8, double>  m_multiplierStorage;     /// Holds Multiplier data and multiplier id (if available)
-    QHash<unsigned int, QByteArray> m_typeIDToUnitFieldInfo;       /// Holds Unit IDs for every type
-    QHash<unsigned int, QByteArray> m_typeIDToMultiplierFieldInfo; /// Holds Multiplier IDs for every type
+    QHash<quint32, QByteArray> m_typeIDToUnitFieldInfo;       /// Holds Unit IDs for every type
+    QHash<quint32, QByteArray> m_typeIDToMultiplierFieldInfo; /// Holds Multiplier IDs for every type
 
 
     /**

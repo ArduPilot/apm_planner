@@ -60,6 +60,10 @@ public:
 
 protected:
 
+    static const quint8 s_UNITMessageType = 0xE5; /// Type Id of the unit (UNIT) message
+    static const quint8 s_MULTMessageType = 0xE6; /// Type Id of the multiplier (MULT) message
+    static const quint8 s_FMTUMessageType = 0xE4; /// Type Id of the Format unit multiplier (FMTU) message
+
     /**
      * @brief The timeStampType struct
      *        Used to hold the name and the scaling of a time stamp.
@@ -109,7 +113,7 @@ protected:
          * @param oldName - name string to search for
          * @param newName - the new name to replace the old one
          */
-        virtual void replaceLabelName(const QString &oldName, const QString newName);
+        virtual void replaceLabelName(const QString &oldName, const QString &newName);
 
         virtual QString getLabelAtIndex(int index) const;
         virtual bool hasNoTimestamp() const;
@@ -136,6 +140,7 @@ protected:
     AP2DataPlotStatus m_logLoadingState;    /// State of the parser
 
     timeStampType m_activeTimestamp;        /// the detected timestamp used for parsing
+    bool m_hasUnitData;                     /// True if parsed log contains unit data
 
 
     /**
@@ -153,6 +158,16 @@ protected:
      * @return true - success, false - datamodel failure
      */
     bool storeNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc);
+
+    /**
+     * @brief extendedStoreNameValuePairList checks for the unit data types (UNIT, MULT, FMTU)
+     *        and inserts them correctly into the datamodel. All other data will be passed to
+     *        the storeNameValuePairList() method.
+     * @param NameValuePairList to be stored
+     * @param desc - matching descriptor for this NameValuePairList
+     * @return true success, false otherwise
+     */
+    bool extendedStoreNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc);
 
     /**
      * @brief handleTimeStamp does all time stamp handling. It checks if the time is increasing and

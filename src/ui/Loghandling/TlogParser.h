@@ -71,7 +71,7 @@ public:
      * @param value - the value itself
      * @param msec  - some sort of timestamp
      */
-    void newValue(const int uasId, const QString &name, const QString &unit, const QVariant &value, const quint64 msec);
+    void newValue(int uasId, const QString &name, const QString &unit, const QVariant &value, quint64 msec);
 
     /**
      * @brief newTextValue - Callback for the mavlink decoder - called for every decoded string
