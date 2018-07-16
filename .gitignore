@@ -49,12 +49,16 @@ user_config.pri
 *.suo
 *.uhf.txt
 *.opensdf
+*.qmlc
 apmplanner2.xcodeproj/
 GeneratedFiles/
 deploy/*.exe
 deploy/*.list
 *.exe
 deploy/*.dll
+.qmake.cache
 .qmake.stash
 libs/lib/Frameworks/GStreamer.framework/
-
+config.tests/has_flite/*
+!config.tests/has_flite/has_flite.pro
+!config.tests/has_flite/main.cpp
