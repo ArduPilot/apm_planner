@@ -162,7 +162,7 @@ QVariant LogdataStorage::headerData(int column, Qt::Orientation orientation, int
 }
 
 bool LogdataStorage::addDataType(const QString &typeName, quint32 typeID, int typeLength,
-                                 const QString &typeFormat, const QStringList &typeLabels, int timeColum)
+                                 const QString &typeFormat, const QStringList &typeLabels, int timeColumn)
 {
     // set up column count - the storage adds s_ColumnOffset columns to the data.
     // One for the index and one for the name.
@@ -394,6 +394,24 @@ void LogdataStorage::getRawDataRow(int index, QString &name, QVector<QVariant> &
     }
 }
 
+QHash<quint8, QString> LogdataStorage::getUnitData() const
+{
+    return m_unitStorage;
+}
+
+QHash<quint8, double> LogdataStorage::getMultiplierData() const
+{
+    return m_multiplierStorage;
+}
+
+QPair<QByteArray, QByteArray> LogdataStorage::getMsgToUnitAndMultiplierData(quint32 typeID) const
+{
+    QPair<QByteArray, QByteArray> dataPair;
+
+    dataPair.first  = m_typeIDToMultiplierFieldInfo[typeID];
+    dataPair.second = m_typeIDToUnitFieldInfo[typeID];
+    return dataPair;
+}
 
 double LogdataStorage::getMinTimeStamp() const
 {

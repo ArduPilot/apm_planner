@@ -56,7 +56,7 @@ void LogParserBase::typeDescriptor::addTimeStampField(const LogParserBase::timeS
     m_timeStampIndex = 0;
 }
 
-void LogParserBase::typeDescriptor::replaceLabelName(const QString &oldName, const QString newName)
+void LogParserBase::typeDescriptor::replaceLabelName(const QString &oldName, const QString &newName)
 {
     int tempIndex = m_labels.indexOf(oldName);
 
@@ -89,6 +89,7 @@ LogParserBase::LogParserBase(LogdataStorage::Ptr storagePtr, IParserCallback *ob
     m_stop(false),
     m_MessageCounter(0),
     m_loadedLogType(MAV_TYPE_GENERIC),
+    m_hasUnitData(false),
     m_timeErrorCount(0),
     m_highestTimestamp(0),
     m_timestampOffset(0)
@@ -122,7 +123,7 @@ void LogParserBase::stopParsing()
 
 void LogParserBase::checkForValidTimestamp(typeDescriptor &desc)
 {
-    foreach(const timeStampType &timeStamp, m_possibleTimestamps)
+    for(const auto &timeStamp: m_possibleTimestamps)
     {
         if (desc.m_labels.contains(timeStamp.m_name))
         {
@@ -173,6 +174,57 @@ bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairLi
     }
     m_MessageCounter++;
     return true;
+}
+
+bool LogParserBase::extendedStoreNameValuePairList(QList<NameValuePair> &NameValuePairList, const typeDescriptor &desc)
+{
+    bool retCode = true;
+    // Store unit related information
+    if(desc.m_ID == s_UNITMessageType)
+    {
+        // Unit data contains unit ID on index 1 and Unit Name on index 2
+        quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
+        m_dataStoragePtr->addUnitData(id, NameValuePairList[2].second.toString());
+    }
+    else if(desc.m_ID == s_MULTMessageType)
+    {
+        // Multiplier data contains unit ID on index 1 and the multiplier on index 2
+        quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
+        double multi = NameValuePairList[2].second.toDouble();
+        // ID 45 and ID 63 are multipliers which should not be used eg. unknown
+        if((id == 45) || (id == 63))
+        {
+            multi = qQNaN();    // we mark them with an NaN wich is easy to detect.
+        }
+        m_dataStoragePtr->addMultiplierData(id, multi);
+    }
+    else if(desc.m_ID == s_FMTUMessageType)
+    {
+        QByteArray multiplierField(NameValuePairList[3].second.toByteArray());
+        QByteArray unitField(NameValuePairList[2].second.toByteArray());
+        // number of elements in multiplier & unit should be the same
+        if(multiplierField.size() == unitField.size())
+        {
+            m_dataStoragePtr->addMsgToUnitAndMultiplierData(NameValuePairList[1].second.toUInt(), multiplierField, unitField);
+            m_hasUnitData = true;
+        }
+        else
+        {
+            QLOG_WARN() << "Unit and multiplier info have size mismatch. Number of elements should be the same. "
+                        << "Data of type " << NameValuePairList[1].second.toUInt() << " will have no scaling nor Unit info";
+
+            m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter),
+                              "Unit and multiplier info have size mismatch. Number of elements should be the same. Data of type "
+                              + QString::number(NameValuePairList[1].second.toUInt()) + " will have no scaling nor Unit info");
+            retCode = false;
+        }
+    }
+    else
+    {
+        retCode = storeNameValuePairList(NameValuePairList, desc);
+    }
+
+    return retCode;
 }
 
 void LogParserBase::handleTimeStamp(QList<NameValuePair> &valuepairlist, const typeDescriptor &desc)
@@ -277,7 +329,7 @@ bool LogParserBase::repairMessage(QList<NameValuePair> &NameValuePairList, const
     QList<NameValuePair> originalList(NameValuePairList);
     NameValuePairList.clear();
     // reconstruct message based on descriptor
-    foreach(const QString &label, descriptor.m_labels)
+    for(const QString &label: descriptor.m_labels)
     {
         bool found = false;
         for(QList<NameValuePair>::Iterator iter = originalList.begin(); iter != originalList.end(); ++iter)

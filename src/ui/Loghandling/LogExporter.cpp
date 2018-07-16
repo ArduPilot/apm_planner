@@ -71,7 +71,7 @@ QString LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::P
     allDataTypesInModel = dataStoragePtr->getAllDataTypes();
 
     QString outputLine;
-    foreach(const LogdataStorage::dataType &type, allDataTypesInModel)
+    for(const auto &type : allDataTypesInModel)
     {
         QTextStream fmtStream(&outputLine);
         fmtStream << "FMT," << type.m_ID << "," << type.m_length << "," << type.m_name << ","
@@ -80,9 +80,45 @@ QString LogExporterBase::exportToFile(const QString &fileName, LogdataStorage::P
         outputLine.clear();
     }
 
+    // Export unit data
+    int artificialTimeStamp = 0;
+    auto unitData = dataStoragePtr->getUnitData();
+    auto unitIter = unitData.constBegin();
+    while(unitIter != unitData.constEnd())
+    {
+        QTextStream unitStream(&outputLine);
+        unitStream << "UNIT," << artificialTimeStamp << "," << unitIter.key() << "," << unitIter.value();
+        ++artificialTimeStamp;
+        ++unitIter;
+        writeLine(outputLine);
+        outputLine.clear();
+    }
+
+    auto multiplierData = dataStoragePtr->getMultiplierData();
+    auto multiIter = multiplierData.constBegin();
+    while(multiIter != multiplierData.constEnd())
+    {
+        QTextStream multStream(&outputLine);
+        multStream << "MULT," << artificialTimeStamp << "," << multiIter.key() << "," << multiIter.value();
+        ++artificialTimeStamp;
+        ++multiIter;
+        writeLine(outputLine);
+        outputLine.clear();
+    }
+
+    for(const auto &type : allDataTypesInModel)
+    {
+        QTextStream fmtuStream(&outputLine);
+        auto dataPair = dataStoragePtr->getMsgToUnitAndMultiplierData(type.m_ID);
+        fmtuStream << "FMTU," << artificialTimeStamp << "," << type.m_ID << ","<< dataPair.second << "," << dataPair.first;
+        ++artificialTimeStamp;
+        writeLine(outputLine);
+        outputLine.clear();
+    }
+
     // Export measurements
     QVector<QVariant> measurements;
-    for(int i = 0; i < dataStoragePtr->rowCount(); ++i)
+    for(auto i = 0; i < dataStoragePtr->rowCount(); ++i)
     {
         dataStoragePtr->getRawDataRow(i, outputLine, measurements);
         foreach(const QVariant &value, measurements)
