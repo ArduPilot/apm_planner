@@ -1,0 +1,12 @@
+--- a/QGCSetup.pri
++++ b/QGCSetup.pri
+@@ -89,7 +89,7 @@
+         desktopLink.path = $$DATADIR/menu
+-        desktopLink.files += $$BASEDIR/debian/apmplanner2
++        desktopLink.files += $$BASEDIR/redhat/apmplanner2
+         menuLink.path = $$DATADIR/applications
+-        menuLink.files += $$BASEDIR/debian/apmplanner2.desktop
++        menuLink.files += $$BASEDIR/redhat/apmplanner2.desktop
+ }
+ 
+ MacBuild {

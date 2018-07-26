@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=APM Planner 2
+GenericName=apmplanner2
+Exec=apmplanner2
+Terminal=false
+Categories=Education;Robotics;
+Comment=A UAV Ground Station
+Icon=/usr/share/APMPlanner2/files/APMIcons/ap_rc.png
+
