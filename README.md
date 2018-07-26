@@ -108,7 +108,10 @@ There are two ways to do this:
 
 a) Using Debuild:
 ```
-cd ~/workspace/apm_planner
+cd ~/workspace/apm_planner/debian
+./gitlog-to-changelog.pl > changelog
+
+cd ..
 debuild -us -uc -d
 ```
 Then install the deb via 
