@@ -16,20 +16,22 @@ BuildRequires:      qt5-qtsvg-devel >= 5.2
 BuildRequires:      qt5-qtwebkit-devel >= 5.2
 BuildRequires:      SDL2-devel >= 2.0
 BuildRequires:      alsa-lib-devel
-BuildRequires:      flite-devel
+#BuildRequires:      flite-devel
 BuildRequires:      libsndfile-devel
 BuildRequires:      openssl-devel
 BuildRequires:      zlib-devel
-URL:                https://github.com/diydrones/apm_planner
+URL:                https://github.com/ardupilot/apm_planner
 ExcludeArch:        s390 s390x
 
 %description
+
+%global debug_package %{nil}
 
 %prep
 %autosetup
 
 %build
-qmake-qt5 CONFIG+=%{_arch} qgroundcontrol.pro PREFIX=$RPM_BUILD_ROOT%{_prefix}
+qmake-qt5 CONFIG+=%{_arch} apm_planner.pro PREFIX=$RPM_BUILD_ROOT%{_prefix}
 
 NCORES=`cat /proc/cpuinfo | grep ^processor | sort -r | head -n 1 | sed -e 's/^.\+\([0-9]\)\+.*/\1/'`
 NPROCS=$(( ( $NCORES + 1 ) * 2 ));
