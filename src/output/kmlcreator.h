@@ -1,8 +1,12 @@
 #ifndef KMLCREATOR_H
 #define KMLCREATOR_H
 
+// Mavlink include is only used for MAV_TYPE constant defined in the protocol
+#include <mavlink_types.h>
+extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS]; // defined in src/main.cc
+#include <mavlink.h>
+
 #include "logging.h"
-#include "mavlink.h"
 #include <qstring.h>
 #include <qlist.h>
 #include <QHash>

@@ -33,13 +33,7 @@ This file is part of the QGROUNDCONTROL project
 #include "GAudioOutput.h"
 #include "LinkManager.h"
 
-#ifndef MAVLINK_MSG_ID_MOUNT_CONFIGURE
-#include "ardupilotmega/mavlink_msg_mount_configure.h"
-#endif
 
-#ifndef MAVLINK_MSG_ID_MOUNT_CONTROL
-#include "ardupilotmega/mavlink_msg_mount_control.h"
-#endif
 
 #include <QString>
 #include <QDir>

@@ -23,7 +23,7 @@ This file is part of the APM_PLANNER project
 #ifndef MISSIONOVERVIEW_H
 #define MISSIONOVERVIEW_H
 
-#include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
+#include <mavlink_types.h>
 #include <QObject>
 
 class LinkInterface;
