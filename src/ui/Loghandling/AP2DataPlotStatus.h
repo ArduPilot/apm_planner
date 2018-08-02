@@ -33,7 +33,10 @@ This file is part of the APM_PLANNER project
 #include <QString>
 #include <QVector>
 
-#include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
+// Mavlink include is only used for MAV_TYPE constant defined in the protocol
+#include <mavlink_types.h>
+extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS]; // defined in src/main.cc
+#include <mavlink.h>
 
 /**
  * @brief The AP2DataPlotStatus class is a helper class desinged as status type for

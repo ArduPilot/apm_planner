@@ -43,7 +43,6 @@ This file is part of the APM_PLANNER project
 #include "AP2DataPlotThread.h"
 #include "AP2DataPlotStatus.h"
 #include "AP2DataPlotAxisDialog.h"
-#include "common/common.h"
 #include "ui_LogAnalysis.h"
 #include "PresetManager.h"
 

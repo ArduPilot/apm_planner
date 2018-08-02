@@ -43,7 +43,7 @@ MAVLinkProtocol::MAVLinkProtocol():
     m_isOnline(true),
     m_loggingEnabled(false),
     m_throwAwayGCSPackets(false),
-    m_connectionManager(NULL),
+    m_connectionManager(nullptr),
     versionMismatchIgnore(false),
     m_enable_version_check(false)
 {
@@ -75,7 +75,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
 
     for(const auto &data : dataBytes)
     {
-        unsigned int decodeState = mavlink_parse_char(linkId, static_cast<quint8>(data), &message, &status);
+        unsigned int decodeState = mavlink_parse_char(MAVLINK_COMM_0, static_cast<quint8>(data), &message, &status);
 
         if (decodeState == 0 && !decodedFirstPacket)
         {
@@ -102,9 +102,17 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
 
             if (!decodedFirstPacket)
             {
-                // TODO do we need this? Could not really test it?!
                 decodedFirstPacket = true;
-                mavlink_status_t* mavlinkStatus = mavlink_get_channel_status(linkId);
+                mavlink_status_t* mavlinkStatus = mavlink_get_channel_status(MAVLINK_COMM_0);
+                if (mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
+                {
+                    QLOG_INFO() << "Using Mavlink 1.0 for communication";
+                }
+                else
+                {
+                    QLOG_INFO() << "Using Mavlink 2.0 for communication";
+                }
+
                 if (!(mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) && (mavlinkStatus->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1))
                 {
                     QLOG_DEBUG() << "Switching outbound to mavlink 2.0 due to incoming mavlink 2.0 packet:" << mavlinkStatus << linkId << mavlinkStatus->flags;
@@ -156,8 +164,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
             }
 
             // Detect if we are talking to an old radio not supporting v2
-            // TODO To be tested - don't know if this works
-            mavlink_status_t* mavlinkStatus = mavlink_get_channel_status(linkId);
+            mavlink_status_t* mavlinkStatus = mavlink_get_channel_status(MAVLINK_COMM_0);
             if (message.msgid == MAVLINK_MSG_ID_RADIO_STATUS)
             {
                 if ((mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
@@ -221,7 +228,7 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
     UASInterface* uas = m_connectionManager->getUas(message.sysid);
 
     // Check and (if necessary) create UAS object
-    if (uas == NULL && message.msgid == MAVLINK_MSG_ID_HEARTBEAT)
+    if ((uas == nullptr) && (message.msgid == MAVLINK_MSG_ID_HEARTBEAT))
     {
         // ORDER MATTERS HERE!
         // The UAS object has first to be created and connected,
@@ -272,7 +279,7 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
     }
 
     // Only count message if UAS exists for this message
-    if (uas != NULL)
+    if (uas != nullptr)
     {
 
         // Increase receive counter

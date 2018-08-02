@@ -45,7 +45,6 @@ This file is part of the APM_PLANNER project
  */
 #include "MAVLinkDecoder.h"
 #include "MAVLinkProtocol.h"
-//#include "MAVLinkProtocol.h"
 #include <QMap>
 #include <QStringList>
 

@@ -2,7 +2,9 @@
 #define RELPOSITIONOVERVIEW_H
 
 #include <QObject>
-#include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
+#include <mavlink_types.h>
+extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS];  // defined in src/main.cc
+#include <mavlink.h>
 #include "LinkInterface.h"
 
 #define ToRad(x) (x*0.01745329252)      // *pi/180

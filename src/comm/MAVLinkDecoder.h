@@ -36,7 +36,9 @@ This file is part of the APM_PLANNER project
 #define NEW_MAVLINKDECODER_H
 
 #include "logging.h"
-#include "libs/mavlink/include/mavlink/v2.0/ardupilotmega/mavlink.h"
+#include <mavlink_types.h>
+extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS]; // defined in src/main.cc
+#include "mavlink.h"
 #include "LinkInterface.h"
 
 #include <QObject>
