@@ -3610,7 +3610,7 @@ void UAS::addLink(LinkInterface* link)
     {
         links->append(link);
         connect(link, SIGNAL(destroyed(QObject*)), this, SLOT(removeLink(QObject*)));
-        connect(link,SIGNAL(disconnected(QObject*)),this,SLOT(disconnected(QObject*)));
+//        connect(link,SIGNAL(disconnected(QObject*)),this,SLOT(disconnected(QObject*)));
         connect(link,SIGNAL(disconnected()),this,SIGNAL(disconnected()));
         connect(link,SIGNAL(connected()),this,SIGNAL(connected()));
         if(link->isConnected())
