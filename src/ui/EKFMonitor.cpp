@@ -76,7 +76,7 @@ void EKFMonitor::setActiveUAS(UASInterface *uas)
     m_uasInterface = uas;
 
     if (m_uasInterface) {
-        connect(uas,SIGNAL(),this,SLOT(uasTextMessage(int,int,int,QString)));
+//        connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessage(int,int,int,QString)));
 
         VehicleOverview* vehicleOverview = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
         if (vehicleOverview) {

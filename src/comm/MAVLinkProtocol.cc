@@ -68,6 +68,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
     static bool warnedUserNonMavlink = false;
 
     mavlink_message_t message;
+    memset(&message, 0, sizeof(mavlink_message_t));
     mavlink_status_t status;
 
     // Cache the link ID for common use.
@@ -99,28 +100,60 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
 
         if (decodeState == 1)
         {
-
+            mavlink_status_t* mavlinkStatus = mavlink_get_channel_status(MAVLINK_COMM_0);
             if (!decodedFirstPacket)
             {
                 decodedFirstPacket = true;
-                mavlink_status_t* mavlinkStatus = mavlink_get_channel_status(MAVLINK_COMM_0);
+
                 if (mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
                 {
-                    QLOG_INFO() << "Using Mavlink 1.0 for communication";
+                    QLOG_INFO() << "First Mavlink message is version 1.0. Using mavlink 1.0 and ask for mavlink 2.0 capability";
+                    mavlinkStatus->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+
+                    // Request AUTOPILOT_VERSION message to check if vehicle is mavlink 2.0 capable
+                    mavlink_command_long_t command;
+                    mavlink_message_t commandMessage;
+                    uint8_t sendbuffer[MAVLINK_MAX_PACKET_LEN];
+                    command.command = MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES;
+                    command.param1 = 1.0f;
+
+                    mavlink_msg_command_long_encode(message.sysid, message.compid, &commandMessage, &command);
+                    // Write message into buffer, prepending start sign
+                    int len = mavlink_msg_to_send_buffer(sendbuffer, &commandMessage);
+                    link->writeBytes(reinterpret_cast<const char*>(sendbuffer), len);
+                    return;
                 }
                 else
                 {
-                    QLOG_INFO() << "Using Mavlink 2.0 for communication";
-                }
-
-                if (!(mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) && (mavlinkStatus->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1))
-                {
-                    QLOG_DEBUG() << "Switching outbound to mavlink 2.0 due to incoming mavlink 2.0 packet:" << mavlinkStatus << linkId << mavlinkStatus->flags;
+                    QLOG_INFO() << "First Mavlink message is version 2.0. Using Mavlink 2.0 for communication";
                     mavlinkStatus->flags &= ~MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
                 }
             }
 
-            if(message.msgid == MAVLINK_MSG_ID_PING)
+            // Check if we are receiving mavlink 2.0 while sending mavlink 1.0
+            if (!(mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) && (mavlinkStatus->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1))
+            {
+                QLOG_DEBUG() << "Switching outbound to mavlink 2.0 due to incoming mavlink 2.0 packet:" << mavlinkStatus << linkId << mavlinkStatus->flags;
+                mavlinkStatus->flags &= ~MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+            }
+
+            if(message.msgid == MAVLINK_MSG_ID_AUTOPILOT_VERSION)
+            {
+                mavlink_autopilot_version_t version;
+                mavlink_msg_autopilot_version_decode(&message, &version);
+                if(version.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2)
+                {
+                    QLOG_INFO() << "Vehicle reports mavlink 2.0 capability. Using Mavlink 2.0 for communication";
+                    mavlinkStatus->flags &= ~MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+                }
+                else
+                {
+                    QLOG_INFO() << "Vehicle reports mavlink 1.0 capability. Using Mavlink 1.0 for communication";
+                    mavlinkStatus->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+                }
+            }
+
+            else if(message.msgid == MAVLINK_MSG_ID_PING)
             {
                 // process ping requests (tgt_system and tgt_comp must be zero)
                 mavlink_ping_t ping;
@@ -133,7 +166,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
                 }
             }
 
-            if(message.msgid == MAVLINK_MSG_ID_RADIO_STATUS)
+            else if(message.msgid == MAVLINK_MSG_ID_RADIO_STATUS)
             {
                 // process telemetry status message
                 mavlink_radio_status_t rstatus;
@@ -164,8 +197,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
             }
 
             // Detect if we are talking to an old radio not supporting v2
-            mavlink_status_t* mavlinkStatus = mavlink_get_channel_status(MAVLINK_COMM_0);
-            if (message.msgid == MAVLINK_MSG_ID_RADIO_STATUS)
+            else if (message.msgid == MAVLINK_MSG_ID_RADIO_STATUS)
             {
                 if ((mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
                         && !(mavlinkStatus->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1))
