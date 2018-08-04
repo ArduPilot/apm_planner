@@ -234,7 +234,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Lock Pitch and Roll Values</string>
+          <string>Lock Pitch/Roll Values</string>
          </property>
          <property name="checked">
           <bool>false</bool>
@@ -1018,7 +1018,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="decimals">
-                 <number>4</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-10000.000000000000000</double>
@@ -1290,7 +1290,7 @@
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_13">
               <item>
-               <widget class="QLabel" name="label_26">
+               <widget class="QLabel" name="LabelHorVel_P">
                 <property name="text">
                  <string>P</string>
                 </property>
@@ -1300,7 +1300,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_27">
+               <widget class="QLabel" name="LabelHorVel_I">
                 <property name="text">
                  <string>I</string>
                 </property>
@@ -1310,7 +1310,17 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_29">
+               <widget class="QLabel" name="LabelHorVel_D">
+                <property name="text">
+                 <string>D</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="LabelHorVel_IMAX">
                 <property name="text">
                  <string>I_MAX</string>
                 </property>
@@ -1320,7 +1330,10 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_12">
+               <widget class="QLabel" name="LabelHorVel_Filter">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="text">
                  <string>Filter</string>
                 </property>
@@ -1372,7 +1385,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="velXYIMAXSpinBox">
+               <widget class="QDoubleSpinBox" name="velXYDSpinBox">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -1385,10 +1398,29 @@
                 <property name="maximum">
                  <double>10000.000000000000000</double>
                 </property>
+                <property name="singleStep">
+                 <double>0.000100000000000</double>
+                </property>
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="velXYFiltHzSpinBox">
+               <widget class="QDoubleSpinBox" name="velXYIMAXSpinBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="minimum">
+                 <double>-10000.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>10000.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="velXYFilterSpinBox">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>

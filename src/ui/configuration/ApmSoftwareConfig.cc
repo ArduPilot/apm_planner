@@ -694,7 +694,8 @@ void ApmSoftwareConfig::reloadView()
     if (m_uas){
         // Detects if we are using new copter PIDS or old ones
         QVariant returnValue;
-        if (m_uas->getParamManager()->getParameterValue(1, QString("POS_XY_P"), returnValue)){
+        if (m_uas->getParamManager()->getParameterValue(1, QString("POS_XY_P"), returnValue) ||
+            m_uas->getParamManager()->getParameterValue(1, QString("PSC_POSXY_P"), returnValue)){
             // Use New Copter PID UI
             if (m_arduCopterPidConfig){
                 QLOG_DEBUG() << "Destroy Ext Tuning (m_arduCopterPidConfig)";

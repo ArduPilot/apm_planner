@@ -59,7 +59,10 @@ private:
     void showEvent(QShowEvent *evt);
 
     void mapParamNamesToBox();
-    void requestParameterUpdate();
+
+    void setupPID_Default();
+    void setupPID_APM_34();
+    void setupPID_APM_36();
 
 private:
     bool m_pitchRollLocked;
@@ -68,28 +71,8 @@ private:
     QMap<QString,QDoubleSpinBox*> m_nameToBoxMap;
     Ui::CopterPidConfig ui;
 
-    QString stb_rll_p;
-    QString stb_pit_p;
-    QString stb_yaw_p;
-
-    QString rate_rll_p;
-    QString rate_rll_i;
-    QString rate_rll_imax;
-    QString rate_rll_d;
-    QString rate_rll_filt_hz;
-
-    QString rate_pit_p;
-    QString rate_pit_i;
-    QString rate_pit_imax;
-    QString rate_pit_d;
-    QString rate_pit_filt_hz;
-
-    QString rate_yaw_p;
-    QString rate_yaw_i;
-    QString rate_yaw_imax;
-    QString rate_yaw_d;
-    QString rate_yaw_filt_hz;
-
+    QString m_channel7Option;
+    QString m_channel8Option;
 };
 
 #endif // COPTERPIDCONFIG_H
