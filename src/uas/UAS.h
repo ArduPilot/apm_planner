@@ -1056,6 +1056,7 @@ protected:
     quint64 lastSendTimeGPS;     ///< Last HIL GPS message sent
     quint64 lastSendTimeSensors;
 
+    QMutex requestQueueMutex;
     QList< QPair<int, QString> >  paramRequestQueue;
 
     QTimer m_parameterSendTimer;
