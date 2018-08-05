@@ -2713,12 +2713,25 @@ void UAS::requestNextParamFromQueue()
 */
 void UAS::requestParameter(int component, const QString& parameter)
 {
-    QLOG_DEBUG() << "Queuing param " << parameter;
-    QPair<int,QString> p = QPair<int,QString>(component, parameter);
+    if(parameters.contains(component))
+    {
+        QMap<QString, QVariant>* p_componentParams = parameters[component];
 
-    QMutexLocker lock(&requestQueueMutex);
-    paramRequestQueue.append(p);
-    m_parameterSendTimer.start();
+        if(p_componentParams->contains(parameter))
+        {
+            QLOG_DEBUG() << "Using param " << parameter << " from cache";
+            emit parameterChanged(uasId, component, parameter, p_componentParams->value(parameter));
+        }
+    }
+    else
+    {
+        QLOG_DEBUG() << "Queuing param " << parameter << " for fetching";
+        QPair<int,QString> p = QPair<int,QString>(component, parameter);
+
+        QMutexLocker lock(&requestQueueMutex);
+        paramRequestQueue.append(p);
+        m_parameterSendTimer.start();
+    }
 }
 
 /**
