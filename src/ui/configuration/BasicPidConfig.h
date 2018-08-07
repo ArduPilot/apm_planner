@@ -64,6 +64,10 @@ private:
 
     QString thr_accel_p;
     QString thr_accel_i;
+    QString thr_mid;
+
+    QString mot_thrust_hover;
+    QString rc_feel_rp;
 
     bool m_use_mot_thst_hover; // if AC3.4-rc2+ use this varible set.
 };
