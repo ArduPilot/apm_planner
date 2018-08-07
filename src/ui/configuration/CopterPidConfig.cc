@@ -155,6 +155,8 @@ CopterPidConfig::CopterPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 
 void CopterPidConfig::mapParamNamesToBox()
 {
+    // TODO: Move to baseclass and syncronize with BasicPidConfig class
+    // as it uses exactly the same mechanics
     // version check
     ArduPilotMegaMAV* apmMav = dynamic_cast<ArduPilotMegaMAV*>(m_uas);
     if (apmMav == nullptr)

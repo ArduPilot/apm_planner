@@ -78,31 +78,84 @@ void BasicPidConfig::requestParameterUpdate()
             << rate_rll_d
             << thr_accel_p
             << thr_accel_i
-            << "THR_MID"
-            << "MOT_THST_HOVER"
-            << "RC_FEEL_RP";
+            << thr_mid
+            << mot_thrust_hover
+            << rc_feel_rp;
 
     m_use_mot_thst_hover = false; // Set true is MOT_THST_HOVER retruns a value.
 
     QLOG_DEBUG() << "Basic Tuning Params (fetch): " << params;
-
     QGCUASParamManager *pm = m_uas->getParamManager();
-    foreach(QString parameter, params) {
+    for (const auto &parameter : params)
+    {
         pm->requestParameterUpdate(1, parameter);
     };
 }
 
 void BasicPidConfig::mapParamNames()
 {
-
-    // AC3.4+ param name compatibility
-    ArduPilotMegaMAV* apmMav = static_cast<ArduPilotMegaMAV*>(m_uas);
-    if (apmMav == NULL) {
+    // TODO: Move to baseclass and syncronize with CopterPidConfig class
+    // as it uses exactly the same mechanics
+    // version check
+    ArduPilotMegaMAV* apmMav = dynamic_cast<ArduPilotMegaMAV*>(m_uas);
+    if (apmMav == nullptr)
+    {
+        QLOG_INFO() << "BasicPidConfig Class only supports ArduPilotMegaMAV vehicles.";
         return;
     }
 
-    // AC3.4+ param name compatibility
-    if (!apmMav->useSeverityCompatibilityMode()) {
+    APMFirmwareVersion version = apmMav->getFirmwareVersion();
+    QLOG_DEBUG() << "Basic Tuning - Config is set up for " << version.versionString();
+
+    if(version.majorNumber() == 3)
+    {
+        if(version.minorNumber() >= 6)
+        {
+            QLOG_DEBUG() << "Using parameter set for ArduCopter 3.6+";
+            rate_rll_p = "ATC_RAT_RLL_P"; //  "RATE_RLL_P";
+            rate_rll_i = "ATC_RAT_RLL_I"; //  "RATE_RLL_I";
+            rate_rll_d = "ATC_RAT_RLL_D"; //  "RATE_RLL_D";
+
+            rate_pit_p = "ATC_RAT_PIT_P"; //  "RATE_PIT_P";
+            rate_pit_i = "ATC_RAT_PIT_I"; //  "RATE_PIT_I";
+            rate_pit_d = "ATC_RAT_PIT_D"; //  "RATE_PIT_D";
+
+            thr_accel_p = "PSC_ACCZ_P"; // THR_ACCEL_P
+            thr_accel_i = "PSC_ACCZ_I";  // THR_ACCEL_I
+            thr_mid     = "THR_MID";
+
+            mot_thrust_hover = "MOT_THST_HOVER";
+            rc_feel_rp       = "ATC_INPUT_TC";      // since ArduCopter 3.6
+
+            // has new scaling and different description since ArduCopter 3.6
+            m_rcFeelWidget->setupDouble(QString("RC Feel Roll/Pitch"), tr("Attitude control input time constant (aka smoothing). Low numbers lead to sharper response, higher numbers to softer response.\nVery Smooth=1.0 / No Smothing=0.0")
+                                               ,0.5,0.0,1.0,0.000001);
+
+        }
+        else if(version.minorNumber() >= 4)
+        {
+            QLOG_DEBUG() << "Using parameter set for ArduCopter 3.4+";
+
+            rate_rll_p = "ATC_RAT_RLL_P"; //  "RATE_RLL_P";
+            rate_rll_i = "ATC_RAT_RLL_I"; //  "RATE_RLL_I";
+            rate_rll_d = "ATC_RAT_RLL_D"; //  "RATE_RLL_D";
+
+            rate_pit_p = "ATC_RAT_PIT_P"; //  "RATE_PIT_P";
+            rate_pit_i = "ATC_RAT_PIT_I"; //  "RATE_PIT_I";
+            rate_pit_d = "ATC_RAT_PIT_D"; //  "RATE_PIT_D";
+
+            thr_accel_p = "ACCEL_Z_P"; // THR_ACCEL_P
+            thr_accel_i = "ACCEL_Z_I"; // THR_ACCEL_I
+            thr_mid     = "THR_MID";
+
+            mot_thrust_hover = "MOT_THST_HOVER";
+            rc_feel_rp       = "RC_FEEL_RP";
+        }
+    }
+    else
+    {
+        QLOG_DEBUG() << "Using default parameter set";
+
         rate_rll_p = "RATE_RLL_P";
         rate_rll_i = "RATE_RLL_I";
         rate_rll_d = "RATE_RLL_D";
@@ -113,18 +166,11 @@ void BasicPidConfig::mapParamNames()
 
         thr_accel_p = "THR_ACCEL_P";
         thr_accel_i = "THR_ACCEL_I";
-    } else {
-        // New AC3.4 tuning param names.
-        rate_rll_p = "ATC_RAT_RLL_P"; //  "RATE_RLL_P";
-        rate_rll_i = "ATC_RAT_RLL_I"; //  "RATE_RLL_I";
-        rate_rll_d = "ATC_RAT_RLL_D"; //  "RATE_RLL_D";
+        thr_mid     = "THR_MID";
 
-        rate_pit_p = "ATC_RAT_PIT_P"; //  "RATE_PIT_P";
-        rate_pit_i = "ATC_RAT_PIT_I"; //  "RATE_PIT_I";
-        rate_pit_d = "ATC_RAT_PIT_D"; //  "RATE_PIT_D";
+        mot_thrust_hover = "MOT_THST_HOVER";
+        rc_feel_rp       = "RC_FEEL_RP";
 
-        thr_accel_p = "ACCEL_Z_P"; // THR_ACCEL_P
-        thr_accel_i = "ACCEL_Z_I"; // THR_ACCEL_I
     }
 }
 
@@ -181,12 +227,12 @@ void BasicPidConfig::tHValueChanged(QString name,int value)
 
     if (m_use_mot_thst_hover) {
         float mot_thst_hover = value / 100.0;
-        QLOG_DEBUG() << "mot_thst_hover: " << mot_thst_hover;
-        m_uas->getParamManager()->setParameter(1,"MOT_THST_HOVER", mot_thst_hover);
+        QLOG_DEBUG() << mot_thrust_hover << ":" << mot_thst_hover;
+        m_uas->getParamManager()->setParameter(1, mot_thrust_hover, mot_thst_hover);
     } else {
         float throtle_mid = value * 10.0;
-        QLOG_DEBUG() << "throttle_mid: " << throtle_mid;
-        m_uas->getParamManager()->setParameter(1,"THR_MID", throtle_mid);
+        QLOG_DEBUG() << thr_mid << ":" << throtle_mid;
+        m_uas->getParamManager()->setParameter(1, thr_mid, throtle_mid);
     }
 
 }
@@ -200,7 +246,7 @@ void BasicPidConfig::rcFeelValueChanged(QString name, int value)
         showNullMAVErrorMessageBox();
         return;
     }
-    m_uas->getParamManager()->setParameter(1,"RC_FEEL_RP",value);
+    m_uas->getParamManager()->setParameter(1, rc_feel_rp, value);
 }
 
 BasicPidConfig::~BasicPidConfig()
@@ -214,29 +260,29 @@ void BasicPidConfig::parameterChanged(int uas, int component, QString parameterN
 
     if (parameterName == rate_rll_p)
     {
-        QLOG_DEBUG() << "BasicPID: " << rate_rll_p << ":" << value.toDouble();
+        QLOG_DEBUG() << "BasicPID: " << parameterName << ":" << value.toDouble();
         m_rollPitchRateWidget->setValue(value.toDouble());
     }
     else if (parameterName == thr_accel_p)
     {
-        QLOG_DEBUG() << "BasicPID: " << thr_accel_p << ":" << value.toDouble();
+        QLOG_DEBUG() << "BasicPID: " << parameterName << ":" << value.toDouble();
         m_throttleAccelWidget->setValue(value.toDouble());
     }
-    else if (parameterName == "THR_MID")
+    else if (parameterName == thr_mid)
     {
         QLOG_DEBUG() << "BasicPID: " << parameterName << ":" << value.toInt();
         m_throttleHoverWidget->setValue(value.toFloat() / 10.0);
         m_use_mot_thst_hover = false;
     }
-    else if (parameterName == "MOT_THST_HOVER")
+    else if (parameterName == mot_thrust_hover)
     {
         QLOG_DEBUG() << "BasicPID: " << parameterName << ":" << value.toFloat();
         m_throttleHoverWidget->setValue(value.toFloat() * 100.0);
         m_use_mot_thst_hover = true;
     }
-    else if (parameterName == "RC_FEEL_RP")
+    else if (parameterName == rc_feel_rp)
     {
-        QLOG_DEBUG() << "BasicPID: RC_FEEL_RP:" << value.toInt();
-        m_rcFeelWidget->setValue(value.toInt());
+        QLOG_DEBUG() << "BasicPID: " << parameterName << ":" << value.toDouble();
+        m_rcFeelWidget->setValue(value.toDouble());
     }
 }
