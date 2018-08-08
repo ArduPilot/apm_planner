@@ -128,7 +128,7 @@ void BasicPidConfig::mapParamNames()
             rc_feel_rp       = "ATC_INPUT_TC";      // since ArduCopter 3.6
 
             // has new scaling and different description since ArduCopter 3.6
-            m_rcFeelWidget->setupDouble(QString("RC Feel Roll/Pitch"), tr("Attitude control input time constant (aka smoothing). Low numbers lead to sharper response, higher numbers to softer response.\nVery Smooth=1.0 / No Smothing=0.0")
+            m_rcFeelWidget->setupDouble(QString("RC Feel Roll/Pitch"), tr("Attitude control input time constant (aka smoothing). Low numbers lead to sharper response, higher numbers to softer response.\nVery soft = 1.0 / Very sharp = 0.0")
                                                ,0.5,0.0,1.0,0.000001);
 
         }
