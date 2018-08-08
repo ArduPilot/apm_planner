@@ -1357,6 +1357,19 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_msg_terrain_request_decode(&message, &terrainRequest);
 
             QLOG_INFO() << QString("Terrain Request: lat%1,lon%2 %3").arg(terrainRequest.lat).arg(terrainRequest.lon).arg(terrainRequest.grid_spacing);
+            break;
+        }
+        case MAVLINK_MSG_ID_TIMESYNC:
+        {
+            mavlink_timesync_t timeSync;
+            mavlink_msg_timesync_decode(&message, &timeSync);
+            timeSync.tc1 = QDateTime::currentDateTime().toTime_t() * 1000 + QTime::currentTime().msec();
+//            QLOG_DEBUG() << "timesync tc1:" << timeSync.tc1 << " ts1:" << timeSync.ts1;
+
+            mavlink_message_t answer;
+            mavlink_msg_timesync_encode(message.sysid, message.compid, &answer, &timeSync);
+            sendMessage(answer);
+            break;
         }
 
         // Messages to ignore
@@ -1369,6 +1382,8 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         case MAVLINK_MSG_ID_NAMED_VALUE_INT:
         case MAVLINK_MSG_ID_MANUAL_CONTROL:
         case MAVLINK_MSG_ID_HIGHRES_IMU:
+        case MAVLINK_MSG_ID_EKF_STATUS_REPORT:
+        case MAVLINK_MSG_ID_VIBRATION:
             break;
         default:
         {
