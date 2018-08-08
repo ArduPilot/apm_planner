@@ -54,16 +54,14 @@ LinkManager* LinkManager::instance()
 
 LinkManager::LinkManager(QObject *parent) :
     QObject(parent),
-    m_mavlinkDecoder(0),
-    m_mavlinkProtocol(0),
     m_mavlinkLoggingEnabled(true)
 {
-    m_mavlinkDecoder = new MAVLinkDecoder(this);
-    m_mavlinkProtocol = new MAVLinkProtocol();
+    m_mavlinkDecoder.reset(new MAVLinkDecoder(this));
+    m_mavlinkProtocol.reset(new MAVLinkProtocol());
     m_mavlinkProtocol->setConnectionManager(this);
-    connect(m_mavlinkProtocol,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
-    connect(m_mavlinkProtocol,SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),this,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
-    connect(m_mavlinkProtocol,SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
+    connect(m_mavlinkProtocol.data(),SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),m_mavlinkDecoder.data(),SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+    connect(m_mavlinkProtocol.data(),SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)),this,SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+    connect(m_mavlinkProtocol.data(),SIGNAL(protocolStatusMessage(QString,QString)),this,SLOT(protocolStatusMessageRec(QString,QString)));
 
     QTimer::singleShot(500, this, SLOT(reloadSettings()));
 }
@@ -108,15 +106,14 @@ void LinkManager::stopLogging()
 
 LinkManager::~LinkManager()
 {
-    saveSettings();
+
 }
 
 void LinkManager::shutdown()
 {  
-    m_mavlinkDecoder->deleteLater();
-    m_mavlinkDecoder = 0;
-    m_mavlinkProtocol->deleteLater();
-    m_mavlinkProtocol = 0;
+    saveSettings();
+    m_mavlinkDecoder.reset();
+    m_mavlinkProtocol.reset();
 }
 
 void LinkManager::loadSettings()
@@ -185,6 +182,8 @@ void LinkManager::loadSettings()
 
 void LinkManager::saveSettings()
 {
+    QSet<QString> knownHosts;
+
     QSettings settings;
     settings.beginGroup("LINKMANAGER");
     settings.setValue("LOGGING",m_mavlinkLoggingEnabled);
@@ -206,11 +205,19 @@ void LinkManager::saveSettings()
             UDPLink *link = qobject_cast<UDPLink*>(i.value());
             settings.setValue("type","UDP_LINK");
             settings.beginWriteArray("HOSTS");
+            int storageCount = 0;
             for (int j=0;j<link->getHosts().size();j++)
             {
-                settings.setArrayIndex(j);
-                settings.setValue("host",link->getHosts().at(j).toString());
-                settings.setValue("port",link->getPorts().at(j));
+                QString hostName = link->getHosts().at(j).toString();
+                hostName.append(':');
+                hostName.append(QString::number(link->getPorts().at(j)));
+                if(!knownHosts.contains(hostName))
+                {
+                    knownHosts.insert(hostName);
+                    settings.setArrayIndex(storageCount++);
+                    settings.setValue("host",link->getHosts().at(j).toString());
+                    settings.setValue("port",link->getPorts().at(j));
+                }
             }
             settings.endArray();
             settings.setValue("port",link->getPort());
@@ -299,7 +306,7 @@ void LinkManager::startLogging()
 
 MAVLinkProtocol* LinkManager::getProtocol() const
 {
-    return m_mavlinkProtocol;
+    return m_mavlinkProtocol.data();
 }
 
 LinkInterface::LinkType LinkManager::getLinkType(int linkid)
@@ -321,14 +328,14 @@ void LinkManager::addLink(LinkInterface *link)
 
 LinkInterface* LinkManager::getLink(int linkId) const
 {
-    return m_connectionMap.value(linkId, 0);
+    return m_connectionMap.value(linkId, nullptr);
 }
 
 void LinkManager::removeLink(LinkInterface *link)
 {
    // This is called with a LINK_ID not an interface. needs mor rework
     //This function is not yet supported, it will be once we support multiple MAVs
-    Q_ASSERT(link == NULL); // This shoud not be called, assert if it anything but NULL
+    Q_ASSERT(link == nullptr); // This shoud not be called, assert if it anything but NULL
 }
 
 void LinkManager::removeLink(int linkId)
@@ -366,7 +373,6 @@ void LinkManager::linkUpdated(LinkInterface *link)
 {
     emit linkChanged(link);
     emit linkChanged(link->getId());
-    saveSettings(); // [todo] may need to verify if this is needed always (refactor to link objects)
 }
 
 QString LinkManager::getLinkName(int linkid)
@@ -464,7 +470,7 @@ UASInterface* LinkManager::getUas(int id)
     {
         return m_uasMap.value(id);
     }
-    return 0;
+    return nullptr;
 }
 QList<int> LinkManager::getLinks() const
 {
@@ -496,9 +502,9 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     {
     case MAV_AUTOPILOT_GENERIC:
     {
-        UAS* mav = new UAS(0, sysid);
+        UAS* mav = new UAS(nullptr, sysid);
         // Set the system type
-        mav->setSystemType((int)heartbeat->type);
+        mav->setSystemType(static_cast<int>(heartbeat->type));
         // Connect this robot to the UAS object
         connect(mavlink, SIGNAL(messageReceived(LinkInterface*, mavlink_message_t)), mav, SLOT(receiveMessage(LinkInterface*, mavlink_message_t)));
 #ifdef QGC_PROTOBUF_ENABLED
@@ -525,9 +531,9 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
 //    break;
     case MAV_AUTOPILOT_SLUGS:
     {
-        SlugsMAV* mav = new SlugsMAV(0, sysid);
+        SlugsMAV* mav = new SlugsMAV(nullptr, sysid);
         // Set the system type
-        mav->setSystemType((int)heartbeat->type);
+        mav->setSystemType(static_cast<int>(heartbeat->type));
         // Connect this robot to the UAS object
         // it is IMPORTANT here to use the right object type,
         // else the slot of the parent object is called (and thus the special
@@ -538,10 +544,10 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     break;
     case MAV_AUTOPILOT_ARDUPILOTMEGA:
     {
-        ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(0, sysid);
+        ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(nullptr, sysid);
 
         // Set the system type
-        mav->setSystemType((int)heartbeat->type);
+        mav->setSystemType(static_cast<int>(heartbeat->type));
         // Connect this robot to the UAS object
         // it is IMPORTANT here to use the right object type,
         // else the slot of the parent object is called (and thus the special
@@ -562,8 +568,8 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
 #endif
     default:
     {
-        UAS* mav = new UAS(0, sysid);
-        mav->setSystemType((int)heartbeat->type);
+        UAS* mav = new UAS(nullptr, sysid);
+        mav->setSystemType(static_cast<int>(heartbeat->type));
         // Connect this robot to the UAS object
         // it is IMPORTANT here to use the right object type,
         // else the slot of the parent object is called (and thus the special
@@ -581,7 +587,7 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     m_uasMap.insert(sysid,uas);
 
     // Set the autopilot type
-    uas->setAutopilotType((int)heartbeat->autopilot);
+    uas->setAutopilotType(static_cast<int>(heartbeat->autopilot));
 
     // Make UAS aware that this link can be used to communicate with the actual robot
     uas->addLink(link);
@@ -598,7 +604,7 @@ UASObject *LinkManager::getUasObject(int uasid)
     {
         return m_uasObjectMap.value(uasid);
     }
-    return 0;
+    return nullptr;
 }
 
 void LinkManager::protocolStatusMessageRec(QString title,QString text)
