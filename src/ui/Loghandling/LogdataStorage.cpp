@@ -353,7 +353,7 @@ bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector
 
     const int timeStampIndex = type.m_timeStampIndex;
     double multiplier = qQNaN();                        // Unknown multiplier is always qQNaN
-    if(type.m_multipliers.size() >= valueIndex)
+    if(type.m_multipliers.size() > valueIndex)
     {
         multiplier  = type.m_multipliers[valueIndex];
     }
