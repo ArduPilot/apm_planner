@@ -60,10 +60,6 @@ public:
 
 protected:
 
-    static const quint8 s_UNITMessageType = 0xE5; /// Type Id of the unit (UNIT) message
-    static const quint8 s_MULTMessageType = 0xE6; /// Type Id of the multiplier (MULT) message
-    static const quint8 s_FMTUMessageType = 0xE4; /// Type Id of the Format unit multiplier (FMTU) message
-
     /**
      * @brief The timeStampType struct
      *        Used to hold the name and the scaling of a time stamp.
@@ -140,6 +136,11 @@ protected:
     AP2DataPlotStatus m_logLoadingState;    /// State of the parser
 
     timeStampType m_activeTimestamp;        /// the detected timestamp used for parsing
+
+    quint32 m_idUnitMessage;                /// to store the Type Id of the unit (UNIT) message
+    quint32 m_idMultMessage;                /// to store the Type Id of the multiplier (MULT) message
+    quint32 m_idFMTUMessage;                /// to store the Type Id of the Format unit multiplier (FMTU) message
+
     bool m_hasUnitData;                     /// True if parsed log contains unit data
 
 
@@ -201,6 +202,13 @@ protected:
      * @return - valid time stamp
      */
     quint64 nextValidTimestamp();
+
+    /**
+     * @brief specialDescriptorHandling does some extra handling for speial descriptor. As some
+     *        message types need special treatment and / or deliver special information they can
+     *        be handled inside this method.
+     */
+    void specialDescriptorHandling(typeDescriptor &desc);
 
 
 private:

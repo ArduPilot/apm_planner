@@ -89,6 +89,9 @@ LogParserBase::LogParserBase(LogdataStorage::Ptr storagePtr, IParserCallback *ob
     m_stop(false),
     m_MessageCounter(0),
     m_loadedLogType(MAV_TYPE_GENERIC),
+    m_idUnitMessage(typeDescriptor::s_InvalidID),
+    m_idMultMessage(typeDescriptor::s_InvalidID),
+    m_idFMTUMessage(typeDescriptor::s_InvalidID),
     m_hasUnitData(false),
     m_timeErrorCount(0),
     m_highestTimestamp(0),
@@ -180,13 +183,13 @@ bool LogParserBase::extendedStoreNameValuePairList(QList<NameValuePair> &NameVal
 {
     bool retCode = true;
     // Store unit related information
-    if(desc.m_ID == s_UNITMessageType)
+    if(desc.m_ID == m_idUnitMessage)
     {
         // Unit data contains unit ID on index 1 and Unit Name on index 2
         quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
         m_dataStoragePtr->addUnitData(id, NameValuePairList[2].second.toString());
     }
-    else if(desc.m_ID == s_MULTMessageType)
+    else if(desc.m_ID == m_idMultMessage)
     {
         // Multiplier data contains unit ID on index 1 and the multiplier on index 2
         quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
@@ -198,7 +201,7 @@ bool LogParserBase::extendedStoreNameValuePairList(QList<NameValuePair> &NameVal
         }
         m_dataStoragePtr->addMultiplierData(id, multi);
     }
-    else if(desc.m_ID == s_FMTUMessageType)
+    else if(desc.m_ID == m_idFMTUMessage)
     {
         QByteArray multiplierField(NameValuePairList[3].second.toByteArray());
         QByteArray unitField(NameValuePairList[2].second.toByteArray());
@@ -356,4 +359,27 @@ bool LogParserBase::repairMessage(QList<NameValuePair> &NameValuePairList, const
 quint64 LogParserBase::nextValidTimestamp()
 {
     return m_highestTimestamp - m_timestampOffset;
+}
+
+void LogParserBase::specialDescriptorHandling(typeDescriptor &desc)
+{
+    if(desc.m_name == "GPS" && !desc.m_labels.contains("GPSTimeMS"))
+    {
+        // Special handling for "GPS" messages that have a "TimeMS"
+        // timestamp but scaling and value does not mach all other time stamps
+        desc.replaceLabelName("TimeMS", "GPSTimeMS");
+    }
+    // Store IDs of UNIT, MULT and FMTU messages to use them later
+    else if(desc.m_name == "UNIT")
+    {
+        m_idUnitMessage = desc.m_ID;
+    }
+    else if(desc.m_name == "MULT")
+    {
+        m_idMultMessage = desc.m_ID;
+    }
+    else if(desc.m_name == "FMTU")
+    {
+        m_idFMTUMessage = desc.m_ID;
+    }
 }
