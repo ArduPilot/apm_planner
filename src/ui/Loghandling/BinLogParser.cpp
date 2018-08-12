@@ -112,12 +112,8 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
                 binDescriptor descriptor;
                 if(parseFMTMessage(descriptor))
                 {
-                    if(descriptor.m_name == "GPS")
-                    {
-                        // Special handling for "GPS" messages that have a "TimeMS"
-                        // timestamp but scaling and value does not mach all other time stamps
-                        descriptor.replaceLabelName("TimeMS", "GPSTimeMS");
-                    }
+                    // do some special handling if needed
+                    specialDescriptorHandling(descriptor);
                     if(m_activeTimestamp.valid())
                     {
                         descriptor.finalize(m_activeTimestamp);

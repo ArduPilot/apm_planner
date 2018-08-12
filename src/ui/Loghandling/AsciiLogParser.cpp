@@ -106,12 +106,8 @@ AP2DataPlotStatus AsciiLogParser::parse(QFile &logfile)
                 asciiDescriptor descriptor;
                 if(parseFMTMessage(descriptor))
                 {
-                    if(descriptor.m_name == "GPS" && !descriptor.m_labels.contains("GPSTimeMS"))
-                    {
-                        // Special handling for "GPS" messages that have a "TimeMS"
-                        // timestamp but scaling and value does not mach all other time stamps
-                        descriptor.replaceLabelName("TimeMS", "GPSTimeMS");
-                    }
+                    // do some special handling if needed
+                    specialDescriptorHandling(descriptor);
                     if(m_activeTimestamp.valid())
                     {
                         descriptor.finalize(m_activeTimestamp);
