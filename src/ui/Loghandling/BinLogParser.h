@@ -65,9 +65,7 @@ public:
 private:
 
     static const quint8 s_FMTMessageType  = 0x80; /// Type Id of the format (FMT) message
-    static const quint8 s_STRTMessageType = 0x0A; /// Type Id of the Start (STRT) message
-
-
+ 
     static const int s_MinHeaderSize = 5;        /// Minimal size to be able to start parsing
     static const int s_HeaderOffset  = 3;        /// byte offset after successful header parsing
     static const quint8 s_StartByte1 = 0xA3;     /// Startbyte 1 is always first byte in one message

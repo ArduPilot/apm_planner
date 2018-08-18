@@ -44,7 +44,7 @@ bool BinLogParser::binDescriptor::isValid() const
                (m_format.size() > 0) && (m_labels.size() > 0);
     }
     // STRT message has also a special behaviour as it has no data fields in older logs.
-    else if(m_ID == BinLogParser::s_STRTMessageType)
+    else if(m_name == "STRT")
     {
         if(m_format.size() == 0 && m_length == 3)
         {
