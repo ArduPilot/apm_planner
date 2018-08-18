@@ -71,10 +71,10 @@ public:
 #ifdef _MSC_VER
     const QVector<uint16_t>& operator()(int i) const;
 #else
-    const QVector<uint16_t>& operator()(int i) const throw(std::out_of_range);
+    const QVector<uint16_t>& operator()(int i) const;
 #endif
     void set(int element, int index, float value) {
-        (*data)[element][index] = value;
+        (*data)[element][index] = static_cast<uint16_t>(value);
     }
 
 public slots:

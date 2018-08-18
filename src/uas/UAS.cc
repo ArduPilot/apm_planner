@@ -1012,6 +1012,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
                 break;
             }
         }
+            break;
         case MAVLINK_MSG_ID_MISSION_COUNT:
         {
             mavlink_mission_count_t wpc;

@@ -44,10 +44,10 @@ const uint16_t* RadioCalibrationData::operator [](int i) const
         return (*data)[i].constData();
     }
 
-    return NULL;
+    return nullptr;
 }
 
-const QVector<uint16_t>& RadioCalibrationData::operator ()(const int i) const throw(std::out_of_range)
+const QVector<uint16_t>& RadioCalibrationData::operator ()(const int i) const
 {
     if ((i < data->size()) && (i >=0)) {
         return (*data)[i];
