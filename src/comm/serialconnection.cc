@@ -37,7 +37,7 @@ This file is part of the APM_PLANNER project
 #include <QStringList>
 #include <QTimer>
 SerialConnection::SerialConnection() : SerialLinkInterface(),
-    m_port(0),
+    m_port(nullptr),
     m_isConnected(false),
     m_retryCount(0),
     m_timeoutsEnabled(true),
@@ -89,6 +89,7 @@ void SerialConnection::portError(QSerialPort::SerialPortError serialPortError)
                 break;
             }
         }
+    [[clang::fallthrough]];
     case QSerialPort::ResourceError:
         {
             // In case of error disconnect from error signal to avoid endless looping

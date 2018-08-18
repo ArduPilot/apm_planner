@@ -159,7 +159,7 @@ void CompassMotorCalibrationDialog::okButtonClicked()
 void CompassMotorCalibrationDialog::cancelCalibration()
 {
     if(m_uasInterface){
-        m_uasInterface->executeCommandAck(MAV_CMD_PREFLIGHT_CALIBRATION, MAV_RESULT_FAILED);
+        m_uasInterface->executeCommandAck(MAV_CMD_PREFLIGHT_CALIBRATION, true);
     }
 }
 

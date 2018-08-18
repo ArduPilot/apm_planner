@@ -684,6 +684,8 @@ void Radio3DRSettings::readData()
         break;
     case error:
         QLOG_DEBUG() << "Error: " << m_serialPort->errorString();
+        m_state = complete;
+        break;
     case none:
     case complete:
     default:
