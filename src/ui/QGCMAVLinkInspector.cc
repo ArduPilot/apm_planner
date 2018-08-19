@@ -201,6 +201,13 @@ void QGCMAVLinkInspector::clearView()
 
 void QGCMAVLinkInspector::refreshView()
 {
+
+    QString message(QString::number(m_mavlink_status[0].packet_rx_success_count));
+    ui->msg_received->setText(message);
+    message.clear();
+    message.append(QString::number(m_mavlink_status[0].packet_rx_drop_count));
+    ui->msg_lost->setText(message);
+
     QMap<int, mavlink_message_t* >::const_iterator ite;
 
     for(ite=uasMessageStorage.constBegin(); ite!=uasMessageStorage.constEnd();++ite)
