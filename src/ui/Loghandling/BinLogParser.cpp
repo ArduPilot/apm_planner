@@ -330,7 +330,7 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
             {
                 // Check if its a soft/quiet or a hard/signalling NaN
                 const quint32 *valPtr = reinterpret_cast<quint32*>(&val);
-                if (*valPtr != s_FloatSoftNaN)
+                if (*valPtr == s_FloatHardNaN)
                 {
                     QLOG_WARN() << "Float resolves to hard NaN - This is a serious log error as data is corrupted."
                                 << "Graphing may not work as expected for data of type " << desc.m_name;
@@ -352,7 +352,7 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
             {
                 // Check if its a soft/quiet or a hard/signalling NaN
                 const quint64 *valPtr = reinterpret_cast<quint64*>(&val);
-                if (*valPtr != s_DoubleSoftNaN)
+                if (*valPtr == s_DoubleHardNaN)
                 {
                     QLOG_WARN() << "Double resolves to hard NaN - This is a serious log error as data is corrupted."
                                 << "Graphing may not work as expected for data of type " << desc.m_name;
