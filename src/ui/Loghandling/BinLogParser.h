@@ -75,8 +75,8 @@ private:
     static const int s_FMTFormatSize = 16;       /// Size of the format field in FMT message
     static const int s_FMTLabelsSize = 64;       /// Size of the comma delimited names field in FMT message
 
-    static const quint32 s_FloatSoftNaN  = 0x7FC04152;         /// Value to detect a quiet/soft float NaN from ardupilot
-    static const quint64 s_DoubleSoftNaN = 0x7FF952445550490A; /// Value to detect a quiet/soft double NaN from ardupilot
+    static const quint32 s_FloatHardNaN  = 0x7FC00000;         /// Value to detect a quiet/soft float NaN from ardupilot
+    static const quint64 s_DoubleHardNaN = 0x7FF8000000000000; /// Value to detect a quiet/soft double NaN from ardupilot
 
 
     /**
