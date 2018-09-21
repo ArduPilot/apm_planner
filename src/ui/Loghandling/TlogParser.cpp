@@ -406,12 +406,12 @@ bool TlogParser::extractModeMessage(const QList<NameValuePair> &NameValuePairLis
     // a heartbeat message. So here we extract MODE data from heartbeat
 
     // Only if mode val has canged
-    if (m_lastModeVal != static_cast<quint8>(NameValuePairList[1].second.toInt()))
+    if (m_lastModeVal != static_cast<quint8>(NameValuePairList[4].second.toInt()))
     {
         QList<NameValuePair> modeValuePairlist;
         tlogDescriptor modeDesc = m_nameToDescriptorMap.value(ModeMessage::TypeName);
         // Extract MODE messages from heartbeat messages
-        m_lastModeVal = static_cast<quint8>(NameValuePairList[1].second.toInt());
+        m_lastModeVal = static_cast<quint8>(NameValuePairList[4].second.toInt());
 
         modeValuePairlist.append(QPair<QString, QVariant>(modeDesc.m_labels[0], nextValidTimestamp()));
         modeValuePairlist.append(QPair<QString, QVariant>(modeDesc.m_labels[1], m_lastModeVal));
