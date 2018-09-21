@@ -911,6 +911,37 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             emit homePositionChanged(uasId, pos.latitude / 10000000.0, pos.longitude / 10000000.0, pos.altitude / 1000.0);
         }
             break;
+        case MAVLINK_MSG_ID_RC_CHANNELS:
+        {
+            mavlink_rc_channels_t channels;
+            mavlink_msg_rc_channels_decode(&message, &channels);
+
+            if(channels.rssi <= 100)
+                emit remoteControlRSSIChanged(channels.rssi);
+            else
+                emit remoteControlRSSIChanged(0);
+
+            if (channels.chan1_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(0, channels.chan1_raw);
+            if (channels.chan2_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(1, channels.chan2_raw);
+            if (channels.chan3_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(2, channels.chan3_raw);
+            if (channels.chan4_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(3, channels.chan4_raw);
+            if (channels.chan5_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(4, channels.chan5_raw);
+            if (channels.chan6_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(5, channels.chan6_raw);
+            if (channels.chan7_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(6, channels.chan7_raw);
+            if (channels.chan8_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(7, channels.chan8_raw);
+            if (channels.chan9_raw != UINT16_MAX)  emit remoteControlChannelRawChanged(8, channels.chan9_raw);
+            if (channels.chan10_raw != UINT16_MAX) emit remoteControlChannelRawChanged(9, channels.chan10_raw);
+            if (channels.chan11_raw != UINT16_MAX) emit remoteControlChannelRawChanged(10, channels.chan11_raw);
+            if (channels.chan12_raw != UINT16_MAX) emit remoteControlChannelRawChanged(11, channels.chan12_raw);
+            if (channels.chan13_raw != UINT16_MAX) emit remoteControlChannelRawChanged(12, channels.chan13_raw);
+            if (channels.chan14_raw != UINT16_MAX) emit remoteControlChannelRawChanged(13, channels.chan14_raw);
+            if (channels.chan15_raw != UINT16_MAX) emit remoteControlChannelRawChanged(14, channels.chan15_raw);
+            if (channels.chan16_raw != UINT16_MAX) emit remoteControlChannelRawChanged(15, channels.chan16_raw);
+            if (channels.chan17_raw != UINT16_MAX) emit remoteControlChannelRawChanged(16, channels.chan17_raw);
+            if (channels.chan18_raw != UINT16_MAX) emit remoteControlChannelRawChanged(17, channels.chan18_raw);
+
+            break;
+        }
         case MAVLINK_MSG_ID_RC_CHANNELS_RAW:
         {
             mavlink_rc_channels_raw_t channels;

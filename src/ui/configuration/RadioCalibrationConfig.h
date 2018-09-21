@@ -25,20 +25,30 @@ This file is part of the APM_PLANNER project
  *   @brief Radio Calibration Configuration widget header.
  *
  *   @author Michael Carpenter <malcom2073@gmail.com>
+ *   @author Arne Wischmann <wischmann-a@gmx.de>
  *
  */
 
 #ifndef RADIOCALIBRATIONCONFIG_H
 #define RADIOCALIBRATIONCONFIG_H
 
-#include <QWidget>
+//#include <QWidget>
 #include <QTimer>
-#include <QShowEvent>
-#include <QHideEvent>
-#include "ui_RadioCalibrationConfig.h"
+//#include <QShowEvent>
+//#include <QHideEvent>
+#include <QCheckBox>
+
 #include "UASManager.h"
 #include "UASInterface.h"
 #include "AP2ConfigWidget.h"
+#include "QGCRadioChannelDisplay.h"
+
+// UI forward declaration allow faster compiling on UI changes
+namespace Ui
+{
+    class RadioCalibrationConfig;
+}
+
 
 class RadioCalibrationConfig : public AP2ConfigWidget
 {
@@ -46,15 +56,17 @@ class RadioCalibrationConfig : public AP2ConfigWidget
 
     static const int RC_CHANNEL_PWM_MIN = 850; // Spektrum DX6i reports 898 on ch7 even though its 6 channels
     static const int RC_CHANNEL_PWM_MAX = 2100;
-    static const int RC_CHANNEL_NUM_MAX = 8;
+    static const int RC_CHANNEL_NUM_MAX = 16;
     static const int RC_CHANNEL_LOWER_CONTROL_CH_MAX = 4;
     
 public:
-    explicit RadioCalibrationConfig(QWidget *parent = 0);
+    explicit RadioCalibrationConfig(QWidget *parent = nullptr);
     ~RadioCalibrationConfig();
+
 protected:
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
+
 private slots:
     void activeUASSet(UASInterface *uas);
     void remoteControlChannelRawChanged(int chan,float val);
@@ -75,6 +87,12 @@ private slots:
 
     void modeIndexChanged(int index);
 
+    void pitchDZChanged(int value);
+    void rollDZChanged(int value);
+    void throtDZChanged(int value);
+    void yawDZChanged(int value);
+    void writeDZButtonPressed();
+
 private:
     void updateChannelReversalStates();
     void setParamChannelRev(const QString& param, bool state);
@@ -86,25 +104,26 @@ private:
     bool validRadioSettings();
 
 private:
-    Ui::RadioCalibrationConfig ui;
-    QList<double> rcMin;
-    QList<double> rcMax;
-    QList<double> rcTrim;
-    QList<double> rcValue;
+    Ui::RadioCalibrationConfig *ui; //!< Pointer to UI
 
-    QTimer *guiUpdateTimer;
-    bool m_calibrationEnabled;
+    QVector<qint32> rcMin;          //!< holds minimum RC-value for each channel after calibration
+    QVector<qint32> rcMax;          //!< holds maximum RC-value for each channel after calibration
+    QVector<qint32> rcValue;        //!< current RC-value
+    QVector<qint32> rcDeadzone;     //!< RC deadzone for the lower 4 channels (roll, pitch, throttle, yaw)
 
-    int m_pitchChannel;
-    int m_rollChannel;
-    int m_yawChannel;
-    int m_throttleChannel;
+    QTimer *guiUpdateTimer;         //!< timer for gui update
+    bool m_calibrationEnabled;      //!< set to true during calibration
 
-    QGCRadioChannelDisplay* m_pitchWidget;
-    QGCRadioChannelDisplay* m_throttleWidget;
-    QCheckBox* m_pitchCheckBox;
-    QCheckBox* m_throttleCheckBox;
-    int m_rcMode;
+    int m_pitchChannel;             //!< Channel number used for pitch
+    int m_rollChannel;              //!< Channel number used for roll
+    int m_yawChannel;               //!< Channel number used for yaw
+    int m_throttleChannel;          //!< Channel number used for throttle
+
+    QGCRadioChannelDisplay* m_pitchWidget;      //!< pointer to widget showing pitch value
+    QGCRadioChannelDisplay* m_throttleWidget;   //!< pointer to widget showing throttle value
+    QCheckBox* m_pitchCheckBox;                 //!< pointer to checkbox showing pitch reverse
+    QCheckBox* m_throttleCheckBox;              //!< pointer to checkbox showing throttle reverse
+    int m_rcMode;                               //!< Mode of RC-Transmitter
 };
 
 #endif // RADIOCALIBRATIONCONFIG_H

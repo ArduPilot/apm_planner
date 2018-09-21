@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>626</width>
-    <height>694</height>
+    <height>736</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -46,9 +46,9 @@
           <enum>QLayout::SetMinAndMaxSize</enum>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,0,0,1,2,2,0,0">
            <item>
-            <spacer name="horizontalSpacer_2">
+            <spacer name="horizontalSpacer_5">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -57,8 +57,165 @@
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>52</width>
+               <width>5</width>
                <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="revLeftVCheckBox">
+             <property name="text">
+              <string>Rev</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>90</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QGCRadioChannelDisplay" name="leftVWidget" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>40</width>
+               <height>200</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>40</width>
+               <height>200</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Expanding</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>150</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QGCRadioChannelDisplay" name="rightVWidget" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>40</width>
+               <height>200</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>40</width>
+               <height>200</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>90</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="revRightVCheckBox">
+             <property name="text">
+              <string>Rev</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>5</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="revYawCheckBox">
+             <property name="text">
+              <string>Rev</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGCRadioChannelDisplay" name="yawWidget" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>220</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>220</width>
+               <height>60</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>60</height>
               </size>
              </property>
             </spacer>
@@ -67,13 +224,13 @@
             <widget class="QGCRadioChannelDisplay" name="rollWidget" native="true">
              <property name="minimumSize">
               <size>
-               <width>258</width>
+               <width>220</width>
                <height>60</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>258</width>
+               <width>220</width>
                <height>60</height>
               </size>
              </property>
@@ -91,226 +248,210 @@ qlineargradient(spread:pad, x1:0.473, y1:0, x2:0.443, y2:0.994318, stop:0 rgba(0
              </property>
             </widget>
            </item>
-           <item>
-            <spacer name="horizontalSpacer_6">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
           </layout>
          </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,1,2,0,2,2,0">
-           <item>
-            <widget class="QCheckBox" name="revLeftVCheckBox">
-             <property name="text">
-              <string>Rev</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGCRadioChannelDisplay" name="leftVWidget" native="true">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>150</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>200</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_11">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Maximum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>100</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="revRightVCheckBox">
-             <property name="text">
-              <string>Rev</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGCRadioChannelDisplay" name="rightVWidget" native="true">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>150</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>200</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_10">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Maximum</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>30</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <widget class="QGCRadioChannelDisplay" name="radio5Widget" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>250</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>250</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGCRadioChannelDisplay" name="radio6Widget" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>250</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>250</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGCRadioChannelDisplay" name="radio7Widget" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>250</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>250</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGCRadioChannelDisplay" name="radio8Widget" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>250</width>
-                 <height>40</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>250</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+          <widget class="QGCRadioChannelDisplay" name="radio5Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_12">
-           <item>
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Fixed</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>52</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QGCRadioChannelDisplay" name="yawWidget" native="true">
-             <property name="minimumSize">
-              <size>
-               <width>258</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>258</width>
-               <height>60</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="revYawCheckBox">
-             <property name="text">
-              <string>Rev</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QGCRadioChannelDisplay" name="radio6Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio7Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio8Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio9Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio10Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio11Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio12Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio13Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio14Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio15Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGCRadioChannelDisplay" name="radio16Widget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -372,6 +513,13 @@ qlineargradient(spread:pad, x1:0.473, y1:0, x2:0.443, y2:0.994318, stop:0 rgba(0
         </widget>
        </item>
        <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QLabel" name="label_3">
@@ -410,6 +558,108 @@ qlineargradient(spread:pad, x1:0.473, y1:0, x2:0.443, y2:0.994318, stop:0 rgba(0
     </layout>
    </item>
    <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="4">
+      <widget class="QLabel" name="label_9">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>Yaw</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QSpinBox" name="pitchDZ_spinBox">
+       <property name="maximum">
+        <number>199</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QSpinBox" name="throtDZ_spinBox">
+       <property name="maximum">
+        <number>199</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Roll</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="5">
+      <widget class="QPushButton" name="writeDZ_Button">
+       <property name="text">
+        <string>Write to UAS</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="rollDZ_spinBox">
+       <property name="maximum">
+        <number>199</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4">
+      <widget class="QSpinBox" name="yawDZ_spinBox">
+       <property name="maximum">
+        <number>199</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Dead Zones</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Pitch</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Throttle</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -417,7 +667,7 @@ qlineargradient(spread:pad, x1:0.473, y1:0, x2:0.443, y2:0.994318, stop:0 rgba(0
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>40</height>
+       <height>1</height>
       </size>
      </property>
     </spacer>
