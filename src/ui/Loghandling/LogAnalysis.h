@@ -65,9 +65,9 @@ public:
      */
     enum CursorType
     {
-        simple,     /// Simple cursor - one cursor in plot
-        left,       /// Range cursor - two cursors in plot - the left one
-        right       /// Range cursor - two cursors in plot - the right one
+        simple,     ///< Simple cursor - one cursor in plot
+        left,       ///< Range cursor - two cursors in plot - the left one
+        right       ///< Range cursor - two cursors in plot - the right one
     };
 
     /**
@@ -136,10 +136,10 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
 
 private:
-    double m_currentPos;                    /// Current cursor position on x axis
-    double m_otherCursorPos;                /// Position of the other cursor when using range cursors.
-    CursorType m_type;                      /// Type of the cursor
-    QCPItemStraightLine *mp_otherCursor;    /// Pointer to the other cursor when using range cursors.
+    double m_currentPos;                    ///< Current cursor position on x axis
+    double m_otherCursorPos;                ///< Position of the other cursor when using range cursors.
+    CursorType m_type;                      ///< Type of the cursor
+    QCPItemStraightLine *mp_otherCursor;    ///< Pointer to the other cursor when using range cursors.
 };
 
 //************************************************************************************************************
@@ -224,21 +224,21 @@ public slots:
 
 private:
 
-    static const QString s_CursorLayerName;     /// Name for the cursor layer
+    static const QString s_CursorLayerName;     ///< Name for the cursor layer
 
-    static const int s_ROW_HEIGHT_PADDING = 3;  /// Number of additional pixels over font height for each row for the table view.
-    static const int s_TextArrowPositions = 12;  /// Max number of different positions for the test arrows
+    static const int s_ROW_HEIGHT_PADDING = 3;  ///< Number of additional pixels over font height for each row for the table view.
+    static const int s_TextArrowPositions = 12;  ///< Max number of different positions for the test arrows
 
     /**
      * @brief The GraphElements struct holds all needed information about an active graph
      */
     struct GraphElements
     {
-        QCPAxis  *p_yAxis;     /// pointer to the y-Axis of this graph
-        QCPGraph *p_graph;     /// pointer to the graph itself
-        QString m_groupName;   /// name of the group the plot belongs to.
-        bool m_manualRange;    /// has user defined scaling
-        bool m_inGroup;        /// has group scaling
+        QCPAxis  *p_yAxis;     ///< pointer to the y-Axis of this graph
+        QCPGraph *p_graph;     ///< pointer to the graph itself
+        QString m_groupName;   ///< name of the group the plot belongs to.
+        bool m_manualRange;    ///< has user defined scaling
+        bool m_inGroup;        ///< has group scaling
 
         GraphElements() : p_yAxis(0), p_graph(0), m_manualRange(false), m_inGroup(false) {}
     };
@@ -249,10 +249,10 @@ private:
      */
     struct GroupElement
     {
-        QString m_groupName;        /// group name
-        double m_lower;             /// lower range value
-        double m_upper;             /// upper range value
-        QStringList m_graphList;    /// list of graph names beloging to this group
+        QString m_groupName;        ///< group name
+        double m_lower;             ///< lower range value
+        double m_upper;             ///< upper range value
+        QStringList m_graphList;    ///< list of graph names beloging to this group
 
         GroupElement() : m_lower(std::numeric_limits<double>::max()), m_upper(m_lower * -1) {}
     };
@@ -262,55 +262,56 @@ private:
      */
     struct RangeValues
     {
-        double m_min;           /// Min value in range
-        double m_max;           /// Max value in range
-        double m_average;       /// Average value in range
-        int    m_measurements;  /// Number of measurements in range
+        double m_min;           ///< Min value in range
+        double m_max;           ///< Max value in range
+        double m_average;       ///< Average value in range
+        int    m_measurements;  ///< Number of measurements in range
 
         RangeValues() : m_min(std::numeric_limits<double>::max()), m_max(m_min * -1), m_average(0.0), m_measurements(0) {}
     };
 
-    typedef QMap<QString, QStringList> fmtMapType;          /// type for handling fmt values from datamodel
-    typedef QHash<QString, GraphElements> activeGraphType;  /// type for handling active graph container
+    typedef QMap<QString, QStringList> fmtMapType;          ///< type for handling fmt values from datamodel
+    typedef QHash<QString, GraphElements> activeGraphType;  ///< type for handling active graph container
 
 
 
-    Ui::LogAnalysis ui;     /// The user interface
+    Ui::LogAnalysis ui;             ///< The user interface
+    QAction *mp_KMLExportMenuEntry; ///<< used to en/disable the entry
 
-    QScopedPointer<QCustomPlot>  m_plotPtr;            /// Scoped pointer to QCustomplot
-    LogdataStorage::Ptr          m_dataStoragePtr;     /// Shared pointer to data storage
+    QScopedPointer<QCustomPlot>  m_plotPtr;            ///< Scoped pointer to QCustomplot
+    LogdataStorage::Ptr          m_dataStoragePtr;     ///< Shared pointer to data storage
 
-    QScopedPointer<QMenuBar, QScopedPointerDeleteLater> m_menuBarPtr;        /// Scoped pointer to the menu bar
-    QScopedPointer<PresetManager, QScopedPointerDeleteLater> m_presetMgrPtr; /// Scoped pointer to the preset manager
+    QScopedPointer<QMenuBar, QScopedPointerDeleteLater> m_menuBarPtr;        ///< Scoped pointer to the menu bar
+    QScopedPointer<PresetManager, QScopedPointerDeleteLater> m_presetMgrPtr; ///< Scoped pointer to the preset manager
 
-    QScopedPointer<AP2DataPlotThread, QScopedPointerDeleteLater> m_loaderThreadPtr;        /// Scoped pointer to AP2DataPlotThread
-    QScopedPointer<QProgressDialog, QScopedPointerDeleteLater>   m_loadProgressDialog;     /// Scoped pointer to load progress window
-    QScopedPointer<AP2DataPlotAxisDialog, QScopedPointerDeleteLater> m_axisGroupingDialog; /// Scoped pointer to axis grouping dialog
+    QScopedPointer<AP2DataPlotThread, QScopedPointerDeleteLater> m_loaderThreadPtr;        ///< Scoped pointer to AP2DataPlotThread
+    QScopedPointer<QProgressDialog, QScopedPointerDeleteLater>   m_loadProgressDialog;     ///< Scoped pointer to load progress window
+    QScopedPointer<AP2DataPlotAxisDialog, QScopedPointerDeleteLater> m_axisGroupingDialog; ///< Scoped pointer to axis grouping dialog
 
-    activeGraphType m_activeGraphs;                         /// Holds all active graphs
-    QHash<QString, RangeValues> m_rangeValuesStorage;       /// If there is a range cursor the range values are stored here.
-    QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    /// Map holding all Messages which are printed as arrows
-    GraphElements m_arrowGraph;                             /// The text arrows have an own graph
+    activeGraphType m_activeGraphs;                         ///< Holds all active graphs
+    QHash<QString, RangeValues> m_rangeValuesStorage;       ///< If there is a range cursor the range values are stored here.
+    QMap<quint64, MessageBase::Ptr> m_indexToMessageMap;    ///< Map holding all Messages which are printed as arrows
+    GraphElements m_arrowGraph;                             ///< The text arrows have an own graph
 
-    QStringList m_tableFilterList;   /// Used to create regex filter pattern for table view.
+    QStringList m_tableFilterList;   ///< Used to create regex filter pattern for table view.
 
-    QSortFilterProxyModel *mp_tableFilterProxyModel;    /// Filter model for table view.
+    QSortFilterProxyModel *mp_tableFilterProxyModel;    ///< Filter model for table view.
 
-    QString m_filename;              /// Filename of the loaded Log - mainly used for export
+    QString m_filename;              ///< Filename of the loaded Log - mainly used for export
 
-    MAV_TYPE m_loadedLogMavType;     /// Holds the mav type of the loaded log
+    MAV_TYPE m_loadedLogMavType;     ///< Holds the mav type of the loaded log
 
-    bool m_useTimeOnXAxis;           /// true if x axis holds time values
-    qint64 m_scrollStartIndex;       /// Current start index of the loaded log
-    qint64 m_scrollEndIndex;         /// Current end index of the loaded log
-    int    m_statusTextPos;          /// Counter for giving text arrows a different length
-    int m_lastHorizontalScrollVal;   /// Stores the last value of the horizontal scroller
+    bool m_useTimeOnXAxis;           ///< true if x axis holds time values
+    qint64 m_scrollStartIndex;       ///< Current start index of the loaded log
+    qint64 m_scrollEndIndex;         ///< Current end index of the loaded log
+    int    m_statusTextPos;          ///< Counter for giving text arrows a different length
+    int m_lastHorizontalScrollVal;   ///< Stores the last value of the horizontal scroller
 
-    double m_cursorXAxisRange;       /// X axis range of the cursors.
+    double m_cursorXAxisRange;       ///< X axis range of the cursors.
 
-    LogAnalysisCursor *mp_cursorSimple;     /// Pointer to the simple cursor only valid if visible
-    LogAnalysisCursor *mp_cursorLeft;       /// Pointer to the left cursor only valid if visible
-    LogAnalysisCursor *mp_cursorRight;      /// Pointer to the right cursor only valid if visible
+    LogAnalysisCursor *mp_cursorSimple;     ///< Pointer to the simple cursor only valid if visible
+    LogAnalysisCursor *mp_cursorLeft;       ///< Pointer to the left cursor only valid if visible
+    LogAnalysisCursor *mp_cursorRight;      ///< Pointer to the right cursor only valid if visible
 
     /**
      * @brief setupXAxisAndScroller sets up x axis and the horizontal scroller

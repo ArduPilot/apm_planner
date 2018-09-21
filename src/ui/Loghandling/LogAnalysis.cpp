@@ -219,9 +219,10 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     // add ascii export to menu
     QAction *p_Action = exportMenu->addAction("Export to Ascii log file");
     connect(p_Action, SIGNAL(triggered()), this, SLOT(exportAsciiLogClicked()));
-    // add KMZ export to menu
-    p_Action = exportMenu->addAction("Export to KML/KMZ file");
-    connect(p_Action, SIGNAL(triggered()), this, SLOT(exportKmlClicked()));
+    // add KMZ export to menu (disabled by default)
+    mp_KMLExportMenuEntry = exportMenu->addAction("Export to KML/KMZ file");
+    connect(mp_KMLExportMenuEntry, SIGNAL(triggered()), this, SLOT(exportKmlClicked()));
+    mp_KMLExportMenuEntry->setDisabled(true);
 
     // create preset menu and give it to preset manager
     m_presetMgrPtr.reset(new PresetManager(this, m_menuBarPtr.data()));
@@ -360,6 +361,12 @@ void LogAnalysis::loadLog(QString filename)
 
     // let the loader start the log loading
     m_loaderThreadPtr->loadFile(filename);
+
+    // KML/KMZ export only for flashlogs (*.bin)
+    if(m_filename.toLower().endsWith(".bin"))
+    {
+        mp_KMLExportMenuEntry->setEnabled(true);
+    }
 }
 
 void LogAnalysis::setTablePos(double xPosition)
