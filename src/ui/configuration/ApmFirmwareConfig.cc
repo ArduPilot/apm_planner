@@ -168,91 +168,98 @@ void ApmFirmwareConfig::storeSettings()
 
 void ApmFirmwareConfig::populateSerialPorts()
 {
-    QString current = ui.linkComboBox->itemText(ui.linkComboBox->currentIndex());
-    disconnect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
-    ui.linkComboBox->clear();
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-        QStringList list;
-        list << info.portName()
-             << info.description()
-             << info.manufacturer()
-             << info.systemLocation()
-             << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
-             << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
+    QList<QSerialPortInfo> portList = QSerialPortInfo::availablePorts();
+    // we only have to process the portlist if something changes
+    if(!portlistIsEqual(m_serialPortList, portList))
+    {
+        QLOG_DEBUG() << "ApmFirmwareConfig::populateSerialPorts: Port list changed";
+        // store new port list and setup linkComboBox
+        m_serialPortList = portList;
+        disconnect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
+        ui.linkComboBox->clear();
 
-        if (!(info.portName().contains("Bluetooth")))
+        for(const QSerialPortInfo &info : m_serialPortList)
         {
-            // Don't add bluetooth ports to be less confusing to the user
-            // on windows, the friendly name is annoyingly identical between devices. On OSX it's different
-            // We also want to only display COM ports for PX4/Pixhawk, or arduino mega 2560's.
-            // We also want to show FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
-            if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega") ||
-                    info.productIdentifier() == 0x0001 || info.productIdentifier() == 0x0003 ||
-                    info.productIdentifier() == 0x0010 || info.productIdentifier() == 0x0011 ||
-                    info.productIdentifier() == 0x0012 || info.productIdentifier() == 0x0013 ||
-                    info.productIdentifier() == 0x0014)
+            QStringList list;
+            list << info.portName()
+                 << info.description()
+                 << info.manufacturer()
+                 << info.systemLocation()
+                 << (info.vendorIdentifier() ? QString::number(info.vendorIdentifier(), 16) : QString())
+                 << (info.productIdentifier() ? QString::number(info.productIdentifier(), 16) : QString());
+
+            QLOG_DEBUG() << "Found device:" << list;
+
+            if (!(info.portName().contains("Bluetooth")))
             {
-                ui.linkComboBox->insertItem(0,list[0], list);
+                // Don't add bluetooth ports to be less confusing to the user
+                // on windows, the friendly name is annoyingly identical between devices. On OSX it's different
+                // We also want to only display COM ports for PX4/Pixhawk, or arduino mega 2560's.
+                // We also want to show FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
+                if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega") ||
+                        info.productIdentifier() == 0x0001 || info.productIdentifier() == 0x0003 ||
+                        info.productIdentifier() == 0x0010 || info.productIdentifier() == 0x0011 ||
+                        info.productIdentifier() == 0x0012 || info.productIdentifier() == 0x0013 ||
+                        info.productIdentifier() == 0x0014)
+                {
+                    ui.linkComboBox->insertItem(0,list[0], list);
+                    QLOG_DEBUG() << "Added " << list[0] << ":" << list[1];
+                }
+                else
+                {
+                    QLOG_DEBUG() << "Dropped " << list[0] << ":" << list[1];
+                }
             }
-            QLOG_TRACE() << "Inserting " << list.first();
         }
-    }
-    for (int i=0;i<ui.linkComboBox->count();i++)
-    {
-        if (ui.linkComboBox->itemText(i) == current)
+
+        if (ui.linkComboBox->count() == 0)
         {
-            ui.linkComboBox->setCurrentIndex(i);
-            setLink(ui.linkComboBox->currentIndex());
-            connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
-            return;
+            //no ports found
+            ui.linkComboBox->setEnabled(false);
+            ui.comPortNameLabel->setText("No valid device found. \nCheck to be sure your APM2.5+ \n or Pixhawk/PX4 device is plugged in, and \ndrivers are installed.");
+            hideFirmwareButtons();
+            m_autopilotType = DEFAULT_AUTOPILOT_HW_TYPE;
         }
+        else
+        {
+            ui.linkComboBox->setEnabled(true);
+            setLink(ui.linkComboBox->currentIndex());
+        }
+
+        connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
     }
-    connect(ui.linkComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setLink(int)));
-    if (current == "")
-    {
-        setLink(ui.linkComboBox->currentIndex());
-    }
-    if (ui.linkComboBox->count() == 0)
-    {
-        //no ports found
-        ui.linkComboBox->setEnabled(false);
-        ui.comPortNameLabel->setText("No valid device found. \nCheck to be sure your APM2.5+ \n or Pixhawk/PX4 device is plugged in, and \ndrivers are installed.");
-    }
-    else
-    {
-        ui.linkComboBox->setEnabled(true);
-    }
+    m_timer.start(2500);
 }
 
 void ApmFirmwareConfig::showEvent(QShowEvent *)
 {
-    // Start Port scanning
-    m_timer.setSingleShot(false);
-    m_timer.start(2000);
+    // Only when not connected to Flight controller
     if(ui.stackedWidget->currentIndex() == 0)
     {
+        // disable connect button...
         MainWindow::instance()->toolBar().disableConnectWidget(true);
+        // ...and start port scanning
+        QLOG_DEBUG() << "ApmFirmwareConfig start port scanning";
+        m_timer.setSingleShot(true);
+        // first call to populate serial ports is done here all consecutive are done by timer
+        populateSerialPorts();
     }
-    QSettings settings;
-    if (settings.contains("ADVANCED_MODE"))
-    {
-        m_isAdvancedMode = settings.value("ADVANCED_MODE").toBool();
-    }
-    updateFirmwareButtons();
 }
 
 void ApmFirmwareConfig::hideEvent(QHideEvent *)
 {
-    // Stop Port scanning
-    if (!m_timer.isActive())
-        return;
+    // Stop Port scanning...
+    if (m_timer.isActive())
+    {
+        QLOG_DEBUG() << "ApmFirmwareConfig stop port scanning";
+        m_timer.stop();
+    }
 
-    m_timer.stop();
+    // ...and reenable connect button
     if(ui.stackedWidget->currentIndex() == 0)
     {
         MainWindow::instance()->toolBar().disableConnectWidget(false);
     }
-    //MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
 
 void ApmFirmwareConfig::uasConnected()
@@ -260,8 +267,10 @@ void ApmFirmwareConfig::uasConnected()
    // MainWindow::instance()->toolBar().disableConnectWidget(false);
     ui.stackedWidget->setCurrentIndex(1);
 }
+
 void ApmFirmwareConfig::cancelButtonClicked()
 {
+    QLOG_DEBUG() << "Cancel button pressed";
     if(!m_arduinoUploader && !m_px4uploader)
     {
         return;
@@ -390,7 +399,7 @@ void ApmFirmwareConfig::addButtonStyleSheet(QWidget *parent)
 void ApmFirmwareConfig::requestFirmwares(QString type, QString autopilot, bool notification = false)
 {
     //type can be "stable" "beta" or "latest"
-    //autopilot can be "apm" "px4", "px4-v2" or "px4-v4"
+    //autopilot can be "apm" "px4", "px4-v2", "px4-v4" or "px4-v5"
     //or "aerocore"
     QLOG_DEBUG() << "ApmFirmwareConfig::requestFirmwares - Requesting firmware versions:" << autopilot << " " << type;
     if(autopilot.size() == 0)
@@ -428,6 +437,11 @@ void ApmFirmwareConfig::requestFirmwares(QString type, QString autopilot, bool n
         prestring = "PX4";
         poststring = "-v4";
     }
+    else if (autopilot == "px4-v5")
+    {
+        prestring = "fmuv5";
+        poststring = "-v5";
+    }
     else if (autopilot == "aerocore")
     {
         prestring = "PX4";
@@ -455,74 +469,48 @@ void ApmFirmwareConfig::requestFirmwares(QString type, QString autopilot, bool n
         m_buttonToUrlMap[ui.roverPushButton] = DEFAULT_ARDUPILOT_FW_URL + "/Rover/" + type + "/" + prestring + "/APMrover2.hex";
         m_buttonToUrlMap[ui.planePushButton] = DEFAULT_ARDUPILOT_FW_URL + "/Plane/" + type + "/" + prestring + "/ArduPlane.hex";
 
-        if (type == "latest")
-        {
-            ui.warningLabelAC33->show();
-            /*
-             * AC3.3 only supports Pixhawk, APM1/APM2 is discontinued.
-             * Last known 'latest': http://firmware.ardupilot.org/Copter/2015-03/2015-03-13-00:03/
-             * stable and beta both still support, as they are not 3.3 yet
-             */
-            QString prepath = "http://firmware.ardupilot.org/Copter/2015-03/2015-03-13-00:03/" + prestring;
-            m_buttonToUrlMap[ui.copterPushButton] = prepath + "-heli/ArduCopter.hex";
-            m_buttonToUrlMap[ui.hexaPushButton] = prepath + "-hexa/ArduCopter.hex";
-            m_buttonToUrlMap[ui.octaQuadPushButton] = prepath + "-octa-quad/ArduCopter.hex";
-            m_buttonToUrlMap[ui.octaPushButton] = prepath + "-octa/ArduCopter.hex";
-            m_buttonToUrlMap[ui.quadPushButton] = prepath + "-quad/ArduCopter.hex";
-            m_buttonToUrlMap[ui.triPushButton] = prepath + "-tri/ArduCopter.hex";
-            m_buttonToUrlMap[ui.y6PushButton] = prepath + "-y6/ArduCopter.hex";
+        // There is no support of beta software for apm any more so we ignore the type
+        ui.warningLabelAC33->show();
+        /*
+         * AC3.3 only supports Pixhawk, APM1/APM2 is discontinued.
+         * Last known 'latest': http://firmware.ardupilot.org/Copter/2015-03/2015-03-13-00:03/
+         * stable and beta both still support, as they are not 3.3 yet
+         */
+        QString prepath = "http://firmware.ardupilot.org/Copter/stable-3.4.6/" + prestring;
+        m_buttonToUrlMap[ui.copterPushButton] = prepath + "-heli/ArduCopter.hex";
+        m_buttonToUrlMap[ui.hexaPushButton] = prepath + "-hexa/ArduCopter.hex";
+        m_buttonToUrlMap[ui.octaQuadPushButton] = prepath + "-octa-quad/ArduCopter.hex";
+        m_buttonToUrlMap[ui.octaPushButton] = prepath + "-octa/ArduCopter.hex";
+        m_buttonToUrlMap[ui.quadPushButton] = prepath + "-quad/ArduCopter.hex";
+        m_buttonToUrlMap[ui.triPushButton] = prepath + "-tri/ArduCopter.hex";
+        m_buttonToUrlMap[ui.y6PushButton] = prepath + "-y6/ArduCopter.hex";
 
-            makeNetworkRequest(QUrl(prepath + "-heli/git-version.txt"));
-            makeNetworkRequest(QUrl(prepath + "-quad/git-version.txt"));
-            makeNetworkRequest(QUrl(prepath + "-hexa/git-version.txt"));
-            makeNetworkRequest(QUrl(prepath + "-octa/git-version.txt"));
-            makeNetworkRequest(QUrl(prepath + "-octa-quad/git-version.txt"));
-            makeNetworkRequest(QUrl(prepath + "-tri/git-version.txt"));
-            makeNetworkRequest(QUrl(prepath + "-y6/git-version.txt"));
-        }
-        else
-        {
-            //TODO: Need to add beta and stable as they push APM1/APM2 support off
+        makeNetworkRequest(QUrl(prepath + "-heli/git-version.txt"));
+        makeNetworkRequest(QUrl(prepath + "-quad/git-version.txt"));
+        makeNetworkRequest(QUrl(prepath + "-hexa/git-version.txt"));
+        makeNetworkRequest(QUrl(prepath + "-octa/git-version.txt"));
+        makeNetworkRequest(QUrl(prepath + "-octa-quad/git-version.txt"));
+        makeNetworkRequest(QUrl(prepath + "-tri/git-version.txt"));
+        makeNetworkRequest(QUrl(prepath + "-y6/git-version.txt"));
 
-            m_buttonToUrlMap[ui.copterPushButton] = "http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-heli/ArduCopter.hex";
-            m_buttonToUrlMap[ui.hexaPushButton] = "http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-hexa/ArduCopter.hex";
-            m_buttonToUrlMap[ui.octaQuadPushButton] = "http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter.hex";
-            m_buttonToUrlMap[ui.octaPushButton] = "http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-octa/ArduCopter.hex";
-            m_buttonToUrlMap[ui.quadPushButton] = "http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-quad/ArduCopter.hex";
-            m_buttonToUrlMap[ui.triPushButton] = "http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-tri/ArduCopter.hex";
-            m_buttonToUrlMap[ui.y6PushButton] = "http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-y6/ArduCopter.hex";
-
-            makeNetworkRequest(QUrl("http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-heli/git-version.txt"));
-            makeNetworkRequest(QUrl("http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-quad/git-version.txt"));
-            makeNetworkRequest(QUrl("http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-hexa/git-version.txt"));
-            makeNetworkRequest(QUrl("http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-octa/git-version.txt"));
-            makeNetworkRequest(QUrl("http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt"));
-            makeNetworkRequest(QUrl("http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-tri/git-version.txt"));
-            makeNetworkRequest(QUrl("http://firmware.ardupilot.org/Copter/" + type + "/" + prestring + "-y6/git-version.txt"));
-        }
     }
     else if ((autopilot == "px4") || (autopilot == "px4-v2") || (autopilot == "px4-v4"))
     {
         m_buttonToUrlMap[ui.roverPushButton]       = DEFAULT_ARDUPILOT_FW_URL + "/Rover/"  + type + "/" + prestring + "/APMrover2" + poststring + ".px4";
         m_buttonToUrlMap[ui.planePushButton]       = DEFAULT_ARDUPILOT_FW_URL + "/Plane/"  + type + "/" + prestring + "/ArduPlane" + poststring + ".px4";
         m_buttonToUrlMap[ui.copterPushButton]      = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-heli/ArduCopter" + poststring + ".px4";
-        m_buttonToUrlMap[ui.hexaPushButton]        = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-hexa/ArduCopter" + poststring + ".px4";
-        m_buttonToUrlMap[ui.octaQuadPushButton]    = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-octa-quad/ArduCopter" + poststring + ".px4";
-        m_buttonToUrlMap[ui.octaPushButton]        = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-octa/ArduCopter" + poststring + ".px4";
-        m_buttonToUrlMap[ui.quadPushButton]        = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-quad/ArduCopter" + poststring + ".px4";
-        m_buttonToUrlMap[ui.triPushButton]         = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-tri/ArduCopter" + poststring + ".px4";
-        m_buttonToUrlMap[ui.y6PushButton]          = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-y6/ArduCopter" + poststring + ".px4";
         m_buttonToUrlMap[ui.mutlicopterPushButton] = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "/ArduCopter" + poststring + ".px4";    // for FW >= 3.5.0
-
         makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-heli/git-version.txt"));
-        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-quad/git-version.txt"));
-        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-hexa/git-version.txt"));
-        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-octa/git-version.txt"));
-        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-octa-quad/git-version.txt"));
-        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-tri/git-version.txt"));
-        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-y6/git-version.txt"));
         makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "/git-version.txt"));    // for FW >= 3.5.0
-
+    }
+    else if(autopilot == "px4-v5")
+    {
+        m_buttonToUrlMap[ui.roverPushButton]       = DEFAULT_ARDUPILOT_FW_URL + "/Rover/"  + type + "/" + prestring + "/APMrover2.apj";
+        m_buttonToUrlMap[ui.copterPushButton]      = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-heli/arducopter-heli.apj";
+        m_buttonToUrlMap[ui.planePushButton]       = DEFAULT_ARDUPILOT_FW_URL + "/Plane/"  + type + "/" + prestring + "/arduplane.apj";
+        m_buttonToUrlMap[ui.mutlicopterPushButton] = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "/arducopter.apj";
+        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-heli/git-version.txt"));
+        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "/git-version.txt"));
     }
     else if (autopilot == "aerocore")
     {
@@ -570,6 +558,7 @@ void ApmFirmwareConfig::stableFirmwareButtonClicked()
 {
     hideFirmwareButtons();
     ui.label->setText(tr("<h2>Firmware</h2>"));
+    hideBetaLabels();
     requestFirmwares("stable",m_autopilotType);
 }
 
@@ -682,17 +671,16 @@ void ApmFirmwareConfig::downloadFinished()
     flashFirmware(m_tempFirmwareFile->fileName());
 }
 
-
  void ApmFirmwareConfig::flashFirmware(QString filename)
  {
     ui.cancelPushButton->setVisible(true);
     ui.progressBar->setVisible(true);
-    QList<QSerialPortInfo> portList =  QSerialPortInfo::availablePorts();
 
-    foreach (const QSerialPortInfo &info, portList)
+    QLOG_DEBUG() << "Available devices are:";
+    foreach (const QSerialPortInfo &info, m_serialPortList)
     {
-        QLOG_DEBUG() << "PortName    : " << info.portName()
-               << "Description : " << info.description();
+        QLOG_DEBUG() << "PortName    : " << info.portName();
+        QLOG_DEBUG() << "Description : " << info.description();
         QLOG_DEBUG() << "Manufacturer: " << info.manufacturer();
     }
 
@@ -712,7 +700,7 @@ void ApmFirmwareConfig::downloadFinished()
         m_arduinoUploader->loadFirmware(m_settings.name,filename);
 
     }
-    else if ((m_autopilotType == "px4-v4" || m_autopilotType == "px4-v2" || m_autopilotType == "px4" || m_autopilotType == "aerocore"))
+    else if (m_autopilotType == "px4-v5" || m_autopilotType == "px4-v4" || m_autopilotType == "px4-v2" || m_autopilotType == "px4" || m_autopilotType == "aerocore")
     {
         if (m_px4uploader)
         {
@@ -735,6 +723,7 @@ void ApmFirmwareConfig::downloadFinished()
         ui.progressBar->setValue(0);
     }
 }
+
 void ApmFirmwareConfig::requestDeviceReplug()
 {
     if (m_replugRequestMessageBox)
@@ -754,6 +743,7 @@ void ApmFirmwareConfig::requestDeviceReplug()
     //m_px4UnplugTimer->start(1000);
     //QMessageBox::information(this,"Warning","Please click ok, then unplug, and plug back in the PX4/Pixhawk");
 }
+
 void ApmFirmwareConfig::px4UnplugTimerTick()
 {
     m_replugRequestMessageBox->setValue(m_replugRequestMessageBox->value()+1);
@@ -843,30 +833,37 @@ void ApmFirmwareConfig::flashButtonClicked()
 }
 void ApmFirmwareConfig::setLink(int index)
 {
-    if (ui.linkComboBox->itemData(index).toStringList().size() > 0)
+    QStringList list = ui.linkComboBox->itemData(index).toStringList();
+
+    if (list.size() > 0)
     {
-        bool blank = false;
-        if (m_settings.name == "")
-        {
-            blank = true;
-        }
-        m_settings.name = ui.linkComboBox->itemData(index).toStringList()[0];
-#ifdef Q_OS_WIN
-        ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[1] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
-#else
-        ui.comPortNameLabel->setText(ui.linkComboBox->itemData(index).toStringList()[1] + "\n" + ui.linkComboBox->itemData(index).toStringList()[2]);
-#endif
-        foreach(QSerialPortInfo info,QSerialPortInfo::availablePorts())
+        m_settings.name = list[0];
+        QLOG_DEBUG() << "ApmFirmwareConfig::setLink for port:" << m_settings.name;
+
+        ui.comPortNameLabel->setText(list[1] + "\n" + list[2]);
+
+        for(const QSerialPortInfo &info : m_serialPortList)
         {
             if (info.portName() == m_settings.name)
             {
                 QString platform = processPortInfo(info);
-                if (platform != "Unknown" && (m_autopilotType != platform || blank)){
+                if ((platform != "Unknown") && (m_autopilotType != platform))
+                {
+                    QLOG_DEBUG() << "Detected Platform:" << platform;
                     requestFirmwares(m_firmwareType, platform);
-                    QLOG_TRACE() << platform << " Detected";
+                }
+                else
+                {
+                    QLOG_DEBUG() << "Unknown platform: " << list;
+                    ui.textBrowser->append("Unknown platform: " + list.join(';') + " Processing stopped.");
+                    m_autopilotType = DEFAULT_AUTOPILOT_HW_TYPE;
                 }
             }
         }
+    }
+    else
+    {
+        QLOG_INFO() << "ApmFirmwareConfig::setLink called but item was empty. Processing stopped.";
     }
 }
 
@@ -888,13 +885,17 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
         }
         else if ( info.productIdentifier() == 0x0012 || info.description().contains("FMU v4.x") ) // v4.x is Pixracer
         {
-            return "px4-v4";
+            return "px4-v4";    //FMUv4
         }
         else if (info.productIdentifier() == 0x0011 || info.productIdentifier() == 0x0001
                  || info.productIdentifier() == 0x0016 || info.description().contains("FMU v2.x")) //0x0011 is the Pixhawk, 0x0001 is the bootloader.
         {
             QLOG_TRACE() << "Detected: " << info.description() << " :" << info.productIdentifier();
-            return "px4-v2";
+            return "px4-v2";    //  FMUv2
+        }
+        else if(info.description().contains("FMU v5.x"))    //TODO Should be detected by productIdentifier
+        {
+            return "px4-v5";    // FMUv5
         }
         else
         {
@@ -903,7 +904,7 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
     }
     else if (info.description().toLower().contains("aerocore"))
     {
-	return "aerocore";
+        return "aerocore";
     }
     else
     {
@@ -971,6 +972,11 @@ void ApmFirmwareConfig::firmwareListFinished()
     {
         apmver = "PX4";
     }
+    else if (m_autopilotType == "px4-v5")
+    {
+        apmver = "fmuv5";
+    }
+
     if (m_firmwareType == "beta")
     {
         cmpstr = "beta";
@@ -1235,7 +1241,7 @@ void ApmFirmwareConfig::flashCustomFirmware()
     // Show File SelectionDialog
 
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QGC::appDataDirectory(),
-                                                     tr("bin (*.hex *.px4)"));
+                                                     tr("bin (*.hex *.px4 *.apj)"));
     QApplication::processEvents(); // Helps clear dialog from screen
 
     if (filename.length() > 0){
@@ -1390,4 +1396,26 @@ void ApmFirmwareConfig::arduinoUploadComplete()
     m_tempFirmwareFile = NULL;
     ui.progressBar->setVisible(false);
     ui.cancelPushButton->setVisible(false);
+}
+
+bool ApmFirmwareConfig::portlistIsEqual(const QList<QSerialPortInfo> &list1, const QList<QSerialPortInfo> &list2) const
+{
+    // Content can not be equal if size is different
+    if(list1.size() != list2.size())
+    {
+        return false;
+    }
+    // compare content
+    for(auto i = 0; i < list1.size(); ++i)
+    {
+        if(list1[i].vendorIdentifier() != list2[i].vendorIdentifier()
+                || list1[i].productIdentifier() != list2[i].productIdentifier()
+                || list1[i].description() != list2[i].description()
+                || list1[i].manufacturer() != list2[i].manufacturer()
+                || list1[i].portName() != list2[i].portName())
+        {
+            return false;
+        }
+    }
+    return true;
 }
