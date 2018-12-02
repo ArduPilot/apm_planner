@@ -131,6 +131,8 @@ private:
 
     void makeNetworkRequest(const QUrl &url);
 
+    bool portlistIsEqual(const QList<QSerialPortInfo> &list1, const QList<QSerialPortInfo> &list2) const;
+
 private:
     bool m_throwPropSpinWarning;
     QProgressDialog *m_replugRequestMessageBox;
@@ -180,6 +182,8 @@ private:
     QString m_lastVersionSkipped;
     bool m_isAdvancedMode;
     int m_activeNetworkRequests;
+
+    QList<QSerialPortInfo> m_serialPortList;  //!< List of serial connections to detect if devices were added or removed
 };
 
 #endif // APMFIRMWARECONFIG_H

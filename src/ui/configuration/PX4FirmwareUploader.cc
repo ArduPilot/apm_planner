@@ -535,7 +535,7 @@ bool PX4FirmwareUploader::readDeviceInfo()
         {
             case PROTO_DEVICE_BOARD_ID:
             {
-                emit statusUpdate("Requesting Board ID");
+                emit statusUpdate("Board ID:" + QString::number(reply));
                 emit boardId(reply);
             }
                 break;
@@ -548,7 +548,7 @@ bool PX4FirmwareUploader::readDeviceInfo()
             case PROTO_DEVICE_FW_SIZE:
             {
                 emit statusUpdate("Requesting FW Size");
-        emit flashSize(reply);
+                emit flashSize(reply);
                 m_flashSize = reply;
             }
                 break;
