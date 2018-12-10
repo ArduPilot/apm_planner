@@ -214,8 +214,6 @@ OpenBSDBuild {
 
 LinuxBuild {
 
-    QMAKE_CXX = ccache g++
-
     CONFIG += c++11 #C++11 support
     DEFINES += __STDC_LIMIT_MACROS
 
