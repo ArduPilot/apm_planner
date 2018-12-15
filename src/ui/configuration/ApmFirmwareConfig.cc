@@ -39,10 +39,10 @@ static const QString DEFAULT_ARDUPILOT_FW_URL = "http://firmware.ardupilot.org";
 
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_throwPropSpinWarning(false),
-    m_replugRequestMessageBox(0),
-    m_px4UnplugTimer(0),
-    m_px4uploader(NULL),
-    m_arduinoUploader(NULL),
+    m_replugRequestMessageBox(nullptr),
+    m_px4UnplugTimer(nullptr),
+    m_px4uploader(nullptr),
+    m_arduinoUploader(nullptr),
     m_firmwareType(DEFAULT_FIRMWARE_TYPE),
     m_autopilotType(DEFAULT_AUTOPILOT_HW_TYPE),
     m_timeoutCounter(0),
@@ -196,13 +196,14 @@ void ApmFirmwareConfig::populateSerialPorts()
                 // on windows, the friendly name is annoyingly identical between devices. On OSX it's different
                 // We also want to only display COM ports for PX4/Pixhawk, or arduino mega 2560's.
                 // We also want to show FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
-                if (info.description().toLower().contains("px4") || info.description().toLower().contains("mega") ||
+                if (info.description().toLower().contains("fmuv") || info.description().toLower().contains("px4") ||
+                        info.description().toLower().contains("mega") || info.manufacturer().toLower().contains("ardupilot") ||
                         info.productIdentifier() == 0x0001 || info.productIdentifier() == 0x0003 ||
                         info.productIdentifier() == 0x0010 || info.productIdentifier() == 0x0011 ||
                         info.productIdentifier() == 0x0012 || info.productIdentifier() == 0x0013 ||
                         info.productIdentifier() == 0x0014)
                 {
-                    ui.linkComboBox->insertItem(0,list[0], list);
+                    ui.linkComboBox->insertItem(0, list[0], list);
                     QLOG_DEBUG() << "Added " << list[0] << ":" << list[1];
                 }
                 else
@@ -297,7 +298,7 @@ void ApmFirmwareConfig::cleanUp()
         m_arduinoUploader->abortLoading();
         m_arduinoUploader->wait(500);
         m_arduinoUploader->deleteLater();
-        m_arduinoUploader = NULL;
+        m_arduinoUploader = nullptr;
     }
 }
 
@@ -334,7 +335,7 @@ void ApmFirmwareConfig::activeUASSet(UASInterface *uas)
                    this,SLOT(parameterChanged(int,int,QString,QVariant)));
         disconnect(m_uas,SIGNAL(connected()),this,SLOT(uasConnected()));
         disconnect(m_uas,SIGNAL(disconnected()),this,SLOT(uasDisconnected()));
-        m_uas = 0;
+        m_uas = nullptr;
     }
     if (!uas)
     {
@@ -573,12 +574,12 @@ void ApmFirmwareConfig::trunkFirmwareButtonClicked()
 
 void ApmFirmwareConfig::px4Warning(QString message)
 {
-    QMessageBox::information(this,tr("Warning"),tr("Warning: ") + message,"Continue");
+    QMessageBox::information(this, tr("Warning"),tr("Warning: ") + message,"Continue");
     ui.statusLabel->setText(tr("Error during upload"));
 }
 void ApmFirmwareConfig::px4Error(QString error)
 {
-    QMessageBox::information(0,tr("Error"),tr("Error during upload:") + error);
+    QMessageBox::information(this, tr("Error"),tr("Error during upload:") + error);
     ui.statusLabel->setText(tr("Error during upload"));
 }
 void ApmFirmwareConfig::px4Cleanup()
@@ -588,19 +589,19 @@ void ApmFirmwareConfig::px4Cleanup()
         m_px4uploader->stop();
         m_px4uploader->wait(250);
         m_px4uploader->deleteLater();
-        m_px4uploader = NULL;
+        m_px4uploader = nullptr;
     }
 
     if (m_px4UnplugTimer){
         m_px4UnplugTimer->stop();
         m_px4UnplugTimer->deleteLater();
-        m_px4UnplugTimer = 0;
+        m_px4UnplugTimer = nullptr;
     }
 
     if (m_replugRequestMessageBox) {
         m_replugRequestMessageBox->hide();
         m_replugRequestMessageBox->deleteLater();
-        m_replugRequestMessageBox = 0;
+        m_replugRequestMessageBox = nullptr;
     }
 }
 
@@ -730,7 +731,7 @@ void ApmFirmwareConfig::requestDeviceReplug()
     {
         m_replugRequestMessageBox->hide();
         delete m_replugRequestMessageBox;
-        m_replugRequestMessageBox = 0;
+        m_replugRequestMessageBox = nullptr;
     }
     m_replugRequestMessageBox = new QProgressDialog("Please unplug, and plug back in the PX4/Pixhawk","Cancel",0,30,this);
     QProgressBar *bar = new QProgressBar(m_replugRequestMessageBox);
@@ -751,10 +752,10 @@ void ApmFirmwareConfig::px4UnplugTimerTick()
     {
         m_px4UnplugTimer->stop();
         m_px4UnplugTimer->deleteLater();
-        m_px4UnplugTimer = 0;
+        m_px4UnplugTimer = nullptr;
         m_replugRequestMessageBox->hide();
         m_replugRequestMessageBox->deleteLater();
-        m_replugRequestMessageBox = 0;
+        m_replugRequestMessageBox = nullptr;
         cancelButtonClicked();
 
     }
@@ -766,13 +767,13 @@ void ApmFirmwareConfig::devicePlugDetected()
     {
         m_px4UnplugTimer->stop();
         m_px4UnplugTimer->deleteLater();
-        m_px4UnplugTimer = 0;
+        m_px4UnplugTimer = nullptr;
     }
     if (m_replugRequestMessageBox)
     {
         m_replugRequestMessageBox->hide();
         delete m_replugRequestMessageBox;
-        m_replugRequestMessageBox = 0;
+        m_replugRequestMessageBox = nullptr;
     }
 }
 
@@ -797,7 +798,7 @@ void ApmFirmwareConfig::flashButtonClicked()
         {
             confirmmsg = "You are about to install " + m_buttonToUrlMap[senderbtn].mid(m_buttonToUrlMap[senderbtn].lastIndexOf("/")+1);
         }
-        if (QMessageBox::question(0,"Confirm",confirmmsg,QMessageBox::Ok,QMessageBox::Abort) == QMessageBox::Abort)
+        if (QMessageBox::question(this ,"Confirm",confirmmsg,QMessageBox::Ok,QMessageBox::Abort) == QMessageBox::Abort)
         {
             //aborted.
             return;
@@ -893,7 +894,7 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
             QLOG_TRACE() << "Detected: " << info.description() << " :" << info.productIdentifier();
             return "px4-v2";    //  FMUv2
         }
-        else if(info.description().contains("FMU v5.x"))    //TODO Should be detected by productIdentifier
+        else if(info.description().contains("FMU v5.x"))    //Some Pixhawk 4 have "PX4 FMU v5.x"
         {
             return "px4-v5";    // FMUv5
         }
@@ -901,6 +902,10 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
         {
             return "Unknown";
         }
+    }
+    else if (info.description().toLower().contains("fmuv5"))    //Some Pixhawk 4 have only "fmuv5"
+    {
+        return "px4-v5";    // FMUv5
     }
     else if (info.description().toLower().contains("aerocore"))
     {
@@ -1339,10 +1344,10 @@ void ApmFirmwareConfig::arduinoError(QString error)
 {
     ui.statusLabel->setText(error);
     ui.textBrowser->append(error);
-    QMessageBox::information(0,"Error",error);
+    QMessageBox::information(this, "Error", error);
     cleanUp();
     if (m_tempFirmwareFile) m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
-    m_tempFirmwareFile = NULL;
+    m_tempFirmwareFile = nullptr;
     ui.progressBar->setVisible(false);
     ui.cancelPushButton->setVisible(false);
 }
@@ -1393,7 +1398,7 @@ void ApmFirmwareConfig::arduinoUploadComplete()
     }
     //QLOG_DEBUG() << "Upload finished!" << QString::number(status);
     if (m_tempFirmwareFile) m_tempFirmwareFile->deleteLater(); //This will remove the temporary file.
-    m_tempFirmwareFile = NULL;
+    m_tempFirmwareFile = nullptr;
     ui.progressBar->setVisible(false);
     ui.cancelPushButton->setVisible(false);
 }
