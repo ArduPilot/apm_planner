@@ -209,14 +209,17 @@ void LinkManager::saveSettings()
             for (int j=0;j<link->getHosts().size();j++)
             {
                 QString hostName = link->getHosts().at(j).toString();
-                hostName.append(':');
-                hostName.append(QString::number(link->getPorts().at(j)));
-                if(!knownHosts.contains(hostName))
+                if(hostName != "10.1.1.1")  // never store 10.1.1.1 which are created by Solo see issue #1121
                 {
-                    knownHosts.insert(hostName);
-                    settings.setArrayIndex(storageCount++);
-                    settings.setValue("host",link->getHosts().at(j).toString());
-                    settings.setValue("port",link->getPorts().at(j));
+                    hostName.append(':');
+                    hostName.append(QString::number(link->getPorts().at(j)));
+                    if(!knownHosts.contains(hostName))  // store all adresses only once
+                    {
+                        knownHosts.insert(hostName);
+                        settings.setArrayIndex(storageCount++);
+                        settings.setValue("host",link->getHosts().at(j).toString());
+                        settings.setValue("port",link->getPorts().at(j));
+                    }
                 }
             }
             settings.endArray();
