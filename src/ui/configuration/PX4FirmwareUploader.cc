@@ -7,24 +7,7 @@
 #include <QJsonObject>
 #include <QProcess>
 #include <QApplication>
-#if defined(OPENSSL)
-#include <openssl/ssl.h>
-
-// from https://rt.cpan.org/Public/Bug/Display.html?id=118345
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-#define EVP_PKEY_get0_RSA(pkey) ((pkey)->pkey.rsa)
-#define EVP_PKEY_get0_DSA(pkey) ((pkey)->pkey.dsa)
-#ifndef OPENSSL_NO_EC
-#define EVP_PKEY_get0_EC_KEY(pkey) ((pkey)->pkey.ec)
-#endif
-#endif
-
-#endif
-
 #include "logging.h"
-
-#define CERT_OF_A_FAILED "Certificate of Authenticity check failed! Please check with your autopilot hardware supplier for support."
-#define CERT_OF_A_PUB_KEY_FAILED "Certificate of Authenticity failed COA check! Public Key is not valid."
 
 #define PROTO_OK 0x10
 #define PROTO_GET_DEVICE 0x22
@@ -83,12 +66,11 @@ static quint32 crc32(const QByteArray src)
 
 PX4FirmwareUploader::PX4FirmwareUploader(QObject *parent) :
     QThread(parent),
-    m_port(NULL),
+    m_port(nullptr),
     m_waitingForSync(false),
-    m_checkTimer(NULL),
-    m_currentOtpAddress(0),
+    m_checkTimer(nullptr),
     m_currentSNAddress(0),
-    m_eraseTimeoutTimer(NULL)
+    m_eraseTimeoutTimer(nullptr)
 {
 }
 
@@ -180,6 +162,7 @@ void PX4FirmwareUploader::loadFile(QString filename)
     tempFile->write(uncompressed);
     tempFile->close();
 
+    QLOG_DEBUG() << "Requesting device replug";
     emit requestDevicePlug();
 }
 
@@ -192,17 +175,17 @@ void PX4FirmwareUploader::stop()
         {
             m_checkTimer->stop();
             delete m_checkTimer;
-            m_checkTimer = 0;
+            m_checkTimer = nullptr;
         }
         if (m_eraseTimeoutTimer)
         {
             m_eraseTimeoutTimer->stop();
             delete m_eraseTimeoutTimer;
-            m_eraseTimeoutTimer = 0;
+            m_eraseTimeoutTimer = nullptr;
         }
         m_port->close();
         delete m_port;
-        m_port = 0;
+        m_port = nullptr;
     }
 }
 
@@ -216,6 +199,7 @@ void PX4FirmwareUploader::reqChecksum()
     m_currentState = REQ_CHECKSUM;
     m_port->write(QByteArray().append(0x29).append(0x20));
 }
+
 bool PX4FirmwareUploader::readChecksum()
 {
     if (!m_port)
@@ -265,7 +249,7 @@ void PX4FirmwareUploader::checkForPort()
             emit kickOff();
             m_checkTimer->stop();
             m_checkTimer->deleteLater();
-            m_checkTimer = 0;
+            m_checkTimer = nullptr;
             break;
 #ifdef Q_OS_LINUX
             }
@@ -283,13 +267,14 @@ void PX4FirmwareUploader::checkForPort()
         m_portlist.append(info.portName());
     }
 }
+
 void PX4FirmwareUploader::kickOffTriggered()
 {
     if (m_port)
     {
         m_port->close();
         delete m_port;
-        m_port = NULL;
+        m_port = nullptr;
     }
     m_waitingForSync = false;
     m_currentState = INIT;
@@ -311,6 +296,7 @@ void PX4FirmwareUploader::kickOffTriggered()
     m_port->write(QByteArray().append(0x21).append(0x20));
 
 }
+
 void PX4FirmwareUploader::getDeviceInfo(unsigned char infobyte)
 {
     if (!m_port)
@@ -331,6 +317,7 @@ void PX4FirmwareUploader::reqErase()
     m_port->write(QByteArray().append(0x23).append(0x20));
     m_eraseTimeoutTimer->start(250);
 }
+
 void PX4FirmwareUploader::eraseSyncCheck()
 {
     if (getSync())
@@ -340,7 +327,7 @@ void PX4FirmwareUploader::eraseSyncCheck()
         emit statusUpdate("Erase Complete");
         m_eraseTimeoutTimer->stop();
         m_eraseTimeoutTimer->deleteLater(); //Can't do a direct delete since we're in its slot
-        m_eraseTimeoutTimer = 0;
+        m_eraseTimeoutTimer = nullptr;
         reqFlash();
     }
     else
@@ -350,12 +337,13 @@ void PX4FirmwareUploader::eraseSyncCheck()
         {
             m_eraseTimeoutTimer->stop();
             m_eraseTimeoutTimer->deleteLater(); //Can't do a direct delete since we're in its slot
-            m_eraseTimeoutTimer = 0;
+            m_eraseTimeoutTimer = nullptr;
             //Emit error here
             QLOG_INFO() << "Error flashing, never returned from erase";
         }
     }
 }
+
 void PX4FirmwareUploader::reqReboot()
 {
     if (!m_port)
@@ -366,6 +354,7 @@ void PX4FirmwareUploader::reqReboot()
     m_port->write(QByteArray().append(0x30).append(0x20));
     m_port->flush();
 }
+
 void PX4FirmwareUploader::reqFlash()
 {
     QLOG_INFO() << "Flash requested, flashing firmware";
@@ -376,6 +365,7 @@ void PX4FirmwareUploader::reqFlash()
     m_fwBytesCounter = 0;
     sendNextFwBytes();
 }
+
 bool PX4FirmwareUploader::sendNextFwBytes()
 {
     if (!tempFile)
@@ -392,7 +382,7 @@ bool PX4FirmwareUploader::sendNextFwBytes()
     {
         tempFile->close();
         delete tempFile;
-        tempFile = NULL;
+        tempFile = nullptr;
         return false;
     }
     if (m_fwBytesCounter++ % 50 == 0)
@@ -420,6 +410,7 @@ void PX4FirmwareUploader::getSNAddress(int address)
     }
     m_port->write(QByteArray().append(0x2B).append(address).append((char)0).append((char)0).append((char)0).append(PROTO_EOC));
 }
+
 bool PX4FirmwareUploader::reqNextSNAddress()
 {
     if (m_currentSNAddress >= 12)
@@ -431,6 +422,7 @@ bool PX4FirmwareUploader::reqNextSNAddress()
     m_currentSNAddress+=4;
     return true;
 }
+
 bool PX4FirmwareUploader::readSN()
 {
     if (!m_port)
@@ -450,25 +442,6 @@ bool PX4FirmwareUploader::readSN()
     return false;
 }
 
-void PX4FirmwareUploader::getOtpAddress(int address)
-{
-    m_port->write(QByteArray().append(0x2A).append(address & 0xFF).append(((address >> 8) & 0xFF)).append((char)0).append((char)0));//.append(PROTO_EOC));
-}
-
-bool PX4FirmwareUploader::reqNextOtpAddress()
-{
-    if (m_currentOtpAddress >= 512)
-    {
-        //All OTP is complete
-        return false;
-    }
-    //qDebug() << m_currentOtpAddress << "OTP";
-    getOtpAddress(m_currentOtpAddress);
-    m_currentOtpAddress+=4;
-    return true;
-
-}
-
 bool PX4FirmwareUploader::reqNextDeviceInfo()
 {
     if (m_devInfoList.size() == 0)
@@ -481,6 +454,7 @@ bool PX4FirmwareUploader::reqNextDeviceInfo()
     getDeviceInfo(val);
     return true;
 }
+
 bool PX4FirmwareUploader::getSync()
 {
     if (!m_port)
@@ -503,21 +477,6 @@ bool PX4FirmwareUploader::getSync()
     }
     return false;
 }
-bool PX4FirmwareUploader::readOtp()
-{
-    if (!m_port)
-    {
-        QLOG_ERROR() << "Called readOtp with a null port!";
-        return false;
-    }
-    if (m_port->bytesAvailable() >= 4)
-    {
-        QByteArray infobuf = m_port->read(4);
-        m_otpBytes.append(infobuf);
-        return true;
-    }
-    return false;
-}
 
 bool PX4FirmwareUploader::readDeviceInfo()
 {
@@ -535,19 +494,22 @@ bool PX4FirmwareUploader::readDeviceInfo()
         {
             case PROTO_DEVICE_BOARD_ID:
             {
-                emit statusUpdate("Board ID:" + QString::number(reply));
+                QLOG_DEBUG() << "Board ID:" << reply;
+                emit statusUpdate("Board ID: " + QString::number(reply));
                 emit boardId(reply);
             }
                 break;
             case PROTO_DEVICE_BOARD_REV:
             {
-                emit statusUpdate("Requesting Board Rev");
+                QLOG_DEBUG() << "Board Rev:" << reply;
+                emit statusUpdate("Board Rev: " + QString::number(reply));
                 emit boardRev(reply);
             }
                 break;
             case PROTO_DEVICE_FW_SIZE:
             {
-                emit statusUpdate("Requesting FW Size");
+                QLOG_DEBUG() << "Flash rom Size:" << reply;
+                emit statusUpdate("Flash rom Size: " + QString::number(reply));
                 emit flashSize(reply);
                 m_flashSize = reply;
             }
@@ -562,116 +524,6 @@ bool PX4FirmwareUploader::readDeviceInfo()
     }
     return false;
 }
-bool PX4FirmwareUploader::verifyOtp()
-{
-    QString SIGarg = "";
-    QByteArray signature;
-    for (int i=32;i<(128+32);i++)
-    {
-        signature.append(m_otpBytes[i]);
-        SIGarg += ((unsigned char)m_otpBytes[i] <= (char)0xF ? "0" : "") + QString::number((unsigned char)m_otpBytes[i],16).toUpper();
-    }
-    QByteArray serial;
-    QString SNarg = "";
-    for (int i=0;i<12;i++)
-    {
-        serial.append(m_snBytes[i]);
-        SNarg += ((unsigned char)m_snBytes[i] <= (char)0xF ? "0" : "") + QString::number((unsigned char)m_snBytes[i],16).toUpper();
-    }
-    QLOG_DEBUG() << "Verifying OTP";
-    QLOG_DEBUG() << "Signature:" << signature.toHex();
-    QLOG_DEBUG() << "Serial:" << serial.toHex();
-
-#ifdef Q_OS_WIN
-    QProcess *proc = new QProcess();
-    QLOG_DEBUG() << "Attempting to start" << QApplication::instance()->applicationDirPath() + "/uploader/AP2OTPCheck.exe" << SNarg << SIGarg;
-    proc->start(QApplication::instance()->applicationDirPath() + "/uploader/AP2OTPCheck.exe",QStringList() << SNarg << SIGarg);
-    proc->waitForStarted();
-    proc->waitForFinished();
-    QString result = proc->readAll() + " " + proc->readAllStandardError() + " " + proc->readAllStandardOutput();
-    QLOG_DEBUG() << "Proc finished with:" << result;
-    delete proc;
-    if (!result.contains("Valid Key"))
-    {
-        QLOG_WARN() << CERT_OF_A_FAILED;
-        emit statusUpdate(CERT_OF_A_FAILED);
-        emit warning(CERT_OF_A_FAILED);
-        return false;
-    }
-    else
-    {
-        QLOG_DEBUG() << "COA verification successful";
-        emit statusUpdate("COA verification successful");
-        return true;
-    }
-#else
-    // [TODO] Need to read XML file of list of authorized keys.
-
-    // 3DR COA Public Key
-    QStringList publicKeyList;
-    // 3DR Public Key 1
-    publicKeyList << "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDqi8E6EdZ11iE7nAc95bjdUTwd\r\n/gLetSAAx8X9jgjInz5j47DIcDqFVFKEFZWiAc3AxJE/fNrPQey16SfI0FyDAX/U\t\n4jyGIv9w+M1dKgUPI8UdpEMS2w1YnfzW0GO3PX0SBL6pctEIdXr0NGsFFaqU9Yz4\r\nDbgBdR6wBz9qdfRRoQIDAQAB";
-    // 3DR Public Key 2
-    publicKeyList << "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCei8vGvc+jPXfbAAUkiu7o9fiQ\r\nhQ6/xdJcrmsJqa2/Onf4xDk6mMoZaNXNaNsEmE/xdeYgLqbPoivCba7A0YiGzonp\r\nOiEZlfUKJPzXvGSNrKbIDsOrvhPQpFwBEU+hO5usHoWCO5VzN5+wKTpGVZ300ny4\r\nNHbIGjZUF/RUz84lVwIDAQAB";
-    // Arsov RC Technology USA
-    publicKeyList << "\r\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDJQfXiYHrYIHGadPwDPkUuHnQG\r\nubN4x0UAyvhP1VGzAk/CNYkcSCEKVGbi+Ro3l60xpoiOIR5HfHtzGgzdl+oBu55t\r\n2xjvbJbGIPKkA8pBU10Nj2dg/vjNphWMQpSw2yRdHuqvnrGjOq2fLduS0ITp11ST\r\nRX6cRfeDDXsVkL+XzwIDAQAB";
-
-    bool checkCOAsuccess = false;
-    foreach(QString publicKey, publicKeyList){
-        checkCOAsuccess = checkCOA(serial, signature, publicKey);
-        if (checkCOAsuccess){
-            break;
-        }
-    }
-
-    if (checkCOAsuccess){
-        emit statusUpdate("COA Verification Success");
-    } else {
-        emit statusUpdate(CERT_OF_A_FAILED);
-        emit error(CERT_OF_A_FAILED);
-    }
-
-    return checkCOAsuccess;
-#endif //Q_OS_WIN
-}
-
-bool PX4FirmwareUploader::checkCOA(const QByteArray& serial, const QByteArray& signature, const QString& publicKey)
-{
-#if defined(OPENSSL)
-    QByteArray bytes = QByteArray::fromBase64(publicKey.toUtf8());
-
-    BIO *bi = BIO_new(BIO_s_mem());
-    BIO_write(bi, bytes.data(), bytes.size());
-    EVP_PKEY *pkey = d2i_PUBKEY_bio(bi, NULL);
-    BIO_free(bi);
-
-    if(!pkey)
-    {
-        QLOG_DEBUG() << "Invalid public key: " << publicKey;
-        return false;
-    }
-
-    RSA *rsa_key = EVP_PKEY_get1_RSA(pkey);
-    int verify = RSA_verify(NID_sha1,(unsigned char*)serial.data(),serial.size(),(unsigned char*)signature.data(),signature.size(),rsa_key);
-    RSA_free(rsa_key);
-    if (verify)
-    {
-        //Failed!
-        QLOG_DEBUG() << "Failed to verify against public key:" << publicKey;
-        return false;
-    }
-    else
-    {
-        QLOG_DEBUG() << "COA verification successful with public key" << publicKey;
-        return true;
-    }
-#else
-    Q_UNUSED(serial)
-    Q_UNUSED(signature)
-    Q_UNUSED(publicKey)
-#endif
-    return false;
-}
 
 void PX4FirmwareUploader::portReadyRead()
 {
@@ -684,28 +536,6 @@ void PX4FirmwareUploader::portReadyRead()
             return;
         }
     }
-//    else if (m_currentState == REQ_DEVICE_INFO)
-//    {
-//        if (m_waitingForSync)
-//        {
-//            if (getSync())
-//            {
-//                m_waitingForSync = false;
-//                if (!reqNextDeviceInfo())
-//                {
-//            //Al device info req's are done, request OTP
-//                    m_currentState = REQ_OTP;
-//                    emit statusUpdate("Requesting CoA");
-//                    reqNextOtpAddress();
-//                }
-//            }
-//        }
-//        else if (readDeviceInfo())
-//        {
-//            m_waitingForSync = true;
-//            portReadyRead(); //Check for sync before popping out.
-//        }
-//    }
     else if (m_currentState == REQ_DEVICE_INFO)
     {
         if (m_waitingForSync)
@@ -738,7 +568,7 @@ void PX4FirmwareUploader::portReadyRead()
                 m_waitingForSync = false;
                 if (!reqNextSNAddress())
                 {
-                    QLOG_INFO() << "SN read complete"; 
+                    QLOG_INFO() << "SN read complete" << m_snBytes.toHex();
                     emit serialNumber(m_snBytes.toHex());
                     emit statusUpdate("Erasing board");
                     reqErase();
@@ -749,7 +579,7 @@ void PX4FirmwareUploader::portReadyRead()
         else if (readSN())
         {
             m_waitingForSync = true;
-        portReadyRead();  //Check for sync before popping out.
+            portReadyRead();  //Check for sync before popping out.
         }
     }
     else if (m_currentState == SEND_FW)
@@ -782,7 +612,7 @@ void PX4FirmwareUploader::portReadyRead()
                 reqReboot();
                 m_port->close();
                 m_port->deleteLater(); //We're in a slot for m_port, so don't delete it now.
-                m_port = NULL; //But since we called deleteLater, it's safe to clear it out, Qt promises.
+                m_port = nullptr; //But since we called deleteLater, it's safe to clear it out, Qt promises.
                 emit complete();
             }
             return;
@@ -802,7 +632,7 @@ void PX4FirmwareUploader::portReadyRead()
                 emit statusUpdate("CRC mismatch! Firmware write failed, please try again");
                 m_port->close();
                 m_port->deleteLater();
-                m_port = 0;
+                m_port = nullptr;
                 emit complete();
                 return;
             }
