@@ -300,6 +300,11 @@ void ApmFirmwareConfig::cleanUp()
         m_arduinoUploader->deleteLater();
         m_arduinoUploader = nullptr;
     }
+
+    if (!m_timer.isActive()){
+        QLOG_DEBUG() << "ApmFirmwareConfig start port scanning after cleanup.";
+        m_timer.start(100);
+    }
 }
 
 void ApmFirmwareConfig::px4StatusUpdate(QString update)
@@ -603,6 +608,11 @@ void ApmFirmwareConfig::px4Cleanup()
         m_replugRequestMessageBox->deleteLater();
         m_replugRequestMessageBox = nullptr;
     }
+
+    if (!m_timer.isActive()) {
+        QLOG_DEBUG() << "ApmFirmwareConfig start port scanning after px4Cleanup.";
+        m_timer.start(100);
+    }
 }
 
 void ApmFirmwareConfig::px4Finished()
@@ -674,6 +684,9 @@ void ApmFirmwareConfig::downloadFinished()
 
  void ApmFirmwareConfig::flashFirmware(QString filename)
  {
+     QLOG_DEBUG() << "ApmFirmwareConfig flashFirmware - stop port scanning";
+     m_timer.stop();
+
     ui.cancelPushButton->setVisible(true);
     ui.progressBar->setVisible(true);
 
@@ -809,9 +822,9 @@ void ApmFirmwareConfig::flashButtonClicked()
         //http://firmware.ardupilot.org/Plane/stable/apm2/ArduPlane.hex
         ui.textBrowser->append("Started downloading " + m_buttonToUrlMap[senderbtn]);
         connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
-
         connect(reply,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
         connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(firmwareDownloadProgress(qint64,qint64)));
+
         ui.statusLabel->setText("Downloading");
         ui.progressBar->setVisible(true);
         ui.progressBar->setMaximum(100);
@@ -853,11 +866,15 @@ void ApmFirmwareConfig::setLink(int index)
                     QLOG_DEBUG() << "Detected Platform:" << platform;
                     requestFirmwares(m_firmwareType, platform);
                 }
-                else
+                else if (platform == "Unknown")
                 {
                     QLOG_DEBUG() << "Unknown platform: " << list;
                     ui.textBrowser->append("Unknown platform: " + list.join(';') + " Processing stopped.");
                     m_autopilotType = DEFAULT_AUTOPILOT_HW_TYPE;
+                }
+                else
+                {
+                    QLOG_DEBUG() << "Platform did not change - is still: " << platform;
                 }
             }
         }
@@ -900,6 +917,7 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
         }
         else
         {
+            QLOG_DEBUG() << "Unknown detected:" << info.productIdentifier() << info.description();
             return "Unknown";
         }
     }
@@ -1244,23 +1262,21 @@ bool ApmFirmwareConfig::compareVersionStrings(const QString& newVersion, const Q
 void ApmFirmwareConfig::flashCustomFirmware()
 {
     // Show File SelectionDialog
-
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QGC::appDataDirectory(),
-                                                     tr("bin (*.hex *.px4 *.apj)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open File"), QGC::appDataDirectory(), tr("bin (*.hex *.px4 *.apj)"));
     QApplication::processEvents(); // Helps clear dialog from screen
 
-    if (filename.length() > 0){
+    if (filename.length() > 0)
+    {
         QLOG_DEBUG() << "Selected File to flash: " << filename;
         ui.progressBar->setEnabled(true);
         ui.progressBar->setTextVisible(false);
         ui.statusLabel->setText("Flashing");
         flashFirmware(filename);
-
-    } else {
-        QLOG_DEBUG() << "custom firmware flash cancelled: ";
-        return;
     }
-
+    else
+    {
+        QLOG_DEBUG() << "custom firmware flash cancelled.";
+    }
 }
 
 void ApmFirmwareConfig::checkForUpdates(const QString &versionString)
