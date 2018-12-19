@@ -72,8 +72,8 @@ linux-g++-64 | linux-g++ {
     contains( DISTRO, "Arch" ) {
         message(ArchLinux Build)
         DEFINES += Q_ARCHLINUX
-        INCLUDEPATH += /usr/include/openssl-1.0
-        LIBRARYPATH += /usr/lib/openssl-1.0
+#        INCLUDEPATH += /usr/include/openssl-1.0
+#        LIBRARYPATH += /usr/lib/openssl-1.0
     }
 
     contains( REDHAT_RELEASE, "Fedora" ) {
@@ -208,8 +208,8 @@ OpenBSDBuild {
 
 #    LIBS += -lsndfile
     LIBS += -lz
-    LIBS += -lssl -lcrypto
-    DEFINES += OPENSSL
+#    LIBS += -lssl -lcrypto
+#    DEFINES += OPENSSL
 }
 
 LinuxBuild {
@@ -222,8 +222,8 @@ LinuxBuild {
 
     LIBS += -lsndfile -lasound
     LIBS += -lz
-    LIBS += -lssl -lcrypto
-    DEFINES += OPENSSL
+#    LIBS += -lssl -lcrypto
+#    DEFINES += OPENSSL
 }
 
 WindowsBuild {

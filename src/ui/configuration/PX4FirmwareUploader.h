@@ -9,21 +9,17 @@ class PX4FirmwareUploader : public QThread
 {
     Q_OBJECT
 public:
-    explicit PX4FirmwareUploader(QObject *parent = 0);
+    explicit PX4FirmwareUploader(QObject *parent = nullptr);
     enum State
     {
         INIT,
         REQ_DEVICE_INFO,
-        REQ_OTP,
         REQ_SN,
         SEND_FW,
         REQ_CHECKSUM
     };
     void stop();
     void loadFile(QString filename);
-
-private:
-    bool checkCOA(const QByteArray& serial, const QByteArray& signature, const QString& publicKey);
 
 private:
     QList<QString> m_portlist;
@@ -37,13 +33,6 @@ private:
     State m_currentState;
 
     bool getSync();
-    bool verifyOtp();
-
-    bool reqNextOtpAddress();
-    void getOtpAddress(int address);
-    bool readOtp();
-    int m_currentOtpAddress;
-    QByteArray m_otpBytes;
 
     bool reqNextSNAddress();
     void getSNAddress(int address);
@@ -89,7 +78,6 @@ signals:
     void devicePlugDetected();
     void complete();
     void serialNumber(QString sn);
-    void OTP(QString otp);
     void boardRev(int rev);
     void boardId(int id);
     void bootloaderRev(int rev);
