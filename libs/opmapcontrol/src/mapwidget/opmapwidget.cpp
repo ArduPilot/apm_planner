@@ -38,6 +38,8 @@ namespace mapcontrol
         UAV(0),
         GPS(0),
         Home(0),
+        p_Trail(nullptr),
+        p_TrailCursor(nullptr),
         followmouse(true),
         compass(0),
         showuav(false),
@@ -99,6 +101,20 @@ namespace mapcontrol
             GPS->SetUavPic(UAVPic);
 
 
+    }
+
+    GPSItem *OPMapWidget::AddTrail()
+    {
+        p_Trail = new GPSItem(map, this);
+        p_Trail->setParentItem(map);
+        return p_Trail;
+    }
+
+    GPSItem *OPMapWidget::AddTrailCursor()
+    {
+        p_TrailCursor = new GPSItem(map, this);
+        p_TrailCursor->setParentItem(map);
+        return p_TrailCursor;
     }
 
     UAVItem* OPMapWidget::AddUAV(int id)
@@ -232,6 +248,8 @@ namespace mapcontrol
     OPMapWidget::~OPMapWidget()
     {
         delete UAV;
+        delete p_Trail;
+        delete p_TrailCursor;
 
         foreach(UAVItem* uav, this->UAVS)
         {

@@ -363,7 +363,12 @@ namespace mapcontrol
         QMap<int, QGraphicsItemGroup*> waypointLines;
         GPSItem* GPS;
         HomeItem* Home;
+        GPSItem *p_Trail;
+        GPSItem *p_TrailCursor;
         // END OF FIXME XXX
+
+        GPSItem *AddTrail();
+        GPSItem *AddTrailCursor();
 
         UAVItem* AddUAV(int id);
         void AddUAV(int id, UAVItem* uav);
