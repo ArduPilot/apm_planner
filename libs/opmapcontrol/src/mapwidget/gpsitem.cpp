@@ -34,142 +34,99 @@ namespace mapcontrol
 {
     GPSItem::GPSItem(MapGraphicItem* map,OPMapWidget* parent,QString uavPic) :
         GraphicsItem(map, parent),
-        showtrail(true), showtrailline(true), trailtime(5), traildistance(50),
-        autosetreached(true), autosetdistance(100)
+        altitude(0),
+        trailtype(UAVTrailType::ByDistance),
+        trail(nullptr),
+        trailLine(nullptr),
+        showtrail(false),
+        showtrailline(true),
+        trailtime(5),
+        traildistance(10),
+        showUAV(true)
     {
         picture.load(uavPic);
-       // Don't scale but trust the image we are given
-       // pic=pic.scaled(50,33,Qt::IgnoreAspectRatio);
         core::Point localposition = map->FromLatLngToLocal(mapwidget->CurrentPosition());
-        this->setPos(localposition.X(),localposition.Y());
+        this->setPos(localposition.X(), localposition.Y());
         this->setZValue(4);
-        trail=new QGraphicsItemGroup();
+        trail = new QGraphicsItemGroup(this);
         trail->setParentItem(map);
-        trailLine=new QGraphicsItemGroup();
+        trailLine = new QGraphicsItemGroup(this);
         trailLine->setParentItem(map);
-        this->setFlag(QGraphicsItem::ItemIgnoresTransformations,true);
-        mapfollowtype=UAVMapFollowType::None;
-        trailtype=UAVTrailType::ByDistance;
+        this->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
         timer.start();
     }
+
     GPSItem::~GPSItem()
     {
-        delete trail;
     }
 
     void GPSItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
     {
         Q_UNUSED(option);
         Q_UNUSED(widget);
-       // painter->rotate(-90);
-        painter->drawPixmap(-picture.width()/2,-picture.height()/2,picture);
-       //   painter->drawRect(QRectF(-picture.width()/2,-picture.height()/2,picture.width()-1,picture.height()-1));
+        if(showUAV)
+        {
+            painter->drawPixmap(-picture.width()/2,-picture.height()/2,picture);
+        }
     }
+
     QRectF GPSItem::boundingRect()const
     {
         return QRectF(-picture.width()/2,-picture.height()/2,picture.width(),picture.height());
     }
+
     void GPSItem::SetUAVPos(const internals::PointLatLng &position, const int &altitude)
     {
         if(coord.IsEmpty())
-            lastcoord=coord;
-        if(coord!=position)
+            lastcoord = coord;
+        if(coord != position)
         {
 
-            if(trailtype==UAVTrailType::ByTimeElapsed)
+            if(trailtype == UAVTrailType::ByTimeElapsed)
             {
                 if(timer.elapsed()>trailtime*1000)
                 {
-                    trail->addToGroup(new TrailItem(position,altitude,Qt::green,this));
+                    trail->addToGroup(new TrailItem(position, altitude, Qt::green, map));
                     if(!lasttrailline.IsEmpty())
-                        trailLine->addToGroup((new TrailLineItem(lasttrailline,position,Qt::green,map)));
-                    lasttrailline=position;
+                        trailLine->addToGroup((new TrailLineItem(lasttrailline, position, Qt::green, map)));
+                    lasttrailline = position;
                     timer.restart();
                 }
 
             }
-            else if(trailtype==UAVTrailType::ByDistance)
+            else if(trailtype == UAVTrailType::ByDistance)
             {
-                if(qAbs(internals::PureProjection::DistanceBetweenLatLng(lastcoord,position)*1000)>traildistance)
+                if((traildistance == 0) || (qAbs(internals::PureProjection::DistanceBetweenLatLng(lastcoord, position) * 1000) > traildistance))
                 {
-                    trail->addToGroup(new TrailItem(position,altitude,Qt::green,this));
+                    trail->addToGroup(new TrailItem(position, altitude, Qt::green, map));
                     if(!lasttrailline.IsEmpty())
-
-                        trailLine->addToGroup((new TrailLineItem(lasttrailline,position,Qt::green,this)));
-                    lasttrailline=position;
-                    lastcoord=position;
+                        trailLine->addToGroup((new TrailLineItem(lasttrailline, position, Qt::green, map)));
+                    lasttrailline = position;
+                    lastcoord = position;
                 }
             }
-            coord=position;
-            this->altitude=altitude;
-            RefreshPos();
-            /*if(mapfollowtype==UAVMapFollowType::CenterAndRotateMap||mapfollowtype==UAVMapFollowType::CenterMap)
-            {
-                mapwidget->SetCurrentPosition(coord);
-            }*/
+            coord = position;
+            this->altitude = altitude;
+
             this->update();
-            /*if(autosetreached)
-            {
-                foreach(QGraphicsItem* i,map->childItems())
-                {
-                    WayPointItem* wp=qgraphicsitem_cast<WayPointItem*>(i);
-                    if(wp)
-                    {
-                        if(Distance3D(wp->Coord(),wp->Altitude())<autosetdistance)
-                        {
-                            wp->SetReached(true);
-                            emit UAVReachedWayPoint(wp->Number(),wp);
-                        }
-                    }
-                }
-            }
-            if(mapwidget->Home!=0)
-            {
-                //verify if the UAV is inside the safety bouble
-                if(Distance3D(mapwidget->Home->Coord(),mapwidget->Home->Altitude())>mapwidget->Home->SafeArea())
-                {
-                    if(mapwidget->Home->safe!=false)
-                    {
-                        mapwidget->Home->safe=false;
-                        mapwidget->Home->update();
-                        emit UAVLeftSafetyBouble(this->coord);
-                    }
-                }
-                else
-                {
-                    if(mapwidget->Home->safe!=true)
-                    {
-                        mapwidget->Home->safe=true;
-                        mapwidget->Home->update();
-                    }
-                }
-
-            }*/
         }
     }
 
     /**
-      * Rotate the UAV Icon on the map, or rotate the map
-      * depending on the display mode
+      * Rotate the UAV Icon on the map
       */
     void GPSItem::SetUAVHeading(const qreal &value)
     {
-        if(mapfollowtype==UAVMapFollowType::CenterAndRotateMap)
+        if (this->rotation() != value)
         {
-            mapwidget->SetRotate(-value);
-        }
-        else {
-            if (this->rotation() != value)
-                this->setRotation(value);
+            this->setRotation(value);
         }
     }
-
 
     int GPSItem::type()const
     {
         return Type;
     }
-
 
     void GPSItem::RefreshPos()
     {
@@ -189,23 +146,27 @@ namespace mapcontrol
         }
 
     }
+
     void GPSItem::SetTrailType(const UAVTrailType::Types &value)
     {
         trailtype=value;
         if(trailtype==UAVTrailType::ByTimeElapsed)
             timer.restart();
     }
+
     void GPSItem::SetShowTrail(const bool &value)
     {
         showtrail=value;
         trail->setVisible(value);
 
     }
+
     void GPSItem::SetShowTrailLine(const bool &value)
     {
         showtrailline=value;
         trailLine->setVisible(value);
     }
+
     void GPSItem::DeleteTrail()const
     {
         foreach(QGraphicsItem* i,trail->childItems())
@@ -213,12 +174,14 @@ namespace mapcontrol
         foreach(QGraphicsItem* i,trailLine->childItems())
             delete i;
     }
+
     double GPSItem::Distance3D(const internals::PointLatLng &coord, const int &altitude)
     {
        return sqrt(pow(internals::PureProjection::DistanceBetweenLatLng(this->coord,coord)*1000,2)+
        pow(static_cast<float>(this->altitude-altitude),2));
 
     }
+
     void GPSItem::SetUavPic(QString UAVPic)
     {
         picture.load(":/uavs/images/"+UAVPic);

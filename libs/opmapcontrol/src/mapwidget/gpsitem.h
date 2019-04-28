@@ -69,23 +69,11 @@ namespace mapcontrol
         */
         internals::PointLatLng UAVPos()const{return coord;}
         /**
-        * @brief Sets the Map follow type
-        *
-        * @param value can be "none"(map doesnt follow UAV), "CenterMap"(map moves to keep UAV centered) or "CenterAndRotateMap"(map moves and rotates to keep UAV centered and straight)
-        */
-        void SetMapFollowType(UAVMapFollowType::Types const& value){mapfollowtype=value;}
-        /**
         * @brief Sets the trail type
         *
         * @param value can be "NoTrail"(no trail is plotted), "ByTimeElapsed"(a trail point is plotted each TrailTime()) or ByDistance(a trail point is plotted if the distance between the UAV and the last trail point is bigger than TrailDistance())
         */
         void SetTrailType(UAVTrailType::Types const& value);
-        /**
-        * @brief Returns the map follow method used
-        *
-        * @return UAVMapFollowType::Types
-        */
-        UAVMapFollowType::Types GetMapFollowType()const{return mapfollowtype;}
         /**
         * @brief Returns the UAV trail type. It can be plotted by time elapsed or distance
         *
@@ -185,9 +173,11 @@ namespace mapcontrol
         int type() const;
 
         void SetUavPic(QString UAVPic);
+
+        void ShowUavPic(bool show){showUAV = show;}
+
     private:
         int altitude;
-        UAVMapFollowType::Types mapfollowtype;
         UAVTrailType::Types trailtype;
         internals::PointLatLng lastcoord;
         QGraphicsItemGroup* trail;
@@ -199,15 +189,12 @@ namespace mapcontrol
         int trailtime;
         int traildistance;
         bool autosetreached;
-        double Distance3D(internals::PointLatLng const& coord, int const& altitude);
+        bool showUAV;
         double autosetdistance;
-      //  QRectF rect;
 
-    public slots:
 
-    signals:
-        void UAVReachedWayPoint(int const& waypointnumber,WayPointItem* waypoint);
-        void UAVLeftSafetyBouble(internals::PointLatLng const& position);
-    };
+        double Distance3D(internals::PointLatLng const& coord, int const& altitude);
+
+};
 }
 #endif // GPSITEM_H
