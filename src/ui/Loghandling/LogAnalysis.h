@@ -46,6 +46,8 @@ This file is part of the APM_PLANNER project
 #include "ui_LogAnalysis.h"
 #include "PresetManager.h"
 
+#include "LogAnalysisMap.h"
+
 /**
  * @brief The LogAnalysisCursor class defines a cursor line (vertical selectable, movable line in plot).
  *        It supports 3 types of cursors:
@@ -312,6 +314,8 @@ private:
     LogAnalysisCursor *mp_cursorSimple;     ///< Pointer to the simple cursor only valid if visible
     LogAnalysisCursor *mp_cursorLeft;       ///< Pointer to the left cursor only valid if visible
     LogAnalysisCursor *mp_cursorRight;      ///< Pointer to the right cursor only valid if visible
+
+    QPointer<LogAnalysisMap> mp_logAnalysisMap;
 
     /**
      * @brief setupXAxisAndScroller sets up x axis and the horizontal scroller
@@ -633,6 +637,8 @@ private slots:
      * @brief addCurrentViewToPreset - applies the current graph view to the preset manager
      */
     void addCurrentViewToPreset();
+
+    void showMapViewClicked();
 
 };
 
