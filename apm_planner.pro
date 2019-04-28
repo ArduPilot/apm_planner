@@ -490,6 +490,7 @@ FORMS += \
     src/ui/uas/PreFlightCalibrationDialog.ui \
     src/ui/configuration/RadioFlashWizard.ui \
     src/ui/LogAnalysis.ui \
+    src/ui/LogAnalysisMap.ui \
     src/ui/configuration/FrameTypeConfigOld.ui \
     src/ui/configuration/FrameTypeConfigNew.ui
 
@@ -727,6 +728,7 @@ HEADERS += \
     src/ui/Loghandling/LogdataStorage.h \
     src/ui/Loghandling/LogExporter.h \
     src/ui/Loghandling/LogAnalysis.h \
+    src/ui/Loghandling/LogAnalysisMap.h \
     src/ui/Loghandling/PresetManager.h
 
 SOURCES += src/main.cc \
@@ -953,6 +955,7 @@ SOURCES += src/main.cc \
     src/ui/Loghandling/LogdataStorage.cpp \
     src/ui/Loghandling/LogExporter.cpp \
     src/ui/Loghandling/LogAnalysis.cpp \
+    src/ui/Loghandling/LogAnalysisMap.cpp\
     src/ui/Loghandling/PresetManager.cpp
 
 MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)

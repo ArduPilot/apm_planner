@@ -35,13 +35,12 @@ This file is part of the APM_PLANNER project
 #include "Loghandling/PresetManager.h"
 
 
-
 LogAnalysisCursor::LogAnalysisCursor(QCustomPlot *parentPlot, double xPosition, CursorType type) :
     QCPItemStraightLine(parentPlot),
     m_currentPos(xPosition),
     m_otherCursorPos(0.0),
     m_type(type),
-    mp_otherCursor(0)
+    mp_otherCursor(nullptr)
 {
     QLOG_TRACE() << "LogAnalysisCursor::LogAnalysisCursor - CTOR - type " << type;
     point1->setCoords(m_currentPos, 1);
@@ -205,9 +204,9 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     m_statusTextPos(0),
     m_lastHorizontalScrollVal(0),
     m_cursorXAxisRange(0.0),
-    mp_cursorSimple(0),
-    mp_cursorLeft(0),
-    mp_cursorRight(0)
+    mp_cursorSimple(nullptr),
+    mp_cursorLeft(nullptr),
+    mp_cursorRight(nullptr)
 {
     QLOG_DEBUG() << "LogAnalysis::LogAnalysis - CTOR";
     ui.setupUi(this);
@@ -223,6 +222,13 @@ LogAnalysis::LogAnalysis(QWidget *parent) :
     mp_KMLExportMenuEntry = exportMenu->addAction("Export to KML/KMZ file");
     connect(mp_KMLExportMenuEntry, SIGNAL(triggered()), this, SLOT(exportKmlClicked()));
     mp_KMLExportMenuEntry->setDisabled(true);
+    // add view menu
+    QMenu *viewMenu = new QMenu("View",this);
+    m_menuBarPtr->addMenu(viewMenu);
+    // and add Trail view
+    p_Action = viewMenu->addAction("GPS Trail");
+    connect(p_Action, SIGNAL(triggered()), this, SLOT(showMapViewClicked()));
+
 
     // create preset menu and give it to preset manager
     m_presetMgrPtr.reset(new PresetManager(this, m_menuBarPtr.data()));
@@ -339,6 +345,12 @@ LogAnalysis::~LogAnalysis()
 {
     QLOG_DEBUG() << "LogAnalysis::~LogAnalysis - DTOR";
     saveSettings();
+
+    // Close map window if it is alive...
+    if (!mp_logAnalysisMap.isNull())
+    {
+        mp_logAnalysisMap->deleteLater();
+    }
 }
 
 void LogAnalysis::loadLog(QString filename)
@@ -377,7 +389,7 @@ void LogAnalysis::setTablePos(double xPosition)
 
         if (m_useTimeOnXAxis)
         {
-            timeStamp = xPosition;
+            timeStamp = xPosition < 0.0 ? 0.0 : xPosition;
             xPosition = m_dataStoragePtr->getNearestIndexForTimestamp(timeStamp);
         }
 
@@ -390,6 +402,10 @@ void LogAnalysis::setTablePos(double xPosition)
             ui.tableWidget->scrollToBottom();
             double plotPos = m_useTimeOnXAxis ? m_dataStoragePtr->getMaxTimeStamp() : max;
             mp_cursorSimple->setCurrentXPos(plotPos);
+            if (mp_logAnalysisMap != nullptr)
+            {
+                mp_logAnalysisMap->setUavCursor(max);
+            }
 
         }
         else if ( position <= min )
@@ -397,6 +413,10 @@ void LogAnalysis::setTablePos(double xPosition)
             ui.tableWidget->scrollToTop();
             double plotPos = m_useTimeOnXAxis ? m_dataStoragePtr->getMinTimeStamp() : min;
             mp_cursorSimple->setCurrentXPos(plotPos);
+            if (mp_logAnalysisMap != nullptr)
+            {
+                mp_logAnalysisMap->setUavCursor(min);
+            }
         }
         else
         {
@@ -422,6 +442,11 @@ void LogAnalysis::setTablePos(double xPosition)
             }
             ui.tableWidget->setCurrentIndex(index);
             ui.tableWidget->scrollTo(index);
+
+            if (mp_logAnalysisMap != nullptr)
+            {
+                mp_logAnalysisMap->setUavCursor(position);
+            }
         }
     }
 }
@@ -680,7 +705,7 @@ void LogAnalysis::showValueUnderMouseClicked(bool checked)
 
 void LogAnalysis::logLoadingStarted()
 {
-    m_loadProgressDialog.reset(new QProgressDialog("Loading File", "Cancel", 0, 100, 0));
+    m_loadProgressDialog.reset(new QProgressDialog("Loading File", "Cancel", 0, 100, nullptr));
     m_loadProgressDialog->setWindowModality(Qt::WindowModal);
     connect(m_loadProgressDialog.data(), SIGNAL(canceled()), this, SLOT(logLoadingProgressDialogCanceled()));
     m_loadProgressDialog->show();
@@ -1011,9 +1036,9 @@ void LogAnalysis::indexTypeCheckBoxClicked(bool checked)
 
         // remove the text arrows and cursors
         m_plotPtr->clearItems();
-        mp_cursorSimple = 0;      // clearItems() deletes the cursors!
-        mp_cursorLeft = 0;        // clearItems() deletes the cursors!
-        mp_cursorRight = 0;       // clearItems() deletes the cursors!
+        mp_cursorSimple = nullptr;      // clearItems() deletes the cursors!
+        mp_cursorLeft = nullptr;        // clearItems() deletes the cursors!
+        mp_cursorRight = nullptr;       // clearItems() deletes the cursors!
         m_cursorXAxisRange = 0.0; // no cursor no range
 
         // uncheck cursor checkboxes
@@ -1160,6 +1185,10 @@ void LogAnalysis::selectedRowChanged(QModelIndex current, QModelIndex previous)
     }
 
     m_dataStoragePtr->selectedRowChanged(mp_tableFilterProxyModel->mapToSource(current));
+    if (mp_logAnalysisMap != nullptr)
+    {
+        mp_logAnalysisMap->setUavCursor(index);
+    }
 
     // TODO check if we want to handle a context menu on table?!
 }
@@ -1454,7 +1483,7 @@ void LogAnalysis::removeSimpleCursor()
     if(mp_cursorSimple)
     {
         m_plotPtr->removeItem(mp_cursorSimple); // remove also deletes the pointer
-        mp_cursorSimple = 0;
+        mp_cursorSimple = nullptr;
     }
     m_plotPtr->replot();
     // when cursors are removed the check box should reflect this
@@ -1466,12 +1495,12 @@ void LogAnalysis::removeRangeCursors()
     if(mp_cursorLeft)
     {
         m_plotPtr->removeItem(mp_cursorLeft); // remove also deletes the pointer
-        mp_cursorLeft = 0;
+        mp_cursorLeft = nullptr;
     }
     if(mp_cursorRight)
     {
         m_plotPtr->removeItem(mp_cursorRight); // remove also deletes the pointer
-        mp_cursorRight = 0;
+        mp_cursorRight = nullptr;
     }
     m_cursorXAxisRange = 0.0;   // no cursor no range
     m_plotPtr->replot();
@@ -1627,4 +1656,25 @@ void LogAnalysis::addCurrentViewToPreset()
     }
 
     m_presetMgrPtr->addToCurrentPresets(preset);
+}
+
+void LogAnalysis::showMapViewClicked()
+{
+    if (mp_logAnalysisMap.isNull())
+    {
+        mp_logAnalysisMap = new LogAnalysisMap;
+        mp_logAnalysisMap->setAttribute(Qt::WA_DeleteOnClose, true);
+        mp_logAnalysisMap->show();
+        mp_logAnalysisMap->activateWindow();
+        mp_logAnalysisMap->raise();
+
+        mp_logAnalysisMap->setDataStorage(m_dataStoragePtr);
+        mp_logAnalysisMap->paintUAVTrail();
+    }
+    else
+    {
+        mp_logAnalysisMap->show();
+        mp_logAnalysisMap->activateWindow();
+        mp_logAnalysisMap->raise();
+    }
 }
