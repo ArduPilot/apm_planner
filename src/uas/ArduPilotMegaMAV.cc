@@ -1155,6 +1155,12 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
     case Copter::FLOWHOLD:
         outputStream << "Flowhold";
         break;
+    case Copter::FOLLOW:
+        outputStream << "Follow";
+        break;
+    case Copter::ZIGZAG:
+        outputStream << "ZigZag";
+        break;
     default:
         outputStream << "Unknown Mode:" << message.getMode();
         break;

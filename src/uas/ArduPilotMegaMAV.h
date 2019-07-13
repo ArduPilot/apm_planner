@@ -496,6 +496,8 @@ enum Mode
     GUIDED_NOGPS= 20,
     SMART_RTL   = 21,
     FLOWHOLD    = 22,
+    FOLLOW      = 23,
+    ZIGZAG      = 24,
     LAST_MODE           // This must always be the last entry
 };
 
