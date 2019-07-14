@@ -99,54 +99,54 @@ ArduCopterPidConfig::ArduCopterPidConfig(QWidget *parent) : AP2ConfigWidget(pare
     connect(ui.writePushButton,SIGNAL(clicked()),this,SLOT(writeButtonClicked()));
     connect(ui.refreshPushButton,SIGNAL(clicked()),this,SLOT(refreshButtonClicked()));
 
-    m_ch6ValueToTextList.append(QPair<int,QString>(0,"CH6_NONE"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(1,"CH6_STABILIZE_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(2,"CH6_STABILIZE_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(3,"CH6_YAW_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(24,"CH6_YAW_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(4,"CH6_RATE_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(5,"CH6_RATE_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(6,"CH6_YAW_RATE_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(26,"CH6_YAW_RATE_KD"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(7,"CH6_THROTTLE_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(9,"CH6_RELAY"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(10,"CH6_WP_SPEED"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(12,"CH6_LOITER_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(13,"CH6_HELI_EXTERNAL_GYRO"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(14,"CH6_THR_HOLD_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(17,"CH6_OPTFLOW_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(18,"CH6_OPTFLOW_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(19,"CH6_OPTFLOW_KD"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(21,"CH6_RATE_KD"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(22,"CH6_LOITER_RATE_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(23,"CH6_LOITER_RATE_KD"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(25,"CH6_ACRO_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(27,"CH6_LOITER_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(28,"CH6_LOITER_RATE_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(29,"CH6_STABILIZE_KD"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(30,"CH6_AHRS_YAW_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(31,"CH6_AHRS_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(32,"CH6_INAV_TC"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(33,"CH6_THROTTLE_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(34,"CH6_THR_ACCEL_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(35,"CH6_THR_ACCEL_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(36,"CH6_THR_ACCEL_KD"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(38,"CH6_DECLINATION"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(39,"CH6_CIRCLE_RATE"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(41,"CH6_SONAR_GAIN"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(42,"CH6_EKF_VERTICAL_POS"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(43,"CH6_EKF_HORIZONTAL_POS"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(44,"CH6_EKF_ACCEL_NOISE"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(45,"CH6_RC_FEEL_RP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(46,"CH6_RATE_PITCH_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(47,"CH6_RATE_PITCH_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(48,"CH6_RATE_PITCH_KD"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(49,"CH6_RATE_ROLL_KP"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(50,"CH6_RATE_ROLL_KI"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(51,"CH6_RATE_ROLL_KD"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(52,"CH6_RATE_PITCH_FF"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(53,"CH6_RATE_ROLL_FF"));
-    m_ch6ValueToTextList.append(QPair<int,QString>(54,"CH6_RATE_YAW_FF"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(0,"RC6_NONE"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(1,"RC6_STABILIZE_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(2,"RC6_STABILIZE_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(3,"RC6_YAW_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(24,"RC6_YAW_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(4,"RC6_RATE_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(5,"RC6_RATE_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(6,"RC6_YAW_RATE_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(26,"RC6_YAW_RATE_KD"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(7,"RC6_THROTTLE_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(9,"RC6_RELAY"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(10,"RC6_WP_SPEED"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(12,"RC6_LOITER_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(13,"RC6_HELI_EXTERNAL_GYRO"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(14,"RC6_THR_HOLD_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(17,"RC6_OPTFLOW_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(18,"RC6_OPTFLOW_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(19,"RC6_OPTFLOW_KD"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(21,"RC6_RATE_KD"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(22,"RC6_LOITER_RATE_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(23,"RC6_LOITER_RATE_KD"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(25,"RC6_ACRO_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(27,"RC6_LOITER_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(28,"RC6_LOITER_RATE_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(29,"RC6_STABILIZE_KD"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(30,"RC6_AHRS_YAW_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(31,"RC6_AHRS_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(32,"RC6_INAV_TC"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(33,"RC6_THROTTLE_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(34,"RC6_THR_ACCEL_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(35,"RC6_THR_ACCEL_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(36,"RC6_THR_ACCEL_KD"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(38,"RC6_DECLINATION"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(39,"RC6_CIRCLE_RATE"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(41,"RC6_SONAR_GAIN"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(42,"RC6_EKF_VERTICAL_POS"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(43,"RC6_EKF_HORIZONTAL_POS"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(44,"RC6_EKF_ACCEL_NOISE"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(45,"RC6_RC_FEEL_RP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(46,"RC6_RATE_PITCH_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(47,"RC6_RATE_PITCH_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(48,"RC6_RATE_PITCH_KD"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(49,"RC6_RATE_ROLL_KP"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(50,"RC6_RATE_ROLL_KI"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(51,"RC6_RATE_ROLL_KD"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(52,"RC6_RATE_PITCH_FF"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(53,"RC6_RATE_ROLL_FF"));
+    m_ch6ValueToTextList.append(QPair<int,QString>(54,"RC6_RATE_YAW_FF"));
 
     for (int i=0;i<m_ch6ValueToTextList.size();i++)
     {
@@ -299,7 +299,7 @@ void ArduCopterPidConfig::parameterChanged(int uas, int component, QString param
             }
         }
     }
-    else if (parameterName == "CH7_OPT")
+    else if (parameterName == "RC7_OPT")
     {
         for (int i=0;i<m_ch78ValueToTextList.size();i++)
         {
@@ -309,7 +309,7 @@ void ArduCopterPidConfig::parameterChanged(int uas, int component, QString param
             }
         }
     }
-    else if (parameterName == "CH8_OPT")
+    else if (parameterName == "RC8_OPT")
     {
         for (int i=0;i<m_ch78ValueToTextList.size();i++)
         {
@@ -333,8 +333,8 @@ void ArduCopterPidConfig::writeButtonClicked()
     }
 
     m_uas->getParamManager()->setParameter(1,"TUNE",m_ch6ValueToTextList[ui.ch6OptComboBox->currentIndex()].first);
-    m_uas->getParamManager()->setParameter(1,"CH7_OPT",m_ch78ValueToTextList[ui.ch7OptComboBox->currentIndex()].first);
-    m_uas->getParamManager()->setParameter(1,"CH8_OPT",m_ch78ValueToTextList[ui.ch8OptComboBox->currentIndex()].first);
+    m_uas->getParamManager()->setParameter(1,"RC7_OPT",m_ch78ValueToTextList[ui.ch7OptComboBox->currentIndex()].first);
+    m_uas->getParamManager()->setParameter(1,"RC8_OPT",m_ch78ValueToTextList[ui.ch8OptComboBox->currentIndex()].first);
     m_uas->getParamManager()->setParameter(1,"TUNE_HIGH",ui.ch6MaxSpinBox->value() * 1000.0);
     m_uas->getParamManager()->setParameter(1,"TUNE_LOW",ui.ch6MinSpinBox->value() * 1000.0);
 }
@@ -351,8 +351,8 @@ void ArduCopterPidConfig::refreshButtonClicked()
         m_uas->getParamManager()->requestParameterUpdate(1,i.key());
     }
     m_uas->getParamManager()->requestParameterUpdate(1,"TUNE");
-    m_uas->getParamManager()->requestParameterUpdate(1,"CH7_OPT");
-    m_uas->getParamManager()->requestParameterUpdate(1,"CH8_OPT");
+    m_uas->getParamManager()->requestParameterUpdate(1,"RC7_OPT");
+    m_uas->getParamManager()->requestParameterUpdate(1,"RC8_OPT");
     m_uas->getParamManager()->requestParameterUpdate(1,"TUNE_HIGH");
     m_uas->getParamManager()->requestParameterUpdate(1,"TUNE_LOW");
 }

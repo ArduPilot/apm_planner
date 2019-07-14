@@ -93,18 +93,18 @@ RadioCalibrationConfig::RadioCalibrationConfig(QWidget *parent) : AP2ConfigWidge
     ui->radio16Widget->setMin(800);
     ui->radio16Widget->setMax(2200);
 
-    ui->radio5Widget->setName("Ch 5");
-    ui->radio6Widget->setName("Ch 6");
-    ui->radio7Widget->setName("Ch 7");
-    ui->radio8Widget->setName("Ch 8");
-    ui->radio9Widget->setName("Ch 9");
-    ui->radio10Widget->setName("Ch 10");
-    ui->radio11Widget->setName("Ch 11");
-    ui->radio12Widget->setName("Ch 12");
-    ui->radio13Widget->setName("Ch 13");
-    ui->radio14Widget->setName("Ch 14");
-    ui->radio15Widget->setName("Ch 15");
-    ui->radio16Widget->setName("Ch 16");
+    ui->radio5Widget->setName("Rc 5");
+    ui->radio6Widget->setName("Rc 6");
+    ui->radio7Widget->setName("Rc 7");
+    ui->radio8Widget->setName("Rc 8");
+    ui->radio9Widget->setName("Rc 9");
+    ui->radio10Widget->setName("Rc 10");
+    ui->radio11Widget->setName("Rc 11");
+    ui->radio12Widget->setName("Rc 12");
+    ui->radio13Widget->setName("Rc 13");
+    ui->radio14Widget->setName("Rc 14");
+    ui->radio15Widget->setName("Rc 15");
+    ui->radio16Widget->setName("Rc 16");
 
     guiUpdateTimer = new QTimer(this);
     connect(guiUpdateTimer,SIGNAL(timeout()),this,SLOT(guiUpdateTimerTick()));
