@@ -681,7 +681,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Ch6 Opt</string>
+              <string>Rc6 Opt</string>
              </property>
             </widget>
            </item>
@@ -804,7 +804,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Ch7 Opt</string>
+              <string>Rc7 Opt</string>
              </property>
             </widget>
            </item>
@@ -846,7 +846,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Ch8 Opt</string>
+              <string>Rc8 Opt</string>
              </property>
             </widget>
            </item>
