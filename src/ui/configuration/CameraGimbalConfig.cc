@@ -487,6 +487,9 @@ void CameraGimbalConfig::updateCameraTriggerOutputCh(int index)
         // Disabled
         ui.camTriggerGroupBox->setEnabled(false);
         return;
+    } else {
+        // Enabled
+        ui.camTriggerGroupBox->setEnabled(true);
     }
 
     m_triggerPrefix = m_newTriggerPrefix;
@@ -501,6 +504,7 @@ void CameraGimbalConfig::updateCameraTriggerSettings()
     if (showNullMAVErrorMessageBox())
         return;
 
+    ui.camTriggerTypeComboBox->setEnabled(true);
     m_uas->getParamManager()->setParameter(1,"CAM_TRIGG_TYPE",ui.camTriggerTypeComboBox->currentIndex());
     m_uas->getParamManager()->setParameter(1, m_triggerPrefix + "_MIN",ui.camTriggerServoMinSpinBox->value());
     m_uas->getParamManager()->setParameter(1, m_triggerPrefix + "_MAX",ui.camTriggerServoMaxSpinBox->value());
