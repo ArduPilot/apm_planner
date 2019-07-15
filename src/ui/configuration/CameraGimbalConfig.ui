@@ -247,7 +247,7 @@
                   <item row="1" column="4">
                    <widget class="QLabel" name="label_9">
                     <property name="text">
-                     <string>&lt;h3&gt;Input Ch&lt;/h3&gt;</string>
+                     <string>&lt;h3&gt;Input Rc&lt;/h3&gt;</string>
                     </property>
                    </widget>
                   </item>
@@ -356,7 +356,7 @@
                   <item row="1" column="4">
                    <widget class="QLabel" name="label_16">
                     <property name="text">
-                     <string>&lt;h3&gt;Input Ch&lt;/h3&gt;</string>
+                     <string>&lt;h3&gt;Input Rc&lt;/h3&gt;</string>
                     </property>
                    </widget>
                   </item>
@@ -649,7 +649,7 @@
                   <item row="1" column="4">
                    <widget class="QLabel" name="label_24">
                     <property name="text">
-                     <string>&lt;h3&gt;Input Ch&lt;/h3&gt;</string>
+                     <string>&lt;h3&gt;Input Rc&lt;/h3&gt;</string>
                     </property>
                    </widget>
                   </item>
@@ -1143,7 +1143,7 @@
         </size>
        </property>
        <property name="text">
-        <string>&lt;h2&gt;Please set the Ch7 Option to Camera Trigger&lt;/h2&gt;</string>
+        <string>&lt;h2&gt;Please set the Rc7 Option to Camera Trigger&lt;/h2&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
