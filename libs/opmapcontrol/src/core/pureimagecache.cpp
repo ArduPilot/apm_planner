@@ -103,7 +103,7 @@ namespace core {
             return false;
         }
         QSqlQuery query(db);
-        query.exec("CREATE TABLE IF NOT EXISTS Tiles (id INTEGER NOT NULL PRIMARY KEY, X INTEGER NOT NULL, Y INTEGER NOT NULL, Zoom INTEGER NOT NULL, Type INTEGER NOT NULL,Date TEXT)");
+        query.exec("CREATE TABLE IF NOT EXISTS Tiles (id INTEGER NOT nullptr PRIMARY KEY, X INTEGER NOT nullptr, Y INTEGER NOT nullptr, Zoom INTEGER NOT nullptr, Type INTEGER NOT nullptr,Date TEXT)");
         if(query.numRowsAffected()==-1)
         {
 #ifdef DEBUG_PUREIMAGECACHE
@@ -112,7 +112,7 @@ namespace core {
             db.close();
             return false;
         }
-        query.exec("CREATE TABLE IF NOT EXISTS TilesData (id INTEGER NOT NULL PRIMARY KEY CONSTRAINT fk_Tiles_id REFERENCES Tiles(id) ON DELETE CASCADE, Tile BLOB NULL)");
+        query.exec("CREATE TABLE IF NOT EXISTS TilesData (id INTEGER NOT nullptr PRIMARY KEY CONSTRAINT fk_Tiles_id REFERENCES Tiles(id) ON DELETE CASCADE, Tile BLOB nullptr)");
         if(query.numRowsAffected()==-1)
         {
 #ifdef DEBUG_PUREIMAGECACHE
@@ -126,7 +126,7 @@ namespace core {
                 "BEFORE INSERT ON [TilesData] "
                 "FOR EACH ROW BEGIN "
                 "SELECT RAISE(ROLLBACK, 'insert on table TilesData violates foreign key constraint fki_TilesData_id_Tiles_id') "
-                "WHERE (SELECT id FROM Tiles WHERE id = NEW.id) IS NULL; "
+                "WHERE (SELECT id FROM Tiles WHERE id = NEW.id) IS nullptr; "
                 "END");
         if(query.numRowsAffected()==-1)
         {
@@ -141,7 +141,7 @@ namespace core {
                 "BEFORE UPDATE ON [TilesData] "
                 "FOR EACH ROW BEGIN "
                 "SELECT RAISE(ROLLBACK, 'update on table TilesData violates foreign key constraint fku_TilesData_id_Tiles_id') "
-                "WHERE (SELECT id FROM Tiles WHERE id = NEW.id) IS NULL; "
+                "WHERE (SELECT id FROM Tiles WHERE id = NEW.id) IS nullptr; "
                 "END");
         if(query.numRowsAffected()==-1)
         {
