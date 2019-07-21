@@ -7,7 +7,7 @@
 
 QGCMessageView::QGCMessageView(QWidget *parent) :
     QWidget(parent),
-    activeUAS(NULL),
+    activeUAS(nullptr),
     clearAction(new QAction(tr("Clear Text"), this)),
     ui(new Ui::QGCMessageView)
 {

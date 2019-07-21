@@ -23,7 +23,7 @@ PreFlightCalibrationDialog::PreFlightCalibrationDialog(QWidget *parent) :
 
     for (int count = 0; count < 7; count++){
         m_param.append(0.0f);
-        m_widgets.append(NULL);
+        m_widgets.append(nullptr);
     }
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
@@ -119,7 +119,7 @@ void PreFlightCalibrationDialog::addParamCheckBoxes(const QString& vehicleName, 
 
     for(int count = 0; count < parameterList.length(); count++) {
         QString parameterName = parameterList[count];
-        QAbstractButton *paramBox = NULL;
+        QAbstractButton *paramBox = nullptr;
         if (exclusive){
             paramBox = new QRadioButton(parameterName);
         } else {
@@ -199,7 +199,7 @@ float PreFlightCalibrationDialog::getCheckValue(QWidget* widget)
             return 0.0f; // No
         }
     } else {
-        float result = qobject_cast<QDoubleSpinBox*>(widget) == NULL ?
+        float result = qobject_cast<QDoubleSpinBox*>(widget) == nullptr ?
                     0.0f : qobject_cast<QDoubleSpinBox*>(widget)->value();
         return result;
     }
