@@ -12,7 +12,7 @@
 
 QGCMapWidget::QGCMapWidget(QWidget *parent) :
     mapcontrol::OPMapWidget(parent),
-    firingWaypointChange(NULL),
+    firingWaypointChange(nullptr),
     maxUpdateInterval(2.1f), // 2 seconds
     followUAVEnabled(false),
     trailType(mapcontrol::UAVTrailType::ByTimeElapsed),
@@ -20,7 +20,7 @@ QGCMapWidget::QGCMapWidget(QWidget *parent) :
     followUAVID(0),
     mapInitialized(false),
     homeAltitude(0),
-    uas(NULL)
+    uas(nullptr)
 {
     // Set the map cache directory
     configuration->SetCacheLocation(QGC::appDataDirectory() + "/mapscache/");
@@ -355,7 +355,7 @@ void QGCMapWidget::mouseDoubleClickEvent(QMouseEvent* event)
         wp->setLatitude(pos.Lat());
         wp->setLongitude(pos.Lng());
         currWPManager->blockSignals(false);
-        currWPManager->notifyOfChangeEditable(NULL); // yes: NULL to fire waypointEditableListChanged
+        currWPManager->notifyOfChangeEditable(nullptr); // yes: nullptr to fire waypointEditableListChanged
     }
 
     OPMapWidget::mouseDoubleClickEvent(event);
@@ -442,7 +442,7 @@ void QGCMapWidget::updateGlobalPosition(UASInterface* uas, double lat, double lo
         // Get reference to graphic UAV item
         mapcontrol::UAVItem* uav = GetUAV(uas->getUASID());
         // Check if reference is valid, else create a new one
-        if (uav == NULL)
+        if (uav == nullptr)
         {
             MAV2DIcon* newUAV = new MAV2DIcon(map, this, uas);
             newUAV->setParentItem(map);
@@ -500,7 +500,7 @@ void QGCMapWidget::updateGlobalPosition()
         // Get reference to graphic UAV item
         mapcontrol::UAVItem* uav = GetUAV(system->getUASID());
         // Check if reference is valid, else create a new one
-        if (uav == NULL)
+        if (uav == nullptr)
         {
             MAV2DIcon* newUAV = new MAV2DIcon(map, this, system);
             AddUAV(system->getUASID(), newUAV);
@@ -530,7 +530,7 @@ void QGCMapWidget::updateLocalPosition()
         // Get reference to graphic UAV item
         mapcontrol::UAVItem* uav = GetUAV(system->getUASID());
         // Check if reference is valid, else create a new one
-        if (uav == NULL)
+        if (uav == nullptr)
         {
             MAV2DIcon* newUAV = new MAV2DIcon(map, this, system);
             AddUAV(system->getUASID(), newUAV);
@@ -706,7 +706,7 @@ void QGCMapWidget::shiftOtherSelectedWaypoints(mapcontrol::WayPointItem* selecte
 void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
 {
     // Block circle updates
-    Waypoint* wp = iconsToWaypoints.value(waypoint, NULL);
+    Waypoint* wp = iconsToWaypoints.value(waypoint, nullptr);
 
     // Delete UI element if wp doesn't exist
     if (!wp)
@@ -730,7 +730,7 @@ void QGCMapWidget::handleMapWaypointEdit(mapcontrol::WayPointItem* waypoint)
     wp->setLongitude(pos.Lng());
     wp->blockSignals(false);
 
-    firingWaypointChange = NULL;
+    firingWaypointChange = nullptr;
 
     emit waypointChanged(wp);
 
@@ -818,7 +818,7 @@ void QGCMapWidget::updateWaypoint(int uas, Waypoint* wp)
 
             redrawWaypointLines(uas);
 
-            firingWaypointChange = NULL;
+            firingWaypointChange = nullptr;
         }
         else
         {

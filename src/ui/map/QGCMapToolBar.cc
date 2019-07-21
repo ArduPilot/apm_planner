@@ -7,7 +7,7 @@
 QGCMapToolBar::QGCMapToolBar(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QGCMapToolBar),
-    map(NULL),
+    map(nullptr),
     optionsMenu(this),
     trailPlotMenu(this),
     updateTimesMenu(this),
