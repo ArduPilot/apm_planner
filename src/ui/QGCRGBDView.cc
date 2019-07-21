@@ -56,7 +56,7 @@ void QGCRGBDView::loadSettings()
 
 void QGCRGBDView::setActiveUAS(UASInterface* uas)
 {
-    if (this->uas != NULL)
+    if (this->uas != nullptr)
     {
         // Disconnect any previously connected active MAV
         disconnect(this->uas, SIGNAL(rgbdImageChanged(UASInterface*)), this, SLOT(updateData(UASInterface*)));

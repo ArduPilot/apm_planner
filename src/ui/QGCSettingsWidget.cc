@@ -203,10 +203,10 @@ void QGCSettingsWidget::setMissionsDir()
 void QGCSettingsWidget::setActiveUAS(UASInterface *uas)
 {
     if (m_uas){
-        m_uas = NULL;
+        m_uas = nullptr;
     }
 
-    if (uas != NULL){
+    if (uas != nullptr){
         m_uas = uas;
     }
 }
@@ -272,7 +272,7 @@ void QGCSettingsWidget::ratesChanged()
 
     if (m_uas) {
         ArduPilotMegaMAV *mav = dynamic_cast<ArduPilotMegaMAV*>(m_uas);
-        if (mav != NULL){
+        if (mav != nullptr){
             mav->RequestAllDataStreams();
         }
     }

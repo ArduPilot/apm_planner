@@ -50,16 +50,16 @@ This file is part of the APM_PLANNER project
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
-    m_updateTimer(NULL),
+    m_updateTimer(nullptr),
     m_graphCount(0),
-    m_plot(NULL),
-    m_wideAxisRect(NULL),
+    m_plot(nullptr),
+    m_wideAxisRect(nullptr),
     m_currentIndex(0),
     m_startIndex(0),
-    m_uas(NULL),
-    m_axisGroupingDialog(NULL),
+    m_uas(nullptr),
+    m_axisGroupingDialog(nullptr),
     m_tlogReplayEnabled(false),
-    m_logDownloadDialog(NULL),
+    m_logDownloadDialog(nullptr),
     m_statusTextPos(0),
     m_lastHorizontalScrollerVal(0)
 {
@@ -271,7 +271,7 @@ void AP2DataPlot2D::showEvent(QShowEvent *evt)
     {
         m_updateTimer->stop();
         m_updateTimer->deleteLater();
-        m_updateTimer = NULL;
+        m_updateTimer = nullptr;
     }
     m_updateTimer = new QTimer(this);
     connect(m_updateTimer,SIGNAL(timeout()),m_plot,SLOT(replot()));
@@ -285,7 +285,7 @@ void AP2DataPlot2D::hideEvent(QHideEvent *evt)
     {
         m_updateTimer->stop();
         m_updateTimer->deleteLater();
-        m_updateTimer = NULL;
+        m_updateTimer = nullptr;
     }
     QWidget::hideEvent(evt);
 }
@@ -643,13 +643,13 @@ AP2DataPlot2D::~AP2DataPlot2D()
     {
         m_updateTimer->stop();
         m_updateTimer->deleteLater();
-        m_updateTimer = NULL;
+        m_updateTimer = nullptr;
     }
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->close();
         delete m_axisGroupingDialog;
-        m_axisGroupingDialog = NULL;
+        m_axisGroupingDialog = nullptr;
     }
 
     for (int i=0;i<m_childGraphList.size();i++)
@@ -658,7 +658,7 @@ AP2DataPlot2D::~AP2DataPlot2D()
     }
 
     delete m_plot;
-    m_plot = NULL;
+    m_plot = nullptr;
 }
 
 void AP2DataPlot2D::itemEnabled(QString name)
@@ -833,7 +833,7 @@ void AP2DataPlot2D::removeTextArrows(const QString &graphName)
 void AP2DataPlot2D::showLogDownloadDialog()
 {
     QLOG_DEBUG() << "showLogDownloadDialog";
-    if (m_logDownloadDialog == NULL){
+    if (m_logDownloadDialog == nullptr){
         m_logDownloadDialog = new LogDownloadDialog(this);
         connect(m_logDownloadDialog, SIGNAL(accepted()), this, SLOT(closeLogDownloadDialog()));
     }
@@ -846,7 +846,7 @@ void AP2DataPlot2D::closeLogDownloadDialog()
     if (m_logDownloadDialog){
         m_logDownloadDialog->hide();
         m_logDownloadDialog->deleteLater();
-        m_logDownloadDialog = NULL;
+        m_logDownloadDialog = nullptr;
     }
 }
 

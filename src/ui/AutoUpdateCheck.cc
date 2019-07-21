@@ -38,7 +38,7 @@ static const QString VersionCompareRegEx = "(\\d*\\.\\d+\\.?\\d+)-?(rc\\d)?";
 
 AutoUpdateCheck::AutoUpdateCheck(QObject *parent) :
     QObject(parent),
-    m_networkReply(NULL),
+    m_networkReply(nullptr),
     m_httpRequestAborted(false),
     m_suppressNoUpdateSignal(false)
 {
@@ -64,9 +64,9 @@ void AutoUpdateCheck::autoUpdateCheck(const QUrl &url)
 
     m_url = QUrl(url);
 
-    if (m_networkReply != NULL){
+    if (m_networkReply != nullptr){
         delete m_networkReply;
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
     }
     m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpFinished()));
@@ -86,7 +86,7 @@ void AutoUpdateCheck::httpFinished()
     QLOG_DEBUG() << "AutoUpdateCheck::httpFinished()";
     if (m_httpRequestAborted) {
         reply->deleteLater();
-        reply = NULL;
+        reply = nullptr;
         return;
     }
 
@@ -96,7 +96,7 @@ void AutoUpdateCheck::httpFinished()
     if (reply->error()) {
         // [TODO] cleanup download failed
 #ifdef QT_DEBUG
-        QMessageBox::information(NULL, tr("HTTP"),
+        QMessageBox::information(nullptr, tr("HTTP"),
                                  tr("Download failed: %1.")
                                  .arg(m_networkReply->errorString()));
 #endif
@@ -117,7 +117,7 @@ void AutoUpdateCheck::httpFinished()
     }
 
     m_networkReply->deleteLater();
-    m_networkReply = NULL;
+    m_networkReply = nullptr;
 }
 
 void AutoUpdateCheck::processDownloadedVersionObject(const QByteArray& versionObject)

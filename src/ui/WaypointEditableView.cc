@@ -75,7 +75,7 @@ This file is part of the QGROUNDCONTROL project
 WaypointEditableView::WaypointEditableView(Waypoint* wp, QWidget* parent) :
     QWidget(parent),
     viewMode(QGC_WAYPOINTEDITABLEVIEW_MODE_DEFAULT),
-    m_missionWidget(NULL),
+    m_missionWidget(nullptr),
     m_ui(new Ui::WaypointEditableView)
 {
     m_ui->setupUi(this);
@@ -254,10 +254,10 @@ void WaypointEditableView::updateActionView(int actionID)
 
     if (m_missionWidget && (m_currentAction != actionID)){
         delete m_missionWidget;
-        m_missionWidget = NULL;
+        m_missionWidget = nullptr;
     }
 
-    if (m_missionWidget == NULL){
+    if (m_missionWidget == nullptr){
         m_missionWidget = createActionWidget(actionID);
         m_ui->customActionWidget->layout()->addWidget(m_missionWidget);
         m_currentAction = actionID;

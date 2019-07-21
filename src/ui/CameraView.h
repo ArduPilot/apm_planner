@@ -40,7 +40,7 @@ class CameraView : public QGLWidget
 {
     Q_OBJECT
 public:
-    CameraView(int width = 640, int height = 480, int depth = 8, int channels = 1, QWidget* parent = NULL);
+    CameraView(int width = 640, int height = 480, int depth = 8, int channels = 1, QWidget* parent = nullptr);
     ~CameraView();
 
     void setImageSize(int width, int height, int depth, int channels);

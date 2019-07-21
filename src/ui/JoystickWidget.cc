@@ -95,7 +95,7 @@ void JoystickWidget::joystickSelected(const QString& name)
 {
     m_ui->joystickLabel->setText(name);
     m_ui->joystickButton->setEnabled(true);
-    joystick->setActiveUAS(NULL);
+    joystick->setActiveUAS(nullptr);
     updateMappings();
 
     m_buttonList.clear();
@@ -117,7 +117,7 @@ void JoystickWidget::joystickEnabled(bool checked)
     {
         QLOG_INFO() << "Disabling joystick";
         m_ui->joystickButton->setText("Activate");
-        joystick->setActiveUAS(NULL);
+        joystick->setActiveUAS(nullptr);
     }
 }
 

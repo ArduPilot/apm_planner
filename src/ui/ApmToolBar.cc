@@ -40,7 +40,7 @@ This file is part of the APM_PLANNER project
 #include <QQmlEngine>
 
 APMToolBar::APMToolBar(QWindow *parent):
-    QQuickView(parent), m_uas(NULL), m_disableOverride(false), m_currentLinkId(0)
+    QQuickView(parent), m_uas(nullptr), m_disableOverride(false), m_currentLinkId(0)
 {
     // Configure our QML object
     QLOG_DEBUG() << "qmlBaseDir" << QGC::shareDirectory();

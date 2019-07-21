@@ -42,7 +42,7 @@ SlugsHilSim::SlugsHilSim(QWidget *parent) :
     rxSocket = new QUdpSocket(this);
     txSocket = new QUdpSocket(this);
 
-    hilLink = NULL;
+    hilLink = nullptr;
 
     //connect(LinkManager::instance(), SIGNAL(newLink(LinkInterface*)), this, SLOT(addToCombo(LinkInterface*)));
     connect(LinkManager::instance(),SIGNAL(newLink(LinkInterface*)),this,SLOT(addToCombo(LinkInterface*)));
@@ -78,7 +78,7 @@ void SlugsHilSim::addToCombo(LinkInterface* theLink)
     linksAvailable.insert(ui->cb_mavlinkLinks->count(),theLink);
     ui->cb_mavlinkLinks->addItem(theLink->getName());
 
-    if (hilLink == NULL) {
+    if (hilLink == nullptr) {
         hilLink = theLink;
     }
 
@@ -156,7 +156,7 @@ void SlugsHilSim::readDatagram(void)
 void SlugsHilSim::activeUasSet(UASInterface* uas)
 {
 
-    if (uas != NULL) {
+    if (uas != nullptr) {
         activeUas = static_cast <UAS *>(uas);
     }
 }
@@ -332,7 +332,7 @@ void SlugsHilSim::commandDatagramToSimulink()
 
     //mavlink_pwm_commands_t* pwdC;
 
-//    if(pwdC != NULL){
+//    if(pwdC != nullptr){
 //    }
 
     QByteArray data;

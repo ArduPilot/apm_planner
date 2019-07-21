@@ -22,7 +22,7 @@
 
 QGCVehicleConfig::QGCVehicleConfig(QWidget *parent) :
     QWidget(parent),
-    mav(NULL),
+    mav(nullptr),
     chanCount(0),
     rcRoll(0.0f),
     rcPitch(0.0f),
@@ -787,8 +787,8 @@ void QGCVehicleConfig::loadConfig()
 
 void QGCVehicleConfig::setActiveUAS(UASInterface* active)
 {
-    // Do nothing if system is the same or NULL
-    if ((active == NULL) || mav == active) return;
+    // Do nothing if system is the same or nullptr
+    if ((active == nullptr) || mav == active) return;
 
     if (mav)
     {

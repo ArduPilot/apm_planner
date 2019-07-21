@@ -190,7 +190,7 @@ void MAVLinkSettingsWidget::enableDroneOS(bool enable)
     //QString host = hostString.split(":").first();
 
     // Delete from all lists first
-    UDPLink* firstUdp = NULL;
+    UDPLink* firstUdp = nullptr;
     /*QList<LinkInterface*> links = LinkManager::instance()->getLinksForProtocol(protocol);
     foreach (LinkInterface* link, links)
     {

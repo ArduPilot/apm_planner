@@ -138,7 +138,7 @@ void QGCMAVLinkInspector::clearView()
     for(ite=uasMessageStorage.begin(); ite!=uasMessageStorage.end();++ite)
     {
         delete ite.value();
-        ite.value() = NULL;
+        ite.value() = nullptr;
     }
     uasMessageStorage.clear();
 
@@ -160,7 +160,7 @@ void QGCMAVLinkInspector::clearView()
     for(iteTree=uasTreeWidgetItems.begin(); iteTree!=uasTreeWidgetItems.end();++iteTree)
     {
         delete iteTree.value();
-        iteTree.value() = NULL;
+        iteTree.value() = nullptr;
     }
     uasTreeWidgetItems.clear();
     
@@ -170,7 +170,7 @@ void QGCMAVLinkInspector::clearView()
 
         iteHz.value()->clear();
         delete iteHz.value();
-        iteHz.value() = NULL;
+        iteHz.value() = nullptr;
     }
     uasMessageHz.clear();
 
@@ -179,7 +179,7 @@ void QGCMAVLinkInspector::clearView()
     {
         iteCount.value()->clear();
         delete iteCount.value();
-        iteCount.value() = NULL;
+        iteCount.value() = nullptr;
     }
     uasMessageCount.clear();
 
@@ -188,7 +188,7 @@ void QGCMAVLinkInspector::clearView()
     {
         iteLast.value()->clear();
         delete iteLast.value();
-        iteLast.value() = NULL;
+        iteLast.value() = nullptr;
     }
     uasLastMessageUpdate.clear();
 
@@ -214,7 +214,7 @@ void QGCMAVLinkInspector::refreshView()
     {
 
         mavlink_message_t* msg = ite.value();
-        // Ignore NULL values
+        // Ignore nullptr values
         if (msg->msgid == 0xFF) continue;
 
         // Update the message frenquency

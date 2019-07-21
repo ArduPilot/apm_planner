@@ -29,7 +29,7 @@ void QGCWaypointListMulti::systemDeleted(QObject* uas)
     if (mav)
     {
         int id = mav->getUASID();
-        WaypointList* list = lists.value(id, NULL);
+        WaypointList* list = lists.value(id, nullptr);
         if (list)
         {
             delete list;
@@ -49,7 +49,7 @@ void QGCWaypointListMulti::systemCreated(UASInterface* uas)
 
 void QGCWaypointListMulti::systemSetActive(int uas)
 {
-    WaypointList* list = lists.value(uas, NULL);
+    WaypointList* list = lists.value(uas, nullptr);
     if (list) {
         ui->stackedWidget->setCurrentWidget(list);
     }

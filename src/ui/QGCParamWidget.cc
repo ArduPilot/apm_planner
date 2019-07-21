@@ -703,7 +703,7 @@ void QGCParamWidget::addParameter(int uas, int component, QString parameterName,
         initialParamTimer->stop();
     }
     // Reference to item in tree
-    QTreeWidgetItem* parameterItem = NULL;
+    QTreeWidgetItem* parameterItem = nullptr;
 
     // Get component
     if (!components->contains(component))
@@ -882,7 +882,7 @@ void QGCParamWidget::parameterItemChanged(QTreeWidgetItem* current, int column)
 {
     if (current && column > 0) {
         QTreeWidgetItem* parent = current->parent();
-        while (parent->parent() != NULL) {
+        while (parent->parent() != nullptr) {
             parent = parent->parent();
         }
         // Parent is now top-level component
@@ -890,7 +890,7 @@ void QGCParamWidget::parameterItemChanged(QTreeWidgetItem* current, int column)
         if (!changedValues.contains(key)) {
             changedValues.insert(key, new QMap<QString, QVariant>());
         }
-        QMap<QString, QVariant>* map = changedValues.value(key, NULL);
+        QMap<QString, QVariant>* map = changedValues.value(key, nullptr);
         if (map) {
             QString str = current->data(0, Qt::DisplayRole).toString();
             QVariant value = current->data(1, Qt::DisplayRole);
@@ -1018,7 +1018,7 @@ void QGCParamWidget::retransmissionGuardTick()
             // Iterate through the parameters of the component
             int component = i.key();
             // Request n parameters from this component (at maximum)
-            QList<int> * paramList = transmissionMissingPackets.value(component, NULL);
+            QList<int> * paramList = transmissionMissingPackets.value(component, nullptr);
             if (paramList) {
                 int count = 0;
                 foreach (int id, *paramList) {
@@ -1117,7 +1117,7 @@ void QGCParamWidget::setParameter(int component, QString parameterName, QVariant
 
     QMap<QString, QVariant>* parameterList = parameters.value(component);
 
-    if (parameterList == NULL){
+    if (parameterList == nullptr){
         QLOG_ERROR() << " No parameter list for component: " << component;
         return;
     }

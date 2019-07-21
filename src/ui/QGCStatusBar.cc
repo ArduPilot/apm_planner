@@ -31,11 +31,11 @@ This file is part of the QGROUNDCONTROL project
 
 QGCStatusBar::QGCStatusBar(QWidget *parent) :
     QStatusBar(parent),
-    toggleLoggingButton(NULL),
-    player(NULL),
+    toggleLoggingButton(nullptr),
+    player(nullptr),
     changed(true),
     lastLogDirectory(QGC::MAVLinkLogDirectory()),
-    m_uas(NULL)
+    m_uas(nullptr)
 {
     setObjectName("QGC_STATUSBAR");
 

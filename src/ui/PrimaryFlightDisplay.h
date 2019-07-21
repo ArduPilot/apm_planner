@@ -9,7 +9,7 @@ class PrimaryFlightDisplay : public QWidget
 {
     Q_OBJECT
 public:
-    PrimaryFlightDisplay(int width = 640, int height = 480, QWidget* parent = NULL);
+    PrimaryFlightDisplay(int width = 640, int height = 480, QWidget* parent = nullptr);
     ~PrimaryFlightDisplay();
 
 public slots:

@@ -12,7 +12,7 @@ class OgreWidget : public QGLWidget
 public:
     OgreWidget( QWidget *parent=0 ):
         QGLWidget( parent ),
-        mOgreWindow(NULL) {
+        mOgreWindow(nullptr) {
         init( "../bin/plugins.cfg", "../bin/ogre.cfg", "../bin/ogre.log" );
     }
 

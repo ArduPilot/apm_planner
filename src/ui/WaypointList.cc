@@ -44,7 +44,7 @@ This file is part of the PIXHAWK project
 
 WaypointList::WaypointList(QWidget *parent, UASWaypointManager* wpm) :
     QWidget(parent),
-    m_uas(NULL),
+    m_uas(nullptr),
     WPM(wpm),
     mavX(0.0),
     mavY(0.0),
@@ -172,7 +172,7 @@ void WaypointList::updateAttitude(UASInterface* uas, double roll, double pitch, 
 
 void WaypointList::setUAS(UASInterface* uas)
 {
-    if (m_uas != NULL)
+    if (m_uas != nullptr)
     {
         // Clear current list
         on_clearWPListButton_clicked();
