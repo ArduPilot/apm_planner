@@ -1096,7 +1096,7 @@ int main()
             double epsg = 1.0E-9;
             mincgcreate(1, x, state);
             mincgsetcond(state, epsg, 0.0, 0.0, 0);
-            mincgoptimize(state, func505_grad, NULL, &x0);
+            mincgoptimize(state, func505_grad, nullptr, &x0);
             mincgresults(state, x, rep);
             issue505_passed = issue505_passed && (fabs(4*pow(x[0]-x0,3))<epsg);
         }
@@ -1115,7 +1115,7 @@ int main()
             double epsg = 1.0E-9;
             minlmcreatevj(1, 2, x, state);
             minlmsetcond(state, epsg, 0.0, 0.0, 0);
-            minlmoptimize(state, func505_vec, func505_jac, NULL, &x0);
+            minlmoptimize(state, func505_vec, func505_jac, nullptr, &x0);
             minlmresults(state, x, rep);
             issue505_passed = issue505_passed && (fabs(x[0]-x0)<1.0E-3);
         }

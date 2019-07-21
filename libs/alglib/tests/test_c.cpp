@@ -78371,12 +78371,12 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
      * b) "conventional local" is valid by default
      * b) unitinitialized shared pool is "not initialized"
      */
-    if( prec2!=NULL )
+    if( prec2!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
     }
-    if( !(&seedrec1!=NULL) )
+    if( !(&seedrec1!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
@@ -78404,7 +78404,7 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
     seedrec2.bval = !seedrec2.bval;
     seedrec2.recval.i1val.ptr.p_int[0] = seedrec2.recval.i1val.ptr.p_int[0]+1;
     ae_shared_pool_retrieve(&pool, &_prec2, _state);
-    if( !(prec2!=NULL) )
+    if( !(prec2!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
@@ -78454,13 +78454,13 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
     ae_shared_pool_retrieve(&pool, &_prec2, _state);
     prec2->recval.ival = prec2->recval.ival+1;
     ae_shared_pool_recycle(&pool, &_prec2, _state);
-    if( prec2!=NULL )
+    if( prec2!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_retrieve(&pool, &_prec2, _state);
-    if( !(prec2!=NULL) )
+    if( !(prec2!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
@@ -78473,7 +78473,7 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
     ae_shared_pool_recycle(&pool, &_prec2, _state);
     ae_shared_pool_clear_recycled(&pool, _state);
     ae_shared_pool_retrieve(&pool, &_prec2, _state);
-    if( !(prec2!=NULL) )
+    if( !(prec2!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
@@ -78506,7 +78506,7 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
     val101cnt = 0;
     val102cnt = 0;
     ae_shared_pool_first_recycled(&pool, &_prec2, _state);
-    while(prec2!=NULL)
+    while(prec2!=nullptr)
     {
         if( prec2->recval.ival==100 )
         {
@@ -78531,7 +78531,7 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
     val101cnt = 0;
     val102cnt = 0;
     ae_shared_pool_first_recycled(&pool, &_prec2, _state);
-    while(prec2!=NULL)
+    while(prec2!=nullptr)
     {
         if( prec2->recval.ival==100 )
         {
@@ -78564,14 +78564,14 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
      */
     testalglibbasicsunit_createpoolandrecords(&seedrec2, &seedrec2copy, &pool, _state);
     ae_shared_pool_set_seed(&pool2, &pool, sizeof(pool), ae_shared_pool_init, ae_shared_pool_init_copy, ae_shared_pool_destroy, _state);
-    if( ppool0!=NULL||ppool1!=NULL )
+    if( ppool0!=nullptr||ppool1!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_retrieve(&pool2, &_ppool0, _state);
     ae_shared_pool_retrieve(&pool2, &_ppool1, _state);
-    if( !(ppool0!=NULL&&ppool1!=NULL) )
+    if( !(ppool0!=nullptr&&ppool1!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
@@ -78635,50 +78635,50 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
     ae_shared_pool_recycle(&pool, &_p2, _state);
     ae_shared_pool_recycle(&pool, &_p0, _state);
     ae_shared_pool_first_recycled(&pool, &_p0, _state);
-    if( !(p0!=NULL) )
+    if( !(p0!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_next_recycled(&pool, &_p0, _state);
-    if( !(p0!=NULL) )
+    if( !(p0!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_next_recycled(&pool, &_p0, _state);
-    if( !(p0!=NULL) )
+    if( !(p0!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_next_recycled(&pool, &_p0, _state);
-    if( p0!=NULL )
+    if( p0!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_reset(&pool, _state);
     ae_shared_pool_first_recycled(&pool, &_p0, _state);
-    if( p0!=NULL )
+    if( p0!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_next_recycled(&pool, &_p0, _state);
-    if( p0!=NULL )
+    if( p0!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_next_recycled(&pool, &_p0, _state);
-    if( p0!=NULL )
+    if( p0!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_next_recycled(&pool, &_p0, _state);
-    if( p0!=NULL )
+    if( p0!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
@@ -78695,13 +78695,13 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
     ae_shared_pool_recycle(&pool, &_p2, _state);
     ae_shared_pool_recycle(&pool, &_p0, _state);
     ae_shared_pool_first_recycled(&pool, &_p0, _state);
-    if( !(p0!=NULL) )
+    if( !(p0!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
     }
     ae_shared_pool_clear_recycled(&pool, _state);
-    if( !(p0!=NULL) )
+    if( !(p0!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
@@ -78712,13 +78712,13 @@ static ae_bool testalglibbasicsunit_sharedpoolerrors(ae_state *_state)
      */
     testalglibbasicsunit_createpoolandrecords(&seedrec2, &seedrec2copy, &pool, _state);
     ae_shared_pool_retrieve(&pool, &_p0, _state);
-    if( !(p0!=NULL) )
+    if( !(p0!=nullptr) )
     {
         ae_frame_leave(_state);
         return result;
     }
-    ae_smart_ptr_assign(&_p0, NULL, ae_false, ae_false, NULL);
-    if( p0!=NULL )
+    ae_smart_ptr_assign(&_p0, nullptr, ae_false, ae_false, nullptr);
+    if( p0!=nullptr )
     {
         ae_frame_leave(_state);
         return result;
@@ -79065,7 +79065,7 @@ static ae_bool testalglibbasicsunit_performtestpoolsum(ae_state *_state)
     testalglibbasicsunit_parallelpoolsum(&pool, 0, n, _state);
     sum = 0;
     ae_shared_pool_first_recycled(&pool, &_ptr, _state);
-    while(ptr!=NULL)
+    while(ptr!=nullptr)
     {
         sum = sum+ptr->val;
         ae_shared_pool_next_recycled(&pool, &_ptr, _state);
