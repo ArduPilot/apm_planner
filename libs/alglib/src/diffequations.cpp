@@ -42,19 +42,19 @@ namespace alglib
 *************************************************************************/
 _odesolverstate_owner::_odesolverstate_owner()
 {
-    p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_odesolverstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _odesolverstate_owner::_odesolverstate_owner(const _odesolverstate_owner &rhs)
 {
-    p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -63,7 +63,7 @@ _odesolverstate_owner& _odesolverstate_owner::operator=(const _odesolverstate_ow
     if( this==&rhs )
         return *this;
     alglib_impl::_odesolverstate_clear(p_struct);
-    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -109,19 +109,19 @@ odesolverstate::~odesolverstate()
 *************************************************************************/
 _odesolverreport_owner::_odesolverreport_owner()
 {
-    p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_odesolverreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _odesolverreport_owner::_odesolverreport_owner(const _odesolverreport_owner &rhs)
 {
-    p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -130,7 +130,7 @@ _odesolverreport_owner& _odesolverreport_owner::operator=(const _odesolverreport
     if( this==&rhs )
         return *this;
     alglib_impl::_odesolverreport_clear(p_struct);
-    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -328,8 +328,8 @@ void odesolversolve(odesolverstate &state,
     void (*diff)(const real_1d_array &y, double x, real_1d_array &dy, void *ptr),
     void *ptr){
     alglib_impl::ae_state _alglib_env_state;
-    if( diff==NULL )
-        throw ap_error("ALGLIB: error in 'odesolversolve()' (diff is NULL)");
+    if( diff==nullptr )
+        throw ap_error("ALGLIB: error in 'odesolversolve()' (diff is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {

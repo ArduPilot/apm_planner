@@ -1628,9 +1628,9 @@ These functions accept following parameters:
     jac     -   callback which calculates function vector fi[]
                 and Jacobian jac at given point x
     rep     -   optional callback which is called after each iteration
-                can be NULL
+                can be nullptr
     ptr     -   optional pointer which is passed to func/grad/hess/jac/rep
-                can be NULL
+                can be nullptr
 
 
   -- ALGLIB --
@@ -1640,8 +1640,8 @@ These functions accept following parameters:
 void nleqsolve(nleqstate &state,
     void (*func)(const real_1d_array &x, double &func, void *ptr),
     void  (*jac)(const real_1d_array &x, real_1d_array &fi, real_2d_array &jac, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 
 
 /*************************************************************************

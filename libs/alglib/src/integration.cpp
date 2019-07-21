@@ -53,12 +53,12 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-1], alpha coefficients
-    Beta    –   array[0..N-1], beta coefficients
+    Alpha   ï¿½   array[0..N-1], alpha coefficients
+    Beta    ï¿½   array[0..N-1], beta coefficients
                 Zero-indexed element is not used and may be arbitrary.
                 Beta[I]>0.
-    Mu0     –   zeroth moment of the weight function.
-    N       –   number of nodes of the quadrature formula, N>=1
+    Mu0     ï¿½   zeroth moment of the weight function.
+    N       ï¿½   number of nodes of the quadrature formula, N>=1
 
 OUTPUT PARAMETERS:
     Info    -   error code:
@@ -105,14 +105,14 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-2], alpha coefficients
-    Beta    –   array[0..N-2], beta coefficients.
+    Alpha   ï¿½   array[0..N-2], alpha coefficients
+    Beta    ï¿½   array[0..N-2], beta coefficients.
                 Zero-indexed element is not used, may be arbitrary.
                 Beta[I]>0
-    Mu0     –   zeroth moment of the weighting function.
-    A       –   left boundary of the integration interval.
-    B       –   right boundary of the integration interval.
-    N       –   number of nodes of the quadrature formula, N>=3
+    Mu0     ï¿½   zeroth moment of the weighting function.
+    A       ï¿½   left boundary of the integration interval.
+    B       ï¿½   right boundary of the integration interval.
+    N       ï¿½   number of nodes of the quadrature formula, N>=3
                 (including the left and right boundary nodes).
 
 OUTPUT PARAMETERS:
@@ -160,13 +160,13 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-2], alpha coefficients.
-    Beta    –   array[0..N-1], beta coefficients
+    Alpha   ï¿½   array[0..N-2], alpha coefficients.
+    Beta    ï¿½   array[0..N-1], beta coefficients
                 Zero-indexed element is not used.
                 Beta[I]>0
-    Mu0     –   zeroth moment of the weighting function.
-    A       –   left boundary of the integration interval.
-    N       –   number of nodes of the quadrature formula, N>=2
+    Mu0     ï¿½   zeroth moment of the weighting function.
+    A       ï¿½   left boundary of the integration interval.
+    N       ï¿½   number of nodes of the quadrature formula, N>=2
                 (including the left boundary node).
 
 OUTPUT PARAMETERS:
@@ -380,12 +380,12 @@ and zero moment Mu0
 
 
 INPUT PARAMETERS:
-    Alpha       –   alpha coefficients, array[0..floor(3*K/2)].
-    Beta        –   beta coefficients,  array[0..ceil(3*K/2)].
+    Alpha       ï¿½   alpha coefficients, array[0..floor(3*K/2)].
+    Beta        ï¿½   beta coefficients,  array[0..ceil(3*K/2)].
                     Beta[0] is not used and may be arbitrary.
                     Beta[I]>0.
-    Mu0         –   zeroth moment of the weight function.
-    N           –   number of nodes of the Gauss-Kronrod quadrature formula,
+    Mu0         ï¿½   zeroth moment of the weight function.
+    N           ï¿½   number of nodes of the Gauss-Kronrod quadrature formula,
                     N >= 3,
                     N =  2*K+1.
 
@@ -615,19 +615,19 @@ Integration report:
 *************************************************************************/
 _autogkreport_owner::_autogkreport_owner()
 {
-    p_struct = (alglib_impl::autogkreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::autogkreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::autogkreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::autogkreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_autogkreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_autogkreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _autogkreport_owner::_autogkreport_owner(const _autogkreport_owner &rhs)
 {
-    p_struct = (alglib_impl::autogkreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::autogkreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::autogkreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::autogkreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_autogkreport_init_copy(p_struct, const_cast<alglib_impl::autogkreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_autogkreport_init_copy(p_struct, const_cast<alglib_impl::autogkreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -636,7 +636,7 @@ _autogkreport_owner& _autogkreport_owner::operator=(const _autogkreport_owner &r
     if( this==&rhs )
         return *this;
     alglib_impl::_autogkreport_clear(p_struct);
-    if( !alglib_impl::_autogkreport_init_copy(p_struct, const_cast<alglib_impl::autogkreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_autogkreport_init_copy(p_struct, const_cast<alglib_impl::autogkreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -688,19 +688,19 @@ use. You should use ALGLIB functions to work with this class:
 *************************************************************************/
 _autogkstate_owner::_autogkstate_owner()
 {
-    p_struct = (alglib_impl::autogkstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::autogkstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::autogkstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::autogkstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_autogkstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_autogkstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _autogkstate_owner::_autogkstate_owner(const _autogkstate_owner &rhs)
 {
-    p_struct = (alglib_impl::autogkstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::autogkstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::autogkstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::autogkstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_autogkstate_init_copy(p_struct, const_cast<alglib_impl::autogkstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_autogkstate_init_copy(p_struct, const_cast<alglib_impl::autogkstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -709,7 +709,7 @@ _autogkstate_owner& _autogkstate_owner::operator=(const _autogkstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_autogkstate_clear(p_struct);
-    if( !alglib_impl::_autogkstate_init_copy(p_struct, const_cast<alglib_impl::autogkstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_autogkstate_init_copy(p_struct, const_cast<alglib_impl::autogkstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -904,8 +904,8 @@ void autogkintegrate(autogkstate &state,
     void (*func)(double x, double xminusa, double bminusx, double &y, void *ptr),
     void *ptr){
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'autogkintegrate()' (func is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'autogkintegrate()' (func is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -1014,12 +1014,12 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-1], alpha coefficients
-    Beta    –   array[0..N-1], beta coefficients
+    Alpha   ï¿½   array[0..N-1], alpha coefficients
+    Beta    ï¿½   array[0..N-1], beta coefficients
                 Zero-indexed element is not used and may be arbitrary.
                 Beta[I]>0.
-    Mu0     –   zeroth moment of the weight function.
-    N       –   number of nodes of the quadrature formula, N>=1
+    Mu0     ï¿½   zeroth moment of the weight function.
+    N       ï¿½   number of nodes of the quadrature formula, N>=1
 
 OUTPUT PARAMETERS:
     Info    -   error code:
@@ -1123,14 +1123,14 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-2], alpha coefficients
-    Beta    –   array[0..N-2], beta coefficients.
+    Alpha   ï¿½   array[0..N-2], alpha coefficients
+    Beta    ï¿½   array[0..N-2], beta coefficients.
                 Zero-indexed element is not used, may be arbitrary.
                 Beta[I]>0
-    Mu0     –   zeroth moment of the weighting function.
-    A       –   left boundary of the integration interval.
-    B       –   right boundary of the integration interval.
-    N       –   number of nodes of the quadrature formula, N>=3
+    Mu0     ï¿½   zeroth moment of the weighting function.
+    A       ï¿½   left boundary of the integration interval.
+    B       ï¿½   right boundary of the integration interval.
+    N       ï¿½   number of nodes of the quadrature formula, N>=3
                 (including the left and right boundary nodes).
 
 OUTPUT PARAMETERS:
@@ -1317,13 +1317,13 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-2], alpha coefficients.
-    Beta    –   array[0..N-1], beta coefficients
+    Alpha   ï¿½   array[0..N-2], alpha coefficients.
+    Beta    ï¿½   array[0..N-1], beta coefficients
                 Zero-indexed element is not used.
                 Beta[I]>0
-    Mu0     –   zeroth moment of the weighting function.
-    A       –   left boundary of the integration interval.
-    N       –   number of nodes of the quadrature formula, N>=2
+    Mu0     ï¿½   zeroth moment of the weighting function.
+    A       ï¿½   left boundary of the integration interval.
+    N       ï¿½   number of nodes of the quadrature formula, N>=2
                 (including the left boundary node).
 
 OUTPUT PARAMETERS:
@@ -1818,12 +1818,12 @@ and zero moment Mu0
 
 
 INPUT PARAMETERS:
-    Alpha       –   alpha coefficients, array[0..floor(3*K/2)].
-    Beta        –   beta coefficients,  array[0..ceil(3*K/2)].
+    Alpha       ï¿½   alpha coefficients, array[0..floor(3*K/2)].
+    Beta        ï¿½   beta coefficients,  array[0..ceil(3*K/2)].
                     Beta[0] is not used and may be arbitrary.
                     Beta[I]>0.
-    Mu0         –   zeroth moment of the weight function.
-    N           –   number of nodes of the Gauss-Kronrod quadrature formula,
+    Mu0         ï¿½   zeroth moment of the weight function.
+    N           ï¿½   number of nodes of the Gauss-Kronrod quadrature formula,
                     N >= 3,
                     N =  2*K+1.
 

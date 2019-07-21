@@ -52,19 +52,19 @@ You should use ALGLIB functions to work with this object.
 *************************************************************************/
 _mincgstate_owner::_mincgstate_owner()
 {
-    p_struct = (alglib_impl::mincgstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::mincgstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mincgstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::mincgstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mincgstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mincgstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mincgstate_owner::_mincgstate_owner(const _mincgstate_owner &rhs)
 {
-    p_struct = (alglib_impl::mincgstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::mincgstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mincgstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::mincgstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mincgstate_init_copy(p_struct, const_cast<alglib_impl::mincgstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mincgstate_init_copy(p_struct, const_cast<alglib_impl::mincgstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -73,7 +73,7 @@ _mincgstate_owner& _mincgstate_owner::operator=(const _mincgstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mincgstate_clear(p_struct);
-    if( !alglib_impl::_mincgstate_init_copy(p_struct, const_cast<alglib_impl::mincgstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mincgstate_init_copy(p_struct, const_cast<alglib_impl::mincgstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -119,19 +119,19 @@ mincgstate::~mincgstate()
 *************************************************************************/
 _mincgreport_owner::_mincgreport_owner()
 {
-    p_struct = (alglib_impl::mincgreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mincgreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mincgreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mincgreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mincgreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mincgreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mincgreport_owner::_mincgreport_owner(const _mincgreport_owner &rhs)
 {
-    p_struct = (alglib_impl::mincgreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mincgreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mincgreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mincgreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mincgreport_init_copy(p_struct, const_cast<alglib_impl::mincgreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mincgreport_init_copy(p_struct, const_cast<alglib_impl::mincgreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -140,7 +140,7 @@ _mincgreport_owner& _mincgreport_owner::operator=(const _mincgreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mincgreport_clear(p_struct);
-    if( !alglib_impl::_mincgreport_init_copy(p_struct, const_cast<alglib_impl::mincgreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mincgreport_init_copy(p_struct, const_cast<alglib_impl::mincgreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -783,8 +783,8 @@ void mincgoptimize(mincgstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'mincgoptimize()' (func is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'mincgoptimize()' (func is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -797,7 +797,7 @@ void mincgoptimize(mincgstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -818,8 +818,8 @@ void mincgoptimize(mincgstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( grad==NULL )
-        throw ap_error("ALGLIB: error in 'mincgoptimize()' (grad is NULL)");
+    if( grad==nullptr )
+        throw ap_error("ALGLIB: error in 'mincgoptimize()' (grad is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -832,7 +832,7 @@ void mincgoptimize(mincgstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -1019,19 +1019,19 @@ object
 *************************************************************************/
 _minbleicstate_owner::_minbleicstate_owner()
 {
-    p_struct = (alglib_impl::minbleicstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minbleicstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minbleicstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minbleicstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minbleicstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minbleicstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minbleicstate_owner::_minbleicstate_owner(const _minbleicstate_owner &rhs)
 {
-    p_struct = (alglib_impl::minbleicstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minbleicstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minbleicstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minbleicstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minbleicstate_init_copy(p_struct, const_cast<alglib_impl::minbleicstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minbleicstate_init_copy(p_struct, const_cast<alglib_impl::minbleicstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1040,7 +1040,7 @@ _minbleicstate_owner& _minbleicstate_owner::operator=(const _minbleicstate_owner
     if( this==&rhs )
         return *this;
     alglib_impl::_minbleicstate_clear(p_struct);
-    if( !alglib_impl::_minbleicstate_init_copy(p_struct, const_cast<alglib_impl::minbleicstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minbleicstate_init_copy(p_struct, const_cast<alglib_impl::minbleicstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1114,19 +1114,19 @@ There are additional fields which can be used for debugging:
 *************************************************************************/
 _minbleicreport_owner::_minbleicreport_owner()
 {
-    p_struct = (alglib_impl::minbleicreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minbleicreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minbleicreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minbleicreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minbleicreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minbleicreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minbleicreport_owner::_minbleicreport_owner(const _minbleicreport_owner &rhs)
 {
-    p_struct = (alglib_impl::minbleicreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minbleicreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minbleicreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minbleicreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minbleicreport_init_copy(p_struct, const_cast<alglib_impl::minbleicreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minbleicreport_init_copy(p_struct, const_cast<alglib_impl::minbleicreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1135,7 +1135,7 @@ _minbleicreport_owner& _minbleicreport_owner::operator=(const _minbleicreport_ow
     if( this==&rhs )
         return *this;
     alglib_impl::_minbleicreport_clear(p_struct);
-    if( !alglib_impl::_minbleicreport_init_copy(p_struct, const_cast<alglib_impl::minbleicreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minbleicreport_init_copy(p_struct, const_cast<alglib_impl::minbleicreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1893,8 +1893,8 @@ void minbleicoptimize(minbleicstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'minbleicoptimize()' (func is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'minbleicoptimize()' (func is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -1907,7 +1907,7 @@ void minbleicoptimize(minbleicstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -1928,8 +1928,8 @@ void minbleicoptimize(minbleicstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( grad==NULL )
-        throw ap_error("ALGLIB: error in 'minbleicoptimize()' (grad is NULL)");
+    if( grad==nullptr )
+        throw ap_error("ALGLIB: error in 'minbleicoptimize()' (grad is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -1942,7 +1942,7 @@ void minbleicoptimize(minbleicstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -2126,19 +2126,19 @@ void minbleicsetgradientcheck(const minbleicstate &state, const double teststep)
 *************************************************************************/
 _minlbfgsstate_owner::_minlbfgsstate_owner()
 {
-    p_struct = (alglib_impl::minlbfgsstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlbfgsstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minlbfgsstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlbfgsstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minlbfgsstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minlbfgsstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minlbfgsstate_owner::_minlbfgsstate_owner(const _minlbfgsstate_owner &rhs)
 {
-    p_struct = (alglib_impl::minlbfgsstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlbfgsstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minlbfgsstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlbfgsstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minlbfgsstate_init_copy(p_struct, const_cast<alglib_impl::minlbfgsstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minlbfgsstate_init_copy(p_struct, const_cast<alglib_impl::minlbfgsstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -2147,7 +2147,7 @@ _minlbfgsstate_owner& _minlbfgsstate_owner::operator=(const _minlbfgsstate_owner
     if( this==&rhs )
         return *this;
     alglib_impl::_minlbfgsstate_clear(p_struct);
-    if( !alglib_impl::_minlbfgsstate_init_copy(p_struct, const_cast<alglib_impl::minlbfgsstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minlbfgsstate_init_copy(p_struct, const_cast<alglib_impl::minlbfgsstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -2193,19 +2193,19 @@ minlbfgsstate::~minlbfgsstate()
 *************************************************************************/
 _minlbfgsreport_owner::_minlbfgsreport_owner()
 {
-    p_struct = (alglib_impl::minlbfgsreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlbfgsreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minlbfgsreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlbfgsreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minlbfgsreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minlbfgsreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minlbfgsreport_owner::_minlbfgsreport_owner(const _minlbfgsreport_owner &rhs)
 {
-    p_struct = (alglib_impl::minlbfgsreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlbfgsreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minlbfgsreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlbfgsreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minlbfgsreport_init_copy(p_struct, const_cast<alglib_impl::minlbfgsreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minlbfgsreport_init_copy(p_struct, const_cast<alglib_impl::minlbfgsreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -2214,7 +2214,7 @@ _minlbfgsreport_owner& _minlbfgsreport_owner::operator=(const _minlbfgsreport_ow
     if( this==&rhs )
         return *this;
     alglib_impl::_minlbfgsreport_clear(p_struct);
-    if( !alglib_impl::_minlbfgsreport_init_copy(p_struct, const_cast<alglib_impl::minlbfgsreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minlbfgsreport_init_copy(p_struct, const_cast<alglib_impl::minlbfgsreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -2857,8 +2857,8 @@ void minlbfgsoptimize(minlbfgsstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'minlbfgsoptimize()' (func is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'minlbfgsoptimize()' (func is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -2871,7 +2871,7 @@ void minlbfgsoptimize(minlbfgsstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -2892,8 +2892,8 @@ void minlbfgsoptimize(minlbfgsstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( grad==NULL )
-        throw ap_error("ALGLIB: error in 'minlbfgsoptimize()' (grad is NULL)");
+    if( grad==nullptr )
+        throw ap_error("ALGLIB: error in 'minlbfgsoptimize()' (grad is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -2906,7 +2906,7 @@ void minlbfgsoptimize(minlbfgsstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -3094,19 +3094,19 @@ object
 *************************************************************************/
 _minqpstate_owner::_minqpstate_owner()
 {
-    p_struct = (alglib_impl::minqpstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minqpstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minqpstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minqpstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minqpstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minqpstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minqpstate_owner::_minqpstate_owner(const _minqpstate_owner &rhs)
 {
-    p_struct = (alglib_impl::minqpstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minqpstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minqpstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minqpstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minqpstate_init_copy(p_struct, const_cast<alglib_impl::minqpstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minqpstate_init_copy(p_struct, const_cast<alglib_impl::minqpstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3115,7 +3115,7 @@ _minqpstate_owner& _minqpstate_owner::operator=(const _minqpstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_minqpstate_clear(p_struct);
-    if( !alglib_impl::_minqpstate_init_copy(p_struct, const_cast<alglib_impl::minqpstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minqpstate_init_copy(p_struct, const_cast<alglib_impl::minqpstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -3186,19 +3186,19 @@ Completion codes:
 *************************************************************************/
 _minqpreport_owner::_minqpreport_owner()
 {
-    p_struct = (alglib_impl::minqpreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minqpreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minqpreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minqpreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minqpreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minqpreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minqpreport_owner::_minqpreport_owner(const _minqpreport_owner &rhs)
 {
-    p_struct = (alglib_impl::minqpreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minqpreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minqpreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minqpreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minqpreport_init_copy(p_struct, const_cast<alglib_impl::minqpreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minqpreport_init_copy(p_struct, const_cast<alglib_impl::minqpreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3207,7 +3207,7 @@ _minqpreport_owner& _minqpreport_owner::operator=(const _minqpreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_minqpreport_clear(p_struct);
-    if( !alglib_impl::_minqpreport_init_copy(p_struct, const_cast<alglib_impl::minqpreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minqpreport_init_copy(p_struct, const_cast<alglib_impl::minqpreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -3333,9 +3333,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isnï¿½t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isnï¿½t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -3382,9 +3382,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isnï¿½t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isnï¿½t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -3441,9 +3441,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isnï¿½t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isnï¿½t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -3965,19 +3965,19 @@ to work with it.
 *************************************************************************/
 _minlmstate_owner::_minlmstate_owner()
 {
-    p_struct = (alglib_impl::minlmstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlmstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minlmstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlmstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minlmstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minlmstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minlmstate_owner::_minlmstate_owner(const _minlmstate_owner &rhs)
 {
-    p_struct = (alglib_impl::minlmstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlmstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minlmstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlmstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minlmstate_init_copy(p_struct, const_cast<alglib_impl::minlmstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minlmstate_init_copy(p_struct, const_cast<alglib_impl::minlmstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3986,7 +3986,7 @@ _minlmstate_owner& _minlmstate_owner::operator=(const _minlmstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_minlmstate_clear(p_struct);
-    if( !alglib_impl::_minlmstate_init_copy(p_struct, const_cast<alglib_impl::minlmstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minlmstate_init_copy(p_struct, const_cast<alglib_impl::minlmstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -4051,19 +4051,19 @@ FIELDS:
 *************************************************************************/
 _minlmreport_owner::_minlmreport_owner()
 {
-    p_struct = (alglib_impl::minlmreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlmreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minlmreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlmreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minlmreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minlmreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minlmreport_owner::_minlmreport_owner(const _minlmreport_owner &rhs)
 {
-    p_struct = (alglib_impl::minlmreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlmreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minlmreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minlmreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minlmreport_init_copy(p_struct, const_cast<alglib_impl::minlmreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minlmreport_init_copy(p_struct, const_cast<alglib_impl::minlmreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -4072,7 +4072,7 @@ _minlmreport_owner& _minlmreport_owner::operator=(const _minlmreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_minlmreport_clear(p_struct);
-    if( !alglib_impl::_minlmreport_init_copy(p_struct, const_cast<alglib_impl::minlmreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minlmreport_init_copy(p_struct, const_cast<alglib_impl::minlmreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -4882,8 +4882,8 @@ void minlmoptimize(minlmstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( fvec==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (fvec is NULL)");
+    if( fvec==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (fvec is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -4896,7 +4896,7 @@ void minlmoptimize(minlmstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -4918,10 +4918,10 @@ void minlmoptimize(minlmstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( fvec==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (fvec is NULL)");
-    if( jac==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (jac is NULL)");
+    if( fvec==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (fvec is nullptr)");
+    if( jac==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (jac is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -4939,7 +4939,7 @@ void minlmoptimize(minlmstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -4962,12 +4962,12 @@ void minlmoptimize(minlmstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (func is NULL)");
-    if( grad==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (grad is NULL)");
-    if( hess==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (hess is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (func is nullptr)");
+    if( grad==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (grad is nullptr)");
+    if( hess==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (hess is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -4990,7 +4990,7 @@ void minlmoptimize(minlmstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -5012,10 +5012,10 @@ void minlmoptimize(minlmstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (func is NULL)");
-    if( jac==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (jac is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (func is nullptr)");
+    if( jac==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (jac is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -5033,7 +5033,7 @@ void minlmoptimize(minlmstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -5056,12 +5056,12 @@ void minlmoptimize(minlmstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (func is NULL)");
-    if( grad==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (grad is NULL)");
-    if( jac==NULL )
-        throw ap_error("ALGLIB: error in 'minlmoptimize()' (jac is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (func is nullptr)");
+    if( grad==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (grad is nullptr)");
+    if( jac==nullptr )
+        throw ap_error("ALGLIB: error in 'minlmoptimize()' (jac is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -5084,7 +5084,7 @@ void minlmoptimize(minlmstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -5413,19 +5413,19 @@ void minlmsetgradientcheck(const minlmstate &state, const double teststep)
 *************************************************************************/
 _minasastate_owner::_minasastate_owner()
 {
-    p_struct = (alglib_impl::minasastate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minasastate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minasastate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minasastate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minasastate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minasastate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minasastate_owner::_minasastate_owner(const _minasastate_owner &rhs)
 {
-    p_struct = (alglib_impl::minasastate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minasastate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minasastate*)alglib_impl::ae_malloc(sizeof(alglib_impl::minasastate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minasastate_init_copy(p_struct, const_cast<alglib_impl::minasastate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minasastate_init_copy(p_struct, const_cast<alglib_impl::minasastate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -5434,7 +5434,7 @@ _minasastate_owner& _minasastate_owner::operator=(const _minasastate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_minasastate_clear(p_struct);
-    if( !alglib_impl::_minasastate_init_copy(p_struct, const_cast<alglib_impl::minasastate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minasastate_init_copy(p_struct, const_cast<alglib_impl::minasastate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -5480,19 +5480,19 @@ minasastate::~minasastate()
 *************************************************************************/
 _minasareport_owner::_minasareport_owner()
 {
-    p_struct = (alglib_impl::minasareport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minasareport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minasareport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minasareport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minasareport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_minasareport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _minasareport_owner::_minasareport_owner(const _minasareport_owner &rhs)
 {
-    p_struct = (alglib_impl::minasareport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minasareport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::minasareport*)alglib_impl::ae_malloc(sizeof(alglib_impl::minasareport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_minasareport_init_copy(p_struct, const_cast<alglib_impl::minasareport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minasareport_init_copy(p_struct, const_cast<alglib_impl::minasareport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -5501,7 +5501,7 @@ _minasareport_owner& _minasareport_owner::operator=(const _minasareport_owner &r
     if( this==&rhs )
         return *this;
     alglib_impl::_minasareport_clear(p_struct);
-    if( !alglib_impl::_minasareport_init_copy(p_struct, const_cast<alglib_impl::minasareport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_minasareport_init_copy(p_struct, const_cast<alglib_impl::minasareport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -5802,8 +5802,8 @@ void minasaoptimize(minasastate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( grad==NULL )
-        throw ap_error("ALGLIB: error in 'minasaoptimize()' (grad is NULL)");
+    if( grad==nullptr )
+        throw ap_error("ALGLIB: error in 'minasaoptimize()' (grad is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -5816,7 +5816,7 @@ void minasaoptimize(minasastate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }
@@ -19116,9 +19116,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isnï¿½t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isnï¿½t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -19170,9 +19170,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isnï¿½t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isnï¿½t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 

@@ -131,19 +131,19 @@ Use ALGLIB functions in order to work with this object.
 *************************************************************************/
 _clusterizerstate_owner::_clusterizerstate_owner()
 {
-    p_struct = (alglib_impl::clusterizerstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::clusterizerstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::clusterizerstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::clusterizerstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_clusterizerstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_clusterizerstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _clusterizerstate_owner::_clusterizerstate_owner(const _clusterizerstate_owner &rhs)
 {
-    p_struct = (alglib_impl::clusterizerstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::clusterizerstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::clusterizerstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::clusterizerstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_clusterizerstate_init_copy(p_struct, const_cast<alglib_impl::clusterizerstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_clusterizerstate_init_copy(p_struct, const_cast<alglib_impl::clusterizerstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -152,7 +152,7 @@ _clusterizerstate_owner& _clusterizerstate_owner::operator=(const _clusterizerst
     if( this==&rhs )
         return *this;
     alglib_impl::_clusterizerstate_clear(p_struct);
-    if( !alglib_impl::_clusterizerstate_init_copy(p_struct, const_cast<alglib_impl::clusterizerstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_clusterizerstate_init_copy(p_struct, const_cast<alglib_impl::clusterizerstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -282,19 +282,19 @@ NOTE: there is one-to-one correspondence between merges described by Z and
 *************************************************************************/
 _ahcreport_owner::_ahcreport_owner()
 {
-    p_struct = (alglib_impl::ahcreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::ahcreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::ahcreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::ahcreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_ahcreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_ahcreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _ahcreport_owner::_ahcreport_owner(const _ahcreport_owner &rhs)
 {
-    p_struct = (alglib_impl::ahcreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::ahcreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::ahcreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::ahcreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_ahcreport_init_copy(p_struct, const_cast<alglib_impl::ahcreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_ahcreport_init_copy(p_struct, const_cast<alglib_impl::ahcreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -303,7 +303,7 @@ _ahcreport_owner& _ahcreport_owner::operator=(const _ahcreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_ahcreport_clear(p_struct);
-    if( !alglib_impl::_ahcreport_init_copy(p_struct, const_cast<alglib_impl::ahcreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_ahcreport_init_copy(p_struct, const_cast<alglib_impl::ahcreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -377,19 +377,19 @@ FORMAL DESCRIPTION OF FIELDS:
 *************************************************************************/
 _kmeansreport_owner::_kmeansreport_owner()
 {
-    p_struct = (alglib_impl::kmeansreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::kmeansreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::kmeansreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::kmeansreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_kmeansreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_kmeansreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _kmeansreport_owner::_kmeansreport_owner(const _kmeansreport_owner &rhs)
 {
-    p_struct = (alglib_impl::kmeansreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::kmeansreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::kmeansreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::kmeansreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_kmeansreport_init_copy(p_struct, const_cast<alglib_impl::kmeansreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_kmeansreport_init_copy(p_struct, const_cast<alglib_impl::kmeansreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -398,7 +398,7 @@ _kmeansreport_owner& _kmeansreport_owner::operator=(const _kmeansreport_owner &r
     if( this==&rhs )
         return *this;
     alglib_impl::_kmeansreport_clear(p_struct);
-    if( !alglib_impl::_kmeansreport_init_copy(p_struct, const_cast<alglib_impl::kmeansreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_kmeansreport_init_copy(p_struct, const_cast<alglib_impl::kmeansreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1193,19 +1193,19 @@ void kmeansgenerate(const real_2d_array &xy, const ae_int_t npoints, const ae_in
 *************************************************************************/
 _decisionforest_owner::_decisionforest_owner()
 {
-    p_struct = (alglib_impl::decisionforest*)alglib_impl::ae_malloc(sizeof(alglib_impl::decisionforest), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::decisionforest*)alglib_impl::ae_malloc(sizeof(alglib_impl::decisionforest), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_decisionforest_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_decisionforest_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _decisionforest_owner::_decisionforest_owner(const _decisionforest_owner &rhs)
 {
-    p_struct = (alglib_impl::decisionforest*)alglib_impl::ae_malloc(sizeof(alglib_impl::decisionforest), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::decisionforest*)alglib_impl::ae_malloc(sizeof(alglib_impl::decisionforest), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_decisionforest_init_copy(p_struct, const_cast<alglib_impl::decisionforest*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_decisionforest_init_copy(p_struct, const_cast<alglib_impl::decisionforest*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1214,7 +1214,7 @@ _decisionforest_owner& _decisionforest_owner::operator=(const _decisionforest_ow
     if( this==&rhs )
         return *this;
     alglib_impl::_decisionforest_clear(p_struct);
-    if( !alglib_impl::_decisionforest_init_copy(p_struct, const_cast<alglib_impl::decisionforest*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_decisionforest_init_copy(p_struct, const_cast<alglib_impl::decisionforest*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1260,19 +1260,19 @@ decisionforest::~decisionforest()
 *************************************************************************/
 _dfreport_owner::_dfreport_owner()
 {
-    p_struct = (alglib_impl::dfreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::dfreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::dfreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::dfreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_dfreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_dfreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _dfreport_owner::_dfreport_owner(const _dfreport_owner &rhs)
 {
-    p_struct = (alglib_impl::dfreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::dfreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::dfreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::dfreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_dfreport_init_copy(p_struct, const_cast<alglib_impl::dfreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_dfreport_init_copy(p_struct, const_cast<alglib_impl::dfreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1281,7 +1281,7 @@ _dfreport_owner& _dfreport_owner::operator=(const _dfreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_dfreport_clear(p_struct);
-    if( !alglib_impl::_dfreport_init_copy(p_struct, const_cast<alglib_impl::dfreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_dfreport_init_copy(p_struct, const_cast<alglib_impl::dfreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1718,19 +1718,19 @@ double dfavgrelerror(const decisionforest &df, const real_2d_array &xy, const ae
 *************************************************************************/
 _linearmodel_owner::_linearmodel_owner()
 {
-    p_struct = (alglib_impl::linearmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::linearmodel), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::linearmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::linearmodel), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_linearmodel_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_linearmodel_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _linearmodel_owner::_linearmodel_owner(const _linearmodel_owner &rhs)
 {
-    p_struct = (alglib_impl::linearmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::linearmodel), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::linearmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::linearmodel), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_linearmodel_init_copy(p_struct, const_cast<alglib_impl::linearmodel*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_linearmodel_init_copy(p_struct, const_cast<alglib_impl::linearmodel*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1739,7 +1739,7 @@ _linearmodel_owner& _linearmodel_owner::operator=(const _linearmodel_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_linearmodel_clear(p_struct);
-    if( !alglib_impl::_linearmodel_init_copy(p_struct, const_cast<alglib_impl::linearmodel*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_linearmodel_init_copy(p_struct, const_cast<alglib_impl::linearmodel*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1799,19 +1799,19 @@ not be used outside ALGLIB.
 *************************************************************************/
 _lrreport_owner::_lrreport_owner()
 {
-    p_struct = (alglib_impl::lrreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lrreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lrreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lrreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lrreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_lrreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _lrreport_owner::_lrreport_owner(const _lrreport_owner &rhs)
 {
-    p_struct = (alglib_impl::lrreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lrreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lrreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lrreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lrreport_init_copy(p_struct, const_cast<alglib_impl::lrreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lrreport_init_copy(p_struct, const_cast<alglib_impl::lrreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1820,7 +1820,7 @@ _lrreport_owner& _lrreport_owner::operator=(const _lrreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_lrreport_clear(p_struct);
-    if( !alglib_impl::_lrreport_init_copy(p_struct, const_cast<alglib_impl::lrreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lrreport_init_copy(p_struct, const_cast<alglib_impl::lrreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -2624,19 +2624,19 @@ NOTE 2: on classification problems  RMSError/AvgError/AvgRelError  contain
 *************************************************************************/
 _modelerrors_owner::_modelerrors_owner()
 {
-    p_struct = (alglib_impl::modelerrors*)alglib_impl::ae_malloc(sizeof(alglib_impl::modelerrors), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::modelerrors*)alglib_impl::ae_malloc(sizeof(alglib_impl::modelerrors), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_modelerrors_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_modelerrors_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _modelerrors_owner::_modelerrors_owner(const _modelerrors_owner &rhs)
 {
-    p_struct = (alglib_impl::modelerrors*)alglib_impl::ae_malloc(sizeof(alglib_impl::modelerrors), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::modelerrors*)alglib_impl::ae_malloc(sizeof(alglib_impl::modelerrors), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_modelerrors_init_copy(p_struct, const_cast<alglib_impl::modelerrors*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_modelerrors_init_copy(p_struct, const_cast<alglib_impl::modelerrors*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -2645,7 +2645,7 @@ _modelerrors_owner& _modelerrors_owner::operator=(const _modelerrors_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_modelerrors_clear(p_struct);
-    if( !alglib_impl::_modelerrors_init_copy(p_struct, const_cast<alglib_impl::modelerrors*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_modelerrors_init_copy(p_struct, const_cast<alglib_impl::modelerrors*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -2691,19 +2691,19 @@ modelerrors::~modelerrors()
 *************************************************************************/
 _multilayerperceptron_owner::_multilayerperceptron_owner()
 {
-    p_struct = (alglib_impl::multilayerperceptron*)alglib_impl::ae_malloc(sizeof(alglib_impl::multilayerperceptron), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::multilayerperceptron*)alglib_impl::ae_malloc(sizeof(alglib_impl::multilayerperceptron), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_multilayerperceptron_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_multilayerperceptron_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _multilayerperceptron_owner::_multilayerperceptron_owner(const _multilayerperceptron_owner &rhs)
 {
-    p_struct = (alglib_impl::multilayerperceptron*)alglib_impl::ae_malloc(sizeof(alglib_impl::multilayerperceptron), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::multilayerperceptron*)alglib_impl::ae_malloc(sizeof(alglib_impl::multilayerperceptron), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_multilayerperceptron_init_copy(p_struct, const_cast<alglib_impl::multilayerperceptron*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_multilayerperceptron_init_copy(p_struct, const_cast<alglib_impl::multilayerperceptron*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -2712,7 +2712,7 @@ _multilayerperceptron_owner& _multilayerperceptron_owner::operator=(const _multi
     if( this==&rhs )
         return *this;
     alglib_impl::_multilayerperceptron_clear(p_struct);
-    if( !alglib_impl::_multilayerperceptron_init_copy(p_struct, const_cast<alglib_impl::multilayerperceptron*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_multilayerperceptron_init_copy(p_struct, const_cast<alglib_impl::multilayerperceptron*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -5889,19 +5889,19 @@ double smp_mlperrorsparsesubset(const multilayerperceptron &network, const spars
 *************************************************************************/
 _logitmodel_owner::_logitmodel_owner()
 {
-    p_struct = (alglib_impl::logitmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::logitmodel), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::logitmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::logitmodel), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_logitmodel_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_logitmodel_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _logitmodel_owner::_logitmodel_owner(const _logitmodel_owner &rhs)
 {
-    p_struct = (alglib_impl::logitmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::logitmodel), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::logitmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::logitmodel), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_logitmodel_init_copy(p_struct, const_cast<alglib_impl::logitmodel*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_logitmodel_init_copy(p_struct, const_cast<alglib_impl::logitmodel*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -5910,7 +5910,7 @@ _logitmodel_owner& _logitmodel_owner::operator=(const _logitmodel_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_logitmodel_clear(p_struct);
-    if( !alglib_impl::_logitmodel_init_copy(p_struct, const_cast<alglib_impl::logitmodel*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_logitmodel_init_copy(p_struct, const_cast<alglib_impl::logitmodel*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -5958,19 +5958,19 @@ MNLReport structure contains information about training process:
 *************************************************************************/
 _mnlreport_owner::_mnlreport_owner()
 {
-    p_struct = (alglib_impl::mnlreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mnlreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mnlreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mnlreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mnlreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mnlreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mnlreport_owner::_mnlreport_owner(const _mnlreport_owner &rhs)
 {
-    p_struct = (alglib_impl::mnlreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mnlreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mnlreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mnlreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mnlreport_init_copy(p_struct, const_cast<alglib_impl::mnlreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mnlreport_init_copy(p_struct, const_cast<alglib_impl::mnlreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -5979,7 +5979,7 @@ _mnlreport_owner& _mnlreport_owner::operator=(const _mnlreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mnlreport_clear(p_struct);
-    if( !alglib_impl::_mnlreport_init_copy(p_struct, const_cast<alglib_impl::mnlreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mnlreport_init_copy(p_struct, const_cast<alglib_impl::mnlreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -6371,19 +6371,19 @@ You should use ALGLIB functions in order to work with this object.
 *************************************************************************/
 _mcpdstate_owner::_mcpdstate_owner()
 {
-    p_struct = (alglib_impl::mcpdstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::mcpdstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mcpdstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::mcpdstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mcpdstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mcpdstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mcpdstate_owner::_mcpdstate_owner(const _mcpdstate_owner &rhs)
 {
-    p_struct = (alglib_impl::mcpdstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::mcpdstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mcpdstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::mcpdstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mcpdstate_init_copy(p_struct, const_cast<alglib_impl::mcpdstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mcpdstate_init_copy(p_struct, const_cast<alglib_impl::mcpdstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -6392,7 +6392,7 @@ _mcpdstate_owner& _mcpdstate_owner::operator=(const _mcpdstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mcpdstate_clear(p_struct);
-    if( !alglib_impl::_mcpdstate_init_copy(p_struct, const_cast<alglib_impl::mcpdstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mcpdstate_init_copy(p_struct, const_cast<alglib_impl::mcpdstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -6450,19 +6450,19 @@ This structure is a MCPD training report:
 *************************************************************************/
 _mcpdreport_owner::_mcpdreport_owner()
 {
-    p_struct = (alglib_impl::mcpdreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mcpdreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mcpdreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mcpdreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mcpdreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mcpdreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mcpdreport_owner::_mcpdreport_owner(const _mcpdreport_owner &rhs)
 {
-    p_struct = (alglib_impl::mcpdreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mcpdreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mcpdreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mcpdreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mcpdreport_init_copy(p_struct, const_cast<alglib_impl::mcpdreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mcpdreport_init_copy(p_struct, const_cast<alglib_impl::mcpdreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -6471,7 +6471,7 @@ _mcpdreport_owner& _mcpdreport_owner::operator=(const _mcpdreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mcpdreport_clear(p_struct);
-    if( !alglib_impl::_mcpdreport_init_copy(p_struct, const_cast<alglib_impl::mcpdreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mcpdreport_init_copy(p_struct, const_cast<alglib_impl::mcpdreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -7447,19 +7447,19 @@ Neural networks ensemble
 *************************************************************************/
 _mlpensemble_owner::_mlpensemble_owner()
 {
-    p_struct = (alglib_impl::mlpensemble*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpensemble), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mlpensemble*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpensemble), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mlpensemble_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mlpensemble_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mlpensemble_owner::_mlpensemble_owner(const _mlpensemble_owner &rhs)
 {
-    p_struct = (alglib_impl::mlpensemble*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpensemble), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mlpensemble*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpensemble), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mlpensemble_init_copy(p_struct, const_cast<alglib_impl::mlpensemble*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mlpensemble_init_copy(p_struct, const_cast<alglib_impl::mlpensemble*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -7468,7 +7468,7 @@ _mlpensemble_owner& _mlpensemble_owner::operator=(const _mlpensemble_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mlpensemble_clear(p_struct);
-    if( !alglib_impl::_mlpensemble_init_copy(p_struct, const_cast<alglib_impl::mlpensemble*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mlpensemble_init_copy(p_struct, const_cast<alglib_impl::mlpensemble*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -8170,19 +8170,19 @@ NOTE 2: on classification problems  RMSError/AvgError/AvgRelError  contain
 *************************************************************************/
 _mlpreport_owner::_mlpreport_owner()
 {
-    p_struct = (alglib_impl::mlpreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mlpreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mlpreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mlpreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mlpreport_owner::_mlpreport_owner(const _mlpreport_owner &rhs)
 {
-    p_struct = (alglib_impl::mlpreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mlpreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mlpreport_init_copy(p_struct, const_cast<alglib_impl::mlpreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mlpreport_init_copy(p_struct, const_cast<alglib_impl::mlpreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -8191,7 +8191,7 @@ _mlpreport_owner& _mlpreport_owner::operator=(const _mlpreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mlpreport_clear(p_struct);
-    if( !alglib_impl::_mlpreport_init_copy(p_struct, const_cast<alglib_impl::mlpreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mlpreport_init_copy(p_struct, const_cast<alglib_impl::mlpreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -8237,19 +8237,19 @@ Cross-validation estimates of generalization error
 *************************************************************************/
 _mlpcvreport_owner::_mlpcvreport_owner()
 {
-    p_struct = (alglib_impl::mlpcvreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpcvreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mlpcvreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpcvreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mlpcvreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mlpcvreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mlpcvreport_owner::_mlpcvreport_owner(const _mlpcvreport_owner &rhs)
 {
-    p_struct = (alglib_impl::mlpcvreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpcvreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mlpcvreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlpcvreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mlpcvreport_init_copy(p_struct, const_cast<alglib_impl::mlpcvreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mlpcvreport_init_copy(p_struct, const_cast<alglib_impl::mlpcvreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -8258,7 +8258,7 @@ _mlpcvreport_owner& _mlpcvreport_owner::operator=(const _mlpcvreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mlpcvreport_clear(p_struct);
-    if( !alglib_impl::_mlpcvreport_init_copy(p_struct, const_cast<alglib_impl::mlpcvreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mlpcvreport_init_copy(p_struct, const_cast<alglib_impl::mlpcvreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -8307,19 +8307,19 @@ functions to work with this object.
 *************************************************************************/
 _mlptrainer_owner::_mlptrainer_owner()
 {
-    p_struct = (alglib_impl::mlptrainer*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlptrainer), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mlptrainer*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlptrainer), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mlptrainer_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_mlptrainer_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _mlptrainer_owner::_mlptrainer_owner(const _mlptrainer_owner &rhs)
 {
-    p_struct = (alglib_impl::mlptrainer*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlptrainer), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::mlptrainer*)alglib_impl::ae_malloc(sizeof(alglib_impl::mlptrainer), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_mlptrainer_init_copy(p_struct, const_cast<alglib_impl::mlptrainer*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mlptrainer_init_copy(p_struct, const_cast<alglib_impl::mlptrainer*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -8328,7 +8328,7 @@ _mlptrainer_owner& _mlptrainer_owner::operator=(const _mlptrainer_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_mlptrainer_clear(p_struct);
-    if( !alglib_impl::_mlptrainer_init_copy(p_struct, const_cast<alglib_impl::mlptrainer*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_mlptrainer_init_copy(p_struct, const_cast<alglib_impl::mlptrainer*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -9530,7 +9530,7 @@ INPUT PARAMETERS:
     NPoints     -   dataset size, NPoints>=0
     NVars       -   number of independent variables, NVars>=1
 
-ÂÛÕÎÄÍÛÅ ÏÀÐÀÌÅÒÐÛ:
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:
     Info        -   return code:
                     * -4, if SVD subroutine haven't converged
                     * -1, if wrong parameters has been passed (NPoints<0,
@@ -22307,7 +22307,7 @@ void mlpgradbatch(multilayerperceptron* network,
     mlpproperties(network, &nin, &nout, &wcount, _state);
     rvectorsetlengthatleast(grad, wcount, _state);
     ae_shared_pool_first_recycled(&network->gradbuf, &_sgrad, _state);
-    while(sgrad!=NULL)
+    while(sgrad!=nullptr)
     {
         sgrad->f = 0.0;
         for(i=0; i<=wcount-1; i++)
@@ -22323,7 +22323,7 @@ void mlpgradbatch(multilayerperceptron* network,
         grad->ptr.p_double[i] = 0.0;
     }
     ae_shared_pool_first_recycled(&network->gradbuf, &_sgrad, _state);
-    while(sgrad!=NULL)
+    while(sgrad!=nullptr)
     {
         *e = *e+sgrad->f;
         for(i=0; i<=wcount-1; i++)
@@ -22433,7 +22433,7 @@ void mlpgradbatchsparse(multilayerperceptron* network,
     mlpproperties(network, &nin, &nout, &wcount, _state);
     rvectorsetlengthatleast(grad, wcount, _state);
     ae_shared_pool_first_recycled(&network->gradbuf, &_sgrad, _state);
-    while(sgrad!=NULL)
+    while(sgrad!=nullptr)
     {
         sgrad->f = 0.0;
         for(i=0; i<=wcount-1; i++)
@@ -22449,7 +22449,7 @@ void mlpgradbatchsparse(multilayerperceptron* network,
         grad->ptr.p_double[i] = 0.0;
     }
     ae_shared_pool_first_recycled(&network->gradbuf, &_sgrad, _state);
-    while(sgrad!=NULL)
+    while(sgrad!=nullptr)
     {
         *e = *e+sgrad->f;
         for(i=0; i<=wcount-1; i++)
@@ -22589,7 +22589,7 @@ void mlpgradbatchsubset(multilayerperceptron* network,
     mlpproperties(network, &nin, &nout, &wcount, _state);
     rvectorsetlengthatleast(grad, wcount, _state);
     ae_shared_pool_first_recycled(&network->gradbuf, &_sgrad, _state);
-    while(sgrad!=NULL)
+    while(sgrad!=nullptr)
     {
         sgrad->f = 0.0;
         for(i=0; i<=wcount-1; i++)
@@ -22605,7 +22605,7 @@ void mlpgradbatchsubset(multilayerperceptron* network,
         grad->ptr.p_double[i] = 0.0;
     }
     ae_shared_pool_first_recycled(&network->gradbuf, &_sgrad, _state);
-    while(sgrad!=NULL)
+    while(sgrad!=nullptr)
     {
         *e = *e+sgrad->f;
         for(i=0; i<=wcount-1; i++)
@@ -22753,7 +22753,7 @@ void mlpgradbatchsparsesubset(multilayerperceptron* network,
     mlpproperties(network, &nin, &nout, &wcount, _state);
     rvectorsetlengthatleast(grad, wcount, _state);
     ae_shared_pool_first_recycled(&network->gradbuf, &_sgrad, _state);
-    while(sgrad!=NULL)
+    while(sgrad!=nullptr)
     {
         sgrad->f = 0.0;
         for(i=0; i<=wcount-1; i++)
@@ -22769,7 +22769,7 @@ void mlpgradbatchsparsesubset(multilayerperceptron* network,
         grad->ptr.p_double[i] = 0.0;
     }
     ae_shared_pool_first_recycled(&network->gradbuf, &_sgrad, _state);
-    while(sgrad!=NULL)
+    while(sgrad!=nullptr)
     {
         *e = *e+sgrad->f;
         for(i=0; i<=wcount-1; i++)
@@ -31811,7 +31811,7 @@ void mlpkfoldcv(mlptrainer* s,
      * Calculate value for NGrad
      */
     ae_shared_pool_first_recycled(&pooldatacv, &_sdatacv, _state);
-    while(sdatacv!=NULL)
+    while(sdatacv!=nullptr)
     {
         rep->ngrad = rep->ngrad+sdatacv->ngrad;
         ae_shared_pool_next_recycled(&pooldatacv, &_sdatacv, _state);
@@ -33459,7 +33459,7 @@ static void mlptrain_mlptrainnetworkx(mlptrainer* s,
          */
         bestrmserror = ae_maxrealnumber;
         ae_shared_pool_first_recycled(sessions, &_psession, _state);
-        while(psession!=NULL)
+        while(psession!=nullptr)
         {
             if( ae_fp_less(psession->bestrmserror,bestrmserror) )
             {
@@ -34481,7 +34481,7 @@ static void mlptrain_initmlptrnsessions(multilayerperceptron* networktrained,
          * Clear sessions stored in the pool.
          */
         ae_shared_pool_first_recycled(sessions, &_p, _state);
-        while(p!=NULL)
+        while(p!=nullptr)
         {
             ae_assert(mlpsamearchitecture(&p->network, networktrained, _state), "InitMLPTrnSessions: internal consistency error", _state);
             p->bestrmserror = ae_maxrealnumber;
@@ -34940,7 +34940,7 @@ INPUT PARAMETERS:
     NPoints     -   dataset size, NPoints>=0
     NVars       -   number of independent variables, NVars>=1
 
-ÂÛÕÎÄÍÛÅ ÏÀÐÀÌÅÒÐÛ:
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:
     Info        -   return code:
                     * -4, if SVD subroutine haven't converged
                     * -1, if wrong parameters has been passed (NPoints<0,

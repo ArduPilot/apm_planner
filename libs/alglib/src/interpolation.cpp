@@ -42,19 +42,19 @@ IDW interpolant.
 *************************************************************************/
 _idwinterpolant_owner::_idwinterpolant_owner()
 {
-    p_struct = (alglib_impl::idwinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::idwinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::idwinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::idwinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_idwinterpolant_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_idwinterpolant_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _idwinterpolant_owner::_idwinterpolant_owner(const _idwinterpolant_owner &rhs)
 {
-    p_struct = (alglib_impl::idwinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::idwinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::idwinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::idwinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_idwinterpolant_init_copy(p_struct, const_cast<alglib_impl::idwinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_idwinterpolant_init_copy(p_struct, const_cast<alglib_impl::idwinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -63,7 +63,7 @@ _idwinterpolant_owner& _idwinterpolant_owner::operator=(const _idwinterpolant_ow
     if( this==&rhs )
         return *this;
     alglib_impl::_idwinterpolant_clear(p_struct);
-    if( !alglib_impl::_idwinterpolant_init_copy(p_struct, const_cast<alglib_impl::idwinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_idwinterpolant_init_copy(p_struct, const_cast<alglib_impl::idwinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -331,19 +331,19 @@ Barycentric interpolant.
 *************************************************************************/
 _barycentricinterpolant_owner::_barycentricinterpolant_owner()
 {
-    p_struct = (alglib_impl::barycentricinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::barycentricinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_barycentricinterpolant_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_barycentricinterpolant_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _barycentricinterpolant_owner::_barycentricinterpolant_owner(const _barycentricinterpolant_owner &rhs)
 {
-    p_struct = (alglib_impl::barycentricinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::barycentricinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_barycentricinterpolant_init_copy(p_struct, const_cast<alglib_impl::barycentricinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_barycentricinterpolant_init_copy(p_struct, const_cast<alglib_impl::barycentricinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -352,7 +352,7 @@ _barycentricinterpolant_owner& _barycentricinterpolant_owner::operator=(const _b
     if( this==&rhs )
         return *this;
     alglib_impl::_barycentricinterpolant_clear(p_struct);
-    if( !alglib_impl::_barycentricinterpolant_init_copy(p_struct, const_cast<alglib_impl::barycentricinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_barycentricinterpolant_init_copy(p_struct, const_cast<alglib_impl::barycentricinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1573,19 +1573,19 @@ double polynomialcalccheb2(const double a, const double b, const real_1d_array &
 *************************************************************************/
 _spline1dinterpolant_owner::_spline1dinterpolant_owner()
 {
-    p_struct = (alglib_impl::spline1dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::spline1dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline1dinterpolant_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_spline1dinterpolant_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _spline1dinterpolant_owner::_spline1dinterpolant_owner(const _spline1dinterpolant_owner &rhs)
 {
-    p_struct = (alglib_impl::spline1dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::spline1dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline1dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline1dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline1dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline1dinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1594,7 +1594,7 @@ _spline1dinterpolant_owner& _spline1dinterpolant_owner::operator=(const _spline1
     if( this==&rhs )
         return *this;
     alglib_impl::_spline1dinterpolant_clear(p_struct);
-    if( !alglib_impl::_spline1dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline1dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline1dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline1dinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -3314,19 +3314,19 @@ Polynomial fitting report:
 *************************************************************************/
 _polynomialfitreport_owner::_polynomialfitreport_owner()
 {
-    p_struct = (alglib_impl::polynomialfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::polynomialfitreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::polynomialfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::polynomialfitreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_polynomialfitreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_polynomialfitreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _polynomialfitreport_owner::_polynomialfitreport_owner(const _polynomialfitreport_owner &rhs)
 {
-    p_struct = (alglib_impl::polynomialfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::polynomialfitreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::polynomialfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::polynomialfitreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_polynomialfitreport_init_copy(p_struct, const_cast<alglib_impl::polynomialfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_polynomialfitreport_init_copy(p_struct, const_cast<alglib_impl::polynomialfitreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3335,7 +3335,7 @@ _polynomialfitreport_owner& _polynomialfitreport_owner::operator=(const _polynom
     if( this==&rhs )
         return *this;
     alglib_impl::_polynomialfitreport_clear(p_struct);
-    if( !alglib_impl::_polynomialfitreport_init_copy(p_struct, const_cast<alglib_impl::polynomialfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_polynomialfitreport_init_copy(p_struct, const_cast<alglib_impl::polynomialfitreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -3386,19 +3386,19 @@ Barycentric fitting report:
 *************************************************************************/
 _barycentricfitreport_owner::_barycentricfitreport_owner()
 {
-    p_struct = (alglib_impl::barycentricfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricfitreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::barycentricfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricfitreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_barycentricfitreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_barycentricfitreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _barycentricfitreport_owner::_barycentricfitreport_owner(const _barycentricfitreport_owner &rhs)
 {
-    p_struct = (alglib_impl::barycentricfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricfitreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::barycentricfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricfitreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_barycentricfitreport_init_copy(p_struct, const_cast<alglib_impl::barycentricfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_barycentricfitreport_init_copy(p_struct, const_cast<alglib_impl::barycentricfitreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3407,7 +3407,7 @@ _barycentricfitreport_owner& _barycentricfitreport_owner::operator=(const _baryc
     if( this==&rhs )
         return *this;
     alglib_impl::_barycentricfitreport_clear(p_struct);
-    if( !alglib_impl::_barycentricfitreport_init_copy(p_struct, const_cast<alglib_impl::barycentricfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_barycentricfitreport_init_copy(p_struct, const_cast<alglib_impl::barycentricfitreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -3461,19 +3461,19 @@ Spline1DFitHermite). Modern fitting functions do NOT fill these fields:
 *************************************************************************/
 _spline1dfitreport_owner::_spline1dfitreport_owner()
 {
-    p_struct = (alglib_impl::spline1dfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dfitreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::spline1dfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dfitreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline1dfitreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_spline1dfitreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _spline1dfitreport_owner::_spline1dfitreport_owner(const _spline1dfitreport_owner &rhs)
 {
-    p_struct = (alglib_impl::spline1dfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dfitreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::spline1dfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dfitreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline1dfitreport_init_copy(p_struct, const_cast<alglib_impl::spline1dfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline1dfitreport_init_copy(p_struct, const_cast<alglib_impl::spline1dfitreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3482,7 +3482,7 @@ _spline1dfitreport_owner& _spline1dfitreport_owner::operator=(const _spline1dfit
     if( this==&rhs )
         return *this;
     alglib_impl::_spline1dfitreport_clear(p_struct);
-    if( !alglib_impl::_spline1dfitreport_init_copy(p_struct, const_cast<alglib_impl::spline1dfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline1dfitreport_init_copy(p_struct, const_cast<alglib_impl::spline1dfitreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -3557,19 +3557,19 @@ fields are initialized.
 *************************************************************************/
 _lsfitreport_owner::_lsfitreport_owner()
 {
-    p_struct = (alglib_impl::lsfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lsfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lsfitreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_lsfitreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _lsfitreport_owner::_lsfitreport_owner(const _lsfitreport_owner &rhs)
 {
-    p_struct = (alglib_impl::lsfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lsfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lsfitreport_init_copy(p_struct, const_cast<alglib_impl::lsfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lsfitreport_init_copy(p_struct, const_cast<alglib_impl::lsfitreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3578,7 +3578,7 @@ _lsfitreport_owner& _lsfitreport_owner::operator=(const _lsfitreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_lsfitreport_clear(p_struct);
-    if( !alglib_impl::_lsfitreport_init_copy(p_struct, const_cast<alglib_impl::lsfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lsfitreport_init_copy(p_struct, const_cast<alglib_impl::lsfitreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -3627,19 +3627,19 @@ Never try to access its fields directly!
 *************************************************************************/
 _lsfitstate_owner::_lsfitstate_owner()
 {
-    p_struct = (alglib_impl::lsfitstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lsfitstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lsfitstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_lsfitstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _lsfitstate_owner::_lsfitstate_owner(const _lsfitstate_owner &rhs)
 {
-    p_struct = (alglib_impl::lsfitstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lsfitstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lsfitstate_init_copy(p_struct, const_cast<alglib_impl::lsfitstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lsfitstate_init_copy(p_struct, const_cast<alglib_impl::lsfitstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3648,7 +3648,7 @@ _lsfitstate_owner& _lsfitstate_owner::operator=(const _lsfitstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_lsfitstate_clear(p_struct);
-    if( !alglib_impl::_lsfitstate_init_copy(p_struct, const_cast<alglib_impl::lsfitstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lsfitstate_init_copy(p_struct, const_cast<alglib_impl::lsfitstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -6800,8 +6800,8 @@ void lsfitfit(lsfitstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'lsfitfit()' (func is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'lsfitfit()' (func is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -6814,7 +6814,7 @@ void lsfitfit(lsfitstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.c, state.f, ptr);
                 continue;
             }
@@ -6836,10 +6836,10 @@ void lsfitfit(lsfitstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'lsfitfit()' (func is NULL)");
-    if( grad==NULL )
-        throw ap_error("ALGLIB: error in 'lsfitfit()' (grad is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'lsfitfit()' (func is nullptr)");
+    if( grad==nullptr )
+        throw ap_error("ALGLIB: error in 'lsfitfit()' (grad is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -6857,7 +6857,7 @@ void lsfitfit(lsfitstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.c, state.f, ptr);
                 continue;
             }
@@ -6880,12 +6880,12 @@ void lsfitfit(lsfitstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'lsfitfit()' (func is NULL)");
-    if( grad==NULL )
-        throw ap_error("ALGLIB: error in 'lsfitfit()' (grad is NULL)");
-    if( hess==NULL )
-        throw ap_error("ALGLIB: error in 'lsfitfit()' (hess is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'lsfitfit()' (func is nullptr)");
+    if( grad==nullptr )
+        throw ap_error("ALGLIB: error in 'lsfitfit()' (grad is nullptr)");
+    if( hess==nullptr )
+        throw ap_error("ALGLIB: error in 'lsfitfit()' (hess is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -6908,7 +6908,7 @@ void lsfitfit(lsfitstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.c, state.f, ptr);
                 continue;
             }
@@ -7089,19 +7089,19 @@ functions instead.
 *************************************************************************/
 _pspline2interpolant_owner::_pspline2interpolant_owner()
 {
-    p_struct = (alglib_impl::pspline2interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline2interpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::pspline2interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline2interpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_pspline2interpolant_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_pspline2interpolant_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _pspline2interpolant_owner::_pspline2interpolant_owner(const _pspline2interpolant_owner &rhs)
 {
-    p_struct = (alglib_impl::pspline2interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline2interpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::pspline2interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline2interpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_pspline2interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline2interpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_pspline2interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline2interpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -7110,7 +7110,7 @@ _pspline2interpolant_owner& _pspline2interpolant_owner::operator=(const _pspline
     if( this==&rhs )
         return *this;
     alglib_impl::_pspline2interpolant_clear(p_struct);
-    if( !alglib_impl::_pspline2interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline2interpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_pspline2interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline2interpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -7159,19 +7159,19 @@ functions instead.
 *************************************************************************/
 _pspline3interpolant_owner::_pspline3interpolant_owner()
 {
-    p_struct = (alglib_impl::pspline3interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline3interpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::pspline3interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline3interpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_pspline3interpolant_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_pspline3interpolant_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _pspline3interpolant_owner::_pspline3interpolant_owner(const _pspline3interpolant_owner &rhs)
 {
-    p_struct = (alglib_impl::pspline3interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline3interpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::pspline3interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline3interpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_pspline3interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline3interpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_pspline3interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline3interpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -7180,7 +7180,7 @@ _pspline3interpolant_owner& _pspline3interpolant_owner::operator=(const _pspline
     if( this==&rhs )
         return *this;
     alglib_impl::_pspline3interpolant_clear(p_struct);
-    if( !alglib_impl::_pspline3interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline3interpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_pspline3interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline3interpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -7825,19 +7825,19 @@ functions to use this object.
 *************************************************************************/
 _rbfmodel_owner::_rbfmodel_owner()
 {
-    p_struct = (alglib_impl::rbfmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::rbfmodel), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::rbfmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::rbfmodel), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_rbfmodel_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_rbfmodel_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _rbfmodel_owner::_rbfmodel_owner(const _rbfmodel_owner &rhs)
 {
-    p_struct = (alglib_impl::rbfmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::rbfmodel), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::rbfmodel*)alglib_impl::ae_malloc(sizeof(alglib_impl::rbfmodel), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_rbfmodel_init_copy(p_struct, const_cast<alglib_impl::rbfmodel*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_rbfmodel_init_copy(p_struct, const_cast<alglib_impl::rbfmodel*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -7846,7 +7846,7 @@ _rbfmodel_owner& _rbfmodel_owner::operator=(const _rbfmodel_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_rbfmodel_clear(p_struct);
-    if( !alglib_impl::_rbfmodel_init_copy(p_struct, const_cast<alglib_impl::rbfmodel*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_rbfmodel_init_copy(p_struct, const_cast<alglib_impl::rbfmodel*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -7894,19 +7894,19 @@ RBF solution report:
 *************************************************************************/
 _rbfreport_owner::_rbfreport_owner()
 {
-    p_struct = (alglib_impl::rbfreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::rbfreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::rbfreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::rbfreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_rbfreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_rbfreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _rbfreport_owner::_rbfreport_owner(const _rbfreport_owner &rhs)
 {
-    p_struct = (alglib_impl::rbfreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::rbfreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::rbfreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::rbfreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_rbfreport_init_copy(p_struct, const_cast<alglib_impl::rbfreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_rbfreport_init_copy(p_struct, const_cast<alglib_impl::rbfreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -7915,7 +7915,7 @@ _rbfreport_owner& _rbfreport_owner::operator=(const _rbfreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_rbfreport_clear(p_struct);
-    if( !alglib_impl::_rbfreport_init_copy(p_struct, const_cast<alglib_impl::rbfreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_rbfreport_init_copy(p_struct, const_cast<alglib_impl::rbfreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -8932,19 +8932,19 @@ void rbfunpack(const rbfmodel &s, ae_int_t &nx, ae_int_t &ny, real_2d_array &xwr
 *************************************************************************/
 _spline2dinterpolant_owner::_spline2dinterpolant_owner()
 {
-    p_struct = (alglib_impl::spline2dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline2dinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::spline2dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline2dinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline2dinterpolant_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_spline2dinterpolant_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _spline2dinterpolant_owner::_spline2dinterpolant_owner(const _spline2dinterpolant_owner &rhs)
 {
-    p_struct = (alglib_impl::spline2dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline2dinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::spline2dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline2dinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline2dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline2dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline2dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline2dinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -8953,7 +8953,7 @@ _spline2dinterpolant_owner& _spline2dinterpolant_owner::operator=(const _spline2
     if( this==&rhs )
         return *this;
     alglib_impl::_spline2dinterpolant_clear(p_struct);
-    if( !alglib_impl::_spline2dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline2dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline2dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline2dinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -9486,19 +9486,19 @@ void spline2dunpack(const spline2dinterpolant &c, ae_int_t &m, ae_int_t &n, real
 *************************************************************************/
 _spline3dinterpolant_owner::_spline3dinterpolant_owner()
 {
-    p_struct = (alglib_impl::spline3dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline3dinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::spline3dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline3dinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline3dinterpolant_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_spline3dinterpolant_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _spline3dinterpolant_owner::_spline3dinterpolant_owner(const _spline3dinterpolant_owner &rhs)
 {
-    p_struct = (alglib_impl::spline3dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline3dinterpolant), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::spline3dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline3dinterpolant), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline3dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline3dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline3dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline3dinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -9507,7 +9507,7 @@ _spline3dinterpolant_owner& _spline3dinterpolant_owner::operator=(const _spline3
     if( this==&rhs )
         return *this;
     alglib_impl::_spline3dinterpolant_clear(p_struct);
-    if( !alglib_impl::_spline3dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline3dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline3dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline3dinterpolant*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }

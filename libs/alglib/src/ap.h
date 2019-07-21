@@ -222,7 +222,7 @@ enum { CPU_SSE2=1 };
 x-string (zero-terminated):
     owner       OWN_CALLER or OWN_AE. Determines what to do on realloc().
                 If vector is owned by caller, X-interface  will  just set
-                ptr to NULL before realloc(). If it is  owned  by  X,  it
+                ptr to nullptr before realloc(). If it is  owned  by  X,  it
                 will call ae_free/x_free/aligned_free family functions.
 
     last_action ACT_UNCHANGED, ACT_SAME_LOCATION, ACT_NEW_LOCATION
@@ -249,7 +249,7 @@ x-vector:
 
     owner       OWN_CALLER or OWN_AE. Determines what to do on realloc().
                 If vector is owned by caller, X-interface  will  just set
-                ptr to NULL before realloc(). If it is  owned  by  X,  it
+                ptr to nullptr before realloc(). If it is  owned  by  X,  it
                 will call ae_free/x_free/aligned_free family functions.
 
     last_action ACT_UNCHANGED, ACT_SAME_LOCATION, ACT_NEW_LOCATION
@@ -286,7 +286,7 @@ x-matrix:
 
     owner       OWN_CALLER or OWN_AE. Determines what to do on realloc().
                 If vector is owned by caller, X-interface  will  just set
-                ptr to NULL before realloc(). If it is  owned  by  X,  it
+                ptr to nullptr before realloc(). If it is  owned  by  X,  it
                 will call ae_free/x_free/aligned_free family functions.
 
     last_action ACT_UNCHANGED, ACT_SAME_LOCATION, ACT_NEW_LOCATION
@@ -317,9 +317,9 @@ typedef struct
 dynamic block which may be automatically deallocated during stack unwinding
 
 p_next          next block in the stack unwinding list.
-                NULL means that this block is not in the list
+                nullptr means that this block is not in the list
 deallocator     deallocator function which should be used to deallocate block.
-                NULL for "special" blocks (frame/stack boundaries)
+                nullptr for "special" blocks (frame/stack boundaries)
 ptr             pointer which should be passed to the deallocator.
                 may be null (for zero-size block), DYN_BOTTOM or DYN_FRAME
                 for "special" blocks (frame/stack boundaries).

@@ -193,7 +193,7 @@ This function is used to launcn iterations of ODE solver
 
 It accepts following parameters:
     diff    -   callback which calculates dy/dx for given y and x
-    ptr     -   optional pointer which is passed to diff; can be NULL
+    ptr     -   optional pointer which is passed to diff; can be nullptr
 
 
   -- ALGLIB --
@@ -202,7 +202,7 @@ It accepts following parameters:
 *************************************************************************/
 void odesolversolve(odesolverstate &state,
     void (*diff)(const real_1d_array &y, double x, real_1d_array &dy, void *ptr),
-    void *ptr = NULL);
+    void *ptr = nullptr);
 
 
 /*************************************************************************

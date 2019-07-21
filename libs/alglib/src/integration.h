@@ -183,12 +183,12 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-1], alpha coefficients
-    Beta    –   array[0..N-1], beta coefficients
+    Alpha   ï¿½   array[0..N-1], alpha coefficients
+    Beta    ï¿½   array[0..N-1], beta coefficients
                 Zero-indexed element is not used and may be arbitrary.
                 Beta[I]>0.
-    Mu0     –   zeroth moment of the weight function.
-    N       –   number of nodes of the quadrature formula, N>=1
+    Mu0     ï¿½   zeroth moment of the weight function.
+    N       ï¿½   number of nodes of the quadrature formula, N>=1
 
 OUTPUT PARAMETERS:
     Info    -   error code:
@@ -222,14 +222,14 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-2], alpha coefficients
-    Beta    –   array[0..N-2], beta coefficients.
+    Alpha   ï¿½   array[0..N-2], alpha coefficients
+    Beta    ï¿½   array[0..N-2], beta coefficients.
                 Zero-indexed element is not used, may be arbitrary.
                 Beta[I]>0
-    Mu0     –   zeroth moment of the weighting function.
-    A       –   left boundary of the integration interval.
-    B       –   right boundary of the integration interval.
-    N       –   number of nodes of the quadrature formula, N>=3
+    Mu0     ï¿½   zeroth moment of the weighting function.
+    A       ï¿½   left boundary of the integration interval.
+    B       ï¿½   right boundary of the integration interval.
+    N       ï¿½   number of nodes of the quadrature formula, N>=3
                 (including the left and right boundary nodes).
 
 OUTPUT PARAMETERS:
@@ -264,13 +264,13 @@ and zeroth moment Mu0
 Mu0 = integral(W(x)dx,a,b)
 
 INPUT PARAMETERS:
-    Alpha   –   array[0..N-2], alpha coefficients.
-    Beta    –   array[0..N-1], beta coefficients
+    Alpha   ï¿½   array[0..N-2], alpha coefficients.
+    Beta    ï¿½   array[0..N-1], beta coefficients
                 Zero-indexed element is not used.
                 Beta[I]>0
-    Mu0     –   zeroth moment of the weighting function.
-    A       –   left boundary of the integration interval.
-    N       –   number of nodes of the quadrature formula, N>=2
+    Mu0     ï¿½   zeroth moment of the weighting function.
+    A       ï¿½   left boundary of the integration interval.
+    N       ï¿½   number of nodes of the quadrature formula, N>=2
                 (including the left boundary node).
 
 OUTPUT PARAMETERS:
@@ -418,12 +418,12 @@ and zero moment Mu0
 
 
 INPUT PARAMETERS:
-    Alpha       –   alpha coefficients, array[0..floor(3*K/2)].
-    Beta        –   beta coefficients,  array[0..ceil(3*K/2)].
+    Alpha       ï¿½   alpha coefficients, array[0..floor(3*K/2)].
+    Beta        ï¿½   beta coefficients,  array[0..ceil(3*K/2)].
                     Beta[0] is not used and may be arbitrary.
                     Beta[I]>0.
-    Mu0         –   zeroth moment of the weight function.
-    N           –   number of nodes of the Gauss-Kronrod quadrature formula,
+    Mu0         ï¿½   zeroth moment of the weight function.
+    N           ï¿½   number of nodes of the Gauss-Kronrod quadrature formula,
                     N >= 3,
                     N =  2*K+1.
 
@@ -677,7 +677,7 @@ This function is used to launcn iterations of the 1-dimensional integrator
 
 It accepts following parameters:
     func    -   callback which calculates f(x) for given x
-    ptr     -   optional pointer which is passed to func; can be NULL
+    ptr     -   optional pointer which is passed to func; can be nullptr
 
 
   -- ALGLIB --
@@ -686,7 +686,7 @@ It accepts following parameters:
 *************************************************************************/
 void autogkintegrate(autogkstate &state,
     void (*func)(double x, double xminusa, double bminusx, double &y, void *ptr),
-    void *ptr = NULL);
+    void *ptr = nullptr);
 
 
 /*************************************************************************
