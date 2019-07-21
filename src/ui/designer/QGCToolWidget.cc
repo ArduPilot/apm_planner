@@ -18,8 +18,8 @@
 
 QGCToolWidget::QGCToolWidget(const QString& title, QWidget *parent, QSettings* settings) :
         QWidget(parent),
-        mav(NULL),
-        mainMenuAction(NULL),
+        mav(nullptr),
+        mainMenuAction(nullptr),
         widgetTitle(title),
         ui(new Ui::QGCToolWidget)
 {
@@ -232,7 +232,7 @@ void QGCToolWidget::setParameterValue(int uas, int component, QString parameterN
     for (int j = 0; j < size; j++)
     {
         QString type = settingsMap.value(widgetName + "\\" + QString::number(j) + "\\" + "TYPE", "UNKNOWN").toString();
-        QGCToolWidgetItem* item = NULL;
+        QGCToolWidgetItem* item = nullptr;
         if (type == "COMMANDBUTTON")
         {
             //This shouldn't happen, but I'm not sure... so lets test for it.
@@ -281,7 +281,7 @@ void QGCToolWidget::loadSettings(QVariantMap& settings)
         QString type = settings.value(widgetName + "\\" + QString::number(j) + "\\" + "TYPE", "UNKNOWN").toString();
         if (type != "UNKNOWN")
         {
-            QGCToolWidgetItem* item = NULL;
+            QGCToolWidgetItem* item = nullptr;
             if (type == "COMMANDBUTTON")
             {
                 item = new QGCCommandButton(this);
@@ -333,7 +333,7 @@ void QGCToolWidget::loadSettings(QSettings& settings)
         QString type = settings.value("TYPE", "UNKNOWN").toString();
         if (type != "UNKNOWN")
         {
-            QGCToolWidgetItem* item = NULL;
+            QGCToolWidgetItem* item = nullptr;
             if (type == "COMMANDBUTTON")
             {
                 QGCCommandButton *button = new QGCCommandButton(this);
@@ -477,7 +477,7 @@ void QGCToolWidget::addUAS(UASInterface* uas)
     if (newMav)
     {
         // FIXME Convert to list
-        if (mav == NULL) mav = newMav;
+        if (mav == nullptr) mav = newMav;
     }
 }
 
@@ -559,7 +559,7 @@ void QGCToolWidget::addParam(int uas,int component,QString paramname,QVariant va
     if (ui->hintLabel)
     {
         ui->hintLabel->deleteLater();
-        ui->hintLabel = NULL;
+        ui->hintLabel = nullptr;
     }
     toolLayout->addWidget(slider);
     slider->setActiveUAS(mav);
@@ -575,7 +575,7 @@ void QGCToolWidget::addParam()
     if (ui->hintLabel)
     {
         ui->hintLabel->deleteLater();
-        ui->hintLabel = NULL;
+        ui->hintLabel = nullptr;
     }
     toolLayout->addWidget(slider);
     slider->startEditMode();
@@ -588,7 +588,7 @@ void QGCToolWidget::addCommand()
     if (ui->hintLabel)
     {
         ui->hintLabel->deleteLater();
-        ui->hintLabel = NULL;
+        ui->hintLabel = nullptr;
     }
     toolLayout->addWidget(button);
     button->startEditMode();
@@ -599,7 +599,7 @@ void QGCToolWidget::addToolWidget(QGCToolWidgetItem* widget)
     if (ui->hintLabel)
     {
         ui->hintLabel->deleteLater();
-        ui->hintLabel = NULL;
+        ui->hintLabel = nullptr;
     }
     connect(widget, SIGNAL(destroyed()), this, SLOT(storeSettings()));
     toolLayout->addWidget(widget);
