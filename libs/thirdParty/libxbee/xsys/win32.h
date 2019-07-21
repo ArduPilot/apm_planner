@@ -37,23 +37,23 @@
 
 #define Win32Message()  MessageBox(0,"Run xbee_setup() first!...","libxbee",MB_OK);
 
-HMODULE glob_hModule = NULL;
+HMODULE glob_hModule = nullptr;
 
 /* this uses miliseconds not microseconds... */
 #define usleep(a)                 Sleep((a)/1000)
 
-#define xbee_thread_create(a,b,c) (((a) = CreateThread(NULL,0,(void *)(b),(void *)(c),0,NULL)) == NULL)
+#define xbee_thread_create(a,b,c) (((a) = CreateThread(nullptr,0,(void *)(b),(void *)(c),0,nullptr)) == nullptr)
 #define xbee_thread_cancel(a,b)   TerminateThread((a),(b))
 #define xbee_thread_join(a)       WaitForSingleObject((a),INFINITE)
 #define xbee_thread_tryjoin(a)    WaitForSingleObject((a),0)
 
-#define xbee_mutex_init(a)        (((a) = CreateEvent(NULL,FALSE,TRUE,NULL)) == NULL)
+#define xbee_mutex_init(a)        (((a) = CreateEvent(nullptr,FALSE,TRUE,nullptr)) == nullptr)
 #define xbee_mutex_destroy(a)     CloseHandle((a))
 #define xbee_mutex_lock(a)        WaitForSingleObject((a),INFINITE)
 #define xbee_mutex_trylock(a)     WaitForSingleObject((a),0)
 #define xbee_mutex_unlock(a)      SetEvent((a))
 
-#define xbee_sem_init(a)          (((a) = CreateEvent(NULL,FALSE,FALSE,NULL)) == NULL)
+#define xbee_sem_init(a)          (((a) = CreateEvent(nullptr,FALSE,FALSE,nullptr)) == nullptr)
 #define xbee_sem_destroy(a)       CloseHandle((a))
 #define xbee_sem_wait(a)          WaitForSingleObject((a),INFINITE)
 #define xbee_sem_wait1sec(a)      WaitForSingleObject((a),1000)
