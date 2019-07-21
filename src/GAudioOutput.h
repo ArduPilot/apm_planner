@@ -113,7 +113,7 @@ protected:
     QTimer* emergencyTimer;
     bool muted;
 private:
-    GAudioOutput(QObject* parent=NULL);
+    GAudioOutput(QObject* parent=nullptr);
     ~GAudioOutput();
 };
 

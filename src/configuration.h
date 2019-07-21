@@ -65,7 +65,7 @@ const int APPLICATIONVERSION = 2027; // 2.0.27 [TODO] we should deprecate this v
     inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();
         delete global;
-        global = NULL;
+        global = nullptr;
     }
 
     inline void loadSettings(){

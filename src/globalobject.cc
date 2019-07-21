@@ -8,7 +8,7 @@
 
 GlobalObject* GlobalObject::sharedInstance()
 {
-    static GlobalObject* _globalInstance = NULL;
+    static GlobalObject* _globalInstance = nullptr;
     if (_globalInstance) {
         return _globalInstance;
     }

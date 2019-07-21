@@ -18,7 +18,7 @@
 
 PX4FirmwareUpgradeWorker::PX4FirmwareUpgradeWorker(QObject *parent) :
     QObject(parent),
-    link(NULL)
+    link(nullptr)
 {
 }
 
@@ -127,7 +127,7 @@ void PX4FirmwareUpgradeWorker::loadFirmware(const QString &filename)
     PX4_Uploader uploader;
     const char* filenames[2];
     filenames[0] = filename.toStdString().c_str();
-    filenames[1] = NULL;
+    filenames[1] = nullptr;
     uploader.upload(filenames, "/dev/tty.usbmodem1");
 
 //    QFile f(filename);
