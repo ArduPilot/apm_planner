@@ -50,7 +50,7 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
       current_partner_systemid(0),
       current_partner_compid(MAV_COMP_ID_PRIMARY),
       read_to_edit(false),
-      currentWaypointEditable(NULL),
+      currentWaypointEditable(nullptr),
       protocol_timer(this),
       standalone(false),
       uasid(0),
@@ -331,7 +331,7 @@ void UASWaypointManager::handleWaypointCurrent(quint8 systemId, quint8 compId, m
 void UASWaypointManager::notifyOfChangeEditable(Waypoint* wp)
 {
     // If only one waypoint was changed, emit only WP signal
-    if (wp != NULL) {
+    if (wp != nullptr) {
         emit waypointEditableChanged(uasid, wp);
     } else {
         emit waypointEditableListChanged();
@@ -341,7 +341,7 @@ void UASWaypointManager::notifyOfChangeEditable(Waypoint* wp)
 
 void UASWaypointManager::notifyOfChangeViewOnly(Waypoint* wp)
 {
-    if (wp != NULL) {
+    if (wp != nullptr) {
         emit waypointViewOnlyChanged(uasid, wp);
     } else {
         emit waypointViewOnlyListChanged();
@@ -414,7 +414,7 @@ void UASWaypointManager::addWaypointEditable(Waypoint *wp, bool enforceFirstActi
     if (wp)
     {
         // Check if this is the first waypoint in an offline list
-        if (waypointsEditable.count() == 0 && uas == NULL)
+        if (waypointsEditable.count() == 0 && uas == nullptr)
             MainWindow::instance()->showCriticalMessage(tr("OFFLINE Waypoint Editing Mode"), tr("You are in offline editing mode. Make sure to save your mission to a file before connecting to a system - you will need to load the file into the system, the offline list will be cleared on connect."));
 
         wp->setId(waypointsEditable.count());
@@ -438,7 +438,7 @@ void UASWaypointManager::addWaypointEditable(Waypoint *wp, bool enforceFirstActi
 Waypoint* UASWaypointManager::createWaypoint(bool enforceFirstActive)
 {
     // Check if this is the first waypoint in an offline list
-    if (waypointsEditable.count() == 0 && uas == NULL)
+    if (waypointsEditable.count() == 0 && uas == nullptr)
         MainWindow::instance()->showCriticalMessage(tr("OFFLINE Waypoint Editing Mode"), tr("You are in offline editing mode. Make sure to save your mission to a file before connecting to a system - you will need to load the file into the system, the offline list will be cleared on connect."));
 
     Waypoint* wp = new Waypoint();
@@ -479,7 +479,7 @@ int UASWaypointManager::removeWaypoint(quint16 seq)
 
         waypointsEditable.removeAt(seq);
         delete t;
-        t = NULL;
+        t = nullptr;
 
         for(int i = seq; i < waypointsEditable.count(); i++)
         {
@@ -1163,7 +1163,7 @@ const Waypoint *UASWaypointManager::getWaypoint(int index)
     if (index > 0 || index < waypointsEditable.count()){
         return waypointsEditable[index];
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 

@@ -229,8 +229,8 @@ void UASManager::uavChangedHomePosition(int uav, double lat, double lon, double 
  * This class implements the singleton design pattern and has therefore only a private constructor.
  **/
 UASManager::UASManager() :
-        activeUAS(NULL),
-        offlineUASWaypointManager(NULL),
+        activeUAS(nullptr),
+        offlineUASWaypointManager(nullptr),
         homeLat(32.835354),
         homeLon(-117.162774),
         homeAlt(25.0),
@@ -257,7 +257,7 @@ void UASManager::addUAS(UASInterface* uas)
     // returns the UAS once the UASCreated() signal
     // is emitted. The code is thus NOT redundant.
     bool firstUAS = false;
-    if (activeUAS == NULL)
+    if (activeUAS == nullptr)
     {
         firstUAS = true;
         activeUAS = uas;
@@ -333,8 +333,8 @@ void UASManager::removeUAS(UASInterface* uas)
             {
                 // sends a null pointer if no UAS is present any more.
                 // It requires listeners of activeUASSet signal to
-                // check for NULL, otherwise bad stuff will happen!
-                activeUAS = NULL;
+                // check for nullptr, otherwise bad stuff will happen!
+                activeUAS = nullptr;
                 emit activeUASSet(activeUAS);
             }
         }
@@ -365,7 +365,7 @@ UASWaypointManager *UASManager::getActiveUASWaypointManager()
     }
     if (!offlineUASWaypointManager)
     {
-        offlineUASWaypointManager = new UASWaypointManager(NULL);
+        offlineUASWaypointManager = new UASWaypointManager(nullptr);
     }
     return offlineUASWaypointManager;
 
@@ -429,7 +429,7 @@ void UASManager::configureActiveUAS()
 
 UASInterface* UASManager::getUASForId(int id)
 {
-    UASInterface* system = NULL;
+    UASInterface* system = nullptr;
 
     foreach(UASInterface* sys, systems) {
         if (sys->getUASID() == id) {
@@ -437,15 +437,15 @@ UASInterface* UASManager::getUASForId(int id)
         }
     }
 
-    // Return NULL if not found
+    // Return nullptr if not found
     return system;
 }
 
 void UASManager::setActiveUAS(UASInterface* uas)
 {
-    if (uas != NULL) {
+    if (uas != nullptr) {
         activeUASMutex.lock();
-        if (activeUAS != NULL) {
+        if (activeUAS != nullptr) {
             emit activeUASStatusChanged(activeUAS, false);
             emit activeUASStatusChanged(activeUAS->getUASID(), false);
         }

@@ -10,7 +10,7 @@ UASInterface* QGCMAVLinkUASFactory::createUAS(MAVLinkProtocol* mavlink, LinkInte
 {
     QPointer<QObject> p;
 
-    if (parent != NULL)
+    if (parent != nullptr)
     {
         p = parent;
     }
