@@ -15,10 +15,10 @@ void UASUnitTest::init()
 void UASUnitTest::cleanup()
 {
     delete uas;
-    uas = NULL;
+    uas = nullptr;
 
     delete mav;
-    mav = NULL;
+    mav = nullptr;
 }
 
 void UASUnitTest::getUASID_test()
@@ -270,7 +270,7 @@ void UASUnitTest::signalWayPoint_test()
     QCOMPARE( spyDestroyed.count(), 0 );
 
     delete uas;// delete(destroyed) uas for validating
-    uas = NULL;
+    uas = nullptr;
     QCOMPARE(spyDestroyed.count(), 1);// count destroyed uas should are 1
     uas = new UAS(mav,UASID);
     QSignalSpy spy2(uas->getWaypointManager(), SIGNAL(waypointEditableListChanged()));
@@ -284,7 +284,7 @@ void UASUnitTest::signalWayPoint_test()
     QVector<Waypoint*> wpList = uas->getWaypointManager()->getWaypointEditableList();
     QCOMPARE(wpList.count(), 1);
     delete uas;
-    uas = NULL;
+    uas = nullptr;
     delete wp2;
 }
 
@@ -317,7 +317,7 @@ void UASUnitTest::signalUASLink_test()
         qDebug()<< link->getName();
         qDebug()<< QString::number(link->getId());
         qDebug()<< QString::number(link->getNominalDataRate());
-        QVERIFY(link != NULL);
+        QVERIFY(link != nullptr);
         uas->addLink(link);
     }
 
