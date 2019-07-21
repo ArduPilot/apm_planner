@@ -234,7 +234,7 @@ bool Mouse3DInput::Is3dmouseAttached()
 
 	unsigned int nDevices = 0;
 
-	if (::GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) {
+	if (::GetRawInputDeviceList(nullptr, &nDevices, sizeof(RAWINPUTDEVICELIST)) != 0) {
 		return false;
 	}
 
@@ -318,7 +318,7 @@ UINT Mouse3DInput::GetRawInputBuffer(PRAWINPUT pData, PUINT pcbSize, UINT cbSize
 #else
 	BOOL bIsWow64 = FALSE;
 	::IsWow64Process(GetCurrentProcess(), &bIsWow64);
-	if (!bIsWow64 || pData==NULL) {
+	if (!bIsWow64 || pData==nullptr) {
 		return ::GetRawInputBuffer(pData, pcbSize, cbSizeHeader);
 	} else {
 		HWND hwndTarget = fWindow; //fParent->winId();
@@ -365,7 +365,7 @@ UINT Mouse3DInput::GetRawInputBuffer(PRAWINPUT pData, PUINT pcbSize, UINT cbSize
 void Mouse3DInput::On3dmouseInput()
 {
 	// Don't do any data processing in background
-	bool bIsForeground = (::GetActiveWindow() != NULL);
+	bool bIsForeground = (::GetActiveWindow() != nullptr);
 	if (!bIsForeground) {
 		// set all cached data to zero so that a zero event is seen and the cached data deleted
 		for (std::map<HANDLE, TInputData>::iterator it = fDevice2Data.begin(); it != fDevice2Data.end(); it++) {
@@ -550,7 +550,7 @@ bool Mouse3DInput::TranslateRawInputData(UINT nInputCode, PRAWINPUT pRawInput)
 
 #if _TRACE_RIDI_DEVICENAME
 	UINT dwSize=0;
-	if (::GetRawInputDeviceInfo(pRawInput->header.hDevice, RIDI_DEVICENAME, NULL, &dwSize) == 0)  {
+	if (::GetRawInputDeviceInfo(pRawInput->header.hDevice, RIDI_DEVICENAME, nullptr, &dwSize) == 0)  {
 		std::vector<wchar_t> szDeviceName(dwSize+1);
 		if (::GetRawInputDeviceInfo(pRawInput->header.hDevice, RIDI_DEVICENAME, &szDeviceName[0],	&dwSize) >0) {
             QLOG_TRACE() << "Device Name = %s\nDevice handle = 0x%x\n", &szDeviceName[0], pRawInput->header.hDevice;
