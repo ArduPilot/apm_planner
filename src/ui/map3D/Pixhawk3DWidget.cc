@@ -53,7 +53,7 @@ Pixhawk3DWidget::Pixhawk3DWidget(QWidget* parent)
  , mMode(DEFAULT_MODE)
  , mSelectedWpIndex(-1)
  , mActiveSystemId(-1)
- , mActiveUAS(NULL)
+ , mActiveUAS(nullptr)
  , mGlobalViewParams(new GlobalViewParams)
  , mFollowCameraId(-1)
  , mInitCameraPos(false)
@@ -779,7 +779,7 @@ Pixhawk3DWidget::insertWaypoint(void)
         return;
     }
 
-    Waypoint* wp = NULL;
+    Waypoint* wp = nullptr;
     if (mGlobalViewParams->frame() == MAV_FRAME_GLOBAL)
     {
         double latitude = mActiveUAS->getLatitude();
@@ -2078,7 +2078,7 @@ Pixhawk3DWidget::resizeHUD(int width, int height)
     int bottomHUDHeight = 25;
 
     osg::Vec3Array* vertices = static_cast<osg::Vec3Array*>(mHudBackgroundGeometry->getVertexArray());
-    if (vertices == NULL || vertices->size() != 8)
+    if (vertices == nullptr || vertices->size() != 8)
     {
         osg::ref_ptr<osg::Vec3Array> newVertices = new osg::Vec3Array(8);
         mHudBackgroundGeometry->setVertexArray(newVertices);

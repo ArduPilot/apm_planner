@@ -102,7 +102,7 @@ Texture::sync(const WebImagePtr& image)
     {
         image->setSyncFlag(false);
 
-        if (mTexture2D->getImage() != NULL)
+        if (mTexture2D->getImage() != nullptr)
         {
             mTexture2D->getImage()->setImage(image->getWidth(),
                                              image->getHeight(),

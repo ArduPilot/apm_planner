@@ -209,7 +209,7 @@ GCManipulator::calcMovement(void)
     using namespace osgGA;
 
     // return if less then two events have been added.
-    if (_ga_t0.get() == NULL || _ga_t1.get() == NULL) {
+    if (_ga_t0.get() == nullptr || _ga_t1.get() == nullptr) {
         return false;
     }
 
