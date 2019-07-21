@@ -18,7 +18,7 @@ class QGCVideoWidget : public QGLWidget
 {
     Q_OBJECT
 public:
-    QGCVideoWidget(QWidget* parent = NULL);
+    QGCVideoWidget(QWidget* parent = nullptr);
     ~QGCVideoWidget();
 
     void resizeGL(int w, int h);
