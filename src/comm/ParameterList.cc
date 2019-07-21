@@ -107,13 +107,13 @@ void ParameterList::getParameterList(QMap<QString, unsigned short> *opalParams)
 
     /* outputs */
     unsigned short numParams;
-    unsigned short *idParam=NULL;
+    unsigned short *idParam=nullptr;
     unsigned short maxPathLen;
-    char **paths=NULL;
+    char **paths=nullptr;
     unsigned short maxNameLen;
-    char **names=NULL;
+    char **names=nullptr;
     unsigned short maxVarLen;
-    char **var=NULL;
+    char **var=nullptr;
 
     int returnValue;
 

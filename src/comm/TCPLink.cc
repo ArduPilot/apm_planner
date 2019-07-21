@@ -42,7 +42,7 @@ TCPLink::TCPLink(const QHostAddress &hostAddress, const QString &hostName, quint
     _hostAddress(hostAddress),
     _port(socketPort),
     _asServer(asServer),
-    _socket(NULL)
+    _socket(nullptr)
 {
     _server.setMaxPendingConnections(1);
     _linkId = getNextLinkId();
@@ -225,7 +225,7 @@ void TCPLink::_socketDisconnected()
     Q_ASSERT(_socket);
 
     _socket->deleteLater();
-    _socket = NULL;
+    _socket = nullptr;
 
     emit disconnected();
     emit connected(false);
@@ -254,11 +254,11 @@ bool TCPLink::connect()
 
 void TCPLink::newConnection()
 {
-    if (_socket != NULL)
+    if (_socket != nullptr)
         disconnect();
 
     _socket = _server.nextPendingConnection();
-    if (_socket == NULL)
+    if (_socket == nullptr)
         return;
 
     qDebug() << _hostAddress.toString() << ": new connection";
@@ -274,7 +274,7 @@ void TCPLink::newConnection()
 
 bool TCPLink::_hardwareConnect(void)
 {
-    Q_ASSERT(_socket == NULL);
+    Q_ASSERT(_socket == nullptr);
 
     if (_asServer)
     {
@@ -313,7 +313,7 @@ bool TCPLink::_hardwareConnect(void)
                 emit communicationError(getName(), "Connection Failed");
             }
             delete _socket;
-            _socket = NULL;
+            _socket = nullptr;
             return false;
         }
 

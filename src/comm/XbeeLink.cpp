@@ -7,9 +7,9 @@
 #include <configuration.h>
 
 XbeeLink::XbeeLink(QString portName, int baudRate) : 
-	m_xbeeCon(NULL),
+	m_xbeeCon(nullptr),
     m_id(-1),
-    m_portName(NULL),
+    m_portName(nullptr),
     m_portNameLength(0),
     m_baudRate(baudRate),
     m_connected(false),
@@ -33,7 +33,7 @@ XbeeLink::~XbeeLink()
 	if(m_portName)
 	{
 		delete m_portName;
-		m_portName = NULL;
+		m_portName = nullptr;
 	}
 	this->disconnect();
 }
@@ -64,7 +64,7 @@ bool XbeeLink::setPortName(QString portName)
 	if(m_portName)
 	{
 		delete m_portName;
-		m_portName = NULL;
+		m_portName = nullptr;
 	}
 	QStringList list = portName.split(QRegExp("\\s+"),QString::SkipEmptyParts);
 	if(list.size()>0)
@@ -180,7 +180,7 @@ bool XbeeLink::disconnect()
 	if(this->m_xbeeCon)
 	{
 		xbee_end();
-		this->m_xbeeCon = NULL;
+		this->m_xbeeCon = nullptr;
 	}
 	this->m_connected = false;
 
@@ -219,7 +219,7 @@ void XbeeLink::readBytes()
 {
 	xbee_pkt *xbeePkt;
 	xbeePkt = xbee_getpacketwait(this->m_xbeeCon);
-	if(!(NULL==xbeePkt))
+	if(!(nullptr==xbeePkt))
 	{
 		QByteArray data;
 		for(unsigned int i=0;i<=xbeePkt->datalen;i++)

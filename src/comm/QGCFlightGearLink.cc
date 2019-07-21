@@ -44,9 +44,9 @@ This file is part of the QGROUNDCONTROL project
 #include <QMatrix3x3>
 
 QGCFlightGearLink::QGCFlightGearLink(UASInterface* mav, QString startupArguments, QString remoteHost, QHostAddress host, quint16 port) :
-    socket(NULL),
-    process(NULL),
-    terraSync(NULL),
+    socket(nullptr),
+    process(nullptr),
+    terraSync(nullptr),
     flightGearVersion(0),
     startupArguments(startupArguments),
     _sensorHilEnabled(true),
@@ -393,19 +393,19 @@ bool QGCFlightGearLink::disconnectSimulation()
     {
         process->close();
         delete process;
-        process = NULL;
+        process = nullptr;
     }
     if (terraSync)
     {
         terraSync->close();
         delete terraSync;
-        terraSync = NULL;
+        terraSync = nullptr;
     }
     if (socket)
     {
         socket->close();
         delete socket;
-        socket = NULL;
+        socket = nullptr;
     }
 
     connectState = false;
