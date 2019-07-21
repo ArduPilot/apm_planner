@@ -38,7 +38,7 @@ DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent, bool ove
     m_locationOfFrameParams("https://raw.github.com/diydrones/ardupilot/master/Tools/Frame_params/"),
     m_extension(".param"),
     m_version("?ref=master"),
-    m_networkReply(NULL),
+    m_networkReply(nullptr),
     m_httpRequestAborted(false),
     m_overwriteFile(overwriteFile)
 {
@@ -128,9 +128,9 @@ void DownloadRemoteParamsDialog::refreshParamList()
 
     m_url = QUrl("https://api.github.com/repos/diydrones/ardupilot/contents/Tools/Frame_params");
 
-    if (m_networkReply != NULL){
+    if (m_networkReply != nullptr){
         delete m_networkReply;
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
     }
     m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpParamListFinished()));
@@ -141,9 +141,9 @@ void DownloadRemoteParamsDialog::refreshParamList()
 void DownloadRemoteParamsDialog::startFileDownloadRequest(QUrl url)
 {
     m_httpRequestAborted = false;
-    if (m_networkReply != NULL){
+    if (m_networkReply != nullptr){
         delete m_networkReply;
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
     }
     m_networkReply = m_networkAccessManager.get(QNetworkRequest(url));
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpFinished()));
@@ -155,9 +155,9 @@ void DownloadRemoteParamsDialog::startFileDownloadRequest(QUrl url)
 void DownloadRemoteParamsDialog::startParamListDownloadRequest(QUrl url)
 {
     m_httpRequestAborted = false;
-    if (m_networkReply != NULL){
+    if (m_networkReply != nullptr){
         delete m_networkReply;
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
     }
     m_networkReply = m_networkAccessManager.get(QNetworkRequest(url));
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpParamListFinished()));
@@ -204,7 +204,7 @@ bool DownloadRemoteParamsDialog::downloadParamFile()
                                  tr("Unable to save the file %1: %2.")
                                  .arg(fileName).arg(m_downloadedParamFile->errorString()));
         delete m_downloadedParamFile;
-        m_downloadedParamFile = NULL;
+        m_downloadedParamFile = nullptr;
         return false;
     }
     return true;
@@ -226,7 +226,7 @@ void DownloadRemoteParamsDialog::httpFinished()
             m_downloadedParamFile->close();
             m_downloadedParamFile->remove();
             delete m_downloadedParamFile;
-            m_downloadedParamFile = NULL;
+            m_downloadedParamFile = nullptr;
         }
         m_networkReply->deleteLater();
         return;
@@ -261,9 +261,9 @@ void DownloadRemoteParamsDialog::httpFinished()
     }
 
     m_networkReply->deleteLater();
-    m_networkReply = NULL;
+    m_networkReply = nullptr;
     delete m_downloadedParamFile;
-    m_downloadedParamFile = NULL;
+    m_downloadedParamFile = nullptr;
 
     if (result){
         this->accept();
@@ -295,7 +295,7 @@ void DownloadRemoteParamsDialog::httpParamListFinished()
     QLOG_DEBUG() << "DownloadRemoteParamsDialog::httpParamListFinished()";
     if (m_httpRequestAborted) {
         m_networkReply->deleteLater();
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
         return;
     }
 
@@ -303,7 +303,7 @@ void DownloadRemoteParamsDialog::httpParamListFinished()
     if (m_networkReply->error()) {
         // [TODO] cleanup download failed
 #ifdef QT_DEBUG
-        QMessageBox::information(NULL, tr("HTTP"),
+        QMessageBox::information(nullptr, tr("HTTP"),
                                  tr("Download failed: %1.")
                                  .arg(m_networkReply->errorString()));
 #endif
@@ -313,7 +313,7 @@ void DownloadRemoteParamsDialog::httpParamListFinished()
     }
 
     m_networkReply->deleteLater();
-    m_networkReply = NULL;
+    m_networkReply = nullptr;
 }
 
 void DownloadRemoteParamsDialog::processDownloadedVersionObject(const QByteArray& data)

@@ -20,7 +20,7 @@ static const QColor GRAPH_COLOR_CURRENT_FILL = QColor(0, 255, 0, 20); // Red
 CompassMotorCalibrationDialog::CompassMotorCalibrationDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CompassMotorCalibrationDialog),
-    m_uasInterface(NULL)
+    m_uasInterface(nullptr)
 {
     ui->setupUi(this);
 

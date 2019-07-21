@@ -178,7 +178,7 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished()
         }
         m_url = newUrl;
         m_networkReply->deleteLater();
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
         m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
         connect(m_networkReply, SIGNAL(finished()), this, SLOT(apmParamNetworkReplyFinished()));
         return;
@@ -208,7 +208,7 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished()
         file.close();
     }
     m_networkReply->deleteLater();
-    m_networkReply = NULL;
+    m_networkReply = nullptr;
 
     if (!pdef_urls.isEmpty()) {
         QPair<QUrl, QString> next = pdef_urls.takeFirst();

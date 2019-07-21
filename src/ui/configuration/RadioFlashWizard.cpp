@@ -62,7 +62,7 @@ RadioFlashWizard::RadioFlashWizard(QWidget *parent) :
 RadioFlashWizard::~RadioFlashWizard()
 {
     delete m_updateProcess;
-    m_updateProcess = NULL;
+    m_updateProcess = nullptr;
 
     delete ui;
 }
@@ -165,7 +165,7 @@ void RadioFlashWizard::processFinished(int exitCode)
     ui->plainTextEdit->insertPlainText(QString("\nComplete %1").arg(exitCode));
     m_timer.stop();
     m_updateProcess->deleteLater();
-    m_updateProcess = NULL;
+    m_updateProcess = nullptr;
 }
 
 QString RadioFlashWizard::getFirmwareImageName(int index)
