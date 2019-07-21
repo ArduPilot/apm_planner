@@ -7,9 +7,9 @@ class QuaGzipFilePrivate {
     friend class QuaGzipFile;
     QString fileName;
     gzFile gzd;
-    inline QuaGzipFilePrivate(): gzd(NULL) {}
+    inline QuaGzipFilePrivate(): gzd(nullptr) {}
     inline QuaGzipFilePrivate(const QString &fileName): 
-        fileName(fileName), gzd(NULL) {}
+        fileName(fileName), gzd(nullptr) {}
     template<typename FileId> bool open(FileId id, 
         QIODevice::OpenMode mode, QString &error);
     gzFile open(int fd, const char *modeString);
@@ -52,7 +52,7 @@ bool QuaGzipFilePrivate::open(FileId id, QIODevice::OpenMode mode,
         return false;
     }
     gzd = open(id, modeString);
-    if (gzd == NULL) {
+    if (gzd == nullptr) {
         error = QuaGzipFile::trUtf8("Could not gzopen() file");
         return false;
     }

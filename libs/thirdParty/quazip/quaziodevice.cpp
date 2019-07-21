@@ -23,20 +23,20 @@ class QuaZIODevicePrivate {
 
 QuaZIODevicePrivate::QuaZIODevicePrivate(QIODevice *io):
   io(io),
-  inBuf(NULL),
+  inBuf(nullptr),
   inBufPos(0),
   inBufSize(0),
-  outBuf(NULL),
+  outBuf(nullptr),
   outBufPos(0),
   outBufSize(0),
   zBufError(false)
 {
-  zins.zalloc = (alloc_func) NULL;
-  zins.zfree = (free_func) NULL;
-  zins.opaque = NULL;
-  zouts.zalloc = (alloc_func) NULL;
-  zouts.zfree = (free_func) NULL;
-  zouts.opaque = NULL;
+  zins.zalloc = (alloc_func) nullptr;
+  zins.zfree = (free_func) nullptr;
+  zins.opaque = nullptr;
+  zouts.zalloc = (alloc_func) nullptr;
+  zouts.zfree = (free_func) nullptr;
+  zouts.opaque = nullptr;
   inBuf = new char[QUAZIO_INBUFSIZE];
   outBuf = new char[QUAZIO_OUTBUFSIZE];
 #ifdef QUAZIP_ZIODEVICE_DEBUG_OUTPUT
@@ -57,9 +57,9 @@ QuaZIODevicePrivate::~QuaZIODevicePrivate()
 #ifdef QUAZIP_ZIODEVICE_DEBUG_INPUT
   indebug.close();
 #endif
-  if (inBuf != NULL)
+  if (inBuf != nullptr)
     delete[] inBuf;
-  if (outBuf != NULL)
+  if (outBuf != nullptr)
     delete[] outBuf;
 }
 

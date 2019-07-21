@@ -159,10 +159,10 @@ class QUAZIP_EXPORT QuaZip {
      * \return \c true if successful, \c false otherwise.
      *
      * \note ZIP/UNZIP API open calls do not return error code - they
-     * just return \c NULL indicating an error. But to make things
+     * just return \c nullptr indicating an error. But to make things
      * easier, quazip.h header defines additional error code \c
      * UNZ_ERROROPEN and getZipError() will return it if the open call
-     * of the ZIP/UNZIP API returns \c NULL.
+     * of the ZIP/UNZIP API returns \c nullptr.
      *
      * Argument \a ioApi specifies IO function set for ZIP/UNZIP
      * package to use. See unzip.h, zip.h and ioapi.h for details. Note
@@ -179,7 +179,7 @@ class QUAZIP_EXPORT QuaZip {
      * In short: just forget about the \a ioApi argument and you'll be
      * fine.
      **/
-    bool open(Mode mode, zlib_filefunc_def *ioApi =NULL);
+    bool open(Mode mode, zlib_filefunc_def *ioApi =nullptr);
     /// Closes ZIP file.
     /** Call getZipError() to determine if the close was successful. The
      * underlying QIODevice is also closed, regardless of whether it was
@@ -331,7 +331,7 @@ class QUAZIP_EXPORT QuaZip {
      * Does nothing and returns \c false in any of the following cases.
      * - ZIP is not open;
      * - ZIP does not have current file;
-     * - \a info is \c NULL;
+     * - \a info is \c nullptr;
      *
      * In all these cases getZipError() returns \c UNZ_OK since there
      * is no ZIP/UNZIP API call.

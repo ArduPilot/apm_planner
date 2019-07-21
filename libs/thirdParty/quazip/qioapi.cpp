@@ -58,12 +58,12 @@ voidpf ZCALLBACK qiodevice_open_file_func (
     if (iodevice->isOpen()) {
         if (iodevice->isSequential()) {
             iodevice->close();
-            return NULL;
+            return nullptr;
         } else {
             return iodevice;
         }
     } else
-        return NULL;
+        return nullptr;
 }
 
 
@@ -150,5 +150,5 @@ void fill_qiodevice_filefunc (
     pzlib_filefunc_def->zseek_file = qiodevice_seek_file_func;
     pzlib_filefunc_def->zclose_file = qiodevice_close_file_func;
     pzlib_filefunc_def->zerror_file = qiodevice_error_file_func;
-    pzlib_filefunc_def->opaque = NULL;
+    pzlib_filefunc_def->opaque = nullptr;
 }
