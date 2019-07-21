@@ -44,7 +44,7 @@ QTCREATOR_UTILS_EXPORT QString winErrorMessage(unsigned long error)
 
     const int len = FormatMessage(
             FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-            NULL, error, 0, (LPTSTR)&lpMsgBuf, 0, NULL);
+            nullptr, error, 0, (LPTSTR)&lpMsgBuf, 0, nullptr);
     if (len) {
         rc = QString::fromUtf16(lpMsgBuf, len);
         LocalFree(lpMsgBuf);
