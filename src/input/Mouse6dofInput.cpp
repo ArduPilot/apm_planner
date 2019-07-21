@@ -26,7 +26,7 @@ extern "C"
 #ifdef MOUSE_ENABLED_WIN
 Mouse6dofInput::Mouse6dofInput(Mouse3DInput* mouseInput) :
     mouse3DMax(0.075),   // TODO: check maximum value fot plugged device
-    uas(NULL),
+    uas(nullptr),
     done(false),
     mouseActive(false),
     translationActive(true),
@@ -50,7 +50,7 @@ Mouse6dofInput::Mouse6dofInput(Mouse3DInput* mouseInput) :
 #ifdef MOUSE_ENABLED_LINUX
 Mouse6dofInput::Mouse6dofInput(QWidget* parent) :
     mouse3DMax(350.0),   // TODO: check maximum value fot plugged device
-    uas(NULL),
+    uas(nullptr),
     done(false),
     mouseActive(false),
     translationActive(true),

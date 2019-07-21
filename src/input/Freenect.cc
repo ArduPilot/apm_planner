@@ -46,8 +46,8 @@ const freenect_frame_mode FREENECT_DEPTH_11_BIT_MEDIUM = supported_depth_modes[0
 
 
 Freenect::Freenect()
-    : context(NULL)
-    , device(NULL)
+    : context(nullptr)
+    , device(nullptr)
     , tiltAngle(0)
     , rgbData(new QByteArray)
     , rawDepthData(new QByteArray)
@@ -60,7 +60,7 @@ Freenect::Freenect()
 
 Freenect::~Freenect()
 {
-    if (device != NULL) {
+    if (device != nullptr) {
         freenect_stop_depth(device);
         freenect_stop_video(device);
     }
@@ -100,7 +100,7 @@ Freenect::init(int userDeviceNumber)
         }
     }
 
-    if (freenect_init(&context, NULL) < 0) {
+    if (freenect_init(&context, nullptr) < 0) {
         return false;
     }
 
