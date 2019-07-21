@@ -41,8 +41,8 @@ LinechartPlot::LinechartPlot(QWidget *parent, int plotid, quint64 interval): Qwt
     automaticScrollActive(false),
     m_active(false),
     m_groundTime(true),
-    d_data(NULL),
-    d_curve(NULL)
+    d_data(nullptr),
+    d_curve(nullptr)
 {
     this->plotid = plotid;
     this->plotInterval = interval;
@@ -141,7 +141,7 @@ LinechartPlot::~LinechartPlot()
 //        // Delete the object
 //        delete curve;
 //        // Set the pointer null
-//        curve = NULL;
+//        curve = nullptr;
 //    }
 
 //    // Delete data
@@ -152,7 +152,7 @@ LinechartPlot::~LinechartPlot()
 //        // Delete the object
 //        delete d;
 //        // Set the pointer null
-//        d = NULL;
+//        d = nullptr;
 //    }
 //    datalock.unlock();
 }
@@ -239,7 +239,7 @@ void LinechartPlot::removeTimedOutCurves()
             // Delete the object
             delete curve;
             // Set the pointer null
-            curve = NULL;
+            curve = nullptr;
 
             // Notify connected components about the removal
             emit curveRemoved(key);
@@ -249,7 +249,7 @@ void LinechartPlot::removeTimedOutCurves()
             // Delete the object
             delete d;
             // Set the pointer null
-            d = NULL;
+            d = nullptr;
             emit curveRemoved(key);
         }
     }
@@ -779,7 +779,7 @@ void LinechartPlot::removeAllData()
         // Delete the object
         delete curve;
         // Set the pointer null
-        curve = NULL;
+        curve = nullptr;
 
         // Notify connected components about the removal
         emit curveRemoved(i.key());
@@ -794,7 +794,7 @@ void LinechartPlot::removeAllData()
         // Delete the object
         delete d;
         // Set the pointer null
-        d = NULL;
+        d = nullptr;
     }
     datalock.unlock();
     replot();

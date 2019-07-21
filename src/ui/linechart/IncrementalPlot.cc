@@ -118,7 +118,7 @@ IncrementalPlot::IncrementalPlot(QWidget *parent):
     zoomer->setRubberBandPen(QPen(Qt::red, 1.5f, Qt::DotLine));
     zoomer->setTrackerPen(QPen(Qt::red));
     //zoomer->setZoomBase(QwtDoubleRect());
-    legend = NULL;
+    legend = nullptr;
 
     colors = QList<QColor>();
     nextColor = 0;
@@ -174,7 +174,7 @@ void IncrementalPlot::handleLegendClick(QwtPlotItem* item, bool on)
 void IncrementalPlot::showLegend(bool show)
 {
     if (show) {
-        if (legend == NULL) {
+        if (legend == nullptr) {
             legend = new QwtLegend;
             legend->setFrameStyle(QFrame::Box);
             legend->setItemMode(QwtLegend::CheckableItem);
@@ -182,7 +182,7 @@ void IncrementalPlot::showLegend(bool show)
         insertLegend(legend, QwtPlot::RightLegend);
     } else {
         delete legend;
-        legend = NULL;
+        legend = nullptr;
     }
     updateScale(); // Updates the scaling at replots
 }
@@ -269,7 +269,7 @@ void IncrementalPlot::updateScale()
 
         // Get the aspect ratio of the plot
         float xSize = width();
-        if (legend != NULL) xSize -= legend->width();
+        if (legend != nullptr) xSize -= legend->width();
         float ySize = height();
 
         float aspectRatio = xSize / ySize;

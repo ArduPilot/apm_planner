@@ -78,7 +78,7 @@ class IncrementalPlot : public QwtPlot
     Q_OBJECT
 public:
     /** @brief Create a new, empty incremental plot */
-    IncrementalPlot(QWidget *parent = NULL);
+    IncrementalPlot(QWidget *parent = nullptr);
     virtual ~IncrementalPlot();
 
     /** @brief Get color map of this plot */

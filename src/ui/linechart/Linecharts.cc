@@ -74,7 +74,7 @@ void Linecharts::selectSystem(int systemid)
 //            chart->setActiveSystem(systemid);
 //        }
 //    }
-//    QWidget* widget = plots.value(systemid, NULL);
+//    QWidget* widget = plots.value(systemid, nullptr);
 //    if (widget)
 //    {
 //        setCurrentWidget(widget);
