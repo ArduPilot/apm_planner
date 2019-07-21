@@ -52,7 +52,7 @@ public:
 */
 QwtAbstractSlider::QwtAbstractSlider(
     Qt::Orientation orientation, QWidget *parent):
-    QWidget(parent, NULL)
+    QWidget(parent, nullptr)
 {
     d_data = new QwtAbstractSlider::PrivateData;
     d_data->orientation = orientation;

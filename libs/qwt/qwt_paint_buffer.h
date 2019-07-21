@@ -30,11 +30,11 @@ class QWT_EXPORT QwtPaintBuffer
 {
 public:
     explicit QwtPaintBuffer();
-    explicit QwtPaintBuffer(QPaintDevice *, const QRect &, QPainter *p = NULL);
+    explicit QwtPaintBuffer(QPaintDevice *, const QRect &, QPainter *p = nullptr);
 
     virtual ~QwtPaintBuffer();
 
-    void open(QPaintDevice *, const QRect &, QPainter *p = NULL);
+    void open(QPaintDevice *, const QRect &, QPainter *p = nullptr);
     void close();
 
     QPainter *painter();

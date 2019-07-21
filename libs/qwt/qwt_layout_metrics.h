@@ -48,8 +48,8 @@ public:
     int screenToLayoutY(int y) const;
     int layoutToScreenY(int y) const;
 
-    QPoint layoutToDevice(const QPoint &, const QPainter * = NULL) const;
-    QPoint deviceToLayout(const QPoint &, const QPainter * = NULL) const;
+    QPoint layoutToDevice(const QPoint &, const QPainter * = nullptr) const;
+    QPoint deviceToLayout(const QPoint &, const QPainter * = nullptr) const;
     QPoint screenToLayout(const QPoint &) const;
     QPoint layoutToScreen(const QPoint &point) const;
 
@@ -59,15 +59,15 @@ public:
     QSize screenToLayout(const QSize &) const;
     QSize layoutToScreen(const QSize &) const;
 
-    QRect layoutToDevice(const QRect &, const QPainter * = NULL) const;
-    QRect deviceToLayout(const QRect &, const QPainter * = NULL) const;
+    QRect layoutToDevice(const QRect &, const QPainter * = nullptr) const;
+    QRect deviceToLayout(const QRect &, const QPainter * = nullptr) const;
     QRect screenToLayout(const QRect &) const;
     QRect layoutToScreen(const QRect &) const;
 
     QwtPolygon layoutToDevice(const QwtPolygon &,
-                              const QPainter * = NULL) const;
+                              const QPainter * = nullptr) const;
     QwtPolygon deviceToLayout(const QwtPolygon &,
-                              const QPainter * = NULL) const;
+                              const QPainter * = nullptr) const;
 
 #if QT_VERSION < 0x040000
     static QwtPolygon translate(const QWMatrix &, const QwtPolygon &);

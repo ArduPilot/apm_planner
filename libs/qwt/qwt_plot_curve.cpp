@@ -541,7 +541,7 @@ void QwtPlotCurve::setRawData(const double *xData, const double *yData, int size
 
 QwtDoubleRect QwtPlotCurve::boundingRect() const
 {
-    if ( d_xy == NULL )
+    if ( d_xy == nullptr )
         return QwtDoubleRect(1.0, 1.0, -2.0, -2.0); // invalid
 
     return d_xy->boundingRect();
@@ -1266,7 +1266,7 @@ int QwtPlotCurve::dataSize() const
 
 int QwtPlotCurve::closestPoint(const QPoint &pos, double *dist) const
 {
-    if ( plot() == NULL || dataSize() <= 0 )
+    if ( plot() == nullptr || dataSize() <= 0 )
         return -1;
 
     const QwtScaleMap xMap = plot()->canvasMap(xAxis());

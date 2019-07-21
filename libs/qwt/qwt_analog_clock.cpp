@@ -69,7 +69,7 @@ void QwtAnalogClock::initClock()
             QwtDialSimpleNeedle::Arrow, true, handColor, knobColor);
         hand->setWidth(width);
 
-        d_hand[i] = NULL;
+        d_hand[i] = nullptr;
         setHand((Hand)i, hand);
     }
 }
@@ -113,7 +113,7 @@ void QwtAnalogClock::setHand(Hand hand, QwtDialNeedle *needle)
 QwtDialNeedle *QwtAnalogClock::hand(Hand hd)
 {
     if ( hd < 0 || hd >= NHands )
-        return NULL;
+        return nullptr;
 
     return d_hand[hd];
 }

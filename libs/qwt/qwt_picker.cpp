@@ -270,8 +270,8 @@ void QwtPicker::init(QWidget *parent, int selectionFlags,
 {
     d_data = new PrivateData;
 
-    d_data->rubberBandWidget = NULL;
-    d_data->trackerWidget = NULL;
+    d_data->rubberBandWidget = nullptr;
+    d_data->trackerWidget = nullptr;
 
     d_data->rubberBand = rubberBand;
     d_data->enabled = false;
@@ -281,7 +281,7 @@ void QwtPicker::init(QWidget *parent, int selectionFlags,
     d_data->trackerPosition = QPoint(-1, -1);
     d_data->mouseTracking = false;
 
-    d_data->stateMachine = NULL;
+    d_data->stateMachine = nullptr;
     setSelectionFlags(selectionFlags);
 
     if ( parent ) {
@@ -349,7 +349,7 @@ QwtPickerMachine *QwtPicker::stateMachine(int flags) const
     if ( flags & PolygonSelection ) {
         return new QwtPickerPolygonMachine();
     }
-    return NULL;
+    return nullptr;
 }
 
 //! Return the parent widget, where the selection happens
@@ -359,7 +359,7 @@ QWidget *QwtPicker::parentWidget()
     if ( obj && obj->isWidgetType() )
         return (QWidget *)obj;
 
-    return NULL;
+    return nullptr;
 }
 
 //! Return the parent widget, where the selection happens
@@ -369,7 +369,7 @@ const QWidget *QwtPicker::parentWidget() const
     if ( obj && obj->isWidgetType() )
         return (QWidget *)obj;
 
-    return NULL;
+    return nullptr;
 }
 
 /*!

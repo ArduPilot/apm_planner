@@ -118,7 +118,7 @@ public:
 #endif
     void setData(const QwtData &data);
 
-    int closestPoint(const QPoint &pos, double *dist = NULL) const;
+    int closestPoint(const QPoint &pos, double *dist = nullptr) const;
 
     QwtData &data();
     const QwtData &data() const;

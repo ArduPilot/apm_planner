@@ -23,7 +23,7 @@
 class QWT_EXPORT QwtArrowButton : public QPushButton
 {
 public:
-    explicit QwtArrowButton (int num, Qt::ArrowType, QWidget *parent = NULL);
+    explicit QwtArrowButton (int num, Qt::ArrowType, QWidget *parent = nullptr);
     virtual ~QwtArrowButton();
 
     Qt::ArrowType arrowType() const;

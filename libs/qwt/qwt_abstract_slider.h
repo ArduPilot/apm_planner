@@ -55,7 +55,7 @@ public:
         ScrPage
     };
 
-    explicit QwtAbstractSlider(Qt::Orientation, QWidget *parent = NULL);
+    explicit QwtAbstractSlider(Qt::Orientation, QWidget *parent = nullptr);
     virtual ~QwtAbstractSlider();
 
     void setUpdateTime(int t);

@@ -114,7 +114,7 @@ void QwtLegendItem::init(const QwtText &text)
 QwtLegendItem::~QwtLegendItem()
 {
     delete d_data;
-    d_data = NULL;
+    d_data = nullptr;
 }
 
 /*!

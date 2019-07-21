@@ -50,7 +50,7 @@ class QWT_EXPORT QwtCompass: public QwtDial
     Q_OBJECT
 
 public:
-    explicit QwtCompass( QWidget* parent = NULL);
+    explicit QwtCompass( QWidget* parent = nullptr);
 #if QT_VERSION < 0x040000
     explicit QwtCompass(QWidget* parent, const char *name);
 #endif
