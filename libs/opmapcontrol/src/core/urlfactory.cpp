@@ -492,6 +492,12 @@ namespace core {
                         return QString("http://map.eniro.com/geowebcache/service/tms1.0.0/map/%1/%2/%3.png").arg(zoom).arg(pos.X()).arg((1<<zoom)-1-pos.Y());
                     }
                     break;
+        case MapType::JapanMap:
+            {
+                //char letter = "abc"[GetServerNum(pos, 3)];
+                return QString("https://cyberjapandata.gsi.go.jp/xyz/std/%1/%2/%3.png").arg(zoom).arg(pos.X()).arg(pos.Y());
+            }
+            break;
         default:
             break;
         }
