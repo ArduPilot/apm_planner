@@ -99,7 +99,9 @@ namespace core {
 
             YandexMapRu = 5000,
             Statkart_Topo = 5500,
-            Eniro_Topo = 5510
+            Eniro_Topo = 5510,
+
+            JapanMap = 6001,
         };
         static QString StrByType(Types const& value)
         {

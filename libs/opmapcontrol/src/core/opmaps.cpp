@@ -209,6 +209,11 @@ namespace core {
 						qheader.setRawHeader("Referrer", "http://eniro.se/");
 					}
 					break;
+                case MapType::JapanMap:
+                    {
+                        qheader.setRawHeader("Referrer", "https://cyberjapandata.gsi.go.jp/xyz/std/");
+                    }
+                    break;
                 default:
                     break;
                 }
