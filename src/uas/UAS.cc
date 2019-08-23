@@ -1052,14 +1052,26 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         }
             break;
 
-        case MAVLINK_MSG_ID_MISSION_ITEM:
+        // add MAV Message id: MAVLINK_MSG_ID_MISSION_ITEM_INT
+        // to handle the mavlink_mission_item_int_t type message
+        case MAVLINK_MSG_ID_MISSION_ITEM_INT:
         {
-            mavlink_mission_item_t wp;
-            mavlink_msg_mission_item_decode(&message, &wp);
-            //QLOG_DEBUG() << "got waypoint (" << wp.seq << ") from ID " << message.sysid << " x=" << wp.x << " y=" << wp.y << " z=" << wp.z;
+            mavlink_mission_item_int_t wp;
+            // using mavlink_msg_mission_item_int_decode to decode mavlink_mission_item_int_t type message
+            mavlink_msg_mission_item_int_decode(&message, &wp);
             waypointManager.handleWaypoint(message.sysid, message.compid, &wp);
         }
             break;
+
+        // unable to support float waypoints
+//        case MAVLINK_MSG_ID_MISSION_ITEM:
+//        {
+//            mavlink_mission_item_t wp;
+//            mavlink_msg_mission_item_decode(&message, &wp);
+//            //QLOG_DEBUG() << "got waypoint (" << wp.seq << ") from ID " << message.sysid << " x=" << wp.x << " y=" << wp.y << " z=" << wp.z;
+//            waypointManager.handleWaypoint(message.sysid, message.compid, &wp);
+//        }
+//            break;
 
         case MAVLINK_MSG_ID_MISSION_ACK:
         {
