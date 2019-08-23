@@ -72,7 +72,7 @@ public:
     /** @name Received message handlers */
     /*@{*/
     void handleWaypointCount(quint8 systemId, quint8 compId, quint16 count);                            ///< Handles received waypoint count messages
-    void handleWaypoint(quint8 systemId, quint8 compId, mavlink_mission_item_t *wp);                        ///< Handles received waypoint messages
+    void handleWaypoint(quint8 systemId, quint8 compId, mavlink_mission_item_int_t *wp);                        ///< Handles received waypoint int messages
     void handleWaypointAck(quint8 systemId, quint8 compId, mavlink_mission_ack_t *wpa);                ///< Handles received waypoint ack messages
     void handleWaypointRequest(quint8 systemId, quint8 compId, mavlink_mission_request_t *wpr);        ///< Handles received waypoint request messages
     void handleWaypointReached(quint8 systemId, quint8 compId, mavlink_mission_item_reached_t *wpr);        ///< Handles received waypoint reached messages
@@ -181,7 +181,8 @@ private:
     QList<Waypoint *> waypointsViewOnly;                  ///< local copy of current waypoint list on MAV
     QList<Waypoint *> waypointsEditable;                  ///< local editable waypoint list
     Waypoint* currentWaypointEditable;                      ///< The currently used waypoint
-    QList<mavlink_mission_item_t *> waypoint_buffer;  ///< buffer for waypoints during communication
+    // change from mavlink_mission_item_t to mavlink_mission_item_int_t
+    QList<mavlink_mission_item_int_t *> waypoint_buffer;  ///< buffer for waypoints during communication
     QTimer protocol_timer;                          ///< Timer to catch timeouts
     bool standalone;                                ///< If standalone is set, do not write to UAS
     quint16 uasid;
