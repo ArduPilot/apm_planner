@@ -197,7 +197,7 @@ void ApmFirmwareConfig::populateSerialPorts()
                 // We also want to only display COM ports for PX4/Pixhawk, or arduino mega 2560's.
                 // We also want to show FTDI based 232/TTL devices, for APM 1.0/2.0 devices which use FTDI for usb comms.
                 if (info.description().toLower().contains("fmuv") || info.description().toLower().contains("px4") ||
-                        info.description().toLower().contains("mega") || info.manufacturer().toLower().contains("ardupilot") ||
+                        info.description().toLower().contains("mega") || info.manufacturer().toLower().contains("ardupilot")|| info.description().toLower().contains("cubeblack") ||
                         info.productIdentifier() == 0x0001 || info.productIdentifier() == 0x0003 ||
                         info.productIdentifier() == 0x0010 || info.productIdentifier() == 0x0011 ||
                         info.productIdentifier() == 0x0012 || info.productIdentifier() == 0x0013 ||
@@ -438,6 +438,11 @@ void ApmFirmwareConfig::requestFirmwares(QString type, QString autopilot, bool n
         prestring = "PX4";
         poststring = "-v2";
     }
+    else if (autopilot == "cubeblack")
+    {
+        prestring = "CubeBlack";
+        poststring = "";
+    }
     else if (autopilot == "px4-v4")
     {
         prestring = "PX4";
@@ -518,6 +523,16 @@ void ApmFirmwareConfig::requestFirmwares(QString type, QString autopilot, bool n
         makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-heli/git-version.txt"));
         makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "/git-version.txt"));
     }
+    else if (autopilot == "cubeblack")
+    {
+        m_buttonToUrlMap[ui.roverPushButton]       = DEFAULT_ARDUPILOT_FW_URL + "/Rover/"  + type + "/" + prestring + "/ardurover" + poststring + ".apj";
+        m_buttonToUrlMap[ui.planePushButton]       = DEFAULT_ARDUPILOT_FW_URL + "/Plane/"  + type + "/" + prestring + "/arduplane" + poststring + ".apj";
+        m_buttonToUrlMap[ui.copterPushButton]      = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-heli/arducopter" + poststring + ".apj";
+        m_buttonToUrlMap[ui.mutlicopterPushButton] = DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "/arducopter" + poststring + ".apj";    // for FW >= 3.5.0
+        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "-heli/git-version.txt"));
+        makeNetworkRequest(QUrl(DEFAULT_ARDUPILOT_FW_URL + "/Copter/" + type + "/" + prestring + "/git-version.txt"));    // for FW >= 3.5.0
+    }
+
     else if (autopilot == "aerocore")
     {
         m_buttonToUrlMap[ui.roverPushButton] = "http://gumstix-aerocore.s3.amazonaws.com/APM/Rover/" + type + "/" + prestring + "/APMrover2-aerocore.px4";
@@ -714,7 +729,7 @@ void ApmFirmwareConfig::downloadFinished()
         m_arduinoUploader->loadFirmware(m_settings.name,filename);
 
     }
-    else if (m_autopilotType == "px4-v5" || m_autopilotType == "px4-v4" || m_autopilotType == "px4-v2" || m_autopilotType == "px4" || m_autopilotType == "aerocore")
+    else if (m_autopilotType == "px4-v5" || m_autopilotType == "px4-v4" || m_autopilotType == "px4-v2" || m_autopilotType == "px4" || m_autopilotType == "aerocore" || m_autopilotType == "cubeblack")
     {
         if (m_px4uploader)
         {
@@ -928,6 +943,10 @@ QString ApmFirmwareConfig::processPortInfo(const QSerialPortInfo &info)
     else if (info.description().toLower().contains("aerocore"))
     {
         return "aerocore";
+    }
+    else if (info.description().toLower().contains("cubeblack"))
+    {
+        return "cubeblack"; //ClubeBlack
     }
     else
     {
