@@ -2769,6 +2769,10 @@ void UAS::requestParameter(int component, const QString& parameter)
             QLOG_DEBUG() << "Using param " << parameter << " from cache";
             emit parameterChanged(uasId, component, parameter, p_componentParams->value(parameter));
         }
+        else
+        {
+            QLOG_DEBUG() << "Param " << parameter << " not provided by this UAV";
+        }
     }
     else
     {
