@@ -51,8 +51,8 @@ FrameTypeConfig::~FrameTypeConfig()
 
 void FrameTypeConfig::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
-    Q_UNUSED(uas);
-    Q_UNUSED(component);
+    Q_UNUSED(uas)
+    Q_UNUSED(component)
 
     if(!m_currentFirmwareVersion.isValid())
     {
@@ -61,7 +61,9 @@ void FrameTypeConfig::parameterChanged(int uas, int component, QString parameter
         {
             m_currentFirmwareVersion = myMav->getFirmwareVersion();
 
-            if(m_currentFirmwareVersion.isValid() && m_currentFirmwareVersion.majorNumber() >= 3 && m_currentFirmwareVersion.minorNumber() >= 5)
+            if(m_currentFirmwareVersion.isValid() &&
+                    ((m_currentFirmwareVersion.majorNumber() >= 3 && m_currentFirmwareVersion.minorNumber() >= 5) ||    // >= ArduPilot 3.5.0
+                     m_currentFirmwareVersion.majorNumber() >= 4))                                                      // >= ArduPilot 4.0.0
             {
                 QLOG_DEBUG() << "FrameTypeConfig::parameterChanged - Using new frame config!";
                 FrameTypeConfigNew *p_ConfigNew = new FrameTypeConfigNew(m_uas, this);
