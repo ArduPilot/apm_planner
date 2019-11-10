@@ -164,6 +164,8 @@ void CameraGimbalConfig::disconnectSignals()
     disconnect(ui.neutralXSpinBox,SIGNAL(editingFinished()),this,SLOT(updateNeutralAngles()));
     disconnect(ui.neutralYSpinBox,SIGNAL(editingFinished()),this,SLOT(updateNeutralAngles()));
     disconnect(ui.neutralZSpinBox,SIGNAL(editingFinished()),this,SLOT(updateNeutralAngles()));
+
+    disconnect(ui.mountModeComboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(updateMountMode(int)));
 }
 
 
@@ -186,7 +188,7 @@ void CameraGimbalConfig::addOutputRcChannels(QComboBox* comboBox)
 
 void CameraGimbalConfig::addInputRcChannels(QComboBox* comboBox)
 {
-    comboBox->addItem(tr("None", 0));
+    comboBox->addItem(tr("None", nullptr));
     comboBox->addItem("RC5", 5);
     comboBox->addItem("RC6", 6);
     comboBox->addItem("RC7", 7);
@@ -222,19 +224,22 @@ void CameraGimbalConfig::requestParameterUpdate()
     if (!m_uas) return;
     // The List of Params we care about
 
+    // empty list;
+    m_cameraParams.clear();
+
     for (int channelCount=5; channelCount <= 11; ++channelCount) {
         QString function = "SERVO?_FUNCTION";
-        function.replace(2,1,QString::number(channelCount));
+        function.replace(5,1,QString::number(channelCount));
         QString min = "SERVO?_MIN";
-        min.replace(2,1,QString::number(channelCount));
+        min.replace(5,1,QString::number(channelCount));
         QString max = "SERVO?_MAX";
-        max.replace(2,1,QString::number(channelCount));
+        max.replace(5,1,QString::number(channelCount));
         QString trim = "SERVO?_TRIM";
-        trim.replace(2,1,QString::number(channelCount));
+        trim.replace(5,1,QString::number(channelCount));
         QString rev = "SERVO?_REVERSED";
-        rev.replace(2,1,QString::number(channelCount));
+        rev.replace(5,1,QString::number(channelCount));
         QString dz =  "SERVO?_DZ";
-        dz.replace(2,1,QString::number(channelCount));
+        dz.replace(5,1,QString::number(channelCount));
 
         m_cameraParams << function << min << max << trim << rev << dz;
     }
@@ -253,7 +258,7 @@ void CameraGimbalConfig::requestParameterUpdate()
 
         << "MNT_DEFLT_MODE"
 
-        << "MNT2_JSTICK_SPD"
+        << "MNT_JSTICK_SPD"
 
         << "MNT_LEAD_PTCH"
         << "MNT_LEAD_RLL"
@@ -270,56 +275,19 @@ void CameraGimbalConfig::requestParameterUpdate()
         << "MNT_RETRACT_Y"
         << "MNT_RETRACT_Z"
 
-
         << "MNT_STAB_PAN"
         << "MNT_STAB_ROLL"
         << "MNT_STAB_TILT"
 
-        << "MNT_TYPE"
+        << "MNT_TYPE";
         
-        << "MNT2_ANGMAX_PAN"
-        << "MNT2_ANGMAX_ROL"
-        << "MNT2_ANGMAX_TIL"
-    
-        << "MNT2_ANGMIN_PAN"
-        << "MNT2_ANGMIN_ROL"
-        << "MNT2_ANGMIN_TIL"
-
-        << "MNT2_CONTROL_X"
-        << "MNT2_CONTROL_Y"
-        << "MNT2_CONTROL_Z"
-
-        << "MNT2_DEFLT_MODE"
-
-        << "MNT2_JSTICK_SPD"
-
-        << "MNT2_LEAD_PTCH"
-        << "MNT2_LEAD_RLL"
-
-        << "MNT2_NEUTRAL_X"
-        << "MNT2_NEUTRAL_Y"
-        << "MNT2_NEUTRAL_Z"
-
-        << "MNT2_RC_IN_PAN"
-        << "MNT2_RC_IN_ROLL"
-        << "MNT2_RC_IN_TILT"
-
-        << "MNT2_RETRACT_X"
-        << "MNT2_RETRACT_Y"
-        << "MNT2_RETRACT_Z"
-
-        << "MNT2_STAB_PAN"
-        << "MNT2_STAB_ROLL"
-        << "MNT2_STAB_TILT"
-
-        << "MNT2_TYPE";
 
     qDebug() << "cameraParams" << m_cameraParams;
 
     QGCUASParamManager *pm = m_uas->getParamManager();
     foreach(QString parameter, m_cameraParams) {
         pm->requestParameterUpdate(1, parameter);
-    };
+    }
 }
 
 void CameraGimbalConfig::updateRetractAngles()
