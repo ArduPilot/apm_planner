@@ -904,13 +904,26 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             setSatelliteCount(pos.satellites_visible);
         }
             break;
+
         case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:
         {
-            mavlink_gps_global_origin_t pos;
-            mavlink_msg_gps_global_origin_decode(&message, &pos);
-            emit homePositionChanged(uasId, pos.latitude / 10000000.0, pos.longitude / 10000000.0, pos.altitude / 1000.0);
-        }
+            //mavlink_gps_global_origin_t pos;
+            //mavlink_msg_gps_global_origin_decode(&message, &pos);
+            // Origin means the position where UAV came alive eg. its first valid GPS position. This position can be different from home
+            // position.
+            //emit homePositionChanged(uasId, pos.latitude / 10000000.0, pos.longitude / 10000000.0, pos.altitude / 1000.0);
             break;
+        }
+
+        case MAVLINK_MSG_ID_HOME_POSITION:
+        {
+            // Home position is where the UAV will return to when return home is triggered. All UAVs share the home position.
+            mavlink_home_position_t pos;
+            mavlink_msg_home_position_decode(&message, &pos);
+            emit homePositionChanged(uasId, pos.latitude / 10000000.0, pos.longitude / 10000000.0, pos.altitude / 1000.0);
+            break;
+        }
+
         case MAVLINK_MSG_ID_RC_CHANNELS:
         {
             mavlink_rc_channels_t channels;
@@ -942,6 +955,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
             break;
         }
+
         case MAVLINK_MSG_ID_RC_CHANNELS_RAW:
         {
             mavlink_rc_channels_raw_t channels;

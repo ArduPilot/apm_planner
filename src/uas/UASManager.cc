@@ -72,20 +72,26 @@ bool UASManager::setHomePosition(double lat, double lon, double alt)
 {
     // Checking for NaN and infitiny
     // and checking for borders
-    bool changed = false;
     if (!qIsNaN(lat) && !qIsNaN(lon) && !qIsNaN(alt)
-        && !qIsInf(lat) && !qIsInf(lon) && !qIsInf(alt)
-        && lat <= 90.0 && lat >= -90.0 && lon <= 180.0 && lon >= -180.0)
-        {
+            && !qIsInf(lat) && !qIsInf(lon) && !qIsInf(alt)
+            && lat <= 90.0 && lat >= -90.0 && lon <= 180.0 && lon >= -180.0)
+    {
 
-        if (homeLat != lat) changed = true;
-        if (homeLon != lon) changed = true;
-        if (homeAlt != alt) changed = true;
+        // cut altitude to centimeters for comparison
+        qint32 tempAltNew = static_cast<qint32>( alt * 1E3 );
+        qint32 tempAltOLd = static_cast<qint32>( homeAlt * 1E3 );
+
+        // cut lat/lon to 7 decimal places for comparison
+        qint32 tempLatNew = static_cast<qint32>( lat * 1E7 );
+        qint32 tempLatOld = static_cast<qint32>( homeLat * 1E7 );
+        qint32 tempLonNew = static_cast<qint32>( lon * 1E7 );
+        qint32 tempLonOld = static_cast<qint32>( homeLon * 1E7 );
 
         // Initialize conversion reference in any case
         initReference(lat, lon, alt);
 
-        if (changed)
+        // Set home pos only if it has changed
+        if((tempAltNew != tempAltOLd) || (tempLatNew != tempLatOld) || (tempLonNew != tempLonOld))
         {
             homeLat = lat;
             homeLon = lon;
@@ -93,14 +99,10 @@ bool UASManager::setHomePosition(double lat, double lon, double alt)
 
             emit homePositionChanged(homeLat, homeLon, homeAlt);
 
-            // Update all UAVs
-            foreach (UASInterface* mav, systems)
-            {
-                mav->setHomePosition(homeLat, homeLon, homeAlt);
-            }
+            return true;
         }
     }
-    return changed;
+    return false;
 }
 
 /**

@@ -623,6 +623,8 @@ void QGCMapWidget::updateHomePosition(double latitude, double longitude, double 
     Home->SetAltitude(altitude);
     homeAltitude = altitude;
     SetShowHome(true);                      // display the HOME position on the map
+
+    Home->RefreshPos();     // Force repainting
 }
 
 void QGCMapWidget::goHome()
