@@ -897,21 +897,24 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_gps_status_t pos;
             mavlink_msg_gps_status_decode(&message, &pos);
-            for(int i = 0; i < (int)pos.satellites_visible; i++)
+            for(int i = 0; i < pos.satellites_visible; i++)
             {
-                emit gpsSatelliteStatusChanged(uasId, (unsigned char)pos.satellite_prn[i], (unsigned char)pos.satellite_elevation[i], (unsigned char)pos.satellite_azimuth[i], (unsigned char)pos.satellite_snr[i], static_cast<bool>(pos.satellite_used[i]));
+                emit gpsSatelliteStatusChanged(uasId, pos.satellite_prn[i], static_cast<float>(pos.satellite_elevation[i]), static_cast<float>(pos.satellite_azimuth[i]), static_cast<float>(pos.satellite_snr[i]), static_cast<bool>(pos.satellite_used[i]));
             }
             setSatelliteCount(pos.satellites_visible);
-        }
             break;
+        }
 
         case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN:
         {
-            //mavlink_gps_global_origin_t pos;
-            //mavlink_msg_gps_global_origin_decode(&message, &pos);
-            // Origin means the position where UAV came alive eg. its first valid GPS position. This position can be different from home
-            // position.
-            //emit homePositionChanged(uasId, pos.latitude / 10000000.0, pos.longitude / 10000000.0, pos.altitude / 1000.0);
+            // Origin means the position where UAV came alive eg. its first valid GPS position.
+            // This position can be different from home position. Each UAV has its own origin.
+            mavlink_gps_global_origin_t pos;
+            mavlink_msg_gps_global_origin_decode(&message, &pos);
+            m_originLatitude  = pos.latitude / 10000000.0;
+            m_originLongitude = pos.longitude / 10000000.0;
+            m_originAltitude  = pos.altitude / 1000.0f;
+            m_originValid     = true;
             break;
         }
 
