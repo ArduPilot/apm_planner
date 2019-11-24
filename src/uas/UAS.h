@@ -283,7 +283,7 @@ public:
         return velocity_gps;
     }
 
-    void setSatelliteCount(double val)
+    void setSatelliteCount(int val)
     {
         m_satelliteCount = val;
         emit satelliteCountChanged(val,"satelliteCount");
@@ -510,6 +510,11 @@ protected: //COMMENTS FOR TEST UNIT
     double speedX;              ///< True speed in X axis
     double speedY;              ///< True speed in Y axis
     double speedZ;              ///< True speed in Z axis
+
+    bool m_originValid      {false};    ///< True if origin position is valid.
+    double m_originLatitude {0.0};      ///< Origin position latitude.
+    double m_originLongitude{0.0};      ///< Origin position longitude.
+    float  m_originAltitude {0.0};      ///< Origin position altitude.
 
     QVector3D nedPosGlobalOffset;   ///< Offset between the system's NED position measurements and the swarm / global 0/0/0 origin
     QVector3D nedAttGlobalOffset;   ///< Offset between the system's NED position measurements and the swarm / global 0/0/0 origin
