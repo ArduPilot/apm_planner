@@ -10,7 +10,7 @@ configfile        = YAML.load_file("#{current_dir}/.vagrantconfig.yml")
 yaml_config = configfile['configs']['dev']
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "ubuntu/xenial64"
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", "4096"]
     vb.customize ["modifyvm", :id, "--cpus", "1"]
@@ -27,6 +27,7 @@ Vagrant.configure(2) do |config|
 
      sudo apt-get install -y libglu1-mesa-dev
 
+     sudo apt-get install -y aptitude
      sudo aptitude install -y flite1-dev libsdl2-dev libsdl1.2-dev libsndfile-dev libssl-dev libudev-dev
 
      # taken from README.md
@@ -57,6 +58,40 @@ Vagrant.configure(2) do |config|
      su - vagrant -c 'cp -a %{qt_deps_lib_unpack_dir} %{qt_deps_lib_dir}'
      su - vagrant -c 'cp -a %{qt_deps_plugins_unpack_dir} %{qt_deps_plugins_dir}'
      su - vagrant -c 'cp -a %{qt_deps_qml_unpack_dir} %{qt_deps_qml_dir}'
+
+     # write out a pair of scripts to make rebuilding on the VM easy:
+     su - vagrant -c "cat <<QMAKE >do-qmake.sh
+#!/bin/bash
+
+set -e
+set -x
+
+cd %{shadow_build_dir}
+export LD_LIBRARY_PATH=%{qt_deps_lib_unpack_dir}
+export PATH=%{qt_deps_bin_unpack_dir}:\$PATH
+qmake -r %{pro} CONFIG+=\${CONFIG} CONFIG+=WarningsAsErrorsOn -spec %{spec}
+QMAKE
+"
+
+     su - vagrant -c "cat <<MAKE >do-make.sh
+#!/bin/bash
+
+set -e
+set -x
+
+JOBS=1
+
+cd %{shadow_build_dir}
+export LD_LIBRARY_PATH=%{qt_deps_lib_unpack_dir}
+export PATH=%{qt_deps_bin_unpack_dir}:\$PATH
+make -j\${JOBS}
+MAKE
+"
+    su - vagrant -c "chmod +x do-qmake.sh do-make.sh"
+
+    # now run the scripts:
+    su - vagrant -c ./do-qmake.sh
+    su - vagrant -c ./do-make.sh
 
    SHELL
 
