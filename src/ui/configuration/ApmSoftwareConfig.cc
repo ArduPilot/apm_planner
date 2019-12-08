@@ -113,7 +113,7 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     pdef_vehicle_dirs.append(QPair<QString,QString>(QString("APMrover2"),
                                    QString("ardurover.pdef.xml")));
 
-    const QString param_basepath = "http://autotest.ardupilot.org/Parameters";
+    const QString param_basepath = "https://autotest.ardupilot.org/Parameters";
     for (QList<QPair<QString,QString> >::iterator i=pdef_vehicle_dirs.begin(); i != pdef_vehicle_dirs.end(); i++)
     {
         QPair<QString, QString> pdef_info = *i;
