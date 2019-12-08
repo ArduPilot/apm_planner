@@ -35,7 +35,7 @@ This file is part of the APM_PLANNER project
 
 static const QString DEFAULT_FIRMWARE_TYPE = "stable";
 static const QString DEFAULT_AUTOPILOT_HW_TYPE = "";
-static const QString DEFAULT_ARDUPILOT_FW_URL = "http://firmware.ardupilot.org";
+static const QString DEFAULT_ARDUPILOT_FW_URL = "https://firmware.ardupilot.org";
 
 ApmFirmwareConfig::ApmFirmwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_throwPropSpinWarning(false),
@@ -484,10 +484,10 @@ void ApmFirmwareConfig::requestFirmwares(QString type, QString autopilot, bool n
         ui.warningLabelAC33->show();
         /*
          * AC3.3 only supports Pixhawk, APM1/APM2 is discontinued.
-         * Last known 'latest': http://firmware.ardupilot.org/Copter/2015-03/2015-03-13-00:03/
+         * Last known 'latest': https://firmware.ardupilot.org/Copter/2015-03/2015-03-13-00:03/
          * stable and beta both still support, as they are not 3.3 yet
          */
-        QString prepath = "http://firmware.ardupilot.org/Copter/stable-3.4.6/" + prestring;
+        QString prepath = "https://firmware.ardupilot.org/Copter/stable-3.4.6/" + prestring;
         m_buttonToUrlMap[ui.copterPushButton] = prepath + "-heli/ArduCopter.hex";
         m_buttonToUrlMap[ui.hexaPushButton] = prepath + "-hexa/ArduCopter.hex";
         m_buttonToUrlMap[ui.octaQuadPushButton] = prepath + "-octa-quad/ArduCopter.hex";
@@ -834,7 +834,7 @@ void ApmFirmwareConfig::flashButtonClicked()
 
         QLOG_DEBUG() << "Go download:" << m_buttonToUrlMap[senderbtn];
         QNetworkReply *reply = m_networkManager->get(QNetworkRequest(QUrl(m_buttonToUrlMap[senderbtn])));
-        //http://firmware.ardupilot.org/Plane/stable/apm2/ArduPlane.hex
+        //https://firmware.ardupilot.org/Plane/stable/apm2/ArduPlane.hex
         ui.textBrowser->append("Started downloading " + m_buttonToUrlMap[senderbtn]);
         connect(reply,SIGNAL(finished()),this,SLOT(downloadFinished()));
         connect(reply,SIGNAL(error(QNetworkReply::NetworkError)),this,SLOT(firmwareListError(QNetworkReply::NetworkError)));
