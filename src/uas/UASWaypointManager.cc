@@ -94,7 +94,7 @@ void UASWaypointManager::timeout()
         } else if (current_state == WP_SENDLIST) {
             QLOG_WARN() << "Timeout sending waypoint count - retrying.";
             sendWaypointCount();
-        } else if (current_state == WP_SENDLIST_SENDWPS) {
+        } else if (current_state == WP_SENDLIST_SENDWPSINT || current_state == WP_SENDLIST_SENDWPSFLOAT) {
             QLOG_WARN() << "Timeout sending waypoints - retrying.";
             sendWaypoint(current_wp_id);
         } else if (current_state == WP_CLEARLIST) {
@@ -254,7 +254,8 @@ void UASWaypointManager::handleWaypoint(quint8 systemId, quint8 compId, mavlink_
 void UASWaypointManager::handleWaypointAck(quint8 systemId, quint8 compId, mavlink_mission_ack_t *wpa)
 {
     if (systemId == current_partner_systemid && (compId == current_partner_compid || compId == MAV_COMP_ID_PRIMARY)) {
-        if((current_state == WP_SENDLIST || current_state == WP_SENDLIST_SENDWPS) && (current_wp_id == waypoint_buffer.count()-1 && wpa->type == 0)) {
+        if((current_state == WP_SENDLIST || current_state == WP_SENDLIST_SENDWPSINT || current_state == WP_SENDLIST_SENDWPSFLOAT)
+           && (current_wp_id == waypoint_buffer.count()-1 && wpa->type == 0)) {
             //all waypoints sent and ack received
             protocol_timer.stop();
             current_state = WP_IDLE;
@@ -270,21 +271,35 @@ void UASWaypointManager::handleWaypointAck(quint8 systemId, quint8 compId, mavli
 
 void UASWaypointManager::handleWaypointRequest(quint8 systemId, quint8 compId, mavlink_mission_request_t *wpr)
 {
-    if (systemId == current_partner_systemid && ((current_state == WP_SENDLIST && wpr->seq == 0) || (current_state == WP_SENDLIST_SENDWPS && (wpr->seq == current_wp_id || wpr->seq == current_wp_id + 1)))) {
+    handleWaypointRequest(systemId, compId, wpr->seq, MissionItemEncoding::Float);
+}
+
+void UASWaypointManager::handleWaypointRequest(quint8 systemId, quint8 compId, mavlink_mission_request_int_t *wpr)
+{
+    handleWaypointRequest(systemId, compId, wpr->seq, MissionItemEncoding::Int);
+}
+
+void UASWaypointManager::handleWaypointRequest(quint8 systemId, quint8 compId, quint16 wpRequestId, MissionItemEncoding wpEncoding)
+{
+    if (systemId == current_partner_systemid
+        && ((current_state == WP_SENDLIST && wpRequestId == 0)
+            || ((current_state == WP_SENDLIST_SENDWPSINT || current_state == WP_SENDLIST_SENDWPSFLOAT)
+                && (wpRequestId == current_wp_id || wpRequestId == current_wp_id + 1)))
+       ) {
         protocol_timer.start(PROTOCOL_TIMEOUT_MS);
         current_retries = PROTOCOL_MAX_RETRIES;
 
-        if (wpr->seq < waypoint_buffer.count()) {
-            current_state = WP_SENDLIST_SENDWPS;
-            current_wp_id = wpr->seq;
+        if (wpRequestId < waypoint_buffer.count()) {
+            current_state = wpEncoding == MissionItemEncoding::Int ? WP_SENDLIST_SENDWPSINT : WP_SENDLIST_SENDWPSFLOAT;
+            current_wp_id = wpRequestId;
             sendWaypoint(current_wp_id);
         } else {
             QLOG_DEBUG() << "System id:" << current_partner_systemid << "requested waypoint which does not exist."
-                         << " Requested waypoint ID:" << wpr->seq << " max waypoint ID:" << waypoint_buffer.size() - 1;
+                         << " Requested waypoint ID:" << wpRequestId << " max waypoint ID:" << waypoint_buffer.size() - 1;
         }
     } else {
         QLOG_DEBUG() << "handleWaypointRequest() - Rejecting message, check mismatch: current_state: " << current_state
-                     << " == " << WP_SENDLIST << " or " << WP_SENDLIST_SENDWPS
+                     << " == " << WP_SENDLIST << " or " << WP_SENDLIST_SENDWPSINT << " or " << WP_SENDLIST_SENDWPSFLOAT
                      << ", system id " << current_partner_systemid
                      << " == " << systemId
                      << ", comp id " << current_partner_compid
@@ -1073,16 +1088,20 @@ void UASWaypointManager::sendWaypoint(quint16 seq)
 
         mavlink_mission_item_int_t *wp;
 
-
         wp = waypoint_buffer.at(seq);
         wp->target_system = uasid;
         wp->target_component = MAV_COMP_ID_MISSIONPLANNER;
 
+        if (current_state == WP_SENDLIST_SENDWPSINT) {
+            mavlink_msg_mission_item_int_encode(uas->getSystemId(), uas->getComponentId(), &message, wp);
+        } else if (current_state == WP_SENDLIST_SENDWPSFLOAT) {
+            mavlink_mission_item_t wp_float;
+            convertMavlinkMissionItem(wp, &wp_float);
+            mavlink_msg_mission_item_encode(uas->getSystemId(), uas->getComponentId(), &message, &wp_float);
+        }
+        else return;
+
         emit updateStatusString(QString("Sending waypoint ID %1 of %2 total").arg(wp->seq).arg(current_count));
-
-
-        //using mavlink_msg_mission_item_int_encode to encode mavlink_mission_item_int_t type message
-        mavlink_msg_mission_item_int_encode(uas->getSystemId(), uas->getComponentId(), &message, wp);
         uas->sendMessage(message);
         QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
     }
@@ -1101,6 +1120,25 @@ void UASWaypointManager::sendWaypointAck(quint8 type)
     mavlink_msg_mission_ack_encode(uas->getSystemId(), uas->getComponentId(), &message, &wpa);
     uas->sendMessage(message);
     QGC::SLEEP::msleep(PROTOCOL_DELAY_MS);
+}
+
+void UASWaypointManager::convertMavlinkMissionItem(mavlink_mission_item_int_t *from, mavlink_mission_item_t *to)
+{
+    to->target_system = from->target_system;
+    to->target_component = from->target_component;
+    to->seq = from->seq;
+    to->frame = from->frame;
+    to->command = from->command;
+    to->current = from->current;
+    to->autocontinue = from->autocontinue;
+    to->param1 = from->param1;
+    to->param2 = from->param2;
+    to->param3 = from->param3;
+    to->param4 = from->param4;
+    to->x = 1e-7 * (double)from->x; // only applies to global frames, local frames are scaled by 1e4
+    to->y = 1e-7 * (double)from->y;
+    to->z = from->z; // this is a float in both cases
+    to->mission_type = from->mission_type;
 }
 
 UAS* UASWaypointManager::getUAS() {
