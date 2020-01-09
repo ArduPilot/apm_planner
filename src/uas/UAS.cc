@@ -1098,6 +1098,14 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         }
             break;
 
+        case MAVLINK_MSG_ID_MISSION_REQUEST_INT:
+        {
+            mavlink_mission_request_int_t wpr;
+            mavlink_msg_mission_request_int_decode(&message, &wpr);
+            waypointManager.handleWaypointRequest(message.sysid, message.compid, &wpr);
+        }
+            break;
+
         case MAVLINK_MSG_ID_MISSION_REQUEST:
         {
             mavlink_mission_request_t wpr;

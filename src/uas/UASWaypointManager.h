@@ -53,14 +53,20 @@ class UASWaypointManager : public QObject
 {
     Q_OBJECT
 private:
+    enum class MissionItemEncoding {
+        Float, ///< x and y stored as floats
+        Int    ///< x and y stored as integers
+    }; ///< The possible encodings for MAVLink mission items
+
     enum WaypointState {
-        WP_IDLE = 0,        ///< Waiting for commands
-        WP_SENDLIST,        ///< Initial state for sending waypoints to the MAV
-        WP_SENDLIST_SENDWPS,///< Sending waypoints
-        WP_GETLIST,         ///< Initial state for retrieving waypoints from the MAV
-        WP_GETLIST_GETWPS,  ///< Receiving waypoints
-        WP_CLEARLIST,       ///< Clearing waypoint list on the MAV
-        WP_SETCURRENT       ///< Setting new current waypoint on the MAV
+        WP_IDLE = 0,              ///< Waiting for commands
+        WP_SENDLIST,              ///< Initial state for sending waypoints to the MAV
+        WP_SENDLIST_SENDWPSINT,   ///< Sending int waypoints
+        WP_SENDLIST_SENDWPSFLOAT, ///< Sending float waypoints
+        WP_GETLIST,               ///< Initial state for retrieving waypoints from the MAV
+        WP_GETLIST_GETWPS,        ///< Receiving waypoints
+        WP_CLEARLIST,             ///< Clearing waypoint list on the MAV
+        WP_SETCURRENT             ///< Setting new current waypoint on the MAV
     }; ///< The possible states for the waypoint protocol
 
 public:
@@ -71,11 +77,12 @@ public:
     void goToWaypoint(Waypoint *wp);
     /** @name Received message handlers */
     /*@{*/
-    void handleWaypointCount(quint8 systemId, quint8 compId, quint16 count);                            ///< Handles received waypoint count messages
-    void handleWaypoint(quint8 systemId, quint8 compId, mavlink_mission_item_int_t *wp);                        ///< Handles received waypoint int messages
+    void handleWaypointCount(quint8 systemId, quint8 compId, quint16 count);                           ///< Handles received waypoint count messages
+    void handleWaypoint(quint8 systemId, quint8 compId, mavlink_mission_item_int_t *wp);               ///< Handles received waypoint int messages
     void handleWaypointAck(quint8 systemId, quint8 compId, mavlink_mission_ack_t *wpa);                ///< Handles received waypoint ack messages
-    void handleWaypointRequest(quint8 systemId, quint8 compId, mavlink_mission_request_t *wpr);        ///< Handles received waypoint request messages
-    void handleWaypointReached(quint8 systemId, quint8 compId, mavlink_mission_item_reached_t *wpr);        ///< Handles received waypoint reached messages
+    void handleWaypointRequest(quint8 systemId, quint8 compId, mavlink_mission_request_t *wpr);        ///< Handles received waypoint float request messages
+    void handleWaypointRequest(quint8 systemId, quint8 compId, mavlink_mission_request_int_t *wpr);    ///< Handles received waypoint int request messages
+    void handleWaypointReached(quint8 systemId, quint8 compId, mavlink_mission_item_reached_t *wpr);   ///< Handles received waypoint reached messages
     void handleWaypointCurrent(quint8 systemId, quint8 compId, mavlink_mission_current_t *wpc);        ///< Handles received set current waypoint messages
     /*@}*/
 
@@ -121,6 +128,9 @@ public:
     double getDefaultRelAltitude();
 
 private:
+    void convertMavlinkMissionItem(mavlink_mission_item_int_t *from, mavlink_mission_item_t *to);
+    void handleWaypointRequest(quint8 systemId, quint8 compId, quint16 wpRequestId, MissionItemEncoding wpEncoding); ///< Handles received waypoint request messages (int and float)
+
     /** @name Message send functions */
     /*@{*/
     void sendWaypointClearAll();
