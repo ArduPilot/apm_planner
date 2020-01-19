@@ -33,16 +33,21 @@ This file is part of the APM_PLANNER project
 #define COPTERPIDCONFIG_H
 
 #include <QWidget>
-#include "ui_CopterPidConfig.h"
+#include <QDoubleSpinBox>
+#include <QComboBox>
 
 #include "AP2ConfigWidget.h"
+
+namespace Ui {
+    class CopterPidConfig;
+}
 
 class CopterPidConfig : public AP2ConfigWidget
 {
     Q_OBJECT
     
 public:
-    explicit CopterPidConfig(QWidget *parent = 0);
+    explicit CopterPidConfig(QWidget *parent = nullptr);
     ~CopterPidConfig();
 private slots:
     void writeButtonClicked();
@@ -56,6 +61,9 @@ private slots:
     void rateIMAXChanged(double value);
 
 private:
+    typedef QPair<int,QString> ValueNamePair;
+    typedef QVector<ValueNamePair> ValueNamePairList;
+
     void showEvent(QShowEvent *evt);
 
     void mapParamNamesToBox();
@@ -63,16 +71,31 @@ private:
     void setupPID_Default();
     void setupPID_APM_34();
     void setupPID_APM_36();
+    void setupPID_APM_40();
+
+    void setupTuneOption_APM_36();
+    void setupRC78Option_APM_36();
+
+    void hideAPM_40_Filters();
+
+    void populateCombobox(const ValueNamePairList &ValueToText, QComboBox *Box);
 
 private:
-    bool m_pitchRollLocked;
-    QList<QPair<int,QString> > m_ch6ValueToTextList;
-    QList<QPair<int,QString> > m_ch78ValueToTextList;
+
+    Ui::CopterPidConfig *mp_ui{nullptr};
+
+    ValueNamePairList m_ch6ValueToTextList;
+    ValueNamePairList m_ch78ValueToTextList;
     QMap<QString,QDoubleSpinBox*> m_nameToBoxMap;
-    Ui::CopterPidConfig ui;
+
+    bool m_pitchRollLocked;
 
     QString m_channel7Option;
     QString m_channel8Option;
+    QString m_channel9Option;
+
+    QString m_ch6MaxParamName;
+    QString m_ch6MinParamName;
 };
 
 #endif // COPTERPIDCONFIG_H
