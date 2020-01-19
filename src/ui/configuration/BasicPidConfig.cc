@@ -89,7 +89,7 @@ void BasicPidConfig::requestParameterUpdate()
     for (const auto &parameter : params)
     {
         pm->requestParameterUpdate(1, parameter);
-    };
+    }
 }
 
 void BasicPidConfig::mapParamNames()
@@ -151,6 +151,28 @@ void BasicPidConfig::mapParamNames()
             mot_thrust_hover = "MOT_THST_HOVER";
             rc_feel_rp       = "RC_FEEL_RP";
         }
+    }
+    else if(version.majorNumber() == 4)
+    {
+        QLOG_DEBUG() << "Using parameter set for ArduCopter 4.0+";
+        rate_rll_p = "ATC_RAT_RLL_P"; //  "RATE_RLL_P";
+        rate_rll_i = "ATC_RAT_RLL_I"; //  "RATE_RLL_I";
+        rate_rll_d = "ATC_RAT_RLL_D"; //  "RATE_RLL_D";
+
+        rate_pit_p = "ATC_RAT_PIT_P"; //  "RATE_PIT_P";
+        rate_pit_i = "ATC_RAT_PIT_I"; //  "RATE_PIT_I";
+        rate_pit_d = "ATC_RAT_PIT_D"; //  "RATE_PIT_D";
+
+        thr_accel_p = "PSC_ACCZ_P"; // THR_ACCEL_P
+        thr_accel_i = "PSC_ACCZ_I";  // THR_ACCEL_I
+        thr_mid     = "THR_MID";
+
+        mot_thrust_hover = "MOT_THST_HOVER";
+        rc_feel_rp       = "ATC_INPUT_TC";      // since ArduCopter 3.6
+
+        // has new scaling and different description since ArduCopter 3.6
+        m_rcFeelWidget->setupDouble(QString("RC Feel Roll/Pitch"), tr("Attitude control input time constant (aka smoothing). Low numbers lead to sharper response, higher numbers to softer response.\nVery soft = 1.0 / Very sharp = 0.0")
+                                                                       ,0.5,0.0,1.0,0.000001);
     }
     else
     {
