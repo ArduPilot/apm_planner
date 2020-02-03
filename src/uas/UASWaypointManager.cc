@@ -1099,7 +1099,11 @@ void UASWaypointManager::sendWaypoint(quint16 seq)
             convertMavlinkMissionItem(wp, &wp_float);
             mavlink_msg_mission_item_encode(uas->getSystemId(), uas->getComponentId(), &message, &wp_float);
         }
-        else return;
+        else {
+            QLOG_DEBUG() << "sendWaypoint() - Current state does not allow sending waypoints. Check failed: current_state: " << current_state
+                         << " == " << WP_SENDLIST_SENDWPSINT << " or " << WP_SENDLIST_SENDWPSFLOAT;
+            return;
+        }
 
         emit updateStatusString(QString("Sending waypoint ID %1 of %2 total").arg(wp->seq).arg(current_count));
         uas->sendMessage(message);
