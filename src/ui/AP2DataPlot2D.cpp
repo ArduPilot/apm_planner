@@ -607,32 +607,29 @@ void AP2DataPlot2D::valueChanged(const int uasId, const QString& name, const QSt
 
 void AP2DataPlot2D::loadButtonClicked()
 {
-    QFileDialog *dialog = new QFileDialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.BIN *.tlog);;All Files (*.*)");
-    dialog->setFileMode(QFileDialog::ExistingFile);
-    dialog->open(this, SLOT(loadDialogAccepted()));
-}
+    QLOG_DEBUG() << "Start loading logfile";
+    QFileDialog dialog(this,"Load File",QGC::logDirectory(),"Dataflash Log Files (*.log *.bin *.BIN *.tlog);;All Files (*.*)");
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
-void AP2DataPlot2D::loadDialogAccepted()
-{
-    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
-    if (!dialog)
+    if(dialog.exec())
     {
-        return;
-    }
-    if (dialog->selectedFiles().size() == 0)
-    {
-        return;
-    }
-    QString filename = dialog->selectedFiles().first();
+        QString result;
+        QString selectedFileName = dialog.selectedFiles().first();
 
-    LogAnalysis *pAnalyze = new LogAnalysis(0);
-    m_childGraphList.append(pAnalyze);
-    connect(pAnalyze, SIGNAL(destroyed(QObject*)), this, SLOT(childGraphDestroyed(QObject*)));
-    pAnalyze->setAttribute(Qt::WA_DeleteOnClose, true);
-    pAnalyze->show();
-    pAnalyze->activateWindow();
-    pAnalyze->raise();
-    pAnalyze->loadLog(filename);
+        LogAnalysis *pAnalyze = new LogAnalysis(nullptr);
+        m_childGraphList.append(pAnalyze);
+        connect(pAnalyze, SIGNAL(destroyed(QObject*)), this, SLOT(childGraphDestroyed(QObject*)));
+        pAnalyze->setAttribute(Qt::WA_DeleteOnClose, true);
+        pAnalyze->show();
+        pAnalyze->activateWindow();
+        pAnalyze->raise();
+        pAnalyze->loadLog(selectedFileName);
+    }
+    else
+    {
+        QLOG_DEBUG() << "Loading logfile cancelled";
+    }
 }
 
 AP2DataPlot2D::~AP2DataPlot2D()
