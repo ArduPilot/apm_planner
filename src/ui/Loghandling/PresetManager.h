@@ -181,12 +181,6 @@ private slots:
     void loadPresets();
 
     /**
-     * @brief loadDialogAccepted - callback for loadPresets(). Gets the selected filename and loads
-     *        the preset
-     */
-    void loadDialogAccepted();
-
-    /**
      * @brief handlePresetSelected - is called as soon as one preset is selected from menu.
      *        Gets the name of the selected preset and enables it.
      */

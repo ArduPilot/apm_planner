@@ -75,7 +75,6 @@ private slots:
 
     //Load a graph from a file
     void loadButtonClicked();
-    void loadDialogAccepted();
 
     //settings
     void saveSettings();

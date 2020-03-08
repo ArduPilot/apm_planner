@@ -341,23 +341,20 @@ void PresetManager::loadPresets()
 {
     checkAndSaveIfPresetModified();
 
-    QFileDialog *dialog = new QFileDialog(qobject_cast<QWidget*>(parent()), "Load Analyzing Presets", QGC::appDataDirectory(), "Analyzing Presets (*.ini);;All Files (*.*)");
-    dialog->setFileMode(QFileDialog::ExistingFile);
-    dialog->open(this, SLOT(loadDialogAccepted()));
-}
+    QFileDialog dialog(qobject_cast<QWidget*>(parent()), "Load Analyzing Presets", QGC::appDataDirectory(), "Analyzing Presets (*.ini);;All Files (*.*)");
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
-void PresetManager::loadDialogAccepted()
-{
-    QFileDialog *dialog = qobject_cast<QFileDialog*>(sender());
-    if (!dialog || (dialog->selectedFiles().size() == 0))
+    if(dialog.exec())
     {
-        return;
+        m_presetFile.setFile(dialog.selectedFiles().first());
+        // read presets
+        readPresetFile();
     }
-    m_presetFile.setFile(dialog->selectedFiles().first());
-    dialog->deleteLater();
-
-    // read presets
-    readPresetFile();
+    else
+    {
+        QLOG_DEBUG() << "Loading logfile cancelled";
+    }
 }
 
 void PresetManager::handlePresetSelected()
