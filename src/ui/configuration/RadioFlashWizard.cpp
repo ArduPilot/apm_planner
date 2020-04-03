@@ -34,7 +34,7 @@ This file is part of the APM_PLANNER project
 #include <QMessageBox>
 
 static const QString FirmwareBaseURL = "./sik_uploader/firmware/";
-static const QString FirmwareVersionURL = "1.9";
+static const QString FirmwareVersionURL = "2.0";
 
 RadioFlashWizard::RadioFlashWizard(QWidget *parent) :
     QWizard(parent),
@@ -52,9 +52,9 @@ RadioFlashWizard::RadioFlashWizard(QWidget *parent) :
     ui->baudrateComboBox->addItem(QLatin1String("38400"), QSerialPort::Baud38400);
     ui->baudrateComboBox->addItem(QLatin1String("19200"), QSerialPort::Baud19200);
     ui->baudrateComboBox->addItem(QLatin1String("9600"), QSerialPort::Baud9600);
-    ui->baudrateComboBox->addItem(QLatin1String("9600"), QSerialPort::Baud4800);
-    ui->baudrateComboBox->addItem(QLatin1String("9600"), QSerialPort::Baud2400);
-    ui->baudrateComboBox->addItem(QLatin1String("9600"), QSerialPort::Baud1200);
+    ui->baudrateComboBox->addItem(QLatin1String("4800"), QSerialPort::Baud4800);
+    ui->baudrateComboBox->addItem(QLatin1String("2400"), QSerialPort::Baud2400);
+    ui->baudrateComboBox->addItem(QLatin1String("1200"), QSerialPort::Baud1200);
 
     ui->baudrateComboBox->setCurrentIndex(ui->baudrateComboBox->findData(QSerialPort::Baud57600)); // Select 57600 default
 }
@@ -107,13 +107,13 @@ void RadioFlashWizard::flashRadio()
 {
     QLOG_DEBUG() << "Flash Radio:";
     ui->plainTextEdit->insertPlainText("\nFlashing with firmware\n");
-    ui->plainTextEdit->insertPlainText("./sik_uploader/firmware/1.9/radio~hm_trp.ihx\n");
+    ui->plainTextEdit->insertPlainText("./sik_uploader/firmware/2.0/radio~hm_trp.ihx\n");
 
     QStringList argumentsList;
     argumentsList << "./sik_uploader/sik_uploader.py";
     argumentsList << "--port" << ui->deviceComboBox->currentData().toString();
     argumentsList << "--baudrate" << ui->baudrateComboBox->currentText();
-    argumentsList << "./sik_uploader/firmware/1.9/radio~hm_trp.ihx";
+    argumentsList << "./sik_uploader/firmware/2.0/radio~hm_trp.ihx";
 
     QLOG_DEBUG() << "commands: python " << argumentsList;
 
@@ -128,7 +128,7 @@ void RadioFlashWizard::flashRadio()
 
     QLOG_DEBUG() << "Working dir:" << m_updateProcess->workingDirectory();
 
-    m_updateProcess->start("python", argumentsList);
+    m_updateProcess->start("python2", argumentsList);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(processTimeout()));
     m_timer.start(100);
 }
@@ -172,8 +172,8 @@ QString RadioFlashWizard::getFirmwareImageName(int index)
 {
     QStringList imageList;
     imageList << "radio~hm_trp.ihx";
-    imageList << "RFD_SiK_V1.9_rfd900a.ihx";
-    imageList << "RFD_SiK_V1.9_rfd900u.ihx";
+    imageList << "RFD_SiK_V2.0_rfd900a.ihx";
+    imageList << "RFD_SiK_V2.0_rfd900u.ihx";
     return FirmwareBaseURL + FirmwareVersionURL + "/" + imageList[index];
 }
 
