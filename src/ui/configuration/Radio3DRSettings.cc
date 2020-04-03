@@ -118,25 +118,21 @@ bool Radio3DREeprom::setParameter(QString &parameterString)
 
 bool Radio3DREeprom::setVersion(const QString &versionString)
 {
-    QLOG_DEBUG() << "Radio3DREeprom Ver:" << versionString;
-    QStringList values = versionString.split(" ", QString::SkipEmptyParts);
+    QLOG_DEBUG() << "Radio Firmware:" << versionString;
 
-    if(values.count()>0 && values[0].contains("SiK")){
-//        QRegExp versionEx("\\d\\*.\\d+");
-//        int pos = versionEx.indexIn(versionString);
-//        if (pos > -1) {
-//            m_version = versionEx.cap(1).toFloat();
-//        }
-        QString majorMinorVersion(values[1]);
-        majorMinorVersion.truncate(3); // [TODO] retrun x.n as the version for now
-                                       // but this doesn't work for 1.10 and greater
-                                       // Need to fix the above RegExp code to match
-                                       // xx.nn (it should but doesn't
-        m_version = majorMinorVersion.toFloat();
+    QString vers;
+    for (const QChar c : qAsConst(versionString)) {
+    if (c.isDigit() || c == '.') {
+    vers.append(c);
+  }
+}
+
+    if(versionString.contains("SiK")){
+        QLOG_DEBUG() << "Radio Formware Version:" << vers;
 
         // The number of params should be worked out from the returned ATI5 message
         // Or by using a lookup table of version to num of params.
-        if (m_version < SIK_LOWLATENCY_MIN_VERSION){
+        if (vers.toFloat() < SIK_LOWLATENCY_MIN_VERSION){
             m_numberOfParams = 14;
             m_endParam = "S14";
         } else {
@@ -568,9 +564,9 @@ void Radio3DRSettings::readData()
     } break;
 
     case readLocalVersion:{
-        QRegExp rx("^SiK\\s+(.*)\\s+on\\s+(.*)");
+        QRegExp rx("^(.*)SiK\\s+(.*)\\s+on\\s+(.*)");
+        QLOG_INFO() << "3DR Local Radio: Version" << currentLine;
         if(currentLine.contains(rx)) {
-            QLOG_INFO() << "3DR Local Radio: Version" << currentLine;
             if (!m_localRadio.setVersion(currentLine)) {
                 // Failed to read Version
                 QLOG_DEBUG() << " Failed to Read Version";
@@ -616,7 +612,7 @@ void Radio3DRSettings::readData()
     case readRemoteVersion:{
         m_timerReadWrite.stop();
         disconnect(&m_timerReadWrite, SIGNAL(timeout()), this , SLOT(readRemoteTimeout()));
-        QRegExp rx("^SiK\\s+(.*)\\s+on\\s+(.*)");
+        QRegExp rx("^(.*)SiK\\s+(.*)\\s+on\\s+(.*)");
         if(currentLine.contains(rx)) {
             QLOG_INFO() << "3DR Remote Radio: Version" << currentLine;
             if (!m_remoteRadio.setVersion(currentLine)) {
