@@ -1,3 +1,316 @@
+Release Notes - APM Planner  2.0.28-RC1 - 2020-05-10
+
+70fe4eb67  build: Update to 2.0.28-rc1 - Arne-W
+750a12ac3  GraphView: File dialog does not use signal/slot mechanism anymore. - Arne-W
+565ff6f23  Telemetry radio flashing fixed, and updated to SiK v2.0 - Andre Kjellstrup
+aaa4777bb  Radio-Settings: added support for newer SiK versions - Andre Kjellstrup
+d7bea2a2e  Add log message when waypoint should be sent, but state does not allow it - Dino Hüllmann
+18218033b  mavlink: support both MISSION_REQUEST and MISSION_REQUEST_INT - Dino Hüllmann
+b7cebba77  Tuning Setup: Added support for Arducopter 4.0 Fixes #1193 - Arne-W
+aa0760c8f  Vagrantfile: move to xenial64; write scripts for compilation - Peter Barker
+32e3eeb40  Use https:// for ardupilot.org URLs - Peter Barker
+34c66dde3  Comms: Changed handling of mavlink GLOBAL_ORIGIN message - Arne-W
+49643bc3d  Map Widget: Update Home position icon when vehicle sends HOME_POSITION mavlink message. Fixes #1173 - Arne-W
+fa2a28793  Camera Setup: Fixed some wrong parameter names and multiple mount mode requesting - Arne-W
+84840586d  Frame Config: Support for ardupilot 4.0.0 and later - Arne-W
+00cd64070  read and request int32 waypoints - niuxw
+150cf4c33  Firmwareupdater: added support for flashing of CubeBlack. - André
+a022bedb9  map: Added Japan Map - murata
+48c13a2fb  configuration: Delete unnecessary files - murata
+13480cc6e  CameraGimbal: Enable setting of camera trigger group box - murata
+d9242a2c5  CameraGimbal: Change from RC to SERVO - murata
+1d5704eb9  Copter: Change from CH to RC - murata
+e39ecf386  Copter: Add throwing mode and zigzag mode to flight mode selection item. - murata
+5ddba4155  Copter: Change to setting parameter of AC 3.6.9 release version. - murata
+80b62f1c7  Graph View: Added Support for GPS trail to loganalysis. Fixes #1096 - Arne-W
+ffbc3e88b  Graph View: Adapted mapwidget classes to enable GPS-Trail painting - Arne-W
+299ff23b5  Removed QMap3d.ui as is was not used. Fixes #1166 - Arne-W
+c64ead17c  Firmware Install: Removed OpenSSL requirement from firmware upload - Arne-W
+bf14b3a7e  Firmware Install: Stop scanning for devices if flashing has started and better logging. - Arne-W
+562fa65f7  Comms: Linkmanager does not store 10.1.1.1 Adresses anymore - Arne-W
+edbb38910  Firmware Install: More changes for fmu-v5 and some cleanup - Arne-W
+fc70222ef  Reverted accidentally pushed change on project file - Arne-W
+de4262112  Firmware Install: Adapted for fmu-v5 - Arne-W
+
+
+4c0826c44  build: Update to 2.0.27-rc1 - Bill Bonney
+98cf653ee  Radio Setup: Added compatibility for MAVLink 2 and increased to 16 channels. Fixes #1153 - Arne-W
+e2a15de52  GraphView: Disabled KML export for all files but flashlogs. #Fixes 1154 - Arne-W
+db4ded16e  GraphView: Bugfix mode was not read correctly from tlogs. Fixes #1155 - Arne-W
+718b06ebb  GraphView: Changed NaN detection Fixes #1144 - Arne-W
+adb583fc7  MavLink Inspector: Added simple mavlink statistics - Arne-W
+838d2968b  Fix some Compiler warning - Arne-W
+528b83078  GraphView: Changed detection of start message to name - Arne-W
+d68c2ba29  GraphView: Message IDs for Unit data are now setup dynamically. - Arne-W
+717ab8bac  GraphView: Bugfix for flashlog crashing when no unit data available. - Arne-W
+786d1a9d8  Comms: Added support for timesync message - Arne-W
+040445eb7  Tuning Setup: Basic tuning adapted description / typo fix - Arne-W
+58518c5d2  Comms: Linkmanager will store each UDP connection only once. Fixes #1121 - Arne-W
+aaeee8cf9  Tuning Setup: Basic tuning adapted parameter names for arducopter 3.6 - Arne-W
+b464216e3  Parameters: parameters which are already fetched are not fetched again - Arne-W
+89592371c  Tuning Setup: Adapted extended tuning to copter 3.6 Fixes #1138 - Arne-W
+5eb5b56a0  Comms: Added mutex to avoid concurrent access to QList container - Arne-W
+3e4adab0a  Comms: improved mavlink version detection - Arne-W
+b679433ca  Comms: Adapted/unified includes for mavlink 2.0 and made mavlink_status global - Arne-W
+cb3a517f8  Fedora 26 build scripts and spec files - Александр Фролов
+e3357d026  GraphView: Adapted Ascii log export and import to handle unit data if available. - Arne-W
+4bb3d410b  Graph View: Added Support for parsing and storing unit data from dataflash logs. - Arne-W
+45af180cd  Build: Added files generated during build to gitignore (*.qmlc, .qmake.cache and files in config.tests/has_flite) - Dino Hüllmann
+223fe9c22  Added missing change log generation step to README.md. Fixes #1128 - Arne-W
+736532f14  Comms: Adapted code base to support mavlink 2 - Arne-W
+284b0fdb7  Comms: Update mavlink library to mavlink 2 - Arne-W
+3dc0167d8  Typo fixes - Rob Campbell
+
+
+262c6d2bd  build: Update to 2.0.26-rc2 - Bill Bonney
+3abd9948c  Update README.md - Bill Bonney
+88abb1699  Update README.md - Bill Bonney
+ac7a3a2e3  Create BUILD-EASY.md - Bill Bonney
+d72b06620  Mission Widget: Terrain Alt will not loose markers anymore. Fixes #1117 - Arne-W
+029099d9e  maps: removed all references to map-version for Statkart - Andre Kjellstrup
+1bc74e0c5  Maps: statkart (map-source) updated to v4 - Andre Kjellstrup
+41d3c50a9  Graph View: Added "Use Time on X axis" setting to persistence. - Arne-W
+28b2e8b2d  Graph View: Cursor check boxes will be unchecked when changing x-axis. Fixes #1101 - Arne-W
+81b79ff44  Graph View: Simplified dialog handling on file export. Fixes #1107 - Arne-W
+f8a9e1999  Logging: Created logging category and set it to debug level. Fixes #1108 - Arne-W
+503e4e1d5  Graph View: Better handling of message boxes and progress window at the end of logexport - Arne-W
+b5361126d  Firmware: changed URL, .eu is discontinued - André
+9c606bb86  OpenBSD compatibility - David Bern
+95954a080  Graph View: Improved performance when moving cursors and sliders. They behaved somehow tenacious. - Arne-W
+f07a5a035  Graph View: Adapted the message Formatters to new messages. Fixes #1099 - Arne-W
+b9dfebd1d  APMToolBar Widget: Donate eval Fixes #1103 - David Bern
+239ffd997  Graph View: Bugfix for table filter bug where filter by "IMU" also shows "IMU2" entries. Fixes #1100 - Arne-W
+c33c84096  About Dialog: Fixed credits link - Dave C
+27f740211  Update README.md - Bill Bonney
+8b66bf1d4  build: Update to 2.0.26-rc1 - Bill Bonney
+1dd5e8051  Several small fixes - Tomaz Canabrava
+942f3e493  COMMS: Fixed wrong host string for UDP connection - Dino Hüllmann
+af6b04439  Flightplan: Introduced GraphicsItem base class for graphics items on map - Dino Hüllmann
+ff5e3512b  Build: Enabled c++ 11 support for all plattforms - Arne-W
+9eb3a1f49  Info View: fix set speed - André Kjellstrup
+a9663f234  Graph View: Added handling of soft / hard NaNs for float and double values in flash logs. Fixes #1067 - Arne-W
+22d8370c7  Graph View: Better handling of load progress window. Does not log a cancel message anymore even if it was not canceled. - Arne-W
+a2e94ff14  Param Setup: Added some output to the log which was only shown on gui. - Arne-W
+83d96d731  Flightplan: Removed if-statement before delete in opmapcontrol (since deleting a null-pointer is a nop) - Dino Hüllmann
+9d9c69ae1  Replaced nullptr by 0 - Dino Hüllmann
+5ec23fb97  Flightplan: Put opmapcontrol object files in extra directory - Dino Hüllmann
+8867ddf1b  Flightplan: Virtual destructor required for inheritance in opmapcontrol - Dino Hüllmann
+f1eff3900  Flightplan: Fixed memory leaks in opmapcontrol - Dino Hüllmann
+258d654c2  Flightplan: Fixed project files and removed unused includes in opmapcontrol - Dino Hüllmann
+9910ae2e7  GraphView: Unchecked index lead to crash on empty logs. - Arne-W
+d9b275098  GraphView: Logparser can handle multiple flights in one log now. Fixes #1041 - Arne-W
+dd331536d  GraphView: Graphs with only one point will be handled correctly now. Fixes #1071 - Arne-W
+1df5ee28c  GraphView: Migrated to new qcustomplot version 2.0.0 - Arne-W
+6286fd977  Improved path handling of pdef.xml - Arne-W
+18a874670  Update README.md - Bill Bonney
+6fc419e1e  Update ArduPlane config files, add for Rover and Copter - Peter Barker
+67afba51b  Avoid downloading deprecated apm.pdef.xml - Peter Barker
+42a83ca01  Vagrantfile: update for new dependencies - Peter Barker
+cdcb39014  Map: added Eniro as map for Norway,Sweden,Finland,Denmark,Poland - André Kjellstrup
+3f35d759a  fix CAM_DIST_TRIG label from  to - jtuchek
+46092ae4c  Update README.md - RiccardoBe
+89a626ae3  build cleanups and bugfixes - Lars Kellogg-Stedman
+7770d4a99  GraphView: Fix SaveView bug where current view was not saved correctly - Arne-W
+6bca0edd1  Updated Readme.md Fixes #1010 - Arne-W
+95c951070  FlightPlan: Fixed creation of mapscache directory in home. Fixes #1058 - Arne-W
+0c5ef67c8  GraphView: Fixed GraphControls showing wrong colors. Fixes #1062 - Arne-W
+1a96b716e  FlightDisplay: Extend the maximum value of the altitude indicator. Fixes #930 - yamsam
+02324eea8  FlightDisplay: Add wordwrap to status message. #Fixes 1034 - yamsam
+d9bae3ff5  System: Fixed minor memory leak on style sheet loading by using scoped pointers now. - Arne-W
+38513ff77  System: Determining location of apm planner executable should work better now. Fixes #986 - Arne-W
+afcf5f64f  Update Readme.md - Arne-W
+fe24a2588  Vagrant: add vagrant file - Peter Barker
+
+
+8e9956c38  Build: release version 2.0.25 - Bill Bonney
+780acb522  Fix incompatibility w/ openssl 1.1.x - Lars Kellogg-Stedman
+6cfb863d9  Maps:Update urls to get GoogleVersion - yamsam
+38c5f5e28  GraphView: KML export: specify colors for additional flight modes - Mark Whitehorn
+58e389952  GraphView: KML export: handle old versions of GPS and Mode messages - Mark Whitehorn
+c940f83dd  GraphView: KML export: specify min distance between EKF placemarks - Mark Whitehorn
+ab6df5bf6  GraphView: add unsgemented flight path to KML - Mark Whitehorn
+fdcaf067a  GraphView: fix flight mode handling in KML export - Mark Whitehorn
+08a7ca3d4  GraphView: generate a plane icon for every attitude record - Mark Whitehorn
+a81b566ec  GraphView: clean up timestamping code and add timestamps to FlightPath - Mark Whitehorn
+095db215f  Build: Compile on Arch Linux. - Miguel Arroyo
+38b21e1f0  GraphView: Added preset feature. It is possible to store different graphing presets and reapply them to other graphs. - Arne-W
+3b299827e  GraphView: Plane model in Gmaps now has correct yaw, pitch and roll values. Fixed corrupt CDATA structure. Fixes #1036 - Arne-W
+97a6ee46b  FlightPlan: Fix for waypoint lines not moving when panning map without having an UAV connected. Fixes #1035 - Arne-W
+cd07fd1b6  Build: Refactor docker directory, create Dockerfiles for different distributions - Eduardo Feo
+d3beca03e  libs: quazip: add definition for OF macro - Ralf Ramsauer
+7a23a1cd4  MainWindow: update helper to add user to dialout - Pierre Kancir
+1bf4bba18  Updated shellscript to make console output visible - Andre Kjellstrup
+e67a6e4af  FlightPlan: Fixed waypoint bug introduced while fixing - Arne-W
+2a5e6cf15  FlightPlan: Changed status text updates upon way point transfer, improving readability. Fixes #1027 - Arne-W
+5889fa340  Build: Fixed warning regarding c++11 initialization. - Arne-W
+04bb765df  GraphView: Bugfix for wrong auto scaling of groups - Arne-W
+3769131c1  FlightPlan: Fixed the orphaned Lines between waypoints issue. Fixes #1024 - Arne-W
+f634990b2  FlightPlan: Added and corrected logmessages on waypoint receiving and sending. - Arne-W
+0b03d1015  FlightPlan: Fixed the multi waypoint movement on mission load. Fixes #1019 - Arne-W
+e43ab2f22  GraphView: Fixed UI inconsistency regarding table filter and reorganized some UI parts. Fixes #1023 - Arne-W
+1042f1a70  GraphView: Logparser for .bin files could not handle double values. Fixes #1022 - Arne-W
+3e8968fd2  Build: Update to 2.0.25-rc1 - Bill Bonney
+5334dbef1  Frame Config: Added Single and Coax Copter to frame selection. UI cleanup. - Arne-W
+a456b5931  Firmware Upload: Added support for changed file names for Copter firmware. Fixes #1001 - Arne-W
+168751eb7  Frame Config: Added support for ArduCupter 3.5.0 frame configuration. Fixes #1000 - Arne-W
+0843a048c  Update Linux shortcut to use shellscript with enviroment parameter - Andre Kjellstrup
+5c8b6667e  Shellscript sets enviroment variable to prevent CPU hogging on Intel - Andre Kjellstrup
+35c3ff8a9  System: Added application attributes Qt::AA_X11InitThreads to fix the CPU hogging on Intel Graphics.  * Partly fix for #646 - Arne-W
+740b61dc7  GraphView: BugFix log loading dialog did not always disappear. - Arne-W
+e040658f5  GraphView: Added new range cursor feature and refactored AP2DataPlot2D into online and offline part.  * All cursors can be moved by drag and drop  * Value Axis can be scaled by mousewheel - Arne-W
+a202002ad  GraphView: Migrated to new qcustomplot version 2.0.0-beta - Arne-W
+83aa82445  another typo correction - Roel Hoek
+1e68cc941  updated dependencies in README.md - André Kjellstrup
+5ff8f10ec  updated dependencies - Andre Kjellstrup
+cb4b3c676  SiK_uploader fixed - Andre Kjellstrup
+3b4333a09  Config: BugFix for loading global settings #730 - yamsam
+524b1c034  3DR Radio Config: Changed Status presentation - removed popup and colorized status output - Arne-W
+490cf22f7  3DR Radio Config: Added sanity checks to every pointer access and a message box when loosing connection. - Arne-W
+d32aa4064  3DR Radio Config: Several Bugfixes Fixes #917 - Arne-W
+5c7f7c178  GraphView: Refactored the log exporting for Ascii and KML - Arne-W
+bdaf491bc  GraphView: renamed LogParser folder to Loghandling and moved all log dependent files to this folder. - Arne-W
+cb495360d  GraphView: Removed several superfluous const and casts. - Arne-W
+bb0d93cc7  GraphView: Adapted message formatters for copters to new features - Arne-W
+35ccff21c  GraphView: Added new getValues method to data storage to avoid additional copying.  * added filter for string measurements which will be filtered out in the tree view. - Arne-W
+6aeba43fc  Replaced all isinf() and isnan() by qIsInf() and qIsNaN() fixing build issue with Qt 5.6.x - Arne-W
+637a526a0  build: Fix Qt5.5.1 build issue with ULLONG_MAX - Bill Bonney
+63fd14dee  build: Add tools to patch Qt for Xcode3.0 - Bill Bonney
+ca85a836e  build: TravisCI add OSX build - Bill Bonney
+02e663922  build: Remove QScript - Bill Bonney
+f94c1f1fb  ParamDownload: Migrate to use of QJson - Bill Bonney
+c0757bf5b  Elevation: Migrate to use of QJson - Bill Bonney
+b7f9203de  AutoUpdateCheck: Migrate to use of QJson - Bill Bonney
+e674cbf5e  Graph View: Moved repair function to base class. - Arne-W
+6d7ccc419  Graph View: BugFix - Message index in parsing state now matches logline in table view. - Arne-W
+c741d7955  Graph View: Improved timestamp handling  * each type has now its own timeline - less error messages about wrong timestamps - Arne-W
+517e53f24  Graph View: Added repair function for corrupt messages in tlogs. - Arne-W
+3acc9f85a  Graph View: Extended type checking for tlog parser - Arne-W
+d2ef0b280  Graph View: Fixed mav type detection for ASCII logs. Was too restrictive. - Arne-W
+0f9dc74dc  Travis CI Addition (#996) - Bill Bonney
+e3cb14d91  Update README.md - Bill Bonney
+4036ed036  Graph View: Refactored data-model for storing log data - Arne-W
+39579bf92  QuickView: Update to show QuickView items in other units. - Bill Bonney
+d8d6d262c  Cleanup: couple of extra fixes to file removal - Bill Bonney
+d72c3c5ec  UAS: Add terrain message decoding to logs - Bill Bonney
+2ddc703d4  KML: Update to only plot NAV commands - Bill Bonney
+d64c2e3c5  Cleanup and remove old files - Bill Bonney
+c4b441902  KML: Update to fix GPS msg removal of RelAlt. - Bill Bonney
+8e204f603  BasicTuning: Fix incorrect naming - Bill Bonney
+aa75a65ef  BasicTuning: Fix to use auto detection - Bill Bonney
+dda7ea2e2  MainWindow: Remove AutoPilot PIXHAWK - Bill Bonney
+349923586  MAVLink: Fix method signature change - Bill Bonney
+2e666bb9e  Remove MAV_AUTOPILOT_PIXHAWK - Bill Bonney
+429057ba9  MAVLink: Update to latest v1.0 spec - Bill Bonney
+6cb87f521  MissionEditor: Disable points without valid locations - Bill Bonney
+97de82c47  Graph View: Refactored logparser for telemetry log (tlog) files.  * Removed old parsing code completely - Arne-W
+e989f89b3  Graph View: Refactored logparser for ascii log (log) files - Arne-W
+05bdd58b2  Graph View: Refactored logparser for flashlog (bin) files - Arne-W
+3a8939058  RadioCalibration: add new ELEVON_OUTPUT values - Mathieu OTHACEHE
+daa1798b5  Graph: display .BIN files too (uppercase) when selecting log. - Andre Kjellstrup
+b7ea135e5  KMZ: Fixes export to use newer naming - Bill Bonney
+f6fb874c3  Mission: Add Terrain Alt as an option. - Bill Bonney
+f76ce0370  build: update update file - Bill Bonney
+
+
+e2bcdb472  build: Update to 2.0.24 - Bill Bonney
+97271a853  Build: Update to 2.0.24-rc1 - Bill Bonney
+2181ed2d7  AutoUpdate: Fix to handle redirects - Bill Bonney
+ca00d23c1  ApmFirmware: Fix to handle redirects on firmware download links - Bill Bonney
+0e97390eb  Enlarge m_buttonStates array to prevent crash - Alexey Chernov
+3105fcf42  Fix build instruction - Mirko Denecke
+e8a6382a8  changed due to rename of project file to apm_planner.pro for debian builds - ChristopherOlson
+
+
+013bea293  build: Update to 2.0.23 release - Bill Bonney
+acdbf12c0  build: renamed project build to apm_planner.pro - Bill Bonney
+5683b8410  build: Update for Xcode8 builds - Bill Bonney
+ee7118b34  Removed index from data model interface. - Arne-W
+b91873beb  Datamodel now generates its own index. - Arne-W
+7f6ed4723  build: update version object - Bill Bonney
+677358e6e  build: Add C++11 option - Bill Bonney
+8ccca61d0  build: Update to 2.0.23-rc4 - Bill Bonney
+d9dba572f  BasicTuningVC: Add support for AC3.4rc2+ - Bill Bonney
+c9bdeab28  CopterPIDs: Fix AC3.4+ detection for new param names - Bill Bonney
+9eaa95826  APMToolBar: Fix Typo - Bill Bonney
+f2aab7180  AP2Settings: Remove Compatibility Option - Bill Bonney
+bad8c5611  ArduPilotMAV: Update code mapping for severity - Bill Bonney
+4075e8880  ArduPilotMAV: Adds but detection of Severity Adjustment - Bill Bonney
+065f1600d  Waypoints: Add Do Set Reverse support for Rover - Bill Bonney
+46a68d418  WaypointManager: Update Digicam Control - Bill Bonney
+15058c092  build: Update to 2.0.23-rc3 - Bill Bonney
+4fe8c43a8  Maps: Update Google API version - Bill Bonney
+93ca0f828  build: Update to 2.0.23-rc2 - Bill Bonney
+87e322794  BasicTuning: Modify Throttle Accel as Sensitivity - Bill Bonney
+2ba7e87a7  CopterPIDs: Fix to use new AC3.4+ naming - Bill Bonney
+93363ee4b  ArduCopterPIDs: Fix to retrieve parameters on view load - Bill Bonney
+056e17cf5  BasicTuning: Update to use new names for AC3.4+ - Bill Bonney
+e058efd03  build: fix typo - Bill Bonney
+a7184c367  Merge pull request #967 from yuripourre/patch-1 - Bill Bonney
+052629a01  Serial Link: Disconnect from signal in case of error to avoid endless loop. Fixes #946 - Arne-W
+2f85bed47  Add Linux Build in Fedora - Yuri Pourre
+0de02db3b  Logging: Adapted debug log window to new logging system - Arne-W
+9713647c6  Graph View: Adapted Mode message to handle reason and added reason to formatter. Fixes #955 - Arne-W
+bd3b919f7  Graph View: Adapted Message formatters for copter to match AC 3.4 - Arne-W
+9a2110098  Merge pull request #960 from dcarpy/nsis - Bill Bonney
+29b9be6f8  NSIS Script : Updates for Windows - Dave C
+
+
+e4fe05269  build: update to build 2.0.23-rc1 - Bill Bonney
+f862eac13  Camera Gimbal Config: update interface when disabling other outputs - Ben van Klinken
+38adcac62  added docker file for issue #953 - Rik Bruggink
+eacc4cacb  Found a UI typo and fixed it. - Bradley Conn
+f4f451467  Logging: Removed old QsLog initcode and created temp string to avoid double formatting - Arne-W
+a8f8e67af  Logging: qInfo() will only be used if Qt > 5.5.0 - Arne-W
+1c780a796  Logging: Replaced QsLog with Qt mechanisms - Arne-W
+ccce60be6  Graph View: Removed member holding database connnection cause it leads to resouce leaks.   * DB can now be cleanly closed - Arne-W
+5205eb2c9  Graph View: Added finish call to all reused DB queries - Arne-W
+82ee43d09  GraphView: Fix Multirotor detection due to parameter renaming in AC3.4 - Bill Bonney
+3f6c56d2b  Logging: Added messagehandler to reenable file logging. - Arne-W
+beb0a028c  GraphView: clean up old code - Bill Bonney
+33885d151  InfoView: Fix missing dependency - Bill Bonney
+25c9d9e1e  Graph View: Use HSV Color Model Fixes #932 - Dave C
+4d0fc86f8  Logging: Fix to enable QS_LOG or QtDebug logging - Bill Bonney
+fbe577694  Changed m_progressDialog back to Smartpointer.  * As you can give a "deleter" to the Smartpointer it is possible to call deleteLater() if refcount goes to 0 - Arne-W
+28bf758bc  Disabled all QsLog objects and redefined macros to use Qt logging. Workaround for #941 - Arne-W
+e35fc42bf  Graph View: Fix for race condition between deletion of progress dialog and already emitted signals - Arne-W
+9d40bbcc3  Graph View: Fixed memleak - m_tableFilterProxyModel was not deleted - Arne-W
+e25adcddc  Valgrind Fix: Conditional jump or move depends on uninitialised value.  * Added value to initializer list. - Arne-W
+b2297a35d  Valgrind Fix: Conditional jump or move depends on uninitialised value.  * Added value to initializer list. - Arne-W
+ea1d0f6d5  Valgrind Fix: Conditional jump or move depends on uninitialised value.  * Added value to initializer list. - Arne-W
+5ba68499b  Maps: Update Google API version - Bill Bonney
+
+
+8d776969c  build: 2.0.22 - Bill Bonney
+021ee2d1a  Logging: Fix random crashing - Bill Bonney
+
+
+1df39ab54  build: Update to 2.0.21 - Bill Bonney
+c679336a0  About: Fix links and version display - Bill Bonney
+05810e3ef  Parameters: Add support for URL redirection - Bill Bonney
+e0d48566d  Added QLAND and QRTL flight modes for plane - Andrew Tridgell
+5e8e82d80  Logging: Fix C++11 warning (errors with GCC) - Bill Bonney
+a2b1ac052  logging: enable multi-thread support and update QSLOG to avoid lockup - Bill Bonney
+c1e1ce20e  Graph View: Removed memory leak - Arne-W
+80a456a1c  Graph View: Inserted Semaphore to block parsing thread. Fixes #940 - Arne-W
+4014cc9d3  Graph View: Fix some warnings about signals and unregistered metatypes - Arne-W
+6cf155604  KML export fix - Kelly Schrock
+68f292ea8  QuickView: Use HSV Color Model - Dave C
+651bbcc75  Info View: added camera trigger - Andre Kjellstrup
+3baea5585  Graph View: Enhanced error handling of logparsing.  * improved AP2DataPlotStatus class to reflect more information.  * Added specialized handling for time errors - Arne-W
+dc4e85fed  Graph View: Added some sanity checks to tlog parsing - Arne-W
+a2cb5ca34  Graph View: Enable STATUSTEXT tlog message to be handeled as MsgMessage. Fixes #920 - Arne-W
+7e3d0027f  Graph View: Extracted time handling of data removing some code doubling - Arne-W
+d33aca279  Graph View: Converted timestamp from pair to struct (better naming) an made it class member. - Arne-W
+6bb3bcabb  AccelCalibration: Fix issue with ArduCopter 3.2.1 - Bill Bonney
+9fc757bef  Graph View: Check for increasing time when reading tlogs. - Arne-W
+5c81f622e  Firmware: Update url to new ardupilot.org - Bill Bonney
+5f0ecdc25  Graph View: Bugfix for potentially detecting wrong mav type when loading a tlog. - Arne-W
+81bee3f5c  Graph View: Export to google earth (KML) is now done direct from memory if a log is loaded. Fixes:#919 - Arne-W
+68ad2020b  Improoved scroller behaviour - Arne-W
+41e30ecad  Graph View: Enabled "time on x-axis" feature for all log types. Fixes:#918 - Arne-W
+2f90f1f7b  build: update release notes and version object - Bill Bonney
+
+
 Release Notes - APM Planner  2.0.20 - 2014-03-18
 
 0b4ab40:  build: update to 2.0.20 - Bill Bonney
