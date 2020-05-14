@@ -7,6 +7,7 @@ QGCMissionOther::QGCMissionOther(WaypointEditableView* WEV) :
     ui(new Ui::QGCMissionOther)
 {
     ui->setupUi(this);
+    ui->commandSpinBox->setMaximum(MAV_CMD_ENUM_END-1);
     this->WEV = WEV;
     //Using UI to change WP:
     connect(this->ui->commandSpinBox,SIGNAL(valueChanged(int)),WEV,SLOT(changedCommand(int)));
