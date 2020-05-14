@@ -1034,6 +1034,7 @@ void UASWaypointManager::sendWaypointCount()
     wpc.target_system = uasid;
     wpc.target_component = MAV_COMP_ID_MISSIONPLANNER;
     wpc.count = current_count;
+    wpc.mission_type = MAV_MISSION_TYPE_MISSION;
 
     emit updateStatusString(QString("Starting to transmit waypoints..."));
 
