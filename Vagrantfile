@@ -10,7 +10,7 @@ configfile        = YAML.load_file("#{current_dir}/.vagrantconfig.yml")
 yaml_config = configfile['configs']['dev']
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "ubuntu/bionic64"
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", "4096"]
     vb.customize ["modifyvm", :id, "--cpus", "1"]
