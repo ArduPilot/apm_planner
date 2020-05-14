@@ -121,7 +121,7 @@ bool Radio3DREeprom::setVersion(const QString &versionString)
     QLOG_DEBUG() << "Radio Firmware:" << versionString;
 
     QString vers;
-    for (const QChar c : qAsConst(versionString)) {
+    for (const QChar c : versionString) {
     if (c.isDigit() || c == '.') {
     vers.append(c);
   }
