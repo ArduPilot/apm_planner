@@ -4,7 +4,7 @@ APM Planner 2.0
 **Travis CI Build:**  [![Build Status](https://travis-ci.org/ArduPilot/apm_planner.svg?branch=master)](https://travis-ci.org/ArduPilot/apm_planner)
 
 **Support:**
-[ardupilot.com Support Forum for APM Planner 2.0](http://ardupilot.com/forum/viewtopic.php?f=82)
+[ardupilot.com Support Forum for APM Planner 2.0](https://discuss.ardupilot.org/c/ground-control-software/apm-planner-2-0/)
 
 Support is handled in the forum, we keep issues here known problems and enhancements
 
@@ -13,7 +13,7 @@ Support is handled in the forum, we keep issues here known problems and enhancem
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/diydrones/apm_planner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 **Credits:**
-http://planner2.ardupilot.com/credits-and-contributors/
+https://ardupilot.org/planner2/docs/credits-and-contributors.html
 
 [Waffle.io](https://waffle.io/diydrones/apm_planner) Progress Graph
 
@@ -48,8 +48,8 @@ Build APM Planner
 Linux 
 =====
 
-Building on Linux (tested against Ubuntu 14.04 LTS):
-(Use Qt5.4.2+ suggested Qt5.9.3)
+Building on Linux (tested against Ubuntu 18.04 LTS):
+(Use Qt5.9.5+ suggested Qt5.12.5)
 
 (**NOTE:** There is an error in 14.04LTS with libxcb crashing sometimes, try this [fix](https://gist.github.com/slimsag/a26d838ccc4480ce21bc))
 
