@@ -310,12 +310,12 @@ void UASActionsWidget::updateWaypointList()
 {
     if(!activeUas())
         return;
-    QLOG_INFO() << "updateWaypointList: ";
+    //QLOG_INFO() << "updateWaypointList: ";
 
     ui.waypointListComboBox->clear();
     for (int i=0;i<m_uas->getWaypointManager()->getWaypointEditableList().size();i++)
     {
-        QLOG_INFO() << "  WP:" << i;
+        //QLOG_INFO() << "  WP:" << i;
         ui.waypointListComboBox->addItem(QString::number(i));
     }
 }
