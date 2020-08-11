@@ -289,9 +289,17 @@ void PX4FirmwareUploader::kickOffTriggered()
     m_port->setPortName(m_portToUse);
 #endif
 
-    if (!m_port->open(QIODevice::ReadWrite))
-    {
-        QLOG_ERROR() << "Unable to open port:" << m_port->errorString();
+    for (int t = 0; t < 100; ++t) {
+        if (!m_port->open(QIODevice::ReadWrite))
+        {
+            auto errorString = m_port->errorString();
+            QLOG_ERROR() << "Unable to open port, attempt " << t << ":" << errorString;
+            sleep(1);
+        }
+        else
+        {
+            break;
+        }
     }
     m_port->write(QByteArray().append(0x21).append(0x20));
 
