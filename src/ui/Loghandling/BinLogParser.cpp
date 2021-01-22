@@ -461,6 +461,18 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
             packetstream >> val;
             NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
         }
+        else if (typeCode == 'a') //int16_t[32] (int16 array)
+        {
+            QList<QVariant> valArray;
+            valArray.reserve(32);
+            for (int j = 0; j < 32; j++)
+            {
+                qint16 val;
+                packetstream >> val;
+                valArray.push_back(val);
+            }
+            NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), valArray));
+        }
         else
         {
             //Unknown!
