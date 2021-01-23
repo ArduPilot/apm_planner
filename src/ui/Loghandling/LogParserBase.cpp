@@ -126,7 +126,7 @@ void LogParserBase::stopParsing()
 
 void LogParserBase::checkForValidTimestamp(typeDescriptor &desc)
 {
-    for(const auto &timeStamp: m_possibleTimestamps)
+    for(const auto &timeStamp: qAsConst(m_possibleTimestamps))
     {
         if (desc.m_labels.contains(timeStamp.m_name))
         {

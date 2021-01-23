@@ -181,7 +181,7 @@ AP2DataPlotStatus BinLogParser::parse(QFile &logfile)
     if(m_hasUnitData)
     {
        QStringList errors = m_dataStoragePtr->setupUnitData(m_activeTimestamp.m_name, m_activeTimestamp.m_divisor);
-       for(const auto &error : errors)
+       for(const auto &error : qAsConst(errors))
        {
            QLOG_WARN() << error;
            m_logLoadingState.corruptFMTRead(static_cast<int>(m_MessageCounter), "Unit or scaling error. " + error);
@@ -494,7 +494,7 @@ bool BinLogParser::extendedStoreDescriptor(const binDescriptor &desc)
     bool rc = true;
     if(m_descriptorForDeferredStorage.size() > 0)
     {
-        for(const auto &descriptor : m_descriptorForDeferredStorage)
+        for(const auto &descriptor : qAsConst(m_descriptorForDeferredStorage))
         {
             bool localRc = storeDescriptor(descriptor);
             rc = rc && localRc;
