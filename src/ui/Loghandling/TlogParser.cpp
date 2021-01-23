@@ -354,9 +354,9 @@ bool TlogParser::decodeData(const mavlink_message_t &mavlinkMessage, QList<NameV
 
 void TlogParser::newValue(int uasId, const QString &name, const QString &unit, const QVariant &value, quint64 msec)
 {
-    Q_UNUSED(uasId);
-    Q_UNUSED(msec);
-    Q_UNUSED(unit);
+    Q_UNUSED(uasId)
+    Q_UNUSED(msec)
+    Q_UNUSED(unit)
 
     // the name of the expected data looks like this:
     // "M1:RAW_IMU.time_usec" in standart case
@@ -387,9 +387,9 @@ void TlogParser::newValue(int uasId, const QString &name, const QString &unit, c
 
 void TlogParser::newTextValue(int uasId, int componentId, int severity, const QString &text)
 {
-    Q_UNUSED(uasId);
-    Q_UNUSED(componentId);
-    Q_UNUSED(severity);
+    Q_UNUSED(uasId)
+    Q_UNUSED(componentId)
+    Q_UNUSED(severity)
 
     // The date we are expecting looks like this:
     // M1:STATUSTEXT.text: ArduCopter V3.6-dev (12a53ed6)
