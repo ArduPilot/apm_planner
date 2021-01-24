@@ -92,6 +92,13 @@ AP2DataPlotStatus TlogParser::parse(QFile &logfile)
             unsigned int decodeState = mavlink_parse_char(14, static_cast<uint8_t>(m_dataBlock[i]), &mavlinkMessage, &mavlinkStatus);
             if (decodeState == MAVLINK_FRAMING_OK)
             {
+                if ((mavlinkMessage.msgid >= 20) && (mavlinkMessage.msgid <= 23))
+                {
+                    // The messages PARAM_REQUEST_READ (#20), PARAM_REQUEST_LIST (#21), PARAM_VALUE (#22), PARAM_SET (#23)
+                    // are useless for plotting. Therefore we skip them here.
+                    continue;
+                }
+
                 tlogDescriptor descriptor;
                 descriptor.m_name = m_mavDecoderPtr->getMessageName(mavlinkMessage.msgid);
                 if ((descriptor.m_name != "EMPTY") && (mavlinkMessage.sysid != s_GCSType))
@@ -115,7 +122,8 @@ AP2DataPlotStatus TlogParser::parse(QFile &logfile)
                     {
                         if(!storeNameValuePairList(NameValuePairList, m_nameToDescriptorMap.value(descriptor.m_name)))
                         {
-                            return m_logLoadingState;
+                            // Data could not be stored cause of defects. Continue with next data package.
+                            continue;
                         }
 
                         // Special message handling - Heartbeat
