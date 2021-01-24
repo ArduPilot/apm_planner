@@ -181,6 +181,7 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
 {
     if (!m_typeStorage.count(typeName))  // type exists in type storage?
     {
+        m_errorText.clear();
         QTextStream error(&m_errorText);
         error << "Data of type " << typeName << " cannot be inserted cause its type is unknown.";
         return false;
@@ -189,6 +190,7 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
     dataType &tempType = m_typeStorage[typeName];
     if(values.size() != tempType.m_labels.size())    // Number of elements match type?
     {
+        m_errorText.clear();
         QTextStream error(&m_errorText);
         error << "Number of datafields for type " << typeName << " does not match. Expected:"
               << tempType.m_labels.size() << " got:" << values.size();
@@ -206,9 +208,11 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
     {
         if(values[i].first != tempType.m_labels[i])  // value name match?
         {
+            m_errorText.clear();
             QTextStream error(&m_errorText);
             error << "Data of type " << typeName << " Value name mismatch. Expected:"
-                  << tempType.m_labels[i] << " got:" << values[i].first;
+                  << tempType.m_labels[i] << " but got:" << values[i].first
+                  << " Dropping data.";
             return false;
         }
         newRow.m_values.push_back(values[i].second);

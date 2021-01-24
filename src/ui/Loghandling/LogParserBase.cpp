@@ -167,7 +167,8 @@ bool LogParserBase::storeNameValuePairList(QList<NameValuePair> &NameValuePairLi
 
     if(!m_dataStoragePtr->addDataRow(desc.m_name, NameValuePairList))
     {
-        m_callbackObject->onError(m_dataStoragePtr->getError());
+        QLOG_WARN() << m_dataStoragePtr->getError();
+        m_logLoadingState.corruptDataRead(static_cast<int>(m_MessageCounter), m_dataStoragePtr->getError());
         return false;
     }
 
