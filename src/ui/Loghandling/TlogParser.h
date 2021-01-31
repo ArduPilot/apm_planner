@@ -53,7 +53,7 @@ public:
     /**
      * @brief ~TlogParser - DTOR
      */
-    virtual ~TlogParser();
+    virtual ~TlogParser() override;
 
     /**
      * @brief parse method reads the logfile. Should be called with an
@@ -61,7 +61,7 @@ public:
      * @param logfile - The file which should be parsed
      * @return - Detailed status of the parsing
      */
-    virtual AP2DataPlotStatus parse(QFile &logfile);
+    virtual AP2DataPlotStatus parse(QFile &logfile) override;
 
     /**
      * @brief newValue - Callback for the mavlink decoder - called for every decoded value
@@ -84,8 +84,6 @@ public:
 
 private:
 
-    static const quint8 s_GCSType = 255;  /// sys id of Ground station
-
     /**
      * @brief The tlogDescriptor class provides a specialized typeDescriptor
      *        with an own isValid method.
@@ -93,7 +91,7 @@ private:
     class tlogDescriptor : public typeDescriptor
     {
     public:
-        virtual bool isValid() const;
+        virtual bool isValid() const override;
     };
 
     QHash<QString, tlogDescriptor> m_nameToDescriptorMap;   /// hashMap storing a format descriptor for every message type
@@ -105,6 +103,8 @@ private:
     quint8 m_lastModeVal;       /// holds the current mode used to detect changes
 
     QList<NameValuePair> *mp_ReceiveData;  /// pointer to the data structure for receiving data
+
+    quint8 m_GCSMavID = QGC::MavlinkID();  /// sys id of Ground station
 
     /**
      * @brief addMissingDescriptors adds the missing type descriptors to the

@@ -8,7 +8,7 @@
 
 GlobalObject* GlobalObject::sharedInstance()
 {
-    static GlobalObject* _globalInstance = NULL;
+    static GlobalObject* _globalInstance = nullptr;
     if (_globalInstance) {
         return _globalInstance;
     }
@@ -35,6 +35,7 @@ void GlobalObject::loadSettings()
     m_MAVLinklogDirectory = settings.value("MAVLINK_LOG_DIRECTORY", defaultMAVLinkLogDirectory()).toString();
     m_parameterDirectory = settings.value("PARAMETER_DIRECTORY", defaultParameterDirectory()).toString();
     m_missionDirectory = settings.value("MISSION_DIRECTORY", defaultMissionDirectory()).toString();
+    m_mavlinkID = static_cast<quint8>(settings.value("MAVLINK_ID", defaultMavlinkID()).toUInt());
 
     settings.endGroup();
 }
@@ -49,6 +50,7 @@ void GlobalObject::saveSettings()
     QLOG_DEBUG() << "save tlog dir to:" << m_MAVLinklogDirectory;
     settings.setValue("PARAMETER_DIRECTORY", m_parameterDirectory);
     settings.setValue("MISSION_DIRECTORY", m_missionDirectory);
+    settings.setValue("MAVLINK_ID", m_mavlinkID);
 
     settings.sync();
 }
@@ -183,6 +185,26 @@ void GlobalObject::setMissionDirectory(const QString &dir)
     QLOG_DEBUG() << "Set mission dir to:" << dir;
     m_missionDirectory = dir;
 }
+
+//
+// Mavlink ID of APM PLanner
+//
+
+quint8 GlobalObject::defaultMavlinkID()
+{
+    return QGC::defaultMavlinkSystemId;
+}
+
+quint8 GlobalObject::MavlinkID()
+{
+    return m_mavlinkID;
+}
+
+void GlobalObject::setMavlinkID(const quint8 mavlinkID)
+{
+    m_mavlinkID = mavlinkID;
+}
+
 
 //
 // Share Directory

@@ -349,7 +349,7 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>0</y>
+         <y>120</y>
          <width>501</width>
          <height>161</height>
         </rect>
@@ -433,6 +433,51 @@
          </layout>
         </item>
        </layout>
+      </widget>
+      <widget class="QLabel" name="label_14">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>70</y>
+         <width>171</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Mavlink ID of Apm Planner</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="MavlinkspinBox">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>70</y>
+         <width>100</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="value">
+        <number>252</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_29">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>511</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;After changing the settings on this page you have to restart APM Planner&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
       </widget>
      </widget>
     </widget>

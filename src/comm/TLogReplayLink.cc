@@ -214,7 +214,7 @@ void TLogReplayLink::run()
             {
                 nexttime = true;
                 //Good decode
-                if (message.sysid == 255)
+                if (message.sysid == QGC::MavlinkID())
                 {
                     //GCS packet, ignore it
                 }
