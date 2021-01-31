@@ -53,8 +53,6 @@ class MAVLinkProtocol : public QObject
     Q_OBJECT
 
 public:
-    constexpr static quint8 s_SystemID    = 252;
-    constexpr static quint8 s_ComponentID = 1;
 
     explicit MAVLinkProtocol();
     ~MAVLinkProtocol();
@@ -71,19 +69,23 @@ public slots:
 
 private:
     void handleMessage(LinkInterface *link, const mavlink_message_t &message);
-    bool m_isOnline;
-    bool m_loggingEnabled;
+
+    quint8 m_systemID    = QGC::defaultMavlinkSystemId;
+    quint8 m_componentID = QGC::defaultComponentId;
+
+    bool m_isOnline = true;
+    bool m_loggingEnabled = true;
     QScopedPointer<QFile>m_ScopedLogfilePtr;
 
-    bool m_throwAwayGCSPackets;
-    LinkManager *m_connectionManager;
-    bool versionMismatchIgnore;
+    bool m_throwAwayGCSPackets = false;
+    LinkManager *m_connectionManager = nullptr;
+    bool versionMismatchIgnore = false;
     QMap<int, qint64> totalReceiveCounter;
     QMap<int, qint64> currReceiveCounter;
     QMap<int,QMap<int, quint8> > lastIndex;
     QMap<int, qint64> totalLossCounter;
     QMap<int, qint64> currLossCounter;
-    bool m_enable_version_check;
+    bool m_enable_version_check = false;
 
 signals:
     void protocolStatusMessage(const QString& title, const QString& message);

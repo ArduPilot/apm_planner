@@ -107,6 +107,9 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         connect(ui->rcChannelDataLineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
         connect(ui->rawSensorLineEdit, SIGNAL(editingFinished()), this, SLOT(ratesChanged()));
 
+        ui->MavlinkspinBox->setValue(QGC::MavlinkID());
+        connect(ui->MavlinkspinBox, SIGNAL(valueChanged(int)), this, SLOT(mavIdChanged(int)));
+
         connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(setActiveUAS(UASInterface*)));
         setActiveUAS(UASManager::instance()->getActiveUAS());
 
@@ -276,6 +279,12 @@ void QGCSettingsWidget::ratesChanged()
             mav->RequestAllDataStreams();
         }
     }
+}
+
+void QGCSettingsWidget::mavIdChanged(int id)
+{
+    quint8 localID = static_cast<quint8>(id);
+    QGC::setMavlinkID(localID);
 }
 
 void QGCSettingsWidget::setBetaRelease(bool state)

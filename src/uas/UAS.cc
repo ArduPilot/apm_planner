@@ -176,9 +176,9 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     readSettings(); 
     // Initial signals
     emit disarmed();
-    emit armingChanged(false);  
+    emit armingChanged(false);
 
-    systemId = QGC::defaultSystemId;
+    systemId = QGC::MavlinkID();
     componentId = QGC::defaultComponentId;
 
     m_heartbeatsEnabled = MainWindow::instance()->heartbeatEnabled(); //Default to sending heartbeats

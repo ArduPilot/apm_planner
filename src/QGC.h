@@ -61,7 +61,7 @@
 
 namespace QGC
 {
-const static int defaultSystemId = 252; // Using 252 to 'crudely' identify a log created by APM Planner 2
+
 const static int defaultComponentId = MAV_COMP_ID_PRIMARY; // The main component ID is 1 for autopilot/and GCS (0 means all components)
 
 const QColor colorCyan(55, 154, 195);

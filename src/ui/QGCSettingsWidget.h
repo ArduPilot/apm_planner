@@ -14,10 +14,12 @@ class QGCSettingsWidget : public QDialog
     Q_OBJECT
 
 public:
-    QGCSettingsWidget(QWidget *parent = 0, Qt::WindowFlags flags = Qt::Sheet);
-    ~QGCSettingsWidget();
+    QGCSettingsWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Sheet);
+    ~QGCSettingsWidget() override;
+
 protected:
-    void showEvent(QShowEvent *evt);
+    void showEvent(QShowEvent *evt) override;
+
 private slots:
     void setLogDir();
     void setMAVLinkLogDir();
@@ -29,6 +31,8 @@ private slots:
     void setHideDonateButton(bool state);
 
     void setActiveUAS(UASInterface *uas);
+
+    void mavIdChanged(int id);
 
 private:
     void setDataRateLineEdits();

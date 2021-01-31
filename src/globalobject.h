@@ -68,6 +68,10 @@ public:
     QString missionDirectory();
     void setMissionDirectory(const QString &dir);
 
+    quint8 defaultMavlinkID();
+    quint8 MavlinkID();
+    void setMavlinkID(const quint8 mavlinkID);
+
     QString shareDirectory();
 
 private:
@@ -78,6 +82,7 @@ private:
     QString m_MAVLinklogDirectory;
     QString m_parameterDirectory;
     QString m_missionDirectory;
+    quint8  m_mavlinkID;
 
 };
 

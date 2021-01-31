@@ -101,7 +101,7 @@ AP2DataPlotStatus TlogParser::parse(QFile &logfile)
 
                 tlogDescriptor descriptor;
                 descriptor.m_name = m_mavDecoderPtr->getMessageName(mavlinkMessage.msgid);
-                if ((descriptor.m_name != "EMPTY") && (mavlinkMessage.sysid != s_GCSType))
+                if (descriptor.m_name != "EMPTY")
                 {
                     descriptor.m_ID = mavlinkMessage.msgid;
                     if(!m_nameToDescriptorMap.contains(descriptor.m_name))

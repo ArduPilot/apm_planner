@@ -39,14 +39,9 @@ This file is part of the APM_PLANNER project
 #include <cstring>
 #include <QDataStream>
 
-MAVLinkProtocol::MAVLinkProtocol():
-    m_isOnline(true),
-    m_loggingEnabled(false),
-    m_throwAwayGCSPackets(false),
-    m_connectionManager(nullptr),
-    versionMismatchIgnore(false),
-    m_enable_version_check(false)
+MAVLinkProtocol::MAVLinkProtocol()
 {
+    m_systemID = QGC::MavlinkID();
 }
 
 MAVLinkProtocol::~MAVLinkProtocol()
@@ -56,7 +51,7 @@ MAVLinkProtocol::~MAVLinkProtocol()
 
 void MAVLinkProtocol::sendMessage(mavlink_message_t msg)
 {
-    Q_UNUSED(msg);
+    Q_UNUSED(msg)
 }
 
 void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBytes)
@@ -161,7 +156,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
                 if(!ping.target_system && !ping.target_component && m_isOnline)
                 {
                     mavlink_message_t msg;
-                    mavlink_msg_ping_pack(s_SystemID, s_ComponentID, &msg, ping.time_usec, ping.seq, message.sysid, message.compid);
+                    mavlink_msg_ping_pack(m_systemID, m_componentID, &msg, ping.time_usec, ping.seq, message.sysid, message.compid);
                     sendMessage(msg);
                 }
             }
@@ -269,14 +264,14 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
         // it's first messages.
 
         // Check if the UAS has the same id like this system
-        if (message.sysid == s_SystemID)
+        if (message.sysid == m_systemID)
         {
             if (m_throwAwayGCSPackets)
             {
                 //If replaying, we have to assume that it's just hearing ground control traffic
                 return;
             }
-            emit protocolStatusMessage(tr("SYSTEM ID CONFLICT!"), tr("Warning: A second system is using the same system id (%1)").arg(s_SystemID));
+            emit protocolStatusMessage(tr("SYSTEM ID CONFLICT!"), tr("Warning: A second system is using the same system id (%1)").arg(m_systemID));
         }
 
         // Create a new UAS based on the heartbeat received

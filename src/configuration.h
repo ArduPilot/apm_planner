@@ -58,14 +58,15 @@
 namespace QGC
 
 {
-const QString APPNAME = "APMPLANNER2";
-const QString COMPANYNAME = "ARDUPILOT";
-const int APPLICATIONVERSION = 2028; // 2.0.28 [TODO] we should deprecate this version definition
+const static QString APPNAME = "APMPLANNER2";
+const static QString COMPANYNAME = "ARDUPILOT";
+const static int APPLICATIONVERSION = 2028; // 2.0.28 [TODO] we should deprecate this version definition
+const static quint8 defaultMavlinkSystemId = 252; // Using 252 to 'crudely' identify a log created by APM Planner 2
 
     inline void close(){
         GlobalObject* global = GlobalObject::sharedInstance();
         delete global;
-        global = NULL;
+        global = nullptr;
     }
 
     inline void loadSettings(){
@@ -123,6 +124,15 @@ const int APPLICATIONVERSION = 2028; // 2.0.28 [TODO] we should deprecate this v
     inline void setMissionDirectory(const QString& dir){
         GlobalObject::sharedInstance()->setMissionDirectory(dir);
     }
+
+    inline quint8 MavlinkID(){
+        return GlobalObject::sharedInstance()->MavlinkID();
+    }
+
+    inline void setMavlinkID(const quint8 ID){
+        GlobalObject::sharedInstance()->setMavlinkID(ID);
+    }
+
 
     //Returns the absolute parth to the files, data, qml support directories
     //It could be in 1 of 2 places under Linux
