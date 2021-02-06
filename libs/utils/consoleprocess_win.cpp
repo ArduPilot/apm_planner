@@ -48,7 +48,7 @@ ConsoleProcess::ConsoleProcess(QObject *parent) :
     m_stubSocket(0),
     m_tempFile(0),
     m_pid(0),
-    m_hInferior(NULL),
+    m_hInferior(nullptr),
     inferiorFinishedNotifier(0),
     processFinishedNotifier(0)
 {
@@ -133,7 +133,7 @@ bool ConsoleProcess::start(const QString &program, const QStringList &args)
 
 void ConsoleProcess::stop()
 {
-    if (m_hInferior != NULL) {
+    if (m_hInferior != nullptr) {
         TerminateProcess(m_hInferior, (unsigned)-1);
         cleanupInferior();
     }
@@ -190,7 +190,7 @@ void ConsoleProcess::readStubOutput()
             m_hInferior = OpenProcess(
                     SYNCHRONIZE | PROCESS_QUERY_INFORMATION | PROCESS_TERMINATE,
                     FALSE, m_appPid);
-            if (m_hInferior == NULL) {
+            if (m_hInferior == nullptr) {
                 emit processError(tr("Cannot obtain a handle to the inferior: %1")
                                   .arg(winErrorMessage(GetLastError())));
                 // Uhm, and now what?
@@ -212,7 +212,7 @@ void ConsoleProcess::cleanupInferior()
     delete inferiorFinishedNotifier;
     inferiorFinishedNotifier = 0;
     CloseHandle(m_hInferior);
-    m_hInferior = NULL;
+    m_hInferior = nullptr;
     m_appPid = 0;
 }
 
@@ -248,7 +248,7 @@ void ConsoleProcess::stubExited()
     if (m_stubSocket && m_stubSocket->state() == QLocalSocket::ConnectedState)
         m_stubSocket->waitForDisconnected();
     cleanupStub();
-    if (m_hInferior != NULL) {
+    if (m_hInferior != nullptr) {
         TerminateProcess(m_hInferior, (unsigned)-1);
         cleanupInferior();
         m_appStatus = QProcess::CrashExit;

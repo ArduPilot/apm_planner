@@ -34,10 +34,10 @@ namespace mapcontrol
     WayPointItem::WayPointItem(const internals::PointLatLng &wp_coord, double const& altitude, MapGraphicItem *map, OPMapWidget *parent, const QString &description) :
         GraphicsItem(map, parent),
         autoreachedEnabled(true),
-        text(NULL),
-        textBG(NULL),
-        numberI(NULL),
-        numberIBG(NULL),
+        text(nullptr),
+        textBG(nullptr),
+        numberI(nullptr),
+        numberIBG(nullptr),
         reached(false),
         description(description),
         shownumber(true),
@@ -201,10 +201,10 @@ namespace mapcontrol
     void WayPointItem::SetShowNumber(const bool &value)
     {
         shownumber=value;
-        if((numberI==NULL) && value)
+        if((numberI==nullptr) && value)
         {
-            Q_ASSERT(numberI == NULL);
-            Q_ASSERT(numberIBG == NULL);
+            Q_ASSERT(numberI == nullptr);
+            Q_ASSERT(numberIBG == nullptr);
             numberI=new QGraphicsSimpleTextItem(this);
             numberIBG=new QGraphicsRectItem(this);
             numberIBG->setBrush(Qt::black);
@@ -219,9 +219,9 @@ namespace mapcontrol
         else if (!value && numberI)
         {
             delete numberI;
-            numberI = NULL;
+            numberI = nullptr;
             delete numberIBG;
-            numberIBG = NULL;
+            numberIBG = nullptr;
         }
         this->update();
 

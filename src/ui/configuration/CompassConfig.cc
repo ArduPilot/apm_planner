@@ -27,8 +27,8 @@ This file is part of the APM_PLANNER project
 #include "QGCCore.h"
 
 CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
-    m_progressDialog(NULL),
-    m_timer(NULL),
+    m_progressDialog(nullptr),
+    m_timer(nullptr),
     m_calibratingCompass(false),
     m_compatibilityMode(false),
     m_haveSecondCompass(false),
@@ -352,7 +352,7 @@ void CompassConfig::liveCalibrationClicked()
 
 void CompassConfig::startDataCollection()
 {
-    if (m_uas == NULL){
+    if (m_uas == nullptr){
         return;
     }
     QGCUASParamManager* pm = m_uas->getParamManager();

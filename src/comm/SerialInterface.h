@@ -149,7 +149,7 @@ signals:
     void aboutToClose();
 public:
     SerialQserial(QString porthandle, QIODevice::OpenModeFlag flag=QIODevice::ReadWrite)
-        : _port(NULL) {
+        : _port(nullptr) {
         QObject::connect(_port,SIGNAL(aboutToClose()),this,SIGNAL(aboutToClose()));
         settings.setBaudRate(QPortSettings::BAUDR_57600);
         settings.setStopBits(QPortSettings::STOP_1);
@@ -161,7 +161,7 @@ public:
     }
     ~SerialQserial() {
         delete _port;
-        _port = NULL;
+        _port = nullptr;
     }
     virtual bool isOpen() {
         return _port->isOpen();

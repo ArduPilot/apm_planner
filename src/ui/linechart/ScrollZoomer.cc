@@ -10,7 +10,7 @@ class ScrollData
 {
 public:
     ScrollData():
-        scrollBar(NULL),
+        scrollBar(nullptr),
         position(ScrollZoomer::OppositeToScale),
 #if QT_VERSION < 0x040000
         mode(QScrollView::Auto)
@@ -35,9 +35,9 @@ public:
 
 ScrollZoomer::ScrollZoomer(QwtPlotCanvas *canvas):
     QwtPlotZoomer(canvas),
-    d_cornerWidget(NULL),
-    d_hScrollData(NULL),
-    d_vScrollData(NULL),
+    d_cornerWidget(nullptr),
+    d_hScrollData(nullptr),
+    d_vScrollData(nullptr),
     d_inZoom(false)
 {
     if ( !canvas )
@@ -96,7 +96,7 @@ ScrollBar *ScrollZoomer::scrollBar(Qt::Orientation o)
     ScrollBar *&sb = (o == Qt::Vertical)
                      ? d_vScrollData->scrollBar : d_hScrollData->scrollBar;
 
-    if ( sb == NULL ) {
+    if ( sb == nullptr ) {
         sb = new ScrollBar(o, canvas());
         sb->hide();
         connect(sb,
@@ -226,11 +226,11 @@ bool ScrollZoomer::eventFilter(QObject *o, QEvent *e)
         case QEvent::ChildRemoved: {
             const QObject *child = ((QChildEvent *)e)->child();
             if ( child == d_cornerWidget )
-                d_cornerWidget = NULL;
+                d_cornerWidget = nullptr;
             else if ( child == d_hScrollData->scrollBar )
-                d_hScrollData->scrollBar = NULL;
+                d_hScrollData->scrollBar = nullptr;
             else if ( child == d_vScrollData->scrollBar )
-                d_vScrollData->scrollBar = NULL;
+                d_vScrollData->scrollBar = nullptr;
             break;
         }
         default:
@@ -358,7 +358,7 @@ void ScrollZoomer::updateScrollBars()
     }
 
     if ( showHScrollBar && showVScrollBar ) {
-        if ( d_cornerWidget == NULL ) {
+        if ( d_cornerWidget == nullptr ) {
             d_cornerWidget = new QWidget(canvas());
 #if QT_VERSION >= 0x040100
             d_cornerWidget->setAutoFillBackground(true);

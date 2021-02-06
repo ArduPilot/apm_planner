@@ -38,7 +38,7 @@ This file is part of the QGROUNDCONTROL project
 
 WatchdogControl::WatchdogControl(QWidget *parent) :
     QWidget(parent),
-    mav(NULL),
+    mav(nullptr),
     updateInterval(2000000),
     ui(new Ui::WatchdogControl)
 {

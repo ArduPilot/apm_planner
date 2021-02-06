@@ -59,8 +59,8 @@ This file is part of the QGROUNDCONTROL project
  */
 HUD::HUD(int width, int height, QWidget* parent)
     : QLabel(parent),
-      image(NULL),
-      uas(NULL),
+      image(nullptr),
+      uas(nullptr),
       yawInt(0.0f),
       mode(tr("UNKNOWN MODE")),
       state(tr("UNKNOWN STATE")),
@@ -71,9 +71,9 @@ HUD::HUD(int width, int height, QWidget* parent)
       vheight(150.0f),
       vGaugeSpacing(65.0f),
       vPitchPerDeg(6.0f), ///< 4 mm y translation per degree)
-      rawBuffer1(NULL),
-      rawBuffer2(NULL),
-      rawImage(NULL),
+      rawBuffer1(nullptr),
+      rawBuffer2(nullptr),
+      rawImage(nullptr),
       rawLastIndex(0),
       rawExpectedBytes(0),
       bytesPerLine(1),
@@ -172,7 +172,7 @@ HUD::HUD(int width, int height, QWidget* parent)
 
     createActions();
 
-    if (UASManager::instance()->getActiveUAS() != NULL) setActiveUAS(UASManager::instance()->getActiveUAS());
+    if (UASManager::instance()->getActiveUAS() != nullptr) setActiveUAS(UASManager::instance()->getActiveUAS());
 }
 
 HUD::~HUD()
@@ -248,7 +248,7 @@ void HUD::createActions()
  */
 void HUD::setActiveUAS(UASInterface* uas)
 {
-    if (this->uas != NULL) {
+    if (this->uas != nullptr) {
         // Disconnect any previously connected active MAV
         disconnect(this->uas, SIGNAL(attitudeChanged(UASInterface*, double, double, double, quint64)), this, SLOT(updateAttitude(UASInterface*, double, double, double, quint64)));
         disconnect(this->uas, SIGNAL(attitudeChanged(UASInterface*,int, double, double, double, quint64)), this, SLOT(updateAttitude(UASInterface*,int,double, double, double, quint64)));
@@ -1157,7 +1157,7 @@ void HUD::selectWaypoint(int uasId, int id)
 void HUD::setImageSize(int width, int height, int depth, int channels)
 {
     // Allocate raw image in correct size
-    if (width != receivedWidth || height != receivedHeight || depth != receivedDepth || channels != receivedChannels || image == NULL) {
+    if (width != receivedWidth || height != receivedHeight || depth != receivedDepth || channels != receivedChannels || image == nullptr) {
         // Set new size
         if (width > 0) receivedWidth  = width;
         if (height > 0) receivedHeight = height;
@@ -1167,9 +1167,9 @@ void HUD::setImageSize(int width, int height, int depth, int channels)
         rawExpectedBytes = (receivedWidth * receivedHeight * receivedDepth * receivedChannels) / 8;
         bytesPerLine = rawExpectedBytes / receivedHeight;
         // Delete old buffers if necessary
-        rawImage = NULL;
-        if (rawBuffer1 != NULL) delete rawBuffer1;
-        if (rawBuffer2 != NULL) delete rawBuffer2;
+        rawImage = nullptr;
+        if (rawBuffer1 != nullptr) delete rawBuffer1;
+        if (rawBuffer2 != nullptr) delete rawBuffer2;
 
         rawBuffer1 = (unsigned char*)malloc(rawExpectedBytes);
         rawBuffer2 = (unsigned char*)malloc(rawExpectedBytes);
@@ -1235,7 +1235,7 @@ void HUD::finishImage()
 void HUD::commitRawDataToGL()
 {
     QLOG_DEBUG() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
-    if (image != NULL) {
+    if (image != nullptr) {
         QImage::Format format = image->format();
         QImage* newImage = new QImage(rawImage, receivedWidth, receivedHeight, format);
         if (format == QImage::Format_Indexed8) {

@@ -3,7 +3,7 @@
 #include <qregexp.h>
 
 HexSpinBox::HexSpinBox(QWidget *parent)
-    : QSpinBox(parent), validator(NULL)
+    : QSpinBox(parent), validator(nullptr)
 {
     setRange(0, 0x7fffffff);
     validator = new QRegExpValidator(QRegExp("[0-9A-Fa-f]{1,8}"), this);
@@ -14,7 +14,7 @@ HexSpinBox::~HexSpinBox(void)
 	if(this->validator)
 	{
 		delete this->validator;
-		this->validator = NULL;
+		this->validator = nullptr;
 	}
 }
 

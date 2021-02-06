@@ -108,7 +108,7 @@ uint QwtDialScaleDraw::penWidth() const
 */
 QwtText QwtDialScaleDraw::label(double value) const
 {
-    if ( d_parent == NULL )
+    if ( d_parent == nullptr )
         return QwtRoundScaleDraw::label(value);
 
     return d_parent->scaleLabel(value);
@@ -668,7 +668,7 @@ void QwtDial::drawNeedle(QPainter *painter, const QPoint &center,
 void QwtDial::drawScale(QPainter *painter, const QPoint &center,
                         int radius, double origin, double minArc, double maxArc) const
 {
-    if ( d_data->scaleDraw == NULL )
+    if ( d_data->scaleDraw == nullptr )
         return;
 
     origin -= 270.0; // hardcoded origin of QwtScaleDraw
@@ -831,7 +831,7 @@ void QwtDial::setScale(int maxMajIntv, int maxMinIntv, double step)
   A wrapper method for accessing the scale draw.
 
   - options == 0\n
-    No visible scale: setScaleDraw(NULL)
+    No visible scale: setScaleDraw(nullptr)
   - options & ScaleBackbone\n
     En/disable the backbone of the scale.
   - options & ScaleTicks\n
@@ -844,10 +844,10 @@ void QwtDial::setScale(int maxMajIntv, int maxMinIntv, double step)
 void QwtDial::setScaleOptions(int options)
 {
     if ( options == 0 )
-        setScaleDraw(NULL);
+        setScaleDraw(nullptr);
 
     QwtDialScaleDraw *sd = d_data->scaleDraw;
-    if ( sd == NULL )
+    if ( sd == nullptr )
         return;
 
     sd->enableComponent(QwtAbstractScaleDraw::Backbone,

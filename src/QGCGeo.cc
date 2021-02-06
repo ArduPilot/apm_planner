@@ -134,7 +134,7 @@ bool Vector3d::setToLeastSquaresSphericalCenter(const QVector<Vector3d> &pointsO
     alglib::minlmsetcond(state, epsg, epsf, epsx, maxits);
 
     // optimize it!
-    alglib::minlmoptimize(state, &sphereError, NULL, (void *)&pointsOnSphere);
+    alglib::minlmoptimize(state, &sphereError, nullptr, (void *)&pointsOnSphere);
 
     // retrieve output report
     alglib::minlmreport rep;

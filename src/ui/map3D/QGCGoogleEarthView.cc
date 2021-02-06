@@ -34,7 +34,7 @@ QGCGoogleEarthView::QGCGoogleEarthView(QWidget *parent) :
     QWidget(parent),
     updateTimer(new QTimer(this)),
     refreshRateMs(100),
-    mav(NULL),
+    mav(nullptr),
     followCamera(true),
     trailEnabled(true),
     webViewInitialized(false),
@@ -46,7 +46,7 @@ QGCGoogleEarthView::QGCGoogleEarthView(QWidget *parent) :
 #endif
 #ifdef _MSC_VER
     webViewWin(new QGCWebAxWidget(this)),
-    documentWin(NULL),
+    documentWin(nullptr),
 #endif
     ui(new Ui::QGCGoogleEarthView)
 {
@@ -474,7 +474,7 @@ QVariant QGCGoogleEarthView::documentElement(QString name)
             IHTMLDocument3* doc;
             documentWin->queryInterface( IID_IHTMLDocument3, (void**)&doc);
             params.append(name);
-            IHTMLElement* element = NULL;
+            IHTMLElement* element = nullptr;
             // Append alias
             name.prepend("JScript_");
             HRESULT res = doc->getElementById(QStringToBSTR(name), &element);
@@ -484,7 +484,7 @@ QVariant QGCGoogleEarthView::documentElement(QString name)
                 VARIANT var;
                 var.vt = VT_BSTR;
                 HRESULT res = element->getAttribute(L"value", 0, &var);
-                if (SUCCEEDED(res) && (var.vt != VT_NULL)) {
+                if (SUCCEEDED(res) && (var.vt != VT_nullptr)) {
                     QByteArray typeName;
                     QVariant qtValue = VARIANTToQVariant(var,typeName);
                     return qtValue;
@@ -509,16 +509,16 @@ void QGCGoogleEarthView::initializeGoogleEarth()
 #ifdef _MSC_VER
         QAxObject* doc = webViewWin->querySubObject("Document()");
         //IDispatch* Disp;
-        IDispatch* winDoc = NULL;
-        IHTMLDocument2* document = NULL;
+        IDispatch* winDoc = nullptr;
+        IHTMLDocument2* document = nullptr;
 
         //332C4425-26CB-11D0-B483-00C04FD90119 IHTMLDocument2
         //25336920-03F9-11CF-8FD0-00AA00686F13 HTMLDocument
         doc->queryInterface(QUuid("{332C4425-26CB-11D0-B483-00C04FD90119}"), (void**)(&winDoc));
         if (winDoc) {
-            document = NULL;
+            document = nullptr;
             winDoc->QueryInterface( IID_IHTMLDocument2, (void**)&document );
-            IHTMLWindow2 *window = NULL;
+            IHTMLWindow2 *window = nullptr;
             document->get_parentWindow( &window );
             documentWin = new QAxObject(document, webViewWin);
             jScriptWin = new QAxObject(window, webViewWin);

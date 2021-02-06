@@ -27,7 +27,7 @@ extern "C" {
 
 AudioOutput::AudioOutput(QString voice, QObject* parent)
     : QObject(parent),
-      voice(NULL),
+      voice(nullptr),
       voiceIndex(0)
 {
 #if !defined(Q_OS_WIN32) && !defined(Q_OS_MAC)
@@ -113,14 +113,14 @@ bool AudioOutput::stopEmergency()
 void AudioOutput::selectFemaleVoice()
 {
 #if !defined(Q_OS_WIN32) && !defined(Q_OS_MAC)
-    this->voice = register_cmu_us_slt(NULL);
+    this->voice = register_cmu_us_slt(nullptr);
 #endif
 }
 
 void AudioOutput::selectMaleVoice()
 {
 #if !defined(Q_OS_WIN32) && !defined(Q_OS_MAC)
-    this->voice = register_cmu_us_rms(NULL);
+    this->voice = register_cmu_us_rms(nullptr);
 #endif
 }
 
@@ -128,7 +128,7 @@ void AudioOutput::selectMaleVoice()
 void AudioOutput::selectNeutralVoice()
 {
 #if !defined(Q_OS_WIN32) && !defined(Q_OS_MAC)
-    this->voice = register_cmu_us_awb(NULL);
+    this->voice = register_cmu_us_awb(nullptr);
 #endif
 }
 

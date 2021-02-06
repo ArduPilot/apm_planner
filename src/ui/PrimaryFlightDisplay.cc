@@ -123,7 +123,7 @@ const QString PrimaryFlightDisplay::compassWindNames[] = {
 PrimaryFlightDisplay::PrimaryFlightDisplay(int width, int height, QWidget *parent) :
     QWidget(parent),
 
-    uas(NULL),
+    uas(nullptr),
 
     /*
     altimeterMode(GPS_MAIN),
@@ -265,7 +265,7 @@ void PrimaryFlightDisplay::paintEvent(QPaintEvent *event)
 
 void PrimaryFlightDisplay::forgetUAS(UASInterface* uas)
 {
-    if (this->uas != NULL && this->uas == uas) {
+    if (this->uas != nullptr && this->uas == uas) {
         // Disconnect any previously connected active MAV
         disconnect(this->uas, SIGNAL(attitudeChanged(UASInterface*,double,double,double,quint64)),
                    this, SLOT(updateAttitude(UASInterface*, double, double, double, quint64)));

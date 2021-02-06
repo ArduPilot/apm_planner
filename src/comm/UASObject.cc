@@ -8,10 +8,10 @@
 #include <QMetaType>
 
 UASObject::UASObject(QObject *parent) : QObject(parent),
-  m_vehicleOverview(NULL),
-  m_relPositionOverview(NULL),
-  m_absPositionOverview(NULL),
-  m_missionOverview(NULL)
+  m_vehicleOverview(nullptr),
+  m_relPositionOverview(nullptr),
+  m_absPositionOverview(nullptr),
+  m_missionOverview(nullptr)
 {
     m_vehicleOverview = new VehicleOverview(this);
     m_relPositionOverview = new RelPositionOverview(this);
@@ -22,13 +22,13 @@ UASObject::UASObject(QObject *parent) : QObject(parent),
 UASObject::~UASObject()
 {
     delete m_vehicleOverview;
-    m_vehicleOverview = NULL;
+    m_vehicleOverview = nullptr;
     delete m_relPositionOverview;
-    m_relPositionOverview = NULL;
+    m_relPositionOverview = nullptr;
     delete m_absPositionOverview;
-    m_absPositionOverview = NULL;
+    m_absPositionOverview = nullptr;
     delete m_missionOverview;
-    m_missionOverview = NULL;
+    m_missionOverview = nullptr;
 }
 
 VehicleOverview* UASObject::getVehicleOverview()

@@ -185,7 +185,7 @@ class LinechartPlot : public QwtPlot
 {
     Q_OBJECT
 public:
-    LinechartPlot(QWidget *parent = NULL, int plotid=0, quint64 interval = LinechartPlot::DEFAULT_PLOT_INTERVAL);
+    LinechartPlot(QWidget *parent = nullptr, int plotid=0, quint64 interval = LinechartPlot::DEFAULT_PLOT_INTERVAL);
     virtual ~LinechartPlot();
 
     void setZeroValue(QString id, double zeroValue);

@@ -82,9 +82,9 @@ QGCVideoWidget::QGCVideoWidget(QWidget* parent)
       vheight(150.0f),
       vGaugeSpacing(50.0f),
       vPitchPerDeg(6.0f), ///< 4 mm y translation per degree)
-      rawBuffer1(NULL),
-      rawBuffer2(NULL),
-      rawImage(NULL),
+      rawBuffer1(nullptr),
+      rawBuffer2(nullptr),
+      rawImage(nullptr),
       rawLastIndex(0),
       rawExpectedBytes(0),
       bytesPerLine(1),
@@ -135,8 +135,8 @@ QGCVideoWidget::QGCVideoWidget(QWidget* parent)
       xImageFactor(1.0),
       yImageFactor(1.0),
       imageRequested(false),
-      flowFieldX(NULL),
-      flowFieldY(NULL),
+      flowFieldX(nullptr),
+      flowFieldY(nullptr),
       flowWidth(0),
       flowHeight(0)
 {
@@ -1131,7 +1131,7 @@ void QGCVideoWidget::resizeGL(int w, int h)
 void QGCVideoWidget::commitRawDataToGL()
 {
     qDebug() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
-    if (image != NULL) {
+    if (image != nullptr) {
         QImage::Format format = image->format();
         QImage* newImage = new QImage(rawImage, receivedWidth, receivedHeight, format);
         if (format == QImage::Format_Indexed8) {

@@ -47,7 +47,7 @@ This file is part of the QGROUNDCONTROL project
 #include <qmath.h>
 
 HSIDisplay::HSIDisplay(QWidget *parent) :
-    HDDisplay(NULL, "HSI", parent),
+    HDDisplay(nullptr, "HSI", parent),
     dragStarted(false),
     leftDragStarted(false),
     mouseHasMoved(false),
@@ -165,7 +165,7 @@ HSIDisplay::HSIDisplay(QWidget *parent) :
     xCenterPos = vwidth/2.0f;
     yCenterPos = vheight/2.0f + topMargin - bottomMargin;
 
-    uas = NULL;
+    uas = nullptr;
     resetMAVState();
 
     // Do first update
@@ -859,7 +859,7 @@ void HSIDisplay::setActiveUAS(UASInterface* uas)
     if (!uas)
         return;
 
-    if (this->uas != NULL) {
+    if (this->uas != nullptr) {
         disconnect(this->uas, SIGNAL(gpsSatelliteStatusChanged(int,int,float,float,float,bool)), this, SLOT(updateSatellite(int,int,float,float,float,bool)));
         disconnect(this->uas, SIGNAL(localPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(updateLocalPosition(UASInterface*,double,double,double,quint64)));
         disconnect(this->uas, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)), this, SLOT(updateGlobalPosition(UASInterface*,double,double,double,quint64)));

@@ -124,31 +124,31 @@ GAudioOutput::GAudioOutput(QObject* parent) : QObject(parent),
 
 #ifdef Q_OS_MAC
     m_speech_channel = new SpeechChannel;
-    OSErr theErr = NewSpeechChannel(NULL, m_speech_channel);
+    OSErr theErr = NewSpeechChannel(nullptr, m_speech_channel);
     if (theErr != noErr)
     {
         QLOG_WARN() << "Creating speech channel failed!";
         delete m_speech_channel;
-        m_speech_channel = NULL;
+        m_speech_channel = nullptr;
     }
 #endif
 
 #if _MSC_VER2
 
-    ISpVoice * pVoice = NULL;
-    if (FAILED(::CoInitialize(NULL)))
+    ISpVoice * pVoice = nullptr;
+    if (FAILED(::CoInitialize(nullptr)))
     {
         QLOG_WARN() << "Creating COM object for audio output failed!";
     }
     else
     {
 
-        HRESULT hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice;);
+        HRESULT hr = CoCreateInstance(CLSID_SpVoice, nullptr, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice;);
         if( SUCCEEDED( hr ) )
         {
-            hr = pVoice->Speak(L"Hello world", 0, NULL);
+            hr = pVoice->Speak(L"Hello world", 0, nullptr);
             pVoice->Release();
-            pVoice = NULL;
+            pVoice = nullptr;
         }
     }
 #endif
@@ -181,7 +181,7 @@ GAudioOutput::~GAudioOutput()
         DisposeSpeechChannel(*m_speech_channel);
     };
     delete m_speech_channel;
-    m_speech_channel = NULL;
+    m_speech_channel = nullptr;
 #endif
 //#ifdef _MSC_VER2
 // ::CoUninitialize();
@@ -239,7 +239,7 @@ bool GAudioOutput::say(QString text, int severity)
                 if (file.open(QIODevice::ReadWrite))
                 {
                     QLOG_INFO() << file.fileName() << " file not exist, create a new one";
-                    cst_voice *v = register_cmu_us_kal(NULL);
+                    cst_voice *v = register_cmu_us_kal(nullptr);
                     cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
                     cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
                     file.close();
@@ -261,7 +261,7 @@ bool GAudioOutput::say(QString text, int severity)
 #ifdef Q_OS_MAC
             if(m_speech_channel)
             {
-                SpeakCFString(*m_speech_channel, text.toCFString(), NULL);
+                SpeakCFString(*m_speech_channel, text.toCFString(), nullptr);
             }
             res = true;
 #endif
@@ -369,14 +369,14 @@ void GAudioOutput::beep()
 void GAudioOutput::selectFemaleVoice()
 {
 #ifdef Q_OS_LINUX
-    //this->voice = register_cmu_us_slt(NULL);
+    //this->voice = register_cmu_us_slt(nullptr);
 #endif
 }
 
 void GAudioOutput::selectMaleVoice()
 {
 #ifdef Q_OS_LINUX
-    //this->voice = register_cmu_us_rms(NULL);
+    //this->voice = register_cmu_us_rms(nullptr);
 #endif
 }
 
@@ -384,7 +384,7 @@ void GAudioOutput::selectMaleVoice()
 void GAudioOutput::selectNeutralVoice()
 {
 #ifdef Q_OS_LINUX
-    this->voice = register_cmu_us_awb(NULL);
+    this->voice = register_cmu_us_awb(nullptr);
 #endif
 }*/
 

@@ -92,7 +92,7 @@ void ParamCompareDialog::dialogRejected()
     QLOG_DEBUG() << "Dialog Rejected:" << dialog;
     if (dialog){
         dialog->deleteLater();
-        dialog = NULL;
+        dialog = nullptr;
     }
 
 }
@@ -155,7 +155,7 @@ void ParamCompareDialog::loadParameterFile(const QString &filename)
 }
 
 void ParamCompareDialog::populateParamListFromString(QString paramString, QMap<QString, UASParameter*>* list,
-                                                     QWidget* widget = NULL)
+                                                     QWidget* widget = nullptr)
 {
     QStringList paramSplit = paramString.split(QGC::paramLineSplitRegExp());
     bool summaryComplete = false;
@@ -210,7 +210,7 @@ void ParamCompareDialog::compareLists()
 
         UASParameter* currentParam = m_currentList->value(keys[count]);
 
-        if (currentParam != NULL){
+        if (currentParam != nullptr){
             UASParameter* newParam = m_newList->value(keys[count]);
 
             if ( !paramCompareEqual(currentParam->value(), newParam->value()) ){

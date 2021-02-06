@@ -180,7 +180,7 @@ MainWindow::MainWindow(QWidget *parent):
     centerStackActionGroup(new QActionGroup(this)),
     styleFileName(QCoreApplication::applicationDirPath() + "/style-outdoor.css"),
     m_heartbeatEnabled(true),
-    m_terminalDialog(NULL)
+    m_terminalDialog(nullptr)
 {
     QLOG_DEBUG() << "Creating MainWindow";
     this->setAttribute(Qt::WA_DeleteOnClose);
@@ -419,14 +419,14 @@ MainWindow::~MainWindow()
         QLOG_DEBUG() << "Delete JoystickWidget";
 
         delete joystickWidget;
-        joystickWidget = NULL;
+        joystickWidget = nullptr;
     }
     if (joystick)
     {
         joystick->shutdown();
         joystick->wait(5000);
         delete joystick;
-        joystick = NULL;
+        joystick = nullptr;
     }
 
     // Get and delete all dockwidgets and contained
@@ -445,14 +445,14 @@ MainWindow::~MainWindow()
             // delete dockWidget->widget();
             QLOG_DEBUG() << "Delete DockWidget " << dockWidget;
             delete dockWidget;
-            dockWidget = NULL;
+            dockWidget = nullptr;
         }
         else if (dynamic_cast<QWidget*>(*i)) // [ToDo] Stability
         {
             QWidget* widget = dynamic_cast<QWidget*>(*i);
             QLOG_DEBUG() << "Delete Widget " << widget;
             delete widget;
-            *i = NULL;
+            *i = nullptr;
         }
     }
     // Delete all UAS objects
@@ -640,7 +640,7 @@ void MainWindow::buildCommonWidgets()
         connect(ui.actionAdvanced_Mode, SIGNAL(toggled(bool)), apsw, SLOT(advModeChanged(bool)));
     }
 
-     AP2DataPlot2D *plot = NULL;
+     AP2DataPlot2D *plot = nullptr;
     if (!engineeringView)
     {
         engineeringView = new SubMainWindow(this);
@@ -2450,7 +2450,7 @@ void MainWindow::showAbout()
     dialog->exec();
     dialog->hide();
     delete dialog;
-    dialog = NULL;
+    dialog = nullptr;
 }
 
 void MainWindow::showAutoUpdateDownloadDialog(QString version, QString releaseType, QString url, QString name)
@@ -2469,7 +2469,7 @@ void MainWindow::autoUpdateCancelled(QString version)
     m_autoUpdateCheck.setSkipVersion(version);
 
     delete m_dialog;
-    m_dialog = NULL;
+    m_dialog = nullptr;
 }
 
 void MainWindow::showNoUpdateAvailDialog()
@@ -2491,8 +2491,8 @@ void MainWindow::enableHeartbeat(bool enabled)
 
 void MainWindow::showTerminalConsole()
 {
-    if(m_terminalDialog == NULL){
-        m_terminalDialog = new QDialog(NULL);
+    if(m_terminalDialog == nullptr){
+        m_terminalDialog = new QDialog(nullptr);
         TerminalConsole *terminalConsole = new TerminalConsole(this);
         QVBoxLayout* vLayout = new QVBoxLayout(m_terminalDialog);
         vLayout->setMargin(0);
@@ -2512,6 +2512,6 @@ void MainWindow::closeTerminalConsole()
     if (m_terminalDialog){
         m_terminalDialog->close();
         m_terminalDialog->deleteLater();
-        m_terminalDialog = NULL;
+        m_terminalDialog = nullptr;
     }
 }

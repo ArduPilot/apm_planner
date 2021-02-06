@@ -68,7 +68,7 @@ class QuaZipPrivate {
         q(q),
       fileNameCodec(QTextCodec::codecForLocale()),
       commentCodec(QTextCodec::codecForLocale()),
-      ioDevice(NULL),
+      ioDevice(nullptr),
       mode(QuaZip::mdNotOpen),
       hasCurrentFile_f(false),
       zipError(UNZ_OK),
@@ -79,7 +79,7 @@ class QuaZipPrivate {
       fileNameCodec(QTextCodec::codecForLocale()),
       commentCodec(QTextCodec::codecForLocale()),
       zipName(zipName),
-      ioDevice(NULL),
+      ioDevice(nullptr),
       mode(QuaZip::mdNotOpen),
       hasCurrentFile_f(false),
       zipError(UNZ_OK),
@@ -129,7 +129,7 @@ bool QuaZip::open(Mode mode, zlib_filefunc_def* ioApi)
     return false;
   }
   QIODevice *ioDevice = p->ioDevice;
-  if (ioDevice == NULL) {
+  if (ioDevice == nullptr) {
     if (p->zipName.isEmpty()) {
       qWarning("QuaZip::open(): set either ZIP file name or IO device first");
       return false;
@@ -140,7 +140,7 @@ bool QuaZip::open(Mode mode, zlib_filefunc_def* ioApi)
   switch(mode) {
     case mdUnzip:
       p->unzFile_f=unzOpen2(ioDevice, ioApi);
-      if(p->unzFile_f!=NULL) {
+      if(p->unzFile_f!=nullptr) {
         p->mode=mode;
         p->ioDevice = ioDevice;
         return true;
@@ -157,9 +157,9 @@ bool QuaZip::open(Mode mode, zlib_filefunc_def* ioApi)
           mode==mdCreate?APPEND_STATUS_CREATE:
           mode==mdAppend?APPEND_STATUS_CREATEAFTER:
           APPEND_STATUS_ADDINZIP,
-          NULL,
+          nullptr,
           ioApi);
-      if(p->zipFile_f!=NULL) {
+      if(p->zipFile_f!=nullptr) {
         p->mode=mode;
         p->ioDevice = ioDevice;
         return true;
@@ -192,7 +192,7 @@ void QuaZip::close()
     case mdAppend:
     case mdAdd:
       p->zipError=zipClose(p->zipFile_f, 
-          p->comment.isNull() ? NULL
+          p->comment.isNull() ? nullptr
           : p->commentCodec->fromUnicode(p->comment).constData());
       break;
     default:
@@ -202,7 +202,7 @@ void QuaZip::close()
   // opened by name, need to delete the internal IO device
   if (!p->zipName.isEmpty()) {
       delete p->ioDevice;
-      p->ioDevice = NULL;
+      p->ioDevice = nullptr;
   }
   if(p->zipError==UNZ_OK)
     p->mode=mdNotOpen;
@@ -215,7 +215,7 @@ void QuaZip::setZipName(const QString& zipName)
     return;
   }
   p->zipName=zipName;
-  p->ioDevice = NULL;
+  p->ioDevice = nullptr;
 }
 
 void QuaZip::setIoDevice(QIODevice *ioDevice)
@@ -273,7 +273,7 @@ bool QuaZip::setCurrentFile(const QString& fileName, CaseSensitivity cs)
     return true;
   }
   // Unicode-aware reimplementation of the unzLocateFile function
-  if(p->unzFile_f==NULL) {
+  if(p->unzFile_f==nullptr) {
     p->zipError=UNZ_PARAMERROR;
     return false;
   }
@@ -335,14 +335,14 @@ bool QuaZip::getCurrentFileInfo(QuaZipFileInfo *info)const
   QByteArray fileName;
   QByteArray extra;
   QByteArray comment;
-  if(info==NULL) return false;
+  if(info==nullptr) return false;
   if(!isOpen()||!hasCurrentFile()) return false;
-  if((fakeThis->p->zipError=unzGetCurrentFileInfo(p->unzFile_f, &info_z, NULL, 0, NULL, 0, NULL, 0))!=UNZ_OK)
+  if((fakeThis->p->zipError=unzGetCurrentFileInfo(p->unzFile_f, &info_z, nullptr, 0, nullptr, 0, nullptr, 0))!=UNZ_OK)
     return false;
   fileName.resize(info_z.size_filename);
   extra.resize(info_z.size_file_extra);
   comment.resize(info_z.size_file_comment);
-  if((fakeThis->p->zipError=unzGetCurrentFileInfo(p->unzFile_f, NULL,
+  if((fakeThis->p->zipError=unzGetCurrentFileInfo(p->unzFile_f, nullptr,
       fileName.data(), fileName.size(),
       extra.data(), extra.size(),
       comment.data(), comment.size()))!=UNZ_OK)
@@ -376,8 +376,8 @@ QString QuaZip::getCurrentFileName()const
   }
   if(!isOpen()||!hasCurrentFile()) return QString();
   QByteArray fileName(MAX_FILE_NAME_LENGTH, 0);
-  if((fakeThis->p->zipError=unzGetCurrentFileInfo(p->unzFile_f, NULL, fileName.data(), fileName.size(),
-      NULL, 0, NULL, 0))!=UNZ_OK)
+  if((fakeThis->p->zipError=unzGetCurrentFileInfo(p->unzFile_f, nullptr, fileName.data(), fileName.size(),
+      nullptr, 0, nullptr, 0))!=UNZ_OK)
     return QString();
   return p->fileNameCodec->toUnicode(fileName.constData());
 }
@@ -420,7 +420,7 @@ QString QuaZip::getZipName() const
 QIODevice *QuaZip::getIoDevice() const
 {
   if (!p->zipName.isEmpty()) // opened by name, using an internal QIODevice
-    return NULL;
+    return nullptr;
   return p->ioDevice;
 }
 

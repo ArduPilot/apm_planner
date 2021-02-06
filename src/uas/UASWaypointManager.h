@@ -70,7 +70,7 @@ private:
     }; ///< The possible states for the waypoint protocol
 
 public:
-    UASWaypointManager(UAS* uas=NULL);   ///< Standard constructor
+    UASWaypointManager(UAS* uas=nullptr);   ///< Standard constructor
     ~UASWaypointManager();
     bool guidedModeSupported();
 
@@ -107,7 +107,7 @@ public:
     const QList<Waypoint *> getGlobalFrameWaypointList();  ///< Returns a global waypoint list
     const QList<Waypoint *> getGlobalFrameAndNavTypeWaypointList(bool onlypath); ///< Returns a global waypoint list containing only waypoints suitable for navigation. Actions and other mission items are filtered out.
     const QList<Waypoint *> getNavTypeWaypointList(); ///< Returns a waypoint list containing only waypoints suitable for navigation. Actions and other mission items are filtered out.
-    const Waypoint* getWaypoint(int index);     ///< Returns the waypoint at index, or NULL if not valid.
+    const Waypoint* getWaypoint(int index);     ///< Returns the waypoint at index, or nullptr if not valid.
     int getIndexOf(Waypoint* wp);                   ///< Get the index of a waypoint in the list
     int getGlobalFrameIndexOf(Waypoint* wp);    ///< Get the index of a waypoint in the list, counting only global waypoints
     int getGlobalFrameAndNavTypeIndexOf(Waypoint* wp); ///< Get the index of a waypoint in the list, counting only global AND navigation mode waypoints

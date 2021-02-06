@@ -60,7 +60,7 @@ public:
         NHands
     };
 
-    explicit QwtAnalogClock(QWidget* parent = NULL);
+    explicit QwtAnalogClock(QWidget* parent = nullptr);
 #if QT_VERSION < 0x040000
     explicit QwtAnalogClock(QWidget* parent, const char *name);
 #endif

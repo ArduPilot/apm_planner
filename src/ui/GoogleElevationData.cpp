@@ -31,7 +31,7 @@ This file is part of the APM_PLANNER project
 
 GoogleElevationData::GoogleElevationData(QObject *parent) :
     QObject(parent),
-    m_networkReply(NULL),
+    m_networkReply(nullptr),
     m_httpRequestAborted(false)
 {
 }
@@ -52,14 +52,14 @@ void GoogleElevationData::httpFinished()
     QLOG_DEBUG() << "GoogleElevationData::httpFinished()";
     if (m_httpRequestAborted) {
         m_networkReply->deleteLater();
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
         return;
     }
 
     // Finished donwloading the elevation information
     if (m_networkReply->error()) {
         // cleanup download failed
-        QMessageBox::information(NULL, tr("HTTP"),
+        QMessageBox::information(nullptr, tr("HTTP"),
                                  tr("Download failed: %1.")
                                  .arg(m_networkReply->errorString()));
     } else {
@@ -68,7 +68,7 @@ void GoogleElevationData::httpFinished()
     }
 
     m_networkReply->deleteLater();
-    m_networkReply = NULL;
+    m_networkReply = nullptr;
 }
 
 void GoogleElevationData::httpReadyRead()
@@ -119,9 +119,9 @@ void GoogleElevationData::requestElevationData(const QList<Waypoint *> &waypoint
     m_url.setQuery(q);
     QLOG_DEBUG() << "elevation query :" << m_url;
 
-    if (m_networkReply != NULL){
+    if (m_networkReply != nullptr){
         delete m_networkReply;
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
     }
     m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpFinished()));

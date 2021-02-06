@@ -33,7 +33,7 @@ AutoUpdateDialog::AutoUpdateDialog(const QString &version, const QString &target
     ui(new Ui::AutoUpdateDialog),
     m_sourceUrl(url),
     m_targetFilename(targetFilename),
-    m_networkReply(NULL),
+    m_networkReply(nullptr),
     m_skipVersion(false),
     m_skipVersionString(version)
 {
@@ -99,7 +99,7 @@ bool AutoUpdateDialog::startDownload(const QString& url, const QString& filename
                                  tr("Unable to save the file %1: %2.")
                                  .arg(filename).arg(m_targetFile->errorString()));
         delete m_targetFile;
-        m_targetFile = NULL;
+        m_targetFile = nullptr;
         return false;
     }
 
@@ -119,9 +119,9 @@ void AutoUpdateDialog::startFileDownloadRequest(QUrl url)
     ui->questionLabel->setText(tr(""));
     ui->statusLabel->setText(tr("Downloading %1").arg(m_targetFilename));
     m_httpRequestAborted = false;
-    if (m_networkReply != NULL){
+    if (m_networkReply != nullptr){
         delete m_networkReply;
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
     }
     m_networkReply = m_networkAccessManager.get(QNetworkRequest(url));
     connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpFinished()));
@@ -146,7 +146,7 @@ void AutoUpdateDialog::httpFinished()
              m_targetFile->close();
              m_targetFile->remove();
              delete m_targetFile;
-             m_targetFile = NULL;
+             m_targetFile = nullptr;
          }
          m_networkReply->deleteLater();
         return;
@@ -181,7 +181,7 @@ void AutoUpdateDialog::httpFinished()
      }
 
      m_networkReply->deleteLater();
-     m_networkReply = NULL;
+     m_networkReply = nullptr;
 
      if (!result){
          ui->titleLabel->setText(tr("<html><head/><body><p><span style=\" font-size:18pt; font-weight:600;\">Download Failed</span></p></body></html>"));
@@ -202,7 +202,7 @@ void AutoUpdateDialog::httpFinished()
 
      this->raise();
      delete m_targetFile;
-     m_targetFile = NULL;
+     m_targetFile = nullptr;
 }
 
 void AutoUpdateDialog::executeDownloadedFile()

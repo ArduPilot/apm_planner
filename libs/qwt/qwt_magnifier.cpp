@@ -319,7 +319,7 @@ bool QwtMagnifier::eventFilter(QObject *o, QEvent *e)
 */
 void QwtMagnifier::widgetMousePressEvent(QMouseEvent *me)
 {
-    if ( me->button() != d_data->mouseButton || parentWidget() == NULL )
+    if ( me->button() != d_data->mouseButton || parentWidget() == nullptr )
         return;
 
 #if QT_VERSION < 0x040000
@@ -451,7 +451,7 @@ QWidget *QwtMagnifier::parentWidget()
     if ( parent()->inherits("QWidget") )
         return (QWidget *)parent();
 
-    return NULL;
+    return nullptr;
 }
 
 const QWidget *QwtMagnifier::parentWidget() const
@@ -459,6 +459,6 @@ const QWidget *QwtMagnifier::parentWidget() const
     if ( parent()->inherits("QWidget") )
         return (const QWidget *)parent();
 
-    return NULL;
+    return nullptr;
 }
 

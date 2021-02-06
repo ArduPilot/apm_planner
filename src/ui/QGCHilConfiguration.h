@@ -1,4 +1,4 @@
-#ifndef QGCHILCONFIGURATION_H
+   #ifndef QGCHILCONFIGURATION_H
 #define QGCHILCONFIGURATION_H
 
 #include <QWidget>

@@ -8,7 +8,7 @@
 QGCCommandButton::QGCCommandButton(QWidget *parent) :
     QGCToolWidgetItem("Command Button", parent),
     ui(new Ui::QGCCommandButton),
-    uas(NULL)
+    uas(nullptr)
 {
     ui->setupUi(this);
 

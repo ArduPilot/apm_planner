@@ -115,7 +115,7 @@ private:
 
 
     int getStatusTextPos();
-    void plotTextArrow(double index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = NULL);
+    void plotTextArrow(double index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = nullptr);
 
     /**
      * @brief This method hides or shows the text arrows of type
@@ -149,7 +149,7 @@ private:
         QList<QCPAbstractItem*> itemList;
         QMap<double,QString> messageMap;
 
-        Graph() : isManualRange(false), isInGroup(false), axisIndex(0), axis(NULL), graph(NULL){}
+        Graph() : isManualRange(false), isInGroup(false), axisIndex(0), axis(nullptr), graph(nullptr){}
     };
 
     QMap<QString,Graph> m_graphClassMap;

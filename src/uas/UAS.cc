@@ -146,7 +146,7 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
 
 
     paramsOnceRequested(false),
-    paramManager(NULL),
+    paramManager(nullptr),
 
     simulation(0),
 
@@ -2988,7 +2988,7 @@ void UAS::setManualControlCommands(double roll, double pitch, double yaw, double
             && (! manualControl))
     {
         const QMap<QString, QVariant>* params = parameters[uasId];
-        if (params == NULL
+        if (params == nullptr
                 || ! params->contains("RCMAP_ROLL")
                 || ! params->contains("RCMAP_PITCH")
                 || ! params->contains("RCMAP_YAW")

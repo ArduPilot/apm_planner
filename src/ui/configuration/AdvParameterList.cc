@@ -46,7 +46,7 @@ AdvParameterList::AdvParameterList(QWidget *parent) : AP2ConfigWidget(parent),
     m_writingParams(false),
     m_paramsWritten(0),
     m_paramsToWrite(0),
-    m_fileDialog(NULL)
+    m_fileDialog(nullptr)
 {
     ui.setupUi(this);
     connect(ui.refreshPushButton, SIGNAL(clicked()),this, SLOT(refreshButtonClicked()));
@@ -172,7 +172,7 @@ void AdvParameterList::writeButtonClicked()
 AdvParameterList::~AdvParameterList()
 {
     delete m_fileDialog;
-    m_fileDialog = NULL;
+    m_fileDialog = nullptr;
 }
 
 void AdvParameterList::refreshButtonClicked()
@@ -270,7 +270,7 @@ void AdvParameterList::dialogRejected()
     QLOG_DEBUG() << "Dialog Rejected:" << dialog;
     if (dialog){
         dialog->deleteLater();
-        dialog = NULL;
+        dialog = nullptr;
     }
 
 }
@@ -340,7 +340,7 @@ void AdvParameterList::saveDialogAccepted()
     file.close();
 
     dialog->deleteLater(); // cleanup dialog instance
-    dialog = NULL;
+    dialog = nullptr;
 }
 
 void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString parameterName, QVariant value)
@@ -503,7 +503,7 @@ void AdvParameterList::downloadRemoteFiles()
         QTimer::singleShot(300, this, SLOT(compareButtonClicked()));
     }
     dialog->deleteLater();
-    dialog = NULL;
+    dialog = nullptr;
 }
 
 void AdvParameterList::updateTableWidgetElements(QMap<QString, UASParameter *> &parameterList)
@@ -536,7 +536,7 @@ void AdvParameterList::compareButtonClicked()
     }
     m_paramFileToCompare = ""; // clear any previous filenames
     dialog->deleteLater();
-    dialog = NULL;
+    dialog = nullptr;
 }
 
 void AdvParameterList::findStringInTable(const QString &searchString)

@@ -216,10 +216,10 @@ int QwtAbstractScale::scaleMaxMajor() const
 */
 void QwtAbstractScale::setAbstractScaleDraw(QwtAbstractScaleDraw *scaleDraw)
 {
-    if ( scaleDraw == NULL || scaleDraw == d_data->scaleDraw )
+    if ( scaleDraw == nullptr || scaleDraw == d_data->scaleDraw )
         return;
 
-    if ( d_data->scaleDraw != NULL )
+    if ( d_data->scaleDraw != nullptr )
         scaleDraw->setScaleDiv(d_data->scaleDraw->scaleDiv());
 
     delete d_data->scaleDraw;
@@ -261,7 +261,7 @@ void QwtAbstractScale::updateScaleDraw()
 */
 void QwtAbstractScale::setScaleEngine(QwtScaleEngine *scaleEngine)
 {
-    if ( scaleEngine != NULL && scaleEngine != d_data->scaleEngine ) {
+    if ( scaleEngine != nullptr && scaleEngine != d_data->scaleEngine ) {
         delete d_data->scaleEngine;
         d_data->scaleEngine = scaleEngine;
     }

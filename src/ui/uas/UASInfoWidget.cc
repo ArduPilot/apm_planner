@@ -45,7 +45,7 @@ UASInfoWidget::UASInfoWidget(QWidget *parent, QString name) : QWidget(parent)
 {
     ui.setupUi(this);
     this->name = name;
-    activeUAS = NULL;
+    activeUAS = nullptr;
 
     connect(UASManager::instance(), SIGNAL(activeUASSet(UASInterface*)), this, SLOT(setActiveUAS(UASInterface*)));
     setActiveUAS(UASManager::instance()->getActiveUAS());
@@ -95,7 +95,7 @@ void UASInfoWidget::hideEvent(QHideEvent* event)
 
 void UASInfoWidget::addUAS(UASInterface* uas)
 {
-    if (uas != NULL) {
+    if (uas != nullptr) {
         connect(uas, SIGNAL(batteryChanged(UASInterface*, double, double, double, int)), this, SLOT(updateBattery(UASInterface*, double, double, double, int)));
         connect(uas, SIGNAL(dropRateChanged(int,float)), this, SLOT(updateReceiveLoss(int,float)));
         connect(uas, SIGNAL(loadChanged(UASInterface*, double)), this, SLOT(updateCPULoad(UASInterface*,double)));

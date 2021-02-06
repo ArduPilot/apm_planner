@@ -45,7 +45,7 @@ ObjectDetectionView::ObjectDetectionView(QString folder, QWidget *parent) :
     patternList(),
     letterList(),
     letterTimer(),
-    uas(NULL),
+    uas(nullptr),
     patternFolder(folder),
     separator(" "),
     m_ui(new Ui::ObjectDetectionView)
@@ -77,7 +77,7 @@ void ObjectDetectionView::changeEvent(QEvent *e)
 
 void ObjectDetectionView::setUAS(UASInterface* uas)
 {
-    if (this->uas != NULL) {
+    if (this->uas != nullptr) {
         disconnect(this->uas, SIGNAL(patternDetected(int, QString, float, bool)), this, SLOT(newPattern(int, QString, float, bool)));
         disconnect(this->uas, SIGNAL(letterDetected(int, QString, float, bool)), this, SLOT(newLetter(int, QString, float, bool)));
     }

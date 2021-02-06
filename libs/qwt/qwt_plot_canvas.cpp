@@ -31,7 +31,7 @@ public:
     PrivateData():
         focusIndicator(NoFocusIndicator),
         paintAttributes(0),
-        cache(NULL) {
+        cache(nullptr) {
     }
 
     ~PrivateData() {
@@ -82,7 +82,7 @@ QwtPlot *QwtPlotCanvas::plot()
     if ( w && w->inherits("QwtPlot") )
         return (QwtPlot *)w;
 
-    return NULL;
+    return nullptr;
 }
 
 //! Return parent plot widget
@@ -92,7 +92,7 @@ const QwtPlot *QwtPlotCanvas::plot() const
     if ( w && w->inherits("QwtPlot") )
         return (QwtPlot *)w;
 
-    return NULL;
+    return nullptr;
 }
 
 /*!
@@ -118,7 +118,7 @@ void QwtPlotCanvas::setPaintAttribute(PaintAttribute attribute, bool on)
     switch(attribute) {
     case PaintCached: {
         if ( on ) {
-            if ( d_data->cache == NULL )
+            if ( d_data->cache == nullptr )
                 d_data->cache = new QPixmap();
 
             if ( isVisible() ) {
@@ -128,7 +128,7 @@ void QwtPlotCanvas::setPaintAttribute(PaintAttribute attribute, bool on)
             }
         } else {
             delete d_data->cache;
-            d_data->cache = NULL;
+            d_data->cache = nullptr;
         }
         break;
     }

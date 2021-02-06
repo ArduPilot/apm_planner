@@ -141,7 +141,7 @@ void FrameTypeConfig::paramButtonClicked()
         QTimer::singleShot(300, this, SLOT(activateCompareDialog()));
     }
     delete dialog;
-    dialog = NULL;
+    dialog = nullptr;
 }
 
 void FrameTypeConfig::activateCompareDialog()
@@ -161,7 +161,7 @@ void FrameTypeConfig::activateCompareDialog()
         }
     }
     delete dialog;
-    dialog = NULL;
+    dialog = nullptr;
 }
 
 

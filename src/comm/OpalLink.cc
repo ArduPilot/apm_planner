@@ -39,7 +39,7 @@ OpalLink::OpalLink() :
     receiveBuffer(new QQueue<QByteArray>()),
     systemID(1),
     componentID(1),
-    params(NULL),
+    params(nullptr),
     opalInstID(101),
     sendRCValues(false),
     sendRawController(false),

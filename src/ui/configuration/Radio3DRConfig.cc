@@ -36,7 +36,7 @@ This file is part of the APM_PLANNER project
 #include <QMessageBox>
 
 Radio3DRConfig::Radio3DRConfig(QWidget *parent) : QWidget(parent),
-    m_radioSettings(NULL),
+    m_radioSettings(nullptr),
     m_state(none)
 {
     ui.setupUi(this);
@@ -264,7 +264,7 @@ void Radio3DRConfig::readRadioSettings()
 {
     QLOG_INFO() << "read 3DR Radio Settings";
 
-    if (m_radioSettings == NULL) {
+    if (m_radioSettings == nullptr) {
         m_radioSettings = new Radio3DRSettings(this);
         connect(m_radioSettings, SIGNAL(localReadComplete(Radio3DREeprom&, bool)),
                 this, SLOT(localReadComplete(Radio3DREeprom&, bool)));
@@ -478,7 +478,7 @@ void Radio3DRConfig::writeLocalRadioSettings()
 {
     QLOG_INFO() << "save 3DR Local Radio Settings";
 
-    if(m_radioSettings == NULL){
+    if(m_radioSettings == nullptr){
         QMessageBox::critical(this, tr("Radio Config"), tr("Please Load Settings before attempting to change them"));
         return;
     }
@@ -509,7 +509,7 @@ void Radio3DRConfig::writeRemoteRadioSettings()
 {
     QLOG_INFO() << "save 3DR Remote Radio Settings";
 
-    if(m_radioSettings == NULL){
+    if(m_radioSettings == nullptr){
         QMessageBox::critical(this, tr("Radio Config"), tr("Please Load Settings before attempting to change them"));
         return;
     }
@@ -545,7 +545,7 @@ void Radio3DRConfig::writeRemoteRadioSettings()
 void Radio3DRConfig::copyLocalSettingsToRemote()
 {
     QLOG_INFO() << "Copy 3DR Local Radio Settings to remote";
-    if(m_radioSettings == NULL){
+    if(m_radioSettings == nullptr){
         QMessageBox::critical(this, tr("Radio Config"), tr("Please Load Settings before attempting to change them"));
         return;
     }

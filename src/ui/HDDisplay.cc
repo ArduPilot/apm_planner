@@ -30,7 +30,7 @@
 
 HDDisplay::HDDisplay(QStringList* plotList, QString title, QWidget *parent) :
     QGraphicsView(parent),
-    uas(NULL),
+    uas(nullptr),
     xCenterOffset(0.0f),
     yCenterOffset(0.0f),
     vwidth(80.0f),
@@ -53,7 +53,7 @@ HDDisplay::HDDisplay(QStringList* plotList, QString title, QWidget *parent) :
     lastPaintTime(0),
     columns(3),
     valuesChanged(true),
-    m_ui(NULL)
+    m_ui(nullptr)
 {
     setWindowTitle(title);
     //m_ui->setupUi(this);
@@ -484,7 +484,7 @@ void HDDisplay::setActiveUAS(UASInterface* uas)
     if (!uas)
         return;
     // Disconnect any previously connected active UAS
-    if (this->uas != NULL) {
+    if (this->uas != nullptr) {
         removeSource(this->uas);
     }
 

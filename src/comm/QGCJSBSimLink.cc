@@ -42,8 +42,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QHostInfo>
 
 QGCJSBSimLink::QGCJSBSimLink(UASInterface* mav, QString startupArguments, QString remoteHost, QHostAddress host, quint16 port) :
-    socket(NULL),
-    process(NULL),
+    socket(nullptr),
+    process(nullptr),
     startupArguments(startupArguments)
 {
     this->host = host;
@@ -278,13 +278,13 @@ bool QGCJSBSimLink::disconnectSimulation()
     {
         process->close();
         delete process;
-        process = NULL;
+        process = nullptr;
     }
     if (socket)
     {
         socket->close();
         delete socket;
-        socket = NULL;
+        socket = nullptr;
     }
 
     connectState = false;

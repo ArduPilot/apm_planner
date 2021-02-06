@@ -43,7 +43,7 @@ This file is part of the QGROUNDCONTROL project
 
 
 UDPLink::UDPLink(QHostAddress host, quint16 port) :
-    socket(NULL),
+    socket(nullptr),
     connectState(false),
     _shouldRestartConnection(false),
     _running(false)
@@ -106,7 +106,7 @@ void UDPLink::run()
 
         if (!_running) {
             socket->deleteLater();
-            socket = NULL;
+            socket = nullptr;
             connectState = false;
             emit disconnected();
             emit connected(false);

@@ -72,9 +72,9 @@ uint LogDownloadDescriptor::logSize()
 LogDownloadDialog::LogDownloadDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LogDownloadDialog),
-    m_uas(NULL),
-    m_downloadSet(NULL),
-    m_downloadFile(NULL),
+    m_uas(nullptr),
+    m_downloadSet(nullptr),
+    m_downloadFile(nullptr),
     m_downloadID(0),
     m_downloadLastTimestamp(0),
     m_downloadOffset(0),
@@ -114,13 +114,13 @@ void LogDownloadDialog::resetDownload()
 {
     if (m_downloadSet){
         delete m_downloadSet;
-        m_downloadSet = NULL;
+        m_downloadSet = nullptr;
     }
 
     if (m_downloadFile){
         m_downloadFile->close();
         m_downloadFile->deleteLater();
-        m_downloadFile = NULL;
+        m_downloadFile = nullptr;
     }
 
     m_downloadID = 0;
@@ -156,7 +156,7 @@ void LogDownloadDialog::setActiveUAS(UASInterface *uas)
         removeConnections(uas);
     }
 
-    if (uas == NULL)
+    if (uas == nullptr)
         return;
 
     m_uas = uas;
@@ -217,7 +217,7 @@ void LogDownloadDialog::getSelectedLogs()
 
 void LogDownloadDialog::eraseAllLogs()
 {
-   if (m_uas == NULL)
+   if (m_uas == nullptr)
        return;
 
    int button = QMessageBox::critical(this, tr("Erase All Logs"),
@@ -300,7 +300,7 @@ void LogDownloadDialog::logEntry(int uasId, uint32_t time_utc, uint32_t size, ui
                        "id=" << id << " num_logs=" << num_logs << ", last_log_num=" << last_log_num;
     ui->tableWidget->setSortingEnabled(false);
 
-    if (m_uas == NULL)
+    if (m_uas == nullptr)
         return;
 
     LogDownloadDescriptor *logItem = new LogDownloadDescriptor(id, time_utc, size);
@@ -341,11 +341,11 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
     QLOG_DEBUG() << "logData ofs:" << ofs << " id:" << id << " count:" << count
                  /*<< " data:" << data*/;
 #endif
-    if (m_uas == NULL || m_downloadSet == NULL)
+    if (m_uas == nullptr || m_downloadSet == nullptr)
         return;
     if (m_uas->getUASID() != static_cast<int>(uasId))
         return;
-    if(m_downloadFile == NULL){
+    if(m_downloadFile == nullptr){
         QLOG_ERROR() << "No file open to save log info";
         return;
     }
@@ -399,7 +399,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
             m_downloadStart.start();
             m_downloadFile->close();
             delete m_downloadFile;
-            m_downloadFile = NULL;
+            m_downloadFile = nullptr;
             issueDownloadRequest();
             return;
         }
@@ -422,7 +422,7 @@ void LogDownloadDialog::logData(uint32_t uasId, uint32_t ofs, uint16_t id,
 void LogDownloadDialog::processDownloadedLogData()
 {
     // Process incoming log data and trigger next request for more
-    if (m_downloadSet==NULL || m_downloadSet->size() == 0)
+    if (m_downloadSet==nullptr || m_downloadSet->size() == 0)
         return;
 
     uint highest = 0;

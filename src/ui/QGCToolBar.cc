@@ -31,16 +31,16 @@ This file is part of the QGROUNDCONTROL project
 
 QGCToolBar::QGCToolBar(QWidget *parent) :
     QToolBar(parent),
-    mav(NULL),
-    player(NULL),
+    mav(nullptr),
+    player(nullptr),
     changed(true),
     batteryPercent(0),
     batteryVoltage(0),
     wpId(0),
     wpDistance(0),
     systemArmed(false),
-    currentLink(NULL),
-    firstAction(NULL)
+    currentLink(nullptr),
+    firstAction(nullptr)
 {
     setObjectName("QGC_TOOLBAR");
 
@@ -302,8 +302,8 @@ void QGCToolBar::advancedActivityTriggered(QAction* action)
 
 void QGCToolBar::setActiveUAS(UASInterface* active)
 {
-    // Do nothing if system is the same or NULL
-    if ((active == NULL) || mav == active) return;
+    // Do nothing if system is the same or nullptr
+    if ((active == nullptr) || mav == active) return;
 
     if (mav)
     {
@@ -555,7 +555,7 @@ void QGCToolBar::addLink(LinkInterface* link)
 void QGCToolBar::removeLink(LinkInterface* link)
 {
     if (link == currentLink) {
-        currentLink = NULL;
+        currentLink = nullptr;
         //portComboBox->setEnabled(false);
         //portComboBox->clear();
         // XXX magic number

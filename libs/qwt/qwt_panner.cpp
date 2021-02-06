@@ -63,8 +63,8 @@ public:
         abortKey(Qt::Key_Escape),
         abortKeyState(Qt::NoButton),
 #ifndef QT_NO_CURSOR
-        cursor(NULL),
-        restoreCursor(NULL),
+        cursor(nullptr),
+        restoreCursor(nullptr),
         hasCursor(false),
 #endif
         isEnabled(false) {
@@ -327,7 +327,7 @@ void QwtPanner::paintEvent(QPaintEvent *pe)
 */
 bool QwtPanner::eventFilter(QObject *o, QEvent *e)
 {
-    if ( o == NULL || o != parentWidget() )
+    if ( o == nullptr || o != parentWidget() )
         return false;
 
     switch(e->type()) {
@@ -376,7 +376,7 @@ void QwtPanner::widgetMousePressEvent(QMouseEvent *me)
         return;
 
     QWidget *w = parentWidget();
-    if ( w == NULL )
+    if ( w == nullptr )
         return;
 
 #if QT_VERSION < 0x040000
@@ -518,7 +518,7 @@ void QwtPanner::showCursor(bool on)
         return;
 
     QWidget *w = parentWidget();
-    if ( w == NULL || d_data->cursor == NULL )
+    if ( w == nullptr || d_data->cursor == nullptr )
         return;
 
     d_data->hasCursor = on;
@@ -538,7 +538,7 @@ void QwtPanner::showCursor(bool on)
         if ( d_data->restoreCursor ) {
             w->setCursor(*d_data->restoreCursor);
             delete d_data->restoreCursor;
-            d_data->restoreCursor = NULL;
+            d_data->restoreCursor = nullptr;
         } else
             w->unsetCursor();
     }

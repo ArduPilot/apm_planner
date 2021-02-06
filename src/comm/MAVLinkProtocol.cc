@@ -251,7 +251,7 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
     // If the matching UAS object does not yet exist, it has to be created
     // before emitting the packetReceived signal
 
-    Q_ASSERT_X(m_connectionManager != NULL, "MAVLinkProtocol::receiveBytes", " error:m_connectionManager == NULL");
+    Q_ASSERT_X(m_connectionManager != nullptr, "MAVLinkProtocol::receiveBytes", " error:m_connectionManager == nullptr");
     UASInterface* uas = m_connectionManager->getUas(message.sysid);
 
     // Check and (if necessary) create UAS object

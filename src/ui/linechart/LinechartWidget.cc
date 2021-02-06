@@ -57,7 +57,7 @@ This file is part of the PIXHAWK project
 
 LinechartWidget::LinechartWidget(int systemid, QWidget *parent) : QWidget(parent),
     sysid(systemid),
-    activePlot(NULL),
+    activePlot(nullptr),
     curvesLock(new QReadWriteLock()),
     plotWindowLock(),
     curveListIndex(0),
@@ -154,9 +154,9 @@ LinechartWidget::~LinechartWidget()
     writeSettings();
     stopLogging();
     if (activePlot) delete activePlot;
-    activePlot = NULL;
+    activePlot = nullptr;
     delete listedCurves;
-    listedCurves = NULL;
+    listedCurves = nullptr;
 }
 
 void LinechartWidget::selectActiveSystem(int mav)
@@ -340,7 +340,7 @@ void LinechartWidget::appendData(int uasId, const QString& curve, const QString&
         // Order matters here, first append to plot, then update curve list
         activePlot->appendData(curve+unit, usec, value);
         // Store data
-        QLabel* label = curveLabels->value(curve+unit, NULL);
+        QLabel* label = curveLabels->value(curve+unit, nullptr);
         // Make sure the curve will be created if it does not yet exist
         if(!label)
         {
@@ -386,7 +386,7 @@ void LinechartWidget::appendData(int uasId, const QString& curve, const QString&
         // Order matters here, first append to plot, then update curve list
         activePlot->appendData(curve+unit, usec, value);
         // Store data
-        QLabel* label = curveLabels->value(curve+unit, NULL);
+        QLabel* label = curveLabels->value(curve+unit, nullptr);
         // Make sure the curve will be created if it does not yet exist
         if(!label)
         {
@@ -433,7 +433,7 @@ void LinechartWidget::appendData(int uasId, const QString& curve, const QString&
         // Order matters here, first append to plot, then update curve list
         activePlot->appendData(curve+unit, usec, value);
         // Store data
-        QLabel* label = curveLabels->value(curve+unit, NULL);
+        QLabel* label = curveLabels->value(curve+unit, nullptr);
         // Make sure the curve will be created if it does not yet exist
         if(!label)
         {
@@ -767,7 +767,7 @@ void LinechartWidget::removeCurve(QString curve)
 {
     Q_UNUSED(curve)
 
-    QWidget* widget = NULL;
+    QWidget* widget = nullptr;
     widget = curveLabels->take(curve);
     curvesWidgetLayout->removeWidget(widget);
     widget->deleteLater();
@@ -1002,7 +1002,7 @@ void LinechartWidget::takeButtonClick(bool checked)
 
     QCheckBox* button = qobject_cast<QCheckBox*>(QObject::sender());
 
-    if(button != NULL)
+    if(button != nullptr)
     {
         activePlot->setVisible(button->objectName(), checked);
 

@@ -32,7 +32,7 @@ class QWT_EXPORT QwtWheel : public QwtAbstractSlider
     Q_PROPERTY( double mass READ mass WRITE setMass )
 
 public:
-    explicit QwtWheel(QWidget *parent = NULL);
+    explicit QwtWheel(QWidget *parent = nullptr);
 #if QT_VERSION < 0x040000
     explicit QwtWheel(QWidget *parent, const char *name);
 #endif

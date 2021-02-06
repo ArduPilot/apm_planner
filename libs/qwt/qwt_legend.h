@@ -72,7 +72,7 @@ public:
         CheckableItem
     };
 
-    explicit QwtLegend(QWidget *parent = NULL);
+    explicit QwtLegend(QWidget *parent = nullptr);
     virtual ~QwtLegend();
 
     void setDisplayPolicy(LegendDisplayPolicy policy, int mode);

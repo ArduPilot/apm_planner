@@ -28,11 +28,11 @@
 
 MapWidget::MapWidget(QWidget *parent) :
     QWidget(parent),
-    mc(NULL),
+    mc(nullptr),
     zoomLevel(0),
     uasIcons(),
     uasTrails(),
-    mav(NULL),
+    mav(nullptr),
     lastUpdate(0),
     initialized(false),
     m_ui(new Ui::MapWidget)
@@ -499,7 +499,7 @@ void MapWidget::updateWaypoint(int uas, Waypoint* wp, bool updateView)
                             // Update pen
                             wpIcons.at(wpindex)->setPen(mavPens.value(uas));
                             // Then waypoint line coordinate
-                            Point* linesegment = NULL;
+                            Point* linesegment = nullptr;
                             // If the line segment already exists, just update it
                             // else create a new one
                             if (waypointPath->points().size() > wpindex) {
@@ -800,7 +800,7 @@ void MapWidget::updateAttitude(UASInterface* uas, double roll, double pitch, dou
     if (mc) {
 
         if (uas) {
-            MAV2DIcon* icon = dynamic_cast<MAV2DIcon*>(uasIcons.value(uas->getUASID(), NULL));
+            MAV2DIcon* icon = dynamic_cast<MAV2DIcon*>(uasIcons.value(uas->getUASID(), nullptr));
             if (icon) {
                 icon->setYaw(yaw);
             }

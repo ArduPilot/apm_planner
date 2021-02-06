@@ -1818,7 +1818,7 @@ Input parameters:
     VTNeeded    -   0, 1 or 2. See the description of the parameter VT.
     AdditionalMemory -
                     If the parameter:
-                     * equals 0, the algorithm doesn’t use additional
+                     * equals 0, the algorithm doesnï¿½t use additional
                        memory (lower requirements, lower performance).
                      * equals 1, the algorithm uses additional
                        memory of size min(M,N)*min(M,N) of real numbers.
@@ -1837,7 +1837,7 @@ Output parameters:
                     within [0..M-1, 0..Min(M,N)-1].
                     if UNeeded=2, U contains matrix U wholly. Array whose
                     indexes range within [0..M-1, 0..M-1].
-    VT          -   if VTNeeded=0, VT isn’t changed, the right singular vectors
+    VT          -   if VTNeeded=0, VT isnï¿½t changed, the right singular vectors
                     are not calculated.
                     if VTNeeded=1, VT contains right singular vectors (first
                     min(M,N) rows of matrix V^T). Array whose indexes range
@@ -1885,7 +1885,7 @@ Output parameters:
     D       -   eigenvalues in ascending order.
                 Array whose index ranges within [0..N-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains the eigenvectors.
                 Array whose indexes range within [0..N-1, 0..N-1].
                 The eigenvectors are stored in the matrix columns.
@@ -1934,7 +1934,7 @@ Output parameters:
     W       -   array of the eigenvalues found.
                 Array whose index ranges within [0..M-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains eigenvectors.
                 Array whose indexes range within [0..N-1, 0..M-1].
                 The eigenvectors are stored in the matrix columns.
@@ -1989,7 +1989,7 @@ Output parameters:
     W       -   array of the eigenvalues found.
                 Array whose index ranges within [0..I2-I1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains eigenvectors.
                 Array whose indexes range within [0..N-1, 0..I2-I1].
                 In that case, the eigenvectors are stored in the matrix columns.
@@ -2043,7 +2043,7 @@ Output parameters:
     D       -   eigenvalues in ascending order.
                 Array whose index ranges within [0..N-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains the eigenvectors.
                 Array whose indexes range within [0..N-1, 0..N-1].
                 The eigenvectors are stored in the matrix columns.
@@ -2097,7 +2097,7 @@ Output parameters:
     W       -   array of the eigenvalues found.
                 Array whose index ranges within [0..M-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains eigenvectors.
                 Array whose indexes range within [0..N-1, 0..M-1].
                 The eigenvectors are stored in the matrix columns.
@@ -2157,7 +2157,7 @@ Output parameters:
     W       -   array of the eigenvalues found.
                 Array whose index ranges within [0..I2-I1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains eigenvectors.
                 Array whose indexes range within [0..N-1, 0..I2-I1].
                 In  that  case,  the eigenvectors are stored in the matrix
@@ -2226,7 +2226,7 @@ Output parameters:
     D       -   eigenvalues in ascending order.
                 Array whose index ranges within [0..N-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains the product of a given matrix (from the left)
                    and the eigenvectors matrix (from the right);
                  * 2, Z contains the eigenvectors.
@@ -3673,19 +3673,19 @@ Matrix inverse report:
 *************************************************************************/
 _matinvreport_owner::_matinvreport_owner()
 {
-    p_struct = (alglib_impl::matinvreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::matinvreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::matinvreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::matinvreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_matinvreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_matinvreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _matinvreport_owner::_matinvreport_owner(const _matinvreport_owner &rhs)
 {
-    p_struct = (alglib_impl::matinvreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::matinvreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::matinvreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::matinvreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_matinvreport_init_copy(p_struct, const_cast<alglib_impl::matinvreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_matinvreport_init_copy(p_struct, const_cast<alglib_impl::matinvreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -3694,7 +3694,7 @@ _matinvreport_owner& _matinvreport_owner::operator=(const _matinvreport_owner &r
     if( this==&rhs )
         return *this;
     alglib_impl::_matinvreport_clear(p_struct);
-    if( !alglib_impl::_matinvreport_init_copy(p_struct, const_cast<alglib_impl::matinvreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_matinvreport_init_copy(p_struct, const_cast<alglib_impl::matinvreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -4086,7 +4086,7 @@ by Cholesky decomposition.
 
 Input parameters:
     A       -   Cholesky decomposition of the matrix to be inverted:
-                A=U’*U or A = L*L'.
+                A=Uï¿½*U or A = L*L'.
                 Output of  SPDMatrixCholesky subroutine.
     N       -   size of matrix A (optional) :
                 * if given, only principal NxN submatrix is processed  and
@@ -4095,10 +4095,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, lower half is used.
 
@@ -4133,7 +4133,7 @@ by Cholesky decomposition.
 
 Input parameters:
     A       -   Cholesky decomposition of the matrix to be inverted:
-                A=U’*U or A = L*L'.
+                A=Uï¿½*U or A = L*L'.
                 Output of  SPDMatrixCholesky subroutine.
     N       -   size of matrix A (optional) :
                 * if given, only principal NxN submatrix is processed  and
@@ -4142,10 +4142,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, lower half is used.
 
@@ -4198,10 +4198,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given,  both lower and upper  triangles  must  be
                   filled.
@@ -4248,10 +4248,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given,  both lower and upper  triangles  must  be
                   filled.
@@ -4297,7 +4297,7 @@ by Cholesky decomposition.
 
 Input parameters:
     A       -   Cholesky decomposition of the matrix to be inverted:
-                A=U’*U or A = L*L'.
+                A=Uï¿½*U or A = L*L'.
                 Output of  HPDMatrixCholesky subroutine.
     N       -   size of matrix A (optional) :
                 * if given, only principal NxN submatrix is processed  and
@@ -4306,10 +4306,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, lower half is used.
 
@@ -4344,7 +4344,7 @@ by Cholesky decomposition.
 
 Input parameters:
     A       -   Cholesky decomposition of the matrix to be inverted:
-                A=U’*U or A = L*L'.
+                A=Uï¿½*U or A = L*L'.
                 Output of  HPDMatrixCholesky subroutine.
     N       -   size of matrix A (optional) :
                 * if given, only principal NxN submatrix is processed  and
@@ -4353,10 +4353,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, lower half is used.
 
@@ -4409,10 +4409,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given,  both lower and upper  triangles  must  be
                   filled.
@@ -4459,10 +4459,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given,  both lower and upper  triangles  must  be
                   filled.
@@ -4740,19 +4740,19 @@ Never try to access its fields directly!
 *************************************************************************/
 _sparsematrix_owner::_sparsematrix_owner()
 {
-    p_struct = (alglib_impl::sparsematrix*)alglib_impl::ae_malloc(sizeof(alglib_impl::sparsematrix), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::sparsematrix*)alglib_impl::ae_malloc(sizeof(alglib_impl::sparsematrix), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_sparsematrix_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_sparsematrix_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _sparsematrix_owner::_sparsematrix_owner(const _sparsematrix_owner &rhs)
 {
-    p_struct = (alglib_impl::sparsematrix*)alglib_impl::ae_malloc(sizeof(alglib_impl::sparsematrix), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::sparsematrix*)alglib_impl::ae_malloc(sizeof(alglib_impl::sparsematrix), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_sparsematrix_init_copy(p_struct, const_cast<alglib_impl::sparsematrix*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_sparsematrix_init_copy(p_struct, const_cast<alglib_impl::sparsematrix*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -4761,7 +4761,7 @@ _sparsematrix_owner& _sparsematrix_owner::operator=(const _sparsematrix_owner &r
     if( this==&rhs )
         return *this;
     alglib_impl::_sparsematrix_clear(p_struct);
-    if( !alglib_impl::_sparsematrix_init_copy(p_struct, const_cast<alglib_impl::sparsematrix*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_sparsematrix_init_copy(p_struct, const_cast<alglib_impl::sparsematrix*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -6057,19 +6057,19 @@ You should use ALGLIB functions to work with this object.
 *************************************************************************/
 _normestimatorstate_owner::_normestimatorstate_owner()
 {
-    p_struct = (alglib_impl::normestimatorstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::normestimatorstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::normestimatorstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::normestimatorstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_normestimatorstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_normestimatorstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _normestimatorstate_owner::_normestimatorstate_owner(const _normestimatorstate_owner &rhs)
 {
-    p_struct = (alglib_impl::normestimatorstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::normestimatorstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::normestimatorstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::normestimatorstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_normestimatorstate_init_copy(p_struct, const_cast<alglib_impl::normestimatorstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_normestimatorstate_init_copy(p_struct, const_cast<alglib_impl::normestimatorstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -6078,7 +6078,7 @@ _normestimatorstate_owner& _normestimatorstate_owner::operator=(const _normestim
     if( this==&rhs )
         return *this;
     alglib_impl::_normestimatorstate_clear(p_struct);
-    if( !alglib_impl::_normestimatorstate_init_copy(p_struct, const_cast<alglib_impl::normestimatorstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_normestimatorstate_init_copy(p_struct, const_cast<alglib_impl::normestimatorstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -6562,7 +6562,7 @@ Input parameters:
                   (A must be square matrix)
 
 As the determinant is equal to the product of squares of diagonal elements,
-it’s not necessary to specify which triangle - lower or upper - the matrix
+itï¿½s not necessary to specify which triangle - lower or upper - the matrix
 is stored in.
 
 Result:
@@ -6600,7 +6600,7 @@ Input parameters:
                   (A must be square matrix)
 
 As the determinant is equal to the product of squares of diagonal elements,
-it’s not necessary to specify which triangle - lower or upper - the matrix
+itï¿½s not necessary to specify which triangle - lower or upper - the matrix
 is stored in.
 
 Result:
@@ -6642,10 +6642,10 @@ Input parameters:
                   (A must be square matrix)
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used/changed  by
+                  triangle, and the lower triangle isnï¿½t used/changed  by
                   function
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used/changed  by
+                  triangle, and the upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, both lower and upper  triangles  must  be
                   filled.
@@ -6685,10 +6685,10 @@ Input parameters:
                   (A must be square matrix)
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used/changed  by
+                  triangle, and the lower triangle isnï¿½t used/changed  by
                   function
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used/changed  by
+                  triangle, and the upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, both lower and upper  triangles  must  be
                   filled.
@@ -6757,7 +6757,7 @@ Output parameters:
     D           -   eigenvalues in ascending order.
                     Array whose index ranges within [0..N-1].
     Z           -   if ZNeeded is equal to:
-                     * 0, Z hasn’t changed;
+                     * 0, Z hasnï¿½t changed;
                      * 1, Z contains eigenvectors.
                     Array whose indexes range within [0..N-1, 0..N-1].
                     The eigenvectors are stored in matrix columns. It should
@@ -6767,7 +6767,7 @@ Output parameters:
 Result:
     True, if the problem was solved successfully.
     False, if the error occurred during the Cholesky decomposition of matrix
-    B (the matrix isn’t positive-definite) or during the work of the iterative
+    B (the matrix isnï¿½t positive-definite) or during the work of the iterative
     algorithm for solving the symmetric eigenproblem.
 
 See also the GeneralizedSymmetricDefiniteEVDReduce subroutine.
@@ -6973,7 +6973,7 @@ void rmatrixinvupdatecolumn(real_2d_array &inva, const ae_int_t n, const ae_int_
 /*************************************************************************
 Inverse matrix update by the Sherman-Morrison formula
 
-The algorithm computes the inverse of matrix A+u*v’ by using the given matrix
+The algorithm computes the inverse of matrix A+u*vï¿½ by using the given matrix
 A^-1 and the vectors u and v.
 
 Input parameters:
@@ -15134,7 +15134,7 @@ Input parameters:
     VTNeeded    -   0, 1 or 2. See the description of the parameter VT.
     AdditionalMemory -
                     If the parameter:
-                     * equals 0, the algorithm doesn’t use additional
+                     * equals 0, the algorithm doesnï¿½t use additional
                        memory (lower requirements, lower performance).
                      * equals 1, the algorithm uses additional
                        memory of size min(M,N)*min(M,N) of real numbers.
@@ -15153,7 +15153,7 @@ Output parameters:
                     within [0..M-1, 0..Min(M,N)-1].
                     if UNeeded=2, U contains matrix U wholly. Array whose
                     indexes range within [0..M-1, 0..M-1].
-    VT          -   if VTNeeded=0, VT isn’t changed, the right singular vectors
+    VT          -   if VTNeeded=0, VT isnï¿½t changed, the right singular vectors
                     are not calculated.
                     if VTNeeded=1, VT contains right singular vectors (first
                     min(M,N) rows of matrix V^T). Array whose indexes range
@@ -15470,7 +15470,7 @@ Output parameters:
     D       -   eigenvalues in ascending order.
                 Array whose index ranges within [0..N-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains the eigenvectors.
                 Array whose indexes range within [0..N-1, 0..N-1].
                 The eigenvectors are stored in the matrix columns.
@@ -15537,7 +15537,7 @@ Output parameters:
     W       -   array of the eigenvalues found.
                 Array whose index ranges within [0..M-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains eigenvectors.
                 Array whose indexes range within [0..N-1, 0..M-1].
                 The eigenvectors are stored in the matrix columns.
@@ -15614,7 +15614,7 @@ Output parameters:
     W       -   array of the eigenvalues found.
                 Array whose index ranges within [0..I2-I1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains eigenvectors.
                 Array whose indexes range within [0..N-1, 0..I2-I1].
                 In that case, the eigenvectors are stored in the matrix columns.
@@ -15688,7 +15688,7 @@ Output parameters:
     D       -   eigenvalues in ascending order.
                 Array whose index ranges within [0..N-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains the eigenvectors.
                 Array whose indexes range within [0..N-1, 0..N-1].
                 The eigenvectors are stored in the matrix columns.
@@ -15825,7 +15825,7 @@ Output parameters:
     W       -   array of the eigenvalues found.
                 Array whose index ranges within [0..M-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains eigenvectors.
                 Array whose indexes range within [0..N-1, 0..M-1].
                 The eigenvectors are stored in the matrix columns.
@@ -15972,7 +15972,7 @@ Output parameters:
     W       -   array of the eigenvalues found.
                 Array whose index ranges within [0..I2-I1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains eigenvectors.
                 Array whose indexes range within [0..N-1, 0..I2-I1].
                 In  that  case,  the eigenvectors are stored in the matrix
@@ -16128,7 +16128,7 @@ Output parameters:
     D       -   eigenvalues in ascending order.
                 Array whose index ranges within [0..N-1].
     Z       -   if ZNeeded is equal to:
-                 * 0, Z hasn’t changed;
+                 * 0, Z hasnï¿½t changed;
                  * 1, Z contains the product of a given matrix (from the left)
                    and the eigenvectors matrix (from the right);
                  * 2, Z contains the eigenvectors.
@@ -27563,7 +27563,7 @@ by Cholesky decomposition.
 
 Input parameters:
     A       -   Cholesky decomposition of the matrix to be inverted:
-                A=U’*U or A = L*L'.
+                A=Uï¿½*U or A = L*L'.
                 Output of  SPDMatrixCholesky subroutine.
     N       -   size of matrix A (optional) :
                 * if given, only principal NxN submatrix is processed  and
@@ -27572,10 +27572,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, lower half is used.
 
@@ -27679,10 +27679,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given,  both lower and upper  triangles  must  be
                   filled.
@@ -27729,7 +27729,7 @@ by Cholesky decomposition.
 
 Input parameters:
     A       -   Cholesky decomposition of the matrix to be inverted:
-                A=U’*U or A = L*L'.
+                A=Uï¿½*U or A = L*L'.
                 Output of  HPDMatrixCholesky subroutine.
     N       -   size of matrix A (optional) :
                 * if given, only principal NxN submatrix is processed  and
@@ -27738,10 +27738,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, lower half is used.
 
@@ -27845,10 +27845,10 @@ Input parameters:
                   matrix size (A must be square matrix)
     IsUpper -   storage type (optional):
                 * if True, symmetric  matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t  used/changed  by
+                  triangle, and the lower triangle isnï¿½t  used/changed  by
                   function
                 * if False,  symmetric matrix  A  is  given  by  its lower
-                  triangle, and the  upper triangle isn’t used/changed  by
+                  triangle, and the  upper triangle isnï¿½t used/changed  by
                   function
                 * if not given,  both lower and upper  triangles  must  be
                   filled.
@@ -32863,7 +32863,7 @@ Input parameters:
                   (A must be square matrix)
 
 As the determinant is equal to the product of squares of diagonal elements,
-it’s not necessary to specify which triangle - lower or upper - the matrix
+itï¿½s not necessary to specify which triangle - lower or upper - the matrix
 is stored in.
 
 Result:
@@ -32911,10 +32911,10 @@ Input parameters:
                   (A must be square matrix)
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used/changed  by
+                  triangle, and the lower triangle isnï¿½t used/changed  by
                   function
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used/changed  by
+                  triangle, and the upper triangle isnï¿½t used/changed  by
                   function
                 * if not given, both lower and upper  triangles  must  be
                   filled.
@@ -32986,7 +32986,7 @@ Output parameters:
     D           -   eigenvalues in ascending order.
                     Array whose index ranges within [0..N-1].
     Z           -   if ZNeeded is equal to:
-                     * 0, Z hasn’t changed;
+                     * 0, Z hasnï¿½t changed;
                      * 1, Z contains eigenvectors.
                     Array whose indexes range within [0..N-1, 0..N-1].
                     The eigenvectors are stored in matrix columns. It should
@@ -32996,7 +32996,7 @@ Output parameters:
 Result:
     True, if the problem was solved successfully.
     False, if the error occurred during the Cholesky decomposition of matrix
-    B (the matrix isn’t positive-definite) or during the work of the iterative
+    B (the matrix isnï¿½t positive-definite) or during the work of the iterative
     algorithm for solving the symmetric eigenproblem.
 
 See also the GeneralizedSymmetricDefiniteEVDReduce subroutine.
@@ -33656,7 +33656,7 @@ void rmatrixinvupdatecolumn(/* Real    */ ae_matrix* inva,
 /*************************************************************************
 Inverse matrix update by the Sherman-Morrison formula
 
-The algorithm computes the inverse of matrix A+u*v’ by using the given matrix
+The algorithm computes the inverse of matrix A+u*vï¿½ by using the given matrix
 A^-1 and the vectors u and v.
 
 Input parameters:

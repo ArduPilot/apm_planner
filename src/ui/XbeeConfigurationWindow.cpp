@@ -82,8 +82,8 @@ static kern_return_t FindModems(io_iterator_t *matchingServices)
 
     // Serial devices are instances of class IOSerialBSDClient
     classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue);
-    if (classesToMatch == NULL) {
-        printf("IOServiceMatching returned a NULL dictionary.\n");
+    if (classesToMatch == nullptr) {
+        printf("IOServiceMatching returned a nullptr dictionary.\n");
     } else {
         /*!
           @function CFDictionarySetValue

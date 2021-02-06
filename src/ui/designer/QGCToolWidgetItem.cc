@@ -10,7 +10,7 @@ QGCToolWidgetItem::QGCToolWidgetItem(const QString& name, QWidget *parent) :
     QWidget(parent),
     isInEditMode(false),
     qgcToolWidgetItemName(name),
-    uas(NULL),
+    uas(nullptr),
     _component(-1)
 {
     startEditAction = new QAction(tr("Edit %1").arg(qgcToolWidgetItemName), this);

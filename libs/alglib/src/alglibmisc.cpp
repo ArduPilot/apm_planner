@@ -49,19 +49,19 @@ Fields:
 *************************************************************************/
 _hqrndstate_owner::_hqrndstate_owner()
 {
-    p_struct = (alglib_impl::hqrndstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::hqrndstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::hqrndstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::hqrndstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_hqrndstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_hqrndstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _hqrndstate_owner::_hqrndstate_owner(const _hqrndstate_owner &rhs)
 {
-    p_struct = (alglib_impl::hqrndstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::hqrndstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::hqrndstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::hqrndstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_hqrndstate_init_copy(p_struct, const_cast<alglib_impl::hqrndstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_hqrndstate_init_copy(p_struct, const_cast<alglib_impl::hqrndstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -70,7 +70,7 @@ _hqrndstate_owner& _hqrndstate_owner::operator=(const _hqrndstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_hqrndstate_clear(p_struct);
-    if( !alglib_impl::_hqrndstate_init_copy(p_struct, const_cast<alglib_impl::hqrndstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_hqrndstate_init_copy(p_struct, const_cast<alglib_impl::hqrndstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -382,19 +382,19 @@ double hqrndcontinuous(const hqrndstate &state, const real_1d_array &x, const ae
 *************************************************************************/
 _kdtree_owner::_kdtree_owner()
 {
-    p_struct = (alglib_impl::kdtree*)alglib_impl::ae_malloc(sizeof(alglib_impl::kdtree), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::kdtree*)alglib_impl::ae_malloc(sizeof(alglib_impl::kdtree), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_kdtree_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_kdtree_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _kdtree_owner::_kdtree_owner(const _kdtree_owner &rhs)
 {
-    p_struct = (alglib_impl::kdtree*)alglib_impl::ae_malloc(sizeof(alglib_impl::kdtree), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::kdtree*)alglib_impl::ae_malloc(sizeof(alglib_impl::kdtree), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_kdtree_init_copy(p_struct, const_cast<alglib_impl::kdtree*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_kdtree_init_copy(p_struct, const_cast<alglib_impl::kdtree*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -403,7 +403,7 @@ _kdtree_owner& _kdtree_owner::operator=(const _kdtree_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_kdtree_clear(p_struct);
-    if( !alglib_impl::_kdtree_init_copy(p_struct, const_cast<alglib_impl::kdtree*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_kdtree_init_copy(p_struct, const_cast<alglib_impl::kdtree*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }

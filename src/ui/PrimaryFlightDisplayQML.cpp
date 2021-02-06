@@ -34,8 +34,8 @@ This file is part of the APM_PLANNER project
 
 PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
     QWidget(parent),
-    m_declarativeView(NULL),
-    m_uasInterface(NULL)
+    m_declarativeView(nullptr),
+    m_uasInterface(nullptr)
 {
     QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml");
     QLOG_DEBUG() << url;

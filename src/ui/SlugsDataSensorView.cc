@@ -11,7 +11,7 @@ SlugsDataSensorView::SlugsDataSensorView(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    activeUAS = NULL;
+    activeUAS = nullptr;
 
     this->setVisible(false);
 
@@ -29,7 +29,7 @@ void SlugsDataSensorView::addUAS(UASInterface* uas)
 {
     SlugsMAV* slugsMav = qobject_cast<SlugsMAV*>(uas);
 
-    if (slugsMav != NULL) {
+    if (slugsMav != nullptr) {
 
         connect(slugsMav, SIGNAL(slugsRawImu(int, const mavlink_raw_imu_t&)), this, SLOT(slugRawDataChanged(int, const mavlink_raw_imu_t&)));
 

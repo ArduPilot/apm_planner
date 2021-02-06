@@ -112,7 +112,7 @@ void runFileSearch(QFutureInterface<FileSearchResult> &future,
         if (!device->open(QIODevice::ReadOnly))
             continue;
         int lineNr = 1;
-        const char *startOfLastLine = NULL;
+        const char *startOfLastLine = nullptr;
 
         bool firstChunk = true;
         while (!device->atEnd()) {

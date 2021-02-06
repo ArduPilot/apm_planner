@@ -33,9 +33,9 @@
  * @image html http://pixhawk.ethz.ch/wiki/_media/standards/body-frame.png Aeronautical frame
  */
 JoystickInput::JoystickInput() :
-        joystick(NULL),
+        joystick(nullptr),
         joystickName(""),
-        uas(NULL),
+        uas(nullptr),
         done(0),
         thrustAxis(2),
         xAxis(0),
@@ -333,7 +333,7 @@ yes:
 void JoystickInput::run()
 {
     init();
-    if (joystick == NULL)
+    if (joystick == nullptr)
     {
         exit();
         return;

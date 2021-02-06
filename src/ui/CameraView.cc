@@ -37,11 +37,11 @@ This file is part of the QGROUNDCONTROL project
 
 CameraView::CameraView(int width, int height, int depth, int channels, QWidget* parent) : QGLWidget(parent)
 {
-    rawImage = NULL;
-    rawBuffer1 = NULL;
-    rawBuffer2 = NULL;
+    rawImage = nullptr;
+    rawBuffer1 = nullptr;
+    rawBuffer2 = nullptr;
     rawLastIndex = 0;
-    image = NULL;
+    image = nullptr;
     imageStarted = false;
     // Init to black image
     //setImageSize(width, height, depth, channels);
@@ -84,7 +84,7 @@ void CameraView::addUAS(UASInterface* uas)
 void CameraView::setImageSize(int width, int height, int depth, int channels)
 {
     // Allocate raw image in correct size
-    if (width != receivedWidth || height != receivedHeight || depth != receivedDepth || channels != receivedChannels || image == NULL) {
+    if (width != receivedWidth || height != receivedHeight || depth != receivedDepth || channels != receivedChannels || image == nullptr) {
         // Set new size
         if (width > 0) receivedWidth  = width;
         if (height > 0) receivedHeight = height;
@@ -94,9 +94,9 @@ void CameraView::setImageSize(int width, int height, int depth, int channels)
         rawExpectedBytes = (receivedWidth * receivedHeight * receivedDepth * receivedChannels) / 8;
         bytesPerLine = rawExpectedBytes / receivedHeight;
         // Delete old buffers if necessary
-        rawImage = NULL;
-        if (rawBuffer1 != NULL) delete rawBuffer1;
-        if (rawBuffer2 != NULL) delete rawBuffer2;
+        rawImage = nullptr;
+        if (rawBuffer1 != nullptr) delete rawBuffer1;
+        if (rawBuffer2 != nullptr) delete rawBuffer2;
 
         rawBuffer1 = (unsigned char*)malloc(rawExpectedBytes);
         rawBuffer2 = (unsigned char*)malloc(rawExpectedBytes);
@@ -161,7 +161,7 @@ void CameraView::finishImage()
 void CameraView::commitRawDataToGL()
 {
     //QLOG_DEBUG() << __FILE__ << __LINE__ << "Copying raw data to GL buffer:" << rawImage << receivedWidth << receivedHeight << image->format();
-    if (image != NULL) {
+    if (image != nullptr) {
         QImage::Format format = image->format();
         QImage* newImage = new QImage(rawImage, receivedWidth, receivedHeight, format);
         if (format == QImage::Format_Indexed8) {

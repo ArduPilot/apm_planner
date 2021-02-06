@@ -17,7 +17,7 @@ class QwtPlotItem::PrivateData
 {
 public:
     PrivateData():
-        plot(NULL),
+        plot(nullptr),
         isVisible(true),
         attributes(0),
 #if QT_VERSION >= 0x040000
@@ -53,7 +53,7 @@ QwtPlotItem::QwtPlotItem(const QwtText &title)
 //! Destroy the QwtPlotItem
 QwtPlotItem::~QwtPlotItem()
 {
-    attach(NULL);
+    attach(nullptr);
     delete d_data;
 }
 
@@ -62,7 +62,7 @@ QwtPlotItem::~QwtPlotItem()
 
   This method will attach a QwtPlotItem to the QwtPlot argument. It will first
   detach the QwtPlotItem from any plot from a previous call to attach (if
-  necessary). If a NULL argument is passed, it will detach from any QwtPlot it
+  necessary). If a nullptr argument is passed, it will detach from any QwtPlot it
   was attached to.
 
   \sa QwtPlotItem::detach()
@@ -411,7 +411,7 @@ void QwtPlotItem::updateLegend(QwtLegend *legend) const
 
     QWidget *lgdItem = legend->find(this);
     if ( testItemAttribute(QwtPlotItem::Legend) ) {
-        if ( lgdItem == NULL ) {
+        if ( lgdItem == nullptr ) {
             lgdItem = legendItem();
             if ( lgdItem ) {
                 if ( lgdItem->inherits("QwtLegendItem") ) {

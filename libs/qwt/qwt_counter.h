@@ -83,7 +83,7 @@ public:
         ButtonCnt
     };
 
-    explicit QwtCounter(QWidget *parent = NULL);
+    explicit QwtCounter(QWidget *parent = nullptr);
 #if QT_VERSION < 0x040000
     explicit QwtCounter(QWidget *parent, const char *name);
 #endif

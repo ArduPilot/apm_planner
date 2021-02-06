@@ -103,7 +103,7 @@ public:
         BottomScale
     };
 
-    explicit QwtThermo(QWidget *parent = NULL);
+    explicit QwtThermo(QWidget *parent = nullptr);
 #if QT_VERSION < 0x040000
     explicit QwtThermo(QWidget *parent, const char *name);
 #endif

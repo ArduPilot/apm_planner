@@ -137,24 +137,24 @@ namespace mapcontrol
 
     void OPMapWidget::DeleteUAV(int id)
     {
-        UAVItem* uav = UAVS.value(id, NULL);
+        UAVItem* uav = UAVS.value(id, nullptr);
         UAVS.remove(id);
         if (uav)
         {
             delete uav;
-            uav = NULL;
+            uav = nullptr;
         }
-        QGraphicsItemGroup* wpLine = waypointLines.value(id, NULL);
+        QGraphicsItemGroup* wpLine = waypointLines.value(id, nullptr);
         waypointLines.remove(id);
         if (wpLine)
         {
             delete wpLine;
-            wpLine = NULL;
+            wpLine = nullptr;
         }
     }
 
     /**
-     * @return The reference to the UAVItem or NULL if no item exists yet
+     * @return The reference to the UAVItem or nullptr if no item exists yet
      * @see AddUAV() for adding a not yet existing UAV to the map
      */
     UAVItem* OPMapWidget::GetUAV(int id)
@@ -169,7 +169,7 @@ namespace mapcontrol
 
     QGraphicsItemGroup* OPMapWidget::waypointLine(int id)
     {
-        return waypointLines.value(id, NULL);
+        return waypointLines.value(id, nullptr);
     }
 
     void OPMapWidget::SetShowUAV(const bool &value)
@@ -312,7 +312,7 @@ namespace mapcontrol
         ConnectWP(item);
         item->setParentItem(map);
 
-//        QGraphicsItemGroup* wpLine = waypointLines.value(id, NULL);
+//        QGraphicsItemGroup* wpLine = waypointLines.value(id, nullptr);
 //        if (!wpLine)
 //        {
 //            wpLine = new QGraphicsItemGroup(map);

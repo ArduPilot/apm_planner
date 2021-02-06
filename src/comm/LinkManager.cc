@@ -338,7 +338,7 @@ void LinkManager::removeLink(LinkInterface *link)
 {
    // This is called with a LINK_ID not an interface. needs mor rework
     //This function is not yet supported, it will be once we support multiple MAVs
-    Q_ASSERT(link == nullptr); // This shoud not be called, assert if it anything but NULL
+    Q_ASSERT(link == nullptr); // This shoud not be called, assert if it anything but nullptr
 }
 
 void LinkManager::removeLink(int linkId)

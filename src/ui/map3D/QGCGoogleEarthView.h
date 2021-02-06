@@ -20,7 +20,7 @@ public:
     //Q_OBJECT
     QGCWebAxWidget(QWidget* parent = 0, Qt::WindowFlags f = 0)
         : QAxWidget(parent, f)/*,
-		_document(NULL)*/
+		_document(nullptr)*/
     {
         // Set web browser control
         setControl("{8856F961-340A-11D0-A96B-00C04FD705A2}");

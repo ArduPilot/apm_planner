@@ -23,7 +23,7 @@ public:
     {
     public:
         void insertItem(QwtPlotItem *item) {
-            if ( item == NULL )
+            if ( item == nullptr )
                 return;
 
             // Unfortunately there is no inSort operation
@@ -51,7 +51,7 @@ public:
         }
 
         void removeItem(QwtPlotItem *item) {
-            if ( item == NULL )
+            if ( item == nullptr )
                 return;
 
             int i = 0;
@@ -162,7 +162,7 @@ void QwtPlotDict::detachItems(int rtti, bool autoDelete)
         ++it; // increment before removing item from the list
 
         if ( rtti == QwtPlotItem::Rtti_PlotItem || item->rtti() == rtti ) {
-            item->attach(NULL);
+            item->attach(nullptr);
             if ( autoDelete )
                 delete item;
         }

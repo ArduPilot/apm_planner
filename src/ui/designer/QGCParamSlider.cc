@@ -29,7 +29,7 @@ QGCParamSlider::QGCParamSlider(QWidget *parent) :
     ui->intValueSpinBox->hide();
     ui->valueSlider->setEnabled(false);
     ui->doubleValueSpinBox->setEnabled(false);
-    uas = NULL;
+    uas = nullptr;
 
     scaledInt = ui->valueSlider->maximum() - ui->valueSlider->minimum();
 

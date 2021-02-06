@@ -47,9 +47,9 @@ QGCXPlaneLink::QGCXPlaneLink(UASInterface* mav, QString remoteHost, QHostAddress
     mav(mav),
     remoteHost(QHostAddress("127.0.0.1")),
     remotePort(49000),
-    socket(NULL),
-    process(NULL),
-    terraSync(NULL),
+    socket(nullptr),
+    process(nullptr),
+    terraSync(nullptr),
     barometerOffsetkPa(15.0f),
     airframeID(QGCXPlaneLink::AIRFRAME_UNKNOWN),
     xPlaneConnected(false),
@@ -782,19 +782,19 @@ bool QGCXPlaneLink::disconnectSimulation()
     {
         process->close();
         delete process;
-        process = NULL;
+        process = nullptr;
     }
     if (terraSync)
     {
         terraSync->close();
         delete terraSync;
-        terraSync = NULL;
+        terraSync = nullptr;
     }
     if (socket)
     {
         socket->close();
         delete socket;
-        socket = NULL;
+        socket = nullptr;
     }
 
     emit simulationDisconnected();

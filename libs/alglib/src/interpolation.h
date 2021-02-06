@@ -3391,9 +3391,9 @@ These functions accept following parameters:
     hess    -   callback which calculates function (or merit function)
                 value func, gradient grad and Hessian hess at given point x
     rep     -   optional callback which is called after each iteration
-                can be NULL
+                can be nullptr
     ptr     -   optional pointer which is passed to func/grad/hess/jac/rep
-                can be NULL
+                can be nullptr
 
 NOTES:
 
@@ -3435,19 +3435,19 @@ NOTES:
 *************************************************************************/
 void lsfitfit(lsfitstate &state,
     void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &c, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void lsfitfit(lsfitstate &state,
     void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
     void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &c, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void lsfitfit(lsfitstate &state,
     void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
     void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
     void (*hess)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, real_2d_array &hess, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &c, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 
 
 /*************************************************************************

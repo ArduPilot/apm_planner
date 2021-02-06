@@ -43,10 +43,10 @@ static const int ElevationGraphElevationId = 1; //m
 MissionElevationDisplay::MissionElevationDisplay(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MissionElevationDisplay),
-    m_uasInterface(NULL),
-    m_uasWaypointMgr(NULL),
+    m_uasInterface(nullptr),
+    m_uasWaypointMgr(nullptr),
     m_totalDistance(0),
-    m_elevationData(NULL),
+    m_elevationData(nullptr),
     m_useHomeAltOffset(false),
     m_homeAltOffset(0.0),
     m_elevationShown(false)
@@ -110,7 +110,7 @@ void MissionElevationDisplay::activeUASSet(UASInterface *uas)
         disconnect(ui->sampleSpinBox, SIGNAL(valueChanged(int)), this, SLOT(sampleValueChanged()));
     }
 
-    m_uasWaypointMgr = NULL;
+    m_uasWaypointMgr = nullptr;
     m_uasInterface = uas;
 
     if(m_uasInterface){
@@ -194,7 +194,7 @@ void MissionElevationDisplay::updateElevationGraph(QList<Waypoint *> waypointLis
 
 int MissionElevationDisplay::plotElevationGraph(QList<Waypoint *> waypointList, int graphId, double homeAltOffset)
 {
-    Waypoint* previousWp = NULL;
+    Waypoint* previousWp = nullptr;
     double totalDistance = 0.0;
     double homeAlt = 0.0;
     QCustomPlot* customplot = ui->customPlot;
@@ -253,10 +253,10 @@ void MissionElevationDisplay::addWaypointLabels()
     customPlot->clearItems();
     double totalDistance = 0.0;
     double distance = 0.0;
-    Waypoint* previousWp = NULL;
+    Waypoint* previousWp = nullptr;
 
     foreach(Waypoint* wp, m_waypointList){
-        if(previousWp != NULL) {
+        if(previousWp != nullptr) {
             distance = distanceBetweenLatLng(previousWp->getLatitude(), previousWp->getLongitude(),
                                                 wp->getLatitude(), wp->getLongitude());
         }
@@ -277,7 +277,7 @@ void MissionElevationDisplay::addWaypointLabels()
 
 void MissionElevationDisplay::updateElevationData()
 {
-    if(m_elevationData == NULL){
+    if(m_elevationData == nullptr){
         m_elevationData = new GoogleElevationData();
         connect(m_elevationData, SIGNAL(elevationDataReady(QList<Waypoint*>,double)),
                 this, SLOT(updateElevationGraph(QList<Waypoint*>,double)));

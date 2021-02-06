@@ -42,19 +42,19 @@ namespace alglib
 *************************************************************************/
 _densesolverreport_owner::_densesolverreport_owner()
 {
-    p_struct = (alglib_impl::densesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::densesolverreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::densesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::densesolverreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_densesolverreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_densesolverreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _densesolverreport_owner::_densesolverreport_owner(const _densesolverreport_owner &rhs)
 {
-    p_struct = (alglib_impl::densesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::densesolverreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::densesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::densesolverreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_densesolverreport_init_copy(p_struct, const_cast<alglib_impl::densesolverreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_densesolverreport_init_copy(p_struct, const_cast<alglib_impl::densesolverreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -63,7 +63,7 @@ _densesolverreport_owner& _densesolverreport_owner::operator=(const _densesolver
     if( this==&rhs )
         return *this;
     alglib_impl::_densesolverreport_clear(p_struct);
-    if( !alglib_impl::_densesolverreport_init_copy(p_struct, const_cast<alglib_impl::densesolverreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_densesolverreport_init_copy(p_struct, const_cast<alglib_impl::densesolverreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -109,19 +109,19 @@ densesolverreport::~densesolverreport()
 *************************************************************************/
 _densesolverlsreport_owner::_densesolverlsreport_owner()
 {
-    p_struct = (alglib_impl::densesolverlsreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::densesolverlsreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::densesolverlsreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::densesolverlsreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_densesolverlsreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_densesolverlsreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _densesolverlsreport_owner::_densesolverlsreport_owner(const _densesolverlsreport_owner &rhs)
 {
-    p_struct = (alglib_impl::densesolverlsreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::densesolverlsreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::densesolverlsreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::densesolverlsreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_densesolverlsreport_init_copy(p_struct, const_cast<alglib_impl::densesolverlsreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_densesolverlsreport_init_copy(p_struct, const_cast<alglib_impl::densesolverlsreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -130,7 +130,7 @@ _densesolverlsreport_owner& _densesolverlsreport_owner::operator=(const _denseso
     if( this==&rhs )
         return *this;
     alglib_impl::_densesolverlsreport_clear(p_struct);
-    if( !alglib_impl::_densesolverlsreport_init_copy(p_struct, const_cast<alglib_impl::densesolverlsreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_densesolverlsreport_init_copy(p_struct, const_cast<alglib_impl::densesolverlsreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1139,19 +1139,19 @@ You should use ALGLIB functions to work with this object.
 *************************************************************************/
 _linlsqrstate_owner::_linlsqrstate_owner()
 {
-    p_struct = (alglib_impl::linlsqrstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::linlsqrstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::linlsqrstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::linlsqrstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_linlsqrstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_linlsqrstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _linlsqrstate_owner::_linlsqrstate_owner(const _linlsqrstate_owner &rhs)
 {
-    p_struct = (alglib_impl::linlsqrstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::linlsqrstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::linlsqrstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::linlsqrstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_linlsqrstate_init_copy(p_struct, const_cast<alglib_impl::linlsqrstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_linlsqrstate_init_copy(p_struct, const_cast<alglib_impl::linlsqrstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1160,7 +1160,7 @@ _linlsqrstate_owner& _linlsqrstate_owner::operator=(const _linlsqrstate_owner &r
     if( this==&rhs )
         return *this;
     alglib_impl::_linlsqrstate_clear(p_struct);
-    if( !alglib_impl::_linlsqrstate_init_copy(p_struct, const_cast<alglib_impl::linlsqrstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_linlsqrstate_init_copy(p_struct, const_cast<alglib_impl::linlsqrstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1206,19 +1206,19 @@ linlsqrstate::~linlsqrstate()
 *************************************************************************/
 _linlsqrreport_owner::_linlsqrreport_owner()
 {
-    p_struct = (alglib_impl::linlsqrreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::linlsqrreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::linlsqrreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::linlsqrreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_linlsqrreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_linlsqrreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _linlsqrreport_owner::_linlsqrreport_owner(const _linlsqrreport_owner &rhs)
 {
-    p_struct = (alglib_impl::linlsqrreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::linlsqrreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::linlsqrreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::linlsqrreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_linlsqrreport_init_copy(p_struct, const_cast<alglib_impl::linlsqrreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_linlsqrreport_init_copy(p_struct, const_cast<alglib_impl::linlsqrreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1227,7 +1227,7 @@ _linlsqrreport_owner& _linlsqrreport_owner::operator=(const _linlsqrreport_owner
     if( this==&rhs )
         return *this;
     alglib_impl::_linlsqrreport_clear(p_struct);
-    if( !alglib_impl::_linlsqrreport_init_copy(p_struct, const_cast<alglib_impl::linlsqrreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_linlsqrreport_init_copy(p_struct, const_cast<alglib_impl::linlsqrreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1542,19 +1542,19 @@ Never try to access its fields directly!
 *************************************************************************/
 _lincgstate_owner::_lincgstate_owner()
 {
-    p_struct = (alglib_impl::lincgstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lincgstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lincgstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lincgstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lincgstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_lincgstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _lincgstate_owner::_lincgstate_owner(const _lincgstate_owner &rhs)
 {
-    p_struct = (alglib_impl::lincgstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lincgstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lincgstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lincgstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lincgstate_init_copy(p_struct, const_cast<alglib_impl::lincgstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lincgstate_init_copy(p_struct, const_cast<alglib_impl::lincgstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1563,7 +1563,7 @@ _lincgstate_owner& _lincgstate_owner::operator=(const _lincgstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_lincgstate_clear(p_struct);
-    if( !alglib_impl::_lincgstate_init_copy(p_struct, const_cast<alglib_impl::lincgstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lincgstate_init_copy(p_struct, const_cast<alglib_impl::lincgstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -1609,19 +1609,19 @@ lincgstate::~lincgstate()
 *************************************************************************/
 _lincgreport_owner::_lincgreport_owner()
 {
-    p_struct = (alglib_impl::lincgreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lincgreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lincgreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lincgreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lincgreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_lincgreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _lincgreport_owner::_lincgreport_owner(const _lincgreport_owner &rhs)
 {
-    p_struct = (alglib_impl::lincgreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lincgreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::lincgreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lincgreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lincgreport_init_copy(p_struct, const_cast<alglib_impl::lincgreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lincgreport_init_copy(p_struct, const_cast<alglib_impl::lincgreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -1630,7 +1630,7 @@ _lincgreport_owner& _lincgreport_owner::operator=(const _lincgreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_lincgreport_clear(p_struct);
-    if( !alglib_impl::_lincgreport_init_copy(p_struct, const_cast<alglib_impl::lincgreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lincgreport_init_copy(p_struct, const_cast<alglib_impl::lincgreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -2007,19 +2007,19 @@ void lincgsetxrep(const lincgstate &state, const bool needxrep)
 *************************************************************************/
 _nleqstate_owner::_nleqstate_owner()
 {
-    p_struct = (alglib_impl::nleqstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::nleqstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::nleqstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::nleqstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_nleqstate_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_nleqstate_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _nleqstate_owner::_nleqstate_owner(const _nleqstate_owner &rhs)
 {
-    p_struct = (alglib_impl::nleqstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::nleqstate), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::nleqstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::nleqstate), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_nleqstate_init_copy(p_struct, const_cast<alglib_impl::nleqstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_nleqstate_init_copy(p_struct, const_cast<alglib_impl::nleqstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -2028,7 +2028,7 @@ _nleqstate_owner& _nleqstate_owner::operator=(const _nleqstate_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_nleqstate_clear(p_struct);
-    if( !alglib_impl::_nleqstate_init_copy(p_struct, const_cast<alglib_impl::nleqstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_nleqstate_init_copy(p_struct, const_cast<alglib_impl::nleqstate*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -2074,19 +2074,19 @@ nleqstate::~nleqstate()
 *************************************************************************/
 _nleqreport_owner::_nleqreport_owner()
 {
-    p_struct = (alglib_impl::nleqreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::nleqreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::nleqreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::nleqreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_nleqreport_init(p_struct, NULL, ae_false) )
+    if( !alglib_impl::_nleqreport_init(p_struct, nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
 _nleqreport_owner::_nleqreport_owner(const _nleqreport_owner &rhs)
 {
-    p_struct = (alglib_impl::nleqreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::nleqreport), NULL);
-    if( p_struct==NULL )
+    p_struct = (alglib_impl::nleqreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::nleqreport), nullptr);
+    if( p_struct==nullptr )
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_nleqreport_init_copy(p_struct, const_cast<alglib_impl::nleqreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_nleqreport_init_copy(p_struct, const_cast<alglib_impl::nleqreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
 }
 
@@ -2095,7 +2095,7 @@ _nleqreport_owner& _nleqreport_owner::operator=(const _nleqreport_owner &rhs)
     if( this==&rhs )
         return *this;
     alglib_impl::_nleqreport_clear(p_struct);
-    if( !alglib_impl::_nleqreport_init_copy(p_struct, const_cast<alglib_impl::nleqreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_nleqreport_init_copy(p_struct, const_cast<alglib_impl::nleqreport*>(rhs.p_struct), nullptr, ae_false) )
         throw ap_error("ALGLIB: malloc error");
     return *this;
 }
@@ -2437,10 +2437,10 @@ void nleqsolve(nleqstate &state,
     void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
-        throw ap_error("ALGLIB: error in 'nleqsolve()' (func is NULL)");
-    if( jac==NULL )
-        throw ap_error("ALGLIB: error in 'nleqsolve()' (jac is NULL)");
+    if( func==nullptr )
+        throw ap_error("ALGLIB: error in 'nleqsolve()' (func is nullptr)");
+    if( jac==nullptr )
+        throw ap_error("ALGLIB: error in 'nleqsolve()' (jac is nullptr)");
     alglib_impl::ae_state_init(&_alglib_env_state);
     try
     {
@@ -2458,7 +2458,7 @@ void nleqsolve(nleqstate &state,
             }
             if( state.xupdated )
             {
-                if( rep!=NULL )
+                if( rep!=nullptr )
                     rep(state.x, state.f, ptr);
                 continue;
             }

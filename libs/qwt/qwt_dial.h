@@ -112,7 +112,7 @@ public:
         RotateScale
     };
 
-    explicit QwtDial( QWidget *parent = NULL);
+    explicit QwtDial( QWidget *parent = nullptr);
 #if QT_VERSION < 0x040000
     explicit QwtDial( QWidget *parent, const char *name);
 #endif

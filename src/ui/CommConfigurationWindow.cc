@@ -224,7 +224,7 @@ void CommConfigurationWindow::setLinkName(QString name)
 void CommConfigurationWindow::remove()
 {
     if(action) delete action; //delete action first since it has a pointer to link
-    action=NULL;
+    action=nullptr;
 
     LinkManager::instance()->removeLink(m_linkid); //close & remove link from LinkManager list
 

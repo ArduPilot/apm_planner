@@ -13,7 +13,7 @@ const static int MapToolZoomFactor = 10; // This may need to be different for wi
 QGCMapTool::QGCMapTool(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QGCMapTool),
-    m_uasInterface(NULL)
+    m_uasInterface(nullptr)
 {
     ui->setupUi(this);
 
@@ -66,11 +66,11 @@ QGCMapTool::~QGCMapTool()
 void QGCMapTool::activeUASSet(UASInterface *uasInterface)
 {
     QLOG_INFO() << "QGCMapTool::activeUASSet";
-    if (uasInterface == NULL) {
-        QLOG_ERROR() << "uas object NULL";
+    if (uasInterface == nullptr) {
+        QLOG_ERROR() << "uas object nullptr";
         return;
     }
-    UAS* uas = NULL;
+    UAS* uas = nullptr;
     if (m_uasInterface){
         uas = qobject_cast<UAS*>(m_uasInterface);
         disconnect(m_uasInterface, SIGNAL(globalPositionChanged(UASInterface*,double,double,double,quint64)),

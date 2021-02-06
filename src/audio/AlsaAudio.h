@@ -47,7 +47,7 @@ class AlsaAudio : public QThread
 {
 //    Q_OBJECT
 public:
-    AlsaAudio(QObject *parent=NULL);
+    AlsaAudio(QObject *parent=nullptr);
 
     /** @brief Get the singleton instance */
     static AlsaAudio* instance(QObject *par);

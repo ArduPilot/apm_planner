@@ -89,7 +89,7 @@ void UASActionsWidget::setupApmRoverModes()
 UASActionsWidget::UASActionsWidget(QWidget *parent) : QWidget(parent)
 {
     QLOG_INFO() << "UASActionsWidget creating " << this;
-    m_uas = NULL;
+    m_uas = nullptr;
     ui.setupUi(this);
     connect(ui.changeAltitudeButton,SIGNAL(clicked()),this,SLOT(changeAltitudeClicked()));
     connect(ui.changeSpeedButton,SIGNAL(clicked()),this,SLOT(changeSpeedClicked()));
@@ -132,8 +132,8 @@ UASActionsWidget::UASActionsWidget(QWidget *parent) : QWidget(parent)
 void UASActionsWidget::activeUASSet(UASInterface *uas)
 {
     QLOG_INFO() << "UASActionWidget::activeUASSet";
-    if (uas == NULL) {
-        QLOG_ERROR() << "uas object NULL";
+    if (uas == nullptr) {
+        QLOG_ERROR() << "uas object nullptr";
         return;
     }
 
@@ -839,7 +839,7 @@ void UASActionsWidget::setRTLMode()
 
 bool UASActionsWidget::activeUas()
 {
-    if (m_uas == NULL) {
+    if (m_uas == nullptr) {
         QLOG_ERROR() << "UASActionsWidget: Error: No Active UAS, please connnect";
         return false;
     }
@@ -876,7 +876,7 @@ void UASActionsWidget::contextMenuEvent(QContextMenuEvent *event)
 
     QLOG_DEBUG() << "contextMenuEvent";
 
-    if(m_uas == NULL)
+    if(m_uas == nullptr)
         return;
 
     APMShortcutModesDialog* dialog = new APMShortcutModesDialog();
@@ -899,7 +899,7 @@ void UASActionsWidget::contextMenuEvent(QContextMenuEvent *event)
     } else {
         // Do nothing.
         delete dialog;
-        dialog = NULL;
+        dialog = nullptr;
         return;
     }
 

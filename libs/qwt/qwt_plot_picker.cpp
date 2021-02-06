@@ -104,7 +104,7 @@ QwtPlotCanvas *QwtPlotPicker::canvas()
     if ( w && w->inherits("QwtPlotCanvas") )
         return (QwtPlotCanvas *)w;
 
-    return NULL;
+    return nullptr;
 }
 
 //! Return Observed plot canvas
@@ -123,7 +123,7 @@ QwtPlot *QwtPlotPicker::plot()
             return (QwtPlot *)w;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //! Return plot widget, containing the observed plot canvas

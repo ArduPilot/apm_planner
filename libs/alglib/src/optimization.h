@@ -1387,9 +1387,9 @@ These functions accept following parameters:
     grad    -   callback which calculates function (or merit function)
                 value func and gradient grad at given point x
     rep     -   optional callback which is called after each iteration
-                can be NULL
+                can be nullptr
     ptr     -   optional pointer which is passed to func/grad/hess/jac/rep
-                can be NULL
+                can be nullptr
 
 NOTES:
 
@@ -1429,12 +1429,12 @@ NOTES:
 *************************************************************************/
 void mincgoptimize(mincgstate &state,
     void (*func)(const real_1d_array &x, double &func, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void mincgoptimize(mincgstate &state,
     void (*grad)(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 
 
 /*************************************************************************
@@ -1918,9 +1918,9 @@ These functions accept following parameters:
     grad    -   callback which calculates function (or merit function)
                 value func and gradient grad at given point x
     rep     -   optional callback which is called after each iteration
-                can be NULL
+                can be nullptr
     ptr     -   optional pointer which is passed to func/grad/hess/jac/rep
-                can be NULL
+                can be nullptr
 
 NOTES:
 
@@ -1960,12 +1960,12 @@ NOTES:
 *************************************************************************/
 void minbleicoptimize(minbleicstate &state,
     void (*func)(const real_1d_array &x, double &func, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void minbleicoptimize(minbleicstate &state,
     void (*grad)(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 
 
 /*************************************************************************
@@ -2401,9 +2401,9 @@ These functions accept following parameters:
     grad    -   callback which calculates function (or merit function)
                 value func and gradient grad at given point x
     rep     -   optional callback which is called after each iteration
-                can be NULL
+                can be nullptr
     ptr     -   optional pointer which is passed to func/grad/hess/jac/rep
-                can be NULL
+                can be nullptr
 
 NOTES:
 
@@ -2443,12 +2443,12 @@ NOTES:
 *************************************************************************/
 void minlbfgsoptimize(minlbfgsstate &state,
     void (*func)(const real_1d_array &x, double &func, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void minlbfgsoptimize(minlbfgsstate &state,
     void (*grad)(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 
 
 /*************************************************************************
@@ -2623,9 +2623,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isnï¿½t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isnï¿½t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -2665,9 +2665,9 @@ INPUT PARAMETERS:
     A       -   matrix, array[N,N]
     IsUpper -   (optional) storage type:
                 * if True, symmetric matrix  A  is  given  by  its  upper
-                  triangle, and the lower triangle isn’t used
+                  triangle, and the lower triangle isnï¿½t used
                 * if False, symmetric matrix  A  is  given  by  its lower
-                  triangle, and the upper triangle isn’t used
+                  triangle, and the upper triangle isnï¿½t used
                 * if not given, both lower and upper  triangles  must  be
                   filled.
 
@@ -3396,9 +3396,9 @@ These functions accept following parameters:
     jac     -   callback which calculates function vector fi[]
                 and Jacobian jac at given point x
     rep     -   optional callback which is called after each iteration
-                can be NULL
+                can be nullptr
     ptr     -   optional pointer which is passed to func/grad/hess/jac/rep
-                can be NULL
+                can be nullptr
 
 NOTES:
 
@@ -3421,30 +3421,30 @@ NOTES:
 *************************************************************************/
 void minlmoptimize(minlmstate &state,
     void (*fvec)(const real_1d_array &x, real_1d_array &fi, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void minlmoptimize(minlmstate &state,
     void (*fvec)(const real_1d_array &x, real_1d_array &fi, void *ptr),
     void  (*jac)(const real_1d_array &x, real_1d_array &fi, real_2d_array &jac, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void minlmoptimize(minlmstate &state,
     void (*func)(const real_1d_array &x, double &func, void *ptr),
     void (*grad)(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
     void (*hess)(const real_1d_array &x, double &func, real_1d_array &grad, real_2d_array &hess, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void minlmoptimize(minlmstate &state,
     void (*func)(const real_1d_array &x, double &func, void *ptr),
     void  (*jac)(const real_1d_array &x, real_1d_array &fi, real_2d_array &jac, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 void minlmoptimize(minlmstate &state,
     void (*func)(const real_1d_array &x, double &func, void *ptr),
     void (*grad)(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
     void  (*jac)(const real_1d_array &x, real_1d_array &fi, real_2d_array &jac, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 
 
 /*************************************************************************
@@ -3687,9 +3687,9 @@ These functions accept following parameters:
     grad    -   callback which calculates function (or merit function)
                 value func and gradient grad at given point x
     rep     -   optional callback which is called after each iteration
-                can be NULL
+                can be nullptr
     ptr     -   optional pointer which is passed to func/grad/hess/jac/rep
-                can be NULL
+                can be nullptr
 
 
   -- ALGLIB --
@@ -3698,8 +3698,8 @@ These functions accept following parameters:
 *************************************************************************/
 void minasaoptimize(minasastate &state,
     void (*grad)(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void  (*rep)(const real_1d_array &x, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+    void  (*rep)(const real_1d_array &x, double func, void *ptr) = nullptr,
+    void *ptr = nullptr);
 
 
 /*************************************************************************

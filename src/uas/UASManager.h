@@ -54,7 +54,7 @@ public:
     /**
      * @brief Get the currently selected UAS
      *
-     * @return NULL pointer if no UAS exists, active UAS else
+     * @return nullptr pointer if no UAS exists, active UAS else
      **/
     UASInterface* getActiveUAS();
     /**
@@ -71,7 +71,7 @@ public:
      * in the range of 1 - 127 by the MAVLINK protocol.
      *
      * @param id unique system / aircraft id
-     * @return UAS with the given ID, NULL pointer else
+     * @return UAS with the given ID, nullptr pointer else
      **/
     UASInterface* getUASForId(int id);
 

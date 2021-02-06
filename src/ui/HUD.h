@@ -52,7 +52,7 @@ class HUD : public QLabel
 {
     Q_OBJECT
 public:
-    HUD(int width = 640, int height = 480, QWidget* parent = NULL);
+    HUD(int width = 640, int height = 480, QWidget* parent = nullptr);
     ~HUD();
 
     void setImageSize(int width, int height, int depth, int channels);

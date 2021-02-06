@@ -21,7 +21,7 @@ QGCComboBox::QGCComboBox(QWidget *parent) :
     ui(new Ui::QGCComboBox)
 {
     ui->setupUi(this);
-    uas = NULL;
+    uas = nullptr;
 
 
     ui->editInfoCheckBox->hide();

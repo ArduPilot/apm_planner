@@ -193,7 +193,7 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     if ((err = snd_pcm_open (&alsa_dev, device, SND_PCM_STREAM_PLAYBACK, 0)) < 0)
     {
         QLOG_INFO() << "cannot open audio device " << device << snd_strerror(err);
-        return NULL;
+        return nullptr;
     }
 
     snd_pcm_nonblock (alsa_dev, 0);
@@ -201,56 +201,56 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     if ((err = snd_pcm_hw_params_malloc (&hw_params)) < 0)
     {
         QLOG_INFO() << "cannot allocate hardware parameter structure "<< snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_hw_params_any (alsa_dev, hw_params)) < 0)
     {
         QLOG_INFO() << "cannot initialize hardware parameter structure " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_hw_params_set_access (alsa_dev, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
     {
         QLOG_INFO() << "cannot set access type ", snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_hw_params_set_format (alsa_dev, hw_params, SND_PCM_FORMAT_FLOAT)) < 0)
     {
         QLOG_INFO() << "cannot set sample format " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_hw_params_set_rate_near (alsa_dev, hw_params, (uint*)&samplerate, 0)) < 0)
     {
         QLOG_INFO() << "cannot set sample rate " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_hw_params_set_channels (alsa_dev, hw_params, channels)) < 0)
     {
         QLOG_INFO() << "cannot set channel count " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_hw_params_set_buffer_size_near (alsa_dev, hw_params, &alsa_buffer_frames)) < 0)
     {
         QLOG_INFO() << "cannot set buffer size " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
 
     if ((err = snd_pcm_hw_params_set_period_size_near (alsa_dev, hw_params, &alsa_period_size, 0)) < 0)
     {
         QLOG_INFO() << "cannot set period size " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_hw_params (alsa_dev, hw_params)) < 0)
     {
         QLOG_INFO() << "cannot set parameters " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     /* extra check: if we have only one period, this code won't work */
@@ -259,7 +259,7 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     if (alsa_period_size == buffer_size)
     {
         QLOG_INFO() << "Can't use period equal to buffer size " << alsa_period_size << buffer_size;
-        return NULL;
+        return nullptr;
     }
 
     snd_pcm_hw_params_free (hw_params);
@@ -267,13 +267,13 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     if ((err = snd_pcm_sw_params_malloc (&sw_params)) != 0)
     {
         QLOG_INFO() << "%s: snd_pcm_sw_params_malloc: " << __func__<< snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_sw_params_current (alsa_dev, sw_params)) != 0)
     {
         QLOG_INFO() << "%s: snd_pcm_sw_params_current: " << __func__ << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     /* note: set start threshold to delay start until the ring buffer is full */
@@ -281,7 +281,7 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     if ((err = snd_pcm_sw_params_get_xfer_align (sw_params, &xfer_align)) < 0)
     {
         QLOG_INFO() << "cannot get xfer align " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     /* round up to closest transfer boundary */
@@ -291,13 +291,13 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
     if ((err = snd_pcm_sw_params_set_start_threshold (alsa_dev, sw_params, start_threshold)) < 0)
     {
         QLOG_INFO() << "cannot set start threshold " << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
 
     if ((err = snd_pcm_sw_params (alsa_dev, sw_params)) != 0)
     {
         QLOG_INFO() << "%s: snd_pcm_sw_params: " << __func__ << snd_strerror (err);
-        return NULL;
+        return nullptr;
     }
     snd_pcm_sw_params_free (sw_params);
 

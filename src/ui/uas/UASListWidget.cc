@@ -46,7 +46,7 @@ This file is part of the PIXHAWK project
 #include "LinkManager.h"
 
 UASListWidget::UASListWidget(QWidget *parent) : QWidget(parent),
-    uWidget(NULL),
+    uWidget(nullptr),
     m_ui(new Ui::UASList)
 {
     m_ui->setupUi(this);
@@ -117,7 +117,7 @@ void UASListWidget::addUAS(UASInterface* uas)
         {
             listLayout->removeWidget(uWidget);
             delete uWidget;
-            uWidget = NULL;
+            uWidget = nullptr;
         }
     }
 
@@ -131,7 +131,7 @@ void UASListWidget::addUAS(UASInterface* uas)
 
 void UASListWidget::activeUAS(UASInterface* uas)
 {
-    UASView* view = uasViews.value(uas, NULL);
+    UASView* view = uasViews.value(uas, nullptr);
     if (view) {
         view->setUASasActive(true);
     }

@@ -89,7 +89,7 @@ QwtPlotCanvas *QwtPlotPanner::canvas()
     if ( w && w->inherits("QwtPlotCanvas") )
         return (QwtPlotCanvas *)w;
 
-    return NULL;
+    return nullptr;
 }
 
 //! Return Observed plot canvas
@@ -108,7 +108,7 @@ QwtPlot *QwtPlotPanner::plot()
             return (QwtPlot *)w;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //! Return plot widget, containing the observed plot canvas
@@ -131,7 +131,7 @@ void QwtPlotPanner::moveCanvas(int dx, int dy)
         return;
 
     QwtPlot *plot = QwtPlotPanner::plot();
-    if ( plot == NULL )
+    if ( plot == nullptr )
         return;
 
     const bool doAutoReplot = plot->autoReplot();

@@ -202,7 +202,7 @@ uint QwtLegend::PrivateData::LegendMap::count() const
 inline const QWidget *QwtLegend::PrivateData::LegendMap::find(const QwtLegendItemManager *item) const
 {
     if ( !d_itemMap.contains((QwtLegendItemManager *)item) )
-        return NULL;
+        return nullptr;
 
     return d_itemMap[(QwtLegendItemManager *)item];
 }
@@ -210,7 +210,7 @@ inline const QWidget *QwtLegend::PrivateData::LegendMap::find(const QwtLegendIte
 inline QWidget *QwtLegend::PrivateData::LegendMap::find(const QwtLegendItemManager *item)
 {
     if ( !d_itemMap.contains((QwtLegendItemManager *)item) )
-        return NULL;
+        return nullptr;
 
     return d_itemMap[(QwtLegendItemManager *)item];
 }
@@ -219,7 +219,7 @@ inline const QwtLegendItemManager *QwtLegend::PrivateData::LegendMap::find(
     const QWidget *widget) const
 {
     if ( !d_widgetMap.contains((QWidget *)widget) )
-        return NULL;
+        return nullptr;
 
     return d_widgetMap[(QWidget *)widget];
 }
@@ -228,7 +228,7 @@ inline QwtLegendItemManager *QwtLegend::PrivateData::LegendMap::find(
     const QWidget *widget)
 {
     if ( !d_widgetMap.contains((QWidget *)widget) )
-        return NULL;
+        return nullptr;
 
     return (QwtLegendItemManager *)d_widgetMap[(QWidget *)widget];
 }
@@ -377,7 +377,7 @@ const QWidget *QwtLegend::contentsWidget() const
 */
 void QwtLegend::insert(const QwtLegendItemManager *plotItem, QWidget *legendItem)
 {
-    if ( legendItem == NULL || plotItem == NULL )
+    if ( legendItem == nullptr || plotItem == nullptr )
         return;
 
     QWidget *contentsWidget = d_data->view->contentsWidget;
@@ -403,7 +403,7 @@ void QwtLegend::insert(const QwtLegendItemManager *plotItem, QWidget *legendItem
 
         // set tab focus chain
 
-        QWidget *w = NULL;
+        QWidget *w = nullptr;
 
 #if QT_VERSION < 0x040000
         QLayoutIterator layoutIterator =
@@ -420,7 +420,7 @@ void QwtLegend::insert(const QwtLegendItemManager *plotItem, QWidget *legendItem
             }
         }
     }
-    if ( parentWidget() && parentWidget()->layout() == NULL ) {
+    if ( parentWidget() && parentWidget()->layout() == nullptr ) {
         /*
            updateGeometry() doesn't post LayoutRequest in certain
            situations, like when we are hidden. But we want the
@@ -441,7 +441,7 @@ void QwtLegend::insert(const QwtLegendItemManager *plotItem, QWidget *legendItem
   Find the widget that represents a plot item
 
   \param plotItem Plot item
-  \return Widget on the legend, or NULL
+  \return Widget on the legend, or nullptr
 */
 QWidget *QwtLegend::find(const QwtLegendItemManager *plotItem) const
 {
@@ -452,7 +452,7 @@ QWidget *QwtLegend::find(const QwtLegendItemManager *plotItem) const
   Find the widget that represents a plot item
 
   \param plotItem Plot item
-  \return Widget on the legend, or NULL
+  \return Widget on the legend, or nullptr
 */
 QwtLegendItemManager *QwtLegend::find(const QWidget *legendItem) const
 {
