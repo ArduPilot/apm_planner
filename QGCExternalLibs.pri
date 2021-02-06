@@ -58,8 +58,6 @@ WindowsBuild {
 MAVLINKPATH_REL = libs/mavlink/include/mavlink/v2.0
 MAVLINKPATH = $$BASEDIR/$$MAVLINKPATH_REL
 MAVLINK_CONF = ardupilotmega
-DEFINES += MAVLINK_NO_DATA
-DEFINES += MAVLINK_EXTERNAL_RX_STATUS # Use global status data
 
 # First we select the dialect, checking for valid user selection
 # Users can override all other settings by specifying MAVLINK_CONF as an argument to qmake

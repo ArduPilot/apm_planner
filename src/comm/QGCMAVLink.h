@@ -30,8 +30,6 @@ This file is part of the QGROUNDCONTROL project
 #ifndef QGCMAVLINK_H
 #define QGCMAVLINK_H
 
-#include <mavlink_types.h>
-extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS]; // defined in src/main.cc
 #include <mavlink.h>
 
 #define MAV_COMP_ID_PRIMARY 1 // Required until we have an offical enum in MAV_COMPONENT
