@@ -5,6 +5,7 @@
 #include "UASManager.h"
 #include "LinkManager.h"
 #include "ui_QGCMAVLinkInspector.h"
+#include "mavlink_helpers.h"
 
 const float QGCMAVLinkInspector::updateHzLowpass = 0.2f;
 const unsigned int QGCMAVLinkInspector::updateInterval = 1000U;
@@ -202,10 +203,10 @@ void QGCMAVLinkInspector::clearView()
 void QGCMAVLinkInspector::refreshView()
 {
 
-    QString message(QString::number(m_mavlink_status[0].packet_rx_success_count));
+    QString message(QString::number(mavlink_get_channel_status(MAVLINK_COMM_0)->packet_rx_success_count));
     ui->msg_received->setText(message);
     message.clear();
-    message.append(QString::number(m_mavlink_status[0].packet_rx_drop_count));
+    message.append(QString::number(mavlink_get_channel_status(MAVLINK_COMM_0)->packet_rx_drop_count));
     ui->msg_lost->setText(message);
 
     QMap<int, mavlink_message_t* >::const_iterator ite;

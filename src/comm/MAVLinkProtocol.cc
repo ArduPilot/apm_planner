@@ -35,6 +35,7 @@ This file is part of the APM_PLANNER project
 
 #include "MAVLinkProtocol.h"
 #include "LinkManager.h"
+#include "mavlink_helpers.h"
 
 #include <cstring>
 #include <QDataStream>
@@ -65,9 +66,6 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
     mavlink_message_t message;
     memset(&message, 0, sizeof(mavlink_message_t));
     mavlink_status_t status;
-
-    // Cache the link ID for common use.
-    quint8 linkId = static_cast<quint8>(link->getId());
 
     for(const auto &data : dataBytes)
     {
@@ -128,7 +126,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
             // Check if we are receiving mavlink 2.0 while sending mavlink 1.0
             if (!(mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) && (mavlinkStatus->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1))
             {
-                QLOG_DEBUG() << "Switching outbound to mavlink 2.0 due to incoming mavlink 2.0 packet:" << mavlinkStatus << linkId << mavlinkStatus->flags;
+                QLOG_DEBUG() << "Switching outbound to mavlink 2.0 due to incoming mavlink 2.0 packet:" << mavlinkStatus << link->getId() << mavlinkStatus->flags;
                 mavlinkStatus->flags &= ~MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
             }
 
@@ -209,7 +207,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
                 // Ensure the warning can't get stuck
                 radioVersionMismatchCount++;
                 // Flick link back to v1
-                QLOG_DEBUG() << "Switching outbound to mavlink 1.0 due to incoming mavlink 1.0 packet:" << mavlinkStatus << linkId << mavlinkStatus->flags;
+                QLOG_DEBUG() << "Switching outbound to mavlink 1.0 due to incoming mavlink 1.0 packet:" << mavlinkStatus << link->getId() << mavlinkStatus->flags;
                 mavlinkStatus->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
             }
 
@@ -337,7 +335,7 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
         }
 
         // Make some noise if a message was skipped
-        //QLOG_DEBUG() << "SYSID" << message.sysid << "COMPID" << message.compid << "MSGID" << message.msgid << "EXPECTED INDEX:" << expectedIndex << "SEQ" << message.seq;
+        //QLOG_DEBUG() << "SYSID" << message.sysid << "COMPID" << message.compid << "MSGID" << message.msgid << "EXPECTED SEQ:" << expectedSequence << "SEQ" << message.seq;
         if (message.seq != expectedSequence)
         {
             // Determine how many messages were skipped accounting for 0-wraparound
@@ -350,7 +348,7 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
             else
             {
                 // TODO Console generates excessive load at high loss rates, needs better GUI visualization
-                //QLOG_DEBUG() << QString("Lost %1 messages for comp %4: expected sequence ID %2 but received %3.").arg(lostMessages).arg(expectedIndex).arg(message.seq).arg(message.compid);
+                //QLOG_DEBUG() << QString("Lost %1 messages for comp %4: expected sequence ID %2 but received %3.").arg(lostMessages).arg(expectedSequence).arg(message.seq).arg(message.compid);
             }
             totalLossCounter[linkId] += lostMessages;
             currLossCounter[linkId] += lostMessages;
