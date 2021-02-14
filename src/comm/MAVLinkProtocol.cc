@@ -67,6 +67,8 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
     memset(&message, 0, sizeof(mavlink_message_t));
     mavlink_status_t status;
 
+    //QLOG_DEBUG() << "MAVLinkProtocol received size:" << dataBytes.size() << " " << dataBytes.at(0);
+
     for(const auto &data : dataBytes)
     {
         unsigned int decodeState = mavlink_parse_char(MAVLINK_COMM_0, static_cast<quint8>(data), &message, &status);
@@ -101,7 +103,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
                 if (mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1)
                 {
                     QLOG_INFO() << "First Mavlink message is version 1.0. Using mavlink 1.0 and ask for mavlink 2.0 capability";
-                    mavlinkStatus->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+                    mavlink_set_proto_version(MAVLINK_COMM_0, 1);
 
                     // Request AUTOPILOT_VERSION message to check if vehicle is mavlink 2.0 capable
                     mavlink_command_long_t command;
@@ -114,12 +116,11 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
                     // Write message into buffer, prepending start sign
                     int len = mavlink_msg_to_send_buffer(sendbuffer, &commandMessage);
                     link->writeBytes(reinterpret_cast<const char*>(sendbuffer), len);
-                    return;
                 }
                 else
                 {
                     QLOG_INFO() << "First Mavlink message is version 2.0. Using Mavlink 2.0 for communication";
-                    mavlinkStatus->flags &= ~MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+                    mavlink_set_proto_version(MAVLINK_COMM_0, 2);
                 }
             }
 
@@ -127,7 +128,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
             if (!(mavlinkStatus->flags & MAVLINK_STATUS_FLAG_IN_MAVLINK1) && (mavlinkStatus->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1))
             {
                 QLOG_DEBUG() << "Switching outbound to mavlink 2.0 due to incoming mavlink 2.0 packet:" << mavlinkStatus << link->getId() << mavlinkStatus->flags;
-                mavlinkStatus->flags &= ~MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+                mavlink_set_proto_version(MAVLINK_COMM_0, 2);
             }
 
             if(message.msgid == MAVLINK_MSG_ID_AUTOPILOT_VERSION)
@@ -137,12 +138,12 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
                 if(version.capabilities & MAV_PROTOCOL_CAPABILITY_MAVLINK2)
                 {
                     QLOG_INFO() << "Vehicle reports mavlink 2.0 capability. Using Mavlink 2.0 for communication";
-                    mavlinkStatus->flags &= ~MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+                    mavlink_set_proto_version(MAVLINK_COMM_0, 2);
                 }
                 else
                 {
                     QLOG_INFO() << "Vehicle reports mavlink 1.0 capability. Using Mavlink 1.0 for communication";
-                    mavlinkStatus->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+                    mavlink_set_proto_version(MAVLINK_COMM_0, 1);
                 }
             }
 
@@ -208,7 +209,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
                 radioVersionMismatchCount++;
                 // Flick link back to v1
                 QLOG_DEBUG() << "Switching outbound to mavlink 1.0 due to incoming mavlink 1.0 packet:" << mavlinkStatus << link->getId() << mavlinkStatus->flags;
-                mavlinkStatus->flags |= MAVLINK_STATUS_FLAG_OUT_MAVLINK1;
+                mavlink_set_proto_version(MAVLINK_COMM_0, 1);
             }
 
             // Log data
@@ -306,10 +307,15 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
     // Only count message if UAS exists for this message
     if (uas != nullptr)
     {
-
         // Increase receive counter
         quint8 linkId = static_cast<quint8>(link->getId());
-        totalReceiveCounter[linkId]++;
+        quint64 currentTotalReceiveCounter = 0;
+        {   // scope for lock
+            QMutexLocker lock(&totalCounterMutex);
+            totalReceiveCounter[linkId]++;
+            currentTotalReceiveCounter = totalReceiveCounter.value(linkId);
+        }
+
         currReceiveCounter[linkId]++;
 
         // Update last message sequence ID
@@ -350,15 +356,18 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
                 // TODO Console generates excessive load at high loss rates, needs better GUI visualization
                 //QLOG_DEBUG() << QString("Lost %1 messages for comp %4: expected sequence ID %2 but received %3.").arg(lostMessages).arg(expectedSequence).arg(message.seq).arg(message.compid);
             }
-            totalLossCounter[linkId] += lostMessages;
-            currLossCounter[linkId] += lostMessages;
+            {   // Scope for lock
+                QMutexLocker lock(&totalCounterMutex);
+                totalLossCounter[linkId] += static_cast<quint64>(lostMessages);
+            }
+            currLossCounter[linkId]  += static_cast<quint64>(lostMessages);
         }
 
         // Update the last sequence ID
         lastIndex[message.sysid][message.compid] = message.seq;
 
         // Update on every 32th packet
-        if (totalReceiveCounter[linkId] % 32 == 0)
+        if (currentTotalReceiveCounter % 32 == 0)
         {
             // Calculate new receive loss ratio
             float receiveLoss = (double)currLossCounter[linkId]/(double)(currReceiveCounter[linkId]+currLossCounter[linkId]);
@@ -409,4 +418,42 @@ bool MAVLinkProtocol::startLogging(const QString& filename)
         m_ScopedLogfilePtr.reset();
     }
     return m_loggingEnabled; // reflects if logging started or not.
+}
+
+quint64 MAVLinkProtocol::getTotalMessagesReceived(int mavLinkID) const
+{
+    quint64 result = 0;
+    QMutexLocker lock(&totalCounterMutex);
+
+    if(mavLinkID == 0)  // ID = 0 means all devices
+    {
+        for (quint64 count : qAsConst(totalReceiveCounter))
+        {
+            result += count; // create sum of all devices
+        }
+    }
+    if(totalReceiveCounter.contains(mavLinkID))
+    {
+        result = totalReceiveCounter[mavLinkID];
+    }
+    return result;
+}
+
+quint64 MAVLinkProtocol::getTotalMessagesLost(int mavLinkID) const
+{
+    quint64 result = 0;
+    QMutexLocker lock(&totalCounterMutex);
+
+    if(mavLinkID == 0)  // ID = 0 means all devices
+    {
+        for (quint64 count : qAsConst(totalLossCounter))
+        {
+            result += count; // create sum of all devices
+        }
+    }
+    if(totalLossCounter.contains(mavLinkID))
+    {
+        result = totalLossCounter[mavLinkID];
+    }
+    return result;
 }

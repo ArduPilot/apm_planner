@@ -61,6 +61,18 @@ public:
     bool startLogging(const QString& filename);
     bool loggingEnabled() { return m_loggingEnabled; }
     void setOnline(bool isonline) { m_isOnline = isonline; }
+    /*!
+     * \brief getTotalMessagesReceived - Get total number of successfull received messages
+     * \param mavLinkID - ID of the communication partner
+     * \return - Number of successful received messages
+     */
+    quint64 getTotalMessagesReceived(int mavLinkID) const;
+    /*!
+     * \brief getTotalMessagesLost - Get the numer of messages lost
+     * \param mavLinkID - ID of the communication partner
+     * \return - Number of lost messages
+     */
+    quint64 getTotalMessagesLost(int mavLinkID) const;
 
 public slots:
     void receiveBytes(LinkInterface* link, const QByteArray &dataBytes);
@@ -78,12 +90,14 @@ private:
     bool m_throwAwayGCSPackets = false;
     LinkManager *m_connectionManager = nullptr;
     bool versionMismatchIgnore = false;
-    QMap<int, qint64> totalReceiveCounter;
-    QMap<int, qint64> currReceiveCounter;
-    QMap<int,QMap<int, quint8> > lastIndex;
-    QMap<int, qint64> totalLossCounter;
-    QMap<int, qint64> currLossCounter;
     bool m_enable_version_check = false;
+
+    mutable QMutex totalCounterMutex;
+    QMap<int, quint64> totalReceiveCounter;
+    QMap<int, quint64> totalLossCounter;
+    QMap<int, quint64> currReceiveCounter;
+    QMap<int, quint64> currLossCounter;
+    QMap<int,QMap<int, quint8> > lastIndex;
 
 signals:
     void protocolStatusMessage(const QString& title, const QString& message);
