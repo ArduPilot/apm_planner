@@ -505,7 +505,7 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     {
     case MAV_AUTOPILOT_GENERIC:
     {
-        UAS* mav = new UAS(nullptr, sysid);
+        UAS* mav = new UAS(mavlink, sysid);
         // Set the system type
         mav->setSystemType(static_cast<int>(heartbeat->type));
         // Connect this robot to the UAS object
@@ -534,7 +534,7 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
 //    break;
     case MAV_AUTOPILOT_SLUGS:
     {
-        SlugsMAV* mav = new SlugsMAV(nullptr, sysid);
+        SlugsMAV* mav = new SlugsMAV(mavlink, sysid);
         // Set the system type
         mav->setSystemType(static_cast<int>(heartbeat->type));
         // Connect this robot to the UAS object
@@ -547,7 +547,7 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
     break;
     case MAV_AUTOPILOT_ARDUPILOTMEGA:
     {
-        ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(nullptr, sysid);
+        ArduPilotMegaMAV* mav = new ArduPilotMegaMAV(mavlink, sysid);
 
         // Set the system type
         mav->setSystemType(static_cast<int>(heartbeat->type));
@@ -571,7 +571,7 @@ UASInterface* LinkManager::createUAS(MAVLinkProtocol* mavlink, LinkInterface* li
 #endif
     default:
     {
-        UAS* mav = new UAS(nullptr, sysid);
+        UAS* mav = new UAS(mavlink, sysid);
         mav->setSystemType(static_cast<int>(heartbeat->type));
         // Connect this robot to the UAS object
         // it is IMPORTANT here to use the right object type,

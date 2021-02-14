@@ -418,6 +418,11 @@ public:
 
     friend class UASWaypointManager;
 
+    MAVLinkProtocol* getMavLinkProtocol() const
+    {
+        return p_protocol;
+    }
+
 protected: //COMMENTS FOR TEST UNIT
     bool m_heartbeatsEnabled;
     /// LINK ID AND STATUS
@@ -557,6 +562,8 @@ protected: //COMMENTS FOR TEST UNIT
 
     /// SIMULATION
     QGCHilLink* simulation;         ///< Hardware in the loop simulation link
+
+    MAVLinkProtocol* p_protocol = nullptr;
 
 public:
     void setHeartbeatEnabled(bool enabled) { m_heartbeatsEnabled = enabled; }
@@ -1065,7 +1072,6 @@ protected:
     QList< QPair<int, QString> >  paramRequestQueue;
 
     QTimer m_parameterSendTimer;
-
 
 protected slots:
     void requestNextParamFromQueue();
