@@ -10,9 +10,9 @@
 const float QGCMAVLinkInspector::updateHzLowpass = 0.2f;
 const unsigned int QGCMAVLinkInspector::updateInterval = 1000U;
 
-QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *parent) :
+QGCMAVLinkInspector::QGCMAVLinkInspector(QWidget *parent) :
     QWidget(parent),
-    _protocol(protocol),
+    _protocol(nullptr),
     selectedSystemID(0),
     selectedComponentID(0),
     ui(new Ui::QGCMAVLinkInspector)
@@ -59,8 +59,11 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
     // Connect external connections
     connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(addSystem(UASInterface*)));
     connect(LinkManager::instance(), SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)), this, SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
-    for(int count=0; count < UASManager::instance()->getUASList().count();count++){
-        addSystem(UASManager::instance()->getUASList()[count]);
+
+    QList<UASInterface*> uasList = UASManager::instance()->getUASList();
+    for(UASInterface *uas: uasList)
+    {
+        addSystem(uas);
     }
 
     // Attach the UI's refresh rate to a timer.
@@ -70,8 +73,25 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *par
 
 void QGCMAVLinkInspector::addSystem(UASInterface* uas)
 {
-    ui->systemComboBox->addItem(uas->getUASName(), uas->getUASID());
+    if (!uas)
+    {
+        return;
+    }
+    // FIXME: This is a hack:
+    // the getMavLinkProtocol is not exposed in the interface.
+    // therefore we cast the type to UAS which implements the method.
+    // Moreover we know that there is only ONE MavLinkProtocol so we can take the first one.
+    if (!_protocol)
+    {
+        UAS* theUAS = dynamic_cast<UAS*>(uas);
+        if (theUAS)
+        {
+            _protocol = theUAS->getMavLinkProtocol();
+        }
+    }
 
+    // Add UAS to UI
+    ui->systemComboBox->addItem(uas->getUASName(), uas->getUASID());
     // Add a tree for a new UAS
     addUAStoTree(uas->getUASID());
 }
@@ -202,12 +222,14 @@ void QGCMAVLinkInspector::clearView()
 
 void QGCMAVLinkInspector::refreshView()
 {
-
-    QString message(QString::number(mavlink_get_channel_status(MAVLINK_COMM_0)->packet_rx_success_count));
-    ui->msg_received->setText(message);
-    message.clear();
-    message.append(QString::number(mavlink_get_channel_status(MAVLINK_COMM_0)->packet_rx_drop_count));
-    ui->msg_lost->setText(message);
+    if (_protocol)
+    {
+        QString message(QString::number(_protocol->getTotalMessagesReceived(selectedSystemID)));
+        ui->msg_received->setText(message);
+        message.clear();
+        message.append(QString::number(_protocol->getTotalMessagesLost(selectedSystemID)));
+        ui->msg_lost->setText(message);
+    }
 
     QMap<int, mavlink_message_t* >::const_iterator ite;
 

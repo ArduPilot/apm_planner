@@ -19,7 +19,7 @@ class QGCMAVLinkInspector : public QWidget
     Q_OBJECT
 
 public:
-    explicit QGCMAVLinkInspector(MAVLinkProtocol* protocol, QWidget *parent = 0);
+    explicit QGCMAVLinkInspector(QWidget *parent = 0);
     ~QGCMAVLinkInspector();
 
 public slots:
