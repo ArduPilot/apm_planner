@@ -75,8 +75,6 @@ void SerialConnection::connectionDestroyed(QObject *object)
 
 void SerialConnection::portError(QSerialPort::SerialPortError serialPortError)
 {
-    QLOG_ERROR() << "serial connection: error " << serialPortError;
-
     switch(serialPortError){
     case QSerialPort::ReadError: // Required for commands when the port is open.
     case QSerialPort::WriteError:
@@ -92,6 +90,8 @@ void SerialConnection::portError(QSerialPort::SerialPortError serialPortError)
     [[clang::fallthrough]];
     case QSerialPort::ResourceError:
         {
+            QLOG_ERROR() << "serial connection: error " << serialPortError;
+
             // In case of error disconnect from error signal to avoid endless looping
             // if another error is signalled while disconnecting
             QObject::disconnect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
@@ -288,10 +288,7 @@ bool SerialConnection::connect()
         disconnect();
     }
     m_port = new QSerialPort();
-    QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(readyRead()));
-    QObject::connect(m_port, SIGNAL(destroyed(QObject*)),this,SLOT(connectionDestroyed(QObject*)));
-    QObject::connect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
-                     this, SLOT(portError(QSerialPort::SerialPortError)), Qt::UniqueConnection);
+
 
 #if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
     // temp fix Qt5.4.1 issue on OSX
@@ -357,6 +354,18 @@ bool SerialConnection::connect()
         m_port = 0;
         return false;
     }
+
+    // After port setup reset state and data buffer
+    m_port->clear();
+    m_port->clearError();
+
+    // Connetc to signals and start receivieng
+    QObject::connect(m_port,SIGNAL(readyRead()),this,SLOT(readyRead()));
+    QObject::connect(m_port, SIGNAL(destroyed(QObject*)),this,SLOT(connectionDestroyed(QObject*)));
+    QObject::connect(m_port, SIGNAL(error(QSerialPort::SerialPortError)),
+                     this, SLOT(portError(QSerialPort::SerialPortError)), Qt::UniqueConnection);
+
+
     m_lastTimeoutMessage = QDateTime::currentMSecsSinceEpoch();
     m_isConnected = true;
     m_timeoutMessageSent = false;
@@ -366,15 +375,19 @@ bool SerialConnection::connect()
     m_retryCount = 0;
     return true;
 }
+
 void SerialConnection::readyRead()
 {
-    if (!m_port)
+    if (m_port)
     {
-        //This shouldn't happen
+        m_lastTimeoutMessage = QDateTime::currentMSecsSinceEpoch();
+        QByteArray bytes = m_port->readAll();
+        while (m_port->waitForReadyRead(10))
+        {
+            bytes += m_port->readAll();
+        }
+        emit bytesReceived(this,bytes);
     }
-    m_lastTimeoutMessage = QDateTime::currentMSecsSinceEpoch();
-    QByteArray bytes = m_port->readAll();
-    emit bytesReceived(this,bytes);
 }
 
 void SerialConnection::disableTimeouts()
