@@ -146,9 +146,10 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
 
 
     paramsOnceRequested(false),
-    paramManager(NULL),
+    paramManager(nullptr),
 
-    simulation(0),
+    simulation(nullptr),
+    p_protocol(protocol),
 
     // The protected members.
     connectionLost(false),
@@ -160,8 +161,6 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
     lastSendTimeGPS(0),
     lastSendTimeSensors(0)
 {
-    Q_UNUSED(protocol);
-
     for (unsigned int i = 0; i<255;++i)
     {
         componentID[i] = -1;
