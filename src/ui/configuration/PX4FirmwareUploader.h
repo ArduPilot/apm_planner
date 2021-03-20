@@ -82,6 +82,7 @@ signals:
     void boardId(int id);
     void bootloaderRev(int rev);
     void flashSize(int size);
+    void startFlashing();
     void flashProgress(qint64 current,qint64 total);
     void error(QString error);
     void statusUpdate(QString status);

@@ -25,8 +25,8 @@ This file is part of the APM_PLANNER project
 
 AP2ConfigWidget::AP2ConfigWidget(QWidget *parent) : QWidget(parent)
 {
-    m_uas = 0;
 }
+
 void AP2ConfigWidget::initConnections()
 {
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
@@ -37,43 +37,41 @@ void AP2ConfigWidget::activeUASSet(UASInterface *uas)
 {
     if (m_uas)
     {
-        disconnect(m_uas,SIGNAL(parameterChanged(int,int,QString,QVariant)),
-                   this,SLOT(parameterChanged(int,int,QString,QVariant)));
-        disconnect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
-                this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
-        m_uas = 0;
+        disconnect(m_uas, SIGNAL(parameterChanged(int,int,QString,QVariant)), this, SLOT(parameterChanged(int,int,QString,QVariant)));
+        disconnect(m_uas, SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)), this, SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
+        m_uas = nullptr;
     }
-    if (!uas) return;
-    m_uas = uas;
-    connect(m_uas,SIGNAL(parameterChanged(int,int,QString,QVariant)),
-            this,SLOT(parameterChanged(int,int,QString,QVariant)));
-    connect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
-            this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
+    if (uas)
+    {
+        m_uas = uas;
+        connect(m_uas, SIGNAL(parameterChanged(int,int,QString,QVariant)), this, SLOT(parameterChanged(int,int,QString,QVariant)));
+        connect(m_uas, SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)), this, SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
+    }
 }
 
 void AP2ConfigWidget::parameterChanged(int uas, int component, QString parameterName, QVariant value)
 {
-    Q_UNUSED(uas);
-    Q_UNUSED(component);
-    Q_UNUSED(parameterName);
-    Q_UNUSED(value);
+    Q_UNUSED(uas)
+    Q_UNUSED(component)
+    Q_UNUSED(parameterName)
+    Q_UNUSED(value)
 }
 
 void AP2ConfigWidget::parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value)
 {
-    Q_UNUSED(uas);
-    Q_UNUSED(component);
-    Q_UNUSED(parameterName);
-    Q_UNUSED(value);
-    Q_UNUSED(parameterCount);
-    Q_UNUSED(parameterId);
+    Q_UNUSED(uas)
+    Q_UNUSED(component)
+    Q_UNUSED(parameterName)
+    Q_UNUSED(value)
+    Q_UNUSED(parameterCount)
+    Q_UNUSED(parameterId)
 }
 
 bool AP2ConfigWidget::showNullMAVErrorMessageBox()
 {
-    if (!m_uas) {
-        QMessageBox::information(0,tr("Error"),
-                                 tr("Please connect to a MAV before attempting to set configuration"));
+    if (!m_uas)
+    {
+        QMessageBox::information(this ,tr("Error"), tr("Please connect to a MAV before attempting to set configuration"));
         return true;
     }
     return false;

@@ -32,8 +32,8 @@ This file is part of the PIXHAWK project
 #include <QTimer>
 #include <QLabel>
 #include <QFileDialog>
-
 #include <QApplication>
+#include <QScrollBar>
 
 #include "MG.h"
 #include "UASListWidget.h"

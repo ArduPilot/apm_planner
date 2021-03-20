@@ -377,8 +377,6 @@ FORMS += \
     src/ui/watchdog/WatchdogControl.ui \
     src/ui/watchdog/WatchdogProcessView.ui \
     src/ui/watchdog/WatchdogView.ui \
-    src/ui/QGCFirmwareUpdate.ui \
-    src/ui/QGCPxImuFirmwareUpdate.ui \
     src/ui/SlugsDataSensorView.ui \
     src/ui/SlugsHilSim.ui \
     src/ui/SlugsPadCameraControl.ui \
@@ -399,9 +397,7 @@ FORMS += \
     src/ui/WaypointViewOnlyView.ui \
     src/ui/WaypointEditableView.ui \
     src/ui/UnconnectedUASInfoWidget.ui \
-    src/ui/firmwareupdate/QGCFirmwareUpdateWidget.ui \
     src/ui/QGCPluginHost.ui \
-    src/ui/firmwareupdate/QGCPX4FirmwareUpdate.ui \
     src/ui/mission/QGCMissionOther.ui \
     src/ui/mission/QGCMissionNavWaypoint.ui \
     src/ui/mission/QGCMissionDoJump.ui \
@@ -473,9 +469,7 @@ FORMS += \
     src/ui/configuration/TerminalConsole.ui \
     src/ui/configuration/LogConsole.ui \
     src/ui/configuration/SerialSettingsDialog.ui \
-    src/ui/configuration/ApmFirmwareConfig.ui \
     src/ui/DebugOutput.ui \
-    src/ui/configuration/SetupWarningMessage.ui \
     src/ui/uas/APMShortcutModesDialog.ui \
     src/ui/configuration/DownloadRemoteParamsDialog.ui \
     src/ui/configuration/ParamCompareDialog.ui \
@@ -492,7 +486,8 @@ FORMS += \
     src/ui/LogAnalysis.ui \
     src/ui/LogAnalysisMap.ui \
     src/ui/configuration/FrameTypeConfigOld.ui \
-    src/ui/configuration/FrameTypeConfigNew.ui
+    src/ui/configuration/FrameTypeConfigNew.ui \
+    src/ui/configuration/apmcustomfirmwareconfig.ui
 
 HEADERS += \
     src/MG.h \
@@ -545,8 +540,6 @@ HEADERS += \
     src/uas/UASWaypointManager.h \
     src/ui/HSIDisplay.h \
     src/QGC.h \
-    src/ui/QGCFirmwareUpdate.h \
-    src/ui/QGCPxImuFirmwareUpdate.h \
     src/ui/RadioCalibration/RadioCalibrationData.h \
     src/comm/QGCMAVLink.h \
     src/ui/SlugsDataSensorView.h \
@@ -582,9 +575,7 @@ HEADERS += \
     src/ui/WaypointEditableView.h \
     src/ui/UnconnectedUASInfoWidget.h \
     src/ui/QGCRGBDView.h \
-    src/ui/firmwareupdate/QGCFirmwareUpdateWidget.h \
     src/ui/QGCPluginHost.h \
-    src/ui/firmwareupdate/QGCPX4FirmwareUpdate.h \
     src/ui/mission/QGCMissionOther.h \
     src/ui/mission/QGCMissionNavWaypoint.h \
     src/ui/mission/QGCMissionDoJump.h \
@@ -669,13 +660,11 @@ HEADERS += \
     src/ui/configuration/TerminalConsole.h \
     src/ui/configuration/LogConsole.h \
     src/ui/configuration/ApmHighlighter.h \
-    src/ui/configuration/ApmFirmwareConfig.h \
     src/ui/designer/QGCMouseWheelEventFilter.h \
     src/ui/DebugOutput.h \
     src/ui/configuration/APDoubleSpinBox.h \
     src/ui/configuration/APSpinBox.h \
     src/ui/configuration/Radio3DRSettings.h \
-    src/ui/configuration/SetupWarningMessage.h \
     src/ui/uas/APMShortcutModesDialog.h \
     src/ui/configuration/DownloadRemoteParamsDialog.h \
     src/ui/configuration/ParamCompareDialog.h \
@@ -729,7 +718,8 @@ HEADERS += \
     src/ui/Loghandling/LogExporter.h \
     src/ui/Loghandling/LogAnalysis.h \
     src/ui/Loghandling/LogAnalysisMap.h \
-    src/ui/Loghandling/PresetManager.h
+    src/ui/Loghandling/PresetManager.h \
+    src/ui/configuration/ApmCustomFirmwareConfig.h
 
 SOURCES += src/main.cc \
     src/QGCCore.cc \
@@ -777,8 +767,6 @@ SOURCES += src/main.cc \
     src/uas/UASWaypointManager.cc \
     src/ui/HSIDisplay.cc \
     src/QGC.cc \
-    src/ui/QGCFirmwareUpdate.cc \
-    src/ui/QGCPxImuFirmwareUpdate.cc \
     src/ui/RadioCalibration/RadioCalibrationData.cc \
     src/ui/SlugsDataSensorView.cc \
     src/ui/SlugsHilSim.cc \
@@ -813,9 +801,7 @@ SOURCES += src/main.cc \
     src/ui/WaypointEditableView.cc \
     src/ui/UnconnectedUASInfoWidget.cc \
     src/ui/QGCRGBDView.cc \
-    src/ui/firmwareupdate/QGCFirmwareUpdateWidget.cc \
     src/ui/QGCPluginHost.cc \
-    src/ui/firmwareupdate/QGCPX4FirmwareUpdate.cc \
     src/ui/mission/QGCMissionOther.cc \
     src/ui/mission/QGCMissionNavWaypoint.cc \
     src/ui/mission/QGCMissionDoJump.cc \
@@ -899,13 +885,11 @@ SOURCES += src/main.cc \
     src/ui/configuration/Console.cc \
     src/ui/configuration/SerialSettingsDialog.cc \
     src/ui/configuration/ApmHighlighter.cc \
-    src/ui/configuration/ApmFirmwareConfig.cc \
     src/ui/designer/QGCMouseWheelEventFilter.cc \
     src/ui/DebugOutput.cc \
     src/ui/configuration/APDoubleSpinBox.cc \
     src/ui/configuration/APSpinBox.cc \
     src/ui/configuration/Radio3DRSettings.cc \
-    src/ui/configuration/SetupWarningMessage.cc \
     src/ui/uas/APMShortcutModesDialog.cpp \
     src/ui/configuration/DownloadRemoteParamsDialog.cc \
     src/ui/configuration/ParamCompareDialog.cpp \
@@ -956,7 +940,8 @@ SOURCES += src/main.cc \
     src/ui/Loghandling/LogExporter.cpp \
     src/ui/Loghandling/LogAnalysis.cpp \
     src/ui/Loghandling/LogAnalysisMap.cpp\
-    src/ui/Loghandling/PresetManager.cpp
+    src/ui/Loghandling/PresetManager.cpp \
+    src/ui/configuration/ApmCustomFirmwareConfig.cpp
 
 MacBuild | WindowsBuild : contains(GOOGLEEARTH, enable) { #fix this to make sense ;)
     message(Including support for Google Earth)

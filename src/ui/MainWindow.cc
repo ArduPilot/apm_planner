@@ -43,7 +43,6 @@ This file is part of the QGROUNDCONTROL project
 #include "QGCMapTool.h"
 #include "MAVLinkDecoder.h"
 #include "QGCRGBDView.h"
-#include "QGCFirmwareUpdate.h"
 #include "QGCStatusBar.h"
 #include "UASQuickView.h"
 #include "UASActionsWidget.h"
@@ -2229,9 +2228,6 @@ void MainWindow::loadViewState()
             break;
         case VIEW_MAVLINK:
             centerStack->setCurrentWidget(mavlinkView);
-            break;
-        case VIEW_FIRMWAREUPDATE:
-            centerStack->setCurrentWidget(firmwareUpdateWidget);
             break;
         case VIEW_MISSION:
             centerStack->setCurrentWidget(plannerView);
