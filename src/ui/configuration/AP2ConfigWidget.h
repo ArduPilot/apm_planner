@@ -37,12 +37,12 @@ class AP2ConfigWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AP2ConfigWidget(QWidget *parent = 0);
+    explicit AP2ConfigWidget(QWidget *parent = nullptr);
+
 protected:
-    UASInterface *m_uas;
+    UASInterface *m_uas{nullptr};
     bool showNullMAVErrorMessageBox();
     void initConnections();
-signals:
     
 public slots:
     virtual void activeUASSet(UASInterface *uas);

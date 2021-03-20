@@ -47,9 +47,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
-        <width>201</width>
-        <height>747</height>
+        <y>-430</y>
+        <width>195</width>
+        <height>804</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -62,13 +62,13 @@
           <widget class="QPushButton" name="firmwareButton">
            <property name="minimumSize">
             <size>
-             <width>175</width>
+             <width>0</width>
              <height>30</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>175</width>
+             <width>16777215</width>
              <height>30</height>
             </size>
            </property>

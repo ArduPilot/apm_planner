@@ -27,14 +27,12 @@ This file is part of the APM_PLANNER project
  *   @author Michael Carpenter <malcom2073@gmail.com>
  *
  */
+
 #include "logging.h"
 #include "ApmHardwareConfig.h"
+#include <QMessageBox>
 
-ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
-    m_uas(NULL),
-    m_paramDownloadState(none),
-    m_paramDownloadCount(0),
-    m_mandatory(false)
+ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
 {
     ui.setupUi(this);
 
@@ -59,12 +57,10 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     ui.radio3DRLargeButton->setVisible(true); // [SHOW 3DR RADIO]
     ui.antennaTrackerLargeButton->setVisible(false); // [HIDE Antenna Tracking]
 
-    m_apmFirmwareConfig = new ApmFirmwareConfig(this);
-    connect(m_apmFirmwareConfig,SIGNAL(showBlankingScreen()),this,SLOT(activateBlankingScreen()));
-    ui.stackedWidget->addWidget(m_apmFirmwareConfig); //Firmware placeholder.
-    m_buttonToConfigWidgetMap[ui.firmwareButton] = m_apmFirmwareConfig;
-    connect(ui.firmwareButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
-    connect(this, SIGNAL(advancedModeChanged(bool)), m_apmFirmwareConfig, SLOT(advancedModeChanged(bool)));
+    m_apmCustomFWConfig = new ApmCustomFirmwareConfig(this);
+    ui.stackedWidget->addWidget(m_apmCustomFWConfig);
+    m_buttonToConfigWidgetMap[ui.firmwareButton] = m_apmCustomFWConfig;
+    connect(ui.firmwareButton, SIGNAL(clicked()), this, SLOT(activateStackedWidget()));
 
     m_flightConfig = new FlightModeConfig(this);
     ui.stackedWidget->addWidget(m_flightConfig);
@@ -143,12 +139,7 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : AP2ConfigWidget(parent),
     connect(ui.antennaTrackerButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
     connect(ui.antennaTrackerLargeButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
-    m_setupWarningMessage = new SetupWarningMessage(this);
-    ui.stackedWidget->addWidget(m_setupWarningMessage);
-    m_buttonToConfigWidgetMap[ui.hiddenPushButton] = m_setupWarningMessage;
-    connect(ui.hiddenPushButton,SIGNAL(clicked()),this,SLOT(activateStackedWidget()));
 
-    m_uas=0;
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     if (UASManager::instance()->getActiveUAS())
     {
@@ -170,10 +161,6 @@ void ApmHardwareConfig::advModeChanged(bool state)
     emit advancedModeChanged(state);
 }
 
-void ApmHardwareConfig::activateBlankingScreen()
-{
-    ui.stackedWidget->setCurrentWidget(m_setupWarningMessage);
-}
 
 void ApmHardwareConfig::activateStackedWidget()
 {
@@ -187,9 +174,6 @@ void ApmHardwareConfig::activateStackedWidget()
     }
 }
 
-ApmHardwareConfig::~ApmHardwareConfig()
-{
-}
 void ApmHardwareConfig::uasConnected()
 {
     if (!m_uas)
@@ -197,10 +181,20 @@ void ApmHardwareConfig::uasConnected()
         return;
     }
     QLOG_DEBUG() << "AHC: uasConnected()";
-    connect(ui.optionalHardwareButton, SIGNAL(clicked()),
-            this, SLOT(optionalClicked()),Qt::UniqueConnection);
-    connect(ui.mandatoryHardware, SIGNAL(clicked()),
-            this, SLOT(mandatoryClicked()),Qt::UniqueConnection);
+    connect(ui.optionalHardwareButton, SIGNAL(clicked()), this, SLOT(optionalClicked()), Qt::UniqueConnection);
+    connect(ui.mandatoryHardware, SIGNAL(clicked()), this, SLOT(mandatoryClicked()), Qt::UniqueConnection);
+
+    // if we are connecedt via mavlink flashing is not allowed so we connect the button to another function...
+    disconnect(ui.firmwareButton, SIGNAL(clicked()), this, SLOT(activateStackedWidget()));
+    connect(ui.firmwareButton, SIGNAL(clicked()), this, SLOT(firmwareWhileConnected()), Qt::UniqueConnection);
+
+    if (ui.stackedWidget->currentWidget() == m_apmCustomFWConfig)
+    {
+        // ...and hide the flashing page.
+        ui.stackedWidget->setCurrentWidget(m_frameConfig);
+        ui.frameTypeButton->setChecked(true);
+    }
+
     // Hide offline options and show Optional and Mandatory buttons
     ui.radio3DRLargeButton->setVisible(false);
     ui.antennaTrackerLargeButton->setVisible(false);
@@ -224,10 +218,11 @@ void ApmHardwareConfig::uasDisconnected()
     }
     QLOG_DEBUG() << "AHC: uasDisconnected()";
     // Show offline options and hide Optional and Mandatory buttons
-    disconnect(ui.mandatoryHardware, SIGNAL(clicked()),
-                this, SLOT(mandatoryClicked()));
-    disconnect(ui.optionalHardwareButton, SIGNAL(clicked()),
-                this, SLOT(optionalClicked()));
+    disconnect(ui.mandatoryHardware, SIGNAL(clicked()), this, SLOT(mandatoryClicked()));
+    disconnect(ui.optionalHardwareButton, SIGNAL(clicked()), this, SLOT(optionalClicked()));
+
+    disconnect(ui.firmwareButton, SIGNAL(clicked()), this, SLOT(firmwareWhileConnected()));
+    connect(ui.firmwareButton, SIGNAL(clicked()), this, SLOT(activateStackedWidget()), Qt::UniqueConnection);
 
     ui.optionalHardwareButton->setChecked(false);
     ui.optionalHardwareButton->setVisible(false);
@@ -258,6 +253,16 @@ void ApmHardwareConfig::uasDisconnected()
     ui.stackedWidget->setCurrentWidget(m_buttonToConfigWidgetMap[ui.hiddenPushButton]);
     ui.hiddenPushButton->setChecked(true);
 }
+
+void ApmHardwareConfig::firmwareWhileConnected()
+{
+    QMessageBox::information(this, "Flashing Not Allowed", "You can not load new firmware while connected via Mavlink.\n\n"
+                                   "Please press the disconnect button at the top right to end the current Mavlink session");
+
+    ui.firmwareButton->setChecked(false);
+    ui.frameTypeButton->setChecked(true);
+}
+
 void ApmHardwareConfig::activeUASSet(UASInterface *uas)
 {
     if (m_uas)
@@ -269,7 +274,7 @@ void ApmHardwareConfig::activeUASSet(UASInterface *uas)
         disconnect(m_uas,SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)),
                 this,SLOT(parameterChanged(int,int,int,int,QString,QVariant)));
 
-        m_uas = 0;
+        m_uas = nullptr;
     }
     if (!uas)
     {

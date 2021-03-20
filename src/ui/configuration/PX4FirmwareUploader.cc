@@ -340,6 +340,8 @@ void PX4FirmwareUploader::eraseSyncCheck()
             m_eraseTimeoutTimer = nullptr;
             //Emit error here
             QLOG_INFO() << "Error flashing, never returned from erase";
+            emit statusUpdate("Erase failed - took too long.");
+            emit statusUpdate("Flashing process stopped. Perhaps you should try again or use a different tool.");
         }
     }
 }
@@ -359,6 +361,7 @@ void PX4FirmwareUploader::reqFlash()
 {
     QLOG_INFO() << "Flash requested, flashing firmware";
     emit statusUpdate("Flashing Firmware");
+    emit startFlashing();
     tempFile->open();
     m_currentState = SEND_FW;
     m_waitingForSync = true;
@@ -569,8 +572,9 @@ void PX4FirmwareUploader::portReadyRead()
                 if (!reqNextSNAddress())
                 {
                     QLOG_INFO() << "SN read complete" << m_snBytes.toHex();
+                    emit statusUpdate("Serial Number: 0x" + m_snBytes.toHex());
                     emit serialNumber(m_snBytes.toHex());
-                    emit statusUpdate("Erasing board");
+                    emit statusUpdate("Erasing board. This may take a while - do not disconnect or power off!");
                     reqErase();
                     return;
                 }

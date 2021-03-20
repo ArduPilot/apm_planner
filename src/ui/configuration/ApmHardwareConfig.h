@@ -33,7 +33,6 @@ This file is part of the APM_PLANNER project
 #define APMHARDWARECONFIG_H
 
 #include <QWidget>
-#include "AP2ConfigWidget.h"
 #include "ui_ApmHardwareConfig.h"
 #include <UASInterface.h>
 #include <UASManager.h>
@@ -50,12 +49,11 @@ This file is part of the APM_PLANNER project
 #include "CameraGimbalConfig.h"
 #include "AntennaTrackerConfig.h"
 #include "ApmPlaneLevel.h"
-#include "ApmFirmwareConfig.h"
+#include "ApmCustomFirmwareConfig.h"
 #include "FlightModeConfig.h"
 #include "FailSafeConfig.h"
-#include "SetupWarningMessage.h"
 
-class ApmHardwareConfig : public AP2ConfigWidget
+class ApmHardwareConfig : public QWidget
 {
     Q_OBJECT
 
@@ -63,8 +61,7 @@ class ApmHardwareConfig : public AP2ConfigWidget
     enum ParamReadWriteState { none, startRead, startWrite, readingParams, writingParams, completed };
     
 public:
-    explicit ApmHardwareConfig(QWidget *parent = 0);
-    ~ApmHardwareConfig();
+    explicit ApmHardwareConfig(QWidget *parent = nullptr);
 
 signals:
     void advancedModeChanged(bool stateupdateFirmwareButtons);
@@ -78,7 +75,7 @@ public slots:
     void advModeChanged(bool state);
 
 private:
-    QPointer<ApmFirmwareConfig> m_apmFirmwareConfig;
+    QPointer<ApmCustomFirmwareConfig> m_apmCustomFWConfig;
 
     //Mandatory
     QPointer<FrameTypeConfig> m_frameConfig;
@@ -99,26 +96,24 @@ private:
     QPointer<CameraGimbalConfig> m_cameraGimbalConfig;
     QPointer<AntennaTrackerConfig> m_antennaTrackerConfig;
 
-    QPointer<SetupWarningMessage> m_setupWarningMessage;
-
 private slots:
     void activeUASSet(UASInterface *uas);
     void activateStackedWidget();
     void uasConnected();
     void uasDisconnected();
-    void activateBlankingScreen();
+    void firmwareWhileConnected();
 
 private:
     Ui::ApmHardwareConfig ui;
-    UASInterface *m_uas;
+    UASInterface *m_uas{nullptr};
 
     //This is a map between the buttons, and the widgets they should be displying
     QMap<QObject*,QWidget*> m_buttonToConfigWidgetMap;
 
-    ParamReadWriteState m_paramDownloadState;
-    int m_paramDownloadCount;
-    int m_paramTotalCount;
-    bool m_mandatory;
+    ParamReadWriteState m_paramDownloadState{none};
+    int m_paramDownloadCount{0};
+    int m_paramTotalCount{0};
+    bool m_mandatory{false};
 
     QMap<QString, UASParameter*> m_parameterList;
     QString m_paramFileToCompare;
