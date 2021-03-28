@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>apmplanner2</id>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>GPL-2.0+</project_license>
+	<name>Apm Planner 2</name>
+	<summary>Ground station application for MAVlink based autopilots</summary>
+	<description>
+		<p>An open-source ground station application for MAVlink based autopilots.</p>
+	</description>
+	<launchable type="desktop-id">apmplanner2.desktop</launchable>
+	<url type="homepage">http://ardupilot.org/planner2/index.html</url>
+	<screenshots>
+		<screenshot type="default">
+			<image>http://ardupilot.org/planner2/_images/ap2_flight-data-live1.jpg</image>
+		</screenshot>
+	</screenshots>
+	<provides>
+		<id>apmplanner2.desktop</id>
+	</provides>
+</component>
