@@ -66,11 +66,8 @@ static quint32 crc32(const QByteArray src)
 
 PX4FirmwareUploader::PX4FirmwareUploader(QObject *parent) :
     QThread(parent),
-    m_port(nullptr),
     m_waitingForSync(false),
-    m_checkTimer(nullptr),
-    m_currentSNAddress(0),
-    m_eraseTimeoutTimer(nullptr)
+    m_currentSNAddress(0)
 {
 }
 
@@ -81,9 +78,9 @@ void PX4FirmwareUploader::loadFile(QString filename)
         m_portlist.append(info.portName());
     }
     connect(this,SIGNAL(kickOff()),this,SLOT(kickOffTriggered()));
-    m_checkTimer = new QTimer(this);
-    connect(m_checkTimer,SIGNAL(timeout()),this,SLOT(checkForPort()));
-    m_checkTimer->start(250);
+    mp_checkTimer.reset(new QTimer());
+    connect(mp_checkTimer.data(),SIGNAL(timeout()),this,SLOT(checkForPort()));
+    mp_checkTimer->start(250);
 
     m_waitingForSync = false;
 
@@ -157,7 +154,7 @@ void PX4FirmwareUploader::loadFile(QString filename)
         uncompressed.append((char)0xFF);
     }
     m_localChecksum = crc32(uncompressed);
-    tempFile = new QTemporaryFile();
+    tempFile = new QTemporaryFile(this);
     tempFile->open();
     tempFile->write(uncompressed);
     tempFile->close();
@@ -169,48 +166,45 @@ void PX4FirmwareUploader::loadFile(QString filename)
 void PX4FirmwareUploader::stop()
 {
     //Stop has been requested, close out the port, kill the thread.
-    if (m_port)
+    if (mp_port)
     {
-        if (m_checkTimer)
+        if (mp_checkTimer)
         {
-            m_checkTimer->stop();
-            delete m_checkTimer;
-            m_checkTimer = nullptr;
+            mp_checkTimer->stop();
+            mp_checkTimer.reset();
         }
-        if (m_eraseTimeoutTimer)
+        if (mp_eraseTimeoutTimer)
         {
-            m_eraseTimeoutTimer->stop();
-            delete m_eraseTimeoutTimer;
-            m_eraseTimeoutTimer = nullptr;
+            mp_eraseTimeoutTimer->stop();
+            mp_eraseTimeoutTimer.reset();
         }
-        m_port->close();
-        delete m_port;
-        m_port = nullptr;
+        mp_port->close();
+        mp_port.reset();
     }
 }
 
 void PX4FirmwareUploader::reqChecksum()
 {
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called reqChecksum with a null port!";
         return;
     }
     m_currentState = REQ_CHECKSUM;
-    m_port->write(QByteArray().append(0x29).append(0x20));
+    mp_port->write(QByteArray().append(0x29).append(0x20));
 }
 
 bool PX4FirmwareUploader::readChecksum()
 {
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called readChecksum with a null port!";
         return false;
     }
     m_checksum = 0;
-    if (m_port->bytesAvailable() >= 4)
+    if (mp_port->bytesAvailable() >= 4)
     {
-        QByteArray infobuf = m_port->read(4);
+        QByteArray infobuf = mp_port->read(4);
         QLOG_INFO() << "Got Checksum Bytes:" << infobuf.toHex();
         m_checksum = 0;
         m_checksum += static_cast<unsigned char>(infobuf[0]);
@@ -247,9 +241,8 @@ void PX4FirmwareUploader::checkForPort()
             m_devInfoList.append(PROTO_DEVICE_FW_SIZE);
             emit devicePlugDetected();
             emit kickOff();
-            m_checkTimer->stop();
-            m_checkTimer->deleteLater();
-            m_checkTimer = nullptr;
+            mp_checkTimer->stop();
+            mp_checkTimer.reset();
             break;
 #ifdef Q_OS_LINUX
             }
@@ -270,29 +263,21 @@ void PX4FirmwareUploader::checkForPort()
 
 void PX4FirmwareUploader::kickOffTriggered()
 {
-    if (m_port)
+    if (mp_port)
     {
-        m_port->close();
-        delete m_port;
-        m_port = nullptr;
+        mp_port->close();
     }
     m_waitingForSync = false;
     m_currentState = INIT;
-    m_port = new QSerialPort();
-    connect(m_port,SIGNAL(readyRead()),this,SLOT(portReadyRead()));
+    mp_port.reset(new QSerialPort());
+    connect(mp_port.data(), SIGNAL(readyRead()), this, SLOT(portReadyRead()));
+    mp_port->setPortName(m_portToUse);
 
-#if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
-    // temp fix Qt5.4.1 issue on OSX
-    // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
-    m_port->setPortName("/dev/cu." + m_portToUse);
-#else
-    m_port->setPortName(m_portToUse);
-#endif
-
-    for (int t = 0; t < 100; ++t) {
-        if (!m_port->open(QIODevice::ReadWrite))
+    for (int t = 0; t < 100; ++t)
+    {
+        if (!mp_port->open(QIODevice::ReadWrite))
         {
-            auto errorString = m_port->errorString();
+            auto errorString = mp_port->errorString();
             QLOG_ERROR() << "Unable to open port, attempt " << t << ":" << errorString;
             sleep(1);
         }
@@ -301,29 +286,29 @@ void PX4FirmwareUploader::kickOffTriggered()
             break;
         }
     }
-    m_port->write(QByteArray().append(0x21).append(0x20));
+    mp_port->write(QByteArray().append(0x21).append(0x20));
 
 }
 
 void PX4FirmwareUploader::getDeviceInfo(unsigned char infobyte)
 {
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called getDeviceInfo with a null port!";
         return;
     }
     m_waitingDeviceInfoVar = infobyte;
-    m_port->write(QByteArray().append(PROTO_GET_DEVICE).append(infobyte).append(PROTO_EOC));
+    mp_port->write(QByteArray().append(PROTO_GET_DEVICE).append(infobyte).append(PROTO_EOC));
 }
 
 void PX4FirmwareUploader::reqErase()
 {
     QLOG_INFO() << "Requesting erase";
-    m_eraseTimeoutTimer = new QTimer(this);
+    mp_eraseTimeoutTimer.reset(new QTimer());
     m_eraseTimerCounter = 0;
-    connect(m_eraseTimeoutTimer,SIGNAL(timeout()),this,SLOT(eraseSyncCheck()));
-    m_port->write(QByteArray().append(0x23).append(0x20));
-    m_eraseTimeoutTimer->start(250);
+    connect(mp_eraseTimeoutTimer.data(), SIGNAL(timeout()), this, SLOT(eraseSyncCheck()));
+    mp_port->write(QByteArray().append(0x23).append(0x20));
+    mp_eraseTimeoutTimer->start(250);
 }
 
 void PX4FirmwareUploader::eraseSyncCheck()
@@ -333,9 +318,8 @@ void PX4FirmwareUploader::eraseSyncCheck()
         //Done erasing
         QLOG_INFO() << "Erase complete";
         emit statusUpdate("Erase Complete");
-        m_eraseTimeoutTimer->stop();
-        m_eraseTimeoutTimer->deleteLater(); //Can't do a direct delete since we're in its slot
-        m_eraseTimeoutTimer = nullptr;
+        mp_eraseTimeoutTimer->stop();
+        mp_eraseTimeoutTimer.reset();   // calls deleteLater
         reqFlash();
     }
     else
@@ -343,9 +327,8 @@ void PX4FirmwareUploader::eraseSyncCheck()
         m_eraseTimerCounter++;
         if (m_eraseTimerCounter > 240) // 60 seconds
         {
-            m_eraseTimeoutTimer->stop();
-            m_eraseTimeoutTimer->deleteLater(); //Can't do a direct delete since we're in its slot
-            m_eraseTimeoutTimer = nullptr;
+            mp_eraseTimeoutTimer->stop();
+            mp_eraseTimeoutTimer.reset();   // calls deleteLater
             //Emit error here
             QLOG_INFO() << "Error flashing, never returned from erase";
             emit statusUpdate("Erase failed - took too long.");
@@ -356,13 +339,13 @@ void PX4FirmwareUploader::eraseSyncCheck()
 
 void PX4FirmwareUploader::reqReboot()
 {
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called reqReboot with a null port!";
         return;
     }
-    m_port->write(QByteArray().append(0x30).append(0x20));
-    m_port->flush();
+    mp_port->write(QByteArray().append(0x30).append(0x20));
+    mp_port->flush();
 }
 
 void PX4FirmwareUploader::reqFlash()
@@ -384,7 +367,7 @@ bool PX4FirmwareUploader::sendNextFwBytes()
         QLOG_ERROR() << "Called sendNextFwBytes with no firmware file!";
         return false;
     }
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called sendNextFwBytes with a null port!";
         return false;
@@ -408,18 +391,18 @@ bool PX4FirmwareUploader::sendNextFwBytes()
     tosend.append(bytes.size());
     tosend.append(bytes);
     tosend.append(0x20);
-    m_port->write(tosend);
+    mp_port->write(tosend);
     return true;
 }
 
 void PX4FirmwareUploader::getSNAddress(int address)
 {
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called getSNAddress with a null port!";
         return;
     }
-    m_port->write(QByteArray().append(0x2B).append(address).append((char)0).append((char)0).append((char)0).append(PROTO_EOC));
+    mp_port->write(QByteArray().append(0x2B).append(address).append((char)0).append((char)0).append((char)0).append(PROTO_EOC));
 }
 
 bool PX4FirmwareUploader::reqNextSNAddress()
@@ -436,14 +419,14 @@ bool PX4FirmwareUploader::reqNextSNAddress()
 
 bool PX4FirmwareUploader::readSN()
 {
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called readSN with a null port!";
         return false;
     }
-    if (m_port->bytesAvailable() >= 4)
+    if (mp_port->bytesAvailable() >= 4)
     {
-        QByteArray infobuf = m_port->read(4);
+        QByteArray infobuf = mp_port->read(4);
         m_snBytes.append(infobuf[3]);
         m_snBytes.append(infobuf[2]);
         m_snBytes.append(infobuf[1]);
@@ -468,14 +451,14 @@ bool PX4FirmwareUploader::reqNextDeviceInfo()
 
 bool PX4FirmwareUploader::getSync()
 {
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called getSync with a null port!";
         return false;
     }
-    if (m_port->bytesAvailable() == 2)
+    if (mp_port->bytesAvailable() == 2)
     {
-        QByteArray infobuf = m_port->readAll();
+        QByteArray infobuf = mp_port->readAll();
         if (infobuf[0] != (char)0x12  || infobuf[1] != (char)0x10)
         {
             QLOG_INFO() << "Bad sync return:" << QString::number(infobuf[0],16) << QString::number(infobuf[1],16);
@@ -491,14 +474,14 @@ bool PX4FirmwareUploader::getSync()
 
 bool PX4FirmwareUploader::readDeviceInfo()
 {
-    if (!m_port)
+    if (!mp_port)
     {
         QLOG_ERROR() << "Called readDeviceInfo with a null port!";
         return false;
     }
-    if (m_port->bytesAvailable() >= 4)
+    if (mp_port->bytesAvailable() >= 4)
     {
-        QByteArray infobuf = m_port->read(4);
+        QByteArray infobuf = mp_port->read(4);
         unsigned int reply = ((unsigned char)infobuf[0]) + ((unsigned char)infobuf[1] << 8) + ((unsigned char)infobuf[2] << 16) + ((unsigned char)infobuf[3] << 24);
         emit gotDeviceInfo(m_waitingDeviceInfoVar,reply);
         switch (m_waitingDeviceInfoVar)
@@ -622,9 +605,8 @@ void PX4FirmwareUploader::portReadyRead()
             {
                 //Everything's happy, reboot and close out
                 reqReboot();
-                m_port->close();
-                m_port->deleteLater(); //We're in a slot for m_port, so don't delete it now.
-                m_port = nullptr; //But since we called deleteLater, it's safe to clear it out, Qt promises.
+                mp_port->close();
+                mp_port.reset();    // calls deleteLater
                 emit complete();
             }
             return;
@@ -642,9 +624,8 @@ void PX4FirmwareUploader::portReadyRead()
                 QLOG_INFO() << "Error with checksum";
                 emit error("CRC mismatch! Firmware write failed, please try again");
                 emit statusUpdate("CRC mismatch! Firmware write failed, please try again");
-                m_port->close();
-                m_port->deleteLater();
-                m_port = nullptr;
+                mp_port->close();
+                mp_port.reset();    // calls deleteLater
                 emit complete();
                 return;
             }

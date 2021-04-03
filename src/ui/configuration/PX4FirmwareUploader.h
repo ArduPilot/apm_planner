@@ -24,12 +24,12 @@ public:
 private:
     QList<QString> m_portlist;
     QString m_portToUse;
-    QSerialPort *m_port;
+    QScopedPointer<QSerialPort, QScopedPointerDeleteLater> mp_port;
 
     bool m_waitingForSync;
 
     QList<unsigned char> m_devInfoList;
-    QTimer *m_checkTimer;
+    QScopedPointer<QTimer, QScopedPointerDeleteLater> mp_checkTimer;
     State m_currentState;
 
     bool getSync();
@@ -60,7 +60,7 @@ private:
 
 
     void reqErase();
-    QTimer *m_eraseTimeoutTimer;
+    QScopedPointer<QTimer, QScopedPointerDeleteLater> mp_eraseTimeoutTimer;
     int m_eraseTimerCounter;
 
 
