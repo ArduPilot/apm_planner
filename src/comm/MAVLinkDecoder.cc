@@ -34,10 +34,11 @@ This file is part of the APM_PLANNER project
 
 #include "MAVLinkDecoder.h"
 #include "QGC.h"
-#include <QDataStream>
 #include "LinkManager.h"
 #include "UASManager.h"
 #include "UASInterface.h"
+
+#include <QDataStream>
 
 MAVLinkDecoder::MAVLinkDecoder(QObject *parent):
     QObject(parent),

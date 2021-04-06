@@ -35,10 +35,8 @@ This file is part of the APM_PLANNER project
 #ifndef NEW_MAVLINKDECODER_H
 #define NEW_MAVLINKDECODER_H
 
-#include "logging.h"
-#include <mavlink_types.h>
-extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS]; // defined in src/main.cc
 #include "mavlink.h"
+#include "logging.h"
 #include "LinkInterface.h"
 
 #include <QObject>
