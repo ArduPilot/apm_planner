@@ -22,7 +22,6 @@
 # along with QGroundControl. If not, see <http://www.gnu.org/licenses/>.
 # -------------------------------------------------
 
-
 message(Qt version $$[QT_VERSION])
 
 # Setup our supported build types. We do this once here and then use the
@@ -34,7 +33,13 @@ DEFINES+=DISABLE_3DMOUSE    # Disable 3D mice support for now
 
 load(configure)
 
+#################################################################################
+# Check OS type ans some general options
+#################################################################################
+
+
 linux-g++-64 | linux-g++ {
+
     CONFIG += LinuxBuild
 
     DISTRO = $$system(lsb_release -i)
@@ -72,8 +77,6 @@ linux-g++-64 | linux-g++ {
     contains( DISTRO, "Arch" ) {
         message(ArchLinux Build)
         DEFINES += Q_ARCHLINUX
-#        INCLUDEPATH += /usr/include/openssl-1.0
-#        LIBRARYPATH += /usr/lib/openssl-1.0
     }
 
     contains( REDHAT_RELEASE, "Fedora" ) {
@@ -91,11 +94,8 @@ linux-g++-64 | linux-g++ {
     CONFIG += MacBuild
 } else : openbsd-clang | openbsd-g++ {
     message(OpenBSD build)
-
     DEFINES += Q_OPENBSD
-
     CONFIG += OpenBSDBuild
-
 } else {
     error(Unsupported build type)
 }
@@ -153,26 +153,24 @@ QT += network \
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
-#Not sure what we were doing here, will have to ask
-#!NOTOUCH {
-#    gittouch.commands = touch qgroundcontrol.pro
-#    QMAKE_EXTRA_TARGETS += gittouch
-#    POST_TARGETDEPS += gittouch
-#}
-
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
 
 #Turn on camera view
 #DEFINES += AMERAVIEW
 
-#
+#################################################################################
 # OS Specific settings
-#
+#################################################################################
+
+# Common settings
+CONFIG  += c++14 #C++14 support
+DEFINES += GIT_COMMIT=$$system(git describe --tag --dirty=-DEV --always)
+DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
+
 
 RaspberryPiBuild {
    DEFINES -= CAMERAVIEW
-   CONFIG += c++11 #C++11 support
 }
 
 MacBuild {
@@ -181,54 +179,28 @@ MacBuild {
     QMAKE_INFO_PLIST = Custom-Info.plist
     CONFIG += x86_64
     CONFIG -= x86
-    CONFIG += c++11 #C++11 support
-#    QMAKE_MAC_SDK = macosx10.13 # Required for build using Qt5.6.2 on High Sierra
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     ICON = $$BASEDIR/files/APMIcons/icon.icns
     QMAKE_INFO_PLIST = APMPlanner.plist   # Sets the pretty name for the build
 
-    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
-    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
-
     LIBS += -lz
-#    LIBS += -lssl -lcrypto
-#    LIBS +=
     LIBS += -framework ApplicationServices
 }
 
-
 OpenBSDBuild {
-
-    CONFIG += c++11 #C++11 support
     DEFINES += __STDC_LIMIT_MACROS
-#    DEFINES += UDPLINK_DEBUG
 
-    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
-    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
-
-#    LIBS += -lsndfile
     LIBS += -lz
-#    LIBS += -lssl -lcrypto
-#    DEFINES += OPENSSL
 }
 
 LinuxBuild {
-
-    CONFIG += c++11 #C++11 support
     DEFINES += __STDC_LIMIT_MACROS
-
-    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
-    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 
     LIBS += -lsndfile -lasound
     LIBS += -lz
-#    LIBS += -lssl -lcrypto
-#    DEFINES += OPENSSL
 }
 
 WindowsBuild {
-
-    CONFIG += c++11 #C++11 support
     DEFINES += __STDC_LIMIT_MACROS
 
     # Specify multi-process compilation within Visual Studio.
@@ -240,14 +212,9 @@ WindowsBuild {
     CONFIG -= webkit
 
     RC_FILE = $$BASEDIR/qgroundcontrol.rc
-
-    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
-    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 }
 
 WindowsCrossBuild {
-
-    CONFIG += c++11 #C++11 support
     QT += script
     # Windows version cross compiled on linux using
     DEFINES += __STDC_LIMIT_MACROS
@@ -258,14 +225,25 @@ WindowsCrossBuild {
     RC_FILE = $$BASEDIR/qgroundcontrol.rc
     LIBS += -lz
     CONFIG += exceptions rtti
-
-    DEFINES += GIT_COMMIT=$$system(git describe --dirty=-DEV --always)
-    DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 }
 
-#
+#################################################################################
+#   Compiler specific settings
+#################################################################################
+
+gcc {
+    # suppress deprecated copy ctor wanings caused by Qt versions <= 5.12.x and gcc 9.x
+    # !lessThan means bigger or equal (>=)
+    !lessThan(QMAKE_GCC_MAJOR_VERSION, 9){
+        !lessThan(QT_MAJOR_VERSION, 5){
+            !lessThan(QT_MINOR_VERSION, 12): QMAKE_CXXFLAGS += -Wno-deprecated-copy
+        }
+    }
+}
+
+##################################################################################
 # Build flavor specific settings
-#
+##################################################################################
 
 DebugBuild {
 #Let console be defined by the IDE/Build process.
