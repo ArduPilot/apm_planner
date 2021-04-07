@@ -3,25 +3,25 @@
 
 #define MAVLINK_MSG_ID_ICAROUS_KINEMATIC_BANDS 42001
 
-MAVPACKED(
+
 typedef struct __mavlink_icarous_kinematic_bands_t {
- float min1; /*< min angle (degrees)*/
- float max1; /*< max angle (degrees)*/
- float min2; /*< min angle (degrees)*/
- float max2; /*< max angle (degrees)*/
- float min3; /*< min angle (degrees)*/
- float max3; /*< max angle (degrees)*/
- float min4; /*< min angle (degrees)*/
- float max4; /*< max angle (degrees)*/
- float min5; /*< min angle (degrees)*/
- float max5; /*< max angle (degrees)*/
- int8_t numBands; /*< Number of track bands*/
- uint8_t type1; /*< See the TRACK_BAND_TYPES enum.*/
- uint8_t type2; /*< See the TRACK_BAND_TYPES enum.*/
- uint8_t type3; /*< See the TRACK_BAND_TYPES enum.*/
- uint8_t type4; /*< See the TRACK_BAND_TYPES enum.*/
- uint8_t type5; /*< See the TRACK_BAND_TYPES enum.*/
-}) mavlink_icarous_kinematic_bands_t;
+ float min1; /*< [deg] min angle (degrees)*/
+ float max1; /*< [deg] max angle (degrees)*/
+ float min2; /*< [deg] min angle (degrees)*/
+ float max2; /*< [deg] max angle (degrees)*/
+ float min3; /*< [deg] min angle (degrees)*/
+ float max3; /*< [deg] max angle (degrees)*/
+ float min4; /*< [deg] min angle (degrees)*/
+ float max4; /*< [deg] max angle (degrees)*/
+ float min5; /*< [deg] min angle (degrees)*/
+ float max5; /*< [deg] max angle (degrees)*/
+ int8_t numBands; /*<  Number of track bands*/
+ uint8_t type1; /*<  See the TRACK_BAND_TYPES enum.*/
+ uint8_t type2; /*<  See the TRACK_BAND_TYPES enum.*/
+ uint8_t type3; /*<  See the TRACK_BAND_TYPES enum.*/
+ uint8_t type4; /*<  See the TRACK_BAND_TYPES enum.*/
+ uint8_t type5; /*<  See the TRACK_BAND_TYPES enum.*/
+} mavlink_icarous_kinematic_bands_t;
 
 #define MAVLINK_MSG_ID_ICAROUS_KINEMATIC_BANDS_LEN 46
 #define MAVLINK_MSG_ID_ICAROUS_KINEMATIC_BANDS_MIN_LEN 46
@@ -86,22 +86,22 @@ typedef struct __mavlink_icarous_kinematic_bands_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param numBands Number of track bands
- * @param type1 See the TRACK_BAND_TYPES enum.
- * @param min1 min angle (degrees)
- * @param max1 max angle (degrees)
- * @param type2 See the TRACK_BAND_TYPES enum.
- * @param min2 min angle (degrees)
- * @param max2 max angle (degrees)
- * @param type3 See the TRACK_BAND_TYPES enum.
- * @param min3 min angle (degrees)
- * @param max3 max angle (degrees)
- * @param type4 See the TRACK_BAND_TYPES enum.
- * @param min4 min angle (degrees)
- * @param max4 max angle (degrees)
- * @param type5 See the TRACK_BAND_TYPES enum.
- * @param min5 min angle (degrees)
- * @param max5 max angle (degrees)
+ * @param numBands  Number of track bands
+ * @param type1  See the TRACK_BAND_TYPES enum.
+ * @param min1 [deg] min angle (degrees)
+ * @param max1 [deg] max angle (degrees)
+ * @param type2  See the TRACK_BAND_TYPES enum.
+ * @param min2 [deg] min angle (degrees)
+ * @param max2 [deg] max angle (degrees)
+ * @param type3  See the TRACK_BAND_TYPES enum.
+ * @param min3 [deg] min angle (degrees)
+ * @param max3 [deg] max angle (degrees)
+ * @param type4  See the TRACK_BAND_TYPES enum.
+ * @param min4 [deg] min angle (degrees)
+ * @param max4 [deg] max angle (degrees)
+ * @param type5  See the TRACK_BAND_TYPES enum.
+ * @param min5 [deg] min angle (degrees)
+ * @param max5 [deg] max angle (degrees)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_icarous_kinematic_bands_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -159,22 +159,22 @@ static inline uint16_t mavlink_msg_icarous_kinematic_bands_pack(uint8_t system_i
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param numBands Number of track bands
- * @param type1 See the TRACK_BAND_TYPES enum.
- * @param min1 min angle (degrees)
- * @param max1 max angle (degrees)
- * @param type2 See the TRACK_BAND_TYPES enum.
- * @param min2 min angle (degrees)
- * @param max2 max angle (degrees)
- * @param type3 See the TRACK_BAND_TYPES enum.
- * @param min3 min angle (degrees)
- * @param max3 max angle (degrees)
- * @param type4 See the TRACK_BAND_TYPES enum.
- * @param min4 min angle (degrees)
- * @param max4 max angle (degrees)
- * @param type5 See the TRACK_BAND_TYPES enum.
- * @param min5 min angle (degrees)
- * @param max5 max angle (degrees)
+ * @param numBands  Number of track bands
+ * @param type1  See the TRACK_BAND_TYPES enum.
+ * @param min1 [deg] min angle (degrees)
+ * @param max1 [deg] max angle (degrees)
+ * @param type2  See the TRACK_BAND_TYPES enum.
+ * @param min2 [deg] min angle (degrees)
+ * @param max2 [deg] max angle (degrees)
+ * @param type3  See the TRACK_BAND_TYPES enum.
+ * @param min3 [deg] min angle (degrees)
+ * @param max3 [deg] max angle (degrees)
+ * @param type4  See the TRACK_BAND_TYPES enum.
+ * @param min4 [deg] min angle (degrees)
+ * @param max4 [deg] max angle (degrees)
+ * @param type5  See the TRACK_BAND_TYPES enum.
+ * @param min5 [deg] min angle (degrees)
+ * @param max5 [deg] max angle (degrees)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_icarous_kinematic_bands_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -258,22 +258,22 @@ static inline uint16_t mavlink_msg_icarous_kinematic_bands_encode_chan(uint8_t s
  * @brief Send a icarous_kinematic_bands message
  * @param chan MAVLink channel to send the message
  *
- * @param numBands Number of track bands
- * @param type1 See the TRACK_BAND_TYPES enum.
- * @param min1 min angle (degrees)
- * @param max1 max angle (degrees)
- * @param type2 See the TRACK_BAND_TYPES enum.
- * @param min2 min angle (degrees)
- * @param max2 max angle (degrees)
- * @param type3 See the TRACK_BAND_TYPES enum.
- * @param min3 min angle (degrees)
- * @param max3 max angle (degrees)
- * @param type4 See the TRACK_BAND_TYPES enum.
- * @param min4 min angle (degrees)
- * @param max4 max angle (degrees)
- * @param type5 See the TRACK_BAND_TYPES enum.
- * @param min5 min angle (degrees)
- * @param max5 max angle (degrees)
+ * @param numBands  Number of track bands
+ * @param type1  See the TRACK_BAND_TYPES enum.
+ * @param min1 [deg] min angle (degrees)
+ * @param max1 [deg] max angle (degrees)
+ * @param type2  See the TRACK_BAND_TYPES enum.
+ * @param min2 [deg] min angle (degrees)
+ * @param max2 [deg] max angle (degrees)
+ * @param type3  See the TRACK_BAND_TYPES enum.
+ * @param min3 [deg] min angle (degrees)
+ * @param max3 [deg] max angle (degrees)
+ * @param type4  See the TRACK_BAND_TYPES enum.
+ * @param min4 [deg] min angle (degrees)
+ * @param max4 [deg] max angle (degrees)
+ * @param type5  See the TRACK_BAND_TYPES enum.
+ * @param min5 [deg] min angle (degrees)
+ * @param max5 [deg] max angle (degrees)
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -398,7 +398,7 @@ static inline void mavlink_msg_icarous_kinematic_bands_send_buf(mavlink_message_
 /**
  * @brief Get field numBands from icarous_kinematic_bands message
  *
- * @return Number of track bands
+ * @return  Number of track bands
  */
 static inline int8_t mavlink_msg_icarous_kinematic_bands_get_numBands(const mavlink_message_t* msg)
 {
@@ -408,7 +408,7 @@ static inline int8_t mavlink_msg_icarous_kinematic_bands_get_numBands(const mavl
 /**
  * @brief Get field type1 from icarous_kinematic_bands message
  *
- * @return See the TRACK_BAND_TYPES enum.
+ * @return  See the TRACK_BAND_TYPES enum.
  */
 static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type1(const mavlink_message_t* msg)
 {
@@ -418,7 +418,7 @@ static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type1(const mavlin
 /**
  * @brief Get field min1 from icarous_kinematic_bands message
  *
- * @return min angle (degrees)
+ * @return [deg] min angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_min1(const mavlink_message_t* msg)
 {
@@ -428,7 +428,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_min1(const mavlink_m
 /**
  * @brief Get field max1 from icarous_kinematic_bands message
  *
- * @return max angle (degrees)
+ * @return [deg] max angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_max1(const mavlink_message_t* msg)
 {
@@ -438,7 +438,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_max1(const mavlink_m
 /**
  * @brief Get field type2 from icarous_kinematic_bands message
  *
- * @return See the TRACK_BAND_TYPES enum.
+ * @return  See the TRACK_BAND_TYPES enum.
  */
 static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type2(const mavlink_message_t* msg)
 {
@@ -448,7 +448,7 @@ static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type2(const mavlin
 /**
  * @brief Get field min2 from icarous_kinematic_bands message
  *
- * @return min angle (degrees)
+ * @return [deg] min angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_min2(const mavlink_message_t* msg)
 {
@@ -458,7 +458,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_min2(const mavlink_m
 /**
  * @brief Get field max2 from icarous_kinematic_bands message
  *
- * @return max angle (degrees)
+ * @return [deg] max angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_max2(const mavlink_message_t* msg)
 {
@@ -468,7 +468,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_max2(const mavlink_m
 /**
  * @brief Get field type3 from icarous_kinematic_bands message
  *
- * @return See the TRACK_BAND_TYPES enum.
+ * @return  See the TRACK_BAND_TYPES enum.
  */
 static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type3(const mavlink_message_t* msg)
 {
@@ -478,7 +478,7 @@ static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type3(const mavlin
 /**
  * @brief Get field min3 from icarous_kinematic_bands message
  *
- * @return min angle (degrees)
+ * @return [deg] min angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_min3(const mavlink_message_t* msg)
 {
@@ -488,7 +488,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_min3(const mavlink_m
 /**
  * @brief Get field max3 from icarous_kinematic_bands message
  *
- * @return max angle (degrees)
+ * @return [deg] max angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_max3(const mavlink_message_t* msg)
 {
@@ -498,7 +498,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_max3(const mavlink_m
 /**
  * @brief Get field type4 from icarous_kinematic_bands message
  *
- * @return See the TRACK_BAND_TYPES enum.
+ * @return  See the TRACK_BAND_TYPES enum.
  */
 static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type4(const mavlink_message_t* msg)
 {
@@ -508,7 +508,7 @@ static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type4(const mavlin
 /**
  * @brief Get field min4 from icarous_kinematic_bands message
  *
- * @return min angle (degrees)
+ * @return [deg] min angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_min4(const mavlink_message_t* msg)
 {
@@ -518,7 +518,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_min4(const mavlink_m
 /**
  * @brief Get field max4 from icarous_kinematic_bands message
  *
- * @return max angle (degrees)
+ * @return [deg] max angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_max4(const mavlink_message_t* msg)
 {
@@ -528,7 +528,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_max4(const mavlink_m
 /**
  * @brief Get field type5 from icarous_kinematic_bands message
  *
- * @return See the TRACK_BAND_TYPES enum.
+ * @return  See the TRACK_BAND_TYPES enum.
  */
 static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type5(const mavlink_message_t* msg)
 {
@@ -538,7 +538,7 @@ static inline uint8_t mavlink_msg_icarous_kinematic_bands_get_type5(const mavlin
 /**
  * @brief Get field min5 from icarous_kinematic_bands message
  *
- * @return min angle (degrees)
+ * @return [deg] min angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_min5(const mavlink_message_t* msg)
 {
@@ -548,7 +548,7 @@ static inline float mavlink_msg_icarous_kinematic_bands_get_min5(const mavlink_m
 /**
  * @brief Get field max5 from icarous_kinematic_bands message
  *
- * @return max angle (degrees)
+ * @return [deg] max angle (degrees)
  */
 static inline float mavlink_msg_icarous_kinematic_bands_get_max5(const mavlink_message_t* msg)
 {

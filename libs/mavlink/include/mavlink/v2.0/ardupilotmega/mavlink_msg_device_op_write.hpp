@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DEVICE_OP_WRITE message
  *
- * Write registers for a device
+ * Write registers for a device.
  */
 struct DEVICE_OP_WRITE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11002;
@@ -19,16 +19,16 @@ struct DEVICE_OP_WRITE : mavlink::Message {
     static constexpr auto NAME = "DEVICE_OP_WRITE";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint32_t request_id; /*< request ID - copied to reply */
-    uint8_t bustype; /*< The bus type */
-    uint8_t bus; /*< Bus number */
-    uint8_t address; /*< Bus address */
-    std::array<char, 40> busname; /*< Name of device on bus (for SPI) */
-    uint8_t regstart; /*< First register to write */
-    uint8_t count; /*< count of registers to write */
-    std::array<uint8_t, 128> data; /*< write data */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint32_t request_id; /*<  Request ID - copied to reply. */
+    uint8_t bustype; /*<  The bus type. */
+    uint8_t bus; /*<  Bus number. */
+    uint8_t address; /*<  Bus address. */
+    std::array<char, 40> busname; /*<  Name of device on bus (for SPI). */
+    uint8_t regstart; /*<  First register to write. */
+    uint8_t count; /*<  Count of registers to write. */
+    std::array<uint8_t, 128> data; /*<  Write data. */
 
 
     inline std::string get_name(void) const override

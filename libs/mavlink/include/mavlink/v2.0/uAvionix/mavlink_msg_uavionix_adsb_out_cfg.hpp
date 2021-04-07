@@ -19,14 +19,14 @@ struct UAVIONIX_ADSB_OUT_CFG : mavlink::Message {
     static constexpr auto NAME = "UAVIONIX_ADSB_OUT_CFG";
 
 
-    uint32_t ICAO; /*< Vehicle address (24 bit) */
-    std::array<char, 9> callsign; /*< Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only) */
-    uint8_t emitterType; /*< Transmitting vehicle type. See ADSB_EMITTER_TYPE enum */
-    uint8_t aircraftSize; /*< Aircraft length and width encoding (table 2-35 of DO-282B) */
-    uint8_t gpsOffsetLat; /*< GPS antenna lateral offset (table 2-36 of DO-282B) */
-    uint8_t gpsOffsetLon; /*< GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B) */
-    uint16_t stallSpeed; /*< Aircraft stall speed in cm/s */
-    uint8_t rfSelect; /*< ADS-B transponder reciever and transmit enable flags */
+    uint32_t ICAO; /*<  Vehicle address (24 bit) */
+    std::array<char, 9> callsign; /*<  Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only) */
+    uint8_t emitterType; /*<  Transmitting vehicle type. See ADSB_EMITTER_TYPE enum */
+    uint8_t aircraftSize; /*<  Aircraft length and width encoding (table 2-35 of DO-282B) */
+    uint8_t gpsOffsetLat; /*<  GPS antenna lateral offset (table 2-36 of DO-282B) */
+    uint8_t gpsOffsetLon; /*<  GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B) */
+    uint16_t stallSpeed; /*< [cm/s] Aircraft stall speed in cm/s */
+    uint8_t rfSelect; /*<  ADS-B transponder reciever and transmit enable flags */
 
 
     inline std::string get_name(void) const override

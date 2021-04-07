@@ -19,8 +19,8 @@ struct SYSTEM_TIME : mavlink::Message {
     static constexpr auto NAME = "SYSTEM_TIME";
 
 
-    uint64_t time_unix_usec; /*< Timestamp of the master clock in microseconds since UNIX epoch. */
-    uint32_t time_boot_ms; /*< Timestamp of the component clock since boot time in milliseconds. */
+    uint64_t time_unix_usec; /*< [us] Timestamp (UNIX epoch time). */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
 
 
     inline std::string get_name(void) const override

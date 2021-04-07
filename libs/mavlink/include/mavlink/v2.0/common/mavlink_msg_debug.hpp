@@ -19,9 +19,9 @@ struct DEBUG : mavlink::Message {
     static constexpr auto NAME = "DEBUG";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    uint8_t ind; /*< index of debug variable */
-    float value; /*< DEBUG value */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    uint8_t ind; /*<  index of debug variable */
+    float value; /*<  DEBUG value */
 
 
     inline std::string get_name(void) const override

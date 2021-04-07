@@ -20,15 +20,15 @@ struct GLOBAL_POSITION_INT : mavlink::Message {
     static constexpr auto NAME = "GLOBAL_POSITION_INT";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    int32_t lat; /*< Latitude, expressed as degrees * 1E7 */
-    int32_t lon; /*< Longitude, expressed as degrees * 1E7 */
-    int32_t alt; /*< Altitude in meters, expressed as * 1000 (millimeters), AMSL (not WGS84 - note that virtually all GPS modules provide the AMSL as well) */
-    int32_t relative_alt; /*< Altitude above ground in meters, expressed as * 1000 (millimeters) */
-    int16_t vx; /*< Ground X Speed (Latitude, positive north), expressed as m/s * 100 */
-    int16_t vy; /*< Ground Y Speed (Longitude, positive east), expressed as m/s * 100 */
-    int16_t vz; /*< Ground Z Speed (Altitude, positive down), expressed as m/s * 100 */
-    uint16_t hdg; /*< Vehicle heading (yaw angle) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    int32_t lat; /*< [degE7] Latitude, expressed */
+    int32_t lon; /*< [degE7] Longitude, expressed */
+    int32_t alt; /*< [mm] Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL. */
+    int32_t relative_alt; /*< [mm] Altitude above ground */
+    int16_t vx; /*< [cm/s] Ground X Speed (Latitude, positive north) */
+    int16_t vy; /*< [cm/s] Ground Y Speed (Longitude, positive east) */
+    int16_t vz; /*< [cm/s] Ground Z Speed (Altitude, positive down) */
+    uint16_t hdg; /*< [cdeg] Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: UINT16_MAX */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief CAMERA_FEEDBACK message
  *
- * Camera Capture Feedback
+ * Camera Capture Feedback.
  */
 struct CAMERA_FEEDBACK : mavlink::Message {
     static constexpr msgid_t MSG_ID = 180;
@@ -19,20 +19,20 @@ struct CAMERA_FEEDBACK : mavlink::Message {
     static constexpr auto NAME = "CAMERA_FEEDBACK";
 
 
-    uint64_t time_usec; /*< Image timestamp (microseconds since UNIX epoch), as passed in by CAMERA_STATUS message (or autopilot if no CCB) */
-    uint8_t target_system; /*< System ID */
-    uint8_t cam_idx; /*< Camera ID */
-    uint16_t img_idx; /*< Image index */
-    int32_t lat; /*< Latitude in (deg * 1E7) */
-    int32_t lng; /*< Longitude in (deg * 1E7) */
-    float alt_msl; /*< Altitude Absolute (meters AMSL) */
-    float alt_rel; /*< Altitude Relative (meters above HOME location) */
-    float roll; /*< Camera Roll angle (earth frame, degrees, +-180) */
-    float pitch; /*< Camera Pitch angle (earth frame, degrees, +-180) */
-    float yaw; /*< Camera Yaw (earth frame, degrees, 0-360, true) */
-    float foc_len; /*< Focal Length (mm) */
-    uint8_t flags; /*< See CAMERA_FEEDBACK_FLAGS enum for definition of the bitmask */
-    uint16_t completed_captures; /*< Completed image captures */
+    uint64_t time_usec; /*< [us] Image timestamp (since UNIX epoch), as passed in by CAMERA_STATUS message (or autopilot if no CCB). */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t cam_idx; /*<  Camera ID. */
+    uint16_t img_idx; /*<  Image index. */
+    int32_t lat; /*< [degE7] Latitude. */
+    int32_t lng; /*< [degE7] Longitude. */
+    float alt_msl; /*< [m] Altitude (MSL). */
+    float alt_rel; /*< [m] Altitude (Relative to HOME location). */
+    float roll; /*< [deg] Camera Roll angle (earth frame, +-180). */
+    float pitch; /*< [deg] Camera Pitch angle (earth frame, +-180). */
+    float yaw; /*< [deg] Camera Yaw (earth frame, 0-360, true). */
+    float foc_len; /*< [mm] Focal Length. */
+    uint8_t flags; /*<  Feedback flags. */
+    uint16_t completed_captures; /*<  Completed image captures. */
 
 
     inline std::string get_name(void) const override

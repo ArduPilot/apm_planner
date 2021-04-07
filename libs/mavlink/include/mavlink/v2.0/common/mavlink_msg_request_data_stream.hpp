@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief REQUEST_DATA_STREAM message
  *
- * THIS INTERFACE IS DEPRECATED. USE SET_MESSAGE_INTERVAL INSTEAD.
+ * Request a data stream.
  */
 struct REQUEST_DATA_STREAM : mavlink::Message {
     static constexpr msgid_t MSG_ID = 66;
@@ -19,11 +19,11 @@ struct REQUEST_DATA_STREAM : mavlink::Message {
     static constexpr auto NAME = "REQUEST_DATA_STREAM";
 
 
-    uint8_t target_system; /*< The target requested to send the message stream. */
-    uint8_t target_component; /*< The target requested to send the message stream. */
-    uint8_t req_stream_id; /*< The ID of the requested data stream */
-    uint16_t req_message_rate; /*< The requested message rate */
-    uint8_t start_stop; /*< 1 to start sending, 0 to stop sending. */
+    uint8_t target_system; /*<  The target requested to send the message stream. */
+    uint8_t target_component; /*<  The target requested to send the message stream. */
+    uint8_t req_stream_id; /*<  The ID of the requested data stream */
+    uint16_t req_message_rate; /*< [Hz] The requested message rate */
+    uint8_t start_stop; /*<  1 to start sending, 0 to stop sending. */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief VISION_POSITION_DELTA message
  *
- * camera vision based attitude and position deltas
+ * Camera vision based attitude and position deltas.
  */
 struct VISION_POSITION_DELTA : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11011;
@@ -19,11 +19,11 @@ struct VISION_POSITION_DELTA : mavlink::Message {
     static constexpr auto NAME = "VISION_POSITION_DELTA";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot) */
-    uint64_t time_delta_usec; /*< Time in microseconds since the last reported camera frame */
-    std::array<float, 3> angle_delta; /*< Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation */
-    std::array<float, 3> position_delta; /*< Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down) */
-    float confidence; /*< normalised confidence value from 0 to 100 */
+    uint64_t time_usec; /*< [us] Timestamp (synced to UNIX time or since system boot). */
+    uint64_t time_delta_usec; /*< [us] Time since the last reported camera frame. */
+    std::array<float, 3> angle_delta; /*<  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation. */
+    std::array<float, 3> position_delta; /*< [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down). */
+    float confidence; /*< [%] Normalised confidence value from 0 to 100. */
 
 
     inline std::string get_name(void) const override

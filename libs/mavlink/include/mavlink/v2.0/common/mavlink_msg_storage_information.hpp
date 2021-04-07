@@ -9,24 +9,25 @@ namespace msg {
 /**
  * @brief STORAGE_INFORMATION message
  *
- * WIP: Information about a storage medium
+ * Information about a storage medium. This message is sent in response to a request and whenever the status of the storage changes (STORAGE_STATUS).
  */
 struct STORAGE_INFORMATION : mavlink::Message {
     static constexpr msgid_t MSG_ID = 261;
-    static constexpr size_t LENGTH = 26;
-    static constexpr size_t MIN_LENGTH = 26;
-    static constexpr uint8_t CRC_EXTRA = 244;
+    static constexpr size_t LENGTH = 27;
+    static constexpr size_t MIN_LENGTH = 27;
+    static constexpr uint8_t CRC_EXTRA = 179;
     static constexpr auto NAME = "STORAGE_INFORMATION";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    uint8_t storage_id; /*< Storage ID if there are multiple */
-    uint8_t status; /*< Status of storage (0 not available, 1 unformatted, 2 formatted) */
-    float total_capacity; /*< Total capacity in MiB */
-    float used_capacity; /*< Used capacity in MiB */
-    float available_capacity; /*< Available capacity in MiB */
-    float read_speed; /*< Read speed in MiB/s */
-    float write_speed; /*< Write speed in MiB/s */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    uint8_t storage_id; /*<  Storage ID (1 for first, 2 for second, etc.) */
+    uint8_t storage_count; /*<  Number of storage devices */
+    uint8_t status; /*<  Status of storage */
+    float total_capacity; /*< [MiB] Total capacity. If storage is not ready (STORAGE_STATUS_READY) value will be ignored. */
+    float used_capacity; /*< [MiB] Used capacity. If storage is not ready (STORAGE_STATUS_READY) value will be ignored. */
+    float available_capacity; /*< [MiB] Available storage capacity. If storage is not ready (STORAGE_STATUS_READY) value will be ignored. */
+    float read_speed; /*< [MiB/s] Read speed. */
+    float write_speed; /*< [MiB/s] Write speed. */
 
 
     inline std::string get_name(void) const override
@@ -46,6 +47,7 @@ struct STORAGE_INFORMATION : mavlink::Message {
         ss << NAME << ":" << std::endl;
         ss << "  time_boot_ms: " << time_boot_ms << std::endl;
         ss << "  storage_id: " << +storage_id << std::endl;
+        ss << "  storage_count: " << +storage_count << std::endl;
         ss << "  status: " << +status << std::endl;
         ss << "  total_capacity: " << total_capacity << std::endl;
         ss << "  used_capacity: " << used_capacity << std::endl;
@@ -67,7 +69,8 @@ struct STORAGE_INFORMATION : mavlink::Message {
         map << read_speed;                    // offset: 16
         map << write_speed;                   // offset: 20
         map << storage_id;                    // offset: 24
-        map << status;                        // offset: 25
+        map << storage_count;                 // offset: 25
+        map << status;                        // offset: 26
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -79,7 +82,8 @@ struct STORAGE_INFORMATION : mavlink::Message {
         map >> read_speed;                    // offset: 16
         map >> write_speed;                   // offset: 20
         map >> storage_id;                    // offset: 24
-        map >> status;                        // offset: 25
+        map >> storage_count;                 // offset: 25
+        map >> status;                        // offset: 26
     }
 };
 

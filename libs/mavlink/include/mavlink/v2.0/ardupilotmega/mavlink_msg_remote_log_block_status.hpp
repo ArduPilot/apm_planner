@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief REMOTE_LOG_BLOCK_STATUS message
  *
- * Send Status of each log block that autopilot board might have sent
+ * Send Status of each log block that autopilot board might have sent.
  */
 struct REMOTE_LOG_BLOCK_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 185;
@@ -19,10 +19,10 @@ struct REMOTE_LOG_BLOCK_STATUS : mavlink::Message {
     static constexpr auto NAME = "REMOTE_LOG_BLOCK_STATUS";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint32_t seqno; /*< log data block sequence number */
-    uint8_t status; /*< log data block status */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint32_t seqno; /*<  Log data block sequence number. */
+    uint8_t status; /*<  Log data block status. */
 
 
     inline std::string get_name(void) const override

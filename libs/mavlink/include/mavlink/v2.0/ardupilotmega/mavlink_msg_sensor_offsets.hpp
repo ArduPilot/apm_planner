@@ -19,18 +19,18 @@ struct SENSOR_OFFSETS : mavlink::Message {
     static constexpr auto NAME = "SENSOR_OFFSETS";
 
 
-    int16_t mag_ofs_x; /*< magnetometer X offset */
-    int16_t mag_ofs_y; /*< magnetometer Y offset */
-    int16_t mag_ofs_z; /*< magnetometer Z offset */
-    float mag_declination; /*< magnetic declination (radians) */
-    int32_t raw_press; /*< raw pressure from barometer */
-    int32_t raw_temp; /*< raw temperature from barometer */
-    float gyro_cal_x; /*< gyro X calibration */
-    float gyro_cal_y; /*< gyro Y calibration */
-    float gyro_cal_z; /*< gyro Z calibration */
-    float accel_cal_x; /*< accel X calibration */
-    float accel_cal_y; /*< accel Y calibration */
-    float accel_cal_z; /*< accel Z calibration */
+    int16_t mag_ofs_x; /*<  Magnetometer X offset. */
+    int16_t mag_ofs_y; /*<  Magnetometer Y offset. */
+    int16_t mag_ofs_z; /*<  Magnetometer Z offset. */
+    float mag_declination; /*< [rad] Magnetic declination. */
+    int32_t raw_press; /*<  Raw pressure from barometer. */
+    int32_t raw_temp; /*<  Raw temperature from barometer. */
+    float gyro_cal_x; /*<  Gyro X calibration. */
+    float gyro_cal_y; /*<  Gyro Y calibration. */
+    float gyro_cal_z; /*<  Gyro Z calibration. */
+    float accel_cal_x; /*<  Accel X calibration. */
+    float accel_cal_y; /*<  Accel Y calibration. */
+    float accel_cal_z; /*<  Accel Z calibration. */
 
 
     inline std::string get_name(void) const override

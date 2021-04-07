@@ -19,8 +19,8 @@ struct EXTENDED_SYS_STATE : mavlink::Message {
     static constexpr auto NAME = "EXTENDED_SYS_STATE";
 
 
-    uint8_t vtol_state; /*< The VTOL state if applicable. Is set to MAV_VTOL_STATE_UNDEFINED if UAV is not in VTOL configuration. */
-    uint8_t landed_state; /*< The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown. */
+    uint8_t vtol_state; /*<  The VTOL state if applicable. Is set to MAV_VTOL_STATE_UNDEFINED if UAV is not in VTOL configuration. */
+    uint8_t landed_state; /*<  The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown. */
 
 
     inline std::string get_name(void) const override

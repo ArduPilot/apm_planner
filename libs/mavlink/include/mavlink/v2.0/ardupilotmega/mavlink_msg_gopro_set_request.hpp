@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GOPRO_SET_REQUEST message
  *
- * Request to set a GOPRO_COMMAND with a desired
+ * Request to set a GOPRO_COMMAND with a desired.
  */
 struct GOPRO_SET_REQUEST : mavlink::Message {
     static constexpr msgid_t MSG_ID = 218;
@@ -19,10 +19,10 @@ struct GOPRO_SET_REQUEST : mavlink::Message {
     static constexpr auto NAME = "GOPRO_SET_REQUEST";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t cmd_id; /*< Command ID */
-    std::array<uint8_t, 4> value; /*< Value */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint8_t cmd_id; /*<  Command ID. */
+    std::array<uint8_t, 4> value; /*<  Value. */
 
 
     inline std::string get_name(void) const override

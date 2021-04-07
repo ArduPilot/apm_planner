@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief FLIGHT_INFORMATION message
  *
- * WIP: Information about flight since last arming
+ * Information about flight since last arming.
  */
 struct FLIGHT_INFORMATION : mavlink::Message {
     static constexpr msgid_t MSG_ID = 264;
@@ -19,10 +19,10 @@ struct FLIGHT_INFORMATION : mavlink::Message {
     static constexpr auto NAME = "FLIGHT_INFORMATION";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    uint64_t arming_time_utc; /*< Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown */
-    uint64_t takeoff_time_utc; /*< Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown */
-    uint64_t flight_uuid; /*< Universally unique identifier (UUID) of flight, should correspond to name of logfiles */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    uint64_t arming_time_utc; /*< [us] Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown */
+    uint64_t takeoff_time_utc; /*< [us] Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown */
+    uint64_t flight_uuid; /*<  Universally unique identifier (UUID) of flight, should correspond to name of log files */
 
 
     inline std::string get_name(void) const override

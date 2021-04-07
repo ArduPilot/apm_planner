@@ -3,11 +3,11 @@
 
 #define MAVLINK_MSG_ID_RPM 226
 
-MAVPACKED(
+
 typedef struct __mavlink_rpm_t {
- float rpm1; /*< RPM Sensor1*/
- float rpm2; /*< RPM Sensor2*/
-}) mavlink_rpm_t;
+ float rpm1; /*<  RPM Sensor1.*/
+ float rpm2; /*<  RPM Sensor2.*/
+} mavlink_rpm_t;
 
 #define MAVLINK_MSG_ID_RPM_LEN 8
 #define MAVLINK_MSG_ID_RPM_MIN_LEN 8
@@ -44,8 +44,8 @@ typedef struct __mavlink_rpm_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param rpm1 RPM Sensor1
- * @param rpm2 RPM Sensor2
+ * @param rpm1  RPM Sensor1.
+ * @param rpm2  RPM Sensor2.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_rpm_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -75,8 +75,8 @@ static inline uint16_t mavlink_msg_rpm_pack(uint8_t system_id, uint8_t component
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param rpm1 RPM Sensor1
- * @param rpm2 RPM Sensor2
+ * @param rpm1  RPM Sensor1.
+ * @param rpm2  RPM Sensor2.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_rpm_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -132,8 +132,8 @@ static inline uint16_t mavlink_msg_rpm_encode_chan(uint8_t system_id, uint8_t co
  * @brief Send a rpm message
  * @param chan MAVLink channel to send the message
  *
- * @param rpm1 RPM Sensor1
- * @param rpm2 RPM Sensor2
+ * @param rpm1  RPM Sensor1.
+ * @param rpm2  RPM Sensor2.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -202,7 +202,7 @@ static inline void mavlink_msg_rpm_send_buf(mavlink_message_t *msgbuf, mavlink_c
 /**
  * @brief Get field rpm1 from rpm message
  *
- * @return RPM Sensor1
+ * @return  RPM Sensor1.
  */
 static inline float mavlink_msg_rpm_get_rpm1(const mavlink_message_t* msg)
 {
@@ -212,7 +212,7 @@ static inline float mavlink_msg_rpm_get_rpm1(const mavlink_message_t* msg)
 /**
  * @brief Get field rpm2 from rpm message
  *
- * @return RPM Sensor2
+ * @return  RPM Sensor2.
  */
 static inline float mavlink_msg_rpm_get_rpm2(const mavlink_message_t* msg)
 {

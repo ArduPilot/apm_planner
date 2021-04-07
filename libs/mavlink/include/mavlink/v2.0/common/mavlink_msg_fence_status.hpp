@@ -3,26 +3,27 @@
 #pragma once
 
 namespace mavlink {
-namespace ardupilotmega {
+namespace common {
 namespace msg {
 
 /**
  * @brief FENCE_STATUS message
  *
- * Status of geo-fencing. Sent in extended status stream when fencing enabled
+ * Status of geo-fencing. Sent in extended status stream when fencing enabled.
  */
 struct FENCE_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 162;
-    static constexpr size_t LENGTH = 8;
+    static constexpr size_t LENGTH = 9;
     static constexpr size_t MIN_LENGTH = 8;
     static constexpr uint8_t CRC_EXTRA = 189;
     static constexpr auto NAME = "FENCE_STATUS";
 
 
-    uint8_t breach_status; /*< 0 if currently inside fence, 1 if outside */
-    uint16_t breach_count; /*< number of fence breaches */
-    uint8_t breach_type; /*< last breach type (see FENCE_BREACH_* enum) */
-    uint32_t breach_time; /*< time of last breach in milliseconds since boot */
+    uint8_t breach_status; /*<  Breach status (0 if currently inside fence, 1 if outside). */
+    uint16_t breach_count; /*<  Number of fence breaches. */
+    uint8_t breach_type; /*<  Last breach type. */
+    uint32_t breach_time; /*< [ms] Time (since boot) of last breach. */
+    uint8_t breach_mitigation; /*<  Active action to prevent fence breach */
 
 
     inline std::string get_name(void) const override
@@ -44,6 +45,7 @@ struct FENCE_STATUS : mavlink::Message {
         ss << "  breach_count: " << breach_count << std::endl;
         ss << "  breach_type: " << +breach_type << std::endl;
         ss << "  breach_time: " << breach_time << std::endl;
+        ss << "  breach_mitigation: " << +breach_mitigation << std::endl;
 
         return ss.str();
     }
@@ -56,6 +58,7 @@ struct FENCE_STATUS : mavlink::Message {
         map << breach_count;                  // offset: 4
         map << breach_status;                 // offset: 6
         map << breach_type;                   // offset: 7
+        map << breach_mitigation;             // offset: 8
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -64,9 +67,10 @@ struct FENCE_STATUS : mavlink::Message {
         map >> breach_count;                  // offset: 4
         map >> breach_status;                 // offset: 6
         map >> breach_type;                   // offset: 7
+        map >> breach_mitigation;             // offset: 8
     }
 };
 
 } // namespace msg
-} // namespace ardupilotmega
+} // namespace common
 } // namespace mavlink

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief CAMERA_STATUS message
  *
- * Camera Event
+ * Camera Event.
  */
 struct CAMERA_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 179;
@@ -19,15 +19,15 @@ struct CAMERA_STATUS : mavlink::Message {
     static constexpr auto NAME = "CAMERA_STATUS";
 
 
-    uint64_t time_usec; /*< Image timestamp (microseconds since UNIX epoch, according to camera clock) */
-    uint8_t target_system; /*< System ID */
-    uint8_t cam_idx; /*< Camera ID */
-    uint16_t img_idx; /*< Image index */
-    uint8_t event_id; /*< See CAMERA_STATUS_TYPES enum for definition of the bitmask */
-    float p1; /*< Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum) */
-    float p2; /*< Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum) */
-    float p3; /*< Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum) */
-    float p4; /*< Parameter 4 (meaning depends on event, see CAMERA_STATUS_TYPES enum) */
+    uint64_t time_usec; /*< [us] Image timestamp (since UNIX epoch, according to camera clock). */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t cam_idx; /*<  Camera ID. */
+    uint16_t img_idx; /*<  Image index. */
+    uint8_t event_id; /*<  Event type. */
+    float p1; /*<  Parameter 1 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum). */
+    float p2; /*<  Parameter 2 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum). */
+    float p3; /*<  Parameter 3 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum). */
+    float p4; /*<  Parameter 4 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum). */
 
 
     inline std::string get_name(void) const override

@@ -19,9 +19,9 @@ struct POWER_STATUS : mavlink::Message {
     static constexpr auto NAME = "POWER_STATUS";
 
 
-    uint16_t Vcc; /*< 5V rail voltage in millivolts */
-    uint16_t Vservo; /*< servo rail voltage in millivolts */
-    uint16_t flags; /*< power supply status flags (see MAV_POWER_STATUS enum) */
+    uint16_t Vcc; /*< [mV] 5V rail voltage. */
+    uint16_t Vservo; /*< [mV] Servo rail voltage. */
+    uint16_t flags; /*<  Bitmap of power supply status flags. */
 
 
     inline std::string get_name(void) const override

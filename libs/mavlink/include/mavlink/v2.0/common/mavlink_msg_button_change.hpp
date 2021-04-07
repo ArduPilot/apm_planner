@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief BUTTON_CHANGE message
  *
- * Report button state change
+ * Report button state change.
  */
 struct BUTTON_CHANGE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 257;
@@ -19,9 +19,9 @@ struct BUTTON_CHANGE : mavlink::Message {
     static constexpr auto NAME = "BUTTON_CHANGE";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    uint32_t last_change_ms; /*< Time of last change of button state */
-    uint8_t state; /*< Bitmap state of buttons */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    uint32_t last_change_ms; /*< [ms] Time of last change of button state. */
+    uint8_t state; /*<  Bitmap for state of buttons. */
 
 
     inline std::string get_name(void) const override

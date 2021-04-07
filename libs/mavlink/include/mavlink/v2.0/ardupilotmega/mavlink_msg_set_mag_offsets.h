@@ -3,14 +3,14 @@
 
 #define MAVLINK_MSG_ID_SET_MAG_OFFSETS 151
 
-MAVPACKED(
+
 typedef struct __mavlink_set_mag_offsets_t {
- int16_t mag_ofs_x; /*< magnetometer X offset*/
- int16_t mag_ofs_y; /*< magnetometer Y offset*/
- int16_t mag_ofs_z; /*< magnetometer Z offset*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
-}) mavlink_set_mag_offsets_t;
+ int16_t mag_ofs_x; /*<  Magnetometer X offset.*/
+ int16_t mag_ofs_y; /*<  Magnetometer Y offset.*/
+ int16_t mag_ofs_z; /*<  Magnetometer Z offset.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+} mavlink_set_mag_offsets_t;
 
 #define MAVLINK_MSG_ID_SET_MAG_OFFSETS_LEN 8
 #define MAVLINK_MSG_ID_SET_MAG_OFFSETS_MIN_LEN 8
@@ -53,11 +53,11 @@ typedef struct __mavlink_set_mag_offsets_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param mag_ofs_x magnetometer X offset
- * @param mag_ofs_y magnetometer Y offset
- * @param mag_ofs_z magnetometer Z offset
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mag_ofs_x  Magnetometer X offset.
+ * @param mag_ofs_y  Magnetometer Y offset.
+ * @param mag_ofs_z  Magnetometer Z offset.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_set_mag_offsets_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -93,11 +93,11 @@ static inline uint16_t mavlink_msg_set_mag_offsets_pack(uint8_t system_id, uint8
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param mag_ofs_x magnetometer X offset
- * @param mag_ofs_y magnetometer Y offset
- * @param mag_ofs_z magnetometer Z offset
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mag_ofs_x  Magnetometer X offset.
+ * @param mag_ofs_y  Magnetometer Y offset.
+ * @param mag_ofs_z  Magnetometer Z offset.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_set_mag_offsets_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -159,11 +159,11 @@ static inline uint16_t mavlink_msg_set_mag_offsets_encode_chan(uint8_t system_id
  * @brief Send a set_mag_offsets message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param mag_ofs_x magnetometer X offset
- * @param mag_ofs_y magnetometer Y offset
- * @param mag_ofs_z magnetometer Z offset
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mag_ofs_x  Magnetometer X offset.
+ * @param mag_ofs_y  Magnetometer Y offset.
+ * @param mag_ofs_z  Magnetometer Z offset.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -244,7 +244,7 @@ static inline void mavlink_msg_set_mag_offsets_send_buf(mavlink_message_t *msgbu
 /**
  * @brief Get field target_system from set_mag_offsets message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_set_mag_offsets_get_target_system(const mavlink_message_t* msg)
 {
@@ -254,7 +254,7 @@ static inline uint8_t mavlink_msg_set_mag_offsets_get_target_system(const mavlin
 /**
  * @brief Get field target_component from set_mag_offsets message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_set_mag_offsets_get_target_component(const mavlink_message_t* msg)
 {
@@ -264,7 +264,7 @@ static inline uint8_t mavlink_msg_set_mag_offsets_get_target_component(const mav
 /**
  * @brief Get field mag_ofs_x from set_mag_offsets message
  *
- * @return magnetometer X offset
+ * @return  Magnetometer X offset.
  */
 static inline int16_t mavlink_msg_set_mag_offsets_get_mag_ofs_x(const mavlink_message_t* msg)
 {
@@ -274,7 +274,7 @@ static inline int16_t mavlink_msg_set_mag_offsets_get_mag_ofs_x(const mavlink_me
 /**
  * @brief Get field mag_ofs_y from set_mag_offsets message
  *
- * @return magnetometer Y offset
+ * @return  Magnetometer Y offset.
  */
 static inline int16_t mavlink_msg_set_mag_offsets_get_mag_ofs_y(const mavlink_message_t* msg)
 {
@@ -284,7 +284,7 @@ static inline int16_t mavlink_msg_set_mag_offsets_get_mag_ofs_y(const mavlink_me
 /**
  * @brief Get field mag_ofs_z from set_mag_offsets message
  *
- * @return magnetometer Z offset
+ * @return  Magnetometer Z offset.
  */
 static inline int16_t mavlink_msg_set_mag_offsets_get_mag_ofs_z(const mavlink_message_t* msg)
 {

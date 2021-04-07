@@ -3,11 +3,11 @@
 
 #define MAVLINK_MSG_ID_GOPRO_SET_RESPONSE 219
 
-MAVPACKED(
+
 typedef struct __mavlink_gopro_set_response_t {
- uint8_t cmd_id; /*< Command ID*/
- uint8_t status; /*< Status*/
-}) mavlink_gopro_set_response_t;
+ uint8_t cmd_id; /*<  Command ID.*/
+ uint8_t status; /*<  Status.*/
+} mavlink_gopro_set_response_t;
 
 #define MAVLINK_MSG_ID_GOPRO_SET_RESPONSE_LEN 2
 #define MAVLINK_MSG_ID_GOPRO_SET_RESPONSE_MIN_LEN 2
@@ -44,8 +44,8 @@ typedef struct __mavlink_gopro_set_response_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param cmd_id Command ID
- * @param status Status
+ * @param cmd_id  Command ID.
+ * @param status  Status.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gopro_set_response_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -75,8 +75,8 @@ static inline uint16_t mavlink_msg_gopro_set_response_pack(uint8_t system_id, ui
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param cmd_id Command ID
- * @param status Status
+ * @param cmd_id  Command ID.
+ * @param status  Status.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gopro_set_response_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -132,8 +132,8 @@ static inline uint16_t mavlink_msg_gopro_set_response_encode_chan(uint8_t system
  * @brief Send a gopro_set_response message
  * @param chan MAVLink channel to send the message
  *
- * @param cmd_id Command ID
- * @param status Status
+ * @param cmd_id  Command ID.
+ * @param status  Status.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -202,7 +202,7 @@ static inline void mavlink_msg_gopro_set_response_send_buf(mavlink_message_t *ms
 /**
  * @brief Get field cmd_id from gopro_set_response message
  *
- * @return Command ID
+ * @return  Command ID.
  */
 static inline uint8_t mavlink_msg_gopro_set_response_get_cmd_id(const mavlink_message_t* msg)
 {
@@ -212,7 +212,7 @@ static inline uint8_t mavlink_msg_gopro_set_response_get_cmd_id(const mavlink_me
 /**
  * @brief Get field status from gopro_set_response message
  *
- * @return Status
+ * @return  Status.
  */
 static inline uint8_t mavlink_msg_gopro_set_response_get_status(const mavlink_message_t* msg)
 {

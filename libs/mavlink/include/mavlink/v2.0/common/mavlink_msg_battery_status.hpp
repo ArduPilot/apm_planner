@@ -19,17 +19,17 @@ struct BATTERY_STATUS : mavlink::Message {
     static constexpr auto NAME = "BATTERY_STATUS";
 
 
-    uint8_t id; /*< Battery ID */
-    uint8_t battery_function; /*< Function of the battery */
-    uint8_t type; /*< Type (chemistry) of the battery */
-    int16_t temperature; /*< Temperature of the battery in centi-degrees celsius. INT16_MAX for unknown temperature. */
-    std::array<uint16_t, 10> voltages; /*< Battery voltage of cells, in millivolts (1 = 1 millivolt). Cells above the valid cell count for this battery should have the UINT16_MAX value. */
-    int16_t current_battery; /*< Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current */
-    int32_t current_consumed; /*< Consumed charge, in milliampere hours (1 = 1 mAh), -1: autopilot does not provide mAh consumption estimate */
-    int32_t energy_consumed; /*< Consumed energy, in HectoJoules (intergrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate */
-    int8_t battery_remaining; /*< Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery */
-    int32_t time_remaining; /*< Remaining battery time, in seconds (1 = 1s = 0% energy left), 0: autopilot does not provide remaining battery time estimate */
-    uint8_t charge_state; /*< State for extent of discharge, provided by autopilot for warning or external reactions */
+    uint8_t id; /*<  Battery ID */
+    uint8_t battery_function; /*<  Function of the battery */
+    uint8_t type; /*<  Type (chemistry) of the battery */
+    int16_t temperature; /*< [cdegC] Temperature of the battery. INT16_MAX for unknown temperature. */
+    std::array<uint16_t, 10> voltages; /*< [mV] Battery voltage of cells. Cells above the valid cell count for this battery should have the UINT16_MAX value. */
+    int16_t current_battery; /*< [cA] Battery current, -1: autopilot does not measure the current */
+    int32_t current_consumed; /*< [mAh] Consumed charge, -1: autopilot does not provide consumption estimate */
+    int32_t energy_consumed; /*< [hJ] Consumed energy, -1: autopilot does not provide energy consumption estimate */
+    int8_t battery_remaining; /*< [%] Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery. */
+    int32_t time_remaining; /*< [s] Remaining battery time, 0: autopilot does not provide remaining battery time estimate */
+    uint8_t charge_state; /*<  State for extent of discharge, provided by autopilot for warning or external reactions */
 
 
     inline std::string get_name(void) const override

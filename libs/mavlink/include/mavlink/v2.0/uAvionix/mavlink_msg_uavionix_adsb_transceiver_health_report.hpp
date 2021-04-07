@@ -19,7 +19,7 @@ struct UAVIONIX_ADSB_TRANSCEIVER_HEALTH_REPORT : mavlink::Message {
     static constexpr auto NAME = "UAVIONIX_ADSB_TRANSCEIVER_HEALTH_REPORT";
 
 
-    uint8_t rfHealth; /*< ADS-B transponder messages */
+    uint8_t rfHealth; /*<  ADS-B transponder messages */
 
 
     inline std::string get_name(void) const override

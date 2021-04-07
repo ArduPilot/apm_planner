@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GIMBAL_REPORT message
  *
- * 3 axis gimbal mesuraments
+ * 3 axis gimbal measurements.
  */
 struct GIMBAL_REPORT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 200;
@@ -19,18 +19,18 @@ struct GIMBAL_REPORT : mavlink::Message {
     static constexpr auto NAME = "GIMBAL_REPORT";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    float delta_time; /*< Time since last update (seconds) */
-    float delta_angle_x; /*< Delta angle X (radians) */
-    float delta_angle_y; /*< Delta angle Y (radians) */
-    float delta_angle_z; /*< Delta angle X (radians) */
-    float delta_velocity_x; /*< Delta velocity X (m/s) */
-    float delta_velocity_y; /*< Delta velocity Y (m/s) */
-    float delta_velocity_z; /*< Delta velocity Z (m/s) */
-    float joint_roll; /*< Joint ROLL (radians) */
-    float joint_el; /*< Joint EL (radians) */
-    float joint_az; /*< Joint AZ (radians) */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    float delta_time; /*< [s] Time since last update. */
+    float delta_angle_x; /*< [rad] Delta angle X. */
+    float delta_angle_y; /*< [rad] Delta angle Y. */
+    float delta_angle_z; /*< [rad] Delta angle X. */
+    float delta_velocity_x; /*< [m/s] Delta velocity X. */
+    float delta_velocity_y; /*< [m/s] Delta velocity Y. */
+    float delta_velocity_z; /*< [m/s] Delta velocity Z. */
+    float joint_roll; /*< [rad] Joint ROLL. */
+    float joint_el; /*< [rad] Joint EL. */
+    float joint_az; /*< [rad] Joint AZ. */
 
 
     inline std::string get_name(void) const override

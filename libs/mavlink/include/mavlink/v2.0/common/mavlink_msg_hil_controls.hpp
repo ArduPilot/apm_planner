@@ -19,17 +19,17 @@ struct HIL_CONTROLS : mavlink::Message {
     static constexpr auto NAME = "HIL_CONTROLS";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
-    float roll_ailerons; /*< Control output -1 .. 1 */
-    float pitch_elevator; /*< Control output -1 .. 1 */
-    float yaw_rudder; /*< Control output -1 .. 1 */
-    float throttle; /*< Throttle 0 .. 1 */
-    float aux1; /*< Aux 1, -1 .. 1 */
-    float aux2; /*< Aux 2, -1 .. 1 */
-    float aux3; /*< Aux 3, -1 .. 1 */
-    float aux4; /*< Aux 4, -1 .. 1 */
-    uint8_t mode; /*< System mode (MAV_MODE) */
-    uint8_t nav_mode; /*< Navigation mode (MAV_NAV_MODE) */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    float roll_ailerons; /*<  Control output -1 .. 1 */
+    float pitch_elevator; /*<  Control output -1 .. 1 */
+    float yaw_rudder; /*<  Control output -1 .. 1 */
+    float throttle; /*<  Throttle 0 .. 1 */
+    float aux1; /*<  Aux 1, -1 .. 1 */
+    float aux2; /*<  Aux 2, -1 .. 1 */
+    float aux3; /*<  Aux 3, -1 .. 1 */
+    float aux4; /*<  Aux 4, -1 .. 1 */
+    uint8_t mode; /*<  System mode. */
+    uint8_t nav_mode; /*<  Navigation mode (MAV_NAV_MODE) */
 
 
     inline std::string get_name(void) const override

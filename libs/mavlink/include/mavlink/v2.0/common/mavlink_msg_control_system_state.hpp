@@ -19,23 +19,23 @@ struct CONTROL_SYSTEM_STATE : mavlink::Message {
     static constexpr auto NAME = "CONTROL_SYSTEM_STATE";
 
 
-    uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch) */
-    float x_acc; /*< X acceleration in body frame */
-    float y_acc; /*< Y acceleration in body frame */
-    float z_acc; /*< Z acceleration in body frame */
-    float x_vel; /*< X velocity in body frame */
-    float y_vel; /*< Y velocity in body frame */
-    float z_vel; /*< Z velocity in body frame */
-    float x_pos; /*< X position in local frame */
-    float y_pos; /*< Y position in local frame */
-    float z_pos; /*< Z position in local frame */
-    float airspeed; /*< Airspeed, set to -1 if unknown */
-    std::array<float, 3> vel_variance; /*< Variance of body velocity estimate */
-    std::array<float, 3> pos_variance; /*< Variance in local position */
-    std::array<float, 4> q; /*< The attitude, represented as Quaternion */
-    float roll_rate; /*< Angular rate in roll axis */
-    float pitch_rate; /*< Angular rate in pitch axis */
-    float yaw_rate; /*< Angular rate in yaw axis */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    float x_acc; /*< [m/s/s] X acceleration in body frame */
+    float y_acc; /*< [m/s/s] Y acceleration in body frame */
+    float z_acc; /*< [m/s/s] Z acceleration in body frame */
+    float x_vel; /*< [m/s] X velocity in body frame */
+    float y_vel; /*< [m/s] Y velocity in body frame */
+    float z_vel; /*< [m/s] Z velocity in body frame */
+    float x_pos; /*< [m] X position in local frame */
+    float y_pos; /*< [m] Y position in local frame */
+    float z_pos; /*< [m] Z position in local frame */
+    float airspeed; /*< [m/s] Airspeed, set to -1 if unknown */
+    std::array<float, 3> vel_variance; /*<  Variance of body velocity estimate */
+    std::array<float, 3> pos_variance; /*<  Variance in local position */
+    std::array<float, 4> q; /*<  The attitude, represented as Quaternion */
+    float roll_rate; /*< [rad/s] Angular rate in roll axis */
+    float pitch_rate; /*< [rad/s] Angular rate in pitch axis */
+    float yaw_rate; /*< [rad/s] Angular rate in yaw axis */
 
 
     inline std::string get_name(void) const override

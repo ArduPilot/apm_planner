@@ -3,12 +3,12 @@
 
 #define MAVLINK_MSG_ID_FENCE_FETCH_POINT 161
 
-MAVPACKED(
+
 typedef struct __mavlink_fence_fetch_point_t {
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t idx; /*< point index (first point is 1, 0 is for return point)*/
-}) mavlink_fence_fetch_point_t;
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t idx; /*<  Point index (first point is 1, 0 is for return point).*/
+} mavlink_fence_fetch_point_t;
 
 #define MAVLINK_MSG_ID_FENCE_FETCH_POINT_LEN 3
 #define MAVLINK_MSG_ID_FENCE_FETCH_POINT_MIN_LEN 3
@@ -47,9 +47,9 @@ typedef struct __mavlink_fence_fetch_point_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param idx point index (first point is 1, 0 is for return point)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param idx  Point index (first point is 1, 0 is for return point).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_fence_fetch_point_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -81,9 +81,9 @@ static inline uint16_t mavlink_msg_fence_fetch_point_pack(uint8_t system_id, uin
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param idx point index (first point is 1, 0 is for return point)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param idx  Point index (first point is 1, 0 is for return point).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_fence_fetch_point_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -141,9 +141,9 @@ static inline uint16_t mavlink_msg_fence_fetch_point_encode_chan(uint8_t system_
  * @brief Send a fence_fetch_point message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param idx point index (first point is 1, 0 is for return point)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param idx  Point index (first point is 1, 0 is for return point).
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -216,7 +216,7 @@ static inline void mavlink_msg_fence_fetch_point_send_buf(mavlink_message_t *msg
 /**
  * @brief Get field target_system from fence_fetch_point message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_fence_fetch_point_get_target_system(const mavlink_message_t* msg)
 {
@@ -226,7 +226,7 @@ static inline uint8_t mavlink_msg_fence_fetch_point_get_target_system(const mavl
 /**
  * @brief Get field target_component from fence_fetch_point message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_fence_fetch_point_get_target_component(const mavlink_message_t* msg)
 {
@@ -236,7 +236,7 @@ static inline uint8_t mavlink_msg_fence_fetch_point_get_target_component(const m
 /**
  * @brief Get field idx from fence_fetch_point message
  *
- * @return point index (first point is 1, 0 is for return point)
+ * @return  Point index (first point is 1, 0 is for return point).
  */
 static inline uint8_t mavlink_msg_fence_fetch_point_get_idx(const mavlink_message_t* msg)
 {

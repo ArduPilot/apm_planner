@@ -3,13 +3,13 @@
 
 #define MAVLINK_MSG_ID_FLIGHT_INFORMATION 264
 
-MAVPACKED(
+
 typedef struct __mavlink_flight_information_t {
- uint64_t arming_time_utc; /*< Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown*/
- uint64_t takeoff_time_utc; /*< Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown*/
- uint64_t flight_uuid; /*< Universally unique identifier (UUID) of flight, should correspond to name of logfiles*/
- uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot)*/
-}) mavlink_flight_information_t;
+ uint64_t arming_time_utc; /*< [us] Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown*/
+ uint64_t takeoff_time_utc; /*< [us] Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown*/
+ uint64_t flight_uuid; /*<  Universally unique identifier (UUID) of flight, should correspond to name of log files*/
+ uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot).*/
+} mavlink_flight_information_t;
 
 #define MAVLINK_MSG_ID_FLIGHT_INFORMATION_LEN 28
 #define MAVLINK_MSG_ID_FLIGHT_INFORMATION_MIN_LEN 28
@@ -50,10 +50,10 @@ typedef struct __mavlink_flight_information_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_boot_ms Timestamp (milliseconds since system boot)
- * @param arming_time_utc Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown
- * @param takeoff_time_utc Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown
- * @param flight_uuid Universally unique identifier (UUID) of flight, should correspond to name of logfiles
+ * @param time_boot_ms [ms] Timestamp (time since system boot).
+ * @param arming_time_utc [us] Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown
+ * @param takeoff_time_utc [us] Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown
+ * @param flight_uuid  Universally unique identifier (UUID) of flight, should correspond to name of log files
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_flight_information_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -87,10 +87,10 @@ static inline uint16_t mavlink_msg_flight_information_pack(uint8_t system_id, ui
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_boot_ms Timestamp (milliseconds since system boot)
- * @param arming_time_utc Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown
- * @param takeoff_time_utc Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown
- * @param flight_uuid Universally unique identifier (UUID) of flight, should correspond to name of logfiles
+ * @param time_boot_ms [ms] Timestamp (time since system boot).
+ * @param arming_time_utc [us] Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown
+ * @param takeoff_time_utc [us] Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown
+ * @param flight_uuid  Universally unique identifier (UUID) of flight, should correspond to name of log files
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_flight_information_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -150,10 +150,10 @@ static inline uint16_t mavlink_msg_flight_information_encode_chan(uint8_t system
  * @brief Send a flight_information message
  * @param chan MAVLink channel to send the message
  *
- * @param time_boot_ms Timestamp (milliseconds since system boot)
- * @param arming_time_utc Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown
- * @param takeoff_time_utc Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown
- * @param flight_uuid Universally unique identifier (UUID) of flight, should correspond to name of logfiles
+ * @param time_boot_ms [ms] Timestamp (time since system boot).
+ * @param arming_time_utc [us] Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown
+ * @param takeoff_time_utc [us] Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown
+ * @param flight_uuid  Universally unique identifier (UUID) of flight, should correspond to name of log files
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -230,7 +230,7 @@ static inline void mavlink_msg_flight_information_send_buf(mavlink_message_t *ms
 /**
  * @brief Get field time_boot_ms from flight_information message
  *
- * @return Timestamp (milliseconds since system boot)
+ * @return [ms] Timestamp (time since system boot).
  */
 static inline uint32_t mavlink_msg_flight_information_get_time_boot_ms(const mavlink_message_t* msg)
 {
@@ -240,7 +240,7 @@ static inline uint32_t mavlink_msg_flight_information_get_time_boot_ms(const mav
 /**
  * @brief Get field arming_time_utc from flight_information message
  *
- * @return Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown
+ * @return [us] Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown
  */
 static inline uint64_t mavlink_msg_flight_information_get_arming_time_utc(const mavlink_message_t* msg)
 {
@@ -250,7 +250,7 @@ static inline uint64_t mavlink_msg_flight_information_get_arming_time_utc(const 
 /**
  * @brief Get field takeoff_time_utc from flight_information message
  *
- * @return Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown
+ * @return [us] Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown
  */
 static inline uint64_t mavlink_msg_flight_information_get_takeoff_time_utc(const mavlink_message_t* msg)
 {
@@ -260,7 +260,7 @@ static inline uint64_t mavlink_msg_flight_information_get_takeoff_time_utc(const
 /**
  * @brief Get field flight_uuid from flight_information message
  *
- * @return Universally unique identifier (UUID) of flight, should correspond to name of logfiles
+ * @return  Universally unique identifier (UUID) of flight, should correspond to name of log files
  */
 static inline uint64_t mavlink_msg_flight_information_get_flight_uuid(const mavlink_message_t* msg)
 {

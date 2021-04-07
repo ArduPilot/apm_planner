@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief ADAP_TUNING message
  *
- * Adaptive Controller tuning information
+ * Adaptive Controller tuning information.
  */
 struct ADAP_TUNING : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11010;
@@ -19,19 +19,19 @@ struct ADAP_TUNING : mavlink::Message {
     static constexpr auto NAME = "ADAP_TUNING";
 
 
-    uint8_t axis; /*< axis */
-    float desired; /*< desired rate (degrees/s) */
-    float achieved; /*< achieved rate (degrees/s) */
-    float error; /*< error between model and vehicle */
-    float theta; /*< theta estimated state predictor */
-    float omega; /*< omega estimated state predictor */
-    float sigma; /*< sigma estimated state predictor */
-    float theta_dot; /*< theta derivative */
-    float omega_dot; /*< omega derivative */
-    float sigma_dot; /*< sigma derivative */
-    float f; /*< projection operator value */
-    float f_dot; /*< projection operator derivative */
-    float u; /*< u adaptive controlled output command */
+    uint8_t axis; /*<  Axis. */
+    float desired; /*< [deg/s] Desired rate. */
+    float achieved; /*< [deg/s] Achieved rate. */
+    float error; /*<  Error between model and vehicle. */
+    float theta; /*<  Theta estimated state predictor. */
+    float omega; /*<  Omega estimated state predictor. */
+    float sigma; /*<  Sigma estimated state predictor. */
+    float theta_dot; /*<  Theta derivative. */
+    float omega_dot; /*<  Omega derivative. */
+    float sigma_dot; /*<  Sigma derivative. */
+    float f; /*<  Projection operator value. */
+    float f_dot; /*<  Projection operator derivative. */
+    float u; /*<  u adaptive controlled output command. */
 
 
     inline std::string get_name(void) const override

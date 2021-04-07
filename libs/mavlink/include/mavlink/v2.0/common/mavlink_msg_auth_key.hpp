@@ -19,7 +19,7 @@ struct AUTH_KEY : mavlink::Message {
     static constexpr auto NAME = "AUTH_KEY";
 
 
-    std::array<char, 32> key; /*< key */
+    std::array<char, 32> key; /*<  key */
 
 
     inline std::string get_name(void) const override

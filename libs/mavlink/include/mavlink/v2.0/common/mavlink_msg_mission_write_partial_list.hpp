@@ -19,11 +19,11 @@ struct MISSION_WRITE_PARTIAL_LIST : mavlink::Message {
     static constexpr auto NAME = "MISSION_WRITE_PARTIAL_LIST";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    int16_t start_index; /*< Start index, 0 by default and smaller / equal to the largest index of the current onboard list. */
-    int16_t end_index; /*< End index, equal or greater than start index. */
-    uint8_t mission_type; /*< Mission type, see MAV_MISSION_TYPE */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    int16_t start_index; /*<  Start index. Must be smaller / equal to the largest index of the current onboard list. */
+    int16_t end_index; /*<  End index, equal or greater than start index. */
+    uint8_t mission_type; /*<  Mission type. */
 
 
     inline std::string get_name(void) const override

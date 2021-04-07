@@ -13,15 +13,16 @@ namespace msg {
  */
 struct PLAY_TUNE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 258;
-    static constexpr size_t LENGTH = 32;
+    static constexpr size_t LENGTH = 232;
     static constexpr size_t MIN_LENGTH = 32;
     static constexpr uint8_t CRC_EXTRA = 187;
     static constexpr auto NAME = "PLAY_TUNE";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    std::array<char, 30> tune; /*< tune in board specific format */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    std::array<char, 30> tune; /*<  tune in board specific format */
+    std::array<char, 200> tune2; /*<  tune extension (appended to tune) */
 
 
     inline std::string get_name(void) const override
@@ -42,6 +43,7 @@ struct PLAY_TUNE : mavlink::Message {
         ss << "  target_system: " << +target_system << std::endl;
         ss << "  target_component: " << +target_component << std::endl;
         ss << "  tune: \"" << to_string(tune) << "\"" << std::endl;
+        ss << "  tune2: \"" << to_string(tune2) << "\"" << std::endl;
 
         return ss.str();
     }
@@ -53,6 +55,7 @@ struct PLAY_TUNE : mavlink::Message {
         map << target_system;                 // offset: 0
         map << target_component;              // offset: 1
         map << tune;                          // offset: 2
+        map << tune2;                         // offset: 32
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -60,6 +63,7 @@ struct PLAY_TUNE : mavlink::Message {
         map >> target_system;                 // offset: 0
         map >> target_component;              // offset: 1
         map >> tune;                          // offset: 2
+        map >> tune2;                         // offset: 32
     }
 };
 

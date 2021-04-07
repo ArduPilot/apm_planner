@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief HEARTBEAT message
  *
- * The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).
+ * The heartbeat message shows that a system or component is present and responding. The type and autopilot fields (along with the message component id), allow the receiving system to treat further messages from this system appropriately (e.g. by laying out the user interface based on the autopilot). This microservice is documented at https://mavlink.io/en/services/heartbeat.html
  */
 struct HEARTBEAT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 0;
@@ -19,12 +19,12 @@ struct HEARTBEAT : mavlink::Message {
     static constexpr auto NAME = "HEARTBEAT";
 
 
-    uint8_t type; /*< Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM) */
-    uint8_t autopilot; /*< Autopilot type / class. defined in MAV_AUTOPILOT ENUM */
-    uint8_t base_mode; /*< System mode bitfield, as defined by MAV_MODE_FLAG enum */
-    uint32_t custom_mode; /*< A bitfield for use for autopilot-specific flags */
-    uint8_t system_status; /*< System status flag, as defined by MAV_STATE enum */
-    uint8_t mavlink_version; /*< MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version */
+    uint8_t type; /*<  Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type. */
+    uint8_t autopilot; /*<  Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers. */
+    uint8_t base_mode; /*<  System mode bitmap. */
+    uint32_t custom_mode; /*<  A bitfield for use for autopilot-specific flags */
+    uint8_t system_status; /*<  System status flag. */
+    uint8_t mavlink_version; /*<  MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version */
 
 
     inline std::string get_name(void) const override

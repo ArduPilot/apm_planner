@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief EKF_STATUS_REPORT message
  *
- * EKF Status message including flags and variances
+ * EKF Status message including flags and variances.
  */
 struct EKF_STATUS_REPORT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 193;
@@ -19,13 +19,13 @@ struct EKF_STATUS_REPORT : mavlink::Message {
     static constexpr auto NAME = "EKF_STATUS_REPORT";
 
 
-    uint16_t flags; /*< Flags */
-    float velocity_variance; /*< Velocity variance */
-    float pos_horiz_variance; /*< Horizontal Position variance */
-    float pos_vert_variance; /*< Vertical Position variance */
-    float compass_variance; /*< Compass variance */
-    float terrain_alt_variance; /*< Terrain Altitude variance */
-    float airspeed_variance; /*< Airspeed variance */
+    uint16_t flags; /*<  Flags. */
+    float velocity_variance; /*<  Velocity variance. */
+    float pos_horiz_variance; /*<  Horizontal Position variance. */
+    float pos_vert_variance; /*<  Vertical Position variance. */
+    float compass_variance; /*<  Compass variance. */
+    float terrain_alt_variance; /*<  Terrain Altitude variance. */
+    float airspeed_variance; /*<  Airspeed variance. */
 
 
     inline std::string get_name(void) const override

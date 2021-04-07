@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief VFR_HUD message
  *
- * Metrics typically displayed on a HUD for fixed wing aircraft
+ * Metrics typically displayed on a HUD for fixed wing aircraft.
  */
 struct VFR_HUD : mavlink::Message {
     static constexpr msgid_t MSG_ID = 74;
@@ -19,12 +19,12 @@ struct VFR_HUD : mavlink::Message {
     static constexpr auto NAME = "VFR_HUD";
 
 
-    float airspeed; /*< Current airspeed in m/s */
-    float groundspeed; /*< Current ground speed in m/s */
-    int16_t heading; /*< Current heading in degrees, in compass units (0..360, 0=north) */
-    uint16_t throttle; /*< Current throttle setting in integer percent, 0 to 100 */
-    float alt; /*< Current altitude (MSL), in meters */
-    float climb; /*< Current climb rate in meters/second */
+    float airspeed; /*< [m/s] Current indicated airspeed (IAS). */
+    float groundspeed; /*< [m/s] Current ground speed. */
+    int16_t heading; /*< [deg] Current heading in compass units (0-360, 0=north). */
+    uint16_t throttle; /*< [%] Current throttle setting (0 to 100). */
+    float alt; /*< [m] Current altitude (MSL). */
+    float climb; /*< [m/s] Current climb rate. */
 
 
     inline std::string get_name(void) const override

@@ -19,9 +19,9 @@ struct CHANGE_OPERATOR_CONTROL_ACK : mavlink::Message {
     static constexpr auto NAME = "CHANGE_OPERATOR_CONTROL_ACK";
 
 
-    uint8_t gcs_system_id; /*< ID of the GCS this message  */
-    uint8_t control_request; /*< 0: request control of this MAV, 1: Release control of this MAV */
-    uint8_t ack; /*< 0: ACK, 1: NACK: Wrong passkey, 2: NACK: Unsupported passkey encryption method, 3: NACK: Already under control */
+    uint8_t gcs_system_id; /*<  ID of the GCS this message  */
+    uint8_t control_request; /*<  0: request control of this MAV, 1: Release control of this MAV */
+    uint8_t ack; /*<  0: ACK, 1: NACK: Wrong passkey, 2: NACK: Unsupported passkey encryption method, 3: NACK: Already under control */
 
 
     inline std::string get_name(void) const override

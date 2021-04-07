@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief RC_CHANNELS_RAW message
  *
- * The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.
+ * The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.
  */
 struct RC_CHANNELS_RAW : mavlink::Message {
     static constexpr msgid_t MSG_ID = 35;
@@ -19,17 +19,17 @@ struct RC_CHANNELS_RAW : mavlink::Message {
     static constexpr auto NAME = "RC_CHANNELS_RAW";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    uint8_t port; /*< Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows for more than 8 servos. */
-    uint16_t chan1_raw; /*< RC channel 1 value, in microseconds. A value of UINT16_MAX implies the channel is unused. */
-    uint16_t chan2_raw; /*< RC channel 2 value, in microseconds. A value of UINT16_MAX implies the channel is unused. */
-    uint16_t chan3_raw; /*< RC channel 3 value, in microseconds. A value of UINT16_MAX implies the channel is unused. */
-    uint16_t chan4_raw; /*< RC channel 4 value, in microseconds. A value of UINT16_MAX implies the channel is unused. */
-    uint16_t chan5_raw; /*< RC channel 5 value, in microseconds. A value of UINT16_MAX implies the channel is unused. */
-    uint16_t chan6_raw; /*< RC channel 6 value, in microseconds. A value of UINT16_MAX implies the channel is unused. */
-    uint16_t chan7_raw; /*< RC channel 7 value, in microseconds. A value of UINT16_MAX implies the channel is unused. */
-    uint16_t chan8_raw; /*< RC channel 8 value, in microseconds. A value of UINT16_MAX implies the channel is unused. */
-    uint8_t rssi; /*< Receive signal strength indicator, 0: 0%, 100: 100%, 255: invalid/unknown. */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    uint8_t port; /*<  Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX. */
+    uint16_t chan1_raw; /*< [us] RC channel 1 value. */
+    uint16_t chan2_raw; /*< [us] RC channel 2 value. */
+    uint16_t chan3_raw; /*< [us] RC channel 3 value. */
+    uint16_t chan4_raw; /*< [us] RC channel 4 value. */
+    uint16_t chan5_raw; /*< [us] RC channel 5 value. */
+    uint16_t chan6_raw; /*< [us] RC channel 6 value. */
+    uint16_t chan7_raw; /*< [us] RC channel 7 value. */
+    uint16_t chan8_raw; /*< [us] RC channel 8 value. */
+    uint8_t rssi; /*<  Receive signal strength indicator in device-dependent units/scale. Values: [0-254], 255: invalid/unknown. */
 
 
     inline std::string get_name(void) const override

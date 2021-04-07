@@ -19,8 +19,8 @@ struct WIFI_CONFIG_AP : mavlink::Message {
     static constexpr auto NAME = "WIFI_CONFIG_AP";
 
 
-    std::array<char, 32> ssid; /*< Name of Wi-Fi network (SSID). Leave it blank to leave it unchanged. */
-    std::array<char, 64> password; /*< Password. Leave it blank for an open AP. */
+    std::array<char, 32> ssid; /*<  Name of Wi-Fi network (SSID). Leave it blank to leave it unchanged. */
+    std::array<char, 64> password; /*<  Password. Leave it blank for an open AP. */
 
 
     inline std::string get_name(void) const override

@@ -3,12 +3,12 @@
 
 #define MAVLINK_MSG_ID_SET_MODE 11
 
-MAVPACKED(
+
 typedef struct __mavlink_set_mode_t {
- uint32_t custom_mode; /*< The new autopilot-specific mode. This field can be ignored by an autopilot.*/
- uint8_t target_system; /*< The system setting the mode*/
- uint8_t base_mode; /*< The new base mode*/
-}) mavlink_set_mode_t;
+ uint32_t custom_mode; /*<  The new autopilot-specific mode. This field can be ignored by an autopilot.*/
+ uint8_t target_system; /*<  The system setting the mode*/
+ uint8_t base_mode; /*<  The new base mode.*/
+} mavlink_set_mode_t;
 
 #define MAVLINK_MSG_ID_SET_MODE_LEN 6
 #define MAVLINK_MSG_ID_SET_MODE_MIN_LEN 6
@@ -47,9 +47,9 @@ typedef struct __mavlink_set_mode_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system The system setting the mode
- * @param base_mode The new base mode
- * @param custom_mode The new autopilot-specific mode. This field can be ignored by an autopilot.
+ * @param target_system  The system setting the mode
+ * @param base_mode  The new base mode.
+ * @param custom_mode  The new autopilot-specific mode. This field can be ignored by an autopilot.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_set_mode_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -81,9 +81,9 @@ static inline uint16_t mavlink_msg_set_mode_pack(uint8_t system_id, uint8_t comp
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system The system setting the mode
- * @param base_mode The new base mode
- * @param custom_mode The new autopilot-specific mode. This field can be ignored by an autopilot.
+ * @param target_system  The system setting the mode
+ * @param base_mode  The new base mode.
+ * @param custom_mode  The new autopilot-specific mode. This field can be ignored by an autopilot.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_set_mode_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -141,9 +141,9 @@ static inline uint16_t mavlink_msg_set_mode_encode_chan(uint8_t system_id, uint8
  * @brief Send a set_mode message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system The system setting the mode
- * @param base_mode The new base mode
- * @param custom_mode The new autopilot-specific mode. This field can be ignored by an autopilot.
+ * @param target_system  The system setting the mode
+ * @param base_mode  The new base mode.
+ * @param custom_mode  The new autopilot-specific mode. This field can be ignored by an autopilot.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -216,7 +216,7 @@ static inline void mavlink_msg_set_mode_send_buf(mavlink_message_t *msgbuf, mavl
 /**
  * @brief Get field target_system from set_mode message
  *
- * @return The system setting the mode
+ * @return  The system setting the mode
  */
 static inline uint8_t mavlink_msg_set_mode_get_target_system(const mavlink_message_t* msg)
 {
@@ -226,7 +226,7 @@ static inline uint8_t mavlink_msg_set_mode_get_target_system(const mavlink_messa
 /**
  * @brief Get field base_mode from set_mode message
  *
- * @return The new base mode
+ * @return  The new base mode.
  */
 static inline uint8_t mavlink_msg_set_mode_get_base_mode(const mavlink_message_t* msg)
 {
@@ -236,7 +236,7 @@ static inline uint8_t mavlink_msg_set_mode_get_base_mode(const mavlink_message_t
 /**
  * @brief Get field custom_mode from set_mode message
  *
- * @return The new autopilot-specific mode. This field can be ignored by an autopilot.
+ * @return  The new autopilot-specific mode. This field can be ignored by an autopilot.
  */
 static inline uint32_t mavlink_msg_set_mode_get_custom_mode(const mavlink_message_t* msg)
 {

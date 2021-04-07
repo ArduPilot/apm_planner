@@ -3,12 +3,12 @@
 
 #define MAVLINK_MSG_ID_GOPRO_HEARTBEAT 215
 
-MAVPACKED(
+
 typedef struct __mavlink_gopro_heartbeat_t {
- uint8_t status; /*< Status*/
- uint8_t capture_mode; /*< Current capture mode*/
- uint8_t flags; /*< additional status bits*/
-}) mavlink_gopro_heartbeat_t;
+ uint8_t status; /*<  Status.*/
+ uint8_t capture_mode; /*<  Current capture mode.*/
+ uint8_t flags; /*<  Additional status bits.*/
+} mavlink_gopro_heartbeat_t;
 
 #define MAVLINK_MSG_ID_GOPRO_HEARTBEAT_LEN 3
 #define MAVLINK_MSG_ID_GOPRO_HEARTBEAT_MIN_LEN 3
@@ -47,9 +47,9 @@ typedef struct __mavlink_gopro_heartbeat_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param status Status
- * @param capture_mode Current capture mode
- * @param flags additional status bits
+ * @param status  Status.
+ * @param capture_mode  Current capture mode.
+ * @param flags  Additional status bits.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gopro_heartbeat_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -81,9 +81,9 @@ static inline uint16_t mavlink_msg_gopro_heartbeat_pack(uint8_t system_id, uint8
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param status Status
- * @param capture_mode Current capture mode
- * @param flags additional status bits
+ * @param status  Status.
+ * @param capture_mode  Current capture mode.
+ * @param flags  Additional status bits.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gopro_heartbeat_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -141,9 +141,9 @@ static inline uint16_t mavlink_msg_gopro_heartbeat_encode_chan(uint8_t system_id
  * @brief Send a gopro_heartbeat message
  * @param chan MAVLink channel to send the message
  *
- * @param status Status
- * @param capture_mode Current capture mode
- * @param flags additional status bits
+ * @param status  Status.
+ * @param capture_mode  Current capture mode.
+ * @param flags  Additional status bits.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -216,7 +216,7 @@ static inline void mavlink_msg_gopro_heartbeat_send_buf(mavlink_message_t *msgbu
 /**
  * @brief Get field status from gopro_heartbeat message
  *
- * @return Status
+ * @return  Status.
  */
 static inline uint8_t mavlink_msg_gopro_heartbeat_get_status(const mavlink_message_t* msg)
 {
@@ -226,7 +226,7 @@ static inline uint8_t mavlink_msg_gopro_heartbeat_get_status(const mavlink_messa
 /**
  * @brief Get field capture_mode from gopro_heartbeat message
  *
- * @return Current capture mode
+ * @return  Current capture mode.
  */
 static inline uint8_t mavlink_msg_gopro_heartbeat_get_capture_mode(const mavlink_message_t* msg)
 {
@@ -236,7 +236,7 @@ static inline uint8_t mavlink_msg_gopro_heartbeat_get_capture_mode(const mavlink
 /**
  * @brief Get field flags from gopro_heartbeat message
  *
- * @return additional status bits
+ * @return  Additional status bits.
  */
 static inline uint8_t mavlink_msg_gopro_heartbeat_get_flags(const mavlink_message_t* msg)
 {

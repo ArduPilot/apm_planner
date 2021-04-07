@@ -19,14 +19,14 @@ struct NAV_CONTROLLER_OUTPUT : mavlink::Message {
     static constexpr auto NAME = "NAV_CONTROLLER_OUTPUT";
 
 
-    float nav_roll; /*< Current desired roll in degrees */
-    float nav_pitch; /*< Current desired pitch in degrees */
-    int16_t nav_bearing; /*< Current desired heading in degrees */
-    int16_t target_bearing; /*< Bearing to current waypoint/target in degrees */
-    uint16_t wp_dist; /*< Distance to active waypoint in meters */
-    float alt_error; /*< Current altitude error in meters */
-    float aspd_error; /*< Current airspeed error in meters/second */
-    float xtrack_error; /*< Current crosstrack error on x-y plane in meters */
+    float nav_roll; /*< [deg] Current desired roll */
+    float nav_pitch; /*< [deg] Current desired pitch */
+    int16_t nav_bearing; /*< [deg] Current desired heading */
+    int16_t target_bearing; /*< [deg] Bearing to current waypoint/target */
+    uint16_t wp_dist; /*< [m] Distance to active waypoint */
+    float alt_error; /*< [m] Current altitude error */
+    float aspd_error; /*< [m/s] Current airspeed error */
+    float xtrack_error; /*< [m] Current crosstrack error on x-y plane */
 
 
     inline std::string get_name(void) const override

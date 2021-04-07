@@ -19,30 +19,30 @@ struct HIGH_LATENCY : mavlink::Message {
     static constexpr auto NAME = "HIGH_LATENCY";
 
 
-    uint8_t base_mode; /*< System mode bitfield, as defined by MAV_MODE_FLAG enum. */
-    uint32_t custom_mode; /*< A bitfield for use for autopilot-specific flags. */
-    uint8_t landed_state; /*< The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown. */
-    int16_t roll; /*< roll (centidegrees) */
-    int16_t pitch; /*< pitch (centidegrees) */
-    uint16_t heading; /*< heading (centidegrees) */
-    int8_t throttle; /*< throttle (percentage) */
-    int16_t heading_sp; /*< heading setpoint (centidegrees) */
-    int32_t latitude; /*< Latitude, expressed as degrees * 1E7 */
-    int32_t longitude; /*< Longitude, expressed as degrees * 1E7 */
-    int16_t altitude_amsl; /*< Altitude above mean sea level (meters) */
-    int16_t altitude_sp; /*< Altitude setpoint relative to the home position (meters) */
-    uint8_t airspeed; /*< airspeed (m/s) */
-    uint8_t airspeed_sp; /*< airspeed setpoint (m/s) */
-    uint8_t groundspeed; /*< groundspeed (m/s) */
-    int8_t climb_rate; /*< climb rate (m/s) */
-    uint8_t gps_nsat; /*< Number of satellites visible. If unknown, set to 255 */
-    uint8_t gps_fix_type; /*< See the GPS_FIX_TYPE enum. */
-    uint8_t battery_remaining; /*< Remaining battery (percentage) */
-    int8_t temperature; /*< Autopilot temperature (degrees C) */
-    int8_t temperature_air; /*< Air temperature (degrees C) from airspeed sensor */
-    uint8_t failsafe; /*< failsafe (each bit represents a failsafe where 0=ok, 1=failsafe active (bit0:RC, bit1:batt, bit2:GPS, bit3:GCS, bit4:fence) */
-    uint8_t wp_num; /*< current waypoint number */
-    uint16_t wp_distance; /*< distance to target (meters) */
+    uint8_t base_mode; /*<  Bitmap of enabled system modes. */
+    uint32_t custom_mode; /*<  A bitfield for use for autopilot-specific flags. */
+    uint8_t landed_state; /*<  The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown. */
+    int16_t roll; /*< [cdeg] roll */
+    int16_t pitch; /*< [cdeg] pitch */
+    uint16_t heading; /*< [cdeg] heading */
+    int8_t throttle; /*< [%] throttle (percentage) */
+    int16_t heading_sp; /*< [cdeg] heading setpoint */
+    int32_t latitude; /*< [degE7] Latitude */
+    int32_t longitude; /*< [degE7] Longitude */
+    int16_t altitude_amsl; /*< [m] Altitude above mean sea level */
+    int16_t altitude_sp; /*< [m] Altitude setpoint relative to the home position */
+    uint8_t airspeed; /*< [m/s] airspeed */
+    uint8_t airspeed_sp; /*< [m/s] airspeed setpoint */
+    uint8_t groundspeed; /*< [m/s] groundspeed */
+    int8_t climb_rate; /*< [m/s] climb rate */
+    uint8_t gps_nsat; /*<  Number of satellites visible. If unknown, set to 255 */
+    uint8_t gps_fix_type; /*<  GPS Fix type. */
+    uint8_t battery_remaining; /*< [%] Remaining battery (percentage) */
+    int8_t temperature; /*< [degC] Autopilot temperature (degrees C) */
+    int8_t temperature_air; /*< [degC] Air temperature (degrees C) from airspeed sensor */
+    uint8_t failsafe; /*<  failsafe (each bit represents a failsafe where 0=ok, 1=failsafe active (bit0:RC, bit1:batt, bit2:GPS, bit3:GCS, bit4:fence) */
+    uint8_t wp_num; /*<  current waypoint number */
+    uint16_t wp_distance; /*< [m] distance to target */
 
 
     inline std::string get_name(void) const override

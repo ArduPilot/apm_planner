@@ -19,22 +19,22 @@ struct ICAROUS_KINEMATIC_BANDS : mavlink::Message {
     static constexpr auto NAME = "ICAROUS_KINEMATIC_BANDS";
 
 
-    int8_t numBands; /*< Number of track bands */
-    uint8_t type1; /*< See the TRACK_BAND_TYPES enum. */
-    float min1; /*< min angle (degrees) */
-    float max1; /*< max angle (degrees) */
-    uint8_t type2; /*< See the TRACK_BAND_TYPES enum. */
-    float min2; /*< min angle (degrees) */
-    float max2; /*< max angle (degrees) */
-    uint8_t type3; /*< See the TRACK_BAND_TYPES enum. */
-    float min3; /*< min angle (degrees) */
-    float max3; /*< max angle (degrees) */
-    uint8_t type4; /*< See the TRACK_BAND_TYPES enum. */
-    float min4; /*< min angle (degrees) */
-    float max4; /*< max angle (degrees) */
-    uint8_t type5; /*< See the TRACK_BAND_TYPES enum. */
-    float min5; /*< min angle (degrees) */
-    float max5; /*< max angle (degrees) */
+    int8_t numBands; /*<  Number of track bands */
+    uint8_t type1; /*<  See the TRACK_BAND_TYPES enum. */
+    float min1; /*< [deg] min angle (degrees) */
+    float max1; /*< [deg] max angle (degrees) */
+    uint8_t type2; /*<  See the TRACK_BAND_TYPES enum. */
+    float min2; /*< [deg] min angle (degrees) */
+    float max2; /*< [deg] max angle (degrees) */
+    uint8_t type3; /*<  See the TRACK_BAND_TYPES enum. */
+    float min3; /*< [deg] min angle (degrees) */
+    float max3; /*< [deg] max angle (degrees) */
+    uint8_t type4; /*<  See the TRACK_BAND_TYPES enum. */
+    float min4; /*< [deg] min angle (degrees) */
+    float max4; /*< [deg] max angle (degrees) */
+    uint8_t type5; /*<  See the TRACK_BAND_TYPES enum. */
+    float min5; /*< [deg] min angle (degrees) */
+    float max5; /*< [deg] max angle (degrees) */
 
 
     inline std::string get_name(void) const override

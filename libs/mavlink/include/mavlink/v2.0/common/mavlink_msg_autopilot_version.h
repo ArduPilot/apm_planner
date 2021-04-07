@@ -3,21 +3,21 @@
 
 #define MAVLINK_MSG_ID_AUTOPILOT_VERSION 148
 
-MAVPACKED(
+
 typedef struct __mavlink_autopilot_version_t {
- uint64_t capabilities; /*< bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)*/
- uint64_t uid; /*< UID if provided by hardware (see uid2)*/
- uint32_t flight_sw_version; /*< Firmware version number*/
- uint32_t middleware_sw_version; /*< Middleware version number*/
- uint32_t os_sw_version; /*< Operating system version number*/
- uint32_t board_version; /*< HW / board version (last 8 bytes should be silicon ID, if any)*/
- uint16_t vendor_id; /*< ID of the board vendor*/
- uint16_t product_id; /*< ID of the product*/
- uint8_t flight_custom_version[8]; /*< Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.*/
- uint8_t middleware_custom_version[8]; /*< Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.*/
- uint8_t os_custom_version[8]; /*< Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.*/
- uint8_t uid2[18]; /*< UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)*/
-}) mavlink_autopilot_version_t;
+ uint64_t capabilities; /*<  Bitmap of capabilities*/
+ uint64_t uid; /*<  UID if provided by hardware (see uid2)*/
+ uint32_t flight_sw_version; /*<  Firmware version number*/
+ uint32_t middleware_sw_version; /*<  Middleware version number*/
+ uint32_t os_sw_version; /*<  Operating system version number*/
+ uint32_t board_version; /*<  HW / board version (last 8 bytes should be silicon ID, if any)*/
+ uint16_t vendor_id; /*<  ID of the board vendor*/
+ uint16_t product_id; /*<  ID of the product*/
+ uint8_t flight_custom_version[8]; /*<  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.*/
+ uint8_t middleware_custom_version[8]; /*<  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.*/
+ uint8_t os_custom_version[8]; /*<  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.*/
+ uint8_t uid2[18]; /*<  UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)*/
+} mavlink_autopilot_version_t;
 
 #define MAVLINK_MSG_ID_AUTOPILOT_VERSION_LEN 78
 #define MAVLINK_MSG_ID_AUTOPILOT_VERSION_MIN_LEN 60
@@ -77,18 +77,18 @@ typedef struct __mavlink_autopilot_version_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param capabilities bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)
- * @param flight_sw_version Firmware version number
- * @param middleware_sw_version Middleware version number
- * @param os_sw_version Operating system version number
- * @param board_version HW / board version (last 8 bytes should be silicon ID, if any)
- * @param flight_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param middleware_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param os_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param vendor_id ID of the board vendor
- * @param product_id ID of the product
- * @param uid UID if provided by hardware (see uid2)
- * @param uid2 UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
+ * @param capabilities  Bitmap of capabilities
+ * @param flight_sw_version  Firmware version number
+ * @param middleware_sw_version  Middleware version number
+ * @param os_sw_version  Operating system version number
+ * @param board_version  HW / board version (last 8 bytes should be silicon ID, if any)
+ * @param flight_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param middleware_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param os_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param vendor_id  ID of the board vendor
+ * @param product_id  ID of the product
+ * @param uid  UID if provided by hardware (see uid2)
+ * @param uid2  UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_autopilot_version_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -136,18 +136,18 @@ static inline uint16_t mavlink_msg_autopilot_version_pack(uint8_t system_id, uin
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param capabilities bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)
- * @param flight_sw_version Firmware version number
- * @param middleware_sw_version Middleware version number
- * @param os_sw_version Operating system version number
- * @param board_version HW / board version (last 8 bytes should be silicon ID, if any)
- * @param flight_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param middleware_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param os_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param vendor_id ID of the board vendor
- * @param product_id ID of the product
- * @param uid UID if provided by hardware (see uid2)
- * @param uid2 UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
+ * @param capabilities  Bitmap of capabilities
+ * @param flight_sw_version  Firmware version number
+ * @param middleware_sw_version  Middleware version number
+ * @param os_sw_version  Operating system version number
+ * @param board_version  HW / board version (last 8 bytes should be silicon ID, if any)
+ * @param flight_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param middleware_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param os_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param vendor_id  ID of the board vendor
+ * @param product_id  ID of the product
+ * @param uid  UID if provided by hardware (see uid2)
+ * @param uid2  UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_autopilot_version_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -221,18 +221,18 @@ static inline uint16_t mavlink_msg_autopilot_version_encode_chan(uint8_t system_
  * @brief Send a autopilot_version message
  * @param chan MAVLink channel to send the message
  *
- * @param capabilities bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)
- * @param flight_sw_version Firmware version number
- * @param middleware_sw_version Middleware version number
- * @param os_sw_version Operating system version number
- * @param board_version HW / board version (last 8 bytes should be silicon ID, if any)
- * @param flight_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param middleware_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param os_custom_version Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
- * @param vendor_id ID of the board vendor
- * @param product_id ID of the product
- * @param uid UID if provided by hardware (see uid2)
- * @param uid2 UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
+ * @param capabilities  Bitmap of capabilities
+ * @param flight_sw_version  Firmware version number
+ * @param middleware_sw_version  Middleware version number
+ * @param os_sw_version  Operating system version number
+ * @param board_version  HW / board version (last 8 bytes should be silicon ID, if any)
+ * @param flight_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param middleware_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param os_custom_version  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @param vendor_id  ID of the board vendor
+ * @param product_id  ID of the product
+ * @param uid  UID if provided by hardware (see uid2)
+ * @param uid2  UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -337,7 +337,7 @@ static inline void mavlink_msg_autopilot_version_send_buf(mavlink_message_t *msg
 /**
  * @brief Get field capabilities from autopilot_version message
  *
- * @return bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)
+ * @return  Bitmap of capabilities
  */
 static inline uint64_t mavlink_msg_autopilot_version_get_capabilities(const mavlink_message_t* msg)
 {
@@ -347,7 +347,7 @@ static inline uint64_t mavlink_msg_autopilot_version_get_capabilities(const mavl
 /**
  * @brief Get field flight_sw_version from autopilot_version message
  *
- * @return Firmware version number
+ * @return  Firmware version number
  */
 static inline uint32_t mavlink_msg_autopilot_version_get_flight_sw_version(const mavlink_message_t* msg)
 {
@@ -357,7 +357,7 @@ static inline uint32_t mavlink_msg_autopilot_version_get_flight_sw_version(const
 /**
  * @brief Get field middleware_sw_version from autopilot_version message
  *
- * @return Middleware version number
+ * @return  Middleware version number
  */
 static inline uint32_t mavlink_msg_autopilot_version_get_middleware_sw_version(const mavlink_message_t* msg)
 {
@@ -367,7 +367,7 @@ static inline uint32_t mavlink_msg_autopilot_version_get_middleware_sw_version(c
 /**
  * @brief Get field os_sw_version from autopilot_version message
  *
- * @return Operating system version number
+ * @return  Operating system version number
  */
 static inline uint32_t mavlink_msg_autopilot_version_get_os_sw_version(const mavlink_message_t* msg)
 {
@@ -377,7 +377,7 @@ static inline uint32_t mavlink_msg_autopilot_version_get_os_sw_version(const mav
 /**
  * @brief Get field board_version from autopilot_version message
  *
- * @return HW / board version (last 8 bytes should be silicon ID, if any)
+ * @return  HW / board version (last 8 bytes should be silicon ID, if any)
  */
 static inline uint32_t mavlink_msg_autopilot_version_get_board_version(const mavlink_message_t* msg)
 {
@@ -387,7 +387,7 @@ static inline uint32_t mavlink_msg_autopilot_version_get_board_version(const mav
 /**
  * @brief Get field flight_custom_version from autopilot_version message
  *
- * @return Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @return  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
  */
 static inline uint16_t mavlink_msg_autopilot_version_get_flight_custom_version(const mavlink_message_t* msg, uint8_t *flight_custom_version)
 {
@@ -397,7 +397,7 @@ static inline uint16_t mavlink_msg_autopilot_version_get_flight_custom_version(c
 /**
  * @brief Get field middleware_custom_version from autopilot_version message
  *
- * @return Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @return  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
  */
 static inline uint16_t mavlink_msg_autopilot_version_get_middleware_custom_version(const mavlink_message_t* msg, uint8_t *middleware_custom_version)
 {
@@ -407,7 +407,7 @@ static inline uint16_t mavlink_msg_autopilot_version_get_middleware_custom_versi
 /**
  * @brief Get field os_custom_version from autopilot_version message
  *
- * @return Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
+ * @return  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
  */
 static inline uint16_t mavlink_msg_autopilot_version_get_os_custom_version(const mavlink_message_t* msg, uint8_t *os_custom_version)
 {
@@ -417,7 +417,7 @@ static inline uint16_t mavlink_msg_autopilot_version_get_os_custom_version(const
 /**
  * @brief Get field vendor_id from autopilot_version message
  *
- * @return ID of the board vendor
+ * @return  ID of the board vendor
  */
 static inline uint16_t mavlink_msg_autopilot_version_get_vendor_id(const mavlink_message_t* msg)
 {
@@ -427,7 +427,7 @@ static inline uint16_t mavlink_msg_autopilot_version_get_vendor_id(const mavlink
 /**
  * @brief Get field product_id from autopilot_version message
  *
- * @return ID of the product
+ * @return  ID of the product
  */
 static inline uint16_t mavlink_msg_autopilot_version_get_product_id(const mavlink_message_t* msg)
 {
@@ -437,7 +437,7 @@ static inline uint16_t mavlink_msg_autopilot_version_get_product_id(const mavlin
 /**
  * @brief Get field uid from autopilot_version message
  *
- * @return UID if provided by hardware (see uid2)
+ * @return  UID if provided by hardware (see uid2)
  */
 static inline uint64_t mavlink_msg_autopilot_version_get_uid(const mavlink_message_t* msg)
 {
@@ -447,7 +447,7 @@ static inline uint64_t mavlink_msg_autopilot_version_get_uid(const mavlink_messa
 /**
  * @brief Get field uid2 from autopilot_version message
  *
- * @return UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
+ * @return  UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
  */
 static inline uint16_t mavlink_msg_autopilot_version_get_uid2(const mavlink_message_t* msg, uint8_t *uid2)
 {

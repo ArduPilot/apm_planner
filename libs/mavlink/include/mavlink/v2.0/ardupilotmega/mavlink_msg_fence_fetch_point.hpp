@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief FENCE_FETCH_POINT message
  *
- * Request a current fence point from MAV
+ * Request a current fence point from MAV.
  */
 struct FENCE_FETCH_POINT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 161;
@@ -19,9 +19,9 @@ struct FENCE_FETCH_POINT : mavlink::Message {
     static constexpr auto NAME = "FENCE_FETCH_POINT";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t idx; /*< point index (first point is 1, 0 is for return point) */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint8_t idx; /*<  Point index (first point is 1, 0 is for return point). */
 
 
     inline std::string get_name(void) const override

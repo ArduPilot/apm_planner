@@ -19,12 +19,12 @@ struct MOUNT_CONFIGURE : mavlink::Message {
     static constexpr auto NAME = "MOUNT_CONFIGURE";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t mount_mode; /*< mount operating mode (see MAV_MOUNT_MODE enum) */
-    uint8_t stab_roll; /*< (1 = yes, 0 = no) */
-    uint8_t stab_pitch; /*< (1 = yes, 0 = no) */
-    uint8_t stab_yaw; /*< (1 = yes, 0 = no) */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint8_t mount_mode; /*<  Mount operating mode. */
+    uint8_t stab_roll; /*<  (1 = yes, 0 = no). */
+    uint8_t stab_pitch; /*<  (1 = yes, 0 = no). */
+    uint8_t stab_yaw; /*<  (1 = yes, 0 = no). */
 
 
     inline std::string get_name(void) const override

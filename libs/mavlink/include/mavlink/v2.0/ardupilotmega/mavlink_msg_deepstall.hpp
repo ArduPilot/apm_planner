@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DEEPSTALL message
  *
- * Deepstall path planning
+ * Deepstall path planning.
  */
 struct DEEPSTALL : mavlink::Message {
     static constexpr msgid_t MSG_ID = 195;
@@ -19,16 +19,16 @@ struct DEEPSTALL : mavlink::Message {
     static constexpr auto NAME = "DEEPSTALL";
 
 
-    int32_t landing_lat; /*< Landing latitude (deg * 1E7) */
-    int32_t landing_lon; /*< Landing longitude (deg * 1E7) */
-    int32_t path_lat; /*< Final heading start point, latitude (deg * 1E7) */
-    int32_t path_lon; /*< Final heading start point, longitude (deg * 1E7) */
-    int32_t arc_entry_lat; /*< Arc entry point, latitude (deg * 1E7) */
-    int32_t arc_entry_lon; /*< Arc entry point, longitude (deg * 1E7) */
-    float altitude; /*< Altitude (meters) */
-    float expected_travel_distance; /*< Distance the aircraft expects to travel during the deepstall */
-    float cross_track_error; /*< Deepstall cross track error in meters (only valid when in DEEPSTALL_STAGE_LAND) */
-    uint8_t stage; /*< Deepstall stage, see enum MAV_DEEPSTALL_STAGE */
+    int32_t landing_lat; /*< [degE7] Landing latitude. */
+    int32_t landing_lon; /*< [degE7] Landing longitude. */
+    int32_t path_lat; /*< [degE7] Final heading start point, latitude. */
+    int32_t path_lon; /*< [degE7] Final heading start point, longitude. */
+    int32_t arc_entry_lat; /*< [degE7] Arc entry point, latitude. */
+    int32_t arc_entry_lon; /*< [degE7] Arc entry point, longitude. */
+    float altitude; /*< [m] Altitude. */
+    float expected_travel_distance; /*< [m] Distance the aircraft expects to travel during the deepstall. */
+    float cross_track_error; /*< [m] Deepstall cross track error (only valid when in DEEPSTALL_STAGE_LAND). */
+    uint8_t stage; /*<  Deepstall stage. */
 
 
     inline std::string get_name(void) const override

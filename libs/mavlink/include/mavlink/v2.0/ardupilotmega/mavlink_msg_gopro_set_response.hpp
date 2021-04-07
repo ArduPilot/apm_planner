@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GOPRO_SET_RESPONSE message
  *
- * Response from a GOPRO_COMMAND set request
+ * Response from a GOPRO_COMMAND set request.
  */
 struct GOPRO_SET_RESPONSE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 219;
@@ -19,8 +19,8 @@ struct GOPRO_SET_RESPONSE : mavlink::Message {
     static constexpr auto NAME = "GOPRO_SET_RESPONSE";
 
 
-    uint8_t cmd_id; /*< Command ID */
-    uint8_t status; /*< Status */
+    uint8_t cmd_id; /*<  Command ID. */
+    uint8_t status; /*<  Status. */
 
 
     inline std::string get_name(void) const override

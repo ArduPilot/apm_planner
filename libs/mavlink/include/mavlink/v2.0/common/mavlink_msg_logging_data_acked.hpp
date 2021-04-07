@@ -19,12 +19,12 @@ struct LOGGING_DATA_ACKED : mavlink::Message {
     static constexpr auto NAME = "LOGGING_DATA_ACKED";
 
 
-    uint8_t target_system; /*< system ID of the target */
-    uint8_t target_component; /*< component ID of the target */
-    uint16_t sequence; /*< sequence number (can wrap) */
-    uint8_t length; /*< data length */
-    uint8_t first_message_offset; /*< offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists). */
-    std::array<uint8_t, 249> data; /*< logged data */
+    uint8_t target_system; /*<  system ID of the target */
+    uint8_t target_component; /*<  component ID of the target */
+    uint16_t sequence; /*<  sequence number (can wrap) */
+    uint8_t length; /*< [bytes] data length */
+    uint8_t first_message_offset; /*< [bytes] offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists). */
+    std::array<uint8_t, 249> data; /*<  logged data */
 
 
     inline std::string get_name(void) const override

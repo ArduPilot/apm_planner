@@ -3,16 +3,16 @@
 
 #define MAVLINK_MSG_ID_AHRS 163
 
-MAVPACKED(
+
 typedef struct __mavlink_ahrs_t {
- float omegaIx; /*< X gyro drift estimate rad/s*/
- float omegaIy; /*< Y gyro drift estimate rad/s*/
- float omegaIz; /*< Z gyro drift estimate rad/s*/
- float accel_weight; /*< average accel_weight*/
- float renorm_val; /*< average renormalisation value*/
- float error_rp; /*< average error_roll_pitch value*/
- float error_yaw; /*< average error_yaw value*/
-}) mavlink_ahrs_t;
+ float omegaIx; /*< [rad/s] X gyro drift estimate.*/
+ float omegaIy; /*< [rad/s] Y gyro drift estimate.*/
+ float omegaIz; /*< [rad/s] Z gyro drift estimate.*/
+ float accel_weight; /*<  Average accel_weight.*/
+ float renorm_val; /*<  Average renormalisation value.*/
+ float error_rp; /*<  Average error_roll_pitch value.*/
+ float error_yaw; /*<  Average error_yaw value.*/
+} mavlink_ahrs_t;
 
 #define MAVLINK_MSG_ID_AHRS_LEN 28
 #define MAVLINK_MSG_ID_AHRS_MIN_LEN 28
@@ -59,13 +59,13 @@ typedef struct __mavlink_ahrs_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param omegaIx X gyro drift estimate rad/s
- * @param omegaIy Y gyro drift estimate rad/s
- * @param omegaIz Z gyro drift estimate rad/s
- * @param accel_weight average accel_weight
- * @param renorm_val average renormalisation value
- * @param error_rp average error_roll_pitch value
- * @param error_yaw average error_yaw value
+ * @param omegaIx [rad/s] X gyro drift estimate.
+ * @param omegaIy [rad/s] Y gyro drift estimate.
+ * @param omegaIz [rad/s] Z gyro drift estimate.
+ * @param accel_weight  Average accel_weight.
+ * @param renorm_val  Average renormalisation value.
+ * @param error_rp  Average error_roll_pitch value.
+ * @param error_yaw  Average error_yaw value.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ahrs_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -105,13 +105,13 @@ static inline uint16_t mavlink_msg_ahrs_pack(uint8_t system_id, uint8_t componen
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param omegaIx X gyro drift estimate rad/s
- * @param omegaIy Y gyro drift estimate rad/s
- * @param omegaIz Z gyro drift estimate rad/s
- * @param accel_weight average accel_weight
- * @param renorm_val average renormalisation value
- * @param error_rp average error_roll_pitch value
- * @param error_yaw average error_yaw value
+ * @param omegaIx [rad/s] X gyro drift estimate.
+ * @param omegaIy [rad/s] Y gyro drift estimate.
+ * @param omegaIz [rad/s] Z gyro drift estimate.
+ * @param accel_weight  Average accel_weight.
+ * @param renorm_val  Average renormalisation value.
+ * @param error_rp  Average error_roll_pitch value.
+ * @param error_yaw  Average error_yaw value.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ahrs_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -177,13 +177,13 @@ static inline uint16_t mavlink_msg_ahrs_encode_chan(uint8_t system_id, uint8_t c
  * @brief Send a ahrs message
  * @param chan MAVLink channel to send the message
  *
- * @param omegaIx X gyro drift estimate rad/s
- * @param omegaIy Y gyro drift estimate rad/s
- * @param omegaIz Z gyro drift estimate rad/s
- * @param accel_weight average accel_weight
- * @param renorm_val average renormalisation value
- * @param error_rp average error_roll_pitch value
- * @param error_yaw average error_yaw value
+ * @param omegaIx [rad/s] X gyro drift estimate.
+ * @param omegaIy [rad/s] Y gyro drift estimate.
+ * @param omegaIz [rad/s] Z gyro drift estimate.
+ * @param accel_weight  Average accel_weight.
+ * @param renorm_val  Average renormalisation value.
+ * @param error_rp  Average error_roll_pitch value.
+ * @param error_yaw  Average error_yaw value.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -272,7 +272,7 @@ static inline void mavlink_msg_ahrs_send_buf(mavlink_message_t *msgbuf, mavlink_
 /**
  * @brief Get field omegaIx from ahrs message
  *
- * @return X gyro drift estimate rad/s
+ * @return [rad/s] X gyro drift estimate.
  */
 static inline float mavlink_msg_ahrs_get_omegaIx(const mavlink_message_t* msg)
 {
@@ -282,7 +282,7 @@ static inline float mavlink_msg_ahrs_get_omegaIx(const mavlink_message_t* msg)
 /**
  * @brief Get field omegaIy from ahrs message
  *
- * @return Y gyro drift estimate rad/s
+ * @return [rad/s] Y gyro drift estimate.
  */
 static inline float mavlink_msg_ahrs_get_omegaIy(const mavlink_message_t* msg)
 {
@@ -292,7 +292,7 @@ static inline float mavlink_msg_ahrs_get_omegaIy(const mavlink_message_t* msg)
 /**
  * @brief Get field omegaIz from ahrs message
  *
- * @return Z gyro drift estimate rad/s
+ * @return [rad/s] Z gyro drift estimate.
  */
 static inline float mavlink_msg_ahrs_get_omegaIz(const mavlink_message_t* msg)
 {
@@ -302,7 +302,7 @@ static inline float mavlink_msg_ahrs_get_omegaIz(const mavlink_message_t* msg)
 /**
  * @brief Get field accel_weight from ahrs message
  *
- * @return average accel_weight
+ * @return  Average accel_weight.
  */
 static inline float mavlink_msg_ahrs_get_accel_weight(const mavlink_message_t* msg)
 {
@@ -312,7 +312,7 @@ static inline float mavlink_msg_ahrs_get_accel_weight(const mavlink_message_t* m
 /**
  * @brief Get field renorm_val from ahrs message
  *
- * @return average renormalisation value
+ * @return  Average renormalisation value.
  */
 static inline float mavlink_msg_ahrs_get_renorm_val(const mavlink_message_t* msg)
 {
@@ -322,7 +322,7 @@ static inline float mavlink_msg_ahrs_get_renorm_val(const mavlink_message_t* msg
 /**
  * @brief Get field error_rp from ahrs message
  *
- * @return average error_roll_pitch value
+ * @return  Average error_roll_pitch value.
  */
 static inline float mavlink_msg_ahrs_get_error_rp(const mavlink_message_t* msg)
 {
@@ -332,7 +332,7 @@ static inline float mavlink_msg_ahrs_get_error_rp(const mavlink_message_t* msg)
 /**
  * @brief Get field error_yaw from ahrs message
  *
- * @return average error_yaw value
+ * @return  Average error_yaw value.
  */
 static inline float mavlink_msg_ahrs_get_error_yaw(const mavlink_message_t* msg)
 {

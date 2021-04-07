@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DATA64 message
  *
- * Data packet, size 64
+ * Data packet, size 64.
  */
 struct DATA64 : mavlink::Message {
     static constexpr msgid_t MSG_ID = 171;
@@ -19,9 +19,9 @@ struct DATA64 : mavlink::Message {
     static constexpr auto NAME = "DATA64";
 
 
-    uint8_t type; /*< data type */
-    uint8_t len; /*< data length */
-    std::array<uint8_t, 64> data; /*< raw data */
+    uint8_t type; /*<  Data type. */
+    uint8_t len; /*< [bytes] Data length. */
+    std::array<uint8_t, 64> data; /*<  Raw data. */
 
 
     inline std::string get_name(void) const override

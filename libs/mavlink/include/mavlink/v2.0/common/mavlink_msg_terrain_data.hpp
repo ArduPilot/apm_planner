@@ -19,11 +19,11 @@ struct TERRAIN_DATA : mavlink::Message {
     static constexpr auto NAME = "TERRAIN_DATA";
 
 
-    int32_t lat; /*< Latitude of SW corner of first grid (degrees *10^7) */
-    int32_t lon; /*< Longitude of SW corner of first grid (in degrees *10^7) */
-    uint16_t grid_spacing; /*< Grid spacing in meters */
-    uint8_t gridbit; /*< bit within the terrain request mask */
-    std::array<int16_t, 16> data; /*< Terrain data in meters AMSL */
+    int32_t lat; /*< [degE7] Latitude of SW corner of first grid */
+    int32_t lon; /*< [degE7] Longitude of SW corner of first grid */
+    uint16_t grid_spacing; /*< [m] Grid spacing */
+    uint8_t gridbit; /*<  bit within the terrain request mask */
+    std::array<int16_t, 16> data; /*< [m] Terrain data MSL */
 
 
     inline std::string get_name(void) const override

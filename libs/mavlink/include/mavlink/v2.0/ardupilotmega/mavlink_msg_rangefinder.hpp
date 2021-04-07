@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief RANGEFINDER message
  *
- * Rangefinder reporting
+ * Rangefinder reporting.
  */
 struct RANGEFINDER : mavlink::Message {
     static constexpr msgid_t MSG_ID = 173;
@@ -19,8 +19,8 @@ struct RANGEFINDER : mavlink::Message {
     static constexpr auto NAME = "RANGEFINDER";
 
 
-    float distance; /*< distance in meters */
-    float voltage; /*< raw voltage if available, zero otherwise */
+    float distance; /*< [m] Distance. */
+    float voltage; /*< [V] Raw voltage if available, zero otherwise. */
 
 
     inline std::string get_name(void) const override

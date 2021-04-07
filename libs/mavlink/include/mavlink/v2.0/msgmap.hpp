@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <endian.h>
 #include <type_traits>
 
@@ -54,82 +55,147 @@ private:
 	mavlink_message_t *msg;		// for serialization
 	const mavlink_message_t *cmsg;	// for deserialization
 	size_t pos;
-
-	template<typename _T, typename _Tin>
-	inline void msg_swap_memcpy(_T &buf, _Tin data);
-
-	template<typename _T, typename _Tout>
-	inline void cmsg_memcpy_bzero_swap_set_data(_T &buf, _Tout &data);
 };
 
+namespace impl {
+
+template<size_t _N>
+struct UintBufferHelper;
+
+template<>
+struct UintBufferHelper<1>
+{
+    typedef uint8_t Type;
+};
+
+template<>
+struct UintBufferHelper<2>
+{
+    typedef uint16_t Type;
+};
+
+template<>
+struct UintBufferHelper<4>
+{
+    typedef uint32_t Type;
+};
+
+template<>
+struct UintBufferHelper<8>
+{
+    typedef uint64_t Type;
+};
+
+template<typename _T>
+struct UintBuffer
+{
+    typedef typename UintBufferHelper<sizeof(_T)>::Type Type;
+};
+
+
+template<typename _T>
+_T to_little_endian_internal(_T);
+
+template<>
+inline uint8_t to_little_endian_internal<uint8_t>(uint8_t data)
+{
+    return data;
+}
+
+template<>
+inline uint16_t to_little_endian_internal<uint16_t>(uint16_t data)
+{
+    return htole16(data);
+}
+
+template<>
+inline uint32_t to_little_endian_internal<uint32_t>(uint32_t data)
+{
+    return htole32(data);
+}
+
+template<>
+inline uint64_t to_little_endian_internal<uint64_t>(uint64_t data)
+{
+    return htole64(data);
+}
+
+template<typename _T>
+typename std::enable_if<std::is_floating_point<_T>::value, typename UintBuffer<_T>::Type>::type to_little_endian(_T data)
+{
+    typedef typename UintBuffer<_T>::Type ReturnType;
+    ReturnType buf;
+    memcpy(&buf, &data, sizeof(ReturnType));
+    return to_little_endian_internal<ReturnType>(buf);
+}
+
+template<typename _T>
+typename std::enable_if<std::is_integral<_T>::value, typename UintBuffer<_T>::Type>::type to_little_endian(_T data)
+{
+    return to_little_endian_internal<typename UintBuffer<_T>::Type>(data);
+}
+
+template<typename _T>
+_T to_host_from_little_endian_internal(_T);
+
+template<>
+inline uint8_t to_host_from_little_endian_internal<uint8_t>(uint8_t data)
+{
+    return data;
+}
+
+template<>
+inline uint16_t to_host_from_little_endian_internal<uint16_t>(uint16_t data)
+{
+    return le16toh(data);
+}
+
+template<>
+inline uint32_t to_host_from_little_endian_internal<uint32_t>(uint32_t data)
+{
+    return le32toh(data);
+}
+
+template<>
+inline uint64_t to_host_from_little_endian_internal<uint64_t>(uint64_t data)
+{
+    return le64toh(data);
+}
+
+template<typename _TOutput, typename _TInput,
+         class = typename std::enable_if<std::is_unsigned<_TInput>::value>::type>
+typename std::enable_if<std::is_floating_point<_TOutput>::value, _TOutput>::type to_host_from_little_endian(_TInput data)
+{
+    static_assert(sizeof(_TInput) == sizeof(_TOutput), "Size of input and output must match");
+    data = to_host_from_little_endian_internal(data);
+
+    _TOutput buf;
+    memcpy(&buf, &data, sizeof(_TOutput));
+    return buf;
+}
+
+template<typename _TOutput, typename _TInput,
+         class = typename std::enable_if<std::is_unsigned<_TInput>::value>::type>
+typename std::enable_if<std::is_integral<_TOutput>::value, _TOutput>::type to_host_from_little_endian(_TInput data)
+{
+    static_assert(sizeof(_TInput) == sizeof(_TOutput), "Size of input and output must match");
+    return to_host_from_little_endian_internal(data);
+}
+
+} // namespace impl
 } // namespace mavlink
 
 // implementation
 
-template<typename _T, typename _Tin>
-void mavlink::MsgMap::msg_swap_memcpy(_T &buf, _Tin data)
-{
-	if (std::is_floating_point<_Tin>::value) {
-		buf = *static_cast<const _T *>(static_cast<const void *>(&data));
-	} else {
-		buf = data;
-	}
-
-	// htoleXX functions may be empty macros,
-	// switch will be optimized-out
-	switch (sizeof(_T)) {
-	case 2:
-		buf = htole16(buf);
-		break;
-
-	case 4:
-		buf = htole32(buf);
-		break;
-
-	case 8:
-		buf = htole64(buf);
-		break;
-
-	default:
-		assert(false);
-	}
-
-	memcpy(&_MAV_PAYLOAD_NON_CONST(msg)[pos], &buf, sizeof(buf));
-}
-
 template<typename _T>
 void mavlink::MsgMap::operator<< (const _T data)
 {
-	assert(msg);
-	assert(pos + sizeof(_T) <= MAVLINK_MAX_PAYLOAD_LEN);
+    assert(msg);
+    assert(pos + sizeof(_T) <= MAVLINK_MAX_PAYLOAD_LEN);
 
-	switch (sizeof(_T)) {
-	case 1:
-		_MAV_PAYLOAD_NON_CONST(msg)[pos] = data;
-		break;
-
-	case 2:
-		uint16_t data_le16;
-		msg_swap_memcpy(data_le16, data);
-		break;
-
-	case 4:
-		uint32_t data_le32;
-		msg_swap_memcpy(data_le32, data);
-		break;
-
-	case 8:
-		uint64_t data_le64;
-		msg_swap_memcpy(data_le64, data);
-		break;
-
-	default:
-		assert(false);
-	}
-
-	//std::cout << "M< s: " << sizeof(_T) << " p: " << pos << " d: " << data << std::endl;
-
-	pos += sizeof(_T);
+    auto data_le = mavlink::impl::to_little_endian<_T>(data);
+    memcpy(&_MAV_PAYLOAD_NON_CONST(msg)[pos], &data_le, sizeof(data_le));
+    pos += sizeof(_T);
 }
 
 template<class _T, size_t _Size>
@@ -140,94 +206,34 @@ void mavlink::MsgMap::operator<< (const std::array<_T, _Size> &data)
 	}
 }
 
-template<typename _T, typename _Tout>
-void mavlink::MsgMap::cmsg_memcpy_bzero_swap_set_data(_T &buf, _Tout &data)
-{
-	memcpy(&buf, &_MAV_PAYLOAD(cmsg)[pos], sizeof(_T));
-
-	// if message is trimmed - bzero tail
-	if (pos + sizeof(_T) > cmsg->len) {
-		union {
-			_T d;
-			uint8_t u8[sizeof(_T)];
-		} bz;
-
-		size_t toclean = (pos + sizeof(_T)) - cmsg->len;
-		size_t start_pos = sizeof(_T) - toclean;
-
-		//std::cout << "B> bzero s: " << sizeof(_T) << " c: " << toclean << " p: " << start_pos << std::endl;
-
-		bz.d = buf;
-		memset(&bz.u8[start_pos], 0, toclean);
-		buf = bz.d;
-	}
-
-	// leXXtoh functions may be empty macros,
-	// switch will be optimized-out
-	switch (sizeof(_T)) {
-	case 2:
-		buf = le16toh(buf);
-		break;
-
-	case 4:
-		buf = le32toh(buf);
-		break;
-
-	case 8:
-		buf = le64toh(buf);
-		break;
-
-	default:
-		assert(false);
-	}
-
-	if (std::is_floating_point<_Tout>::value) {
-		data = *static_cast<_Tout *>(static_cast<void *>(&buf));
-	} else {
-		data = buf;
-	}
-}
-
 template<typename _T>
 void mavlink::MsgMap::operator>> (_T &data)
 {
-	assert(cmsg);
-	assert(pos + sizeof(_T) <= MAVLINK_MAX_PAYLOAD_LEN);
+    assert(cmsg);
+    assert(pos + sizeof(_T) <= MAVLINK_MAX_PAYLOAD_LEN);
 
-	// message is trimmed - fill with zeroes
-	if (pos >= cmsg->len) {
-		data = 0;
-		pos += sizeof(_T);
-		return;
-	}
+    ssize_t remaining_non_zero_data = cmsg->len - pos;
+    typename mavlink::impl::UintBuffer<_T>::Type buf;
 
-	switch (sizeof(_T)) {
-	case 1:
-		data = _MAV_PAYLOAD(cmsg)[pos];
-		break;
+    if (static_cast<ssize_t>(sizeof(_T)) <= remaining_non_zero_data) { // field is not truncated
+        memcpy(&buf, &_MAV_PAYLOAD(cmsg)[pos], sizeof(_T));
+    } else if (remaining_non_zero_data <= 0) {
+        // there is no non-zero data left, so just fill with 0
+        buf = 0;
+    } else { // field is trimmed - pad with zeroes
+        // here remaining_non_zero_data < sizeof(_T) holds
+        size_t non_zero_count = std::max<decltype(remaining_non_zero_data)>(remaining_non_zero_data, 0);
+        size_t pad_zero_count = sizeof(_T) - non_zero_count;
 
-	case 2:
-		uint16_t data_le16;
-		cmsg_memcpy_bzero_swap_set_data(data_le16, data);
-		break;
+        std::array<char, sizeof(_T)> raw_buf;
+        memcpy(raw_buf.data(), &_MAV_PAYLOAD(cmsg)[pos], non_zero_count);
+        memset(raw_buf.data() + non_zero_count, 0, pad_zero_count);
 
-	case 4:
-		uint32_t data_le32;
-		cmsg_memcpy_bzero_swap_set_data(data_le32, data);
-		break;
+        memcpy(&buf, raw_buf.data(), raw_buf.size());
+    }
 
-	case 8:
-		uint64_t data_le64;
-		cmsg_memcpy_bzero_swap_set_data(data_le64, data);
-		break;
-
-	default:
-		assert(false);
-	}
-
-	//std::cout << "M> s: " << sizeof(_T) << " p: " << pos << " d: " << data << std::endl;
-
-	pos += sizeof(_T);
+    data = mavlink::impl::to_host_from_little_endian<_T>(buf);
+    pos += sizeof(_T);
 }
 
 template<class _T, size_t _Size>
@@ -237,4 +243,3 @@ void mavlink::MsgMap::operator>> (std::array<_T, _Size> &data)
 		*this >> v;
 	}
 }
-

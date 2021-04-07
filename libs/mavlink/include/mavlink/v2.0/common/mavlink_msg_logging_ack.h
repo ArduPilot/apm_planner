@@ -3,12 +3,12 @@
 
 #define MAVLINK_MSG_ID_LOGGING_ACK 268
 
-MAVPACKED(
+
 typedef struct __mavlink_logging_ack_t {
- uint16_t sequence; /*< sequence number (must match the one in LOGGING_DATA_ACKED)*/
- uint8_t target_system; /*< system ID of the target*/
- uint8_t target_component; /*< component ID of the target*/
-}) mavlink_logging_ack_t;
+ uint16_t sequence; /*<  sequence number (must match the one in LOGGING_DATA_ACKED)*/
+ uint8_t target_system; /*<  system ID of the target*/
+ uint8_t target_component; /*<  component ID of the target*/
+} mavlink_logging_ack_t;
 
 #define MAVLINK_MSG_ID_LOGGING_ACK_LEN 4
 #define MAVLINK_MSG_ID_LOGGING_ACK_MIN_LEN 4
@@ -47,9 +47,9 @@ typedef struct __mavlink_logging_ack_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system system ID of the target
- * @param target_component component ID of the target
- * @param sequence sequence number (must match the one in LOGGING_DATA_ACKED)
+ * @param target_system  system ID of the target
+ * @param target_component  component ID of the target
+ * @param sequence  sequence number (must match the one in LOGGING_DATA_ACKED)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_logging_ack_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -81,9 +81,9 @@ static inline uint16_t mavlink_msg_logging_ack_pack(uint8_t system_id, uint8_t c
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system system ID of the target
- * @param target_component component ID of the target
- * @param sequence sequence number (must match the one in LOGGING_DATA_ACKED)
+ * @param target_system  system ID of the target
+ * @param target_component  component ID of the target
+ * @param sequence  sequence number (must match the one in LOGGING_DATA_ACKED)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_logging_ack_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -141,9 +141,9 @@ static inline uint16_t mavlink_msg_logging_ack_encode_chan(uint8_t system_id, ui
  * @brief Send a logging_ack message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system system ID of the target
- * @param target_component component ID of the target
- * @param sequence sequence number (must match the one in LOGGING_DATA_ACKED)
+ * @param target_system  system ID of the target
+ * @param target_component  component ID of the target
+ * @param sequence  sequence number (must match the one in LOGGING_DATA_ACKED)
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -216,7 +216,7 @@ static inline void mavlink_msg_logging_ack_send_buf(mavlink_message_t *msgbuf, m
 /**
  * @brief Get field target_system from logging_ack message
  *
- * @return system ID of the target
+ * @return  system ID of the target
  */
 static inline uint8_t mavlink_msg_logging_ack_get_target_system(const mavlink_message_t* msg)
 {
@@ -226,7 +226,7 @@ static inline uint8_t mavlink_msg_logging_ack_get_target_system(const mavlink_me
 /**
  * @brief Get field target_component from logging_ack message
  *
- * @return component ID of the target
+ * @return  component ID of the target
  */
 static inline uint8_t mavlink_msg_logging_ack_get_target_component(const mavlink_message_t* msg)
 {
@@ -236,7 +236,7 @@ static inline uint8_t mavlink_msg_logging_ack_get_target_component(const mavlink
 /**
  * @brief Get field sequence from logging_ack message
  *
- * @return sequence number (must match the one in LOGGING_DATA_ACKED)
+ * @return  sequence number (must match the one in LOGGING_DATA_ACKED)
  */
 static inline uint16_t mavlink_msg_logging_ack_get_sequence(const mavlink_message_t* msg)
 {

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GOPRO_GET_RESPONSE message
  *
- * Response from a GOPRO_COMMAND get request
+ * Response from a GOPRO_COMMAND get request.
  */
 struct GOPRO_GET_RESPONSE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 217;
@@ -19,9 +19,9 @@ struct GOPRO_GET_RESPONSE : mavlink::Message {
     static constexpr auto NAME = "GOPRO_GET_RESPONSE";
 
 
-    uint8_t cmd_id; /*< Command ID */
-    uint8_t status; /*< Status */
-    std::array<uint8_t, 4> value; /*< Value */
+    uint8_t cmd_id; /*<  Command ID. */
+    uint8_t status; /*<  Status. */
+    std::array<uint8_t, 4> value; /*<  Value. */
 
 
     inline std::string get_name(void) const override

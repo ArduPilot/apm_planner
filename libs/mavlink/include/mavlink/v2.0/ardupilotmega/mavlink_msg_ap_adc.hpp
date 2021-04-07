@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief AP_ADC message
  *
- * raw ADC output
+ * Raw ADC output.
  */
 struct AP_ADC : mavlink::Message {
     static constexpr msgid_t MSG_ID = 153;
@@ -19,12 +19,12 @@ struct AP_ADC : mavlink::Message {
     static constexpr auto NAME = "AP_ADC";
 
 
-    uint16_t adc1; /*< ADC output 1 */
-    uint16_t adc2; /*< ADC output 2 */
-    uint16_t adc3; /*< ADC output 3 */
-    uint16_t adc4; /*< ADC output 4 */
-    uint16_t adc5; /*< ADC output 5 */
-    uint16_t adc6; /*< ADC output 6 */
+    uint16_t adc1; /*<  ADC output 1. */
+    uint16_t adc2; /*<  ADC output 2. */
+    uint16_t adc3; /*<  ADC output 3. */
+    uint16_t adc4; /*<  ADC output 4. */
+    uint16_t adc5; /*<  ADC output 5. */
+    uint16_t adc6; /*<  ADC output 6. */
 
 
     inline std::string get_name(void) const override

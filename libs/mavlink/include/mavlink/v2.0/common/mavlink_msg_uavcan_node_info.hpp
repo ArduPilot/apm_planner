@@ -19,15 +19,15 @@ struct UAVCAN_NODE_INFO : mavlink::Message {
     static constexpr auto NAME = "UAVCAN_NODE_INFO";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
-    uint32_t uptime_sec; /*< The number of seconds since the start-up of the node. */
-    std::array<char, 80> name; /*< Node name string. For example, "sapog.px4.io". */
-    uint8_t hw_version_major; /*< Hardware major version number. */
-    uint8_t hw_version_minor; /*< Hardware minor version number. */
-    std::array<uint8_t, 16> hw_unique_id; /*< Hardware unique 128-bit ID. */
-    uint8_t sw_version_major; /*< Software major version number. */
-    uint8_t sw_version_minor; /*< Software minor version number. */
-    uint32_t sw_vcs_commit; /*< Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint32_t uptime_sec; /*< [s] Time since the start-up of the node. */
+    std::array<char, 80> name; /*<  Node name string. For example, "sapog.px4.io". */
+    uint8_t hw_version_major; /*<  Hardware major version number. */
+    uint8_t hw_version_minor; /*<  Hardware minor version number. */
+    std::array<uint8_t, 16> hw_unique_id; /*<  Hardware unique 128-bit ID. */
+    uint8_t sw_version_major; /*<  Software major version number. */
+    uint8_t sw_version_minor; /*<  Software minor version number. */
+    uint32_t sw_vcs_commit; /*<  Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown. */
 
 
     inline std::string get_name(void) const override

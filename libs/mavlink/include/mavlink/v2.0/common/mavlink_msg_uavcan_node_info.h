@@ -3,18 +3,18 @@
 
 #define MAVLINK_MSG_ID_UAVCAN_NODE_INFO 311
 
-MAVPACKED(
+
 typedef struct __mavlink_uavcan_node_info_t {
- uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot)*/
- uint32_t uptime_sec; /*< The number of seconds since the start-up of the node.*/
- uint32_t sw_vcs_commit; /*< Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.*/
- char name[80]; /*< Node name string. For example, "sapog.px4.io".*/
- uint8_t hw_version_major; /*< Hardware major version number.*/
- uint8_t hw_version_minor; /*< Hardware minor version number.*/
- uint8_t hw_unique_id[16]; /*< Hardware unique 128-bit ID.*/
- uint8_t sw_version_major; /*< Software major version number.*/
- uint8_t sw_version_minor; /*< Software minor version number.*/
-}) mavlink_uavcan_node_info_t;
+ uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.*/
+ uint32_t uptime_sec; /*< [s] Time since the start-up of the node.*/
+ uint32_t sw_vcs_commit; /*<  Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.*/
+ char name[80]; /*<  Node name string. For example, "sapog.px4.io".*/
+ uint8_t hw_version_major; /*<  Hardware major version number.*/
+ uint8_t hw_version_minor; /*<  Hardware minor version number.*/
+ uint8_t hw_unique_id[16]; /*<  Hardware unique 128-bit ID.*/
+ uint8_t sw_version_major; /*<  Software major version number.*/
+ uint8_t sw_version_minor; /*<  Software minor version number.*/
+} mavlink_uavcan_node_info_t;
 
 #define MAVLINK_MSG_ID_UAVCAN_NODE_INFO_LEN 116
 #define MAVLINK_MSG_ID_UAVCAN_NODE_INFO_MIN_LEN 116
@@ -66,15 +66,15 @@ typedef struct __mavlink_uavcan_node_info_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec Timestamp (microseconds since UNIX epoch or microseconds since system boot)
- * @param uptime_sec The number of seconds since the start-up of the node.
- * @param name Node name string. For example, "sapog.px4.io".
- * @param hw_version_major Hardware major version number.
- * @param hw_version_minor Hardware minor version number.
- * @param hw_unique_id Hardware unique 128-bit ID.
- * @param sw_version_major Software major version number.
- * @param sw_version_minor Software minor version number.
- * @param sw_vcs_commit Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param uptime_sec [s] Time since the start-up of the node.
+ * @param name  Node name string. For example, "sapog.px4.io".
+ * @param hw_version_major  Hardware major version number.
+ * @param hw_version_minor  Hardware minor version number.
+ * @param hw_unique_id  Hardware unique 128-bit ID.
+ * @param sw_version_major  Software major version number.
+ * @param sw_version_minor  Software minor version number.
+ * @param sw_vcs_commit  Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_uavcan_node_info_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -116,15 +116,15 @@ static inline uint16_t mavlink_msg_uavcan_node_info_pack(uint8_t system_id, uint
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec Timestamp (microseconds since UNIX epoch or microseconds since system boot)
- * @param uptime_sec The number of seconds since the start-up of the node.
- * @param name Node name string. For example, "sapog.px4.io".
- * @param hw_version_major Hardware major version number.
- * @param hw_version_minor Hardware minor version number.
- * @param hw_unique_id Hardware unique 128-bit ID.
- * @param sw_version_major Software major version number.
- * @param sw_version_minor Software minor version number.
- * @param sw_vcs_commit Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param uptime_sec [s] Time since the start-up of the node.
+ * @param name  Node name string. For example, "sapog.px4.io".
+ * @param hw_version_major  Hardware major version number.
+ * @param hw_version_minor  Hardware minor version number.
+ * @param hw_unique_id  Hardware unique 128-bit ID.
+ * @param sw_version_major  Software major version number.
+ * @param sw_version_minor  Software minor version number.
+ * @param sw_vcs_commit  Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_uavcan_node_info_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -192,15 +192,15 @@ static inline uint16_t mavlink_msg_uavcan_node_info_encode_chan(uint8_t system_i
  * @brief Send a uavcan_node_info message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec Timestamp (microseconds since UNIX epoch or microseconds since system boot)
- * @param uptime_sec The number of seconds since the start-up of the node.
- * @param name Node name string. For example, "sapog.px4.io".
- * @param hw_version_major Hardware major version number.
- * @param hw_version_minor Hardware minor version number.
- * @param hw_unique_id Hardware unique 128-bit ID.
- * @param sw_version_major Software major version number.
- * @param sw_version_minor Software minor version number.
- * @param sw_vcs_commit Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param uptime_sec [s] Time since the start-up of the node.
+ * @param name  Node name string. For example, "sapog.px4.io".
+ * @param hw_version_major  Hardware major version number.
+ * @param hw_version_minor  Hardware minor version number.
+ * @param hw_unique_id  Hardware unique 128-bit ID.
+ * @param sw_version_major  Software major version number.
+ * @param sw_version_minor  Software minor version number.
+ * @param sw_vcs_commit  Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -293,7 +293,7 @@ static inline void mavlink_msg_uavcan_node_info_send_buf(mavlink_message_t *msgb
 /**
  * @brief Get field time_usec from uavcan_node_info message
  *
- * @return Timestamp (microseconds since UNIX epoch or microseconds since system boot)
+ * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
  */
 static inline uint64_t mavlink_msg_uavcan_node_info_get_time_usec(const mavlink_message_t* msg)
 {
@@ -303,7 +303,7 @@ static inline uint64_t mavlink_msg_uavcan_node_info_get_time_usec(const mavlink_
 /**
  * @brief Get field uptime_sec from uavcan_node_info message
  *
- * @return The number of seconds since the start-up of the node.
+ * @return [s] Time since the start-up of the node.
  */
 static inline uint32_t mavlink_msg_uavcan_node_info_get_uptime_sec(const mavlink_message_t* msg)
 {
@@ -313,7 +313,7 @@ static inline uint32_t mavlink_msg_uavcan_node_info_get_uptime_sec(const mavlink
 /**
  * @brief Get field name from uavcan_node_info message
  *
- * @return Node name string. For example, "sapog.px4.io".
+ * @return  Node name string. For example, "sapog.px4.io".
  */
 static inline uint16_t mavlink_msg_uavcan_node_info_get_name(const mavlink_message_t* msg, char *name)
 {
@@ -323,7 +323,7 @@ static inline uint16_t mavlink_msg_uavcan_node_info_get_name(const mavlink_messa
 /**
  * @brief Get field hw_version_major from uavcan_node_info message
  *
- * @return Hardware major version number.
+ * @return  Hardware major version number.
  */
 static inline uint8_t mavlink_msg_uavcan_node_info_get_hw_version_major(const mavlink_message_t* msg)
 {
@@ -333,7 +333,7 @@ static inline uint8_t mavlink_msg_uavcan_node_info_get_hw_version_major(const ma
 /**
  * @brief Get field hw_version_minor from uavcan_node_info message
  *
- * @return Hardware minor version number.
+ * @return  Hardware minor version number.
  */
 static inline uint8_t mavlink_msg_uavcan_node_info_get_hw_version_minor(const mavlink_message_t* msg)
 {
@@ -343,7 +343,7 @@ static inline uint8_t mavlink_msg_uavcan_node_info_get_hw_version_minor(const ma
 /**
  * @brief Get field hw_unique_id from uavcan_node_info message
  *
- * @return Hardware unique 128-bit ID.
+ * @return  Hardware unique 128-bit ID.
  */
 static inline uint16_t mavlink_msg_uavcan_node_info_get_hw_unique_id(const mavlink_message_t* msg, uint8_t *hw_unique_id)
 {
@@ -353,7 +353,7 @@ static inline uint16_t mavlink_msg_uavcan_node_info_get_hw_unique_id(const mavli
 /**
  * @brief Get field sw_version_major from uavcan_node_info message
  *
- * @return Software major version number.
+ * @return  Software major version number.
  */
 static inline uint8_t mavlink_msg_uavcan_node_info_get_sw_version_major(const mavlink_message_t* msg)
 {
@@ -363,7 +363,7 @@ static inline uint8_t mavlink_msg_uavcan_node_info_get_sw_version_major(const ma
 /**
  * @brief Get field sw_version_minor from uavcan_node_info message
  *
- * @return Software minor version number.
+ * @return  Software minor version number.
  */
 static inline uint8_t mavlink_msg_uavcan_node_info_get_sw_version_minor(const mavlink_message_t* msg)
 {
@@ -373,7 +373,7 @@ static inline uint8_t mavlink_msg_uavcan_node_info_get_sw_version_minor(const ma
 /**
  * @brief Get field sw_vcs_commit from uavcan_node_info message
  *
- * @return Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.
+ * @return  Version control system (VCS) revision identifier (e.g. git short commit hash). Zero if unknown.
  */
 static inline uint32_t mavlink_msg_uavcan_node_info_get_sw_vcs_commit(const mavlink_message_t* msg)
 {

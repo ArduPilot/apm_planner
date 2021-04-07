@@ -5,16 +5,16 @@
 
 MAVPACKED(
 typedef struct __mavlink_optical_flow_t {
- uint64_t time_usec; /*< Timestamp (UNIX)*/
- float flow_comp_m_x; /*< Flow in meters in x-sensor direction, angular-speed compensated*/
- float flow_comp_m_y; /*< Flow in meters in y-sensor direction, angular-speed compensated*/
- float ground_distance; /*< Ground distance in meters. Positive value: distance known. Negative value: Unknown distance*/
- int16_t flow_x; /*< Flow in pixels * 10 in x-sensor direction (dezi-pixels)*/
- int16_t flow_y; /*< Flow in pixels * 10 in y-sensor direction (dezi-pixels)*/
- uint8_t sensor_id; /*< Sensor ID*/
- uint8_t quality; /*< Optical flow quality / confidence. 0: bad, 255: maximum quality*/
- float flow_rate_x; /*< Flow rate in radians/second about X axis*/
- float flow_rate_y; /*< Flow rate in radians/second about Y axis*/
+ uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.*/
+ float flow_comp_m_x; /*< [m/s] Flow in x-sensor direction, angular-speed compensated*/
+ float flow_comp_m_y; /*< [m/s] Flow in y-sensor direction, angular-speed compensated*/
+ float ground_distance; /*< [m] Ground distance. Positive value: distance known. Negative value: Unknown distance*/
+ int16_t flow_x; /*< [dpix] Flow in x-sensor direction*/
+ int16_t flow_y; /*< [dpix] Flow in y-sensor direction*/
+ uint8_t sensor_id; /*<  Sensor ID*/
+ uint8_t quality; /*<  Optical flow quality / confidence. 0: bad, 255: maximum quality*/
+ float flow_rate_x; /*< [rad/s] Flow rate about X axis*/
+ float flow_rate_y; /*< [rad/s] Flow rate about Y axis*/
 }) mavlink_optical_flow_t;
 
 #define MAVLINK_MSG_ID_OPTICAL_FLOW_LEN 34
@@ -68,16 +68,16 @@ typedef struct __mavlink_optical_flow_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec Timestamp (UNIX)
- * @param sensor_id Sensor ID
- * @param flow_x Flow in pixels * 10 in x-sensor direction (dezi-pixels)
- * @param flow_y Flow in pixels * 10 in y-sensor direction (dezi-pixels)
- * @param flow_comp_m_x Flow in meters in x-sensor direction, angular-speed compensated
- * @param flow_comp_m_y Flow in meters in y-sensor direction, angular-speed compensated
- * @param quality Optical flow quality / confidence. 0: bad, 255: maximum quality
- * @param ground_distance Ground distance in meters. Positive value: distance known. Negative value: Unknown distance
- * @param flow_rate_x Flow rate in radians/second about X axis
- * @param flow_rate_y Flow rate in radians/second about Y axis
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param sensor_id  Sensor ID
+ * @param flow_x [dpix] Flow in x-sensor direction
+ * @param flow_y [dpix] Flow in y-sensor direction
+ * @param flow_comp_m_x [m/s] Flow in x-sensor direction, angular-speed compensated
+ * @param flow_comp_m_y [m/s] Flow in y-sensor direction, angular-speed compensated
+ * @param quality  Optical flow quality / confidence. 0: bad, 255: maximum quality
+ * @param ground_distance [m] Ground distance. Positive value: distance known. Negative value: Unknown distance
+ * @param flow_rate_x [rad/s] Flow rate about X axis
+ * @param flow_rate_y [rad/s] Flow rate about Y axis
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_optical_flow_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -123,16 +123,16 @@ static inline uint16_t mavlink_msg_optical_flow_pack(uint8_t system_id, uint8_t 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec Timestamp (UNIX)
- * @param sensor_id Sensor ID
- * @param flow_x Flow in pixels * 10 in x-sensor direction (dezi-pixels)
- * @param flow_y Flow in pixels * 10 in y-sensor direction (dezi-pixels)
- * @param flow_comp_m_x Flow in meters in x-sensor direction, angular-speed compensated
- * @param flow_comp_m_y Flow in meters in y-sensor direction, angular-speed compensated
- * @param quality Optical flow quality / confidence. 0: bad, 255: maximum quality
- * @param ground_distance Ground distance in meters. Positive value: distance known. Negative value: Unknown distance
- * @param flow_rate_x Flow rate in radians/second about X axis
- * @param flow_rate_y Flow rate in radians/second about Y axis
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param sensor_id  Sensor ID
+ * @param flow_x [dpix] Flow in x-sensor direction
+ * @param flow_y [dpix] Flow in y-sensor direction
+ * @param flow_comp_m_x [m/s] Flow in x-sensor direction, angular-speed compensated
+ * @param flow_comp_m_y [m/s] Flow in y-sensor direction, angular-speed compensated
+ * @param quality  Optical flow quality / confidence. 0: bad, 255: maximum quality
+ * @param ground_distance [m] Ground distance. Positive value: distance known. Negative value: Unknown distance
+ * @param flow_rate_x [rad/s] Flow rate about X axis
+ * @param flow_rate_y [rad/s] Flow rate about Y axis
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_optical_flow_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -204,16 +204,16 @@ static inline uint16_t mavlink_msg_optical_flow_encode_chan(uint8_t system_id, u
  * @brief Send a optical_flow message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec Timestamp (UNIX)
- * @param sensor_id Sensor ID
- * @param flow_x Flow in pixels * 10 in x-sensor direction (dezi-pixels)
- * @param flow_y Flow in pixels * 10 in y-sensor direction (dezi-pixels)
- * @param flow_comp_m_x Flow in meters in x-sensor direction, angular-speed compensated
- * @param flow_comp_m_y Flow in meters in y-sensor direction, angular-speed compensated
- * @param quality Optical flow quality / confidence. 0: bad, 255: maximum quality
- * @param ground_distance Ground distance in meters. Positive value: distance known. Negative value: Unknown distance
- * @param flow_rate_x Flow rate in radians/second about X axis
- * @param flow_rate_y Flow rate in radians/second about Y axis
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param sensor_id  Sensor ID
+ * @param flow_x [dpix] Flow in x-sensor direction
+ * @param flow_y [dpix] Flow in y-sensor direction
+ * @param flow_comp_m_x [m/s] Flow in x-sensor direction, angular-speed compensated
+ * @param flow_comp_m_y [m/s] Flow in y-sensor direction, angular-speed compensated
+ * @param quality  Optical flow quality / confidence. 0: bad, 255: maximum quality
+ * @param ground_distance [m] Ground distance. Positive value: distance known. Negative value: Unknown distance
+ * @param flow_rate_x [rad/s] Flow rate about X axis
+ * @param flow_rate_y [rad/s] Flow rate about Y axis
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -314,7 +314,7 @@ static inline void mavlink_msg_optical_flow_send_buf(mavlink_message_t *msgbuf, 
 /**
  * @brief Get field time_usec from optical_flow message
  *
- * @return Timestamp (UNIX)
+ * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
  */
 static inline uint64_t mavlink_msg_optical_flow_get_time_usec(const mavlink_message_t* msg)
 {
@@ -324,7 +324,7 @@ static inline uint64_t mavlink_msg_optical_flow_get_time_usec(const mavlink_mess
 /**
  * @brief Get field sensor_id from optical_flow message
  *
- * @return Sensor ID
+ * @return  Sensor ID
  */
 static inline uint8_t mavlink_msg_optical_flow_get_sensor_id(const mavlink_message_t* msg)
 {
@@ -334,7 +334,7 @@ static inline uint8_t mavlink_msg_optical_flow_get_sensor_id(const mavlink_messa
 /**
  * @brief Get field flow_x from optical_flow message
  *
- * @return Flow in pixels * 10 in x-sensor direction (dezi-pixels)
+ * @return [dpix] Flow in x-sensor direction
  */
 static inline int16_t mavlink_msg_optical_flow_get_flow_x(const mavlink_message_t* msg)
 {
@@ -344,7 +344,7 @@ static inline int16_t mavlink_msg_optical_flow_get_flow_x(const mavlink_message_
 /**
  * @brief Get field flow_y from optical_flow message
  *
- * @return Flow in pixels * 10 in y-sensor direction (dezi-pixels)
+ * @return [dpix] Flow in y-sensor direction
  */
 static inline int16_t mavlink_msg_optical_flow_get_flow_y(const mavlink_message_t* msg)
 {
@@ -354,7 +354,7 @@ static inline int16_t mavlink_msg_optical_flow_get_flow_y(const mavlink_message_
 /**
  * @brief Get field flow_comp_m_x from optical_flow message
  *
- * @return Flow in meters in x-sensor direction, angular-speed compensated
+ * @return [m/s] Flow in x-sensor direction, angular-speed compensated
  */
 static inline float mavlink_msg_optical_flow_get_flow_comp_m_x(const mavlink_message_t* msg)
 {
@@ -364,7 +364,7 @@ static inline float mavlink_msg_optical_flow_get_flow_comp_m_x(const mavlink_mes
 /**
  * @brief Get field flow_comp_m_y from optical_flow message
  *
- * @return Flow in meters in y-sensor direction, angular-speed compensated
+ * @return [m/s] Flow in y-sensor direction, angular-speed compensated
  */
 static inline float mavlink_msg_optical_flow_get_flow_comp_m_y(const mavlink_message_t* msg)
 {
@@ -374,7 +374,7 @@ static inline float mavlink_msg_optical_flow_get_flow_comp_m_y(const mavlink_mes
 /**
  * @brief Get field quality from optical_flow message
  *
- * @return Optical flow quality / confidence. 0: bad, 255: maximum quality
+ * @return  Optical flow quality / confidence. 0: bad, 255: maximum quality
  */
 static inline uint8_t mavlink_msg_optical_flow_get_quality(const mavlink_message_t* msg)
 {
@@ -384,7 +384,7 @@ static inline uint8_t mavlink_msg_optical_flow_get_quality(const mavlink_message
 /**
  * @brief Get field ground_distance from optical_flow message
  *
- * @return Ground distance in meters. Positive value: distance known. Negative value: Unknown distance
+ * @return [m] Ground distance. Positive value: distance known. Negative value: Unknown distance
  */
 static inline float mavlink_msg_optical_flow_get_ground_distance(const mavlink_message_t* msg)
 {
@@ -394,7 +394,7 @@ static inline float mavlink_msg_optical_flow_get_ground_distance(const mavlink_m
 /**
  * @brief Get field flow_rate_x from optical_flow message
  *
- * @return Flow rate in radians/second about X axis
+ * @return [rad/s] Flow rate about X axis
  */
 static inline float mavlink_msg_optical_flow_get_flow_rate_x(const mavlink_message_t* msg)
 {
@@ -404,7 +404,7 @@ static inline float mavlink_msg_optical_flow_get_flow_rate_x(const mavlink_messa
 /**
  * @brief Get field flow_rate_y from optical_flow message
  *
- * @return Flow rate in radians/second about Y axis
+ * @return [rad/s] Flow rate about Y axis
  */
 static inline float mavlink_msg_optical_flow_get_flow_rate_y(const mavlink_message_t* msg)
 {

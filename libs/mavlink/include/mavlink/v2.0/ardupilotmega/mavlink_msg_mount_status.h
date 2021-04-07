@@ -3,14 +3,14 @@
 
 #define MAVLINK_MSG_ID_MOUNT_STATUS 158
 
-MAVPACKED(
+
 typedef struct __mavlink_mount_status_t {
- int32_t pointing_a; /*< pitch(deg*100)*/
- int32_t pointing_b; /*< roll(deg*100)*/
- int32_t pointing_c; /*< yaw(deg*100)*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
-}) mavlink_mount_status_t;
+ int32_t pointing_a; /*< [cdeg] Pitch.*/
+ int32_t pointing_b; /*< [cdeg] Roll.*/
+ int32_t pointing_c; /*< [cdeg] Yaw.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+} mavlink_mount_status_t;
 
 #define MAVLINK_MSG_ID_MOUNT_STATUS_LEN 14
 #define MAVLINK_MSG_ID_MOUNT_STATUS_MIN_LEN 14
@@ -53,11 +53,11 @@ typedef struct __mavlink_mount_status_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param pointing_a pitch(deg*100)
- * @param pointing_b roll(deg*100)
- * @param pointing_c yaw(deg*100)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param pointing_a [cdeg] Pitch.
+ * @param pointing_b [cdeg] Roll.
+ * @param pointing_c [cdeg] Yaw.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mount_status_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -93,11 +93,11 @@ static inline uint16_t mavlink_msg_mount_status_pack(uint8_t system_id, uint8_t 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param pointing_a pitch(deg*100)
- * @param pointing_b roll(deg*100)
- * @param pointing_c yaw(deg*100)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param pointing_a [cdeg] Pitch.
+ * @param pointing_b [cdeg] Roll.
+ * @param pointing_c [cdeg] Yaw.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mount_status_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -159,11 +159,11 @@ static inline uint16_t mavlink_msg_mount_status_encode_chan(uint8_t system_id, u
  * @brief Send a mount_status message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param pointing_a pitch(deg*100)
- * @param pointing_b roll(deg*100)
- * @param pointing_c yaw(deg*100)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param pointing_a [cdeg] Pitch.
+ * @param pointing_b [cdeg] Roll.
+ * @param pointing_c [cdeg] Yaw.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -244,7 +244,7 @@ static inline void mavlink_msg_mount_status_send_buf(mavlink_message_t *msgbuf, 
 /**
  * @brief Get field target_system from mount_status message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_mount_status_get_target_system(const mavlink_message_t* msg)
 {
@@ -254,7 +254,7 @@ static inline uint8_t mavlink_msg_mount_status_get_target_system(const mavlink_m
 /**
  * @brief Get field target_component from mount_status message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_mount_status_get_target_component(const mavlink_message_t* msg)
 {
@@ -264,7 +264,7 @@ static inline uint8_t mavlink_msg_mount_status_get_target_component(const mavlin
 /**
  * @brief Get field pointing_a from mount_status message
  *
- * @return pitch(deg*100)
+ * @return [cdeg] Pitch.
  */
 static inline int32_t mavlink_msg_mount_status_get_pointing_a(const mavlink_message_t* msg)
 {
@@ -274,7 +274,7 @@ static inline int32_t mavlink_msg_mount_status_get_pointing_a(const mavlink_mess
 /**
  * @brief Get field pointing_b from mount_status message
  *
- * @return roll(deg*100)
+ * @return [cdeg] Roll.
  */
 static inline int32_t mavlink_msg_mount_status_get_pointing_b(const mavlink_message_t* msg)
 {
@@ -284,7 +284,7 @@ static inline int32_t mavlink_msg_mount_status_get_pointing_b(const mavlink_mess
 /**
  * @brief Get field pointing_c from mount_status message
  *
- * @return yaw(deg*100)
+ * @return [cdeg] Yaw.
  */
 static inline int32_t mavlink_msg_mount_status_get_pointing_c(const mavlink_message_t* msg)
 {

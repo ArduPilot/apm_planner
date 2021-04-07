@@ -3,19 +3,19 @@
 
 #define MAVLINK_MSG_ID_RALLY_POINT 175
 
-MAVPACKED(
+
 typedef struct __mavlink_rally_point_t {
- int32_t lat; /*< Latitude of point in degrees * 1E7*/
- int32_t lng; /*< Longitude of point in degrees * 1E7*/
- int16_t alt; /*< Transit / loiter altitude in meters relative to home*/
- int16_t break_alt; /*< Break altitude in meters relative to home*/
- uint16_t land_dir; /*< Heading to aim for when landing. In centi-degrees.*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t idx; /*< point index (first point is 0)*/
- uint8_t count; /*< total number of points (for sanity checking)*/
- uint8_t flags; /*< See RALLY_FLAGS enum for definition of the bitmask.*/
-}) mavlink_rally_point_t;
+ int32_t lat; /*< [degE7] Latitude of point.*/
+ int32_t lng; /*< [degE7] Longitude of point.*/
+ int16_t alt; /*< [m] Transit / loiter altitude relative to home.*/
+ int16_t break_alt; /*< [m] Break altitude relative to home.*/
+ uint16_t land_dir; /*< [cdeg] Heading to aim for when landing.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t idx; /*<  Point index (first point is 0).*/
+ uint8_t count; /*<  Total number of points (for sanity checking).*/
+ uint8_t flags; /*<  Configuration flags.*/
+} mavlink_rally_point_t;
 
 #define MAVLINK_MSG_ID_RALLY_POINT_LEN 19
 #define MAVLINK_MSG_ID_RALLY_POINT_MIN_LEN 19
@@ -68,16 +68,16 @@ typedef struct __mavlink_rally_point_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param idx point index (first point is 0)
- * @param count total number of points (for sanity checking)
- * @param lat Latitude of point in degrees * 1E7
- * @param lng Longitude of point in degrees * 1E7
- * @param alt Transit / loiter altitude in meters relative to home
- * @param break_alt Break altitude in meters relative to home
- * @param land_dir Heading to aim for when landing. In centi-degrees.
- * @param flags See RALLY_FLAGS enum for definition of the bitmask.
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param idx  Point index (first point is 0).
+ * @param count  Total number of points (for sanity checking).
+ * @param lat [degE7] Latitude of point.
+ * @param lng [degE7] Longitude of point.
+ * @param alt [m] Transit / loiter altitude relative to home.
+ * @param break_alt [m] Break altitude relative to home.
+ * @param land_dir [cdeg] Heading to aim for when landing.
+ * @param flags  Configuration flags.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_rally_point_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -123,16 +123,16 @@ static inline uint16_t mavlink_msg_rally_point_pack(uint8_t system_id, uint8_t c
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param idx point index (first point is 0)
- * @param count total number of points (for sanity checking)
- * @param lat Latitude of point in degrees * 1E7
- * @param lng Longitude of point in degrees * 1E7
- * @param alt Transit / loiter altitude in meters relative to home
- * @param break_alt Break altitude in meters relative to home
- * @param land_dir Heading to aim for when landing. In centi-degrees.
- * @param flags See RALLY_FLAGS enum for definition of the bitmask.
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param idx  Point index (first point is 0).
+ * @param count  Total number of points (for sanity checking).
+ * @param lat [degE7] Latitude of point.
+ * @param lng [degE7] Longitude of point.
+ * @param alt [m] Transit / loiter altitude relative to home.
+ * @param break_alt [m] Break altitude relative to home.
+ * @param land_dir [cdeg] Heading to aim for when landing.
+ * @param flags  Configuration flags.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_rally_point_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -204,16 +204,16 @@ static inline uint16_t mavlink_msg_rally_point_encode_chan(uint8_t system_id, ui
  * @brief Send a rally_point message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param idx point index (first point is 0)
- * @param count total number of points (for sanity checking)
- * @param lat Latitude of point in degrees * 1E7
- * @param lng Longitude of point in degrees * 1E7
- * @param alt Transit / loiter altitude in meters relative to home
- * @param break_alt Break altitude in meters relative to home
- * @param land_dir Heading to aim for when landing. In centi-degrees.
- * @param flags See RALLY_FLAGS enum for definition of the bitmask.
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param idx  Point index (first point is 0).
+ * @param count  Total number of points (for sanity checking).
+ * @param lat [degE7] Latitude of point.
+ * @param lng [degE7] Longitude of point.
+ * @param alt [m] Transit / loiter altitude relative to home.
+ * @param break_alt [m] Break altitude relative to home.
+ * @param land_dir [cdeg] Heading to aim for when landing.
+ * @param flags  Configuration flags.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -314,7 +314,7 @@ static inline void mavlink_msg_rally_point_send_buf(mavlink_message_t *msgbuf, m
 /**
  * @brief Get field target_system from rally_point message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_rally_point_get_target_system(const mavlink_message_t* msg)
 {
@@ -324,7 +324,7 @@ static inline uint8_t mavlink_msg_rally_point_get_target_system(const mavlink_me
 /**
  * @brief Get field target_component from rally_point message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_rally_point_get_target_component(const mavlink_message_t* msg)
 {
@@ -334,7 +334,7 @@ static inline uint8_t mavlink_msg_rally_point_get_target_component(const mavlink
 /**
  * @brief Get field idx from rally_point message
  *
- * @return point index (first point is 0)
+ * @return  Point index (first point is 0).
  */
 static inline uint8_t mavlink_msg_rally_point_get_idx(const mavlink_message_t* msg)
 {
@@ -344,7 +344,7 @@ static inline uint8_t mavlink_msg_rally_point_get_idx(const mavlink_message_t* m
 /**
  * @brief Get field count from rally_point message
  *
- * @return total number of points (for sanity checking)
+ * @return  Total number of points (for sanity checking).
  */
 static inline uint8_t mavlink_msg_rally_point_get_count(const mavlink_message_t* msg)
 {
@@ -354,7 +354,7 @@ static inline uint8_t mavlink_msg_rally_point_get_count(const mavlink_message_t*
 /**
  * @brief Get field lat from rally_point message
  *
- * @return Latitude of point in degrees * 1E7
+ * @return [degE7] Latitude of point.
  */
 static inline int32_t mavlink_msg_rally_point_get_lat(const mavlink_message_t* msg)
 {
@@ -364,7 +364,7 @@ static inline int32_t mavlink_msg_rally_point_get_lat(const mavlink_message_t* m
 /**
  * @brief Get field lng from rally_point message
  *
- * @return Longitude of point in degrees * 1E7
+ * @return [degE7] Longitude of point.
  */
 static inline int32_t mavlink_msg_rally_point_get_lng(const mavlink_message_t* msg)
 {
@@ -374,7 +374,7 @@ static inline int32_t mavlink_msg_rally_point_get_lng(const mavlink_message_t* m
 /**
  * @brief Get field alt from rally_point message
  *
- * @return Transit / loiter altitude in meters relative to home
+ * @return [m] Transit / loiter altitude relative to home.
  */
 static inline int16_t mavlink_msg_rally_point_get_alt(const mavlink_message_t* msg)
 {
@@ -384,7 +384,7 @@ static inline int16_t mavlink_msg_rally_point_get_alt(const mavlink_message_t* m
 /**
  * @brief Get field break_alt from rally_point message
  *
- * @return Break altitude in meters relative to home
+ * @return [m] Break altitude relative to home.
  */
 static inline int16_t mavlink_msg_rally_point_get_break_alt(const mavlink_message_t* msg)
 {
@@ -394,7 +394,7 @@ static inline int16_t mavlink_msg_rally_point_get_break_alt(const mavlink_messag
 /**
  * @brief Get field land_dir from rally_point message
  *
- * @return Heading to aim for when landing. In centi-degrees.
+ * @return [cdeg] Heading to aim for when landing.
  */
 static inline uint16_t mavlink_msg_rally_point_get_land_dir(const mavlink_message_t* msg)
 {
@@ -404,7 +404,7 @@ static inline uint16_t mavlink_msg_rally_point_get_land_dir(const mavlink_messag
 /**
  * @brief Get field flags from rally_point message
  *
- * @return See RALLY_FLAGS enum for definition of the bitmask.
+ * @return  Configuration flags.
  */
 static inline uint8_t mavlink_msg_rally_point_get_flags(const mavlink_message_t* msg)
 {

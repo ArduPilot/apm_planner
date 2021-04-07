@@ -9,24 +9,25 @@ namespace msg {
 /**
  * @brief VISION_POSITION_ESTIMATE message
  *
- * 
+ * Local position/attitude estimate from a vision source.
  */
 struct VISION_POSITION_ESTIMATE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 102;
-    static constexpr size_t LENGTH = 116;
+    static constexpr size_t LENGTH = 117;
     static constexpr size_t MIN_LENGTH = 32;
     static constexpr uint8_t CRC_EXTRA = 158;
     static constexpr auto NAME = "VISION_POSITION_ESTIMATE";
 
 
-    uint64_t usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot) */
-    float x; /*< Global X position */
-    float y; /*< Global Y position */
-    float z; /*< Global Z position */
-    float roll; /*< Roll angle in rad */
-    float pitch; /*< Pitch angle in rad */
-    float yaw; /*< Yaw angle in rad */
-    std::array<float, 21> covariance; /*< Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.) */
+    uint64_t usec; /*< [us] Timestamp (UNIX time or time since system boot) */
+    float x; /*< [m] Local X position */
+    float y; /*< [m] Local Y position */
+    float z; /*< [m] Local Z position */
+    float roll; /*< [rad] Roll angle */
+    float pitch; /*< [rad] Pitch angle */
+    float yaw; /*< [rad] Yaw angle */
+    std::array<float, 21> covariance; /*<  Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array. */
+    uint8_t reset_counter; /*<  Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps. */
 
 
     inline std::string get_name(void) const override
@@ -52,6 +53,7 @@ struct VISION_POSITION_ESTIMATE : mavlink::Message {
         ss << "  pitch: " << pitch << std::endl;
         ss << "  yaw: " << yaw << std::endl;
         ss << "  covariance: [" << to_string(covariance) << "]" << std::endl;
+        ss << "  reset_counter: " << +reset_counter << std::endl;
 
         return ss.str();
     }
@@ -68,6 +70,7 @@ struct VISION_POSITION_ESTIMATE : mavlink::Message {
         map << pitch;                         // offset: 24
         map << yaw;                           // offset: 28
         map << covariance;                    // offset: 32
+        map << reset_counter;                 // offset: 116
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -80,6 +83,7 @@ struct VISION_POSITION_ESTIMATE : mavlink::Message {
         map >> pitch;                         // offset: 24
         map >> yaw;                           // offset: 28
         map >> covariance;                    // offset: 32
+        map >> reset_counter;                 // offset: 116
     }
 };
 

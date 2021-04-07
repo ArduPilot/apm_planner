@@ -19,18 +19,18 @@ struct HIL_OPTICAL_FLOW : mavlink::Message {
     static constexpr auto NAME = "HIL_OPTICAL_FLOW";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot) */
-    uint8_t sensor_id; /*< Sensor ID */
-    uint32_t integration_time_us; /*< Integration time in microseconds. Divide integrated_x and integrated_y by the integration time to obtain average flow. The integration time also indicates the. */
-    float integrated_x; /*< Flow in radians around X axis (Sensor RH rotation about the X axis induces a positive flow. Sensor linear motion along the positive Y axis induces a negative flow.) */
-    float integrated_y; /*< Flow in radians around Y axis (Sensor RH rotation about the Y axis induces a positive flow. Sensor linear motion along the positive X axis induces a positive flow.) */
-    float integrated_xgyro; /*< RH rotation around X axis (rad) */
-    float integrated_ygyro; /*< RH rotation around Y axis (rad) */
-    float integrated_zgyro; /*< RH rotation around Z axis (rad) */
-    int16_t temperature; /*< Temperature * 100 in centi-degrees Celsius */
-    uint8_t quality; /*< Optical flow quality / confidence. 0: no valid flow, 255: maximum quality */
-    uint32_t time_delta_distance_us; /*< Time in microseconds since the distance was sampled. */
-    float distance; /*< Distance to the center of the flow field in meters. Positive value (including zero): distance known. Negative value: Unknown distance. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint8_t sensor_id; /*<  Sensor ID */
+    uint32_t integration_time_us; /*< [us] Integration time. Divide integrated_x and integrated_y by the integration time to obtain average flow. The integration time also indicates the. */
+    float integrated_x; /*< [rad] Flow in radians around X axis (Sensor RH rotation about the X axis induces a positive flow. Sensor linear motion along the positive Y axis induces a negative flow.) */
+    float integrated_y; /*< [rad] Flow in radians around Y axis (Sensor RH rotation about the Y axis induces a positive flow. Sensor linear motion along the positive X axis induces a positive flow.) */
+    float integrated_xgyro; /*< [rad] RH rotation around X axis */
+    float integrated_ygyro; /*< [rad] RH rotation around Y axis */
+    float integrated_zgyro; /*< [rad] RH rotation around Z axis */
+    int16_t temperature; /*< [cdegC] Temperature */
+    uint8_t quality; /*<  Optical flow quality / confidence. 0: no valid flow, 255: maximum quality */
+    uint32_t time_delta_distance_us; /*< [us] Time since the distance was sampled. */
+    float distance; /*< [m] Distance to the center of the flow field. Positive value (including zero): distance known. Negative value: Unknown distance. */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GPS_GLOBAL_ORIGIN message
  *
- * Once the MAV sets a new GPS-Local correspondence, this message announces the origin (0,0,0) position
+ * Publishes the GPS co-ordinates of the vehicle local origin (0,0,0) position. Emitted whenever a new GPS-Local position mapping is requested or set - e.g. following SET_GPS_GLOBAL_ORIGIN message.
  */
 struct GPS_GLOBAL_ORIGIN : mavlink::Message {
     static constexpr msgid_t MSG_ID = 49;
@@ -19,10 +19,10 @@ struct GPS_GLOBAL_ORIGIN : mavlink::Message {
     static constexpr auto NAME = "GPS_GLOBAL_ORIGIN";
 
 
-    int32_t latitude; /*< Latitude (WGS84), in degrees * 1E7 */
-    int32_t longitude; /*< Longitude (WGS84), in degrees * 1E7 */
-    int32_t altitude; /*< Altitude (AMSL), in meters * 1000 (positive for up) */
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
+    int32_t latitude; /*< [degE7] Latitude (WGS84) */
+    int32_t longitude; /*< [degE7] Longitude (WGS84) */
+    int32_t altitude; /*< [mm] Altitude (MSL). Positive for up. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
 
 
     inline std::string get_name(void) const override

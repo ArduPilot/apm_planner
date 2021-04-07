@@ -19,12 +19,12 @@ struct MOUNT_CONTROL : mavlink::Message {
     static constexpr auto NAME = "MOUNT_CONTROL";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    int32_t input_a; /*< pitch(deg*100) or lat, depending on mount mode */
-    int32_t input_b; /*< roll(deg*100) or lon depending on mount mode */
-    int32_t input_c; /*< yaw(deg*100) or alt (in cm) depending on mount mode */
-    uint8_t save_position; /*< if "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING) */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    int32_t input_a; /*<  Pitch (centi-degrees) or lat (degE7), depending on mount mode. */
+    int32_t input_b; /*<  Roll (centi-degrees) or lon (degE7) depending on mount mode. */
+    int32_t input_c; /*<  Yaw (centi-degrees) or alt (cm) depending on mount mode. */
+    uint8_t save_position; /*<  If "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING). */
 
 
     inline std::string get_name(void) const override

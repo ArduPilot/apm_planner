@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief SET_GPS_GLOBAL_ORIGIN message
  *
- * As local waypoints exist, the global waypoint reference allows to transform between the local coordinate frame and the global (GPS) coordinate frame. This can be necessary when e.g. in- and outdoor settings are connected and the MAV should move from in- to outdoor.
+ * Sets the GPS co-ordinates of the vehicle local origin (0,0,0) position. Vehicle should emit GPS_GLOBAL_ORIGIN irrespective of whether the origin is changed. This enables transform between the local coordinate frame and the global (GPS) coordinate frame, which may be necessary when (for example) indoor and outdoor settings are connected and the MAV should move from in- to outdoor.
  */
 struct SET_GPS_GLOBAL_ORIGIN : mavlink::Message {
     static constexpr msgid_t MSG_ID = 48;
@@ -19,11 +19,11 @@ struct SET_GPS_GLOBAL_ORIGIN : mavlink::Message {
     static constexpr auto NAME = "SET_GPS_GLOBAL_ORIGIN";
 
 
-    uint8_t target_system; /*< System ID */
-    int32_t latitude; /*< Latitude (WGS84), in degrees * 1E7 */
-    int32_t longitude; /*< Longitude (WGS84), in degrees * 1E7 */
-    int32_t altitude; /*< Altitude (AMSL), in meters * 1000 (positive for up) */
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
+    uint8_t target_system; /*<  System ID */
+    int32_t latitude; /*< [degE7] Latitude (WGS84) */
+    int32_t longitude; /*< [degE7] Longitude (WGS84) */
+    int32_t altitude; /*< [mm] Altitude (MSL). Positive for up. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
 
 
     inline std::string get_name(void) const override

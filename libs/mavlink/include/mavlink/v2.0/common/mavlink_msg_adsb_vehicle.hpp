@@ -19,19 +19,19 @@ struct ADSB_VEHICLE : mavlink::Message {
     static constexpr auto NAME = "ADSB_VEHICLE";
 
 
-    uint32_t ICAO_address; /*< ICAO address */
-    int32_t lat; /*< Latitude, expressed as degrees * 1E7 */
-    int32_t lon; /*< Longitude, expressed as degrees * 1E7 */
-    uint8_t altitude_type; /*< Type from ADSB_ALTITUDE_TYPE enum */
-    int32_t altitude; /*< Altitude(ASL) in millimeters */
-    uint16_t heading; /*< Course over ground in centidegrees */
-    uint16_t hor_velocity; /*< The horizontal velocity in centimeters/second */
-    int16_t ver_velocity; /*< The vertical velocity in centimeters/second, positive is up */
-    std::array<char, 9> callsign; /*< The callsign, 8+null */
-    uint8_t emitter_type; /*< Type from ADSB_EMITTER_TYPE enum */
-    uint8_t tslc; /*< Time since last communication in seconds */
-    uint16_t flags; /*< Flags to indicate various statuses including valid data fields */
-    uint16_t squawk; /*< Squawk code */
+    uint32_t ICAO_address; /*<  ICAO address */
+    int32_t lat; /*< [degE7] Latitude */
+    int32_t lon; /*< [degE7] Longitude */
+    uint8_t altitude_type; /*<  ADSB altitude type. */
+    int32_t altitude; /*< [mm] Altitude(ASL) */
+    uint16_t heading; /*< [cdeg] Course over ground */
+    uint16_t hor_velocity; /*< [cm/s] The horizontal velocity */
+    int16_t ver_velocity; /*< [cm/s] The vertical velocity. Positive is up */
+    std::array<char, 9> callsign; /*<  The callsign, 8+null */
+    uint8_t emitter_type; /*<  ADSB emitter type. */
+    uint8_t tslc; /*< [s] Time since last communication in seconds */
+    uint16_t flags; /*<  Bitmap to indicate various statuses including valid data fields */
+    uint16_t squawk; /*<  Squawk code */
 
 
     inline std::string get_name(void) const override

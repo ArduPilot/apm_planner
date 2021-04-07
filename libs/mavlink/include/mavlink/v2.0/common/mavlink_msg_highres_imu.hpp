@@ -13,27 +13,28 @@ namespace msg {
  */
 struct HIGHRES_IMU : mavlink::Message {
     static constexpr msgid_t MSG_ID = 105;
-    static constexpr size_t LENGTH = 62;
+    static constexpr size_t LENGTH = 63;
     static constexpr size_t MIN_LENGTH = 62;
     static constexpr uint8_t CRC_EXTRA = 93;
     static constexpr auto NAME = "HIGHRES_IMU";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot) */
-    float xacc; /*< X acceleration (m/s^2) */
-    float yacc; /*< Y acceleration (m/s^2) */
-    float zacc; /*< Z acceleration (m/s^2) */
-    float xgyro; /*< Angular speed around X axis (rad / sec) */
-    float ygyro; /*< Angular speed around Y axis (rad / sec) */
-    float zgyro; /*< Angular speed around Z axis (rad / sec) */
-    float xmag; /*< X Magnetic field (Gauss) */
-    float ymag; /*< Y Magnetic field (Gauss) */
-    float zmag; /*< Z Magnetic field (Gauss) */
-    float abs_pressure; /*< Absolute pressure in millibar */
-    float diff_pressure; /*< Differential pressure in millibar */
-    float pressure_alt; /*< Altitude calculated from pressure */
-    float temperature; /*< Temperature in degrees celsius */
-    uint16_t fields_updated; /*< Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    float xacc; /*< [m/s/s] X acceleration */
+    float yacc; /*< [m/s/s] Y acceleration */
+    float zacc; /*< [m/s/s] Z acceleration */
+    float xgyro; /*< [rad/s] Angular speed around X axis */
+    float ygyro; /*< [rad/s] Angular speed around Y axis */
+    float zgyro; /*< [rad/s] Angular speed around Z axis */
+    float xmag; /*< [gauss] X Magnetic field */
+    float ymag; /*< [gauss] Y Magnetic field */
+    float zmag; /*< [gauss] Z Magnetic field */
+    float abs_pressure; /*< [mbar] Absolute pressure */
+    float diff_pressure; /*< [mbar] Differential pressure */
+    float pressure_alt; /*<  Altitude calculated from pressure */
+    float temperature; /*< [degC] Temperature */
+    uint16_t fields_updated; /*<  Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature */
+    uint8_t id; /*<  Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0) */
 
 
     inline std::string get_name(void) const override
@@ -66,6 +67,7 @@ struct HIGHRES_IMU : mavlink::Message {
         ss << "  pressure_alt: " << pressure_alt << std::endl;
         ss << "  temperature: " << temperature << std::endl;
         ss << "  fields_updated: " << fields_updated << std::endl;
+        ss << "  id: " << +id << std::endl;
 
         return ss.str();
     }
@@ -89,6 +91,7 @@ struct HIGHRES_IMU : mavlink::Message {
         map << pressure_alt;                  // offset: 52
         map << temperature;                   // offset: 56
         map << fields_updated;                // offset: 60
+        map << id;                            // offset: 62
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -108,6 +111,7 @@ struct HIGHRES_IMU : mavlink::Message {
         map >> pressure_alt;                  // offset: 52
         map >> temperature;                   // offset: 56
         map >> fields_updated;                // offset: 60
+        map >> id;                            // offset: 62
     }
 };
 

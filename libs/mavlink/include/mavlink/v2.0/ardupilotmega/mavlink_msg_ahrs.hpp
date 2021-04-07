@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief AHRS message
  *
- * Status of DCM attitude estimator
+ * Status of DCM attitude estimator.
  */
 struct AHRS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 163;
@@ -19,13 +19,13 @@ struct AHRS : mavlink::Message {
     static constexpr auto NAME = "AHRS";
 
 
-    float omegaIx; /*< X gyro drift estimate rad/s */
-    float omegaIy; /*< Y gyro drift estimate rad/s */
-    float omegaIz; /*< Z gyro drift estimate rad/s */
-    float accel_weight; /*< average accel_weight */
-    float renorm_val; /*< average renormalisation value */
-    float error_rp; /*< average error_roll_pitch value */
-    float error_yaw; /*< average error_yaw value */
+    float omegaIx; /*< [rad/s] X gyro drift estimate. */
+    float omegaIy; /*< [rad/s] Y gyro drift estimate. */
+    float omegaIz; /*< [rad/s] Z gyro drift estimate. */
+    float accel_weight; /*<  Average accel_weight. */
+    float renorm_val; /*<  Average renormalisation value. */
+    float error_rp; /*<  Average error_roll_pitch value. */
+    float error_yaw; /*<  Average error_yaw value. */
 
 
     inline std::string get_name(void) const override

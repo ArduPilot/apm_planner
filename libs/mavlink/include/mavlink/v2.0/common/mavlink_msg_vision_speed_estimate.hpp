@@ -9,21 +9,22 @@ namespace msg {
 /**
  * @brief VISION_SPEED_ESTIMATE message
  *
- * 
+ * Speed estimate from a vision source.
  */
 struct VISION_SPEED_ESTIMATE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 103;
-    static constexpr size_t LENGTH = 56;
+    static constexpr size_t LENGTH = 57;
     static constexpr size_t MIN_LENGTH = 20;
     static constexpr uint8_t CRC_EXTRA = 208;
     static constexpr auto NAME = "VISION_SPEED_ESTIMATE";
 
 
-    uint64_t usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot) */
-    float x; /*< Global X speed */
-    float y; /*< Global Y speed */
-    float z; /*< Global Z speed */
-    std::array<float, 9> covariance; /*< Linear velocity covariance matrix (1st three entries - 1st row, etc.) */
+    uint64_t usec; /*< [us] Timestamp (UNIX time or time since system boot) */
+    float x; /*< [m/s] Global X speed */
+    float y; /*< [m/s] Global Y speed */
+    float z; /*< [m/s] Global Z speed */
+    std::array<float, 9> covariance; /*<  Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array. */
+    uint8_t reset_counter; /*<  Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps. */
 
 
     inline std::string get_name(void) const override
@@ -46,6 +47,7 @@ struct VISION_SPEED_ESTIMATE : mavlink::Message {
         ss << "  y: " << y << std::endl;
         ss << "  z: " << z << std::endl;
         ss << "  covariance: [" << to_string(covariance) << "]" << std::endl;
+        ss << "  reset_counter: " << +reset_counter << std::endl;
 
         return ss.str();
     }
@@ -59,6 +61,7 @@ struct VISION_SPEED_ESTIMATE : mavlink::Message {
         map << y;                             // offset: 12
         map << z;                             // offset: 16
         map << covariance;                    // offset: 20
+        map << reset_counter;                 // offset: 56
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -68,6 +71,7 @@ struct VISION_SPEED_ESTIMATE : mavlink::Message {
         map >> y;                             // offset: 12
         map >> z;                             // offset: 16
         map >> covariance;                    // offset: 20
+        map >> reset_counter;                 // offset: 56
     }
 };
 

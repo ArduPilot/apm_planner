@@ -19,13 +19,13 @@ struct SAFETY_ALLOWED_AREA : mavlink::Message {
     static constexpr auto NAME = "SAFETY_ALLOWED_AREA";
 
 
-    uint8_t frame; /*< Coordinate frame, as defined by MAV_FRAME enum. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down. */
-    float p1x; /*< x position 1 / Latitude 1 */
-    float p1y; /*< y position 1 / Longitude 1 */
-    float p1z; /*< z position 1 / Altitude 1 */
-    float p2x; /*< x position 2 / Latitude 2 */
-    float p2y; /*< y position 2 / Longitude 2 */
-    float p2z; /*< z position 2 / Altitude 2 */
+    uint8_t frame; /*<  Coordinate frame. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down. */
+    float p1x; /*< [m] x position 1 / Latitude 1 */
+    float p1y; /*< [m] y position 1 / Longitude 1 */
+    float p1z; /*< [m] z position 1 / Altitude 1 */
+    float p2x; /*< [m] x position 2 / Latitude 2 */
+    float p2y; /*< [m] y position 2 / Longitude 2 */
+    float p2z; /*< [m] z position 2 / Altitude 2 */
 
 
     inline std::string get_name(void) const override

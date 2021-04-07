@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DEVICE_OP_READ message
  *
- * Read registers for a device
+ * Read registers for a device.
  */
 struct DEVICE_OP_READ : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11000;
@@ -19,15 +19,15 @@ struct DEVICE_OP_READ : mavlink::Message {
     static constexpr auto NAME = "DEVICE_OP_READ";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint32_t request_id; /*< request ID - copied to reply */
-    uint8_t bustype; /*< The bus type */
-    uint8_t bus; /*< Bus number */
-    uint8_t address; /*< Bus address */
-    std::array<char, 40> busname; /*< Name of device on bus (for SPI) */
-    uint8_t regstart; /*< First register to read */
-    uint8_t count; /*< count of registers to read */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint32_t request_id; /*<  Request ID - copied to reply. */
+    uint8_t bustype; /*<  The bus type. */
+    uint8_t bus; /*<  Bus number. */
+    uint8_t address; /*<  Bus address. */
+    std::array<char, 40> busname; /*<  Name of device on bus (for SPI). */
+    uint8_t regstart; /*<  First register to read. */
+    uint8_t count; /*<  Count of registers to read. */
 
 
     inline std::string get_name(void) const override

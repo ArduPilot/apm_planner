@@ -3,21 +3,21 @@
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT 200
 
-MAVPACKED(
+
 typedef struct __mavlink_gimbal_report_t {
- float delta_time; /*< Time since last update (seconds)*/
- float delta_angle_x; /*< Delta angle X (radians)*/
- float delta_angle_y; /*< Delta angle Y (radians)*/
- float delta_angle_z; /*< Delta angle X (radians)*/
- float delta_velocity_x; /*< Delta velocity X (m/s)*/
- float delta_velocity_y; /*< Delta velocity Y (m/s)*/
- float delta_velocity_z; /*< Delta velocity Z (m/s)*/
- float joint_roll; /*< Joint ROLL (radians)*/
- float joint_el; /*< Joint EL (radians)*/
- float joint_az; /*< Joint AZ (radians)*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
-}) mavlink_gimbal_report_t;
+ float delta_time; /*< [s] Time since last update.*/
+ float delta_angle_x; /*< [rad] Delta angle X.*/
+ float delta_angle_y; /*< [rad] Delta angle Y.*/
+ float delta_angle_z; /*< [rad] Delta angle X.*/
+ float delta_velocity_x; /*< [m/s] Delta velocity X.*/
+ float delta_velocity_y; /*< [m/s] Delta velocity Y.*/
+ float delta_velocity_z; /*< [m/s] Delta velocity Z.*/
+ float joint_roll; /*< [rad] Joint ROLL.*/
+ float joint_el; /*< [rad] Joint EL.*/
+ float joint_az; /*< [rad] Joint AZ.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+} mavlink_gimbal_report_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_LEN 42
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_MIN_LEN 42
@@ -74,18 +74,18 @@ typedef struct __mavlink_gimbal_report_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param delta_time Time since last update (seconds)
- * @param delta_angle_x Delta angle X (radians)
- * @param delta_angle_y Delta angle Y (radians)
- * @param delta_angle_z Delta angle X (radians)
- * @param delta_velocity_x Delta velocity X (m/s)
- * @param delta_velocity_y Delta velocity Y (m/s)
- * @param delta_velocity_z Delta velocity Z (m/s)
- * @param joint_roll Joint ROLL (radians)
- * @param joint_el Joint EL (radians)
- * @param joint_az Joint AZ (radians)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param delta_time [s] Time since last update.
+ * @param delta_angle_x [rad] Delta angle X.
+ * @param delta_angle_y [rad] Delta angle Y.
+ * @param delta_angle_z [rad] Delta angle X.
+ * @param delta_velocity_x [m/s] Delta velocity X.
+ * @param delta_velocity_y [m/s] Delta velocity Y.
+ * @param delta_velocity_z [m/s] Delta velocity Z.
+ * @param joint_roll [rad] Joint ROLL.
+ * @param joint_el [rad] Joint EL.
+ * @param joint_az [rad] Joint AZ.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gimbal_report_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -135,18 +135,18 @@ static inline uint16_t mavlink_msg_gimbal_report_pack(uint8_t system_id, uint8_t
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param delta_time Time since last update (seconds)
- * @param delta_angle_x Delta angle X (radians)
- * @param delta_angle_y Delta angle Y (radians)
- * @param delta_angle_z Delta angle X (radians)
- * @param delta_velocity_x Delta velocity X (m/s)
- * @param delta_velocity_y Delta velocity Y (m/s)
- * @param delta_velocity_z Delta velocity Z (m/s)
- * @param joint_roll Joint ROLL (radians)
- * @param joint_el Joint EL (radians)
- * @param joint_az Joint AZ (radians)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param delta_time [s] Time since last update.
+ * @param delta_angle_x [rad] Delta angle X.
+ * @param delta_angle_y [rad] Delta angle Y.
+ * @param delta_angle_z [rad] Delta angle X.
+ * @param delta_velocity_x [m/s] Delta velocity X.
+ * @param delta_velocity_y [m/s] Delta velocity Y.
+ * @param delta_velocity_z [m/s] Delta velocity Z.
+ * @param joint_roll [rad] Joint ROLL.
+ * @param joint_el [rad] Joint EL.
+ * @param joint_az [rad] Joint AZ.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gimbal_report_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -222,18 +222,18 @@ static inline uint16_t mavlink_msg_gimbal_report_encode_chan(uint8_t system_id, 
  * @brief Send a gimbal_report message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param delta_time Time since last update (seconds)
- * @param delta_angle_x Delta angle X (radians)
- * @param delta_angle_y Delta angle Y (radians)
- * @param delta_angle_z Delta angle X (radians)
- * @param delta_velocity_x Delta velocity X (m/s)
- * @param delta_velocity_y Delta velocity Y (m/s)
- * @param delta_velocity_z Delta velocity Z (m/s)
- * @param joint_roll Joint ROLL (radians)
- * @param joint_el Joint EL (radians)
- * @param joint_az Joint AZ (radians)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param delta_time [s] Time since last update.
+ * @param delta_angle_x [rad] Delta angle X.
+ * @param delta_angle_y [rad] Delta angle Y.
+ * @param delta_angle_z [rad] Delta angle X.
+ * @param delta_velocity_x [m/s] Delta velocity X.
+ * @param delta_velocity_y [m/s] Delta velocity Y.
+ * @param delta_velocity_z [m/s] Delta velocity Z.
+ * @param joint_roll [rad] Joint ROLL.
+ * @param joint_el [rad] Joint EL.
+ * @param joint_az [rad] Joint AZ.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -342,7 +342,7 @@ static inline void mavlink_msg_gimbal_report_send_buf(mavlink_message_t *msgbuf,
 /**
  * @brief Get field target_system from gimbal_report message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_gimbal_report_get_target_system(const mavlink_message_t* msg)
 {
@@ -352,7 +352,7 @@ static inline uint8_t mavlink_msg_gimbal_report_get_target_system(const mavlink_
 /**
  * @brief Get field target_component from gimbal_report message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_gimbal_report_get_target_component(const mavlink_message_t* msg)
 {
@@ -362,7 +362,7 @@ static inline uint8_t mavlink_msg_gimbal_report_get_target_component(const mavli
 /**
  * @brief Get field delta_time from gimbal_report message
  *
- * @return Time since last update (seconds)
+ * @return [s] Time since last update.
  */
 static inline float mavlink_msg_gimbal_report_get_delta_time(const mavlink_message_t* msg)
 {
@@ -372,7 +372,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_time(const mavlink_messa
 /**
  * @brief Get field delta_angle_x from gimbal_report message
  *
- * @return Delta angle X (radians)
+ * @return [rad] Delta angle X.
  */
 static inline float mavlink_msg_gimbal_report_get_delta_angle_x(const mavlink_message_t* msg)
 {
@@ -382,7 +382,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_angle_x(const mavlink_me
 /**
  * @brief Get field delta_angle_y from gimbal_report message
  *
- * @return Delta angle Y (radians)
+ * @return [rad] Delta angle Y.
  */
 static inline float mavlink_msg_gimbal_report_get_delta_angle_y(const mavlink_message_t* msg)
 {
@@ -392,7 +392,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_angle_y(const mavlink_me
 /**
  * @brief Get field delta_angle_z from gimbal_report message
  *
- * @return Delta angle X (radians)
+ * @return [rad] Delta angle X.
  */
 static inline float mavlink_msg_gimbal_report_get_delta_angle_z(const mavlink_message_t* msg)
 {
@@ -402,7 +402,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_angle_z(const mavlink_me
 /**
  * @brief Get field delta_velocity_x from gimbal_report message
  *
- * @return Delta velocity X (m/s)
+ * @return [m/s] Delta velocity X.
  */
 static inline float mavlink_msg_gimbal_report_get_delta_velocity_x(const mavlink_message_t* msg)
 {
@@ -412,7 +412,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_velocity_x(const mavlink
 /**
  * @brief Get field delta_velocity_y from gimbal_report message
  *
- * @return Delta velocity Y (m/s)
+ * @return [m/s] Delta velocity Y.
  */
 static inline float mavlink_msg_gimbal_report_get_delta_velocity_y(const mavlink_message_t* msg)
 {
@@ -422,7 +422,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_velocity_y(const mavlink
 /**
  * @brief Get field delta_velocity_z from gimbal_report message
  *
- * @return Delta velocity Z (m/s)
+ * @return [m/s] Delta velocity Z.
  */
 static inline float mavlink_msg_gimbal_report_get_delta_velocity_z(const mavlink_message_t* msg)
 {
@@ -432,7 +432,7 @@ static inline float mavlink_msg_gimbal_report_get_delta_velocity_z(const mavlink
 /**
  * @brief Get field joint_roll from gimbal_report message
  *
- * @return Joint ROLL (radians)
+ * @return [rad] Joint ROLL.
  */
 static inline float mavlink_msg_gimbal_report_get_joint_roll(const mavlink_message_t* msg)
 {
@@ -442,7 +442,7 @@ static inline float mavlink_msg_gimbal_report_get_joint_roll(const mavlink_messa
 /**
  * @brief Get field joint_el from gimbal_report message
  *
- * @return Joint EL (radians)
+ * @return [rad] Joint EL.
  */
 static inline float mavlink_msg_gimbal_report_get_joint_el(const mavlink_message_t* msg)
 {
@@ -452,7 +452,7 @@ static inline float mavlink_msg_gimbal_report_get_joint_el(const mavlink_message
 /**
  * @brief Get field joint_az from gimbal_report message
  *
- * @return Joint AZ (radians)
+ * @return [rad] Joint AZ.
  */
 static inline float mavlink_msg_gimbal_report_get_joint_az(const mavlink_message_t* msg)
 {

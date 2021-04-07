@@ -13,22 +13,23 @@ namespace msg {
  */
 struct SCALED_IMU2 : mavlink::Message {
     static constexpr msgid_t MSG_ID = 116;
-    static constexpr size_t LENGTH = 22;
+    static constexpr size_t LENGTH = 24;
     static constexpr size_t MIN_LENGTH = 22;
     static constexpr uint8_t CRC_EXTRA = 76;
     static constexpr auto NAME = "SCALED_IMU2";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    int16_t xacc; /*< X acceleration (mg) */
-    int16_t yacc; /*< Y acceleration (mg) */
-    int16_t zacc; /*< Z acceleration (mg) */
-    int16_t xgyro; /*< Angular speed around X axis (millirad /sec) */
-    int16_t ygyro; /*< Angular speed around Y axis (millirad /sec) */
-    int16_t zgyro; /*< Angular speed around Z axis (millirad /sec) */
-    int16_t xmag; /*< X Magnetic field (milli tesla) */
-    int16_t ymag; /*< Y Magnetic field (milli tesla) */
-    int16_t zmag; /*< Z Magnetic field (milli tesla) */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    int16_t xacc; /*< [mG] X acceleration */
+    int16_t yacc; /*< [mG] Y acceleration */
+    int16_t zacc; /*< [mG] Z acceleration */
+    int16_t xgyro; /*< [mrad/s] Angular speed around X axis */
+    int16_t ygyro; /*< [mrad/s] Angular speed around Y axis */
+    int16_t zgyro; /*< [mrad/s] Angular speed around Z axis */
+    int16_t xmag; /*< [mgauss] X Magnetic field */
+    int16_t ymag; /*< [mgauss] Y Magnetic field */
+    int16_t zmag; /*< [mgauss] Z Magnetic field */
+    int16_t temperature; /*< [cdegC] Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C). */
 
 
     inline std::string get_name(void) const override
@@ -56,6 +57,7 @@ struct SCALED_IMU2 : mavlink::Message {
         ss << "  xmag: " << xmag << std::endl;
         ss << "  ymag: " << ymag << std::endl;
         ss << "  zmag: " << zmag << std::endl;
+        ss << "  temperature: " << temperature << std::endl;
 
         return ss.str();
     }
@@ -74,6 +76,7 @@ struct SCALED_IMU2 : mavlink::Message {
         map << xmag;                          // offset: 16
         map << ymag;                          // offset: 18
         map << zmag;                          // offset: 20
+        map << temperature;                   // offset: 22
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -88,6 +91,7 @@ struct SCALED_IMU2 : mavlink::Message {
         map >> xmag;                          // offset: 16
         map >> ymag;                          // offset: 18
         map >> zmag;                          // offset: 20
+        map >> temperature;                   // offset: 22
     }
 };
 

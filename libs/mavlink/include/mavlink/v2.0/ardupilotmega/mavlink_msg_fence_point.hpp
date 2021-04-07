@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief FENCE_POINT message
  *
- * A fence point. Used to set a point when from GCS -> MAV. Also used to return a point from MAV -> GCS
+ * A fence point. Used to set a point when from GCS -> MAV. Also used to return a point from MAV -> GCS.
  */
 struct FENCE_POINT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 160;
@@ -19,12 +19,12 @@ struct FENCE_POINT : mavlink::Message {
     static constexpr auto NAME = "FENCE_POINT";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t idx; /*< point index (first point is 1, 0 is for return point) */
-    uint8_t count; /*< total number of points (for sanity checking) */
-    float lat; /*< Latitude of point */
-    float lng; /*< Longitude of point */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint8_t idx; /*<  Point index (first point is 1, 0 is for return point). */
+    uint8_t count; /*<  Total number of points (for sanity checking). */
+    float lat; /*< [deg] Latitude of point. */
+    float lng; /*< [deg] Longitude of point. */
 
 
     inline std::string get_name(void) const override

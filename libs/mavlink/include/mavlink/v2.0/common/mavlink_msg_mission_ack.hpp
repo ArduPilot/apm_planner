@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief MISSION_ACK message
  *
- * Ack message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).
+ * Acknowledgment message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).
  */
 struct MISSION_ACK : mavlink::Message {
     static constexpr msgid_t MSG_ID = 47;
@@ -19,10 +19,10 @@ struct MISSION_ACK : mavlink::Message {
     static constexpr auto NAME = "MISSION_ACK";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t type; /*< See MAV_MISSION_RESULT enum */
-    uint8_t mission_type; /*< Mission type, see MAV_MISSION_TYPE */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    uint8_t type; /*<  Mission result. */
+    uint8_t mission_type; /*<  Mission type. */
 
 
     inline std::string get_name(void) const override

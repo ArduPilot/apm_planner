@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DEBUG_VECT message
  *
- * 
+ * To debug something using a named 3D vector.
  */
 struct DEBUG_VECT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 250;
@@ -19,11 +19,11 @@ struct DEBUG_VECT : mavlink::Message {
     static constexpr auto NAME = "DEBUG_VECT";
 
 
-    std::array<char, 10> name; /*< Name */
-    uint64_t time_usec; /*< Timestamp */
-    float x; /*< x */
-    float y; /*< y */
-    float z; /*< z */
+    std::array<char, 10> name; /*<  Name */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    float x; /*<  x */
+    float y; /*<  y */
+    float z; /*<  z */
 
 
     inline std::string get_name(void) const override

@@ -19,9 +19,9 @@ struct MISSION_CLEAR_ALL : mavlink::Message {
     static constexpr auto NAME = "MISSION_CLEAR_ALL";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t mission_type; /*< Mission type, see MAV_MISSION_TYPE */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    uint8_t mission_type; /*<  Mission type. */
 
 
     inline std::string get_name(void) const override

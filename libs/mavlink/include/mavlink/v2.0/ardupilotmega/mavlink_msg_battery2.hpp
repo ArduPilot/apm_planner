@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief BATTERY2 message
  *
- * Deprecated. Use BATTERY_STATUS instead. 2nd Battery status
+ * 2nd Battery status
  */
 struct BATTERY2 : mavlink::Message {
     static constexpr msgid_t MSG_ID = 181;
@@ -19,8 +19,8 @@ struct BATTERY2 : mavlink::Message {
     static constexpr auto NAME = "BATTERY2";
 
 
-    uint16_t voltage; /*< voltage in millivolts */
-    int16_t current_battery; /*< Battery current, in centiamperes (1 = 10 milliampere), -1: autopilot does not measure the current */
+    uint16_t voltage; /*< [mV] Voltage. */
+    int16_t current_battery; /*< [cA] Battery current, -1: autopilot does not measure the current. */
 
 
     inline std::string get_name(void) const override

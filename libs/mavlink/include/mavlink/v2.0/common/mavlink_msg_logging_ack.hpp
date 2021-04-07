@@ -19,9 +19,9 @@ struct LOGGING_ACK : mavlink::Message {
     static constexpr auto NAME = "LOGGING_ACK";
 
 
-    uint8_t target_system; /*< system ID of the target */
-    uint8_t target_component; /*< component ID of the target */
-    uint16_t sequence; /*< sequence number (must match the one in LOGGING_DATA_ACKED) */
+    uint8_t target_system; /*<  system ID of the target */
+    uint8_t target_component; /*<  component ID of the target */
+    uint16_t sequence; /*<  sequence number (must match the one in LOGGING_DATA_ACKED) */
 
 
     inline std::string get_name(void) const override

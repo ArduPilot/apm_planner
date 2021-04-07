@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief COMMAND_ACK message
  *
- * Report status of a command. Includes feedback whether the command was executed.
+ * Report status of a command. Includes feedback whether the command was executed. The command microservice is documented at https://mavlink.io/en/services/command.html
  */
 struct COMMAND_ACK : mavlink::Message {
     static constexpr msgid_t MSG_ID = 77;
@@ -19,8 +19,8 @@ struct COMMAND_ACK : mavlink::Message {
     static constexpr auto NAME = "COMMAND_ACK";
 
 
-    uint16_t command; /*< Command ID, as defined by MAV_CMD enum. */
-    uint8_t result; /*< See MAV_RESULT enum */
+    uint16_t command; /*<  Command ID (of acknowledged command). */
+    uint8_t result; /*<  Result of command. */
 
 
     inline std::string get_name(void) const override

@@ -13,26 +13,30 @@ namespace msg {
  */
 struct MAG_CAL_REPORT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 192;
-    static constexpr size_t LENGTH = 44;
+    static constexpr size_t LENGTH = 54;
     static constexpr size_t MIN_LENGTH = 44;
     static constexpr uint8_t CRC_EXTRA = 36;
     static constexpr auto NAME = "MAG_CAL_REPORT";
 
 
-    uint8_t compass_id; /*< Compass being calibrated */
-    uint8_t cal_mask; /*< Bitmask of compasses being calibrated */
-    uint8_t cal_status; /*< Status (see MAG_CAL_STATUS enum) */
-    uint8_t autosaved; /*< 0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters */
-    float fitness; /*< RMS milligauss residuals */
-    float ofs_x; /*< X offset */
-    float ofs_y; /*< Y offset */
-    float ofs_z; /*< Z offset */
-    float diag_x; /*< X diagonal (matrix 11) */
-    float diag_y; /*< Y diagonal (matrix 22) */
-    float diag_z; /*< Z diagonal (matrix 33) */
-    float offdiag_x; /*< X off-diagonal (matrix 12 and 21) */
-    float offdiag_y; /*< Y off-diagonal (matrix 13 and 31) */
-    float offdiag_z; /*< Z off-diagonal (matrix 32 and 23) */
+    uint8_t compass_id; /*<  Compass being calibrated. */
+    uint8_t cal_mask; /*<  Bitmask of compasses being calibrated. */
+    uint8_t cal_status; /*<  Calibration Status. */
+    uint8_t autosaved; /*<  0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters. */
+    float fitness; /*< [mgauss] RMS milligauss residuals. */
+    float ofs_x; /*<  X offset. */
+    float ofs_y; /*<  Y offset. */
+    float ofs_z; /*<  Z offset. */
+    float diag_x; /*<  X diagonal (matrix 11). */
+    float diag_y; /*<  Y diagonal (matrix 22). */
+    float diag_z; /*<  Z diagonal (matrix 33). */
+    float offdiag_x; /*<  X off-diagonal (matrix 12 and 21). */
+    float offdiag_y; /*<  Y off-diagonal (matrix 13 and 31). */
+    float offdiag_z; /*<  Z off-diagonal (matrix 32 and 23). */
+    float orientation_confidence; /*<  Confidence in orientation (higher is better). */
+    uint8_t old_orientation; /*<  orientation before calibration. */
+    uint8_t new_orientation; /*<  orientation after calibration. */
+    float scale_factor; /*<  field radius correction factor */
 
 
     inline std::string get_name(void) const override
@@ -64,6 +68,10 @@ struct MAG_CAL_REPORT : mavlink::Message {
         ss << "  offdiag_x: " << offdiag_x << std::endl;
         ss << "  offdiag_y: " << offdiag_y << std::endl;
         ss << "  offdiag_z: " << offdiag_z << std::endl;
+        ss << "  orientation_confidence: " << orientation_confidence << std::endl;
+        ss << "  old_orientation: " << +old_orientation << std::endl;
+        ss << "  new_orientation: " << +new_orientation << std::endl;
+        ss << "  scale_factor: " << scale_factor << std::endl;
 
         return ss.str();
     }
@@ -86,6 +94,10 @@ struct MAG_CAL_REPORT : mavlink::Message {
         map << cal_mask;                      // offset: 41
         map << cal_status;                    // offset: 42
         map << autosaved;                     // offset: 43
+        map << orientation_confidence;        // offset: 44
+        map << old_orientation;               // offset: 48
+        map << new_orientation;               // offset: 49
+        map << scale_factor;                  // offset: 50
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -104,6 +116,10 @@ struct MAG_CAL_REPORT : mavlink::Message {
         map >> cal_mask;                      // offset: 41
         map >> cal_status;                    // offset: 42
         map >> autosaved;                     // offset: 43
+        map >> orientation_confidence;        // offset: 44
+        map >> old_orientation;               // offset: 48
+        map >> new_orientation;               // offset: 49
+        map >> scale_factor;                  // offset: 50
     }
 };
 

@@ -28,7 +28,21 @@
 #define MAVLINK_COMMAND_24BIT 1
 #endif
 
+// gcc version 9 brings a lot of new warnings. We supress them here for the mavlink
+// library as it is not "our" code
+#if defined(__GNUC__) && (__GNUC__ > 8)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Waddress-of-packed-member" // Suppress lots of warnings
+#endif
+
 #include "version.h"
 #include "ardupilotmega.h"
+
+#if defined(__GNUC__) && (__GNUC__ > 8)
+    #pragma GCC diagnostic pop
+#endif
+
+
+
 
 #endif // MAVLINK_H

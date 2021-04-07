@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief SET_HOME_POSITION message
  *
- * The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitely set by the operator before or after. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.
+ * The position the system will return to and land on. The position is set automatically by the system during the takeoff in case it was not explicitly set by the operator before or after. The global and local positions encode the position in the respective coordinate frames, while the q parameter encodes the orientation of the surface. Under normal conditions it describes the heading and terrain slope, which can be used by the aircraft to adjust the approach. The approach 3D vector describes the point to which the system should fly in normal flight mode and then perform a landing sequence along the vector.
  */
 struct SET_HOME_POSITION : mavlink::Message {
     static constexpr msgid_t MSG_ID = 243;
@@ -19,18 +19,18 @@ struct SET_HOME_POSITION : mavlink::Message {
     static constexpr auto NAME = "SET_HOME_POSITION";
 
 
-    uint8_t target_system; /*< System ID. */
-    int32_t latitude; /*< Latitude (WGS84), in degrees * 1E7 */
-    int32_t longitude; /*< Longitude (WGS84, in degrees * 1E7 */
-    int32_t altitude; /*< Altitude (AMSL), in meters * 1000 (positive for up) */
-    float x; /*< Local X position of this position in the local coordinate frame */
-    float y; /*< Local Y position of this position in the local coordinate frame */
-    float z; /*< Local Z position of this position in the local coordinate frame */
-    std::array<float, 4> q; /*< World to surface normal and heading transformation of the takeoff position. Used to indicate the heading and slope of the ground */
-    float approach_x; /*< Local X position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone. */
-    float approach_y; /*< Local Y position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone. */
-    float approach_z; /*< Local Z position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone. */
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
+    uint8_t target_system; /*<  System ID. */
+    int32_t latitude; /*< [degE7] Latitude (WGS84) */
+    int32_t longitude; /*< [degE7] Longitude (WGS84) */
+    int32_t altitude; /*< [mm] Altitude (MSL). Positive for up. */
+    float x; /*< [m] Local X position of this position in the local coordinate frame */
+    float y; /*< [m] Local Y position of this position in the local coordinate frame */
+    float z; /*< [m] Local Z position of this position in the local coordinate frame */
+    std::array<float, 4> q; /*<  World to surface normal and heading transformation of the takeoff position. Used to indicate the heading and slope of the ground */
+    float approach_x; /*< [m] Local X position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone. */
+    float approach_y; /*< [m] Local Y position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone. */
+    float approach_z; /*< [m] Local Z position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
 
 
     inline std::string get_name(void) const override

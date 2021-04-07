@@ -19,12 +19,12 @@ struct GPS_STATUS : mavlink::Message {
     static constexpr auto NAME = "GPS_STATUS";
 
 
-    uint8_t satellites_visible; /*< Number of satellites visible */
-    std::array<uint8_t, 20> satellite_prn; /*< Global satellite ID */
-    std::array<uint8_t, 20> satellite_used; /*< 0: Satellite not used, 1: used for localization */
-    std::array<uint8_t, 20> satellite_elevation; /*< Elevation (0: right on top of receiver, 90: on the horizon) of satellite */
-    std::array<uint8_t, 20> satellite_azimuth; /*< Direction of satellite, 0: 0 deg, 255: 360 deg. */
-    std::array<uint8_t, 20> satellite_snr; /*< Signal to noise ratio of satellite */
+    uint8_t satellites_visible; /*<  Number of satellites visible */
+    std::array<uint8_t, 20> satellite_prn; /*<  Global satellite ID */
+    std::array<uint8_t, 20> satellite_used; /*<  0: Satellite not used, 1: used for localization */
+    std::array<uint8_t, 20> satellite_elevation; /*< [deg] Elevation (0: right on top of receiver, 90: on the horizon) of satellite */
+    std::array<uint8_t, 20> satellite_azimuth; /*< [deg] Direction of satellite, 0: 0 deg, 255: 360 deg. */
+    std::array<uint8_t, 20> satellite_snr; /*< [dB] Signal to noise ratio of satellite */
 
 
     inline std::string get_name(void) const override

@@ -3,15 +3,15 @@
 
 #define MAVLINK_MSG_ID_COMPASSMOT_STATUS 177
 
-MAVPACKED(
+
 typedef struct __mavlink_compassmot_status_t {
- float current; /*< current (Ampere)*/
- float CompensationX; /*< Motor Compensation X*/
- float CompensationY; /*< Motor Compensation Y*/
- float CompensationZ; /*< Motor Compensation Z*/
- uint16_t throttle; /*< throttle (percent*10)*/
- uint16_t interference; /*< interference (percent)*/
-}) mavlink_compassmot_status_t;
+ float current; /*< [A] Current.*/
+ float CompensationX; /*<  Motor Compensation X.*/
+ float CompensationY; /*<  Motor Compensation Y.*/
+ float CompensationZ; /*<  Motor Compensation Z.*/
+ uint16_t throttle; /*< [d%] Throttle.*/
+ uint16_t interference; /*< [%] Interference.*/
+} mavlink_compassmot_status_t;
 
 #define MAVLINK_MSG_ID_COMPASSMOT_STATUS_LEN 20
 #define MAVLINK_MSG_ID_COMPASSMOT_STATUS_MIN_LEN 20
@@ -56,12 +56,12 @@ typedef struct __mavlink_compassmot_status_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param throttle throttle (percent*10)
- * @param current current (Ampere)
- * @param interference interference (percent)
- * @param CompensationX Motor Compensation X
- * @param CompensationY Motor Compensation Y
- * @param CompensationZ Motor Compensation Z
+ * @param throttle [d%] Throttle.
+ * @param current [A] Current.
+ * @param interference [%] Interference.
+ * @param CompensationX  Motor Compensation X.
+ * @param CompensationY  Motor Compensation Y.
+ * @param CompensationZ  Motor Compensation Z.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_compassmot_status_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -99,12 +99,12 @@ static inline uint16_t mavlink_msg_compassmot_status_pack(uint8_t system_id, uin
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param throttle throttle (percent*10)
- * @param current current (Ampere)
- * @param interference interference (percent)
- * @param CompensationX Motor Compensation X
- * @param CompensationY Motor Compensation Y
- * @param CompensationZ Motor Compensation Z
+ * @param throttle [d%] Throttle.
+ * @param current [A] Current.
+ * @param interference [%] Interference.
+ * @param CompensationX  Motor Compensation X.
+ * @param CompensationY  Motor Compensation Y.
+ * @param CompensationZ  Motor Compensation Z.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_compassmot_status_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -168,12 +168,12 @@ static inline uint16_t mavlink_msg_compassmot_status_encode_chan(uint8_t system_
  * @brief Send a compassmot_status message
  * @param chan MAVLink channel to send the message
  *
- * @param throttle throttle (percent*10)
- * @param current current (Ampere)
- * @param interference interference (percent)
- * @param CompensationX Motor Compensation X
- * @param CompensationY Motor Compensation Y
- * @param CompensationZ Motor Compensation Z
+ * @param throttle [d%] Throttle.
+ * @param current [A] Current.
+ * @param interference [%] Interference.
+ * @param CompensationX  Motor Compensation X.
+ * @param CompensationY  Motor Compensation Y.
+ * @param CompensationZ  Motor Compensation Z.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -258,7 +258,7 @@ static inline void mavlink_msg_compassmot_status_send_buf(mavlink_message_t *msg
 /**
  * @brief Get field throttle from compassmot_status message
  *
- * @return throttle (percent*10)
+ * @return [d%] Throttle.
  */
 static inline uint16_t mavlink_msg_compassmot_status_get_throttle(const mavlink_message_t* msg)
 {
@@ -268,7 +268,7 @@ static inline uint16_t mavlink_msg_compassmot_status_get_throttle(const mavlink_
 /**
  * @brief Get field current from compassmot_status message
  *
- * @return current (Ampere)
+ * @return [A] Current.
  */
 static inline float mavlink_msg_compassmot_status_get_current(const mavlink_message_t* msg)
 {
@@ -278,7 +278,7 @@ static inline float mavlink_msg_compassmot_status_get_current(const mavlink_mess
 /**
  * @brief Get field interference from compassmot_status message
  *
- * @return interference (percent)
+ * @return [%] Interference.
  */
 static inline uint16_t mavlink_msg_compassmot_status_get_interference(const mavlink_message_t* msg)
 {
@@ -288,7 +288,7 @@ static inline uint16_t mavlink_msg_compassmot_status_get_interference(const mavl
 /**
  * @brief Get field CompensationX from compassmot_status message
  *
- * @return Motor Compensation X
+ * @return  Motor Compensation X.
  */
 static inline float mavlink_msg_compassmot_status_get_CompensationX(const mavlink_message_t* msg)
 {
@@ -298,7 +298,7 @@ static inline float mavlink_msg_compassmot_status_get_CompensationX(const mavlin
 /**
  * @brief Get field CompensationY from compassmot_status message
  *
- * @return Motor Compensation Y
+ * @return  Motor Compensation Y.
  */
 static inline float mavlink_msg_compassmot_status_get_CompensationY(const mavlink_message_t* msg)
 {
@@ -308,7 +308,7 @@ static inline float mavlink_msg_compassmot_status_get_CompensationY(const mavlin
 /**
  * @brief Get field CompensationZ from compassmot_status message
  *
- * @return Motor Compensation Z
+ * @return  Motor Compensation Z.
  */
 static inline float mavlink_msg_compassmot_status_get_CompensationZ(const mavlink_message_t* msg)
 {

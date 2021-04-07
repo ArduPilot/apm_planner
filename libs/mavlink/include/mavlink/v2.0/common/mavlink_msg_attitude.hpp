@@ -19,13 +19,13 @@ struct ATTITUDE : mavlink::Message {
     static constexpr auto NAME = "ATTITUDE";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    float roll; /*< Roll angle (rad, -pi..+pi) */
-    float pitch; /*< Pitch angle (rad, -pi..+pi) */
-    float yaw; /*< Yaw angle (rad, -pi..+pi) */
-    float rollspeed; /*< Roll angular speed (rad/s) */
-    float pitchspeed; /*< Pitch angular speed (rad/s) */
-    float yawspeed; /*< Yaw angular speed (rad/s) */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    float roll; /*< [rad] Roll angle (-pi..+pi) */
+    float pitch; /*< [rad] Pitch angle (-pi..+pi) */
+    float yaw; /*< [rad] Yaw angle (-pi..+pi) */
+    float rollspeed; /*< [rad/s] Roll angular speed */
+    float pitchspeed; /*< [rad/s] Pitch angular speed */
+    float yawspeed; /*< [rad/s] Yaw angular speed */
 
 
     inline std::string get_name(void) const override

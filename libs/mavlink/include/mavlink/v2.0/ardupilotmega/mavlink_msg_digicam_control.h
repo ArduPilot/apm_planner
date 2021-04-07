@@ -3,19 +3,19 @@
 
 #define MAVLINK_MSG_ID_DIGICAM_CONTROL 155
 
-MAVPACKED(
+
 typedef struct __mavlink_digicam_control_t {
- float extra_value; /*< Correspondent value to given extra_param*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t session; /*< 0: stop, 1: start or keep it up //Session control e.g. show/hide lens*/
- uint8_t zoom_pos; /*< 1 to N //Zoom's absolute position (0 means ignore)*/
- int8_t zoom_step; /*< -100 to 100 //Zooming step value to offset zoom from the current position*/
- uint8_t focus_lock; /*< 0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus*/
- uint8_t shot; /*< 0: ignore, 1: shot or start filming*/
- uint8_t command_id; /*< Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once*/
- uint8_t extra_param; /*< Extra parameters enumeration (0 means ignore)*/
-}) mavlink_digicam_control_t;
+ float extra_value; /*<  Correspondent value to given extra_param.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t session; /*<  0: stop, 1: start or keep it up //Session control e.g. show/hide lens.*/
+ uint8_t zoom_pos; /*<  1 to N //Zoom's absolute position (0 means ignore).*/
+ int8_t zoom_step; /*<  -100 to 100 //Zooming step value to offset zoom from the current position.*/
+ uint8_t focus_lock; /*<  0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus.*/
+ uint8_t shot; /*<  0: ignore, 1: shot or start filming.*/
+ uint8_t command_id; /*<  Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once.*/
+ uint8_t extra_param; /*<  Extra parameters enumeration (0 means ignore).*/
+} mavlink_digicam_control_t;
 
 #define MAVLINK_MSG_ID_DIGICAM_CONTROL_LEN 13
 #define MAVLINK_MSG_ID_DIGICAM_CONTROL_MIN_LEN 13
@@ -68,16 +68,16 @@ typedef struct __mavlink_digicam_control_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param session 0: stop, 1: start or keep it up //Session control e.g. show/hide lens
- * @param zoom_pos 1 to N //Zoom's absolute position (0 means ignore)
- * @param zoom_step -100 to 100 //Zooming step value to offset zoom from the current position
- * @param focus_lock 0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus
- * @param shot 0: ignore, 1: shot or start filming
- * @param command_id Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once
- * @param extra_param Extra parameters enumeration (0 means ignore)
- * @param extra_value Correspondent value to given extra_param
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param session  0: stop, 1: start or keep it up //Session control e.g. show/hide lens.
+ * @param zoom_pos  1 to N //Zoom's absolute position (0 means ignore).
+ * @param zoom_step  -100 to 100 //Zooming step value to offset zoom from the current position.
+ * @param focus_lock  0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus.
+ * @param shot  0: ignore, 1: shot or start filming.
+ * @param command_id  Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once.
+ * @param extra_param  Extra parameters enumeration (0 means ignore).
+ * @param extra_value  Correspondent value to given extra_param.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_digicam_control_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -123,16 +123,16 @@ static inline uint16_t mavlink_msg_digicam_control_pack(uint8_t system_id, uint8
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param session 0: stop, 1: start or keep it up //Session control e.g. show/hide lens
- * @param zoom_pos 1 to N //Zoom's absolute position (0 means ignore)
- * @param zoom_step -100 to 100 //Zooming step value to offset zoom from the current position
- * @param focus_lock 0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus
- * @param shot 0: ignore, 1: shot or start filming
- * @param command_id Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once
- * @param extra_param Extra parameters enumeration (0 means ignore)
- * @param extra_value Correspondent value to given extra_param
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param session  0: stop, 1: start or keep it up //Session control e.g. show/hide lens.
+ * @param zoom_pos  1 to N //Zoom's absolute position (0 means ignore).
+ * @param zoom_step  -100 to 100 //Zooming step value to offset zoom from the current position.
+ * @param focus_lock  0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus.
+ * @param shot  0: ignore, 1: shot or start filming.
+ * @param command_id  Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once.
+ * @param extra_param  Extra parameters enumeration (0 means ignore).
+ * @param extra_value  Correspondent value to given extra_param.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_digicam_control_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -204,16 +204,16 @@ static inline uint16_t mavlink_msg_digicam_control_encode_chan(uint8_t system_id
  * @brief Send a digicam_control message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param session 0: stop, 1: start or keep it up //Session control e.g. show/hide lens
- * @param zoom_pos 1 to N //Zoom's absolute position (0 means ignore)
- * @param zoom_step -100 to 100 //Zooming step value to offset zoom from the current position
- * @param focus_lock 0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus
- * @param shot 0: ignore, 1: shot or start filming
- * @param command_id Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once
- * @param extra_param Extra parameters enumeration (0 means ignore)
- * @param extra_value Correspondent value to given extra_param
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param session  0: stop, 1: start or keep it up //Session control e.g. show/hide lens.
+ * @param zoom_pos  1 to N //Zoom's absolute position (0 means ignore).
+ * @param zoom_step  -100 to 100 //Zooming step value to offset zoom from the current position.
+ * @param focus_lock  0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus.
+ * @param shot  0: ignore, 1: shot or start filming.
+ * @param command_id  Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once.
+ * @param extra_param  Extra parameters enumeration (0 means ignore).
+ * @param extra_value  Correspondent value to given extra_param.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -314,7 +314,7 @@ static inline void mavlink_msg_digicam_control_send_buf(mavlink_message_t *msgbu
 /**
  * @brief Get field target_system from digicam_control message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_digicam_control_get_target_system(const mavlink_message_t* msg)
 {
@@ -324,7 +324,7 @@ static inline uint8_t mavlink_msg_digicam_control_get_target_system(const mavlin
 /**
  * @brief Get field target_component from digicam_control message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_digicam_control_get_target_component(const mavlink_message_t* msg)
 {
@@ -334,7 +334,7 @@ static inline uint8_t mavlink_msg_digicam_control_get_target_component(const mav
 /**
  * @brief Get field session from digicam_control message
  *
- * @return 0: stop, 1: start or keep it up //Session control e.g. show/hide lens
+ * @return  0: stop, 1: start or keep it up //Session control e.g. show/hide lens.
  */
 static inline uint8_t mavlink_msg_digicam_control_get_session(const mavlink_message_t* msg)
 {
@@ -344,7 +344,7 @@ static inline uint8_t mavlink_msg_digicam_control_get_session(const mavlink_mess
 /**
  * @brief Get field zoom_pos from digicam_control message
  *
- * @return 1 to N //Zoom's absolute position (0 means ignore)
+ * @return  1 to N //Zoom's absolute position (0 means ignore).
  */
 static inline uint8_t mavlink_msg_digicam_control_get_zoom_pos(const mavlink_message_t* msg)
 {
@@ -354,7 +354,7 @@ static inline uint8_t mavlink_msg_digicam_control_get_zoom_pos(const mavlink_mes
 /**
  * @brief Get field zoom_step from digicam_control message
  *
- * @return -100 to 100 //Zooming step value to offset zoom from the current position
+ * @return  -100 to 100 //Zooming step value to offset zoom from the current position.
  */
 static inline int8_t mavlink_msg_digicam_control_get_zoom_step(const mavlink_message_t* msg)
 {
@@ -364,7 +364,7 @@ static inline int8_t mavlink_msg_digicam_control_get_zoom_step(const mavlink_mes
 /**
  * @brief Get field focus_lock from digicam_control message
  *
- * @return 0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus
+ * @return  0: unlock focus or keep unlocked, 1: lock focus or keep locked, 3: re-lock focus.
  */
 static inline uint8_t mavlink_msg_digicam_control_get_focus_lock(const mavlink_message_t* msg)
 {
@@ -374,7 +374,7 @@ static inline uint8_t mavlink_msg_digicam_control_get_focus_lock(const mavlink_m
 /**
  * @brief Get field shot from digicam_control message
  *
- * @return 0: ignore, 1: shot or start filming
+ * @return  0: ignore, 1: shot or start filming.
  */
 static inline uint8_t mavlink_msg_digicam_control_get_shot(const mavlink_message_t* msg)
 {
@@ -384,7 +384,7 @@ static inline uint8_t mavlink_msg_digicam_control_get_shot(const mavlink_message
 /**
  * @brief Get field command_id from digicam_control message
  *
- * @return Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once
+ * @return  Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once.
  */
 static inline uint8_t mavlink_msg_digicam_control_get_command_id(const mavlink_message_t* msg)
 {
@@ -394,7 +394,7 @@ static inline uint8_t mavlink_msg_digicam_control_get_command_id(const mavlink_m
 /**
  * @brief Get field extra_param from digicam_control message
  *
- * @return Extra parameters enumeration (0 means ignore)
+ * @return  Extra parameters enumeration (0 means ignore).
  */
 static inline uint8_t mavlink_msg_digicam_control_get_extra_param(const mavlink_message_t* msg)
 {
@@ -404,7 +404,7 @@ static inline uint8_t mavlink_msg_digicam_control_get_extra_param(const mavlink_
 /**
  * @brief Get field extra_value from digicam_control message
  *
- * @return Correspondent value to given extra_param
+ * @return  Correspondent value to given extra_param.
  */
 static inline float mavlink_msg_digicam_control_get_extra_value(const mavlink_message_t* msg)
 {

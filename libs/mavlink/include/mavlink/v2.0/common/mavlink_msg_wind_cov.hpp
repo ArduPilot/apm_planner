@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief WIND_COV message
  *
- * 
+ * Wind covariance estimate from vehicle.
  */
 struct WIND_COV : mavlink::Message {
     static constexpr msgid_t MSG_ID = 231;
@@ -19,15 +19,15 @@ struct WIND_COV : mavlink::Message {
     static constexpr auto NAME = "WIND_COV";
 
 
-    uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch) */
-    float wind_x; /*< Wind in X (NED) direction in m/s */
-    float wind_y; /*< Wind in Y (NED) direction in m/s */
-    float wind_z; /*< Wind in Z (NED) direction in m/s */
-    float var_horiz; /*< Variability of the wind in XY. RMS of a 1 Hz lowpassed wind estimate. */
-    float var_vert; /*< Variability of the wind in Z. RMS of a 1 Hz lowpassed wind estimate. */
-    float wind_alt; /*< AMSL altitude (m) this measurement was taken at */
-    float horiz_accuracy; /*< Horizontal speed 1-STD accuracy */
-    float vert_accuracy; /*< Vertical speed 1-STD accuracy */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    float wind_x; /*< [m/s] Wind in X (NED) direction */
+    float wind_y; /*< [m/s] Wind in Y (NED) direction */
+    float wind_z; /*< [m/s] Wind in Z (NED) direction */
+    float var_horiz; /*< [m/s] Variability of the wind in XY. RMS of a 1 Hz lowpassed wind estimate. */
+    float var_vert; /*< [m/s] Variability of the wind in Z. RMS of a 1 Hz lowpassed wind estimate. */
+    float wind_alt; /*< [m] Altitude (MSL) that this measurement was taken at */
+    float horiz_accuracy; /*< [m] Horizontal speed 1-STD accuracy */
+    float vert_accuracy; /*< [m] Vertical speed 1-STD accuracy */
 
 
     inline std::string get_name(void) const override

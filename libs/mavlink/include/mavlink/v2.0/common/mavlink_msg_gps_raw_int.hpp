@@ -14,27 +14,28 @@ namespace msg {
  */
 struct GPS_RAW_INT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 24;
-    static constexpr size_t LENGTH = 50;
+    static constexpr size_t LENGTH = 52;
     static constexpr size_t MIN_LENGTH = 30;
     static constexpr uint8_t CRC_EXTRA = 24;
     static constexpr auto NAME = "GPS_RAW_INT";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
-    uint8_t fix_type; /*< See the GPS_FIX_TYPE enum. */
-    int32_t lat; /*< Latitude (WGS84, EGM96 ellipsoid), in degrees * 1E7 */
-    int32_t lon; /*< Longitude (WGS84, EGM96 ellipsoid), in degrees * 1E7 */
-    int32_t alt; /*< Altitude (AMSL, NOT WGS84), in meters * 1000 (positive for up). Note that virtually all GPS modules provide the AMSL altitude in addition to the WGS84 altitude. */
-    uint16_t eph; /*< GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX */
-    uint16_t epv; /*< GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX */
-    uint16_t vel; /*< GPS ground speed (m/s * 100). If unknown, set to: UINT16_MAX */
-    uint16_t cog; /*< Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX */
-    uint8_t satellites_visible; /*< Number of satellites visible. If unknown, set to 255 */
-    int32_t alt_ellipsoid; /*< Altitude (above WGS84, EGM96 ellipsoid), in meters * 1000 (positive for up). */
-    uint32_t h_acc; /*< Position uncertainty in meters * 1000 (positive for up). */
-    uint32_t v_acc; /*< Altitude uncertainty in meters * 1000 (positive for up). */
-    uint32_t vel_acc; /*< Speed uncertainty in meters * 1000 (positive for up). */
-    uint32_t hdg_acc; /*< Heading / track uncertainty in degrees * 1e5. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint8_t fix_type; /*<  GPS fix type. */
+    int32_t lat; /*< [degE7] Latitude (WGS84, EGM96 ellipsoid) */
+    int32_t lon; /*< [degE7] Longitude (WGS84, EGM96 ellipsoid) */
+    int32_t alt; /*< [mm] Altitude (MSL). Positive for up. Note that virtually all GPS modules provide the MSL altitude in addition to the WGS84 altitude. */
+    uint16_t eph; /*<  GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX */
+    uint16_t epv; /*<  GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX */
+    uint16_t vel; /*< [cm/s] GPS ground speed. If unknown, set to: UINT16_MAX */
+    uint16_t cog; /*< [cdeg] Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX */
+    uint8_t satellites_visible; /*<  Number of satellites visible. If unknown, set to 255 */
+    int32_t alt_ellipsoid; /*< [mm] Altitude (above WGS84, EGM96 ellipsoid). Positive for up. */
+    uint32_t h_acc; /*< [mm] Position uncertainty. Positive for up. */
+    uint32_t v_acc; /*< [mm] Altitude uncertainty. Positive for up. */
+    uint32_t vel_acc; /*< [mm] Speed uncertainty. Positive for up. */
+    uint32_t hdg_acc; /*< [degE5] Heading / track uncertainty */
+    uint16_t yaw; /*< [cdeg] Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use 65535 if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north. */
 
 
     inline std::string get_name(void) const override
@@ -67,6 +68,7 @@ struct GPS_RAW_INT : mavlink::Message {
         ss << "  v_acc: " << v_acc << std::endl;
         ss << "  vel_acc: " << vel_acc << std::endl;
         ss << "  hdg_acc: " << hdg_acc << std::endl;
+        ss << "  yaw: " << yaw << std::endl;
 
         return ss.str();
     }
@@ -90,6 +92,7 @@ struct GPS_RAW_INT : mavlink::Message {
         map << v_acc;                         // offset: 38
         map << vel_acc;                       // offset: 42
         map << hdg_acc;                       // offset: 46
+        map << yaw;                           // offset: 50
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -109,6 +112,7 @@ struct GPS_RAW_INT : mavlink::Message {
         map >> v_acc;                         // offset: 38
         map >> vel_acc;                       // offset: 42
         map >> hdg_acc;                       // offset: 46
+        map >> yaw;                           // offset: 50
     }
 };
 

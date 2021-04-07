@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief HIL_STATE message
  *
- * DEPRECATED PACKET! Suffers from missing airspeed fields and singularities due to Euler angles. Please use HIL_STATE_QUATERNION instead. Sent from simulation to autopilot. This packet is useful for high throughput applications such as hardware in the loop simulations.
+ * Sent from simulation to autopilot. This packet is useful for high throughput applications such as hardware in the loop simulations.
  */
 struct HIL_STATE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 90;
@@ -19,22 +19,22 @@ struct HIL_STATE : mavlink::Message {
     static constexpr auto NAME = "HIL_STATE";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
-    float roll; /*< Roll angle (rad) */
-    float pitch; /*< Pitch angle (rad) */
-    float yaw; /*< Yaw angle (rad) */
-    float rollspeed; /*< Body frame roll / phi angular speed (rad/s) */
-    float pitchspeed; /*< Body frame pitch / theta angular speed (rad/s) */
-    float yawspeed; /*< Body frame yaw / psi angular speed (rad/s) */
-    int32_t lat; /*< Latitude, expressed as degrees * 1E7 */
-    int32_t lon; /*< Longitude, expressed as degrees * 1E7 */
-    int32_t alt; /*< Altitude in meters, expressed as * 1000 (millimeters) */
-    int16_t vx; /*< Ground X Speed (Latitude), expressed as m/s * 100 */
-    int16_t vy; /*< Ground Y Speed (Longitude), expressed as m/s * 100 */
-    int16_t vz; /*< Ground Z Speed (Altitude), expressed as m/s * 100 */
-    int16_t xacc; /*< X acceleration (mg) */
-    int16_t yacc; /*< Y acceleration (mg) */
-    int16_t zacc; /*< Z acceleration (mg) */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    float roll; /*< [rad] Roll angle */
+    float pitch; /*< [rad] Pitch angle */
+    float yaw; /*< [rad] Yaw angle */
+    float rollspeed; /*< [rad/s] Body frame roll / phi angular speed */
+    float pitchspeed; /*< [rad/s] Body frame pitch / theta angular speed */
+    float yawspeed; /*< [rad/s] Body frame yaw / psi angular speed */
+    int32_t lat; /*< [degE7] Latitude */
+    int32_t lon; /*< [degE7] Longitude */
+    int32_t alt; /*< [mm] Altitude */
+    int16_t vx; /*< [cm/s] Ground X Speed (Latitude) */
+    int16_t vy; /*< [cm/s] Ground Y Speed (Longitude) */
+    int16_t vz; /*< [cm/s] Ground Z Speed (Altitude) */
+    int16_t xacc; /*< [mG] X acceleration */
+    int16_t yacc; /*< [mG] Y acceleration */
+    int16_t zacc; /*< [mG] Z acceleration */
 
 
     inline std::string get_name(void) const override

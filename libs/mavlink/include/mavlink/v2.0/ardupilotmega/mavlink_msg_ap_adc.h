@@ -3,15 +3,15 @@
 
 #define MAVLINK_MSG_ID_AP_ADC 153
 
-MAVPACKED(
+
 typedef struct __mavlink_ap_adc_t {
- uint16_t adc1; /*< ADC output 1*/
- uint16_t adc2; /*< ADC output 2*/
- uint16_t adc3; /*< ADC output 3*/
- uint16_t adc4; /*< ADC output 4*/
- uint16_t adc5; /*< ADC output 5*/
- uint16_t adc6; /*< ADC output 6*/
-}) mavlink_ap_adc_t;
+ uint16_t adc1; /*<  ADC output 1.*/
+ uint16_t adc2; /*<  ADC output 2.*/
+ uint16_t adc3; /*<  ADC output 3.*/
+ uint16_t adc4; /*<  ADC output 4.*/
+ uint16_t adc5; /*<  ADC output 5.*/
+ uint16_t adc6; /*<  ADC output 6.*/
+} mavlink_ap_adc_t;
 
 #define MAVLINK_MSG_ID_AP_ADC_LEN 12
 #define MAVLINK_MSG_ID_AP_ADC_MIN_LEN 12
@@ -56,12 +56,12 @@ typedef struct __mavlink_ap_adc_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param adc1 ADC output 1
- * @param adc2 ADC output 2
- * @param adc3 ADC output 3
- * @param adc4 ADC output 4
- * @param adc5 ADC output 5
- * @param adc6 ADC output 6
+ * @param adc1  ADC output 1.
+ * @param adc2  ADC output 2.
+ * @param adc3  ADC output 3.
+ * @param adc4  ADC output 4.
+ * @param adc5  ADC output 5.
+ * @param adc6  ADC output 6.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ap_adc_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -99,12 +99,12 @@ static inline uint16_t mavlink_msg_ap_adc_pack(uint8_t system_id, uint8_t compon
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param adc1 ADC output 1
- * @param adc2 ADC output 2
- * @param adc3 ADC output 3
- * @param adc4 ADC output 4
- * @param adc5 ADC output 5
- * @param adc6 ADC output 6
+ * @param adc1  ADC output 1.
+ * @param adc2  ADC output 2.
+ * @param adc3  ADC output 3.
+ * @param adc4  ADC output 4.
+ * @param adc5  ADC output 5.
+ * @param adc6  ADC output 6.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ap_adc_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -168,12 +168,12 @@ static inline uint16_t mavlink_msg_ap_adc_encode_chan(uint8_t system_id, uint8_t
  * @brief Send a ap_adc message
  * @param chan MAVLink channel to send the message
  *
- * @param adc1 ADC output 1
- * @param adc2 ADC output 2
- * @param adc3 ADC output 3
- * @param adc4 ADC output 4
- * @param adc5 ADC output 5
- * @param adc6 ADC output 6
+ * @param adc1  ADC output 1.
+ * @param adc2  ADC output 2.
+ * @param adc3  ADC output 3.
+ * @param adc4  ADC output 4.
+ * @param adc5  ADC output 5.
+ * @param adc6  ADC output 6.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -258,7 +258,7 @@ static inline void mavlink_msg_ap_adc_send_buf(mavlink_message_t *msgbuf, mavlin
 /**
  * @brief Get field adc1 from ap_adc message
  *
- * @return ADC output 1
+ * @return  ADC output 1.
  */
 static inline uint16_t mavlink_msg_ap_adc_get_adc1(const mavlink_message_t* msg)
 {
@@ -268,7 +268,7 @@ static inline uint16_t mavlink_msg_ap_adc_get_adc1(const mavlink_message_t* msg)
 /**
  * @brief Get field adc2 from ap_adc message
  *
- * @return ADC output 2
+ * @return  ADC output 2.
  */
 static inline uint16_t mavlink_msg_ap_adc_get_adc2(const mavlink_message_t* msg)
 {
@@ -278,7 +278,7 @@ static inline uint16_t mavlink_msg_ap_adc_get_adc2(const mavlink_message_t* msg)
 /**
  * @brief Get field adc3 from ap_adc message
  *
- * @return ADC output 3
+ * @return  ADC output 3.
  */
 static inline uint16_t mavlink_msg_ap_adc_get_adc3(const mavlink_message_t* msg)
 {
@@ -288,7 +288,7 @@ static inline uint16_t mavlink_msg_ap_adc_get_adc3(const mavlink_message_t* msg)
 /**
  * @brief Get field adc4 from ap_adc message
  *
- * @return ADC output 4
+ * @return  ADC output 4.
  */
 static inline uint16_t mavlink_msg_ap_adc_get_adc4(const mavlink_message_t* msg)
 {
@@ -298,7 +298,7 @@ static inline uint16_t mavlink_msg_ap_adc_get_adc4(const mavlink_message_t* msg)
 /**
  * @brief Get field adc5 from ap_adc message
  *
- * @return ADC output 5
+ * @return  ADC output 5.
  */
 static inline uint16_t mavlink_msg_ap_adc_get_adc5(const mavlink_message_t* msg)
 {
@@ -308,7 +308,7 @@ static inline uint16_t mavlink_msg_ap_adc_get_adc5(const mavlink_message_t* msg)
 /**
  * @brief Get field adc6 from ap_adc message
  *
- * @return ADC output 6
+ * @return  ADC output 6.
  */
 static inline uint16_t mavlink_msg_ap_adc_get_adc6(const mavlink_message_t* msg)
 {

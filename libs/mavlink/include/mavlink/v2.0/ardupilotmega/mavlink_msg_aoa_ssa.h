@@ -3,12 +3,12 @@
 
 #define MAVLINK_MSG_ID_AOA_SSA 11020
 
-MAVPACKED(
+
 typedef struct __mavlink_aoa_ssa_t {
- uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch)*/
- float AOA; /*< Angle of Attack (degrees)*/
- float SSA; /*< Side Slip Angle (degrees)*/
-}) mavlink_aoa_ssa_t;
+ uint64_t time_usec; /*< [us] Timestamp (since boot or Unix epoch).*/
+ float AOA; /*< [deg] Angle of Attack.*/
+ float SSA; /*< [deg] Side Slip Angle.*/
+} mavlink_aoa_ssa_t;
 
 #define MAVLINK_MSG_ID_AOA_SSA_LEN 16
 #define MAVLINK_MSG_ID_AOA_SSA_MIN_LEN 16
@@ -47,9 +47,9 @@ typedef struct __mavlink_aoa_ssa_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec Timestamp (micros since boot or Unix epoch)
- * @param AOA Angle of Attack (degrees)
- * @param SSA Side Slip Angle (degrees)
+ * @param time_usec [us] Timestamp (since boot or Unix epoch).
+ * @param AOA [deg] Angle of Attack.
+ * @param SSA [deg] Side Slip Angle.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_aoa_ssa_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -81,9 +81,9 @@ static inline uint16_t mavlink_msg_aoa_ssa_pack(uint8_t system_id, uint8_t compo
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec Timestamp (micros since boot or Unix epoch)
- * @param AOA Angle of Attack (degrees)
- * @param SSA Side Slip Angle (degrees)
+ * @param time_usec [us] Timestamp (since boot or Unix epoch).
+ * @param AOA [deg] Angle of Attack.
+ * @param SSA [deg] Side Slip Angle.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_aoa_ssa_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -141,9 +141,9 @@ static inline uint16_t mavlink_msg_aoa_ssa_encode_chan(uint8_t system_id, uint8_
  * @brief Send a aoa_ssa message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec Timestamp (micros since boot or Unix epoch)
- * @param AOA Angle of Attack (degrees)
- * @param SSA Side Slip Angle (degrees)
+ * @param time_usec [us] Timestamp (since boot or Unix epoch).
+ * @param AOA [deg] Angle of Attack.
+ * @param SSA [deg] Side Slip Angle.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -216,7 +216,7 @@ static inline void mavlink_msg_aoa_ssa_send_buf(mavlink_message_t *msgbuf, mavli
 /**
  * @brief Get field time_usec from aoa_ssa message
  *
- * @return Timestamp (micros since boot or Unix epoch)
+ * @return [us] Timestamp (since boot or Unix epoch).
  */
 static inline uint64_t mavlink_msg_aoa_ssa_get_time_usec(const mavlink_message_t* msg)
 {
@@ -226,7 +226,7 @@ static inline uint64_t mavlink_msg_aoa_ssa_get_time_usec(const mavlink_message_t
 /**
  * @brief Get field AOA from aoa_ssa message
  *
- * @return Angle of Attack (degrees)
+ * @return [deg] Angle of Attack.
  */
 static inline float mavlink_msg_aoa_ssa_get_AOA(const mavlink_message_t* msg)
 {
@@ -236,7 +236,7 @@ static inline float mavlink_msg_aoa_ssa_get_AOA(const mavlink_message_t* msg)
 /**
  * @brief Get field SSA from aoa_ssa message
  *
- * @return Side Slip Angle (degrees)
+ * @return [deg] Side Slip Angle.
  */
 static inline float mavlink_msg_aoa_ssa_get_SSA(const mavlink_message_t* msg)
 {

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DEVICE_OP_READ_REPLY message
  *
- * Read registers reply
+ * Read registers reply.
  */
 struct DEVICE_OP_READ_REPLY : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11001;
@@ -19,11 +19,11 @@ struct DEVICE_OP_READ_REPLY : mavlink::Message {
     static constexpr auto NAME = "DEVICE_OP_READ_REPLY";
 
 
-    uint32_t request_id; /*< request ID - copied from request */
-    uint8_t result; /*< 0 for success, anything else is failure code */
-    uint8_t regstart; /*< starting register */
-    uint8_t count; /*< count of bytes read */
-    std::array<uint8_t, 128> data; /*< reply data */
+    uint32_t request_id; /*<  Request ID - copied from request. */
+    uint8_t result; /*<  0 for success, anything else is failure code. */
+    uint8_t regstart; /*<  Starting register. */
+    uint8_t count; /*<  Count of bytes read. */
+    std::array<uint8_t, 128> data; /*<  Reply data. */
 
 
     inline std::string get_name(void) const override

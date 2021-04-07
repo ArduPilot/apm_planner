@@ -19,13 +19,13 @@ struct LOCAL_POSITION_NED : mavlink::Message {
     static constexpr auto NAME = "LOCAL_POSITION_NED";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    float x; /*< X Position */
-    float y; /*< Y Position */
-    float z; /*< Z Position */
-    float vx; /*< X Speed */
-    float vy; /*< Y Speed */
-    float vz; /*< Z Speed */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    float x; /*< [m] X Position */
+    float y; /*< [m] Y Position */
+    float z; /*< [m] Z Position */
+    float vx; /*< [m/s] X Speed */
+    float vy; /*< [m/s] Y Speed */
+    float vz; /*< [m/s] Z Speed */
 
 
     inline std::string get_name(void) const override

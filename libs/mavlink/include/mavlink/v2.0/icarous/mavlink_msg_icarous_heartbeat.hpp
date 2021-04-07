@@ -19,7 +19,7 @@ struct ICAROUS_HEARTBEAT : mavlink::Message {
     static constexpr auto NAME = "ICAROUS_HEARTBEAT";
 
 
-    uint8_t status; /*< See the FMS_STATE enum. */
+    uint8_t status; /*<  See the FMS_STATE enum. */
 
 
     inline std::string get_name(void) const override

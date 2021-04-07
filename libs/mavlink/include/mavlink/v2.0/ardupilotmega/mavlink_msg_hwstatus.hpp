@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief HWSTATUS message
  *
- * Status of key hardware
+ * Status of key hardware.
  */
 struct HWSTATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 165;
@@ -19,8 +19,8 @@ struct HWSTATUS : mavlink::Message {
     static constexpr auto NAME = "HWSTATUS";
 
 
-    uint16_t Vcc; /*< board voltage (mV) */
-    uint8_t I2Cerr; /*< I2C error count */
+    uint16_t Vcc; /*< [mV] Board voltage. */
+    uint8_t I2Cerr; /*<  I2C error count. */
 
 
     inline std::string get_name(void) const override

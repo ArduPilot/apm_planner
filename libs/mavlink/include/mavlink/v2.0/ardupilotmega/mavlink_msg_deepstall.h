@@ -3,19 +3,19 @@
 
 #define MAVLINK_MSG_ID_DEEPSTALL 195
 
-MAVPACKED(
+
 typedef struct __mavlink_deepstall_t {
- int32_t landing_lat; /*< Landing latitude (deg * 1E7)*/
- int32_t landing_lon; /*< Landing longitude (deg * 1E7)*/
- int32_t path_lat; /*< Final heading start point, latitude (deg * 1E7)*/
- int32_t path_lon; /*< Final heading start point, longitude (deg * 1E7)*/
- int32_t arc_entry_lat; /*< Arc entry point, latitude (deg * 1E7)*/
- int32_t arc_entry_lon; /*< Arc entry point, longitude (deg * 1E7)*/
- float altitude; /*< Altitude (meters)*/
- float expected_travel_distance; /*< Distance the aircraft expects to travel during the deepstall*/
- float cross_track_error; /*< Deepstall cross track error in meters (only valid when in DEEPSTALL_STAGE_LAND)*/
- uint8_t stage; /*< Deepstall stage, see enum MAV_DEEPSTALL_STAGE*/
-}) mavlink_deepstall_t;
+ int32_t landing_lat; /*< [degE7] Landing latitude.*/
+ int32_t landing_lon; /*< [degE7] Landing longitude.*/
+ int32_t path_lat; /*< [degE7] Final heading start point, latitude.*/
+ int32_t path_lon; /*< [degE7] Final heading start point, longitude.*/
+ int32_t arc_entry_lat; /*< [degE7] Arc entry point, latitude.*/
+ int32_t arc_entry_lon; /*< [degE7] Arc entry point, longitude.*/
+ float altitude; /*< [m] Altitude.*/
+ float expected_travel_distance; /*< [m] Distance the aircraft expects to travel during the deepstall.*/
+ float cross_track_error; /*< [m] Deepstall cross track error (only valid when in DEEPSTALL_STAGE_LAND).*/
+ uint8_t stage; /*<  Deepstall stage.*/
+} mavlink_deepstall_t;
 
 #define MAVLINK_MSG_ID_DEEPSTALL_LEN 37
 #define MAVLINK_MSG_ID_DEEPSTALL_MIN_LEN 37
@@ -68,16 +68,16 @@ typedef struct __mavlink_deepstall_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param landing_lat Landing latitude (deg * 1E7)
- * @param landing_lon Landing longitude (deg * 1E7)
- * @param path_lat Final heading start point, latitude (deg * 1E7)
- * @param path_lon Final heading start point, longitude (deg * 1E7)
- * @param arc_entry_lat Arc entry point, latitude (deg * 1E7)
- * @param arc_entry_lon Arc entry point, longitude (deg * 1E7)
- * @param altitude Altitude (meters)
- * @param expected_travel_distance Distance the aircraft expects to travel during the deepstall
- * @param cross_track_error Deepstall cross track error in meters (only valid when in DEEPSTALL_STAGE_LAND)
- * @param stage Deepstall stage, see enum MAV_DEEPSTALL_STAGE
+ * @param landing_lat [degE7] Landing latitude.
+ * @param landing_lon [degE7] Landing longitude.
+ * @param path_lat [degE7] Final heading start point, latitude.
+ * @param path_lon [degE7] Final heading start point, longitude.
+ * @param arc_entry_lat [degE7] Arc entry point, latitude.
+ * @param arc_entry_lon [degE7] Arc entry point, longitude.
+ * @param altitude [m] Altitude.
+ * @param expected_travel_distance [m] Distance the aircraft expects to travel during the deepstall.
+ * @param cross_track_error [m] Deepstall cross track error (only valid when in DEEPSTALL_STAGE_LAND).
+ * @param stage  Deepstall stage.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_deepstall_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -123,16 +123,16 @@ static inline uint16_t mavlink_msg_deepstall_pack(uint8_t system_id, uint8_t com
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param landing_lat Landing latitude (deg * 1E7)
- * @param landing_lon Landing longitude (deg * 1E7)
- * @param path_lat Final heading start point, latitude (deg * 1E7)
- * @param path_lon Final heading start point, longitude (deg * 1E7)
- * @param arc_entry_lat Arc entry point, latitude (deg * 1E7)
- * @param arc_entry_lon Arc entry point, longitude (deg * 1E7)
- * @param altitude Altitude (meters)
- * @param expected_travel_distance Distance the aircraft expects to travel during the deepstall
- * @param cross_track_error Deepstall cross track error in meters (only valid when in DEEPSTALL_STAGE_LAND)
- * @param stage Deepstall stage, see enum MAV_DEEPSTALL_STAGE
+ * @param landing_lat [degE7] Landing latitude.
+ * @param landing_lon [degE7] Landing longitude.
+ * @param path_lat [degE7] Final heading start point, latitude.
+ * @param path_lon [degE7] Final heading start point, longitude.
+ * @param arc_entry_lat [degE7] Arc entry point, latitude.
+ * @param arc_entry_lon [degE7] Arc entry point, longitude.
+ * @param altitude [m] Altitude.
+ * @param expected_travel_distance [m] Distance the aircraft expects to travel during the deepstall.
+ * @param cross_track_error [m] Deepstall cross track error (only valid when in DEEPSTALL_STAGE_LAND).
+ * @param stage  Deepstall stage.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_deepstall_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -204,16 +204,16 @@ static inline uint16_t mavlink_msg_deepstall_encode_chan(uint8_t system_id, uint
  * @brief Send a deepstall message
  * @param chan MAVLink channel to send the message
  *
- * @param landing_lat Landing latitude (deg * 1E7)
- * @param landing_lon Landing longitude (deg * 1E7)
- * @param path_lat Final heading start point, latitude (deg * 1E7)
- * @param path_lon Final heading start point, longitude (deg * 1E7)
- * @param arc_entry_lat Arc entry point, latitude (deg * 1E7)
- * @param arc_entry_lon Arc entry point, longitude (deg * 1E7)
- * @param altitude Altitude (meters)
- * @param expected_travel_distance Distance the aircraft expects to travel during the deepstall
- * @param cross_track_error Deepstall cross track error in meters (only valid when in DEEPSTALL_STAGE_LAND)
- * @param stage Deepstall stage, see enum MAV_DEEPSTALL_STAGE
+ * @param landing_lat [degE7] Landing latitude.
+ * @param landing_lon [degE7] Landing longitude.
+ * @param path_lat [degE7] Final heading start point, latitude.
+ * @param path_lon [degE7] Final heading start point, longitude.
+ * @param arc_entry_lat [degE7] Arc entry point, latitude.
+ * @param arc_entry_lon [degE7] Arc entry point, longitude.
+ * @param altitude [m] Altitude.
+ * @param expected_travel_distance [m] Distance the aircraft expects to travel during the deepstall.
+ * @param cross_track_error [m] Deepstall cross track error (only valid when in DEEPSTALL_STAGE_LAND).
+ * @param stage  Deepstall stage.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -314,7 +314,7 @@ static inline void mavlink_msg_deepstall_send_buf(mavlink_message_t *msgbuf, mav
 /**
  * @brief Get field landing_lat from deepstall message
  *
- * @return Landing latitude (deg * 1E7)
+ * @return [degE7] Landing latitude.
  */
 static inline int32_t mavlink_msg_deepstall_get_landing_lat(const mavlink_message_t* msg)
 {
@@ -324,7 +324,7 @@ static inline int32_t mavlink_msg_deepstall_get_landing_lat(const mavlink_messag
 /**
  * @brief Get field landing_lon from deepstall message
  *
- * @return Landing longitude (deg * 1E7)
+ * @return [degE7] Landing longitude.
  */
 static inline int32_t mavlink_msg_deepstall_get_landing_lon(const mavlink_message_t* msg)
 {
@@ -334,7 +334,7 @@ static inline int32_t mavlink_msg_deepstall_get_landing_lon(const mavlink_messag
 /**
  * @brief Get field path_lat from deepstall message
  *
- * @return Final heading start point, latitude (deg * 1E7)
+ * @return [degE7] Final heading start point, latitude.
  */
 static inline int32_t mavlink_msg_deepstall_get_path_lat(const mavlink_message_t* msg)
 {
@@ -344,7 +344,7 @@ static inline int32_t mavlink_msg_deepstall_get_path_lat(const mavlink_message_t
 /**
  * @brief Get field path_lon from deepstall message
  *
- * @return Final heading start point, longitude (deg * 1E7)
+ * @return [degE7] Final heading start point, longitude.
  */
 static inline int32_t mavlink_msg_deepstall_get_path_lon(const mavlink_message_t* msg)
 {
@@ -354,7 +354,7 @@ static inline int32_t mavlink_msg_deepstall_get_path_lon(const mavlink_message_t
 /**
  * @brief Get field arc_entry_lat from deepstall message
  *
- * @return Arc entry point, latitude (deg * 1E7)
+ * @return [degE7] Arc entry point, latitude.
  */
 static inline int32_t mavlink_msg_deepstall_get_arc_entry_lat(const mavlink_message_t* msg)
 {
@@ -364,7 +364,7 @@ static inline int32_t mavlink_msg_deepstall_get_arc_entry_lat(const mavlink_mess
 /**
  * @brief Get field arc_entry_lon from deepstall message
  *
- * @return Arc entry point, longitude (deg * 1E7)
+ * @return [degE7] Arc entry point, longitude.
  */
 static inline int32_t mavlink_msg_deepstall_get_arc_entry_lon(const mavlink_message_t* msg)
 {
@@ -374,7 +374,7 @@ static inline int32_t mavlink_msg_deepstall_get_arc_entry_lon(const mavlink_mess
 /**
  * @brief Get field altitude from deepstall message
  *
- * @return Altitude (meters)
+ * @return [m] Altitude.
  */
 static inline float mavlink_msg_deepstall_get_altitude(const mavlink_message_t* msg)
 {
@@ -384,7 +384,7 @@ static inline float mavlink_msg_deepstall_get_altitude(const mavlink_message_t* 
 /**
  * @brief Get field expected_travel_distance from deepstall message
  *
- * @return Distance the aircraft expects to travel during the deepstall
+ * @return [m] Distance the aircraft expects to travel during the deepstall.
  */
 static inline float mavlink_msg_deepstall_get_expected_travel_distance(const mavlink_message_t* msg)
 {
@@ -394,7 +394,7 @@ static inline float mavlink_msg_deepstall_get_expected_travel_distance(const mav
 /**
  * @brief Get field cross_track_error from deepstall message
  *
- * @return Deepstall cross track error in meters (only valid when in DEEPSTALL_STAGE_LAND)
+ * @return [m] Deepstall cross track error (only valid when in DEEPSTALL_STAGE_LAND).
  */
 static inline float mavlink_msg_deepstall_get_cross_track_error(const mavlink_message_t* msg)
 {
@@ -404,7 +404,7 @@ static inline float mavlink_msg_deepstall_get_cross_track_error(const mavlink_me
 /**
  * @brief Get field stage from deepstall message
  *
- * @return Deepstall stage, see enum MAV_DEEPSTALL_STAGE
+ * @return  Deepstall stage.
  */
 static inline uint8_t mavlink_msg_deepstall_get_stage(const mavlink_message_t* msg)
 {

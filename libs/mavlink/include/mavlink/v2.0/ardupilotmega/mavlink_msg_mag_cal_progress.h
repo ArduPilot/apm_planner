@@ -3,18 +3,18 @@
 
 #define MAVLINK_MSG_ID_MAG_CAL_PROGRESS 191
 
-MAVPACKED(
+
 typedef struct __mavlink_mag_cal_progress_t {
- float direction_x; /*< Body frame direction vector for display*/
- float direction_y; /*< Body frame direction vector for display*/
- float direction_z; /*< Body frame direction vector for display*/
- uint8_t compass_id; /*< Compass being calibrated*/
- uint8_t cal_mask; /*< Bitmask of compasses being calibrated*/
- uint8_t cal_status; /*< Status (see MAG_CAL_STATUS enum)*/
- uint8_t attempt; /*< Attempt number*/
- uint8_t completion_pct; /*< Completion percentage*/
- uint8_t completion_mask[10]; /*< Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid)*/
-}) mavlink_mag_cal_progress_t;
+ float direction_x; /*<  Body frame direction vector for display.*/
+ float direction_y; /*<  Body frame direction vector for display.*/
+ float direction_z; /*<  Body frame direction vector for display.*/
+ uint8_t compass_id; /*<  Compass being calibrated.*/
+ uint8_t cal_mask; /*<  Bitmask of compasses being calibrated.*/
+ uint8_t cal_status; /*<  Calibration Status.*/
+ uint8_t attempt; /*<  Attempt number.*/
+ uint8_t completion_pct; /*< [%] Completion percentage.*/
+ uint8_t completion_mask[10]; /*<  Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid).*/
+} mavlink_mag_cal_progress_t;
 
 #define MAVLINK_MSG_ID_MAG_CAL_PROGRESS_LEN 27
 #define MAVLINK_MSG_ID_MAG_CAL_PROGRESS_MIN_LEN 27
@@ -65,15 +65,15 @@ typedef struct __mavlink_mag_cal_progress_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param compass_id Compass being calibrated
- * @param cal_mask Bitmask of compasses being calibrated
- * @param cal_status Status (see MAG_CAL_STATUS enum)
- * @param attempt Attempt number
- * @param completion_pct Completion percentage
- * @param completion_mask Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid)
- * @param direction_x Body frame direction vector for display
- * @param direction_y Body frame direction vector for display
- * @param direction_z Body frame direction vector for display
+ * @param compass_id  Compass being calibrated.
+ * @param cal_mask  Bitmask of compasses being calibrated.
+ * @param cal_status  Calibration Status.
+ * @param attempt  Attempt number.
+ * @param completion_pct [%] Completion percentage.
+ * @param completion_mask  Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid).
+ * @param direction_x  Body frame direction vector for display.
+ * @param direction_y  Body frame direction vector for display.
+ * @param direction_z  Body frame direction vector for display.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mag_cal_progress_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -115,15 +115,15 @@ static inline uint16_t mavlink_msg_mag_cal_progress_pack(uint8_t system_id, uint
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param compass_id Compass being calibrated
- * @param cal_mask Bitmask of compasses being calibrated
- * @param cal_status Status (see MAG_CAL_STATUS enum)
- * @param attempt Attempt number
- * @param completion_pct Completion percentage
- * @param completion_mask Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid)
- * @param direction_x Body frame direction vector for display
- * @param direction_y Body frame direction vector for display
- * @param direction_z Body frame direction vector for display
+ * @param compass_id  Compass being calibrated.
+ * @param cal_mask  Bitmask of compasses being calibrated.
+ * @param cal_status  Calibration Status.
+ * @param attempt  Attempt number.
+ * @param completion_pct [%] Completion percentage.
+ * @param completion_mask  Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid).
+ * @param direction_x  Body frame direction vector for display.
+ * @param direction_y  Body frame direction vector for display.
+ * @param direction_z  Body frame direction vector for display.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mag_cal_progress_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -191,15 +191,15 @@ static inline uint16_t mavlink_msg_mag_cal_progress_encode_chan(uint8_t system_i
  * @brief Send a mag_cal_progress message
  * @param chan MAVLink channel to send the message
  *
- * @param compass_id Compass being calibrated
- * @param cal_mask Bitmask of compasses being calibrated
- * @param cal_status Status (see MAG_CAL_STATUS enum)
- * @param attempt Attempt number
- * @param completion_pct Completion percentage
- * @param completion_mask Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid)
- * @param direction_x Body frame direction vector for display
- * @param direction_y Body frame direction vector for display
- * @param direction_z Body frame direction vector for display
+ * @param compass_id  Compass being calibrated.
+ * @param cal_mask  Bitmask of compasses being calibrated.
+ * @param cal_status  Calibration Status.
+ * @param attempt  Attempt number.
+ * @param completion_pct [%] Completion percentage.
+ * @param completion_mask  Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid).
+ * @param direction_x  Body frame direction vector for display.
+ * @param direction_y  Body frame direction vector for display.
+ * @param direction_z  Body frame direction vector for display.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -292,7 +292,7 @@ static inline void mavlink_msg_mag_cal_progress_send_buf(mavlink_message_t *msgb
 /**
  * @brief Get field compass_id from mag_cal_progress message
  *
- * @return Compass being calibrated
+ * @return  Compass being calibrated.
  */
 static inline uint8_t mavlink_msg_mag_cal_progress_get_compass_id(const mavlink_message_t* msg)
 {
@@ -302,7 +302,7 @@ static inline uint8_t mavlink_msg_mag_cal_progress_get_compass_id(const mavlink_
 /**
  * @brief Get field cal_mask from mag_cal_progress message
  *
- * @return Bitmask of compasses being calibrated
+ * @return  Bitmask of compasses being calibrated.
  */
 static inline uint8_t mavlink_msg_mag_cal_progress_get_cal_mask(const mavlink_message_t* msg)
 {
@@ -312,7 +312,7 @@ static inline uint8_t mavlink_msg_mag_cal_progress_get_cal_mask(const mavlink_me
 /**
  * @brief Get field cal_status from mag_cal_progress message
  *
- * @return Status (see MAG_CAL_STATUS enum)
+ * @return  Calibration Status.
  */
 static inline uint8_t mavlink_msg_mag_cal_progress_get_cal_status(const mavlink_message_t* msg)
 {
@@ -322,7 +322,7 @@ static inline uint8_t mavlink_msg_mag_cal_progress_get_cal_status(const mavlink_
 /**
  * @brief Get field attempt from mag_cal_progress message
  *
- * @return Attempt number
+ * @return  Attempt number.
  */
 static inline uint8_t mavlink_msg_mag_cal_progress_get_attempt(const mavlink_message_t* msg)
 {
@@ -332,7 +332,7 @@ static inline uint8_t mavlink_msg_mag_cal_progress_get_attempt(const mavlink_mes
 /**
  * @brief Get field completion_pct from mag_cal_progress message
  *
- * @return Completion percentage
+ * @return [%] Completion percentage.
  */
 static inline uint8_t mavlink_msg_mag_cal_progress_get_completion_pct(const mavlink_message_t* msg)
 {
@@ -342,7 +342,7 @@ static inline uint8_t mavlink_msg_mag_cal_progress_get_completion_pct(const mavl
 /**
  * @brief Get field completion_mask from mag_cal_progress message
  *
- * @return Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid)
+ * @return  Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid).
  */
 static inline uint16_t mavlink_msg_mag_cal_progress_get_completion_mask(const mavlink_message_t* msg, uint8_t *completion_mask)
 {
@@ -352,7 +352,7 @@ static inline uint16_t mavlink_msg_mag_cal_progress_get_completion_mask(const ma
 /**
  * @brief Get field direction_x from mag_cal_progress message
  *
- * @return Body frame direction vector for display
+ * @return  Body frame direction vector for display.
  */
 static inline float mavlink_msg_mag_cal_progress_get_direction_x(const mavlink_message_t* msg)
 {
@@ -362,7 +362,7 @@ static inline float mavlink_msg_mag_cal_progress_get_direction_x(const mavlink_m
 /**
  * @brief Get field direction_y from mag_cal_progress message
  *
- * @return Body frame direction vector for display
+ * @return  Body frame direction vector for display.
  */
 static inline float mavlink_msg_mag_cal_progress_get_direction_y(const mavlink_message_t* msg)
 {
@@ -372,7 +372,7 @@ static inline float mavlink_msg_mag_cal_progress_get_direction_y(const mavlink_m
 /**
  * @brief Get field direction_z from mag_cal_progress message
  *
- * @return Body frame direction vector for display
+ * @return  Body frame direction vector for display.
  */
 static inline float mavlink_msg_mag_cal_progress_get_direction_z(const mavlink_message_t* msg)
 {

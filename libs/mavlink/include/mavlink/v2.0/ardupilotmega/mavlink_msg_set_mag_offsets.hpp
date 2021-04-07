@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief SET_MAG_OFFSETS message
  *
- * Deprecated. Use MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS instead. Set the magnetometer offsets
+ * Set the magnetometer offsets
  */
 struct SET_MAG_OFFSETS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 151;
@@ -19,11 +19,11 @@ struct SET_MAG_OFFSETS : mavlink::Message {
     static constexpr auto NAME = "SET_MAG_OFFSETS";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    int16_t mag_ofs_x; /*< magnetometer X offset */
-    int16_t mag_ofs_y; /*< magnetometer Y offset */
-    int16_t mag_ofs_z; /*< magnetometer Z offset */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    int16_t mag_ofs_x; /*<  Magnetometer X offset. */
+    int16_t mag_ofs_y; /*<  Magnetometer Y offset. */
+    int16_t mag_ofs_z; /*<  Magnetometer Z offset. */
 
 
     inline std::string get_name(void) const override

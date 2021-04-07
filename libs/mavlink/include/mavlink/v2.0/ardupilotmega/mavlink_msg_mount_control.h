@@ -3,15 +3,15 @@
 
 #define MAVLINK_MSG_ID_MOUNT_CONTROL 157
 
-MAVPACKED(
+
 typedef struct __mavlink_mount_control_t {
- int32_t input_a; /*< pitch(deg*100) or lat, depending on mount mode*/
- int32_t input_b; /*< roll(deg*100) or lon depending on mount mode*/
- int32_t input_c; /*< yaw(deg*100) or alt (in cm) depending on mount mode*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t save_position; /*< if "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING)*/
-}) mavlink_mount_control_t;
+ int32_t input_a; /*<  Pitch (centi-degrees) or lat (degE7), depending on mount mode.*/
+ int32_t input_b; /*<  Roll (centi-degrees) or lon (degE7) depending on mount mode.*/
+ int32_t input_c; /*<  Yaw (centi-degrees) or alt (cm) depending on mount mode.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t save_position; /*<  If "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING).*/
+} mavlink_mount_control_t;
 
 #define MAVLINK_MSG_ID_MOUNT_CONTROL_LEN 15
 #define MAVLINK_MSG_ID_MOUNT_CONTROL_MIN_LEN 15
@@ -56,12 +56,12 @@ typedef struct __mavlink_mount_control_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param input_a pitch(deg*100) or lat, depending on mount mode
- * @param input_b roll(deg*100) or lon depending on mount mode
- * @param input_c yaw(deg*100) or alt (in cm) depending on mount mode
- * @param save_position if "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param input_a  Pitch (centi-degrees) or lat (degE7), depending on mount mode.
+ * @param input_b  Roll (centi-degrees) or lon (degE7) depending on mount mode.
+ * @param input_c  Yaw (centi-degrees) or alt (cm) depending on mount mode.
+ * @param save_position  If "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mount_control_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -99,12 +99,12 @@ static inline uint16_t mavlink_msg_mount_control_pack(uint8_t system_id, uint8_t
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param input_a pitch(deg*100) or lat, depending on mount mode
- * @param input_b roll(deg*100) or lon depending on mount mode
- * @param input_c yaw(deg*100) or alt (in cm) depending on mount mode
- * @param save_position if "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param input_a  Pitch (centi-degrees) or lat (degE7), depending on mount mode.
+ * @param input_b  Roll (centi-degrees) or lon (degE7) depending on mount mode.
+ * @param input_c  Yaw (centi-degrees) or alt (cm) depending on mount mode.
+ * @param save_position  If "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mount_control_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -168,12 +168,12 @@ static inline uint16_t mavlink_msg_mount_control_encode_chan(uint8_t system_id, 
  * @brief Send a mount_control message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param input_a pitch(deg*100) or lat, depending on mount mode
- * @param input_b roll(deg*100) or lon depending on mount mode
- * @param input_c yaw(deg*100) or alt (in cm) depending on mount mode
- * @param save_position if "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param input_a  Pitch (centi-degrees) or lat (degE7), depending on mount mode.
+ * @param input_b  Roll (centi-degrees) or lon (degE7) depending on mount mode.
+ * @param input_c  Yaw (centi-degrees) or alt (cm) depending on mount mode.
+ * @param save_position  If "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING).
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -258,7 +258,7 @@ static inline void mavlink_msg_mount_control_send_buf(mavlink_message_t *msgbuf,
 /**
  * @brief Get field target_system from mount_control message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_mount_control_get_target_system(const mavlink_message_t* msg)
 {
@@ -268,7 +268,7 @@ static inline uint8_t mavlink_msg_mount_control_get_target_system(const mavlink_
 /**
  * @brief Get field target_component from mount_control message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_mount_control_get_target_component(const mavlink_message_t* msg)
 {
@@ -278,7 +278,7 @@ static inline uint8_t mavlink_msg_mount_control_get_target_component(const mavli
 /**
  * @brief Get field input_a from mount_control message
  *
- * @return pitch(deg*100) or lat, depending on mount mode
+ * @return  Pitch (centi-degrees) or lat (degE7), depending on mount mode.
  */
 static inline int32_t mavlink_msg_mount_control_get_input_a(const mavlink_message_t* msg)
 {
@@ -288,7 +288,7 @@ static inline int32_t mavlink_msg_mount_control_get_input_a(const mavlink_messag
 /**
  * @brief Get field input_b from mount_control message
  *
- * @return roll(deg*100) or lon depending on mount mode
+ * @return  Roll (centi-degrees) or lon (degE7) depending on mount mode.
  */
 static inline int32_t mavlink_msg_mount_control_get_input_b(const mavlink_message_t* msg)
 {
@@ -298,7 +298,7 @@ static inline int32_t mavlink_msg_mount_control_get_input_b(const mavlink_messag
 /**
  * @brief Get field input_c from mount_control message
  *
- * @return yaw(deg*100) or alt (in cm) depending on mount mode
+ * @return  Yaw (centi-degrees) or alt (cm) depending on mount mode.
  */
 static inline int32_t mavlink_msg_mount_control_get_input_c(const mavlink_message_t* msg)
 {
@@ -308,7 +308,7 @@ static inline int32_t mavlink_msg_mount_control_get_input_c(const mavlink_messag
 /**
  * @brief Get field save_position from mount_control message
  *
- * @return if "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING)
+ * @return  If "1" it will save current trimmed position on EEPROM (just valid for NEUTRAL and LANDING).
  */
 static inline uint8_t mavlink_msg_mount_control_get_save_position(const mavlink_message_t* msg)
 {

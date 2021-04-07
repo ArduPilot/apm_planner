@@ -19,18 +19,18 @@ struct LOCAL_POSITION_NED_COV : mavlink::Message {
     static constexpr auto NAME = "LOCAL_POSITION_NED_COV";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since system boot or since UNIX epoch) */
-    uint8_t estimator_type; /*< Class id of the estimator this estimate originated from. */
-    float x; /*< X Position */
-    float y; /*< Y Position */
-    float z; /*< Z Position */
-    float vx; /*< X Speed (m/s) */
-    float vy; /*< Y Speed (m/s) */
-    float vz; /*< Z Speed (m/s) */
-    float ax; /*< X Acceleration (m/s^2) */
-    float ay; /*< Y Acceleration (m/s^2) */
-    float az; /*< Z Acceleration (m/s^2) */
-    std::array<float, 45> covariance; /*< Covariance matrix upper right triangular (first nine entries are the first ROW, next eight entries are the second row, etc.) */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint8_t estimator_type; /*<  Class id of the estimator this estimate originated from. */
+    float x; /*< [m] X Position */
+    float y; /*< [m] Y Position */
+    float z; /*< [m] Z Position */
+    float vx; /*< [m/s] X Speed */
+    float vy; /*< [m/s] Y Speed */
+    float vz; /*< [m/s] Z Speed */
+    float ax; /*< [m/s/s] X Acceleration */
+    float ay; /*< [m/s/s] Y Acceleration */
+    float az; /*< [m/s/s] Z Acceleration */
+    std::array<float, 45> covariance; /*<  Row-major representation of position, velocity and acceleration 9x9 cross-covariance matrix upper right triangle (states: x, y, z, vx, vy, vz, ax, ay, az; first nine entries are the first ROW, next eight entries are the second row, etc.). If unknown, assign NaN value to first element in the array. */
 
 
     inline std::string get_name(void) const override

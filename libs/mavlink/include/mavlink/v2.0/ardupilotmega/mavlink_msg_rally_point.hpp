@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief RALLY_POINT message
  *
- * A rally point. Used to set a point when from GCS -> MAV. Also used to return a point from MAV -> GCS
+ * A rally point. Used to set a point when from GCS -> MAV. Also used to return a point from MAV -> GCS.
  */
 struct RALLY_POINT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 175;
@@ -19,16 +19,16 @@ struct RALLY_POINT : mavlink::Message {
     static constexpr auto NAME = "RALLY_POINT";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t idx; /*< point index (first point is 0) */
-    uint8_t count; /*< total number of points (for sanity checking) */
-    int32_t lat; /*< Latitude of point in degrees * 1E7 */
-    int32_t lng; /*< Longitude of point in degrees * 1E7 */
-    int16_t alt; /*< Transit / loiter altitude in meters relative to home */
-    int16_t break_alt; /*< Break altitude in meters relative to home */
-    uint16_t land_dir; /*< Heading to aim for when landing. In centi-degrees. */
-    uint8_t flags; /*< See RALLY_FLAGS enum for definition of the bitmask. */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint8_t idx; /*<  Point index (first point is 0). */
+    uint8_t count; /*<  Total number of points (for sanity checking). */
+    int32_t lat; /*< [degE7] Latitude of point. */
+    int32_t lng; /*< [degE7] Longitude of point. */
+    int16_t alt; /*< [m] Transit / loiter altitude relative to home. */
+    int16_t break_alt; /*< [m] Break altitude relative to home. */
+    uint16_t land_dir; /*< [cdeg] Heading to aim for when landing. */
+    uint8_t flags; /*<  Configuration flags. */
 
 
     inline std::string get_name(void) const override

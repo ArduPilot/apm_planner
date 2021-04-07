@@ -19,13 +19,13 @@ struct ATTITUDE_TARGET : mavlink::Message {
     static constexpr auto NAME = "ATTITUDE_TARGET";
 
 
-    uint32_t time_boot_ms; /*< Timestamp in milliseconds since system boot */
-    uint8_t type_mask; /*< Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit 8: attitude */
-    std::array<float, 4> q; /*< Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0) */
-    float body_roll_rate; /*< Body roll rate in radians per second */
-    float body_pitch_rate; /*< Body pitch rate in radians per second */
-    float body_yaw_rate; /*< Body yaw rate in radians per second */
-    float thrust; /*< Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust) */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    uint8_t type_mask; /*<  Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit 8: attitude */
+    std::array<float, 4> q; /*<  Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0) */
+    float body_roll_rate; /*< [rad/s] Body roll rate */
+    float body_pitch_rate; /*< [rad/s] Body pitch rate */
+    float body_yaw_rate; /*< [rad/s] Body yaw rate */
+    float thrust; /*<  Collective thrust, normalized to 0 .. 1 (-1 .. 1 for vehicles capable of reverse trust) */
 
 
     inline std::string get_name(void) const override

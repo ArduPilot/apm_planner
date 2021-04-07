@@ -19,17 +19,17 @@ struct DIGICAM_CONFIGURE : mavlink::Message {
     static constexpr auto NAME = "DIGICAM_CONFIGURE";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t mode; /*< Mode enumeration from 1 to N //P, TV, AV, M, Etc (0 means ignore) */
-    uint16_t shutter_speed; /*< Divisor number //e.g. 1000 means 1/1000 (0 means ignore) */
-    uint8_t aperture; /*< F stop number x 10 //e.g. 28 means 2.8 (0 means ignore) */
-    uint8_t iso; /*< ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore) */
-    uint8_t exposure_type; /*< Exposure type enumeration from 1 to N (0 means ignore) */
-    uint8_t command_id; /*< Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once */
-    uint8_t engine_cut_off; /*< Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off) */
-    uint8_t extra_param; /*< Extra parameters enumeration (0 means ignore) */
-    float extra_value; /*< Correspondent value to given extra_param */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint8_t mode; /*<  Mode enumeration from 1 to N //P, TV, AV, M, etc. (0 means ignore). */
+    uint16_t shutter_speed; /*<  Divisor number //e.g. 1000 means 1/1000 (0 means ignore). */
+    uint8_t aperture; /*<  F stop number x 10 //e.g. 28 means 2.8 (0 means ignore). */
+    uint8_t iso; /*<  ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore). */
+    uint8_t exposure_type; /*<  Exposure type enumeration from 1 to N (0 means ignore). */
+    uint8_t command_id; /*<  Command Identity (incremental loop: 0 to 255). //A command sent multiple times will be executed or pooled just once. */
+    uint8_t engine_cut_off; /*< [ds] Main engine cut-off time before camera trigger (0 means no cut-off). */
+    uint8_t extra_param; /*<  Extra parameters enumeration (0 means ignore). */
+    float extra_value; /*<  Correspondent value to given extra_param. */
 
 
     inline std::string get_name(void) const override

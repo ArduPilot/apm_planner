@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief COMPASSMOT_STATUS message
  *
- * Status of compassmot calibration
+ * Status of compassmot calibration.
  */
 struct COMPASSMOT_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 177;
@@ -19,12 +19,12 @@ struct COMPASSMOT_STATUS : mavlink::Message {
     static constexpr auto NAME = "COMPASSMOT_STATUS";
 
 
-    uint16_t throttle; /*< throttle (percent*10) */
-    float current; /*< current (Ampere) */
-    uint16_t interference; /*< interference (percent) */
-    float CompensationX; /*< Motor Compensation X */
-    float CompensationY; /*< Motor Compensation Y */
-    float CompensationZ; /*< Motor Compensation Z */
+    uint16_t throttle; /*< [d%] Throttle. */
+    float current; /*< [A] Current. */
+    uint16_t interference; /*< [%] Interference. */
+    float CompensationX; /*<  Motor Compensation X. */
+    float CompensationY; /*<  Motor Compensation Y. */
+    float CompensationZ; /*<  Motor Compensation Z. */
 
 
     inline std::string get_name(void) const override

@@ -3,18 +3,18 @@
 
 #define MAVLINK_MSG_ID_CAMERA_STATUS 179
 
-MAVPACKED(
+
 typedef struct __mavlink_camera_status_t {
- uint64_t time_usec; /*< Image timestamp (microseconds since UNIX epoch, according to camera clock)*/
- float p1; /*< Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum)*/
- float p2; /*< Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum)*/
- float p3; /*< Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum)*/
- float p4; /*< Parameter 4 (meaning depends on event, see CAMERA_STATUS_TYPES enum)*/
- uint16_t img_idx; /*< Image index*/
- uint8_t target_system; /*< System ID*/
- uint8_t cam_idx; /*< Camera ID*/
- uint8_t event_id; /*< See CAMERA_STATUS_TYPES enum for definition of the bitmask*/
-}) mavlink_camera_status_t;
+ uint64_t time_usec; /*< [us] Image timestamp (since UNIX epoch, according to camera clock).*/
+ float p1; /*<  Parameter 1 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).*/
+ float p2; /*<  Parameter 2 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).*/
+ float p3; /*<  Parameter 3 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).*/
+ float p4; /*<  Parameter 4 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).*/
+ uint16_t img_idx; /*<  Image index.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t cam_idx; /*<  Camera ID.*/
+ uint8_t event_id; /*<  Event type.*/
+} mavlink_camera_status_t;
 
 #define MAVLINK_MSG_ID_CAMERA_STATUS_LEN 29
 #define MAVLINK_MSG_ID_CAMERA_STATUS_MIN_LEN 29
@@ -65,15 +65,15 @@ typedef struct __mavlink_camera_status_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec Image timestamp (microseconds since UNIX epoch, according to camera clock)
- * @param target_system System ID
- * @param cam_idx Camera ID
- * @param img_idx Image index
- * @param event_id See CAMERA_STATUS_TYPES enum for definition of the bitmask
- * @param p1 Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p2 Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p3 Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p4 Parameter 4 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
+ * @param time_usec [us] Image timestamp (since UNIX epoch, according to camera clock).
+ * @param target_system  System ID.
+ * @param cam_idx  Camera ID.
+ * @param img_idx  Image index.
+ * @param event_id  Event type.
+ * @param p1  Parameter 1 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p2  Parameter 2 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p3  Parameter 3 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p4  Parameter 4 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_camera_status_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -117,15 +117,15 @@ static inline uint16_t mavlink_msg_camera_status_pack(uint8_t system_id, uint8_t
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec Image timestamp (microseconds since UNIX epoch, according to camera clock)
- * @param target_system System ID
- * @param cam_idx Camera ID
- * @param img_idx Image index
- * @param event_id See CAMERA_STATUS_TYPES enum for definition of the bitmask
- * @param p1 Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p2 Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p3 Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p4 Parameter 4 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
+ * @param time_usec [us] Image timestamp (since UNIX epoch, according to camera clock).
+ * @param target_system  System ID.
+ * @param cam_idx  Camera ID.
+ * @param img_idx  Image index.
+ * @param event_id  Event type.
+ * @param p1  Parameter 1 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p2  Parameter 2 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p3  Parameter 3 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p4  Parameter 4 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_camera_status_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -195,15 +195,15 @@ static inline uint16_t mavlink_msg_camera_status_encode_chan(uint8_t system_id, 
  * @brief Send a camera_status message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec Image timestamp (microseconds since UNIX epoch, according to camera clock)
- * @param target_system System ID
- * @param cam_idx Camera ID
- * @param img_idx Image index
- * @param event_id See CAMERA_STATUS_TYPES enum for definition of the bitmask
- * @param p1 Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p2 Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p3 Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
- * @param p4 Parameter 4 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
+ * @param time_usec [us] Image timestamp (since UNIX epoch, according to camera clock).
+ * @param target_system  System ID.
+ * @param cam_idx  Camera ID.
+ * @param img_idx  Image index.
+ * @param event_id  Event type.
+ * @param p1  Parameter 1 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p2  Parameter 2 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p3  Parameter 3 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
+ * @param p4  Parameter 4 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -300,7 +300,7 @@ static inline void mavlink_msg_camera_status_send_buf(mavlink_message_t *msgbuf,
 /**
  * @brief Get field time_usec from camera_status message
  *
- * @return Image timestamp (microseconds since UNIX epoch, according to camera clock)
+ * @return [us] Image timestamp (since UNIX epoch, according to camera clock).
  */
 static inline uint64_t mavlink_msg_camera_status_get_time_usec(const mavlink_message_t* msg)
 {
@@ -310,7 +310,7 @@ static inline uint64_t mavlink_msg_camera_status_get_time_usec(const mavlink_mes
 /**
  * @brief Get field target_system from camera_status message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_camera_status_get_target_system(const mavlink_message_t* msg)
 {
@@ -320,7 +320,7 @@ static inline uint8_t mavlink_msg_camera_status_get_target_system(const mavlink_
 /**
  * @brief Get field cam_idx from camera_status message
  *
- * @return Camera ID
+ * @return  Camera ID.
  */
 static inline uint8_t mavlink_msg_camera_status_get_cam_idx(const mavlink_message_t* msg)
 {
@@ -330,7 +330,7 @@ static inline uint8_t mavlink_msg_camera_status_get_cam_idx(const mavlink_messag
 /**
  * @brief Get field img_idx from camera_status message
  *
- * @return Image index
+ * @return  Image index.
  */
 static inline uint16_t mavlink_msg_camera_status_get_img_idx(const mavlink_message_t* msg)
 {
@@ -340,7 +340,7 @@ static inline uint16_t mavlink_msg_camera_status_get_img_idx(const mavlink_messa
 /**
  * @brief Get field event_id from camera_status message
  *
- * @return See CAMERA_STATUS_TYPES enum for definition of the bitmask
+ * @return  Event type.
  */
 static inline uint8_t mavlink_msg_camera_status_get_event_id(const mavlink_message_t* msg)
 {
@@ -350,7 +350,7 @@ static inline uint8_t mavlink_msg_camera_status_get_event_id(const mavlink_messa
 /**
  * @brief Get field p1 from camera_status message
  *
- * @return Parameter 1 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
+ * @return  Parameter 1 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
  */
 static inline float mavlink_msg_camera_status_get_p1(const mavlink_message_t* msg)
 {
@@ -360,7 +360,7 @@ static inline float mavlink_msg_camera_status_get_p1(const mavlink_message_t* ms
 /**
  * @brief Get field p2 from camera_status message
  *
- * @return Parameter 2 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
+ * @return  Parameter 2 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
  */
 static inline float mavlink_msg_camera_status_get_p2(const mavlink_message_t* msg)
 {
@@ -370,7 +370,7 @@ static inline float mavlink_msg_camera_status_get_p2(const mavlink_message_t* ms
 /**
  * @brief Get field p3 from camera_status message
  *
- * @return Parameter 3 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
+ * @return  Parameter 3 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
  */
 static inline float mavlink_msg_camera_status_get_p3(const mavlink_message_t* msg)
 {
@@ -380,7 +380,7 @@ static inline float mavlink_msg_camera_status_get_p3(const mavlink_message_t* ms
 /**
  * @brief Get field p4 from camera_status message
  *
- * @return Parameter 4 (meaning depends on event, see CAMERA_STATUS_TYPES enum)
+ * @return  Parameter 4 (meaning depends on event_id, see CAMERA_STATUS_TYPES enum).
  */
 static inline float mavlink_msg_camera_status_get_p4(const mavlink_message_t* msg)
 {
