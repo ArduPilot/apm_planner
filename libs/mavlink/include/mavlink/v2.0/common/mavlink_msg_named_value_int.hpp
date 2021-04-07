@@ -19,9 +19,9 @@ struct NAMED_VALUE_INT : mavlink::Message {
     static constexpr auto NAME = "NAMED_VALUE_INT";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    std::array<char, 10> name; /*< Name of the debug variable */
-    int32_t value; /*< Signed integer value */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    std::array<char, 10> name; /*<  Name of the debug variable */
+    int32_t value; /*<  Signed integer value */
 
 
     inline std::string get_name(void) const override

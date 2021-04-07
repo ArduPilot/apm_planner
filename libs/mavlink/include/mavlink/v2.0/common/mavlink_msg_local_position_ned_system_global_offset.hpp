@@ -19,13 +19,13 @@ struct LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET : mavlink::Message {
     static constexpr auto NAME = "LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    float x; /*< X Position */
-    float y; /*< Y Position */
-    float z; /*< Z Position */
-    float roll; /*< Roll */
-    float pitch; /*< Pitch */
-    float yaw; /*< Yaw */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    float x; /*< [m] X Position */
+    float y; /*< [m] Y Position */
+    float z; /*< [m] Z Position */
+    float roll; /*< [rad] Roll */
+    float pitch; /*< [rad] Pitch */
+    float yaw; /*< [rad] Yaw */
 
 
     inline std::string get_name(void) const override

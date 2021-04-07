@@ -3,10 +3,10 @@
 
 #define MAVLINK_MSG_ID_UAVIONIX_ADSB_TRANSCEIVER_HEALTH_REPORT 10003
 
-MAVPACKED(
+
 typedef struct __mavlink_uavionix_adsb_transceiver_health_report_t {
- uint8_t rfHealth; /*< ADS-B transponder messages*/
-}) mavlink_uavionix_adsb_transceiver_health_report_t;
+ uint8_t rfHealth; /*<  ADS-B transponder messages*/
+} mavlink_uavionix_adsb_transceiver_health_report_t;
 
 #define MAVLINK_MSG_ID_UAVIONIX_ADSB_TRANSCEIVER_HEALTH_REPORT_LEN 1
 #define MAVLINK_MSG_ID_UAVIONIX_ADSB_TRANSCEIVER_HEALTH_REPORT_MIN_LEN 1
@@ -41,7 +41,7 @@ typedef struct __mavlink_uavionix_adsb_transceiver_health_report_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param rfHealth ADS-B transponder messages
+ * @param rfHealth  ADS-B transponder messages
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_uavionix_adsb_transceiver_health_report_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -69,7 +69,7 @@ static inline uint16_t mavlink_msg_uavionix_adsb_transceiver_health_report_pack(
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param rfHealth ADS-B transponder messages
+ * @param rfHealth  ADS-B transponder messages
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_uavionix_adsb_transceiver_health_report_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -123,7 +123,7 @@ static inline uint16_t mavlink_msg_uavionix_adsb_transceiver_health_report_encod
  * @brief Send a uavionix_adsb_transceiver_health_report message
  * @param chan MAVLink channel to send the message
  *
- * @param rfHealth ADS-B transponder messages
+ * @param rfHealth  ADS-B transponder messages
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -188,7 +188,7 @@ static inline void mavlink_msg_uavionix_adsb_transceiver_health_report_send_buf(
 /**
  * @brief Get field rfHealth from uavionix_adsb_transceiver_health_report message
  *
- * @return ADS-B transponder messages
+ * @return  ADS-B transponder messages
  */
 static inline uint8_t mavlink_msg_uavionix_adsb_transceiver_health_report_get_rfHealth(const mavlink_message_t* msg)
 {

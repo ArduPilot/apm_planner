@@ -3,15 +3,15 @@
 
 #define MAVLINK_MSG_ID_MOUNT_CONFIGURE 156
 
-MAVPACKED(
+
 typedef struct __mavlink_mount_configure_t {
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t mount_mode; /*< mount operating mode (see MAV_MOUNT_MODE enum)*/
- uint8_t stab_roll; /*< (1 = yes, 0 = no)*/
- uint8_t stab_pitch; /*< (1 = yes, 0 = no)*/
- uint8_t stab_yaw; /*< (1 = yes, 0 = no)*/
-}) mavlink_mount_configure_t;
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t mount_mode; /*<  Mount operating mode.*/
+ uint8_t stab_roll; /*<  (1 = yes, 0 = no).*/
+ uint8_t stab_pitch; /*<  (1 = yes, 0 = no).*/
+ uint8_t stab_yaw; /*<  (1 = yes, 0 = no).*/
+} mavlink_mount_configure_t;
 
 #define MAVLINK_MSG_ID_MOUNT_CONFIGURE_LEN 6
 #define MAVLINK_MSG_ID_MOUNT_CONFIGURE_MIN_LEN 6
@@ -56,12 +56,12 @@ typedef struct __mavlink_mount_configure_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param mount_mode mount operating mode (see MAV_MOUNT_MODE enum)
- * @param stab_roll (1 = yes, 0 = no)
- * @param stab_pitch (1 = yes, 0 = no)
- * @param stab_yaw (1 = yes, 0 = no)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mount_mode  Mount operating mode.
+ * @param stab_roll  (1 = yes, 0 = no).
+ * @param stab_pitch  (1 = yes, 0 = no).
+ * @param stab_yaw  (1 = yes, 0 = no).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mount_configure_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -99,12 +99,12 @@ static inline uint16_t mavlink_msg_mount_configure_pack(uint8_t system_id, uint8
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param mount_mode mount operating mode (see MAV_MOUNT_MODE enum)
- * @param stab_roll (1 = yes, 0 = no)
- * @param stab_pitch (1 = yes, 0 = no)
- * @param stab_yaw (1 = yes, 0 = no)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mount_mode  Mount operating mode.
+ * @param stab_roll  (1 = yes, 0 = no).
+ * @param stab_pitch  (1 = yes, 0 = no).
+ * @param stab_yaw  (1 = yes, 0 = no).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mount_configure_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -168,12 +168,12 @@ static inline uint16_t mavlink_msg_mount_configure_encode_chan(uint8_t system_id
  * @brief Send a mount_configure message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param mount_mode mount operating mode (see MAV_MOUNT_MODE enum)
- * @param stab_roll (1 = yes, 0 = no)
- * @param stab_pitch (1 = yes, 0 = no)
- * @param stab_yaw (1 = yes, 0 = no)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mount_mode  Mount operating mode.
+ * @param stab_roll  (1 = yes, 0 = no).
+ * @param stab_pitch  (1 = yes, 0 = no).
+ * @param stab_yaw  (1 = yes, 0 = no).
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -258,7 +258,7 @@ static inline void mavlink_msg_mount_configure_send_buf(mavlink_message_t *msgbu
 /**
  * @brief Get field target_system from mount_configure message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_mount_configure_get_target_system(const mavlink_message_t* msg)
 {
@@ -268,7 +268,7 @@ static inline uint8_t mavlink_msg_mount_configure_get_target_system(const mavlin
 /**
  * @brief Get field target_component from mount_configure message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_mount_configure_get_target_component(const mavlink_message_t* msg)
 {
@@ -278,7 +278,7 @@ static inline uint8_t mavlink_msg_mount_configure_get_target_component(const mav
 /**
  * @brief Get field mount_mode from mount_configure message
  *
- * @return mount operating mode (see MAV_MOUNT_MODE enum)
+ * @return  Mount operating mode.
  */
 static inline uint8_t mavlink_msg_mount_configure_get_mount_mode(const mavlink_message_t* msg)
 {
@@ -288,7 +288,7 @@ static inline uint8_t mavlink_msg_mount_configure_get_mount_mode(const mavlink_m
 /**
  * @brief Get field stab_roll from mount_configure message
  *
- * @return (1 = yes, 0 = no)
+ * @return  (1 = yes, 0 = no).
  */
 static inline uint8_t mavlink_msg_mount_configure_get_stab_roll(const mavlink_message_t* msg)
 {
@@ -298,7 +298,7 @@ static inline uint8_t mavlink_msg_mount_configure_get_stab_roll(const mavlink_me
 /**
  * @brief Get field stab_pitch from mount_configure message
  *
- * @return (1 = yes, 0 = no)
+ * @return  (1 = yes, 0 = no).
  */
 static inline uint8_t mavlink_msg_mount_configure_get_stab_pitch(const mavlink_message_t* msg)
 {
@@ -308,7 +308,7 @@ static inline uint8_t mavlink_msg_mount_configure_get_stab_pitch(const mavlink_m
 /**
  * @brief Get field stab_yaw from mount_configure message
  *
- * @return (1 = yes, 0 = no)
+ * @return  (1 = yes, 0 = no).
  */
 static inline uint8_t mavlink_msg_mount_configure_get_stab_yaw(const mavlink_message_t* msg)
 {

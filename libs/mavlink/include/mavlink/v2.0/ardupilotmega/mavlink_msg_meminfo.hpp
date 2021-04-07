@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief MEMINFO message
  *
- * state of APM memory
+ * State of APM memory.
  */
 struct MEMINFO : mavlink::Message {
     static constexpr msgid_t MSG_ID = 152;
@@ -19,9 +19,9 @@ struct MEMINFO : mavlink::Message {
     static constexpr auto NAME = "MEMINFO";
 
 
-    uint16_t brkval; /*< heap top */
-    uint16_t freemem; /*< free memory */
-    uint32_t freemem32; /*< free memory (32 bit) */
+    uint16_t brkval; /*<  Heap top. */
+    uint16_t freemem; /*< [bytes] Free memory. */
+    uint32_t freemem32; /*< [bytes] Free memory (32 bit). */
 
 
     inline std::string get_name(void) const override

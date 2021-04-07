@@ -19,7 +19,7 @@ struct MISSION_CURRENT : mavlink::Message {
     static constexpr auto NAME = "MISSION_CURRENT";
 
 
-    uint16_t seq; /*< Sequence */
+    uint16_t seq; /*<  Sequence */
 
 
     inline std::string get_name(void) const override

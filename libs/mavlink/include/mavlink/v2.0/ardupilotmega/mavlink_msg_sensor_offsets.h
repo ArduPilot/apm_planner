@@ -3,21 +3,21 @@
 
 #define MAVLINK_MSG_ID_SENSOR_OFFSETS 150
 
-MAVPACKED(
+
 typedef struct __mavlink_sensor_offsets_t {
- float mag_declination; /*< magnetic declination (radians)*/
- int32_t raw_press; /*< raw pressure from barometer*/
- int32_t raw_temp; /*< raw temperature from barometer*/
- float gyro_cal_x; /*< gyro X calibration*/
- float gyro_cal_y; /*< gyro Y calibration*/
- float gyro_cal_z; /*< gyro Z calibration*/
- float accel_cal_x; /*< accel X calibration*/
- float accel_cal_y; /*< accel Y calibration*/
- float accel_cal_z; /*< accel Z calibration*/
- int16_t mag_ofs_x; /*< magnetometer X offset*/
- int16_t mag_ofs_y; /*< magnetometer Y offset*/
- int16_t mag_ofs_z; /*< magnetometer Z offset*/
-}) mavlink_sensor_offsets_t;
+ float mag_declination; /*< [rad] Magnetic declination.*/
+ int32_t raw_press; /*<  Raw pressure from barometer.*/
+ int32_t raw_temp; /*<  Raw temperature from barometer.*/
+ float gyro_cal_x; /*<  Gyro X calibration.*/
+ float gyro_cal_y; /*<  Gyro Y calibration.*/
+ float gyro_cal_z; /*<  Gyro Z calibration.*/
+ float accel_cal_x; /*<  Accel X calibration.*/
+ float accel_cal_y; /*<  Accel Y calibration.*/
+ float accel_cal_z; /*<  Accel Z calibration.*/
+ int16_t mag_ofs_x; /*<  Magnetometer X offset.*/
+ int16_t mag_ofs_y; /*<  Magnetometer Y offset.*/
+ int16_t mag_ofs_z; /*<  Magnetometer Z offset.*/
+} mavlink_sensor_offsets_t;
 
 #define MAVLINK_MSG_ID_SENSOR_OFFSETS_LEN 42
 #define MAVLINK_MSG_ID_SENSOR_OFFSETS_MIN_LEN 42
@@ -74,18 +74,18 @@ typedef struct __mavlink_sensor_offsets_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param mag_ofs_x magnetometer X offset
- * @param mag_ofs_y magnetometer Y offset
- * @param mag_ofs_z magnetometer Z offset
- * @param mag_declination magnetic declination (radians)
- * @param raw_press raw pressure from barometer
- * @param raw_temp raw temperature from barometer
- * @param gyro_cal_x gyro X calibration
- * @param gyro_cal_y gyro Y calibration
- * @param gyro_cal_z gyro Z calibration
- * @param accel_cal_x accel X calibration
- * @param accel_cal_y accel Y calibration
- * @param accel_cal_z accel Z calibration
+ * @param mag_ofs_x  Magnetometer X offset.
+ * @param mag_ofs_y  Magnetometer Y offset.
+ * @param mag_ofs_z  Magnetometer Z offset.
+ * @param mag_declination [rad] Magnetic declination.
+ * @param raw_press  Raw pressure from barometer.
+ * @param raw_temp  Raw temperature from barometer.
+ * @param gyro_cal_x  Gyro X calibration.
+ * @param gyro_cal_y  Gyro Y calibration.
+ * @param gyro_cal_z  Gyro Z calibration.
+ * @param accel_cal_x  Accel X calibration.
+ * @param accel_cal_y  Accel Y calibration.
+ * @param accel_cal_z  Accel Z calibration.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -135,18 +135,18 @@ static inline uint16_t mavlink_msg_sensor_offsets_pack(uint8_t system_id, uint8_
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param mag_ofs_x magnetometer X offset
- * @param mag_ofs_y magnetometer Y offset
- * @param mag_ofs_z magnetometer Z offset
- * @param mag_declination magnetic declination (radians)
- * @param raw_press raw pressure from barometer
- * @param raw_temp raw temperature from barometer
- * @param gyro_cal_x gyro X calibration
- * @param gyro_cal_y gyro Y calibration
- * @param gyro_cal_z gyro Z calibration
- * @param accel_cal_x accel X calibration
- * @param accel_cal_y accel Y calibration
- * @param accel_cal_z accel Z calibration
+ * @param mag_ofs_x  Magnetometer X offset.
+ * @param mag_ofs_y  Magnetometer Y offset.
+ * @param mag_ofs_z  Magnetometer Z offset.
+ * @param mag_declination [rad] Magnetic declination.
+ * @param raw_press  Raw pressure from barometer.
+ * @param raw_temp  Raw temperature from barometer.
+ * @param gyro_cal_x  Gyro X calibration.
+ * @param gyro_cal_y  Gyro Y calibration.
+ * @param gyro_cal_z  Gyro Z calibration.
+ * @param accel_cal_x  Accel X calibration.
+ * @param accel_cal_y  Accel Y calibration.
+ * @param accel_cal_z  Accel Z calibration.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_sensor_offsets_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -222,18 +222,18 @@ static inline uint16_t mavlink_msg_sensor_offsets_encode_chan(uint8_t system_id,
  * @brief Send a sensor_offsets message
  * @param chan MAVLink channel to send the message
  *
- * @param mag_ofs_x magnetometer X offset
- * @param mag_ofs_y magnetometer Y offset
- * @param mag_ofs_z magnetometer Z offset
- * @param mag_declination magnetic declination (radians)
- * @param raw_press raw pressure from barometer
- * @param raw_temp raw temperature from barometer
- * @param gyro_cal_x gyro X calibration
- * @param gyro_cal_y gyro Y calibration
- * @param gyro_cal_z gyro Z calibration
- * @param accel_cal_x accel X calibration
- * @param accel_cal_y accel Y calibration
- * @param accel_cal_z accel Z calibration
+ * @param mag_ofs_x  Magnetometer X offset.
+ * @param mag_ofs_y  Magnetometer Y offset.
+ * @param mag_ofs_z  Magnetometer Z offset.
+ * @param mag_declination [rad] Magnetic declination.
+ * @param raw_press  Raw pressure from barometer.
+ * @param raw_temp  Raw temperature from barometer.
+ * @param gyro_cal_x  Gyro X calibration.
+ * @param gyro_cal_y  Gyro Y calibration.
+ * @param gyro_cal_z  Gyro Z calibration.
+ * @param accel_cal_x  Accel X calibration.
+ * @param accel_cal_y  Accel Y calibration.
+ * @param accel_cal_z  Accel Z calibration.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -342,7 +342,7 @@ static inline void mavlink_msg_sensor_offsets_send_buf(mavlink_message_t *msgbuf
 /**
  * @brief Get field mag_ofs_x from sensor_offsets message
  *
- * @return magnetometer X offset
+ * @return  Magnetometer X offset.
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_x(const mavlink_message_t* msg)
 {
@@ -352,7 +352,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_x(const mavlink_mes
 /**
  * @brief Get field mag_ofs_y from sensor_offsets message
  *
- * @return magnetometer Y offset
+ * @return  Magnetometer Y offset.
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_y(const mavlink_message_t* msg)
 {
@@ -362,7 +362,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_y(const mavlink_mes
 /**
  * @brief Get field mag_ofs_z from sensor_offsets message
  *
- * @return magnetometer Z offset
+ * @return  Magnetometer Z offset.
  */
 static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_z(const mavlink_message_t* msg)
 {
@@ -372,7 +372,7 @@ static inline int16_t mavlink_msg_sensor_offsets_get_mag_ofs_z(const mavlink_mes
 /**
  * @brief Get field mag_declination from sensor_offsets message
  *
- * @return magnetic declination (radians)
+ * @return [rad] Magnetic declination.
  */
 static inline float mavlink_msg_sensor_offsets_get_mag_declination(const mavlink_message_t* msg)
 {
@@ -382,7 +382,7 @@ static inline float mavlink_msg_sensor_offsets_get_mag_declination(const mavlink
 /**
  * @brief Get field raw_press from sensor_offsets message
  *
- * @return raw pressure from barometer
+ * @return  Raw pressure from barometer.
  */
 static inline int32_t mavlink_msg_sensor_offsets_get_raw_press(const mavlink_message_t* msg)
 {
@@ -392,7 +392,7 @@ static inline int32_t mavlink_msg_sensor_offsets_get_raw_press(const mavlink_mes
 /**
  * @brief Get field raw_temp from sensor_offsets message
  *
- * @return raw temperature from barometer
+ * @return  Raw temperature from barometer.
  */
 static inline int32_t mavlink_msg_sensor_offsets_get_raw_temp(const mavlink_message_t* msg)
 {
@@ -402,7 +402,7 @@ static inline int32_t mavlink_msg_sensor_offsets_get_raw_temp(const mavlink_mess
 /**
  * @brief Get field gyro_cal_x from sensor_offsets message
  *
- * @return gyro X calibration
+ * @return  Gyro X calibration.
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_x(const mavlink_message_t* msg)
 {
@@ -412,7 +412,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_x(const mavlink_mess
 /**
  * @brief Get field gyro_cal_y from sensor_offsets message
  *
- * @return gyro Y calibration
+ * @return  Gyro Y calibration.
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_y(const mavlink_message_t* msg)
 {
@@ -422,7 +422,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_y(const mavlink_mess
 /**
  * @brief Get field gyro_cal_z from sensor_offsets message
  *
- * @return gyro Z calibration
+ * @return  Gyro Z calibration.
  */
 static inline float mavlink_msg_sensor_offsets_get_gyro_cal_z(const mavlink_message_t* msg)
 {
@@ -432,7 +432,7 @@ static inline float mavlink_msg_sensor_offsets_get_gyro_cal_z(const mavlink_mess
 /**
  * @brief Get field accel_cal_x from sensor_offsets message
  *
- * @return accel X calibration
+ * @return  Accel X calibration.
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_x(const mavlink_message_t* msg)
 {
@@ -442,7 +442,7 @@ static inline float mavlink_msg_sensor_offsets_get_accel_cal_x(const mavlink_mes
 /**
  * @brief Get field accel_cal_y from sensor_offsets message
  *
- * @return accel Y calibration
+ * @return  Accel Y calibration.
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_y(const mavlink_message_t* msg)
 {
@@ -452,7 +452,7 @@ static inline float mavlink_msg_sensor_offsets_get_accel_cal_y(const mavlink_mes
 /**
  * @brief Get field accel_cal_z from sensor_offsets message
  *
- * @return accel Z calibration
+ * @return  Accel Z calibration.
  */
 static inline float mavlink_msg_sensor_offsets_get_accel_cal_z(const mavlink_message_t* msg)
 {

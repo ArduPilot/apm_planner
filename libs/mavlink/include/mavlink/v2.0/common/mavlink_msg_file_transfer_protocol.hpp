@@ -19,10 +19,10 @@ struct FILE_TRANSFER_PROTOCOL : mavlink::Message {
     static constexpr auto NAME = "FILE_TRANSFER_PROTOCOL";
 
 
-    uint8_t target_network; /*< Network ID (0 for broadcast) */
-    uint8_t target_system; /*< System ID (0 for broadcast) */
-    uint8_t target_component; /*< Component ID (0 for broadcast) */
-    std::array<uint8_t, 251> payload; /*< Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification. */
+    uint8_t target_network; /*<  Network ID (0 for broadcast) */
+    uint8_t target_system; /*<  System ID (0 for broadcast) */
+    uint8_t target_component; /*<  Component ID (0 for broadcast) */
+    std::array<uint8_t, 251> payload; /*<  Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification. */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief LIMITS_STATUS message
  *
- * Status of AP_Limits. Sent in extended status stream when AP_Limits is enabled
+ * Status of AP_Limits. Sent in extended status stream when AP_Limits is enabled.
  */
 struct LIMITS_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 167;
@@ -19,15 +19,15 @@ struct LIMITS_STATUS : mavlink::Message {
     static constexpr auto NAME = "LIMITS_STATUS";
 
 
-    uint8_t limits_state; /*< state of AP_Limits, (see enum LimitState, LIMITS_STATE) */
-    uint32_t last_trigger; /*< time of last breach in milliseconds since boot */
-    uint32_t last_action; /*< time of last recovery action in milliseconds since boot */
-    uint32_t last_recovery; /*< time of last successful recovery in milliseconds since boot */
-    uint32_t last_clear; /*< time of last all-clear in milliseconds since boot */
-    uint16_t breach_count; /*< number of fence breaches */
-    uint8_t mods_enabled; /*< AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE) */
-    uint8_t mods_required; /*< AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE) */
-    uint8_t mods_triggered; /*< AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE) */
+    uint8_t limits_state; /*<  State of AP_Limits. */
+    uint32_t last_trigger; /*< [ms] Time (since boot) of last breach. */
+    uint32_t last_action; /*< [ms] Time (since boot) of last recovery action. */
+    uint32_t last_recovery; /*< [ms] Time (since boot) of last successful recovery. */
+    uint32_t last_clear; /*< [ms] Time (since boot) of last all-clear. */
+    uint16_t breach_count; /*<  Number of fence breaches. */
+    uint8_t mods_enabled; /*<  AP_Limit_Module bitfield of enabled modules. */
+    uint8_t mods_required; /*<  AP_Limit_Module bitfield of required modules. */
+    uint8_t mods_triggered; /*<  AP_Limit_Module bitfield of triggered modules. */
 
 
     inline std::string get_name(void) const override

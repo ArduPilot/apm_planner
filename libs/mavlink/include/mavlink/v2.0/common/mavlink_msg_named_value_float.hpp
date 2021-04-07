@@ -19,9 +19,9 @@ struct NAMED_VALUE_FLOAT : mavlink::Message {
     static constexpr auto NAME = "NAMED_VALUE_FLOAT";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    std::array<char, 10> name; /*< Name of the debug variable */
-    float value; /*< Floating point value */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    std::array<char, 10> name; /*<  Name of the debug variable */
+    float value; /*<  Floating point value */
 
 
     inline std::string get_name(void) const override

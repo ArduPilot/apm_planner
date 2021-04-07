@@ -3,15 +3,15 @@
 
 #define MAVLINK_MSG_ID_LOGGING_DATA 266
 
-MAVPACKED(
+
 typedef struct __mavlink_logging_data_t {
- uint16_t sequence; /*< sequence number (can wrap)*/
- uint8_t target_system; /*< system ID of the target*/
- uint8_t target_component; /*< component ID of the target*/
- uint8_t length; /*< data length*/
- uint8_t first_message_offset; /*< offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).*/
- uint8_t data[249]; /*< logged data*/
-}) mavlink_logging_data_t;
+ uint16_t sequence; /*<  sequence number (can wrap)*/
+ uint8_t target_system; /*<  system ID of the target*/
+ uint8_t target_component; /*<  component ID of the target*/
+ uint8_t length; /*< [bytes] data length*/
+ uint8_t first_message_offset; /*< [bytes] offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).*/
+ uint8_t data[249]; /*<  logged data*/
+} mavlink_logging_data_t;
 
 #define MAVLINK_MSG_ID_LOGGING_DATA_LEN 255
 #define MAVLINK_MSG_ID_LOGGING_DATA_MIN_LEN 255
@@ -56,12 +56,12 @@ typedef struct __mavlink_logging_data_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system system ID of the target
- * @param target_component component ID of the target
- * @param sequence sequence number (can wrap)
- * @param length data length
- * @param first_message_offset offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).
- * @param data logged data
+ * @param target_system  system ID of the target
+ * @param target_component  component ID of the target
+ * @param sequence  sequence number (can wrap)
+ * @param length [bytes] data length
+ * @param first_message_offset [bytes] offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).
+ * @param data  logged data
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_logging_data_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -97,12 +97,12 @@ static inline uint16_t mavlink_msg_logging_data_pack(uint8_t system_id, uint8_t 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system system ID of the target
- * @param target_component component ID of the target
- * @param sequence sequence number (can wrap)
- * @param length data length
- * @param first_message_offset offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).
- * @param data logged data
+ * @param target_system  system ID of the target
+ * @param target_component  component ID of the target
+ * @param sequence  sequence number (can wrap)
+ * @param length [bytes] data length
+ * @param first_message_offset [bytes] offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).
+ * @param data  logged data
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_logging_data_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -164,12 +164,12 @@ static inline uint16_t mavlink_msg_logging_data_encode_chan(uint8_t system_id, u
  * @brief Send a logging_data message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system system ID of the target
- * @param target_component component ID of the target
- * @param sequence sequence number (can wrap)
- * @param length data length
- * @param first_message_offset offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).
- * @param data logged data
+ * @param target_system  system ID of the target
+ * @param target_component  component ID of the target
+ * @param sequence  sequence number (can wrap)
+ * @param length [bytes] data length
+ * @param first_message_offset [bytes] offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).
+ * @param data  logged data
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -250,7 +250,7 @@ static inline void mavlink_msg_logging_data_send_buf(mavlink_message_t *msgbuf, 
 /**
  * @brief Get field target_system from logging_data message
  *
- * @return system ID of the target
+ * @return  system ID of the target
  */
 static inline uint8_t mavlink_msg_logging_data_get_target_system(const mavlink_message_t* msg)
 {
@@ -260,7 +260,7 @@ static inline uint8_t mavlink_msg_logging_data_get_target_system(const mavlink_m
 /**
  * @brief Get field target_component from logging_data message
  *
- * @return component ID of the target
+ * @return  component ID of the target
  */
 static inline uint8_t mavlink_msg_logging_data_get_target_component(const mavlink_message_t* msg)
 {
@@ -270,7 +270,7 @@ static inline uint8_t mavlink_msg_logging_data_get_target_component(const mavlin
 /**
  * @brief Get field sequence from logging_data message
  *
- * @return sequence number (can wrap)
+ * @return  sequence number (can wrap)
  */
 static inline uint16_t mavlink_msg_logging_data_get_sequence(const mavlink_message_t* msg)
 {
@@ -280,7 +280,7 @@ static inline uint16_t mavlink_msg_logging_data_get_sequence(const mavlink_messa
 /**
  * @brief Get field length from logging_data message
  *
- * @return data length
+ * @return [bytes] data length
  */
 static inline uint8_t mavlink_msg_logging_data_get_length(const mavlink_message_t* msg)
 {
@@ -290,7 +290,7 @@ static inline uint8_t mavlink_msg_logging_data_get_length(const mavlink_message_
 /**
  * @brief Get field first_message_offset from logging_data message
  *
- * @return offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).
+ * @return [bytes] offset into data where first message starts. This can be used for recovery, when a previous message got lost (set to 255 if no start exists).
  */
 static inline uint8_t mavlink_msg_logging_data_get_first_message_offset(const mavlink_message_t* msg)
 {
@@ -300,7 +300,7 @@ static inline uint8_t mavlink_msg_logging_data_get_first_message_offset(const ma
 /**
  * @brief Get field data from logging_data message
  *
- * @return logged data
+ * @return  logged data
  */
 static inline uint16_t mavlink_msg_logging_data_get_data(const mavlink_message_t* msg, uint8_t *data)
 {

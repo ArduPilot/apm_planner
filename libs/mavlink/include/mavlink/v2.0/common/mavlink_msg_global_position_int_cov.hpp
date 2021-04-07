@@ -19,16 +19,16 @@ struct GLOBAL_POSITION_INT_COV : mavlink::Message {
     static constexpr auto NAME = "GLOBAL_POSITION_INT_COV";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since system boot or since UNIX epoch) */
-    uint8_t estimator_type; /*< Class id of the estimator this estimate originated from. */
-    int32_t lat; /*< Latitude, expressed as degrees * 1E7 */
-    int32_t lon; /*< Longitude, expressed as degrees * 1E7 */
-    int32_t alt; /*< Altitude in meters, expressed as * 1000 (millimeters), above MSL */
-    int32_t relative_alt; /*< Altitude above ground in meters, expressed as * 1000 (millimeters) */
-    float vx; /*< Ground X Speed (Latitude), expressed as m/s */
-    float vy; /*< Ground Y Speed (Longitude), expressed as m/s */
-    float vz; /*< Ground Z Speed (Altitude), expressed as m/s */
-    std::array<float, 36> covariance; /*< Covariance matrix (first six entries are the first ROW, next six entries are the second row, etc.) */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint8_t estimator_type; /*<  Class id of the estimator this estimate originated from. */
+    int32_t lat; /*< [degE7] Latitude */
+    int32_t lon; /*< [degE7] Longitude */
+    int32_t alt; /*< [mm] Altitude in meters above MSL */
+    int32_t relative_alt; /*< [mm] Altitude above ground */
+    float vx; /*< [m/s] Ground X Speed (Latitude) */
+    float vy; /*< [m/s] Ground Y Speed (Longitude) */
+    float vz; /*< [m/s] Ground Z Speed (Altitude) */
+    std::array<float, 36> covariance; /*<  Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array. */
 
 
     inline std::string get_name(void) const override

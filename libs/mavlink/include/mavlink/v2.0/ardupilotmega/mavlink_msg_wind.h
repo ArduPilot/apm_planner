@@ -3,12 +3,12 @@
 
 #define MAVLINK_MSG_ID_WIND 168
 
-MAVPACKED(
+
 typedef struct __mavlink_wind_t {
- float direction; /*< wind direction that wind is coming from (degrees)*/
- float speed; /*< wind speed in ground plane (m/s)*/
- float speed_z; /*< vertical wind speed (m/s)*/
-}) mavlink_wind_t;
+ float direction; /*< [deg] Wind direction (that wind is coming from).*/
+ float speed; /*< [m/s] Wind speed in ground plane.*/
+ float speed_z; /*< [m/s] Vertical wind speed.*/
+} mavlink_wind_t;
 
 #define MAVLINK_MSG_ID_WIND_LEN 12
 #define MAVLINK_MSG_ID_WIND_MIN_LEN 12
@@ -47,9 +47,9 @@ typedef struct __mavlink_wind_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param direction wind direction that wind is coming from (degrees)
- * @param speed wind speed in ground plane (m/s)
- * @param speed_z vertical wind speed (m/s)
+ * @param direction [deg] Wind direction (that wind is coming from).
+ * @param speed [m/s] Wind speed in ground plane.
+ * @param speed_z [m/s] Vertical wind speed.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_wind_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -81,9 +81,9 @@ static inline uint16_t mavlink_msg_wind_pack(uint8_t system_id, uint8_t componen
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param direction wind direction that wind is coming from (degrees)
- * @param speed wind speed in ground plane (m/s)
- * @param speed_z vertical wind speed (m/s)
+ * @param direction [deg] Wind direction (that wind is coming from).
+ * @param speed [m/s] Wind speed in ground plane.
+ * @param speed_z [m/s] Vertical wind speed.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_wind_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -141,9 +141,9 @@ static inline uint16_t mavlink_msg_wind_encode_chan(uint8_t system_id, uint8_t c
  * @brief Send a wind message
  * @param chan MAVLink channel to send the message
  *
- * @param direction wind direction that wind is coming from (degrees)
- * @param speed wind speed in ground plane (m/s)
- * @param speed_z vertical wind speed (m/s)
+ * @param direction [deg] Wind direction (that wind is coming from).
+ * @param speed [m/s] Wind speed in ground plane.
+ * @param speed_z [m/s] Vertical wind speed.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -216,7 +216,7 @@ static inline void mavlink_msg_wind_send_buf(mavlink_message_t *msgbuf, mavlink_
 /**
  * @brief Get field direction from wind message
  *
- * @return wind direction that wind is coming from (degrees)
+ * @return [deg] Wind direction (that wind is coming from).
  */
 static inline float mavlink_msg_wind_get_direction(const mavlink_message_t* msg)
 {
@@ -226,7 +226,7 @@ static inline float mavlink_msg_wind_get_direction(const mavlink_message_t* msg)
 /**
  * @brief Get field speed from wind message
  *
- * @return wind speed in ground plane (m/s)
+ * @return [m/s] Wind speed in ground plane.
  */
 static inline float mavlink_msg_wind_get_speed(const mavlink_message_t* msg)
 {
@@ -236,7 +236,7 @@ static inline float mavlink_msg_wind_get_speed(const mavlink_message_t* msg)
 /**
  * @brief Get field speed_z from wind message
  *
- * @return vertical wind speed (m/s)
+ * @return [m/s] Vertical wind speed.
  */
 static inline float mavlink_msg_wind_get_speed_z(const mavlink_message_t* msg)
 {

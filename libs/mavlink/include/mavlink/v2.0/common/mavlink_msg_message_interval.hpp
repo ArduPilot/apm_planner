@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief MESSAGE_INTERVAL message
  *
- * This interface replaces DATA_STREAM
+ * The interval between messages for a particular MAVLink message ID. This message is the response to the MAV_CMD_GET_MESSAGE_INTERVAL command. This interface replaces DATA_STREAM.
  */
 struct MESSAGE_INTERVAL : mavlink::Message {
     static constexpr msgid_t MSG_ID = 244;
@@ -19,8 +19,8 @@ struct MESSAGE_INTERVAL : mavlink::Message {
     static constexpr auto NAME = "MESSAGE_INTERVAL";
 
 
-    uint16_t message_id; /*< The ID of the requested MAVLink message. v1.0 is limited to 254 messages. */
-    int32_t interval_us; /*< The interval between two messages, in microseconds. A value of -1 indicates this stream is disabled, 0 indicates it is not available, > 0 indicates the interval at which it is sent. */
+    uint16_t message_id; /*<  The ID of the requested MAVLink message. v1.0 is limited to 254 messages. */
+    int32_t interval_us; /*< [us] The interval between two messages. A value of -1 indicates this stream is disabled, 0 indicates it is not available, > 0 indicates the interval at which it is sent. */
 
 
     inline std::string get_name(void) const override

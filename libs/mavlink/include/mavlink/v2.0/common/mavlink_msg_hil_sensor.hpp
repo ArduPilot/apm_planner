@@ -19,21 +19,21 @@ struct HIL_SENSOR : mavlink::Message {
     static constexpr auto NAME = "HIL_SENSOR";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot) */
-    float xacc; /*< X acceleration (m/s^2) */
-    float yacc; /*< Y acceleration (m/s^2) */
-    float zacc; /*< Z acceleration (m/s^2) */
-    float xgyro; /*< Angular speed around X axis in body frame (rad / sec) */
-    float ygyro; /*< Angular speed around Y axis in body frame (rad / sec) */
-    float zgyro; /*< Angular speed around Z axis in body frame (rad / sec) */
-    float xmag; /*< X Magnetic field (Gauss) */
-    float ymag; /*< Y Magnetic field (Gauss) */
-    float zmag; /*< Z Magnetic field (Gauss) */
-    float abs_pressure; /*< Absolute pressure in millibar */
-    float diff_pressure; /*< Differential pressure (airspeed) in millibar */
-    float pressure_alt; /*< Altitude calculated from pressure */
-    float temperature; /*< Temperature in degrees celsius */
-    uint32_t fields_updated; /*< Bitmask for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    float xacc; /*< [m/s/s] X acceleration */
+    float yacc; /*< [m/s/s] Y acceleration */
+    float zacc; /*< [m/s/s] Z acceleration */
+    float xgyro; /*< [rad/s] Angular speed around X axis in body frame */
+    float ygyro; /*< [rad/s] Angular speed around Y axis in body frame */
+    float zgyro; /*< [rad/s] Angular speed around Z axis in body frame */
+    float xmag; /*< [gauss] X Magnetic field */
+    float ymag; /*< [gauss] Y Magnetic field */
+    float zmag; /*< [gauss] Z Magnetic field */
+    float abs_pressure; /*< [mbar] Absolute pressure */
+    float diff_pressure; /*< [mbar] Differential pressure (airspeed) */
+    float pressure_alt; /*<  Altitude calculated from pressure */
+    float temperature; /*< [degC] Temperature */
+    uint32_t fields_updated; /*<  Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim. */
 
 
     inline std::string get_name(void) const override

@@ -19,10 +19,10 @@ struct TERRAIN_REQUEST : mavlink::Message {
     static constexpr auto NAME = "TERRAIN_REQUEST";
 
 
-    int32_t lat; /*< Latitude of SW corner of first grid (degrees *10^7) */
-    int32_t lon; /*< Longitude of SW corner of first grid (in degrees *10^7) */
-    uint16_t grid_spacing; /*< Grid spacing in meters */
-    uint64_t mask; /*< Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits) */
+    int32_t lat; /*< [degE7] Latitude of SW corner of first grid */
+    int32_t lon; /*< [degE7] Longitude of SW corner of first grid */
+    uint16_t grid_spacing; /*< [m] Grid spacing */
+    uint64_t mask; /*<  Bitmask of requested 4x4 grids (row major 8x7 array of grids, 56 bits) */
 
 
     inline std::string get_name(void) const override

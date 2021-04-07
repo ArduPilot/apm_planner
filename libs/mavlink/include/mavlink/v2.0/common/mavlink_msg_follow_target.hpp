@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief FOLLOW_TARGET message
  *
- * current motion information from a designated system
+ * Current motion information from a designated system
  */
 struct FOLLOW_TARGET : mavlink::Message {
     static constexpr msgid_t MSG_ID = 144;
@@ -19,17 +19,17 @@ struct FOLLOW_TARGET : mavlink::Message {
     static constexpr auto NAME = "FOLLOW_TARGET";
 
 
-    uint64_t timestamp; /*< Timestamp in milliseconds since system boot */
-    uint8_t est_capabilities; /*< bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3) */
-    int32_t lat; /*< Latitude (WGS84), in degrees * 1E7 */
-    int32_t lon; /*< Longitude (WGS84), in degrees * 1E7 */
-    float alt; /*< AMSL, in meters */
-    std::array<float, 3> vel; /*< target velocity (0,0,0) for unknown */
-    std::array<float, 3> acc; /*< linear target acceleration (0,0,0) for unknown */
-    std::array<float, 4> attitude_q; /*< (1 0 0 0 for unknown) */
-    std::array<float, 3> rates; /*< (0 0 0 for unknown) */
-    std::array<float, 3> position_cov; /*< eph epv */
-    uint64_t custom_state; /*< button states or switches of a tracker device */
+    uint64_t timestamp; /*< [ms] Timestamp (time since system boot). */
+    uint8_t est_capabilities; /*<  bit positions for tracker reporting capabilities (POS = 0, VEL = 1, ACCEL = 2, ATT + RATES = 3) */
+    int32_t lat; /*< [degE7] Latitude (WGS84) */
+    int32_t lon; /*< [degE7] Longitude (WGS84) */
+    float alt; /*< [m] Altitude (MSL) */
+    std::array<float, 3> vel; /*< [m/s] target velocity (0,0,0) for unknown */
+    std::array<float, 3> acc; /*< [m/s/s] linear target acceleration (0,0,0) for unknown */
+    std::array<float, 4> attitude_q; /*<  (1 0 0 0 for unknown) */
+    std::array<float, 3> rates; /*<  (0 0 0 for unknown) */
+    std::array<float, 3> position_cov; /*<  eph epv */
+    uint64_t custom_state; /*<  button states or switches of a tracker device */
 
 
     inline std::string get_name(void) const override

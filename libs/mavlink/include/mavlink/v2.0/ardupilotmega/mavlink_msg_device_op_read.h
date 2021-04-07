@@ -3,18 +3,18 @@
 
 #define MAVLINK_MSG_ID_DEVICE_OP_READ 11000
 
-MAVPACKED(
+
 typedef struct __mavlink_device_op_read_t {
- uint32_t request_id; /*< request ID - copied to reply*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t bustype; /*< The bus type*/
- uint8_t bus; /*< Bus number*/
- uint8_t address; /*< Bus address*/
- char busname[40]; /*< Name of device on bus (for SPI)*/
- uint8_t regstart; /*< First register to read*/
- uint8_t count; /*< count of registers to read*/
-}) mavlink_device_op_read_t;
+ uint32_t request_id; /*<  Request ID - copied to reply.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t bustype; /*<  The bus type.*/
+ uint8_t bus; /*<  Bus number.*/
+ uint8_t address; /*<  Bus address.*/
+ char busname[40]; /*<  Name of device on bus (for SPI).*/
+ uint8_t regstart; /*<  First register to read.*/
+ uint8_t count; /*<  Count of registers to read.*/
+} mavlink_device_op_read_t;
 
 #define MAVLINK_MSG_ID_DEVICE_OP_READ_LEN 51
 #define MAVLINK_MSG_ID_DEVICE_OP_READ_MIN_LEN 51
@@ -65,15 +65,15 @@ typedef struct __mavlink_device_op_read_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param request_id request ID - copied to reply
- * @param bustype The bus type
- * @param bus Bus number
- * @param address Bus address
- * @param busname Name of device on bus (for SPI)
- * @param regstart First register to read
- * @param count count of registers to read
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param request_id  Request ID - copied to reply.
+ * @param bustype  The bus type.
+ * @param bus  Bus number.
+ * @param address  Bus address.
+ * @param busname  Name of device on bus (for SPI).
+ * @param regstart  First register to read.
+ * @param count  Count of registers to read.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_device_op_read_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -115,15 +115,15 @@ static inline uint16_t mavlink_msg_device_op_read_pack(uint8_t system_id, uint8_
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param request_id request ID - copied to reply
- * @param bustype The bus type
- * @param bus Bus number
- * @param address Bus address
- * @param busname Name of device on bus (for SPI)
- * @param regstart First register to read
- * @param count count of registers to read
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param request_id  Request ID - copied to reply.
+ * @param bustype  The bus type.
+ * @param bus  Bus number.
+ * @param address  Bus address.
+ * @param busname  Name of device on bus (for SPI).
+ * @param regstart  First register to read.
+ * @param count  Count of registers to read.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_device_op_read_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -191,15 +191,15 @@ static inline uint16_t mavlink_msg_device_op_read_encode_chan(uint8_t system_id,
  * @brief Send a device_op_read message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param request_id request ID - copied to reply
- * @param bustype The bus type
- * @param bus Bus number
- * @param address Bus address
- * @param busname Name of device on bus (for SPI)
- * @param regstart First register to read
- * @param count count of registers to read
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param request_id  Request ID - copied to reply.
+ * @param bustype  The bus type.
+ * @param bus  Bus number.
+ * @param address  Bus address.
+ * @param busname  Name of device on bus (for SPI).
+ * @param regstart  First register to read.
+ * @param count  Count of registers to read.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -292,7 +292,7 @@ static inline void mavlink_msg_device_op_read_send_buf(mavlink_message_t *msgbuf
 /**
  * @brief Get field target_system from device_op_read message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_device_op_read_get_target_system(const mavlink_message_t* msg)
 {
@@ -302,7 +302,7 @@ static inline uint8_t mavlink_msg_device_op_read_get_target_system(const mavlink
 /**
  * @brief Get field target_component from device_op_read message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_device_op_read_get_target_component(const mavlink_message_t* msg)
 {
@@ -312,7 +312,7 @@ static inline uint8_t mavlink_msg_device_op_read_get_target_component(const mavl
 /**
  * @brief Get field request_id from device_op_read message
  *
- * @return request ID - copied to reply
+ * @return  Request ID - copied to reply.
  */
 static inline uint32_t mavlink_msg_device_op_read_get_request_id(const mavlink_message_t* msg)
 {
@@ -322,7 +322,7 @@ static inline uint32_t mavlink_msg_device_op_read_get_request_id(const mavlink_m
 /**
  * @brief Get field bustype from device_op_read message
  *
- * @return The bus type
+ * @return  The bus type.
  */
 static inline uint8_t mavlink_msg_device_op_read_get_bustype(const mavlink_message_t* msg)
 {
@@ -332,7 +332,7 @@ static inline uint8_t mavlink_msg_device_op_read_get_bustype(const mavlink_messa
 /**
  * @brief Get field bus from device_op_read message
  *
- * @return Bus number
+ * @return  Bus number.
  */
 static inline uint8_t mavlink_msg_device_op_read_get_bus(const mavlink_message_t* msg)
 {
@@ -342,7 +342,7 @@ static inline uint8_t mavlink_msg_device_op_read_get_bus(const mavlink_message_t
 /**
  * @brief Get field address from device_op_read message
  *
- * @return Bus address
+ * @return  Bus address.
  */
 static inline uint8_t mavlink_msg_device_op_read_get_address(const mavlink_message_t* msg)
 {
@@ -352,7 +352,7 @@ static inline uint8_t mavlink_msg_device_op_read_get_address(const mavlink_messa
 /**
  * @brief Get field busname from device_op_read message
  *
- * @return Name of device on bus (for SPI)
+ * @return  Name of device on bus (for SPI).
  */
 static inline uint16_t mavlink_msg_device_op_read_get_busname(const mavlink_message_t* msg, char *busname)
 {
@@ -362,7 +362,7 @@ static inline uint16_t mavlink_msg_device_op_read_get_busname(const mavlink_mess
 /**
  * @brief Get field regstart from device_op_read message
  *
- * @return First register to read
+ * @return  First register to read.
  */
 static inline uint8_t mavlink_msg_device_op_read_get_regstart(const mavlink_message_t* msg)
 {
@@ -372,7 +372,7 @@ static inline uint8_t mavlink_msg_device_op_read_get_regstart(const mavlink_mess
 /**
  * @brief Get field count from device_op_read message
  *
- * @return count of registers to read
+ * @return  Count of registers to read.
  */
 static inline uint8_t mavlink_msg_device_op_read_get_count(const mavlink_message_t* msg)
 {

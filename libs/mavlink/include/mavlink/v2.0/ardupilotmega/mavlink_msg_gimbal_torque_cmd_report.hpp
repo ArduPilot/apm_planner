@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GIMBAL_TORQUE_CMD_REPORT message
  *
- * 100 Hz gimbal torque command telemetry
+ * 100 Hz gimbal torque command telemetry.
  */
 struct GIMBAL_TORQUE_CMD_REPORT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 214;
@@ -19,11 +19,11 @@ struct GIMBAL_TORQUE_CMD_REPORT : mavlink::Message {
     static constexpr auto NAME = "GIMBAL_TORQUE_CMD_REPORT";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    int16_t rl_torque_cmd; /*< Roll Torque Command */
-    int16_t el_torque_cmd; /*< Elevation Torque Command */
-    int16_t az_torque_cmd; /*< Azimuth Torque Command */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    int16_t rl_torque_cmd; /*<  Roll Torque Command. */
+    int16_t el_torque_cmd; /*<  Elevation Torque Command. */
+    int16_t az_torque_cmd; /*<  Azimuth Torque Command. */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief RPM message
  *
- * RPM sensor output
+ * RPM sensor output.
  */
 struct RPM : mavlink::Message {
     static constexpr msgid_t MSG_ID = 226;
@@ -19,8 +19,8 @@ struct RPM : mavlink::Message {
     static constexpr auto NAME = "RPM";
 
 
-    float rpm1; /*< RPM Sensor1 */
-    float rpm2; /*< RPM Sensor2 */
+    float rpm1; /*<  RPM Sensor1. */
+    float rpm2; /*<  RPM Sensor2. */
 
 
     inline std::string get_name(void) const override

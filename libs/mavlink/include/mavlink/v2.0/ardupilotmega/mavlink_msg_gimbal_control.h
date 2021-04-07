@@ -3,14 +3,14 @@
 
 #define MAVLINK_MSG_ID_GIMBAL_CONTROL 201
 
-MAVPACKED(
+
 typedef struct __mavlink_gimbal_control_t {
- float demanded_rate_x; /*< Demanded angular rate X (rad/s)*/
- float demanded_rate_y; /*< Demanded angular rate Y (rad/s)*/
- float demanded_rate_z; /*< Demanded angular rate Z (rad/s)*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
-}) mavlink_gimbal_control_t;
+ float demanded_rate_x; /*< [rad/s] Demanded angular rate X.*/
+ float demanded_rate_y; /*< [rad/s] Demanded angular rate Y.*/
+ float demanded_rate_z; /*< [rad/s] Demanded angular rate Z.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+} mavlink_gimbal_control_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_CONTROL_LEN 14
 #define MAVLINK_MSG_ID_GIMBAL_CONTROL_MIN_LEN 14
@@ -53,11 +53,11 @@ typedef struct __mavlink_gimbal_control_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param demanded_rate_x Demanded angular rate X (rad/s)
- * @param demanded_rate_y Demanded angular rate Y (rad/s)
- * @param demanded_rate_z Demanded angular rate Z (rad/s)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param demanded_rate_x [rad/s] Demanded angular rate X.
+ * @param demanded_rate_y [rad/s] Demanded angular rate Y.
+ * @param demanded_rate_z [rad/s] Demanded angular rate Z.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gimbal_control_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -93,11 +93,11 @@ static inline uint16_t mavlink_msg_gimbal_control_pack(uint8_t system_id, uint8_
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param demanded_rate_x Demanded angular rate X (rad/s)
- * @param demanded_rate_y Demanded angular rate Y (rad/s)
- * @param demanded_rate_z Demanded angular rate Z (rad/s)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param demanded_rate_x [rad/s] Demanded angular rate X.
+ * @param demanded_rate_y [rad/s] Demanded angular rate Y.
+ * @param demanded_rate_z [rad/s] Demanded angular rate Z.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gimbal_control_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -159,11 +159,11 @@ static inline uint16_t mavlink_msg_gimbal_control_encode_chan(uint8_t system_id,
  * @brief Send a gimbal_control message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param demanded_rate_x Demanded angular rate X (rad/s)
- * @param demanded_rate_y Demanded angular rate Y (rad/s)
- * @param demanded_rate_z Demanded angular rate Z (rad/s)
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param demanded_rate_x [rad/s] Demanded angular rate X.
+ * @param demanded_rate_y [rad/s] Demanded angular rate Y.
+ * @param demanded_rate_z [rad/s] Demanded angular rate Z.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -244,7 +244,7 @@ static inline void mavlink_msg_gimbal_control_send_buf(mavlink_message_t *msgbuf
 /**
  * @brief Get field target_system from gimbal_control message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_gimbal_control_get_target_system(const mavlink_message_t* msg)
 {
@@ -254,7 +254,7 @@ static inline uint8_t mavlink_msg_gimbal_control_get_target_system(const mavlink
 /**
  * @brief Get field target_component from gimbal_control message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_gimbal_control_get_target_component(const mavlink_message_t* msg)
 {
@@ -264,7 +264,7 @@ static inline uint8_t mavlink_msg_gimbal_control_get_target_component(const mavl
 /**
  * @brief Get field demanded_rate_x from gimbal_control message
  *
- * @return Demanded angular rate X (rad/s)
+ * @return [rad/s] Demanded angular rate X.
  */
 static inline float mavlink_msg_gimbal_control_get_demanded_rate_x(const mavlink_message_t* msg)
 {
@@ -274,7 +274,7 @@ static inline float mavlink_msg_gimbal_control_get_demanded_rate_x(const mavlink
 /**
  * @brief Get field demanded_rate_y from gimbal_control message
  *
- * @return Demanded angular rate Y (rad/s)
+ * @return [rad/s] Demanded angular rate Y.
  */
 static inline float mavlink_msg_gimbal_control_get_demanded_rate_y(const mavlink_message_t* msg)
 {
@@ -284,7 +284,7 @@ static inline float mavlink_msg_gimbal_control_get_demanded_rate_y(const mavlink
 /**
  * @brief Get field demanded_rate_z from gimbal_control message
  *
- * @return Demanded angular rate Z (rad/s)
+ * @return [rad/s] Demanded angular rate Z.
  */
 static inline float mavlink_msg_gimbal_control_get_demanded_rate_z(const mavlink_message_t* msg)
 {

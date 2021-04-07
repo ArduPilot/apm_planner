@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief REMOTE_LOG_DATA_BLOCK message
  *
- * Send a block of log data to remote location
+ * Send a block of log data to remote location.
  */
 struct REMOTE_LOG_DATA_BLOCK : mavlink::Message {
     static constexpr msgid_t MSG_ID = 184;
@@ -19,10 +19,10 @@ struct REMOTE_LOG_DATA_BLOCK : mavlink::Message {
     static constexpr auto NAME = "REMOTE_LOG_DATA_BLOCK";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint32_t seqno; /*< log data block sequence number */
-    std::array<uint8_t, 200> data; /*< log data block */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint32_t seqno; /*<  Log data block sequence number. */
+    std::array<uint8_t, 200> data; /*<  Log data block. */
 
 
     inline std::string get_name(void) const override

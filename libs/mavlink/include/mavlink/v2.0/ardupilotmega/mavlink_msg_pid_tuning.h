@@ -3,16 +3,16 @@
 
 #define MAVLINK_MSG_ID_PID_TUNING 194
 
-MAVPACKED(
+
 typedef struct __mavlink_pid_tuning_t {
- float desired; /*< desired rate (degrees/s)*/
- float achieved; /*< achieved rate (degrees/s)*/
- float FF; /*< FF component*/
- float P; /*< P component*/
- float I; /*< I component*/
- float D; /*< D component*/
- uint8_t axis; /*< axis*/
-}) mavlink_pid_tuning_t;
+ float desired; /*< [deg/s] Desired rate.*/
+ float achieved; /*< [deg/s] Achieved rate.*/
+ float FF; /*<  FF component.*/
+ float P; /*<  P component.*/
+ float I; /*<  I component.*/
+ float D; /*<  D component.*/
+ uint8_t axis; /*<  Axis.*/
+} mavlink_pid_tuning_t;
 
 #define MAVLINK_MSG_ID_PID_TUNING_LEN 25
 #define MAVLINK_MSG_ID_PID_TUNING_MIN_LEN 25
@@ -59,13 +59,13 @@ typedef struct __mavlink_pid_tuning_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param axis axis
- * @param desired desired rate (degrees/s)
- * @param achieved achieved rate (degrees/s)
- * @param FF FF component
- * @param P P component
- * @param I I component
- * @param D D component
+ * @param axis  Axis.
+ * @param desired [deg/s] Desired rate.
+ * @param achieved [deg/s] Achieved rate.
+ * @param FF  FF component.
+ * @param P  P component.
+ * @param I  I component.
+ * @param D  D component.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_pid_tuning_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -105,13 +105,13 @@ static inline uint16_t mavlink_msg_pid_tuning_pack(uint8_t system_id, uint8_t co
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param axis axis
- * @param desired desired rate (degrees/s)
- * @param achieved achieved rate (degrees/s)
- * @param FF FF component
- * @param P P component
- * @param I I component
- * @param D D component
+ * @param axis  Axis.
+ * @param desired [deg/s] Desired rate.
+ * @param achieved [deg/s] Achieved rate.
+ * @param FF  FF component.
+ * @param P  P component.
+ * @param I  I component.
+ * @param D  D component.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_pid_tuning_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -177,13 +177,13 @@ static inline uint16_t mavlink_msg_pid_tuning_encode_chan(uint8_t system_id, uin
  * @brief Send a pid_tuning message
  * @param chan MAVLink channel to send the message
  *
- * @param axis axis
- * @param desired desired rate (degrees/s)
- * @param achieved achieved rate (degrees/s)
- * @param FF FF component
- * @param P P component
- * @param I I component
- * @param D D component
+ * @param axis  Axis.
+ * @param desired [deg/s] Desired rate.
+ * @param achieved [deg/s] Achieved rate.
+ * @param FF  FF component.
+ * @param P  P component.
+ * @param I  I component.
+ * @param D  D component.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -272,7 +272,7 @@ static inline void mavlink_msg_pid_tuning_send_buf(mavlink_message_t *msgbuf, ma
 /**
  * @brief Get field axis from pid_tuning message
  *
- * @return axis
+ * @return  Axis.
  */
 static inline uint8_t mavlink_msg_pid_tuning_get_axis(const mavlink_message_t* msg)
 {
@@ -282,7 +282,7 @@ static inline uint8_t mavlink_msg_pid_tuning_get_axis(const mavlink_message_t* m
 /**
  * @brief Get field desired from pid_tuning message
  *
- * @return desired rate (degrees/s)
+ * @return [deg/s] Desired rate.
  */
 static inline float mavlink_msg_pid_tuning_get_desired(const mavlink_message_t* msg)
 {
@@ -292,7 +292,7 @@ static inline float mavlink_msg_pid_tuning_get_desired(const mavlink_message_t* 
 /**
  * @brief Get field achieved from pid_tuning message
  *
- * @return achieved rate (degrees/s)
+ * @return [deg/s] Achieved rate.
  */
 static inline float mavlink_msg_pid_tuning_get_achieved(const mavlink_message_t* msg)
 {
@@ -302,7 +302,7 @@ static inline float mavlink_msg_pid_tuning_get_achieved(const mavlink_message_t*
 /**
  * @brief Get field FF from pid_tuning message
  *
- * @return FF component
+ * @return  FF component.
  */
 static inline float mavlink_msg_pid_tuning_get_FF(const mavlink_message_t* msg)
 {
@@ -312,7 +312,7 @@ static inline float mavlink_msg_pid_tuning_get_FF(const mavlink_message_t* msg)
 /**
  * @brief Get field P from pid_tuning message
  *
- * @return P component
+ * @return  P component.
  */
 static inline float mavlink_msg_pid_tuning_get_P(const mavlink_message_t* msg)
 {
@@ -322,7 +322,7 @@ static inline float mavlink_msg_pid_tuning_get_P(const mavlink_message_t* msg)
 /**
  * @brief Get field I from pid_tuning message
  *
- * @return I component
+ * @return  I component.
  */
 static inline float mavlink_msg_pid_tuning_get_I(const mavlink_message_t* msg)
 {
@@ -332,7 +332,7 @@ static inline float mavlink_msg_pid_tuning_get_I(const mavlink_message_t* msg)
 /**
  * @brief Get field D from pid_tuning message
  *
- * @return D component
+ * @return  D component.
  */
 static inline float mavlink_msg_pid_tuning_get_D(const mavlink_message_t* msg)
 {

@@ -3,11 +3,11 @@
 
 #define MAVLINK_MSG_ID_DEVICE_OP_WRITE_REPLY 11003
 
-MAVPACKED(
+
 typedef struct __mavlink_device_op_write_reply_t {
- uint32_t request_id; /*< request ID - copied from request*/
- uint8_t result; /*< 0 for success, anything else is failure code*/
-}) mavlink_device_op_write_reply_t;
+ uint32_t request_id; /*<  Request ID - copied from request.*/
+ uint8_t result; /*<  0 for success, anything else is failure code.*/
+} mavlink_device_op_write_reply_t;
 
 #define MAVLINK_MSG_ID_DEVICE_OP_WRITE_REPLY_LEN 5
 #define MAVLINK_MSG_ID_DEVICE_OP_WRITE_REPLY_MIN_LEN 5
@@ -44,8 +44,8 @@ typedef struct __mavlink_device_op_write_reply_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param request_id request ID - copied from request
- * @param result 0 for success, anything else is failure code
+ * @param request_id  Request ID - copied from request.
+ * @param result  0 for success, anything else is failure code.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_device_op_write_reply_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -75,8 +75,8 @@ static inline uint16_t mavlink_msg_device_op_write_reply_pack(uint8_t system_id,
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param request_id request ID - copied from request
- * @param result 0 for success, anything else is failure code
+ * @param request_id  Request ID - copied from request.
+ * @param result  0 for success, anything else is failure code.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_device_op_write_reply_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -132,8 +132,8 @@ static inline uint16_t mavlink_msg_device_op_write_reply_encode_chan(uint8_t sys
  * @brief Send a device_op_write_reply message
  * @param chan MAVLink channel to send the message
  *
- * @param request_id request ID - copied from request
- * @param result 0 for success, anything else is failure code
+ * @param request_id  Request ID - copied from request.
+ * @param result  0 for success, anything else is failure code.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -202,7 +202,7 @@ static inline void mavlink_msg_device_op_write_reply_send_buf(mavlink_message_t 
 /**
  * @brief Get field request_id from device_op_write_reply message
  *
- * @return request ID - copied from request
+ * @return  Request ID - copied from request.
  */
 static inline uint32_t mavlink_msg_device_op_write_reply_get_request_id(const mavlink_message_t* msg)
 {
@@ -212,7 +212,7 @@ static inline uint32_t mavlink_msg_device_op_write_reply_get_request_id(const ma
 /**
  * @brief Get field result from device_op_write_reply message
  *
- * @return 0 for success, anything else is failure code
+ * @return  0 for success, anything else is failure code.
  */
 static inline uint8_t mavlink_msg_device_op_write_reply_get_result(const mavlink_message_t* msg)
 {

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief AHRS3 message
  *
- * Status of third AHRS filter if available. This is for ANU research group (Ali and Sean)
+ * Status of third AHRS filter if available. This is for ANU research group (Ali and Sean).
  */
 struct AHRS3 : mavlink::Message {
     static constexpr msgid_t MSG_ID = 182;
@@ -19,16 +19,16 @@ struct AHRS3 : mavlink::Message {
     static constexpr auto NAME = "AHRS3";
 
 
-    float roll; /*< Roll angle (rad) */
-    float pitch; /*< Pitch angle (rad) */
-    float yaw; /*< Yaw angle (rad) */
-    float altitude; /*< Altitude (MSL) */
-    int32_t lat; /*< Latitude in degrees * 1E7 */
-    int32_t lng; /*< Longitude in degrees * 1E7 */
-    float v1; /*< test variable1 */
-    float v2; /*< test variable2 */
-    float v3; /*< test variable3 */
-    float v4; /*< test variable4 */
+    float roll; /*< [rad] Roll angle. */
+    float pitch; /*< [rad] Pitch angle. */
+    float yaw; /*< [rad] Yaw angle. */
+    float altitude; /*< [m] Altitude (MSL). */
+    int32_t lat; /*< [degE7] Latitude. */
+    int32_t lng; /*< [degE7] Longitude. */
+    float v1; /*<  Test variable1. */
+    float v2; /*<  Test variable2. */
+    float v3; /*<  Test variable3. */
+    float v4; /*<  Test variable4. */
 
 
     inline std::string get_name(void) const override

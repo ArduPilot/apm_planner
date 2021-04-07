@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief AOA_SSA message
  *
- * Angle of Attack and Side Slip Angle
+ * Angle of Attack and Side Slip Angle.
  */
 struct AOA_SSA : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11020;
@@ -19,9 +19,9 @@ struct AOA_SSA : mavlink::Message {
     static constexpr auto NAME = "AOA_SSA";
 
 
-    uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch) */
-    float AOA; /*< Angle of Attack (degrees) */
-    float SSA; /*< Side Slip Angle (degrees) */
+    uint64_t time_usec; /*< [us] Timestamp (since boot or Unix epoch). */
+    float AOA; /*< [deg] Angle of Attack. */
+    float SSA; /*< [deg] Side Slip Angle. */
 
 
     inline std::string get_name(void) const override

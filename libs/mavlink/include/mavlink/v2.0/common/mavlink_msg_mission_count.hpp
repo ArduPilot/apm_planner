@@ -19,10 +19,10 @@ struct MISSION_COUNT : mavlink::Message {
     static constexpr auto NAME = "MISSION_COUNT";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint16_t count; /*< Number of mission items in the sequence */
-    uint8_t mission_type; /*< Mission type, see MAV_MISSION_TYPE */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    uint16_t count; /*<  Number of mission items in the sequence */
+    uint8_t mission_type; /*<  Mission type. */
 
 
     inline std::string get_name(void) const override

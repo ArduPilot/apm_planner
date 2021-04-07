@@ -19,20 +19,20 @@ struct POSITION_TARGET_GLOBAL_INT : mavlink::Message {
     static constexpr auto NAME = "POSITION_TARGET_GLOBAL_INT";
 
 
-    uint32_t time_boot_ms; /*< Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency. */
-    uint8_t coordinate_frame; /*< Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11 */
-    uint16_t type_mask; /*< Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate */
-    int32_t lat_int; /*< X Position in WGS84 frame in 1e7 * degrees */
-    int32_t lon_int; /*< Y Position in WGS84 frame in 1e7 * degrees */
-    float alt; /*< Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT */
-    float vx; /*< X velocity in NED frame in meter / s */
-    float vy; /*< Y velocity in NED frame in meter / s */
-    float vz; /*< Z velocity in NED frame in meter / s */
-    float afx; /*< X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N */
-    float afy; /*< Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N */
-    float afz; /*< Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N */
-    float yaw; /*< yaw setpoint in rad */
-    float yaw_rate; /*< yaw rate setpoint in rad/s */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency. */
+    uint8_t coordinate_frame; /*<  Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11 */
+    uint16_t type_mask; /*<  Bitmap to indicate which dimensions should be ignored by the vehicle. */
+    int32_t lat_int; /*< [degE7] X Position in WGS84 frame */
+    int32_t lon_int; /*< [degE7] Y Position in WGS84 frame */
+    float alt; /*< [m] Altitude (MSL, AGL or relative to home altitude, depending on frame) */
+    float vx; /*< [m/s] X velocity in NED frame */
+    float vy; /*< [m/s] Y velocity in NED frame */
+    float vz; /*< [m/s] Z velocity in NED frame */
+    float afx; /*< [m/s/s] X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N */
+    float afy; /*< [m/s/s] Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N */
+    float afz; /*< [m/s/s] Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N */
+    float yaw; /*< [rad] yaw setpoint */
+    float yaw_rate; /*< [rad/s] yaw rate setpoint */
 
 
     inline std::string get_name(void) const override

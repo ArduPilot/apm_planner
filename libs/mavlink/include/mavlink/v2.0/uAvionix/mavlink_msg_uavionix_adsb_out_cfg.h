@@ -3,17 +3,17 @@
 
 #define MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG 10001
 
-MAVPACKED(
+
 typedef struct __mavlink_uavionix_adsb_out_cfg_t {
- uint32_t ICAO; /*< Vehicle address (24 bit)*/
- uint16_t stallSpeed; /*< Aircraft stall speed in cm/s*/
- char callsign[9]; /*< Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)*/
- uint8_t emitterType; /*< Transmitting vehicle type. See ADSB_EMITTER_TYPE enum*/
- uint8_t aircraftSize; /*< Aircraft length and width encoding (table 2-35 of DO-282B)*/
- uint8_t gpsOffsetLat; /*< GPS antenna lateral offset (table 2-36 of DO-282B)*/
- uint8_t gpsOffsetLon; /*< GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)*/
- uint8_t rfSelect; /*< ADS-B transponder reciever and transmit enable flags*/
-}) mavlink_uavionix_adsb_out_cfg_t;
+ uint32_t ICAO; /*<  Vehicle address (24 bit)*/
+ uint16_t stallSpeed; /*< [cm/s] Aircraft stall speed in cm/s*/
+ char callsign[9]; /*<  Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)*/
+ uint8_t emitterType; /*<  Transmitting vehicle type. See ADSB_EMITTER_TYPE enum*/
+ uint8_t aircraftSize; /*<  Aircraft length and width encoding (table 2-35 of DO-282B)*/
+ uint8_t gpsOffsetLat; /*<  GPS antenna lateral offset (table 2-36 of DO-282B)*/
+ uint8_t gpsOffsetLon; /*<  GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)*/
+ uint8_t rfSelect; /*<  ADS-B transponder reciever and transmit enable flags*/
+} mavlink_uavionix_adsb_out_cfg_t;
 
 #define MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_LEN 20
 #define MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG_MIN_LEN 20
@@ -62,14 +62,14 @@ typedef struct __mavlink_uavionix_adsb_out_cfg_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param ICAO Vehicle address (24 bit)
- * @param callsign Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
- * @param emitterType Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
- * @param aircraftSize Aircraft length and width encoding (table 2-35 of DO-282B)
- * @param gpsOffsetLat GPS antenna lateral offset (table 2-36 of DO-282B)
- * @param gpsOffsetLon GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
- * @param stallSpeed Aircraft stall speed in cm/s
- * @param rfSelect ADS-B transponder reciever and transmit enable flags
+ * @param ICAO  Vehicle address (24 bit)
+ * @param callsign  Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
+ * @param emitterType  Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
+ * @param aircraftSize  Aircraft length and width encoding (table 2-35 of DO-282B)
+ * @param gpsOffsetLat  GPS antenna lateral offset (table 2-36 of DO-282B)
+ * @param gpsOffsetLon  GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
+ * @param stallSpeed [cm/s] Aircraft stall speed in cm/s
+ * @param rfSelect  ADS-B transponder reciever and transmit enable flags
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -109,14 +109,14 @@ static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_pack(uint8_t system_id,
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param ICAO Vehicle address (24 bit)
- * @param callsign Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
- * @param emitterType Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
- * @param aircraftSize Aircraft length and width encoding (table 2-35 of DO-282B)
- * @param gpsOffsetLat GPS antenna lateral offset (table 2-36 of DO-282B)
- * @param gpsOffsetLon GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
- * @param stallSpeed Aircraft stall speed in cm/s
- * @param rfSelect ADS-B transponder reciever and transmit enable flags
+ * @param ICAO  Vehicle address (24 bit)
+ * @param callsign  Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
+ * @param emitterType  Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
+ * @param aircraftSize  Aircraft length and width encoding (table 2-35 of DO-282B)
+ * @param gpsOffsetLat  GPS antenna lateral offset (table 2-36 of DO-282B)
+ * @param gpsOffsetLon  GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
+ * @param stallSpeed [cm/s] Aircraft stall speed in cm/s
+ * @param rfSelect  ADS-B transponder reciever and transmit enable flags
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -182,14 +182,14 @@ static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_encode_chan(uint8_t sys
  * @brief Send a uavionix_adsb_out_cfg message
  * @param chan MAVLink channel to send the message
  *
- * @param ICAO Vehicle address (24 bit)
- * @param callsign Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
- * @param emitterType Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
- * @param aircraftSize Aircraft length and width encoding (table 2-35 of DO-282B)
- * @param gpsOffsetLat GPS antenna lateral offset (table 2-36 of DO-282B)
- * @param gpsOffsetLon GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
- * @param stallSpeed Aircraft stall speed in cm/s
- * @param rfSelect ADS-B transponder reciever and transmit enable flags
+ * @param ICAO  Vehicle address (24 bit)
+ * @param callsign  Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
+ * @param emitterType  Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
+ * @param aircraftSize  Aircraft length and width encoding (table 2-35 of DO-282B)
+ * @param gpsOffsetLat  GPS antenna lateral offset (table 2-36 of DO-282B)
+ * @param gpsOffsetLon  GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
+ * @param stallSpeed [cm/s] Aircraft stall speed in cm/s
+ * @param rfSelect  ADS-B transponder reciever and transmit enable flags
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -278,7 +278,7 @@ static inline void mavlink_msg_uavionix_adsb_out_cfg_send_buf(mavlink_message_t 
 /**
  * @brief Get field ICAO from uavionix_adsb_out_cfg message
  *
- * @return Vehicle address (24 bit)
+ * @return  Vehicle address (24 bit)
  */
 static inline uint32_t mavlink_msg_uavionix_adsb_out_cfg_get_ICAO(const mavlink_message_t* msg)
 {
@@ -288,7 +288,7 @@ static inline uint32_t mavlink_msg_uavionix_adsb_out_cfg_get_ICAO(const mavlink_
 /**
  * @brief Get field callsign from uavionix_adsb_out_cfg message
  *
- * @return Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
+ * @return  Vehicle identifier (8 characters, null terminated, valid characters are A-Z, 0-9, " " only)
  */
 static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_get_callsign(const mavlink_message_t* msg, char *callsign)
 {
@@ -298,7 +298,7 @@ static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_get_callsign(const mavl
 /**
  * @brief Get field emitterType from uavionix_adsb_out_cfg message
  *
- * @return Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
+ * @return  Transmitting vehicle type. See ADSB_EMITTER_TYPE enum
  */
 static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_emitterType(const mavlink_message_t* msg)
 {
@@ -308,7 +308,7 @@ static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_emitterType(const ma
 /**
  * @brief Get field aircraftSize from uavionix_adsb_out_cfg message
  *
- * @return Aircraft length and width encoding (table 2-35 of DO-282B)
+ * @return  Aircraft length and width encoding (table 2-35 of DO-282B)
  */
 static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_aircraftSize(const mavlink_message_t* msg)
 {
@@ -318,7 +318,7 @@ static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_aircraftSize(const m
 /**
  * @brief Get field gpsOffsetLat from uavionix_adsb_out_cfg message
  *
- * @return GPS antenna lateral offset (table 2-36 of DO-282B)
+ * @return  GPS antenna lateral offset (table 2-36 of DO-282B)
  */
 static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_gpsOffsetLat(const mavlink_message_t* msg)
 {
@@ -328,7 +328,7 @@ static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_gpsOffsetLat(const m
 /**
  * @brief Get field gpsOffsetLon from uavionix_adsb_out_cfg message
  *
- * @return GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
+ * @return  GPS antenna longitudinal offset from nose [if non-zero, take position (in meters) divide by 2 and add one] (table 2-37 DO-282B)
  */
 static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_gpsOffsetLon(const mavlink_message_t* msg)
 {
@@ -338,7 +338,7 @@ static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_gpsOffsetLon(const m
 /**
  * @brief Get field stallSpeed from uavionix_adsb_out_cfg message
  *
- * @return Aircraft stall speed in cm/s
+ * @return [cm/s] Aircraft stall speed in cm/s
  */
 static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_get_stallSpeed(const mavlink_message_t* msg)
 {
@@ -348,7 +348,7 @@ static inline uint16_t mavlink_msg_uavionix_adsb_out_cfg_get_stallSpeed(const ma
 /**
  * @brief Get field rfSelect from uavionix_adsb_out_cfg message
  *
- * @return ADS-B transponder reciever and transmit enable flags
+ * @return  ADS-B transponder reciever and transmit enable flags
  */
 static inline uint8_t mavlink_msg_uavionix_adsb_out_cfg_get_rfSelect(const mavlink_message_t* msg)
 {

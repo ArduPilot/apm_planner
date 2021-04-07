@@ -3,15 +3,15 @@
 
 #define MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4 11030
 
-MAVPACKED(
+
 typedef struct __mavlink_esc_telemetry_1_to_4_t {
- uint16_t voltage[4]; /*< Voltage*/
- uint16_t current[4]; /*< Current*/
- uint16_t totalcurrent[4]; /*< Total current*/
- uint16_t rpm[4]; /*< RPM (eRPM)*/
- uint16_t count[4]; /*< count of telemetry packets received (wraps at 65535)*/
- uint8_t temperature[4]; /*< Temperature*/
-}) mavlink_esc_telemetry_1_to_4_t;
+ uint16_t voltage[4]; /*< [cV] Voltage.*/
+ uint16_t current[4]; /*< [cA] Current.*/
+ uint16_t totalcurrent[4]; /*< [mAh] Total current.*/
+ uint16_t rpm[4]; /*< [rpm] RPM (eRPM).*/
+ uint16_t count[4]; /*<  count of telemetry packets received (wraps at 65535).*/
+ uint8_t temperature[4]; /*< [degC] Temperature.*/
+} mavlink_esc_telemetry_1_to_4_t;
 
 #define MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4_LEN 44
 #define MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4_MIN_LEN 44
@@ -61,12 +61,12 @@ typedef struct __mavlink_esc_telemetry_1_to_4_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param temperature Temperature
- * @param voltage Voltage
- * @param current Current
- * @param totalcurrent Total current
- * @param rpm RPM (eRPM)
- * @param count count of telemetry packets received (wraps at 65535)
+ * @param temperature [degC] Temperature.
+ * @param voltage [cV] Voltage.
+ * @param current [cA] Current.
+ * @param totalcurrent [mAh] Total current.
+ * @param rpm [rpm] RPM (eRPM).
+ * @param count  count of telemetry packets received (wraps at 65535).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -104,12 +104,12 @@ static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_pack(uint8_t system_id, 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param temperature Temperature
- * @param voltage Voltage
- * @param current Current
- * @param totalcurrent Total current
- * @param rpm RPM (eRPM)
- * @param count count of telemetry packets received (wraps at 65535)
+ * @param temperature [degC] Temperature.
+ * @param voltage [cV] Voltage.
+ * @param current [cA] Current.
+ * @param totalcurrent [mAh] Total current.
+ * @param rpm [rpm] RPM (eRPM).
+ * @param count  count of telemetry packets received (wraps at 65535).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -173,12 +173,12 @@ static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_encode_chan(uint8_t syst
  * @brief Send a esc_telemetry_1_to_4 message
  * @param chan MAVLink channel to send the message
  *
- * @param temperature Temperature
- * @param voltage Voltage
- * @param current Current
- * @param totalcurrent Total current
- * @param rpm RPM (eRPM)
- * @param count count of telemetry packets received (wraps at 65535)
+ * @param temperature [degC] Temperature.
+ * @param voltage [cV] Voltage.
+ * @param current [cA] Current.
+ * @param totalcurrent [mAh] Total current.
+ * @param rpm [rpm] RPM (eRPM).
+ * @param count  count of telemetry packets received (wraps at 65535).
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -263,7 +263,7 @@ static inline void mavlink_msg_esc_telemetry_1_to_4_send_buf(mavlink_message_t *
 /**
  * @brief Get field temperature from esc_telemetry_1_to_4 message
  *
- * @return Temperature
+ * @return [degC] Temperature.
  */
 static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_temperature(const mavlink_message_t* msg, uint8_t *temperature)
 {
@@ -273,7 +273,7 @@ static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_temperature(const ma
 /**
  * @brief Get field voltage from esc_telemetry_1_to_4 message
  *
- * @return Voltage
+ * @return [cV] Voltage.
  */
 static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_voltage(const mavlink_message_t* msg, uint16_t *voltage)
 {
@@ -283,7 +283,7 @@ static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_voltage(const mavlin
 /**
  * @brief Get field current from esc_telemetry_1_to_4 message
  *
- * @return Current
+ * @return [cA] Current.
  */
 static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_current(const mavlink_message_t* msg, uint16_t *current)
 {
@@ -293,7 +293,7 @@ static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_current(const mavlin
 /**
  * @brief Get field totalcurrent from esc_telemetry_1_to_4 message
  *
- * @return Total current
+ * @return [mAh] Total current.
  */
 static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_totalcurrent(const mavlink_message_t* msg, uint16_t *totalcurrent)
 {
@@ -303,7 +303,7 @@ static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_totalcurrent(const m
 /**
  * @brief Get field rpm from esc_telemetry_1_to_4 message
  *
- * @return RPM (eRPM)
+ * @return [rpm] RPM (eRPM).
  */
 static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_rpm(const mavlink_message_t* msg, uint16_t *rpm)
 {
@@ -313,7 +313,7 @@ static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_rpm(const mavlink_me
 /**
  * @brief Get field count from esc_telemetry_1_to_4 message
  *
- * @return count of telemetry packets received (wraps at 65535)
+ * @return  count of telemetry packets received (wraps at 65535).
  */
 static inline uint16_t mavlink_msg_esc_telemetry_1_to_4_get_count(const mavlink_message_t* msg, uint16_t *count)
 {

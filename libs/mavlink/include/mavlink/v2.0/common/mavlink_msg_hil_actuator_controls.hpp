@@ -19,10 +19,10 @@ struct HIL_ACTUATOR_CONTROLS : mavlink::Message {
     static constexpr auto NAME = "HIL_ACTUATOR_CONTROLS";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
-    std::array<float, 16> controls; /*< Control outputs -1 .. 1. Channel assignment depends on the simulated hardware. */
-    uint8_t mode; /*< System mode (MAV_MODE), includes arming state. */
-    uint64_t flags; /*< Flags as bitfield, reserved for future use. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    std::array<float, 16> controls; /*<  Control outputs -1 .. 1. Channel assignment depends on the simulated hardware. */
+    uint8_t mode; /*<  System mode. Includes arming state. */
+    uint64_t flags; /*<  Flags as bitfield, reserved for future use. */
 
 
     inline std::string get_name(void) const override

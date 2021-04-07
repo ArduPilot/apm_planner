@@ -19,9 +19,9 @@ struct RALLY_FETCH_POINT : mavlink::Message {
     static constexpr auto NAME = "RALLY_FETCH_POINT";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t idx; /*< point index (first point is 0) */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint8_t idx; /*<  Point index (first point is 0). */
 
 
     inline std::string get_name(void) const override

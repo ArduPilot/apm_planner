@@ -3,19 +3,19 @@
 
 #define MAVLINK_MSG_ID_DEVICE_OP_WRITE 11002
 
-MAVPACKED(
+
 typedef struct __mavlink_device_op_write_t {
- uint32_t request_id; /*< request ID - copied to reply*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t bustype; /*< The bus type*/
- uint8_t bus; /*< Bus number*/
- uint8_t address; /*< Bus address*/
- char busname[40]; /*< Name of device on bus (for SPI)*/
- uint8_t regstart; /*< First register to write*/
- uint8_t count; /*< count of registers to write*/
- uint8_t data[128]; /*< write data*/
-}) mavlink_device_op_write_t;
+ uint32_t request_id; /*<  Request ID - copied to reply.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t bustype; /*<  The bus type.*/
+ uint8_t bus; /*<  Bus number.*/
+ uint8_t address; /*<  Bus address.*/
+ char busname[40]; /*<  Name of device on bus (for SPI).*/
+ uint8_t regstart; /*<  First register to write.*/
+ uint8_t count; /*<  Count of registers to write.*/
+ uint8_t data[128]; /*<  Write data.*/
+} mavlink_device_op_write_t;
 
 #define MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN 179
 #define MAVLINK_MSG_ID_DEVICE_OP_WRITE_MIN_LEN 179
@@ -69,16 +69,16 @@ typedef struct __mavlink_device_op_write_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param request_id request ID - copied to reply
- * @param bustype The bus type
- * @param bus Bus number
- * @param address Bus address
- * @param busname Name of device on bus (for SPI)
- * @param regstart First register to write
- * @param count count of registers to write
- * @param data write data
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param request_id  Request ID - copied to reply.
+ * @param bustype  The bus type.
+ * @param bus  Bus number.
+ * @param address  Bus address.
+ * @param busname  Name of device on bus (for SPI).
+ * @param regstart  First register to write.
+ * @param count  Count of registers to write.
+ * @param data  Write data.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_device_op_write_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -122,16 +122,16 @@ static inline uint16_t mavlink_msg_device_op_write_pack(uint8_t system_id, uint8
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param request_id request ID - copied to reply
- * @param bustype The bus type
- * @param bus Bus number
- * @param address Bus address
- * @param busname Name of device on bus (for SPI)
- * @param regstart First register to write
- * @param count count of registers to write
- * @param data write data
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param request_id  Request ID - copied to reply.
+ * @param bustype  The bus type.
+ * @param bus  Bus number.
+ * @param address  Bus address.
+ * @param busname  Name of device on bus (for SPI).
+ * @param regstart  First register to write.
+ * @param count  Count of registers to write.
+ * @param data  Write data.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_device_op_write_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -201,16 +201,16 @@ static inline uint16_t mavlink_msg_device_op_write_encode_chan(uint8_t system_id
  * @brief Send a device_op_write message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param request_id request ID - copied to reply
- * @param bustype The bus type
- * @param bus Bus number
- * @param address Bus address
- * @param busname Name of device on bus (for SPI)
- * @param regstart First register to write
- * @param count count of registers to write
- * @param data write data
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param request_id  Request ID - copied to reply.
+ * @param bustype  The bus type.
+ * @param bus  Bus number.
+ * @param address  Bus address.
+ * @param busname  Name of device on bus (for SPI).
+ * @param regstart  First register to write.
+ * @param count  Count of registers to write.
+ * @param data  Write data.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -307,7 +307,7 @@ static inline void mavlink_msg_device_op_write_send_buf(mavlink_message_t *msgbu
 /**
  * @brief Get field target_system from device_op_write message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_device_op_write_get_target_system(const mavlink_message_t* msg)
 {
@@ -317,7 +317,7 @@ static inline uint8_t mavlink_msg_device_op_write_get_target_system(const mavlin
 /**
  * @brief Get field target_component from device_op_write message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_device_op_write_get_target_component(const mavlink_message_t* msg)
 {
@@ -327,7 +327,7 @@ static inline uint8_t mavlink_msg_device_op_write_get_target_component(const mav
 /**
  * @brief Get field request_id from device_op_write message
  *
- * @return request ID - copied to reply
+ * @return  Request ID - copied to reply.
  */
 static inline uint32_t mavlink_msg_device_op_write_get_request_id(const mavlink_message_t* msg)
 {
@@ -337,7 +337,7 @@ static inline uint32_t mavlink_msg_device_op_write_get_request_id(const mavlink_
 /**
  * @brief Get field bustype from device_op_write message
  *
- * @return The bus type
+ * @return  The bus type.
  */
 static inline uint8_t mavlink_msg_device_op_write_get_bustype(const mavlink_message_t* msg)
 {
@@ -347,7 +347,7 @@ static inline uint8_t mavlink_msg_device_op_write_get_bustype(const mavlink_mess
 /**
  * @brief Get field bus from device_op_write message
  *
- * @return Bus number
+ * @return  Bus number.
  */
 static inline uint8_t mavlink_msg_device_op_write_get_bus(const mavlink_message_t* msg)
 {
@@ -357,7 +357,7 @@ static inline uint8_t mavlink_msg_device_op_write_get_bus(const mavlink_message_
 /**
  * @brief Get field address from device_op_write message
  *
- * @return Bus address
+ * @return  Bus address.
  */
 static inline uint8_t mavlink_msg_device_op_write_get_address(const mavlink_message_t* msg)
 {
@@ -367,7 +367,7 @@ static inline uint8_t mavlink_msg_device_op_write_get_address(const mavlink_mess
 /**
  * @brief Get field busname from device_op_write message
  *
- * @return Name of device on bus (for SPI)
+ * @return  Name of device on bus (for SPI).
  */
 static inline uint16_t mavlink_msg_device_op_write_get_busname(const mavlink_message_t* msg, char *busname)
 {
@@ -377,7 +377,7 @@ static inline uint16_t mavlink_msg_device_op_write_get_busname(const mavlink_mes
 /**
  * @brief Get field regstart from device_op_write message
  *
- * @return First register to write
+ * @return  First register to write.
  */
 static inline uint8_t mavlink_msg_device_op_write_get_regstart(const mavlink_message_t* msg)
 {
@@ -387,7 +387,7 @@ static inline uint8_t mavlink_msg_device_op_write_get_regstart(const mavlink_mes
 /**
  * @brief Get field count from device_op_write message
  *
- * @return count of registers to write
+ * @return  Count of registers to write.
  */
 static inline uint8_t mavlink_msg_device_op_write_get_count(const mavlink_message_t* msg)
 {
@@ -397,7 +397,7 @@ static inline uint8_t mavlink_msg_device_op_write_get_count(const mavlink_messag
 /**
  * @brief Get field data from device_op_write message
  *
- * @return write data
+ * @return  Write data.
  */
 static inline uint16_t mavlink_msg_device_op_write_get_data(const mavlink_message_t* msg, uint8_t *data)
 {

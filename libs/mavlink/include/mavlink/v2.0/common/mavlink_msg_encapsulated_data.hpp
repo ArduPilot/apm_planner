@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief ENCAPSULATED_DATA message
  *
- * 
+ * Data packet for images sent using the Image Transmission Protocol: https://mavlink.io/en/services/image_transmission.html.
  */
 struct ENCAPSULATED_DATA : mavlink::Message {
     static constexpr msgid_t MSG_ID = 131;
@@ -19,8 +19,8 @@ struct ENCAPSULATED_DATA : mavlink::Message {
     static constexpr auto NAME = "ENCAPSULATED_DATA";
 
 
-    uint16_t seqnr; /*< sequence number (starting with 0 on every transmission) */
-    std::array<uint8_t, 253> data; /*< image data bytes */
+    uint16_t seqnr; /*<  sequence number (starting with 0 on every transmission) */
+    std::array<uint8_t, 253> data; /*<  image data bytes */
 
 
     inline std::string get_name(void) const override

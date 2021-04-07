@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DEVICE_OP_WRITE_REPLY message
  *
- * Write registers reply
+ * Write registers reply.
  */
 struct DEVICE_OP_WRITE_REPLY : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11003;
@@ -19,8 +19,8 @@ struct DEVICE_OP_WRITE_REPLY : mavlink::Message {
     static constexpr auto NAME = "DEVICE_OP_WRITE_REPLY";
 
 
-    uint32_t request_id; /*< request ID - copied from request */
-    uint8_t result; /*< 0 for success, anything else is failure code */
+    uint32_t request_id; /*<  Request ID - copied from request. */
+    uint8_t result; /*<  0 for success, anything else is failure code. */
 
 
     inline std::string get_name(void) const override

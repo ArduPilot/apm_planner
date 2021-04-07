@@ -3,11 +3,11 @@
 
 #define MAVLINK_MSG_ID_HWSTATUS 165
 
-MAVPACKED(
+
 typedef struct __mavlink_hwstatus_t {
- uint16_t Vcc; /*< board voltage (mV)*/
- uint8_t I2Cerr; /*< I2C error count*/
-}) mavlink_hwstatus_t;
+ uint16_t Vcc; /*< [mV] Board voltage.*/
+ uint8_t I2Cerr; /*<  I2C error count.*/
+} mavlink_hwstatus_t;
 
 #define MAVLINK_MSG_ID_HWSTATUS_LEN 3
 #define MAVLINK_MSG_ID_HWSTATUS_MIN_LEN 3
@@ -44,8 +44,8 @@ typedef struct __mavlink_hwstatus_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param Vcc board voltage (mV)
- * @param I2Cerr I2C error count
+ * @param Vcc [mV] Board voltage.
+ * @param I2Cerr  I2C error count.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_hwstatus_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -75,8 +75,8 @@ static inline uint16_t mavlink_msg_hwstatus_pack(uint8_t system_id, uint8_t comp
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param Vcc board voltage (mV)
- * @param I2Cerr I2C error count
+ * @param Vcc [mV] Board voltage.
+ * @param I2Cerr  I2C error count.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_hwstatus_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -132,8 +132,8 @@ static inline uint16_t mavlink_msg_hwstatus_encode_chan(uint8_t system_id, uint8
  * @brief Send a hwstatus message
  * @param chan MAVLink channel to send the message
  *
- * @param Vcc board voltage (mV)
- * @param I2Cerr I2C error count
+ * @param Vcc [mV] Board voltage.
+ * @param I2Cerr  I2C error count.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -202,7 +202,7 @@ static inline void mavlink_msg_hwstatus_send_buf(mavlink_message_t *msgbuf, mavl
 /**
  * @brief Get field Vcc from hwstatus message
  *
- * @return board voltage (mV)
+ * @return [mV] Board voltage.
  */
 static inline uint16_t mavlink_msg_hwstatus_get_Vcc(const mavlink_message_t* msg)
 {
@@ -212,7 +212,7 @@ static inline uint16_t mavlink_msg_hwstatus_get_Vcc(const mavlink_message_t* msg
 /**
  * @brief Get field I2Cerr from hwstatus message
  *
- * @return I2C error count
+ * @return  I2C error count.
  */
 static inline uint8_t mavlink_msg_hwstatus_get_I2Cerr(const mavlink_message_t* msg)
 {

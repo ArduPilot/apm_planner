@@ -19,22 +19,22 @@ struct HIL_STATE_QUATERNION : mavlink::Message {
     static constexpr auto NAME = "HIL_STATE_QUATERNION";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
-    std::array<float, 4> attitude_quaternion; /*< Vehicle attitude expressed as normalized quaternion in w, x, y, z order (with 1 0 0 0 being the null-rotation) */
-    float rollspeed; /*< Body frame roll / phi angular speed (rad/s) */
-    float pitchspeed; /*< Body frame pitch / theta angular speed (rad/s) */
-    float yawspeed; /*< Body frame yaw / psi angular speed (rad/s) */
-    int32_t lat; /*< Latitude, expressed as degrees * 1E7 */
-    int32_t lon; /*< Longitude, expressed as degrees * 1E7 */
-    int32_t alt; /*< Altitude in meters, expressed as * 1000 (millimeters) */
-    int16_t vx; /*< Ground X Speed (Latitude), expressed as cm/s */
-    int16_t vy; /*< Ground Y Speed (Longitude), expressed as cm/s */
-    int16_t vz; /*< Ground Z Speed (Altitude), expressed as cm/s */
-    uint16_t ind_airspeed; /*< Indicated airspeed, expressed as cm/s */
-    uint16_t true_airspeed; /*< True airspeed, expressed as cm/s */
-    int16_t xacc; /*< X acceleration (mg) */
-    int16_t yacc; /*< Y acceleration (mg) */
-    int16_t zacc; /*< Z acceleration (mg) */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    std::array<float, 4> attitude_quaternion; /*<  Vehicle attitude expressed as normalized quaternion in w, x, y, z order (with 1 0 0 0 being the null-rotation) */
+    float rollspeed; /*< [rad/s] Body frame roll / phi angular speed */
+    float pitchspeed; /*< [rad/s] Body frame pitch / theta angular speed */
+    float yawspeed; /*< [rad/s] Body frame yaw / psi angular speed */
+    int32_t lat; /*< [degE7] Latitude */
+    int32_t lon; /*< [degE7] Longitude */
+    int32_t alt; /*< [mm] Altitude */
+    int16_t vx; /*< [cm/s] Ground X Speed (Latitude) */
+    int16_t vy; /*< [cm/s] Ground Y Speed (Longitude) */
+    int16_t vz; /*< [cm/s] Ground Z Speed (Altitude) */
+    uint16_t ind_airspeed; /*< [cm/s] Indicated airspeed */
+    uint16_t true_airspeed; /*< [cm/s] True airspeed */
+    int16_t xacc; /*< [mG] X acceleration */
+    int16_t yacc; /*< [mG] Y acceleration */
+    int16_t zacc; /*< [mG] Z acceleration */
 
 
     inline std::string get_name(void) const override

@@ -19,13 +19,13 @@ struct TERRAIN_REPORT : mavlink::Message {
     static constexpr auto NAME = "TERRAIN_REPORT";
 
 
-    int32_t lat; /*< Latitude (degrees *10^7) */
-    int32_t lon; /*< Longitude (degrees *10^7) */
-    uint16_t spacing; /*< grid spacing (zero if terrain at this location unavailable) */
-    float terrain_height; /*< Terrain height in meters AMSL */
-    float current_height; /*< Current vehicle height above lat/lon terrain height (meters) */
-    uint16_t pending; /*< Number of 4x4 terrain blocks waiting to be received or read from disk */
-    uint16_t loaded; /*< Number of 4x4 terrain blocks in memory */
+    int32_t lat; /*< [degE7] Latitude */
+    int32_t lon; /*< [degE7] Longitude */
+    uint16_t spacing; /*<  grid spacing (zero if terrain at this location unavailable) */
+    float terrain_height; /*< [m] Terrain height MSL */
+    float current_height; /*< [m] Current vehicle height above lat/lon terrain height */
+    uint16_t pending; /*<  Number of 4x4 terrain blocks waiting to be received or read from disk */
+    uint16_t loaded; /*<  Number of 4x4 terrain blocks in memory */
 
 
     inline std::string get_name(void) const override

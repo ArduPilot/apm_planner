@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief LANDING_TARGET message
  *
- * The location of a landing area captured from a downward facing camera
+ * The location of a landing target. See: https://mavlink.io/en/services/landing_target.html
  */
 struct LANDING_TARGET : mavlink::Message {
     static constexpr msgid_t MSG_ID = 149;
@@ -19,20 +19,20 @@ struct LANDING_TARGET : mavlink::Message {
     static constexpr auto NAME = "LANDING_TARGET";
 
 
-    uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch) */
-    uint8_t target_num; /*< The ID of the target if multiple targets are present */
-    uint8_t frame; /*< MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc. */
-    float angle_x; /*< X-axis angular offset (in radians) of the target from the center of the image */
-    float angle_y; /*< Y-axis angular offset (in radians) of the target from the center of the image */
-    float distance; /*< Distance to the target from the vehicle in meters */
-    float size_x; /*< Size in radians of target along x-axis */
-    float size_y; /*< Size in radians of target along y-axis */
-    float x; /*< X Position of the landing target on MAV_FRAME */
-    float y; /*< Y Position of the landing target on MAV_FRAME */
-    float z; /*< Z Position of the landing target on MAV_FRAME */
-    std::array<float, 4> q; /*< Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0) */
-    uint8_t type; /*< LANDING_TARGET_TYPE enum specifying the type of landing target */
-    uint8_t position_valid; /*< Boolean indicating known position (1) or default unkown position (0), for validation of positioning of the landing target */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint8_t target_num; /*<  The ID of the target if multiple targets are present */
+    uint8_t frame; /*<  Coordinate frame used for following fields. */
+    float angle_x; /*< [rad] X-axis angular offset of the target from the center of the image */
+    float angle_y; /*< [rad] Y-axis angular offset of the target from the center of the image */
+    float distance; /*< [m] Distance to the target from the vehicle */
+    float size_x; /*< [rad] Size of target along x-axis */
+    float size_y; /*< [rad] Size of target along y-axis */
+    float x; /*< [m] X Position of the landing target in MAV_FRAME */
+    float y; /*< [m] Y Position of the landing target in MAV_FRAME */
+    float z; /*< [m] Z Position of the landing target in MAV_FRAME */
+    std::array<float, 4> q; /*<  Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0) */
+    uint8_t type; /*<  Type of landing target */
+    uint8_t position_valid; /*<  Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid). */
 
 
     inline std::string get_name(void) const override

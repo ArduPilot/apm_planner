@@ -19,8 +19,8 @@ struct LOG_ERASE : mavlink::Message {
     static constexpr auto NAME = "LOG_ERASE";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief PING message
  *
- * A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections.
+ * A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections. The ping microservice is documented at https://mavlink.io/en/services/ping.html
  */
 struct PING : mavlink::Message {
     static constexpr msgid_t MSG_ID = 4;
@@ -19,10 +19,10 @@ struct PING : mavlink::Message {
     static constexpr auto NAME = "PING";
 
 
-    uint64_t time_usec; /*< Unix timestamp in microseconds or since system boot if smaller than MAVLink epoch (1.1.2009) */
-    uint32_t seq; /*< PING sequence */
-    uint8_t target_system; /*< 0: request ping from all receiving systems, if greater than 0: message is a ping response and number is the system id of the requesting system */
-    uint8_t target_component; /*< 0: request ping from all receiving components, if greater than 0: message is a ping response and number is the system id of the requesting system */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint32_t seq; /*<  PING sequence */
+    uint8_t target_system; /*<  0: request ping from all receiving systems. If greater than 0: message is a ping response and number is the system id of the requesting system */
+    uint8_t target_component; /*<  0: request ping from all receiving components. If greater than 0: message is a ping response and number is the component id of the requesting component. */
 
 
     inline std::string get_name(void) const override

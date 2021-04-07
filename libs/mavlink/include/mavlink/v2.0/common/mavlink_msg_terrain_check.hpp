@@ -19,8 +19,8 @@ struct TERRAIN_CHECK : mavlink::Message {
     static constexpr auto NAME = "TERRAIN_CHECK";
 
 
-    int32_t lat; /*< Latitude (degrees *10^7) */
-    int32_t lon; /*< Longitude (degrees *10^7) */
+    int32_t lat; /*< [degE7] Latitude */
+    int32_t lon; /*< [degE7] Longitude */
 
 
     inline std::string get_name(void) const override

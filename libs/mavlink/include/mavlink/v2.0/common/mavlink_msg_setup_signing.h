@@ -3,13 +3,13 @@
 
 #define MAVLINK_MSG_ID_SETUP_SIGNING 256
 
-MAVPACKED(
+
 typedef struct __mavlink_setup_signing_t {
- uint64_t initial_timestamp; /*< initial timestamp*/
- uint8_t target_system; /*< system id of the target*/
- uint8_t target_component; /*< component ID of the target*/
- uint8_t secret_key[32]; /*< signing key*/
-}) mavlink_setup_signing_t;
+ uint64_t initial_timestamp; /*<  initial timestamp*/
+ uint8_t target_system; /*<  system id of the target*/
+ uint8_t target_component; /*<  component ID of the target*/
+ uint8_t secret_key[32]; /*<  signing key*/
+} mavlink_setup_signing_t;
 
 #define MAVLINK_MSG_ID_SETUP_SIGNING_LEN 42
 #define MAVLINK_MSG_ID_SETUP_SIGNING_MIN_LEN 42
@@ -50,10 +50,10 @@ typedef struct __mavlink_setup_signing_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system system id of the target
- * @param target_component component ID of the target
- * @param secret_key signing key
- * @param initial_timestamp initial timestamp
+ * @param target_system  system id of the target
+ * @param target_component  component ID of the target
+ * @param secret_key  signing key
+ * @param initial_timestamp  initial timestamp
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_setup_signing_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -85,10 +85,10 @@ static inline uint16_t mavlink_msg_setup_signing_pack(uint8_t system_id, uint8_t
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system system id of the target
- * @param target_component component ID of the target
- * @param secret_key signing key
- * @param initial_timestamp initial timestamp
+ * @param target_system  system id of the target
+ * @param target_component  component ID of the target
+ * @param secret_key  signing key
+ * @param initial_timestamp  initial timestamp
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_setup_signing_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -146,10 +146,10 @@ static inline uint16_t mavlink_msg_setup_signing_encode_chan(uint8_t system_id, 
  * @brief Send a setup_signing message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system system id of the target
- * @param target_component component ID of the target
- * @param secret_key signing key
- * @param initial_timestamp initial timestamp
+ * @param target_system  system id of the target
+ * @param target_component  component ID of the target
+ * @param secret_key  signing key
+ * @param initial_timestamp  initial timestamp
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -222,7 +222,7 @@ static inline void mavlink_msg_setup_signing_send_buf(mavlink_message_t *msgbuf,
 /**
  * @brief Get field target_system from setup_signing message
  *
- * @return system id of the target
+ * @return  system id of the target
  */
 static inline uint8_t mavlink_msg_setup_signing_get_target_system(const mavlink_message_t* msg)
 {
@@ -232,7 +232,7 @@ static inline uint8_t mavlink_msg_setup_signing_get_target_system(const mavlink_
 /**
  * @brief Get field target_component from setup_signing message
  *
- * @return component ID of the target
+ * @return  component ID of the target
  */
 static inline uint8_t mavlink_msg_setup_signing_get_target_component(const mavlink_message_t* msg)
 {
@@ -242,7 +242,7 @@ static inline uint8_t mavlink_msg_setup_signing_get_target_component(const mavli
 /**
  * @brief Get field secret_key from setup_signing message
  *
- * @return signing key
+ * @return  signing key
  */
 static inline uint16_t mavlink_msg_setup_signing_get_secret_key(const mavlink_message_t* msg, uint8_t *secret_key)
 {
@@ -252,7 +252,7 @@ static inline uint16_t mavlink_msg_setup_signing_get_secret_key(const mavlink_me
 /**
  * @brief Get field initial_timestamp from setup_signing message
  *
- * @return initial timestamp
+ * @return  initial timestamp
  */
 static inline uint64_t mavlink_msg_setup_signing_get_initial_timestamp(const mavlink_message_t* msg)
 {

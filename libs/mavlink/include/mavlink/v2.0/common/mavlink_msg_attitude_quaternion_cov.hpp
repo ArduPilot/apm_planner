@@ -19,12 +19,12 @@ struct ATTITUDE_QUATERNION_COV : mavlink::Message {
     static constexpr auto NAME = "ATTITUDE_QUATERNION_COV";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since system boot or since UNIX epoch) */
-    std::array<float, 4> q; /*< Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation) */
-    float rollspeed; /*< Roll angular speed (rad/s) */
-    float pitchspeed; /*< Pitch angular speed (rad/s) */
-    float yawspeed; /*< Yaw angular speed (rad/s) */
-    std::array<float, 9> covariance; /*< Attitude covariance */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    std::array<float, 4> q; /*<  Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation) */
+    float rollspeed; /*< [rad/s] Roll angular speed */
+    float pitchspeed; /*< [rad/s] Pitch angular speed */
+    float yawspeed; /*< [rad/s] Yaw angular speed */
+    std::array<float, 9> covariance; /*<  Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array. */
 
 
     inline std::string get_name(void) const override

@@ -3,15 +3,15 @@
 
 #define MAVLINK_MSG_ID_ATT_POS_MOCAP 138
 
-MAVPACKED(
+
 typedef struct __mavlink_att_pos_mocap_t {
- uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch)*/
- float q[4]; /*< Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)*/
- float x; /*< X position in meters (NED)*/
- float y; /*< Y position in meters (NED)*/
- float z; /*< Z position in meters (NED)*/
- float covariance[21]; /*< Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)*/
-}) mavlink_att_pos_mocap_t;
+ uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.*/
+ float q[4]; /*<  Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)*/
+ float x; /*< [m] X position (NED)*/
+ float y; /*< [m] Y position (NED)*/
+ float z; /*< [m] Z position (NED)*/
+ float covariance[21]; /*<  Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.*/
+} mavlink_att_pos_mocap_t;
 
 #define MAVLINK_MSG_ID_ATT_POS_MOCAP_LEN 120
 #define MAVLINK_MSG_ID_ATT_POS_MOCAP_MIN_LEN 36
@@ -57,12 +57,12 @@ typedef struct __mavlink_att_pos_mocap_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec Timestamp (micros since boot or Unix epoch)
- * @param q Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
- * @param x X position in meters (NED)
- * @param y Y position in meters (NED)
- * @param z Z position in meters (NED)
- * @param covariance Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param q  Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
+ * @param x [m] X position (NED)
+ * @param y [m] Y position (NED)
+ * @param z [m] Z position (NED)
+ * @param covariance  Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_att_pos_mocap_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -98,12 +98,12 @@ static inline uint16_t mavlink_msg_att_pos_mocap_pack(uint8_t system_id, uint8_t
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec Timestamp (micros since boot or Unix epoch)
- * @param q Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
- * @param x X position in meters (NED)
- * @param y Y position in meters (NED)
- * @param z Z position in meters (NED)
- * @param covariance Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param q  Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
+ * @param x [m] X position (NED)
+ * @param y [m] Y position (NED)
+ * @param z [m] Z position (NED)
+ * @param covariance  Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_att_pos_mocap_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -165,12 +165,12 @@ static inline uint16_t mavlink_msg_att_pos_mocap_encode_chan(uint8_t system_id, 
  * @brief Send a att_pos_mocap message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec Timestamp (micros since boot or Unix epoch)
- * @param q Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
- * @param x X position in meters (NED)
- * @param y Y position in meters (NED)
- * @param z Z position in meters (NED)
- * @param covariance Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param q  Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
+ * @param x [m] X position (NED)
+ * @param y [m] Y position (NED)
+ * @param z [m] Z position (NED)
+ * @param covariance  Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -251,7 +251,7 @@ static inline void mavlink_msg_att_pos_mocap_send_buf(mavlink_message_t *msgbuf,
 /**
  * @brief Get field time_usec from att_pos_mocap message
  *
- * @return Timestamp (micros since boot or Unix epoch)
+ * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
  */
 static inline uint64_t mavlink_msg_att_pos_mocap_get_time_usec(const mavlink_message_t* msg)
 {
@@ -261,7 +261,7 @@ static inline uint64_t mavlink_msg_att_pos_mocap_get_time_usec(const mavlink_mes
 /**
  * @brief Get field q from att_pos_mocap message
  *
- * @return Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
+ * @return  Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
  */
 static inline uint16_t mavlink_msg_att_pos_mocap_get_q(const mavlink_message_t* msg, float *q)
 {
@@ -271,7 +271,7 @@ static inline uint16_t mavlink_msg_att_pos_mocap_get_q(const mavlink_message_t* 
 /**
  * @brief Get field x from att_pos_mocap message
  *
- * @return X position in meters (NED)
+ * @return [m] X position (NED)
  */
 static inline float mavlink_msg_att_pos_mocap_get_x(const mavlink_message_t* msg)
 {
@@ -281,7 +281,7 @@ static inline float mavlink_msg_att_pos_mocap_get_x(const mavlink_message_t* msg
 /**
  * @brief Get field y from att_pos_mocap message
  *
- * @return Y position in meters (NED)
+ * @return [m] Y position (NED)
  */
 static inline float mavlink_msg_att_pos_mocap_get_y(const mavlink_message_t* msg)
 {
@@ -291,7 +291,7 @@ static inline float mavlink_msg_att_pos_mocap_get_y(const mavlink_message_t* msg
 /**
  * @brief Get field z from att_pos_mocap message
  *
- * @return Z position in meters (NED)
+ * @return [m] Z position (NED)
  */
 static inline float mavlink_msg_att_pos_mocap_get_z(const mavlink_message_t* msg)
 {
@@ -301,7 +301,7 @@ static inline float mavlink_msg_att_pos_mocap_get_z(const mavlink_message_t* msg
 /**
  * @brief Get field covariance from att_pos_mocap message
  *
- * @return Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)
+ * @return  Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.
  */
 static inline uint16_t mavlink_msg_att_pos_mocap_get_covariance(const mavlink_message_t* msg, float *covariance)
 {

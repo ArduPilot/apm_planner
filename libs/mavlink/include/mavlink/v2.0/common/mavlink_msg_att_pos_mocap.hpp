@@ -19,12 +19,12 @@ struct ATT_POS_MOCAP : mavlink::Message {
     static constexpr auto NAME = "ATT_POS_MOCAP";
 
 
-    uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch) */
-    std::array<float, 4> q; /*< Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0) */
-    float x; /*< X position in meters (NED) */
-    float y; /*< Y position in meters (NED) */
-    float z; /*< Z position in meters (NED) */
-    std::array<float, 21> covariance; /*< Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.) */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    std::array<float, 4> q; /*<  Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0) */
+    float x; /*< [m] X position (NED) */
+    float y; /*< [m] Y position (NED) */
+    float z; /*< [m] Z position (NED) */
+    std::array<float, 21> covariance; /*<  Row-major representation of a pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array. */
 
 
     inline std::string get_name(void) const override

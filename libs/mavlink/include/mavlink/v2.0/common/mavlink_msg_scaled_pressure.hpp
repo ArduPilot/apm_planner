@@ -19,10 +19,10 @@ struct SCALED_PRESSURE : mavlink::Message {
     static constexpr auto NAME = "SCALED_PRESSURE";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    float press_abs; /*< Absolute pressure (hectopascal) */
-    float press_diff; /*< Differential pressure 1 (hectopascal) */
-    int16_t temperature; /*< Temperature measurement (0.01 degrees celsius) */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    float press_abs; /*< [hPa] Absolute pressure */
+    float press_diff; /*< [hPa] Differential pressure 1 */
+    int16_t temperature; /*< [cdegC] Temperature */
 
 
     inline std::string get_name(void) const override

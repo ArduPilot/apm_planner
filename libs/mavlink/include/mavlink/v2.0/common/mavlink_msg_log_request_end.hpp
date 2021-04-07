@@ -19,8 +19,8 @@ struct LOG_REQUEST_END : mavlink::Message {
     static constexpr auto NAME = "LOG_REQUEST_END";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
 
 
     inline std::string get_name(void) const override

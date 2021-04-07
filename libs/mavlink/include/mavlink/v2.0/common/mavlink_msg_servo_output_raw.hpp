@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief SERVO_OUTPUT_RAW message
  *
- * The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.
+ * Superseded by ACTUATOR_OUTPUT_STATUS. The RAW values of the servo outputs (for RC input from the remote, use the RC_CHANNELS messages). The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%.
  */
 struct SERVO_OUTPUT_RAW : mavlink::Message {
     static constexpr msgid_t MSG_ID = 36;
@@ -19,24 +19,24 @@ struct SERVO_OUTPUT_RAW : mavlink::Message {
     static constexpr auto NAME = "SERVO_OUTPUT_RAW";
 
 
-    uint32_t time_usec; /*< Timestamp (microseconds since system boot) */
-    uint8_t port; /*< Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos. */
-    uint16_t servo1_raw; /*< Servo output 1 value, in microseconds */
-    uint16_t servo2_raw; /*< Servo output 2 value, in microseconds */
-    uint16_t servo3_raw; /*< Servo output 3 value, in microseconds */
-    uint16_t servo4_raw; /*< Servo output 4 value, in microseconds */
-    uint16_t servo5_raw; /*< Servo output 5 value, in microseconds */
-    uint16_t servo6_raw; /*< Servo output 6 value, in microseconds */
-    uint16_t servo7_raw; /*< Servo output 7 value, in microseconds */
-    uint16_t servo8_raw; /*< Servo output 8 value, in microseconds */
-    uint16_t servo9_raw; /*< Servo output 9 value, in microseconds */
-    uint16_t servo10_raw; /*< Servo output 10 value, in microseconds */
-    uint16_t servo11_raw; /*< Servo output 11 value, in microseconds */
-    uint16_t servo12_raw; /*< Servo output 12 value, in microseconds */
-    uint16_t servo13_raw; /*< Servo output 13 value, in microseconds */
-    uint16_t servo14_raw; /*< Servo output 14 value, in microseconds */
-    uint16_t servo15_raw; /*< Servo output 15 value, in microseconds */
-    uint16_t servo16_raw; /*< Servo output 16 value, in microseconds */
+    uint32_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint8_t port; /*<  Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX. */
+    uint16_t servo1_raw; /*< [us] Servo output 1 value */
+    uint16_t servo2_raw; /*< [us] Servo output 2 value */
+    uint16_t servo3_raw; /*< [us] Servo output 3 value */
+    uint16_t servo4_raw; /*< [us] Servo output 4 value */
+    uint16_t servo5_raw; /*< [us] Servo output 5 value */
+    uint16_t servo6_raw; /*< [us] Servo output 6 value */
+    uint16_t servo7_raw; /*< [us] Servo output 7 value */
+    uint16_t servo8_raw; /*< [us] Servo output 8 value */
+    uint16_t servo9_raw; /*< [us] Servo output 9 value */
+    uint16_t servo10_raw; /*< [us] Servo output 10 value */
+    uint16_t servo11_raw; /*< [us] Servo output 11 value */
+    uint16_t servo12_raw; /*< [us] Servo output 12 value */
+    uint16_t servo13_raw; /*< [us] Servo output 13 value */
+    uint16_t servo14_raw; /*< [us] Servo output 14 value */
+    uint16_t servo15_raw; /*< [us] Servo output 15 value */
+    uint16_t servo16_raw; /*< [us] Servo output 16 value */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief WIND message
  *
- * Wind estimation
+ * Wind estimation.
  */
 struct WIND : mavlink::Message {
     static constexpr msgid_t MSG_ID = 168;
@@ -19,9 +19,9 @@ struct WIND : mavlink::Message {
     static constexpr auto NAME = "WIND";
 
 
-    float direction; /*< wind direction that wind is coming from (degrees) */
-    float speed; /*< wind speed in ground plane (m/s) */
-    float speed_z; /*< vertical wind speed (m/s) */
+    float direction; /*< [deg] Wind direction (that wind is coming from). */
+    float speed; /*< [m/s] Wind speed in ground plane. */
+    float speed_z; /*< [m/s] Vertical wind speed. */
 
 
     inline std::string get_name(void) const override

@@ -3,13 +3,13 @@
 
 #define MAVLINK_MSG_ID_MISSION_REQUEST 40
 
-MAVPACKED(
+
 typedef struct __mavlink_mission_request_t {
- uint16_t seq; /*< Sequence*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t mission_type; /*< Mission type, see MAV_MISSION_TYPE*/
-}) mavlink_mission_request_t;
+ uint16_t seq; /*<  Sequence*/
+ uint8_t target_system; /*<  System ID*/
+ uint8_t target_component; /*<  Component ID*/
+ uint8_t mission_type; /*<  Mission type.*/
+} mavlink_mission_request_t;
 
 #define MAVLINK_MSG_ID_MISSION_REQUEST_LEN 5
 #define MAVLINK_MSG_ID_MISSION_REQUEST_MIN_LEN 4
@@ -50,10 +50,10 @@ typedef struct __mavlink_mission_request_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param seq Sequence
- * @param mission_type Mission type, see MAV_MISSION_TYPE
+ * @param target_system  System ID
+ * @param target_component  Component ID
+ * @param seq  Sequence
+ * @param mission_type  Mission type.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mission_request_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -87,10 +87,10 @@ static inline uint16_t mavlink_msg_mission_request_pack(uint8_t system_id, uint8
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param seq Sequence
- * @param mission_type Mission type, see MAV_MISSION_TYPE
+ * @param target_system  System ID
+ * @param target_component  Component ID
+ * @param seq  Sequence
+ * @param mission_type  Mission type.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mission_request_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -150,10 +150,10 @@ static inline uint16_t mavlink_msg_mission_request_encode_chan(uint8_t system_id
  * @brief Send a mission_request message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param seq Sequence
- * @param mission_type Mission type, see MAV_MISSION_TYPE
+ * @param target_system  System ID
+ * @param target_component  Component ID
+ * @param seq  Sequence
+ * @param mission_type  Mission type.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -230,7 +230,7 @@ static inline void mavlink_msg_mission_request_send_buf(mavlink_message_t *msgbu
 /**
  * @brief Get field target_system from mission_request message
  *
- * @return System ID
+ * @return  System ID
  */
 static inline uint8_t mavlink_msg_mission_request_get_target_system(const mavlink_message_t* msg)
 {
@@ -240,7 +240,7 @@ static inline uint8_t mavlink_msg_mission_request_get_target_system(const mavlin
 /**
  * @brief Get field target_component from mission_request message
  *
- * @return Component ID
+ * @return  Component ID
  */
 static inline uint8_t mavlink_msg_mission_request_get_target_component(const mavlink_message_t* msg)
 {
@@ -250,7 +250,7 @@ static inline uint8_t mavlink_msg_mission_request_get_target_component(const mav
 /**
  * @brief Get field seq from mission_request message
  *
- * @return Sequence
+ * @return  Sequence
  */
 static inline uint16_t mavlink_msg_mission_request_get_seq(const mavlink_message_t* msg)
 {
@@ -260,7 +260,7 @@ static inline uint16_t mavlink_msg_mission_request_get_seq(const mavlink_message
 /**
  * @brief Get field mission_type from mission_request message
  *
- * @return Mission type, see MAV_MISSION_TYPE
+ * @return  Mission type.
  */
 static inline uint8_t mavlink_msg_mission_request_get_mission_type(const mavlink_message_t* msg)
 {

@@ -3,10 +3,10 @@
 
 #define MAVLINK_MSG_ID_ICAROUS_HEARTBEAT 42000
 
-MAVPACKED(
+
 typedef struct __mavlink_icarous_heartbeat_t {
- uint8_t status; /*< See the FMS_STATE enum.*/
-}) mavlink_icarous_heartbeat_t;
+ uint8_t status; /*<  See the FMS_STATE enum.*/
+} mavlink_icarous_heartbeat_t;
 
 #define MAVLINK_MSG_ID_ICAROUS_HEARTBEAT_LEN 1
 #define MAVLINK_MSG_ID_ICAROUS_HEARTBEAT_MIN_LEN 1
@@ -41,7 +41,7 @@ typedef struct __mavlink_icarous_heartbeat_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param status See the FMS_STATE enum.
+ * @param status  See the FMS_STATE enum.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_icarous_heartbeat_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -69,7 +69,7 @@ static inline uint16_t mavlink_msg_icarous_heartbeat_pack(uint8_t system_id, uin
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param status See the FMS_STATE enum.
+ * @param status  See the FMS_STATE enum.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_icarous_heartbeat_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -123,7 +123,7 @@ static inline uint16_t mavlink_msg_icarous_heartbeat_encode_chan(uint8_t system_
  * @brief Send a icarous_heartbeat message
  * @param chan MAVLink channel to send the message
  *
- * @param status See the FMS_STATE enum.
+ * @param status  See the FMS_STATE enum.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -188,7 +188,7 @@ static inline void mavlink_msg_icarous_heartbeat_send_buf(mavlink_message_t *msg
 /**
  * @brief Get field status from icarous_heartbeat message
  *
- * @return See the FMS_STATE enum.
+ * @return  See the FMS_STATE enum.
  */
 static inline uint8_t mavlink_msg_icarous_heartbeat_get_status(const mavlink_message_t* msg)
 {

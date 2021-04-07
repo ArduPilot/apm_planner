@@ -19,12 +19,12 @@ struct SERIAL_CONTROL : mavlink::Message {
     static constexpr auto NAME = "SERIAL_CONTROL";
 
 
-    uint8_t device; /*< See SERIAL_CONTROL_DEV enum */
-    uint8_t flags; /*< See SERIAL_CONTROL_FLAG enum */
-    uint16_t timeout; /*< Timeout for reply data in milliseconds */
-    uint32_t baudrate; /*< Baudrate of transfer. Zero means no change. */
-    uint8_t count; /*< how many bytes in this transfer */
-    std::array<uint8_t, 70> data; /*< serial data */
+    uint8_t device; /*<  Serial control device type. */
+    uint8_t flags; /*<  Bitmap of serial control flags. */
+    uint16_t timeout; /*< [ms] Timeout for reply data */
+    uint32_t baudrate; /*< [bits/s] Baudrate of transfer. Zero means no change. */
+    uint8_t count; /*< [bytes] how many bytes in this transfer */
+    std::array<uint8_t, 70> data; /*<  serial data */
 
 
     inline std::string get_name(void) const override

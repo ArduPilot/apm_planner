@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief PID_TUNING message
  *
- * PID tuning information
+ * PID tuning information.
  */
 struct PID_TUNING : mavlink::Message {
     static constexpr msgid_t MSG_ID = 194;
@@ -19,13 +19,13 @@ struct PID_TUNING : mavlink::Message {
     static constexpr auto NAME = "PID_TUNING";
 
 
-    uint8_t axis; /*< axis */
-    float desired; /*< desired rate (degrees/s) */
-    float achieved; /*< achieved rate (degrees/s) */
-    float FF; /*< FF component */
-    float P; /*< P component */
-    float I; /*< I component */
-    float D; /*< D component */
+    uint8_t axis; /*<  Axis. */
+    float desired; /*< [deg/s] Desired rate. */
+    float achieved; /*< [deg/s] Achieved rate. */
+    float FF; /*<  FF component. */
+    float P; /*<  P component. */
+    float I; /*<  I component. */
+    float D; /*<  D component. */
 
 
     inline std::string get_name(void) const override

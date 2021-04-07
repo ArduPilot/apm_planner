@@ -3,20 +3,20 @@
 
 #define MAVLINK_MSG_ID_DIGICAM_CONFIGURE 154
 
-MAVPACKED(
+
 typedef struct __mavlink_digicam_configure_t {
- float extra_value; /*< Correspondent value to given extra_param*/
- uint16_t shutter_speed; /*< Divisor number //e.g. 1000 means 1/1000 (0 means ignore)*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t mode; /*< Mode enumeration from 1 to N //P, TV, AV, M, Etc (0 means ignore)*/
- uint8_t aperture; /*< F stop number x 10 //e.g. 28 means 2.8 (0 means ignore)*/
- uint8_t iso; /*< ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore)*/
- uint8_t exposure_type; /*< Exposure type enumeration from 1 to N (0 means ignore)*/
- uint8_t command_id; /*< Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once*/
- uint8_t engine_cut_off; /*< Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)*/
- uint8_t extra_param; /*< Extra parameters enumeration (0 means ignore)*/
-}) mavlink_digicam_configure_t;
+ float extra_value; /*<  Correspondent value to given extra_param.*/
+ uint16_t shutter_speed; /*<  Divisor number //e.g. 1000 means 1/1000 (0 means ignore).*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t mode; /*<  Mode enumeration from 1 to N //P, TV, AV, M, etc. (0 means ignore).*/
+ uint8_t aperture; /*<  F stop number x 10 //e.g. 28 means 2.8 (0 means ignore).*/
+ uint8_t iso; /*<  ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore).*/
+ uint8_t exposure_type; /*<  Exposure type enumeration from 1 to N (0 means ignore).*/
+ uint8_t command_id; /*<  Command Identity (incremental loop: 0 to 255). //A command sent multiple times will be executed or pooled just once.*/
+ uint8_t engine_cut_off; /*< [ds] Main engine cut-off time before camera trigger (0 means no cut-off).*/
+ uint8_t extra_param; /*<  Extra parameters enumeration (0 means ignore).*/
+} mavlink_digicam_configure_t;
 
 #define MAVLINK_MSG_ID_DIGICAM_CONFIGURE_LEN 15
 #define MAVLINK_MSG_ID_DIGICAM_CONFIGURE_MIN_LEN 15
@@ -71,17 +71,17 @@ typedef struct __mavlink_digicam_configure_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param mode Mode enumeration from 1 to N //P, TV, AV, M, Etc (0 means ignore)
- * @param shutter_speed Divisor number //e.g. 1000 means 1/1000 (0 means ignore)
- * @param aperture F stop number x 10 //e.g. 28 means 2.8 (0 means ignore)
- * @param iso ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore)
- * @param exposure_type Exposure type enumeration from 1 to N (0 means ignore)
- * @param command_id Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once
- * @param engine_cut_off Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)
- * @param extra_param Extra parameters enumeration (0 means ignore)
- * @param extra_value Correspondent value to given extra_param
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mode  Mode enumeration from 1 to N //P, TV, AV, M, etc. (0 means ignore).
+ * @param shutter_speed  Divisor number //e.g. 1000 means 1/1000 (0 means ignore).
+ * @param aperture  F stop number x 10 //e.g. 28 means 2.8 (0 means ignore).
+ * @param iso  ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore).
+ * @param exposure_type  Exposure type enumeration from 1 to N (0 means ignore).
+ * @param command_id  Command Identity (incremental loop: 0 to 255). //A command sent multiple times will be executed or pooled just once.
+ * @param engine_cut_off [ds] Main engine cut-off time before camera trigger (0 means no cut-off).
+ * @param extra_param  Extra parameters enumeration (0 means ignore).
+ * @param extra_value  Correspondent value to given extra_param.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_digicam_configure_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -129,17 +129,17 @@ static inline uint16_t mavlink_msg_digicam_configure_pack(uint8_t system_id, uin
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param mode Mode enumeration from 1 to N //P, TV, AV, M, Etc (0 means ignore)
- * @param shutter_speed Divisor number //e.g. 1000 means 1/1000 (0 means ignore)
- * @param aperture F stop number x 10 //e.g. 28 means 2.8 (0 means ignore)
- * @param iso ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore)
- * @param exposure_type Exposure type enumeration from 1 to N (0 means ignore)
- * @param command_id Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once
- * @param engine_cut_off Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)
- * @param extra_param Extra parameters enumeration (0 means ignore)
- * @param extra_value Correspondent value to given extra_param
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mode  Mode enumeration from 1 to N //P, TV, AV, M, etc. (0 means ignore).
+ * @param shutter_speed  Divisor number //e.g. 1000 means 1/1000 (0 means ignore).
+ * @param aperture  F stop number x 10 //e.g. 28 means 2.8 (0 means ignore).
+ * @param iso  ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore).
+ * @param exposure_type  Exposure type enumeration from 1 to N (0 means ignore).
+ * @param command_id  Command Identity (incremental loop: 0 to 255). //A command sent multiple times will be executed or pooled just once.
+ * @param engine_cut_off [ds] Main engine cut-off time before camera trigger (0 means no cut-off).
+ * @param extra_param  Extra parameters enumeration (0 means ignore).
+ * @param extra_value  Correspondent value to given extra_param.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_digicam_configure_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -213,17 +213,17 @@ static inline uint16_t mavlink_msg_digicam_configure_encode_chan(uint8_t system_
  * @brief Send a digicam_configure message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param mode Mode enumeration from 1 to N //P, TV, AV, M, Etc (0 means ignore)
- * @param shutter_speed Divisor number //e.g. 1000 means 1/1000 (0 means ignore)
- * @param aperture F stop number x 10 //e.g. 28 means 2.8 (0 means ignore)
- * @param iso ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore)
- * @param exposure_type Exposure type enumeration from 1 to N (0 means ignore)
- * @param command_id Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once
- * @param engine_cut_off Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)
- * @param extra_param Extra parameters enumeration (0 means ignore)
- * @param extra_value Correspondent value to given extra_param
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param mode  Mode enumeration from 1 to N //P, TV, AV, M, etc. (0 means ignore).
+ * @param shutter_speed  Divisor number //e.g. 1000 means 1/1000 (0 means ignore).
+ * @param aperture  F stop number x 10 //e.g. 28 means 2.8 (0 means ignore).
+ * @param iso  ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore).
+ * @param exposure_type  Exposure type enumeration from 1 to N (0 means ignore).
+ * @param command_id  Command Identity (incremental loop: 0 to 255). //A command sent multiple times will be executed or pooled just once.
+ * @param engine_cut_off [ds] Main engine cut-off time before camera trigger (0 means no cut-off).
+ * @param extra_param  Extra parameters enumeration (0 means ignore).
+ * @param extra_value  Correspondent value to given extra_param.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -328,7 +328,7 @@ static inline void mavlink_msg_digicam_configure_send_buf(mavlink_message_t *msg
 /**
  * @brief Get field target_system from digicam_configure message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_target_system(const mavlink_message_t* msg)
 {
@@ -338,7 +338,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_target_system(const mavl
 /**
  * @brief Get field target_component from digicam_configure message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_target_component(const mavlink_message_t* msg)
 {
@@ -348,7 +348,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_target_component(const m
 /**
  * @brief Get field mode from digicam_configure message
  *
- * @return Mode enumeration from 1 to N //P, TV, AV, M, Etc (0 means ignore)
+ * @return  Mode enumeration from 1 to N //P, TV, AV, M, etc. (0 means ignore).
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_mode(const mavlink_message_t* msg)
 {
@@ -358,7 +358,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_mode(const mavlink_messa
 /**
  * @brief Get field shutter_speed from digicam_configure message
  *
- * @return Divisor number //e.g. 1000 means 1/1000 (0 means ignore)
+ * @return  Divisor number //e.g. 1000 means 1/1000 (0 means ignore).
  */
 static inline uint16_t mavlink_msg_digicam_configure_get_shutter_speed(const mavlink_message_t* msg)
 {
@@ -368,7 +368,7 @@ static inline uint16_t mavlink_msg_digicam_configure_get_shutter_speed(const mav
 /**
  * @brief Get field aperture from digicam_configure message
  *
- * @return F stop number x 10 //e.g. 28 means 2.8 (0 means ignore)
+ * @return  F stop number x 10 //e.g. 28 means 2.8 (0 means ignore).
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_aperture(const mavlink_message_t* msg)
 {
@@ -378,7 +378,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_aperture(const mavlink_m
 /**
  * @brief Get field iso from digicam_configure message
  *
- * @return ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore)
+ * @return  ISO enumeration from 1 to N //e.g. 80, 100, 200, Etc (0 means ignore).
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_iso(const mavlink_message_t* msg)
 {
@@ -388,7 +388,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_iso(const mavlink_messag
 /**
  * @brief Get field exposure_type from digicam_configure message
  *
- * @return Exposure type enumeration from 1 to N (0 means ignore)
+ * @return  Exposure type enumeration from 1 to N (0 means ignore).
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_exposure_type(const mavlink_message_t* msg)
 {
@@ -398,7 +398,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_exposure_type(const mavl
 /**
  * @brief Get field command_id from digicam_configure message
  *
- * @return Command Identity (incremental loop: 0 to 255)//A command sent multiple times will be executed or pooled just once
+ * @return  Command Identity (incremental loop: 0 to 255). //A command sent multiple times will be executed or pooled just once.
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_command_id(const mavlink_message_t* msg)
 {
@@ -408,7 +408,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_command_id(const mavlink
 /**
  * @brief Get field engine_cut_off from digicam_configure message
  *
- * @return Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)
+ * @return [ds] Main engine cut-off time before camera trigger (0 means no cut-off).
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_engine_cut_off(const mavlink_message_t* msg)
 {
@@ -418,7 +418,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_engine_cut_off(const mav
 /**
  * @brief Get field extra_param from digicam_configure message
  *
- * @return Extra parameters enumeration (0 means ignore)
+ * @return  Extra parameters enumeration (0 means ignore).
  */
 static inline uint8_t mavlink_msg_digicam_configure_get_extra_param(const mavlink_message_t* msg)
 {
@@ -428,7 +428,7 @@ static inline uint8_t mavlink_msg_digicam_configure_get_extra_param(const mavlin
 /**
  * @brief Get field extra_value from digicam_configure message
  *
- * @return Correspondent value to given extra_param
+ * @return  Correspondent value to given extra_param.
  */
 static inline float mavlink_msg_digicam_configure_get_extra_value(const mavlink_message_t* msg)
 {

@@ -19,10 +19,10 @@ struct LOG_REQUEST_LIST : mavlink::Message {
     static constexpr auto NAME = "LOG_REQUEST_LIST";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint16_t start; /*< First log id (0 for first available) */
-    uint16_t end; /*< Last log id (0xffff for last available) */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    uint16_t start; /*<  First log id (0 for first available) */
+    uint16_t end; /*<  Last log id (0xffff for last available) */
 
 
     inline std::string get_name(void) const override

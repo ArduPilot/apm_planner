@@ -19,8 +19,8 @@ struct TIMESYNC : mavlink::Message {
     static constexpr auto NAME = "TIMESYNC";
 
 
-    int64_t tc1; /*< Time sync timestamp 1 */
-    int64_t ts1; /*< Time sync timestamp 2 */
+    int64_t tc1; /*<  Time sync timestamp 1 */
+    int64_t ts1; /*<  Time sync timestamp 2 */
 
 
     inline std::string get_name(void) const override

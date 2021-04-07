@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GPS_INJECT_DATA message
  *
- * data for injecting into the onboard GPS (used for DGPS)
+ * Data for injecting into the onboard GPS (used for DGPS)
  */
 struct GPS_INJECT_DATA : mavlink::Message {
     static constexpr msgid_t MSG_ID = 123;
@@ -19,10 +19,10 @@ struct GPS_INJECT_DATA : mavlink::Message {
     static constexpr auto NAME = "GPS_INJECT_DATA";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t len; /*< data length */
-    std::array<uint8_t, 110> data; /*< raw data (110 is enough for 12 satellites of RTCMv2) */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    uint8_t len; /*< [bytes] Data length */
+    std::array<uint8_t, 110> data; /*<  Raw data (110 is enough for 12 satellites of RTCMv2) */
 
 
     inline std::string get_name(void) const override

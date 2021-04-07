@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief ESC_TELEMETRY_1_TO_4 message
  *
- * ESC Telemetry Data for ESCs 1 to 4, matching data sent by BLHeli ESCs
+ * ESC Telemetry Data for ESCs 1 to 4, matching data sent by BLHeli ESCs.
  */
 struct ESC_TELEMETRY_1_TO_4 : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11030;
@@ -19,12 +19,12 @@ struct ESC_TELEMETRY_1_TO_4 : mavlink::Message {
     static constexpr auto NAME = "ESC_TELEMETRY_1_TO_4";
 
 
-    std::array<uint8_t, 4> temperature; /*< Temperature */
-    std::array<uint16_t, 4> voltage; /*< Voltage */
-    std::array<uint16_t, 4> current; /*< Current */
-    std::array<uint16_t, 4> totalcurrent; /*< Total current */
-    std::array<uint16_t, 4> rpm; /*< RPM (eRPM) */
-    std::array<uint16_t, 4> count; /*< count of telemetry packets received (wraps at 65535) */
+    std::array<uint8_t, 4> temperature; /*< [degC] Temperature. */
+    std::array<uint16_t, 4> voltage; /*< [cV] Voltage. */
+    std::array<uint16_t, 4> current; /*< [cA] Current. */
+    std::array<uint16_t, 4> totalcurrent; /*< [mAh] Total current. */
+    std::array<uint16_t, 4> rpm; /*< [rpm] RPM (eRPM). */
+    std::array<uint16_t, 4> count; /*<  count of telemetry packets received (wraps at 65535). */
 
 
     inline std::string get_name(void) const override

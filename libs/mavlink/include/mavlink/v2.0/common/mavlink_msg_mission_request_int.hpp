@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief MISSION_REQUEST_INT message
  *
- * Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM_INT message. https://mavlink.io/en/protocol/mission.html
+ * Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM_INT message. https://mavlink.io/en/services/mission.html
  */
 struct MISSION_REQUEST_INT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 51;
@@ -19,10 +19,10 @@ struct MISSION_REQUEST_INT : mavlink::Message {
     static constexpr auto NAME = "MISSION_REQUEST_INT";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint16_t seq; /*< Sequence */
-    uint8_t mission_type; /*< Mission type, see MAV_MISSION_TYPE */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    uint16_t seq; /*<  Sequence */
+    uint8_t mission_type; /*<  Mission type. */
 
 
     inline std::string get_name(void) const override

@@ -20,19 +20,19 @@ struct HIL_GPS : mavlink::Message {
     static constexpr auto NAME = "HIL_GPS";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
-    uint8_t fix_type; /*< 0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix. */
-    int32_t lat; /*< Latitude (WGS84), in degrees * 1E7 */
-    int32_t lon; /*< Longitude (WGS84), in degrees * 1E7 */
-    int32_t alt; /*< Altitude (AMSL, not WGS84), in meters * 1000 (positive for up) */
-    uint16_t eph; /*< GPS HDOP horizontal dilution of position in cm (m*100). If unknown, set to: 65535 */
-    uint16_t epv; /*< GPS VDOP vertical dilution of position in cm (m*100). If unknown, set to: 65535 */
-    uint16_t vel; /*< GPS ground speed in cm/s. If unknown, set to: 65535 */
-    int16_t vn; /*< GPS velocity in cm/s in NORTH direction in earth-fixed NED frame */
-    int16_t ve; /*< GPS velocity in cm/s in EAST direction in earth-fixed NED frame */
-    int16_t vd; /*< GPS velocity in cm/s in DOWN direction in earth-fixed NED frame */
-    uint16_t cog; /*< Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: 65535 */
-    uint8_t satellites_visible; /*< Number of satellites visible. If unknown, set to 255 */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint8_t fix_type; /*<  0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix. */
+    int32_t lat; /*< [degE7] Latitude (WGS84) */
+    int32_t lon; /*< [degE7] Longitude (WGS84) */
+    int32_t alt; /*< [mm] Altitude (MSL). Positive for up. */
+    uint16_t eph; /*< [cm] GPS HDOP horizontal dilution of position. If unknown, set to: 65535 */
+    uint16_t epv; /*< [cm] GPS VDOP vertical dilution of position. If unknown, set to: 65535 */
+    uint16_t vel; /*< [cm/s] GPS ground speed. If unknown, set to: 65535 */
+    int16_t vn; /*< [cm/s] GPS velocity in north direction in earth-fixed NED frame */
+    int16_t ve; /*< [cm/s] GPS velocity in east direction in earth-fixed NED frame */
+    int16_t vd; /*< [cm/s] GPS velocity in down direction in earth-fixed NED frame */
+    uint16_t cog; /*< [cdeg] Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees. If unknown, set to: 65535 */
+    uint8_t satellites_visible; /*<  Number of satellites visible. If unknown, set to 255 */
 
 
     inline std::string get_name(void) const override

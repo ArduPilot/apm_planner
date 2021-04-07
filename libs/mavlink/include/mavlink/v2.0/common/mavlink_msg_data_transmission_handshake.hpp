@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DATA_TRANSMISSION_HANDSHAKE message
  *
- * 
+ * Handshake message to initiate, control and stop image streaming when using the Image Transmission Protocol: https://mavlink.io/en/services/image_transmission.html.
  */
 struct DATA_TRANSMISSION_HANDSHAKE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 130;
@@ -19,13 +19,13 @@ struct DATA_TRANSMISSION_HANDSHAKE : mavlink::Message {
     static constexpr auto NAME = "DATA_TRANSMISSION_HANDSHAKE";
 
 
-    uint8_t type; /*< type of requested/acknowledged data (as defined in ENUM DATA_TYPES in mavlink/include/mavlink_types.h) */
-    uint32_t size; /*< total data size in bytes (set on ACK only) */
-    uint16_t width; /*< Width of a matrix or image */
-    uint16_t height; /*< Height of a matrix or image */
-    uint16_t packets; /*< number of packets beeing sent (set on ACK only) */
-    uint8_t payload; /*< payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only) */
-    uint8_t jpg_quality; /*< JPEG quality out of [1,100] */
+    uint8_t type; /*<  Type of requested/acknowledged data. */
+    uint32_t size; /*< [bytes] total data size (set on ACK only). */
+    uint16_t width; /*<  Width of a matrix or image. */
+    uint16_t height; /*<  Height of a matrix or image. */
+    uint16_t packets; /*<  Number of packets being sent (set on ACK only). */
+    uint8_t payload; /*< [bytes] Payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only). */
+    uint8_t jpg_quality; /*< [%] JPEG quality. Values: [1-100]. */
 
 
     inline std::string get_name(void) const override

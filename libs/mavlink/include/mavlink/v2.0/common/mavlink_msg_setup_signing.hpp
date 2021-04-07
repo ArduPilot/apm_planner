@@ -19,10 +19,10 @@ struct SETUP_SIGNING : mavlink::Message {
     static constexpr auto NAME = "SETUP_SIGNING";
 
 
-    uint8_t target_system; /*< system id of the target */
-    uint8_t target_component; /*< component ID of the target */
-    std::array<uint8_t, 32> secret_key; /*< signing key */
-    uint64_t initial_timestamp; /*< initial timestamp */
+    uint8_t target_system; /*<  system id of the target */
+    uint8_t target_component; /*<  component ID of the target */
+    std::array<uint8_t, 32> secret_key; /*<  signing key */
+    uint64_t initial_timestamp; /*<  initial timestamp */
 
 
     inline std::string get_name(void) const override

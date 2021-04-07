@@ -3,22 +3,22 @@
 
 #define MAVLINK_MSG_ID_GPS_RTK 127
 
-MAVPACKED(
+
 typedef struct __mavlink_gps_rtk_t {
- uint32_t time_last_baseline_ms; /*< Time since boot of last baseline message received in ms.*/
- uint32_t tow; /*< GPS Time of Week of last baseline*/
- int32_t baseline_a_mm; /*< Current baseline in ECEF x or NED north component in mm.*/
- int32_t baseline_b_mm; /*< Current baseline in ECEF y or NED east component in mm.*/
- int32_t baseline_c_mm; /*< Current baseline in ECEF z or NED down component in mm.*/
- uint32_t accuracy; /*< Current estimate of baseline accuracy.*/
- int32_t iar_num_hypotheses; /*< Current number of integer ambiguity hypotheses.*/
- uint16_t wn; /*< GPS Week Number of last baseline*/
- uint8_t rtk_receiver_id; /*< Identification of connected RTK receiver.*/
- uint8_t rtk_health; /*< GPS-specific health report for RTK data.*/
- uint8_t rtk_rate; /*< Rate of baseline messages being received by GPS, in HZ*/
- uint8_t nsats; /*< Current number of sats used for RTK calculation.*/
- uint8_t baseline_coords_type; /*< Coordinate system of baseline*/
-}) mavlink_gps_rtk_t;
+ uint32_t time_last_baseline_ms; /*< [ms] Time since boot of last baseline message received.*/
+ uint32_t tow; /*< [ms] GPS Time of Week of last baseline*/
+ int32_t baseline_a_mm; /*< [mm] Current baseline in ECEF x or NED north component.*/
+ int32_t baseline_b_mm; /*< [mm] Current baseline in ECEF y or NED east component.*/
+ int32_t baseline_c_mm; /*< [mm] Current baseline in ECEF z or NED down component.*/
+ uint32_t accuracy; /*<  Current estimate of baseline accuracy.*/
+ int32_t iar_num_hypotheses; /*<  Current number of integer ambiguity hypotheses.*/
+ uint16_t wn; /*<  GPS Week Number of last baseline*/
+ uint8_t rtk_receiver_id; /*<  Identification of connected RTK receiver.*/
+ uint8_t rtk_health; /*<  GPS-specific health report for RTK data.*/
+ uint8_t rtk_rate; /*< [Hz] Rate of baseline messages being received by GPS*/
+ uint8_t nsats; /*<  Current number of sats used for RTK calculation.*/
+ uint8_t baseline_coords_type; /*<  Coordinate system of baseline*/
+} mavlink_gps_rtk_t;
 
 #define MAVLINK_MSG_ID_GPS_RTK_LEN 35
 #define MAVLINK_MSG_ID_GPS_RTK_MIN_LEN 35
@@ -77,19 +77,19 @@ typedef struct __mavlink_gps_rtk_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_last_baseline_ms Time since boot of last baseline message received in ms.
- * @param rtk_receiver_id Identification of connected RTK receiver.
- * @param wn GPS Week Number of last baseline
- * @param tow GPS Time of Week of last baseline
- * @param rtk_health GPS-specific health report for RTK data.
- * @param rtk_rate Rate of baseline messages being received by GPS, in HZ
- * @param nsats Current number of sats used for RTK calculation.
- * @param baseline_coords_type Coordinate system of baseline
- * @param baseline_a_mm Current baseline in ECEF x or NED north component in mm.
- * @param baseline_b_mm Current baseline in ECEF y or NED east component in mm.
- * @param baseline_c_mm Current baseline in ECEF z or NED down component in mm.
- * @param accuracy Current estimate of baseline accuracy.
- * @param iar_num_hypotheses Current number of integer ambiguity hypotheses.
+ * @param time_last_baseline_ms [ms] Time since boot of last baseline message received.
+ * @param rtk_receiver_id  Identification of connected RTK receiver.
+ * @param wn  GPS Week Number of last baseline
+ * @param tow [ms] GPS Time of Week of last baseline
+ * @param rtk_health  GPS-specific health report for RTK data.
+ * @param rtk_rate [Hz] Rate of baseline messages being received by GPS
+ * @param nsats  Current number of sats used for RTK calculation.
+ * @param baseline_coords_type  Coordinate system of baseline
+ * @param baseline_a_mm [mm] Current baseline in ECEF x or NED north component.
+ * @param baseline_b_mm [mm] Current baseline in ECEF y or NED east component.
+ * @param baseline_c_mm [mm] Current baseline in ECEF z or NED down component.
+ * @param accuracy  Current estimate of baseline accuracy.
+ * @param iar_num_hypotheses  Current number of integer ambiguity hypotheses.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gps_rtk_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -141,19 +141,19 @@ static inline uint16_t mavlink_msg_gps_rtk_pack(uint8_t system_id, uint8_t compo
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_last_baseline_ms Time since boot of last baseline message received in ms.
- * @param rtk_receiver_id Identification of connected RTK receiver.
- * @param wn GPS Week Number of last baseline
- * @param tow GPS Time of Week of last baseline
- * @param rtk_health GPS-specific health report for RTK data.
- * @param rtk_rate Rate of baseline messages being received by GPS, in HZ
- * @param nsats Current number of sats used for RTK calculation.
- * @param baseline_coords_type Coordinate system of baseline
- * @param baseline_a_mm Current baseline in ECEF x or NED north component in mm.
- * @param baseline_b_mm Current baseline in ECEF y or NED east component in mm.
- * @param baseline_c_mm Current baseline in ECEF z or NED down component in mm.
- * @param accuracy Current estimate of baseline accuracy.
- * @param iar_num_hypotheses Current number of integer ambiguity hypotheses.
+ * @param time_last_baseline_ms [ms] Time since boot of last baseline message received.
+ * @param rtk_receiver_id  Identification of connected RTK receiver.
+ * @param wn  GPS Week Number of last baseline
+ * @param tow [ms] GPS Time of Week of last baseline
+ * @param rtk_health  GPS-specific health report for RTK data.
+ * @param rtk_rate [Hz] Rate of baseline messages being received by GPS
+ * @param nsats  Current number of sats used for RTK calculation.
+ * @param baseline_coords_type  Coordinate system of baseline
+ * @param baseline_a_mm [mm] Current baseline in ECEF x or NED north component.
+ * @param baseline_b_mm [mm] Current baseline in ECEF y or NED east component.
+ * @param baseline_c_mm [mm] Current baseline in ECEF z or NED down component.
+ * @param accuracy  Current estimate of baseline accuracy.
+ * @param iar_num_hypotheses  Current number of integer ambiguity hypotheses.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_gps_rtk_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -231,19 +231,19 @@ static inline uint16_t mavlink_msg_gps_rtk_encode_chan(uint8_t system_id, uint8_
  * @brief Send a gps_rtk message
  * @param chan MAVLink channel to send the message
  *
- * @param time_last_baseline_ms Time since boot of last baseline message received in ms.
- * @param rtk_receiver_id Identification of connected RTK receiver.
- * @param wn GPS Week Number of last baseline
- * @param tow GPS Time of Week of last baseline
- * @param rtk_health GPS-specific health report for RTK data.
- * @param rtk_rate Rate of baseline messages being received by GPS, in HZ
- * @param nsats Current number of sats used for RTK calculation.
- * @param baseline_coords_type Coordinate system of baseline
- * @param baseline_a_mm Current baseline in ECEF x or NED north component in mm.
- * @param baseline_b_mm Current baseline in ECEF y or NED east component in mm.
- * @param baseline_c_mm Current baseline in ECEF z or NED down component in mm.
- * @param accuracy Current estimate of baseline accuracy.
- * @param iar_num_hypotheses Current number of integer ambiguity hypotheses.
+ * @param time_last_baseline_ms [ms] Time since boot of last baseline message received.
+ * @param rtk_receiver_id  Identification of connected RTK receiver.
+ * @param wn  GPS Week Number of last baseline
+ * @param tow [ms] GPS Time of Week of last baseline
+ * @param rtk_health  GPS-specific health report for RTK data.
+ * @param rtk_rate [Hz] Rate of baseline messages being received by GPS
+ * @param nsats  Current number of sats used for RTK calculation.
+ * @param baseline_coords_type  Coordinate system of baseline
+ * @param baseline_a_mm [mm] Current baseline in ECEF x or NED north component.
+ * @param baseline_b_mm [mm] Current baseline in ECEF y or NED east component.
+ * @param baseline_c_mm [mm] Current baseline in ECEF z or NED down component.
+ * @param accuracy  Current estimate of baseline accuracy.
+ * @param iar_num_hypotheses  Current number of integer ambiguity hypotheses.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -356,7 +356,7 @@ static inline void mavlink_msg_gps_rtk_send_buf(mavlink_message_t *msgbuf, mavli
 /**
  * @brief Get field time_last_baseline_ms from gps_rtk message
  *
- * @return Time since boot of last baseline message received in ms.
+ * @return [ms] Time since boot of last baseline message received.
  */
 static inline uint32_t mavlink_msg_gps_rtk_get_time_last_baseline_ms(const mavlink_message_t* msg)
 {
@@ -366,7 +366,7 @@ static inline uint32_t mavlink_msg_gps_rtk_get_time_last_baseline_ms(const mavli
 /**
  * @brief Get field rtk_receiver_id from gps_rtk message
  *
- * @return Identification of connected RTK receiver.
+ * @return  Identification of connected RTK receiver.
  */
 static inline uint8_t mavlink_msg_gps_rtk_get_rtk_receiver_id(const mavlink_message_t* msg)
 {
@@ -376,7 +376,7 @@ static inline uint8_t mavlink_msg_gps_rtk_get_rtk_receiver_id(const mavlink_mess
 /**
  * @brief Get field wn from gps_rtk message
  *
- * @return GPS Week Number of last baseline
+ * @return  GPS Week Number of last baseline
  */
 static inline uint16_t mavlink_msg_gps_rtk_get_wn(const mavlink_message_t* msg)
 {
@@ -386,7 +386,7 @@ static inline uint16_t mavlink_msg_gps_rtk_get_wn(const mavlink_message_t* msg)
 /**
  * @brief Get field tow from gps_rtk message
  *
- * @return GPS Time of Week of last baseline
+ * @return [ms] GPS Time of Week of last baseline
  */
 static inline uint32_t mavlink_msg_gps_rtk_get_tow(const mavlink_message_t* msg)
 {
@@ -396,7 +396,7 @@ static inline uint32_t mavlink_msg_gps_rtk_get_tow(const mavlink_message_t* msg)
 /**
  * @brief Get field rtk_health from gps_rtk message
  *
- * @return GPS-specific health report for RTK data.
+ * @return  GPS-specific health report for RTK data.
  */
 static inline uint8_t mavlink_msg_gps_rtk_get_rtk_health(const mavlink_message_t* msg)
 {
@@ -406,7 +406,7 @@ static inline uint8_t mavlink_msg_gps_rtk_get_rtk_health(const mavlink_message_t
 /**
  * @brief Get field rtk_rate from gps_rtk message
  *
- * @return Rate of baseline messages being received by GPS, in HZ
+ * @return [Hz] Rate of baseline messages being received by GPS
  */
 static inline uint8_t mavlink_msg_gps_rtk_get_rtk_rate(const mavlink_message_t* msg)
 {
@@ -416,7 +416,7 @@ static inline uint8_t mavlink_msg_gps_rtk_get_rtk_rate(const mavlink_message_t* 
 /**
  * @brief Get field nsats from gps_rtk message
  *
- * @return Current number of sats used for RTK calculation.
+ * @return  Current number of sats used for RTK calculation.
  */
 static inline uint8_t mavlink_msg_gps_rtk_get_nsats(const mavlink_message_t* msg)
 {
@@ -426,7 +426,7 @@ static inline uint8_t mavlink_msg_gps_rtk_get_nsats(const mavlink_message_t* msg
 /**
  * @brief Get field baseline_coords_type from gps_rtk message
  *
- * @return Coordinate system of baseline
+ * @return  Coordinate system of baseline
  */
 static inline uint8_t mavlink_msg_gps_rtk_get_baseline_coords_type(const mavlink_message_t* msg)
 {
@@ -436,7 +436,7 @@ static inline uint8_t mavlink_msg_gps_rtk_get_baseline_coords_type(const mavlink
 /**
  * @brief Get field baseline_a_mm from gps_rtk message
  *
- * @return Current baseline in ECEF x or NED north component in mm.
+ * @return [mm] Current baseline in ECEF x or NED north component.
  */
 static inline int32_t mavlink_msg_gps_rtk_get_baseline_a_mm(const mavlink_message_t* msg)
 {
@@ -446,7 +446,7 @@ static inline int32_t mavlink_msg_gps_rtk_get_baseline_a_mm(const mavlink_messag
 /**
  * @brief Get field baseline_b_mm from gps_rtk message
  *
- * @return Current baseline in ECEF y or NED east component in mm.
+ * @return [mm] Current baseline in ECEF y or NED east component.
  */
 static inline int32_t mavlink_msg_gps_rtk_get_baseline_b_mm(const mavlink_message_t* msg)
 {
@@ -456,7 +456,7 @@ static inline int32_t mavlink_msg_gps_rtk_get_baseline_b_mm(const mavlink_messag
 /**
  * @brief Get field baseline_c_mm from gps_rtk message
  *
- * @return Current baseline in ECEF z or NED down component in mm.
+ * @return [mm] Current baseline in ECEF z or NED down component.
  */
 static inline int32_t mavlink_msg_gps_rtk_get_baseline_c_mm(const mavlink_message_t* msg)
 {
@@ -466,7 +466,7 @@ static inline int32_t mavlink_msg_gps_rtk_get_baseline_c_mm(const mavlink_messag
 /**
  * @brief Get field accuracy from gps_rtk message
  *
- * @return Current estimate of baseline accuracy.
+ * @return  Current estimate of baseline accuracy.
  */
 static inline uint32_t mavlink_msg_gps_rtk_get_accuracy(const mavlink_message_t* msg)
 {
@@ -476,7 +476,7 @@ static inline uint32_t mavlink_msg_gps_rtk_get_accuracy(const mavlink_message_t*
 /**
  * @brief Get field iar_num_hypotheses from gps_rtk message
  *
- * @return Current number of integer ambiguity hypotheses.
+ * @return  Current number of integer ambiguity hypotheses.
  */
 static inline int32_t mavlink_msg_gps_rtk_get_iar_num_hypotheses(const mavlink_message_t* msg)
 {

@@ -3,12 +3,12 @@
 
 #define MAVLINK_MSG_ID_BUTTON_CHANGE 257
 
-MAVPACKED(
+
 typedef struct __mavlink_button_change_t {
- uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot)*/
- uint32_t last_change_ms; /*< Time of last change of button state*/
- uint8_t state; /*< Bitmap state of buttons*/
-}) mavlink_button_change_t;
+ uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot).*/
+ uint32_t last_change_ms; /*< [ms] Time of last change of button state.*/
+ uint8_t state; /*<  Bitmap for state of buttons.*/
+} mavlink_button_change_t;
 
 #define MAVLINK_MSG_ID_BUTTON_CHANGE_LEN 9
 #define MAVLINK_MSG_ID_BUTTON_CHANGE_MIN_LEN 9
@@ -47,9 +47,9 @@ typedef struct __mavlink_button_change_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_boot_ms Timestamp (milliseconds since system boot)
- * @param last_change_ms Time of last change of button state
- * @param state Bitmap state of buttons
+ * @param time_boot_ms [ms] Timestamp (time since system boot).
+ * @param last_change_ms [ms] Time of last change of button state.
+ * @param state  Bitmap for state of buttons.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_button_change_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -81,9 +81,9 @@ static inline uint16_t mavlink_msg_button_change_pack(uint8_t system_id, uint8_t
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_boot_ms Timestamp (milliseconds since system boot)
- * @param last_change_ms Time of last change of button state
- * @param state Bitmap state of buttons
+ * @param time_boot_ms [ms] Timestamp (time since system boot).
+ * @param last_change_ms [ms] Time of last change of button state.
+ * @param state  Bitmap for state of buttons.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_button_change_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -141,9 +141,9 @@ static inline uint16_t mavlink_msg_button_change_encode_chan(uint8_t system_id, 
  * @brief Send a button_change message
  * @param chan MAVLink channel to send the message
  *
- * @param time_boot_ms Timestamp (milliseconds since system boot)
- * @param last_change_ms Time of last change of button state
- * @param state Bitmap state of buttons
+ * @param time_boot_ms [ms] Timestamp (time since system boot).
+ * @param last_change_ms [ms] Time of last change of button state.
+ * @param state  Bitmap for state of buttons.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -216,7 +216,7 @@ static inline void mavlink_msg_button_change_send_buf(mavlink_message_t *msgbuf,
 /**
  * @brief Get field time_boot_ms from button_change message
  *
- * @return Timestamp (milliseconds since system boot)
+ * @return [ms] Timestamp (time since system boot).
  */
 static inline uint32_t mavlink_msg_button_change_get_time_boot_ms(const mavlink_message_t* msg)
 {
@@ -226,7 +226,7 @@ static inline uint32_t mavlink_msg_button_change_get_time_boot_ms(const mavlink_
 /**
  * @brief Get field last_change_ms from button_change message
  *
- * @return Time of last change of button state
+ * @return [ms] Time of last change of button state.
  */
 static inline uint32_t mavlink_msg_button_change_get_last_change_ms(const mavlink_message_t* msg)
 {
@@ -236,7 +236,7 @@ static inline uint32_t mavlink_msg_button_change_get_last_change_ms(const mavlin
 /**
  * @brief Get field state from button_change message
  *
- * @return Bitmap state of buttons
+ * @return  Bitmap for state of buttons.
  */
 static inline uint8_t mavlink_msg_button_change_get_state(const mavlink_message_t* msg)
 {

@@ -19,11 +19,11 @@ struct LOG_REQUEST_DATA : mavlink::Message {
     static constexpr auto NAME = "LOG_REQUEST_DATA";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint16_t id; /*< Log id (from LOG_ENTRY reply) */
-    uint32_t ofs; /*< Offset into the log */
-    uint32_t count; /*< Number of bytes */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    uint16_t id; /*<  Log id (from LOG_ENTRY reply) */
+    uint32_t ofs; /*<  Offset into the log */
+    uint32_t count; /*< [bytes] Number of bytes */
 
 
     inline std::string get_name(void) const override

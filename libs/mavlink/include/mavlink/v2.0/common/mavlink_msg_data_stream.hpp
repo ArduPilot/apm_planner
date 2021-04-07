@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief DATA_STREAM message
  *
- * THIS INTERFACE IS DEPRECATED. USE MESSAGE_INTERVAL INSTEAD.
+ * Data stream status information.
  */
 struct DATA_STREAM : mavlink::Message {
     static constexpr msgid_t MSG_ID = 67;
@@ -19,9 +19,9 @@ struct DATA_STREAM : mavlink::Message {
     static constexpr auto NAME = "DATA_STREAM";
 
 
-    uint8_t stream_id; /*< The ID of the requested data stream */
-    uint16_t message_rate; /*< The message rate */
-    uint8_t on_off; /*< 1 stream is enabled, 0 stream is stopped. */
+    uint8_t stream_id; /*<  The ID of the requested data stream */
+    uint16_t message_rate; /*< [Hz] The message rate */
+    uint8_t on_off; /*<  1 stream is enabled, 0 stream is stopped. */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief SIMSTATE message
  *
- * Status of simulation environment, if used
+ * Status of simulation environment, if used.
  */
 struct SIMSTATE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 164;
@@ -19,17 +19,17 @@ struct SIMSTATE : mavlink::Message {
     static constexpr auto NAME = "SIMSTATE";
 
 
-    float roll; /*< Roll angle (rad) */
-    float pitch; /*< Pitch angle (rad) */
-    float yaw; /*< Yaw angle (rad) */
-    float xacc; /*< X acceleration m/s/s */
-    float yacc; /*< Y acceleration m/s/s */
-    float zacc; /*< Z acceleration m/s/s */
-    float xgyro; /*< Angular speed around X axis rad/s */
-    float ygyro; /*< Angular speed around Y axis rad/s */
-    float zgyro; /*< Angular speed around Z axis rad/s */
-    int32_t lat; /*< Latitude in degrees * 1E7 */
-    int32_t lng; /*< Longitude in degrees * 1E7 */
+    float roll; /*< [rad] Roll angle. */
+    float pitch; /*< [rad] Pitch angle. */
+    float yaw; /*< [rad] Yaw angle. */
+    float xacc; /*< [m/s/s] X acceleration. */
+    float yacc; /*< [m/s/s] Y acceleration. */
+    float zacc; /*< [m/s/s] Z acceleration. */
+    float xgyro; /*< [rad/s] Angular speed around X axis. */
+    float ygyro; /*< [rad/s] Angular speed around Y axis. */
+    float zgyro; /*< [rad/s] Angular speed around Z axis. */
+    int32_t lat; /*< [degE7] Latitude. */
+    int32_t lng; /*< [degE7] Longitude. */
 
 
     inline std::string get_name(void) const override

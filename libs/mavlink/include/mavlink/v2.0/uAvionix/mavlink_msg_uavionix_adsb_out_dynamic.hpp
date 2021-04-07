@@ -19,22 +19,22 @@ struct UAVIONIX_ADSB_OUT_DYNAMIC : mavlink::Message {
     static constexpr auto NAME = "UAVIONIX_ADSB_OUT_DYNAMIC";
 
 
-    uint32_t utcTime; /*< UTC time in seconds since GPS epoch (Jan 6, 1980). If unknown set to UINT32_MAX */
-    int32_t gpsLat; /*< Latitude WGS84 (deg * 1E7). If unknown set to INT32_MAX */
-    int32_t gpsLon; /*< Longitude WGS84 (deg * 1E7). If unknown set to INT32_MAX */
-    int32_t gpsAlt; /*< Altitude in mm (m * 1E-3) UP +ve. WGS84 altitude. If unknown set to INT32_MAX */
-    uint8_t gpsFix; /*< 0-1: no fix, 2: 2D fix, 3: 3D fix, 4: DGPS, 5: RTK */
-    uint8_t numSats; /*< Number of satellites visible. If unknown set to UINT8_MAX */
-    int32_t baroAltMSL; /*< Barometric pressure altitude relative to a standard atmosphere of 1013.2 mBar and NOT bar corrected altitude (m * 1E-3). (up +ve). If unknown set to INT32_MAX */
-    uint32_t accuracyHor; /*< Horizontal accuracy in mm (m * 1E-3). If unknown set to UINT32_MAX */
-    uint16_t accuracyVert; /*< Vertical accuracy in cm. If unknown set to UINT16_MAX */
-    uint16_t accuracyVel; /*< Velocity accuracy in mm/s (m * 1E-3). If unknown set to UINT16_MAX */
-    int16_t velVert; /*< GPS vertical speed in cm/s. If unknown set to INT16_MAX */
-    int16_t velNS; /*< North-South velocity over ground in cm/s North +ve. If unknown set to INT16_MAX */
-    int16_t VelEW; /*< East-West velocity over ground in cm/s East +ve. If unknown set to INT16_MAX */
-    uint8_t emergencyStatus; /*< Emergency status */
-    uint16_t state; /*< ADS-B transponder dynamic input state flags */
-    uint16_t squawk; /*< Mode A code (typically 1200 [0x04B0] for VFR) */
+    uint32_t utcTime; /*< [s] UTC time in seconds since GPS epoch (Jan 6, 1980). If unknown set to UINT32_MAX */
+    int32_t gpsLat; /*< [degE7] Latitude WGS84 (deg * 1E7). If unknown set to INT32_MAX */
+    int32_t gpsLon; /*< [degE7] Longitude WGS84 (deg * 1E7). If unknown set to INT32_MAX */
+    int32_t gpsAlt; /*< [mm] Altitude (WGS84). UP +ve. If unknown set to INT32_MAX */
+    uint8_t gpsFix; /*<  0-1: no fix, 2: 2D fix, 3: 3D fix, 4: DGPS, 5: RTK */
+    uint8_t numSats; /*<  Number of satellites visible. If unknown set to UINT8_MAX */
+    int32_t baroAltMSL; /*< [mbar] Barometric pressure altitude (MSL) relative to a standard atmosphere of 1013.2 mBar and NOT bar corrected altitude (m * 1E-3). (up +ve). If unknown set to INT32_MAX */
+    uint32_t accuracyHor; /*< [mm] Horizontal accuracy in mm (m * 1E-3). If unknown set to UINT32_MAX */
+    uint16_t accuracyVert; /*< [cm] Vertical accuracy in cm. If unknown set to UINT16_MAX */
+    uint16_t accuracyVel; /*< [mm/s] Velocity accuracy in mm/s (m * 1E-3). If unknown set to UINT16_MAX */
+    int16_t velVert; /*< [cm/s] GPS vertical speed in cm/s. If unknown set to INT16_MAX */
+    int16_t velNS; /*< [cm/s] North-South velocity over ground in cm/s North +ve. If unknown set to INT16_MAX */
+    int16_t VelEW; /*< [cm/s] East-West velocity over ground in cm/s East +ve. If unknown set to INT16_MAX */
+    uint8_t emergencyStatus; /*<  Emergency status */
+    uint16_t state; /*<  ADS-B transponder dynamic input state flags */
+    uint16_t squawk; /*<  Mode A code (typically 1200 [0x04B0] for VFR) */
 
 
     inline std::string get_name(void) const override

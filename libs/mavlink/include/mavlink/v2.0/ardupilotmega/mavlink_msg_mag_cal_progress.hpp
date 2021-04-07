@@ -19,15 +19,15 @@ struct MAG_CAL_PROGRESS : mavlink::Message {
     static constexpr auto NAME = "MAG_CAL_PROGRESS";
 
 
-    uint8_t compass_id; /*< Compass being calibrated */
-    uint8_t cal_mask; /*< Bitmask of compasses being calibrated */
-    uint8_t cal_status; /*< Status (see MAG_CAL_STATUS enum) */
-    uint8_t attempt; /*< Attempt number */
-    uint8_t completion_pct; /*< Completion percentage */
-    std::array<uint8_t, 10> completion_mask; /*< Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid) */
-    float direction_x; /*< Body frame direction vector for display */
-    float direction_y; /*< Body frame direction vector for display */
-    float direction_z; /*< Body frame direction vector for display */
+    uint8_t compass_id; /*<  Compass being calibrated. */
+    uint8_t cal_mask; /*<  Bitmask of compasses being calibrated. */
+    uint8_t cal_status; /*<  Calibration Status. */
+    uint8_t attempt; /*<  Attempt number. */
+    uint8_t completion_pct; /*< [%] Completion percentage. */
+    std::array<uint8_t, 10> completion_mask; /*<  Bitmask of sphere sections (see http://en.wikipedia.org/wiki/Geodesic_grid). */
+    float direction_x; /*<  Body frame direction vector for display. */
+    float direction_y; /*<  Body frame direction vector for display. */
+    float direction_z; /*<  Body frame direction vector for display. */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief VICON_POSITION_ESTIMATE message
  *
- * 
+ * Global position estimate from a Vicon motion system source.
  */
 struct VICON_POSITION_ESTIMATE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 104;
@@ -19,14 +19,14 @@ struct VICON_POSITION_ESTIMATE : mavlink::Message {
     static constexpr auto NAME = "VICON_POSITION_ESTIMATE";
 
 
-    uint64_t usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot) */
-    float x; /*< Global X position */
-    float y; /*< Global Y position */
-    float z; /*< Global Z position */
-    float roll; /*< Roll angle in rad */
-    float pitch; /*< Pitch angle in rad */
-    float yaw; /*< Yaw angle in rad */
-    std::array<float, 21> covariance; /*< Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.) */
+    uint64_t usec; /*< [us] Timestamp (UNIX time or time since system boot) */
+    float x; /*< [m] Global X position */
+    float y; /*< [m] Global Y position */
+    float z; /*< [m] Global Z position */
+    float roll; /*< [rad] Roll angle */
+    float pitch; /*< [rad] Pitch angle */
+    float yaw; /*< [rad] Yaw angle */
+    std::array<float, 21> covariance; /*<  Row-major representation of 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array. */
 
 
     inline std::string get_name(void) const override

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief LED_CONTROL message
  *
- * Control vehicle LEDs
+ * Control vehicle LEDs.
  */
 struct LED_CONTROL : mavlink::Message {
     static constexpr msgid_t MSG_ID = 186;
@@ -19,12 +19,12 @@ struct LED_CONTROL : mavlink::Message {
     static constexpr auto NAME = "LED_CONTROL";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint8_t instance; /*< Instance (LED instance to control or 255 for all LEDs) */
-    uint8_t pattern; /*< Pattern (see LED_PATTERN_ENUM) */
-    uint8_t custom_len; /*< Custom Byte Length */
-    std::array<uint8_t, 24> custom_bytes; /*< Custom Bytes */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    uint8_t instance; /*<  Instance (LED instance to control or 255 for all LEDs). */
+    uint8_t pattern; /*<  Pattern (see LED_PATTERN_ENUM). */
+    uint8_t custom_len; /*<  Custom Byte Length. */
+    std::array<uint8_t, 24> custom_bytes; /*<  Custom Bytes. */
 
 
     inline std::string get_name(void) const override

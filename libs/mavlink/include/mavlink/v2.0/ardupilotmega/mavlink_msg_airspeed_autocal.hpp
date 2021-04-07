@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief AIRSPEED_AUTOCAL message
  *
- * Airspeed auto-calibration
+ * Airspeed auto-calibration.
  */
 struct AIRSPEED_AUTOCAL : mavlink::Message {
     static constexpr msgid_t MSG_ID = 174;
@@ -19,18 +19,18 @@ struct AIRSPEED_AUTOCAL : mavlink::Message {
     static constexpr auto NAME = "AIRSPEED_AUTOCAL";
 
 
-    float vx; /*< GPS velocity north m/s */
-    float vy; /*< GPS velocity east m/s */
-    float vz; /*< GPS velocity down m/s */
-    float diff_pressure; /*< Differential pressure pascals */
-    float EAS2TAS; /*< Estimated to true airspeed ratio */
-    float ratio; /*< Airspeed ratio */
-    float state_x; /*< EKF state x */
-    float state_y; /*< EKF state y */
-    float state_z; /*< EKF state z */
-    float Pax; /*< EKF Pax */
-    float Pby; /*< EKF Pby */
-    float Pcz; /*< EKF Pcz */
+    float vx; /*< [m/s] GPS velocity north. */
+    float vy; /*< [m/s] GPS velocity east. */
+    float vz; /*< [m/s] GPS velocity down. */
+    float diff_pressure; /*< [Pa] Differential pressure. */
+    float EAS2TAS; /*<  Estimated to true airspeed ratio. */
+    float ratio; /*<  Airspeed ratio. */
+    float state_x; /*<  EKF state x. */
+    float state_y; /*<  EKF state y. */
+    float state_z; /*<  EKF state z. */
+    float Pax; /*<  EKF Pax. */
+    float Pby; /*<  EKF Pby. */
+    float Pcz; /*<  EKF Pcz. */
 
 
     inline std::string get_name(void) const override

@@ -10,7 +10,7 @@ namespace msg {
  * @brief MISSION_ITEM message
  *
  * Message encoding a mission item. This message is emitted to announce
-                the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). See also https://mavlink.io/en/protocol/mission.html.
+                the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). See also https://mavlink.io/en/services/mission.html.
  */
 struct MISSION_ITEM : mavlink::Message {
     static constexpr msgid_t MSG_ID = 39;
@@ -20,21 +20,21 @@ struct MISSION_ITEM : mavlink::Message {
     static constexpr auto NAME = "MISSION_ITEM";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    uint16_t seq; /*< Sequence */
-    uint8_t frame; /*< The coordinate system of the waypoint, as defined by MAV_FRAME enum */
-    uint16_t command; /*< The scheduled action for the waypoint, as defined by MAV_CMD enum */
-    uint8_t current; /*< false:0, true:1 */
-    uint8_t autocontinue; /*< autocontinue to next wp */
-    float param1; /*< PARAM1, see MAV_CMD enum */
-    float param2; /*< PARAM2, see MAV_CMD enum */
-    float param3; /*< PARAM3, see MAV_CMD enum */
-    float param4; /*< PARAM4, see MAV_CMD enum */
-    float x; /*< PARAM5 / local: x position, global: latitude */
-    float y; /*< PARAM6 / y position: global: longitude */
-    float z; /*< PARAM7 / z position: global: altitude (relative or absolute, depending on frame. */
-    uint8_t mission_type; /*< Mission type, see MAV_MISSION_TYPE */
+    uint8_t target_system; /*<  System ID */
+    uint8_t target_component; /*<  Component ID */
+    uint16_t seq; /*<  Sequence */
+    uint8_t frame; /*<  The coordinate system of the waypoint. */
+    uint16_t command; /*<  The scheduled action for the waypoint. */
+    uint8_t current; /*<  false:0, true:1 */
+    uint8_t autocontinue; /*<  Autocontinue to next waypoint */
+    float param1; /*<  PARAM1, see MAV_CMD enum */
+    float param2; /*<  PARAM2, see MAV_CMD enum */
+    float param3; /*<  PARAM3, see MAV_CMD enum */
+    float param4; /*<  PARAM4, see MAV_CMD enum */
+    float x; /*<  PARAM5 / local: X coordinate, global: latitude */
+    float y; /*<  PARAM6 / local: Y coordinate, global: longitude */
+    float z; /*<  PARAM7 / local: Z coordinate, global: altitude (relative or absolute, depending on frame). */
+    uint8_t mission_type; /*<  Mission type. */
 
 
     inline std::string get_name(void) const override

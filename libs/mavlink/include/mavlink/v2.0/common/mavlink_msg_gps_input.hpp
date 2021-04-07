@@ -9,34 +9,35 @@ namespace msg {
 /**
  * @brief GPS_INPUT message
  *
- * GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the sytem.
+ * GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the system.
  */
 struct GPS_INPUT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 232;
-    static constexpr size_t LENGTH = 63;
+    static constexpr size_t LENGTH = 65;
     static constexpr size_t MIN_LENGTH = 63;
     static constexpr uint8_t CRC_EXTRA = 151;
     static constexpr auto NAME = "GPS_INPUT";
 
 
-    uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch) */
-    uint8_t gps_id; /*< ID of the GPS for multiple GPS inputs */
-    uint16_t ignore_flags; /*< Flags indicating which fields to ignore (see GPS_INPUT_IGNORE_FLAGS enum).  All other fields must be provided. */
-    uint32_t time_week_ms; /*< GPS time (milliseconds from start of GPS week) */
-    uint16_t time_week; /*< GPS week number */
-    uint8_t fix_type; /*< 0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK */
-    int32_t lat; /*< Latitude (WGS84), in degrees * 1E7 */
-    int32_t lon; /*< Longitude (WGS84), in degrees * 1E7 */
-    float alt; /*< Altitude (AMSL, not WGS84), in m (positive for up) */
-    float hdop; /*< GPS HDOP horizontal dilution of position in m */
-    float vdop; /*< GPS VDOP vertical dilution of position in m */
-    float vn; /*< GPS velocity in m/s in NORTH direction in earth-fixed NED frame */
-    float ve; /*< GPS velocity in m/s in EAST direction in earth-fixed NED frame */
-    float vd; /*< GPS velocity in m/s in DOWN direction in earth-fixed NED frame */
-    float speed_accuracy; /*< GPS speed accuracy in m/s */
-    float horiz_accuracy; /*< GPS horizontal accuracy in m */
-    float vert_accuracy; /*< GPS vertical accuracy in m */
-    uint8_t satellites_visible; /*< Number of satellites visible. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint8_t gps_id; /*<  ID of the GPS for multiple GPS inputs */
+    uint16_t ignore_flags; /*<  Bitmap indicating which GPS input flags fields to ignore.  All other fields must be provided. */
+    uint32_t time_week_ms; /*< [ms] GPS time (from start of GPS week) */
+    uint16_t time_week; /*<  GPS week number */
+    uint8_t fix_type; /*<  0-1: no fix, 2: 2D fix, 3: 3D fix. 4: 3D with DGPS. 5: 3D with RTK */
+    int32_t lat; /*< [degE7] Latitude (WGS84) */
+    int32_t lon; /*< [degE7] Longitude (WGS84) */
+    float alt; /*< [m] Altitude (MSL). Positive for up. */
+    float hdop; /*< [m] GPS HDOP horizontal dilution of position */
+    float vdop; /*< [m] GPS VDOP vertical dilution of position */
+    float vn; /*< [m/s] GPS velocity in north direction in earth-fixed NED frame */
+    float ve; /*< [m/s] GPS velocity in east direction in earth-fixed NED frame */
+    float vd; /*< [m/s] GPS velocity in down direction in earth-fixed NED frame */
+    float speed_accuracy; /*< [m/s] GPS speed accuracy */
+    float horiz_accuracy; /*< [m] GPS horizontal accuracy */
+    float vert_accuracy; /*< [m] GPS vertical accuracy */
+    uint8_t satellites_visible; /*<  Number of satellites visible. */
+    uint16_t yaw; /*< [cdeg] Yaw of vehicle relative to Earth's North, zero means not available, use 36000 for north */
 
 
     inline std::string get_name(void) const override
@@ -72,6 +73,7 @@ struct GPS_INPUT : mavlink::Message {
         ss << "  horiz_accuracy: " << horiz_accuracy << std::endl;
         ss << "  vert_accuracy: " << vert_accuracy << std::endl;
         ss << "  satellites_visible: " << +satellites_visible << std::endl;
+        ss << "  yaw: " << yaw << std::endl;
 
         return ss.str();
     }
@@ -98,6 +100,7 @@ struct GPS_INPUT : mavlink::Message {
         map << gps_id;                        // offset: 60
         map << fix_type;                      // offset: 61
         map << satellites_visible;            // offset: 62
+        map << yaw;                           // offset: 63
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -120,6 +123,7 @@ struct GPS_INPUT : mavlink::Message {
         map >> gps_id;                        // offset: 60
         map >> fix_type;                      // offset: 61
         map >> satellites_visible;            // offset: 62
+        map >> yaw;                           // offset: 63
     }
 };
 

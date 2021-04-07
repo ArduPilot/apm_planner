@@ -13,20 +13,21 @@ namespace msg {
  */
 struct ATTITUDE_QUATERNION : mavlink::Message {
     static constexpr msgid_t MSG_ID = 31;
-    static constexpr size_t LENGTH = 32;
+    static constexpr size_t LENGTH = 48;
     static constexpr size_t MIN_LENGTH = 32;
     static constexpr uint8_t CRC_EXTRA = 246;
     static constexpr auto NAME = "ATTITUDE_QUATERNION";
 
 
-    uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot) */
-    float q1; /*< Quaternion component 1, w (1 in null-rotation) */
-    float q2; /*< Quaternion component 2, x (0 in null-rotation) */
-    float q3; /*< Quaternion component 3, y (0 in null-rotation) */
-    float q4; /*< Quaternion component 4, z (0 in null-rotation) */
-    float rollspeed; /*< Roll angular speed (rad/s) */
-    float pitchspeed; /*< Pitch angular speed (rad/s) */
-    float yawspeed; /*< Yaw angular speed (rad/s) */
+    uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
+    float q1; /*<  Quaternion component 1, w (1 in null-rotation) */
+    float q2; /*<  Quaternion component 2, x (0 in null-rotation) */
+    float q3; /*<  Quaternion component 3, y (0 in null-rotation) */
+    float q4; /*<  Quaternion component 4, z (0 in null-rotation) */
+    float rollspeed; /*< [rad/s] Roll angular speed */
+    float pitchspeed; /*< [rad/s] Pitch angular speed */
+    float yawspeed; /*< [rad/s] Yaw angular speed */
+    std::array<float, 4> repr_offset_q; /*<  Rotation offset by which the attitude quaternion and angular speed vector should be rotated for user display (quaternion with [w, x, y, z] order, zero-rotation is [1, 0, 0, 0], send [0, 0, 0, 0] if field not supported). This field is intended for systems in which the reference attitude may change during flight. For example, tailsitters VTOLs rotate their reference attitude by 90 degrees between hover mode and fixed wing mode, thus repr_offset_q is equal to [1, 0, 0, 0] in hover mode and equal to [0.7071, 0, 0.7071, 0] in fixed wing mode. */
 
 
     inline std::string get_name(void) const override
@@ -52,6 +53,7 @@ struct ATTITUDE_QUATERNION : mavlink::Message {
         ss << "  rollspeed: " << rollspeed << std::endl;
         ss << "  pitchspeed: " << pitchspeed << std::endl;
         ss << "  yawspeed: " << yawspeed << std::endl;
+        ss << "  repr_offset_q: [" << to_string(repr_offset_q) << "]" << std::endl;
 
         return ss.str();
     }
@@ -68,6 +70,7 @@ struct ATTITUDE_QUATERNION : mavlink::Message {
         map << rollspeed;                     // offset: 20
         map << pitchspeed;                    // offset: 24
         map << yawspeed;                      // offset: 28
+        map << repr_offset_q;                 // offset: 32
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -80,6 +83,7 @@ struct ATTITUDE_QUATERNION : mavlink::Message {
         map >> rollspeed;                     // offset: 20
         map >> pitchspeed;                    // offset: 24
         map >> yawspeed;                      // offset: 28
+        map >> repr_offset_q;                 // offset: 32
     }
 };
 

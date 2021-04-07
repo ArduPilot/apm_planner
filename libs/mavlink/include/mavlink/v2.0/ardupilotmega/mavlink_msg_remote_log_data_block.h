@@ -3,13 +3,13 @@
 
 #define MAVLINK_MSG_ID_REMOTE_LOG_DATA_BLOCK 184
 
-MAVPACKED(
+
 typedef struct __mavlink_remote_log_data_block_t {
- uint32_t seqno; /*< log data block sequence number*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint8_t data[200]; /*< log data block*/
-}) mavlink_remote_log_data_block_t;
+ uint32_t seqno; /*<  Log data block sequence number.*/
+ uint8_t target_system; /*<  System ID.*/
+ uint8_t target_component; /*<  Component ID.*/
+ uint8_t data[200]; /*<  Log data block.*/
+} mavlink_remote_log_data_block_t;
 
 #define MAVLINK_MSG_ID_REMOTE_LOG_DATA_BLOCK_LEN 206
 #define MAVLINK_MSG_ID_REMOTE_LOG_DATA_BLOCK_MIN_LEN 206
@@ -50,10 +50,10 @@ typedef struct __mavlink_remote_log_data_block_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param seqno log data block sequence number
- * @param data log data block
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param seqno  Log data block sequence number.
+ * @param data  Log data block.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_remote_log_data_block_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -85,10 +85,10 @@ static inline uint16_t mavlink_msg_remote_log_data_block_pack(uint8_t system_id,
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param seqno log data block sequence number
- * @param data log data block
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param seqno  Log data block sequence number.
+ * @param data  Log data block.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_remote_log_data_block_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -146,10 +146,10 @@ static inline uint16_t mavlink_msg_remote_log_data_block_encode_chan(uint8_t sys
  * @brief Send a remote_log_data_block message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param seqno log data block sequence number
- * @param data log data block
+ * @param target_system  System ID.
+ * @param target_component  Component ID.
+ * @param seqno  Log data block sequence number.
+ * @param data  Log data block.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -222,7 +222,7 @@ static inline void mavlink_msg_remote_log_data_block_send_buf(mavlink_message_t 
 /**
  * @brief Get field target_system from remote_log_data_block message
  *
- * @return System ID
+ * @return  System ID.
  */
 static inline uint8_t mavlink_msg_remote_log_data_block_get_target_system(const mavlink_message_t* msg)
 {
@@ -232,7 +232,7 @@ static inline uint8_t mavlink_msg_remote_log_data_block_get_target_system(const 
 /**
  * @brief Get field target_component from remote_log_data_block message
  *
- * @return Component ID
+ * @return  Component ID.
  */
 static inline uint8_t mavlink_msg_remote_log_data_block_get_target_component(const mavlink_message_t* msg)
 {
@@ -242,7 +242,7 @@ static inline uint8_t mavlink_msg_remote_log_data_block_get_target_component(con
 /**
  * @brief Get field seqno from remote_log_data_block message
  *
- * @return log data block sequence number
+ * @return  Log data block sequence number.
  */
 static inline uint32_t mavlink_msg_remote_log_data_block_get_seqno(const mavlink_message_t* msg)
 {
@@ -252,7 +252,7 @@ static inline uint32_t mavlink_msg_remote_log_data_block_get_seqno(const mavlink
 /**
  * @brief Get field data from remote_log_data_block message
  *
- * @return log data block
+ * @return  Log data block.
  */
 static inline uint16_t mavlink_msg_remote_log_data_block_get_data(const mavlink_message_t* msg, uint8_t *data)
 {

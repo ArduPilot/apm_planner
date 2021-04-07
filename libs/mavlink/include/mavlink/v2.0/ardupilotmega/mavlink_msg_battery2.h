@@ -3,11 +3,11 @@
 
 #define MAVLINK_MSG_ID_BATTERY2 181
 
-MAVPACKED(
+
 typedef struct __mavlink_battery2_t {
- uint16_t voltage; /*< voltage in millivolts*/
- int16_t current_battery; /*< Battery current, in centiamperes (1 = 10 milliampere), -1: autopilot does not measure the current*/
-}) mavlink_battery2_t;
+ uint16_t voltage; /*< [mV] Voltage.*/
+ int16_t current_battery; /*< [cA] Battery current, -1: autopilot does not measure the current.*/
+} mavlink_battery2_t;
 
 #define MAVLINK_MSG_ID_BATTERY2_LEN 4
 #define MAVLINK_MSG_ID_BATTERY2_MIN_LEN 4
@@ -44,8 +44,8 @@ typedef struct __mavlink_battery2_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param voltage voltage in millivolts
- * @param current_battery Battery current, in centiamperes (1 = 10 milliampere), -1: autopilot does not measure the current
+ * @param voltage [mV] Voltage.
+ * @param current_battery [cA] Battery current, -1: autopilot does not measure the current.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_battery2_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -75,8 +75,8 @@ static inline uint16_t mavlink_msg_battery2_pack(uint8_t system_id, uint8_t comp
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param voltage voltage in millivolts
- * @param current_battery Battery current, in centiamperes (1 = 10 milliampere), -1: autopilot does not measure the current
+ * @param voltage [mV] Voltage.
+ * @param current_battery [cA] Battery current, -1: autopilot does not measure the current.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_battery2_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -132,8 +132,8 @@ static inline uint16_t mavlink_msg_battery2_encode_chan(uint8_t system_id, uint8
  * @brief Send a battery2 message
  * @param chan MAVLink channel to send the message
  *
- * @param voltage voltage in millivolts
- * @param current_battery Battery current, in centiamperes (1 = 10 milliampere), -1: autopilot does not measure the current
+ * @param voltage [mV] Voltage.
+ * @param current_battery [cA] Battery current, -1: autopilot does not measure the current.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -202,7 +202,7 @@ static inline void mavlink_msg_battery2_send_buf(mavlink_message_t *msgbuf, mavl
 /**
  * @brief Get field voltage from battery2 message
  *
- * @return voltage in millivolts
+ * @return [mV] Voltage.
  */
 static inline uint16_t mavlink_msg_battery2_get_voltage(const mavlink_message_t* msg)
 {
@@ -212,7 +212,7 @@ static inline uint16_t mavlink_msg_battery2_get_voltage(const mavlink_message_t*
 /**
  * @brief Get field current_battery from battery2 message
  *
- * @return Battery current, in centiamperes (1 = 10 milliampere), -1: autopilot does not measure the current
+ * @return [cA] Battery current, -1: autopilot does not measure the current.
  */
 static inline int16_t mavlink_msg_battery2_get_current_battery(const mavlink_message_t* msg)
 {

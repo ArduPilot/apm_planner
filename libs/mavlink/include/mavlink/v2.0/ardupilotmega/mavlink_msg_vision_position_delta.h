@@ -3,14 +3,14 @@
 
 #define MAVLINK_MSG_ID_VISION_POSITION_DELTA 11011
 
-MAVPACKED(
+
 typedef struct __mavlink_vision_position_delta_t {
- uint64_t time_usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot)*/
- uint64_t time_delta_usec; /*< Time in microseconds since the last reported camera frame*/
- float angle_delta[3]; /*< Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation*/
- float position_delta[3]; /*< Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)*/
- float confidence; /*< normalised confidence value from 0 to 100*/
-}) mavlink_vision_position_delta_t;
+ uint64_t time_usec; /*< [us] Timestamp (synced to UNIX time or since system boot).*/
+ uint64_t time_delta_usec; /*< [us] Time since the last reported camera frame.*/
+ float angle_delta[3]; /*<  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.*/
+ float position_delta[3]; /*< [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).*/
+ float confidence; /*< [%] Normalised confidence value from 0 to 100.*/
+} mavlink_vision_position_delta_t;
 
 #define MAVLINK_MSG_ID_VISION_POSITION_DELTA_LEN 44
 #define MAVLINK_MSG_ID_VISION_POSITION_DELTA_MIN_LEN 44
@@ -54,11 +54,11 @@ typedef struct __mavlink_vision_position_delta_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec Timestamp (microseconds, synced to UNIX time or since system boot)
- * @param time_delta_usec Time in microseconds since the last reported camera frame
- * @param angle_delta Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation
- * @param position_delta Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)
- * @param confidence normalised confidence value from 0 to 100
+ * @param time_usec [us] Timestamp (synced to UNIX time or since system boot).
+ * @param time_delta_usec [us] Time since the last reported camera frame.
+ * @param angle_delta  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.
+ * @param position_delta [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).
+ * @param confidence [%] Normalised confidence value from 0 to 100.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_vision_position_delta_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -92,11 +92,11 @@ static inline uint16_t mavlink_msg_vision_position_delta_pack(uint8_t system_id,
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec Timestamp (microseconds, synced to UNIX time or since system boot)
- * @param time_delta_usec Time in microseconds since the last reported camera frame
- * @param angle_delta Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation
- * @param position_delta Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)
- * @param confidence normalised confidence value from 0 to 100
+ * @param time_usec [us] Timestamp (synced to UNIX time or since system boot).
+ * @param time_delta_usec [us] Time since the last reported camera frame.
+ * @param angle_delta  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.
+ * @param position_delta [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).
+ * @param confidence [%] Normalised confidence value from 0 to 100.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_vision_position_delta_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -156,11 +156,11 @@ static inline uint16_t mavlink_msg_vision_position_delta_encode_chan(uint8_t sys
  * @brief Send a vision_position_delta message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec Timestamp (microseconds, synced to UNIX time or since system boot)
- * @param time_delta_usec Time in microseconds since the last reported camera frame
- * @param angle_delta Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation
- * @param position_delta Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)
- * @param confidence normalised confidence value from 0 to 100
+ * @param time_usec [us] Timestamp (synced to UNIX time or since system boot).
+ * @param time_delta_usec [us] Time since the last reported camera frame.
+ * @param angle_delta  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.
+ * @param position_delta [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).
+ * @param confidence [%] Normalised confidence value from 0 to 100.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -237,7 +237,7 @@ static inline void mavlink_msg_vision_position_delta_send_buf(mavlink_message_t 
 /**
  * @brief Get field time_usec from vision_position_delta message
  *
- * @return Timestamp (microseconds, synced to UNIX time or since system boot)
+ * @return [us] Timestamp (synced to UNIX time or since system boot).
  */
 static inline uint64_t mavlink_msg_vision_position_delta_get_time_usec(const mavlink_message_t* msg)
 {
@@ -247,7 +247,7 @@ static inline uint64_t mavlink_msg_vision_position_delta_get_time_usec(const mav
 /**
  * @brief Get field time_delta_usec from vision_position_delta message
  *
- * @return Time in microseconds since the last reported camera frame
+ * @return [us] Time since the last reported camera frame.
  */
 static inline uint64_t mavlink_msg_vision_position_delta_get_time_delta_usec(const mavlink_message_t* msg)
 {
@@ -257,7 +257,7 @@ static inline uint64_t mavlink_msg_vision_position_delta_get_time_delta_usec(con
 /**
  * @brief Get field angle_delta from vision_position_delta message
  *
- * @return Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation
+ * @return  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.
  */
 static inline uint16_t mavlink_msg_vision_position_delta_get_angle_delta(const mavlink_message_t* msg, float *angle_delta)
 {
@@ -267,7 +267,7 @@ static inline uint16_t mavlink_msg_vision_position_delta_get_angle_delta(const m
 /**
  * @brief Get field position_delta from vision_position_delta message
  *
- * @return Change in position in meters from previous to current frame rotated into body frame (0=forward, 1=right, 2=down)
+ * @return [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).
  */
 static inline uint16_t mavlink_msg_vision_position_delta_get_position_delta(const mavlink_message_t* msg, float *position_delta)
 {
@@ -277,7 +277,7 @@ static inline uint16_t mavlink_msg_vision_position_delta_get_position_delta(cons
 /**
  * @brief Get field confidence from vision_position_delta message
  *
- * @return normalised confidence value from 0 to 100
+ * @return [%] Normalised confidence value from 0 to 100.
  */
 static inline float mavlink_msg_vision_position_delta_get_confidence(const mavlink_message_t* msg)
 {

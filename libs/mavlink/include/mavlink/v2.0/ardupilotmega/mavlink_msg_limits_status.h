@@ -3,18 +3,18 @@
 
 #define MAVLINK_MSG_ID_LIMITS_STATUS 167
 
-MAVPACKED(
+
 typedef struct __mavlink_limits_status_t {
- uint32_t last_trigger; /*< time of last breach in milliseconds since boot*/
- uint32_t last_action; /*< time of last recovery action in milliseconds since boot*/
- uint32_t last_recovery; /*< time of last successful recovery in milliseconds since boot*/
- uint32_t last_clear; /*< time of last all-clear in milliseconds since boot*/
- uint16_t breach_count; /*< number of fence breaches*/
- uint8_t limits_state; /*< state of AP_Limits, (see enum LimitState, LIMITS_STATE)*/
- uint8_t mods_enabled; /*< AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE)*/
- uint8_t mods_required; /*< AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE)*/
- uint8_t mods_triggered; /*< AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE)*/
-}) mavlink_limits_status_t;
+ uint32_t last_trigger; /*< [ms] Time (since boot) of last breach.*/
+ uint32_t last_action; /*< [ms] Time (since boot) of last recovery action.*/
+ uint32_t last_recovery; /*< [ms] Time (since boot) of last successful recovery.*/
+ uint32_t last_clear; /*< [ms] Time (since boot) of last all-clear.*/
+ uint16_t breach_count; /*<  Number of fence breaches.*/
+ uint8_t limits_state; /*<  State of AP_Limits.*/
+ uint8_t mods_enabled; /*<  AP_Limit_Module bitfield of enabled modules.*/
+ uint8_t mods_required; /*<  AP_Limit_Module bitfield of required modules.*/
+ uint8_t mods_triggered; /*<  AP_Limit_Module bitfield of triggered modules.*/
+} mavlink_limits_status_t;
 
 #define MAVLINK_MSG_ID_LIMITS_STATUS_LEN 22
 #define MAVLINK_MSG_ID_LIMITS_STATUS_MIN_LEN 22
@@ -65,15 +65,15 @@ typedef struct __mavlink_limits_status_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param limits_state state of AP_Limits, (see enum LimitState, LIMITS_STATE)
- * @param last_trigger time of last breach in milliseconds since boot
- * @param last_action time of last recovery action in milliseconds since boot
- * @param last_recovery time of last successful recovery in milliseconds since boot
- * @param last_clear time of last all-clear in milliseconds since boot
- * @param breach_count number of fence breaches
- * @param mods_enabled AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE)
- * @param mods_required AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE)
- * @param mods_triggered AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE)
+ * @param limits_state  State of AP_Limits.
+ * @param last_trigger [ms] Time (since boot) of last breach.
+ * @param last_action [ms] Time (since boot) of last recovery action.
+ * @param last_recovery [ms] Time (since boot) of last successful recovery.
+ * @param last_clear [ms] Time (since boot) of last all-clear.
+ * @param breach_count  Number of fence breaches.
+ * @param mods_enabled  AP_Limit_Module bitfield of enabled modules.
+ * @param mods_required  AP_Limit_Module bitfield of required modules.
+ * @param mods_triggered  AP_Limit_Module bitfield of triggered modules.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_limits_status_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -117,15 +117,15 @@ static inline uint16_t mavlink_msg_limits_status_pack(uint8_t system_id, uint8_t
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param limits_state state of AP_Limits, (see enum LimitState, LIMITS_STATE)
- * @param last_trigger time of last breach in milliseconds since boot
- * @param last_action time of last recovery action in milliseconds since boot
- * @param last_recovery time of last successful recovery in milliseconds since boot
- * @param last_clear time of last all-clear in milliseconds since boot
- * @param breach_count number of fence breaches
- * @param mods_enabled AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE)
- * @param mods_required AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE)
- * @param mods_triggered AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE)
+ * @param limits_state  State of AP_Limits.
+ * @param last_trigger [ms] Time (since boot) of last breach.
+ * @param last_action [ms] Time (since boot) of last recovery action.
+ * @param last_recovery [ms] Time (since boot) of last successful recovery.
+ * @param last_clear [ms] Time (since boot) of last all-clear.
+ * @param breach_count  Number of fence breaches.
+ * @param mods_enabled  AP_Limit_Module bitfield of enabled modules.
+ * @param mods_required  AP_Limit_Module bitfield of required modules.
+ * @param mods_triggered  AP_Limit_Module bitfield of triggered modules.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_limits_status_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -195,15 +195,15 @@ static inline uint16_t mavlink_msg_limits_status_encode_chan(uint8_t system_id, 
  * @brief Send a limits_status message
  * @param chan MAVLink channel to send the message
  *
- * @param limits_state state of AP_Limits, (see enum LimitState, LIMITS_STATE)
- * @param last_trigger time of last breach in milliseconds since boot
- * @param last_action time of last recovery action in milliseconds since boot
- * @param last_recovery time of last successful recovery in milliseconds since boot
- * @param last_clear time of last all-clear in milliseconds since boot
- * @param breach_count number of fence breaches
- * @param mods_enabled AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE)
- * @param mods_required AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE)
- * @param mods_triggered AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE)
+ * @param limits_state  State of AP_Limits.
+ * @param last_trigger [ms] Time (since boot) of last breach.
+ * @param last_action [ms] Time (since boot) of last recovery action.
+ * @param last_recovery [ms] Time (since boot) of last successful recovery.
+ * @param last_clear [ms] Time (since boot) of last all-clear.
+ * @param breach_count  Number of fence breaches.
+ * @param mods_enabled  AP_Limit_Module bitfield of enabled modules.
+ * @param mods_required  AP_Limit_Module bitfield of required modules.
+ * @param mods_triggered  AP_Limit_Module bitfield of triggered modules.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -300,7 +300,7 @@ static inline void mavlink_msg_limits_status_send_buf(mavlink_message_t *msgbuf,
 /**
  * @brief Get field limits_state from limits_status message
  *
- * @return state of AP_Limits, (see enum LimitState, LIMITS_STATE)
+ * @return  State of AP_Limits.
  */
 static inline uint8_t mavlink_msg_limits_status_get_limits_state(const mavlink_message_t* msg)
 {
@@ -310,7 +310,7 @@ static inline uint8_t mavlink_msg_limits_status_get_limits_state(const mavlink_m
 /**
  * @brief Get field last_trigger from limits_status message
  *
- * @return time of last breach in milliseconds since boot
+ * @return [ms] Time (since boot) of last breach.
  */
 static inline uint32_t mavlink_msg_limits_status_get_last_trigger(const mavlink_message_t* msg)
 {
@@ -320,7 +320,7 @@ static inline uint32_t mavlink_msg_limits_status_get_last_trigger(const mavlink_
 /**
  * @brief Get field last_action from limits_status message
  *
- * @return time of last recovery action in milliseconds since boot
+ * @return [ms] Time (since boot) of last recovery action.
  */
 static inline uint32_t mavlink_msg_limits_status_get_last_action(const mavlink_message_t* msg)
 {
@@ -330,7 +330,7 @@ static inline uint32_t mavlink_msg_limits_status_get_last_action(const mavlink_m
 /**
  * @brief Get field last_recovery from limits_status message
  *
- * @return time of last successful recovery in milliseconds since boot
+ * @return [ms] Time (since boot) of last successful recovery.
  */
 static inline uint32_t mavlink_msg_limits_status_get_last_recovery(const mavlink_message_t* msg)
 {
@@ -340,7 +340,7 @@ static inline uint32_t mavlink_msg_limits_status_get_last_recovery(const mavlink
 /**
  * @brief Get field last_clear from limits_status message
  *
- * @return time of last all-clear in milliseconds since boot
+ * @return [ms] Time (since boot) of last all-clear.
  */
 static inline uint32_t mavlink_msg_limits_status_get_last_clear(const mavlink_message_t* msg)
 {
@@ -350,7 +350,7 @@ static inline uint32_t mavlink_msg_limits_status_get_last_clear(const mavlink_me
 /**
  * @brief Get field breach_count from limits_status message
  *
- * @return number of fence breaches
+ * @return  Number of fence breaches.
  */
 static inline uint16_t mavlink_msg_limits_status_get_breach_count(const mavlink_message_t* msg)
 {
@@ -360,7 +360,7 @@ static inline uint16_t mavlink_msg_limits_status_get_breach_count(const mavlink_
 /**
  * @brief Get field mods_enabled from limits_status message
  *
- * @return AP_Limit_Module bitfield of enabled modules, (see enum moduleid or LIMIT_MODULE)
+ * @return  AP_Limit_Module bitfield of enabled modules.
  */
 static inline uint8_t mavlink_msg_limits_status_get_mods_enabled(const mavlink_message_t* msg)
 {
@@ -370,7 +370,7 @@ static inline uint8_t mavlink_msg_limits_status_get_mods_enabled(const mavlink_m
 /**
  * @brief Get field mods_required from limits_status message
  *
- * @return AP_Limit_Module bitfield of required modules, (see enum moduleid or LIMIT_MODULE)
+ * @return  AP_Limit_Module bitfield of required modules.
  */
 static inline uint8_t mavlink_msg_limits_status_get_mods_required(const mavlink_message_t* msg)
 {
@@ -380,7 +380,7 @@ static inline uint8_t mavlink_msg_limits_status_get_mods_required(const mavlink_
 /**
  * @brief Get field mods_triggered from limits_status message
  *
- * @return AP_Limit_Module bitfield of triggered modules, (see enum moduleid or LIMIT_MODULE)
+ * @return  AP_Limit_Module bitfield of triggered modules.
  */
 static inline uint8_t mavlink_msg_limits_status_get_mods_triggered(const mavlink_message_t* msg)
 {

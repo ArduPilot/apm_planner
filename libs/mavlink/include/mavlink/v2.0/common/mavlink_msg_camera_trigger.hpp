@@ -19,8 +19,8 @@ struct CAMERA_TRIGGER : mavlink::Message {
     static constexpr auto NAME = "CAMERA_TRIGGER";
 
 
-    uint64_t time_usec; /*< Timestamp for the image frame in microseconds */
-    uint32_t seq; /*< Image frame sequence */
+    uint64_t time_usec; /*< [us] Timestamp for image frame (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint32_t seq; /*<  Image frame sequence */
 
 
     inline std::string get_name(void) const override

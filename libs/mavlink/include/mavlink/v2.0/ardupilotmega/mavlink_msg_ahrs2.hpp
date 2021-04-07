@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief AHRS2 message
  *
- * Status of secondary AHRS filter if available
+ * Status of secondary AHRS filter if available.
  */
 struct AHRS2 : mavlink::Message {
     static constexpr msgid_t MSG_ID = 178;
@@ -19,12 +19,12 @@ struct AHRS2 : mavlink::Message {
     static constexpr auto NAME = "AHRS2";
 
 
-    float roll; /*< Roll angle (rad) */
-    float pitch; /*< Pitch angle (rad) */
-    float yaw; /*< Yaw angle (rad) */
-    float altitude; /*< Altitude (MSL) */
-    int32_t lat; /*< Latitude in degrees * 1E7 */
-    int32_t lng; /*< Longitude in degrees * 1E7 */
+    float roll; /*< [rad] Roll angle. */
+    float pitch; /*< [rad] Pitch angle. */
+    float yaw; /*< [rad] Yaw angle. */
+    float altitude; /*< [m] Altitude (MSL). */
+    int32_t lat; /*< [degE7] Latitude. */
+    int32_t lng; /*< [degE7] Longitude. */
 
 
     inline std::string get_name(void) const override

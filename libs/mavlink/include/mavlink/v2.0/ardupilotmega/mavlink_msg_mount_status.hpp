@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief MOUNT_STATUS message
  *
- * Message with some status from APM to GCS about camera or antenna mount
+ * Message with some status from APM to GCS about camera or antenna mount.
  */
 struct MOUNT_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 158;
@@ -19,11 +19,11 @@ struct MOUNT_STATUS : mavlink::Message {
     static constexpr auto NAME = "MOUNT_STATUS";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    int32_t pointing_a; /*< pitch(deg*100) */
-    int32_t pointing_b; /*< roll(deg*100) */
-    int32_t pointing_c; /*< yaw(deg*100) */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    int32_t pointing_a; /*< [cdeg] Pitch. */
+    int32_t pointing_b; /*< [cdeg] Roll. */
+    int32_t pointing_c; /*< [cdeg] Yaw. */
 
 
     inline std::string get_name(void) const override

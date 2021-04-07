@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GOPRO_HEARTBEAT message
  *
- * Heartbeat from a HeroBus attached GoPro
+ * Heartbeat from a HeroBus attached GoPro.
  */
 struct GOPRO_HEARTBEAT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 215;
@@ -19,9 +19,9 @@ struct GOPRO_HEARTBEAT : mavlink::Message {
     static constexpr auto NAME = "GOPRO_HEARTBEAT";
 
 
-    uint8_t status; /*< Status */
-    uint8_t capture_mode; /*< Current capture mode */
-    uint8_t flags; /*< additional status bits */
+    uint8_t status; /*<  Status. */
+    uint8_t capture_mode; /*<  Current capture mode. */
+    uint8_t flags; /*<  Additional status bits. */
 
 
     inline std::string get_name(void) const override

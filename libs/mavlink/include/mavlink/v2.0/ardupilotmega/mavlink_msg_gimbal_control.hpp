@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief GIMBAL_CONTROL message
  *
- * Control message for rate gimbal
+ * Control message for rate gimbal.
  */
 struct GIMBAL_CONTROL : mavlink::Message {
     static constexpr msgid_t MSG_ID = 201;
@@ -19,11 +19,11 @@ struct GIMBAL_CONTROL : mavlink::Message {
     static constexpr auto NAME = "GIMBAL_CONTROL";
 
 
-    uint8_t target_system; /*< System ID */
-    uint8_t target_component; /*< Component ID */
-    float demanded_rate_x; /*< Demanded angular rate X (rad/s) */
-    float demanded_rate_y; /*< Demanded angular rate Y (rad/s) */
-    float demanded_rate_z; /*< Demanded angular rate Z (rad/s) */
+    uint8_t target_system; /*<  System ID. */
+    uint8_t target_component; /*<  Component ID. */
+    float demanded_rate_x; /*< [rad/s] Demanded angular rate X. */
+    float demanded_rate_y; /*< [rad/s] Demanded angular rate Y. */
+    float demanded_rate_z; /*< [rad/s] Demanded angular rate Z. */
 
 
     inline std::string get_name(void) const override

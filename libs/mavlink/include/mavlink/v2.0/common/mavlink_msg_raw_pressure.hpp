@@ -19,11 +19,11 @@ struct RAW_PRESSURE : mavlink::Message {
     static constexpr auto NAME = "RAW_PRESSURE";
 
 
-    uint64_t time_usec; /*< Timestamp (microseconds since UNIX epoch or microseconds since system boot) */
-    int16_t press_abs; /*< Absolute pressure (raw) */
-    int16_t press_diff1; /*< Differential pressure 1 (raw, 0 if nonexistant) */
-    int16_t press_diff2; /*< Differential pressure 2 (raw, 0 if nonexistant) */
-    int16_t temperature; /*< Raw Temperature measurement (raw) */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    int16_t press_abs; /*<  Absolute pressure (raw) */
+    int16_t press_diff1; /*<  Differential pressure 1 (raw, 0 if nonexistent) */
+    int16_t press_diff2; /*<  Differential pressure 2 (raw, 0 if nonexistent) */
+    int16_t temperature; /*<  Raw Temperature measurement (raw) */
 
 
     inline std::string get_name(void) const override

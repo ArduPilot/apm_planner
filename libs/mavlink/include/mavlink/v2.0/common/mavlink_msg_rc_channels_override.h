@@ -3,29 +3,29 @@
 
 #define MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE 70
 
-MAVPACKED(
+
 typedef struct __mavlink_rc_channels_override_t {
- uint16_t chan1_raw; /*< RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.*/
- uint16_t chan2_raw; /*< RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.*/
- uint16_t chan3_raw; /*< RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.*/
- uint16_t chan4_raw; /*< RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.*/
- uint16_t chan5_raw; /*< RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.*/
- uint16_t chan6_raw; /*< RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.*/
- uint16_t chan7_raw; /*< RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.*/
- uint16_t chan8_raw; /*< RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.*/
- uint8_t target_system; /*< System ID*/
- uint8_t target_component; /*< Component ID*/
- uint16_t chan9_raw; /*< RC channel 9 value, in microseconds. A value of 0 means to ignore this field.*/
- uint16_t chan10_raw; /*< RC channel 10 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
- uint16_t chan11_raw; /*< RC channel 11 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
- uint16_t chan12_raw; /*< RC channel 12 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
- uint16_t chan13_raw; /*< RC channel 13 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
- uint16_t chan14_raw; /*< RC channel 14 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
- uint16_t chan15_raw; /*< RC channel 15 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
- uint16_t chan16_raw; /*< RC channel 16 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
- uint16_t chan17_raw; /*< RC channel 17 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
- uint16_t chan18_raw; /*< RC channel 18 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.*/
-}) mavlink_rc_channels_override_t;
+ uint16_t chan1_raw; /*< [us] RC channel 1 value. A value of UINT16_MAX means to ignore this field.*/
+ uint16_t chan2_raw; /*< [us] RC channel 2 value. A value of UINT16_MAX means to ignore this field.*/
+ uint16_t chan3_raw; /*< [us] RC channel 3 value. A value of UINT16_MAX means to ignore this field.*/
+ uint16_t chan4_raw; /*< [us] RC channel 4 value. A value of UINT16_MAX means to ignore this field.*/
+ uint16_t chan5_raw; /*< [us] RC channel 5 value. A value of UINT16_MAX means to ignore this field.*/
+ uint16_t chan6_raw; /*< [us] RC channel 6 value. A value of UINT16_MAX means to ignore this field.*/
+ uint16_t chan7_raw; /*< [us] RC channel 7 value. A value of UINT16_MAX means to ignore this field.*/
+ uint16_t chan8_raw; /*< [us] RC channel 8 value. A value of UINT16_MAX means to ignore this field.*/
+ uint8_t target_system; /*<  System ID*/
+ uint8_t target_component; /*<  Component ID*/
+ uint16_t chan9_raw; /*< [us] RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan10_raw; /*< [us] RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan11_raw; /*< [us] RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan12_raw; /*< [us] RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan13_raw; /*< [us] RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan14_raw; /*< [us] RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan15_raw; /*< [us] RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan16_raw; /*< [us] RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan17_raw; /*< [us] RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+ uint16_t chan18_raw; /*< [us] RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.*/
+} mavlink_rc_channels_override_t;
 
 #define MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE_LEN 38
 #define MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE_MIN_LEN 18
@@ -98,26 +98,26 @@ typedef struct __mavlink_rc_channels_override_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param chan1_raw RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan2_raw RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan3_raw RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan4_raw RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan5_raw RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan6_raw RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan7_raw RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan8_raw RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan9_raw RC channel 9 value, in microseconds. A value of 0 means to ignore this field.
- * @param chan10_raw RC channel 10 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan11_raw RC channel 11 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan12_raw RC channel 12 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan13_raw RC channel 13 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan14_raw RC channel 14 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan15_raw RC channel 15 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan16_raw RC channel 16 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan17_raw RC channel 17 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan18_raw RC channel 18 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param target_system  System ID
+ * @param target_component  Component ID
+ * @param chan1_raw [us] RC channel 1 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan2_raw [us] RC channel 2 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan3_raw [us] RC channel 3 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan4_raw [us] RC channel 4 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan5_raw [us] RC channel 5 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan6_raw [us] RC channel 6 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan7_raw [us] RC channel 7 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan8_raw [us] RC channel 8 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan9_raw [us] RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan10_raw [us] RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan11_raw [us] RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan12_raw [us] RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan13_raw [us] RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan14_raw [us] RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan15_raw [us] RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan16_raw [us] RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan17_raw [us] RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan18_raw [us] RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_rc_channels_override_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -183,26 +183,26 @@ static inline uint16_t mavlink_msg_rc_channels_override_pack(uint8_t system_id, 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target_system System ID
- * @param target_component Component ID
- * @param chan1_raw RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan2_raw RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan3_raw RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan4_raw RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan5_raw RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan6_raw RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan7_raw RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan8_raw RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan9_raw RC channel 9 value, in microseconds. A value of 0 means to ignore this field.
- * @param chan10_raw RC channel 10 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan11_raw RC channel 11 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan12_raw RC channel 12 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan13_raw RC channel 13 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan14_raw RC channel 14 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan15_raw RC channel 15 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan16_raw RC channel 16 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan17_raw RC channel 17 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan18_raw RC channel 18 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param target_system  System ID
+ * @param target_component  Component ID
+ * @param chan1_raw [us] RC channel 1 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan2_raw [us] RC channel 2 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan3_raw [us] RC channel 3 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan4_raw [us] RC channel 4 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan5_raw [us] RC channel 5 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan6_raw [us] RC channel 6 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan7_raw [us] RC channel 7 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan8_raw [us] RC channel 8 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan9_raw [us] RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan10_raw [us] RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan11_raw [us] RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan12_raw [us] RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan13_raw [us] RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan14_raw [us] RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan15_raw [us] RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan16_raw [us] RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan17_raw [us] RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan18_raw [us] RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_rc_channels_override_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -294,26 +294,26 @@ static inline uint16_t mavlink_msg_rc_channels_override_encode_chan(uint8_t syst
  * @brief Send a rc_channels_override message
  * @param chan MAVLink channel to send the message
  *
- * @param target_system System ID
- * @param target_component Component ID
- * @param chan1_raw RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan2_raw RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan3_raw RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan4_raw RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan5_raw RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan6_raw RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan7_raw RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan8_raw RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.
- * @param chan9_raw RC channel 9 value, in microseconds. A value of 0 means to ignore this field.
- * @param chan10_raw RC channel 10 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan11_raw RC channel 11 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan12_raw RC channel 12 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan13_raw RC channel 13 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan14_raw RC channel 14 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan15_raw RC channel 15 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan16_raw RC channel 16 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan17_raw RC channel 17 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
- * @param chan18_raw RC channel 18 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param target_system  System ID
+ * @param target_component  Component ID
+ * @param chan1_raw [us] RC channel 1 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan2_raw [us] RC channel 2 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan3_raw [us] RC channel 3 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan4_raw [us] RC channel 4 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan5_raw [us] RC channel 5 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan6_raw [us] RC channel 6 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan7_raw [us] RC channel 7 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan8_raw [us] RC channel 8 value. A value of UINT16_MAX means to ignore this field.
+ * @param chan9_raw [us] RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan10_raw [us] RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan11_raw [us] RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan12_raw [us] RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan13_raw [us] RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan14_raw [us] RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan15_raw [us] RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan16_raw [us] RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan17_raw [us] RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field.
+ * @param chan18_raw [us] RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -454,7 +454,7 @@ static inline void mavlink_msg_rc_channels_override_send_buf(mavlink_message_t *
 /**
  * @brief Get field target_system from rc_channels_override message
  *
- * @return System ID
+ * @return  System ID
  */
 static inline uint8_t mavlink_msg_rc_channels_override_get_target_system(const mavlink_message_t* msg)
 {
@@ -464,7 +464,7 @@ static inline uint8_t mavlink_msg_rc_channels_override_get_target_system(const m
 /**
  * @brief Get field target_component from rc_channels_override message
  *
- * @return Component ID
+ * @return  Component ID
  */
 static inline uint8_t mavlink_msg_rc_channels_override_get_target_component(const mavlink_message_t* msg)
 {
@@ -474,7 +474,7 @@ static inline uint8_t mavlink_msg_rc_channels_override_get_target_component(cons
 /**
  * @brief Get field chan1_raw from rc_channels_override message
  *
- * @return RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 1 value. A value of UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan1_raw(const mavlink_message_t* msg)
 {
@@ -484,7 +484,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan1_raw(const mavl
 /**
  * @brief Get field chan2_raw from rc_channels_override message
  *
- * @return RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 2 value. A value of UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan2_raw(const mavlink_message_t* msg)
 {
@@ -494,7 +494,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan2_raw(const mavl
 /**
  * @brief Get field chan3_raw from rc_channels_override message
  *
- * @return RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 3 value. A value of UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan3_raw(const mavlink_message_t* msg)
 {
@@ -504,7 +504,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan3_raw(const mavl
 /**
  * @brief Get field chan4_raw from rc_channels_override message
  *
- * @return RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 4 value. A value of UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan4_raw(const mavlink_message_t* msg)
 {
@@ -514,7 +514,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan4_raw(const mavl
 /**
  * @brief Get field chan5_raw from rc_channels_override message
  *
- * @return RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 5 value. A value of UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan5_raw(const mavlink_message_t* msg)
 {
@@ -524,7 +524,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan5_raw(const mavl
 /**
  * @brief Get field chan6_raw from rc_channels_override message
  *
- * @return RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 6 value. A value of UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan6_raw(const mavlink_message_t* msg)
 {
@@ -534,7 +534,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan6_raw(const mavl
 /**
  * @brief Get field chan7_raw from rc_channels_override message
  *
- * @return RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 7 value. A value of UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan7_raw(const mavlink_message_t* msg)
 {
@@ -544,7 +544,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan7_raw(const mavl
 /**
  * @brief Get field chan8_raw from rc_channels_override message
  *
- * @return RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 8 value. A value of UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan8_raw(const mavlink_message_t* msg)
 {
@@ -554,7 +554,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan8_raw(const mavl
 /**
  * @brief Get field chan9_raw from rc_channels_override message
  *
- * @return RC channel 9 value, in microseconds. A value of 0 means to ignore this field.
+ * @return [us] RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan9_raw(const mavlink_message_t* msg)
 {
@@ -564,7 +564,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan9_raw(const mavl
 /**
  * @brief Get field chan10_raw from rc_channels_override message
  *
- * @return RC channel 10 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 10 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan10_raw(const mavlink_message_t* msg)
 {
@@ -574,7 +574,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan10_raw(const mav
 /**
  * @brief Get field chan11_raw from rc_channels_override message
  *
- * @return RC channel 11 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 11 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan11_raw(const mavlink_message_t* msg)
 {
@@ -584,7 +584,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan11_raw(const mav
 /**
  * @brief Get field chan12_raw from rc_channels_override message
  *
- * @return RC channel 12 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 12 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan12_raw(const mavlink_message_t* msg)
 {
@@ -594,7 +594,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan12_raw(const mav
 /**
  * @brief Get field chan13_raw from rc_channels_override message
  *
- * @return RC channel 13 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 13 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan13_raw(const mavlink_message_t* msg)
 {
@@ -604,7 +604,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan13_raw(const mav
 /**
  * @brief Get field chan14_raw from rc_channels_override message
  *
- * @return RC channel 14 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 14 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan14_raw(const mavlink_message_t* msg)
 {
@@ -614,7 +614,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan14_raw(const mav
 /**
  * @brief Get field chan15_raw from rc_channels_override message
  *
- * @return RC channel 15 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 15 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan15_raw(const mavlink_message_t* msg)
 {
@@ -624,7 +624,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan15_raw(const mav
 /**
  * @brief Get field chan16_raw from rc_channels_override message
  *
- * @return RC channel 16 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 16 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan16_raw(const mavlink_message_t* msg)
 {
@@ -634,7 +634,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan16_raw(const mav
 /**
  * @brief Get field chan17_raw from rc_channels_override message
  *
- * @return RC channel 17 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 17 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan17_raw(const mavlink_message_t* msg)
 {
@@ -644,7 +644,7 @@ static inline uint16_t mavlink_msg_rc_channels_override_get_chan17_raw(const mav
 /**
  * @brief Get field chan18_raw from rc_channels_override message
  *
- * @return RC channel 18 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+ * @return [us] RC channel 18 value. A value of 0 or UINT16_MAX means to ignore this field.
  */
 static inline uint16_t mavlink_msg_rc_channels_override_get_chan18_raw(const mavlink_message_t* msg)
 {

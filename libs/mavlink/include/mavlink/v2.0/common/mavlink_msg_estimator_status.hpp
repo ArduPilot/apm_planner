@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief ESTIMATOR_STATUS message
  *
- * Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovaton test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovaton test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.
+ * Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovation test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovation test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.
  */
 struct ESTIMATOR_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 230;
@@ -19,16 +19,16 @@ struct ESTIMATOR_STATUS : mavlink::Message {
     static constexpr auto NAME = "ESTIMATOR_STATUS";
 
 
-    uint64_t time_usec; /*< Timestamp (micros since boot or Unix epoch) */
-    uint16_t flags; /*< Integer bitmask indicating which EKF outputs are valid. See definition for ESTIMATOR_STATUS_FLAGS. */
-    float vel_ratio; /*< Velocity innovation test ratio */
-    float pos_horiz_ratio; /*< Horizontal position innovation test ratio */
-    float pos_vert_ratio; /*< Vertical position innovation test ratio */
-    float mag_ratio; /*< Magnetometer innovation test ratio */
-    float hagl_ratio; /*< Height above terrain innovation test ratio */
-    float tas_ratio; /*< True airspeed innovation test ratio */
-    float pos_horiz_accuracy; /*< Horizontal position 1-STD accuracy relative to the EKF local origin (m) */
-    float pos_vert_accuracy; /*< Vertical position 1-STD accuracy relative to the EKF local origin (m) */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint16_t flags; /*<  Bitmap indicating which EKF outputs are valid. */
+    float vel_ratio; /*<  Velocity innovation test ratio */
+    float pos_horiz_ratio; /*<  Horizontal position innovation test ratio */
+    float pos_vert_ratio; /*<  Vertical position innovation test ratio */
+    float mag_ratio; /*<  Magnetometer innovation test ratio */
+    float hagl_ratio; /*<  Height above terrain innovation test ratio */
+    float tas_ratio; /*<  True airspeed innovation test ratio */
+    float pos_horiz_accuracy; /*< [m] Horizontal position 1-STD accuracy relative to the EKF local origin */
+    float pos_vert_accuracy; /*< [m] Vertical position 1-STD accuracy relative to the EKF local origin */
 
 
     inline std::string get_name(void) const override
