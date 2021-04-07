@@ -791,6 +791,8 @@ void ApmCustomFirmwareConfig::downloadFirmwareFinished()
      QLOG_DEBUG() << "ApmCustomFirmwareConfig::flashingDone";
      mp_Ui->statusInfoWidget->append("Flashing done.");
 
+     QString label("<h4>Done!</h4>");
+     mp_Ui->progressbarLabel->setText(label);
      mp_Ui->progressBar->setValue(mp_Ui->progressBar->maximum()); // force to 100%
 
      mp_px4Updater.reset();
