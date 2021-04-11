@@ -21,12 +21,13 @@ SOURCEPATH="/home/build/planner"
     BINPATH="$SOURCEPATH/release"
     LINUXDEPLOY="$SOURCEPATH/squashfs-root/usr/bin/linuxdeployqt"
     BUILDINGPATH="$SOURCEPATH/AppImageBuild"
+    # following files are copied by the docker file
     DESKTOPFILE="/home/build/appimage/apmplanner2.desktop"
     METADATAFILE="/home/build/appimage/apmplanner2.appdata.xml"
 
    #----------------------------------------------
 
-    export VERSION=2.0.28-rc1
+    export VERSION=2.0.29-rc1
 
     # Clean if output already exists
     rm -rf "$BUILDINGPATH"
