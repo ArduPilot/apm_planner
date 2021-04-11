@@ -5,5 +5,11 @@ It is a ubuntu 16.04 based container using latest Qt 5.12.
 Simpy start the BuildPlanner.sh script. It will do all the work for you.
 As this tooling uses docker you should have a working docker installation.
 
+Use this git command to create a log output which can be used for the release notes:
+
+git log --pretty='format:%C(auto)%h %s - %aN'
+
+This should be done as the release note are part of the appimage.
+
 
 

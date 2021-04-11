@@ -54,6 +54,9 @@ SOURCEPATH="/home/build/planner"
 
     # copy desktop file
     cp "$DESKTOPFILE" "$BUILDINGPATH/usr/share/applications/"
+    
+    # copy release notes 
+    cp "./release_notes.txt" "$BUILDINGPATH/usr/share/"
 
     # build the appimage
     $LINUXDEPLOY "$BUILDINGPATH/usr/share/applications/apmplanner2.desktop" -appimage -qmake="$QTPATH/bin/qmake" -extra-plugins=iconengines,platformthemes/libqgtk3.so -qmldir="$BINPATH/qml/"
