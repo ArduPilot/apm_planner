@@ -75,7 +75,7 @@ public slots:
     void advModeChanged(bool state);
 
 private:
-    QPointer<ApmCustomFirmwareConfig> m_apmCustomFWConfig;
+    QPointer<QScrollArea> m_apmCustomFWConfig;
 
     //Mandatory
     QPointer<FrameTypeConfig> m_frameConfig;

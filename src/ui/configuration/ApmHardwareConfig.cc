@@ -57,7 +57,9 @@ ApmHardwareConfig::ApmHardwareConfig(QWidget *parent) : QWidget(parent)
     ui.radio3DRLargeButton->setVisible(true); // [SHOW 3DR RADIO]
     ui.antennaTrackerLargeButton->setVisible(false); // [HIDE Antenna Tracking]
 
-    m_apmCustomFWConfig = new ApmCustomFirmwareConfig(this);
+    m_apmCustomFWConfig = new QScrollArea(this);
+    m_apmCustomFWConfig->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_apmCustomFWConfig->setWidget(new ApmCustomFirmwareConfig(this));
     ui.stackedWidget->addWidget(m_apmCustomFWConfig);
     m_buttonToConfigWidgetMap[ui.firmwareButton] = m_apmCustomFWConfig;
     connect(ui.firmwareButton, SIGNAL(clicked()), this, SLOT(activateStackedWidget()));
