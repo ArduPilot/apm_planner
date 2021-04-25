@@ -57,30 +57,6 @@ bf14b3a7e  Firmware Install: Stop scanning for devices if flashing has started a
 edbb38910  Firmware Install: More changes for fmu-v5 and some cleanup - Arne-W
 fc70222ef  Reverted accidentally pushed change on project file - Arne-W
 de4262112  Firmware Install: Adapted for fmu-v5 - Arne-W
-c7f81f8ba build: Update to 2.0.29-rc1. - Arne-W
-2e47d56d8 Firmware Install: Add "done" message on progress bar - Arne-W
-8248f7eae Build: Project file cleanup - Arne-W
-6ac563ab2 Mavlink: update to commit 6e08c075 from https://github.com/ArduPilot/mavlink - Arne-W
-323a7133d Widget: removed some logging polluting the log - Arne-W
-a63d6d591 Comms: Removed some old unneeded mavlink structures and includes - Arne-W
-f3b0b41ce Firmware Install: replaced some native pointers. - Arne-W
-31fe75ffd Work around non-instant modem availability for PX4 - Maxim Buzdalov
-5d3f27e7d Firmware Install: Completely rewritten and redesigned. Fixes #1171 #1139 #1111 - Arne-W
-cd056ee6d Comms: Minor optimizations for reading data from a serial interface. - Arne-W
-19c045c43 Comms: MavLinkProtocol now provides getter for received messages and lost messages - Arne-W
-a7dca95ed Comms: MavLinkInspector now gets a pointer to mavLinkProtocol class - Arne-W
-88cf50bf1 Comms: UAS now stores a pointer to mavLinkProtocol class - Arne-W
-eb710a668 Comms: Mavlink now uses internal buffers - Arne-W
-c780f15e6 Comms: Allow changing the Mavlink ID of APM Planner in advanced config dialog. Fixes #1228 - Arne-W
-bf74360ac Removed some clazy warnings - Arne-W
-be6acb19f Improved handling of corrupted data in tlogs. Fixes #1225 - Arne-W
-b558146b1 Added support for parsing data with typecode 'a' like ISBD and ISBH data. Fixes #1225 - Arne-W
-ab6059ca1 General: Updated README.md Fixes #1200 - Arne-W
-499c43318 Allow MAV_CMD with values > 255 - Dino Hüllmann
-f4b39d893 Added mission type to MAVLink mission_count message - Dino Hüllmann
-f38bef77f ui: Radio3DRSettings: don't use qAsConst - Peter Barker
-aaf9f8094 Vagrantfile: move to Bionic - Peter Barker
-fea4a37e0 build: update release_notes for 2.0.28-RC1 - Arne-W
 
 
 4c0826c44  build: Update to 2.0.27-rc1 - Bill Bonney
