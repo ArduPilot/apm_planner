@@ -80,14 +80,14 @@ Rectangle {
     AltitudeIndicator {
         id: altIndicator
         anchors.right: parent.right
-        width: 35
+        width: 40
         alt: 0
     }
 
     SpeedIndicator {
         id: speedIndicator
         anchors.left: parent.left
-        width: 35
+        width: 40
         airspeed: 0
         groundspeed: 0
     }
