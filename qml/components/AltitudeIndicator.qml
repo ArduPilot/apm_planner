@@ -19,7 +19,7 @@ import QtQuick 2.0
 Rectangle {
     id: root
     property real alt: 0
-    property real maxAlt: 1000
+    property real maxAlt: 2000
     property real minAlt: -200
     property real graticuleSpacing: 45-graticuleHeight
     property real graticuleAlt: 10 //metres
@@ -87,7 +87,7 @@ Rectangle {
         Text {
             anchors.centerIn: parent
 
-            text: alt.toFixed(1)
+            text: alt < 100 ? alt.toFixed(1) : alt.toFixed(0)
             color: "white"
             z: 2
         }
