@@ -824,7 +824,7 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
     mp_tableFilterProxyModel = new QSortFilterProxyModel(this);     // will be deleted upon destruction of "this"
     mp_tableFilterProxyModel->setSourceModel(m_dataStoragePtr.data());
     ui.tableWidget->setModel(mp_tableFilterProxyModel);
-    connect(ui.tableWidget->selectionModel(), SIGNAL(currentChanged(QModelIndex, QModelIndex)), this, SLOT(selectedRowChanged(QModelIndex, QModelIndex)));
+    connect(ui.tableWidget->selectionModel(), SIGNAL(currentRowChanged(QModelIndex, QModelIndex)), this, SLOT(selectedRowChanged(QModelIndex, QModelIndex)));
 
     // Graph is loaded - Setup ui. Connect mouseMove signal according to checkbox state
     if(ui.showValuesCheckBox->isChecked())
@@ -1159,38 +1159,52 @@ void LogAnalysis::filterSelectInvertClicked()
 
 void LogAnalysis::selectedRowChanged(QModelIndex current, QModelIndex previous)
 {
-    Q_UNUSED(previous);
+    Q_UNUSED(previous)
     if (!current.isValid())
     {
         return;
     }
-    qint64 index =  mp_tableFilterProxyModel->mapToSource(current).row();
 
+    // current only matches model row if data is not filtered.
+    qint64 index = mp_tableFilterProxyModel->mapToSource(current).row();
+
+    // Move cursor if available
     if(mp_cursorSimple)
     {
         if (m_useTimeOnXAxis)
         {
-            // timestamp value of the current row is in colum 2
-            double item = ui.tableWidget->model()->itemData(ui.tableWidget->model()->index(current.row(), 2)).value(Qt::DisplayRole).toInt();
-            if(!m_dataStoragePtr->ModelIsScaled())
+            // Create QModelIndex pointing directly to timestamp value which is in colum 2
+            QModelIndex temp1 = ui.tableWidget->model()->index(current.row(), 2);
+            // fetch the item from table
+            QMap<int, QVariant> map1 = ui.tableWidget->model()->itemData(temp1);
+
+            if(m_dataStoragePtr->ModelIsScaled())
+            {
+                // If datamodel is scaled we use the value from tablemodel.
+                double time = map1.value(Qt::DisplayRole).toDouble();  // Fetch value as directly as double
+                mp_cursorSimple->setCurrentXPos(time); // and set position
+            }
+            else
             {
                 // If datamodel is NOT scaled we have to scale the timestamp.
-                mp_cursorSimple->setCurrentXPos(item / m_dataStoragePtr->getTimeDivisor());
+                double time = map1.value(Qt::DisplayRole).toInt();  // Fetch value as int
+                mp_cursorSimple->setCurrentXPos(time / m_dataStoragePtr->getTimeDivisor()); // scale and set position
             }
         }
         else
         {
-            mp_cursorSimple->setCurrentXPos(index);
+
+            mp_cursorSimple->setCurrentXPos(static_cast<double>(index));
         }
     }
 
-    m_dataStoragePtr->selectedRowChanged(mp_tableFilterProxyModel->mapToSource(current));
-    if (mp_logAnalysisMap != nullptr)
+    if (mp_logAnalysisMap)
     {
-        mp_logAnalysisMap->setUavCursor(index);
+        mp_logAnalysisMap->setUavCursor(static_cast<int>(index));
     }
 
-    // TODO check if we want to handle a context menu on table?!
+    // update table header
+    m_dataStoragePtr->selectedRowChanged(mp_tableFilterProxyModel->mapToSource(current));
 }
 
 void LogAnalysis::exportAsciiLogClicked()

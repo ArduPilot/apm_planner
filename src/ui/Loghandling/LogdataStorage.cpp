@@ -74,13 +74,13 @@ LogdataStorage::~LogdataStorage()
 
 int LogdataStorage::rowCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     return m_indexToDataRow.size();
 }
 
 int LogdataStorage::columnCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     return m_columnCount;
 }
 
@@ -430,7 +430,7 @@ double LogdataStorage::getMaxTimeStamp() const
 int LogdataStorage::getNearestIndexForTimestamp(double timevalue) const
 {
     quint64 timeToFind = static_cast<quint64>(m_timeDivisor * timevalue);
-    float intervalSize = m_TimeToIndexList.size();
+    float intervalSize = static_cast<float>(m_TimeToIndexList.size());
     float intervalStart = 0;
     float middle = 0;
     int   index = 0;
