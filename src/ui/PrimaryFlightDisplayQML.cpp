@@ -70,7 +70,7 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
 
 PrimaryFlightDisplayQML::~PrimaryFlightDisplayQML()
 {
-//    delete ui;
+    delete m_declarativeView;
 }
 
 void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
