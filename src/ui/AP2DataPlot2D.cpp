@@ -50,16 +50,16 @@ This file is part of the APM_PLANNER project
 #define ROW_HEIGHT_PADDING 3 //Number of additional pixels over font height for each row for the table/excel view.
 
 AP2DataPlot2D::AP2DataPlot2D(QWidget *parent) : QWidget(parent),
-    m_updateTimer(NULL),
+    m_updateTimer(nullptr),
     m_graphCount(0),
-    m_plot(NULL),
-    m_wideAxisRect(NULL),
+    m_plot(nullptr),
+    m_wideAxisRect(nullptr),
     m_currentIndex(0),
     m_startIndex(0),
-    m_uas(NULL),
-    m_axisGroupingDialog(NULL),
+    m_uas(nullptr),
+    m_axisGroupingDialog(nullptr),
     m_tlogReplayEnabled(false),
-    m_logDownloadDialog(NULL),
+    m_logDownloadDialog(nullptr),
     m_statusTextPos(0),
     m_lastHorizontalScrollerVal(0)
 {
@@ -271,7 +271,7 @@ void AP2DataPlot2D::showEvent(QShowEvent *evt)
     {
         m_updateTimer->stop();
         m_updateTimer->deleteLater();
-        m_updateTimer = NULL;
+        m_updateTimer = nullptr;
     }
     m_updateTimer = new QTimer(this);
     connect(m_updateTimer,SIGNAL(timeout()),m_plot,SLOT(replot()));
@@ -285,7 +285,7 @@ void AP2DataPlot2D::hideEvent(QHideEvent *evt)
     {
         m_updateTimer->stop();
         m_updateTimer->deleteLater();
-        m_updateTimer = NULL;
+        m_updateTimer = nullptr;
     }
     QWidget::hideEvent(evt);
 }
@@ -494,7 +494,7 @@ void AP2DataPlot2D::navModeChanged(int uasid, int mode, const QString& text)
         m_graphNameList.append(ModeMessage::TypeName);
     }
 
-    int index = newmsec / 1000.0;
+    int index = newmsec / 1000;
     m_graphClassMap[ModeMessage::TypeName].messageMap[index] = text;
     plotTextArrow(index, text, ModeMessage::TypeName, QColor(50,125,0), ui.modeDisplayCheckBox);
 }
@@ -527,8 +527,11 @@ void AP2DataPlot2D::updateValue(const int uasId, const QString& name, const QStr
     if (m_graphCount > 0 && ui.autoScrollCheckBox->isChecked())
     {
         double diff = (newmsec / 1000.0) - m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().upper;
-        m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower + diff);
-        m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper((newmsec / 1000.0));
+        if (diff > 1.0)
+        {
+            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeLower(m_wideAxisRect->axis(QCPAxis::atBottom,0)->range().lower + diff);
+            m_wideAxisRect->axis(QCPAxis::atBottom,0)->setRangeUpper((newmsec / 1000.0));
+        }
     }
 
     if (m_graphClassMap.contains(propername))
@@ -640,13 +643,13 @@ AP2DataPlot2D::~AP2DataPlot2D()
     {
         m_updateTimer->stop();
         m_updateTimer->deleteLater();
-        m_updateTimer = NULL;
+        m_updateTimer = nullptr;
     }
     if (m_axisGroupingDialog)
     {
         m_axisGroupingDialog->close();
         delete m_axisGroupingDialog;
-        m_axisGroupingDialog = NULL;
+        m_axisGroupingDialog = nullptr;
     }
 
     for (int i=0;i<m_childGraphList.size();i++)
@@ -655,7 +658,7 @@ AP2DataPlot2D::~AP2DataPlot2D()
     }
 
     delete m_plot;
-    m_plot = NULL;
+    m_plot = nullptr;
 }
 
 void AP2DataPlot2D::itemEnabled(QString name)
@@ -665,8 +668,8 @@ void AP2DataPlot2D::itemEnabled(QString name)
         QVector<double> xlist;
         QVector<double> ylist;
 
-        float min = m_onlineValueMap[name][0].second;
-        float max = m_onlineValueMap[name][0].second;
+        double min = m_onlineValueMap[name][0].second;
+        double max = m_onlineValueMap[name][0].second;
         for (int j=0;j<m_onlineValueMap[name].size();j++)
         {
             xlist.append(m_onlineValueMap[name][j].first);
@@ -686,6 +689,7 @@ void AP2DataPlot2D::itemEnabled(QString name)
         QColor color = QColor::fromRgb(rand()%255,rand()%255,rand()%255);
         axis->setLabelColor(color);
         axis->setTickLabelColor(color); // add an extra axis on the left and color its numbers
+        axis->setNumberFormat("f");
         QCPGraph *mainGraph1 = m_plot->addGraph(m_wideAxisRect->axis(QCPAxis::atBottom), m_wideAxisRect->axis(QCPAxis::atLeft,m_graphCount++));
         m_graphNameList.append(name);
         mainGraph1->setData(xlist, ylist);
@@ -830,7 +834,8 @@ void AP2DataPlot2D::removeTextArrows(const QString &graphName)
 void AP2DataPlot2D::showLogDownloadDialog()
 {
     QLOG_DEBUG() << "showLogDownloadDialog";
-    if (m_logDownloadDialog == NULL){
+    if (m_logDownloadDialog == nullptr)
+    {
         m_logDownloadDialog = new LogDownloadDialog(this);
         connect(m_logDownloadDialog, SIGNAL(accepted()), this, SLOT(closeLogDownloadDialog()));
     }
@@ -840,10 +845,11 @@ void AP2DataPlot2D::showLogDownloadDialog()
 
 void AP2DataPlot2D::closeLogDownloadDialog()
 {
-    if (m_logDownloadDialog){
+    if (m_logDownloadDialog)
+    {
         m_logDownloadDialog->hide();
         m_logDownloadDialog->deleteLater();
-        m_logDownloadDialog = NULL;
+        m_logDownloadDialog = nullptr;
     }
 }
 

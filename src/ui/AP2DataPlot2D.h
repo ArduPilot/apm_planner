@@ -56,8 +56,8 @@ class AP2DataPlot2D : public QWidget
     Q_OBJECT
     
 public:
-    explicit AP2DataPlot2D(QWidget *parent = 0);
-    ~AP2DataPlot2D();
+    explicit AP2DataPlot2D(QWidget *parent = nullptr);
+    ~AP2DataPlot2D() override;
 
 public slots:
     void showLogDownloadDialog();
@@ -110,12 +110,12 @@ private slots:
 
 private:
 
-    void showEvent(QShowEvent *evt);
-    void hideEvent(QHideEvent *evt);
+    void showEvent(QShowEvent *evt) override;
+    void hideEvent(QHideEvent *evt) override;
 
 
     int getStatusTextPos();
-    void plotTextArrow(double index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = NULL);
+    void plotTextArrow(double index, const QString& text, const QString& graph, const QColor& color, QCheckBox *checkBox = nullptr);
 
     /**
      * @brief This method hides or shows the text arrows of type
@@ -137,19 +137,17 @@ private:
     Ui::AP2DataPlot2D ui;
 
     QTimer *m_updateTimer;
-    class Graph
+
+    struct Graph
     {
-    public:
-        bool isManualRange;
+        bool isManualRange{false};
         QString groupName;
-        bool isInGroup;
-        double axisIndex;
-        QCPAxis *axis;
-        QCPGraph *graph;
+        bool isInGroup    {false};
+        double axisIndex  {0.0};
+        QCPAxis *axis     {nullptr};
+        QCPGraph *graph   {nullptr};
         QList<QCPAbstractItem*> itemList;
         QMap<double,QString> messageMap;
-
-        Graph() : isManualRange(false), isInGroup(false), axisIndex(0), axis(NULL), graph(NULL){}
     };
 
     QMap<QString,Graph> m_graphClassMap;
