@@ -36,13 +36,18 @@ Install QT
 
 2) Double click the package installer
 
+Or install QT with brew: `brew link qt5 --force`
+
+
 Build APM Planner
 --------------------
 1) From the terminal go to the `apm_planner` directory created when you cloned the repository.
 
-2) Run `qmake -spec macx-g++ apm_planner.pro`
+2) Run `qmake -spec macx-clang apm_planner.pro` (old version `qmake -spec macx-g++ apm_planner.pro`)
 
 3) Run `make -j8`
+
+4) Run `open ./release/apmplanner2.app`
 
 
 Linux 
