@@ -673,7 +673,7 @@ bool EventMessage::setFromNameValuePairList(const QList<NameValuePair> &values, 
         }
         else if(values.at(i).first == m_TimeFieldName)
         {
-            m_TimeStamp = values.at(i).second.toUInt();
+            m_TimeStamp = values.at(i).second.toDouble();
             m_TimeStamp /= timeDivider;
             rc2 = true;
         }
@@ -734,7 +734,7 @@ bool MsgMessage::setFromNameValuePairList(const QList<NameValuePair> &values, co
         }
         else if(values.at(i).first == m_TimeFieldName)
         {
-            m_TimeStamp = values.at(i).second.toUInt();
+            m_TimeStamp = values.at(i).second.toDouble();
             m_TimeStamp /= timeDivider;
             rc2 = true;
         }
