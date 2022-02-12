@@ -38,7 +38,7 @@ load(configure)
 #################################################################################
 
 
-linux-g++-64 | linux-g++ {
+linux-g++ | linux-g++-32 {
 
     CONFIG += LinuxBuild
 
@@ -47,12 +47,12 @@ linux-g++-64 | linux-g++ {
 
     qtCompileTest(has_flite)
 
-    linux-g++-64 {
+    linux-g++ {
         message(Linux build x86_64)
         DEFINES += Q_LINUX_64
     }
 
-    linux-g++ {
+    linux-g++-32 {
         message(Linux build x86)
         DEFINES += Q_LINUX_32
     }
