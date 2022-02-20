@@ -61,16 +61,16 @@ public:
     struct dataType
     {
         QString m_name;                 /// Name of the type
-        quint32 m_ID;                   /// ID of the type
-        int m_length;                   /// Length in bytes
+        quint32 m_ID{0xFFFFFFFF};       /// ID of the type
+        int m_length{};                 /// Length in bytes
         QString m_format;               /// format string like "QBB"
         QStringList m_labels;           /// Lable (name) of each column
         QStringList m_units;            /// Unit (name) of each column
         QVector<double> m_multipliers;  /// Multiplier data for scaling the data
-        int m_timeStampIndex;           /// Index of the time stamp field - for faster access
+        int m_timeStampIndex{};         /// Index of the time stamp field - for faster access
+        int m_maxIndex{};               /// If its ad indexed datatype this is the max index otherwise 0
 
-        dataType() : m_ID(0xFFFFFFFF), m_length(0), m_timeStampIndex(0)
-        {}
+        dataType() = default;
 
         dataType(const QString &name, quint32 ID, int length,
                  const QString &format, const QStringList &labels, int timeColumn) :

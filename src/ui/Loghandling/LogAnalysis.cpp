@@ -612,6 +612,8 @@ void LogAnalysis::loadSettings()
     m_useTimeOnXAxis = settings.value("USE_TIMEINDEX", Qt::Unchecked).toBool();
     ui.indexTypeCheckBox->setChecked(m_useTimeOnXAxis);
 
+    ui.horizontalSplitter->restoreState(settings.value("HORIZONTAL_SPITTER_STATE").toByteArray());
+
     m_presetMgrPtr->setFileName(settings.value("PRESET_FILE").toString());
     settings.endGroup();
 }
@@ -626,6 +628,8 @@ void LogAnalysis::saveSettings()
     settings.setValue("SHOW_MSG", ui.msgDisplayCheckBox->isChecked());
     settings.setValue("SHOW_VALUES", ui.showValuesCheckBox->isChecked());
     settings.setValue("USE_TIMEINDEX", ui.indexTypeCheckBox->isChecked());
+
+    settings.setValue("HORIZONTAL_SPITTER_STATE", ui.horizontalSplitter->saveState());
 
     QFileInfo fileInfo = m_presetMgrPtr->getFileInfo();
     QString filePath;
@@ -775,14 +779,8 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
 
     // Insert data into tree view suppressing all measurements containing strings as values
     fmtMapType fmtMap = m_dataStoragePtr->getFmtValues(true);
-    for (fmtMapType::const_iterator iter = fmtMap.constBegin(); iter != fmtMap.constEnd(); ++iter)
-    {
-        QString name = iter.key();
-        for (int i = 0; i < iter.value().size(); ++i)
-        {
-            ui.dataSelectionScreen->addItem(name + "." + iter.value().at(i));
-        }
-    }
+    ui.dataSelectionScreen->addItems(fmtMap);
+
     // and connect the signals for enabling and disabling
     connect(ui.dataSelectionScreen, SIGNAL(itemEnabled(QString)), this, SLOT(itemEnabled(QString)));
     connect(ui.dataSelectionScreen, SIGNAL(itemDisabled(QString)), this, SLOT(itemDisabled(QString)));
@@ -792,11 +790,16 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
     fmtMap = m_dataStoragePtr->getFmtValues(false);
     for (fmtMapType::const_iterator iter = fmtMap.constBegin(); iter != fmtMap.constEnd(); ++iter)
     {
-        QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << iter.key());
-        child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
-        child->setCheckState(0, Qt::Checked); // Set it checked, since all items are enabled by default
-        ui.filterSelectTreeWidget->addTopLevelItem(child);
-        m_tableFilterList.append(iter.key());
+        QStringList parts = iter.key().split('.');
+        QList<QTreeWidgetItem*> findlist = ui.filterSelectTreeWidget->findItems(parts[0], Qt::MatchContains);   // is this group already in tree?
+        if(findlist.empty())
+        {
+            QTreeWidgetItem *child = new QTreeWidgetItem(QStringList() << parts[0]);
+            child->setFlags(child->flags() | Qt::ItemIsUserCheckable);
+            child->setCheckState(0, Qt::Checked); // Set it checked, since all items are enabled by default
+            ui.filterSelectTreeWidget->addTopLevelItem(child);
+            m_tableFilterList.append(parts[0]);
+        }
     }
 
     // create an invisible y-axis for the text arrows

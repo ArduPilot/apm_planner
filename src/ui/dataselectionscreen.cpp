@@ -18,76 +18,25 @@ DataSelectionScreen::~DataSelectionScreen()
 void DataSelectionScreen::clearSelectionButtonClicked()
 {
     QList<QTreeWidgetItem*> items = ui.treeWidget->findItems("",Qt::MatchContains | Qt::MatchRecursive);
-    for (int i=0;i<items.size();i++)
+    for (auto &item : items)
     {
-        if (items[i]->parent())
+        if (item->checkState(0) == Qt::Checked)
         {
-            if (items[i]->checkState(0) == Qt::Checked)
-            {
-                items[i]->setCheckState(0,Qt::Unchecked);
-                // ^^ this will trigger the disabling of the graph automatically
-            }
+            item->setCheckState(0,Qt::Unchecked);
+            // ^^ this will trigger the disabling of the graph automatically
         }
     }
     m_enabledList.clear();
 }
 
-void DataSelectionScreen::enableItem(QString name)
+void DataSelectionScreen::enableItem(const QString &name)
 {
-    QString first = name.split(".")[0];
-    QString second = name.split(".")[1];
-    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchExactly | Qt::MatchRecursive,0);
-    if (items.size() == 0)
-    {
-        return;
-    }
-    for (int i=0;i<items.size();i++)
-    {
-        if (items[i]->parent())
-        {
-            if (items[i]->parent()->text(0) == first)
-            {
-                if (items[i]->checkState(0) != Qt::Checked)
-                {
-                    items[i]->setCheckState(0,Qt::Checked);
-                    ui.treeWidget->scrollToItem(items[i]);
-                }
-                return;
-            }
-            else
-            {
-                QLOG_DEBUG() << "Not found:" << items[i]->parent()->text(0);
-            }
-        }
-    }
-
+    handleItem(name, Qt::Checked);
 }
 
-void DataSelectionScreen::disableItem(QString name)
+void DataSelectionScreen::disableItem(const QString &name)
 {
-    QString first = name.split(".")[0];
-    QString second = name.split(".")[1];
-    QList<QTreeWidgetItem*> items = ui.treeWidget->findItems(second,Qt::MatchExactly | Qt::MatchRecursive,0);
-    if (items.size() == 0)
-    {
-        return;
-    }
-    for (int i=0;i<items.size();i++)
-    {
-        //If the item has no parent, it's a top level item and we ignore it anyway.
-        if (items[i]->parent())
-        {
-            if (items[i]->parent()->text(0) == first)
-            {
-                if (items[i]->checkState(0) != Qt::Unchecked)
-                {
-                    items[i]->setCheckState(0,Qt::Unchecked);
-                    return;
-                }
-            }
-        }
-    }
-    QLOG_ERROR() << "No item found in DataSelectionScreen:disableItem:" << name;
+    handleItem(name, Qt::Unchecked);
 }
 
 QList<QString> DataSelectionScreen::disableAllItems()
@@ -101,9 +50,9 @@ QList<QString> DataSelectionScreen::disableAllItems()
 
 void DataSelectionScreen::enableItemList(QList<QString> &itemList)
 {
-    foreach (QString item, itemList)
+    for(const auto &name : itemList)
     {
-        enableItem(item);
+        handleItem(name, Qt::Checked);
     }
 }
 
@@ -161,14 +110,75 @@ void DataSelectionScreen::addItem(QString name)
     }
     ui.treeWidget->sortByColumn(0,Qt::AscendingOrder);
 }
-void DataSelectionScreen::onItemChanged(QTreeWidgetItem* item,int column)
+
+void DataSelectionScreen::addItems(const QMap<QString, QStringList> &fmtMap)
 {
+    for (auto iter = fmtMap.constBegin(); iter != fmtMap.constEnd(); ++iter)
+    {
+        QString tempName {iter.key()};
+        QStringList parts {tempName.split('.')};
+        QTreeWidgetItem *pParentItem {nullptr};
+
+        if(parts.size() > 2 || parts.size() == 0)
+        {
+            QLOG_INFO() << "Name schema mismatch dropping item.";
+            return;
+        }
+
+        QList<QTreeWidgetItem*> findlist = ui.treeWidget->findItems(parts[0], Qt::MatchContains);   // is this group already in tree?
+        if (findlist.size() > 0)
+        {
+            pParentItem = findlist[0];   // is already there
+        }
+        else
+        {
+            pParentItem = new GraphTreeWidgetItem(QStringList() << parts[0]); // Not there so add it. parts[0] is the groupname
+            ui.treeWidget->addTopLevelItem(pParentItem);
+        }
+
+        if(parts.size() == 2)
+        {
+            // we have an index so add another level to the tree
+            GraphTreeWidgetItem *indexItem = new GraphTreeWidgetItem(QStringList() << parts[1]);    // index
+            pParentItem->addChild(indexItem);
+            // now the index item is the parent of all following items
+            pParentItem = indexItem;
+        }
+
+        // now add all the leaves
+        for (const auto &shortName : iter.value())
+        {
+            GraphTreeWidgetItem *pShortName = new GraphTreeWidgetItem(QStringList() << shortName);
+            pShortName->setFlags(pShortName->flags() | Qt::ItemIsUserCheckable);
+            pShortName->setCheckState(0,Qt::Unchecked);
+            pParentItem->addChild(pShortName);
+        }
+    }
+}
+
+void DataSelectionScreen::onItemChanged(QTreeWidgetItem* item, int column)
+{
+    // Can be 2 level (groupname and shortname) or 3 level (groupname, index, shortname)
     Q_UNUSED(column)
     if (!item->parent())
     {
+        // this is groupname - nothing to do
         return;
     }
-    QString name = item->parent()->text(0) + "." + item->text(0);
+    // construct the name -> groupname.index.shortname or groupname.shortname
+    QString name;
+    auto level1 = item->parent();
+    if(level1->parent())
+    {
+        // here we have 3 level so we take 1st part (groupname)
+        name.append(level1->parent()->text(0));
+        name.append('.');
+    }
+
+    name.append(level1->text(0));   // this is index (3 level) or groupname (2 level)
+    name.append('.');
+    name.append(item->text(0));     // this is always shortname
+
     if (item->checkState(0) == Qt::Checked)
     {
         if (!m_enabledList.contains(name))
@@ -191,4 +201,51 @@ void DataSelectionScreen::clear()
 {
     ui.treeWidget->clear();
     m_enabledList.clear();
+}
+
+void DataSelectionScreen::handleItem(const QString &name, Qt::CheckState checkState)
+{
+    // we expect "groupName.indexName:idx.valueName" or "groupName.valueName" in name
+    QStringList parts {name.split('.')};
+
+    // use reference or pointer to avoid copying
+    QString &groupName {parts.first()};
+    QString &valueName {parts.last()};
+    QString *pindexName {nullptr};
+
+    // we only have an index if the name has 3 parts
+    if (parts.size() == 3)
+    {
+        pindexName = &parts[1];
+    }
+
+    QList<QTreeWidgetItem*> treeItems = ui.treeWidget->findItems(valueName, Qt::MatchExactly | Qt::MatchRecursive, 0);
+    if (treeItems.size() == 0)
+    {
+        return; // haven't found anything
+    }
+
+    // iterate result
+    for (auto &item : treeItems )
+    {
+        QTreeWidgetItem *pItem {item->parent()};
+        if (pItem)  // do we have a parent
+        {
+            if ((pindexName != nullptr) && (pItem->text(0) == *pindexName)) // if we have an index name...
+            {
+                pItem = pItem->parent(); // ... we use it to find the group which is one level up
+            }
+
+            if (pItem->text(0) == groupName)  // if parent matches group we found it
+            {
+                if (item->checkState(0) != checkState)
+                {
+                    item->setCheckState(0, checkState); // enable / disable it
+                    ui.treeWidget->scrollToItem(item);
+                }
+                return;
+            }
+        }
+    }
+    QLOG_ERROR() << "No item found in DataSelectionScreen::handelItem:" << name;
 }
