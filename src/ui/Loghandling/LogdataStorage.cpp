@@ -282,12 +282,34 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues(bool filterStringValues)
             if(!filterStringValues ||           // n N Z are string types - those cannot be plotted
                !(type.m_format.contains('n') || type.m_format.contains('N') || type.m_format.contains('Z')))
             {
+                // first create list consisting of labels and their unit
                 QStringList labelPlusUnit;
                 for(int i = 0; i < type.m_labels.size(); ++i)
                 {
                     labelPlusUnit.append(getLabelName(i, type));
                 }
-                fmtValueMap.insert(type.m_name, labelPlusUnit);
+
+                // check if this value has an indexed one
+                int indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf('#');
+                if(indexFieldPos != -1)    // This is an indexed value
+                {
+                    // if we have an index we remove the field describing the index from the list cause nobody wants to plot it.
+                    labelPlusUnit.removeAt(indexFieldPos);
+                    // now we create a new typename from the type name the index label and the possible ID
+                    QString typeName(type.m_name);
+                    typeName.append('.');
+                    typeName.append(type.m_labels[indexFieldPos]);
+                    typeName.append(':');
+                    for (int i = 0; i <= type.m_maxIndex; ++i)
+                    {
+                        fmtValueMap.insert(typeName + QString::number(i), labelPlusUnit);
+                    }
+                }
+                else
+                {
+                    // this is an value without an index just store its name and its datafields
+                    fmtValueMap.insert(type.m_name, labelPlusUnit);
+                }
             }
         }
     }
@@ -337,19 +359,26 @@ QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &paren
 
 bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const
 {
-    auto splitName = name.split(".");
-    if(splitName.size() != 2)
+    // we expect a name like groupName.indexName:idx.valueName or groupName.valueName
+
+    auto splitName = name.split('.');
+    // sanity checking
+    if((splitName.size() < 2) || (splitName.size() > 3 ))
     {
-        return false;   // name is not valid - structure must be "part1.part2"
+        return false;   // name is not valid - structure must be "groupName.indexName:idx.valueName or groupName.valueName"
     }
     if(!m_typeStorage.count(splitName.at(0)) || !m_dataStorage.count(splitName.at(0)))
     {
         return false;    // don't have this type or no data for this type
     }
 
+    // get the type for easier access
     const auto &type = m_typeStorage[splitName.at(0)];
-    auto part1 = splitName.at(1).split(s_UnitParOpen).at(0).trimmed();  // Remove unit info like "[s]" from
-    const int valueIndex = type.m_labels.indexOf(part1);
+
+    // The last element is always the valueName
+    auto valueName = splitName.last().split(s_UnitParOpen).at(0).trimmed();  // Remove unit info like "[s]" from valueName
+
+    const int valueIndex = type.m_labels.indexOf(valueName);
     if(valueIndex == -1)
     {
         return false;    // don't have this value type
@@ -362,21 +391,37 @@ bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector
         multiplier  = type.m_multipliers[valueIndex];
     }
 
-    xValues.clear();
-    xValues.reserve(m_dataStorage[splitName.at(0)].size());
-    yValues.clear();
-    yValues.reserve(m_dataStorage[splitName.at(0)].size());
-
-    for(const IndexValueRow &row: m_dataStorage[splitName.at(0)])
+    qint32 startIndex {0};
+    if (splitName.size() == 3)
     {
-        xValues.push_back(useTimeAsIndex ? row.m_values.at(timeStampIndex).toDouble() / m_timeDivisor : row.m_index);
+        // this is an indexed type. The index is splitName[1]. Its like instance:0, instance:1 ...
+        const auto indexSplit = splitName[1].split(':');
+        startIndex = indexSplit.at(1).trimmed().toInt();
+    }
+
+    // If we have an indexed type 2 or more datarows are stored within one ValueTable
+    // So if we have a max index of 1 we have 2 datarows. Therefore the index 0,2,4,6... beoon to the first row
+    // and the index 1,3,5,7... belong to the 2nd row. So the step is maxindex + 1.
+
+    // convenience for better readability
+    qint32 step {type.m_maxIndex + 1};
+    const ValueTable &data = m_dataStorage[splitName.at(0)];
+
+    xValues.clear();
+    xValues.reserve((data.size() / (step)) + 2 );  // the +2 is to gurantee the vector is big enough (really no reallocation is needed)
+    yValues.clear();
+    yValues.reserve((data.size() / (step)) + 2 );
+
+    for (qint32 i = startIndex; i < data.size(); i += step)
+    {
+        xValues.push_back((useTimeAsIndex ? data[i].m_values.at(timeStampIndex).toDouble() / m_timeDivisor : data[i].m_index));
         if(!qIsNaN(multiplier))
         {
-            yValues.push_back(row.m_values.at(valueIndex).toDouble() * multiplier);
+            yValues.push_back(data[i].m_values.at(valueIndex).toDouble() * multiplier);
         }
         else
         {
-            yValues.push_back(row.m_values.at(valueIndex).toDouble());
+            yValues.push_back(data[i].m_values.at(valueIndex).toDouble());
         }
     }
 
@@ -509,9 +554,10 @@ QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double d
         for(iter = m_typeStorage.begin(); iter != m_typeStorage.end(); ++iter)
         {
             unsigned int typeID = iter.value().m_ID;
-            // handle unit data
+            // handle unit and index data
             if(m_typeIDToUnitFieldInfo.contains(typeID))
             {
+                // handle unit data
                 for(const qint8 unitID : m_typeIDToUnitFieldInfo.value(typeID))
                 {
                     if(m_unitStorage.contains(static_cast<quint8>(unitID)))
@@ -522,6 +568,25 @@ QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double d
                     {
                         QString error("Found unit ID " + QString::number(unitID) + " but no matching unit");
                         errors.append(error);
+                    }
+                }
+                // handle index data
+                int indexFieldPos = m_typeIDToUnitFieldInfo.value(typeID).indexOf('#'); // '#' is the unitID for index fields
+                if(indexFieldPos != -1)
+                {
+                    if(m_dataStorage.contains(iter.value().m_name)) // only if we have data
+                    {
+                        int maxIndex {0};
+                        for(const IndexValueRow &row: qAsConst(m_dataStorage[iter.value().m_name]))
+                        {
+                            int index{row.m_values[indexFieldPos].toInt()};
+                            maxIndex = maxIndex < index ? index : maxIndex;
+                            if(index < maxIndex)
+                            {
+                                break;  // if the index does not increase anymore we can stop
+                            }
+                        }
+                        iter.value().m_maxIndex = maxIndex;
                     }
                 }
             }
