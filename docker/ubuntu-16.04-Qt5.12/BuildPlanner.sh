@@ -10,7 +10,7 @@ GROUP=$(id -g)
 SOURCEDIR=$PWD/../..
 LINUXDEPLOY=linuxdeployqt-x86_64.AppImage
 
-wget https://github.com/probonopd/linuxdeployqt/releases/download/7/linuxdeployqt-7-x86_64.AppImage -O $SOURCEDIR/$LINUXDEPLOY
+wget https://github.com/probonopd/linuxdeployqt/releases/download/8/linuxdeployqt-continuous-x86_64.AppImage -O $SOURCEDIR/$LINUXDEPLOY
 
 chmod +x $SOURCEDIR/$LINUXDEPLOY
 chmod +x $SOURCEDIR/$LINUXDEPLOYQT
