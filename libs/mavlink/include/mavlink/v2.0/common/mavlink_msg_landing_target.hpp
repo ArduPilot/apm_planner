@@ -19,7 +19,7 @@ struct LANDING_TARGET : mavlink::Message {
     static constexpr auto NAME = "LANDING_TARGET";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint8_t target_num; /*<  The ID of the target if multiple targets are present */
     uint8_t frame; /*<  Coordinate frame used for following fields. */
     float angle_x; /*< [rad] X-axis angular offset of the target from the center of the image */

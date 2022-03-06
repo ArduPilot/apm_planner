@@ -19,7 +19,7 @@ struct LOCAL_POSITION_NED_COV : mavlink::Message {
     static constexpr auto NAME = "LOCAL_POSITION_NED_COV";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint8_t estimator_type; /*<  Class id of the estimator this estimate originated from. */
     float x; /*< [m] X Position */
     float y; /*< [m] Y Position */

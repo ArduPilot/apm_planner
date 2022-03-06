@@ -13,19 +13,21 @@ namespace msg {
  */
 struct PID_TUNING : mavlink::Message {
     static constexpr msgid_t MSG_ID = 194;
-    static constexpr size_t LENGTH = 25;
+    static constexpr size_t LENGTH = 33;
     static constexpr size_t MIN_LENGTH = 25;
     static constexpr uint8_t CRC_EXTRA = 98;
     static constexpr auto NAME = "PID_TUNING";
 
 
     uint8_t axis; /*<  Axis. */
-    float desired; /*< [deg/s] Desired rate. */
-    float achieved; /*< [deg/s] Achieved rate. */
+    float desired; /*<  Desired rate. */
+    float achieved; /*<  Achieved rate. */
     float FF; /*<  FF component. */
     float P; /*<  P component. */
     float I; /*<  I component. */
     float D; /*<  D component. */
+    float SRate; /*<  Slew rate. */
+    float PDmod; /*<  P/D oscillation modifier. */
 
 
     inline std::string get_name(void) const override
@@ -50,6 +52,8 @@ struct PID_TUNING : mavlink::Message {
         ss << "  P: " << P << std::endl;
         ss << "  I: " << I << std::endl;
         ss << "  D: " << D << std::endl;
+        ss << "  SRate: " << SRate << std::endl;
+        ss << "  PDmod: " << PDmod << std::endl;
 
         return ss.str();
     }
@@ -65,6 +69,8 @@ struct PID_TUNING : mavlink::Message {
         map << I;                             // offset: 16
         map << D;                             // offset: 20
         map << axis;                          // offset: 24
+        map << SRate;                         // offset: 25
+        map << PDmod;                         // offset: 29
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -76,6 +82,8 @@ struct PID_TUNING : mavlink::Message {
         map >> I;                             // offset: 16
         map >> D;                             // offset: 20
         map >> axis;                          // offset: 24
+        map >> SRate;                         // offset: 25
+        map >> PDmod;                         // offset: 29
     }
 };
 

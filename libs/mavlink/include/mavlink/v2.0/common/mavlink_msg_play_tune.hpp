@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief PLAY_TUNE message
  *
- * Control vehicle tone generation (buzzer)
+ * Control vehicle tone generation (buzzer).
  */
 struct PLAY_TUNE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 258;

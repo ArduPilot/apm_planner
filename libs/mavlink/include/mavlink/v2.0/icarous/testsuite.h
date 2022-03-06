@@ -1,6 +1,6 @@
 /** @file
  *    @brief MAVLink comm protocol testsuite generated from icarous.xml
- *    @see http://qgroundcontrol.org/mavlink/
+ *    @see https://mavlink.io/en/
  */
 #pragma once
 #ifndef ICAROUS_TESTSUITE_H
@@ -77,6 +77,11 @@ static void mavlink_test_icarous_heartbeat(uint8_t system_id, uint8_t component_
     mavlink_msg_icarous_heartbeat_send(MAVLINK_COMM_1 , packet1.status );
     mavlink_msg_icarous_heartbeat_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+#ifdef MAVLINK_HAVE_GET_MESSAGE_INFO
+    MAVLINK_ASSERT(mavlink_get_message_info_by_name("ICAROUS_HEARTBEAT") != NULL);
+    MAVLINK_ASSERT(mavlink_get_message_info_by_id(MAVLINK_MSG_ID_ICAROUS_HEARTBEAT) != NULL);
+#endif
 }
 
 static void mavlink_test_icarous_kinematic_bands(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
@@ -146,6 +151,11 @@ static void mavlink_test_icarous_kinematic_bands(uint8_t system_id, uint8_t comp
     mavlink_msg_icarous_kinematic_bands_send(MAVLINK_COMM_1 , packet1.numBands , packet1.type1 , packet1.min1 , packet1.max1 , packet1.type2 , packet1.min2 , packet1.max2 , packet1.type3 , packet1.min3 , packet1.max3 , packet1.type4 , packet1.min4 , packet1.max4 , packet1.type5 , packet1.min5 , packet1.max5 );
     mavlink_msg_icarous_kinematic_bands_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+#ifdef MAVLINK_HAVE_GET_MESSAGE_INFO
+    MAVLINK_ASSERT(mavlink_get_message_info_by_name("ICAROUS_KINEMATIC_BANDS") != NULL);
+    MAVLINK_ASSERT(mavlink_get_message_info_by_id(MAVLINK_MSG_ID_ICAROUS_KINEMATIC_BANDS) != NULL);
+#endif
 }
 
 static void mavlink_test_icarous(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)

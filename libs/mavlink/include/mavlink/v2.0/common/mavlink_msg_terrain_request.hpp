@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief TERRAIN_REQUEST message
  *
- * Request for terrain data and terrain status
+ * Request for terrain data and terrain status. See terrain protocol docs: https://mavlink.io/en/services/terrain.html
  */
 struct TERRAIN_REQUEST : mavlink::Message {
     static constexpr msgid_t MSG_ID = 133;

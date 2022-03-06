@@ -9,11 +9,11 @@ namespace msg {
 /**
  * @brief MOUNT_STATUS message
  *
- * Message with some status from APM to GCS about camera or antenna mount.
+ * Message with some status from autopilot to GCS about camera or antenna mount.
  */
 struct MOUNT_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 158;
-    static constexpr size_t LENGTH = 14;
+    static constexpr size_t LENGTH = 15;
     static constexpr size_t MIN_LENGTH = 14;
     static constexpr uint8_t CRC_EXTRA = 134;
     static constexpr auto NAME = "MOUNT_STATUS";
@@ -24,6 +24,7 @@ struct MOUNT_STATUS : mavlink::Message {
     int32_t pointing_a; /*< [cdeg] Pitch. */
     int32_t pointing_b; /*< [cdeg] Roll. */
     int32_t pointing_c; /*< [cdeg] Yaw. */
+    uint8_t mount_mode; /*<  Mount operating mode. */
 
 
     inline std::string get_name(void) const override
@@ -46,6 +47,7 @@ struct MOUNT_STATUS : mavlink::Message {
         ss << "  pointing_a: " << pointing_a << std::endl;
         ss << "  pointing_b: " << pointing_b << std::endl;
         ss << "  pointing_c: " << pointing_c << std::endl;
+        ss << "  mount_mode: " << +mount_mode << std::endl;
 
         return ss.str();
     }
@@ -59,6 +61,7 @@ struct MOUNT_STATUS : mavlink::Message {
         map << pointing_c;                    // offset: 8
         map << target_system;                 // offset: 12
         map << target_component;              // offset: 13
+        map << mount_mode;                    // offset: 14
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -68,6 +71,7 @@ struct MOUNT_STATUS : mavlink::Message {
         map >> pointing_c;                    // offset: 8
         map >> target_system;                 // offset: 12
         map >> target_component;              // offset: 13
+        map >> mount_mode;                    // offset: 14
     }
 };
 

@@ -5,7 +5,7 @@
 
 
 typedef struct __mavlink_vfr_hud_t {
- float airspeed; /*< [m/s] Current indicated airspeed (IAS).*/
+ float airspeed; /*< [m/s] Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.*/
  float groundspeed; /*< [m/s] Current ground speed.*/
  float alt; /*< [m] Current altitude (MSL).*/
  float climb; /*< [m/s] Current climb rate.*/
@@ -56,7 +56,7 @@ typedef struct __mavlink_vfr_hud_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param airspeed [m/s] Current indicated airspeed (IAS).
+ * @param airspeed [m/s] Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.
  * @param groundspeed [m/s] Current ground speed.
  * @param heading [deg] Current heading in compass units (0-360, 0=north).
  * @param throttle [%] Current throttle setting (0 to 100).
@@ -99,7 +99,7 @@ static inline uint16_t mavlink_msg_vfr_hud_pack(uint8_t system_id, uint8_t compo
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param airspeed [m/s] Current indicated airspeed (IAS).
+ * @param airspeed [m/s] Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.
  * @param groundspeed [m/s] Current ground speed.
  * @param heading [deg] Current heading in compass units (0-360, 0=north).
  * @param throttle [%] Current throttle setting (0 to 100).
@@ -168,7 +168,7 @@ static inline uint16_t mavlink_msg_vfr_hud_encode_chan(uint8_t system_id, uint8_
  * @brief Send a vfr_hud message
  * @param chan MAVLink channel to send the message
  *
- * @param airspeed [m/s] Current indicated airspeed (IAS).
+ * @param airspeed [m/s] Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.
  * @param groundspeed [m/s] Current ground speed.
  * @param heading [deg] Current heading in compass units (0-360, 0=north).
  * @param throttle [%] Current throttle setting (0 to 100).
@@ -218,7 +218,7 @@ static inline void mavlink_msg_vfr_hud_send_struct(mavlink_channel_t chan, const
 
 #if MAVLINK_MSG_ID_VFR_HUD_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -258,7 +258,7 @@ static inline void mavlink_msg_vfr_hud_send_buf(mavlink_message_t *msgbuf, mavli
 /**
  * @brief Get field airspeed from vfr_hud message
  *
- * @return [m/s] Current indicated airspeed (IAS).
+ * @return [m/s] Vehicle speed in form appropriate for vehicle type. For standard aircraft this is typically calibrated airspeed (CAS) or indicated airspeed (IAS) - either of which can be used by a pilot to estimate stall speed.
  */
 static inline float mavlink_msg_vfr_hud_get_airspeed(const mavlink_message_t* msg)
 {

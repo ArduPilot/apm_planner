@@ -9,11 +9,11 @@ namespace msg {
 /**
  * @brief CAMERA_CAPTURE_STATUS message
  *
- * Information about the status of a capture.
+ * Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.
  */
 struct CAMERA_CAPTURE_STATUS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 262;
-    static constexpr size_t LENGTH = 18;
+    static constexpr size_t LENGTH = 22;
     static constexpr size_t MIN_LENGTH = 18;
     static constexpr uint8_t CRC_EXTRA = 12;
     static constexpr auto NAME = "CAMERA_CAPTURE_STATUS";
@@ -25,6 +25,7 @@ struct CAMERA_CAPTURE_STATUS : mavlink::Message {
     float image_interval; /*< [s] Image capture interval */
     uint32_t recording_time_ms; /*< [ms] Time since recording started */
     float available_capacity; /*< [MiB] Available storage capacity. */
+    int32_t image_count; /*<  Total number of images captured ('forever', or until reset using MAV_CMD_STORAGE_FORMAT). */
 
 
     inline std::string get_name(void) const override
@@ -48,6 +49,7 @@ struct CAMERA_CAPTURE_STATUS : mavlink::Message {
         ss << "  image_interval: " << image_interval << std::endl;
         ss << "  recording_time_ms: " << recording_time_ms << std::endl;
         ss << "  available_capacity: " << available_capacity << std::endl;
+        ss << "  image_count: " << image_count << std::endl;
 
         return ss.str();
     }
@@ -62,6 +64,7 @@ struct CAMERA_CAPTURE_STATUS : mavlink::Message {
         map << available_capacity;            // offset: 12
         map << image_status;                  // offset: 16
         map << video_status;                  // offset: 17
+        map << image_count;                   // offset: 18
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -72,6 +75,7 @@ struct CAMERA_CAPTURE_STATUS : mavlink::Message {
         map >> available_capacity;            // offset: 12
         map >> image_status;                  // offset: 16
         map >> video_status;                  // offset: 17
+        map >> image_count;                   // offset: 18
     }
 };
 

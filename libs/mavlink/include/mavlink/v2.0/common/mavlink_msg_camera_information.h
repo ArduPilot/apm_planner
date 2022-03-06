@@ -6,7 +6,7 @@
 
 typedef struct __mavlink_camera_information_t {
  uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot).*/
- uint32_t firmware_version; /*<  Version of the camera firmware (v << 24 & 0xff = Dev, v << 16 & 0xff = Patch, v << 8 & 0xff = Minor, v & 0xff = Major)*/
+ uint32_t firmware_version; /*<  Version of the camera firmware, encoded as: (Dev & 0xff) << 24 | (Patch & 0xff) << 16 | (Minor & 0xff) << 8 | (Major & 0xff)*/
  float focal_length; /*< [mm] Focal length*/
  float sensor_size_h; /*< [mm] Image sensor size horizontal*/
  float sensor_size_v; /*< [mm] Image sensor size vertical*/
@@ -82,7 +82,7 @@ typedef struct __mavlink_camera_information_t {
  * @param time_boot_ms [ms] Timestamp (time since system boot).
  * @param vendor_name  Name of the camera vendor
  * @param model_name  Name of the camera model
- * @param firmware_version  Version of the camera firmware (v << 24 & 0xff = Dev, v << 16 & 0xff = Patch, v << 8 & 0xff = Minor, v & 0xff = Major)
+ * @param firmware_version  Version of the camera firmware, encoded as: (Dev & 0xff) << 24 | (Patch & 0xff) << 16 | (Minor & 0xff) << 8 | (Major & 0xff)
  * @param focal_length [mm] Focal length
  * @param sensor_size_h [mm] Image sensor size horizontal
  * @param sensor_size_v [mm] Image sensor size vertical
@@ -144,7 +144,7 @@ static inline uint16_t mavlink_msg_camera_information_pack(uint8_t system_id, ui
  * @param time_boot_ms [ms] Timestamp (time since system boot).
  * @param vendor_name  Name of the camera vendor
  * @param model_name  Name of the camera model
- * @param firmware_version  Version of the camera firmware (v << 24 & 0xff = Dev, v << 16 & 0xff = Patch, v << 8 & 0xff = Minor, v & 0xff = Major)
+ * @param firmware_version  Version of the camera firmware, encoded as: (Dev & 0xff) << 24 | (Patch & 0xff) << 16 | (Minor & 0xff) << 8 | (Major & 0xff)
  * @param focal_length [mm] Focal length
  * @param sensor_size_h [mm] Image sensor size horizontal
  * @param sensor_size_v [mm] Image sensor size vertical
@@ -232,7 +232,7 @@ static inline uint16_t mavlink_msg_camera_information_encode_chan(uint8_t system
  * @param time_boot_ms [ms] Timestamp (time since system boot).
  * @param vendor_name  Name of the camera vendor
  * @param model_name  Name of the camera model
- * @param firmware_version  Version of the camera firmware (v << 24 & 0xff = Dev, v << 16 & 0xff = Patch, v << 8 & 0xff = Minor, v & 0xff = Major)
+ * @param firmware_version  Version of the camera firmware, encoded as: (Dev & 0xff) << 24 | (Patch & 0xff) << 16 | (Minor & 0xff) << 8 | (Major & 0xff)
  * @param focal_length [mm] Focal length
  * @param sensor_size_h [mm] Image sensor size horizontal
  * @param sensor_size_v [mm] Image sensor size vertical
@@ -298,7 +298,7 @@ static inline void mavlink_msg_camera_information_send_struct(mavlink_channel_t 
 
 #if MAVLINK_MSG_ID_CAMERA_INFORMATION_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -380,7 +380,7 @@ static inline uint16_t mavlink_msg_camera_information_get_model_name(const mavli
 /**
  * @brief Get field firmware_version from camera_information message
  *
- * @return  Version of the camera firmware (v << 24 & 0xff = Dev, v << 16 & 0xff = Patch, v << 8 & 0xff = Minor, v & 0xff = Major)
+ * @return  Version of the camera firmware, encoded as: (Dev & 0xff) << 24 | (Patch & 0xff) << 16 | (Minor & 0xff) << 8 | (Major & 0xff)
  */
 static inline uint32_t mavlink_msg_camera_information_get_firmware_version(const mavlink_message_t* msg)
 {

@@ -22,7 +22,7 @@ struct GPS_GLOBAL_ORIGIN : mavlink::Message {
     int32_t latitude; /*< [degE7] Latitude (WGS84) */
     int32_t longitude; /*< [degE7] Longitude (WGS84) */
     int32_t altitude; /*< [mm] Altitude (MSL). Positive for up. */
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
 
 
     inline std::string get_name(void) const override

@@ -19,7 +19,7 @@ struct ESTIMATOR_STATUS : mavlink::Message {
     static constexpr auto NAME = "ESTIMATOR_STATUS";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint16_t flags; /*<  Bitmap indicating which EKF outputs are valid. */
     float vel_ratio; /*<  Velocity innovation test ratio */
     float pos_horiz_ratio; /*<  Horizontal position innovation test ratio */

@@ -5,7 +5,7 @@
 
 
 typedef struct __mavlink_local_position_ned_cov_t {
- uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.*/
+ uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.*/
  float x; /*< [m] X Position*/
  float y; /*< [m] Y Position*/
  float z; /*< [m] Z Position*/
@@ -74,7 +74,7 @@ typedef struct __mavlink_local_position_ned_cov_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param estimator_type  Class id of the estimator this estimate originated from.
  * @param x [m] X Position
  * @param y [m] Y Position
@@ -133,7 +133,7 @@ static inline uint16_t mavlink_msg_local_position_ned_cov_pack(uint8_t system_id
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param estimator_type  Class id of the estimator this estimate originated from.
  * @param x [m] X Position
  * @param y [m] Y Position
@@ -218,7 +218,7 @@ static inline uint16_t mavlink_msg_local_position_ned_cov_encode_chan(uint8_t sy
  * @brief Send a local_position_ned_cov message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param estimator_type  Class id of the estimator this estimate originated from.
  * @param x [m] X Position
  * @param y [m] Y Position
@@ -284,7 +284,7 @@ static inline void mavlink_msg_local_position_ned_cov_send_struct(mavlink_channe
 
 #if MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -334,7 +334,7 @@ static inline void mavlink_msg_local_position_ned_cov_send_buf(mavlink_message_t
 /**
  * @brief Get field time_usec from local_position_ned_cov message
  *
- * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  */
 static inline uint64_t mavlink_msg_local_position_ned_cov_get_time_usec(const mavlink_message_t* msg)
 {

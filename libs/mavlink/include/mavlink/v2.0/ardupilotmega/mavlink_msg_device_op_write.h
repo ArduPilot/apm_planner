@@ -15,11 +15,12 @@ typedef struct __mavlink_device_op_write_t {
  uint8_t regstart; /*<  First register to write.*/
  uint8_t count; /*<  Count of registers to write.*/
  uint8_t data[128]; /*<  Write data.*/
+ uint8_t bank; /*<  Bank number.*/
 } mavlink_device_op_write_t;
 
-#define MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN 179
+#define MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN 180
 #define MAVLINK_MSG_ID_DEVICE_OP_WRITE_MIN_LEN 179
-#define MAVLINK_MSG_ID_11002_LEN 179
+#define MAVLINK_MSG_ID_11002_LEN 180
 #define MAVLINK_MSG_ID_11002_MIN_LEN 179
 
 #define MAVLINK_MSG_ID_DEVICE_OP_WRITE_CRC 234
@@ -32,7 +33,7 @@ typedef struct __mavlink_device_op_write_t {
 #define MAVLINK_MESSAGE_INFO_DEVICE_OP_WRITE { \
     11002, \
     "DEVICE_OP_WRITE", \
-    10, \
+    11, \
     {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 4, offsetof(mavlink_device_op_write_t, target_system) }, \
          { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 5, offsetof(mavlink_device_op_write_t, target_component) }, \
          { "request_id", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_device_op_write_t, request_id) }, \
@@ -43,12 +44,13 @@ typedef struct __mavlink_device_op_write_t {
          { "regstart", NULL, MAVLINK_TYPE_UINT8_T, 0, 49, offsetof(mavlink_device_op_write_t, regstart) }, \
          { "count", NULL, MAVLINK_TYPE_UINT8_T, 0, 50, offsetof(mavlink_device_op_write_t, count) }, \
          { "data", NULL, MAVLINK_TYPE_UINT8_T, 128, 51, offsetof(mavlink_device_op_write_t, data) }, \
+         { "bank", NULL, MAVLINK_TYPE_UINT8_T, 0, 179, offsetof(mavlink_device_op_write_t, bank) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_DEVICE_OP_WRITE { \
     "DEVICE_OP_WRITE", \
-    10, \
+    11, \
     {  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 4, offsetof(mavlink_device_op_write_t, target_system) }, \
          { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 5, offsetof(mavlink_device_op_write_t, target_component) }, \
          { "request_id", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_device_op_write_t, request_id) }, \
@@ -59,6 +61,7 @@ typedef struct __mavlink_device_op_write_t {
          { "regstart", NULL, MAVLINK_TYPE_UINT8_T, 0, 49, offsetof(mavlink_device_op_write_t, regstart) }, \
          { "count", NULL, MAVLINK_TYPE_UINT8_T, 0, 50, offsetof(mavlink_device_op_write_t, count) }, \
          { "data", NULL, MAVLINK_TYPE_UINT8_T, 128, 51, offsetof(mavlink_device_op_write_t, data) }, \
+         { "bank", NULL, MAVLINK_TYPE_UINT8_T, 0, 179, offsetof(mavlink_device_op_write_t, bank) }, \
          } \
 }
 #endif
@@ -79,10 +82,11 @@ typedef struct __mavlink_device_op_write_t {
  * @param regstart  First register to write.
  * @param count  Count of registers to write.
  * @param data  Write data.
+ * @param bank  Bank number.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_device_op_write_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint8_t target_system, uint8_t target_component, uint32_t request_id, uint8_t bustype, uint8_t bus, uint8_t address, const char *busname, uint8_t regstart, uint8_t count, const uint8_t *data)
+                               uint8_t target_system, uint8_t target_component, uint32_t request_id, uint8_t bustype, uint8_t bus, uint8_t address, const char *busname, uint8_t regstart, uint8_t count, const uint8_t *data, uint8_t bank)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN];
@@ -94,6 +98,7 @@ static inline uint16_t mavlink_msg_device_op_write_pack(uint8_t system_id, uint8
     _mav_put_uint8_t(buf, 8, address);
     _mav_put_uint8_t(buf, 49, regstart);
     _mav_put_uint8_t(buf, 50, count);
+    _mav_put_uint8_t(buf, 179, bank);
     _mav_put_char_array(buf, 9, busname, 40);
     _mav_put_uint8_t_array(buf, 51, data, 128);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN);
@@ -107,6 +112,7 @@ static inline uint16_t mavlink_msg_device_op_write_pack(uint8_t system_id, uint8
     packet.address = address;
     packet.regstart = regstart;
     packet.count = count;
+    packet.bank = bank;
     mav_array_memcpy(packet.busname, busname, sizeof(char)*40);
     mav_array_memcpy(packet.data, data, sizeof(uint8_t)*128);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN);
@@ -132,11 +138,12 @@ static inline uint16_t mavlink_msg_device_op_write_pack(uint8_t system_id, uint8
  * @param regstart  First register to write.
  * @param count  Count of registers to write.
  * @param data  Write data.
+ * @param bank  Bank number.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_device_op_write_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint8_t target_system,uint8_t target_component,uint32_t request_id,uint8_t bustype,uint8_t bus,uint8_t address,const char *busname,uint8_t regstart,uint8_t count,const uint8_t *data)
+                                   uint8_t target_system,uint8_t target_component,uint32_t request_id,uint8_t bustype,uint8_t bus,uint8_t address,const char *busname,uint8_t regstart,uint8_t count,const uint8_t *data,uint8_t bank)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN];
@@ -148,6 +155,7 @@ static inline uint16_t mavlink_msg_device_op_write_pack_chan(uint8_t system_id, 
     _mav_put_uint8_t(buf, 8, address);
     _mav_put_uint8_t(buf, 49, regstart);
     _mav_put_uint8_t(buf, 50, count);
+    _mav_put_uint8_t(buf, 179, bank);
     _mav_put_char_array(buf, 9, busname, 40);
     _mav_put_uint8_t_array(buf, 51, data, 128);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN);
@@ -161,6 +169,7 @@ static inline uint16_t mavlink_msg_device_op_write_pack_chan(uint8_t system_id, 
     packet.address = address;
     packet.regstart = regstart;
     packet.count = count;
+    packet.bank = bank;
     mav_array_memcpy(packet.busname, busname, sizeof(char)*40);
     mav_array_memcpy(packet.data, data, sizeof(uint8_t)*128);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN);
@@ -180,7 +189,7 @@ static inline uint16_t mavlink_msg_device_op_write_pack_chan(uint8_t system_id, 
  */
 static inline uint16_t mavlink_msg_device_op_write_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_device_op_write_t* device_op_write)
 {
-    return mavlink_msg_device_op_write_pack(system_id, component_id, msg, device_op_write->target_system, device_op_write->target_component, device_op_write->request_id, device_op_write->bustype, device_op_write->bus, device_op_write->address, device_op_write->busname, device_op_write->regstart, device_op_write->count, device_op_write->data);
+    return mavlink_msg_device_op_write_pack(system_id, component_id, msg, device_op_write->target_system, device_op_write->target_component, device_op_write->request_id, device_op_write->bustype, device_op_write->bus, device_op_write->address, device_op_write->busname, device_op_write->regstart, device_op_write->count, device_op_write->data, device_op_write->bank);
 }
 
 /**
@@ -194,7 +203,7 @@ static inline uint16_t mavlink_msg_device_op_write_encode(uint8_t system_id, uin
  */
 static inline uint16_t mavlink_msg_device_op_write_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_device_op_write_t* device_op_write)
 {
-    return mavlink_msg_device_op_write_pack_chan(system_id, component_id, chan, msg, device_op_write->target_system, device_op_write->target_component, device_op_write->request_id, device_op_write->bustype, device_op_write->bus, device_op_write->address, device_op_write->busname, device_op_write->regstart, device_op_write->count, device_op_write->data);
+    return mavlink_msg_device_op_write_pack_chan(system_id, component_id, chan, msg, device_op_write->target_system, device_op_write->target_component, device_op_write->request_id, device_op_write->bustype, device_op_write->bus, device_op_write->address, device_op_write->busname, device_op_write->regstart, device_op_write->count, device_op_write->data, device_op_write->bank);
 }
 
 /**
@@ -211,10 +220,11 @@ static inline uint16_t mavlink_msg_device_op_write_encode_chan(uint8_t system_id
  * @param regstart  First register to write.
  * @param count  Count of registers to write.
  * @param data  Write data.
+ * @param bank  Bank number.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_device_op_write_send(mavlink_channel_t chan, uint8_t target_system, uint8_t target_component, uint32_t request_id, uint8_t bustype, uint8_t bus, uint8_t address, const char *busname, uint8_t regstart, uint8_t count, const uint8_t *data)
+static inline void mavlink_msg_device_op_write_send(mavlink_channel_t chan, uint8_t target_system, uint8_t target_component, uint32_t request_id, uint8_t bustype, uint8_t bus, uint8_t address, const char *busname, uint8_t regstart, uint8_t count, const uint8_t *data, uint8_t bank)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN];
@@ -226,6 +236,7 @@ static inline void mavlink_msg_device_op_write_send(mavlink_channel_t chan, uint
     _mav_put_uint8_t(buf, 8, address);
     _mav_put_uint8_t(buf, 49, regstart);
     _mav_put_uint8_t(buf, 50, count);
+    _mav_put_uint8_t(buf, 179, bank);
     _mav_put_char_array(buf, 9, busname, 40);
     _mav_put_uint8_t_array(buf, 51, data, 128);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DEVICE_OP_WRITE, buf, MAVLINK_MSG_ID_DEVICE_OP_WRITE_MIN_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_CRC);
@@ -239,6 +250,7 @@ static inline void mavlink_msg_device_op_write_send(mavlink_channel_t chan, uint
     packet.address = address;
     packet.regstart = regstart;
     packet.count = count;
+    packet.bank = bank;
     mav_array_memcpy(packet.busname, busname, sizeof(char)*40);
     mav_array_memcpy(packet.data, data, sizeof(uint8_t)*128);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DEVICE_OP_WRITE, (const char *)&packet, MAVLINK_MSG_ID_DEVICE_OP_WRITE_MIN_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_CRC);
@@ -253,7 +265,7 @@ static inline void mavlink_msg_device_op_write_send(mavlink_channel_t chan, uint
 static inline void mavlink_msg_device_op_write_send_struct(mavlink_channel_t chan, const mavlink_device_op_write_t* device_op_write)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_device_op_write_send(chan, device_op_write->target_system, device_op_write->target_component, device_op_write->request_id, device_op_write->bustype, device_op_write->bus, device_op_write->address, device_op_write->busname, device_op_write->regstart, device_op_write->count, device_op_write->data);
+    mavlink_msg_device_op_write_send(chan, device_op_write->target_system, device_op_write->target_component, device_op_write->request_id, device_op_write->bustype, device_op_write->bus, device_op_write->address, device_op_write->busname, device_op_write->regstart, device_op_write->count, device_op_write->data, device_op_write->bank);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DEVICE_OP_WRITE, (const char *)device_op_write, MAVLINK_MSG_ID_DEVICE_OP_WRITE_MIN_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_CRC);
 #endif
@@ -261,13 +273,13 @@ static inline void mavlink_msg_device_op_write_send_struct(mavlink_channel_t cha
 
 #if MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_device_op_write_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t target_system, uint8_t target_component, uint32_t request_id, uint8_t bustype, uint8_t bus, uint8_t address, const char *busname, uint8_t regstart, uint8_t count, const uint8_t *data)
+static inline void mavlink_msg_device_op_write_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t target_system, uint8_t target_component, uint32_t request_id, uint8_t bustype, uint8_t bus, uint8_t address, const char *busname, uint8_t regstart, uint8_t count, const uint8_t *data, uint8_t bank)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -279,6 +291,7 @@ static inline void mavlink_msg_device_op_write_send_buf(mavlink_message_t *msgbu
     _mav_put_uint8_t(buf, 8, address);
     _mav_put_uint8_t(buf, 49, regstart);
     _mav_put_uint8_t(buf, 50, count);
+    _mav_put_uint8_t(buf, 179, bank);
     _mav_put_char_array(buf, 9, busname, 40);
     _mav_put_uint8_t_array(buf, 51, data, 128);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DEVICE_OP_WRITE, buf, MAVLINK_MSG_ID_DEVICE_OP_WRITE_MIN_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_CRC);
@@ -292,6 +305,7 @@ static inline void mavlink_msg_device_op_write_send_buf(mavlink_message_t *msgbu
     packet->address = address;
     packet->regstart = regstart;
     packet->count = count;
+    packet->bank = bank;
     mav_array_memcpy(packet->busname, busname, sizeof(char)*40);
     mav_array_memcpy(packet->data, data, sizeof(uint8_t)*128);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DEVICE_OP_WRITE, (const char *)packet, MAVLINK_MSG_ID_DEVICE_OP_WRITE_MIN_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN, MAVLINK_MSG_ID_DEVICE_OP_WRITE_CRC);
@@ -405,6 +419,16 @@ static inline uint16_t mavlink_msg_device_op_write_get_data(const mavlink_messag
 }
 
 /**
+ * @brief Get field bank from device_op_write message
+ *
+ * @return  Bank number.
+ */
+static inline uint8_t mavlink_msg_device_op_write_get_bank(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint8_t(msg,  179);
+}
+
+/**
  * @brief Decode a device_op_write message into a struct
  *
  * @param msg The message to decode
@@ -423,6 +447,7 @@ static inline void mavlink_msg_device_op_write_decode(const mavlink_message_t* m
     device_op_write->regstart = mavlink_msg_device_op_write_get_regstart(msg);
     device_op_write->count = mavlink_msg_device_op_write_get_count(msg);
     mavlink_msg_device_op_write_get_data(msg, device_op_write->data);
+    device_op_write->bank = mavlink_msg_device_op_write_get_bank(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN? msg->len : MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN;
         memset(device_op_write, 0, MAVLINK_MSG_ID_DEVICE_OP_WRITE_LEN);

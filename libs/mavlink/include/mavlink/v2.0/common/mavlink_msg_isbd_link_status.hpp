@@ -19,8 +19,8 @@ struct ISBD_LINK_STATUS : mavlink::Message {
     static constexpr auto NAME = "ISBD_LINK_STATUS";
 
 
-    uint64_t timestamp; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
-    uint64_t last_heartbeat; /*< [us] Timestamp of the last successful sbd session. The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t timestamp; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
+    uint64_t last_heartbeat; /*< [us] Timestamp of the last successful sbd session. The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint16_t failed_sessions; /*<  Number of failed SBD sessions. */
     uint16_t successful_sessions; /*<  Number of successful SBD sessions. */
     uint8_t signal_quality; /*<  Signal quality equal to the number of bars displayed on the ISU signal strength indicator. Range is 0 to 5, where 0 indicates no signal and 5 indicates maximum signal strength. */

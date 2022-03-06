@@ -19,7 +19,7 @@ struct UAVCAN_NODE_INFO : mavlink::Message {
     static constexpr auto NAME = "UAVCAN_NODE_INFO";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint32_t uptime_sec; /*< [s] Time since the start-up of the node. */
     std::array<char, 80> name; /*<  Node name string. For example, "sapog.px4.io". */
     uint8_t hw_version_major; /*<  Hardware major version number. */

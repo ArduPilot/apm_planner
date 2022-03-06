@@ -21,8 +21,8 @@ struct VISION_POSITION_DELTA : mavlink::Message {
 
     uint64_t time_usec; /*< [us] Timestamp (synced to UNIX time or since system boot). */
     uint64_t time_delta_usec; /*< [us] Time since the last reported camera frame. */
-    std::array<float, 3> angle_delta; /*<  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation. */
-    std::array<float, 3> position_delta; /*< [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down). */
+    std::array<float, 3> angle_delta; /*< [rad] Defines a rotation vector [roll, pitch, yaw] to the current MAV_FRAME_BODY_FRD from the previous MAV_FRAME_BODY_FRD. */
+    std::array<float, 3> position_delta; /*< [m] Change in position to the current MAV_FRAME_BODY_FRD from the previous FRAME_BODY_FRD rotated to the current MAV_FRAME_BODY_FRD. */
     float confidence; /*< [%] Normalised confidence value from 0 to 100. */
 
 

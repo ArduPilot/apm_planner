@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief TERRAIN_REPORT message
  *
- * Response from a TERRAIN_CHECK request
+ * Streamed from drone to report progress of terrain map download (initiated by TERRAIN_REQUEST), or sent as a response to a TERRAIN_CHECK request. See terrain protocol docs: https://mavlink.io/en/services/terrain.html
  */
 struct TERRAIN_REPORT : mavlink::Message {
     static constexpr msgid_t MSG_ID = 136;

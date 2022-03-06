@@ -19,7 +19,7 @@ struct ATTITUDE_QUATERNION_COV : mavlink::Message {
     static constexpr auto NAME = "ATTITUDE_QUATERNION_COV";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     std::array<float, 4> q; /*<  Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation) */
     float rollspeed; /*< [rad/s] Roll angular speed */
     float pitchspeed; /*< [rad/s] Pitch angular speed */

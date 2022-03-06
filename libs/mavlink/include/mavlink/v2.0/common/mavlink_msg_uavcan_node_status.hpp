@@ -19,7 +19,7 @@ struct UAVCAN_NODE_STATUS : mavlink::Message {
     static constexpr auto NAME = "UAVCAN_NODE_STATUS";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint32_t uptime_sec; /*< [s] Time since the start-up of the node. */
     uint8_t health; /*<  Generalized node health status. */
     uint8_t mode; /*<  Generalized operating mode. */

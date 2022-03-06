@@ -23,8 +23,8 @@ struct COMMAND_INT : mavlink::Message {
     uint8_t target_component; /*<  Component ID */
     uint8_t frame; /*<  The coordinate system of the COMMAND. */
     uint16_t command; /*<  The scheduled action for the mission item. */
-    uint8_t current; /*<  false:0, true:1 */
-    uint8_t autocontinue; /*<  autocontinue to next wp */
+    uint8_t current; /*<  Not used. */
+    uint8_t autocontinue; /*<  Not used (set 0). */
     float param1; /*<  PARAM1, see MAV_CMD enum */
     float param2; /*<  PARAM2, see MAV_CMD enum */
     float param3; /*<  PARAM3, see MAV_CMD enum */

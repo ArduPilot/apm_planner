@@ -13,7 +13,7 @@ namespace msg {
  */
 struct DEVICE_OP_READ : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11000;
-    static constexpr size_t LENGTH = 51;
+    static constexpr size_t LENGTH = 52;
     static constexpr size_t MIN_LENGTH = 51;
     static constexpr uint8_t CRC_EXTRA = 134;
     static constexpr auto NAME = "DEVICE_OP_READ";
@@ -28,6 +28,7 @@ struct DEVICE_OP_READ : mavlink::Message {
     std::array<char, 40> busname; /*<  Name of device on bus (for SPI). */
     uint8_t regstart; /*<  First register to read. */
     uint8_t count; /*<  Count of registers to read. */
+    uint8_t bank; /*<  Bank number. */
 
 
     inline std::string get_name(void) const override
@@ -54,6 +55,7 @@ struct DEVICE_OP_READ : mavlink::Message {
         ss << "  busname: \"" << to_string(busname) << "\"" << std::endl;
         ss << "  regstart: " << +regstart << std::endl;
         ss << "  count: " << +count << std::endl;
+        ss << "  bank: " << +bank << std::endl;
 
         return ss.str();
     }
@@ -71,6 +73,7 @@ struct DEVICE_OP_READ : mavlink::Message {
         map << busname;                       // offset: 9
         map << regstart;                      // offset: 49
         map << count;                         // offset: 50
+        map << bank;                          // offset: 51
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -84,6 +87,7 @@ struct DEVICE_OP_READ : mavlink::Message {
         map >> busname;                       // offset: 9
         map >> regstart;                      // offset: 49
         map >> count;                         // offset: 50
+        map >> bank;                          // offset: 51
     }
 };
 

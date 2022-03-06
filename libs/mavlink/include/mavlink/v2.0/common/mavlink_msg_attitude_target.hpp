@@ -20,7 +20,7 @@ struct ATTITUDE_TARGET : mavlink::Message {
 
 
     uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
-    uint8_t type_mask; /*<  Mappings: If any of these bits are set, the corresponding input should be ignored: bit 1: body roll rate, bit 2: body pitch rate, bit 3: body yaw rate. bit 4-bit 7: reserved, bit 8: attitude */
+    uint8_t type_mask; /*<  Bitmap to indicate which dimensions should be ignored by the vehicle. */
     std::array<float, 4> q; /*<  Attitude quaternion (w, x, y, z order, zero-rotation is 1, 0, 0, 0) */
     float body_roll_rate; /*< [rad/s] Body roll rate */
     float body_pitch_rate; /*< [rad/s] Body pitch rate */

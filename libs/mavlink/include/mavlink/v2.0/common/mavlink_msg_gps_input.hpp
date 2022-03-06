@@ -19,7 +19,7 @@ struct GPS_INPUT : mavlink::Message {
     static constexpr auto NAME = "GPS_INPUT";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint8_t gps_id; /*<  ID of the GPS for multiple GPS inputs */
     uint16_t ignore_flags; /*<  Bitmap indicating which GPS input flags fields to ignore.  All other fields must be provided. */
     uint32_t time_week_ms; /*< [ms] GPS time (from start of GPS week) */
@@ -28,8 +28,8 @@ struct GPS_INPUT : mavlink::Message {
     int32_t lat; /*< [degE7] Latitude (WGS84) */
     int32_t lon; /*< [degE7] Longitude (WGS84) */
     float alt; /*< [m] Altitude (MSL). Positive for up. */
-    float hdop; /*< [m] GPS HDOP horizontal dilution of position */
-    float vdop; /*< [m] GPS VDOP vertical dilution of position */
+    float hdop; /*<  GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX */
+    float vdop; /*<  GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX */
     float vn; /*< [m/s] GPS velocity in north direction in earth-fixed NED frame */
     float ve; /*< [m/s] GPS velocity in east direction in earth-fixed NED frame */
     float vd; /*< [m/s] GPS velocity in down direction in earth-fixed NED frame */
