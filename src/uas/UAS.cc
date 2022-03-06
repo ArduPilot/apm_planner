@@ -1452,6 +1452,21 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         case MAVLINK_MSG_ID_HIGHRES_IMU:
         case MAVLINK_MSG_ID_EKF_STATUS_REPORT:
         case MAVLINK_MSG_ID_VIBRATION:
+        case MAVLINK_MSG_ID_AHRS:
+        case MAVLINK_MSG_ID_SIMSTATE:
+        case MAVLINK_MSG_ID_AHRS2:
+        case MAVLINK_MSG_ID_HWSTATUS:
+        case MAVLINK_MSG_ID_ESC_TELEMETRY_1_TO_4:
+        case MAVLINK_MSG_ID_ESC_TELEMETRY_5_TO_8:
+        case MAVLINK_MSG_ID_ESC_TELEMETRY_9_TO_12:
+        case MAVLINK_MSG_ID_MEMINFO:
+        case MAVLINK_MSG_ID_SYSTEM_TIME:
+        case MAVLINK_MSG_ID_POWER_STATUS:
+        case MAVLINK_MSG_ID_SCALED_IMU3:
+        case MAVLINK_MSG_ID_BATTERY_STATUS:
+        case MAVLINK_MSG_ID_TERRAIN_REPORT:
+        case MAVLINK_MSG_ID_SCALED_PRESSURE2:
+        case MAVLINK_MSG_ID_PLAY_TUNE:
             break;
         default:
         {
@@ -3458,7 +3473,7 @@ void UAS::sendHilSensors(quint64 time_us, float xacc, float yacc, float zacc, fl
         mavlink_msg_hil_sensor_pack(systemId, componentId, &msg,
                                    time_us, xacc, yacc, zacc, rollspeed, pitchspeed, yawspeed,
                                      xmag, ymag, zmag, abs_pressure, diff_pressure, pressure_alt, temperature,
-                                     fields_changed);
+                                     fields_changed, 0);
         sendMessage(msg);
         lastSendTimeSensors = QGC::groundTimeMilliseconds();
     }
@@ -3487,7 +3502,7 @@ void UAS::sendHilGps(quint64 time_us, double lat, double lon, double alt, int fi
 
         mavlink_message_t msg;
         mavlink_msg_hil_gps_pack(systemId, componentId, &msg,
-                                   time_us, fix_type, lat*1e7, lon*1e7, alt*1e3, eph*1e2, epv*1e2, vel*1e2, vn*1e2, ve*1e2, vd*1e2, course*1e2, satellites);
+                                   time_us, fix_type, lat*1e7, lon*1e7, alt*1e3, eph*1e2, epv*1e2, vel*1e2, vn*1e2, ve*1e2, vd*1e2, course*1e2, satellites, 0, 0);
         lastSendTimeGPS = QGC::groundTimeMilliseconds();
         sendMessage(msg);
     }
