@@ -7,8 +7,8 @@
 typedef struct __mavlink_vision_position_delta_t {
  uint64_t time_usec; /*< [us] Timestamp (synced to UNIX time or since system boot).*/
  uint64_t time_delta_usec; /*< [us] Time since the last reported camera frame.*/
- float angle_delta[3]; /*<  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.*/
- float position_delta[3]; /*< [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).*/
+ float angle_delta[3]; /*< [rad] Defines a rotation vector [roll, pitch, yaw] to the current MAV_FRAME_BODY_FRD from the previous MAV_FRAME_BODY_FRD.*/
+ float position_delta[3]; /*< [m] Change in position to the current MAV_FRAME_BODY_FRD from the previous FRAME_BODY_FRD rotated to the current MAV_FRAME_BODY_FRD.*/
  float confidence; /*< [%] Normalised confidence value from 0 to 100.*/
 } mavlink_vision_position_delta_t;
 
@@ -56,8 +56,8 @@ typedef struct __mavlink_vision_position_delta_t {
  *
  * @param time_usec [us] Timestamp (synced to UNIX time or since system boot).
  * @param time_delta_usec [us] Time since the last reported camera frame.
- * @param angle_delta  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.
- * @param position_delta [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).
+ * @param angle_delta [rad] Defines a rotation vector [roll, pitch, yaw] to the current MAV_FRAME_BODY_FRD from the previous MAV_FRAME_BODY_FRD.
+ * @param position_delta [m] Change in position to the current MAV_FRAME_BODY_FRD from the previous FRAME_BODY_FRD rotated to the current MAV_FRAME_BODY_FRD.
  * @param confidence [%] Normalised confidence value from 0 to 100.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
@@ -94,8 +94,8 @@ static inline uint16_t mavlink_msg_vision_position_delta_pack(uint8_t system_id,
  * @param msg The MAVLink message to compress the data into
  * @param time_usec [us] Timestamp (synced to UNIX time or since system boot).
  * @param time_delta_usec [us] Time since the last reported camera frame.
- * @param angle_delta  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.
- * @param position_delta [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).
+ * @param angle_delta [rad] Defines a rotation vector [roll, pitch, yaw] to the current MAV_FRAME_BODY_FRD from the previous MAV_FRAME_BODY_FRD.
+ * @param position_delta [m] Change in position to the current MAV_FRAME_BODY_FRD from the previous FRAME_BODY_FRD rotated to the current MAV_FRAME_BODY_FRD.
  * @param confidence [%] Normalised confidence value from 0 to 100.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
@@ -158,8 +158,8 @@ static inline uint16_t mavlink_msg_vision_position_delta_encode_chan(uint8_t sys
  *
  * @param time_usec [us] Timestamp (synced to UNIX time or since system boot).
  * @param time_delta_usec [us] Time since the last reported camera frame.
- * @param angle_delta  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.
- * @param position_delta [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).
+ * @param angle_delta [rad] Defines a rotation vector [roll, pitch, yaw] to the current MAV_FRAME_BODY_FRD from the previous MAV_FRAME_BODY_FRD.
+ * @param position_delta [m] Change in position to the current MAV_FRAME_BODY_FRD from the previous FRAME_BODY_FRD rotated to the current MAV_FRAME_BODY_FRD.
  * @param confidence [%] Normalised confidence value from 0 to 100.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
@@ -201,7 +201,7 @@ static inline void mavlink_msg_vision_position_delta_send_struct(mavlink_channel
 
 #if MAVLINK_MSG_ID_VISION_POSITION_DELTA_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -257,7 +257,7 @@ static inline uint64_t mavlink_msg_vision_position_delta_get_time_delta_usec(con
 /**
  * @brief Get field angle_delta from vision_position_delta message
  *
- * @return  Defines a rotation vector in body frame that rotates the vehicle from the previous to the current orientation.
+ * @return [rad] Defines a rotation vector [roll, pitch, yaw] to the current MAV_FRAME_BODY_FRD from the previous MAV_FRAME_BODY_FRD.
  */
 static inline uint16_t mavlink_msg_vision_position_delta_get_angle_delta(const mavlink_message_t* msg, float *angle_delta)
 {
@@ -267,7 +267,7 @@ static inline uint16_t mavlink_msg_vision_position_delta_get_angle_delta(const m
 /**
  * @brief Get field position_delta from vision_position_delta message
  *
- * @return [m] Change in position from previous to current frame rotated into body frame (0=forward, 1=right, 2=down).
+ * @return [m] Change in position to the current MAV_FRAME_BODY_FRD from the previous FRAME_BODY_FRD rotated to the current MAV_FRAME_BODY_FRD.
  */
 static inline uint16_t mavlink_msg_vision_position_delta_get_position_delta(const mavlink_message_t* msg, float *position_delta)
 {

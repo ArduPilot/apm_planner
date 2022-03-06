@@ -19,7 +19,7 @@ struct HIL_CONTROLS : mavlink::Message {
     static constexpr auto NAME = "HIL_CONTROLS";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     float roll_ailerons; /*<  Control output -1 .. 1 */
     float pitch_elevator; /*<  Control output -1 .. 1 */
     float yaw_rudder; /*<  Control output -1 .. 1 */

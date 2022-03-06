@@ -19,7 +19,7 @@ namespace mavlink {
 namespace icarous {
 
 /**
- * Array of msg_entry needed for @p mavlink_parse_char() (trought @p mavlink_get_msg_entry())
+ * Array of msg_entry needed for @p mavlink_parse_char() (through @p mavlink_get_msg_entry())
  */
 constexpr std::array<mavlink_msg_entry_t, 2> MESSAGE_ENTRIES {{ {42000, 227, 1, 1, 0, 0, 0}, {42001, 239, 46, 46, 0, 0, 0} }};
 

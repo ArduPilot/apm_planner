@@ -19,7 +19,7 @@ struct OPTICAL_FLOW : mavlink::Message {
     static constexpr auto NAME = "OPTICAL_FLOW";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint8_t sensor_id; /*<  Sensor ID */
     int16_t flow_x; /*< [dpix] Flow in x-sensor direction */
     int16_t flow_y; /*< [dpix] Flow in y-sensor direction */

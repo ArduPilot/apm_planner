@@ -14,25 +14,27 @@ namespace msg {
  */
 struct HIL_GPS : mavlink::Message {
     static constexpr msgid_t MSG_ID = 113;
-    static constexpr size_t LENGTH = 36;
+    static constexpr size_t LENGTH = 39;
     static constexpr size_t MIN_LENGTH = 36;
     static constexpr uint8_t CRC_EXTRA = 124;
     static constexpr auto NAME = "HIL_GPS";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint8_t fix_type; /*<  0-1: no fix, 2: 2D fix, 3: 3D fix. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix. */
     int32_t lat; /*< [degE7] Latitude (WGS84) */
     int32_t lon; /*< [degE7] Longitude (WGS84) */
     int32_t alt; /*< [mm] Altitude (MSL). Positive for up. */
-    uint16_t eph; /*< [cm] GPS HDOP horizontal dilution of position. If unknown, set to: 65535 */
-    uint16_t epv; /*< [cm] GPS VDOP vertical dilution of position. If unknown, set to: 65535 */
+    uint16_t eph; /*<  GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX */
+    uint16_t epv; /*<  GPS VDOP vertical dilution of position (unitless). If unknown, set to: UINT16_MAX */
     uint16_t vel; /*< [cm/s] GPS ground speed. If unknown, set to: 65535 */
     int16_t vn; /*< [cm/s] GPS velocity in north direction in earth-fixed NED frame */
     int16_t ve; /*< [cm/s] GPS velocity in east direction in earth-fixed NED frame */
     int16_t vd; /*< [cm/s] GPS velocity in down direction in earth-fixed NED frame */
     uint16_t cog; /*< [cdeg] Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees. If unknown, set to: 65535 */
     uint8_t satellites_visible; /*<  Number of satellites visible. If unknown, set to 255 */
+    uint8_t id; /*<  GPS ID (zero indexed). Used for multiple GPS inputs */
+    uint16_t yaw; /*< [cdeg] Yaw of vehicle relative to Earth's North, zero means not available, use 36000 for north */
 
 
     inline std::string get_name(void) const override
@@ -63,6 +65,8 @@ struct HIL_GPS : mavlink::Message {
         ss << "  vd: " << vd << std::endl;
         ss << "  cog: " << cog << std::endl;
         ss << "  satellites_visible: " << +satellites_visible << std::endl;
+        ss << "  id: " << +id << std::endl;
+        ss << "  yaw: " << yaw << std::endl;
 
         return ss.str();
     }
@@ -84,6 +88,8 @@ struct HIL_GPS : mavlink::Message {
         map << cog;                           // offset: 32
         map << fix_type;                      // offset: 34
         map << satellites_visible;            // offset: 35
+        map << id;                            // offset: 36
+        map << yaw;                           // offset: 37
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -101,6 +107,8 @@ struct HIL_GPS : mavlink::Message {
         map >> cog;                           // offset: 32
         map >> fix_type;                      // offset: 34
         map >> satellites_visible;            // offset: 35
+        map >> id;                            // offset: 36
+        map >> yaw;                           // offset: 37
     }
 };
 

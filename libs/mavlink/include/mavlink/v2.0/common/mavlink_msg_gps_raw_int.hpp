@@ -20,7 +20,7 @@ struct GPS_RAW_INT : mavlink::Message {
     static constexpr auto NAME = "GPS_RAW_INT";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint8_t fix_type; /*<  GPS fix type. */
     int32_t lat; /*< [degE7] Latitude (WGS84, EGM96 ellipsoid) */
     int32_t lon; /*< [degE7] Longitude (WGS84, EGM96 ellipsoid) */
@@ -31,9 +31,9 @@ struct GPS_RAW_INT : mavlink::Message {
     uint16_t cog; /*< [cdeg] Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX */
     uint8_t satellites_visible; /*<  Number of satellites visible. If unknown, set to 255 */
     int32_t alt_ellipsoid; /*< [mm] Altitude (above WGS84, EGM96 ellipsoid). Positive for up. */
-    uint32_t h_acc; /*< [mm] Position uncertainty. Positive for up. */
-    uint32_t v_acc; /*< [mm] Altitude uncertainty. Positive for up. */
-    uint32_t vel_acc; /*< [mm] Speed uncertainty. Positive for up. */
+    uint32_t h_acc; /*< [mm] Position uncertainty. */
+    uint32_t v_acc; /*< [mm] Altitude uncertainty. */
+    uint32_t vel_acc; /*< [mm] Speed uncertainty. */
     uint32_t hdg_acc; /*< [degE5] Heading / track uncertainty */
     uint16_t yaw; /*< [cdeg] Yaw in earth frame from north. Use 0 if this GPS does not provide yaw. Use 65535 if this GPS is configured to provide yaw and is currently unable to provide it. Use 36000 for north. */
 

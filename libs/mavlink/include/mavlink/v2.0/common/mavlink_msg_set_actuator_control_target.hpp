@@ -19,7 +19,7 @@ struct SET_ACTUATOR_CONTROL_TARGET : mavlink::Message {
     static constexpr auto NAME = "SET_ACTUATOR_CONTROL_TARGET";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint8_t group_mlx; /*<  Actuator group. The "_mlx" indicates this is a multi-instance message and a MAVLink parser should use this field to difference between instances. */
     uint8_t target_system; /*<  System ID */
     uint8_t target_component; /*<  Component ID */

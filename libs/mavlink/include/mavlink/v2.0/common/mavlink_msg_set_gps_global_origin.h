@@ -9,7 +9,7 @@ typedef struct __mavlink_set_gps_global_origin_t {
  int32_t longitude; /*< [degE7] Longitude (WGS84)*/
  int32_t altitude; /*< [mm] Altitude (MSL). Positive for up.*/
  uint8_t target_system; /*<  System ID*/
- uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.*/
+ uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.*/
 }) mavlink_set_gps_global_origin_t;
 
 #define MAVLINK_MSG_ID_SET_GPS_GLOBAL_ORIGIN_LEN 21
@@ -57,7 +57,7 @@ typedef struct __mavlink_set_gps_global_origin_t {
  * @param latitude [degE7] Latitude (WGS84)
  * @param longitude [degE7] Longitude (WGS84)
  * @param altitude [mm] Altitude (MSL). Positive for up.
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_set_gps_global_origin_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -97,7 +97,7 @@ static inline uint16_t mavlink_msg_set_gps_global_origin_pack(uint8_t system_id,
  * @param latitude [degE7] Latitude (WGS84)
  * @param longitude [degE7] Longitude (WGS84)
  * @param altitude [mm] Altitude (MSL). Positive for up.
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_set_gps_global_origin_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -163,7 +163,7 @@ static inline uint16_t mavlink_msg_set_gps_global_origin_encode_chan(uint8_t sys
  * @param latitude [degE7] Latitude (WGS84)
  * @param longitude [degE7] Longitude (WGS84)
  * @param altitude [mm] Altitude (MSL). Positive for up.
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -206,7 +206,7 @@ static inline void mavlink_msg_set_gps_global_origin_send_struct(mavlink_channel
 
 #if MAVLINK_MSG_ID_SET_GPS_GLOBAL_ORIGIN_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -284,7 +284,7 @@ static inline int32_t mavlink_msg_set_gps_global_origin_get_altitude(const mavli
 /**
  * @brief Get field time_usec from set_gps_global_origin message
  *
- * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  */
 static inline uint64_t mavlink_msg_set_gps_global_origin_get_time_usec(const mavlink_message_t* msg)
 {

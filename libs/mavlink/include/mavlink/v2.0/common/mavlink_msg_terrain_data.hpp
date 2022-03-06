@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief TERRAIN_DATA message
  *
- * Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST
+ * Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST. See terrain protocol docs: https://mavlink.io/en/services/terrain.html
  */
 struct TERRAIN_DATA : mavlink::Message {
     static constexpr msgid_t MSG_ID = 134;

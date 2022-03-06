@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief CAMERA_INFORMATION message
  *
- * Information about a camera
+ * Information about a camera. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.
  */
 struct CAMERA_INFORMATION : mavlink::Message {
     static constexpr msgid_t MSG_ID = 259;
@@ -22,7 +22,7 @@ struct CAMERA_INFORMATION : mavlink::Message {
     uint32_t time_boot_ms; /*< [ms] Timestamp (time since system boot). */
     std::array<uint8_t, 32> vendor_name; /*<  Name of the camera vendor */
     std::array<uint8_t, 32> model_name; /*<  Name of the camera model */
-    uint32_t firmware_version; /*<  Version of the camera firmware (v << 24 & 0xff = Dev, v << 16 & 0xff = Patch, v << 8 & 0xff = Minor, v & 0xff = Major) */
+    uint32_t firmware_version; /*<  Version of the camera firmware, encoded as: (Dev & 0xff) << 24 | (Patch & 0xff) << 16 | (Minor & 0xff) << 8 | (Major & 0xff) */
     float focal_length; /*< [mm] Focal length */
     float sensor_size_h; /*< [mm] Image sensor size horizontal */
     float sensor_size_v; /*< [mm] Image sensor size vertical */

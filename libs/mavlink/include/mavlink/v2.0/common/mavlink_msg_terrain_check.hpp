@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief TERRAIN_CHECK message
  *
- * Request that the vehicle report terrain height at the given location. Used by GCS to check if vehicle has all terrain data needed for a mission.
+ * Request that the vehicle report terrain height at the given location (expected response is a TERRAIN_REPORT). Used by GCS to check if vehicle has all terrain data needed for a mission.
  */
 struct TERRAIN_CHECK : mavlink::Message {
     static constexpr msgid_t MSG_ID = 135;

@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief MEMINFO message
  *
- * State of APM memory.
+ * State of autopilot RAM.
  */
 struct MEMINFO : mavlink::Message {
     static constexpr msgid_t MSG_ID = 152;

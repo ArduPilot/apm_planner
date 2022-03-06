@@ -176,7 +176,7 @@ static inline void mavlink_msg_actuator_output_status_send_struct(mavlink_channe
 
 #if MAVLINK_MSG_ID_ACTUATOR_OUTPUT_STATUS_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an

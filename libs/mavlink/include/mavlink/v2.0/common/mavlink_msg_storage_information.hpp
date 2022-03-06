@@ -9,11 +9,11 @@ namespace msg {
 /**
  * @brief STORAGE_INFORMATION message
  *
- * Information about a storage medium. This message is sent in response to a request and whenever the status of the storage changes (STORAGE_STATUS).
+ * Information about a storage medium. This message is sent in response to a request with MAV_CMD_REQUEST_MESSAGE and whenever the status of the storage changes (STORAGE_STATUS). Use MAV_CMD_REQUEST_MESSAGE.param2 to indicate the index/id of requested storage: 0 for all, 1 for first, 2 for second, etc.
  */
 struct STORAGE_INFORMATION : mavlink::Message {
     static constexpr msgid_t MSG_ID = 261;
-    static constexpr size_t LENGTH = 27;
+    static constexpr size_t LENGTH = 60;
     static constexpr size_t MIN_LENGTH = 27;
     static constexpr uint8_t CRC_EXTRA = 179;
     static constexpr auto NAME = "STORAGE_INFORMATION";
@@ -28,6 +28,8 @@ struct STORAGE_INFORMATION : mavlink::Message {
     float available_capacity; /*< [MiB] Available storage capacity. If storage is not ready (STORAGE_STATUS_READY) value will be ignored. */
     float read_speed; /*< [MiB/s] Read speed. */
     float write_speed; /*< [MiB/s] Write speed. */
+    uint8_t type; /*<  Type of storage */
+    std::array<char, 32> name; /*<  Textual storage name to be used in UI (microSD 1, Internal Memory, etc.) This is a NULL terminated string. If it is exactly 32 characters long, add a terminating NULL. If this string is empty, the generic type is shown to the user. */
 
 
     inline std::string get_name(void) const override
@@ -54,6 +56,8 @@ struct STORAGE_INFORMATION : mavlink::Message {
         ss << "  available_capacity: " << available_capacity << std::endl;
         ss << "  read_speed: " << read_speed << std::endl;
         ss << "  write_speed: " << write_speed << std::endl;
+        ss << "  type: " << +type << std::endl;
+        ss << "  name: \"" << to_string(name) << "\"" << std::endl;
 
         return ss.str();
     }
@@ -71,6 +75,8 @@ struct STORAGE_INFORMATION : mavlink::Message {
         map << storage_id;                    // offset: 24
         map << storage_count;                 // offset: 25
         map << status;                        // offset: 26
+        map << type;                          // offset: 27
+        map << name;                          // offset: 28
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -84,6 +90,8 @@ struct STORAGE_INFORMATION : mavlink::Message {
         map >> storage_id;                    // offset: 24
         map >> storage_count;                 // offset: 25
         map >> status;                        // offset: 26
+        map >> type;                          // offset: 27
+        map >> name;                          // offset: 28
     }
 };
 

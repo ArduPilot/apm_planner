@@ -703,6 +703,7 @@ TEST(ardupilotmega, MOUNT_STATUS)
     packet_in.pointing_a = 963497464;
     packet_in.pointing_b = 963497672;
     packet_in.pointing_c = 963497880;
+    packet_in.mount_mode = 175;
 
     mavlink::ardupilotmega::msg::MOUNT_STATUS packet1{};
     mavlink::ardupilotmega::msg::MOUNT_STATUS packet2{};
@@ -722,6 +723,7 @@ TEST(ardupilotmega, MOUNT_STATUS)
     EXPECT_EQ(packet1.pointing_a, packet2.pointing_a);
     EXPECT_EQ(packet1.pointing_b, packet2.pointing_b);
     EXPECT_EQ(packet1.pointing_c, packet2.pointing_c);
+    EXPECT_EQ(packet1.mount_mode, packet2.mount_mode);
 }
 
 #ifdef TEST_INTEROP
@@ -733,7 +735,7 @@ TEST(ardupilotmega_interop, MOUNT_STATUS)
     memset(&msg, 0, sizeof(msg));
 
     mavlink_mount_status_t packet_c {
-         963497464, 963497672, 963497880, 41, 108
+         963497464, 963497672, 963497880, 41, 108, 175
     };
 
     mavlink::ardupilotmega::msg::MOUNT_STATUS packet_in{};
@@ -742,6 +744,7 @@ TEST(ardupilotmega_interop, MOUNT_STATUS)
     packet_in.pointing_a = 963497464;
     packet_in.pointing_b = 963497672;
     packet_in.pointing_c = 963497880;
+    packet_in.mount_mode = 175;
 
     mavlink::ardupilotmega::msg::MOUNT_STATUS packet2{};
 
@@ -759,6 +762,7 @@ TEST(ardupilotmega_interop, MOUNT_STATUS)
     EXPECT_EQ(packet_in.pointing_a, packet2.pointing_a);
     EXPECT_EQ(packet_in.pointing_b, packet2.pointing_b);
     EXPECT_EQ(packet_in.pointing_c, packet2.pointing_c);
+    EXPECT_EQ(packet_in.mount_mode, packet2.mount_mode);
 
 #ifdef PRINT_MSG
     PRINT_MSG(msg);
@@ -2887,133 +2891,6 @@ TEST(ardupilotmega_interop, MAG_CAL_PROGRESS)
 }
 #endif
 
-TEST(ardupilotmega, MAG_CAL_REPORT)
-{
-    mavlink::mavlink_message_t msg;
-    mavlink::MsgMap map1(msg);
-    mavlink::MsgMap map2(msg);
-
-    mavlink::ardupilotmega::msg::MAG_CAL_REPORT packet_in{};
-    packet_in.compass_id = 125;
-    packet_in.cal_mask = 192;
-    packet_in.cal_status = 3;
-    packet_in.autosaved = 70;
-    packet_in.fitness = 17.0;
-    packet_in.ofs_x = 45.0;
-    packet_in.ofs_y = 73.0;
-    packet_in.ofs_z = 101.0;
-    packet_in.diag_x = 129.0;
-    packet_in.diag_y = 157.0;
-    packet_in.diag_z = 185.0;
-    packet_in.offdiag_x = 213.0;
-    packet_in.offdiag_y = 241.0;
-    packet_in.offdiag_z = 269.0;
-    packet_in.orientation_confidence = 325.0;
-    packet_in.old_orientation = 149;
-    packet_in.new_orientation = 216;
-    packet_in.scale_factor = 367.0;
-
-    mavlink::ardupilotmega::msg::MAG_CAL_REPORT packet1{};
-    mavlink::ardupilotmega::msg::MAG_CAL_REPORT packet2{};
-
-    packet1 = packet_in;
-
-    //std::cout << packet1.to_yaml() << std::endl;
-
-    packet1.serialize(map1);
-
-    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
-
-    packet2.deserialize(map2);
-
-    EXPECT_EQ(packet1.compass_id, packet2.compass_id);
-    EXPECT_EQ(packet1.cal_mask, packet2.cal_mask);
-    EXPECT_EQ(packet1.cal_status, packet2.cal_status);
-    EXPECT_EQ(packet1.autosaved, packet2.autosaved);
-    EXPECT_EQ(packet1.fitness, packet2.fitness);
-    EXPECT_EQ(packet1.ofs_x, packet2.ofs_x);
-    EXPECT_EQ(packet1.ofs_y, packet2.ofs_y);
-    EXPECT_EQ(packet1.ofs_z, packet2.ofs_z);
-    EXPECT_EQ(packet1.diag_x, packet2.diag_x);
-    EXPECT_EQ(packet1.diag_y, packet2.diag_y);
-    EXPECT_EQ(packet1.diag_z, packet2.diag_z);
-    EXPECT_EQ(packet1.offdiag_x, packet2.offdiag_x);
-    EXPECT_EQ(packet1.offdiag_y, packet2.offdiag_y);
-    EXPECT_EQ(packet1.offdiag_z, packet2.offdiag_z);
-    EXPECT_EQ(packet1.orientation_confidence, packet2.orientation_confidence);
-    EXPECT_EQ(packet1.old_orientation, packet2.old_orientation);
-    EXPECT_EQ(packet1.new_orientation, packet2.new_orientation);
-    EXPECT_EQ(packet1.scale_factor, packet2.scale_factor);
-}
-
-#ifdef TEST_INTEROP
-TEST(ardupilotmega_interop, MAG_CAL_REPORT)
-{
-    mavlink_message_t msg;
-
-    // to get nice print
-    memset(&msg, 0, sizeof(msg));
-
-    mavlink_mag_cal_report_t packet_c {
-         17.0, 45.0, 73.0, 101.0, 129.0, 157.0, 185.0, 213.0, 241.0, 269.0, 125, 192, 3, 70, 325.0, 149, 216, 367.0
-    };
-
-    mavlink::ardupilotmega::msg::MAG_CAL_REPORT packet_in{};
-    packet_in.compass_id = 125;
-    packet_in.cal_mask = 192;
-    packet_in.cal_status = 3;
-    packet_in.autosaved = 70;
-    packet_in.fitness = 17.0;
-    packet_in.ofs_x = 45.0;
-    packet_in.ofs_y = 73.0;
-    packet_in.ofs_z = 101.0;
-    packet_in.diag_x = 129.0;
-    packet_in.diag_y = 157.0;
-    packet_in.diag_z = 185.0;
-    packet_in.offdiag_x = 213.0;
-    packet_in.offdiag_y = 241.0;
-    packet_in.offdiag_z = 269.0;
-    packet_in.orientation_confidence = 325.0;
-    packet_in.old_orientation = 149;
-    packet_in.new_orientation = 216;
-    packet_in.scale_factor = 367.0;
-
-    mavlink::ardupilotmega::msg::MAG_CAL_REPORT packet2{};
-
-    mavlink_msg_mag_cal_report_encode(1, 1, &msg, &packet_c);
-
-    // simulate message-handling callback
-    [&packet2](const mavlink_message_t *cmsg) {
-        MsgMap map2(cmsg);
-
-        packet2.deserialize(map2);
-    } (&msg);
-
-    EXPECT_EQ(packet_in.compass_id, packet2.compass_id);
-    EXPECT_EQ(packet_in.cal_mask, packet2.cal_mask);
-    EXPECT_EQ(packet_in.cal_status, packet2.cal_status);
-    EXPECT_EQ(packet_in.autosaved, packet2.autosaved);
-    EXPECT_EQ(packet_in.fitness, packet2.fitness);
-    EXPECT_EQ(packet_in.ofs_x, packet2.ofs_x);
-    EXPECT_EQ(packet_in.ofs_y, packet2.ofs_y);
-    EXPECT_EQ(packet_in.ofs_z, packet2.ofs_z);
-    EXPECT_EQ(packet_in.diag_x, packet2.diag_x);
-    EXPECT_EQ(packet_in.diag_y, packet2.diag_y);
-    EXPECT_EQ(packet_in.diag_z, packet2.diag_z);
-    EXPECT_EQ(packet_in.offdiag_x, packet2.offdiag_x);
-    EXPECT_EQ(packet_in.offdiag_y, packet2.offdiag_y);
-    EXPECT_EQ(packet_in.offdiag_z, packet2.offdiag_z);
-    EXPECT_EQ(packet_in.orientation_confidence, packet2.orientation_confidence);
-    EXPECT_EQ(packet_in.old_orientation, packet2.old_orientation);
-    EXPECT_EQ(packet_in.new_orientation, packet2.new_orientation);
-    EXPECT_EQ(packet_in.scale_factor, packet2.scale_factor);
-
-#ifdef PRINT_MSG
-    PRINT_MSG(msg);
-#endif
-}
-#endif
-
 TEST(ardupilotmega, EKF_STATUS_REPORT)
 {
     mavlink::mavlink_message_t msg;
@@ -3111,6 +2988,8 @@ TEST(ardupilotmega, PID_TUNING)
     packet_in.P = 101.0;
     packet_in.I = 129.0;
     packet_in.D = 157.0;
+    packet_in.SRate = 192.0;
+    packet_in.PDmod = 220.0;
 
     mavlink::ardupilotmega::msg::PID_TUNING packet1{};
     mavlink::ardupilotmega::msg::PID_TUNING packet2{};
@@ -3132,6 +3011,8 @@ TEST(ardupilotmega, PID_TUNING)
     EXPECT_EQ(packet1.P, packet2.P);
     EXPECT_EQ(packet1.I, packet2.I);
     EXPECT_EQ(packet1.D, packet2.D);
+    EXPECT_EQ(packet1.SRate, packet2.SRate);
+    EXPECT_EQ(packet1.PDmod, packet2.PDmod);
 }
 
 #ifdef TEST_INTEROP
@@ -3143,7 +3024,7 @@ TEST(ardupilotmega_interop, PID_TUNING)
     memset(&msg, 0, sizeof(msg));
 
     mavlink_pid_tuning_t packet_c {
-         17.0, 45.0, 73.0, 101.0, 129.0, 157.0, 77
+         17.0, 45.0, 73.0, 101.0, 129.0, 157.0, 77, 192.0, 220.0
     };
 
     mavlink::ardupilotmega::msg::PID_TUNING packet_in{};
@@ -3154,6 +3035,8 @@ TEST(ardupilotmega_interop, PID_TUNING)
     packet_in.P = 101.0;
     packet_in.I = 129.0;
     packet_in.D = 157.0;
+    packet_in.SRate = 192.0;
+    packet_in.PDmod = 220.0;
 
     mavlink::ardupilotmega::msg::PID_TUNING packet2{};
 
@@ -3173,6 +3056,8 @@ TEST(ardupilotmega_interop, PID_TUNING)
     EXPECT_EQ(packet_in.P, packet2.P);
     EXPECT_EQ(packet_in.I, packet2.I);
     EXPECT_EQ(packet_in.D, packet2.D);
+    EXPECT_EQ(packet_in.SRate, packet2.SRate);
+    EXPECT_EQ(packet_in.PDmod, packet2.PDmod);
 
 #ifdef PRINT_MSG
     PRINT_MSG(msg);
@@ -3863,129 +3748,6 @@ TEST(ardupilotmega_interop, GOPRO_SET_RESPONSE)
 }
 #endif
 
-TEST(ardupilotmega, EFI_STATUS)
-{
-    mavlink::mavlink_message_t msg;
-    mavlink::MsgMap map1(msg);
-    mavlink::MsgMap map2(msg);
-
-    mavlink::ardupilotmega::msg::EFI_STATUS packet_in{};
-    packet_in.health = 161;
-    packet_in.ecu_index = 17.0;
-    packet_in.rpm = 45.0;
-    packet_in.fuel_consumed = 73.0;
-    packet_in.fuel_flow = 101.0;
-    packet_in.engine_load = 129.0;
-    packet_in.throttle_position = 157.0;
-    packet_in.spark_dwell_time = 185.0;
-    packet_in.barometric_pressure = 213.0;
-    packet_in.intake_manifold_pressure = 241.0;
-    packet_in.intake_manifold_temperature = 269.0;
-    packet_in.cylinder_head_temperature = 297.0;
-    packet_in.ignition_timing = 325.0;
-    packet_in.injection_time = 353.0;
-    packet_in.exhaust_gas_temperature = 388.0;
-    packet_in.throttle_out = 416.0;
-    packet_in.pt_compensation = 444.0;
-
-    mavlink::ardupilotmega::msg::EFI_STATUS packet1{};
-    mavlink::ardupilotmega::msg::EFI_STATUS packet2{};
-
-    packet1 = packet_in;
-
-    //std::cout << packet1.to_yaml() << std::endl;
-
-    packet1.serialize(map1);
-
-    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
-
-    packet2.deserialize(map2);
-
-    EXPECT_EQ(packet1.health, packet2.health);
-    EXPECT_EQ(packet1.ecu_index, packet2.ecu_index);
-    EXPECT_EQ(packet1.rpm, packet2.rpm);
-    EXPECT_EQ(packet1.fuel_consumed, packet2.fuel_consumed);
-    EXPECT_EQ(packet1.fuel_flow, packet2.fuel_flow);
-    EXPECT_EQ(packet1.engine_load, packet2.engine_load);
-    EXPECT_EQ(packet1.throttle_position, packet2.throttle_position);
-    EXPECT_EQ(packet1.spark_dwell_time, packet2.spark_dwell_time);
-    EXPECT_EQ(packet1.barometric_pressure, packet2.barometric_pressure);
-    EXPECT_EQ(packet1.intake_manifold_pressure, packet2.intake_manifold_pressure);
-    EXPECT_EQ(packet1.intake_manifold_temperature, packet2.intake_manifold_temperature);
-    EXPECT_EQ(packet1.cylinder_head_temperature, packet2.cylinder_head_temperature);
-    EXPECT_EQ(packet1.ignition_timing, packet2.ignition_timing);
-    EXPECT_EQ(packet1.injection_time, packet2.injection_time);
-    EXPECT_EQ(packet1.exhaust_gas_temperature, packet2.exhaust_gas_temperature);
-    EXPECT_EQ(packet1.throttle_out, packet2.throttle_out);
-    EXPECT_EQ(packet1.pt_compensation, packet2.pt_compensation);
-}
-
-#ifdef TEST_INTEROP
-TEST(ardupilotmega_interop, EFI_STATUS)
-{
-    mavlink_message_t msg;
-
-    // to get nice print
-    memset(&msg, 0, sizeof(msg));
-
-    mavlink_efi_status_t packet_c {
-         17.0, 45.0, 73.0, 101.0, 129.0, 157.0, 185.0, 213.0, 241.0, 269.0, 297.0, 325.0, 353.0, 161, 388.0, 416.0, 444.0
-    };
-
-    mavlink::ardupilotmega::msg::EFI_STATUS packet_in{};
-    packet_in.health = 161;
-    packet_in.ecu_index = 17.0;
-    packet_in.rpm = 45.0;
-    packet_in.fuel_consumed = 73.0;
-    packet_in.fuel_flow = 101.0;
-    packet_in.engine_load = 129.0;
-    packet_in.throttle_position = 157.0;
-    packet_in.spark_dwell_time = 185.0;
-    packet_in.barometric_pressure = 213.0;
-    packet_in.intake_manifold_pressure = 241.0;
-    packet_in.intake_manifold_temperature = 269.0;
-    packet_in.cylinder_head_temperature = 297.0;
-    packet_in.ignition_timing = 325.0;
-    packet_in.injection_time = 353.0;
-    packet_in.exhaust_gas_temperature = 388.0;
-    packet_in.throttle_out = 416.0;
-    packet_in.pt_compensation = 444.0;
-
-    mavlink::ardupilotmega::msg::EFI_STATUS packet2{};
-
-    mavlink_msg_efi_status_encode(1, 1, &msg, &packet_c);
-
-    // simulate message-handling callback
-    [&packet2](const mavlink_message_t *cmsg) {
-        MsgMap map2(cmsg);
-
-        packet2.deserialize(map2);
-    } (&msg);
-
-    EXPECT_EQ(packet_in.health, packet2.health);
-    EXPECT_EQ(packet_in.ecu_index, packet2.ecu_index);
-    EXPECT_EQ(packet_in.rpm, packet2.rpm);
-    EXPECT_EQ(packet_in.fuel_consumed, packet2.fuel_consumed);
-    EXPECT_EQ(packet_in.fuel_flow, packet2.fuel_flow);
-    EXPECT_EQ(packet_in.engine_load, packet2.engine_load);
-    EXPECT_EQ(packet_in.throttle_position, packet2.throttle_position);
-    EXPECT_EQ(packet_in.spark_dwell_time, packet2.spark_dwell_time);
-    EXPECT_EQ(packet_in.barometric_pressure, packet2.barometric_pressure);
-    EXPECT_EQ(packet_in.intake_manifold_pressure, packet2.intake_manifold_pressure);
-    EXPECT_EQ(packet_in.intake_manifold_temperature, packet2.intake_manifold_temperature);
-    EXPECT_EQ(packet_in.cylinder_head_temperature, packet2.cylinder_head_temperature);
-    EXPECT_EQ(packet_in.ignition_timing, packet2.ignition_timing);
-    EXPECT_EQ(packet_in.injection_time, packet2.injection_time);
-    EXPECT_EQ(packet_in.exhaust_gas_temperature, packet2.exhaust_gas_temperature);
-    EXPECT_EQ(packet_in.throttle_out, packet2.throttle_out);
-    EXPECT_EQ(packet_in.pt_compensation, packet2.pt_compensation);
-
-#ifdef PRINT_MSG
-    PRINT_MSG(msg);
-#endif
-}
-#endif
-
 TEST(ardupilotmega, RPM)
 {
     mavlink::mavlink_message_t msg;
@@ -4065,6 +3827,7 @@ TEST(ardupilotmega, DEVICE_OP_READ)
     packet_in.busname = to_char_array("JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUV");
     packet_in.regstart = 216;
     packet_in.count = 27;
+    packet_in.bank = 94;
 
     mavlink::ardupilotmega::msg::DEVICE_OP_READ packet1{};
     mavlink::ardupilotmega::msg::DEVICE_OP_READ packet2{};
@@ -4088,6 +3851,7 @@ TEST(ardupilotmega, DEVICE_OP_READ)
     EXPECT_EQ(packet1.busname, packet2.busname);
     EXPECT_EQ(packet1.regstart, packet2.regstart);
     EXPECT_EQ(packet1.count, packet2.count);
+    EXPECT_EQ(packet1.bank, packet2.bank);
 }
 
 #ifdef TEST_INTEROP
@@ -4099,7 +3863,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_READ)
     memset(&msg, 0, sizeof(msg));
 
     mavlink_device_op_read_t packet_c {
-         963497464, 17, 84, 151, 218, 29, "JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUV", 216, 27
+         963497464, 17, 84, 151, 218, 29, "JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUV", 216, 27, 94
     };
 
     mavlink::ardupilotmega::msg::DEVICE_OP_READ packet_in{};
@@ -4112,6 +3876,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_READ)
     packet_in.busname = to_char_array("JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUV");
     packet_in.regstart = 216;
     packet_in.count = 27;
+    packet_in.bank = 94;
 
     mavlink::ardupilotmega::msg::DEVICE_OP_READ packet2{};
 
@@ -4133,6 +3898,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_READ)
     EXPECT_EQ(packet_in.busname, packet2.busname);
     EXPECT_EQ(packet_in.regstart, packet2.regstart);
     EXPECT_EQ(packet_in.count, packet2.count);
+    EXPECT_EQ(packet_in.bank, packet2.bank);
 
 #ifdef PRINT_MSG
     PRINT_MSG(msg);
@@ -4152,6 +3918,7 @@ TEST(ardupilotmega, DEVICE_OP_READ_REPLY)
     packet_in.regstart = 84;
     packet_in.count = 151;
     packet_in.data = {{ 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89 }};
+    packet_in.bank = 90;
 
     mavlink::ardupilotmega::msg::DEVICE_OP_READ_REPLY packet1{};
     mavlink::ardupilotmega::msg::DEVICE_OP_READ_REPLY packet2{};
@@ -4171,6 +3938,7 @@ TEST(ardupilotmega, DEVICE_OP_READ_REPLY)
     EXPECT_EQ(packet1.regstart, packet2.regstart);
     EXPECT_EQ(packet1.count, packet2.count);
     EXPECT_EQ(packet1.data, packet2.data);
+    EXPECT_EQ(packet1.bank, packet2.bank);
 }
 
 #ifdef TEST_INTEROP
@@ -4182,7 +3950,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_READ_REPLY)
     memset(&msg, 0, sizeof(msg));
 
     mavlink_device_op_read_reply_t packet_c {
-         963497464, 17, 84, 151, { 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89 }
+         963497464, 17, 84, 151, { 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89 }, 90
     };
 
     mavlink::ardupilotmega::msg::DEVICE_OP_READ_REPLY packet_in{};
@@ -4191,6 +3959,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_READ_REPLY)
     packet_in.regstart = 84;
     packet_in.count = 151;
     packet_in.data = {{ 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89 }};
+    packet_in.bank = 90;
 
     mavlink::ardupilotmega::msg::DEVICE_OP_READ_REPLY packet2{};
 
@@ -4208,6 +3977,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_READ_REPLY)
     EXPECT_EQ(packet_in.regstart, packet2.regstart);
     EXPECT_EQ(packet_in.count, packet2.count);
     EXPECT_EQ(packet_in.data, packet2.data);
+    EXPECT_EQ(packet_in.bank, packet2.bank);
 
 #ifdef PRINT_MSG
     PRINT_MSG(msg);
@@ -4232,6 +4002,7 @@ TEST(ardupilotmega, DEVICE_OP_WRITE)
     packet_in.regstart = 216;
     packet_in.count = 27;
     packet_in.data = {{ 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221 }};
+    packet_in.bank = 222;
 
     mavlink::ardupilotmega::msg::DEVICE_OP_WRITE packet1{};
     mavlink::ardupilotmega::msg::DEVICE_OP_WRITE packet2{};
@@ -4256,6 +4027,7 @@ TEST(ardupilotmega, DEVICE_OP_WRITE)
     EXPECT_EQ(packet1.regstart, packet2.regstart);
     EXPECT_EQ(packet1.count, packet2.count);
     EXPECT_EQ(packet1.data, packet2.data);
+    EXPECT_EQ(packet1.bank, packet2.bank);
 }
 
 #ifdef TEST_INTEROP
@@ -4267,7 +4039,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_WRITE)
     memset(&msg, 0, sizeof(msg));
 
     mavlink_device_op_write_t packet_c {
-         963497464, 17, 84, 151, 218, 29, "JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUV", 216, 27, { 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221 }
+         963497464, 17, 84, 151, 218, 29, "JKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUV", 216, 27, { 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221 }, 222
     };
 
     mavlink::ardupilotmega::msg::DEVICE_OP_WRITE packet_in{};
@@ -4281,6 +4053,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_WRITE)
     packet_in.regstart = 216;
     packet_in.count = 27;
     packet_in.data = {{ 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221 }};
+    packet_in.bank = 222;
 
     mavlink::ardupilotmega::msg::DEVICE_OP_WRITE packet2{};
 
@@ -4303,6 +4076,7 @@ TEST(ardupilotmega_interop, DEVICE_OP_WRITE)
     EXPECT_EQ(packet_in.regstart, packet2.regstart);
     EXPECT_EQ(packet_in.count, packet2.count);
     EXPECT_EQ(packet_in.data, packet2.data);
+    EXPECT_EQ(packet_in.bank, packet2.bank);
 
 #ifdef PRINT_MSG
     PRINT_MSG(msg);
@@ -4852,6 +4626,587 @@ TEST(ardupilotmega_interop, ESC_TELEMETRY_9_TO_12)
     EXPECT_EQ(packet_in.totalcurrent, packet2.totalcurrent);
     EXPECT_EQ(packet_in.rpm, packet2.rpm);
     EXPECT_EQ(packet_in.count, packet2.count);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(ardupilotmega, OSD_PARAM_CONFIG)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG packet_in{};
+    packet_in.target_system = 53;
+    packet_in.target_component = 120;
+    packet_in.request_id = 963497464;
+    packet_in.osd_screen = 187;
+    packet_in.osd_index = 254;
+    packet_in.param_id = to_char_array("UVWXYZABCDEFGHI");
+    packet_in.config_type = 113;
+    packet_in.min_value = 45.0;
+    packet_in.max_value = 73.0;
+    packet_in.increment = 101.0;
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG packet1{};
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.target_system, packet2.target_system);
+    EXPECT_EQ(packet1.target_component, packet2.target_component);
+    EXPECT_EQ(packet1.request_id, packet2.request_id);
+    EXPECT_EQ(packet1.osd_screen, packet2.osd_screen);
+    EXPECT_EQ(packet1.osd_index, packet2.osd_index);
+    EXPECT_EQ(packet1.param_id, packet2.param_id);
+    EXPECT_EQ(packet1.config_type, packet2.config_type);
+    EXPECT_EQ(packet1.min_value, packet2.min_value);
+    EXPECT_EQ(packet1.max_value, packet2.max_value);
+    EXPECT_EQ(packet1.increment, packet2.increment);
+}
+
+#ifdef TEST_INTEROP
+TEST(ardupilotmega_interop, OSD_PARAM_CONFIG)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_osd_param_config_t packet_c {
+         963497464, 45.0, 73.0, 101.0, 53, 120, 187, 254, "UVWXYZABCDEFGHI", 113
+    };
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG packet_in{};
+    packet_in.target_system = 53;
+    packet_in.target_component = 120;
+    packet_in.request_id = 963497464;
+    packet_in.osd_screen = 187;
+    packet_in.osd_index = 254;
+    packet_in.param_id = to_char_array("UVWXYZABCDEFGHI");
+    packet_in.config_type = 113;
+    packet_in.min_value = 45.0;
+    packet_in.max_value = 73.0;
+    packet_in.increment = 101.0;
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG packet2{};
+
+    mavlink_msg_osd_param_config_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.target_system, packet2.target_system);
+    EXPECT_EQ(packet_in.target_component, packet2.target_component);
+    EXPECT_EQ(packet_in.request_id, packet2.request_id);
+    EXPECT_EQ(packet_in.osd_screen, packet2.osd_screen);
+    EXPECT_EQ(packet_in.osd_index, packet2.osd_index);
+    EXPECT_EQ(packet_in.param_id, packet2.param_id);
+    EXPECT_EQ(packet_in.config_type, packet2.config_type);
+    EXPECT_EQ(packet_in.min_value, packet2.min_value);
+    EXPECT_EQ(packet_in.max_value, packet2.max_value);
+    EXPECT_EQ(packet_in.increment, packet2.increment);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(ardupilotmega, OSD_PARAM_CONFIG_REPLY)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG_REPLY packet_in{};
+    packet_in.request_id = 963497464;
+    packet_in.result = 17;
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG_REPLY packet1{};
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG_REPLY packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.request_id, packet2.request_id);
+    EXPECT_EQ(packet1.result, packet2.result);
+}
+
+#ifdef TEST_INTEROP
+TEST(ardupilotmega_interop, OSD_PARAM_CONFIG_REPLY)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_osd_param_config_reply_t packet_c {
+         963497464, 17
+    };
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG_REPLY packet_in{};
+    packet_in.request_id = 963497464;
+    packet_in.result = 17;
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_CONFIG_REPLY packet2{};
+
+    mavlink_msg_osd_param_config_reply_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.request_id, packet2.request_id);
+    EXPECT_EQ(packet_in.result, packet2.result);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(ardupilotmega, OSD_PARAM_SHOW_CONFIG)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG packet_in{};
+    packet_in.target_system = 17;
+    packet_in.target_component = 84;
+    packet_in.request_id = 963497464;
+    packet_in.osd_screen = 151;
+    packet_in.osd_index = 218;
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG packet1{};
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.target_system, packet2.target_system);
+    EXPECT_EQ(packet1.target_component, packet2.target_component);
+    EXPECT_EQ(packet1.request_id, packet2.request_id);
+    EXPECT_EQ(packet1.osd_screen, packet2.osd_screen);
+    EXPECT_EQ(packet1.osd_index, packet2.osd_index);
+}
+
+#ifdef TEST_INTEROP
+TEST(ardupilotmega_interop, OSD_PARAM_SHOW_CONFIG)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_osd_param_show_config_t packet_c {
+         963497464, 17, 84, 151, 218
+    };
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG packet_in{};
+    packet_in.target_system = 17;
+    packet_in.target_component = 84;
+    packet_in.request_id = 963497464;
+    packet_in.osd_screen = 151;
+    packet_in.osd_index = 218;
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG packet2{};
+
+    mavlink_msg_osd_param_show_config_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.target_system, packet2.target_system);
+    EXPECT_EQ(packet_in.target_component, packet2.target_component);
+    EXPECT_EQ(packet_in.request_id, packet2.request_id);
+    EXPECT_EQ(packet_in.osd_screen, packet2.osd_screen);
+    EXPECT_EQ(packet_in.osd_index, packet2.osd_index);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(ardupilotmega, OSD_PARAM_SHOW_CONFIG_REPLY)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG_REPLY packet_in{};
+    packet_in.request_id = 963497464;
+    packet_in.result = 53;
+    packet_in.param_id = to_char_array("RSTUVWXYZABCDEF");
+    packet_in.config_type = 168;
+    packet_in.min_value = 45.0;
+    packet_in.max_value = 73.0;
+    packet_in.increment = 101.0;
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG_REPLY packet1{};
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG_REPLY packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.request_id, packet2.request_id);
+    EXPECT_EQ(packet1.result, packet2.result);
+    EXPECT_EQ(packet1.param_id, packet2.param_id);
+    EXPECT_EQ(packet1.config_type, packet2.config_type);
+    EXPECT_EQ(packet1.min_value, packet2.min_value);
+    EXPECT_EQ(packet1.max_value, packet2.max_value);
+    EXPECT_EQ(packet1.increment, packet2.increment);
+}
+
+#ifdef TEST_INTEROP
+TEST(ardupilotmega_interop, OSD_PARAM_SHOW_CONFIG_REPLY)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_osd_param_show_config_reply_t packet_c {
+         963497464, 45.0, 73.0, 101.0, 53, "RSTUVWXYZABCDEF", 168
+    };
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG_REPLY packet_in{};
+    packet_in.request_id = 963497464;
+    packet_in.result = 53;
+    packet_in.param_id = to_char_array("RSTUVWXYZABCDEF");
+    packet_in.config_type = 168;
+    packet_in.min_value = 45.0;
+    packet_in.max_value = 73.0;
+    packet_in.increment = 101.0;
+
+    mavlink::ardupilotmega::msg::OSD_PARAM_SHOW_CONFIG_REPLY packet2{};
+
+    mavlink_msg_osd_param_show_config_reply_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.request_id, packet2.request_id);
+    EXPECT_EQ(packet_in.result, packet2.result);
+    EXPECT_EQ(packet_in.param_id, packet2.param_id);
+    EXPECT_EQ(packet_in.config_type, packet2.config_type);
+    EXPECT_EQ(packet_in.min_value, packet2.min_value);
+    EXPECT_EQ(packet_in.max_value, packet2.max_value);
+    EXPECT_EQ(packet_in.increment, packet2.increment);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(ardupilotmega, OBSTACLE_DISTANCE_3D)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::ardupilotmega::msg::OBSTACLE_DISTANCE_3D packet_in{};
+    packet_in.time_boot_ms = 963497464;
+    packet_in.sensor_type = 211;
+    packet_in.frame = 22;
+    packet_in.obstacle_id = 18483;
+    packet_in.x = 45.0;
+    packet_in.y = 73.0;
+    packet_in.z = 101.0;
+    packet_in.min_distance = 129.0;
+    packet_in.max_distance = 157.0;
+
+    mavlink::ardupilotmega::msg::OBSTACLE_DISTANCE_3D packet1{};
+    mavlink::ardupilotmega::msg::OBSTACLE_DISTANCE_3D packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.time_boot_ms, packet2.time_boot_ms);
+    EXPECT_EQ(packet1.sensor_type, packet2.sensor_type);
+    EXPECT_EQ(packet1.frame, packet2.frame);
+    EXPECT_EQ(packet1.obstacle_id, packet2.obstacle_id);
+    EXPECT_EQ(packet1.x, packet2.x);
+    EXPECT_EQ(packet1.y, packet2.y);
+    EXPECT_EQ(packet1.z, packet2.z);
+    EXPECT_EQ(packet1.min_distance, packet2.min_distance);
+    EXPECT_EQ(packet1.max_distance, packet2.max_distance);
+}
+
+#ifdef TEST_INTEROP
+TEST(ardupilotmega_interop, OBSTACLE_DISTANCE_3D)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_obstacle_distance_3d_t packet_c {
+         963497464, 45.0, 73.0, 101.0, 129.0, 157.0, 18483, 211, 22
+    };
+
+    mavlink::ardupilotmega::msg::OBSTACLE_DISTANCE_3D packet_in{};
+    packet_in.time_boot_ms = 963497464;
+    packet_in.sensor_type = 211;
+    packet_in.frame = 22;
+    packet_in.obstacle_id = 18483;
+    packet_in.x = 45.0;
+    packet_in.y = 73.0;
+    packet_in.z = 101.0;
+    packet_in.min_distance = 129.0;
+    packet_in.max_distance = 157.0;
+
+    mavlink::ardupilotmega::msg::OBSTACLE_DISTANCE_3D packet2{};
+
+    mavlink_msg_obstacle_distance_3d_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.time_boot_ms, packet2.time_boot_ms);
+    EXPECT_EQ(packet_in.sensor_type, packet2.sensor_type);
+    EXPECT_EQ(packet_in.frame, packet2.frame);
+    EXPECT_EQ(packet_in.obstacle_id, packet2.obstacle_id);
+    EXPECT_EQ(packet_in.x, packet2.x);
+    EXPECT_EQ(packet_in.y, packet2.y);
+    EXPECT_EQ(packet_in.z, packet2.z);
+    EXPECT_EQ(packet_in.min_distance, packet2.min_distance);
+    EXPECT_EQ(packet_in.max_distance, packet2.max_distance);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(ardupilotmega, WATER_DEPTH)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::ardupilotmega::msg::WATER_DEPTH packet_in{};
+    packet_in.time_boot_ms = 963497464;
+    packet_in.id = 113;
+    packet_in.healthy = 180;
+    packet_in.lat = 963497672;
+    packet_in.lng = 963497880;
+    packet_in.alt = 101.0;
+    packet_in.roll = 129.0;
+    packet_in.pitch = 157.0;
+    packet_in.yaw = 185.0;
+    packet_in.distance = 213.0;
+    packet_in.temperature = 241.0;
+
+    mavlink::ardupilotmega::msg::WATER_DEPTH packet1{};
+    mavlink::ardupilotmega::msg::WATER_DEPTH packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.time_boot_ms, packet2.time_boot_ms);
+    EXPECT_EQ(packet1.id, packet2.id);
+    EXPECT_EQ(packet1.healthy, packet2.healthy);
+    EXPECT_EQ(packet1.lat, packet2.lat);
+    EXPECT_EQ(packet1.lng, packet2.lng);
+    EXPECT_EQ(packet1.alt, packet2.alt);
+    EXPECT_EQ(packet1.roll, packet2.roll);
+    EXPECT_EQ(packet1.pitch, packet2.pitch);
+    EXPECT_EQ(packet1.yaw, packet2.yaw);
+    EXPECT_EQ(packet1.distance, packet2.distance);
+    EXPECT_EQ(packet1.temperature, packet2.temperature);
+}
+
+#ifdef TEST_INTEROP
+TEST(ardupilotmega_interop, WATER_DEPTH)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_water_depth_t packet_c {
+         963497464, 963497672, 963497880, 101.0, 129.0, 157.0, 185.0, 213.0, 241.0, 113, 180
+    };
+
+    mavlink::ardupilotmega::msg::WATER_DEPTH packet_in{};
+    packet_in.time_boot_ms = 963497464;
+    packet_in.id = 113;
+    packet_in.healthy = 180;
+    packet_in.lat = 963497672;
+    packet_in.lng = 963497880;
+    packet_in.alt = 101.0;
+    packet_in.roll = 129.0;
+    packet_in.pitch = 157.0;
+    packet_in.yaw = 185.0;
+    packet_in.distance = 213.0;
+    packet_in.temperature = 241.0;
+
+    mavlink::ardupilotmega::msg::WATER_DEPTH packet2{};
+
+    mavlink_msg_water_depth_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.time_boot_ms, packet2.time_boot_ms);
+    EXPECT_EQ(packet_in.id, packet2.id);
+    EXPECT_EQ(packet_in.healthy, packet2.healthy);
+    EXPECT_EQ(packet_in.lat, packet2.lat);
+    EXPECT_EQ(packet_in.lng, packet2.lng);
+    EXPECT_EQ(packet_in.alt, packet2.alt);
+    EXPECT_EQ(packet_in.roll, packet2.roll);
+    EXPECT_EQ(packet_in.pitch, packet2.pitch);
+    EXPECT_EQ(packet_in.yaw, packet2.yaw);
+    EXPECT_EQ(packet_in.distance, packet2.distance);
+    EXPECT_EQ(packet_in.temperature, packet2.temperature);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(ardupilotmega, MCU_STATUS)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::ardupilotmega::msg::MCU_STATUS packet_in{};
+    packet_in.id = 29;
+    packet_in.MCU_temperature = 17235;
+    packet_in.MCU_voltage = 17339;
+    packet_in.MCU_voltage_min = 17443;
+    packet_in.MCU_voltage_max = 17547;
+
+    mavlink::ardupilotmega::msg::MCU_STATUS packet1{};
+    mavlink::ardupilotmega::msg::MCU_STATUS packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.id, packet2.id);
+    EXPECT_EQ(packet1.MCU_temperature, packet2.MCU_temperature);
+    EXPECT_EQ(packet1.MCU_voltage, packet2.MCU_voltage);
+    EXPECT_EQ(packet1.MCU_voltage_min, packet2.MCU_voltage_min);
+    EXPECT_EQ(packet1.MCU_voltage_max, packet2.MCU_voltage_max);
+}
+
+#ifdef TEST_INTEROP
+TEST(ardupilotmega_interop, MCU_STATUS)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_mcu_status_t packet_c {
+         17235, 17339, 17443, 17547, 29
+    };
+
+    mavlink::ardupilotmega::msg::MCU_STATUS packet_in{};
+    packet_in.id = 29;
+    packet_in.MCU_temperature = 17235;
+    packet_in.MCU_voltage = 17339;
+    packet_in.MCU_voltage_min = 17443;
+    packet_in.MCU_voltage_max = 17547;
+
+    mavlink::ardupilotmega::msg::MCU_STATUS packet2{};
+
+    mavlink_msg_mcu_status_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.id, packet2.id);
+    EXPECT_EQ(packet_in.MCU_temperature, packet2.MCU_temperature);
+    EXPECT_EQ(packet_in.MCU_voltage, packet2.MCU_voltage);
+    EXPECT_EQ(packet_in.MCU_voltage_min, packet2.MCU_voltage_min);
+    EXPECT_EQ(packet_in.MCU_voltage_max, packet2.MCU_voltage_max);
 
 #ifdef PRINT_MSG
     PRINT_MSG(msg);

@@ -19,7 +19,7 @@ struct HIL_RC_INPUTS_RAW : mavlink::Message {
     static constexpr auto NAME = "HIL_RC_INPUTS_RAW";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint16_t chan1_raw; /*< [us] RC channel 1 value */
     uint16_t chan2_raw; /*< [us] RC channel 2 value */
     uint16_t chan3_raw; /*< [us] RC channel 3 value */

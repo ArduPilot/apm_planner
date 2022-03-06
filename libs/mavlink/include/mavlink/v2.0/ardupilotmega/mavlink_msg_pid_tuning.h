@@ -3,20 +3,22 @@
 
 #define MAVLINK_MSG_ID_PID_TUNING 194
 
-
+MAVPACKED(
 typedef struct __mavlink_pid_tuning_t {
- float desired; /*< [deg/s] Desired rate.*/
- float achieved; /*< [deg/s] Achieved rate.*/
+ float desired; /*<  Desired rate.*/
+ float achieved; /*<  Achieved rate.*/
  float FF; /*<  FF component.*/
  float P; /*<  P component.*/
  float I; /*<  I component.*/
  float D; /*<  D component.*/
  uint8_t axis; /*<  Axis.*/
-} mavlink_pid_tuning_t;
+ float SRate; /*<  Slew rate.*/
+ float PDmod; /*<  P/D oscillation modifier.*/
+}) mavlink_pid_tuning_t;
 
-#define MAVLINK_MSG_ID_PID_TUNING_LEN 25
+#define MAVLINK_MSG_ID_PID_TUNING_LEN 33
 #define MAVLINK_MSG_ID_PID_TUNING_MIN_LEN 25
-#define MAVLINK_MSG_ID_194_LEN 25
+#define MAVLINK_MSG_ID_194_LEN 33
 #define MAVLINK_MSG_ID_194_MIN_LEN 25
 
 #define MAVLINK_MSG_ID_PID_TUNING_CRC 98
@@ -28,7 +30,7 @@ typedef struct __mavlink_pid_tuning_t {
 #define MAVLINK_MESSAGE_INFO_PID_TUNING { \
     194, \
     "PID_TUNING", \
-    7, \
+    9, \
     {  { "axis", NULL, MAVLINK_TYPE_UINT8_T, 0, 24, offsetof(mavlink_pid_tuning_t, axis) }, \
          { "desired", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_pid_tuning_t, desired) }, \
          { "achieved", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_pid_tuning_t, achieved) }, \
@@ -36,12 +38,14 @@ typedef struct __mavlink_pid_tuning_t {
          { "P", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_pid_tuning_t, P) }, \
          { "I", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_pid_tuning_t, I) }, \
          { "D", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_pid_tuning_t, D) }, \
+         { "SRate", NULL, MAVLINK_TYPE_FLOAT, 0, 25, offsetof(mavlink_pid_tuning_t, SRate) }, \
+         { "PDmod", NULL, MAVLINK_TYPE_FLOAT, 0, 29, offsetof(mavlink_pid_tuning_t, PDmod) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_PID_TUNING { \
     "PID_TUNING", \
-    7, \
+    9, \
     {  { "axis", NULL, MAVLINK_TYPE_UINT8_T, 0, 24, offsetof(mavlink_pid_tuning_t, axis) }, \
          { "desired", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_pid_tuning_t, desired) }, \
          { "achieved", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_pid_tuning_t, achieved) }, \
@@ -49,6 +53,8 @@ typedef struct __mavlink_pid_tuning_t {
          { "P", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_pid_tuning_t, P) }, \
          { "I", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_pid_tuning_t, I) }, \
          { "D", NULL, MAVLINK_TYPE_FLOAT, 0, 20, offsetof(mavlink_pid_tuning_t, D) }, \
+         { "SRate", NULL, MAVLINK_TYPE_FLOAT, 0, 25, offsetof(mavlink_pid_tuning_t, SRate) }, \
+         { "PDmod", NULL, MAVLINK_TYPE_FLOAT, 0, 29, offsetof(mavlink_pid_tuning_t, PDmod) }, \
          } \
 }
 #endif
@@ -60,16 +66,18 @@ typedef struct __mavlink_pid_tuning_t {
  * @param msg The MAVLink message to compress the data into
  *
  * @param axis  Axis.
- * @param desired [deg/s] Desired rate.
- * @param achieved [deg/s] Achieved rate.
+ * @param desired  Desired rate.
+ * @param achieved  Achieved rate.
  * @param FF  FF component.
  * @param P  P component.
  * @param I  I component.
  * @param D  D component.
+ * @param SRate  Slew rate.
+ * @param PDmod  P/D oscillation modifier.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_pid_tuning_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint8_t axis, float desired, float achieved, float FF, float P, float I, float D)
+                               uint8_t axis, float desired, float achieved, float FF, float P, float I, float D, float SRate, float PDmod)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PID_TUNING_LEN];
@@ -80,6 +88,8 @@ static inline uint16_t mavlink_msg_pid_tuning_pack(uint8_t system_id, uint8_t co
     _mav_put_float(buf, 16, I);
     _mav_put_float(buf, 20, D);
     _mav_put_uint8_t(buf, 24, axis);
+    _mav_put_float(buf, 25, SRate);
+    _mav_put_float(buf, 29, PDmod);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_PID_TUNING_LEN);
 #else
@@ -91,6 +101,8 @@ static inline uint16_t mavlink_msg_pid_tuning_pack(uint8_t system_id, uint8_t co
     packet.I = I;
     packet.D = D;
     packet.axis = axis;
+    packet.SRate = SRate;
+    packet.PDmod = PDmod;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_PID_TUNING_LEN);
 #endif
@@ -106,17 +118,19 @@ static inline uint16_t mavlink_msg_pid_tuning_pack(uint8_t system_id, uint8_t co
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
  * @param axis  Axis.
- * @param desired [deg/s] Desired rate.
- * @param achieved [deg/s] Achieved rate.
+ * @param desired  Desired rate.
+ * @param achieved  Achieved rate.
  * @param FF  FF component.
  * @param P  P component.
  * @param I  I component.
  * @param D  D component.
+ * @param SRate  Slew rate.
+ * @param PDmod  P/D oscillation modifier.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_pid_tuning_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint8_t axis,float desired,float achieved,float FF,float P,float I,float D)
+                                   uint8_t axis,float desired,float achieved,float FF,float P,float I,float D,float SRate,float PDmod)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PID_TUNING_LEN];
@@ -127,6 +141,8 @@ static inline uint16_t mavlink_msg_pid_tuning_pack_chan(uint8_t system_id, uint8
     _mav_put_float(buf, 16, I);
     _mav_put_float(buf, 20, D);
     _mav_put_uint8_t(buf, 24, axis);
+    _mav_put_float(buf, 25, SRate);
+    _mav_put_float(buf, 29, PDmod);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_PID_TUNING_LEN);
 #else
@@ -138,6 +154,8 @@ static inline uint16_t mavlink_msg_pid_tuning_pack_chan(uint8_t system_id, uint8
     packet.I = I;
     packet.D = D;
     packet.axis = axis;
+    packet.SRate = SRate;
+    packet.PDmod = PDmod;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_PID_TUNING_LEN);
 #endif
@@ -156,7 +174,7 @@ static inline uint16_t mavlink_msg_pid_tuning_pack_chan(uint8_t system_id, uint8
  */
 static inline uint16_t mavlink_msg_pid_tuning_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_pid_tuning_t* pid_tuning)
 {
-    return mavlink_msg_pid_tuning_pack(system_id, component_id, msg, pid_tuning->axis, pid_tuning->desired, pid_tuning->achieved, pid_tuning->FF, pid_tuning->P, pid_tuning->I, pid_tuning->D);
+    return mavlink_msg_pid_tuning_pack(system_id, component_id, msg, pid_tuning->axis, pid_tuning->desired, pid_tuning->achieved, pid_tuning->FF, pid_tuning->P, pid_tuning->I, pid_tuning->D, pid_tuning->SRate, pid_tuning->PDmod);
 }
 
 /**
@@ -170,7 +188,7 @@ static inline uint16_t mavlink_msg_pid_tuning_encode(uint8_t system_id, uint8_t 
  */
 static inline uint16_t mavlink_msg_pid_tuning_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_pid_tuning_t* pid_tuning)
 {
-    return mavlink_msg_pid_tuning_pack_chan(system_id, component_id, chan, msg, pid_tuning->axis, pid_tuning->desired, pid_tuning->achieved, pid_tuning->FF, pid_tuning->P, pid_tuning->I, pid_tuning->D);
+    return mavlink_msg_pid_tuning_pack_chan(system_id, component_id, chan, msg, pid_tuning->axis, pid_tuning->desired, pid_tuning->achieved, pid_tuning->FF, pid_tuning->P, pid_tuning->I, pid_tuning->D, pid_tuning->SRate, pid_tuning->PDmod);
 }
 
 /**
@@ -178,16 +196,18 @@ static inline uint16_t mavlink_msg_pid_tuning_encode_chan(uint8_t system_id, uin
  * @param chan MAVLink channel to send the message
  *
  * @param axis  Axis.
- * @param desired [deg/s] Desired rate.
- * @param achieved [deg/s] Achieved rate.
+ * @param desired  Desired rate.
+ * @param achieved  Achieved rate.
  * @param FF  FF component.
  * @param P  P component.
  * @param I  I component.
  * @param D  D component.
+ * @param SRate  Slew rate.
+ * @param PDmod  P/D oscillation modifier.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_pid_tuning_send(mavlink_channel_t chan, uint8_t axis, float desired, float achieved, float FF, float P, float I, float D)
+static inline void mavlink_msg_pid_tuning_send(mavlink_channel_t chan, uint8_t axis, float desired, float achieved, float FF, float P, float I, float D, float SRate, float PDmod)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_PID_TUNING_LEN];
@@ -198,6 +218,8 @@ static inline void mavlink_msg_pid_tuning_send(mavlink_channel_t chan, uint8_t a
     _mav_put_float(buf, 16, I);
     _mav_put_float(buf, 20, D);
     _mav_put_uint8_t(buf, 24, axis);
+    _mav_put_float(buf, 25, SRate);
+    _mav_put_float(buf, 29, PDmod);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PID_TUNING, buf, MAVLINK_MSG_ID_PID_TUNING_MIN_LEN, MAVLINK_MSG_ID_PID_TUNING_LEN, MAVLINK_MSG_ID_PID_TUNING_CRC);
 #else
@@ -209,6 +231,8 @@ static inline void mavlink_msg_pid_tuning_send(mavlink_channel_t chan, uint8_t a
     packet.I = I;
     packet.D = D;
     packet.axis = axis;
+    packet.SRate = SRate;
+    packet.PDmod = PDmod;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PID_TUNING, (const char *)&packet, MAVLINK_MSG_ID_PID_TUNING_MIN_LEN, MAVLINK_MSG_ID_PID_TUNING_LEN, MAVLINK_MSG_ID_PID_TUNING_CRC);
 #endif
@@ -222,7 +246,7 @@ static inline void mavlink_msg_pid_tuning_send(mavlink_channel_t chan, uint8_t a
 static inline void mavlink_msg_pid_tuning_send_struct(mavlink_channel_t chan, const mavlink_pid_tuning_t* pid_tuning)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_pid_tuning_send(chan, pid_tuning->axis, pid_tuning->desired, pid_tuning->achieved, pid_tuning->FF, pid_tuning->P, pid_tuning->I, pid_tuning->D);
+    mavlink_msg_pid_tuning_send(chan, pid_tuning->axis, pid_tuning->desired, pid_tuning->achieved, pid_tuning->FF, pid_tuning->P, pid_tuning->I, pid_tuning->D, pid_tuning->SRate, pid_tuning->PDmod);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PID_TUNING, (const char *)pid_tuning, MAVLINK_MSG_ID_PID_TUNING_MIN_LEN, MAVLINK_MSG_ID_PID_TUNING_LEN, MAVLINK_MSG_ID_PID_TUNING_CRC);
 #endif
@@ -230,13 +254,13 @@ static inline void mavlink_msg_pid_tuning_send_struct(mavlink_channel_t chan, co
 
 #if MAVLINK_MSG_ID_PID_TUNING_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_pid_tuning_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t axis, float desired, float achieved, float FF, float P, float I, float D)
+static inline void mavlink_msg_pid_tuning_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t axis, float desired, float achieved, float FF, float P, float I, float D, float SRate, float PDmod)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -247,6 +271,8 @@ static inline void mavlink_msg_pid_tuning_send_buf(mavlink_message_t *msgbuf, ma
     _mav_put_float(buf, 16, I);
     _mav_put_float(buf, 20, D);
     _mav_put_uint8_t(buf, 24, axis);
+    _mav_put_float(buf, 25, SRate);
+    _mav_put_float(buf, 29, PDmod);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PID_TUNING, buf, MAVLINK_MSG_ID_PID_TUNING_MIN_LEN, MAVLINK_MSG_ID_PID_TUNING_LEN, MAVLINK_MSG_ID_PID_TUNING_CRC);
 #else
@@ -258,6 +284,8 @@ static inline void mavlink_msg_pid_tuning_send_buf(mavlink_message_t *msgbuf, ma
     packet->I = I;
     packet->D = D;
     packet->axis = axis;
+    packet->SRate = SRate;
+    packet->PDmod = PDmod;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_PID_TUNING, (const char *)packet, MAVLINK_MSG_ID_PID_TUNING_MIN_LEN, MAVLINK_MSG_ID_PID_TUNING_LEN, MAVLINK_MSG_ID_PID_TUNING_CRC);
 #endif
@@ -282,7 +310,7 @@ static inline uint8_t mavlink_msg_pid_tuning_get_axis(const mavlink_message_t* m
 /**
  * @brief Get field desired from pid_tuning message
  *
- * @return [deg/s] Desired rate.
+ * @return  Desired rate.
  */
 static inline float mavlink_msg_pid_tuning_get_desired(const mavlink_message_t* msg)
 {
@@ -292,7 +320,7 @@ static inline float mavlink_msg_pid_tuning_get_desired(const mavlink_message_t* 
 /**
  * @brief Get field achieved from pid_tuning message
  *
- * @return [deg/s] Achieved rate.
+ * @return  Achieved rate.
  */
 static inline float mavlink_msg_pid_tuning_get_achieved(const mavlink_message_t* msg)
 {
@@ -340,6 +368,26 @@ static inline float mavlink_msg_pid_tuning_get_D(const mavlink_message_t* msg)
 }
 
 /**
+ * @brief Get field SRate from pid_tuning message
+ *
+ * @return  Slew rate.
+ */
+static inline float mavlink_msg_pid_tuning_get_SRate(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_float(msg,  25);
+}
+
+/**
+ * @brief Get field PDmod from pid_tuning message
+ *
+ * @return  P/D oscillation modifier.
+ */
+static inline float mavlink_msg_pid_tuning_get_PDmod(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_float(msg,  29);
+}
+
+/**
  * @brief Decode a pid_tuning message into a struct
  *
  * @param msg The message to decode
@@ -355,6 +403,8 @@ static inline void mavlink_msg_pid_tuning_decode(const mavlink_message_t* msg, m
     pid_tuning->I = mavlink_msg_pid_tuning_get_I(msg);
     pid_tuning->D = mavlink_msg_pid_tuning_get_D(msg);
     pid_tuning->axis = mavlink_msg_pid_tuning_get_axis(msg);
+    pid_tuning->SRate = mavlink_msg_pid_tuning_get_SRate(msg);
+    pid_tuning->PDmod = mavlink_msg_pid_tuning_get_PDmod(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_PID_TUNING_LEN? msg->len : MAVLINK_MSG_ID_PID_TUNING_LEN;
         memset(pid_tuning, 0, MAVLINK_MSG_ID_PID_TUNING_LEN);

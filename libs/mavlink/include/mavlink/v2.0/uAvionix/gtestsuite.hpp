@@ -279,3 +279,338 @@ TEST(uAvionix_interop, UAVIONIX_ADSB_TRANSCEIVER_HEALTH_REPORT)
 #endif
 }
 #endif
+
+TEST(uAvionix, UAVIONIX_ADSB_OUT_CFG_REGISTRATION)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_REGISTRATION packet_in{};
+    packet_in.registration = to_char_array("ABCDEFGH");
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_REGISTRATION packet1{};
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_REGISTRATION packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.registration, packet2.registration);
+}
+
+#ifdef TEST_INTEROP
+TEST(uAvionix_interop, UAVIONIX_ADSB_OUT_CFG_REGISTRATION)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_uavionix_adsb_out_cfg_registration_t packet_c {
+         "ABCDEFGH"
+    };
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_REGISTRATION packet_in{};
+    packet_in.registration = to_char_array("ABCDEFGH");
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_REGISTRATION packet2{};
+
+    mavlink_msg_uavionix_adsb_out_cfg_registration_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.registration, packet2.registration);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(uAvionix, UAVIONIX_ADSB_OUT_CFG_FLIGHTID)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_FLIGHTID packet_in{};
+    packet_in.flight_id = to_char_array("ABCDEFGH");
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_FLIGHTID packet1{};
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_FLIGHTID packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.flight_id, packet2.flight_id);
+}
+
+#ifdef TEST_INTEROP
+TEST(uAvionix_interop, UAVIONIX_ADSB_OUT_CFG_FLIGHTID)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_uavionix_adsb_out_cfg_flightid_t packet_c {
+         "ABCDEFGH"
+    };
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_FLIGHTID packet_in{};
+    packet_in.flight_id = to_char_array("ABCDEFGH");
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CFG_FLIGHTID packet2{};
+
+    mavlink_msg_uavionix_adsb_out_cfg_flightid_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.flight_id, packet2.flight_id);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(uAvionix, UAVIONIX_ADSB_GET)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_GET packet_in{};
+    packet_in.ReqMessageId = 963497464;
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_GET packet1{};
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_GET packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.ReqMessageId, packet2.ReqMessageId);
+}
+
+#ifdef TEST_INTEROP
+TEST(uAvionix_interop, UAVIONIX_ADSB_GET)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_uavionix_adsb_get_t packet_c {
+         963497464
+    };
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_GET packet_in{};
+    packet_in.ReqMessageId = 963497464;
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_GET packet2{};
+
+    mavlink_msg_uavionix_adsb_get_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.ReqMessageId, packet2.ReqMessageId);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(uAvionix, UAVIONIX_ADSB_OUT_CONTROL)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CONTROL packet_in{};
+    packet_in.state = 151;
+    packet_in.baroAltMSL = 963497464;
+    packet_in.squawk = 17443;
+    packet_in.emergencyStatus = 218;
+    packet_in.flight_id = to_char_array("IJKLMNO");
+    packet_in.x_bit = 53;
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CONTROL packet1{};
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CONTROL packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.state, packet2.state);
+    EXPECT_EQ(packet1.baroAltMSL, packet2.baroAltMSL);
+    EXPECT_EQ(packet1.squawk, packet2.squawk);
+    EXPECT_EQ(packet1.emergencyStatus, packet2.emergencyStatus);
+    EXPECT_EQ(packet1.flight_id, packet2.flight_id);
+    EXPECT_EQ(packet1.x_bit, packet2.x_bit);
+}
+
+#ifdef TEST_INTEROP
+TEST(uAvionix_interop, UAVIONIX_ADSB_OUT_CONTROL)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_uavionix_adsb_out_control_t packet_c {
+         963497464, 17443, 151, 218, "IJKLMNO", 53
+    };
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CONTROL packet_in{};
+    packet_in.state = 151;
+    packet_in.baroAltMSL = 963497464;
+    packet_in.squawk = 17443;
+    packet_in.emergencyStatus = 218;
+    packet_in.flight_id = to_char_array("IJKLMNO");
+    packet_in.x_bit = 53;
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_CONTROL packet2{};
+
+    mavlink_msg_uavionix_adsb_out_control_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.state, packet2.state);
+    EXPECT_EQ(packet_in.baroAltMSL, packet2.baroAltMSL);
+    EXPECT_EQ(packet_in.squawk, packet2.squawk);
+    EXPECT_EQ(packet_in.emergencyStatus, packet2.emergencyStatus);
+    EXPECT_EQ(packet_in.flight_id, packet2.flight_id);
+    EXPECT_EQ(packet_in.x_bit, packet2.x_bit);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif
+
+TEST(uAvionix, UAVIONIX_ADSB_OUT_STATUS)
+{
+    mavlink::mavlink_message_t msg;
+    mavlink::MsgMap map1(msg);
+    mavlink::MsgMap map2(msg);
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_STATUS packet_in{};
+    packet_in.state = 139;
+    packet_in.squawk = 17235;
+    packet_in.NIC_NACp = 206;
+    packet_in.boardTemp = 17;
+    packet_in.fault = 84;
+    packet_in.flight_id = to_char_array("GHIJKLM");
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_STATUS packet1{};
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_STATUS packet2{};
+
+    packet1 = packet_in;
+
+    //std::cout << packet1.to_yaml() << std::endl;
+
+    packet1.serialize(map1);
+
+    mavlink::mavlink_finalize_message(&msg, 1, 1, packet1.MIN_LENGTH, packet1.LENGTH, packet1.CRC_EXTRA);
+
+    packet2.deserialize(map2);
+
+    EXPECT_EQ(packet1.state, packet2.state);
+    EXPECT_EQ(packet1.squawk, packet2.squawk);
+    EXPECT_EQ(packet1.NIC_NACp, packet2.NIC_NACp);
+    EXPECT_EQ(packet1.boardTemp, packet2.boardTemp);
+    EXPECT_EQ(packet1.fault, packet2.fault);
+    EXPECT_EQ(packet1.flight_id, packet2.flight_id);
+}
+
+#ifdef TEST_INTEROP
+TEST(uAvionix_interop, UAVIONIX_ADSB_OUT_STATUS)
+{
+    mavlink_message_t msg;
+
+    // to get nice print
+    memset(&msg, 0, sizeof(msg));
+
+    mavlink_uavionix_adsb_out_status_t packet_c {
+         17235, 139, 206, 17, 84, "GHIJKLM"
+    };
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_STATUS packet_in{};
+    packet_in.state = 139;
+    packet_in.squawk = 17235;
+    packet_in.NIC_NACp = 206;
+    packet_in.boardTemp = 17;
+    packet_in.fault = 84;
+    packet_in.flight_id = to_char_array("GHIJKLM");
+
+    mavlink::uAvionix::msg::UAVIONIX_ADSB_OUT_STATUS packet2{};
+
+    mavlink_msg_uavionix_adsb_out_status_encode(1, 1, &msg, &packet_c);
+
+    // simulate message-handling callback
+    [&packet2](const mavlink_message_t *cmsg) {
+        MsgMap map2(cmsg);
+
+        packet2.deserialize(map2);
+    } (&msg);
+
+    EXPECT_EQ(packet_in.state, packet2.state);
+    EXPECT_EQ(packet_in.squawk, packet2.squawk);
+    EXPECT_EQ(packet_in.NIC_NACp, packet2.NIC_NACp);
+    EXPECT_EQ(packet_in.boardTemp, packet2.boardTemp);
+    EXPECT_EQ(packet_in.fault, packet2.fault);
+    EXPECT_EQ(packet_in.flight_id, packet2.flight_id);
+
+#ifdef PRINT_MSG
+    PRINT_MSG(msg);
+#endif
+}
+#endif

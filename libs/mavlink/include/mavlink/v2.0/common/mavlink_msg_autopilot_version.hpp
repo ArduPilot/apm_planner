@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief AUTOPILOT_VERSION message
  *
- * Version and capability of autopilot software. This should be emitted in response to a MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES command.
+ * Version and capability of autopilot software. This should be emitted in response to a request with MAV_CMD_REQUEST_MESSAGE.
  */
 struct AUTOPILOT_VERSION : mavlink::Message {
     static constexpr msgid_t MSG_ID = 148;
@@ -23,7 +23,7 @@ struct AUTOPILOT_VERSION : mavlink::Message {
     uint32_t flight_sw_version; /*<  Firmware version number */
     uint32_t middleware_sw_version; /*<  Middleware version number */
     uint32_t os_sw_version; /*<  Operating system version number */
-    uint32_t board_version; /*<  HW / board version (last 8 bytes should be silicon ID, if any) */
+    uint32_t board_version; /*<  HW / board version (last 8 bits should be silicon ID, if any). The first 16 bits of this field specify https://github.com/PX4/PX4-Bootloader/blob/master/board_types.txt */
     std::array<uint8_t, 8> flight_custom_version; /*<  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases. */
     std::array<uint8_t, 8> middleware_custom_version; /*<  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases. */
     std::array<uint8_t, 8> os_custom_version; /*<  Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases. */

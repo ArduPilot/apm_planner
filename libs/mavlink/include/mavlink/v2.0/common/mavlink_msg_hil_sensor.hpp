@@ -13,13 +13,13 @@ namespace msg {
  */
 struct HIL_SENSOR : mavlink::Message {
     static constexpr msgid_t MSG_ID = 107;
-    static constexpr size_t LENGTH = 64;
+    static constexpr size_t LENGTH = 65;
     static constexpr size_t MIN_LENGTH = 64;
     static constexpr uint8_t CRC_EXTRA = 108;
     static constexpr auto NAME = "HIL_SENSOR";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     float xacc; /*< [m/s/s] X acceleration */
     float yacc; /*< [m/s/s] Y acceleration */
     float zacc; /*< [m/s/s] Z acceleration */
@@ -29,11 +29,12 @@ struct HIL_SENSOR : mavlink::Message {
     float xmag; /*< [gauss] X Magnetic field */
     float ymag; /*< [gauss] Y Magnetic field */
     float zmag; /*< [gauss] Z Magnetic field */
-    float abs_pressure; /*< [mbar] Absolute pressure */
-    float diff_pressure; /*< [mbar] Differential pressure (airspeed) */
+    float abs_pressure; /*< [hPa] Absolute pressure */
+    float diff_pressure; /*< [hPa] Differential pressure (airspeed) */
     float pressure_alt; /*<  Altitude calculated from pressure */
     float temperature; /*< [degC] Temperature */
     uint32_t fields_updated; /*<  Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature, bit 31: full reset of attitude/position/velocities/etc was performed in sim. */
+    uint8_t id; /*<  Sensor ID (zero indexed). Used for multiple sensor inputs */
 
 
     inline std::string get_name(void) const override
@@ -66,6 +67,7 @@ struct HIL_SENSOR : mavlink::Message {
         ss << "  pressure_alt: " << pressure_alt << std::endl;
         ss << "  temperature: " << temperature << std::endl;
         ss << "  fields_updated: " << fields_updated << std::endl;
+        ss << "  id: " << +id << std::endl;
 
         return ss.str();
     }
@@ -89,6 +91,7 @@ struct HIL_SENSOR : mavlink::Message {
         map << pressure_alt;                  // offset: 52
         map << temperature;                   // offset: 56
         map << fields_updated;                // offset: 60
+        map << id;                            // offset: 64
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -108,6 +111,7 @@ struct HIL_SENSOR : mavlink::Message {
         map >> pressure_alt;                  // offset: 52
         map >> temperature;                   // offset: 56
         map >> fields_updated;                // offset: 60
+        map >> id;                            // offset: 64
     }
 };
 

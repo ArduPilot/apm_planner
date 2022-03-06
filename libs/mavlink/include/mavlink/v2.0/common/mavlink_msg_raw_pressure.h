@@ -5,7 +5,7 @@
 
 
 typedef struct __mavlink_raw_pressure_t {
- uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.*/
+ uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.*/
  int16_t press_abs; /*<  Absolute pressure (raw)*/
  int16_t press_diff1; /*<  Differential pressure 1 (raw, 0 if nonexistent)*/
  int16_t press_diff2; /*<  Differential pressure 2 (raw, 0 if nonexistent)*/
@@ -53,7 +53,7 @@ typedef struct __mavlink_raw_pressure_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param press_abs  Absolute pressure (raw)
  * @param press_diff1  Differential pressure 1 (raw, 0 if nonexistent)
  * @param press_diff2  Differential pressure 2 (raw, 0 if nonexistent)
@@ -93,7 +93,7 @@ static inline uint16_t mavlink_msg_raw_pressure_pack(uint8_t system_id, uint8_t 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param press_abs  Absolute pressure (raw)
  * @param press_diff1  Differential pressure 1 (raw, 0 if nonexistent)
  * @param press_diff2  Differential pressure 2 (raw, 0 if nonexistent)
@@ -159,7 +159,7 @@ static inline uint16_t mavlink_msg_raw_pressure_encode_chan(uint8_t system_id, u
  * @brief Send a raw_pressure message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param press_abs  Absolute pressure (raw)
  * @param press_diff1  Differential pressure 1 (raw, 0 if nonexistent)
  * @param press_diff2  Differential pressure 2 (raw, 0 if nonexistent)
@@ -206,7 +206,7 @@ static inline void mavlink_msg_raw_pressure_send_struct(mavlink_channel_t chan, 
 
 #if MAVLINK_MSG_ID_RAW_PRESSURE_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -244,7 +244,7 @@ static inline void mavlink_msg_raw_pressure_send_buf(mavlink_message_t *msgbuf, 
 /**
  * @brief Get field time_usec from raw_pressure message
  *
- * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  */
 static inline uint64_t mavlink_msg_raw_pressure_get_time_usec(const mavlink_message_t* msg)
 {

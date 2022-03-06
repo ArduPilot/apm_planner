@@ -19,7 +19,7 @@ struct PING : mavlink::Message {
     static constexpr auto NAME = "PING";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint32_t seq; /*<  PING sequence */
     uint8_t target_system; /*<  0: request ping from all receiving systems. If greater than 0: message is a ping response and number is the system id of the requesting system */
     uint8_t target_component; /*<  0: request ping from all receiving components. If greater than 0: message is a ping response and number is the component id of the requesting component. */

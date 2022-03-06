@@ -5,7 +5,7 @@
 
 
 typedef struct __mavlink_odometry_t {
- uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.*/
+ uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.*/
  float x; /*< [m] X Position*/
  float y; /*< [m] Y Position*/
  float z; /*< [m] Z Position*/
@@ -91,7 +91,7 @@ typedef struct __mavlink_odometry_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param frame_id  Coordinate frame of reference for the pose data.
  * @param child_frame_id  Coordinate frame of reference for the velocity in free space (twist) data.
  * @param x [m] X Position
@@ -165,7 +165,7 @@ static inline uint16_t mavlink_msg_odometry_pack(uint8_t system_id, uint8_t comp
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param frame_id  Coordinate frame of reference for the pose data.
  * @param child_frame_id  Coordinate frame of reference for the velocity in free space (twist) data.
  * @param x [m] X Position
@@ -265,7 +265,7 @@ static inline uint16_t mavlink_msg_odometry_encode_chan(uint8_t system_id, uint8
  * @brief Send a odometry message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param frame_id  Coordinate frame of reference for the pose data.
  * @param child_frame_id  Coordinate frame of reference for the velocity in free space (twist) data.
  * @param x [m] X Position
@@ -346,7 +346,7 @@ static inline void mavlink_msg_odometry_send_struct(mavlink_channel_t chan, cons
 
 #if MAVLINK_MSG_ID_ODOMETRY_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This varient of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by re-using
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
@@ -406,7 +406,7 @@ static inline void mavlink_msg_odometry_send_buf(mavlink_message_t *msgbuf, mavl
 /**
  * @brief Get field time_usec from odometry message
  *
- * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  */
 static inline uint64_t mavlink_msg_odometry_get_time_usec(const mavlink_message_t* msg)
 {

@@ -13,7 +13,7 @@ namespace msg {
  */
 struct DISTANCE_SENSOR : mavlink::Message {
     static constexpr msgid_t MSG_ID = 132;
-    static constexpr size_t LENGTH = 38;
+    static constexpr size_t LENGTH = 39;
     static constexpr size_t MIN_LENGTH = 14;
     static constexpr uint8_t CRC_EXTRA = 85;
     static constexpr auto NAME = "DISTANCE_SENSOR";
@@ -30,6 +30,7 @@ struct DISTANCE_SENSOR : mavlink::Message {
     float horizontal_fov; /*< [rad] Horizontal Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0. */
     float vertical_fov; /*< [rad] Vertical Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0. */
     std::array<float, 4> quaternion; /*<  Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid." */
+    uint8_t signal_quality; /*< [%] Signal quality of the sensor. Specific to each sensor type, representing the relation of the signal strength with the target reflectivity, distance, size or aspect, but normalised as a percentage. 0 = unknown/unset signal quality, 1 = invalid signal, 100 = perfect signal. */
 
 
     inline std::string get_name(void) const override
@@ -58,6 +59,7 @@ struct DISTANCE_SENSOR : mavlink::Message {
         ss << "  horizontal_fov: " << horizontal_fov << std::endl;
         ss << "  vertical_fov: " << vertical_fov << std::endl;
         ss << "  quaternion: [" << to_string(quaternion) << "]" << std::endl;
+        ss << "  signal_quality: " << +signal_quality << std::endl;
 
         return ss.str();
     }
@@ -77,6 +79,7 @@ struct DISTANCE_SENSOR : mavlink::Message {
         map << horizontal_fov;                // offset: 14
         map << vertical_fov;                  // offset: 18
         map << quaternion;                    // offset: 22
+        map << signal_quality;                // offset: 38
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -92,6 +95,7 @@ struct DISTANCE_SENSOR : mavlink::Message {
         map >> horizontal_fov;                // offset: 14
         map >> vertical_fov;                  // offset: 18
         map >> quaternion;                    // offset: 22
+        map >> signal_quality;                // offset: 38
     }
 };
 

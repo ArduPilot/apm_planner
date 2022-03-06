@@ -9,7 +9,7 @@ namespace msg {
 /**
  * @brief LOG_REQUEST_LIST message
  *
- * Request a list of available logs. On some systems calling this may stop on-board logging until LOG_REQUEST_END is called.
+ * Request a list of available logs. On some systems calling this may stop on-board logging until LOG_REQUEST_END is called. If there are no log files available this request shall be answered with one LOG_ENTRY message with id = 0 and num_logs = 0.
  */
 struct LOG_REQUEST_LIST : mavlink::Message {
     static constexpr msgid_t MSG_ID = 117;

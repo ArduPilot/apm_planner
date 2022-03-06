@@ -19,7 +19,7 @@ struct ODOMETRY : mavlink::Message {
     static constexpr auto NAME = "ODOMETRY";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     uint8_t frame_id; /*<  Coordinate frame of reference for the pose data. */
     uint8_t child_frame_id; /*<  Coordinate frame of reference for the velocity in free space (twist) data. */
     float x; /*< [m] X Position */

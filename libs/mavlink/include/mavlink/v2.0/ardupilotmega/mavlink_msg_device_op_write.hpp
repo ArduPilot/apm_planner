@@ -13,7 +13,7 @@ namespace msg {
  */
 struct DEVICE_OP_WRITE : mavlink::Message {
     static constexpr msgid_t MSG_ID = 11002;
-    static constexpr size_t LENGTH = 179;
+    static constexpr size_t LENGTH = 180;
     static constexpr size_t MIN_LENGTH = 179;
     static constexpr uint8_t CRC_EXTRA = 234;
     static constexpr auto NAME = "DEVICE_OP_WRITE";
@@ -29,6 +29,7 @@ struct DEVICE_OP_WRITE : mavlink::Message {
     uint8_t regstart; /*<  First register to write. */
     uint8_t count; /*<  Count of registers to write. */
     std::array<uint8_t, 128> data; /*<  Write data. */
+    uint8_t bank; /*<  Bank number. */
 
 
     inline std::string get_name(void) const override
@@ -56,6 +57,7 @@ struct DEVICE_OP_WRITE : mavlink::Message {
         ss << "  regstart: " << +regstart << std::endl;
         ss << "  count: " << +count << std::endl;
         ss << "  data: [" << to_string(data) << "]" << std::endl;
+        ss << "  bank: " << +bank << std::endl;
 
         return ss.str();
     }
@@ -74,6 +76,7 @@ struct DEVICE_OP_WRITE : mavlink::Message {
         map << regstart;                      // offset: 49
         map << count;                         // offset: 50
         map << data;                          // offset: 51
+        map << bank;                          // offset: 179
     }
 
     inline void deserialize(mavlink::MsgMap &map) override
@@ -88,6 +91,7 @@ struct DEVICE_OP_WRITE : mavlink::Message {
         map >> regstart;                      // offset: 49
         map >> count;                         // offset: 50
         map >> data;                          // offset: 51
+        map >> bank;                          // offset: 179
     }
 };
 

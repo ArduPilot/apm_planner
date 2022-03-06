@@ -19,7 +19,7 @@ struct HIL_STATE_QUATERNION : mavlink::Message {
     static constexpr auto NAME = "HIL_STATE_QUATERNION";
 
 
-    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number. */
+    uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number. */
     std::array<float, 4> attitude_quaternion; /*<  Vehicle attitude expressed as normalized quaternion in w, x, y, z order (with 1 0 0 0 being the null-rotation) */
     float rollspeed; /*< [rad/s] Body frame roll / phi angular speed */
     float pitchspeed; /*< [rad/s] Body frame pitch / theta angular speed */
