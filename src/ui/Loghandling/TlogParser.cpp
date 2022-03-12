@@ -78,6 +78,7 @@ AP2DataPlotStatus TlogParser::parse(QFile &logfile)
     addMissingDescriptors();
 
     int emptyMessages = 0;
+    int currentSysID = 0;
 
     while(!logfile.atEnd() && !m_stop)
     {
@@ -92,8 +93,9 @@ AP2DataPlotStatus TlogParser::parse(QFile &logfile)
             unsigned int decodeState = mavlink_parse_char(14, static_cast<uint8_t>(m_dataBlock[i]), &mavlinkMessage, &mavlinkStatus);
             if (decodeState == MAVLINK_FRAMING_OK)
             {
-                if ((mavlinkMessage.msgid >= 20) && (mavlinkMessage.msgid <= 23))
+                if ((mavlinkMessage.sysid > 250) || ((mavlinkMessage.msgid <= 23) && (mavlinkMessage.msgid >= 20)))
                 {
+                    // Groundstations have a sysid > 250 we ignore them.
                     // The messages PARAM_REQUEST_READ (#20), PARAM_REQUEST_LIST (#21), PARAM_VALUE (#22), PARAM_SET (#23)
                     // are useless for plotting. Therefore we skip them here.
                     continue;
@@ -129,6 +131,11 @@ AP2DataPlotStatus TlogParser::parse(QFile &logfile)
                         // Special message handling - Heartbeat
                         if(mavlinkMessage.msgid == MAVLINK_MSG_ID_HEARTBEAT)
                         {
+                            if (currentSysID != mavlinkMessage.sysid)
+                            {
+                                QLOG_DEBUG() << "MavLink SysID Changed: " << mavlinkMessage.sysid;
+                                currentSysID = mavlinkMessage.sysid;
+                            }
                             // extract mode message from tlog data
                             if(!extractModeMessage(NameValuePairList))
                             {
