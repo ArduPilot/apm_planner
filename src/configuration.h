@@ -15,7 +15,7 @@
 #define WITH_TEXT_TO_SPEECH 1
 
 #define QGC_APPLICATION_NAME "APM Planner"
-#define QGC_APPLICATION_VERSION "v2.0.29-rc1"
+#define QGC_APPLICATION_VERSION "v2.0.30-rc1"
 #define APP_DATA_DIRECTORY "/apmplanner2"
 #define LOG_DIRECTORY "/dataflashLogs"
 #define PARAMETER_DIRECTORY "/parameters"
@@ -60,7 +60,7 @@ namespace QGC
 {
 const static QString APPNAME = "APMPLANNER2";
 const static QString COMPANYNAME = "ARDUPILOT";
-const static int APPLICATIONVERSION = 2029; // 2.0.28 [TODO] we should deprecate this version definition
+const static int APPLICATIONVERSION = 2030; // 2.0.28 [TODO] we should deprecate this version definition
 const static quint8 defaultMavlinkSystemId = 252; // Using 252 to 'crudely' identify a log created by APM Planner 2
 
     inline void close(){
