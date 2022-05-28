@@ -9,7 +9,7 @@ SOURCEPATH="/home/build/planner"
 { cd "$SOURCEPATH"
 
     # build apm planner
-    qmake apm_planner.pro -spec linux-g++-64
+    qmake apm_planner.pro
     make -j$(nproc)
 
     # create the appimage
@@ -27,7 +27,7 @@ SOURCEPATH="/home/build/planner"
 
    #----------------------------------------------
 
-    export VERSION=2.0.29-rc1
+    export VERSION=2.0.30-rc1
 
     # Clean if output already exists
     rm -rf "$BUILDINGPATH"
