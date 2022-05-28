@@ -1,4 +1,21 @@
-Release Notes - APM Planner  2.0.29-RC1 - 2021-04-11
+Release Notes - APM Planner  2.0.30-RC1 - 2022-05-28
+
+c1a08af4f build: Update to 2.0.30-rc1. - Arne-W
+92927240a mavlink: Supress gcc warnings when using mavlink includes. - Arne-W
+91737c76d uas: Update to the latest MAVLINK messages - murata
+fb912fb50 mavlink: update mavlink headers - murata
+fdc0557aa Graph View: Ignore GCS messages when parsing Tlogs. Fixes #1251 - Arne-W
+d52d5995d Graph View: Support indexed data types flash log files. Fixes #1253 - Arne-W
+c24ce9ea2 Changed default build from 32 to 64 bit. - Arne-W
+bc6721a6b GraphView: Fix uint32 overflow when calculating time of Message arrows. Fixes #1246 - Arne-W
+38f14c34a Update README.md - Andrei
+d2d261cd3 GraphView: Fix table cursor not moving when selecting table row. Scaled models only. - Arne-W
+d097296ab GraphView: Don't use exponent in Graph view anymore. Fixes #1150 - Arne-W
+a8bde8ea2 Allow 2000m in PFD altitude indicator. Fixes #1239 - Arne-W
+56841e3f8 Firmware Install: Made area scrollable for small displays. - Arne-W
+bbb231cae Removed doubled entries from release notes - Arne-W
+f754ca65f build: update release_notes for 2.0.29-RC1 - Arne-W
+
 
 c7f81f8ba build: Update to 2.0.29-rc1. - Arne-W
 2e47d56d8 Firmware Install: Add "done" message on progress bar - Arne-W
