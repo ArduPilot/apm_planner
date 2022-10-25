@@ -6,7 +6,7 @@
 #ifndef MAVLINK_H
 #define MAVLINK_H
 
-#define MAVLINK_PRIMARY_XML_HASH -8875052038040652708
+#define MAVLINK_PRIMARY_XML_HASH 8243252250405391882
 
 #ifndef MAVLINK_STX
 #define MAVLINK_STX 253
@@ -28,19 +28,7 @@
 #define MAVLINK_COMMAND_24BIT 1
 #endif
 
-// gcc version 9 brings a lot of new warnings. We supress them here for the mavlink
-// library as it is not "our" code
-#if defined(__GNUC__) && (__GNUC__ > 8)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Waddress-of-packed-member" // Suppress lots of warnings
-#endif
-
 #include "version.h"
 #include "ardupilotmega.h"
-
-#if defined(__GNUC__) && (__GNUC__ > 8)
-    #pragma GCC diagnostic pop
-#endif
-
 
 #endif // MAVLINK_H
