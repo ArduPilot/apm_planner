@@ -1,13 +1,13 @@
 configs:
     dev:
-        'qt_deps_tarball': 'Qt5.5.1-linux-min.tar.bz2'
-        'qt_deps_unpack_parent_dir': '/tmp'
+        'qt_deps_ver': '5.15.2'
+        'qt_deps_unpack_parent_dir': '/home/vagrant'
 
-        'qt_deps_unpack_dir': '/tmp/Qt'
-        'qt_deps_bin_unpack_dir': '/tmp/Qt/5.5/gcc_64/bin'
-        'qt_deps_lib_unpack_dir': '/tmp/Qt/5.5/gcc_64/lib'
-        'qt_deps_plugins_unpack_dir': '/tmp/Qt/5.5/gcc_64/plugins'
-        'qt_deps_qml_unpack_dir': '/tmp/Qt/5.5/gcc_64/qml'
+        'qt_deps_unpack_dir': '/home/vagrant/Qt'
+        'qt_deps_bin_unpack_dir': '/home/vagrant/Qt/5.15.2/gcc_64/bin'
+        'qt_deps_lib_unpack_dir': '/home/vagrant/Qt/5.15.2/gcc_64/lib'
+        'qt_deps_plugins_unpack_dir': '/home/vagrant/Qt/5.15.2/gcc_64/plugins'
+        'qt_deps_qml_unpack_dir': '/home/vagrant/Qt/5.15.2/gcc_64/qml'
 
         'project_root_dir': '/vagrant'
 
@@ -17,7 +17,6 @@ configs:
         'qt_deps_plugins_dir': '/vagrant/shadow-build/release/Qt/plugins'
         'qt_deps_qml_dir': '/vagrant/shadow-build/release/Qt/qml'
 
-        'spec': 'linux-g++-64'
+        'spec': 'linux-g++'
         'shadow_build_dir': '/vagrant/shadow-build'
         'pro': '/vagrant/apm_planner.pro'
-        'deps_url': 'http://firmware.ardupilot.org/Tools/APMPlanner/support_files/Qt5.5.1-linux-min.tar.bz2'
