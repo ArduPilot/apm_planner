@@ -10,7 +10,7 @@ configfile        = YAML.load_file("#{current_dir}/.vagrantconfig.yml")
 yaml_config = configfile['configs']['dev']
 
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/focal64"
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", "4096"]
     vb.customize ["modifyvm", :id, "--cpus", "1"]
@@ -24,35 +24,38 @@ Vagrant.configure(2) do |config|
      sudo apt-get dist-upgrade -y
      sudo apt-get install -y ccache wget git build-essential
 
-
      sudo apt-get install -y libglu1-mesa-dev
 
      sudo apt-get install -y aptitude
      sudo aptitude install -y flite1-dev libsdl2-dev libsdl1.2-dev libsndfile-dev libssl-dev libudev-dev
 
-     # taken from README.md
-     sudo apt-get install -y qt5-qmake qt5-default \
-        qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
-        libqt5svg5-dev qtdeclarative5-qtquick2-plugin libqt5serialport5-dev \
-        libqt5opengl5-dev
-     sudo apt-get install -y git libsdl1.2-dev  libsndfile-dev \
-        flite1-dev libssl-dev libudev-dev libsdl2-dev python-serial \
-        python-pexpect
+     sudo aptitude install -y \
+          python3-serial \
+          python3-pexpect
 
      # taken from travis.yml
      echo 'Initialising submodules'
      su - vagrant -c 'cd %{project_root_dir}; git submodule init && git submodule update'
 
-     echo 'Saving %{qt_deps_tarball} from %{deps_url} to %{project_root_dir}'
-     su - vagrant -c 'wget --continue -q %{deps_url} -P %{project_root_dir}'
-     su - vagrant -c 'rm -rf %{qt_deps_unpack_dir}'
-     su - vagrant -c 'mkdir -p %{qt_deps_unpack_parent_dir}'
-     su - vagrant -c 'cd %{project_root_dir}; tar jxf "%{qt_deps_tarball}" -C  %{qt_deps_unpack_parent_dir}'
-     su - vagrant -c 'rm -rf %{shadow_build_dir}'
-     su - vagrant -c 'mkdir -p %{shadow_build_dir}'
-     su - vagrant -c "cd %{shadow_build_dir}; LD_LIBRARY_PATH=%{qt_deps_lib_unpack_dir} PATH=%{qt_deps_bin_unpack_dir}:\$PATH qmake -r %{pro} -spec %{spec}"
-     su - vagrant -c "cd %{shadow_build_dir}; LD_LIBRARY_PATH=%{qt_deps_lib_unpack_dir} PATH=%{qt_deps_bin_unpack_dir}:\$PATH make -j4"
+     # with reference to https://github.com/jurplel/install-qt-action/blob/master/src/main.ts and .github/workflows/linux_release.yml:
+     echo 'Installing QT'
+     apt-get install -y python3-pip
+     su - vagrant -c "pip3 install --user aqtinstall"
 
+     apt-get install -y patchelf
+
+     dir="%{qt_deps_unpack_dir}"
+     version="%{qt_deps_ver}"
+     host="linux"
+     target="desktop"
+     modules="qtcharts"
+     su - vagrant -c "rm -rf ${dir}"
+     su - vagrant -c "mkdir -p ${dir}"
+     su - vagrant -c "python3 -m aqt install-qt -O ${dir} ${host} ${target} ${version} -m ${modules}"
+
+
+     # copy Qt deps into the shadow-build directory so that the
+     # compiled binary can find them in its LD_LIBRARY_PATH:
      su - vagrant -c 'mkdir -p %{qt_deps_dir}'
      su - vagrant -c 'cp -a %{qt_deps_bin_unpack_dir} %{qt_deps_bin_dir}'
      su - vagrant -c 'cp -a %{qt_deps_lib_unpack_dir} %{qt_deps_lib_dir}'
@@ -79,12 +82,10 @@ QMAKE
 set -e
 set -x
 
-JOBS=1
-
 cd %{shadow_build_dir}
 export LD_LIBRARY_PATH=%{qt_deps_lib_unpack_dir}
 export PATH=%{qt_deps_bin_unpack_dir}:\$PATH
-make -j\${JOBS}
+make -j1
 MAKE
 "
     su - vagrant -c "chmod +x do-qmake.sh do-make.sh"
@@ -97,12 +98,12 @@ MAKE
 
   config.vm.provision "dev", type: "shell", inline: $config_shell  % {
     :shadow_build_dir => yaml_config['shadow_build_dir'],
-    :qt_deps_tarball => yaml_config['qt_deps_tarball'],
     :pro => yaml_config['pro'],
     :spec => yaml_config['spec'],
-    :deps_url => yaml_config['deps_url'],
-
     :project_root_dir => yaml_config['project_root_dir'],
+
+    :qt_deps_ver => yaml_config['qt_deps_ver'],
+
     :qt_deps_unpack_parent_dir => yaml_config['qt_deps_unpack_parent_dir'],
     :qt_deps_unpack_dir => yaml_config['qt_deps_unpack_dir'],
     :qt_deps_bin_unpack_dir => yaml_config['qt_deps_bin_unpack_dir'],
