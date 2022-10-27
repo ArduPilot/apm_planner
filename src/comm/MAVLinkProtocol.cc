@@ -116,6 +116,15 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, const QByteArray &dataBy
                     // Write message into buffer, prepending start sign
                     int len = mavlink_msg_to_send_buffer(sendbuffer, &commandMessage);
                     link->writeBytes(reinterpret_cast<const char*>(sendbuffer), len);
+
+                    // also request the message using MAV_CMD_REQUEST_MESSAGE
+                    command.command = MAV_CMD_REQUEST_MESSAGE;
+                    command.param1 = MAVLINK_MSG_ID_AUTOPILOT_VERSION;
+
+                    mavlink_msg_command_long_encode(message.sysid, message.compid, &commandMessage, &command);
+                    // Write message into buffer, prepending start sign
+                    len = mavlink_msg_to_send_buffer(sendbuffer, &commandMessage);
+                    link->writeBytes(reinterpret_cast<const char*>(sendbuffer), len);
                 }
                 else
                 {
