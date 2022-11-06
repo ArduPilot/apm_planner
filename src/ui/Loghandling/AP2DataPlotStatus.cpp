@@ -114,11 +114,11 @@ QString AP2DataPlotStatus::getErrorOverview() const
         }
     }
 
-    if (fmtErrorCount     > 0) outStream << fmtErrorCount << " format corruptions" << endl;
-    if (timeErrorCount    > 0) outStream << timeErrorCount << " time corruptions" << endl;
-    if (dataErrorCount    > 0) outStream << dataErrorCount << " data corruptions" << endl;
-    if (unknownErrorCount > 0) outStream << unknownErrorCount << " unspecific corruptions" << endl;
-    if (m_noMessageBytes  > 0) outStream << m_noMessageBytes << " Bytes were dropped" << endl;
+    if (fmtErrorCount     > 0) outStream << fmtErrorCount << " format corruptions" << Qt::endl;
+    if (timeErrorCount    > 0) outStream << timeErrorCount << " time corruptions" << Qt::endl;
+    if (dataErrorCount    > 0) outStream << dataErrorCount << " data corruptions" << Qt::endl;
+    if (unknownErrorCount > 0) outStream << unknownErrorCount << " unspecific corruptions" << Qt::endl;
+    if (m_noMessageBytes  > 0) outStream << m_noMessageBytes << " Bytes were dropped" << Qt::endl;
 
     return out;
 }
@@ -133,14 +133,14 @@ QString AP2DataPlotStatus::getDetailedErrorText() const
     {
         if (entry.m_state != OK)    // Only if a error
         {
-            outStream << "Logline " << entry.m_index << ": " << entry.m_errortext << endl;
+            outStream << "Logline " << entry.m_index << ": " << entry.m_errortext << Qt::endl;
             errorCount++;
         }
     }
-    outStream << endl << " There were " << errorCount << " errors during log parsing." << endl;
+    outStream << endl << " There were " << errorCount << " errors during log parsing." << Qt::endl;
     if(m_noMessageBytes > 0)
     {
-        outStream << m_noMessageBytes << " bytes were dropped during parsing." << endl;
+        outStream << m_noMessageBytes << " bytes were dropped during parsing." << Qt::endl;
     }
     return out;
 }

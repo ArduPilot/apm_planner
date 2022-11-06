@@ -726,9 +726,9 @@ void PrimaryFlightDisplay::drawPitchScale(
             if (SHOW_ZERO_ON_SCALES || degrees) {
                 QString s_number;
                 if (this->pitch == UNKNOWN_ATTITUDE)
-                    s_number.sprintf("-");
+                    s_number.asprintf("-");
                 else
-                    s_number.sprintf("%d", displayDegrees);
+                    s_number.asprintf("%d", displayDegrees);
                 if (drawNumbersLeft)  drawTextRightCenter(painter, s_number, mediumTextSize, -PITCH_SCALE_MAJORWIDTH * w-10, 0);
                 if (drawNumbersRight) drawTextLeftCenter(painter, s_number, mediumTextSize, PITCH_SCALE_MAJORWIDTH * w+10, 0);
             }
@@ -777,7 +777,7 @@ void PrimaryFlightDisplay::drawRollScale(
 
             QString s_number; //= QString("%d").arg(degrees);
             if (SHOW_ZERO_ON_SCALES || degrees)
-                s_number.sprintf("%d", abs(degrees));
+                s_number.asprintf("%d", abs(degrees));
 
             if (drawNumbers) {
                 drawTextCenterBottom(painter, s_number, mediumTextSize, 0, -(ROLL_SCALE_RADIUS+ROLL_SCALE_TICKMARKLENGTH*1.7)*w);
@@ -851,7 +851,7 @@ void PrimaryFlightDisplay::drawAICompassDisk(QPainter& painter, QRectF area, flo
         ) {
             // draw a number
             QString s_number;
-            s_number.sprintf("%d", displayTick/10);
+            s_number.asprintf("%d", displayTick/10);
             painter.setPen(scalePen);
             drawTextCenter(painter, s_number, smallTextSize, 0, -innerRadius*0.75);
         } else {
@@ -910,11 +910,11 @@ void PrimaryFlightDisplay::drawAICompassDisk(QPainter& painter, QRectF area, flo
     QString s_digitalCompass;
 
     if (this->heading == UNKNOWN_ATTITUDE)
-        s_digitalCompass.sprintf("---");
+        s_digitalCompass.asprintf("---");
     else {
     /* final safeguard for really stupid systems */
         int digitalCompassValue = static_cast<int>(qRound((double)heading)) % 360;
-        s_digitalCompass.sprintf("%03d", digitalCompassValue);
+        s_digitalCompass.asprintf("%03d", digitalCompassValue);
     }
 
     QPen pen;
@@ -1014,7 +1014,7 @@ void PrimaryFlightDisplay::drawAltimeter(
         if (isMajor) {
             painter.drawLine(tickmarkLeft, 0, tickmarkRightMajor, 0);
             QString s_alt;
-            s_alt.sprintf("%d", abs(tickAlt));
+            s_alt.asprintf("%d", abs(tickAlt));
             drawTextLeftCenter(painter, s_alt, mediumTextSize, numbersLeft, 0);
         } else {
             painter.drawLine(tickmarkLeft, 0, tickmarkRightMinor, 0);
@@ -1044,9 +1044,9 @@ void PrimaryFlightDisplay::drawAltimeter(
 
     QString s_alt;
     if(altitudeRelative == UNKNOWN_ALTITUDE)
-        s_alt.sprintf("---");
+        s_alt.asprintf("---");
     else
-        s_alt.sprintf("%3.0f", altitudeRelative);
+        s_alt.asprintf("%3.0f", altitudeRelative);
 
     float xCenter = (markerTip+rightEdge)/2;
     drawTextCenter(painter, s_alt, mediumTextSize, xCenter, 0);
@@ -1083,7 +1083,7 @@ void PrimaryFlightDisplay::drawAltimeter(
         painter.resetTransform();
         painter.translate(saBox.center());
         QString s_salt;
-        s_salt.sprintf("%3.0f", altitudeAMSL);
+        s_salt.asprintf("%3.0f", altitudeAMSL);
         drawTextCenter(painter, s_salt, mediumTextSize, 0, 0);
     }
 
@@ -1141,7 +1141,7 @@ void PrimaryFlightDisplay::drawVelocityMeter(
         if (hasText) {
             painter.drawLine(tickmarkLeftMajor, 0, tickmarkRight, 0);
             QString s_speed;
-            s_speed.sprintf("%d", abs(tickSpeed));
+            s_speed.asprintf("%d", abs(tickSpeed));
             drawTextRightCenter(painter, s_speed, mediumTextSize, numbersRight, 0);
         } else {
             painter.drawLine(tickmarkLeftMinor, 0, tickmarkRight, 0);
@@ -1170,9 +1170,9 @@ void PrimaryFlightDisplay::drawVelocityMeter(
     painter.setPen(pen);
     QString s_alt;
     if (groundspeed == UNKNOWN_SPEED)
-        s_alt.sprintf("---");
+        s_alt.asprintf("---");
     else
-        s_alt.sprintf("%3.1f", groundspeed);
+        s_alt.asprintf("%3.1f", groundspeed);
     float xCenter = (markerTip+leftEdge)/2;
     drawTextCenter(painter, s_alt + speedType, /* TAPES_TEXT_SIZE*width()*/ mediumTextSize, xCenter, 0);
 }
@@ -1541,7 +1541,7 @@ void PrimaryFlightDisplay::doPaint() {
         p2.setFont(penfont);
         pen.setWidth(2);
         p2.setPen(pen);
-        int textwidth = p2.fontMetrics().width(preArmCheckMessage);
+        int textwidth = p2.fontMetrics().horizontalAdvance(preArmCheckMessage);
         p2.drawText((this->width()/2.0) - (textwidth/2.0),this->height()/4.0,preArmCheckMessage);
     }
     p2.end();

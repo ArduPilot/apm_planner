@@ -125,7 +125,7 @@ void AdvParameterList::tableWidgetItemChanged(QTableWidgetItem* item)
     int itemsChanged = m_modifiedParamMap.size();
 
     QString str;
-    str.sprintf("%d %s changed", itemsChanged, (itemsChanged == 1)? "param": "params");
+    str.asprintf("%d %s changed", itemsChanged, (itemsChanged == 1)? "param": "params");
     ui.progressLabel->setText(str);
     ui.paramProgressBar->setMaximum(itemsChanged);
     ui.progressLabel->show();
@@ -455,13 +455,13 @@ void AdvParameterList::parameterChanged(int /*uas*/, int /*component*/, QString 
         QString str;
 
         if(m_paramsWritten >= m_paramsToWrite) {
-            str.sprintf("%d params written", m_paramsWritten);
+            str.asprintf("%d params written", m_paramsWritten);
             m_writingParams = false;
             QTimer::singleShot(500,ui.progressLabel, SLOT(hide()));
             QTimer::singleShot(500,ui.paramProgressBar, SLOT(hide()));
         }
         else {
-            str.sprintf("%d of %d", m_paramsWritten, m_paramsToWrite);
+            str.asprintf("%d of %d", m_paramsWritten, m_paramsToWrite);
         }
 
         ui.progressLabel->setText(str);
@@ -561,7 +561,7 @@ void AdvParameterList::findStringInTable(const QString &searchString)
 
     if (m_searchItemList.count() > 0){
         foreach(QTableWidgetItem *item, m_searchItemList){
-            item->setBackgroundColor(QColor(255,255,160));
+            item->setBackground(QColor(255,255,160));
         }
         m_searchIndex = m_searchIndex < m_searchItemList.count()? m_searchIndex
                                                                 : m_searchItemList.count() - 1;

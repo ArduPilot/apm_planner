@@ -69,7 +69,7 @@ void QGCToolBar::heartbeatTimeout(bool timeout, unsigned int ms)
         }
         else
         {
-            toolBarTimeoutLabel->setStyleSheet(QString("QLabel { margin: 3px 2px; padding: 2px; padding-left: 4px; padding-right: 4px; font: 14px; color: %1; background-color: %2; border-radius: 4px;}").arg(QGC::colorDarkWhite.name()).arg(QGC::colorMagenta.dark(250).name()));
+            toolBarTimeoutLabel->setStyleSheet(QString("QLabel { margin: 3px 2px; padding: 2px; padding-left: 4px; padding-right: 4px; font: 14px; color: %1; background-color: %2; border-radius: 4px;}").arg(QGC::colorDarkWhite.name()).arg(QGC::colorMagenta.darker(250).name()));
         }
         toolBarTimeoutLabel->setText(tr("CONNECTION LOST: %1 s").arg((ms / 1000.0f), 2, 'f', 1, ' '));
     }

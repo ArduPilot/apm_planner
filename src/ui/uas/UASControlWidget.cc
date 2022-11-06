@@ -132,7 +132,7 @@ void UASControlWidget::setBackgroundColor(QColor color)
     QString borderColor = "#4A4A4F";
     borderColor = "#FA4A4F";
     uasColor = uasColor.darker(900);
-    colorstyle = colorstyle.sprintf("QLabel { border-radius: 3px; padding: 0px; margin: 0px; background-color: #%02X%02X%02X; border: 0px solid %s; }",
+    colorstyle = colorstyle.asprintf("QLabel { border-radius: 3px; padding: 0px; margin: 0px; background-color: #%02X%02X%02X; border: 0px solid %s; }",
                                     uasColor.red(), uasColor.green(), uasColor.blue(), borderColor.toStdString().c_str());
     setStyleSheet(colorstyle);
     QPalette palette = this->palette();

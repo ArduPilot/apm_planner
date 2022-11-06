@@ -30,6 +30,7 @@
 #include "opmapwidget.h"
 #include "trailitem.h"
 #include "traillineitem.h"
+
 namespace mapcontrol
 {
     GPSItem::GPSItem(MapGraphicItem* map,OPMapWidget* parent,QString uavPic) :

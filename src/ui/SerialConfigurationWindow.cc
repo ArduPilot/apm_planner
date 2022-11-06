@@ -108,7 +108,7 @@ SerialConfigurationWindow::SerialConfigurationWindow(int linkid, QWidget *parent
     //supportedBaudRates << 921600;
 
     // Now actually add all of our supported baud rates to the UI.
-    qSort(supportedBaudRates.begin(), supportedBaudRates.end());
+    std::sort(supportedBaudRates.begin(), supportedBaudRates.end());
     for (int i = 0; i < supportedBaudRates.size(); ++i) {
         ui.baudRate->addItem(QString::number(supportedBaudRates.at(i)), supportedBaudRates.at(i));
     }

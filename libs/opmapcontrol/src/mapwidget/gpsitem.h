@@ -27,10 +27,9 @@
 #ifndef GPSITEM_H
 #define GPSITEM_H
 
-#include <QTime>
+#include <QElapsedTimer>
 #include "graphicsitem.h"
 #include "graphicsusertypes.h"
-#include "uavmapfollowtype.h"
 #include "uavtrailtype.h"
 
 namespace mapcontrol
@@ -183,7 +182,7 @@ namespace mapcontrol
         QGraphicsItemGroup* trail;
         QGraphicsItemGroup * trailLine;
         internals::PointLatLng lasttrailline;
-        QTime timer;
+        QElapsedTimer timer;
         bool showtrail;
         bool showtrailline;
         int trailtime;

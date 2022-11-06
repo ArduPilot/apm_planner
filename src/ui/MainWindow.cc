@@ -74,6 +74,8 @@ This file is part of the QGROUNDCONTROL project
 #include <QDockWidget>
 #include <QNetworkInterface>
 #include <QMessageBox>
+#include <QScreen>
+
 
 #include <QTimer>
 #include <QHostInfo>
@@ -334,29 +336,15 @@ MainWindow::MainWindow(QWidget *parent):
     {
         // Restore the window geometry
         restoreGeometry(settings.value(getWindowGeometryKey()).toByteArray());
-        show();
     }
     else
     {
         // Adjust the size
-        QDesktopWidget* desktopWidget = qApp->desktop();
-        static QRect rect = desktopWidget->screenGeometry();
-        QLOG_INFO() << "Screen Size is " << rect;
-        const int screenWidth = rect.width();
-        const int screenHeight = rect.height();
-
-        if (screenWidth < 1500)
-        {
-            resize(screenWidth, screenHeight - 80);
-            show();
-        }
-        else
-        {
-            resize(screenWidth*0.67f, qMin(screenHeight, (int)(screenWidth*0.67f*0.67f)));
-            show();
-        }
-
+        QScreen *pScreen = QGuiApplication::primaryScreen();
+        QRect rect = pScreen->geometry();
+        resize(rect.width() * 0.6, rect.height() * 0.6);
     }
+    show();
 
     connect(&windowNameUpdateTimer, SIGNAL(timeout()), this, SLOT(configureWindowName()));
     windowNameUpdateTimer.start(15000);
@@ -1375,14 +1363,19 @@ void MainWindow::stopVideoCapture()
 
 void MainWindow::saveScreen()
 {
-    QPixmap window = QPixmap::grabWindow(this->winId());
-    QString format = "bmp";
-
-    if (!screenFileName.isEmpty())
+    QList<QScreen *> screens = QGuiApplication::screens();
+    if(!screens.empty())
     {
-        window.save(screenFileName, format.toLatin1());
+        QPixmap window = screens[0]->grabWindow(this->winId());
+        QString format = "bmp";
+
+        if (!screenFileName.isEmpty())
+        {
+            window.save(screenFileName, format.toLatin1());
+        }
     }
 }
+
 void MainWindow::enableDockWidgetTitleBars(bool enabled)
 {
     dockWidgetTitleBarEnabled = enabled;

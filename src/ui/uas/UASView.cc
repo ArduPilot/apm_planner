@@ -217,7 +217,7 @@ void UASView::setBackgroundColor()
     {
         uasColor = uasColor.darker(675);
     }
-    colorstyle = colorstyle.sprintf("QGroupBox { border-radius: 12px; padding: 0px; margin: 0px; background-color: #%02X%02X%02X; border: 2px solid %s; }",
+    colorstyle = colorstyle.asprintf("QGroupBox { border-radius: 12px; padding: 0px; margin: 0px; background-color: #%02X%02X%02X; border: 2px solid %s; }",
                                     uasColor.red(), uasColor.green(), uasColor.blue(), borderColor.toStdString().c_str());
     m_ui->uasViewFrame->setStyleSheet(colorstyle);
 }
@@ -348,7 +348,7 @@ void UASView::setSystemType(UASInterface* uas, unsigned int systemType)
         case MAV_TYPE_GCS: {
                 // A groundstation is a special system type, update widget
                 QString result;
-                m_ui->nameLabel->setText(tr("GCS ") + result.sprintf("%03d", uas->getUASID()));
+                m_ui->nameLabel->setText(tr("GCS ") + result.asprintf("%03d", uas->getUASID()));
                 m_ui->waypointLabel->setText("");
                 m_ui->timeRemainingLabel->setText("Online:");
                 m_ui->batteryBar->hide();
@@ -605,7 +605,7 @@ void UASView::refresh()
         if (!globalFrameKnown && localFrame)
         {
             QString position;
-            position = position.sprintf("%05.1f %05.1f %06.1f m", x, y, z);
+            position = position.asprintf("%05.1f %05.1f %06.1f m", x, y, z);
             m_ui->positionLabel->setText(position);
         }
 
@@ -631,7 +631,7 @@ void UASView::refresh()
                 lonIndicator = "W";
             }
 
-            globalPosition = globalPosition.sprintf("%05.1f%s %05.1f%s %06.1f m", lon, lonIndicator.toStdString().c_str(), lat, latIndicator.toStdString().c_str(), alt);
+            globalPosition = globalPosition.asprintf("%05.1f%s %05.1f%s %06.1f m", lon, lonIndicator.toStdString().c_str(), lat, latIndicator.toStdString().c_str(), alt);
             m_ui->positionLabel->setText(globalPosition);
         }
 
@@ -662,7 +662,7 @@ void UASView::refresh()
             int hours = static_cast<int>(filterTime - min * 60 - sec);
 
             QString timeText;
-            timeText = timeText.sprintf("%02d:%02d:%02d", hours, min, sec);
+            timeText = timeText.asprintf("%02d:%02d:%02d", hours, min, sec);
             m_ui->timeRemainingLabel->setText(timeText);
         }
         else
@@ -678,7 +678,7 @@ void UASView::refresh()
         int min = static_cast<int>(filterTime / 60);
         int hours = static_cast<int>(filterTime - min * 60 - sec);
         QString timeText;
-        timeText = timeText.sprintf("%02d:%02d:%02d", hours, min, sec);
+        timeText = timeText.asprintf("%02d:%02d:%02d", hours, min, sec);
         m_ui->timeElapsedLabel->setText(timeText);
     }
     generalUpdateCount++;

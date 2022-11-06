@@ -389,7 +389,7 @@ void HSIDisplay::renderOverlay()
         // Position
         QString str;
         float offset = (globalAvailable > 0) ? -3.0f : 0.0f;
-        str.sprintf("%05.2f %05.2f %05.2f m", x, y, z);
+        str.asprintf("%05.2f %05.2f %05.2f m", x, y, z);
         paintText(tr("POS"), QGC::colorCyan, 2.6f, 2, vheight - offset - 2.0f, &painter);
         paintText(str, Qt::white, 2.6f, 10, vheight - offset - 2.0f, &painter);
     }
@@ -398,7 +398,7 @@ void HSIDisplay::renderOverlay()
     {
         // Position
         QString str;
-        str.sprintf("lat: %05.2f lon: %06.2f alt: %06.2f", lat, lon, alt);
+        str.asprintf("lat: %05.2f lon: %06.2f alt: %06.2f", lat, lon, alt);
         paintText(tr("GPS"), QGC::colorCyan, 2.6f, 2, vheight- 2.0f, &painter);
         paintText(str, Qt::white, 2.6f, 10, vheight - 2.0f, &painter);
     }
@@ -490,7 +490,7 @@ void HSIDisplay::drawPositionLock(float x, float y, QString label, int status, b
     if (status == 3) {
         painter.setBrush(posStatusColor);
     } else if (status == 2) {
-        painter.setBrush(intermediateStatusColor.dark(150));
+        painter.setBrush(intermediateStatusColor.darker(150));
     } else {
         painter.setBrush(negStatusColor);
     }
@@ -1470,12 +1470,12 @@ void HSIDisplay::drawAltitudeSetpoint(float xRef, float yRef, float radius, cons
 void HSIDisplay::wheelEvent(QWheelEvent* event)
 {
     double zoomScale = 0.005; // Scaling of zoom value
-    if(event->delta() > 0) {
+    if(event->angleDelta().y() > 0) {
         // Reduce width -> Zoom in
-        metricWidth -= event->delta() * zoomScale;
+        metricWidth -= event->angleDelta().y() * zoomScale;
     } else {
         // Increase width -> Zoom out
-        metricWidth -= event->delta() * zoomScale;
+        metricWidth -= event->angleDelta().y() * zoomScale;
     }
     metricWidth = qBound(0.5, metricWidth, 9999.0);
     emit metricWidthChanged(metricWidth);

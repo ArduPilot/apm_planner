@@ -1,27 +1,20 @@
 #include <QList>
 
-#include "QGCMAVLink.h"
 #include "QGCMAVLinkInspector.h"
 #include "UASManager.h"
 #include "LinkManager.h"
 #include "ui_QGCMAVLinkInspector.h"
-#include "mavlink_helpers.h"
 
-const float QGCMAVLinkInspector::updateHzLowpass = 0.2f;
-const unsigned int QGCMAVLinkInspector::updateInterval = 1000U;
 
 QGCMAVLinkInspector::QGCMAVLinkInspector(QWidget *parent) :
     QWidget(parent),
-    _protocol(nullptr),
-    selectedSystemID(0),
-    selectedComponentID(0),
-    ui(new Ui::QGCMAVLinkInspector)
+    mp_Ui(new Ui::QGCMAVLinkInspector)
 {
-    ui->setupUi(this);
+    mp_Ui->setupUi(this);
 
     // Make sure "All" is an option for both the system and components
-    ui->systemComboBox->addItem(tr("All"), 0);
-    ui->componentComboBox->addItem(tr("All"), 0);
+    mp_Ui->systemComboBox->addItem(tr("All"), 0);
+    mp_Ui->componentComboBox->addItem(tr("All"), 0);
 
     // Store metadata for all MAVLink messages.
     QVector<mavlink_message_info_t> mavlinkMsg = MAVLINK_MESSAGE_INFO;
@@ -38,36 +31,39 @@ QGCMAVLinkInspector::QGCMAVLinkInspector(QWidget *parent) :
     header << tr("Name");
     header << tr("Value");
     header << tr("Type");
-    ui->treeWidget->setHeaderLabels(header);
-    ui->treeWidget->sortByColumn(0,Qt::AscendingOrder);
+    mp_Ui->treeWidget->setHeaderLabels(header);
+    mp_Ui->treeWidget->sortByColumn(0,Qt::AscendingOrder);
 
     // Set up the column headers for the rate listing
     QStringList rateHeader;
     rateHeader << tr("Name");
     rateHeader << tr("#ID");
     rateHeader << tr("Rate");
-    ui->rateTreeWidget->setHeaderLabels(rateHeader);
-    connect(ui->rateTreeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-            this, SLOT(rateTreeItemChanged(QTreeWidgetItem*,int)));
-    ui->rateTreeWidget->hide();
+    mp_Ui->rateTreeWidget->setHeaderLabels(rateHeader);
+    mp_Ui->rateTreeWidget->hide();
+
+//    connect(mp_Ui->refreshButton, &QPushButton::clicked, this, &ApmCustomFirmwareConfig::FillDeviceList);
+//    connect(mp_px4Updater.data(), QOverload<QString>::of(&PX4FirmwareUploader::statusUpdate), this, &ApmCustomFirmwareConfig::statusUpdate);
+    //connect(mp_Ui->rateTreeWidget, QOverload<QTreeWidgetItem*, int>::of(&QTreeWidgetItem::itemChanged), this, &QGCMAVLinkInspector::rateTreeItemChanged);
+    //connect(mp_Ui->rateTreeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(rateTreeItemChanged(QTreeWidgetItem*,int)));
 
     // Connect the UI
-    connect(ui->systemComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectDropDownMenuSystem(int)));
-    connect(ui->componentComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectDropDownMenuComponent(int)));
-    connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(clearView()));
+    connect(mp_Ui->systemComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &QGCMAVLinkInspector::selectDropDownMenuSystem);
+    connect(mp_Ui->componentComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this,  &QGCMAVLinkInspector::selectDropDownMenuComponent);
+    connect(mp_Ui->clearButton, &QPushButton::clicked, this, &QGCMAVLinkInspector::clearView);
 
     // Connect external connections
-    connect(UASManager::instance(), SIGNAL(UASCreated(UASInterface*)), this, SLOT(addSystem(UASInterface*)));
-    connect(LinkManager::instance(), SIGNAL(messageReceived(LinkInterface*,mavlink_message_t)), this, SLOT(receiveMessage(LinkInterface*,mavlink_message_t)));
+    connect(UASManager::instance(), QOverload<UASInterface*>::of(&UASManager::UASCreated), this, &QGCMAVLinkInspector::addSystem);
+    connect(LinkManager::instance(), QOverload<LinkInterface*, mavlink_message_t>::of(&LinkManager::messageReceived), this, &QGCMAVLinkInspector::receiveMessage);
 
     QList<UASInterface*> uasList = UASManager::instance()->getUASList();
-    for(UASInterface *uas: uasList)
+    for(UASInterface *uas: qAsConst(uasList))
     {
         addSystem(uas);
     }
 
     // Attach the UI's refresh rate to a timer.
-    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(refreshView()));
+    connect(&updateTimer, &QTimer::timeout, this, &QGCMAVLinkInspector::refreshView);
     updateTimer.start(updateInterval);
 }
 
@@ -91,58 +87,58 @@ void QGCMAVLinkInspector::addSystem(UASInterface* uas)
     }
 
     // Add UAS to UI
-    ui->systemComboBox->addItem(uas->getUASName(), uas->getUASID());
+    mp_Ui->systemComboBox->addItem(uas->getUASName(), uas->getUASID());
     // Add a tree for a new UAS
     addUAStoTree(uas->getUASID());
 }
 
 void QGCMAVLinkInspector::selectDropDownMenuSystem(int dropdownid)
 {
-    selectedSystemID = ui->systemComboBox->itemData(dropdownid).toInt();
+    selectedSystemID = mp_Ui->systemComboBox->itemData(dropdownid).toInt();
     rebuildComponentList();
 
     if (selectedSystemID != 0 && selectedComponentID != 0) {
-        ui->rateTreeWidget->show();
+        mp_Ui->rateTreeWidget->show();
     } else {
-        ui->rateTreeWidget->hide();
+        mp_Ui->rateTreeWidget->hide();
     }
 }
 
 void QGCMAVLinkInspector::selectDropDownMenuComponent(int dropdownid)
 {
-    selectedComponentID = ui->componentComboBox->itemData(dropdownid).toInt();
+    selectedComponentID = mp_Ui->componentComboBox->itemData(dropdownid).toInt();
 
     if (selectedSystemID != 0 && selectedComponentID != 0) {
-        ui->rateTreeWidget->show();
+        mp_Ui->rateTreeWidget->show();
     } else {
-        ui->rateTreeWidget->hide();
+        mp_Ui->rateTreeWidget->hide();
     }
 }
 
 void QGCMAVLinkInspector::rebuildComponentList()
 {
-    ui->componentComboBox->clear();
+    mp_Ui->componentComboBox->clear();
     components.clear();
 
-    ui->componentComboBox->addItem(tr("All"), 0);
+    mp_Ui->componentComboBox->addItem(tr("All"), 0);
 
     // Fill
     UASInterface* uas = UASManager::instance()->getUASForId(selectedSystemID);
     if (uas)
     {
         QMap<int, QString> components = uas->getComponents();
-        foreach (int id, components.keys())
+        for (QMap<int, QString>::Iterator iter = components.begin(); iter != components.end(); ++iter)
         {
-            QString name = components.value(id);
-            ui->componentComboBox->addItem(name, id);
+            QString name = iter.value();
+            mp_Ui->componentComboBox->addItem(name,iter.key());
         }
     }
 }
 
 void QGCMAVLinkInspector::addComponent(int uas, int component, const QString& name)
 {
-    Q_UNUSED(component);
-    Q_UNUSED(name);
+    Q_UNUSED(component)
+    Q_UNUSED(name)
     
     if (uas != selectedSystemID) return;
 
@@ -155,7 +151,7 @@ void QGCMAVLinkInspector::addComponent(int uas, int component, const QString& na
  */
 void QGCMAVLinkInspector::clearView()
 {
-    QMap<int, mavlink_message_t* >::iterator ite;
+    QMultiMap<int, mavlink_message_t* >::iterator ite;
     for(ite=uasMessageStorage.begin(); ite!=uasMessageStorage.end();++ite)
     {
         delete ite.value();
@@ -163,10 +159,10 @@ void QGCMAVLinkInspector::clearView()
     }
     uasMessageStorage.clear();
 
-    QMap<int, QMap<int, QTreeWidgetItem*>* >::iterator iteMsg;
-    for (iteMsg=uasMsgTreeItems.begin(); iteMsg!=uasMsgTreeItems.end();++iteMsg)
+    QMap<int, QMultiMap<int, QTreeWidgetItem*>* >::iterator iteMsg;
+    for (iteMsg = uasMsgTreeItems.begin(); iteMsg!=uasMsgTreeItems.end();++iteMsg)
     {
-        QMap<int, QTreeWidgetItem*>* msgTreeItems = iteMsg.value();
+        QMultiMap<int, QTreeWidgetItem*>* msgTreeItems = iteMsg.value();
 
         QList<int> groupKeys = msgTreeItems->uniqueKeys();
         QList<int>::iterator listKeys;
@@ -185,7 +181,7 @@ void QGCMAVLinkInspector::clearView()
     }
     uasTreeWidgetItems.clear();
     
-    QMap<int, QMap<int, float>* >::iterator iteHz;
+    QMultiMap<int, QMap<int, float>* >::iterator iteHz;
     for (iteHz=uasMessageHz.begin(); iteHz!=uasMessageHz.end();++iteHz)
     {
 
@@ -195,7 +191,7 @@ void QGCMAVLinkInspector::clearView()
     }
     uasMessageHz.clear();
 
-    QMap<int, QMap<int, unsigned int>* >::iterator iteCount;
+    QMultiMap<int, QMap<int, unsigned int>* >::iterator iteCount;
     for(iteCount=uasMessageCount.begin(); iteCount!=uasMessageCount.end();++iteCount)
     {
         iteCount.value()->clear();
@@ -204,7 +200,7 @@ void QGCMAVLinkInspector::clearView()
     }
     uasMessageCount.clear();
 
-    QMap<int, QMap<int, quint64>* >::iterator iteLast;
+    QMultiMap<int, QMap<int, quint64>* >::iterator iteLast;
     for(iteLast=uasLastMessageUpdate.begin(); iteLast!=uasLastMessageUpdate.end();++iteLast)
     {
         iteLast.value()->clear();
@@ -215,8 +211,8 @@ void QGCMAVLinkInspector::clearView()
 
     onboardMessageInterval.clear();
 
-    ui->treeWidget->clear();
-    ui->rateTreeWidget->clear();
+    mp_Ui->treeWidget->clear();
+    mp_Ui->rateTreeWidget->clear();
 
 }
 
@@ -225,13 +221,13 @@ void QGCMAVLinkInspector::refreshView()
     if (_protocol)
     {
         QString message(QString::number(_protocol->getTotalMessagesReceived(selectedSystemID)));
-        ui->msg_received->setText(message);
+        mp_Ui->msg_received->setText(message);
         message.clear();
         message.append(QString::number(_protocol->getTotalMessagesLost(selectedSystemID)));
-        ui->msg_lost->setText(message);
+        mp_Ui->msg_lost->setText(message);
     }
 
-    QMap<int, mavlink_message_t* >::const_iterator ite;
+    QMultiMap<int, mavlink_message_t* >::const_iterator ite;
 
     for(ite=uasMessageStorage.constBegin(); ite!=uasMessageStorage.constEnd();++ite)
     {
@@ -244,7 +240,7 @@ void QGCMAVLinkInspector::refreshView()
 
         // Get the previous frequency for low-pass filtering
         float msgHz = 0.0f;
-        QMap<int, QMap<int, float>* >::const_iterator iteHz = uasMessageHz.find(msg->sysid);
+        QMultiMap<int, QMap<int, float>* >::const_iterator iteHz = uasMessageHz.find(msg->sysid);
         QMap<int, float>* uasMsgHz = iteHz.value();
 
         while((iteHz != uasMessageHz.end()) && (iteHz.key() == msg->sysid))
@@ -260,7 +256,7 @@ void QGCMAVLinkInspector::refreshView()
 
         // Get the number of message received
         float msgCount = 0;
-        QMap<int, QMap<int, unsigned int> * >::const_iterator iter = uasMessageCount.find(msg->sysid);
+        QMultiMap<int, QMap<int, unsigned int> * >::const_iterator iter = uasMessageCount.find(msg->sysid);
         QMap<int, unsigned int>* uasMsgCount = iter.value();
 
         while((iter != uasMessageCount.end()) && (iter.key()==msg->sysid))
@@ -286,7 +282,7 @@ void QGCMAVLinkInspector::refreshView()
         addUAStoTree(msg->sysid);
 
         // Look for the tree for the UAS sysid
-        QMap<int, QTreeWidgetItem*>* msgTreeItems = uasMsgTreeItems.value(msg->sysid);
+        QMultiMap<int, QTreeWidgetItem*>* msgTreeItems = uasMsgTreeItems.value(msg->sysid);
         if (!msgTreeItems)
         {
             // The UAS tree has not been created yet, no update
@@ -352,7 +348,7 @@ void QGCMAVLinkInspector::refreshView()
             QTreeWidgetItem* widget = new QTreeWidgetItem(fields);
             widget->setFlags(widget->flags() | Qt::ItemIsEditable);
             rateTreeWidgetItems.insert(i, widget);
-            ui->rateTreeWidget->addTopLevelItem(widget);
+            mp_Ui->rateTreeWidget->addTopLevelItem(widget);
         }
 
         // Set Hz
@@ -382,8 +378,8 @@ void QGCMAVLinkInspector::addUAStoTree(int sysId)
             QTreeWidgetItem* uasWidget = new QTreeWidgetItem(idstring);
             uasWidget->setFirstColumnSpanned(true);
             uasTreeWidgetItems.insert(sysId,uasWidget);
-            ui->treeWidget->addTopLevelItem(uasWidget);
-            uasMsgTreeItems.insert(sysId,new QMap<int, QTreeWidgetItem*>());
+            mp_Ui->treeWidget->addTopLevelItem(uasWidget);
+            uasMsgTreeItems.insert(sysId,new QMultiMap<int, QTreeWidgetItem*>());
         }
     }
 }
@@ -402,11 +398,11 @@ void QGCMAVLinkInspector::receiveMessage(LinkInterface* link,mavlink_message_t m
     {
         mavlink_message_t* msg = new mavlink_message_t;
         *msg = message;
-        uasMessageStorage.insertMulti(message.sysid,msg);
+        uasMessageStorage.insert(message.sysid,msg);
     }
 
     bool msgFound = false;
-    QMap<int, mavlink_message_t* >::const_iterator iteMsg = uasMessageStorage.find(message.sysid);
+    QMultiMap<int, mavlink_message_t* >::const_iterator iteMsg = uasMessageStorage.find(message.sysid);
     mavlink_message_t* uasMessage = iteMsg.value();
     while((iteMsg != uasMessageStorage.end()) && (iteMsg.key() == message.sysid))
     {
@@ -422,7 +418,7 @@ void QGCMAVLinkInspector::receiveMessage(LinkInterface* link,mavlink_message_t m
     {
         mavlink_message_t* msgIdMessage = new mavlink_message_t;
         *msgIdMessage = message;
-        uasMessageStorage.insertMulti(message.sysid,msgIdMessage);
+        uasMessageStorage.insert(message.sysid,msgIdMessage);
     }
     else
     {
@@ -431,7 +427,7 @@ void QGCMAVLinkInspector::receiveMessage(LinkInterface* link,mavlink_message_t m
 
     // Looking if this message has already been received once
     msgFound = false;
-    QMap<int, QMap<int, quint64>* >::const_iterator ite = uasLastMessageUpdate.find(message.sysid);
+    QMultiMap<int, QMap<int, quint64>* >::const_iterator ite = uasLastMessageUpdate.find(message.sysid);
     QMap<int, quint64>* lastMsgUpdate = ite.value();
     while((ite != uasLastMessageUpdate.end()) && (ite.key() == message.sysid))
     {   
@@ -454,17 +450,17 @@ void QGCMAVLinkInspector::receiveMessage(LinkInterface* link,mavlink_message_t m
         // Create a map for the message frequency
         QMap<int, float>* messageHz = new QMap<int,float>;
         messageHz->insert(message.msgid,0.0f);
-        uasMessageHz.insertMulti(message.sysid,messageHz);
+        uasMessageHz.insert(message.sysid,messageHz);
 
         // Create a map for the message count
         QMap<int, unsigned int>* messagesCount = new QMap<int, unsigned int>;
         messagesCount->insert(message.msgid,0);
-        uasMessageCount.insertMulti(message.sysid,messagesCount);
+        uasMessageCount.insert(message.sysid,messagesCount);
 
         // Create a map for the time of reception of the message
         QMap<int, quint64>* lastMessage = new QMap<int, quint64>;
         lastMessage->insert(message.msgid,receiveTime);
-        uasLastMessageUpdate.insertMulti(message.sysid,lastMessage);
+        uasLastMessageUpdate.insert(message.sysid,lastMessage);
 
         // Point to the created message
         lastMsgUpdate = lastMessage;
@@ -476,7 +472,7 @@ void QGCMAVLinkInspector::receiveMessage(LinkInterface* link,mavlink_message_t m
         {
             // Looking for and updating the message count
             unsigned int count = 0;
-            QMap<int, QMap<int, unsigned int>* >::const_iterator iter = uasMessageCount.find(message.sysid);
+            QMultiMap<int, QMap<int, unsigned int>* >::const_iterator iter = uasMessageCount.find(message.sysid);
             QMap<int, unsigned int> * uasMsgCount = iter.value();
             while((iter != uasMessageCount.end()) && (iter.key() == message.sysid))
             {
@@ -550,7 +546,7 @@ void QGCMAVLinkInspector::rateTreeItemChanged(QTreeWidgetItem* paramItem, int co
 QGCMAVLinkInspector::~QGCMAVLinkInspector()
 {
     clearView();
-    delete ui;
+    delete mp_Ui;
 }
 
 void QGCMAVLinkInspector::updateField(int sysid, int msgid, int fieldid, QTreeWidgetItem* item)
@@ -566,7 +562,7 @@ void QGCMAVLinkInspector::updateField(int sysid, int msgid, int fieldid, QTreeWi
     item->setData(0, Qt::DisplayRole, QVariant(p_messageInfo->fields[fieldid].name));
     
     bool msgFound = false;
-    QMap<int, mavlink_message_t* >::const_iterator iteMsg = uasMessageStorage.find(sysid);
+    QMultiMap<int, mavlink_message_t* >::const_iterator iteMsg = uasMessageStorage.find(sysid);
     mavlink_message_t* uasMessage = iteMsg.value();
     while((iteMsg != uasMessageStorage.end()) && (iteMsg.key() == sysid))
     {

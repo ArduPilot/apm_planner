@@ -170,7 +170,7 @@ void BatteryMonitorConfig::setNewParameters(QObject *object)
 {
     BatteryPreset *preset = dynamic_cast<BatteryPreset*>(object);
     if(preset){
-        QLOG_DEBUG() << QString().sprintf("Set battMon:%d voltPin:%d voltDiv:%2.3f currPin:%d aPerV:%2.2f",
+        QLOG_DEBUG() << QString().asprintf("Set battMon:%d voltPin:%d voltDiv:%2.3f currPin:%d aPerV:%2.2f",
                                          preset->batteryMonitor(), preset->voltagePin(), preset->voltageDivider(),
                                          preset->currentPin(), preset->ampsPerVolt());
 

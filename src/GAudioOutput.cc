@@ -401,7 +401,7 @@ QStringList GAudioOutput::listVoices(void)
     for (v=flite_voice_list; v; v=val_cdr(v)) {
         voice = val_voice(val_car(v));
         QString s;
-        s.sprintf("%s",voice->name);
+        s.asprintf("%s",voice->name);
         printf("%s",voice->name);
         l.append(s);
     }

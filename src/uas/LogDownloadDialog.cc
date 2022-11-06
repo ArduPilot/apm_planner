@@ -125,7 +125,7 @@ void LogDownloadDialog::resetDownload()
 
     m_downloadID = 0;
     m_downloadFilename.clear();
-    m_downloadStart = QTime();
+    m_downloadStart = QElapsedTimer();
     m_downloadLastTimestamp = 0;
     m_downloadOffset = 0;
 }
