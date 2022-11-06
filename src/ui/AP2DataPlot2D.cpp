@@ -348,7 +348,7 @@ void AP2DataPlot2D::plotMouseMove(QMouseEvent *evt)
         }
         else if(keyIndex)
         {
-            QString str = QString().sprintf( "%.9g", graph->dataMainValue(keyIndex));
+            QString str = QString().asprintf( "%.9g", graph->dataMainValue(keyIndex));
             newresult.append(m_graphClassMap.keys()[i] + ": " + str + ((i == m_graphClassMap.keys().size()-1) ? "" : "\n"));
         }
         else

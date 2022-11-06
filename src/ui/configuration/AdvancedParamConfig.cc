@@ -128,7 +128,7 @@ void AdvancedParamConfig::onSearchFilterChanged(const QString &searchFilterText)
     }
     else
     {
-        QStringList filterList = searchFilterText.toLower().split(' ', QString::SkipEmptyParts);
+        QStringList filterList = searchFilterText.toLower().split(' ', Qt::SkipEmptyParts);
         for (int i = 0; i < ui.verticalLayout->count(); ++i)
         {
             ParamWidget *pw = qobject_cast<ParamWidget *>(ui.verticalLayout->itemAt(i)->widget());

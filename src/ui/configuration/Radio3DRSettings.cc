@@ -55,7 +55,7 @@ Radio3DREeprom::Radio3DREeprom():
 bool Radio3DREeprom::setParameter(QString &parameterString)
 {
      QLOG_DEBUG() << "Radio3DREeprom Param:" << parameterString;
-     QStringList values = parameterString.split("=", QString::SkipEmptyParts);
+     QStringList values = parameterString.split("=", Qt::SkipEmptyParts);
      bool success = false;
 
      if(values.length() == 0){
@@ -225,7 +225,7 @@ QString Radio3DREeprom::frequencyCodeString()
 {
         switch(m_radioFreqCode){
         case FREQ_915:
-            return QString("FREQ_915");;
+            return QString("FREQ_915");
 
         case FREQ_433:
             return QString("FREQ_433");
@@ -583,7 +583,7 @@ void Radio3DRSettings::readData()
     case readLocalFrequency:{
         if(currentLine.toInt() > 0){
             int freqCode = currentLine.toInt();
-            QLOG_DEBUG() << "Read Local Freq:" << QString().sprintf("0x%x",freqCode);
+            QLOG_DEBUG() << "Read Local Freq:" << QString().asprintf("0x%x",freqCode);
             emit updateLocalStatus(tr("read local radio frequency"), black);
             m_localRadio.setRadioFreqCode(freqCode);
             readLocalSettingsStrings();
@@ -600,13 +600,13 @@ void Radio3DRSettings::readData()
         while(m_serialPort->canReadLine()){
             currentLine = m_serialPort->readLine();
             m_localRadio.setParameter(currentLine);
-        };
+        }
         if (currentLine.contains(m_localRadio.endParam())) {
             // All data received
             emit updateLocalStatus(tr("SUCCESS"), green);
             emit localReadComplete(m_localRadio, true);
             readLocalRssi();
-        }; // else wait for more
+        } // else wait for more
     } break;
 
     case readRemoteVersion:{
@@ -631,7 +631,7 @@ void Radio3DRSettings::readData()
     case readRemoteFrequency:{
         if(currentLine.toInt() > 0){
             int freqCode = currentLine.toInt();
-            QLOG_DEBUG() << "Read Remote Freq:" << QString().sprintf("0x%x",freqCode);
+            QLOG_DEBUG() << "Read Remote Freq:" << QString().asprintf("0x%x",freqCode);
             emit updateRemoteStatus(tr("Read remote radio frequency"), black);
             m_remoteRadio.setRadioFreqCode(freqCode);
             readRemoteSettingsStrings();
@@ -650,14 +650,14 @@ void Radio3DRSettings::readData()
         while(m_serialPort->canReadLine()){
             currentLine = m_serialPort->readLine();
             m_remoteRadio.setParameter(currentLine);
-        };
+        }
         if (currentLine.contains(m_remoteRadio.endParam())) {
             // All data received
             emit updateRemoteStatus(tr("SUCCESS"), green);
             emit remoteReadComplete(m_remoteRadio, true);
             // Start the RSSI reading
             readRemoteRssi();
-        };
+        }
     } break;
 
     case readRssiLocal:{
@@ -906,7 +906,7 @@ void Radio3DRSettings::resetLocalRadioToDefaults()
         QLOG_DEBUG() << "Serial Port not Open";
         return;
     }
-    QLOG_INFO() <<  "Reseting local radio back to factory settings";;
+    QLOG_INFO() <<  "Reseting local radio back to factory settings";
 
     m_serialPort->write("AT&F\r\n");
     m_state = writeLocalFactorySettings;

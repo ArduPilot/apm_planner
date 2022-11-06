@@ -99,7 +99,7 @@ void AP2DataPlotAxisDialog::colorDialogAccepted()
     {
         return;
     }
-    ui->graphTableWidget->item(m_colorDialogRowId,0)->setBackgroundColor(dialog->selectedColor());
+    ui->graphTableWidget->item(m_colorDialogRowId,0)->setBackground(dialog->selectedColor());
 }
 
 void AP2DataPlotAxisDialog::cellChanged(int row,int col)
@@ -271,7 +271,7 @@ void AP2DataPlotAxisDialog::addAxis(QString name,double lower, double upper,QCol
     m_rangeMap[name] = QPair<double,double>(lower,upper);
 
 
-    ui->graphTableWidget->item(ui->graphTableWidget->rowCount()-1,0)->setBackgroundColor(color);
+    ui->graphTableWidget->item(ui->graphTableWidget->rowCount()-1,0)->setBackground(color);
     connect(ui->graphTableWidget,SIGNAL(cellChanged(int,int)),this,SLOT(cellChanged(int,int)));
 }
 

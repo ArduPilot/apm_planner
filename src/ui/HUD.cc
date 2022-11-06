@@ -659,7 +659,7 @@ void HUD::paintHUD()
             if (yawDeg > 360) yawDeg -= 360;
             /* final safeguard for really stupid systems */
             int yawCompass = static_cast<int>(yawDeg) % 360;
-            yawAngle.sprintf("%03d", yawCompass);
+            yawAngle.asprintf("%03d", yawCompass);
             paintText(yawAngle, defaultColor,8.5f, -9.8f, compassY+ 1.7f, &painter);
 
             painter.setBrush(Qt::NoBrush);
@@ -777,7 +777,7 @@ void HUD::paintPitchLines(float pitch, QPainter* painter)
     posY = -offsetAbs + posIncrement; //+ 100;// + lineDistance;
 
     while (posY < posLimit) {
-        paintPitchLinePos(label.sprintf("%3d", iPos), 0.0f, -posY, painter);
+        paintPitchLinePos(label.asprintf("%3d", iPos), 0.0f, -posY, painter);
         posY += posIncrement;
         iPos += (int)lineDistance;
     }
@@ -807,7 +807,7 @@ void HUD::paintPitchLines(float pitch, QPainter* painter)
 
 
     while (posY < posLimit) {
-        paintPitchLineNeg(label.sprintf("%3d", iNeg), 0.0f, posY, painter);
+        paintPitchLineNeg(label.asprintf("%3d", iNeg), 0.0f, posY, painter);
         posY += posIncrement;
         iNeg -= (int)lineDistance;
     }
@@ -973,7 +973,7 @@ void HUD::drawChangeRateStrip(float xRef, float yRef, float height, float minRat
 
         // Text
         QString label;
-        label.sprintf("%+06.2f >", value);
+        label.asprintf("%+06.2f >", value);
 
         QFont font("Bitstream Vera Sans");
         // Enforce minimum font size of 5 pixels
@@ -981,7 +981,7 @@ void HUD::drawChangeRateStrip(float xRef, float yRef, float height, float minRat
         font.setPixelSize(6.0f * 1.26f);
 
         QFontMetrics metrics = QFontMetrics(font);
-        paintText(label, defaultColor, 6.0f, (xRef-width) - metrics.width(label), yRef+height-((scaledValue - minRate)/(maxRate-minRate))*height - 1.6f, painter);
+        paintText(label, defaultColor, 6.0f, (xRef-width) - metrics.horizontalAdvance(label), yRef+height-((scaledValue - minRate)/(maxRate-minRate))*height - 1.6f, painter);
     }
     else
     {
@@ -995,7 +995,7 @@ void HUD::drawChangeRateStrip(float xRef, float yRef, float height, float minRat
 
         // Text
         QString label;
-        label.sprintf("< %+06.2f", value);
+        label.asprintf("< %+06.2f", value);
         paintText(label, defaultColor, 6.0f, xRef+width/2.0f, yRef+height-((scaledValue - minRate)/(maxRate-minRate))*height - 1.6f, painter);
     }
 }
@@ -1089,7 +1089,7 @@ void HUD::drawChangeIndicatorGauge(float xRef, float yRef, float radius, float e
     drawCircle(xRef, yRef, radius, 200.0f, 170.0f, 1.5f, color, painter);
 
     QString label;
-    label.sprintf("%05.1f", value);
+    label.asprintf("%05.1f", value);
 
     float textSize = radius / 2.5;
 

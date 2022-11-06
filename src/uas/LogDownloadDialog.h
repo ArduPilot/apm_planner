@@ -25,6 +25,7 @@ This file is part of the APM_PLANNER project
 
 #include "UASInterface.h"
 #include <QDialog>
+#include <QElapsedTimer>
 
 namespace Ui {
 class LogDownloadDialog;
@@ -92,7 +93,7 @@ private:
     QFile* m_downloadFile;
     uint m_downloadID;
     QString m_downloadFilename;
-    QTime m_downloadStart;
+    QElapsedTimer m_downloadStart;
     uint m_downloadLastTimestamp;
     uint m_downloadOffset;
     uint m_lastDownloadOffset;

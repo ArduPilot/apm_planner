@@ -315,7 +315,7 @@ void ApmCustomFirmwareConfig::fetchAvailableFirmware()
     mp_networkReply.reset(mp_networkManager->get(QNetworkRequest(url)));
 
     connect(mp_networkReply.data(), &QNetworkReply::finished, this, &ApmCustomFirmwareConfig::availFirmwarefetchFinished);
-    connect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &ApmCustomFirmwareConfig::firmwareFetchError);
+    connect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &ApmCustomFirmwareConfig::firmwareFetchError);
     connect(mp_networkReply.data(), QOverload<qint64, qint64>::of(&QNetworkReply::downloadProgress), this, &ApmCustomFirmwareConfig::downloadProgress);
 
 }
@@ -344,7 +344,7 @@ void ApmCustomFirmwareConfig::startDownloadFirmware()
         mp_networkReply.reset(mp_networkManager->get(QNetworkRequest(url)));
 
         connect(mp_networkReply.data(), &QNetworkReply::finished, this, &ApmCustomFirmwareConfig::downloadFirmwareFinished);
-        connect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &ApmCustomFirmwareConfig::firmwareFetchError);
+        connect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &ApmCustomFirmwareConfig::firmwareFetchError);
         connect(mp_networkReply.data(), QOverload<qint64, qint64>::of(&QNetworkReply::downloadProgress), this, &ApmCustomFirmwareConfig::downloadProgress);
     }
     else
@@ -397,7 +397,7 @@ void ApmCustomFirmwareConfig::availFirmwarefetchFinished()
     QLOG_DEBUG() << "ApmCustomFirmwareConfig: Fetching available firmwares finished";
 
     disconnect(mp_networkReply.data(), &QNetworkReply::finished, this, &ApmCustomFirmwareConfig::availFirmwarefetchFinished);
-    disconnect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &ApmCustomFirmwareConfig::firmwareFetchError);
+    disconnect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &ApmCustomFirmwareConfig::firmwareFetchError);
     disconnect(mp_networkReply.data(), QOverload<qint64, qint64>::of(&QNetworkReply::downloadProgress), this, &ApmCustomFirmwareConfig::downloadProgress);
 
     mp_Ui->statusInfoWidget->append("Fetching done.");
@@ -456,7 +456,7 @@ void ApmCustomFirmwareConfig::firmwareFetchError(QNetworkReply::NetworkError err
 {
     QLOG_DEBUG() << "ApmCustomFirmwareConfig: Firmware fetch Error: " << error;
     disconnect(mp_networkReply.data(), &QNetworkReply::finished, this, &ApmCustomFirmwareConfig::availFirmwarefetchFinished);
-    disconnect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &ApmCustomFirmwareConfig::firmwareFetchError);
+    disconnect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &ApmCustomFirmwareConfig::firmwareFetchError);
     disconnect(mp_networkReply.data(), QOverload<qint64, qint64>::of(&QNetworkReply::downloadProgress), this, &ApmCustomFirmwareConfig::downloadProgress);
 
     mp_Ui->statusInfoWidget->append("Fetching available firmwares failed due to a network error");
@@ -693,7 +693,7 @@ void ApmCustomFirmwareConfig::downloadFirmwareFinished()
     QLOG_DEBUG() << "ApmCustomFirmwareConfig: downloading firmware finished successful";
 
     disconnect(mp_networkReply.data(), &QNetworkReply::finished, this, &ApmCustomFirmwareConfig::downloadFirmwareFinished);
-    disconnect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &ApmCustomFirmwareConfig::firmwareFetchError);
+    disconnect(mp_networkReply.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &ApmCustomFirmwareConfig::firmwareFetchError);
     disconnect(mp_networkReply.data(), QOverload<qint64, qint64>::of(&QNetworkReply::downloadProgress), this, &ApmCustomFirmwareConfig::downloadProgress);
 
     if (m_operation == Operation::DownloadOnly)

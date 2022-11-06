@@ -574,7 +574,7 @@ void HDDisplay::drawChangeRateStrip(float xRef, float yRef, float height, float 
 
     // Text
     QString label;
-    label.sprintf("< %06.2f", value);
+    label.asprintf("< %06.2f", value);
     paintText(label, defaultColor, 3.0f, xRef+width/2.0f, yRef+height-((scaledValue - minRate)/(maxRate-minRate))*height - 1.6f, painter);
 }
 
@@ -626,9 +626,9 @@ void HDDisplay::drawGauge(float xRef, float yRef, float radius, float min, float
 
     // Show integer values without decimal places
     if (intValues.contains(name)) {
-        label.sprintf("% 05d", (int)value);
+        label.asprintf("% 05d", (int)value);
     } else {
-        label.sprintf("% 06.1f", value);
+        label.asprintf("% 06.1f", value);
     }
 
 
@@ -774,7 +774,7 @@ void HDDisplay::drawChangeIndicatorGauge(float xRef, float yRef, float radius, f
     //drawCircle(xRef, yRef, radius, 200.0f, 170.0f, 1.0f, color, painter);
 
     QString label;
-    label.sprintf("%05.1f", value);
+    label.asprintf("%05.1f", value);
 
     // Draw the value
     paintText(label, color, 4.5f, xRef-7.5f, yRef-2.0f, painter);

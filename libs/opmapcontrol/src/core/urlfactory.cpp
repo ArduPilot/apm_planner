@@ -27,6 +27,8 @@
 #include "urlfactory.h"
 #include <QRegExp>
 #include <qmath.h>
+#include <QRandomGenerator>
+#include <QElapsedTimer>
 
 namespace core {
 
@@ -49,13 +51,16 @@ namespace core {
         UseGeocoderCache=true;
         UsePlacemarkCache=true;
     }
+
     UrlFactory::~UrlFactory()
     {
     }
+
     int UrlFactory::Random(int low, int high)
     {
-        return low + qrand() % (high - low);
+        return low + QRandomGenerator::global()->generate() % (high - low);
     }
+
     QString UrlFactory::TileXYToQuadKey(const int &tileX,const int &tileY,const int &levelOfDetail) const
     {
         QString quadKey;
@@ -76,10 +81,12 @@ namespace core {
         }
         return quadKey;
     }
+
     int UrlFactory::GetServerNum(const Point &pos,const int &max) const
     {
         return (pos.X() + 2 * pos.Y()) % max;
     }
+
     void UrlFactory::setIsCorrectGoogleVersions(bool value)
     {
         isCorrectedGoogleVersions=value;
@@ -162,7 +169,7 @@ namespace core {
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
-                VersionGoogleTerrain = QString("t@%1,r@%2").arg(gc[1]).arg(gc[2]);
+                VersionGoogleTerrain = QString("t@%1,r@%2").arg(gc[1],gc[2]);
                 VersionGoogleTerrainChina = VersionGoogleTerrain;
 #ifdef DEBUG_URLFACTORY
                 qDebug()<<"TryCorrectGoogleVersions, VersionGoogleTerrain: "<<VersionGoogleTerrain;
@@ -179,238 +186,246 @@ namespace core {
 #ifdef DEBUG_URLFACTORY
         qDebug()<<"Entered MakeImageUrl";
 #endif //DEBUG_URLFACTORY
+
+        QString outPut;
+        QTextStream Stream(&outPut);
+
         switch(type)
         {
         case MapType::GoogleMap:
             {
-                QString server = "mt";
-                QString request = "vt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
 
-                return QString("http://%1%2.google.com/%3/lyrs=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMap).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.com/vt/lyrs=" << VersionGoogleMap << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleSatellite:
             {
-                QString server = "khm";
-                QString request = "kh";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
-                return QString("http://%1%2.google.com/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatellite).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+
+                Stream << "http://khm" << GetServerNum(pos, 4) << ".google.com/kh/v=" << VersionGoogleSatellite << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleLabels:
             {
-                QString server = "mt";
-                QString request = "vt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
 
-                return QString("http://%1%2.google.com/%3/lyrs=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabels).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.com/vt/lyrs=" << VersionGoogleLabels << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleTerrain:
             {
-                QString server = "mt";
-                QString request = "vt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
-                return QString("http://%1%2.google.com/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleTerrain).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.com/vt/v=" << VersionGoogleTerrain << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleMapChina:
             {
-                QString server = "mt";
-                QString request = "vt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
                 // http://mt0.google.cn/vt/v=w2.101&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                return QString("http://%1%2.google.cn/%3/lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMapChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleMapChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleSatelliteChina:
             {
-                QString server = "mt";
-                QString request = "vt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 //  TryCorrectGoogleVersions();
                 // http://khm0.google.cn/kh/v=46&x=12&y=6&z=4&s=Ga
 
-                return QString("http://%1%2.google.cn/%3/lyrs=%4&gl=cn&x=%5%6&y=%7&z=%8&s=%9").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatelliteChina).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleSatelliteChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleLabelsChina:
             {
-                QString server = "mt";
-                QString request = "vt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
                 // http://mt0.google.cn/vt/v=w2t.110&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                return QString("http://%1%2.google.cn/%3/imgtp=png32&lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabelsChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.cn/vt/imgtp=png32&lyrs=" << VersionGoogleLabelsChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleTerrainChina:
             {
-                QString server = "mt";
-                QString request = "vt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
                 // http://mt0.google.cn/vt/v=w2p.110&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                return QString("http://%1%2.google.com/%3/lyrs=%4&hl=%5&gl=cn&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleTerrainChina).arg("zh-CN").arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleTerrainChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleMapKorea:
             {
-                QString server = "mt";
-                QString request = "mt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
 
                 //http://mt3.gmaptiles.co.kr/mt/v=kr1.11&hl=lt&x=109&y=49&z=7&s=
 
-                QString ret = QString("http://%1%2.gmaptiles.co.kr/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleMapKorea).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
-                return ret;
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".gmaptiles.co.kr/mt/v=" << VersionGoogleMapKorea << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleSatelliteKorea:
             {
-                QString server = "khm";
-                QString request = "kh";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
 
                 //   http://khm1.google.co.kr/kh/v=54&x=109&y=49&z=7&s=
 
-                return QString("http://%1%2.google.co.kr/%3/v=%4&x=%5%6&y=%7&z=%8&s=%9").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleSatelliteKorea).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                Stream << "http://khm" << GetServerNum(pos, 4) << ".google.co.kr/kh/v=" << VersionGoogleSatelliteKorea << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::GoogleLabelsKorea:
             {
-                QString server = "mt";
-                QString request = "mt";
-                QString sec1 = ""; // after &x=...
-                QString sec2 = ""; // after &zoom=...
+                QString sec1; // after &x=...
+                QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
 
                 //  http://mt1.gmaptiles.co.kr/mt/v=kr1t.11&hl=lt&x=109&y=50&z=7&s=G
 
-                return QString("http://%1%2.gmaptiles.co.kr/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10").arg(server).arg(GetServerNum(pos, 4)).arg(request).arg(VersionGoogleLabelsKorea).arg(language).arg(pos.X()).arg(sec1).arg(pos.Y()).arg(zoom).arg(sec2);
+                Stream << "http://mt" << GetServerNum(pos, 4) << ".gmaptiles.co.kr/mt/v=" << VersionGoogleLabelsKorea << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                return outPut;
             }
             break;
         case MapType::YahooMap:
             {
-                return QString("http://maps%1.yimg.com/hx/tl?v=%2&.intl=%3&x=%4&y=%5&z=%6&r=1").arg(((GetServerNum(pos, 2)) + 1)).arg(VersionYahooMap).arg(language).arg(pos.X()).arg((((1 << zoom) >> 1) - 1 - pos.Y())).arg((zoom + 1));
+                Stream << "http://maps" << (GetServerNum(pos, 2)) + 1 << ".yimg.com/hx/tl?v=" << VersionYahooMap << "&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
+                return outPut;
             }
 
         case MapType::YahooSatellite:
             {
-                return QString("http://maps%1.yimg.com/ae/ximg?v=%2&t=a&s=256&.intl=%3&x=%4&y=%5&z=%6&r=1").arg("3").arg(VersionYahooSatellite).arg(language).arg(pos.X()).arg(((1 << zoom) >> 1) - 1 - pos.Y()).arg(zoom + 1);
+                Stream << "http://maps" << 3 << ".yimg.com/ae/ximg?v=" << VersionYahooSatellite << "&t=a&s=256&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
+                return outPut;
             }
             break;
         case MapType::YahooLabels:
             {
-                return QString("http://maps%1.yimg.com/hx/tl?v=%2&t=h&.intl=%3&x=%4&y=%5&z=%6&r=1").arg("1").arg(VersionYahooLabels).arg(language).arg(pos.X()).arg(((1 << zoom) >> 1) - 1 - pos.Y()).arg(zoom + 1);
+                Stream << "http://maps" << 1 << ".yimg.com/hx/tl?v=" << VersionYahooLabels << "&t=h&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
+                return outPut;
             }
             break;
         case MapType::OpenStreetMap:
             {
                 char letter= "abc"[GetServerNum(pos, 3)];
-                return QString("http://%1.tile.openstreetmap.org/%2/%3/%4.png").arg(letter).arg(zoom).arg(pos.X()).arg(pos.Y());
+                Stream << "http://" << letter << ".tile.openstreetmap.org/" << zoom << "/" << pos.X() << "/" << pos.Y() << ".png";
+                return outPut;
             }
             break;
         case MapType::OpenStreetOsm:
             {
                 char letter = "abc"[GetServerNum(pos, 3)];
-                return QString("http://%1.tah.openstreetmap.org/Tiles/tile/%2/%3/%4.png").arg(letter).arg(zoom).arg(pos.X()).arg(pos.Y());
+                Stream << "http://" << letter << ".tah.openstreetmap.org/Tiles/tile/" << zoom << "/" << pos.X() << "/" << pos.Y() << ".png";
+                return outPut;
             }
             break;
         case MapType::OpenStreetMapSurfer:
             {
                 // http://tiles1.mapsurfer.net/tms_r.ashx?x=37378&y=20826&z=16
-
-                return QString("http://tiles1.mapsurfer.net/tms_r.ashx?x=%1&y=%2&z=%3").arg(pos.X()).arg(pos.Y()).arg(zoom);
+                Stream << "http://tiles1.mapsurfer.net/tms_r.ashx?x=" << pos.X() << "&y=" << pos.Y() << "&z=" << zoom;
+                return outPut;
             }
             break;
         case MapType::OpenStreetMapSurferTerrain:
             {
                 // http://tiles2.mapsurfer.net/tms_t.ashx?x=9346&y=5209&z=14
-
-                return QString("http://tiles2.mapsurfer.net/tms_t.ashx?x=%1&y=%2&z=%3").arg(pos.X()).arg(pos.Y()).arg(zoom);
+                Stream << "http://tiles2.mapsurfer.net/tms_t.ashx?x=" << pos.X() << "&y=" << pos.Y() << "&z=" << zoom;
+                return outPut;
             }
             break;
         case MapType::BingMap:
             {
                 QString key = TileXYToQuadKey(pos.X(), pos.Y(), zoom);
-                return QString("http://ecn.t%1.tiles.virtualearth.net/tiles/r%2.png?g=%3&mkt=%4%5").arg(GetServerNum(pos, 4)).arg(key).arg(VersionBingMaps).arg(language).arg(!(BingMapsClientToken.isNull()|BingMapsClientToken.isEmpty()) ? "&token=" + BingMapsClientToken : QString(""));
+                QString token = !BingMapsClientToken.isEmpty() ? "&token=" + BingMapsClientToken : QString("");
+
+                Stream << "http://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/r" << key << ".png?g=" << VersionBingMaps << "&mkt=" << language << token;
+                return outPut;
             }
             break;
         case MapType::BingSatellite:
             {
                 QString key = TileXYToQuadKey(pos.X(), pos.Y(), zoom);
-                return QString("http://ecn.t%1.tiles.virtualearth.net/tiles/a%2.jpeg?g=%3&mkt=%4%5").arg(GetServerNum(pos, 4)).arg(key).arg(VersionBingMaps).arg(language).arg(!(BingMapsClientToken.isNull()|BingMapsClientToken.isEmpty()) ? "&token=" + BingMapsClientToken : QString(""));
+                QString token = !BingMapsClientToken.isEmpty() ? "&token=" + BingMapsClientToken : QString("");
+
+                Stream << "http://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/a" << key << ".jpeg?g=" << VersionBingMaps << "&mkt=" << language << token;
+                return outPut;
             }
             break;
         case MapType::BingHybrid:
             {
                 QString key = TileXYToQuadKey(pos.X(), pos.Y(), zoom);
-                return QString("http://ecn.t%1.tiles.virtualearth.net/tiles/h%2.jpeg?g=%3&mkt=%4%5").arg(GetServerNum(pos, 4)).arg(key).arg(VersionBingMaps).arg(language).arg(!(BingMapsClientToken.isNull()|BingMapsClientToken.isEmpty()) ? "&token=" + BingMapsClientToken : QString(""));
+                QString token = !BingMapsClientToken.isEmpty() ? "&token=" + BingMapsClientToken : QString("");
+
+                Stream << "http://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/h" << key << ".jpeg?g=" << VersionBingMaps << "&mkt=" << language << token;
+                return outPut;
             }
 
         case MapType::ArcGIS_Map:
             {
                 // http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/0/0/0.jpg
 
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
+                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
             }
             break;
         case MapType::ArcGIS_Satellite:
             {
                 // http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/1/0/1.jpg
 
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
+                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
             }
             break;
         case MapType::ArcGIS_ShadedRelief:
             {
                 // http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/1/0/1.jpg
 
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
+                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
             }
             break;
         case MapType::ArcGIS_Terrain:
             {
                 // http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/4/3/15
 
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
+                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
             }
             break;
         case MapType::ArcGIS_WorldTopo:
             {
                 // http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/4/3/15
-
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/%1/%2/%3").arg(zoom).arg(pos.Y()).arg(pos.X());
+                Stream << "http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/" << zoom << "/" << pos.Y() << "/" << pos.X();
+                return outPut;
             }
             break;
         case MapType::ArcGIS_MapsLT_OrtoFoto:
@@ -495,15 +510,17 @@ namespace core {
         case MapType::JapanMap:
             {
                 //char letter = "abc"[GetServerNum(pos, 3)];
-                return QString("https://cyberjapandata.gsi.go.jp/xyz/std/%1/%2/%3.png").arg(zoom).arg(pos.X()).arg(pos.Y());
+                Stream << "https://cyberjapandata.gsi.go.jp/xyz/std/" << zoom << "/" << pos.X() << "/" << pos.Y();
+                return outPut;
             }
             break;
         default:
             break;
         }
 
-        return QString::null;
+        return QString();                ;
     }
+
     void UrlFactory::GetSecGoogleWords(const Point &pos,  QString &sec1, QString &sec2)
     {
         sec1 = ""; // after &x=...
@@ -515,21 +532,27 @@ namespace core {
             sec1 = "&s=";
         }
     }
+
     QString UrlFactory::MakeGeocoderUrl(QString keywords)
     {
         QString key = keywords.replace(' ', '+');
-        return QString("http://maps.google.com/maps/geo?q=%1&output=csv&key=%2").arg(key).arg(GoogleMapsAPIKey);
+        return QString("http://maps.google.com/maps/geo?q=%1&output=csv&key=%2").arg(key, GoogleMapsAPIKey);
     }
+
     QString UrlFactory::MakeReverseGeocoderUrl(internals::PointLatLng &pt,const QString &language)
     {
+        QString output;
+        QTextStream Stream(&output);
 
-        return QString("http://maps.google.com/maps/geo?hl=%1&ll=%2,%3&output=csv&key=%4").arg(language).arg(QString::number(pt.Lat())).arg(QString::number(pt.Lng())).arg(GoogleMapsAPIKey);
-
+        Stream << "http://maps.google.com/maps/geo?hl=" << language << "&ll=" << pt.Lat() << "," << pt.Lng() << "&output=csv&key=" << GoogleMapsAPIKey;
+        return output;
     }
+
     internals::PointLatLng UrlFactory::GetLatLngFromGeodecoder(const QString &keywords, GeoCoderStatusCode::Types &status)
     {
         return GetLatLngFromGeocoderUrl(MakeGeocoderUrl(keywords),UseGeocoderCache,status);
     }
+
     internals::PointLatLng UrlFactory::GetLatLngFromGeocoderUrl(const QString &url, const bool &useCache, GeoCoderStatusCode::Types &status)
     {
 #ifdef DEBUG_URLFACTORY
@@ -550,7 +573,7 @@ namespace core {
 
         QString geo = useCache ? Cache::Instance()->GetGeocoderFromCache(urlEnd) : "";
 
-        if(geo.isNull()|geo.isEmpty())
+        if(geo.isEmpty())
         {
 #ifdef DEBUG_URLFACTORY
             qDebug()<<"GetLatLngFromGeocoderUrl:Not in cache going internet";
@@ -564,13 +587,13 @@ namespace core {
 #ifdef DEBUG_URLFACTORY
             qDebug()<<"GetLatLngFromGeocoderUrl:URL="<<url;
 #endif //DEBUG_URLFACTORY
-            QTime time;
+            QElapsedTimer time;
             time.start();
             while( (!(reply->isFinished()) || (time.elapsed()>(6*Timeout))) ){QCoreApplication::processEvents(QEventLoop::AllEvents);}
 #ifdef DEBUG_URLFACTORY
             qDebug()<<"Finished?"<<reply->error()<<" abort?"<<(time.elapsed()>Timeout*6);
 #endif //DEBUG_URLFACTORY
-            if( (reply->error()!=QNetworkReply::NoError) | (time.elapsed()>Timeout*6))
+            if( (reply->error()!=QNetworkReply::NoError) || (time.elapsed()>Timeout*6))
             {
 #ifdef DEBUG_URLFACTORY
                 qDebug()<<"GetLatLngFromGeocoderUrl::Network error";
@@ -643,7 +666,7 @@ namespace core {
 
         QString reverse = useCache ? Cache::Instance()->GetPlacemarkFromCache(urlEnd) : "";
 
-        if(reverse.isNull()|reverse.isEmpty())
+        if(reverse.isEmpty())
         {
 #ifdef DEBUG_URLFACTORY
             qDebug()<<"GetLatLngFromGeocoderUrl:Not in cache going internet";
@@ -657,13 +680,13 @@ namespace core {
 #ifdef DEBUG_URLFACTORY
             qDebug()<<"GetLatLngFromGeocoderUrl:URL="<<url;
 #endif //DEBUG_URLFACTORY
-            QTime time;
+            QElapsedTimer time;
             time.start();
             while( (!(reply->isFinished()) || (time.elapsed()>(6*Timeout))) ){QCoreApplication::processEvents(QEventLoop::AllEvents);}
 #ifdef DEBUG_URLFACTORY
             qDebug()<<"Finished?"<<reply->error()<<" abort?"<<(time.elapsed()>Timeout*6);
 #endif //DEBUG_URLFACTORY
-            if( (reply->error()!=QNetworkReply::NoError) | (time.elapsed()>Timeout*6))
+            if( (reply->error()!=QNetworkReply::NoError) || (time.elapsed()>Timeout*6))
             {
 #ifdef DEBUG_URLFACTORY
                 qDebug()<<"GetLatLngFromGeocoderUrl::Network error";
@@ -702,6 +725,7 @@ namespace core {
         }
         return ret;
     }
+
     double UrlFactory::GetDistance(internals::PointLatLng p1, internals::PointLatLng p2)
     {
         double dLat1InRad = p1.Lat() * (M_PI / 180);

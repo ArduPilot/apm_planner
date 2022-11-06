@@ -2,6 +2,7 @@
 #define QGCMAVLINKINSPECTOR_H
 
 #include <QWidget>
+#include <QTreeWidget>
 #include <QMap>
 #include <QTimer>
 
@@ -19,8 +20,8 @@ class QGCMAVLinkInspector : public QWidget
     Q_OBJECT
 
 public:
-    explicit QGCMAVLinkInspector(QWidget *parent = 0);
-    ~QGCMAVLinkInspector();
+    explicit QGCMAVLinkInspector(QWidget *parent = nullptr);
+    ~QGCMAVLinkInspector() override;
 
 public slots:
     void receiveMessage(LinkInterface* link,mavlink_message_t message);
@@ -39,26 +40,45 @@ public slots:
 
     void rateTreeItemChanged(QTreeWidgetItem* paramItem, int column);
 
-protected:
-    MAVLinkProtocol *_protocol;     ///< MAVLink instance
-    int selectedSystemID;          ///< Currently selected system
-    int selectedComponentID;       ///< Currently selected component
-    QMap<int, int> systems;     ///< Already observed systems
-    QMap<int, int> components; ///< Already observed components
+private:
+    MAVLinkProtocol *_protocol {nullptr};     ///< MAVLink instance
+    int selectedSystemID {0};           ///< Currently selected system
+    int selectedComponentID {0};        ///< Currently selected component
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    QMap<int, int> systems;         ///< Already observed systems
+    QMap<int, int> components;      ///< Already observed components
     QMap<int, float> onboardMessageInterval; ///< Stores the onboard selected data rate
     QMap<int, QTreeWidgetItem*> rateTreeWidgetItems; ///< Available rate tree widget items
     QTimer updateTimer; ///< Only update at 1 Hz to not overload the GUI
     QHash<quint32, mavlink_message_info_t> messageInfo; ///< Meta information about all messages
 
+
     QMap<int, QTreeWidgetItem* > uasTreeWidgetItems; ///< Tree of available uas with their widget
-    QMap<int, QMap<int, QTreeWidgetItem*>* > uasMsgTreeItems; ///< Stores the widget of the received message for each UAS
 
-    QMap<int, mavlink_message_t* > uasMessageStorage; ///< Stores the messages for every UAS
 
-    QMap<int, QMap<int, float>* > uasMessageHz; ///< Stores the frequency of each message of each UAS
-    QMap<int, QMap<int, unsigned int>* > uasMessageCount; ///< Stores the message count of each message of each UAS
+    QMap<int, QMultiMap<int, QTreeWidgetItem*>* > uasMsgTreeItems; ///< Stores the widget of the received message for each UAS
 
-    QMap<int, QMap<int, quint64>* > uasLastMessageUpdate; ///< Stores the time of the last message for each message of each UAS
+    QMultiMap<int, mavlink_message_t* > uasMessageStorage; ///< Stores the messages for every UAS
+
+    QMultiMap<int, QMap<int, float>* > uasMessageHz; ///< Stores the frequency of each message of each UAS
+    QMultiMap<int, QMap<int, unsigned int>* > uasMessageCount; ///< Stores the message count of each message of each UAS
+
+    QMultiMap<int, QMap<int, quint64>* > uasLastMessageUpdate; ///< Stores the time of the last message for each message of each UAS
 
     /* @brief Update one message field */
     void updateField(int sysid, int msgid, int fieldid, QTreeWidgetItem* item);
@@ -69,11 +89,11 @@ protected:
     /* @brief Create a new tree for a new UAS */
     void addUAStoTree(int sysId);
 
-    static const unsigned int updateInterval; ///< The update interval of the refresh function
-    static const float updateHzLowpass; ///< The low-pass filter value for the frequency of each message
+    static constexpr unsigned int updateInterval {1000}; ///< The update interval of the refresh function
+    static constexpr float updateHzLowpass {0.2f}; ///< The low-pass filter value for the frequency of each message
 
-private:
-    Ui::QGCMAVLinkInspector *ui;
+
+    Ui::QGCMAVLinkInspector *mp_Ui;
 };
 
 #endif // QGCMAVLINKINSPECTOR_H

@@ -69,14 +69,10 @@ MapRipper::MapRipper(internals::Core * core, const internals::RectLatLng & rect)
 
 void MapRipper::moveFormToCenter()
 {
-    qDebug() << QApplication::desktop()->screenCount();
-    qDebug() << QApplication::desktop()->screenNumber();
-
-    qDebug() << QGuiApplication::primaryScreen()->name();
+    QScreen *pScreen = QGuiApplication::primaryScreen();
 
     //Grab the current screen size
-    QDesktopWidget* window = QApplication::desktop();
-    QRect screenRec = window->screenGeometry(window->screenNumber(QCursor::pos()));
+    QRect screenRec = pScreen->geometry();
     int screenWidth = screenRec.width();
     int screenHeight = screenRec.height();
 

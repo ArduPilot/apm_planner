@@ -27,7 +27,7 @@
 #ifndef UAVITEM_H
 #define UAVITEM_H
 
-#include <QTime>
+#include <QElapsedTimer>
 #include "graphicsitem.h"
 #include "graphicsusertypes.h"
 #include "uavmapfollowtype.h"
@@ -194,7 +194,7 @@ namespace mapcontrol
         QGraphicsItemGroup* trail;
         QGraphicsItemGroup * trailLine;
         internals::PointLatLng lasttrailline;
-        QTime timer;
+        QElapsedTimer timer;
         bool showtrail;
         bool showtrailline;
         int trailtime;

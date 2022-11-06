@@ -3586,16 +3586,13 @@ void UAS::setTargetPosition(float x, float y, float z, float yaw)
  */
 QString UAS::getUASName(void) const
 {
-    QString result;
-    if (name == "")
+    if (name.isEmpty())
     {
-        result = tr("MAV ") + result.sprintf("%03d", getUASID());
+       QString result;
+       result = tr("MAV ") + result.asprintf("%03d", getUASID());
+       return result;
     }
-    else
-    {
-        result = name;
-    }
-    return result;
+    return name;
 }
 
 /**

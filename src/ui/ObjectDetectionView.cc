@@ -92,7 +92,7 @@ void ObjectDetectionView::newPattern(int uasId, QString patternPath, float confi
     if (detected) {
         if (!patternList.contains(patternPath)) {
             // Emit audio message on detection
-            if (detected) GAudioOutput::instance()->say("System " + QString::number(uasId) + " detected pattern " + QString(patternPath.split("/", QString::SkipEmptyParts).last()).split(".", QString::SkipEmptyParts).first());
+            if (detected) GAudioOutput::instance()->say("System " + QString::number(uasId) + " detected pattern " + QString(patternPath.split(QLatin1Char('/'), Qt::SkipEmptyParts).last()).split(QLatin1Char('.'), Qt::SkipEmptyParts).first());
 
             patternList.insert(patternPath, Pattern(patternPath, confidence));
         } else {
@@ -107,13 +107,13 @@ void ObjectDetectionView::newPattern(int uasId, QString patternPath, float confi
         QList<Pattern> templist;
         foreach (Pattern pattern, patternList)
         templist.push_back(pattern);
-        qSort(templist);
+        std::sort(templist.begin(), templist.end());
         m_ui->listWidget->clear();
         foreach (Pattern pattern, templist)
         m_ui->listWidget->addItem(pattern.name + separator + "(" + QString::number(pattern.count) + ")" + separator + QString::number(pattern.confidence));
 
         // load image
-        QString filePath = patternFolder + "/" + patternPath.split("/", QString::SkipEmptyParts).last();
+        QString filePath = patternFolder + "/" + patternPath.split(QLatin1Char('/'), Qt::SkipEmptyParts).last();
         QPixmap image = QPixmap(filePath);
         if (image.width() > image.height())
             image = image.scaledToWidth(m_ui->imageLabel->width());
@@ -122,8 +122,8 @@ void ObjectDetectionView::newPattern(int uasId, QString patternPath, float confi
         m_ui->imageLabel->setPixmap(image);
 
         // set textlabel
-        QString patternName = patternPath.split("/", QString::SkipEmptyParts).last(); // Remove preceding folder names
-        patternName = patternName.split(".", QString::SkipEmptyParts).first(); // Remove file ending
+        QString patternName = patternPath.split(QLatin1Char('/'), Qt::SkipEmptyParts).last(); // Remove preceding folder names
+        patternName = patternName.split(QLatin1Char('.'), Qt::SkipEmptyParts).first(); // Remove file ending
         m_ui->nameLabel->setText("Pattern: " + patternName);
     }
 }
@@ -171,7 +171,7 @@ void ObjectDetectionView::updateLetterList()
     QList<Pattern> templist;
     foreach (Pattern pattern, letterList)
     templist.push_back(pattern);
-    qSort(templist);
+    std::sort(templist.begin(), templist.end());
     m_ui->letterListWidget->clear();
     foreach (Pattern pattern, templist)
     m_ui->letterListWidget->addItem(pattern.name + separator + "(" + QString::number(pattern.count) + ")" + separator + QString::number(pattern.confidence));
@@ -194,9 +194,9 @@ void ObjectDetectionView::takeAction()
 {
     QAction* act = dynamic_cast<QAction*>(sender());
     if (act) {
-        QString patternPath = act->text().trimmed().split(separator, QString::SkipEmptyParts).first(); // Remove additional information
-        QString patternName = patternPath.split("//", QString::SkipEmptyParts).last(); // Remove preceding folder names
-        patternName = patternName.split(".", QString::SkipEmptyParts).first(); // Remove file ending
+        QString patternPath = act->text().trimmed().split(separator, Qt::SkipEmptyParts).first(); // Remove additional information
+        QString patternName = patternPath.split("//", Qt::SkipEmptyParts).last(); // Remove preceding folder names
+        patternName = patternName.split(QLatin1Char('.'), Qt::SkipEmptyParts).first(); // Remove file ending
 
         // Set name and label
         m_ui->nameLabel->setText(patternName);

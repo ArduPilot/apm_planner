@@ -1169,7 +1169,7 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
     // only if we have a valid reason
     if (message.getReason() != 0)
     {
-        outputStream << endl << "by " ;
+        outputStream << Qt::endl << "by " ;
 
         switch (message.getReason())
         {

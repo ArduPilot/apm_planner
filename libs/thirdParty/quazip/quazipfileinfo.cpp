@@ -3,7 +3,7 @@
 QFile::Permissions QuaZipFileInfo::getPermissions() const
 {
     quint32 uPerm = (externalAttr & 0xFFFF0000u) >> 16;
-    QFile::Permissions perm = 0;
+    QFile::Permissions perm;
     if ((uPerm & 0400) != 0)
         perm |= QFile::ReadOwner;
     if ((uPerm & 0200) != 0)

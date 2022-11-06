@@ -71,8 +71,8 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
         //draw the text value of the widget, and its label
         QString valStr = QString::number(m_value);
         painter.setPen(pwmColor);
-        painter.drawText((width()/2.0) - (painter.fontMetrics().width(m_name)/2.0),((height()-3) - (fontHeight*1)),m_name);
-        painter.drawText((width()/2.0) - (painter.fontMetrics().width(valStr)/2.0),((height()-3) - (fontHeight * 0)),valStr);
+        painter.drawText((width()/2.0) - (painter.fontMetrics().horizontalAdvance(m_name)/2.0),((height()-3) - (fontHeight*1)),m_name);
+        painter.drawText((width()/2.0) - (painter.fontMetrics().horizontalAdvance(valStr)/2.0),((height()-3) - (fontHeight * 0)),valStr);
 
         painter.setPen(QColor::fromRgb(128,128,64));
         painter.setBrush(gradientBrush);
@@ -99,12 +99,12 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
 
             //draw min and max labels
             QString minstr = QString::number(m_min);
-            painter.drawText((width() / 2.0) - (painter.fontMetrics().width("min")/2.0),yMin,"min");
-            painter.drawText((width() / 2.0) - (painter.fontMetrics().width(minstr)/2.0),yMin + fontHeight,minstr);
+            painter.drawText((width() / 2.0) - (painter.fontMetrics().horizontalAdvance("min")/2.0),yMin,"min");
+            painter.drawText((width() / 2.0) - (painter.fontMetrics().horizontalAdvance(minstr)/2.0),yMin + fontHeight,minstr);
 
             QString maxstr = QString::number(m_max);
-            painter.drawText((width() / 2.0) - (painter.fontMetrics().width("max")/2.0),yMax,"max");
-            painter.drawText((width() / 2.0) - (painter.fontMetrics().width(maxstr)/2.0),yMax + fontHeight,maxstr);
+            painter.drawText((width() / 2.0) - (painter.fontMetrics().horizontalAdvance("max")/2.0),yMax,"max");
+            painter.drawText((width() / 2.0) - (painter.fontMetrics().horizontalAdvance(maxstr)/2.0),yMax + fontHeight,maxstr);
 
         }
     }
@@ -123,8 +123,8 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
         //draw the value string
         painter.setPen(pwmColor);
         QString valstr = QString::number(m_value);
-        painter.drawText((width()/2.0) - (painter.fontMetrics().width(m_name)/2.0),((height()-3) - (fontHeight*1)),m_name);
-        painter.drawText((width()/2.0) - (painter.fontMetrics().width(valstr)/2.0),((height()-3) - (fontHeight * 0)),valstr);
+        painter.drawText((width()/2.0) - (painter.fontMetrics().horizontalAdvance(m_name)/2.0),((height()-3) - (fontHeight*1)),m_name);
+        painter.drawText((width()/2.0) - (painter.fontMetrics().horizontalAdvance(valstr)/2.0),((height()-3) - (fontHeight * 0)),valstr);
 
 
         painter.setPen(QColor::fromRgb(0,128,0));
@@ -145,12 +145,12 @@ void QGCRadioChannelDisplay::paintEvent(QPaintEvent *event)
 
             //draw the min and max strings
             QString minstr = QString::number(m_min);
-            painter.drawText((width() * ((float)m_min / 3000.0)) - (painter.fontMetrics().width("min")/2.0),((height()-3) - (painter.fontMetrics().height()*1)),"min");
-            painter.drawText((width() * ((float)m_min / 3000.0)) - (painter.fontMetrics().width(minstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),minstr);
+            painter.drawText((width() * ((float)m_min / 3000.0)) - (painter.fontMetrics().horizontalAdvance("min")/2.0),((height()-3) - (painter.fontMetrics().height()*1)),"min");
+            painter.drawText((width() * ((float)m_min / 3000.0)) - (painter.fontMetrics().horizontalAdvance(minstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),minstr);
 
             QString maxstr = QString::number(m_max);
-            painter.drawText((width() * ((float)m_max / 3000.0)) - (painter.fontMetrics().width("max")/2.0),((height()-3) - (painter.fontMetrics().height()*1)),"max");
-            painter.drawText((width() * ((float)m_max / 3000.0)) - (painter.fontMetrics().width(maxstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),maxstr);
+            painter.drawText((width() * ((float)m_max / 3000.0)) - (painter.fontMetrics().horizontalAdvance("max")/2.0),((height()-3) - (painter.fontMetrics().height()*1)),"max");
+            painter.drawText((width() * ((float)m_max / 3000.0)) - (painter.fontMetrics().horizontalAdvance(maxstr)/2.0),((height()-3) - (painter.fontMetrics().height() * 0)),maxstr);
         }
     }
 }

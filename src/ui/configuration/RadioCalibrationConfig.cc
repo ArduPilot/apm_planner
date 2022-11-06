@@ -693,7 +693,7 @@ bool RadioCalibrationConfig::isRadioControlActive()
         // Any invalid range and we abort.
         if (!isInRange(rcValue[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX))
         {
-            QLOG_ERROR() << QString().sprintf("isRadioControlActive: Error Channel %d out of range: rcValue=%d", count+1, rcValue[count]);
+            QLOG_ERROR() << QString().asprintf("isRadioControlActive: Error Channel %d out of range: rcValue=%d", count+1, rcValue[count]);
             return false;
         }
     }
@@ -705,7 +705,7 @@ bool RadioCalibrationConfig::isRadioControlActive()
         {
             if (!isInRange(rcValue[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX))
             {
-                QLOG_ERROR() << QString().sprintf("isRadioControlActive: Error Channel %d out of range: rcValue=%d", count+1, rcValue[count]);
+                QLOG_ERROR() << QString().asprintf("isRadioControlActive: Error Channel %d out of range: rcValue=%d", count+1, rcValue[count]);
                 return false;
             }
         }
@@ -723,7 +723,7 @@ bool RadioCalibrationConfig::validRadioSettings()
         if (!isInRange(rcMin[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)
                 ||!isInRange(rcMax[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX))
         {
-            QLOG_ERROR() << QString().sprintf("validRadioSettings: Error Channel %d out of range: rcMin=%d rcMax=%d",
+            QLOG_ERROR() << QString().asprintf("validRadioSettings: Error Channel %d out of range: rcMin=%d rcMax=%d",
                                               count+1, rcMin[count], rcMax[count]);
             return false;
         }
@@ -739,7 +739,7 @@ bool RadioCalibrationConfig::validRadioSettings()
             if (!isInRange(rcMin[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX)
                 ||!isInRange(rcMax[count], RC_CHANNEL_PWM_MIN, RC_CHANNEL_PWM_MAX))
             {
-                QLOG_ERROR() << QString().sprintf("validRadioSettings: Error Channel %d out of range: rcMin=%d rcMax=%d",
+                QLOG_ERROR() << QString().asprintf("validRadioSettings: Error Channel %d out of range: rcMin=%d rcMax=%d",
                                                   count+1, rcMin[count], rcMax[count]);
                 return false;
             }

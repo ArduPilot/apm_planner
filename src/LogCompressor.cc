@@ -66,7 +66,7 @@ void LogCompressor::run()
 
     QString outFileName;
 
-    QStringList parts = QFileInfo(infile.fileName()).absoluteFilePath().split(".", QString::SkipEmptyParts);
+    QStringList parts = QFileInfo(infile.fileName()).absoluteFilePath().split(".", Qt::SkipEmptyParts);
 
     parts.replace(0, parts.first() + "_compressed");
     parts.replace(parts.size()-1, "txt");

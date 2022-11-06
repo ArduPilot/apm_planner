@@ -77,7 +77,7 @@ void LogAnalysisCursor::setCurrentXPos(double xPosition)
 
 void LogAnalysisCursor::mousePressEvent(QMouseEvent *event, const QVariant &details)
 {
-    Q_UNUSED(details);
+    Q_UNUSED(details)
     QLOG_TRACE() << "LogAnalysisCursor::mousePressEvent";
     if(mSelected)
     {
@@ -137,8 +137,8 @@ void LogAnalysisCursor::mouseReleaseEvent(QMouseEvent *event, const QPointF &sta
 
 void LogAnalysisCursor::mouseDoubleClickEvent(QMouseEvent *event, const QVariant &details)
 {
-    Q_UNUSED(event);
-    Q_UNUSED(details);
+    Q_UNUSED(event)
+    Q_UNUSED(details)
     QLOG_DEBUG() << "LogAnalysisCursor::mouseDoubleClickEvent";
 }
 
@@ -173,13 +173,13 @@ void LogAnalysisAxis::wheelEvent(QWheelEvent *event)
     if(mSelectedParts == QCPAxis::spAxis)
     {
         event->accept();
-        double axisPos = pixelToCoord(event->y());
+        double axisPos = pixelToCoord(event->position().y());
 
-        if(event->delta() < 0)
+        if(event->angleDelta().ry() < 0)
         {
             scaleRange(1.1, axisPos);
         }
-        else if(event->delta() > 0)
+        else if(event->angleDelta().ry() > 0)
         {
             scaleRange(0.9, axisPos);
         }
@@ -400,7 +400,7 @@ void LogAnalysis::setTablePos(double xPosition)
         if ( position >= max )
         {
             ui.tableWidget->scrollToBottom();
-            double plotPos = m_useTimeOnXAxis ? m_dataStoragePtr->getMaxTimeStamp() : max;
+            double plotPos = m_useTimeOnXAxis ? m_dataStoragePtr->getMaxTimeStamp() : static_cast<double>(max);
             mp_cursorSimple->setCurrentXPos(plotPos);
             if (mp_logAnalysisMap != nullptr)
             {
@@ -411,7 +411,7 @@ void LogAnalysis::setTablePos(double xPosition)
         else if ( position <= min )
         {
             ui.tableWidget->scrollToTop();
-            double plotPos = m_useTimeOnXAxis ? m_dataStoragePtr->getMinTimeStamp() : min;
+            double plotPos = m_useTimeOnXAxis ? m_dataStoragePtr->getMinTimeStamp() : static_cast<double>(min);
             mp_cursorSimple->setCurrentXPos(plotPos);
             if (mp_logAnalysisMap != nullptr)
             {
@@ -1240,7 +1240,7 @@ void LogAnalysis::doExport(bool kmlExport, double iconInterval)
 
     if(dialog.exec())
     {
-        QTime timer;
+        QElapsedTimer timer;
         QString result;
         QString outputFileName = dialog.selectedFiles().at(0);
         timer.start();
@@ -1402,7 +1402,7 @@ void LogAnalysis::plotMouseMove(QMouseEvent *evt)
         double key   = iter->p_graph->keyAxis()->pixelToCoord(evt->x());
         int keyIndex = iter->p_graph->findBegin(key);
 
-        outStream << endl << iter.key();
+        outStream << Qt::endl << iter.key();
 
         if(insideCursorRange && m_rangeValuesStorage.contains(iter.key()))
         {
