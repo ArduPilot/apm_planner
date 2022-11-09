@@ -23,11 +23,14 @@ This file is part of the QGROUNDCONTROL project
 #include "logging.h"
 #include "QGCToolBar.h"
 #include "UASManager.h"
-#include "MainWindow.h"
+#include "LinkManager.h"
 
 #include <QToolButton>
 #include <QLabel>
 #include <QSpacerItem>
+#include <QButtonGroup>
+#include <QMenu>
+#include <QSettings>
 
 QGCToolBar::QGCToolBar(QWidget *parent) :
     QToolBar(parent),

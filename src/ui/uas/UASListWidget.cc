@@ -27,6 +27,10 @@ This file is part of the PIXHAWK project
  *   @author Lorenz Meier <mavteam@student.ethz.ch>
  *
  */
+#include "UASListWidget.h"
+#include "UASManager.h"
+#include "UASView.h"
+#include "QGCUnconnectedInfoWidget.h"
 
 #include <QString>
 #include <QTimer>
@@ -34,16 +38,7 @@ This file is part of the PIXHAWK project
 #include <QFileDialog>
 #include <QApplication>
 #include <QScrollBar>
-
-#include "MG.h"
-#include "UASListWidget.h"
-#include "UASManager.h"
-#include "UAS.h"
-#include "UASView.h"
-#include "QGCUnconnectedInfoWidget.h"
-#include "MainWindow.h"
-#include "MAVLinkSimulationLink.h"
-#include "LinkManager.h"
+#include <QStyle>
 
 UASListWidget::UASListWidget(QWidget *parent) : QWidget(parent),
     uWidget(NULL),

@@ -26,37 +26,41 @@ This file is part of the QGROUNDCONTROL project
  *   @brief Implementation of class MainWindow
  *   @author Lorenz Meier <mail@qgroundcontrol.org>
  */
+
+#include "MainWindow.h"
 #include "logging.h"
 #include "dockwidgettitlebareventfilter.h"
 #include "QGC.h"
-#include "MAVLinkSimulationLink.h"
-#include "UDPLink.h"
-#include "MAVLinkProtocol.h"
 #include "CommConfigurationWindow.h"
-#include "QGCWaypointListMulti.h"
-#include "MainWindow.h"
-#include "JoystickWidget.h"
 #include "GAudioOutput.h"
 #include "QGCToolWidget.h"
 #include "QGCMAVLinkLogPlayer.h"
 #include "QGCSettingsWidget.h"
-#include "QGCMapTool.h"
-#include "MAVLinkDecoder.h"
-#include "QGCRGBDView.h"
-#include "QGCStatusBar.h"
-#include "UASQuickView.h"
-#include "UASActionsWidget.h"
 #include "QGCTabbedInfoView.h"
-#include "UASRawStatusView.h"
+#include "QGCMAVLinkLogPlayer.h"
+#include "QGCMapTool.h"
+#include "QGCStatusBar.h"
+#include "QGCWaypointListMulti.h"
+#include "ParameterInterface.h"
+#include "submainwindow.h"
+#include "UASControlWidget.h"
+#include "UASListWidget.h"
+#include "PrimaryFlightDisplayQML.h"
+#include "MissionElevationDisplay.h"
+#include "EKFMonitor.h"
+#include "VibrationMonitor.h"
+#include "UASInfoWidget.h"
+#include "HSIDisplay.h"
 #include "PrimaryFlightDisplay.h"
 #include "PrimaryFlightDisplayQML.h"
-#include "VibrationMonitor.h"
-#include "EKFMonitor.h"
+#include "ObjectDetectionView.h"
+#include "WatchdogControl.h"
+
 #include "ApmToolBar.h"
-#include "SerialSettingsDialog.h"
+#include "ApmHardwareConfig.h"
+#include "ApmSoftwareConfig.h"
 #include "TerminalConsole.h"
 #include "AP2DataPlot2D.h"
-#include "MissionElevationDisplay.h"
 #include "LinkManagerFactory.h"
 
 #ifdef QGC_OSG_ENABLED
@@ -65,16 +69,13 @@ This file is part of the QGROUNDCONTROL project
 
 #include "AboutDialog.h"
 
-// FIXME Move
-#include "PxQuadMAV.h"
-#include "SlugsMAV.h"
-#include "LogCompressor.h"
 
 #include <QSettings>
 #include <QDockWidget>
 #include <QNetworkInterface>
 #include <QMessageBox>
 #include <QScreen>
+
 
 
 #include <QTimer>
@@ -125,19 +126,10 @@ void LogWindowSingleton::removeDebugOutput()
 }
 
 
-MainWindow* MainWindow::instance(QSplashScreen* screen)
+MainWindow* MainWindow::instance()
 {
-    static MainWindow* _instance = 0;
-    if(_instance == 0)
-    {
-        _instance = new MainWindow();
-        if (screen) connect(_instance, SIGNAL(initStatusChanged(QString)), screen, SLOT(showMessage(QString)));
-
-        /* Set the application as parent to ensure that this object
-                 * will be destroyed when the main application exits */
-        //_instance->setParent(qApp);
-    }
-    return _instance;
+    static MainWindow myWindow;
+    return &myWindow;
 }
 
 // inline function definitions
@@ -156,6 +148,7 @@ bool MainWindow::dockWidgetTitleBarsEnabled()
 {
     return dockWidgetTitleBarEnabled;
 }
+
 
 bool MainWindow::lowPowerModeEnabled()
 {
@@ -184,16 +177,14 @@ MainWindow::MainWindow(QWidget *parent):
     m_terminalDialog(NULL)
 {
     QLOG_DEBUG() << "Creating MainWindow";
-    this->setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_DeleteOnClose);
     hide();
-    emit initStatusChanged("Loading UI Settings..");
+
     loadSettings();
     enableDockWidgetTitleBars(dockWidgetTitleBarEnabled);
 
-    emit initStatusChanged("Loading Style.");
     loadStyle(currentStyle);
 
-    emit initStatusChanged("Setting up user interface.");
 
     // Setup user interface
     ui.setupUi(this);
@@ -247,19 +238,14 @@ MainWindow::MainWindow(QWidget *parent):
     statusBar()->setSizeGripEnabled(true);
     statusBar()->hide();
 
-    emit initStatusChanged("Building common widgets.");
 
     buildCommonWidgets();
     connectCommonWidgets();
-
-    emit initStatusChanged("Building common actions.");
 
     // Create actions
     connectCommonActions();
 
     // Populate link menu
-    emit initStatusChanged("Populating link menu");
-
     QList<int> links = LinkManager::instance()->getLinks();
     for (int i=0;i<links.size();i++)
     {
@@ -298,19 +284,16 @@ MainWindow::MainWindow(QWidget *parent):
 #endif
 
     // Connect user interface devices
-    emit initStatusChanged("Initializing joystick interface.");
     joystickWidget = 0;
     joystick = new JoystickInput();
 
 #ifdef MOUSE_ENABLED_WIN
-    emit initStatusChanged("Initializing 3D mouse interface.");
 
     mouseInput = new Mouse3DInput(this);
     mouse = new Mouse6dofInput(mouseInput);
 #endif //MOUSE_ENABLED_WIN
 
 #if MOUSE_ENABLED_LINUX
-    emit initStatusChanged("Initializing 3D mouse interface.");
 
     mouse = new Mouse6dofInput(this);
     connect(this, SIGNAL(x11EventOccured(XEvent*)), mouse, SLOT(handleX11Event(XEvent*)));
@@ -325,12 +308,9 @@ MainWindow::MainWindow(QWidget *parent):
     // Initialize window state
     windowStateVal = windowState();
 
-    emit initStatusChanged("Restoring last view state.");
-
     // Restore the window setup
     loadViewState();
 
-    emit initStatusChanged("Restoring last window size.");
     // Restore the window position and size
     if (settings.contains(getWindowGeometryKey()))
     {
@@ -348,7 +328,6 @@ MainWindow::MainWindow(QWidget *parent):
 
     connect(&windowNameUpdateTimer, SIGNAL(timeout()), this, SLOT(configureWindowName()));
     windowNameUpdateTimer.start(15000);
-    emit initStatusChanged("Done.");
 
     ui.actionDeveloper_Credits->setVisible(false);
     ui.actionOnline_Documentation->setVisible(false);

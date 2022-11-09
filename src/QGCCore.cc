@@ -189,9 +189,7 @@ void QGCCore::initialize()
     simulationLink->disconnect();
 #endif
 
-
-
-    mainWindow = MainWindow::instance(splashScreen);
+    mainWindow = MainWindow::instance();
 
     // Remove splash screen
     splashScreen->finish(mainWindow);

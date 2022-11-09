@@ -26,6 +26,7 @@ This file is part of the APM_PLANNER project
 #include "UASInterface.h"
 #include <QDialog>
 #include <QElapsedTimer>
+#include <QFile>
 
 namespace Ui {
 class LogDownloadDialog;

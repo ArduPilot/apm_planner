@@ -5,10 +5,9 @@
 #include "ui_QGCSettingsWidget.h"
 
 #include "LinkManager.h"
-#include "MAVLinkProtocol.h"
-#include "MAVLinkSettingsWidget.h"
 #include "GAudioOutput.h"
 #include "ArduPilotMegaMAV.h"
+#include "UASManager.h"
 
 #include <QFileDialog>
 

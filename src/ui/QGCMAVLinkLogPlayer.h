@@ -1,12 +1,12 @@
 #ifndef QGCMAVLINKLOGPLAYER_H
 #define QGCMAVLINKLOGPLAYER_H
 
-#include <QWidget>
-#include <QFile>
-#include "MAVLinkProtocol.h"
 #include "TLogReplayLink.h"
 #include "MAVLinkDecoder.h"
 #include "QGCMAVLinkInspector.h"
+
+#include <QFile>
+#include <QWidget>
 namespace Ui
 {
 class QGCMAVLinkLogPlayer;

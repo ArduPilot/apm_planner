@@ -33,6 +33,8 @@ This file is part of the APM_PLANNER project
 #include "LinkManager.h"
 #include "MainWindow.h"
 #include "ArduPilotMegaMAV.h"
+#include "UASManager.h"
+
 #include <QQmlContext>
 #include <QGraphicsObject>
 #include <QTimer>

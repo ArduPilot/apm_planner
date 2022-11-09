@@ -21,14 +21,15 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 #include "logging.h"
 #include "EKFMonitor.h"
-
 #include "configuration.h"
-#include "MainWindow.h"
+#include "UASManager.h"
+#include "LinkManager.h"
 
 #include <QVBoxLayout>
 #include <QQmlContext>
 #include <QQuickItem>
 #include <QQmlEngine>
+#include <QMessageBox>
 
 EKFMonitor::EKFMonitor(QWidget *parent) :
     QWidget(parent),

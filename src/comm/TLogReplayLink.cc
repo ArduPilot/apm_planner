@@ -1,11 +1,14 @@
 #include "TLogReplayLink.h"
-#include <QFile>
+#include "UASManager.h"
+#include "UASObject.h"
+#include "ArduPilotMegaMAV.h"
+#include "LinkManager.h"
+#include "MainWindow.h"
+
 #include <QDebug>
 #include <QDateTime>
-#include "UASManager.h"
-#include "UAS.h"
-#include "MainWindow.h"
-#include "QGCMAVLinkUASFactory.h"
+#include <QFile>
+
 TLogReplayLink::TLogReplayLink(QObject *parent) :
     LinkInterface(),
     m_toBeDeleted(false),

@@ -1,13 +1,15 @@
 #ifndef QGCTABBEDINFOVIEW_H
 #define QGCTABBEDINFOVIEW_H
 
-#include <QWidget>
 #include "ui_QGCTabbedInfoView.h"
 #include "MAVLinkDecoder.h"
 #include "QGCMessageView.h"
 #include "UASActionsWidget.h"
 #include "UASQuickView.h"
 #include "UASRawStatusView.h"
+
+#include <QWidget>
+
 class QGCTabbedInfoView : public QWidget
 {
     Q_OBJECT

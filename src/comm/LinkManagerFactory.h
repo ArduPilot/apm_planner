@@ -3,6 +3,7 @@
 
 #include "LinkManager.h"
 #include <QObject>
+#include <QHostAddress>
 
 class LinkManagerFactory : public QObject
 {
