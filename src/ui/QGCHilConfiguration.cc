@@ -1,11 +1,11 @@
-#include <QSettings>
 
 #include "QGCHilConfiguration.h"
 #include "ui_QGCHilConfiguration.h"
-
+#include "QGCJSBSimLink.h"
 #include "QGCHilFlightGearConfiguration.h"
 #include "QGCHilJSBSimConfiguration.h"
-#include "QGCHilXPlaneConfiguration.h"
+
+#include <QSettings>
 
 QGCHilConfiguration::QGCHilConfiguration(UAS *mav, QWidget *parent) :
     QWidget(parent),

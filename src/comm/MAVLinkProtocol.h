@@ -39,11 +39,13 @@ This file is part of the APM_PLANNER project
 
 #include <mavlink.h>
 
-#include <QByteArray>
 #include "LinkInterface.h"
-#include <QFile>
 #include "QGC.h"
-#include "UASInterface.h"
+#include "configuration.h"
+
+#include <QFile>
+#include <QByteArray>
+#include <QMap>
 
 class LinkManager;
 class MAVLinkProtocol : public QObject

@@ -18,6 +18,7 @@
 #include "QGCMAVLink.h"
 #include "LinkManager.h"
 #include "MainWindow.h"
+#include"QGCJSBSimLink.h"
 
 #include <QList>
 #include <QMessageBox>

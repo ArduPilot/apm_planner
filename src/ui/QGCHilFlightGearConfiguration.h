@@ -1,11 +1,9 @@
 #ifndef QGCHILFLIGHTGEARCONFIGURATION_H
 #define QGCHILFLIGHTGEARCONFIGURATION_H
 
-#include <QWidget>
-
-#include "QGCHilLink.h"
-#include "QGCFlightGearLink.h"
 #include "UAS.h"
+
+#include <QWidget>
 
 namespace Ui {
 class QGCHilFlightGearConfiguration;

@@ -28,12 +28,15 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#include "QGCCore.h"
+
 #include "MainWindow.h"
+#include "QGCCore.h"
 #include "configuration.h"
 #include "logging.h"
-#include <QtWidgets/QApplication>
+
 #include <fstream>
+#include <QApplication>
+#include <QMutexLocker>
 
 /* SDL does ugly things to main() */
 #ifdef main

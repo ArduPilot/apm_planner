@@ -36,7 +36,6 @@ This file is part of the QGROUNDCONTROL project
 #include <QDialog>
 #include <QAction>
 #include <QPointer>
-#include "LinkInterface.h"
 #include "ProtocolInterface.h"
 #include "ui_CommSettings.h"
 

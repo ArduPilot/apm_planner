@@ -32,15 +32,11 @@ This file is part of the QGROUNDCONTROL project
 #pragma once
 
 #include "UASInterface.h"
-#include <MAVLinkProtocol.h>
-#include <QVector3D>
-#include "QGCMAVLink.h"
 #include "QGCHilLink.h"
-#include "QGCFlightGearLink.h"
-#include "QGCJSBSimLink.h"
-//#include "QGCXPlaneLink.h"
 
+#include <MAVLinkProtocol.h>
 
+#include <QVector3D>
 
 /**
  * @brief A generic MAVLINK-connected MAV/UAV

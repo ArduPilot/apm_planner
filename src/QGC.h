@@ -24,7 +24,6 @@
 #ifndef QGC_H
 #define QGC_H
 
-#include "configuration.h"
 #include <QDateTime>
 #include <QColor>
 #include <QThread>

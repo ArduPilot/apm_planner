@@ -21,13 +21,15 @@ This file is part of the QGROUNDCONTROL project
 
 ======================================================================*/
 
-#include <QToolButton>
-#include <QLabel>
-#include <QSpacerItem>
 #include "QGCStatusBar.h"
 #include "UASManager.h"
 #include "MainWindow.h"
+
+#include <QLabel>
+#include <QSpacerItem>
+#include <QToolButton>
 #include <QFileDialog>
+#include <QStyleOption>
 
 QGCStatusBar::QGCStatusBar(QWidget *parent) :
     QStatusBar(parent),

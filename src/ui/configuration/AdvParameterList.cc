@@ -24,6 +24,8 @@ This file is part of the APM_PLANNER project
 #include "DownloadRemoteParamsDialog.h"
 #include "ParamCompareDialog.h"
 #include "logging.h"
+#include "configuration.h"
+
 #include <QTableWidgetItem>
 #include <QInputDialog>
 #include <QFileDialog>

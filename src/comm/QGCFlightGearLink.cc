@@ -32,6 +32,7 @@ This file is part of the QGROUNDCONTROL project
 #include "logging.h"
 #include "QGCFlightGearLink.h"
 #include "QGC.h"
+#include "UASManager.h"
 #include "MainWindow.h"
 
 #include <QTimer>

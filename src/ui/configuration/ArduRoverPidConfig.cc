@@ -21,8 +21,9 @@ This file is part of the APM_PLANNER project
 ======================================================================*/
 
 #include "ArduRoverPidConfig.h"
+#include "QGCMouseWheelEventFilter.h"
 
-#include "QGCCore.h"
+#include <QComboBox>
 
 ArduRoverPidConfig::ArduRoverPidConfig(QWidget *parent) : AP2ConfigWidget(parent)
 {

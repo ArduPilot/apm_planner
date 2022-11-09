@@ -28,63 +28,42 @@ This file is part of the QGROUNDCONTROL project
  *
  */
 
-#ifndef _MAINWINDOW_H_
-#define _MAINWINDOW_H_
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include "AutoUpdateCheck.h"
 #include "AutoUpdateDialog.h"
-#include <QtWidgets/QMainWindow>
-#include <QStatusBar>
-#include <QStackedWidget>
-#include <QSettings>
-#include <qlist.h>
-#include <QNetworkProxy>
 
 #include "ui_MainWindow.h"
-//#include "LinkManager.h"
 #include "LinkInterface.h"
 #include "UASInterface.h"
-#include "UASManager.h"
-#include "UASControlWidget.h"
-#include "UASInfoWidget.h"
-#include "WaypointList.h"
 #if (defined ENABLE_CAMRAVIW)
 #include "CameraView.h"
 #endif // ENABLE_CAMRAVIW
-#include "UASListWidget.h"
-//#include "MAVLinkProtocol.h"
 #include "MAVLinkSimulationLink.h"
-#include "ObjectDetectionView.h"
-#include "HUD.h"
 #include "submainwindow.h"
 #include "JoystickWidget.h"
-#include "input/JoystickInput.h"
 #if (defined MOUSE_ENABLED_WIN) | (defined MOUSE_ENABLED_LINUX)
 #include "Mouse6dofInput.h"
 #endif // MOUSE_ENABLED_WIN
-#include "ParameterInterface.h"
-#include "HDDisplay.h"
-#include "WatchdogControl.h"
-#include "HSIDisplay.h"
 #include "opmapcontrol.h"
 #if (defined GOGGLEEARTH) && ((defined Q_OS_MAC) | (defined _MSC_VER))
 #include "QGCGoogleEarthView.h"
 #endif
-#include "QGCToolBar.h"
-#include "SlugsDataSensorView.h"
 #include "LogCompressor.h"
-
-#include "SlugsHilSim.h"
-
-#include "SlugsPadCameraControl.h"
-#include "QGCMAVLinkInspector.h"
 #include "QGCMAVLinkLogPlayer.h"
-#include "QGCVehicleConfig.h"
 #include "MAVLinkDecoder.h"
-#include "ApmHardwareConfig.h"
-#include "ApmSoftwareConfig.h"
 #include "ApmToolBar.h"
 #include "DebugOutput.h"
+#include "QGCFlightGearLink.h"
+
+#include <QMainWindow>
+#include <QStatusBar>
+#include <QStackedWidget>
+#include <QSettings>
+#include <QList>
+#include <QNetworkProxy>
+#include <QActionGroup>
 
 class QGCMapTool;
 class QGCFirmwareUpdate;
@@ -161,8 +140,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    static MainWindow* instance(QSplashScreen* screen = 0);
-    ~MainWindow();
+    static MainWindow* instance();
+
+    ~MainWindow() override;
 
     enum QGC_MAINWINDOW_STYLE
     {
@@ -290,7 +270,7 @@ public slots:
     /** @brief Loads and shows the HIL Configuration Widget for the given UAS*/
     void showHILConfigurationWidget(UASInterface *uas);
 
-    void closeEvent(QCloseEvent* event);
+    void closeEvent(QCloseEvent* event) override;
 
     /** @brief Load data view, allowing to plot flight data */
 //    void loadDataView(QString fileName);
@@ -322,7 +302,6 @@ public slots:
     APMToolBar &toolBar();
 #endif
 signals:
-    void initStatusChanged(const QString& message);
 #ifdef MOUSE_ENABLED_LINUX
     /** @brief Forward X11Event to catch 3DMouse inputs */
     void x11EventOccured(XEvent *event);
@@ -344,9 +323,9 @@ public:
     bool heartbeatEnabled() { return m_heartbeatEnabled; }
 protected:
 
-    MainWindow(QWidget *parent = 0);
+    MainWindow(QWidget *parent = nullptr);
 
-    typedef enum _VIEW_SECTIONS
+    typedef enum VIEW_SECTIONSs
     {
         VIEW_ENGINEER,
         VIEW_MISSION,
@@ -391,7 +370,7 @@ protected:
     void addToCentralStackedWidget(QWidget* widget, VIEW_SECTIONS viewSection, const QString& title);
 
     /** @brief Catch window resize events */
-    void resizeEvent(QResizeEvent * event);
+    void resizeEvent(QResizeEvent * event) override;
 
     /** @brief Keeps track of the current view */
     VIEW_SECTIONS currentView;
@@ -555,4 +534,4 @@ private:
 
 };
 
-#endif /* _MAINWINDOW_H_ */
+#endif /* MAINWINDOW_H */

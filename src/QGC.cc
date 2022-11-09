@@ -22,6 +22,8 @@ This file is part of the QGROUNDCONTROL project
 ======================================================================*/
 
 #include "QGC.h"
+#include "configuration.h"
+
 #include <qmath.h>
 #include <float.h>
 

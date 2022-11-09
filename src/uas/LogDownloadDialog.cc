@@ -24,8 +24,9 @@ This file is part of the APM_PLANNER project
 #include "LogDownloadDialog.h"
 #include "ui_LogDownloadDialog.h"
 #include "UASManager.h"
-#include <QMessageBox>
+#include "configuration.h"
 
+#include <QMessageBox>
 #include <math.h>
 
 #define LDD_COLUMN_ID 0
