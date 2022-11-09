@@ -234,9 +234,11 @@ WindowsCrossBuild {
 gcc {
     # suppress deprecated copy ctor wanings caused by Qt versions <= 5.12.x and gcc 9.x
     # !lessThan means bigger or equal (>=)
-    !lessThan(QMAKE_GCC_MAJOR_VERSION, 9){
-        !lessThan(QT_MAJOR_VERSION, 5){
-            !lessThan(QT_MINOR_VERSION, 12): QMAKE_CXXFLAGS += -Wno-deprecated-copy
+    !lessThan(QMAKE_GCC_MAJOR_VERSION, 9){  # gcc >= 9.x
+        !lessThan(QT_MAJOR_VERSION, 5){     # Qt >= 5.x.x
+            lessThan(QT_MAJOR_VERSION, 6){  # Qt < 6.x.x
+                lessThan(QT_MINOR_VERSION, 13): QMAKE_CXXFLAGS += -Wno-deprecated-copy # Qt < 5.13.x
+            }
         }
     }
 }
