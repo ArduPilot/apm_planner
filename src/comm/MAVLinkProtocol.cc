@@ -379,11 +379,11 @@ void MAVLinkProtocol::handleMessage(LinkInterface *link, const mavlink_message_t
         if (currentTotalReceiveCounter % 32 == 0)
         {
             // Calculate new receive loss ratio
-            float receiveLoss = (double)currLossCounter[linkId]/(double)(currReceiveCounter[linkId]+currLossCounter[linkId]);
-            receiveLoss *= 100.0f;
+            double receiveLoss = static_cast<double>(currLossCounter[linkId]) / static_cast<double>(currReceiveCounter[linkId]+currLossCounter[linkId]);
+            receiveLoss *= 100.0;
             currLossCounter[linkId] = 0;
             currReceiveCounter[linkId] = 0;
-            emit receiveLossChanged(message.sysid, receiveLoss);
+            emit receiveLossChanged(message.sysid, static_cast<float>(receiveLoss));
         }
 
         // The packet is emitted as a whole, as it is only 255 - 261 bytes short
