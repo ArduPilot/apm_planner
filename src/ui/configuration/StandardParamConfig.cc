@@ -112,7 +112,11 @@ void StandardParamConfig::onSearchFilterChanged(const QString &searchFilterText)
     }
     else
     {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        QStringList filterList = searchFilterText.toLower().split(' ', QString::SkipEmptyParts);
+#else
         QStringList filterList = searchFilterText.toLower().split(' ', Qt::SkipEmptyParts);
+#endif
         for (int i = 0; i < ui.verticalLayout->count(); ++i)
         {
             ParamWidget *pw = qobject_cast<ParamWidget *>(ui.verticalLayout->itemAt(i)->widget());

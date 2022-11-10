@@ -61,7 +61,7 @@ JoystickInput::JoystickInput() :
 JoystickInput::~JoystickInput()
 {
     storeSettings();
-    done.storeRelaxed(1);
+    storeAtomic(1);
 }
 
 const QString JoystickInput::getActiveJoystickId()
@@ -161,7 +161,7 @@ void JoystickInput::init()
                  << ", Linked against SDL" << QString("%1.%2.%3").arg(sdlLinkedVersion.major).arg(sdlLinkedVersion.minor).arg(sdlLinkedVersion.patch);
 
     // Wait for joystick if none is connected
-    while (done.loadRelaxed() == 0)
+    while (loadAtomic() == 0)
     {
         int numJoysticks = SDL_NumJoysticks();
         if (numJoysticks == 0)
@@ -170,7 +170,7 @@ void JoystickInput::init()
 
             SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
             QGC::SLEEP::msleep(1000);
-            if (done.loadRelaxed() != 0)
+            if (loadAtomic() != 0)
                 break;
             if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
             {
@@ -229,7 +229,7 @@ void JoystickInput::init()
 
 void JoystickInput::shutdown()
 {
-    done.storeRelaxed(1);
+    storeAtomic(1);
 }
 
 /** @brief Return the result of SDL_JoystickGetAxis (v) scaled to [-1.0,1.0]
@@ -339,7 +339,7 @@ void JoystickInput::run()
         return;
     }
 
-    while (done.loadRelaxed() == 0){
+    while (loadAtomic() == 0){
 #if 0
         // SDL_WaitEventTimeout() seems to lock up when axis 2 is
         // all the way up (at least on my joystick -- a cheap chinese PSP knock off)
@@ -464,7 +464,7 @@ void JoystickInput::run()
         QGC::SLEEP::msleep(20);
 #endif
 
-        if (done.loadRelaxed() != 0)
+        if (loadAtomic() != 0)
             break;
 
         // signal rate set to 10Hz (100ms)
@@ -519,7 +519,7 @@ void JoystickInput::run()
 
         emit joystickChanged(y, x, yaw, thrust, xHat, yHat, buttons);
     }
-    done.storeRelaxed(0);
+    storeAtomic(0);
 
     exit();
 }

@@ -275,6 +275,25 @@ public slots:
     {
         stabilizeButtonMapping = mapping;
     }
+
+private:
+    void storeAtomic(int val)
+    {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        done.store(val);
+#else
+        done.storeRelaxed(val);
+#endif
+    }
+
+    int loadAtomic()
+    {
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        return done.load();
+#else
+        return done.loadRelaxed();
+#endif
+    }
 };
 
 #endif // _JOYSTICKINPUT_H_
