@@ -30,17 +30,20 @@
 
 // gcc version 9 brings a lot of new warnings. We supress them here for the mavlink
 // library as it is not "our" code
-#if defined(__GNUC__) && (__GNUC__ > 8)
+#if defined(__GNUC__)
     #pragma GCC diagnostic push
+#if (__GNUC__ > 8)
     #pragma GCC diagnostic ignored "-Waddress-of-packed-member" // Suppress lots of warnings
+#elif (__GNUC__ > 6)
     #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
     #pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
 #endif
 
 #include "version.h"
 #include "ardupilotmega.h"
 
-#if defined(__GNUC__) && (__GNUC__ > 8)
+#if defined(__GNUC__)
     #pragma GCC diagnostic pop
 #endif
 
