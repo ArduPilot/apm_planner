@@ -11,6 +11,10 @@
    Modified by Sergey A. Tachenov to integrate with Qt.
 */
 
+#if defined(__GNUC__) && (__GNUC__ > 6)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1279,3 +1283,7 @@ extern int ZEXPORT zipClearFlags(zipFile file, unsigned flags)
     zi->flags &= ~flags;
     return ZIP_OK;
 }
+
+#if defined(__GNUC__) && (__GNUC__ > 6)
+#pragma GCC diagnostic pop
+#endif

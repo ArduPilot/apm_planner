@@ -40,6 +40,15 @@ using namespace std;
 #pragma warning(disable:4996)
 #endif
 
+
+#if defined(__GNUC__) && (__GNUC__ > 6)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
+#pragma GCC diagnostic ignored "-Wextra"
+#pragma GCC diagnostic ignored "-Wformat-overflow="
+#endif
+
+
 /////////////////////////////////////////////////////////////////////////
 //
 // THIS SECTION IMPLEMENTS BASIC FUNCTIONALITY LIKE
@@ -10696,3 +10705,7 @@ namespace alglib_impl
 
 }
 
+
+#if defined(__GNUC__) && (__GNUC__ > 6)
+#pragma GCC diagnostic pop
+#endif

@@ -36,6 +36,10 @@ woven in by Terry Thorsen 1/2003.
   version without encryption capabilities).
  */
 
+#if defined(__GNUC__) && (__GNUC__ > 6)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1601,3 +1605,7 @@ extern int ZEXPORT unzSetOffset (file, pos)
     s->current_file_ok = (err == UNZ_OK);
     return err;
 }
+
+#if defined(__GNUC__) && (__GNUC__ > 6)
+#pragma GCC diagnostic pop
+#endif
