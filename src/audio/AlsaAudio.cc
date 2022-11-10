@@ -278,11 +278,9 @@ snd_pcm_t * AlsaAudio::alsa_open (int channels, int samplerate)
 
     /* note: set start threshold to delay start until the ring buffer is full */
     snd_pcm_sw_params_current (alsa_dev, sw_params);
-    if ((err = snd_pcm_sw_params_get_xfer_align (sw_params, &xfer_align)) < 0)
-    {
-        QLOG_INFO() << "cannot get xfer align " << snd_strerror (err);
-        return NULL;
-    }
+    // According to https://www.alsa-project.org/pipermail/alsa-devel/2008-October/011584.html
+    // the call to snd_pcm_sw_params_get_xfer_align() could be dropped as xfer_align is always set to 1.
+    xfer_align = 1;
 
     /* round up to closest transfer boundary */
     start_threshold = (buffer_size / xfer_align) * xfer_align;

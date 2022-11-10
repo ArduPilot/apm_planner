@@ -26,6 +26,14 @@ http://www.fsf.org/licensing/licenses
 #pragma warning(disable:4702)
 #pragma warning(disable:4996)
 #endif
+
+#if defined(__GNUC__) && (__GNUC__ > 6)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+
+
 using namespace std;
 
 /////////////////////////////////////////////////////////////////////////
@@ -33838,4 +33846,9 @@ ae_bool rmatrixschur(/* Real    */ ae_matrix* a,
 
 
 }
+
+
+#if defined(__GNUC__) && (__GNUC__ > 6)
+#pragma GCC diagnostic pop
+#endif
 
