@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=APM-Planner 2
+Comment=An open-source ground station application for MAVlink based autopilots
+Exec=apmplanner2
+Icon=icon_512x512
+Categories=Qt;Education;Science;Robotics;
