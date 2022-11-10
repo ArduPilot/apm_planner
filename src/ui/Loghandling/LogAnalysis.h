@@ -83,7 +83,7 @@ public:
     /**
      * @brief ~LogAnalysisCursor - DTOR
      */
-    virtual ~LogAnalysisCursor();
+    virtual ~LogAnalysisCursor() override;
 
     /**
      * @brief setOtherCursor - Used to set the the other cursor when using cursors of type left
@@ -131,11 +131,11 @@ protected:
     // virtual double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details = 0)	const;
 
     // Used methods - See QCustomPlot::QCPItemStraightLine for further description
-    virtual void mousePressEvent(QMouseEvent *event, const QVariant &details);
-    virtual void mouseMoveEvent(QMouseEvent *event, const QPointF &startPos);
-    virtual void mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos);
-    virtual void mouseDoubleClickEvent(QMouseEvent *event, const QVariant &details);
-    virtual void wheelEvent(QWheelEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event, const QVariant &details) override;
+    virtual void mouseMoveEvent(QMouseEvent *event, const QPointF &startPos) override;
+    virtual void mouseReleaseEvent(QMouseEvent *event, const QPointF &startPos) override;
+    virtual void mouseDoubleClickEvent(QMouseEvent *event, const QVariant &details) override;
+    virtual void wheelEvent(QWheelEvent *event) override;
 
 private:
     double m_currentPos;                    ///< Current cursor position on x axis
@@ -163,13 +163,13 @@ public:
     /**
      * @brief ~LogAnalysisAxis - DTOR
      */
-    virtual ~LogAnalysisAxis();
+    virtual ~LogAnalysisAxis() override;
 
     /**
      * @brief wheelEvent handler for mouse wheel events over this axis
      * @param event - the wheel event
      */
-    virtual void wheelEvent(QWheelEvent *event);
+    virtual void wheelEvent(QWheelEvent *event) override;
 };
 
 
@@ -189,13 +189,13 @@ public:
      * @brief LogAnalysis - CTOR
      * @param parent - parent object
      */
-    explicit LogAnalysis(QWidget *parent = 0);
+    explicit LogAnalysis(QWidget *parent = nullptr);
 
     /**
      * @brief LogAnalysis - DTOR
      *
      */
-    ~LogAnalysis();
+    ~LogAnalysis() override;
 
     /**
      * @brief loadLog - starts the logloading and parsing. After successful loading a new window is opened
@@ -242,7 +242,7 @@ private:
         bool m_manualRange;    ///< has user defined scaling
         bool m_inGroup;        ///< has group scaling
 
-        GraphElements() : p_yAxis(0), p_graph(0), m_manualRange(false), m_inGroup(false) {}
+        GraphElements() : p_yAxis(nullptr), p_graph(nullptr), m_manualRange(false), m_inGroup(false) {}
     };
 
     /**

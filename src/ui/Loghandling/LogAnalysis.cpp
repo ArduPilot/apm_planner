@@ -385,7 +385,7 @@ void LogAnalysis::loadLog(QString filename)
     // setup window name
     QString shortfilename = filename.mid(filename.lastIndexOf("/")+1);
     QString presetName = m_presetMgrPtr->getFileInfo().fileName();
-    setWindowTitle(tr("Graph: %1 [%2]").arg(shortfilename).arg(presetName));
+    setWindowTitle(tr("Graph: %1 [%2]").arg(shortfilename, presetName));
 
     // create datastorage, loader thread and connect the signals
     m_dataStoragePtr = LogdataStorage::Ptr(new LogdataStorage());
@@ -429,7 +429,7 @@ void LogAnalysis::setTablePos(double xPosition)
             mp_cursorSimple->setCurrentXPos(plotPos);
             if (mp_logAnalysisMap != nullptr)
             {
-                mp_logAnalysisMap->setUavCursor(max);
+                mp_logAnalysisMap->setUavCursor(static_cast<int>(max));
             }
 
         }
@@ -440,7 +440,7 @@ void LogAnalysis::setTablePos(double xPosition)
             mp_cursorSimple->setCurrentXPos(plotPos);
             if (mp_logAnalysisMap != nullptr)
             {
-                mp_logAnalysisMap->setUavCursor(min);
+                mp_logAnalysisMap->setUavCursor(static_cast<int>(min));
             }
         }
         else
@@ -470,7 +470,7 @@ void LogAnalysis::setTablePos(double xPosition)
 
             if (mp_logAnalysisMap != nullptr)
             {
-                mp_logAnalysisMap->setUavCursor(position);
+                mp_logAnalysisMap->setUavCursor(static_cast<int>(position));
             }
         }
     }
@@ -845,7 +845,7 @@ void LogAnalysis::logLoadingDone(AP2DataPlotStatus status)
     connect(m_plotPtr->axisRect()->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)), this, SLOT(xAxisChanged(QCPRange)));
     // set range -> whole graph should be viewable therefore 20 percent offset on both sides
     qint64 offset = (m_scrollEndIndex - m_scrollStartIndex) / 20;
-    m_plotPtr->axisRect()->axis(QCPAxis::atBottom)->setRange(m_scrollStartIndex - offset, m_scrollEndIndex + offset);
+    m_plotPtr->axisRect()->axis(QCPAxis::atBottom)->setRange(static_cast<double>(m_scrollStartIndex - offset), static_cast<double>(m_scrollEndIndex + offset));
     ui.verticalScrollBar->setValue(ui.verticalScrollBar->maximum());
 
     // Set up proxy for table filtering
@@ -919,7 +919,7 @@ void LogAnalysis::verticalScrollMoved(int value)
     QCPAxis *xAxis = m_plotPtr->axisRect()->axis(QCPAxis::atBottom);
     double percent = value / 100.0;
     double center = xAxis->range().center();
-    double requestedrange = (m_scrollEndIndex - m_scrollStartIndex) * percent;
+    double requestedrange = static_cast<double>(m_scrollEndIndex - m_scrollStartIndex) * percent;
     xAxis->setRangeUpper(center + (requestedrange/2.0));
     xAxis->setRangeLower(center - (requestedrange/2.0));
     m_plotPtr->replot(QCustomPlot::rpQueuedReplot);
@@ -945,7 +945,7 @@ void LogAnalysis::xAxisChanged(QCPRange range)
 
     ui.horizontalScrollBar->setValue(qRound(range.center())); // adjust position of scroll bar slider
     ui.horizontalScrollBar->setPageStep(qRound(range.size())); // adjust size of scroll bar slider
-    double totalrange = m_scrollEndIndex - m_scrollStartIndex;
+    double totalrange = static_cast<double>(m_scrollEndIndex - m_scrollStartIndex);
     double currentrange = range.upper - range.lower;
     ui.verticalScrollBar->setValue(static_cast<int>(100.0 * (currentrange / totalrange)));
 
@@ -1085,7 +1085,7 @@ void LogAnalysis::indexTypeCheckBoxClicked(bool checked)
         disconnect(ui.horizontalScrollBar, SIGNAL(valueChanged(int)), this, SLOT(horizontalScrollMoved(int)));
 
         setupXAxisAndScroller();
-        m_plotPtr->axisRect()->axis(QCPAxis::atBottom)->setRange(m_scrollStartIndex, m_scrollEndIndex);
+        m_plotPtr->axisRect()->axis(QCPAxis::atBottom)->setRange(static_cast<double>(m_scrollStartIndex), static_cast<double>(m_scrollEndIndex));
         m_plotPtr->replot();
         ui.verticalScrollBar->setValue(ui.verticalScrollBar->maximum());
 
