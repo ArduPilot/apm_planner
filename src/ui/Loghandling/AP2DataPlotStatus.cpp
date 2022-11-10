@@ -29,6 +29,13 @@ This file is part of the APM_PLANNER project
 #include "AP2DataPlotStatus.h"
 #include <QTextStream>
 
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+#define ENDL endl
+#else
+#define ENDL Qt::endl
+#endif
+
 AP2DataPlotStatus::AP2DataPlotStatus() :
     m_lastParsingState(OK),
     m_globalState(OK),
@@ -114,11 +121,11 @@ QString AP2DataPlotStatus::getErrorOverview() const
         }
     }
 
-    if (fmtErrorCount     > 0) outStream << fmtErrorCount << " format corruptions" << Qt::endl;
-    if (timeErrorCount    > 0) outStream << timeErrorCount << " time corruptions" << Qt::endl;
-    if (dataErrorCount    > 0) outStream << dataErrorCount << " data corruptions" << Qt::endl;
-    if (unknownErrorCount > 0) outStream << unknownErrorCount << " unspecific corruptions" << Qt::endl;
-    if (m_noMessageBytes  > 0) outStream << m_noMessageBytes << " Bytes were dropped" << Qt::endl;
+    if (fmtErrorCount     > 0) outStream << fmtErrorCount << " format corruptions" << ENDL;
+    if (timeErrorCount    > 0) outStream << timeErrorCount << " time corruptions" << ENDL;
+    if (dataErrorCount    > 0) outStream << dataErrorCount << " data corruptions" << ENDL;
+    if (unknownErrorCount > 0) outStream << unknownErrorCount << " unspecific corruptions" << ENDL;
+    if (m_noMessageBytes  > 0) outStream << m_noMessageBytes << " Bytes were dropped" << ENDL;
 
     return out;
 }
@@ -133,14 +140,16 @@ QString AP2DataPlotStatus::getDetailedErrorText() const
     {
         if (entry.m_state != OK)    // Only if a error
         {
-            outStream << "Logline " << entry.m_index << ": " << entry.m_errortext << Qt::endl;
+            outStream << "Logline " << entry.m_index << ": " << entry.m_errortext << ENDL;
             errorCount++;
         }
     }
-    outStream << endl << " There were " << errorCount << " errors during log parsing." << Qt::endl;
+    outStream << ENDL << " There were " << errorCount << " errors during log parsing." << ENDL;
     if(m_noMessageBytes > 0)
     {
-        outStream << m_noMessageBytes << " bytes were dropped during parsing." << Qt::endl;
+        outStream << m_noMessageBytes << " bytes were dropped during parsing." << ENDL;
     }
     return out;
 }
+
+#undef ENDL

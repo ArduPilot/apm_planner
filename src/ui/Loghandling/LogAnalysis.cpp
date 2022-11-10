@@ -167,6 +167,31 @@ LogAnalysisAxis::~LogAnalysisAxis()
     QLOG_TRACE() << "LogAnalysisAxis::~LogAnalysisAxis - DTOR";
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+void LogAnalysisAxis::wheelEvent(QWheelEvent *event)
+{
+    QLOG_TRACE() << "LogAnalysisCursor::wheelEvent";
+    if(mSelectedParts == QCPAxis::spAxis)
+    {
+        event->accept();
+        double axisPos = pixelToCoord(event->y());
+
+        if(event->delta() < 0)
+        {
+            scaleRange(1.1, axisPos);
+        }
+        else if(event->delta() > 0)
+        {
+            scaleRange(0.9, axisPos);
+        }
+        mParentPlot->replot(QCustomPlot::rpQueuedReplot);
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+#else
 void LogAnalysisAxis::wheelEvent(QWheelEvent *event)
 {
     QLOG_TRACE() << "LogAnalysisCursor::wheelEvent";
@@ -190,7 +215,7 @@ void LogAnalysisAxis::wheelEvent(QWheelEvent *event)
         event->ignore();
     }
 }
-
+#endif
 //************************************************************************************
 
 const QString LogAnalysis::s_CursorLayerName("cursors");
@@ -1402,7 +1427,7 @@ void LogAnalysis::plotMouseMove(QMouseEvent *evt)
         double key   = iter->p_graph->keyAxis()->pixelToCoord(evt->x());
         int keyIndex = iter->p_graph->findBegin(key);
 
-        outStream << Qt::endl << iter.key();
+        outStream << "\n" << iter.key();
 
         if(insideCursorRange && m_rangeValuesStorage.contains(iter.key()))
         {

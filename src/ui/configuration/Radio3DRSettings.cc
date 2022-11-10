@@ -55,7 +55,13 @@ Radio3DREeprom::Radio3DREeprom():
 bool Radio3DREeprom::setParameter(QString &parameterString)
 {
      QLOG_DEBUG() << "Radio3DREeprom Param:" << parameterString;
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+     QStringList values = parameterString.split("=", QString::SkipEmptyParts);
+#else
      QStringList values = parameterString.split("=", Qt::SkipEmptyParts);
+#endif
+
      bool success = false;
 
      if(values.length() == 0){

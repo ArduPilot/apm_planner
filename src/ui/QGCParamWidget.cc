@@ -466,7 +466,11 @@ void QGCParamWidget::loadParameterInfoCSV(const QString& autopilot, const QStrin
         //QLOG_DEBUG() << "LINE POST-STRIP" << line;
 
         // Keep empty parts here - we still have to act on them
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        QStringList parts = line.split(separator, QString::KeepEmptyParts);
+#else
         QStringList parts = line.split(separator, Qt::KeepEmptyParts);
+#endif
 
         // Each line is:
         // variable name, Min, Max, Default, Multiplier, Enabled (0 = no, 1 = yes), Comment
