@@ -1,6 +1,28 @@
-Release Notes - APM Planner  2.0.30-RC1 - 2022-05-28
+Release Notes - APM Planner  2.0.30-RC2 - 2023-02-04
 
-c1a08af4f build: Update to 2.0.30-rc1. - Arne-W
+
+658c8d205 build: Update to 2.0.30-RC2 - Arne-W
+8a4754a27 Minor cleanup and suprress terrain request log entries - Arne-W
+7897793b7 Build: Updated to QCustomPlot 2.1.0 - Arne-W
+8bda08473 Build: Fixed some clang warnings - Arne-W
+9c8919420 Build: Removed all warnings from external librarys - Arne-W
+d26413b32 Build: Reorganized includes - Arne-W
+072d2082f Build: Add support for Qt versions before 5.15 again - Arne-W
+a2da4a8f9 Build: Removed all deprecated warnings introduced with Qt 5.14 and Qt 5.15 - Arne-W
+0788604b1 Build: Fixed Qt version detection and a type issue - Arne-W
+3b5715f4b mavlink: Suppress also warnings for gcc 7 - Arne-W
+0bd3a796f mavlink: suppress warnings - Andy Piper
+a2c482f8c mavlink: add remaining mission modules - Andy Piper
+c061e9e19 mavlink: add lowheiser - Andy Piper
+f5338764b files: update parameter definitions - Andy Piper
+aba40a91b mavlink: update mavlink to latest version - Andy Piper
+556552e23 Request AUTOPILOT_VERSION using MAV_CMD_REQUEST_MESSAGE - Peter Barker
+981f7507b Vagrant: use focal, Qt deps to 5.15.2, use install-qt - Peter Barker
+339533bfb Imported new Sik uploader from  https://github.com/ArduPilot/SiK ID: 7276fb99c7cbb9bf0bdebe16b48457412edd04e5 - Arne-W
+68a00d13a build: update release_notes for 2.0.30-RC1 - Arne-W
+
+
+efc4ae4f4 build: Update to 2.0.30-rc1. - Arne-W
 92927240a mavlink: Supress gcc warnings when using mavlink includes. - Arne-W
 91737c76d uas: Update to the latest MAVLINK messages - murata
 fb912fb50 mavlink: update mavlink headers - murata
