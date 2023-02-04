@@ -127,8 +127,9 @@ ApmSoftwareConfig::ApmSoftwareConfig(QWidget *parent) : QWidget(parent),
     m_url = next.first;
     m_pdef_filename = next.second;
 
+
+    connect(&m_networkAccessManager, &QNetworkAccessManager::finished, this, &ApmSoftwareConfig::apmParamNetworkReplyFinished);
     m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
-    connect(m_networkReply,SIGNAL(finished()),this,SLOT(apmParamNetworkReplyFinished()));
 
     // Setup Parameter Progress bars
     ui.globalParamProgressBar->setRange(0,100);
@@ -152,9 +153,8 @@ void ApmSoftwareConfig::advModeChanged(bool state)
 
 }
 
-void ApmSoftwareConfig::apmParamNetworkReplyFinished()
+void ApmSoftwareConfig::apmParamNetworkReplyFinished(QNetworkReply *reply)
 {
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply) {
         return;
     }

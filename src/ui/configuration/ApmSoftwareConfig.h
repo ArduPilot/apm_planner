@@ -70,7 +70,7 @@ private slots:
     void activeUASSet(UASInterface *uas);
     void uasConnected();
     void uasDisconnected();
-    void apmParamNetworkReplyFinished();
+    void apmParamNetworkReplyFinished(QNetworkReply *reply);
     void populateTimerTick();
     void updateUAS();
     void reloadView();

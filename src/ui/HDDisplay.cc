@@ -847,10 +847,8 @@ float HDDisplay::refLineWidthToPen(float line)
 // Connect a generic source
 void HDDisplay::addSource(QObject* obj)
 {
-    //genericSources.append(obj);
-    // FIXME XXX HACK
-//    if (plots.size() > 0)
-//    {
+    if (obj)
+    {
         connect(obj, SIGNAL(valueChanged(int,QString,QString,qint8,quint64)), this, SLOT(updateValue(int,QString,QString,qint8,quint64)));
         connect(obj, SIGNAL(valueChanged(int,QString,QString,quint8,quint64)), this, SLOT(updateValue(int,QString,QString,quint8,quint64)));
         connect(obj, SIGNAL(valueChanged(int,QString,QString,qint16,quint64)), this, SLOT(updateValue(int,QString,QString,qint16,quint64)));
@@ -860,16 +858,14 @@ void HDDisplay::addSource(QObject* obj)
         connect(obj, SIGNAL(valueChanged(int,QString,QString,quint64,quint64)), this, SLOT(updateValue(int,QString,QString,quint64,quint64)));
         connect(obj, SIGNAL(valueChanged(int,QString,QString,qint64,quint64)), this, SLOT(updateValue(int,QString,QString,qint64,quint64)));
         connect(obj, SIGNAL(valueChanged(int,QString,QString,double,quint64)), this, SLOT(updateValue(int,QString,QString,double,quint64)));
-//    }
+    }
 }
 
 // Disconnect a generic source
 void HDDisplay::removeSource(QObject* obj)
 {
-    //genericSources.append(obj);
-    // FIXME XXX HACK
-//    if (plots.size() > 0)
-//    {
+    if (obj)
+    {
         disconnect(obj, SIGNAL(valueChanged(int,QString,QString,qint8,quint64)), this, SLOT(updateValue(int,QString,QString,qint8,quint64)));
         disconnect(obj, SIGNAL(valueChanged(int,QString,QString,quint8,quint64)), this, SLOT(updateValue(int,QString,QString,quint8,quint64)));
         disconnect(obj, SIGNAL(valueChanged(int,QString,QString,qint16,quint64)), this, SLOT(updateValue(int,QString,QString,qint16,quint64)));
@@ -879,7 +875,7 @@ void HDDisplay::removeSource(QObject* obj)
         disconnect(obj, SIGNAL(valueChanged(int,QString,QString,quint64,quint64)), this, SLOT(updateValue(int,QString,QString,quint64,quint64)));
         disconnect(obj, SIGNAL(valueChanged(int,QString,QString,qint64,quint64)), this, SLOT(updateValue(int,QString,QString,qint64,quint64)));
         disconnect(obj, SIGNAL(valueChanged(int,QString,QString,double,quint64)), this, SLOT(updateValue(int,QString,QString,double,quint64)));
-//    }
+    }
 }
 
 void HDDisplay::updateValue(const int uasId, const QString& name, const QString& unit, const qint8 value, const quint64 msec)

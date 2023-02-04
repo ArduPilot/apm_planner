@@ -1425,7 +1425,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_terrain_request_t terrainRequest;
             mavlink_msg_terrain_request_decode(&message, &terrainRequest);
 
-            QLOG_INFO() << QString("Terrain Request: lat%1,lon%2 %3").arg(terrainRequest.lat).arg(terrainRequest.lon).arg(terrainRequest.grid_spacing);
+            //QLOG_INFO() << QString("Terrain Request: lat %1,lon %2 %3").arg(terrainRequest.lat).arg(terrainRequest.lon).arg(terrainRequest.grid_spacing);
             break;
         }
         case MAVLINK_MSG_ID_TIMESYNC:
