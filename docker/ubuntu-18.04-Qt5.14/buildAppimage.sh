@@ -27,7 +27,7 @@ SOURCEPATH="/home/build/planner"
 
    #----------------------------------------------
 
-    export VERSION=2.0.30-rc1
+    export VERSION=2.0.30-rc2
 
     # Clean if output already exists
     rm -rf "$BUILDINGPATH"
