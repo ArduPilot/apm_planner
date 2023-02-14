@@ -99,6 +99,7 @@ namespace core {
 
             YandexMapRu = 5000,
             Statkart_Topo = 5500,
+            Statkart_Basemap = 5501,
             Eniro_Topo = 5510,
 
             JapanMap = 6001,
