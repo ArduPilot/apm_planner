@@ -200,10 +200,15 @@ namespace core {
                     }
                     break;
                 case MapType::Statkart_Topo:
-                                    {
-                                        qheader.setRawHeader("Referrer", "http://www.norgeskart.no/");
-                                    }
-                                    break;
+                    {
+                        qheader.setRawHeader("Referrer", "http://norgeskart.no/");
+                    }
+                    break;
+                case MapType::Statkart_Basemap:
+                    {
+                        qheader.setRawHeader("Referrer", "http://norgeskart.no/");
+                    }
+                    break;
                 case MapType::Eniro_Topo:
 					{
 						qheader.setRawHeader("Referrer", "http://eniro.se/");
