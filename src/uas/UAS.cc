@@ -1436,7 +1436,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 //            QLOG_DEBUG() << "timesync tc1:" << timeSync.tc1 << " ts1:" << timeSync.ts1;
 
             mavlink_message_t answer;
-            mavlink_msg_timesync_encode(message.sysid, message.compid, &answer, &timeSync);
+            mavlink_msg_timesync_encode(systemId, componentId, &answer, &timeSync);
             sendMessage(answer);
             break;
         }
