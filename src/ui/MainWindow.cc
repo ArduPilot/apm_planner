@@ -128,8 +128,14 @@ void LogWindowSingleton::removeDebugOutput()
 
 MainWindow* MainWindow::instance()
 {
-    static MainWindow myWindow;
-    return &myWindow;
+    // This singleton impl. is NOT thread safe. Fortunately we do not need
+    // thread safety as the first call is always done @ application start.
+    static MainWindow* instance{nullptr};
+    if(instance == nullptr)
+    {
+        instance = new MainWindow();
+    }
+    return instance;
 }
 
 // inline function definitions
