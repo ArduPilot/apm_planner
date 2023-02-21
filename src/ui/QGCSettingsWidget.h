@@ -34,6 +34,8 @@ private slots:
 
     void mavIdChanged(int id);
 
+    void componentIdChanged(int id);
+
 private:
     void setDataRateLineEdits();
 

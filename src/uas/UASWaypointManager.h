@@ -197,6 +197,8 @@ private:
     bool standalone;                                ///< If standalone is set, do not write to UAS
     quint16 uasid;
 
+    quint8 m_waypointComponentID{0};               ///< Component ID used for waypoint transmission
+
     double m_defaultAcceptanceRadius;                 ///< Default Acceptance Radius in meters
     double m_defaultRelativeAlt;                      ///< Default relative alt in meters
 

@@ -1,6 +1,7 @@
 #include "logging.h"
 #include "configuration.h"
 #include "globalobject.h"
+#include "mavlink.h"
 #include <QSettings>
 #include <QDateTime>
 #include <QDir>
@@ -36,6 +37,7 @@ void GlobalObject::loadSettings()
     m_parameterDirectory = settings.value("PARAMETER_DIRECTORY", defaultParameterDirectory()).toString();
     m_missionDirectory = settings.value("MISSION_DIRECTORY", defaultMissionDirectory()).toString();
     m_mavlinkID = static_cast<quint8>(settings.value("MAVLINK_ID", defaultMavlinkID()).toUInt());
+    m_componentID = static_cast<quint8>(settings.value("COMPONENT_ID", defaultComponentID()).toUInt());
 
     settings.endGroup();
 }
@@ -51,6 +53,7 @@ void GlobalObject::saveSettings()
     settings.setValue("PARAMETER_DIRECTORY", m_parameterDirectory);
     settings.setValue("MISSION_DIRECTORY", m_missionDirectory);
     settings.setValue("MAVLINK_ID", m_mavlinkID);
+    settings.setValue("COMPONENT_ID", m_componentID);
 
     settings.sync();
 }
@@ -203,6 +206,25 @@ quint8 GlobalObject::MavlinkID()
 void GlobalObject::setMavlinkID(const quint8 mavlinkID)
 {
     m_mavlinkID = mavlinkID;
+}
+
+//
+// Component ID of APM Planner when uploading Waypoints via mavlink
+//
+
+quint8 GlobalObject::defaultComponentID()
+{
+    return MAV_COMP_ID_MISSIONPLANNER;
+}
+
+quint8 GlobalObject::ComponentID()
+{
+    return m_componentID;
+}
+
+void GlobalObject::setComponentID(const quint8 componentID)
+{
+    m_componentID = componentID;
 }
 
 

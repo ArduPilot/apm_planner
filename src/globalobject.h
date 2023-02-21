@@ -72,6 +72,10 @@ public:
     quint8 MavlinkID();
     void setMavlinkID(const quint8 mavlinkID);
 
+    quint8 defaultComponentID();
+    quint8 ComponentID();
+    void setComponentID(const quint8 mavlinkID);
+
     QString shareDirectory();
 
 private:
@@ -83,6 +87,7 @@ private:
     QString m_parameterDirectory;
     QString m_missionDirectory;
     quint8  m_mavlinkID;
+    quint8  m_componentID;
 
 };
 
