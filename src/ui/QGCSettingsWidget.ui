@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1014</width>
-    <height>701</height>
+    <height>839</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="general">
       <attribute name="title">
@@ -439,9 +439,14 @@
         <rect>
          <x>10</x>
          <y>70</y>
-         <width>171</width>
+         <width>170</width>
          <height>25</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Mavlink ID of Apm Planner</string>
@@ -450,11 +455,14 @@
       <widget class="QSpinBox" name="MavlinkspinBox">
        <property name="geometry">
         <rect>
-         <x>180</x>
+         <x>160</x>
          <y>70</y>
          <width>100</width>
          <height>25</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mavlink ID used by APM-Planner when communicating with the UAS. Normally there is no need to change the default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="minimum">
         <number>1</number>
@@ -477,6 +485,46 @@
        </property>
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;After changing the settings on this page you have to restart APM Planner&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_15">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>60</y>
+         <width>180</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Mavlink component ID&lt;br/&gt;when uploading waypoints&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="ComponentspinBox">
+       <property name="geometry">
+        <rect>
+         <x>500</x>
+         <y>70</y>
+         <width>100</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Component ID used by APM-Planner when uploading waypoints to a UAS. Normally there is no need to change the default.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>255</number>
+       </property>
+       <property name="value">
+        <number>190</number>
        </property>
       </widget>
      </widget>

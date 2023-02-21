@@ -109,6 +109,10 @@ void QGCSettingsWidget::showEvent(QShowEvent *evt)
         ui->MavlinkspinBox->setValue(QGC::MavlinkID());
         connect(ui->MavlinkspinBox, SIGNAL(valueChanged(int)), this, SLOT(mavIdChanged(int)));
 
+        ui->ComponentspinBox->setValue(QGC::ComponentID());
+        connect(ui->ComponentspinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &QGCSettingsWidget::componentIdChanged);
+        // Ahgrl sowas muss auch für componentID
+
         connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(setActiveUAS(UASInterface*)));
         setActiveUAS(UASManager::instance()->getActiveUAS());
 
@@ -284,6 +288,12 @@ void QGCSettingsWidget::mavIdChanged(int id)
 {
     quint8 localID = static_cast<quint8>(id);
     QGC::setMavlinkID(localID);
+}
+
+void QGCSettingsWidget::componentIdChanged(int id)
+{
+    quint8 localID = static_cast<quint8>(id);
+    QGC::setComponentID(localID);
 }
 
 void QGCSettingsWidget::setBetaRelease(bool state)

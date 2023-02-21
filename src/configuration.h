@@ -133,6 +133,14 @@ const static quint8 defaultMavlinkSystemId = 252; // Using 252 to 'crudely' iden
         GlobalObject::sharedInstance()->setMavlinkID(ID);
     }
 
+    inline quint8 ComponentID(){
+        return GlobalObject::sharedInstance()->ComponentID();
+    }
+
+    inline void setComponentID(const quint8 ID){
+        GlobalObject::sharedInstance()->setComponentID(ID);
+    }
+
 
     //Returns the absolute parth to the files, data, qml support directories
     //It could be in 1 of 2 places under Linux
