@@ -1,4 +1,12 @@
-Release Notes - APM Planner  2.0.30-RC2 - 2023-02-04
+Release Notes - APM Planner  2.0.30-RC3 - 2023-03-11
+
+502cafe80 build: Update to 2.0.30-RC3 - Arne-W
+f8436270a mavlink ComponentID used when handling waypoints can be changed now. - Arne-W
+d53fe3e52 Comms: Fix wrong system ID and component ID for timesync message. Fixes #1270 - Arne-W
+ba4aff29a MainWindow: Fix segfault when calling dtor due to static singleton object. Uses static pointer again. - Arne-W
+1fba2b8fc Added another map source, with Svalbard topomap. - AndKe
+3ac48e51c Added another map source, with Svalbard topomap. - AndKe
+377b57add build: update release_notes for 2.0.30-RC2 - Arne-W
 
 
 658c8d205 build: Update to 2.0.30-RC2 - Arne-W
