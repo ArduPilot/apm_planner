@@ -53,28 +53,40 @@ Build APM Planner
 Linux 
 =====
 
-Building on Linux (tested against Ubuntu 18.04 LTS):
-(Use Qt5.9.5+ suggested Qt5.12.5)
+Install the required packages:
+---------------------------------
 
-(**NOTE:** There is an error in 14.04LTS with libxcb crashing sometimes, try this [fix](https://gist.github.com/slimsag/a26d838ccc4480ce21bc))
 
-(**NOTE:** If you are using 14:04LTS or other linux and instructions below are not working do it ['The Easy Way'](BUILD-EASY.md))
-
-1) Install the required packages: 
+**Packages needed on Ubuntu 18.04 LTS:**
 
 Be sure to run apt-get update first
+
 
 ```
 sudo apt-get update
 sudo apt-get install qt5-qmake qt5-default \
   qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
-  libqt5svg5-dev qtdeclarative5-qtquick2-plugin libqt5serialport5-dev \
+  libqt5svg5-dev qtdeclarative5-qtquick2-plugin \
   libqt5opengl5-dev qml-module-qtquick-controls
 sudo apt-get install git libsdl1.2-dev  libsndfile-dev \
   flite1-dev libssl-dev libudev-dev libsdl2-dev python-serial python-pexpect
 ```
 
-In Fedora (tested against Fedora 21), use:
+
+**Packages needed on Ubuntu 22.04 LTS:**
+
+(**NOTE:** On Ubuntu 22.04 use only the native (ubuntu) Qt version 5.15.3 as the official Qt 5.15.2 which comes with the Qt Maintenance tool only supports OpenSSL 1.1.1 which is not supported by Ubuntu 22.04 anymore.)
+
+Be sure to run apt-get update first
+
+```
+sudo apt-get update
+sudo apt-get install qt5-qmake qtbase5-dev qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev libqt5svg5-dev libqt5opengl5-dev qml-module-qtquick-controls
+sudo apt-get install git libsdl1.2-dev libsndfile1-dev flite1-dev libssl-dev libudev-dev libsdl2-dev
+```
+
+
+**Packages needed on Fedora (tested against Fedora 21), use:**
 
 ```
 sudo yum update
@@ -86,14 +98,16 @@ sudo yum install SDL-devel libsndfile-devel \
   flite-devel openssl-devel libudev-devel SDL2-devel
 ```
 
-2) Clone the repository in your workspace:
+Clone the repository in your workspace:
+------------------------------------------
 
 ```
 cd ~/workspace
 git clone https://github.com/diydrones/apm_planner
 ```
 
-3) Build APM Planner:
+Build APM Planner:
+---------------------
 
 ```
 cd ~/workspace/apm_planner
@@ -101,14 +115,16 @@ qmake apm_planner.pro
 make
 ```
 
-4) Run APM Planner:
+Run APM Planner:
+-------------------
 
 ```
 ./release/apmplanner2
 ```
 
-5) Permanent installation (optional, if you'd like to install APM Planner in a fixed location)
- 
+Permanent installation (optional, if you'd like to install APM Planner in a fixed location):
+-----------------------------------------------------------------------------------------------
+
 There are two ways to do this:
 
 a) Using Debuild:
