@@ -1461,8 +1461,8 @@ QString Plane::MessageFormatter::format(MessageBase::Ptr &p_message)
 QString Plane::MessageFormatter::format(const ModeMessage &message)
 {
     // Interpretation taken from
-    // Ardupilot/ArduPlane/defines.h
-    // last verification 24.01.2016
+    // ardupilot/ArduPlane/mode.h
+    // last verification 03.07.2023
 
     QString output;
     QTextStream outputStream(&output);
@@ -1512,27 +1512,206 @@ QString Plane::MessageFormatter::format(const ModeMessage &message)
         outputStream << "Guided";
         break;
     case Plane::INITIALIZING:
-        outputStream << "Initialising";
+        outputStream << "Initializing";
         break;
     case Plane::QSTABILIZE:
-        outputStream << "QStabilize";
+        outputStream << "Q-Stabilize";
         break;
     case Plane::QHOVER:
-        outputStream << "QHover";
+        outputStream << "Q-Hover";
         break;
     case Plane::QLOITER:
-        outputStream << "QLoiter";
+        outputStream << "Q-Loiter";
         break;
     case Plane::QLAND:
-        outputStream << "QLand";
+        outputStream << "Q-Land";
         break;
     case Plane::QRTL:
-        outputStream << "QRTL";
+        outputStream << "Q-RTL";
+        break;
+    case Plane::QAUTOTUNE:
+        outputStream << "Q-Autotune";
+        break;
+    case Plane::QACRO:
+        outputStream << "Q-Acro";
+        break;
+    case Plane::THERMAL:
+        outputStream << "Thermal";
+        break;
+    case Plane::LOITER_ALT_QLAND:
+        outputStream << "Loiter Alt Q-Land";
         break;
     default:
         outputStream << "Unknown Mode:" << message.getMode();
         break;
     }
+
+    // only if we have a valid reason
+    if (message.getReason() != 0)
+    {
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        outputStream << endl << "by " ;
+#else
+        outputStream << Qt::endl << "by " ;
+#endif
+
+        switch (message.getReason())
+        {
+        case 1:
+            outputStream << "Radio";
+            break;
+        case 2:
+            outputStream << "GCS";
+            break;
+        case 3:
+            outputStream << "Radio-Failsafe";
+            break;
+        case 4:
+            outputStream << "Battery-Failsafe";
+            break;
+        case 5:
+            outputStream << "GCS-Failsafe";
+            break;
+        case 6:
+            outputStream << "EKF-Failsafe";
+            break;
+        case 7:
+            outputStream << "GPS-Glitch";
+            break;
+        case 8:
+            outputStream << "Mission-End";
+            break;
+        case 9:
+            outputStream << "Thr-Land-Escape";
+            break;
+        case 10:
+            outputStream << "Fence-Breached";
+            break;
+        case 11:
+            outputStream << "Terrain-Failsafe";
+            break;
+        case 12:
+            outputStream << "Breake-Timeout";
+            break;
+        case 13:
+            outputStream << "Flip-Complete";
+            break;
+        case 14:
+            outputStream << "Avoidance";
+            break;
+        case 15:
+            outputStream << "Avoidance-Recov";
+            break;
+        case 16:
+            outputStream << "Throw-Complete";
+            break;
+        case 17:
+            outputStream << "Terminate";
+            break;
+        case 18:
+            outputStream << "Toy-Mode";
+            break;
+        case 19:
+            outputStream << "Crash-Failsafe";
+            break;
+        case 20:
+            outputStream << "Soar-FBW-B";
+            break;
+        case 21:
+            outputStream << "Soar-Ther-Det";
+            break;
+        case 22:
+            outputStream << "Soar-Ther-Est";
+            break;
+        case 23:
+            outputStream << "VTOL-Trans-Fail";
+            break;
+        case 24:
+            outputStream << "VTOL-Takeoff-Fail";
+            break;
+        case 25:
+            outputStream << "Failsafe";
+            break;
+        case 26:
+            outputStream << "Init";
+            break;
+        case 27:
+            outputStream << "Surface-Complete";
+            break;
+        case 28:
+            outputStream << "Bad-Depth";
+            break;
+        case 29:
+            outputStream << "Leak-Failsafe";
+            break;
+        case 30:
+            outputStream << "Servotest";
+            break;
+        case 31:
+            outputStream << "Startup";
+            break;
+        case 32:
+            outputStream << "Script";
+            break;
+        case 33:
+            outputStream << "Unavailable";
+            break;
+        case 34:
+            outputStream << "Autorot-Start";
+            break;
+        case 35:
+            outputStream << "Autorot-Bailout";
+            break;
+        case 36:
+            outputStream << "Soar-Too Hight";
+            break;
+        case 37:
+            outputStream << "Soar-Too Low";
+            break;
+        case 38:
+            outputStream << "Soar-Drift";
+            break;
+        case 39:
+            outputStream << "RTL-Done VTOL Land";
+            break;
+        case 40:
+            outputStream << "RTL-Done Wing Land";
+            break;
+        case 41:
+            outputStream << "Mission-Cmd";
+            break;
+        case 42:
+            outputStream << "FRSky-Cmd";
+            break;
+        case 43:
+            outputStream << "Fence-Prev.Mode";
+            break;
+        case 44:
+            outputStream << "QRTL";
+            break;
+        case 45:
+            outputStream << "Auto-RTL Exit";
+            break;
+        case 46:
+            outputStream << "Loter-Alt-QLand";
+            break;
+        case 47:
+            outputStream << "Loiter-Alt-VTOL";
+            break;
+        case 48:
+            outputStream << "Radio-Failsafe-Recov.";
+            break;
+        case 49:
+            outputStream << "QLand-instead-RTL";
+            break;
+        case 50:
+            outputStream << "DeadReckon-Failsafe";
+            break;
+
+        }
+    }
+
     return output;
 }
 
