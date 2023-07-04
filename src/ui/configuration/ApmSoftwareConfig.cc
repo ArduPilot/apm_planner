@@ -155,37 +155,42 @@ void ApmSoftwareConfig::advModeChanged(bool state)
 
 void ApmSoftwareConfig::apmParamNetworkReplyFinished(QNetworkReply *reply)
 {
-    if (!reply) {
+    if (!reply)
+    {
         return;
     }
 
     QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
 
-    if (reply->error()) {
+    if (reply->error())
+    {
         //Error condition, don't attempt to rewrite the file
         QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to retrieve pdef.xml file! Error num:" << reply->error() << ":" << reply->errorString();
         return;
 
-    } else if (!redirectionTarget.isNull()) {
+    }
+    else if (!redirectionTarget.isNull())
+    {
         QUrl newUrl = m_url.resolved(redirectionTarget.toUrl());
         m_redirectCount++;
-        if ( m_redirectCount >= MAX_REDIRECT_COUNT ) {
+        if ( m_redirectCount >= MAX_REDIRECT_COUNT )
+        {
             // Pormpt user is more than 2 redirects to avoid circular endless reidrects blowing up
-            if (QMessageBox::question(this, tr("HTTP"),
-                                        tr("Redirect to %1 ?").arg(newUrl.toString()),
-                                        QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+            if (QMessageBox::question(this, tr("HTTP"), tr("Redirect to %1 ?").arg(newUrl.toString()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
+            {
                 QLOG_WARN() << "Stop redirection at user request";
                 return;
             }
         }
         m_url = newUrl;
         m_networkReply->deleteLater();
-        m_networkReply = NULL;
+        m_networkReply = nullptr;
         m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
-        connect(m_networkReply, SIGNAL(finished()), this, SLOT(apmParamNetworkReplyFinished()));
         return;
 
-    } else {
+    }
+    else
+    {
         QByteArray apmpdef = reply->readAll();
 
         QDir autopilotdir(QGC::appDataDirectory());
@@ -201,7 +206,8 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished(QNetworkReply *reply)
         QLOG_DEBUG() << "Writing (" << m_url.url() << ") to (" << m_apmPdefFilename <<")";
 
         QFile file(m_apmPdefFilename);
-        if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
+        if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        {
             QLOG_ERROR() << "ApmSoftwareConfig::apmParamNetworkReplyFinished()" << "Unable to open" << file.fileName() << "for writing";
             return;
         }
@@ -210,14 +216,14 @@ void ApmSoftwareConfig::apmParamNetworkReplyFinished(QNetworkReply *reply)
         file.close();
     }
     m_networkReply->deleteLater();
-    m_networkReply = NULL;
+    m_networkReply = nullptr;
 
-    if (!pdef_urls.isEmpty()) {
+    if (!pdef_urls.isEmpty())
+    {
         QPair<QUrl, QString> next = pdef_urls.takeFirst();
         m_url = next.first;
         m_pdef_filename = next.second;
         m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
-        connect(m_networkReply, SIGNAL(finished()), this, SLOT(apmParamNetworkReplyFinished()));
     }
 }
 
