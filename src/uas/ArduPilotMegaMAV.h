@@ -123,7 +123,7 @@ public:
     typedef QSharedPointer<MessageBase> Ptr;            /// Shared pointer type
     typedef QPair<QString, QVariant> NameValuePair;     /// Pair of names and values
 
-    MessageBase();
+    MessageBase() = default;
 
     /**
      * @brief MessageBase constructor for setting all params
@@ -134,7 +134,7 @@ public:
      */
     MessageBase(const quint32 index, const double timeStamp, const QString &name, const QColor &color);
 
-    virtual ~MessageBase(){}
+    virtual ~MessageBase() = default;
 
     /**
      * @brief Getter for the index of this message
@@ -179,11 +179,11 @@ public:
 
 protected:
 
-    quint32 m_Index;        /// DB Index of this message
-    double  m_TimeStamp;    /// Timestamp of this message. Should be in seconds
-    QString m_TypeName;     /// Name of this message
-    QString m_TimeFieldName;/// Name of the Timefield
-    QColor  m_Color;        /// Color associated with this message
+    quint32 m_Index {0};          /// DB Index of this message
+    double  m_TimeStamp {0.0};    /// Timestamp of this message. Should be in seconds
+    QString m_TypeName;           /// Name of this message
+    QString m_TimeFieldName;      /// Name of the Timefield
+    QColor  m_Color;              /// Color associated with this message
 };
 
 /**
@@ -461,6 +461,21 @@ public:
     static MessageBase::Ptr CreateMessageOfType(const QString &type, const QList<QPair<QString, QVariant> > &values, const QString &timeFieldName, const double &timeDivider);
 };
 
+
+/**
+ * @brief Namespace for stuf related to more than one vehicle type
+ */
+namespace Universal
+{
+class MessageFormatter
+{
+public:
+    static QString format(const EventMessage &message);
+};
+
+} // namespace universal
+
+
 /**
  *  Namespace for all copter related stuff
  */
@@ -513,8 +528,6 @@ public:
     static QString format(const ErrorMessage &message);
 
     static QString format(const ModeMessage &message);
-
-    static QString format(const EventMessage &message);
 };
 
 } // namespace Copter
