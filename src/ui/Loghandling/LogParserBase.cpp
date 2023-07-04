@@ -312,7 +312,7 @@ void LogParserBase::detectMavType(const QList<NameValuePair> &valuepairlist)
         {
             m_loadedLogType = MAV_TYPE_QUADROTOR;
         }
-        else if (valuepairlist[nameIndex].second == "PTCH2SRV_P")
+        else if (valuepairlist[nameIndex].second == "PTCH2SRV_P" || valuepairlist[nameIndex].second == "KFF_RDDRMIX")
         {
             m_loadedLogType = MAV_TYPE_FIXED_WING;
         }
