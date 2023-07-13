@@ -283,6 +283,7 @@ WindowsBuild : win32 : exists(src/lib/opalrt/OpalApi.h) : exists(C:/OPAL-RT/RT-L
 #
 
 MacBuild {
+    QMAKE_CXXFLAGS += -F./libs/lib/Frameworks 
     INCLUDEPATH += \
         $$BASEDIR/libs/lib/Frameworks/SDL2.framework/Headers
 
