@@ -49,6 +49,18 @@ Build APM Planner
 
 4) Run `open ./release/apmplanner2.app`
 
+To build on Mac OS X (10.6 or later):
+
+Install appdmg
+-----------
+`npm install -g appdmg`
+
+Create a DMG
+-----------
+`./deploy/mac_dmg.sh` 
+
+Dmg file will be located in `./release/apmplanner2.dmg`
+
 
 Linux 
 =====
