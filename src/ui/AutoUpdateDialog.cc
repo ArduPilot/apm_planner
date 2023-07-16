@@ -190,11 +190,6 @@ void AutoUpdateDialog::httpFinished()
          ui->titleLabel->setText(tr("<html><head/><body><p><span style=\" font-size:18pt; font-weight:600;\">Download Complete</span></p></body></html>"));
          ui->questionLabel->setText(tr(""));
 
-#ifdef Q_OS_MACX
-         ui->statusLabel->setText(tr("Mounting Disk Image"));
-#else
-         ui->statusLabel->setText(tr("Start Installation"));
-#endif
          executeDownloadedFile();
 
      }
@@ -207,28 +202,9 @@ void AutoUpdateDialog::httpFinished()
 
 void AutoUpdateDialog::executeDownloadedFile()
 {
-// [TODO] need to check the extension for .dmg or .pkg
-#ifdef Q_OS_MACX
-    QString filelocation = m_targetFile->fileName();
-    QProcess *process = new QProcess();
-    QLOG_INFO() << "LAUNCHING: DiskImageMounter" << filelocation;
-    QStringList args;
-    args.append(filelocation);
-    process->start("/System/Library/CoreServices/DiskImageMounter.app/Contents/MacOS/DiskImageMounter", args);
-    connect(process, SIGNAL(finished(int,QProcess::ExitStatus)),
-            this, SLOT(dmgMounted(int,QProcess::ExitStatus)));
-    process->waitForStarted();
-#elif defined(Q_OS_UNIX)
     QString url = m_targetFile->fileName().mid(0,m_targetFile->fileName().lastIndexOf("/"));
     QLOG_INFO() << "Opening folder for display" << url;
     QDesktopServices::openUrl(url);
-    exit(0);
-#else
-    QLOG_INFO() << "Launching" << m_targetFile->fileName();
-    QDesktopServices::openUrl(QUrl(m_targetFile->fileName(), QUrl::TolerantMode));
-    QTimer::singleShot(3000,this,SLOT(raise()));
-    exit(0);
-#endif
 }
 
 void AutoUpdateDialog::dmgMounted(int result, QProcess::ExitStatus exitStatus)

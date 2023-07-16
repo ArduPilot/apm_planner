@@ -1,7 +1,7 @@
 /*===================================================================
 APM_PLANNER Open Source Ground Control Station
 
-(c) 2014 APM_PLANNER PROJECT <http://www.ardupilot.com>
+(c) 2023 APM_PLANNER PROJECT <http://www.ardupilot.com>
 
 This file is part of the APM_PLANNER project
 
@@ -24,23 +24,19 @@ This file is part of the APM_PLANNER project
  *   @brief AutoUpdate Query Object
  *
  *   @author Bill Bonney <billbonney@communistech.com>
+ *	 @author Arne Wischamnn <wischmann-a@gmx.de>
  */
 
-#ifndef AUTOUPDATECHECK_H
-#define AUTOUPDATECHECK_H
+#pragma once
 
-#include "configuration.h"
 #include <QObject>
 #include <QtNetwork>
-
-const QString AUTOUPDATE_VERSION_OBJECT_LOCATION = "https://firmware.ardupilot.org/Tools/APMPlanner/";
-const QString AUTOUPDATE_VERSION_OBJECT_NAME = "apm_planner_version.json";
 
 class AutoUpdateCheck : public QObject
 {
     Q_OBJECT
 public:
-    explicit AutoUpdateCheck(QObject *parent = 0);
+    explicit AutoUpdateCheck(QObject *parent = nullptr);
     void suppressNoUpdateSignal();
 
 signals:
@@ -50,33 +46,39 @@ signals:
 public slots:
     void forcedAutoUpdateCheck();
     void autoUpdateCheck();
-    void autoUpdateCheck(const QUrl& url);
+    void autoUpdateCheck(const QString &url);
     void cancelDownload();
     void httpFinished();
     void httpReadyRead();
     void updateDataReadProgress(qint64 bytesRead, qint64 totalBytes);
-
+ 
     void setSkipVersion(const QString& version);
     void setAutoUpdateEnabled(bool enabled);
     bool isUpdateEnabled();
 
 private:
+
+    static constexpr const char* c_AutoUpdateVersionObjectLocation {"https://firmware.ardupilot.org/Tools/APMPlanner/"};
+    static constexpr const char* c_AutoUpdateVersionObjectName {"apm_planner_version.json"};
+    static constexpr const char* c_VersionCompareRegEx {"(\\d*\\.\\d+\\.?\\d+)-?(rc\\d)?"};
+
+
     void loadSettings();
     void writeSettings();
     void processDownloadedVersionObject(const QByteArray& versionObject);
     bool compareVersionStrings(const QString& newVersion, const QString& currentVersion);
+    void extractVersion(const QString& versionString, int& major, int& minor, int& build, int& rc);
 
 private:
     QUrl m_url;
     QNetworkAccessManager m_networkAccessManager;
-    QNetworkReply* m_networkReply;
-    bool m_httpRequestAborted;
+    QScopedPointer<QNetworkReply, QScopedPointerDeleteLater> m_networkReplyPtr;
 
-    bool m_isAutoUpdateEnabled;
     QString m_skipVersion;
     QString m_releaseType; // 'stable', 'beta', 'daily'
-    bool m_suppressNoUpdateSignal;
+
+    bool m_isAutoUpdateEnabled {false};
+    bool m_httpRequestAborted {false};
+    bool m_suppressNoUpdateSignal {false};
 
 };
-
-#endif // AUTOUPDATECHECK_H
