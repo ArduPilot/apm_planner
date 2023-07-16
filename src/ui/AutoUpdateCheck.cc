@@ -1,7 +1,7 @@
 /*===================================================================
 APM_PLANNER Open Source Ground Control Station
 
-(c) 2014 APM_PLANNER PROJECT <http://www.ardupilot.com>
+(c) 2023 APM_PLANNER PROJECT <http://www.ardupilot.com>
 
 This file is part of the APM_PLANNER project
 
@@ -24,6 +24,7 @@ This file is part of the APM_PLANNER project
  *   @brief Droneshare API Query Object
  *
  *   @author Bill Bonney <billbonney@communistech.com>
+ *	 @author Arne Wischamnn <wischmann-a@gmx.de>
  */
 
 #include "logging.h"
@@ -33,14 +34,11 @@ This file is part of the APM_PLANNER project
 #include <QMessageBox>
 #include <QSettings>
 #include "QGC.h"
+#include "configuration.h"
 
-static const QString VersionCompareRegEx = "(\\d*\\.\\d+\\.?\\d+)-?(rc\\d)?";
 
 AutoUpdateCheck::AutoUpdateCheck(QObject *parent) :
-    QObject(parent),
-    m_networkReply(NULL),
-    m_httpRequestAborted(false),
-    m_suppressNoUpdateSignal(false)
+    QObject(parent)
 {
     loadSettings();
 }
@@ -54,111 +52,139 @@ void AutoUpdateCheck::forcedAutoUpdateCheck()
 
 void AutoUpdateCheck::autoUpdateCheck()
 {
-    autoUpdateCheck(QUrl(AUTOUPDATE_VERSION_OBJECT_LOCATION
-                          + AUTOUPDATE_VERSION_OBJECT_NAME));
+    QString url(c_AutoUpdateVersionObjectLocation);
+    url.append(c_AutoUpdateVersionObjectName);
+
+    autoUpdateCheck(url);
 }
 
-void AutoUpdateCheck::autoUpdateCheck(const QUrl &url)
+void AutoUpdateCheck::autoUpdateCheck(const QString &url)
 {
-    QLOG_DEBUG() << "retrieve versionobject from server: " + url.toString();
+    QLOG_DEBUG() << "Retrieve versionobject from server: " + url;
 
     m_url = QUrl(url);
+    m_networkReplyPtr.reset(m_networkAccessManager.get(QNetworkRequest(m_url)));
 
-    if (m_networkReply != NULL){
-        delete m_networkReply;
-        m_networkReply = NULL;
-    }
-    m_networkReply = m_networkAccessManager.get(QNetworkRequest(m_url));
-    connect(m_networkReply, SIGNAL(finished()), this, SLOT(httpFinished()));
-    connect(m_networkReply, SIGNAL(downloadProgress(qint64,qint64)),
-            this, SLOT(updateDataReadProgress(qint64,qint64)));
+    connect(m_networkReplyPtr.data(), &QNetworkReply::finished, this, &AutoUpdateCheck::httpFinished);
+    //connect(m_networkReplyPtr.data(), QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, QOverload<QNetworkReply::NetworkError>::of(&AutoUpdateCheck::networkError));
+    connect(m_networkReplyPtr.data(), QOverload<qint64,qint64>::of(&QNetworkReply::downloadProgress), this, QOverload<qint64,qint64>::of(&AutoUpdateCheck::updateDataReadProgress));
 }
 
 void AutoUpdateCheck::cancelDownload()
 {
-     m_httpRequestAborted = true;
-     m_networkReply->abort();
+    QLOG_INFO() << "AutoUpdateCheck download canceled by user.";
+    m_httpRequestAborted = true;
+    m_networkReplyPtr->abort();
+    m_networkReplyPtr.reset();
 }
 
 void AutoUpdateCheck::httpFinished()
 {
-    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     QLOG_DEBUG() << "AutoUpdateCheck::httpFinished()";
-    if (m_httpRequestAborted) {
-        reply->deleteLater();
-        reply = NULL;
+    if (m_httpRequestAborted)
+    {
+        QLOG_DEBUG() << "AutoUpdateCheck was aborted";
+        m_httpRequestAborted = false;
+        return;
+    }
+    if (!m_networkReplyPtr)
+    {
+        QLOG_DEBUG() << "m_networkReplyPtr is null!!";
         return;
     }
 
-    QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    QVariant redirectionTarget = m_networkReplyPtr->attribute(QNetworkRequest::RedirectionTargetAttribute);
 
     // Finished donwloading the version information
-    if (reply->error()) {
+    if (m_networkReplyPtr->error())
+    {
         // [TODO] cleanup download failed
+        QLOG_WARN() << "AutoUpdateCheck::httpFinished() received an error: " << m_networkReplyPtr->errorString();
 #ifdef QT_DEBUG
-        QMessageBox::information(NULL, tr("HTTP"),
-                                 tr("Download failed: %1.")
-                                 .arg(m_networkReply->errorString()));
+        QMessageBox::information(NULL, tr("HTTP"), tr("Download failed: %1.").arg(m_networkReplyPtr->errorString()));
 #endif
-    } else if (!redirectionTarget.isNull()) {
-        QUrl newUrl = reply->url().resolved(redirectionTarget.toUrl());
-        QNetworkReply* newReply = m_networkAccessManager.get(QNetworkRequest(newUrl));
-        QLOG_DEBUG() << "Redirecting to " << newUrl;
+    }
+    else if (!redirectionTarget.isNull())
+    {
+        // we have a redirection - disconnect the signals
+        disconnect(m_networkReplyPtr.data(), &QNetworkReply::finished, this, &AutoUpdateCheck::httpFinished);
+        disconnect(m_networkReplyPtr.data(), QOverload<qint64,qint64>::of(&QNetworkReply::downloadProgress), this, QOverload<qint64,qint64>::of(&AutoUpdateCheck::updateDataReadProgress));
 
-        connect(newReply, SIGNAL(finished()), this, SLOT(httpFinished()));
-        connect(newReply, SIGNAL(downloadProgress(qint64,qint64)),
-                this, SLOT(updateDataReadProgress(qint64,qint64)));
-        reply->deleteLater();
-        m_networkReply = newReply;
+        // create new netowrk request
+        QUrl newUrl = m_networkReplyPtr->url().resolved(redirectionTarget.toUrl());
+        QLOG_DEBUG() << "Redirecting to " << newUrl;
+        m_networkReplyPtr.reset(m_networkAccessManager.get(QNetworkRequest(newUrl)));
+        m_httpRequestAborted = false;
+
+        // and connect to new request
+        connect(m_networkReplyPtr.data(), &QNetworkReply::finished, this, &AutoUpdateCheck::httpFinished);
+        connect(m_networkReplyPtr.data(), QOverload<qint64,qint64>::of(&QNetworkReply::downloadProgress), this, QOverload<qint64,qint64>::of(&AutoUpdateCheck::updateDataReadProgress));
         return;
-    } else {
-        // Process downloadeed object
-        processDownloadedVersionObject(m_networkReply->readAll());
+    }
+    else
+    {
+        // Process downloaded object
+        processDownloadedVersionObject(m_networkReplyPtr->readAll());
     }
 
-    m_networkReply->deleteLater();
-    m_networkReply = NULL;
+    // the request is not needed anymore
+    m_networkReplyPtr.reset();
 }
 
 void AutoUpdateCheck::processDownloadedVersionObject(const QByteArray& versionObject)
 {
     QJsonParseError jsonParseError;
     QJsonDocument jdoc = QJsonDocument::fromJson(versionObject, &jsonParseError);
-    if (jsonParseError.error != QJsonParseError::NoError){
+    if (jsonParseError.error != QJsonParseError::NoError)
+    {
         QLOG_ERROR() << "Unable to open json version object: " << jsonParseError.errorString();
         QLOG_ERROR() << "Error evaluating version object";
         return;
     }
-    QJsonObject json = jdoc.object();
 
+    QJsonObject json = jdoc.object();
     QJsonArray releases = json["releases"].toArray();
-    foreach(QJsonValue release, releases){
+
+    bool foundUpdate = false;
+
+    for (const auto& release : qAsConst(releases))
+    {
         const QJsonObject& releaseObject = release.toObject();
         QString platform = releaseObject["platform"].toString();
         QString type = releaseObject["type"].toString();
         QString version = releaseObject["version"].toString();
         QString name = releaseObject["name"].toString();
         QString locationUrl = releaseObject["url"].toString();
+        QString platt = define2string(APP_PLATFORM);
 
-        if ((platform == define2string(APP_PLATFORM)) && (type == m_releaseType)){
-            if (compareVersionStrings(version,QGC_APPLICATION_VERSION)){
-                QLOG_DEBUG() << "Found New Version: " << platform << " "
-                            << type << " " << version << " " << locationUrl;
-                if(m_skipVersion != version){
+        if (platform == platt)
+        {
+            if (compareVersionStrings(version,QGC_APPLICATION_VERSION))
+            {
+                foundUpdate = true;
+                QLOG_DEBUG() << "Found New Version: " << platform << " " << type << " " << version << " " << locationUrl;
+                if(m_skipVersion != version)
+                {
                     emit updateAvailable(version, type, locationUrl, name);
-                } else {
+                } else
+                {
                     QLOG_INFO() << "Version Skipped at user request";
                 }
                 break;
-            } else {
-                QLOG_INFO() << "no new update available";
-                if (!m_suppressNoUpdateSignal){
-                    emit noUpdateAvailable();
-                }
-                m_suppressNoUpdateSignal = false;
             }
         }
     }
+
+    if (!foundUpdate)
+    {
+        QLOG_INFO() << "No new update available";
+        if (!m_suppressNoUpdateSignal)
+        {
+            emit noUpdateAvailable();
+        }
+    }
+
+    m_suppressNoUpdateSignal = false;
 }
 
 void AutoUpdateCheck::httpReadyRead()
@@ -175,99 +201,56 @@ void AutoUpdateCheck::updateDataReadProgress(qint64 bytesRead, qint64 totalBytes
 
 bool AutoUpdateCheck::compareVersionStrings(const QString& newVersion, const QString& currentVersion)
 {
-    // [TODO] DRY this out by creating global function for use in APM Firmware as well
-    int newMajor = 0,newMinor = 0,newBuild = 0;
-    int currentMajor = 0, currentMinor = 0,currentBuild = 0;
+    int newMajor = 0;
+    int newMinor = 0;
+    int newBuild = 0;
+    int newRc    = 0;
 
-    QString newBuildSubMoniker, oldBuildSubMoniker; // holds if the build is a rc or dev build
+    int currentMajor = 0;
+    int currentMinor = 0;
+    int currentBuild = 0;
+    int currentRc    = 0;
 
+    extractVersion(newVersion, newMajor, newMinor, newBuild, newRc);
+    extractVersion(currentVersion, currentMajor, currentMinor, currentBuild, currentRc);
 
-    QRegExp versionEx(VersionCompareRegEx);
-    QString versionstr = "";
-    int pos = versionEx.indexIn(newVersion);
-    if (pos > -1) {
-        // Split first sub-element to get numercal major.minor.build version
-        QLOG_DEBUG() << "Detected newVersion:" << versionEx.capturedTexts()<< " count:"
-                     << versionEx.captureCount();
-        versionstr = versionEx.cap(1);
-        QStringList versionList = versionstr.split(".");
-        newMajor = versionList[0].toInt();
-        newMinor = versionList[1].toInt();
-        if (versionList.size() > 2){
-            newBuild = versionList[2].toInt();
-        }
-        // second subelement is either rcX candidate or developement build
-        if (versionEx.captureCount() == 2)
-            newBuildSubMoniker = versionEx.cap(2);
-    }
-
-    QRegExp versionEx2(VersionCompareRegEx);
-    versionstr = "";
-    pos = versionEx2.indexIn(currentVersion);
-    if (pos > -1) {
-        QLOG_DEBUG() << "Detected currentVersion:" << versionEx2.capturedTexts() << " count:"
-                     << versionEx2.captureCount();
-        versionstr = versionEx2.cap(1);
-        QStringList versionList = versionstr.split(".");
-        currentMajor = versionList[0].toInt();
-         currentMinor = versionList[1].toInt();
-        if (versionList.size() > 2){
-            currentBuild = versionList[2].toInt();
-        }
-        // second subelement is either rcX candidate or developement build
-        if (versionEx2.captureCount() == 2)
-            oldBuildSubMoniker = versionEx2.cap(2);
-    }
-
-    QLOG_DEBUG() << "Verison Compare:" <<QString().asprintf(" New Version %d.%d.%d compared to Old Version %d.%d.%d",
-                                                 newMajor,newMinor,newBuild, currentMajor, currentMinor,currentBuild);
-    if (newMajor>currentMajor){
+    QLOG_DEBUG() << "Comparing " <<QString().asprintf("new version %d.%d.%d-rc%d with current Version %d.%d.%d-rc%d",
+                                                             newMajor,newMinor,newBuild,newRc, currentMajor, currentMinor,currentBuild, currentRc);
+    if (newMajor > currentMajor)
+    {
         // A Major release
         return true;
-    } else if (newMajor == currentMajor){
-        if (newMinor >  currentMinor){
+    } else if (newMajor == currentMajor)
+    {
+        if (newMinor > currentMinor)
+        {
             // A minor release
             return true;
-        } else if (newMinor ==  currentMinor){
+        } else if (newMinor ==  currentMinor)
+        {
             if (newBuild > currentBuild)
+            {
                 // new build (or tiny release)
                 return true;
-            else if (newBuild == currentBuild) {
+            }
+            else if (newBuild == currentBuild)
+            {
                 // Check if RC is newer
                 // If the version isn't newer, it might be a new release candidate
-                int newRc = 0, oldRc = 0;
-
-                if (newBuildSubMoniker.startsWith("RC", Qt::CaseInsensitive)
-                        && oldBuildSubMoniker.startsWith("RC", Qt::CaseInsensitive)) {
-                    QRegExp releaseNumber("\\d+");
-                    pos = releaseNumber.indexIn(newBuildSubMoniker);
-                    if (pos > -1) {
-                        QLOG_DEBUG() << "Detected newRc:" << versionEx.capturedTexts();
-                        newRc = releaseNumber.cap(0).toInt();
-                    }
-
-                    QRegExp releaseNumber2("\\d+");
-                    pos = releaseNumber2.indexIn(oldBuildSubMoniker);
-                    if (pos > -1) {
-                        QLOG_DEBUG() << "Detected oldRc:" << versionEx2.capturedTexts();
-                        oldRc = releaseNumber2.cap(0).toInt();
-                    }
-
-                    if (newRc > oldRc)
-                        return true;
-                }
-
-                if (newBuildSubMoniker.length() == 0
-                        && oldBuildSubMoniker.startsWith("RC", Qt::CaseInsensitive)) {
+                if (newRc > currentRc)
+                {
+                    return true;
+                } else if (newRc == 0)
+                {
+                    // 2.0.20 is newer than 2.0.20-rc3
                     QLOG_DEBUG() << "Stable build newer that last unstable release candidate ";
-                    return true; // this means a new stable build of the unstable rc is available
+                    return true;
                 }
             }
         }
     }
 
-
-
+    QLOG_DEBUG() << "Current version is still newest one.";
     return false;
 }
 
@@ -314,4 +297,38 @@ void AutoUpdateCheck::writeSettings()
 void AutoUpdateCheck::suppressNoUpdateSignal()
 {
     m_suppressNoUpdateSignal = true;
+}
+
+void AutoUpdateCheck::extractVersion(const QString& versionString, int& major, int& minor, int& build, int& rc)
+{
+    QRegExp versionEx(c_VersionCompareRegEx);
+    int pos = versionEx.indexIn(versionString);
+    if (pos > -1)
+    {
+        // Split first sub-element to get numercal major.minor.build version
+        QLOG_DEBUG() << "parsing version:" << versionEx.capturedTexts();
+        QString version = versionEx.cap(1);
+        QStringList versionList = version.split(".");
+        major = versionList[0].toInt();
+        minor = versionList[1].toInt();
+        if (versionList.size() > 2)
+        {
+            build = versionList[2].toInt();
+        }
+        // second subelement is either rcX candidate or developement build
+        if (versionEx.captureCount() == 2)
+        {
+            QString newBuildSubMoniker = versionEx.cap(2);
+
+            if (newBuildSubMoniker.startsWith("RC", Qt::CaseInsensitive))
+            {
+                QRegExp releaseNumber("\\d+");
+                pos = releaseNumber.indexIn(newBuildSubMoniker);
+                if (pos > -1)
+                {
+                    rc = releaseNumber.cap(0).toInt();
+                }
+            }
+        }
+    }
 }

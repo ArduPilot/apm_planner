@@ -5,74 +5,56 @@
         {
             "platform": "osx",
             "type": "stable",
-            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/apm_planner_2.0.24_osx.dmg",
-            "name" : "apm_planner_2.0.24_osx.dmg",
-            "version" : "2.0.24",
+            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/v2.0/apm_planner_2.0.26_osx.dmg",
+            "name" : "apm_planner_2.0.26_osx.dmg",
+            "version" : "2.0.26",
             "sha" : "",
-            "date" : "2016-10-04"
+            "date" : "2018-07-09"
         },
         {
             "platform": "win",
             "type": "stable",
-            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/apm_planner_2.0.24_win.exe",
-            "name" : "apm_planner_2.0.24_win.exe",
-            "version": "2.0.24",
+            "url": "https://github.com/ArduPilot/apm_planner/releases/download/2.0.28-rc1/apm_planner_2.0.28-rc1_win64.exe",
+            "name" : "apm_planner_2.0.28-rc1_win64.exe",
+            "version": "2.0.28",
             "sha" : "",
-            "date" : "2015-10-04"
+            "date" : "2020-05-16"
         },
         {
-            "platform": "ubuntu_trusty",
+            "platform": "ubuntu64",
             "type": "stable",
-            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/archive/apm_planner_2.0.18_ubuntu_trusty.deb",
-            "name" : "apm_planner_2.0.18_ubuntu_trusty.deb",
-            "version": "2.0.18",
+            "url": "https://github.com/ArduPilot/apm_planner/releases/download/2.0.29-rc1/APM-Planner_2-2.0.29-rc1-x86_64.AppImage",
+            "name" : "APM-Planner_2-2.0.29-rc1-x86_64.AppImage",
+            "version": "2.0.29",
             "sha" : "",
-            "date" : "2015-07-25"
-        },
-        {
-            "platform": "ubuntu_trusty64",
-            "type": "stable",
-            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/archive/apm_planner_2.0.18_ubuntu_trusty64.deb",
-            "name" : "apm_planner_2.0.18_ubuntu_trusty64.deb",
-            "version": "2.0.18",
-            "sha" : "",
-            "date" : "2015-07-25"
+            "date" : "2021-04-11"
         },
         {
             "platform": "osx",
             "type": "beta",
-            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/beta/apm_planner_2.0.24_osx.dmg",
-            "name" : "apm_planner_2.0.24_osx.dmg",
-            "version" : "2.0.24",
+            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/v2.0/apm_planner_2.0.30-rc1_osx.dmg",
+            "name" : "apm_planner_2.0.30-rc1_osx.dmg",
+            "version" : "2.0.30-rc1",
             "sha" : "",
-            "date" : "2016-10-03"
+            "date" : "2021-10-31"
         },
         {
             "platform": "win",
             "type": "beta",
-            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/beta/apm_planner_2.0.24_win.exe",
-            "name" : "apm_planner_2.0.24_win.exe",
-            "version": "2.0.24",
+            "url": "https://github.com/ArduPilot/apm_planner/releases/download/2.0.28-rc1/apm_planner_2.0.28-rc1_win64.exe",
+            "name" : "apm_planner_2.0.28-rc1_win64.exe",
+            "version": "2.0.28",
             "sha" : "",
-            "date" : "2016-10-03"
+            "date" : "2020-05-16"
         },
         {
-            "platform": "ubuntu_trusty",
+            "platform": "ubuntu64",
             "type": "beta",
-            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/beta/archived/apm_planner_2.0.19-rc4_ubuntu_trusty.deb",
-            "name" : "apm_planner_2.0.19-rc4_ubuntu_trusty.deb",
-            "version": "2.0.19-rc4",
+            "url": "https://github.com/ArduPilot/apm_planner/releases/download/2.0.30-rc3/APM-Planner_2-2.0.30-rc3-x86_64.AppImage",
+            "name" : "APM-Planner_2-2.0.30-rc3-x86_64.AppImage",
+            "version": "2.0.30-rc3",
             "sha" : "",
-            "date" : "2015-10-20"
-        },
-        {
-            "platform": "ubuntu_trusty64",
-            "type": "beta",
-            "url": "https://firmware.ardupilot.org/Tools/APMPlanner/beta/archived/apm_planner_2.0.19-rc4_ubuntu_trusty64.deb",
-            "name" : "apm_planner_2.0.19-rc4_ubuntu_trusty64.deb",
-            "version": "2.0.19-rc4",
-            "sha" : "",
-            "date" : "2015-10-20"
+            "date" : "2023-03-11"
         }
     ]
 }
