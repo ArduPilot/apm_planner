@@ -49,6 +49,6 @@ Push changes to your repo
 if you update Library, framework or third parties 
 Clone your repo in a different folder and compile+run your new code. This process will ensure that you not missing any file.
 
-Last send a [pull request]
+Last send a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
 From here it's on us, we will reply with suggestions changes or improvements, we will try to reply as fast as we can.
