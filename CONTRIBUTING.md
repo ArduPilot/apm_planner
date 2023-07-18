@@ -47,7 +47,7 @@ if you fix an issue, please add 'Fixes #<issue_number> to the short description 
 Push changes to your repo 
 
 if you update Library, framework or third parties 
-Clone your repo in a different folder and compile+run your new code. This process will ensure that you not missing any file.
+Clone your repo in a different folder and compile+run your new code. This process ensures that you do not forget any file.
 
 Last send a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
