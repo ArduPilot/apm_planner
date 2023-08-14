@@ -44,6 +44,11 @@ if you fix an issue, please add 'Fixes #<issue_number> to the short description 
 
 ### Push your changes
 
-Push changes to your repo and send a [pull request]
+Push changes to your repo 
+
+if you update Library, framework or third parties 
+Clone your repo in a different folder and compile+run your new code. This process ensures that you do not forget any file.
+
+Last send a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
 From here it's on us, we will reply with suggestions changes or improvements, we will try to reply as fast as we can.

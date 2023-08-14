@@ -1,4 +1,21 @@
-Release Notes - APM Planner  2.0.30-RC3 - 2023-03-11
+Release Notes - APM Planner  2.0.30 - 2023-07-28
+
+5aa9f1810 build: Update to 2.0.30 - Arne-W
+e5acf25bf Fix and refactor Auto update check - Arne-W
+270b3defe Correct English - Iragne
+476439a82 Add Github link to the PR workflow - Iragne
+84e290aae Improve documentation for PR associated to 3rd parties libs or framework - Iragne
+b7e7dc782 Build: Correction of the “.gitignore” and uploading missing file for SDL2 Fixes #1292 - Iragne
+f6bb8962d GraphView: Updated event messages and added fixed wing support. - Arne-W
+7244b624c GraphView: Update mode messages for fixed wing and added support for mode change reasons. - Arne-W
+2ee0b7664 GraphView: Improved detection of fixed wing mavtype while logparsing. - Arne-W
+44b3bd735 Param Setup: Fix some problems with connecting to Qt signals. - Arne-W
+6fcb63a1c  Build: Update SDL2 and command line to compile. Fixes #1289 #1290 - Iragne
+6bd09e4f2 Update README.md for building on Ubuntu 22.04 - Arne-W
+6d2b96ba0 Update the framework for Mac Undefined symbols for architecture arm64 - ja
+634e81353 Delete old SDK - ja
+d9f0286a4 build: update release_notes for 2.0.30-RC3 - Arne-W
+
 
 502cafe80 build: Update to 2.0.30-RC3 - Arne-W
 f8436270a mavlink ComponentID used when handling waypoints can be changed now. - Arne-W

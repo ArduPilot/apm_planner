@@ -34,7 +34,6 @@ This file is part of the QGROUNDCONTROL project
 #include "LinkManager.h"
 
 
-
 #include <QString>
 #include <QDir>
 #include <QDesktopServices>
@@ -432,9 +431,6 @@ void ArduPilotMegaMAV::playArmStateChangedAudioMessage(bool armedState)
 
 //******************* Classes for Sepcial message handling **************************
 
-MessageBase::MessageBase() : m_Index(0), m_TimeStamp(0)
-{}
-
 MessageBase::MessageBase(const quint32 index, const double timeStamp, const QString &name, const QColor &color) :
     m_Index(index),
     m_TimeStamp(timeStamp),
@@ -794,6 +790,252 @@ MessageBase::Ptr MessageFactory::CreateMessageOfType(const QString &type, const 
 
 //******** Message Formatters ********
 
+
+QString Universal::MessageFormatter::format(const EventMessage &message)
+{
+    // Interpretation taken from Ardupilot
+    // last verification 11.07.2023
+
+    QString output;
+    QTextStream outputStream(&output);
+
+    switch(message.getEventID())
+    {
+    case 7:
+        outputStream << "AP-State";
+        break;
+    case 8:
+        outputStream << "System time set";
+        break;
+    case 9:
+        outputStream << "Init simple bearing";
+        break;
+    case 10:
+        outputStream << "Armed";
+        break;
+    case 11:
+        outputStream << "Disarmed";
+        break;
+    case 15:
+        outputStream << "Auto-Armed";
+        break;
+    case 16:
+        outputStream << "Takeoff";
+        break;
+    case 17:
+        outputStream << "Land Complete Maybe";
+        break;
+    case 18:
+        outputStream << "Land Complete";
+        break;
+    case 19:
+        outputStream << "Lost GPS";
+        break;
+    case 21:
+        outputStream << "Flip Start";
+        break;
+    case 22:
+        outputStream << "Flip End";
+        break;
+    case 25:
+        outputStream << "Home Set";
+        break;
+    case 26:
+        outputStream << "Simple Mode ON";
+        break;
+    case 27:
+        outputStream << "Simple Mode OFF";
+        break;
+    case 28:
+        outputStream << "Not Landed";
+        break;
+    case 29:
+        outputStream << "SuperSimple Mode ON";
+        break;
+    case 30:
+        outputStream << "Autotune Initialized";
+        break;
+    case 31:
+        outputStream << "Autotune Off";
+        break;
+    case 32:
+        outputStream << "Autotune Restart";
+        break;
+    case 33:
+        outputStream << "Autotune Success";
+        break;
+    case 34:
+        outputStream << "Autotune Failed";
+        break;
+    case 35:
+        outputStream << "Autotune Reached Limit";
+        break;
+    case 36:
+        outputStream << "Autotune Pilot Testing";
+        break;
+    case 37:
+        outputStream << "Autotune Saved Gains";
+        break;
+    case 38:
+        outputStream << "Save Trim";
+        break;
+    case 39:
+        outputStream << "Save/Add WP";
+        break;
+    case 40:
+        outputStream << "WP Clear Mission RTL";
+        break;
+    case 41:
+        outputStream << "Fence enable";
+        break;
+    case 42:
+        outputStream << "Fence disable";
+        break;
+    case 43:
+        outputStream << "Acro Trainer disabled";
+        break;
+    case 44:
+        outputStream << "Acro Trainer leveling";
+        break;
+    case 45:
+        outputStream << "Acro Trainer limited";
+        break;
+    case 46:
+        outputStream << "EPM grab";
+        break;
+    case 47:
+        outputStream << "EPM realease";
+        break;
+    case 48:
+        outputStream << "EPM neutral";      // Deprecated
+        break;
+    case 49:
+        outputStream << "Parachute disabled";
+        break;
+    case 50:
+        outputStream << "Parachute enabled";
+        break;
+    case 51:
+        outputStream << "Parachute released";
+        break;
+    case 52:
+        outputStream << "Landing gear delpoyed";
+        break;
+    case 53:
+        outputStream << "Landing gear retracted";
+        break;
+    case 54:
+        outputStream << "Motor emergency stop";
+        break;
+    case 55:
+        outputStream << "Motor emergency stop clear";
+        break;
+    case 56:
+        outputStream << "Motor interlock disabled";
+        break;
+    case 57:
+        outputStream << "Motor interlock enabled";
+        break;
+    case 58:
+        outputStream << "Motor runup complete";         // heli only
+        break;
+    case 59:
+        outputStream << "Motor speed below critical";   // heli only
+        break;
+    case 60:
+        outputStream << "EKF alt reset";
+        break;
+    case 61:
+        outputStream << "Land cancelled by pilot";
+        break;
+    case 62:
+        outputStream << "EKF yaw reset";
+        break;
+    case 63:
+        outputStream << "Avoidance ADSB enable";
+        break;
+    case 64:
+        outputStream << "Avoidance ADSB disable";
+        break;
+    case 65:
+        outputStream << "Avoidance proximity enable";
+        break;
+    case 66:
+        outputStream << "Avoidance proximity disable";
+        break;
+    case 67:
+        outputStream << "Primary GPS changed";
+        break;
+    case 68:
+        outputStream << "Winch relaxed";
+        break;
+    case 69:
+        outputStream << "Winch length control";
+        break;
+    case 70:
+        outputStream << "Winch rate control";
+        break;
+    case 71:
+        outputStream << "ZigZag store A";
+        break;
+    case 72:
+        outputStream << "ZigZag store B";
+        break;
+    case 73:
+        outputStream << "Land repo active";
+        break;
+    case 74:
+        outputStream << "Standby enable";
+        break;
+    case 75:
+        outputStream << "Standby disable";
+        break;
+
+    case 81:
+        outputStream << "Fence floor disable";
+        break;
+    case 82:
+        outputStream << "Fence floor enable";
+        break;
+
+    case 85:
+        outputStream << "EKF src primary";
+        break;
+    case 86:
+        outputStream << "EKF src secondary";
+        break;
+    case 87:
+        outputStream << "EKF src tertiary";
+        break;
+
+    case 90:
+        outputStream << "Airspeed primary changed";
+        break;
+
+    case 163:
+        outputStream << "Surfaced";
+        break;
+    case 164:
+        outputStream << "Not surfaced";
+        break;
+    case 165:
+        outputStream << "Bottomed";
+        break;
+    case 166:
+        outputStream << "Not bottomed";
+        break;
+
+
+    default:
+        outputStream << "Unknown Event: " << message.getEventID();
+        break;
+    }
+
+    return output;
+}
+
+//********
+
 QString Copter::MessageFormatter::format(MessageBase::Ptr &p_message)
 {
     QString retval("Unknown Type");
@@ -810,7 +1052,8 @@ QString Copter::MessageFormatter::format(MessageBase::Ptr &p_message)
         }
         else if (p_message->typeName() == EventMessage::TypeName)
         {
-            retval = format(*dynamic_cast<EventMessage*>(p_message.data()));
+            // Event messages are the same for plane and copters
+            retval = Universal::MessageFormatter::format(*dynamic_cast<EventMessage*>(p_message.data()));
         }
         else // The msgMessage does not need a formatter -> handled by else
         {
@@ -1241,210 +1484,22 @@ QString Copter::MessageFormatter::format(const ModeMessage &message)
     return output;
 }
 
-QString Copter::MessageFormatter::format(const EventMessage &message)
-{
-    // Interpretation taken from
-    // Ardupilot/ArduCopter/defines.h
-    // last verification 04.03.2018
-
-    QString output;
-    QTextStream outputStream(&output);
-
-    switch(message.getEventID())
-    {
-    case 7:
-        outputStream << "AP-State";
-        break;
-    case 8:
-        outputStream << "System time set";
-        break;
-    case 9:
-        outputStream << "Init simple bearing";
-        break;
-    case 10:
-        outputStream << "Armed";
-        break;
-    case 11:
-        outputStream << "Disarmed";
-        break;
-    case 15:
-        outputStream << "Auto-Armed";
-        break;
-    case 16:
-        outputStream << "Takeoff";
-        break;
-    case 17:
-        outputStream << "Land Complete Maybe";
-        break;
-    case 18:
-        outputStream << "Land Complete";
-        break;
-    case 19:
-        outputStream << "Lost GPS";
-        break;
-    case 21:
-        outputStream << "Flip Start";
-        break;
-    case 22:
-        outputStream << "Flip End";
-        break;
-    case 25:
-        outputStream << "Home Set";
-        break;
-    case 26:
-        outputStream << "Simple Mode ON";
-        break;
-    case 27:
-        outputStream << "Simple Mode OFF";
-        break;
-    case 28:
-        outputStream << "Not Landed";
-        break;
-    case 29:
-        outputStream << "SuperSimple Mode ON";
-        break;
-    case 30:
-        outputStream << "Autotune Initialized";
-        break;
-    case 31:
-        outputStream << "Autotune Off";
-        break;
-    case 32:
-        outputStream << "Autotune Restart";
-        break;
-    case 33:
-        outputStream << "Autotune Success";
-        break;
-    case 34:
-        outputStream << "Autotune Failed";
-        break;
-    case 35:
-        outputStream << "Autotune Reached Limit";
-        break;
-    case 36:
-        outputStream << "Autotune Pilot Testing";
-        break;
-    case 37:
-        outputStream << "Autotune Saved Gains";
-        break;
-    case 38:
-        outputStream << "Save Trim";
-        break;
-    case 39:
-        outputStream << "Save/Add WP";
-        break;
-    case 40:
-        outputStream << "WP Clear Mission RTL";
-        break;
-    case 41:
-        outputStream << "Fence enable";
-        break;
-    case 42:
-        outputStream << "Fence disable";
-        break;
-    case 43:
-        outputStream << "Acro Trainer disabled";
-        break;
-    case 44:
-        outputStream << "Acro Trainer leveling";
-        break;
-    case 45:
-        outputStream << "Acro Trainer limited";
-        break;
-    case 46:
-        outputStream << "EPM grab";
-        break;
-    case 47:
-        outputStream << "EPM realease";
-        break;
-    case 48:
-        outputStream << "EPM neutral";      // Deprecated
-        break;
-    case 49:
-        outputStream << "Parachute disabled";
-        break;
-    case 50:
-        outputStream << "Parachute enabled";
-        break;
-    case 51:
-        outputStream << "Parachute released";
-        break;
-    case 52:
-        outputStream << "Landing gear delpoyed";
-        break;
-    case 53:
-        outputStream << "Landing gear retracted";
-        break;
-    case 54:
-        outputStream << "Motor emergency stop";
-        break;
-    case 55:
-        outputStream << "Motor emergency stop clear";
-        break;
-    case 56:
-        outputStream << "Motor interlock disabled";
-        break;
-    case 57:
-        outputStream << "Motor interlock enabled";
-        break;
-    case 58:
-        outputStream << "Motor runup complete";         // heli only
-        break;
-    case 59:
-        outputStream << "Motor speed below critical";   // heli only
-        break;
-    case 60:
-        outputStream << "EKF alt reset";
-        break;
-    case 61:
-        outputStream << "Land cancelled by pilot";
-        break;
-    case 62:
-        outputStream << "EKF yaw reset";
-        break;
-    case 63:
-        outputStream << "Avoidance ADSB enable";
-        break;
-    case 64:
-        outputStream << "Avoidance ADSB disable";
-        break;
-    case 65:
-        outputStream << "Avoidance proximity enable";
-        break;
-    case 66:
-        outputStream << "Avoidance proximity disable";
-        break;
-    case 67:
-        outputStream << "Primary GPS changed";
-        break;
-    case 68:
-        outputStream << "Winch relaxed";
-        break;
-    case 69:
-        outputStream << "Winch length control";
-        break;
-    case 70:
-        outputStream << "Winch rate control";
-        break;
-    default:
-        outputStream << "Unknown Event: " << message.getEventID();
-        break;
-    }
-
-    return output;
-}
-
+//********
 
 QString Plane::MessageFormatter::format(MessageBase::Ptr &p_message)
 {
     QString retval("Unknown Type");
     if (p_message)
     {
-        // Only mode message formatter is implemented for planes
         if (p_message->typeName() == ModeMessage::TypeName)
         {
             // can use the internal pointer here avoiding dynamic pointer cast with refcount increase
             retval = format(*dynamic_cast<ModeMessage*>(p_message.data()));
+        }
+        else if (p_message->typeName() == EventMessage::TypeName)
+        {
+            // Event messages are the same for plane and copters
+            retval = Universal::MessageFormatter::format(*dynamic_cast<EventMessage*>(p_message.data()));
         }
         else
         {
@@ -1461,8 +1516,8 @@ QString Plane::MessageFormatter::format(MessageBase::Ptr &p_message)
 QString Plane::MessageFormatter::format(const ModeMessage &message)
 {
     // Interpretation taken from
-    // Ardupilot/ArduPlane/defines.h
-    // last verification 24.01.2016
+    // ardupilot/ArduPlane/mode.h
+    // last verification 03.07.2023
 
     QString output;
     QTextStream outputStream(&output);
@@ -1512,30 +1567,210 @@ QString Plane::MessageFormatter::format(const ModeMessage &message)
         outputStream << "Guided";
         break;
     case Plane::INITIALIZING:
-        outputStream << "Initialising";
+        outputStream << "Initializing";
         break;
     case Plane::QSTABILIZE:
-        outputStream << "QStabilize";
+        outputStream << "Q-Stabilize";
         break;
     case Plane::QHOVER:
-        outputStream << "QHover";
+        outputStream << "Q-Hover";
         break;
     case Plane::QLOITER:
-        outputStream << "QLoiter";
+        outputStream << "Q-Loiter";
         break;
     case Plane::QLAND:
-        outputStream << "QLand";
+        outputStream << "Q-Land";
         break;
     case Plane::QRTL:
-        outputStream << "QRTL";
+        outputStream << "Q-RTL";
+        break;
+    case Plane::QAUTOTUNE:
+        outputStream << "Q-Autotune";
+        break;
+    case Plane::QACRO:
+        outputStream << "Q-Acro";
+        break;
+    case Plane::THERMAL:
+        outputStream << "Thermal";
+        break;
+    case Plane::LOITER_ALT_QLAND:
+        outputStream << "Loiter Alt Q-Land";
         break;
     default:
         outputStream << "Unknown Mode:" << message.getMode();
         break;
     }
+
+    // only if we have a valid reason
+    if (message.getReason() != 0)
+    {
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        outputStream << endl << "by " ;
+#else
+        outputStream << Qt::endl << "by " ;
+#endif
+
+        switch (message.getReason())
+        {
+        case 1:
+            outputStream << "Radio";
+            break;
+        case 2:
+            outputStream << "GCS";
+            break;
+        case 3:
+            outputStream << "Radio-Failsafe";
+            break;
+        case 4:
+            outputStream << "Battery-Failsafe";
+            break;
+        case 5:
+            outputStream << "GCS-Failsafe";
+            break;
+        case 6:
+            outputStream << "EKF-Failsafe";
+            break;
+        case 7:
+            outputStream << "GPS-Glitch";
+            break;
+        case 8:
+            outputStream << "Mission-End";
+            break;
+        case 9:
+            outputStream << "Thr-Land-Escape";
+            break;
+        case 10:
+            outputStream << "Fence-Breached";
+            break;
+        case 11:
+            outputStream << "Terrain-Failsafe";
+            break;
+        case 12:
+            outputStream << "Breake-Timeout";
+            break;
+        case 13:
+            outputStream << "Flip-Complete";
+            break;
+        case 14:
+            outputStream << "Avoidance";
+            break;
+        case 15:
+            outputStream << "Avoidance-Recov";
+            break;
+        case 16:
+            outputStream << "Throw-Complete";
+            break;
+        case 17:
+            outputStream << "Terminate";
+            break;
+        case 18:
+            outputStream << "Toy-Mode";
+            break;
+        case 19:
+            outputStream << "Crash-Failsafe";
+            break;
+        case 20:
+            outputStream << "Soar-FBW-B";
+            break;
+        case 21:
+            outputStream << "Soar-Ther-Det";
+            break;
+        case 22:
+            outputStream << "Soar-Ther-Est";
+            break;
+        case 23:
+            outputStream << "VTOL-Trans-Fail";
+            break;
+        case 24:
+            outputStream << "VTOL-Takeoff-Fail";
+            break;
+        case 25:
+            outputStream << "Failsafe";
+            break;
+        case 26:
+            outputStream << "Init";
+            break;
+        case 27:
+            outputStream << "Surface-Complete";
+            break;
+        case 28:
+            outputStream << "Bad-Depth";
+            break;
+        case 29:
+            outputStream << "Leak-Failsafe";
+            break;
+        case 30:
+            outputStream << "Servotest";
+            break;
+        case 31:
+            outputStream << "Startup";
+            break;
+        case 32:
+            outputStream << "Script";
+            break;
+        case 33:
+            outputStream << "Unavailable";
+            break;
+        case 34:
+            outputStream << "Autorot-Start";
+            break;
+        case 35:
+            outputStream << "Autorot-Bailout";
+            break;
+        case 36:
+            outputStream << "Soar-Too Hight";
+            break;
+        case 37:
+            outputStream << "Soar-Too Low";
+            break;
+        case 38:
+            outputStream << "Soar-Drift";
+            break;
+        case 39:
+            outputStream << "RTL-Done VTOL Land";
+            break;
+        case 40:
+            outputStream << "RTL-Done Wing Land";
+            break;
+        case 41:
+            outputStream << "Mission-Cmd";
+            break;
+        case 42:
+            outputStream << "FRSky-Cmd";
+            break;
+        case 43:
+            outputStream << "Fence-Prev.Mode";
+            break;
+        case 44:
+            outputStream << "QRTL";
+            break;
+        case 45:
+            outputStream << "Auto-RTL Exit";
+            break;
+        case 46:
+            outputStream << "Loter-Alt-QLand";
+            break;
+        case 47:
+            outputStream << "Loiter-Alt-VTOL";
+            break;
+        case 48:
+            outputStream << "Radio-Failsafe-Recov.";
+            break;
+        case 49:
+            outputStream << "QLand-instead-RTL";
+            break;
+        case 50:
+            outputStream << "DeadReckon-Failsafe";
+            break;
+
+        }
+    }
+
     return output;
 }
 
+//********
 
 QString Rover::MessageFormatter::format(MessageBase::Ptr &p_message)
 {

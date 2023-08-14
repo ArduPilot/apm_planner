@@ -123,7 +123,7 @@ public:
     typedef QSharedPointer<MessageBase> Ptr;            /// Shared pointer type
     typedef QPair<QString, QVariant> NameValuePair;     /// Pair of names and values
 
-    MessageBase();
+    MessageBase() = default;
 
     /**
      * @brief MessageBase constructor for setting all params
@@ -134,7 +134,7 @@ public:
      */
     MessageBase(const quint32 index, const double timeStamp, const QString &name, const QColor &color);
 
-    virtual ~MessageBase(){}
+    virtual ~MessageBase() = default;
 
     /**
      * @brief Getter for the index of this message
@@ -179,11 +179,11 @@ public:
 
 protected:
 
-    quint32 m_Index;        /// DB Index of this message
-    double  m_TimeStamp;    /// Timestamp of this message. Should be in seconds
-    QString m_TypeName;     /// Name of this message
-    QString m_TimeFieldName;/// Name of the Timefield
-    QColor  m_Color;        /// Color associated with this message
+    quint32 m_Index {0};          /// DB Index of this message
+    double  m_TimeStamp {0.0};    /// Timestamp of this message. Should be in seconds
+    QString m_TypeName;           /// Name of this message
+    QString m_TimeFieldName;      /// Name of the Timefield
+    QColor  m_Color;              /// Color associated with this message
 };
 
 /**
@@ -461,6 +461,21 @@ public:
     static MessageBase::Ptr CreateMessageOfType(const QString &type, const QList<QPair<QString, QVariant> > &values, const QString &timeFieldName, const double &timeDivider);
 };
 
+
+/**
+ * @brief Namespace for stuf related to more than one vehicle type
+ */
+namespace Universal
+{
+class MessageFormatter
+{
+public:
+    static QString format(const EventMessage &message);
+};
+
+} // namespace universal
+
+
 /**
  *  Namespace for all copter related stuff
  */
@@ -513,8 +528,6 @@ public:
     static QString format(const ErrorMessage &message);
 
     static QString format(const ModeMessage &message);
-
-    static QString format(const EventMessage &message);
 };
 
 } // namespace Copter
@@ -531,30 +544,35 @@ namespace Plane
  */
 enum Mode
 {
-    MANUAL        = 0,
-    CIRCLE        = 1,
-    STABILIZE     = 2,
-    TRAINING      = 3,
-    ACRO          = 4,
-    FLY_BY_WIRE_A = 5,
-    FLY_BY_WIRE_B = 6,
-    CRUISE        = 7,
-    AUTOTUNE      = 8,
-    LAND          = 9,
-    AUTO          = 10,
-    RTL           = 11,
-    LOITER        = 12,
-    RESERVED_13   = 13, // RESERVED FOR FUTURE USE
-    RESERVED_14   = 14, // RESERVED FOR FUTURE USE
-    GUIDED        = 15,
-    INITIALIZING  = 16,
-    QSTABILIZE    = 17,
-    QHOVER        = 18,
-    QLOITER       = 19,
-    QLAND         = 20,
-    QRTL          = 21,
+    MANUAL           = 0,
+    CIRCLE           = 1,
+    STABILIZE        = 2,
+    TRAINING         = 3,
+    ACRO             = 4,
+    FLY_BY_WIRE_A    = 5,
+    FLY_BY_WIRE_B    = 6,
+    CRUISE           = 7,
+    AUTOTUNE         = 8,
+    LAND             = 9,
+    AUTO             = 10,
+    RTL              = 11,
+    LOITER           = 12,
+    TAKEOFF          = 13,
+    AVOID_ADSB       = 14,
+    GUIDED           = 15,
+    INITIALIZING     = 16,
+    QSTABILIZE       = 17,
+    QHOVER           = 18,
+    QLOITER          = 19,
+    QLAND            = 20,
+    QRTL             = 21,
+    QAUTOTUNE        = 22,
+    QACRO            = 23,
+    THERMAL          = 24,
+    LOITER_ALT_QLAND = 25,
     LAST_MODE           // This must always be the last entry
 };
+
 
 /**
  * @brief Helper class for creating an interpreted output of
