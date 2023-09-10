@@ -121,7 +121,7 @@ WindowsCrossBuild {
     }
 
     DEPLOY_TARGET = $$DESTDIR/$${TARGET}.exe
-    QMAKE_POST_LINK += && windeployqt --no-compiler-runtime --qmldir=$${BASEDIR}/qml $${DEPLOY_TARGET}
+    QMAKE_POST_LINK += && $$[QT_INSTALL_PREFIX]/bin/windeployqt --no-compiler-runtime --qmldir=$${BASEDIR}/qml $${DEPLOY_TARGET}
 }
 
 WindowsBuild {
@@ -162,7 +162,7 @@ WindowsBuild {
                 QMAKE_POST_LINK += $$escape_expand(\\n) $$QMAKE_COPY \"C:\\Windows\\System32\\msvcr120.dll\"  \"$$DESTDIR_WIN\"
         }
         else {
-                error("Visual studio version not supported, installation cannot be completed.")
+                message("Visual studio runtime has to be deployed separately")
         }
     }
     DEPLOY_TARGET = $$shell_quote($$shell_path($$DESTDIR_WIN\\$${TARGET}.exe))

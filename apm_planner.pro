@@ -83,7 +83,7 @@ linux-g++ | linux-g++-32 {
         message(Fedora Build)
         DEFINES += Q_FEDORA
     }
-} else : win32-msvc2012 | win32-msvc2013 {
+} else : win32-msvc {
     message(Windows build)
     CONFIG += WindowsBuild
 }  else : win32-g++|win64-g++ {
