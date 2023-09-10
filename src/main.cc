@@ -112,6 +112,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
 #endif
 
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     // Init application
     QGCCore core(argc, argv);
 
