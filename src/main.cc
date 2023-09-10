@@ -35,6 +35,8 @@ This file is part of the QGROUNDCONTROL project
 #include "logging.h"
 
 #include <fstream>
+#include <iostream>
+
 #include <QApplication>
 #include <QMutexLocker>
 
