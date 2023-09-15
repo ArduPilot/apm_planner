@@ -14,7 +14,7 @@
 //    (c) 2015 Author: Bill Bonney <billbonney@communistech.com>
 //
 
-import QtQuick 2.2
+import QtQuick 2.9
 
 import "./components"
 
