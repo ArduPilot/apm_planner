@@ -31,32 +31,30 @@ This file is part of the APM_PLANNER project
 #include <QQmlEngine>
 #include <QMessageBox>
 
-EKFMonitor::EKFMonitor(QWidget *parent) :
-    QWidget(parent),
-    m_declarativeView(NULL),
-    m_uasInterface(NULL)
+
+EKFMonitor::EKFMonitor(QWidget *parent) : QWidget(parent)
 {
     QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/EKFMonitor.qml");
     QLOG_DEBUG() << url;
     if (!QFile::exists(QGC::shareDirectory() + "/qml/EKFMonitor.qml"))
     {
-        QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/EKFMonitor.qml" + " not found. Please reinstall the application and try again");
+        QMessageBox::information(nullptr, "Error", QGC::shareDirectory() + "/qml/EKFMonitor.qml not found. Please reinstall the application and try again");
         exit(-1);
     }
-    m_declarativeView = new QQuickView();
-    m_declarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
-    m_declarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
-    m_declarativeView->setSource(url);
-    QSurfaceFormat format = m_declarativeView->format();
+    m_ptrDeclarativeView.reset(new QQuickView());
+    m_ptrDeclarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
+    m_ptrDeclarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+    m_ptrDeclarativeView->setSource(url);
+    QSurfaceFormat format = m_ptrDeclarativeView->format();
     format.setSamples(8);
-    m_declarativeView->setFormat(format);
+    m_ptrDeclarativeView->setFormat(format);
 
-    QLOG_DEBUG() << "QML Status:" << m_declarativeView->status();
-    m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
-    QVBoxLayout* layout = new QVBoxLayout();
-    QWidget *viewcontainer = QWidget::createWindowContainer(m_declarativeView);
-    layout->addWidget(viewcontainer);
-    setLayout(layout);
+    QLOG_DEBUG() << "EKFMonitor QML Status:" << m_ptrDeclarativeView->status();
+    m_ptrDeclarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
+    auto *p_layout = new QVBoxLayout();
+    QWidget *viewcontainer = QWidget::createWindowContainer(m_ptrDeclarativeView.get());
+    p_layout->addWidget(viewcontainer);
+    setLayout(p_layout);
     setContentsMargins(0,0,0,0);
     show();
 
@@ -67,25 +65,24 @@ EKFMonitor::EKFMonitor(QWidget *parent) :
 
 }
 
-EKFMonitor::~EKFMonitor()
+void EKFMonitor::setActiveUAS(UASInterface *p_uas)
 {
-    delete m_declarativeView;
-}
+    mp_uasInterface = p_uas;
 
-void EKFMonitor::setActiveUAS(UASInterface *uas)
-{
-    m_uasInterface = uas;
-
-    if (m_uasInterface) {
+    if (mp_uasInterface)
+    {
 //        connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessage(int,int,int,QString)));
 
-        VehicleOverview* vehicleOverview = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
-        if (vehicleOverview) {
-            m_declarativeView->rootContext()->setContextProperty("vehicleOverview", vehicleOverview);
-        } else {
+        VehicleOverview *p_vehicleOverview = LinkManager::instance()->getUasObject(mp_uasInterface->getUASID())->getVehicleOverview();
+        if (p_vehicleOverview)
+        {
+            m_ptrDeclarativeView->rootContext()->setContextProperty("vehicleOverview", p_vehicleOverview);
+        }
+        else
+        {
             QLOG_ERROR() << "EKFMonitor::setActiveUAS() Invalid vehicleOverview!";
         }
 
-        QMetaObject::invokeMethod(m_declarativeView->rootObject(),"activeUasSet");
+        QMetaObject::invokeMethod(m_ptrDeclarativeView->rootObject(),"activeUasSet");
     }
 }

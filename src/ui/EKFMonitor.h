@@ -25,19 +25,20 @@ This file is part of the APM_PLANNER project
 #include <UASInterface.h>
 #include <QWidget>
 #include <QQuickView>
+#include <QScopedPointer>
 
 class EKFMonitor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit EKFMonitor(QWidget *parent = 0);
-    ~EKFMonitor();
+    explicit EKFMonitor(QWidget *parent = nullptr);
+    ~EKFMonitor() override = default;
 
 private slots:
-    void setActiveUAS(UASInterface *uas);
+    void setActiveUAS(UASInterface *p_uas);
 
 private:
-    QQuickView* m_declarativeView;
-    UASInterface *m_uasInterface;
+    QScopedPointer<QQuickView> m_ptrDeclarativeView;
+    UASInterface *mp_uasInterface  {nullptr};
 };
 #endif // EKFMONITOR_H

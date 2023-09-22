@@ -25,19 +25,20 @@ This file is part of the APM_PLANNER project
 #include <UASInterface.h>
 #include <QWidget>
 #include <QQuickView>
+#include <QScopedPointer>
 
 class VibrationMonitor : public QWidget
 {
     Q_OBJECT
 public:
     explicit VibrationMonitor(QWidget *parent = 0);
-    ~VibrationMonitor();
+    ~VibrationMonitor() override = default;
 
 private slots:
-    void setActiveUAS(UASInterface *uas);
+    void setActiveUAS(UASInterface *p_uas);
 
 private:
-    QQuickView* m_declarativeView;
-    UASInterface *m_uasInterface;
+    QScopedPointer<QQuickView> m_ptrDeclarativeView;
+    UASInterface *mp_uasInterface {nullptr};
 };
 #endif // VIBRATIONMONITOR_H

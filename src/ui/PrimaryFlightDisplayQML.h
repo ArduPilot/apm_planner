@@ -26,6 +26,7 @@ This file is part of the APM_PLANNER project
 #include <UASInterface.h>
 #include <QWidget>
 #include <QQuickView>
+#include <QScopedPointer>
 
 namespace Ui {
 class PrimaryFlightDisplayQML;
@@ -36,18 +37,18 @@ class PrimaryFlightDisplayQML : public QWidget
     Q_OBJECT
 
 public:
-    explicit PrimaryFlightDisplayQML(QWidget *parent = 0);
-    ~PrimaryFlightDisplayQML();
+    explicit PrimaryFlightDisplayQML(QWidget *parent = nullptr);
+    ~PrimaryFlightDisplayQML() override = default;
 
 private slots:
     void setActiveUAS(UASInterface *uas);
-    void uasTextMessage(int uasid, int componentid, int severity, QString text);
+    void uasTextMessage(int uasid, int componentid, int severity, const QString &text);
 
 private:
-    Ui::PrimaryFlightDisplayQML *ui;
+    Ui::PrimaryFlightDisplayQML *ui {nullptr};
 
-    QQuickView* m_declarativeView;
-    UASInterface *m_uasInterface;
+    QScopedPointer<QQuickView>m_ptrDeclarativeView;
+    UASInterface *mp_uasInterface    {nullptr};
 };
 
 #endif // PRIMARYFLIGHTDISPLAYQML_H

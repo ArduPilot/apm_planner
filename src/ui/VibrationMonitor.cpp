@@ -31,34 +31,30 @@ This file is part of the APM_PLANNER project
 #include <QQmlEngine>
 #include <QMessageBox>
 
-VibrationMonitor::VibrationMonitor(QWidget *parent) :
-    QWidget(parent),
-    m_declarativeView(NULL),
-    m_uasInterface(NULL)
+VibrationMonitor::VibrationMonitor(QWidget *parent) : QWidget(parent)
 {
     QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/VibrationMonitor.qml");
     QLOG_DEBUG() << url;
     if (!QFile::exists(QGC::shareDirectory() + "/qml/VibrationMonitor.qml"))
     {
-        QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/VibrationMonitor.qml" + " not found. Please reinstall the application and try again");
+        QMessageBox::information(nullptr ,"Error", QGC::shareDirectory() + "/qml/VibrationMonitor.qml not found. Please reinstall the application and try again");
         exit(-1);
     }
-    m_declarativeView = new QQuickView();
-    m_declarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
-    m_declarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
-    m_declarativeView->setSource(url);
-    QSurfaceFormat format = m_declarativeView->format();
+    m_ptrDeclarativeView.reset(new QQuickView());
+    m_ptrDeclarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
+    m_ptrDeclarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+    m_ptrDeclarativeView->setSource(url);
+    QSurfaceFormat format = m_ptrDeclarativeView->format();
     format.setSamples(8);
-    m_declarativeView->setFormat(format);
+    m_ptrDeclarativeView->setFormat(format);
 
-    QLOG_DEBUG() << "VIB QML Status:" << m_declarativeView->status();
-    QLOG_DEBUG() << "VIB QML Size h:" << m_declarativeView->initialSize().height()
-                 << " w:" << m_declarativeView->initialSize().width();
-    m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
-    QVBoxLayout* layout = new QVBoxLayout();
-    QWidget *viewcontainer = QWidget::createWindowContainer(m_declarativeView);
-    layout->addWidget(viewcontainer);
-    setLayout(layout);
+    QLOG_DEBUG() << "VibrationMonitor QML Status:" << m_ptrDeclarativeView->status();
+    QLOG_DEBUG() << "VibrationMonitor QML Size h:" << m_ptrDeclarativeView->initialSize().height() << " w:" << m_ptrDeclarativeView->initialSize().width();
+    m_ptrDeclarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
+    auto *p_layout = new QVBoxLayout();
+    QWidget *viewcontainer = QWidget::createWindowContainer(m_ptrDeclarativeView.get());
+    p_layout->addWidget(viewcontainer);
+    setLayout(p_layout);
     setContentsMargins(0,0,0,0);
     show();
 
@@ -69,25 +65,25 @@ VibrationMonitor::VibrationMonitor(QWidget *parent) :
 
 }
 
-VibrationMonitor::~VibrationMonitor()
-{
-    delete m_declarativeView;
-}
 
-void VibrationMonitor::setActiveUAS(UASInterface *uas)
+void VibrationMonitor::setActiveUAS(UASInterface *p_uas)
 {
-    m_uasInterface = uas;
+    mp_uasInterface = p_uas;
 
-    if (m_uasInterface) {
+    if (mp_uasInterface != nullptr)
+    {
         //connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)), this, SLOT(uasTextMessage(int,int,int,QString)));
 
-        VehicleOverview* vehicleOverview = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
-        if (vehicleOverview) {
-            m_declarativeView->rootContext()->setContextProperty("vehicleOverview", vehicleOverview);
-        } else {
+        VehicleOverview *p_vehicleOverview = LinkManager::instance()->getUasObject(mp_uasInterface->getUASID())->getVehicleOverview();
+        if (p_vehicleOverview)
+        {
+            m_ptrDeclarativeView->rootContext()->setContextProperty("vehicleOverview", p_vehicleOverview);
+        }
+        else
+        {
             QLOG_ERROR() << "VibrationMonitor::setActiveUAS() Invalid vehicleOverview!";
         }
 
-        QMetaObject::invokeMethod(m_declarativeView->rootObject(),"activeUasSet");
+        QMetaObject::invokeMethod(m_ptrDeclarativeView->rootObject(),"activeUasSet");
     }
 }
