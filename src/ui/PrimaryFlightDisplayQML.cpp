@@ -32,35 +32,30 @@ This file is part of the APM_PLANNER project
 #include <QQmlEngine>
 #include <QMessageBox>
 
-#define ToRad(x) (x*0.01745329252)      // *pi/180
-#define ToDeg(x) (x*57.2957795131)      // *180/pi
 
-PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
-    QWidget(parent),
-    m_declarativeView(NULL),
-    m_uasInterface(NULL)
+PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) : QWidget(parent)
 {
     QUrl url = QUrl::fromLocalFile(QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml");
     QLOG_DEBUG() << url;
     if (!QFile::exists(QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml"))
     {
-        QMessageBox::information(0,"Error", "" + QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml" + " not found. Please reinstall the application and try again");
+        QMessageBox::information(nullptr, "Error", QGC::shareDirectory() + "/qml/PrimaryFlightDisplayQML.qml not found. Please reinstall the application and try again");
         exit(-1);
     }
-    m_declarativeView = new QQuickView();
-    m_declarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
-    m_declarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
-    m_declarativeView->setSource(url);
-    QSurfaceFormat format = m_declarativeView->format();
+    m_ptrDeclarativeView.reset(new QQuickView());
+    m_ptrDeclarativeView->engine()->addImportPath("qml/"); //For local or win32 builds
+    m_ptrDeclarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
+    m_ptrDeclarativeView->setSource(url);
+    QSurfaceFormat format = m_ptrDeclarativeView->format();
     format.setSamples(8);
-    m_declarativeView->setFormat(format);
+    m_ptrDeclarativeView->setFormat(format);
 
-    QLOG_DEBUG() << "QML Status:" << m_declarativeView->status();
-    m_declarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
-    QVBoxLayout* layout = new QVBoxLayout();
-    QWidget *viewcontainer = QWidget::createWindowContainer(m_declarativeView);
-    layout->addWidget(viewcontainer);
-    setLayout(layout);
+    QLOG_DEBUG() << "PrimaryFlightDisplay QML Status:" << m_ptrDeclarativeView->status();
+    m_ptrDeclarativeView->setResizeMode(QQuickView::SizeRootObjectToView);
+    auto *p_layout = new QVBoxLayout();
+    QWidget *viewcontainer = QWidget::createWindowContainer(m_ptrDeclarativeView.get());
+    p_layout->addWidget(viewcontainer);
+    setLayout(p_layout);
     setContentsMargins(0,0,0,0);
     show();
 
@@ -71,66 +66,62 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) :
 
 }
 
-PrimaryFlightDisplayQML::~PrimaryFlightDisplayQML()
-{
-    delete m_declarativeView;
-}
 
 void PrimaryFlightDisplayQML::setActiveUAS(UASInterface *uas)
 {
-    if (m_uasInterface) {
-        disconnect(m_uasInterface,SIGNAL(textMessageReceived(int,int,int,QString)),
-                this,SLOT(uasTextMessage(int,int,int,QString)));
+    if (mp_uasInterface != nullptr)
+    {
+        disconnect(mp_uasInterface,SIGNAL(textMessageReceived(int,int,int,QString)),this,SLOT(uasTextMessage(int,int,int,QString)));
     }
-    m_uasInterface = uas;
+    mp_uasInterface = uas;
 
-    if (m_uasInterface) {
+    if (mp_uasInterface != nullptr) {
         connect(uas,SIGNAL(textMessageReceived(int,int,int,QString)),
                 this,SLOT(uasTextMessage(int,int,int,QString)));
         VehicleOverview* vehicleView = LinkManager::instance()->getUasObject(uas->getUASID())->getVehicleOverview();
         RelPositionOverview* relView = LinkManager::instance()->getUasObject(uas->getUASID())->getRelPositionOverview();
         AbsPositionOverview* absView = LinkManager::instance()->getUasObject(uas->getUASID())->getAbsPositionOverview();
-        if (vehicleView)
+        if (vehicleView != nullptr)
         {
-            m_declarativeView->rootContext()->setContextProperty("vehicleoverview", vehicleView);
+            m_ptrDeclarativeView->rootContext()->setContextProperty("vehicleoverview", vehicleView);
         }
         else
         {
             QLOG_ERROR() << "PrimaryFlightDisplayQML::setActiveUAS() Invalid vehicleoverview!";
         }
-        if (relView)
+        if (relView != nullptr)
         {
-            m_declarativeView->rootContext()->setContextProperty("relpositionoverview", relView);
+            m_ptrDeclarativeView->rootContext()->setContextProperty("relpositionoverview", relView);
         }
         else
         {
             QLOG_ERROR() << "PrimaryFlightDisplayQML::setActiveUAS() Invalid relpositionoverview!";
         }
-        if (absView)
+        if (absView != nullptr)
         {
-            m_declarativeView->rootContext()->setContextProperty("abspositionoverview", absView);
+            m_ptrDeclarativeView->rootContext()->setContextProperty("abspositionoverview", absView);
         }
         else
         {
             QLOG_ERROR() << "PrimaryFlightDisplayQML::setActiveUAS() Invalid abspositionoverview!";
         }
 
-        QMetaObject::invokeMethod(m_declarativeView->rootObject(),"activeUasSet");
+        QMetaObject::invokeMethod(m_ptrDeclarativeView->rootObject(),"activeUasSet");
     }
 }
 
-void PrimaryFlightDisplayQML::uasTextMessage(int uasid, int componentid, int severity, QString text)
+void PrimaryFlightDisplayQML::uasTextMessage(int uasid, int componentid, int severity, const QString &text)
 {
     Q_UNUSED(uasid);
     Q_UNUSED(componentid);
     if (text.contains("PreArm") || severity <= MAV_SEVERITY_CRITICAL)
     {
-        QObject *root = m_declarativeView->rootObject();
+        QObject *root = m_ptrDeclarativeView->rootObject();
         root->setProperty("statusMessage", text);
         root->setProperty("showStatusMessage", true);
         root->setProperty("statusMessageColor", "red");
     } else if (severity <= MAV_SEVERITY_INFO ){
-        QObject *root = m_declarativeView->rootObject();
+        QObject *root = m_ptrDeclarativeView->rootObject();
         root->setProperty("statusMessage", text);
         root->setProperty("showStatusMessage", true);
         root->setProperty("statusMessageColor", "darkgreen");

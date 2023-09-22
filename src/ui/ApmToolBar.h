@@ -42,8 +42,8 @@ class APMToolBar : public QQuickView
 {
     Q_OBJECT
 public:
-    explicit APMToolBar(QWindow *parent = 0);
-    ~APMToolBar();
+    explicit APMToolBar(QWindow *parent = nullptr);
+    ~APMToolBar() override;
 
     void setFlightViewAction(QAction *action);
     void setFlightPlanViewAction(QAction *action);
@@ -71,18 +71,18 @@ public slots:
     void selectFlightPlanView();
     void selectInitialSetupView();
     void selectConfigTuningView();
-    void selectSimulationView();
-    void selectDonateView();
-    void selectPlotView();
+    static void selectSimulationView();
+    static void selectDonateView();
+    static void selectPlotView();
 
     void checkAdvancedMode(bool checked);
 
     void connectMAV();
-    void showConnectionDialog();
+    void showConnectionDialog() const;
     void setConnection(bool connection);
 
     void activeUasSet(UASInterface *uas);
-    void armingChanged(int sysId, QString armingState);
+    static void armingChanged(int sysId, const QString &armingState);
     void armingChanged(bool armed);
 
     void updateLinkDisplay(int linkid);
@@ -98,17 +98,16 @@ public slots:
     void disableConnectWidget(bool disable);
     void overrideDisableConnectWidget(bool disable);
 
-    void parameterChanged(int uas, int component, int parameterCount,
-                          int parameterId, QString parameterName, QVariant value);
+    void parameterChanged(int uas, int component, int parameterCount, int parameterId, const QString &parameterName, const QVariant &value);
 
 
 private:
-    QPointer<UASInterface> m_uas;
+    QPointer<UASInterface> mp_uas {nullptr};
     Settings m_settings;
     QTimer m_heartbeatTimer;
-    bool m_disableOverride;
-    int m_currentLinkId;
-    bool m_donated;
+    bool m_disableOverride {false};
+    int m_currentLinkId {0};
+    bool m_donated {false};
 };
 
 #endif // APMTOOLBAR_H

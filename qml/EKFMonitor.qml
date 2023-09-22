@@ -105,7 +105,7 @@ Rectangle {
         Rectangle {
             id: key
             width: parent.width
-            height: 45
+            height: 60
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
