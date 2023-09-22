@@ -48,7 +48,7 @@ EKFMonitor::EKFMonitor(QWidget *parent) :
     m_declarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
     m_declarativeView->setSource(url);
     QSurfaceFormat format = m_declarativeView->format();
-    format.setSamples(16);
+    format.setSamples(8);
     m_declarativeView->setFormat(format);
 
     QLOG_DEBUG() << "QML Status:" << m_declarativeView->status();
