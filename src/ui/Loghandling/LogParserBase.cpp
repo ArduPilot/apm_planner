@@ -187,13 +187,25 @@ bool LogParserBase::extendedStoreNameValuePairList(QList<NameValuePair> &NameVal
     if(desc.m_ID == m_idUnitMessage)
     {
         // Unit data contains unit ID on index 1 and Unit Name on index 2
-        quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
-        m_dataStoragePtr->addUnitData(id, NameValuePairList[2].second.toString());
+        auto unitId = static_cast<quint8>(NameValuePairList[1].second.toUInt());
+        QString unitName(NameValuePairList[2].second.toString());
+
+        // some units have a '.' in their name which breaks the name segmentation using the '.'
+        // Therefore we remove it here. Perhaps it would be better to use another character for
+        // the name segmentation....
+        int index = unitName.indexOf('.');
+        while (index != -1)
+        {
+            unitName.remove(index, 1);
+            index = unitName.indexOf('.');
+        }
+
+        m_dataStoragePtr->addUnitData(unitId, unitName);
     }
     else if(desc.m_ID == m_idMultMessage)
     {
         // Multiplier data contains unit ID on index 1 and the multiplier on index 2
-        quint8 id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
+        auto id = static_cast<quint8>(NameValuePairList[1].second.toUInt());
         double multi = NameValuePairList[2].second.toDouble();
         // ID 45 and ID 63 are multipliers which should not be used eg. unknown
         if((id == 45) || (id == 63))
