@@ -47,12 +47,7 @@ public:
 
 //****************************************************
 
-LogdataStorage::LogdataStorage() :
-    m_columnCount(0),
-    m_currentRow(0),
-    m_timeDivisor(0.0),
-    m_minTimeStamp(ULLONG_MAX),
-    m_maxTimeStamp(0)
+LogdataStorage::LogdataStorage()
 {
     QLOG_DEBUG() << "LogdataStorage::LogdataStorage()";
     // Reserve some memory...
@@ -88,29 +83,29 @@ QVariant LogdataStorage::data(const QModelIndex &index, int role) const
 {
     if ((role != Qt::DisplayRole) || !index.isValid())
     {
-        return QVariant();
+      return {};
     }
     if (index.row() >= m_indexToDataRow.size())
     {
         QLOG_ERROR() << "Accessing a row that does not exist! Row was: " << index.row();
-        return QVariant();
+      return {};
     }
     if (index.column() == 0)
     {
         // Column 0 is the index of the log data which is the same as the row
-        return QVariant(QString::number(index.row()));
+      return {QString::number(index.row())};
     }
     if (index.column() == 1)
     {
         // Column 1 is the name of the log data (ATT,ATUN...)
-        return QVariant(m_indexToDataRow[index.row()].first);
+      return {m_indexToDataRow[index.row()].first};
     }
 
     const TypeIndexPair &typeIndex = m_indexToDataRow[index.row()];
     const ValueTable &dataVect = m_dataStorage[typeIndex.first];
     if(index.column() - s_ColumnOffset >= dataVect.at(typeIndex.second).m_values.size())
     {
-        return QVariant(); // this data type does not have so much colums
+      return {}; // this data type does not have so much colums
     }
 
     const dataType &type = m_typeStorage[typeIndex.first];
@@ -125,7 +120,7 @@ QVariant LogdataStorage::data(const QModelIndex &index, int role) const
                 // Column 2 is the time we want 6 decimals in this one.
                 return QString::number(temp * multi, 'f', 6);
             }
-            return QVariant(temp * multi);
+            return {temp * multi};
         }
     }
     // If we do not have multipliers we do not need scaling
@@ -136,29 +131,29 @@ QVariant LogdataStorage::headerData(int column, Qt::Orientation orientation, int
 {
     if ((column == -1) || (role != Qt::DisplayRole) || (orientation == Qt::Vertical))
     {
-        return QVariant();
+        return {};
     }
     if (m_indexToDataRow.empty())
     {
-        return QVariant("No Data");  // corner case - we do not have any data
+        return {"No Data"};  // corner case - we do not have any data
     }
     if (column == 0)
     {
-        return QVariant("Index");   // first colum is always the index
+        return {"Index"};   // first colum is always the index
     }
     if (column == 1)
     {
-        return QVariant("MSG Type");    // second colum is always the message type
+        return {"MSG Type"};    // second colum is always the message type
     }
 
     const TypeIndexPair &typeIndex = m_indexToDataRow[m_currentRow];
     const dataType &type = m_typeStorage[typeIndex.first];
     if ((column - s_ColumnOffset) >= type.m_labels.size())
     {
-        return QVariant("");    // this row does not have this column
+        return {""};    // this row does not have this column
     }
 
-    return QVariant(getLabelName(column - s_ColumnOffset, type));
+    return {getLabelName(column - s_ColumnOffset, type)};
 }
 
 bool LogdataStorage::addDataType(const QString &typeName, quint32 typeID, int typeLength,
@@ -548,7 +543,7 @@ QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double d
     QStringList errors;
 
     // handle the unit and multiplier data if there is some
-    if(m_typeIDToMultiplierFieldInfo.size() != 0)
+    if(!m_typeIDToMultiplierFieldInfo.empty())
     {
         QHash<QString, dataType>::Iterator iter;
         for(iter = m_typeStorage.begin(); iter != m_typeStorage.end(); ++iter)
@@ -626,7 +621,7 @@ QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double d
 
 bool LogdataStorage::ModelIsScaled() const
 {
-    return m_typeIDToMultiplierFieldInfo.size() > 0;
+    return !m_typeIDToMultiplierFieldInfo.empty();
 }
 
 QString LogdataStorage::getLabelName(int index, const dataType & type) const
