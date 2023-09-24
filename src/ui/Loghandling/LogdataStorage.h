@@ -48,12 +48,12 @@ class LogdataStorage : public QAbstractTableModel
     Q_OBJECT
 public:
 
-    typedef QPair<quint64, int> TimeStampToIndexPair;    /// Type for holding a time stamp and its corresponding index
+    using TimeStampToIndexPair = QPair<quint64, int>;    /// Type for holding a time stamp and its corresponding index
 
     /**
      * @brief Ptr - shared pointer type for this class
      */
-    typedef QSharedPointer<LogdataStorage> Ptr;
+    using Ptr = QSharedPointer<LogdataStorage>;
 
     /**
      * @brief The dataType struct holds all data describing a datatype
@@ -72,17 +72,14 @@ public:
 
         dataType() = default;
 
-        dataType(const QString &name, quint32 ID, int length,
-                 const QString &format, const QStringList &labels, int timeColumn) :
-            m_name(name), m_ID(ID), m_length(length),
-            m_format(format), m_labels(labels), m_timeStampIndex(timeColumn)
+        dataType(QString name, quint32 ID, int length, QString format, QStringList labels, int timeColumn) :
+            m_name(std::move(name)), m_ID(ID), m_length(length),
+            m_format(std::move(format)), m_labels(std::move(labels)), m_timeStampIndex(timeColumn)
         {}
 
-        dataType(const QString &name, quint32 ID, int length,
-                 const QString &format, const QStringList &labels,
-                 const QStringList &units, const QVector<double> &m_multipliers, int timeColumn) :
-            m_name(name), m_ID(ID), m_length(length),
-            m_format(format), m_labels(labels), m_units(units), m_multipliers(m_multipliers),
+        dataType(QString name, quint32 ID, int length, QString format, QStringList labels, QStringList units, QVector<double> multipliers, int timeColumn) :
+            m_name(std::move(name)), m_ID(ID), m_length(length),
+            m_format(std::move(format)), m_labels(std::move(labels)), m_units(std::move(units)), m_multipliers(std::move(multipliers)),
             m_timeStampIndex(timeColumn)
         {}
     };
@@ -95,27 +92,27 @@ public:
     /**
      * @brief ~LogdataStorage - DTOR
      */
-    virtual ~LogdataStorage();
+    ~LogdataStorage() override;
 
     /**
      * @see help of QAbstractTableModel::rowCount
      */
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
     /**
      * @see help of QAbstractTableModel::columnCount
      */
-    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
     /**
      * @see help of QAbstractTableModel::data
      */
-    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
     /**
      * @see help of QAbstractTableModel::headerData
      */
-    virtual QVariant headerData(int column, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    QVariant headerData(int column, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     /**
      * @brief addDataType adds a new data type to the model. The type is used to validate the data
@@ -329,9 +326,9 @@ private:
     constexpr static char s_UnitParOpen  = '[';         /// Unit names are surrounded by this parenthesis
     constexpr static char s_UnitParClose = ']';         /// Unit names are surrounded by this parenthesis
 
-    typedef QPair<QString, QVariant> NameValuePair;     /// Type holding lable string and its value
-    typedef QPair<QString, int> TypeIndexPair;          /// Type holding name and index
-    typedef QVector<QVariant> ValueRow;                 /// Type holding one data line of a specific type
+    using NameValuePair = QPair<QString, QVariant>;     /// Type holding lable string and its value
+    using TypeIndexPair = QPair<QString, int>;          /// Type holding name and index
+    using ValueRow = QVector<QVariant>;                 /// Type holding one data line of a specific type
 
     /**
      * @brief The IndexValueRow struct adds a dedicated index field to the
@@ -339,22 +336,19 @@ private:
      */
     struct IndexValueRow
     {
-        int m_index;        /// the global index of this row
-        ValueRow m_values;  /// The value row
-
-        IndexValueRow() : m_index(0)
-        {}
+        int m_index{};        /// the global index of this row
+        ValueRow m_values;    /// The value row
     };
 
-    typedef QVector<IndexValueRow> ValueTable;            /// Type holding all data rows of a specific type
+    using ValueTable = QVector<IndexValueRow>;          /// Type holding all data rows of a specific type
 
-    int m_columnCount;           /// Holds the maximum column count of all rows
-    int m_currentRow;           /// The current selected row in table
+    int m_columnCount{};           /// Holds the maximum column count of all rows
+    int m_currentRow{};            /// The current selected row in table
 
-    QString m_timeStampName;    /// Holds the name of the time stamp
-    double  m_timeDivisor;      /// Scaling for timestamp for creating second scaling
-    quint64 m_minTimeStamp;     /// the min time stamp in data
-    quint64 m_maxTimeStamp;     /// the max time stamp in data
+    QString m_timeStampName;           /// Holds the name of the time stamp
+    double  m_timeDivisor{};           /// Scaling for timestamp for creating second scaling
+    quint64 m_minTimeStamp{ULLONG_MAX};/// the min time stamp in data
+    quint64 m_maxTimeStamp{};          /// the max time stamp in data
 
     QVector<TimeStampToIndexPair> m_TimeToIndexList;    /// List holding pairs of time stamp and table row index
 
