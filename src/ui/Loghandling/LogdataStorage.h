@@ -69,6 +69,7 @@ public:
         QVector<double> m_multipliers;  /// Multiplier data for scaling the data
         int m_timeStampIndex{};         /// Index of the time stamp field - for faster access
         int m_maxIndex{};               /// If its ad indexed datatype this is the max index otherwise 0
+        int m_indexFieldIndex{};        /// If its ad indexed datatype this points the filed where the index is stored. Only valid if m_maxIndex != 0.
 
         dataType() = default;
 
