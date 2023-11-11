@@ -379,44 +379,63 @@ bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector
         return false;    // don't have this value type
     }
 
-    const int timeStampIndex = type.m_timeStampIndex;
-    double multiplier = qQNaN();                        // Unknown multiplier is always qQNaN
+    const int timeStampIndex {type.m_timeStampIndex};
+    double multiplier {qQNaN()};                        // Unknown multiplier is always qQNaN
     if(type.m_multipliers.size() > valueIndex)
     {
-        multiplier  = type.m_multipliers[valueIndex];
+        multiplier = type.m_multipliers[valueIndex];
     }
 
-    qint32 startIndex {0};
+    int reqDataline {};
+    bool canHaveMultipleDatalines {false};
     if (splitName.size() == 3)
     {
         // this is an indexed type. The index is splitName[1]. Its like instance:0, instance:1 ...
         const auto indexSplit = splitName[1].split(':');
-        startIndex = indexSplit.at(1).trimmed().toInt();
+        reqDataline = indexSplit.at(1).trimmed().toInt();
+        canHaveMultipleDatalines = true;
     }
 
-    // If we have an indexed type 2 or more datarows are stored within one ValueTable
-    // So if we have a max index of 1 we have 2 datarows. Therefore the index 0,2,4,6... beoon to the first row
-    // and the index 1,3,5,7... belong to the 2nd row. So the step is maxindex + 1.
-
-    // convenience for better readability
-    qint32 step {type.m_maxIndex + 1};
-    const ValueTable &data = m_dataStorage[splitName.at(0)];
+    int datalines {type.m_maxIndex + 1};
+    const ValueTable &data {m_dataStorage[splitName.at(0)]};
 
     xValues.clear();
-    xValues.reserve((data.size() / (step)) + 2 );  // the +2 is to gurantee the vector is big enough (really no reallocation is needed)
+    xValues.reserve((data.size() / (datalines)) + 2 );  // the +2 is to gurantee the vector is big enough (really no reallocation is needed)
     yValues.clear();
-    yValues.reserve((data.size() / (step)) + 2 );
+    yValues.reserve((data.size() / (datalines)) + 2 );
 
-    for (qint32 i = startIndex; i < data.size(); i += step)
+    // copy the requested data
+    if (canHaveMultipleDatalines && (datalines > 1))    // only if we really have more than one dataline.
     {
-        xValues.push_back((useTimeAsIndex ? data[i].m_values.at(timeStampIndex).toDouble() / m_timeDivisor : data[i].m_index));
-        if(!qIsNaN(multiplier))
+        for (const auto &valueRow: data)
         {
-            yValues.push_back(data[i].m_values.at(valueIndex).toDouble() * multiplier);
+            if (valueRow.m_values.at(type.m_indexFieldIndex).toInt() == reqDataline)    // only if its the requested dataline
+            {
+                xValues.push_back((useTimeAsIndex ? valueRow.m_values.at(timeStampIndex).toDouble() / m_timeDivisor : valueRow.m_index));
+                if(!qIsNaN(multiplier))
+                {
+                    yValues.push_back(valueRow.m_values.at(valueIndex).toDouble() * multiplier);
+                }
+                else
+                {
+                    yValues.push_back(valueRow.m_values.at(valueIndex).toDouble());
+                }
+            }
         }
-        else
+    }
+    else
+    {
+        for (const auto &valueRow: data)
         {
-            yValues.push_back(data[i].m_values.at(valueIndex).toDouble());
+            xValues.push_back((useTimeAsIndex ? valueRow.m_values.at(timeStampIndex).toDouble() / m_timeDivisor : valueRow.m_index));
+            if(!qIsNaN(multiplier))
+            {
+                yValues.push_back(valueRow.m_values.at(valueIndex).toDouble() * multiplier);
+            }
+            else
+            {
+                yValues.push_back(valueRow.m_values.at(valueIndex).toDouble());
+            }
         }
     }
 
@@ -541,23 +560,22 @@ QString LogdataStorage::getError() const
 QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double divisor)
 {
     QStringList errors;
+    static constexpr int s_maxItemsToCheck {50};
 
     // handle the unit and multiplier data if there is some
     if(!m_typeIDToMultiplierFieldInfo.empty())
     {
-        QHash<QString, dataType>::Iterator iter;
-        for(iter = m_typeStorage.begin(); iter != m_typeStorage.end(); ++iter)
+        for(auto &type : m_typeStorage)
         {
-            unsigned int typeID = iter.value().m_ID;
             // handle unit and index data
-            if(m_typeIDToUnitFieldInfo.contains(typeID))
+            if(m_typeIDToUnitFieldInfo.contains(type.m_ID))
             {
                 // handle unit data
-                for(const qint8 unitID : m_typeIDToUnitFieldInfo.value(typeID))
+                for(const qint8 unitID : m_typeIDToUnitFieldInfo.value(type.m_ID))
                 {
                     if(m_unitStorage.contains(static_cast<quint8>(unitID)))
                     {
-                        iter.value().m_units.push_back(m_unitStorage.value(static_cast<quint8>(unitID)));
+                        type.m_units.push_back(m_unitStorage.value(static_cast<quint8>(unitID)));
                     }
                     else
                     {
@@ -566,38 +584,39 @@ QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double d
                     }
                 }
                 // handle index data
-                int indexFieldPos = m_typeIDToUnitFieldInfo.value(typeID).indexOf('#'); // '#' is the unitID for index fields
+                int indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf('#'); // '#' is the unitID for index fields
                 if(indexFieldPos != -1)
                 {
-                    if(m_dataStorage.contains(iter.value().m_name)) // only if we have data
+                    if(m_dataStorage.contains(type.m_name)) // only if we have data
                     {
+                        // find the max index within the first 50 entries and store it within the datatype
+                        const auto &valueRow {m_dataStorage[type.m_name]};
                         int maxIndex {0};
-                        for(const IndexValueRow &row: qAsConst(m_dataStorage[iter.value().m_name]))
+                        int maxEntriesToCheck {valueRow.size() < s_maxItemsToCheck ? valueRow.size() : s_maxItemsToCheck};
+
+                        for (int i = 0; i < maxEntriesToCheck; ++i)
                         {
-                            int index{row.m_values[indexFieldPos].toInt()};
+                            auto index {valueRow[i].m_values[indexFieldPos].toInt()};
                             maxIndex = maxIndex < index ? index : maxIndex;
-                            if(index < maxIndex)
-                            {
-                                break;  // if the index does not increase anymore we can stop
-                            }
                         }
-                        iter.value().m_maxIndex = maxIndex;
+                        type.m_maxIndex = maxIndex;
+                        type.m_indexFieldIndex = indexFieldPos;
                     }
                 }
             }
             else
             {
-                QString error("No unit description for data type " + iter.value().m_name + " found");
+                QString error("No unit description for data type " + type.m_name + " found");
                 errors.append(error);
             }
             // handle multiplier data
-            if(m_typeIDToMultiplierFieldInfo.contains(typeID))
+            if(m_typeIDToMultiplierFieldInfo.contains(type.m_ID))
             {
-                for(const qint8 multID : m_typeIDToMultiplierFieldInfo.value(typeID))
+                for(const qint8 multID : m_typeIDToMultiplierFieldInfo.value(type.m_ID))
                 {
                     if(m_multiplierStorage.contains(static_cast<quint8>(multID)))
                     {
-                        iter.value().m_multipliers.append(m_multiplierStorage.value(static_cast<quint8>(multID)));
+                        type.m_multipliers.append(m_multiplierStorage.value(static_cast<quint8>(multID)));
                     }
                     else
                     {
@@ -608,7 +627,7 @@ QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double d
             }
             else
             {
-                QString error("No multiplier description for data type " + iter.value().m_name + " found");
+                QString error("No multiplier description for data type " + type.m_name + " found");
                 errors.append(error);
             }
         }
