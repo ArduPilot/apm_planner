@@ -45,7 +45,7 @@ VibrationMonitor::VibrationMonitor(QWidget *parent) : QWidget(parent)
     m_ptrDeclarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
     m_ptrDeclarativeView->setSource(url);
     QSurfaceFormat format = m_ptrDeclarativeView->format();
-    format.setSamples(8);
+    format.setSamples(4);
     m_ptrDeclarativeView->setFormat(format);
 
     QLOG_DEBUG() << "VibrationMonitor QML Status:" << m_ptrDeclarativeView->status();

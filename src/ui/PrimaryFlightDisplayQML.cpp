@@ -47,7 +47,7 @@ PrimaryFlightDisplayQML::PrimaryFlightDisplayQML(QWidget *parent) : QWidget(pare
     m_ptrDeclarativeView->engine()->addImportPath(QGC::shareDirectory() +"/qml"); //For installed linux builds
     m_ptrDeclarativeView->setSource(url);
     QSurfaceFormat format = m_ptrDeclarativeView->format();
-    format.setSamples(8);
+    format.setSamples(4);
     m_ptrDeclarativeView->setFormat(format);
 
     QLOG_DEBUG() << "PrimaryFlightDisplay QML Status:" << m_ptrDeclarativeView->status();
