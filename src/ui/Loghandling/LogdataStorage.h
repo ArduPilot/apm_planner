@@ -77,12 +77,6 @@ public:
             m_name(std::move(name)), m_ID(ID), m_length(length),
             m_format(std::move(format)), m_labels(std::move(labels)), m_timeStampIndex(timeColumn)
         {}
-
-        dataType(QString name, quint32 ID, int length, QString format, QStringList labels, QStringList units, QVector<double> multipliers, int timeColumn) :
-            m_name(std::move(name)), m_ID(ID), m_length(length),
-            m_format(std::move(format)), m_labels(std::move(labels)), m_units(std::move(units)), m_multipliers(std::move(multipliers)),
-            m_timeStampIndex(timeColumn)
-        {}
     };
 
     /**
@@ -209,20 +203,10 @@ public:
     virtual QVector<dataType> getAllDataTypes() const;
 
     /**
-     * @brief getValues - delivers a vector of measurements of one type. The pair contains an index on first
-     *        and the value on second. The index can be the normal index or a time stamp.
-     * @param parent - The name of the type conatinig the measurement like "IMU"
-     * @param child - The name of the column like "GyrX"
-     * @param useTimeAsIndex - true - use time in index
-     * @return The data Vector
-     */
-    virtual QVector<QPair<double, QVariant> > getValues(const QString &parent, const QString &child, bool useTimeAsIndex) const;
-
-    /**
      * @brief getValues - delivers the X and Y values of one type for plotting. If the model supports
      *        scaling the values will be scaled to their unit. Due to the fact that the values
      *        are delivered as double no string values can be fetched with this method.
-     * @param name - The name of the type containig the measurement like "IMU.GyrX" or "IMU.GyrX [rad/s]"
+     * @param name - The name of the type containig the measurement like "IMU.GyrX", "IMU.GyrX [rad/s]" or "IMU.I:0.GyrX [rad/s]" for indexed types
      * @param useTimeAsIndex - true - use time in index
      * @param xValues - reference of a vector for storing the X-Values
      * @param yValues - reference of a vector for storing the Y-Values
@@ -327,7 +311,7 @@ private:
     constexpr static char s_UnitParOpen  = '[';         /// Unit names are surrounded by this parenthesis
     constexpr static char s_UnitParClose = ']';         /// Unit names are surrounded by this parenthesis
 
-    using NameValuePair = QPair<QString, QVariant>;     /// Type holding lable string and its value
+    using NameValuePair = QPair<QString, QVariant>;     /// Type holding label string and its value
     using TypeIndexPair = QPair<QString, int>;          /// Type holding name and index
     using ValueRow = QVector<QVariant>;                 /// Type holding one data line of a specific type
 
@@ -374,7 +358,7 @@ private:
      * @param type - The dataType the label shall be fetched from
      * @return - String containing a least the label plus unit name if available.
      */
-    QString getLabelName(int index, const dataType &type) const;
+    static QString getLabelName(int index, const dataType &type);
 };
 
 #endif // LOGDATASTORAGE_H

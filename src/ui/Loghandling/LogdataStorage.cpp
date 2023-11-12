@@ -38,11 +38,11 @@ This file is part of the APM_PLANNER project
 class TimeStampToIndexPairComparer
 {
 public:
-  bool operator() (LogdataStorage::TimeStampToIndexPair pair1, LogdataStorage::TimeStampToIndexPair pair2)
-  {
-      // pair.first is the time stamp
-      return (pair1.first < pair2.first);
-  }
+    bool operator() (LogdataStorage::TimeStampToIndexPair pair1, LogdataStorage::TimeStampToIndexPair pair2)
+    {
+        // pair.first is the time stamp
+        return (pair1.first < pair2.first);
+    }
 };
 
 //****************************************************
@@ -83,29 +83,29 @@ QVariant LogdataStorage::data(const QModelIndex &index, int role) const
 {
     if ((role != Qt::DisplayRole) || !index.isValid())
     {
-      return {};
+        return {};
     }
     if (index.row() >= m_indexToDataRow.size())
     {
         QLOG_ERROR() << "Accessing a row that does not exist! Row was: " << index.row();
-      return {};
+        return {};
     }
     if (index.column() == 0)
     {
         // Column 0 is the index of the log data which is the same as the row
-      return {QString::number(index.row())};
+        return {QString::number(index.row())};
     }
     if (index.column() == 1)
     {
         // Column 1 is the name of the log data (ATT,ATUN...)
-      return {m_indexToDataRow[index.row()].first};
+        return {m_indexToDataRow[index.row()].first};
     }
 
     const TypeIndexPair &typeIndex = m_indexToDataRow[index.row()];
     const ValueTable &dataVect = m_dataStorage[typeIndex.first];
     if(index.column() - s_ColumnOffset >= dataVect.at(typeIndex.second).m_values.size())
     {
-      return {}; // this data type does not have so much colums
+        return {}; // this data type does not have so much colums
     }
 
     const dataType &type = m_typeStorage[typeIndex.first];
@@ -174,7 +174,7 @@ bool LogdataStorage::addDataType(const QString &typeName, quint32 typeID, int ty
 
 bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QString,QVariant> >  &values)
 {
-    if (!m_typeStorage.count(typeName))  // type exists in type storage?
+    if (!m_typeStorage.contains(typeName))  // type exists in type storage?
     {
         m_errorText.clear();
         QTextStream error(&m_errorText);
@@ -182,7 +182,7 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
         return false;
     }
 
-    dataType &tempType = m_typeStorage[typeName];
+    const dataType &tempType = m_typeStorage[typeName];
     if(values.size() != tempType.m_labels.size())    // Number of elements match type?
     {
         m_errorText.clear();
@@ -272,13 +272,14 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues(bool filterStringValues)
 
     for(const auto &type : m_typeStorage)
     {
-        if(m_dataStorage.count(type.m_name))    // only types we have data for
+        if(m_dataStorage.contains(type.m_name))    // only types we have data for
         {
             if(!filterStringValues ||           // n N Z are string types - those cannot be plotted
                !(type.m_format.contains('n') || type.m_format.contains('N') || type.m_format.contains('Z')))
             {
                 // first create list consisting of labels and their unit
                 QStringList labelPlusUnit;
+                labelPlusUnit.reserve(type.m_labels.size());
                 for(int i = 0; i < type.m_labels.size(); ++i)
                 {
                     labelPlusUnit.append(getLabelName(i, type));
@@ -314,6 +315,8 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues(bool filterStringValues)
 QVector<LogdataStorage::dataType> LogdataStorage::getAllDataTypes() const
 {
     QVector<dataType> dataTypes;
+    dataTypes.reserve(m_indexToTypeRow.size());
+
     foreach(const QString &name, m_indexToTypeRow)
     {
         dataTypes.push_back(m_typeStorage.value(name));
@@ -322,35 +325,6 @@ QVector<LogdataStorage::dataType> LogdataStorage::getAllDataTypes() const
     return dataTypes;
 }
 
-QVector<QPair<double, QVariant> > LogdataStorage::getValues(const QString &parent, const QString &child, bool useTimeAsIndex) const
-{
-    QVector<QPair<double, QVariant> > data;
-
-    if(!m_typeStorage.count(parent) || !m_dataStorage.count(parent))
-    {
-        return data;    // don't have this type or no data for this type
-    }
-
-    int valueIndex = m_typeStorage[parent].m_labels.indexOf(child);
-    int timeStampIndex = m_typeStorage[parent].m_timeStampIndex;
-
-    if(valueIndex == -1)
-    {
-        return data;    // don't have this value type
-    }
-
-    QPair<double, QVariant> indexValuePair;
-    data.reserve(m_dataStorage[parent].size());
-    foreach(const IndexValueRow &row, m_dataStorage[parent])
-    {
-        // TODO Add scaling!
-        indexValuePair.first = useTimeAsIndex ? row.m_values.at(timeStampIndex).toDouble() / m_timeDivisor : row.m_index;
-        indexValuePair.second = row.m_values.at(valueIndex);
-        data.push_back(indexValuePair);
-    }
-
-    return data;
-}
 
 bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector<double> &xValues, QVector<double> &yValues) const
 {
@@ -362,7 +336,7 @@ bool LogdataStorage::getValues(const QString &name, bool useTimeAsIndex, QVector
     {
         return false;   // name is not valid - structure must be "groupName.indexName:idx.valueName or groupName.valueName"
     }
-    if(!m_typeStorage.count(splitName.at(0)) || !m_dataStorage.count(splitName.at(0)))
+    if(!m_typeStorage.contains(splitName.at(0)) || !m_dataStorage.contains(splitName.at(0)))
     {
         return false;    // don't have this type or no data for this type
     }
@@ -488,8 +462,8 @@ double LogdataStorage::getMaxTimeStamp() const
 
 int LogdataStorage::getNearestIndexForTimestamp(double timevalue) const
 {
-    quint64 timeToFind = static_cast<quint64>(m_timeDivisor * timevalue);
-    float intervalSize = static_cast<float>(m_TimeToIndexList.size());
+    auto timeToFind   = static_cast<quint64>(m_timeDivisor * timevalue);
+    auto intervalSize = static_cast<float>(m_TimeToIndexList.size());
     float intervalStart = 0;
     float middle = 0;
     int   index = 0;
@@ -499,34 +473,34 @@ int LogdataStorage::getNearestIndexForTimestamp(double timevalue) const
     {
         return 0;   // timevalue too small deliver index 0
     }
-    else if(m_TimeToIndexList.last().first < timeToFind)
+
+    if(m_TimeToIndexList.last().first < timeToFind)
     {
         return m_TimeToIndexList.size();    // timevalue too big deliver last index.
     }
-    else
+
+    while (intervalSize > 1)
     {
-        while (intervalSize > 1)
+        middle = intervalStart + intervalSize / 2;
+        index = qRound(middle);
+        quint64 tempTime = m_TimeToIndexList[index].first;
+        if (timeToFind > tempTime)
         {
-            middle = intervalStart + intervalSize / 2;
-            index = static_cast<int>(middle + 0.5f);
-            quint64 tempTime = m_TimeToIndexList[index].first;
-            if (timeToFind > tempTime)
-            {
-                intervalStart = middle;
-            }
-            else if (timeToFind == tempTime)
-            {
-                break;
-            }
-            intervalSize = intervalSize / 2;
+            intervalStart = middle;
         }
+        else if (timeToFind == tempTime)
+        {
+            break;
+        }
+        intervalSize = intervalSize / 2;
     }
+
     return m_TimeToIndexList[index].second;
 }
 
 void LogdataStorage::getMessagesOfType(const QString &type, QMap<quint64, MessageBase::Ptr> &indexToMessageMap) const
 {
-    if(!m_dataStorage.count(type))
+    if(!m_dataStorage.contains(type))
     {
         QLOG_DEBUG() << "Graph loaded with no table of type " << type;
         return;
@@ -545,7 +519,7 @@ void LogdataStorage::getMessagesOfType(const QString &type, QMap<quint64, Messag
             nameValueList.append(tempPair);
         }
         MessageBase::Ptr msgPtr = MessageFactory::CreateMessageOfType(type, nameValueList, m_timeStampName, m_timeDivisor);
-        if(msgPtr)
+        if(msgPtr != nullptr)
         {
             indexToMessageMap.insert(static_cast<quint64>(row.m_index), msgPtr);
         }
@@ -643,7 +617,7 @@ bool LogdataStorage::ModelIsScaled() const
     return !m_typeIDToMultiplierFieldInfo.empty();
 }
 
-QString LogdataStorage::getLabelName(int index, const dataType & type) const
+QString LogdataStorage::getLabelName(int index, const dataType & type)
 {
     QString label = type.m_labels.at(index);
     if(index < type.m_units.size())         // do we have a unit?
