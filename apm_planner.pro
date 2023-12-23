@@ -177,7 +177,7 @@ MacBuild {
     QT += multimedia
 
     QMAKE_INFO_PLIST = Custom-Info.plist
-    CONFIG += x86_64
+    CONFIG += x86_64 arm64
     CONFIG -= x86
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     ICON = $$BASEDIR/files/APMIcons/icon.icns
