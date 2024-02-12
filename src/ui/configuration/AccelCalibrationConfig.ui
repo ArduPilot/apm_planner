@@ -34,7 +34,7 @@
     <rect>
      <x>10</x>
      <y>30</y>
-     <width>351</width>
+     <width>400</width>
      <height>281</height>
     </rect>
    </property>
@@ -86,8 +86,42 @@
           <height>35</height>
          </size>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
-         <string>Calibrate</string>
+         <string>Full Accel
+Calibration</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="calibrateAccelSimpleButton">
+        <property name="minimumSize">
+         <size>
+          <width>120</width>
+          <height>35</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Simple
+Accel Calibration</string>
         </property>
        </widget>
       </item>

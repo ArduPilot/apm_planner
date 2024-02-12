@@ -49,10 +49,12 @@ protected:
 private slots:
     void activeUASSet(UASInterface *uas);
     void calibrateButtonClicked();
+    void calibrateSimpleButtonClicked();
     void uasTextMessageReceived(int uasid, int componentid, int severity, QString text);
     void uasConnected();
     void uasDisconnected();
     void countdownTimerTick();
+    void cancelCalibration();
 
 private:
     int m_accelAckCount;
