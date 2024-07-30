@@ -204,9 +204,9 @@ namespace core {
                         qheader.setRawHeader("Referrer", "http://norgeskart.no/");
                     }
                     break;
-                case MapType::Statkart_Basemap:
+                case MapType::Svalbard:
                     {
-                        qheader.setRawHeader("Referrer", "http://norgeskart.no/");
+                        qheader.setRawHeader("Referrer", "http://npolar.no/");
                     }
                     break;
                 case MapType::Eniro_Topo:

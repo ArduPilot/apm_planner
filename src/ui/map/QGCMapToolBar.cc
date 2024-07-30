@@ -35,8 +35,8 @@ static const struct {
     { "ArcGIS Terrain", MapType::ArcGIS_Terrain },
     { "ArcGIS World Topo", MapType::ArcGIS_WorldTopo },
     { "Statkart Topo", MapType::Statkart_Topo },
-    { "Statkart Basemap", MapType::Statkart_Basemap },
-    { "Eniro N,S,F,D,P", MapType::Eniro_Topo },
+    { "Svalbard", MapType::Svalbard },
+    { "Eniro N,S,F,D", MapType::Eniro_Topo },
     { "Japan Map", MapType::JapanMap },
 };
 
