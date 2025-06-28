@@ -498,17 +498,17 @@ namespace core {
             break;
         case MapType::Statkart_Topo:
             {
-                return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
+                return QString("https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/%1/%3/%2").arg(zoom).arg(pos.X()).arg(pos.Y());
             }
             break;
-        case MapType::Statkart_Basemap:
+        case MapType::Svalbard:
             {
-                return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
+                return QString("https://geodata.npolar.no/arcgis/rest/services/Basisdata/NP_Basiskart_Svalbard_WMTS_3857/MapServer/WMTS/tile/1.0.0/Basisdata_NP_Basiskart_Svalbard_WMTS_3857/default/default028mm/%1/%3/%2").arg(zoom).arg(pos.X()).arg(pos.Y());
             }
             break;
         case MapType::Eniro_Topo:
             {
-                return QString("http://map.eniro.com/geowebcache/service/tms1.0.0/map/%1/%2/%3.png").arg(zoom).arg(pos.X()).arg((1<<zoom)-1-pos.Y());
+                return QString("https://map.eniro.com/geowebcache/service/tms1.0.0/map/%1/%2/%3.png").arg(zoom).arg(pos.X()).arg((1<<zoom)-1-pos.Y());
             }
             break;
         case MapType::JapanMap:
