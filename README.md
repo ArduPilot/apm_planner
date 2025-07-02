@@ -8,16 +8,15 @@ APM Planner 2.0
 
 Support is handled in the forum, we keep issues here known problems and enhancements
 
-**Developer Chat:** https://gitter.im/diydrones/apm_planner
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/diydrones/apm_planner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+**Developer Chat:** [AruPilot on Discord](https://discord.com/channels/674039678562861068/)
 
 **Credits:**
+
+Maintainer: [Bill Bonney](https://github.com/billbonney)
+
+Contributors: Michael Carpenter, Arne-W et al.
+
 https://ardupilot.org/planner2/docs/credits-and-contributors.html
-
-[Waffle.io](https://waffle.io/diydrones/apm_planner) Progress Graph
-
-[![Throughput Graph](https://graphs.waffle.io/diydrones/apm_planner/throughput.svg)](https://waffle.io/diydrones/apm_planner/metrics)
 
 Documentation
 =============
@@ -30,14 +29,24 @@ To build on Mac OS X (10.6 or later):
 
 Install QT
 -----------
-1) Download Qt 5.4.2 or greater (Does not work with Qt4.x)
+Preferred using "homebrew" https://brew.sh to install.
+
+```
+brew install qt@5
+brew link qt5 --force
+```
+
+NOTE: you may need to unlink qt6 `brew unlink qt6`
+
+<details>
+<summary>Alternative</summary>
+
+1) Download Qt 5.x or greater (Does not work with Qt4.x)
    - you can verify the version by typing 'qmake -v' and it should report Qt 5.4.2 or greater as the version.
    - NOTE: Tested with Qt5.9.3 wth success
 
 2) Double click the package installer
-
-Or install QT with brew: `brew link qt5 --force`
-
+</details>
 
 Build APM Planner
 --------------------
@@ -55,12 +64,29 @@ Linux
 
 Install the required packages:
 ---------------------------------
+<details>
+<summary>Packages needed on Ubuntu 25.04</summary>
+```
+sudo apt-get update
+sudo apt-get install qt5-qmake qtbase5-dev qtscript5-dev libqt5serialport5-dev libqt5svg5-dev libqt5opengl5-dev qml-module-qtquick-controls
+sudo apt-get install git libsdl1.2-dev libsndfile1-dev flite1-dev libssl-dev libudev-dev libsdl2-dev
+```
+</details>
 
+<details>
+<summary>Packages needed on Ubuntu 22.04 LTS</summary>
 
-**Packages needed on Ubuntu 18.04 LTS:**
+(**NOTE:** On Ubuntu 22.04 use only the native (ubuntu) Qt version 5.15.3 as the official Qt 5.15.2 which comes with the Qt Maintenance tool only supports OpenSSL 1.1.1 which is not supported by Ubuntu 22.04 anymore.)
 
-Be sure to run apt-get update first
+```
+sudo apt-get update
+sudo apt-get install qt5-qmake qtbase5-dev qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev libqt5svg5-dev libqt5opengl5-dev qml-module-qtquick-controls
+sudo apt-get install git libsdl1.2-dev libsndfile1-dev flite1-dev libssl-dev libudev-dev libsdl2-dev
+```
+</details>
 
+<details>
+<summary>Packages needed on Ubuntu 18.04 LTS</summary>
 
 ```
 sudo apt-get update
@@ -71,22 +97,9 @@ sudo apt-get install qt5-qmake qt5-default \
 sudo apt-get install git libsdl1.2-dev  libsndfile-dev \
   flite1-dev libssl-dev libudev-dev libsdl2-dev python-serial python-pexpect
 ```
+</details>
 
-
-**Packages needed on Ubuntu 22.04 LTS:**
-
-(**NOTE:** On Ubuntu 22.04 use only the native (ubuntu) Qt version 5.15.3 as the official Qt 5.15.2 which comes with the Qt Maintenance tool only supports OpenSSL 1.1.1 which is not supported by Ubuntu 22.04 anymore.)
-
-Be sure to run apt-get update first
-
-```
-sudo apt-get update
-sudo apt-get install qt5-qmake qtbase5-dev qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev libqt5svg5-dev libqt5opengl5-dev qml-module-qtquick-controls
-sudo apt-get install git libsdl1.2-dev libsndfile1-dev flite1-dev libssl-dev libudev-dev libsdl2-dev
-```
-
-
-**Packages needed on Fedora (tested against Fedora 21), use:**
+<details><summary>Packages needed on Fedora (tested against Fedora 21)</summary>
 
 ```
 sudo yum update
@@ -97,6 +110,7 @@ sudo yum install qt-devel qt5-qtscript-devel \
 sudo yum install SDL-devel libsndfile-devel \
   flite-devel openssl-devel libudev-devel SDL2-devel
 ```
+</details>
 
 Clone the repository in your workspace:
 ------------------------------------------
@@ -122,76 +136,13 @@ Run APM Planner:
 ./release/apmplanner2
 ```
 
-Permanent installation (optional, if you'd like to install APM Planner in a fixed location):
------------------------------------------------------------------------------------------------
-
-There are two ways to do this:
-
-a) Using Debuild:
-```
-cd ~/workspace/apm_planner/debian
-./gitlog-to-changelog.pl > changelog
-
-cd ..
-debuild -us -uc -d
-```
-Then install the deb via 
-```
-dpkg -i ~/workspace/apmplanner2_2.0.XX_YYYY.deb
-```
-Where XX is the version number, and YYY is your architecture. This method should add it to your launcher too.
-
-If it does not install due to dependancies, you can resolve them with
-```
-sudo apt-get install -f
-````
-Then attempt to install again.
-
-b) Using make:
-```
-cd ~/workspace/apm_planner
-sudo make install
-```
-This will place the binary in your /bin/ folder and corresponding files in /share/
-
-
-OpenBSD
-========
-
-To build on OpenBSD 6.2
--------------------
-1) install dependencies
-
-```
-pkg_add qt5 libsndfile sdl sdl2 flite py-serial py-pexpect openssl git
-```
-
-2) Clone the apm_planner repo
-
-```
-git clone git@github.com:ArduPilot/apm_planner.git
-```
-
-3) Build the project
-
-```
-cd apm_planner
-```
-
-```
-qmake-qt5 apm_planner.pro
-```
-
-```
-make
-```
-
-If the project compiled without errors you will find the binary in ./release
-
-
 Windows
-=======
+-------
+NOTE: Needs Updating
 
+<details>
+<summary>Build on Windows Platform</summary>
+ 
 To build on Windows there are two options:
 * Option 1: Visual Studio 2013 native compile
     * Download and install [Visual Studio 2013 express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop)
@@ -256,8 +207,90 @@ Build APM Planner 2.0:
 Installing this compiled version: 
 * To Do
 
-Repository Layout (2014-3-28: out-of-date, needs to be fixed)
+</details>
+
+Alternatives:
+-------------
+
+NOTE: Needs Updating
+
+<details>
+<summary>Permanent installation</summary>
+
+Permanent Installation
+-----------------------------------------------------------------------------------------------
+
+NOTE: (optional, if you'd like to install APM Planner in a fixed location)
+
+There are two ways to do this:
+
+a) Using Debuild:
+```
+cd ~/workspace/apm_planner/debian
+./gitlog-to-changelog.pl > changelog
+
+cd ..
+debuild -us -uc -d
+```
+Then install the deb via 
+```
+dpkg -i ~/workspace/apmplanner2_2.0.XX_YYYY.deb
+```
+Where XX is the version number, and YYY is your architecture. This method should add it to your launcher too.
+
+If it does not install due to dependancies, you can resolve them with
+```
+sudo apt-get install -f
+````
+Then attempt to install again.
+
+b) Using make:
+```
+cd ~/workspace/apm_planner
+sudo make install
+```
+This will place the binary in your /bin/ folder and corresponding files in /share/
+</details>
+
+<details>
+<summary>OpenBSD</summary>
+	
+To build on OpenBSD 6.2
+-------------------
+1) install dependencies
+
+```
+pkg_add qt5 libsndfile sdl sdl2 flite py-serial py-pexpect openssl git
+```
+
+2) Clone the apm_planner repo
+
+```
+git clone git@github.com:ArduPilot/apm_planner.git
+```
+
+3) Build the project
+
+```
+cd apm_planner
+```
+
+```
+qmake-qt5 apm_planner.pro
+```
+
+```
+make
+```
+
+If the project compiled without errors you will find the binary in ./release
+</details>
+
+Repository Layout
 =================
+ (2014-3-28: out-of-date, needs to be fixed)
+<details><summary>File Layout</summary>
+
 ```
 qgroundcontrol:
 	demo-log.txt
@@ -330,3 +363,5 @@ thirdParty:
 	Library called lxbee.
 	Library called QSerialPort.
 ```
+
+</details>
