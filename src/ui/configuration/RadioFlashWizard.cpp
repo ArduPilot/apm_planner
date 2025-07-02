@@ -128,7 +128,7 @@ void RadioFlashWizard::flashRadio()
 
     QLOG_DEBUG() << "Working dir:" << m_updateProcess->workingDirectory();
 
-    m_updateProcess->start("python2", argumentsList);
+    m_updateProcess->start("python3", argumentsList);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(processTimeout()));
     m_timer.start(100);
 }

@@ -694,6 +694,8 @@ void Radio3DRConfig::resetLocalRadioSettingsToDefaults()
 void Radio3DRConfig::flashButtonClicked()
 {
     QLOG_DEBUG() << "Radio Flash Wizard Started";
+    m_radioSettings->closeSerialPort();
+
     RadioFlashWizard* flashRadioWizard = new RadioFlashWizard(this);
     flashRadioWizard->exec();
 }

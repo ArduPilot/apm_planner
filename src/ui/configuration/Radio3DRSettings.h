@@ -252,9 +252,9 @@ public slots:
     void readRemoteTimeout();
     void handleError(QSerialPort::SerialPortError error);
 
-private:
     void closeSerialPort();
 
+private:
     enum State { none, sendEscapeSequence, enterCommandMode,
                  readLocalVersion, readLocalFrequency, readLocalParams,
                  readRemoteVersion, readRemoteFrequency,
