@@ -57,10 +57,16 @@ private slots:
     void cancelCalibration();
 
 private:
-    int m_accelAckCount;
+    enum class CalibrationType {
+        None = 0,
+        Full_Calibration = 1,
+        Simple_Calibration = 2
+    };
+
+    int m_accelAckCount = -1;
     Ui::AccelCalibrationConfig ui;
     bool m_muted;
-    bool m_isCalibrating;
+    CalibrationType m_calibrationType = CalibrationType::None;
     QTimer m_countdownTimer;
     int m_countdownCount;
 };

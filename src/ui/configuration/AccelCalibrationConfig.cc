@@ -32,14 +32,12 @@ const char* CONTINUE_BUTTON_TEXT = "Continue\nPress SpaceBar";
 
 AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_muted(false),
-    m_isCalibrating(false),
     m_countdownCount(CALIBRATION_TIMEOUT_SEC)
 {
     ui.setupUi(this);
     connect(ui.calibrateAccelButton,SIGNAL(clicked()),this,SLOT(calibrateButtonClicked()));
     connect(ui.calibrateAccelSimpleButton,SIGNAL(clicked()),this,SLOT(calibrateSimpleButtonClicked()));
 
-    m_accelAckCount=-1;
     initConnections();
     //coutdownLabel
     connect(&m_countdownTimer,SIGNAL(timeout()),this,SLOT(countdownTimerTick()));
@@ -48,6 +46,7 @@ AccelCalibrationConfig::AccelCalibrationConfig(QWidget *parent) : AP2ConfigWidge
 AccelCalibrationConfig::~AccelCalibrationConfig()
 {
 }
+
 void AccelCalibrationConfig::countdownTimerTick()
 {
     ui.coutdownLabel->setText(QString().asprintf(COUNTDOWN_STRING, m_uas->getUASID(), m_countdownCount--));
@@ -118,7 +117,7 @@ void AccelCalibrationConfig::calibrateSimpleButtonClicked() {
     int component = 1;
     m_uas->executeCommand(command, confirm, param1, param2, param3, param4,
                           param5, param6, param7, component);
-    m_isCalibrating = true;
+    m_calibrationType = CalibrationType::Simple_Calibration;
     ui.outputLabel->setText("Simple Accel Calibration...");
 }
 
@@ -159,7 +158,7 @@ void AccelCalibrationConfig::calibrateButtonClicked() {
             COUNTDOWN_STRING, m_uas->getUASID(), m_countdownCount--));
         m_countdownTimer.start(1000);
 
-        m_isCalibrating = true; // Guard against showing unwanted GCS Text Messages.
+        m_calibrationType = CalibrationType::Full_Calibration; // Guard against showing unwanted GCS Text Messages.
         m_accelAckCount = 0;
 
         ui.outputLabel->clear();
@@ -220,13 +219,23 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
     if (severity <= MAV_SEVERITY_CRITICAL)
     {
         //This is a calibration instruction
-        if (!m_isCalibrating
-            || text.startsWith("PreArm:")
+        if (m_calibrationType == CalibrationType::None) {
+            return;
+        }
+
+        if (text.startsWith("PreArm:")
             || text.startsWith("EKF")
             || text.startsWith("Arm")
             || text.startsWith("Initialising")
         ) {
-            // Don't show these warning messages
+            // Filter these warning messages
+            return;
+        }
+
+        if (m_calibrationType == CalibrationType::Full_Calibration
+            && text.startsWith("SUCCESS: Executed CMD: 241")
+        ) {
+            // Ignore preflight_calibration commands confirmation while in full calibration.
             return;
         }
 
@@ -238,7 +247,9 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             ui.outputLabel->setText(text);
             m_accelAckCount++;
 
-        } else if (text.contains("Calibration successful") || text.contains("SUCCESS: executed CMD: 241")) {
+        } else if (text.contains("Calibration successful")
+            || text.startsWith("SUCCESS: Executed CMD: 241")
+        ) {
             // Calibration complete success
             if (m_muted) { // turns audio back on, when you complete fail or success
                 GAudioOutput::instance()->mute(false);
@@ -250,10 +261,12 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             ui.calibrateAccelButton->clearFocus();
             ui.outputLabel->setText(ui.outputLabel->text() + "\n" + text);
             MainWindow::instance()->toolBar().startAnimation();
-            m_isCalibrating = false;
+            m_calibrationType = CalibrationType::None;
             m_accelAckCount = -1;
 
-        } else if (text.contains("FAILED") || text.contains("Failed CMD: 241")) {
+        } else if (text.contains("FAILED")
+            || text.contains("Failed CMD: 241") || text.startsWith("FAILURE:")
+        ) {
             //Calibration complete success or failure
             if (m_muted) { // turns audio back on, when you complete fail or success
                 GAudioOutput::instance()->mute(false);
@@ -262,7 +275,7 @@ void AccelCalibrationConfig::uasTextMessageReceived(int uasid, int componentid, 
             cancelCalibration();
             ui.outputLabel->setText(ui.outputLabel->text() + "\n" + text);
             MainWindow::instance()->toolBar().startAnimation();
-            m_isCalibrating = false;
+            m_calibrationType = CalibrationType::None;
 
         } else {
             ui.outputLabel->setText(ui.outputLabel->text() + "\n" + text);
