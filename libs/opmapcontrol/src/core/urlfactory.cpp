@@ -115,7 +115,7 @@ namespace core {
             qDebug()<<"Correct GoogleVersion";
 #endif //DEBUG_URLFACTORY
             setIsCorrectGoogleVersions(true);
-            QString url = "http://maps.google.com/maps/api/js?v=3.2&sensor=false";
+            QString url = "https://maps.google.com/maps/api/js?v=3.2&sensor=false";
 
             qheader.setUrl(QUrl(url));
             qheader.setRawHeader("User-Agent",UserAgent);
@@ -133,7 +133,7 @@ namespace core {
                 return;
             }
             QString html=QString(reply->readAll());
-            QRegExp reg("\"*http://mt0.google.com/vt/lyrs=m@(\\d*)",Qt::CaseInsensitive);
+            QRegExp reg("\"*https://mt0.google.com/vt/lyrs=m@(\\d*)",Qt::CaseInsensitive);
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
@@ -144,7 +144,7 @@ namespace core {
 #endif //DEBUG_URLFACTORY
             }
 
-            reg=QRegExp("\"*http://mt0.google.com/vt/lyrs=h@(\\d*)",Qt::CaseInsensitive);
+            reg=QRegExp("\"*https://mt0.google.com/vt/lyrs=h@(\\d*)",Qt::CaseInsensitive);
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
@@ -165,7 +165,7 @@ namespace core {
                 qDebug()<<"TryCorrectGoogleVersions, VersionGoogleSatellite: "<<VersionGoogleSatellite;
 
             }
-            reg=QRegExp("\"*http://mt0.google.com/vt/lyrs=t@(\\d*),r@(\\d*)",Qt::CaseInsensitive);
+            reg=QRegExp("\"*https://mt0.google.com/vt/lyrs=t@(\\d*),r@(\\d*)",Qt::CaseInsensitive);
             if(reg.indexIn(html)!=-1)
             {
                 QStringList gc=reg.capturedTexts();
@@ -199,7 +199,7 @@ namespace core {
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.com/vt/lyrs=" << VersionGoogleMap << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".google.com/vt/lyrs=" << VersionGoogleMap << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -210,7 +210,7 @@ namespace core {
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
 
-                Stream << "http://khm" << GetServerNum(pos, 4) << ".google.com/kh/v=" << VersionGoogleSatellite << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://khm" << GetServerNum(pos, 4) << ".google.com/kh/v=" << VersionGoogleSatellite << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -221,7 +221,7 @@ namespace core {
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.com/vt/lyrs=" << VersionGoogleLabels << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".google.com/vt/lyrs=" << VersionGoogleLabels << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -232,7 +232,7 @@ namespace core {
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.com/vt/v=" << VersionGoogleTerrain << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".google.com/vt/v=" << VersionGoogleTerrain << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -242,9 +242,9 @@ namespace core {
                 QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
-                // http://mt0.google.cn/vt/v=w2.101&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
+                // https://mt0.google.cn/vt/v=w2.101&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleMapChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleMapChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -254,9 +254,9 @@ namespace core {
                 QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 //  TryCorrectGoogleVersions();
-                // http://khm0.google.cn/kh/v=46&x=12&y=6&z=4&s=Ga
+                // https://khm0.google.cn/kh/v=46&x=12&y=6&z=4&s=Ga
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleSatelliteChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleSatelliteChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -266,9 +266,9 @@ namespace core {
                 QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
-                // http://mt0.google.cn/vt/v=w2t.110&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
+                // https://mt0.google.cn/vt/v=w2t.110&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.cn/vt/imgtp=png32&lyrs=" << VersionGoogleLabelsChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".google.cn/vt/imgtp=png32&lyrs=" << VersionGoogleLabelsChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -278,9 +278,9 @@ namespace core {
                 QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
                 TryCorrectGoogleVersions();
-                // http://mt0.google.cn/vt/v=w2p.110&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
+                // https://mt0.google.cn/vt/v=w2p.110&hl=zh-CN&gl=cn&x=12&y=6&z=4&s=Ga
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleTerrainChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".google.cn/vt/lyrs=" << VersionGoogleTerrainChina << "&hl=zh-CN&gl=cn&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -290,9 +290,9 @@ namespace core {
                 QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
 
-                //http://mt3.gmaptiles.co.kr/mt/v=kr1.11&hl=lt&x=109&y=49&z=7&s=
+                //https://mt3.gmaptiles.co.kr/mt/v=kr1.11&hl=lt&x=109&y=49&z=7&s=
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".gmaptiles.co.kr/mt/v=" << VersionGoogleMapKorea << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".gmaptiles.co.kr/mt/v=" << VersionGoogleMapKorea << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -302,9 +302,9 @@ namespace core {
                 QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
 
-                //   http://khm1.google.co.kr/kh/v=54&x=109&y=49&z=7&s=
+                //   https://khm1.google.co.kr/kh/v=54&x=109&y=49&z=7&s=
 
-                Stream << "http://khm" << GetServerNum(pos, 4) << ".google.co.kr/kh/v=" << VersionGoogleSatelliteKorea << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://khm" << GetServerNum(pos, 4) << ".google.co.kr/kh/v=" << VersionGoogleSatelliteKorea << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
@@ -314,55 +314,55 @@ namespace core {
                 QString sec2; // after &zoom=...
                 GetSecGoogleWords(pos,  sec1,  sec2);
 
-                //  http://mt1.gmaptiles.co.kr/mt/v=kr1t.11&hl=lt&x=109&y=50&z=7&s=G
+                //  https://mt1.gmaptiles.co.kr/mt/v=kr1t.11&hl=lt&x=109&y=50&z=7&s=G
 
-                Stream << "http://mt" << GetServerNum(pos, 4) << ".gmaptiles.co.kr/mt/v=" << VersionGoogleLabelsKorea << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
+                Stream << "https://mt" << GetServerNum(pos, 4) << ".gmaptiles.co.kr/mt/v=" << VersionGoogleLabelsKorea << "&hl=" << language << "&x=" << pos.X() << sec1 << "&y=" << pos.Y() << "&z=" << zoom << "&s=" << sec2;
                 return outPut;
             }
             break;
         case MapType::YahooMap:
             {
-                Stream << "http://maps" << (GetServerNum(pos, 2)) + 1 << ".yimg.com/hx/tl?v=" << VersionYahooMap << "&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
+                Stream << "https://maps" << (GetServerNum(pos, 2)) + 1 << ".yimg.com/hx/tl?v=" << VersionYahooMap << "&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
                 return outPut;
             }
 
         case MapType::YahooSatellite:
             {
-                Stream << "http://maps" << 3 << ".yimg.com/ae/ximg?v=" << VersionYahooSatellite << "&t=a&s=256&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
+                Stream << "https://maps" << 3 << ".yimg.com/ae/ximg?v=" << VersionYahooSatellite << "&t=a&s=256&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
                 return outPut;
             }
             break;
         case MapType::YahooLabels:
             {
-                Stream << "http://maps" << 1 << ".yimg.com/hx/tl?v=" << VersionYahooLabels << "&t=h&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
+                Stream << "https://maps" << 1 << ".yimg.com/hx/tl?v=" << VersionYahooLabels << "&t=h&.intl=" << language << "&x=" << pos.X() << "&y=" << ((1 << zoom) >> 1) - 1 - pos.Y() << "&z=" << zoom + 1 << "&r=1";
                 return outPut;
             }
             break;
         case MapType::OpenStreetMap:
             {
                 char letter= "abc"[GetServerNum(pos, 3)];
-                Stream << "http://" << letter << ".tile.openstreetmap.org/" << zoom << "/" << pos.X() << "/" << pos.Y() << ".png";
+                Stream << "https://" << letter << ".tile.openstreetmap.org/" << zoom << "/" << pos.X() << "/" << pos.Y() << ".png";
                 return outPut;
             }
             break;
         case MapType::OpenStreetOsm:
             {
                 char letter = "abc"[GetServerNum(pos, 3)];
-                Stream << "http://" << letter << ".tah.openstreetmap.org/Tiles/tile/" << zoom << "/" << pos.X() << "/" << pos.Y() << ".png";
+                Stream << "https://" << letter << ".tah.openstreetmap.org/Tiles/tile/" << zoom << "/" << pos.X() << "/" << pos.Y() << ".png";
                 return outPut;
             }
             break;
         case MapType::OpenStreetMapSurfer:
             {
-                // http://tiles1.mapsurfer.net/tms_r.ashx?x=37378&y=20826&z=16
-                Stream << "http://tiles1.mapsurfer.net/tms_r.ashx?x=" << pos.X() << "&y=" << pos.Y() << "&z=" << zoom;
+                // https://tiles1.mapsurfer.net/tms_r.ashx?x=37378&y=20826&z=16
+                Stream << "https://tiles1.mapsurfer.net/tms_r.ashx?x=" << pos.X() << "&y=" << pos.Y() << "&z=" << zoom;
                 return outPut;
             }
             break;
         case MapType::OpenStreetMapSurferTerrain:
             {
-                // http://tiles2.mapsurfer.net/tms_t.ashx?x=9346&y=5209&z=14
-                Stream << "http://tiles2.mapsurfer.net/tms_t.ashx?x=" << pos.X() << "&y=" << pos.Y() << "&z=" << zoom;
+                // https://tiles2.mapsurfer.net/tms_t.ashx?x=9346&y=5209&z=14
+                Stream << "https://tiles2.mapsurfer.net/tms_t.ashx?x=" << pos.X() << "&y=" << pos.Y() << "&z=" << zoom;
                 return outPut;
             }
             break;
@@ -371,7 +371,7 @@ namespace core {
                 QString key = TileXYToQuadKey(pos.X(), pos.Y(), zoom);
                 QString token = !BingMapsClientToken.isEmpty() ? "&token=" + BingMapsClientToken : QString("");
 
-                Stream << "http://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/r" << key << ".png?g=" << VersionBingMaps << "&mkt=" << language << token;
+                Stream << "https://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/r" << key << ".png?g=" << VersionBingMaps << "&mkt=" << language << token;
                 return outPut;
             }
             break;
@@ -380,7 +380,7 @@ namespace core {
                 QString key = TileXYToQuadKey(pos.X(), pos.Y(), zoom);
                 QString token = !BingMapsClientToken.isEmpty() ? "&token=" + BingMapsClientToken : QString("");
 
-                Stream << "http://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/a" << key << ".jpeg?g=" << VersionBingMaps << "&mkt=" << language << token;
+                Stream << "https://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/a" << key << ".jpeg?g=" << VersionBingMaps << "&mkt=" << language << token;
                 return outPut;
             }
             break;
@@ -389,86 +389,86 @@ namespace core {
                 QString key = TileXYToQuadKey(pos.X(), pos.Y(), zoom);
                 QString token = !BingMapsClientToken.isEmpty() ? "&token=" + BingMapsClientToken : QString("");
 
-                Stream << "http://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/h" << key << ".jpeg?g=" << VersionBingMaps << "&mkt=" << language << token;
+                Stream << "https://ecn.t" << GetServerNum(pos, 4) << ".tiles.virtualearth.net/tiles/h" << key << ".jpeg?g=" << VersionBingMaps << "&mkt=" << language << token;
                 return outPut;
             }
 
         case MapType::ArcGIS_Map:
             {
-                // http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/0/0/0.jpg
+                // https://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/0/0/0.jpg
 
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
+                return QString("https://server.arcgisonline.com/ArcGIS/rest/services/ESRI_StreetMap_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
             }
             break;
         case MapType::ArcGIS_Satellite:
             {
-                // http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/1/0/1.jpg
+                // https://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/1/0/1.jpg
 
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
+                return QString("https://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
             }
             break;
         case MapType::ArcGIS_ShadedRelief:
             {
-                // http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/1/0/1.jpg
+                // https://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/1/0/1.jpg
 
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
+                return QString("https://server.arcgisonline.com/ArcGIS/rest/services/ESRI_ShadedRelief_World_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
             }
             break;
         case MapType::ArcGIS_Terrain:
             {
-                // http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/4/3/15
+                // https://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/4/3/15
 
-                return QString("http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
+                return QString("https://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/%1/%2/%3").arg(zoom, pos.Y(), pos.X());
             }
             break;
         case MapType::ArcGIS_WorldTopo:
             {
-                // http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/4/3/15
-                Stream << "http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/" << zoom << "/" << pos.Y() << "/" << pos.X();
+                // https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/4/3/15
+                Stream << "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/" << zoom << "/" << pos.Y() << "/" << pos.X();
                 return outPut;
             }
             break;
         case MapType::ArcGIS_MapsLT_OrtoFoto:
             {
-                // http://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L02/R0000001b/C00000028.jpg
-                // http://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto/MapServer/tile/0/9/13
-                // return string.Format("http://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.jpg", zoom, pos.Y(), pos.X());
-                // http://dc1.maps.lt/cache/mapslt_ortofoto_512/map/_alllayers/L03/R0000001c/C00000029.jpg
-                // return string.Format("http://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto/MapServer/tile/{0}/{1}/{2}", zoom, pos.Y(), pos.X());
-                // http://dc1.maps.lt/cache/mapslt_ortofoto_512/map/_alllayers/L03/R0000001d/C0000002a.jpg
+                // https://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L02/R0000001b/C00000028.jpg
+                // https://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto/MapServer/tile/0/9/13
+                // return string.Format("https://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.jpg", zoom, pos.Y(), pos.X());
+                // https://dc1.maps.lt/cache/mapslt_ortofoto_512/map/_alllayers/L03/R0000001c/C00000029.jpg
+                // return string.Format("https://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto/MapServer/tile/{0}/{1}/{2}", zoom, pos.Y(), pos.X());
+                // https://dc1.maps.lt/cache/mapslt_ortofoto_512/map/_alllayers/L03/R0000001d/C0000002a.jpg
                 //TODO verificar
-                return QString("http://dc1.maps.lt/cache/mapslt_ortofoto/map/_alllayers/L%1/R%2/C%3.jpg").arg(zoom,2,10,(QChar)'0').arg(pos.Y(),8,16,(QChar)'0').arg(pos.X(),8,16,(QChar)'0');
+                return QString("https://dc1.maps.lt/cache/mapslt_ortofoto/map/_alllayers/L%1/R%2/C%3.jpg").arg(zoom,2,10,(QChar)'0').arg(pos.Y(),8,16,(QChar)'0').arg(pos.X(),8,16,(QChar)'0');
             }
             break;
         case MapType::ArcGIS_MapsLT_Map:
             {
-                // http://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L02/R0000001b/C00000028.jpg
-                // http://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto/MapServer/tile/0/9/13
-                // return string.Format("http://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.jpg", zoom, pos.Y(), pos.X());
-                // http://arcgis.maps.lt/ArcGIS/rest/services/mapslt/MapServer/tile/7/1162/1684.png
-                // http://dc1.maps.lt/cache/mapslt_512/map/_alllayers/L03/R0000001b/C00000029.png
+                // https://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L02/R0000001b/C00000028.jpg
+                // https://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto/MapServer/tile/0/9/13
+                // return string.Format("https://www.maps.lt/ortofoto/mapslt_ortofoto_vector_512/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.jpg", zoom, pos.Y(), pos.X());
+                // https://arcgis.maps.lt/ArcGIS/rest/services/mapslt/MapServer/tile/7/1162/1684.png
+                // https://dc1.maps.lt/cache/mapslt_512/map/_alllayers/L03/R0000001b/C00000029.png
                 //TODO verificar
-                // http://dc1.maps.lt/cache/mapslt/map/_alllayers/L02/R0000001c/C00000029.png
-                return QString("http://dc1.maps.lt/cache/mapslt/map/_alllayers/L%1/R%2/C%3.png").arg(zoom,2,10,(QChar)'0').arg(pos.Y(),8,16,(QChar)'0').arg(pos.X(),8,16,(QChar)'0');
+                // https://dc1.maps.lt/cache/mapslt/map/_alllayers/L02/R0000001c/C00000029.png
+                return QString("https://dc1.maps.lt/cache/mapslt/map/_alllayers/L%1/R%2/C%3.png").arg(zoom,2,10,(QChar)'0').arg(pos.Y(),8,16,(QChar)'0').arg(pos.X(),8,16,(QChar)'0');
             }
             break;
         case MapType::ArcGIS_MapsLT_Map_Labels:
             {
-                //http://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto_overlay/MapServer/tile/0/9/13
-                //return string.Format("http://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto_overlay/MapServer/tile/{0}/{1}/{2}", zoom, pos.Y(), pos.X());
-                //http://dc1.maps.lt/cache/mapslt_ortofoto_overlay_512/map/_alllayers/L03/R0000001d/C00000029.png
+                //https://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto_overlay/MapServer/tile/0/9/13
+                //return string.Format("https://arcgis.maps.lt/ArcGIS/rest/services/mapslt_ortofoto_overlay/MapServer/tile/{0}/{1}/{2}", zoom, pos.Y(), pos.X());
+                //https://dc1.maps.lt/cache/mapslt_ortofoto_overlay_512/map/_alllayers/L03/R0000001d/C00000029.png
                 //TODO verificar
-                return QString("http://dc1.maps.lt/cache/mapslt_ortofoto_overlay/map/_alllayers/L%1/R%2/C%3.png").arg(zoom,2,10,(QChar)'0').arg(pos.Y(),8,16,(QChar)'0').arg(pos.X(),8,16,(QChar)'0');
+                return QString("https://dc1.maps.lt/cache/mapslt_ortofoto_overlay/map/_alllayers/L%1/R%2/C%3.png").arg(zoom,2,10,(QChar)'0').arg(pos.Y(),8,16,(QChar)'0').arg(pos.X(),8,16,(QChar)'0');
             }
             break;
         case MapType::PergoTurkeyMap:
             {
-                // http://{domain}/{layerName}/{zoomLevel}/{first3LetterOfTileX}/{second3LetterOfTileX}/{third3LetterOfTileX}/{first3LetterOfTileY}/{second3LetterOfTileY}/{third3LetterOfTileXY}.png
+                // https://{domain}/{layerName}/{zoomLevel}/{first3LetterOfTileX}/{second3LetterOfTileX}/{third3LetterOfTileX}/{first3LetterOfTileY}/{second3LetterOfTileY}/{third3LetterOfTileXY}.png
 
-                // http://map3.pergo.com.tr/tile/00/000/000/001/000/000/000.png
+                // https://map3.pergo.com.tr/tile/00/000/000/001/000/000/000.png
                 // That means: Zoom Level: 0 TileX: 1 TileY: 0
 
-                // http://domain/tile/14/000/019/371/000/011/825.png
+                // https://domain/tile/14/000/019/371/000/011/825.png
                 // That means: Zoom Level: 14 TileX: 19371 TileY:11825
 
                 //               string x = pos.X().ToString("000000000").Insert(3, "/").Insert(7, "/"); // - 000/000/001
@@ -477,13 +477,13 @@ namespace core {
                 x.insert(3,"/").insert(7,"/");
                 QString y=QString("%1").arg(QString::number(pos.Y()),9,(QChar)'0');
                 y.insert(3,"/").insert(7,"/");
-                //"http://map03.pergo.com.tr/tile/2/000/000/003/000/000/002.png"
-                return QString("http://map%1.pergo.com.tr/tile/%2/%3/%4.png").arg(GetServerNum(pos, 4)).arg(zoom,2,10,(QChar)'0').arg(x).arg(y);
+                //"https://map03.pergo.com.tr/tile/2/000/000/003/000/000/002.png"
+                return QString("https://map%1.pergo.com.tr/tile/%2/%3/%4.png").arg(GetServerNum(pos, 4)).arg(zoom,2,10,(QChar)'0').arg(x).arg(y);
             }
             break;
         case MapType::SigPacSpainMap:
             {
-                return QString("http://sigpac.mapa.es/kmlserver/raster/%1@3785/%2.%3.%4.img").arg(levelsForSigPacSpainMap[zoom]).arg(zoom).arg(pos.X()).arg((2 << (zoom - 1)) - pos.Y() - 1);
+                return QString("https://sigpac.mapa.es/kmlserver/raster/%1@3785/%2.%3.%4.img").arg(levelsForSigPacSpainMap[zoom]).arg(zoom).arg(pos.X()).arg((2 << (zoom - 1)) - pos.Y() - 1);
             }
             break;
 
@@ -491,24 +491,24 @@ namespace core {
             {
                 QString server = "vec";
 
-                //http://vec01.maps.yandex.ru/tiles?l=map&v=2.10.2&x=1494&y=650&z=11
+                //https://vec01.maps.yandex.ru/tiles?l=map&v=2.10.2&x=1494&y=650&z=11
 
-                return QString("http://%1").arg(server)+QString("0%2.maps.yandex.ru/tiles?l=map&v=%3&x=%4&y=%5&z=%6").arg(GetServerNum(pos, 4)+1).arg(VersionYandexMap).arg(pos.X()).arg(pos.Y()).arg(zoom);
+                return QString("https://%1").arg(server)+QString("0%2.maps.yandex.ru/tiles?l=map&v=%3&x=%4&y=%5&z=%6").arg(GetServerNum(pos, 4)+1).arg(VersionYandexMap).arg(pos.X()).arg(pos.Y()).arg(zoom);
             }
             break;
         case MapType::Statkart_Topo:
             {
-                return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
+                return QString("https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
             }
             break;
         case MapType::Statkart_Basemap:
             {
-                return QString("http://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
+                return QString("https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norgeskart_bakgrunn&zoom=%1&x=%2&y=%3").arg(zoom).arg(pos.X()).arg(pos.Y());
             }
             break;
         case MapType::Eniro_Topo:
             {
-                return QString("http://map.eniro.com/geowebcache/service/tms1.0.0/map/%1/%2/%3.png").arg(zoom).arg(pos.X()).arg((1<<zoom)-1-pos.Y());
+                return QString("https://map.eniro.com/geowebcache/service/tms1.0.0/map/%1/%2/%3.png").arg(zoom).arg(pos.X()).arg((1<<zoom)-1-pos.Y());
             }
             break;
         case MapType::JapanMap:
@@ -540,7 +540,7 @@ namespace core {
     QString UrlFactory::MakeGeocoderUrl(QString keywords)
     {
         QString key = keywords.replace(' ', '+');
-        return QString("http://maps.google.com/maps/geo?q=%1&output=csv&key=%2").arg(key, GoogleMapsAPIKey);
+        return QString("https://maps.google.com/maps/geo?q=%1&output=csv&key=%2").arg(key, GoogleMapsAPIKey);
     }
 
     QString UrlFactory::MakeReverseGeocoderUrl(internals::PointLatLng &pt,const QString &language)
@@ -548,7 +548,7 @@ namespace core {
         QString output;
         QTextStream Stream(&output);
 
-        Stream << "http://maps.google.com/maps/geo?hl=" << language << "&ll=" << pt.Lat() << "," << pt.Lng() << "&output=csv&key=" << GoogleMapsAPIKey;
+        Stream << "https://maps.google.com/maps/geo?hl=" << language << "&ll=" << pt.Lat() << "," << pt.Lng() << "&output=csv&key=" << GoogleMapsAPIKey;
         return output;
     }
 
