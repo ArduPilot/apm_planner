@@ -35,7 +35,7 @@ This file is part of the APM_PLANNER project
 DownloadRemoteParamsDialog::DownloadRemoteParamsDialog(QWidget *parent, bool overwriteFile) :
     QDialog(parent),
     ui(new Ui::DownloadRemoteParamsDialog),
-    m_locationOfFrameParams("https://raw.github.com/diydrones/ardupilot/master/Tools/Frame_params/"),
+    m_locationOfFrameParams("https://raw.githubusercontent.com/ardupilot/ardupilot/master/Tools/Frame_params/"),
     m_extension(".param"),
     m_version("?ref=master"),
     m_networkReply(NULL),
@@ -126,7 +126,7 @@ void DownloadRemoteParamsDialog::refreshParamList()
     setStatusText(tr("Refresh Param file list"));
     ui->listWidget->clear();
 
-    m_url = QUrl("https://api.github.com/repos/diydrones/ardupilot/contents/Tools/Frame_params");
+    m_url = QUrl("https://api.github.com/repos/ardupilot/ardupilot/contents/Tools/Frame_params");
 
     if (m_networkReply != NULL){
         delete m_networkReply;
@@ -325,9 +325,9 @@ void DownloadRemoteParamsDialog::processDownloadedVersionObject(const QByteArray
         QLOG_ERROR() << "Error evaluating version object";
         return;
     }
-    QJsonObject json = jdoc.object();
 
-    QJsonArray entries = json["results"].toArray();
+    QJsonArray entries = jdoc.array();
+
     foreach(QJsonValue entry, entries){
         const QJsonObject& entryObject = entry.toObject();
 
