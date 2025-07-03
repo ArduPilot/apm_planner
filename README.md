@@ -8,13 +8,17 @@ APM Planner 2.0
 
 Support is handled in the forum, we keep issues here known problems and enhancements
 
-**Developer Chat:** [AruPilot on Discord](https://discord.com/channels/674039678562861068/)
+**Developer Chat:** 
+
+[APN Planner 2 on ArduPilot Discord Server](https://discordapp.com/channels/674039678562861068/1389950623155355708)
+
+[ArduPilot Discord Server](https://discord.com/channels/674039678562861068/)
 
 **Credits:**
 
 Maintainer: [Bill Bonney](https://github.com/billbonney)
 
-Contributors: Michael Carpenter, Arne-W et al.
+Contributors: Michael Carpenter, [Arne-W](https://github.com/Arne-W) et al.
 
 https://ardupilot.org/planner2/docs/credits-and-contributors.html
 
