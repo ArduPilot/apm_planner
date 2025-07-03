@@ -405,6 +405,10 @@ public slots:
     virtual void startPressureCalibration() = 0;
     virtual void startCompassMotCalibration() = 0;
 
+    virtual void startOnboardCompassCalibration() = 0;
+    virtual void acceptOnboardCompassCalibration(int compassId) = 0;
+    virtual void cancelOnboardCompassCalibration() = 0;
+
  	// [NOTE] isRotary/isFixedWing defined above.
     /** @brief Set the current battery type and voltages */
     virtual void setBatterySpecs(const QString& specs) = 0;
@@ -688,7 +692,13 @@ signals:
     /** @brief Radio Status update message*/
     void radioMessageUpdate(UASInterface *uas, mavlink_radio_t radioMessage);
     /** @brief Compass Mot Status update message*/
-    void compassMotCalibration(mavlink_compassmot_status_t* compassmot_status);
+    void compassMotCalibration(UASInterface *uas, mavlink_compassmot_status_t& compassmot_status);
+
+     /** @brief Onboard mag calibration progress message*/
+    void compassCalibrationProgress(UASInterface *uas, mavlink_mag_cal_progress_t& mag_cal_progress);
+    /** @brief Onboard mag calibration completion report message*/
+    void compassCalibrationReport(UASInterface *uas, mavlink_mag_cal_report_t& mag_cal_report);
+
     /** @brief Range Finder update message*/
     void rangeFinderUpdate(UASInterface *uas, double distance, double voltage);
 

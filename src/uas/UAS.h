@@ -985,6 +985,10 @@ public slots:
     void startPressureCalibration();
     void startCompassMotCalibration();
 
+    void startOnboardCompassCalibration();
+    void acceptOnboardCompassCalibration(int compassId);
+    void cancelOnboardCompassCalibration();
+
     void startDataRecording();
     void stopDataRecording();
     void deleteSettings();

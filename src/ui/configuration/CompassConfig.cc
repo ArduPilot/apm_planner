@@ -23,8 +23,9 @@ This file is part of the APM_PLANNER project
 #include "logging.h"
 #include "CompassConfig.h"
 #include "CompassMotorCalibrationDialog.h"
-#include <qmath.h>
+#include "CompassOnboardCalibrationDialog.h"
 #include "QGCCore.h"
+#include <qmath.h>
 
 CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
     m_progressDialog(NULL),
@@ -99,6 +100,7 @@ CompassConfig::CompassConfig(QWidget *parent) : AP2ConfigWidget(parent),
             this,SLOT(setCompassPX4OnBoard()));
 
     connect(ui.compassMotButton, SIGNAL(clicked()), this, SLOT(showCompassMotorCalibrationDialog()));
+    connect(ui.onboardCalibrationButton, SIGNAL(clicked()), this, SLOT(showCompassOnboardCalibrationDialog()));
 
     readSettings();
 }
@@ -350,6 +352,7 @@ void CompassConfig::liveCalibrationClicked()
     QTimer::singleShot(1000,this,SLOT(startDataCollection()));
 }
 
+
 void CompassConfig::startDataCollection()
 {
     if (m_uas == NULL){
@@ -546,6 +549,18 @@ void CompassConfig::showCompassMotorCalibrationDialog()
         QLOG_DEBUG() << "Compass Mot Success!";
     } else {
         QLOG_DEBUG() << "Compass Mot Cancelled!";
+    }
+
+}
+
+void CompassConfig::showCompassOnboardCalibrationDialog()
+{
+    CompassOnboardCalibrationDialog *dialog = new CompassOnboardCalibrationDialog();
+    if(dialog->exec() == QDialog::Accepted){
+        // This modal, as you cannot do anything else while doing a compass calibration.
+        QLOG_DEBUG() << "Compass Onboard Calibration Complete.";
+    } else {
+        QLOG_DEBUG() << "Compass Onboard Calibration Cancelled.";
     }
 
 }

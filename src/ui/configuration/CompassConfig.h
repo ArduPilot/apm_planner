@@ -31,7 +31,6 @@ This file is part of the APM_PLANNER project
 #define COMPASSCONFIG_H
 
 #include "ui_CompassConfig.h"
-#include "UASManager.h"
 #include "UASInterface.h"
 #include "AP2ConfigWidget.h"
 #include <QWidget>
@@ -92,6 +91,7 @@ private slots:
     void setCompass3DRGPS();
 
     void showCompassMotorCalibrationDialog();
+    void showCompassOnboardCalibrationDialog();
 
 private:
     void cleanup();

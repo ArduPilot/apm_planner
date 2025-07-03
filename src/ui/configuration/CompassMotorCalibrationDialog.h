@@ -25,7 +25,7 @@ public:
 
 public slots:
     void activeUASSet(UASInterface* uas);
-    void compassMotCalibration(mavlink_compassmot_status_t* compassmot_status);
+    void compassMotCalibration(UASInterface* uas, mavlink_compassmot_status_t& compassmot_status);
     void textMessageReceived(int uasid, int componentid, int severity, QString text);
 
     void startCalibration();

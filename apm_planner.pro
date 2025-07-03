@@ -150,6 +150,9 @@ QT += network \
     qml \
     quickwidgets
 
+# Add support to visualize compass point clouds.
+QT += datavisualization
+
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
@@ -460,6 +463,7 @@ FORMS += \
     src/ui/AutoUpdateDialog.ui \
     src/uas/LogDownloadDialog.ui \
     src/ui/configuration/CompassMotorCalibrationDialog.ui \
+    src/ui/configuration/CompassOnboardCalibrationDialog.ui \
     src/ui/MissionElevationDisplay.ui \
     src/ui/uas/PreFlightCalibrationDialog.ui \
     src/ui/configuration/RadioFlashWizard.ui \
@@ -669,6 +673,7 @@ HEADERS += \
     src/comm/TLogReplayLink.h \
     src/ui/PrimaryFlightDisplayQML.h \
     src/ui/configuration/CompassMotorCalibrationDialog.h \
+    src/ui/configuration/CompassOnboardCalibrationDialog.h \
     src/comm/MAVLinkDecoder.h \
     src/comm/MAVLinkProtocol.h \
     src/ui/MissionElevationDisplay.h \
@@ -894,6 +899,7 @@ SOURCES += src/main.cc \
     src/comm/TLogReplayLink.cc \
     src/ui/PrimaryFlightDisplayQML.cpp \
     src/ui/configuration/CompassMotorCalibrationDialog.cpp \
+    src/ui/configuration/CompassOnboardCalibrationDialog.cpp \
     src/comm/MAVLinkDecoder.cc \
     src/comm/MAVLinkProtocol.cc \
     src/ui/MissionElevationDisplay.cpp \
