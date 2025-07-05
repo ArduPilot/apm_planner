@@ -1395,7 +1395,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             // Configuration Messages for Compass Calibration
             mavlink_compassmot_status_t compassmot_status;
             mavlink_msg_compassmot_status_decode(&message, &compassmot_status);
-            emit compassMotCalibration(&compassmot_status);
+            emit compassMotCalibration(this, compassmot_status);
         }
             break;
         case MAVLINK_MSG_ID_SCALED_IMU:
@@ -1438,6 +1438,20 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_message_t answer;
             mavlink_msg_timesync_encode(systemId, componentId, &answer, &timeSync);
             sendMessage(answer);
+            break;
+        }
+        case MAVLINK_MSG_ID_MAG_CAL_PROGRESS:
+        {
+            mavlink_mag_cal_progress_t magCalProgress;
+            mavlink_msg_mag_cal_progress_decode(&message, &magCalProgress);
+            emit compassCalibrationProgress(this, magCalProgress);
+            break;
+        }
+        case MAVLINK_MSG_ID_MAG_CAL_REPORT:
+        {
+            mavlink_mag_cal_report_t magCalReport;
+            mavlink_msg_mag_cal_report_decode(&message, &magCalReport);
+            emit compassCalibrationReport(this, magCalReport);
             break;
         }
 
@@ -1737,6 +1751,63 @@ void UAS::startMagnetometerCalibration()
     mavlink_message_t msg;
     // Param 1: gyro cal, param 2: mag cal, param 3: pressure cal, Param 4: radio
     mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, MAV_COMP_ID_IMU, MAV_CMD_PREFLIGHT_CALIBRATION, 1, 0, 1, 0, 0, 0, 0, 0);
+    sendMessage(msg);
+}
+
+void UAS::startOnboardCompassCalibration()
+{
+    mavlink_message_t msg;
+    mavlink_msg_command_long_pack(systemId, componentId, &msg,
+        uasId, // Target system
+        MAV_COMP_ID_ALL, // Target Component
+        MAV_CMD_DO_START_MAG_CAL, // Command
+        0, // confirmation
+        0, // p1: mag_mask
+        0, // p2: retry
+        1, // p3: autosave
+        0, // p4: delay
+        0, // param5
+        0, // param6
+        0  // param7
+    );
+    sendMessage(msg);
+}
+
+void UAS::acceptOnboardCompassCalibration(int compassId)
+{
+    mavlink_message_t msg;
+    mavlink_msg_command_long_pack(systemId, componentId, &msg,
+        uasId, // Target system
+        MAV_COMP_ID_ALL, // Target Component
+        MAV_CMD_DO_ACCEPT_MAG_CAL, // Command
+        0, // confirmation
+        1 << compassId, // p1: mag_mask
+        0, // p2: retry
+        0, // p3: autosave
+        0, // p4: delay
+        0, // param5
+        0, // param6
+        0  // param7
+    );
+    sendMessage(msg);
+}
+
+void UAS::cancelOnboardCompassCalibration()
+{
+    mavlink_message_t msg;
+    mavlink_msg_command_long_pack(systemId, componentId, &msg,
+        uasId, // Target system
+        MAV_COMP_ID_ALL, // Target Component
+        MAV_CMD_DO_CANCEL_MAG_CAL, // Command
+        0, // confirmation
+        0, // p1: mag_mask
+        0, // p2: retry
+        0, // p3: autosave
+        0, // p4: delay
+        0, // param5
+        0, // param6
+        0  // param7
+    );
     sendMessage(msg);
 }
 

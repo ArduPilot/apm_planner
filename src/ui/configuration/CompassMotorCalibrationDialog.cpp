@@ -53,10 +53,15 @@ CompassMotorCalibrationDialog::CompassMotorCalibrationDialog(QWidget *parent) :
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(activeUASSet(UASInterface*)));
     activeUASSet(UASManager::instance()->getActiveUAS());
 
-    int ok = QMessageBox::warning(this, "Compass Motor Calibration", tr("CAUTION: Starting the compass motor calibration arms the motors.\n"
-                                                               "Please make sure you have read and followed all instructions"
-                                                               "before untertaking the calibration as serious injury could occur!"),
-                         QMessageBox::Ok, QMessageBox::Cancel);
+    int ok = QMessageBox::warning(
+        this,
+        "Compass Motor Calibration",
+        tr("CAUTION: Starting the compass motor calibration arms the motors.\n"
+           "Please make sure you have read and followed all instructions"
+           "before untertaking the calibration as serious injury could occur!"),
+           QMessageBox::Ok,
+           QMessageBox::Cancel
+        );
     if (ok == QMessageBox::Cancel){
         QTimer::singleShot(100, this, SLOT(cancelCalibration()));
     }
@@ -74,36 +79,42 @@ void CompassMotorCalibrationDialog::activeUASSet(UASInterface *uas)
     if (m_uasInterface){
         disconnect(ui->startButton, SIGNAL(clicked()), this, SLOT(startCalibration()));
         disconnect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stopCalibration()));
-        disconnect(m_uasInterface, SIGNAL(compassMotCalibration(mavlink_compassmot_status_t)),
-                this, SLOT(compassMotCalibration(mavlink_compassmot_status_t)));
-        disconnect(m_uasInterface, SIGNAL(textMessageReceived(int,int,int,QString)),
-                this, SLOT(textMessageReceived(int,int,int,QString)));
+        disconnect(
+            m_uasInterface, SIGNAL(compassMotCalibration(UASInterface*,mavlink_compassmot_status_t&)),
+            this, SLOT(compassMotCalibration(UASInterface*,mavlink_compassmot_status_t&))
+        );
+        disconnect(
+            m_uasInterface, SIGNAL(textMessageReceived(int,int,int,QString)),
+            this, SLOT(textMessageReceived(int,int,int,QString))
+        );
     }
     m_uasInterface = uas;
 
     if(m_uasInterface){
         connect(ui->startButton, SIGNAL(clicked()), this, SLOT(startCalibration()));
         connect(ui->stopButton, SIGNAL(clicked()), this, SLOT(stopCalibration()));
-        connect(m_uasInterface, SIGNAL(compassMotCalibration(mavlink_compassmot_status_t*)),
-                this, SLOT(compassMotCalibration(mavlink_compassmot_status_t*)));
+        connect(
+            m_uasInterface, SIGNAL(compassMotCalibration(UASInterface*,mavlink_compassmot_status_t&)),
+            this, SLOT(compassMotCalibration(UASInterface*,mavlink_compassmot_status_t&))
+        );
     }
 }
 
-void CompassMotorCalibrationDialog::compassMotCalibration(mavlink_compassmot_status_t *compassmot_status)
+void CompassMotorCalibrationDialog::compassMotCalibration(UASInterface *uas, mavlink_compassmot_status_t &compassmot_status)
 {
     if (!m_uasInterface)
         return; // no active UAS.
 
     QCustomPlot* customPlot = ui->customPlot;
 
-    int index = compassmot_status->throttle/10;
-    customPlot->graph(GRAPH_ID_CURRENT)->addData(index, compassmot_status->current);
-    customPlot->graph(GRAPH_ID_INTERFERENCE)->addData(index, compassmot_status->interference);
+    int index = compassmot_status.throttle/10;
+    customPlot->graph(GRAPH_ID_CURRENT)->addData(index, compassmot_status.current);
+    customPlot->graph(GRAPH_ID_INTERFERENCE)->addData(index, compassmot_status.interference);
     customPlot->replot();
 
-    x_scalar = compassmot_status->CompensationX;
-    y_scalar = compassmot_status->CompensationY;
-    z_scalar = compassmot_status->CompensationZ;
+    x_scalar = compassmot_status.CompensationX;
+    y_scalar = compassmot_status.CompensationY;
+    z_scalar = compassmot_status.CompensationZ;
 
 }
 
@@ -147,7 +158,7 @@ void CompassMotorCalibrationDialog::okButtonClicked()
         m_uasInterface->requestParameter(1, "COMPASS_MOT_X");
         m_uasInterface->requestParameter(1, "COMPASS_MOT_Y");
         m_uasInterface->requestParameter(1, "COMPASS_MOT_Z");
-        QMessageBox::information(this, "Sucess!",
+        QMessageBox::information(this, "Success!",
                                  QString("New values have been stored\n X:%1 Y:%2 Z:%3")
                                  .arg(QString::number(x_scalar))
                                  .arg(QString::number(y_scalar))
