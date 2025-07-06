@@ -146,43 +146,6 @@
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
              <layout class="QGridLayout" name="gridLayout">
-              <item row="1" column="0" colspan="2">
-               <layout class="QHBoxLayout" name="horizontalLayout_4">
-                <item>
-                 <widget class="QLabel" name="apmLabel">
-                  <property name="maximumSize">
-                   <size>
-                    <width>100</width>
-                    <height>100</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="pixmap">
-                   <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/apm2.5.jpg</pixmap>
-                  </property>
-                  <property name="scaledContents">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="onBoardApmButton">
-                  <property name="minimumSize">
-                   <size>
-                    <width>121</width>
-                    <height>36</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>APM with On-Board
-Compass</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
               <item row="2" column="0" colspan="2">
                <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
@@ -300,6 +263,43 @@ GPS/Compass</string>
                 </property>
                </widget>
               </item>
+              <item row="1" column="0" colspan="2">
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="QLabel" name="apmLabel">
+                  <property name="maximumSize">
+                   <size>
+                    <width>100</width>
+                    <height>100</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap resource="../../../qgroundcontrol.qrc">:/files/ardupilotmega/images/apm2.5.jpg</pixmap>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="onBoardApmButton">
+                  <property name="minimumSize">
+                   <size>
+                    <width>121</width>
+                    <height>36</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>APM with On-Board
+Compass</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
              </layout>
             </item>
            </layout>
@@ -361,6 +361,19 @@ GPS/Compass</string>
               <string>Required (Pick One)</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_2">
+              <item row="0" column="0">
+               <widget class="QPushButton" name="onboardCalibrationButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>101</width>
+                  <height>32</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Onboard Calibration</string>
+                </property>
+               </widget>
+              </item>
               <item row="3" column="1">
                <widget class="QLabel" name="youTubeDemoLinkLabel_4">
                 <property name="text">
@@ -381,19 +394,6 @@ GPS/Compass</string>
                 </property>
                 <property name="text">
                  <string>Live Calibration</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QPushButton" name="onboardCalibrationButton">
-                <property name="minimumSize">
-                 <size>
-                  <width>101</width>
-                  <height>32</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Onboard Calibration</string>
                 </property>
                </widget>
               </item>
@@ -422,13 +422,22 @@ GPS/Compass</string>
              <widget class="QPushButton" name="compassMotButton">
               <property name="minimumSize">
                <size>
-                <width>0</width>
-                <height>32</height>
+                <width>128</width>
+                <height>64</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>128</width>
+                <height>64</height>
                </size>
               </property>
               <property name="text">
                <string>Compass
 Motor Calibration</string>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
               </property>
              </widget>
             </item>

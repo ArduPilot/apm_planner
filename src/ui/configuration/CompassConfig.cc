@@ -334,7 +334,9 @@ void CompassConfig::liveCalibrationClicked()
     }
 
     QMessageBox::information(this,tr("Live Compass calibration"),
-                             tr("Data will be collected for 60 seconds, Please click ok and move the apm around all axes"));
+                             tr("Data will be collected for 60 seconds"
+                                "Please click ok and move the apm around all axes.\n"
+                                "\nNOTE: Not supported in Ardupilot 4.0+"));
 
     // Initialiase to zero
     m_uas->setParameter( 1,"COMPASS_OFS_X", 0.0);
