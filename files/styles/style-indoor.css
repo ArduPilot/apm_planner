@@ -116,6 +116,11 @@ QLineEdit {
     border-radius: 2px;
 }
 
+QTextBrowser {
+    border: 1px solid #777777;
+    border-radius: 2px;
+}
+
 QTextEdit {
     border: 1px solid #777777;
     border-radius: 2px;
@@ -561,19 +566,35 @@ QLabel#toolBarMessageLabel {
 	color: #3C7B9E;
 }
 
+QScrollBar {
+    border: 1px solid #777777;
+/*    background: #0;*/
+    width: 14px;
+    margin: 1px 1px 1px 1px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle {
+    background: #AAAAAA;
+    min-height: 20px;
+    border-radius: 3px;
+}
+
 QTableWidget {
-background-color: #222224;
-alternate-background-color: #444444;
+    background-color: #222222;
+    alternate-background-color: #333333;
+    gridline-color: #777777;
+    border: 2px solid #777777;
 }
 
 QHeaderView::section {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-        stop:0 #616161, stop: 0.5 #505050,
-        stop: 0.6 #434343, stop:1 #656565);
-        color: white;
-        padding-left: 4px;
-        border: 1px solid #6c6c6c;
-    }
+    stop:0 #616161, stop: 0.5 #505050,
+    stop: 0.6 #434343, stop:1 #656565);
+    color: white;
+    padding-left: 4px;
+    border: 1px solid #6c6c6c;
+}
 
 QHeaderView::section:checked
 {

@@ -418,6 +418,44 @@ QProgressBar::chunk#thrustBar {
 	background-color: orange;
 }
 
+QScrollBar {
+    border: 1px solid #111111;
+	width: 14px;
+	margin: 1px 1px 1px 1px;
+	border-radius: 3px;
+}
+
+QScrollBar::handle {
+    background: #444444;
+	min-height: 20px;
+	border-radius: 3px;
+}
+
+QHeaderView::section {
+    background-color: #444444;
+	color: white;
+	padding: 4px;
+	border: 1px solid #222222;
+	font-weight: bold;
+}
+
+QTableWidget {
+    alternate-background-color: #BBBBBB;
+	gridline-color: #222222;
+	border: 2px solid #111111;
+}
+
+QTableWidget::item {
+    selection-background-color: #8bc34a;
+	selection-color: #ffffff;
+	padding: 2px;
+}
+
+QTableWidget::item:selected {
+    background-color: #388e3c;
+	color: #ffffff;
+}
+
 QTabWidget::pane { /* The tab widget frame */
     border: 1px solid #62676B;
     border-radius: 2px;
