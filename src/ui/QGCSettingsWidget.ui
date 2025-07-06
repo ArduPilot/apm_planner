@@ -227,6 +227,12 @@
          </property>
          <item>
           <widget class="QCheckBox" name="audioMuteCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="text">
             <string>Mute all audio output</string>
            </property>
@@ -234,10 +240,22 @@
             <iconset resource="../../qgroundcontrol.qrc">
              <normaloff>:/files/images/status/audio-volume-muted.svg</normaloff>:/files/images/status/audio-volume-muted.svg</iconset>
            </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
+           </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="reconnectCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="text">
             <string>Automatically reconnect last link on application startup</string>
            </property>
@@ -245,22 +263,52 @@
             <iconset resource="../../qgroundcontrol.qrc">
              <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
            </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
+           </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="lowPowerCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="toolTip">
             <string>Lowers all update rates to save battery power</string>
            </property>
            <property name="text">
             <string>Enable low power mode</string>
            </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
+           </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="titleBarCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="text">
             <string>Show Docked Widget title bars when NOT in advanced Mode.</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -269,27 +317,69 @@
          </item>
          <item>
           <widget class="QCheckBox" name="heartbeatCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="text">
             <string>Enable GCS Heartbeat transmit (For GCS_Failsafe)</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="mavlinkLoggingCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="text">
             <string>Enable Mavlink Logging (tlog)</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="enableBetaReleaseCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="text">
             <string>Enable Beta Release Updates</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="autoProxyCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="toolTip">
             <string>Use the system defined network proxies to download data from the Internet through a firewall.</string>
            </property>
@@ -300,12 +390,33 @@
             <iconset resource="../../qgroundcontrol.qrc">
              <normaloff>:/files/images/devices/network-wireless.svg</normaloff>:/files/images/devices/network-wireless.svg</iconset>
            </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
+           </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="hideDonateButtonCheckBox">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="text">
             <string>Hide Donate Button</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>18</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="shortcut">
+            <string>Esc</string>
            </property>
           </widget>
          </item>

@@ -170,6 +170,7 @@
         <file>files/images/arrow_down_black.svg</file>
         <file>files/images/arrow_down_white.svg</file>
         <file>files/images/arrow_right_white.svg</file>
+        <file>files/images/checkmark_white.svg</file>
     </qresource>
     <qresource prefix="/general">
         <file alias="vera.ttf">files/styles/Vera.ttf</file>
