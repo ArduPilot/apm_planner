@@ -592,3 +592,14 @@ QHeaderView::down-arrow {
 QHeaderView::up-arrow {
     image: url(up_arrow.png);
 }
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:files/images/arrow_right_white.svg);
+}
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+    border-image: none;
+    image: url(:files/images/arrow_down_white.svg);
+}
