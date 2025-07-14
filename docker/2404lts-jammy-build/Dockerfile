@@ -1,10 +1,10 @@
-# Ubuntu 24.04 LTS Jammy
+# Ubuntu 22.04 LTS 
 # APM Planner 2 build env
 #
 # - build using the follow arguments to setup the docker with common user_id/gid for file permissions.
 # docker build --build-arg USERNAME=$(whoami) --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g) -t qt515-user .
 #
-FROM ubuntu:24.04
+FROM ubuntu:22.04
 
 # Create a non-root user
 ARG USERNAME=developer
@@ -63,16 +63,16 @@ USER $USERNAME
 WORKDIR /home/$USERNAME
 
 # Install Homebrew non-interactively as the non-root user
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Set Homebrew in the path for future RUN commands and shells
-ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
-ENV HOMEBREW_NO_AUTO_UPDATE=1
+#ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+#ENV HOMEBREW_NO_AUTO_UPDATE=1
 
 # Optionally, verify brew install
-RUN brew --version
+#RUN brew --version
 
-RUN if [ ! -z "$USE_BREW" ]; then ulimit -n 8192; brew install qt@5 && brew link qt@5 --force; fi
+#RUN if [ ! -z "$USE_BREW" ]; then ulimit -n 8192; brew install qt@5 && brew link qt@5 --force; fi
 
 ENV QT_VERSION=5.15.16
 ENV QTDIR=/home/$USERNAME/Qt${QT_VERSION}
