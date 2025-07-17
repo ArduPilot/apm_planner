@@ -179,12 +179,11 @@ RaspberryPiBuild {
 MacBuild {
     QT += multimedia
 
-    QMAKE_INFO_PLIST = Custom-Info.plist
     CONFIG += x86_64
     CONFIG -= x86
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
     ICON = $$BASEDIR/files/APMIcons/icon.icns
-    QMAKE_INFO_PLIST = APMPlanner.plist   # Sets the pretty name for the build
+    QMAKE_INFO_PLIST = $$BASEDIR/files/macOS/Info.plist   # Sets the pretty name for the build
 
     LIBS += -lz
     LIBS += -framework ApplicationServices
@@ -345,10 +344,10 @@ FORMS += \
     src/ui/MainWindow.ui \
     src/ui/CommSettings.ui \
     src/ui/SerialSettings.ui \
-    src/ui/UASControl.ui \
-    src/ui/UASList.ui \
-    src/ui/UASInfo.ui \
-    src/ui/UASView.ui \
+    src/ui/uas/UASControl.ui \
+    src/ui/uas/UASList.ui \
+    src/ui/uas/UASInfo.ui \
+    src/ui/uas/UASView.ui \
     src/ui/ParameterInterface.ui \
     src/ui/WaypointList.ui \
     src/ui/ObjectDetectionView.ui \
@@ -467,8 +466,8 @@ FORMS += \
     src/ui/MissionElevationDisplay.ui \
     src/ui/uas/PreFlightCalibrationDialog.ui \
     src/ui/configuration/RadioFlashWizard.ui \
-    src/ui/LogAnalysis.ui \
-    src/ui/LogAnalysisMap.ui \
+    src/ui/Loghandling/LogAnalysis.ui \
+    src/ui/Loghandling/LogAnalysisMap.ui \
     src/ui/configuration/FrameTypeConfigOld.ui \
     src/ui/configuration/FrameTypeConfigNew.ui \
     src/ui/configuration/apmcustomfirmwareconfig.ui

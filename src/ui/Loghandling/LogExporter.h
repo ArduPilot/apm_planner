@@ -33,7 +33,7 @@ This file is part of the APM_PLANNER project
 #include <QString>
 
 #include "LogdataStorage.h"
-#include "src/output/kmlcreator.h"
+#include "output/kmlcreator.h"
 
 /**
  * @brief The LogExporterBase class - for different log exporters. It handles

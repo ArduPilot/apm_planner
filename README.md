@@ -36,32 +36,48 @@ Install QT
 Preferred using "homebrew" https://brew.sh to install.
 
 ```
-brew install qt@5
+brew install qt@5 cmake ninja sdl2
 brew link qt5 --force
 ```
 
 NOTE: you may need to unlink qt6 `brew unlink qt6`
 
 <details>
-<summary>Alternative</summary>
+<summary>Alternatives</summary>
 
-1) Download Qt 5.x or greater (Does not work with Qt4.x)
-   - you can verify the version by typing 'qmake -v' and it should report Qt 5.4.2 or greater as the version.
-   - NOTE: Tested with Qt5.9.3 wth success
+There are alternative ways to get Qt 5.15.x
 
-2) Double click the package installer
+- TARBALL, download the source from https://download.qt.io/official_releases/qt/5.15
+- Qt Offline Installers - NOTE: The last one available is stuck at Qt5.15.2 :-(
+- Using `aqt installer` - NOTE: Also stuck at 5.15.2
+
+I suggest using the internet if you want to install this way. Brew is easyist IMHO!
 </details>
 
 Build APM Planner
 --------------------
-1) From the terminal go to the `apm_planner` directory created when you cloned the repository.
 
-2) Run `qmake -spec macx-clang apm_planner.pro` (old version `qmake -spec macx-g++ apm_planner.pro`)
+Using CMake
 
-3) Run `make -j8`
+```
+cd $HOME
+git clone https://github.com/ArduPilot/apm_planner.git
+cd apm_planner
+mkdir build
+cd build
+cmake cmake -G Ninja .. -DCMAKE_PREFIX_PATH="/opt/homebrew/Cellar/qt@5/5.15.16_2;/opt/homebrew"
+```
 
-4) Run `open ./release/apmplanner2.app`
 
+Using QMake 
+
+```
+cd $HOME
+git clone https://github.com/ArduPilot/apm_planner.git
+qmake -spec macx-clang apm_planner.pro
+make -j$(nproc)
+open ./release/apmplanner2.app
+```
 
 Linux 
 =====
@@ -72,20 +88,25 @@ Install the required packages:
 <summary>Packages needed on Ubuntu 25.04</summary>
 ```
 sudo apt-get update
-sudo apt-get install qt5-qmake qtbase5-dev qtscript5-dev libqt5serialport5-dev libqt5svg5-dev libqt5opengl5-dev qml-module-qtquick-controls
-sudo apt-get install git libsdl1.2-dev libsndfile1-dev flite1-dev libssl-dev libudev-dev libsdl2-dev
+sudo apt-get install git build-essential
+sudo apt-get install qt5-qmake qtbase5-dev qtscript5-dev libqt5serialport5-dev libqt5svg5-dev \
+    libqt5opengl5-dev qml-module-qtquick-controls libsdl1.2-dev libsndfile1-dev flite1-dev libssl-dev \
+	libudev-dev libsdl2-dev
 ```
 </details>
 
 <details>
 <summary>Packages needed on Ubuntu 22.04 LTS</summary>
 
-(**NOTE:** On Ubuntu 22.04 use only the native (ubuntu) Qt version 5.15.3 as the official Qt 5.15.2 which comes with the Qt Maintenance tool only supports OpenSSL 1.1.1 which is not supported by Ubuntu 22.04 anymore.)
+(**NOTE:** On Ubuntu 22.04 use only the native (ubuntu) Qt version 5.15.3 as the official Qt 5.15.2 which 
+comes with the Qt Maintenance tool only supports OpenSSL 1.1.1 which is not supported by Ubuntu 22.04 anymore.)
 
 ```
 sudo apt-get update
-sudo apt-get install qt5-qmake qtbase5-dev qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev libqt5svg5-dev libqt5opengl5-dev qml-module-qtquick-controls
-sudo apt-get install git libsdl1.2-dev libsndfile1-dev flite1-dev libssl-dev libudev-dev libsdl2-dev
+sudo apt-get install git build-essential
+sudo apt-get install qt5-qmake qtbase5-dev qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
+    libqt5svg5-dev libqt5opengl5-dev qml-module-qtquick-controls libsdl1.2-dev libsndfile1-dev flite1-dev \
+	libssl-dev libudev-dev libsdl2-dev
 ```
 </details>
 
@@ -94,12 +115,10 @@ sudo apt-get install git libsdl1.2-dev libsndfile1-dev flite1-dev libssl-dev lib
 
 ```
 sudo apt-get update
-sudo apt-get install qt5-qmake qt5-default \
-  qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
-  libqt5svg5-dev qtdeclarative5-qtquick2-plugin \
-  libqt5opengl5-dev qml-module-qtquick-controls
-sudo apt-get install git libsdl1.2-dev  libsndfile-dev \
-  flite1-dev libssl-dev libudev-dev libsdl2-dev python-serial python-pexpect
+sudo apt-get install git build-essential
+sudo apt-get install qt5-qmake qt5-default qtscript5-dev libqt5webkit5-dev libqt5serialport5-dev \
+  libqt5svg5-dev qtdeclarative5-qtquick2-plugin libqt5opengl5-dev qml-module-qtquick-controls libsdl1.2-dev \
+  libsndfile-dev flite1-dev libssl-dev libudev-dev libsdl2-dev python-serial python-pexpect
 ```
 </details>
 
@@ -107,37 +126,37 @@ sudo apt-get install git libsdl1.2-dev  libsndfile-dev \
 
 ```
 sudo yum update
-sudo yum install qt-devel qt5-qtscript-devel \
-  qt5-qtwebkit-devel qt5-qtserialport-devel qt5-qtsvg-devel \
+sudo yum install qt-devel qt5-qtscript-devel qt5-qtwebkit-devel qt5-qtserialport-devel qt5-qtsvg-devel \
   qt5-qtdeclarative-devel qt5-qtquick1-devel pyserial python-pexpect
 
-sudo yum install SDL-devel libsndfile-devel \
-  flite-devel openssl-devel libudev-devel SDL2-devel
+sudo yum install SDL-devel libsndfile-devel flite-devel openssl-devel libudev-devel SDL2-devel
 ```
 </details>
 
-Clone the repository in your workspace:
-------------------------------------------
-
-```
-cd ~/workspace
-git clone https://github.com/diydrones/apm_planner
-```
-
-Build APM Planner:
+Building APM Planner:
 ---------------------
+Using CMake
 
 ```
-cd ~/workspace/apm_planner
+cd $HOME
+git clone https://github.com/ArduPilot/apm_planner.git
+cd apm_planner
+mkdir build
+cd build
+cmake cmake -G Ninja .. 
+./apmplanner2 # Runs the application
+```
+
+
+Using QMake
+
+```
+cd $HOME
+git clone https://github.com/ArduPilot/apm_planner.git
+cd apm_planner
 qmake apm_planner.pro
-make
-```
-
-Run APM Planner:
--------------------
-
-```
-./release/apmplanner2
+make -j$(nproc)
+./release/apmplanner2 # Runs the application
 ```
 
 Windows

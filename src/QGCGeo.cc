@@ -11,9 +11,9 @@
 #include <stdexcept>
 
 // Using alglib for least squares calc
-#include "libs/alglib/src/ap.h"
-#include "libs/alglib/src/optimization.h"
-#include "libs/alglib/src/interpolation.h"
+#include "alglib/src/ap.h"
+#include "alglib/src/optimization.h"
+#include "alglib/src/interpolation.h"
 
 
 const Vector3d &Vector3d::operator=(const Vector3d &rhs)

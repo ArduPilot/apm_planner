@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>360</width>
-    <height>121</height>
+    <height>132</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -282,7 +282,7 @@ QMenu::separator {
       <property name="verticalSpacing">
        <number>2</number>
       </property>
-      <property name="margin">
+      <property name="margin" stdset="0">
        <number>4</number>
       </property>
       <item row="0" column="0" rowspan="5" colspan="2">
@@ -315,7 +315,7 @@ QMenu::separator {
          <string>...</string>
         </property>
         <property name="icon">
-         <iconset resource="../../mavground.qrc">
+         <iconset resource="../../../qgroundcontrol.qrc">
           <normaloff>:/files/images/mavs/unknown.svg</normaloff>:/files/images/mavs/unknown.svg</iconset>
         </property>
         <property name="iconSize">
@@ -337,7 +337,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>75</weight>
           <italic>false</italic>
           <bold>true</bold>
          </font>
@@ -364,7 +363,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -382,7 +380,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -406,7 +403,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -451,7 +447,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -475,7 +470,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -563,7 +557,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -599,7 +592,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -647,7 +639,7 @@ QMenu::separator {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../mavground.qrc">
+           <iconset resource="../../../qgroundcontrol.qrc">
             <normaloff>:/files/images/control/launch.svg</normaloff>:/files/images/control/launch.svg</iconset>
           </property>
          </widget>
@@ -676,7 +668,7 @@ QMenu::separator {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../mavground.qrc">
+           <iconset resource="../../../qgroundcontrol.qrc">
             <normaloff>:/files/images/actions/media-playback-pause.svg</normaloff>:/files/images/actions/media-playback-pause.svg</iconset>
           </property>
          </widget>
@@ -705,7 +697,7 @@ QMenu::separator {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../mavground.qrc">
+           <iconset resource="../../../qgroundcontrol.qrc">
             <normaloff>:/files/images/actions/media-playback-start.svg</normaloff>:/files/images/actions/media-playback-start.svg</iconset>
           </property>
          </widget>
@@ -734,7 +726,7 @@ QMenu::separator {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../mavground.qrc">
+           <iconset resource="../../../qgroundcontrol.qrc">
             <normaloff>:/files/images/control/land.svg</normaloff>:/files/images/control/land.svg</iconset>
           </property>
          </widget>
@@ -757,7 +749,7 @@ QMenu::separator {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../mavground.qrc">
+           <iconset resource="../../../qgroundcontrol.qrc">
             <normaloff>:/files/images/actions/system-log-out.svg</normaloff>:/files/images/actions/system-log-out.svg</iconset>
           </property>
          </widget>
@@ -792,7 +784,7 @@ QMenu::separator {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../mavground.qrc">
+           <iconset resource="../../../qgroundcontrol.qrc">
             <normaloff>:/files/images/actions/media-playback-stop.svg</normaloff>:/files/images/actions/media-playback-stop.svg</iconset>
           </property>
          </widget>
@@ -821,7 +813,7 @@ QMenu::separator {
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../../mavground.qrc">
+           <iconset resource="../../../qgroundcontrol.qrc">
             <normaloff>:/files/images/actions/process-stop.svg</normaloff>:/files/images/actions/process-stop.svg</iconset>
           </property>
          </widget>
@@ -846,7 +838,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -861,7 +852,6 @@ QMenu::separator {
         <property name="font">
          <font>
           <pointsize>-1</pointsize>
-          <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
          </font>
@@ -890,7 +880,7 @@ QMenu::separator {
   </layout>
  </widget>
  <resources>
-  <include location="../../mavground.qrc"/>
+  <include location="../../../qgroundcontrol.qrc"/>
  </resources>
  <connections/>
 </ui>
