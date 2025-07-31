@@ -819,14 +819,18 @@ if(APPLE)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_SOURCE_DIR}/files/macOS/Info.plist"
             "$<TARGET_FILE_DIR:apmplanner2>/../Info.plist"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/files/macOS/PkgInfo.in"
+            "$<TARGET_FILE_DIR:apmplanner2>/../PkgInfo"
+
     )
 
     install(FILES "${CMAKE_SOURCE_DIR}/files/APMIcons/icon.icns"
             DESTINATION "${CMAKE_INSTALL_PREFIX}/apmplanner2.app/Contents/Resources")
 
-    configure_file(${CMAKE_SOURCE_DIR}/files/macOS/PkgInfo.in ${CMAKE_BINARY_DIR}/PkgInfo @ONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/files/macOS/PkgInfo.in" ${CMAKE_BINARY_DIR}/PkgInfo @ONLY)
     install(FILES ${CMAKE_BINARY_DIR}/PkgInfo
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/apmplanner2.app/Contents)
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/apmplanner2.app/Contents")
 
 
 elseif(WIN32)
