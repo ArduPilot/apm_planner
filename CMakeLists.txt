@@ -861,5 +861,10 @@ if(UNIX AND NOT APPLE)
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/files DESTINATION share/APMPlanner2)
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/data DESTINATION share/APMPlanner2)
     install(DIRECTORY ${CMAKE_SOURCE_DIR}/qml DESTINATION share/APMPlanner2)
+    configure_file(
+        ${CMAKE_SOURCE_DIR}/common/apmplanner2.desktop.in
+        ${CMAKE_SOURCE_DIR}/common/apmplanner2.desktop
+        @ONLY
+    )
     install(FILES ${CMAKE_SOURCE_DIR}/common/apmplanner2.desktop DESTINATION share/applications)
 endif()
