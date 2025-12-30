@@ -2,9 +2,9 @@
 Type=Application
 Name=APM Planner 2
 GenericName=apmplanner2
-Exec=/usr/bin/apmplanner2
+Exec=@CMAKE_INSTALL_PREFIX@/bin/apmplanner2
 Terminal=false
 Categories=Education;Robotics;
 Comment=An open-source ground station application for MAVlink based autopilots
-Icon=/usr/share/APMPlanner2/files/APMIcons/ap_rc.png
+Icon=@CMAKE_INSTALL_PREFIX@/share/APMPlanner2/files/APMIcons/ap_rc.png
 
