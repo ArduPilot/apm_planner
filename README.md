@@ -74,6 +74,7 @@ Using QMake
 ```
 cd $HOME
 git clone https://github.com/ArduPilot/apm_planner.git
+cd apm_planner
 qmake -spec macx-clang apm_planner.pro
 make -j$(nproc)
 open ./release/apmplanner2.app
