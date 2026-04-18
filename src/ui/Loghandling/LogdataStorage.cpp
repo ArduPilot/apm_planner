@@ -257,8 +257,8 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
     m_timeDivisor = divisor;
 
     // Ensure indexed message fields are detected even if the log has no FMTU unit metadata.
-    static constexpr int s_maxRowsToCheck {50};   // Keep detection cheap while covering representative log samples.
-    static constexpr int s_maxAllowedIndex {31};  // ArduPilot instance IDs are expected to stay in a small uint5-like range.
+    static constexpr int kMaxRowsToCheck {50};    // Keep detection cheap while covering representative log samples.
+    static constexpr int kMaxAllowedIndex {31};   // ArduPilot instance IDs are expected to stay in a small uint5-like range.
     for (auto &type : m_typeStorage)
     {
         int indexFieldPos {type.m_indexFieldIndex};
@@ -293,7 +293,7 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
 
         int maxIndex {0};
         bool isValidIndexField {true};
-        const int maxEntriesToCheck {valueRows.size() < s_maxRowsToCheck ? valueRows.size() : s_maxRowsToCheck};
+        const int maxEntriesToCheck {std::min(valueRows.size(), kMaxRowsToCheck)};
         for (int i = 0; i < maxEntriesToCheck; ++i)
         {
             if (indexFieldPos >= valueRows[i].m_values.size())
@@ -313,7 +313,7 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
             maxIndex = std::max(maxIndex, indexValue);
         }
 
-        if (isValidIndexField && (maxIndex <= s_maxAllowedIndex))
+        if (isValidIndexField && (maxIndex <= kMaxAllowedIndex))
         {
             type.m_indexFieldIndex = indexFieldPos;
             type.m_maxIndex = maxIndex;
