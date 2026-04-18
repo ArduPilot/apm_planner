@@ -69,7 +69,7 @@ public:
         QVector<double> m_multipliers;  /// Multiplier data for scaling the data
         int m_timeStampIndex{};         /// Index of the time stamp field - for faster access
         int m_maxIndex{};               /// If its ad indexed datatype this is the max index otherwise 0
-        int m_indexFieldIndex{};        /// If its ad indexed datatype this points the filed where the index is stored. Only valid if m_maxIndex != 0.
+        int m_indexFieldIndex{-1};      /// If its ad indexed datatype this points the filed where the index is stored. Only valid if m_maxIndex != 0.
 
         dataType() = default;
 
@@ -122,7 +122,8 @@ public:
      * @return - true success, false otherwise (data was not added)
      */
     virtual bool addDataType(const QString &typeName, quint32 typeID, int typeLength,
-                             const QString &typeFormat, const QStringList &typeLabels, int timeColumn);
+                             const QString &typeFormat, const QStringList &typeLabels, int timeColumn,
+                             int indexColumn = -1);
 
     /**
      * @brief addDataRow adds a data row - a list of pairs of string and value - to the data storage.

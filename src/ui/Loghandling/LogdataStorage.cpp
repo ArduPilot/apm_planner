@@ -157,7 +157,7 @@ QVariant LogdataStorage::headerData(int column, Qt::Orientation orientation, int
 }
 
 bool LogdataStorage::addDataType(const QString &typeName, quint32 typeID, int typeLength,
-                                 const QString &typeFormat, const QStringList &typeLabels, int timeColumn)
+                                 const QString &typeFormat, const QStringList &typeLabels, int timeColumn, int indexColumn)
 {
     // set up column count - the storage adds s_ColumnOffset columns to the data.
     // One for the index and one for the name.
@@ -165,6 +165,7 @@ bool LogdataStorage::addDataType(const QString &typeName, quint32 typeID, int ty
 
     // create new type and store it
     dataType NewType(typeName, typeID, typeLength, typeFormat, typeLabels, timeColumn);
+    NewType.m_indexFieldIndex = indexColumn;
     m_typeStorage.insert(typeName, NewType);
     // to be able to recreate the order we store the names in a vector.
     m_indexToTypeRow.push_back(typeName);
@@ -211,6 +212,13 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
             return false;
         }
         newRow.m_values.push_back(values[i].second);
+    }
+
+    if((tempType.m_indexFieldIndex >= 0) && (tempType.m_indexFieldIndex < newRow.m_values.size()))
+    {
+        const int messageIndex = newRow.m_values.at(tempType.m_indexFieldIndex).toInt();
+        auto &storedType = m_typeStorage[typeName];
+        storedType.m_maxIndex = storedType.m_maxIndex < messageIndex ? messageIndex : storedType.m_maxIndex;
     }
     // add current global dataindex to row
     newRow.m_index = m_indexToDataRow.size();   // size() will be the index after push_back()
@@ -287,6 +295,10 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues(bool filterStringValues)
 
                 // check if this value has an indexed one
                 int indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf('#');
+                if((indexFieldPos == -1) && (type.m_indexFieldIndex != -1))
+                {
+                    indexFieldPos = type.m_indexFieldIndex;
+                }
                 if(indexFieldPos != -1)    // This is an indexed value
                 {
                     // if we have an index we remove the field describing the index from the list cause nobody wants to plot it.
@@ -633,4 +645,3 @@ QString LogdataStorage::getLabelName(int index, const dataType & type)
     }
     return label;
 }
-
