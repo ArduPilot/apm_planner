@@ -68,8 +68,8 @@ public:
         QStringList m_units;            /// Unit (name) of each column
         QVector<double> m_multipliers;  /// Multiplier data for scaling the data
         int m_timeStampIndex{};         /// Index of the time stamp field - for faster access
-        int m_maxIndex{};               /// If its ad indexed datatype this is the max index otherwise 0
-        int m_indexFieldIndex{-1};      /// If its ad indexed datatype this points the filed where the index is stored. Only valid if m_maxIndex != 0.
+        int m_maxIndex{};               /// If its an indexed datatype this is the max index otherwise 0
+        int m_indexFieldIndex{-1};      /// If its an indexed datatype this points the field where the index is stored. Only valid if m_maxIndex != 0.
 
         dataType() = default;
 

@@ -218,7 +218,7 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
     {
         const int messageIndex = newRow.m_values.at(tempType.m_indexFieldIndex).toInt();
         auto &storedType = m_typeStorage[typeName];
-        storedType.m_maxIndex = storedType.m_maxIndex < messageIndex ? messageIndex : storedType.m_maxIndex;
+        storedType.m_maxIndex = std::max(storedType.m_maxIndex, messageIndex);
     }
     // add current global dataindex to row
     newRow.m_index = m_indexToDataRow.size();   // size() will be the index after push_back()
