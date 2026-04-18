@@ -258,12 +258,13 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
 
     // Ensure indexed message fields are detected even if the log has no FMTU unit metadata.
     static constexpr int s_maxItemsToCheck {50};
+    static constexpr int s_maxAllowedIndex {31};
     for (auto &type : m_typeStorage)
     {
         int indexFieldPos {type.m_indexFieldIndex};
         if (indexFieldPos == -1)
         {
-            indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf('#'); // '#' is the unitID for index fields
+            indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf('#'); // '#' is the unit marker for index fields
         }
         if (indexFieldPos == -1)
         {
@@ -312,7 +313,7 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
             maxIndex = maxIndex < indexValue ? indexValue : maxIndex;
         }
 
-        if (isValidIndexField && (maxIndex <= 31))
+        if (isValidIndexField && (maxIndex <= s_maxAllowedIndex))
         {
             type.m_indexFieldIndex = indexFieldPos;
             type.m_maxIndex = maxIndex;
