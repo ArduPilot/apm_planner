@@ -258,13 +258,14 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
 
     // Ensure indexed message fields are detected even if the log has no FMTU unit metadata.
     static constexpr int kMaxRowsToCheck {50};    // Keep detection cheap while covering representative log samples.
-    static constexpr int kMaxAllowedIndex {31};   // ArduPilot instance IDs are expected to stay in a small uint5-like range.
+    static constexpr int kMaxAllowedIndex {31};   // ArduPilot instance IDs are expected to stay in a 5-bit range (0-31).
+    static constexpr char kIndexFieldMarker {'#'};
     for (auto &type : m_typeStorage)
     {
         int indexFieldPos {type.m_indexFieldIndex};
         if (indexFieldPos == -1)
         {
-            indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf('#'); // '#' is the unit marker for index fields
+            indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf(kIndexFieldMarker); // '#' is the unit marker for index fields
         }
         if (indexFieldPos == -1)
         {
