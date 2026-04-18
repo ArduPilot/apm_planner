@@ -259,7 +259,7 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
     // Ensure indexed message fields are detected even if the log has no FMTU unit metadata.
     static constexpr int kMaxRowsToCheck {50};    // Keep detection cheap while covering representative log samples.
     static constexpr int kMaxAllowedIndex {31};   // ArduPilot instance IDs are expected to stay in a 5-bit range (0-31).
-    static constexpr char kIndexFieldMarker {'#'};
+    static const QChar kIndexFieldMarker {'#'};
     for (auto &type : m_typeStorage)
     {
         int indexFieldPos {type.m_indexFieldIndex};
@@ -270,14 +270,14 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
         if (indexFieldPos == -1)
         {
             // Fallback for logs without unit/index metadata: detect common instance label names.
-            indexFieldPos = type.m_labels.indexOf("I");
-            if (indexFieldPos == -1)
+            static const QStringList kIndexLabelCandidates {"I", "Instance", "Inst"};
+            for (const auto &candidateLabel : kIndexLabelCandidates)
             {
-                indexFieldPos = type.m_labels.indexOf("Instance");
-            }
-            if (indexFieldPos == -1)
-            {
-                indexFieldPos = type.m_labels.indexOf("Inst");
+                indexFieldPos = type.m_labels.indexOf(candidateLabel);
+                if (indexFieldPos != -1)
+                {
+                    break;
+                }
             }
         }
 
