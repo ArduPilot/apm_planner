@@ -256,6 +256,69 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
     m_timeStampName = timeStampName;
     m_timeDivisor = divisor;
 
+    // Ensure indexed message fields are detected even if the log has no FMTU unit metadata.
+    static constexpr int s_maxItemsToCheck {50};
+    for (auto &type : m_typeStorage)
+    {
+        int indexFieldPos {type.m_indexFieldIndex};
+        if (indexFieldPos == -1)
+        {
+            indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf('#'); // '#' is the unitID for index fields
+        }
+        if (indexFieldPos == -1)
+        {
+            // Fallback for logs without unit/index metadata: detect common instance label names.
+            indexFieldPos = type.m_labels.indexOf("I");
+            if (indexFieldPos == -1)
+            {
+                indexFieldPos = type.m_labels.indexOf("Instance");
+            }
+            if (indexFieldPos == -1)
+            {
+                indexFieldPos = type.m_labels.indexOf("Inst");
+            }
+        }
+
+        if ((indexFieldPos == -1) || !m_dataStorage.contains(type.m_name))
+        {
+            continue;
+        }
+
+        const auto &valueRows {m_dataStorage[type.m_name]};
+        if (valueRows.isEmpty())
+        {
+            continue;
+        }
+
+        int maxIndex {0};
+        bool isValidIndexField {true};
+        const int maxEntriesToCheck {valueRows.size() < s_maxItemsToCheck ? valueRows.size() : s_maxItemsToCheck};
+        for (int i = 0; i < maxEntriesToCheck; ++i)
+        {
+            if (indexFieldPos >= valueRows[i].m_values.size())
+            {
+                isValidIndexField = false;
+                break;
+            }
+
+            bool conversionOk {false};
+            const int indexValue {valueRows[i].m_values[indexFieldPos].toInt(&conversionOk)};
+            if (!conversionOk || (indexValue < 0))
+            {
+                isValidIndexField = false;
+                break;
+            }
+
+            maxIndex = maxIndex < indexValue ? indexValue : maxIndex;
+        }
+
+        if (isValidIndexField && (maxIndex <= 31))
+        {
+            type.m_indexFieldIndex = indexFieldPos;
+            type.m_maxIndex = maxIndex;
+        }
+    }
+
     // As this method is called at the End of the parsing we should use the chance to sort the time index by
     // time - just to be sure...
     std::stable_sort(m_TimeToIndexList.begin(), m_TimeToIndexList.end(), TimeStampToIndexPairComparer());
@@ -286,7 +349,7 @@ QMap<QString, QStringList> LogdataStorage::getFmtValues(bool filterStringValues)
                 }
 
                 // check if this value has an indexed one
-                int indexFieldPos = m_typeIDToUnitFieldInfo.value(type.m_ID).indexOf('#');
+                int indexFieldPos = type.m_indexFieldIndex;
                 if(indexFieldPos != -1)    // This is an indexed value
                 {
                     // if we have an index we remove the field describing the index from the list cause nobody wants to plot it.
@@ -633,4 +696,3 @@ QString LogdataStorage::getLabelName(int index, const dataType & type)
     }
     return label;
 }
-
