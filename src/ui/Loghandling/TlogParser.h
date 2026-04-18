@@ -92,6 +92,7 @@ private:
     {
     public:
         virtual bool isValid() const override;
+        int m_indexFieldIndex{-1};   /// index field used for multi-instance messages
     };
 
     QHash<QString, tlogDescriptor> m_nameToDescriptorMap;   /// hashMap storing a format descriptor for every message type

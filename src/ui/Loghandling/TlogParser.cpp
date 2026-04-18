@@ -302,6 +302,10 @@ void TlogParser::extractDescriptorDataFields(tlogDescriptor &desc, const mavlink
     if(fieldInfo.array_length == 0)
     {
         // extract single value
+        if((desc.m_name == "BATTERY_STATUS") && (qstrcmp(fieldInfo.name, "id") == 0))
+        {
+            desc.m_indexFieldIndex = desc.m_labels.size();
+        }
         desc.m_labels.push_back(fieldInfo.name);
         desc.m_format += format;
         desc.m_length += size;
@@ -332,7 +336,8 @@ bool TlogParser::storeDescriptor(tlogDescriptor desc)
             desc.addTimeStampField(m_activeTimestamp);
         }
 
-        m_dataStoragePtr->addDataType(desc.m_name, desc.m_ID, desc.m_length, desc.m_format, desc.m_labels, desc.m_timeStampIndex);
+        m_dataStoragePtr->addDataType(desc.m_name, desc.m_ID, desc.m_length, desc.m_format, desc.m_labels, desc.m_timeStampIndex,
+                                      desc.m_indexFieldIndex);
     }
     else
     {
@@ -465,4 +470,3 @@ bool TlogParser::extractMsgMessage(const QList<NameValuePair> &NameValuePairList
     }
     return true;
 }
-
