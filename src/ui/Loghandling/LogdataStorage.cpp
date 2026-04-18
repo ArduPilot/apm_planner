@@ -257,8 +257,8 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
     m_timeDivisor = divisor;
 
     // Ensure indexed message fields are detected even if the log has no FMTU unit metadata.
-    static constexpr int s_maxItemsToCheck {50};
-    static constexpr int s_maxAllowedIndex {31};
+    static constexpr int s_maxItemsToCheck {50};  // Keep detection cheap while covering representative log samples.
+    static constexpr int s_maxAllowedIndex {31};  // ArduPilot instance IDs are expected to stay in a small uint5-like range.
     for (auto &type : m_typeStorage)
     {
         int indexFieldPos {type.m_indexFieldIndex};
@@ -310,7 +310,7 @@ void LogdataStorage::setTimeStamp(const QString &timeStampName, double divisor)
                 break;
             }
 
-            maxIndex = maxIndex < indexValue ? indexValue : maxIndex;
+            maxIndex = std::max(maxIndex, indexValue);
         }
 
         if (isValidIndexField && (maxIndex <= s_maxAllowedIndex))
