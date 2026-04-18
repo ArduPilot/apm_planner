@@ -214,7 +214,7 @@ bool LogdataStorage::addDataRow(const QString &typeName, const QList<QPair<QStri
         newRow.m_values.push_back(values[i].second);
     }
 
-    if((tempType.m_indexFieldIndex >= 0) && (tempType.m_indexFieldIndex < newRow.m_values.size()))
+    if((tempType.m_indexFieldIndex >= 0) && (tempType.m_indexFieldIndex < static_cast<int>(newRow.m_values.size())))
     {
         bool ok = false;
         const int messageIndex = newRow.m_values.at(tempType.m_indexFieldIndex).toInt(&ok);

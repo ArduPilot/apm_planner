@@ -302,7 +302,7 @@ void TlogParser::extractDescriptorDataFields(tlogDescriptor &desc, const mavlink
     if(fieldInfo.array_length == 0)
     {
         // extract single value
-        if((desc.m_name == "BATTERY_STATUS") && (QString(fieldInfo.name) == "id"))
+        if((desc.m_name == "BATTERY_STATUS") && (qstrcmp(fieldInfo.name, "id") == 0))
         {
             desc.m_indexFieldIndex = desc.m_labels.size();
         }
