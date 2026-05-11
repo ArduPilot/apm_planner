@@ -126,6 +126,8 @@ set(SOURCES
     src/uas/LogDownloadDialog.cc
     src/uas/LogDownloadDialog.h
     src/uas/LogDownloadDialog.ui
+    src/uas/MAVFTPManager.cc
+    src/uas/MAVFTPManager.h
     src/uas/PxQuadMAV.cc
     src/uas/PxQuadMAV.h
     src/uas/QGCMAVLinkUASFactory.cc

@@ -12,6 +12,7 @@
 #include "logging.h"
 #include "UAS.h"
 #include "LinkInterface.h"
+#include "MAVFTPManager.h"
 #include "UASManager.h"
 #include "QGC.h"
 #include "GAudioOutput.h"
@@ -29,6 +30,7 @@
 #include <QMutexLocker>
 
 #include <cmath>
+#include <cstring>
 #include <qmath.h>
 
 #ifdef QGC_PROTOBUF_ENABLED
@@ -38,6 +40,89 @@
 
 const double UAS::lipoFull = 4.2f;  ///< 100% charged voltage
 const double UAS::lipoEmpty = 3.5f; ///< Discharged voltage
+
+namespace {
+
+const quint16 kMavftpParamMagicStandard = 0x671B;
+const quint16 kMavftpParamMagicWithDefaults = 0x671C;
+
+enum ApParamType
+{
+    AP_PARAM_NONE = 0,
+    AP_PARAM_INT8 = 1,
+    AP_PARAM_INT16 = 2,
+    AP_PARAM_INT32 = 3,
+    AP_PARAM_FLOAT = 4
+};
+
+quint16 readUInt16LE(const QByteArray& data, int offset)
+{
+    const uchar* bytes = reinterpret_cast<const uchar*>(data.constData() + offset);
+    return static_cast<quint16>(bytes[0]) |
+            (static_cast<quint16>(bytes[1]) << 8);
+}
+
+qint16 readInt16LE(const QByteArray& data, int offset)
+{
+    return static_cast<qint16>(readUInt16LE(data, offset));
+}
+
+quint32 readUInt32LE(const QByteArray& data, int offset)
+{
+    const uchar* bytes = reinterpret_cast<const uchar*>(data.constData() + offset);
+    return static_cast<quint32>(bytes[0]) |
+            (static_cast<quint32>(bytes[1]) << 8) |
+            (static_cast<quint32>(bytes[2]) << 16) |
+            (static_cast<quint32>(bytes[3]) << 24);
+}
+
+qint32 readInt32LE(const QByteArray& data, int offset)
+{
+    return static_cast<qint32>(readUInt32LE(data, offset));
+}
+
+bool readPackedParamValue(const QByteArray& data, int* offset, int paramType, QVariant* value)
+{
+    switch (paramType) {
+    case AP_PARAM_INT8:
+        if (*offset + 1 > data.size()) {
+            return false;
+        }
+        *value = QVariant(static_cast<int>(static_cast<qint8>(static_cast<uchar>(data.at(*offset)))));
+        *offset += 1;
+        return true;
+    case AP_PARAM_INT16:
+        if (*offset + 2 > data.size()) {
+            return false;
+        }
+        *value = QVariant(static_cast<int>(readInt16LE(data, *offset)));
+        *offset += 2;
+        return true;
+    case AP_PARAM_INT32:
+        if (*offset + 4 > data.size()) {
+            return false;
+        }
+        *value = QVariant(static_cast<int>(readInt32LE(data, *offset)));
+        *offset += 4;
+        return true;
+    case AP_PARAM_FLOAT:
+        if (*offset + 4 > data.size()) {
+            return false;
+        }
+        {
+            const quint32 raw = readUInt32LE(data, *offset);
+            float floatValue = 0.0f;
+            memcpy(&floatValue, &raw, sizeof(floatValue));
+            *value = QVariant(static_cast<double>(floatValue));
+            *offset += 4;
+            return true;
+        }
+    default:
+        return false;
+    }
+}
+
+}
 
 
 /**
@@ -148,6 +233,7 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
 
     paramsOnceRequested(false),
     paramManager(nullptr),
+    mavftpManager(nullptr),
 
     simulation(nullptr),
     p_protocol(protocol),
@@ -180,6 +266,10 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
 
     systemId = QGC::MavlinkID();
     componentId = QGC::defaultComponentId;
+
+    mavftpManager = new MAVFTPManager(this);
+    connect(mavftpManager, SIGNAL(downloadComplete(QByteArray,QString)),
+            this, SLOT(mavftpParameterDownloadComplete(QByteArray,QString)));
 
     m_heartbeatsEnabled = MainWindow::instance()->heartbeatEnabled(); //Default to sending heartbeats
     QTimer *heartbeattimer = new QTimer(this);
@@ -1025,6 +1115,13 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
             processParamValueMsg(message, parameterName,rawValue,paramVal);
 
+        }
+            break;
+        case MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL:
+        {
+            if (mavftpManager) {
+                mavftpManager->handleMessage(link, message);
+            }
         }
             break;
         case MAVLINK_MSG_ID_COMMAND_ACK:
@@ -2342,6 +2439,16 @@ int UAS::getCommunicationStatus() const
 
 void UAS::requestParameters()
 {
+    if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA && mavftpManager && mavftpManager->downloadParameterFile()) {
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "LOADING PARAM LIST VIA MAVFTP";
+        return;
+    }
+
+    requestParametersViaMavlink();
+}
+
+void UAS::requestParametersViaMavlink()
+{
     mavlink_message_t msg;
     mavlink_msg_param_request_list_pack(systemId, componentId, &msg, this->getUASID(), MAV_COMP_ID_PRIMARY);
     sendMessage(msg);
@@ -2826,6 +2933,131 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     default:
         QLOG_ERROR() << "INVALID DATA TYPE USED AS PARAMETER VALUE: " << rawValue.param_type;
     } //switch (value.param_type)
+}
+
+void UAS::processMavftpParamValue(int compId, int paramCount, int paramIndex, const QString& paramName, const QVariant& param)
+{
+    if (!parameters.contains(compId)) {
+        parameters.insert(compId, new QMap<QString, QVariant>());
+    }
+
+    if (parameters.value(compId)->contains(paramName)) {
+        parameters.value(compId)->remove(paramName);
+    }
+
+    parameters.value(compId)->insert(paramName, param);
+    emit parameterChanged(uasId, compId, paramName, param);
+    emit parameterChanged(uasId, compId, paramCount, paramIndex, paramName, param);
+}
+
+bool UAS::processMavftpParameterFile(const QByteArray& data, QString* errorString)
+{
+    if (data.size() < 6) {
+        if (errorString) {
+            *errorString = tr("parameter file is too small");
+        }
+        return false;
+    }
+
+    const quint16 magic = readUInt16LE(data, 0);
+    const int paramCount = readUInt16LE(data, 2);
+    const int totalParamCount = readUInt16LE(data, 4);
+    if (magic != kMavftpParamMagicStandard && magic != kMavftpParamMagicWithDefaults) {
+        if (errorString) {
+            *errorString = tr("parameter file has invalid magic 0x%1").arg(magic, 4, 16, QLatin1Char('0'));
+        }
+        return false;
+    }
+
+    if (paramCount != totalParamCount) {
+        if (errorString) {
+            *errorString = tr("parameter file is partial (%1 of %2 parameters)").arg(paramCount).arg(totalParamCount);
+        }
+        return false;
+    }
+
+    QByteArray previousName;
+    int offset = 6;
+    int paramIndex = 0;
+    while (paramIndex < paramCount) {
+        while (offset < data.size() && data.at(offset) == '\0') {
+            offset++;
+        }
+
+        if (offset + 2 > data.size()) {
+            if (errorString) {
+                *errorString = tr("unexpected end of file after %1 parameters").arg(paramIndex);
+            }
+            return false;
+        }
+
+        const uchar typeAndFlags = static_cast<uchar>(data.at(offset++));
+        const int paramType = typeAndFlags & 0x0f;
+        const int flags = (typeAndFlags >> 4) & 0x0f;
+        const bool hasDefault = (flags & 0x01) == 0x01;
+
+        const uchar nameByte = static_cast<uchar>(data.at(offset++));
+        const int commonLength = nameByte & 0x0f;
+        const int nameLength = ((nameByte >> 4) & 0x0f) + 1;
+        if (commonLength > previousName.size() || commonLength + nameLength > MAVLINK_MSG_PARAM_VALUE_FIELD_PARAM_ID_LEN) {
+            if (errorString) {
+                *errorString = tr("invalid parameter name prefix at index %1").arg(paramIndex);
+            }
+            return false;
+        }
+
+        if (offset + nameLength > data.size()) {
+            if (errorString) {
+                *errorString = tr("unexpected end of file while reading parameter name at index %1").arg(paramIndex);
+            }
+            return false;
+        }
+
+        QByteArray paramNameBytes = previousName.left(commonLength);
+        paramNameBytes.append(data.constData() + offset, nameLength);
+        offset += nameLength;
+        previousName = paramNameBytes;
+
+        QVariant paramValue;
+        if (!readPackedParamValue(data, &offset, paramType, &paramValue)) {
+            if (errorString) {
+                *errorString = tr("invalid or truncated parameter value at index %1").arg(paramIndex);
+            }
+            return false;
+        }
+
+        if (hasDefault) {
+            QVariant defaultValue;
+            if (!readPackedParamValue(data, &offset, paramType, &defaultValue)) {
+                if (errorString) {
+                    *errorString = tr("invalid or truncated default value at index %1").arg(paramIndex);
+                }
+                return false;
+            }
+        }
+
+        const QString paramName = QString::fromLatin1(paramNameBytes.constData(), paramNameBytes.size());
+        processMavftpParamValue(MAV_COMP_ID_PRIMARY, paramCount, paramIndex, paramName, paramValue);
+        paramIndex++;
+    }
+
+    QLOG_DEBUG() << "Loaded" << paramCount << "parameters from MAVFTP packed parameter file";
+    return true;
+}
+
+void UAS::mavftpParameterDownloadComplete(const QByteArray& data, const QString& errorString)
+{
+    if (!errorString.isEmpty()) {
+        QLOG_WARN() << "MAVFTP parameter download failed, falling back to PARAM_REQUEST_LIST:" << errorString;
+        requestParametersViaMavlink();
+        return;
+    }
+
+    QString parseError;
+    if (!processMavftpParameterFile(data, &parseError)) {
+        QLOG_WARN() << "MAVFTP parameter parse failed, falling back to PARAM_REQUEST_LIST:" << parseError;
+        requestParametersViaMavlink();
+    }
 }
 
 /**

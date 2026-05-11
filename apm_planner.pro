@@ -477,6 +477,7 @@ HEADERS += \
     src/QGCCore.h \
     src/uas/UASInterface.h \
     src/uas/UAS.h \
+    src/uas/MAVFTPManager.h \
     src/uas/UASManager.h \
     src/comm/LinkManager.h \
     src/comm/LinkInterface.h \
@@ -709,6 +710,7 @@ SOURCES += src/main.cc \
     src/QGCCore.cc \
     src/uas/UASManager.cc \
     src/uas/UAS.cc \
+    src/uas/MAVFTPManager.cc \
     src/comm/LinkManager.cc \
     src/comm/LinkInterface.cpp \
     src/comm/QGCFlightGearLink.cc \
