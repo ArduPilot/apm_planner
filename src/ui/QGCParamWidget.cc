@@ -143,6 +143,7 @@ QGCParamWidget::QGCParamWidget(UASInterface* uas, QWidget *parent) :
 
     // New parameters from UAS
     connect(uas, SIGNAL(parameterChanged(int,int,int,int,QString,QVariant)), this, SLOT(addParameter(int,int,int,int,QString,QVariant)));
+    connect(uas, SIGNAL(mavftpParameterUploadComplete(QString)), this, SLOT(mavftpParameterUploadComplete(QString)));
 
     // Connect retransmission guard
     connect(this, SIGNAL(requestParameter(int,QString)), uas, SLOT(requestParameter(int,QString)));
@@ -1271,6 +1272,30 @@ void QGCParamWidget::writeParameters()
 
     if (changedParamCount > 0)
     {
+        QMap<int, QMap<QString, QVariant>*> typedChangedValues;
+        for (i = changedValues.begin(); i != changedValues.end(); ++i) {
+            QMap<QString, QVariant>* typedComponentValues = new QMap<QString, QVariant>();
+            typedChangedValues.insert(i.key(), typedComponentValues);
+
+            QMap<QString, QVariant>* sourceValues = i.value();
+            QMap<QString, QVariant>* currentValues = parameters.value(i.key(), NULL);
+            QMap<QString, QVariant>::iterator j;
+            for (j = sourceValues->begin(); j != sourceValues->end(); ++j) {
+                typedComponentValues->insert(j.key(), currentValues ? currentValues->value(j.key(), j.value()) : j.value());
+            }
+        }
+
+        const bool mavftpUploadStarted = mav && mav->uploadParametersViaMavftp(typedChangedValues);
+        qDeleteAll(typedChangedValues);
+
+        if (mavftpUploadStarted) {
+            QPalette pal = statusLabel->palette();
+            pal.setColor(backgroundRole(), QGC::colorOrange);
+            statusLabel->setPalette(pal);
+            statusLabel->setText(tr("Uploading %1 parameters via MAVFTP...").arg(changedParamCount));
+            return;
+        }
+
         QMessageBox msgBox;
         msgBox.setText(tr("There are locally changed parameters. Please transmit them first (<TRANSMIT>) or update them with the onboard values (<REFRESH>) before storing onboard from RAM to ROM."));
         msgBox.exec();
@@ -1286,6 +1311,32 @@ void QGCParamWidget::readParameters()
 {
     if (!mav) return;
     mav->readParametersFromStorage();
+}
+
+void QGCParamWidget::mavftpParameterUploadComplete(QString errorString)
+{
+    if (!errorString.isEmpty()) {
+        QPalette pal = statusLabel->palette();
+        pal.setColor(backgroundRole(), QGC::colorRed);
+        statusLabel->setPalette(pal);
+        statusLabel->setText(tr("MAVFTP parameter upload failed: %1").arg(errorString));
+        return;
+    }
+
+    foreach (int component, changedValues.keys()) {
+        changedValues.value(component)->clear();
+    }
+    foreach (int component, transmissionMissingWriteAckPackets.keys()) {
+        transmissionMissingWriteAckPackets.value(component)->clear();
+    }
+    transmissionActive = false;
+    transmissionListMode = false;
+
+    QPalette pal = statusLabel->palette();
+    pal.setColor(backgroundRole(), QGC::colorGreen);
+    statusLabel->setPalette(pal);
+    statusLabel->setText(tr("Uploaded parameters via MAVFTP. Refreshing..."));
+    requestParameterList();
 }
 
 /**

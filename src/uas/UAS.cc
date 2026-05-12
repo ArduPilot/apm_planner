@@ -12,6 +12,8 @@
 #include "logging.h"
 #include "UAS.h"
 #include "LinkInterface.h"
+#include "MAVFTPFileFormats.h"
+#include "MAVFTPManager.h"
 #include "UASManager.h"
 #include "QGC.h"
 #include "GAudioOutput.h"
@@ -29,6 +31,8 @@
 #include <QMutexLocker>
 
 #include <cmath>
+#include <cstring>
+#include <limits>
 #include <qmath.h>
 
 #ifdef QGC_PROTOBUF_ENABLED
@@ -38,7 +42,6 @@
 
 const double UAS::lipoFull = 4.2f;  ///< 100% charged voltage
 const double UAS::lipoEmpty = 3.5f; ///< Discharged voltage
-
 
 /**
 * Gets the settings from the previous UAS (name, airframe, autopilot, battery specs)
@@ -148,6 +151,7 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
 
     paramsOnceRequested(false),
     paramManager(nullptr),
+    mavftpManager(nullptr),
 
     simulation(nullptr),
     p_protocol(protocol),
@@ -180,6 +184,16 @@ UAS::UAS(MAVLinkProtocol* protocol, int id) : UASInterface(),
 
     systemId = QGC::MavlinkID();
     componentId = QGC::defaultComponentId;
+
+    mavftpManager = new MAVFTPManager(this);
+    connect(mavftpManager, SIGNAL(downloadComplete(QByteArray,QString)),
+            this, SLOT(mavftpParameterDownloadComplete(QByteArray,QString)));
+    connect(mavftpManager, SIGNAL(fileUploadComplete(QString,QString)),
+            this, SLOT(mavftpFileUploadComplete(QString,QString)));
+    connect(mavftpManager, SIGNAL(fileDownloadComplete(QString,QByteArray,QString)),
+            &waypointManager, SLOT(mavftpMissionDownloadComplete(QString,QByteArray,QString)));
+    connect(mavftpManager, SIGNAL(fileUploadComplete(QString,QString)),
+            &waypointManager, SLOT(mavftpMissionUploadComplete(QString,QString)));
 
     m_heartbeatsEnabled = MainWindow::instance()->heartbeatEnabled(); //Default to sending heartbeats
     QTimer *heartbeattimer = new QTimer(this);
@@ -1025,6 +1039,13 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
 
             processParamValueMsg(message, parameterName,rawValue,paramVal);
 
+        }
+            break;
+        case MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL:
+        {
+            if (mavftpManager) {
+                mavftpManager->handleMessage(link, message);
+            }
         }
             break;
         case MAVLINK_MSG_ID_COMMAND_ACK:
@@ -2342,6 +2363,16 @@ int UAS::getCommunicationStatus() const
 
 void UAS::requestParameters()
 {
+    if (getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA && mavftpManager && mavftpManager->downloadParameterFile()) {
+        QLOG_DEBUG() << __FILE__ << __LINE__ << "LOADING PARAM LIST VIA MAVFTP";
+        return;
+    }
+
+    requestParametersViaMavlink();
+}
+
+void UAS::requestParametersViaMavlink()
+{
     mavlink_message_t msg;
     mavlink_msg_param_request_list_pack(systemId, componentId, &msg, this->getUASID(), MAV_COMP_ID_PRIMARY);
     sendMessage(msg);
@@ -2354,6 +2385,37 @@ void UAS::writeParametersToStorage()
     mavlink_msg_command_long_pack(systemId, componentId, &msg, uasId, 0, MAV_CMD_PREFLIGHT_STORAGE, 1, 1, -1, -1, -1, 0, 0, 0);
     QLOG_DEBUG() << "SENT COMMAND" << MAV_CMD_PREFLIGHT_STORAGE;
     sendMessage(msg);
+}
+
+bool UAS::uploadParametersViaMavftp(const QMap<int, QMap<QString, QVariant>*>& changedParameters)
+{
+    if (getAutopilotType() != MAV_AUTOPILOT_ARDUPILOTMEGA || !mavftpManager || mavftpManager->isBusy()) {
+        return false;
+    }
+
+    const QMap<QString, QVariant>* primaryParams = changedParameters.value(MAV_COMP_ID_PRIMARY, nullptr);
+    if (!primaryParams || primaryParams->isEmpty()) {
+        return false;
+    }
+    if (primaryParams->count() > std::numeric_limits<quint16>::max()) {
+        return false;
+    }
+
+    foreach (int component, changedParameters.keys()) {
+        const QMap<QString, QVariant>* componentParams = changedParameters.value(component);
+        if (component != MAV_COMP_ID_PRIMARY && componentParams && !componentParams->isEmpty()) {
+            return false;
+        }
+    }
+
+    QByteArray data;
+    QString encodeError;
+    if (!MAVFTPFileFormats::encodeParameterUploadFile(*primaryParams, &data, &encodeError)) {
+        QLOG_WARN() << "MAVFTP parameter upload file encode failed:" << encodeError;
+        return false;
+    }
+
+    return mavftpManager->uploadFile(MAVFTPFileFormats::parameterUploadPath(), data, MAV_COMP_ID_PRIMARY);
 }
 
 void UAS::readParametersFromStorage()
@@ -2826,6 +2888,59 @@ void UAS::processParamValueMsg(mavlink_message_t& msg, const QString& paramName,
     default:
         QLOG_ERROR() << "INVALID DATA TYPE USED AS PARAMETER VALUE: " << rawValue.param_type;
     } //switch (value.param_type)
+}
+
+void UAS::processMavftpParamValue(int compId, int paramCount, int paramIndex, const QString& paramName, const QVariant& param)
+{
+    if (!parameters.contains(compId)) {
+        parameters.insert(compId, new QMap<QString, QVariant>());
+    }
+
+    if (parameters.value(compId)->contains(paramName)) {
+        parameters.value(compId)->remove(paramName);
+    }
+
+    parameters.value(compId)->insert(paramName, param);
+    emit parameterChanged(uasId, compId, paramName, param);
+    emit parameterChanged(uasId, compId, paramCount, paramIndex, paramName, param);
+}
+
+bool UAS::processMavftpParameterFile(const QByteArray& data, QString* errorString)
+{
+    QList<MAVFTPFileFormats::ParameterValue> parameters;
+    if (!MAVFTPFileFormats::parseParameterFile(data, &parameters, errorString)) {
+        return false;
+    }
+
+    for (int i = 0; i < parameters.count(); i++) {
+        const MAVFTPFileFormats::ParameterValue& parameter = parameters.at(i);
+        processMavftpParamValue(MAV_COMP_ID_PRIMARY, parameters.count(), i, parameter.name, parameter.value);
+    }
+
+    QLOG_DEBUG() << "Loaded" << parameters.count() << "parameters from MAVFTP packed parameter file";
+    return true;
+}
+
+void UAS::mavftpParameterDownloadComplete(const QByteArray& data, const QString& errorString)
+{
+    if (!errorString.isEmpty()) {
+        QLOG_WARN() << "MAVFTP parameter download failed, falling back to PARAM_REQUEST_LIST:" << errorString;
+        requestParametersViaMavlink();
+        return;
+    }
+
+    QString parseError;
+    if (!processMavftpParameterFile(data, &parseError)) {
+        QLOG_WARN() << "MAVFTP parameter parse failed, falling back to PARAM_REQUEST_LIST:" << parseError;
+        requestParametersViaMavlink();
+    }
+}
+
+void UAS::mavftpFileUploadComplete(const QString& remotePath, const QString& errorString)
+{
+    if (remotePath == MAVFTPFileFormats::parameterUploadPath()) {
+        emit mavftpParameterUploadComplete(errorString);
+    }
 }
 
 /**

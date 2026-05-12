@@ -31,9 +31,13 @@ This file is part of the QGROUNDCONTROL project
 
 #include "logging.h"
 #include "UASWaypointManager.h"
+#include "MAVFTPFileFormats.h"
+#include "MAVFTPManager.h"
 #include "UAS.h"
 #include "configuration.h"
 #include "MainWindow.h"
+
+#include <cstring>
 
 #define PROTOCOL_TIMEOUT_MS 2000    ///< maximum time to wait for pending messages until timeout
 #define PROTOCOL_DELAY_MS 20        ///< minimum delay between sent messages
@@ -56,7 +60,10 @@ UASWaypointManager::UASWaypointManager(UAS* _uas)
       uasid(0),
       m_defaultAcceptanceRadius(5.0),
       m_defaultRelativeAlt(0.0),
-      waypointIDHandled(65534) // nobody will have a waypoint list with 65534 waypoints.
+      waypointIDHandled(65534), // nobody will have a waypoint list with 65534 waypoints.
+      mavftpReadActive(false),
+      mavftpWriteActive(false),
+      mavftpReadToEdit(false)
 {
     if (uas)
     {
@@ -850,6 +857,15 @@ int UASWaypointManager::getMissionFrameIndexOf(Waypoint* wp)
  */
 void UASWaypointManager::readWaypoints(bool readToEdit)
 {
+    if (tryReadWaypointsViaMavftp(readToEdit)) {
+        return;
+    }
+
+    readWaypointsViaMavlink(readToEdit);
+}
+
+void UASWaypointManager::readWaypointsViaMavlink(bool readToEdit)
+{
     read_to_edit = readToEdit;
     emit readGlobalWPFromUAS(true);
     if(current_state == WP_IDLE) {
@@ -882,6 +898,219 @@ void UASWaypointManager::readWaypoints(bool readToEdit)
 
     }
 }
+
+bool UASWaypointManager::tryReadWaypointsViaMavftp(bool readToEdit)
+{
+    if (!uas || uas->getAutopilotType() != MAV_AUTOPILOT_ARDUPILOTMEGA || current_state != WP_IDLE) {
+        return false;
+    }
+
+    MAVFTPManager* ftp = uas->getMavftpManager();
+    if (!ftp || ftp->isBusy()) {
+        return false;
+    }
+
+    read_to_edit = readToEdit;
+    mavftpReadActive = true;
+    mavftpReadToEdit = readToEdit;
+    current_state = WP_GETLIST;
+    current_wp_id = 0;
+    current_count = 0;
+    current_partner_systemid = uasid;
+    current_partner_compid = MAV_COMP_ID_PRIMARY;
+
+    emit readGlobalWPFromUAS(true);
+    qDeleteAll(waypointsViewOnly);
+    waypointsViewOnly.clear();
+    emit waypointViewOnlyListChanged();
+    emit updateStatusString(QStringLiteral("Requesting waypoint list via MAVFTP..."));
+
+    if (!ftp->downloadFile(MAVFTPFileFormats::missionPath(), MAV_COMP_ID_PRIMARY)) {
+        mavftpReadActive = false;
+        current_state = WP_IDLE;
+        current_partner_systemid = 0;
+        current_partner_compid = MAV_COMP_ID_PRIMARY;
+        emit readGlobalWPFromUAS(false);
+        return false;
+    }
+
+    return true;
+}
+
+bool UASWaypointManager::tryWriteWaypointsViaMavftp()
+{
+    if (!uas || uas->getAutopilotType() != MAV_AUTOPILOT_ARDUPILOTMEGA || current_state != WP_IDLE) {
+        return false;
+    }
+
+    MAVFTPManager* ftp = uas->getMavftpManager();
+    if (!ftp || ftp->isBusy()) {
+        return false;
+    }
+
+    const QByteArray missionData = buildMavftpMissionData();
+    mavftpWriteActive = true;
+    current_count = waypointsEditable.count();
+    current_state = WP_SENDLIST;
+    current_wp_id = 0;
+    current_partner_systemid = uasid;
+    current_partner_compid = MAV_COMP_ID_PRIMARY;
+
+    emit updateStatusString(QStringLiteral("Uploading waypoint list via MAVFTP..."));
+    if (!ftp->uploadFile(MAVFTPFileFormats::missionPath(), missionData, MAV_COMP_ID_PRIMARY)) {
+        mavftpWriteActive = false;
+        current_state = WP_IDLE;
+        current_count = 0;
+        current_partner_systemid = 0;
+        current_partner_compid = MAV_COMP_ID_PRIMARY;
+        return false;
+    }
+
+    return true;
+}
+
+void UASWaypointManager::mavftpMissionDownloadComplete(const QString& remotePath, const QByteArray& data, const QString& errorString)
+{
+    if (!mavftpReadActive || remotePath != MAVFTPFileFormats::missionPath()) {
+        return;
+    }
+
+    const bool readToEdit = mavftpReadToEdit;
+    mavftpReadActive = false;
+    mavftpReadToEdit = false;
+    current_state = WP_IDLE;
+    current_count = 0;
+    current_wp_id = 0;
+    current_partner_systemid = 0;
+    current_partner_compid = MAV_COMP_ID_PRIMARY;
+
+    if (!errorString.isEmpty()) {
+        QLOG_WARN() << "MAVFTP mission download failed, falling back to mission protocol:" << errorString;
+        readWaypointsViaMavlink(readToEdit);
+        return;
+    }
+
+    QString parseError;
+    if (!loadMissionFromMavftpData(data, readToEdit, &parseError)) {
+        QLOG_WARN() << "MAVFTP mission parse failed, falling back to mission protocol:" << parseError;
+        readWaypointsViaMavlink(readToEdit);
+        return;
+    }
+
+    waypointIDHandled = 65534;
+    emit readGlobalWPFromUAS(false);
+
+    const QTime time = QTime::currentTime();
+    emit updateStatusString(tr("done. (updated at %1)").arg(time.toString()));
+    QLOG_DEBUG() << "Loaded" << waypointsViewOnly.count() << "mission items from MAVFTP mission file";
+}
+
+void UASWaypointManager::mavftpMissionUploadComplete(const QString& remotePath, const QString& errorString)
+{
+    if (!mavftpWriteActive || remotePath != MAVFTPFileFormats::missionPath()) {
+        return;
+    }
+
+    mavftpWriteActive = false;
+    current_state = WP_IDLE;
+    current_count = 0;
+    current_wp_id = 0;
+    current_partner_systemid = 0;
+    current_partner_compid = MAV_COMP_ID_PRIMARY;
+
+    if (!errorString.isEmpty()) {
+        QLOG_WARN() << "MAVFTP mission upload failed, falling back to mission protocol:" << errorString;
+        writeWaypointsViaMavlink();
+        return;
+    }
+
+    emit updateStatusString(QStringLiteral("done."));
+    readWaypoints(false);
+}
+
+bool UASWaypointManager::loadMissionFromMavftpData(const QByteArray& data, bool readToEdit, QString* errorString)
+{
+    QList<mavlink_mission_item_int_t> items;
+    if (!MAVFTPFileFormats::parseMissionFile(data, &items, errorString)) {
+        return false;
+    }
+
+    qDeleteAll(waypointsViewOnly);
+    waypointsViewOnly.clear();
+    emit waypointViewOnlyListChanged();
+
+    if (readToEdit) {
+        qDeleteAll(waypointsEditable);
+        waypointsEditable.clear();
+        currentWaypointEditable = NULL;
+        emit waypointEditableListChanged();
+    }
+
+    for (int i = 0; i < items.count(); i++) {
+        const mavlink_mission_item_int_t item = items.at(i);
+        const double wp_x = item.x / static_cast<double>(1E7);
+        const double wp_y = item.y / static_cast<double>(1E7);
+
+        Waypoint* viewWaypoint = new Waypoint(item.seq, wp_x, wp_y, item.z, item.param1, item.param2, item.param3, item.param4,
+                                             item.autocontinue, item.current, static_cast<MAV_FRAME>(item.frame), static_cast<MAV_CMD>(item.command));
+        addWaypointViewOnly(viewWaypoint);
+
+        if (readToEdit) {
+            Waypoint* editableWaypoint = new Waypoint(item.seq, wp_x, wp_y, item.z, item.param1, item.param2, item.param3, item.param4,
+                                                      item.autocontinue, item.current, static_cast<MAV_FRAME>(item.frame), static_cast<MAV_CMD>(item.command));
+            addWaypointEditable(editableWaypoint, false);
+            if (item.current == 1) {
+                currentWaypointEditable = editableWaypoint;
+            }
+        }
+    }
+
+    return true;
+}
+
+QByteArray UASWaypointManager::buildMavftpMissionData() const
+{
+    QList<mavlink_mission_item_int_t> items;
+    bool noCurrent = true;
+    for (int i = 0; i < waypointsEditable.count(); i++) {
+        const Waypoint* waypoint = waypointsEditable.at(i);
+        bool current = waypoint->getCurrent() && noCurrent;
+        if (waypoint->getCurrent() && noCurrent) {
+            noCurrent = false;
+        }
+        if (i == waypointsEditable.count() - 1 && noCurrent) {
+            current = true;
+        }
+
+        const mavlink_mission_item_int_t item = waypointToMissionItem(waypoint, static_cast<quint16>(i), current);
+        items.append(item);
+    }
+
+    return MAVFTPFileFormats::encodeMissionFile(items);
+}
+
+mavlink_mission_item_int_t UASWaypointManager::waypointToMissionItem(const Waypoint* waypoint, quint16 seq, bool current) const
+{
+    mavlink_mission_item_int_t item;
+    memset(&item, 0, sizeof(item));
+    item.target_system = uasid;
+    item.target_component = m_waypointComponentID;
+    item.seq = seq;
+    item.frame = waypoint->getFrame();
+    item.command = waypoint->getAction();
+    item.current = current ? 1 : 0;
+    item.autocontinue = waypoint->getAutoContinue();
+    item.param1 = waypoint->getParam1();
+    item.param2 = waypoint->getParam2();
+    item.param3 = waypoint->getParam3();
+    item.param4 = waypoint->getParam4();
+    item.x = static_cast<int32_t>(waypoint->getX() * 1E7);
+    item.y = static_cast<int32_t>(waypoint->getY() * 1E7);
+    item.z = waypoint->getZ();
+    item.mission_type = MAV_MISSION_TYPE_MISSION;
+    return item;
+}
+
 bool UASWaypointManager::guidedModeSupported()
 {
     return (uas->getAutopilotType() == MAV_AUTOPILOT_ARDUPILOTMEGA);
@@ -925,6 +1154,15 @@ void UASWaypointManager::goToWaypoint(Waypoint *wp)
 
 // change mavlink_mission_item_t to mavlink_mission_item_int_t
 void UASWaypointManager::writeWaypoints()
+{
+    if (tryWriteWaypointsViaMavftp()) {
+        return;
+    }
+
+    writeWaypointsViaMavlink();
+}
+
+void UASWaypointManager::writeWaypointsViaMavlink()
 {
     if (current_state == WP_IDLE) {
         // Send clear all if count == 0

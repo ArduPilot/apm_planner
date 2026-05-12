@@ -91,6 +91,8 @@ public slots:
     void writeParameters();
     /** @brief Read the parameters from permanent storage to RAM */
     void readParameters();
+    /** @brief Handle completion of a MAVFTP parameter upload */
+    void mavftpParameterUploadComplete(QString errorString);
     /** @brief Clear the parameter list */
     void clear();
     /** @brief Update when user changes parameters */

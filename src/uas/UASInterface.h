@@ -36,7 +36,9 @@ This file is part of the QGROUNDCONTROL project
 #include <QList>
 #include <QAction>
 #include <QColor>
+#include <QMap>
 #include <QPointer>
+#include <QVariant>
 
 #include "LinkInterface.h"
 #include "ProtocolInterface.h"
@@ -358,6 +360,8 @@ public slots:
     virtual void requestParameter(int component, const QString& parameter) = 0;
     /** @brief Write parameter to permanent storage */
     virtual void writeParametersToStorage() = 0;
+    /** @brief Upload changed parameters through ArduPilot MAVFTP parameter file */
+    virtual bool uploadParametersViaMavftp(const QMap<int, QMap<QString, QVariant>*>& changedParameters) = 0;
     /** @brief Read parameter from permanent storage */
     virtual void readParametersFromStorage() = 0;
     /** @brief Set a system parameter
@@ -547,6 +551,7 @@ signals:
     void autoModeChanged(bool autoMode);
     void parameterChanged(int uas, int component, QString parameterName, QVariant value);
     void parameterChanged(int uas, int component, int parameterCount, int parameterId, QString parameterName, QVariant value);
+    void mavftpParameterUploadComplete(QString errorString);
     void patternDetected(int uasId, QString patternPath, float confidence, bool detected);
     void letterDetected(int uasId, QString letter, float confidence, bool detected);
     /**

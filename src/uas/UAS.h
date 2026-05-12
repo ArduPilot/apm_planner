@@ -36,7 +36,10 @@ This file is part of the QGROUNDCONTROL project
 
 #include <MAVLinkProtocol.h>
 
+#include <QByteArray>
 #include <QVector3D>
+
+class MAVFTPManager;
 
 /**
  * @brief A generic MAVLINK-connected MAV/UAV
@@ -419,6 +422,11 @@ public:
         return p_protocol;
     }
 
+    MAVFTPManager* getMavftpManager() const
+    {
+        return mavftpManager;
+    }
+
 protected: //COMMENTS FOR TEST UNIT
     bool m_heartbeatsEnabled;
     /// LINK ID AND STATUS
@@ -555,6 +563,7 @@ protected: //COMMENTS FOR TEST UNIT
     QMap<int, QMap<QString, QVariant>* > parameters; ///< All parameters
     bool paramsOnceRequested;       ///< If the parameter list has been read at least once
     QGCUASParamManager* paramManager; ///< Parameter manager class
+    MAVFTPManager* mavftpManager;   ///< MAVLink FTP helper for ArduPilot virtual file access
 
     /// SIMULATION
     QGCHilLink* simulation;         ///< Hardware in the loop simulation link
@@ -946,6 +955,8 @@ public slots:
 
     /** @brief Write parameters to permanent storage */
     void writeParametersToStorage();
+    /** @brief Upload changed parameters through ArduPilot MAVFTP parameter file */
+    bool uploadParametersViaMavftp(const QMap<int, QMap<QString, QVariant>*>& changedParameters);
     /** @brief Read parameters from permanent storage */
     void readParametersFromStorage();
 
@@ -1055,6 +1066,9 @@ protected:
     uint16_t scaleJoystickToRC(double pct, int channel) const;
 
     virtual void processParamValueMsg(mavlink_message_t& msg, const QString& paramName,const mavlink_param_value_t& rawValue, mavlink_param_union_t& paramValue);
+    void processMavftpParamValue(int compId, int paramCount, int paramIndex, const QString& paramName, const QVariant& param);
+    bool processMavftpParameterFile(const QByteArray& data, QString* errorString);
+    void requestParametersViaMavlink();
 
     int componentID[256];
     bool componentMulti[256];
@@ -1075,6 +1089,8 @@ protected:
 
 protected slots:
     void requestNextParamFromQueue();
+    void mavftpParameterDownloadComplete(const QByteArray& data, const QString& errorString);
+    void mavftpFileUploadComplete(const QString& remotePath, const QString& errorString);
 
     /** @brief Write settings to disk */
     void writeSettings();
