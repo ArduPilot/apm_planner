@@ -32,6 +32,7 @@ This file is part of the QGROUNDCONTROL project
 #ifndef UASWAYPOINTMANAGER_H
 #define UASWAYPOINTMANAGER_H
 
+#include <QByteArray>
 #include <QObject>
 #include <QList>
 #include <QTimer>
@@ -130,6 +131,13 @@ public:
 private:
     void convertMavlinkMissionItem(mavlink_mission_item_int_t *from, mavlink_mission_item_t *to);
     void handleWaypointRequest(quint8 systemId, quint8 compId, quint16 wpRequestId, MissionItemEncoding wpEncoding); ///< Handles received waypoint request messages (int and float)
+    void readWaypointsViaMavlink(bool readToEdit);
+    void writeWaypointsViaMavlink();
+    bool tryReadWaypointsViaMavftp(bool readToEdit);
+    bool tryWriteWaypointsViaMavftp();
+    bool loadMissionFromMavftpData(const QByteArray& data, bool readToEdit, QString* errorString);
+    QByteArray buildMavftpMissionData() const;
+    mavlink_mission_item_int_t waypointToMissionItem(const Waypoint* waypoint, quint16 seq, bool current) const;
 
     /** @name Message send functions */
     /*@{*/
@@ -163,6 +171,8 @@ public slots:
     void handleGlobalPositionChanged(UASInterface* mav, double lat, double lon, double alt, quint64 time);
 
     void setDefaultRelAltitude(double alt);
+    void mavftpMissionDownloadComplete(const QString& remotePath, const QByteArray& data, const QString& errorString);
+    void mavftpMissionUploadComplete(const QString& remotePath, const QString& errorString);
 
 signals:
     void waypointEditableListChanged(void);                 ///< emits signal that the list of editable waypoints has been changed
@@ -203,6 +213,9 @@ private:
     double m_defaultRelativeAlt;                      ///< Default relative alt in meters
 
     quint16 waypointIDHandled;
+    bool mavftpReadActive;
+    bool mavftpWriteActive;
+    bool mavftpReadToEdit;
 };
 
 #endif // UASWAYPOINTMANAGER_H

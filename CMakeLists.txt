@@ -126,6 +126,12 @@ set(SOURCES
     src/uas/LogDownloadDialog.cc
     src/uas/LogDownloadDialog.h
     src/uas/LogDownloadDialog.ui
+    src/uas/MAVFTPFileFormats.cc
+    src/uas/MAVFTPFileFormats.h
+    src/uas/MAVFTPManager.cc
+    src/uas/MAVFTPManager.h
+    src/uas/MAVFTPProtocol.cc
+    src/uas/MAVFTPProtocol.h
     src/uas/PxQuadMAV.cc
     src/uas/PxQuadMAV.h
     src/uas/QGCMAVLinkUASFactory.cc
@@ -784,6 +790,31 @@ target_compile_definitions(apmplanner2 PRIVATE
     QGC_USE_${MAVLINK_CONF}_MESSAGES
     NOMINMAX
 )
+
+option(BUILD_MAVFTP_TESTS "Build MAVFTP unit tests" ON)
+if(BUILD_MAVFTP_TESTS)
+    enable_testing()
+    add_executable(mavftp_unit_tests
+        tests/mavftp/MAVFTPUnitTest.cc
+        src/uas/MAVFTPFileFormats.cc
+        src/uas/MAVFTPFileFormats.h
+        src/uas/MAVFTPProtocol.cc
+        src/uas/MAVFTPProtocol.h
+    )
+    target_include_directories(mavftp_unit_tests PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/comm
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/uas
+        ${MAVLINKPATH}
+        ${MAVLINKPATH}/${MAVLINK_CONF}
+    )
+    target_compile_definitions(mavftp_unit_tests PRIVATE
+        QGC_USE_${MAVLINK_CONF}_MESSAGES
+    )
+    target_link_libraries(mavftp_unit_tests
+        Qt5::Test
+    )
+    add_test(NAME mavftp_unit_tests COMMAND mavftp_unit_tests)
+endif()
 
 # Platform-specific properties and post-build
 if(APPLE)
