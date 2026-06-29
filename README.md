@@ -65,7 +65,7 @@ git clone https://github.com/ArduPilot/apm_planner.git
 cd apm_planner
 mkdir build
 cd build
-cmake cmake -G Ninja .. -DCMAKE_PREFIX_PATH="/opt/homebrew/Cellar/qt@5/5.15.16_2;/opt/homebrew"
+cmake -G Ninja .. -DCMAKE_PREFIX_PATH="$(brew --prefix qt@5);$(brew --prefix)"
 ```
 
 
