@@ -66,6 +66,13 @@ cd apm_planner
 mkdir build
 cd build
 cmake -G Ninja .. -DCMAKE_PREFIX_PATH="$(brew --prefix qt@5);$(brew --prefix)"
+ninja
+```
+
+Once the build finishes, the app bundle is created in the `build` directory. Launch it with:
+
+```
+open apmplanner2.app
 ```
 
 
