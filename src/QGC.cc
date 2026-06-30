@@ -35,7 +35,7 @@ quint64 groundTimeUsecs()
     QDateTime time = QDateTime::currentDateTime();
     time = time.toUTC();
     /* Return seconds and milliseconds, in milliseconds unit */
-    quint64 microseconds = time.toTime_t() * static_cast<quint64>(1000000);
+    quint64 microseconds = time.toSecsSinceEpoch() * static_cast<quint64>(1000000);
     return static_cast<quint64>(microseconds + (time.time().msec()*1000));
 }
 
@@ -44,7 +44,7 @@ quint64 groundTimeMilliseconds()
     QDateTime time = QDateTime::currentDateTime();
     time = time.toUTC();
     /* Return seconds and milliseconds, in milliseconds unit */
-    quint64 seconds = time.toTime_t() * static_cast<quint64>(1000);
+    quint64 seconds = time.toSecsSinceEpoch() * static_cast<quint64>(1000);
     return static_cast<quint64>(seconds + (time.time().msec()));
 }
 
@@ -53,7 +53,7 @@ qreal groundTimeSeconds()
     QDateTime time = QDateTime::currentDateTime();
     time = time.toUTC();
     /* Return time in seconds unit */
-    quint64 seconds = time.toTime_t();
+    quint64 seconds = time.toSecsSinceEpoch();
     return static_cast<qreal>(seconds + (time.time().msec() / 1000.0));
 }
 

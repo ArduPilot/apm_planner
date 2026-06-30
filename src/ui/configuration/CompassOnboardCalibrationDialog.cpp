@@ -12,7 +12,9 @@
 #include "CompassOnboardCalibrationDialog.h"
 #include "ui_CompassOnboardCalibrationDialog.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 using namespace QtDataVisualization;
+#endif
 
 QString magCalStatusToString(uint8_t status);
 

@@ -47,7 +47,7 @@ WatchdogControl::WatchdogControl(QWidget *parent) :
     // UI is initialized, setup layout
     listLayout = new QVBoxLayout(ui->mainWidget);
     listLayout->setSpacing(6);
-    listLayout->setMargin(0);
+    listLayout->setContentsMargins(0, 0, 0, 0);
     listLayout->setAlignment(Qt::AlignTop);
     ui->mainWidget->setLayout(listLayout);
 

@@ -1432,7 +1432,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_timesync_t timeSync;
             mavlink_msg_timesync_decode(&message, &timeSync);
-            timeSync.tc1 = QDateTime::currentDateTime().toTime_t() * 1000 + QTime::currentTime().msec();
+            timeSync.tc1 = QDateTime::currentDateTime().toSecsSinceEpoch() * 1000 + QTime::currentTime().msec();
 //            QLOG_DEBUG() << "timesync tc1:" << timeSync.tc1 << " ts1:" << timeSync.ts1;
 
             mavlink_message_t answer;

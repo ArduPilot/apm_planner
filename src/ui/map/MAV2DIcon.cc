@@ -70,7 +70,7 @@ void MAV2DIcon::drawIcon()
     QPainter painter(&picture);
     painter.setRenderHint(QPainter::TextAntialiasing);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
 
     radius = qMin(picture.width(), picture.height());
 

@@ -442,8 +442,8 @@ QString Waypoint::debugString()
                 + " yaw:" + QString::number(yaw)
                 + " MAV_FRAME:" + QString::number(frame)
                 + " MAV_CMD:" + QString::number(action)
-                + " autocontinue:" + autocontinue
-                + " current:" + current
+                + " autocontinue:" + QString::number(autocontinue)
+                + " current:" + QString::number(current)
                 + " orbit:" + QString::number(orbit)
                 + " param1:" + QString::number(param1)
                 + " param2:" + QString::number(param2)

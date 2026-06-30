@@ -570,7 +570,7 @@ void QGCVideoWidget::paintHUD()
             QPainter painter;
             painter.begin(this);
             painter.setRenderHint(QPainter::Antialiasing, true);
-            painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+            painter.setRenderHint(QPainter::Antialiasing, true);
             painter.setPen(Qt::red);
             paintFlowField(&painter);
         }
@@ -584,7 +584,7 @@ void QGCVideoWidget::paintHUD()
             QPainter painter;
             painter.begin(this);
             painter.setRenderHint(QPainter::Antialiasing, true);
-            painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+            painter.setRenderHint(QPainter::Antialiasing, true);
             painter.translate((this->vwidth/2.0+xCenterOffset)*scalingFactor, (this->vheight/2.0+yCenterOffset)*scalingFactor);
 
 

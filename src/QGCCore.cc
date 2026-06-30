@@ -47,7 +47,6 @@ This file is part of the QGROUNDCONTROL project
 #include <QThread>
 #include <QSplashScreen>
 #include <QPixmap>
-#include <QDesktopWidget>
 #include <QPainter>
 #include <QStyleFactory>
 #include <QAction>

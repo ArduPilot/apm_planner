@@ -1251,7 +1251,7 @@ void PrimaryFlightDisplay::doPaint() {
     QPainter painter;
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
     qreal margin = height()/100.0f;
 

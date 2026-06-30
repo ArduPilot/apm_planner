@@ -125,7 +125,7 @@ void Waypoint2DIcon::drawIcon()
     picture.fill(Qt::transparent);
     QPainter painter(&picture);
     painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
     QFont font("Bitstream Vera Sans");
     int fontSize = picture.height()*0.8f;

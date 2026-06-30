@@ -5,13 +5,19 @@ project(apmplanner2 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Qt5 components
-find_package(Qt5 REQUIRED COMPONENTS
+# Qt components (Qt6 preferred, Qt5 fallback for a gradual transition)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
     Widgets Network OpenGL Svg Xml Sql SerialPort Quick PrintSupport Qml QuickWidgets Test DataVisualization
 )
+if(QT_VERSION_MAJOR EQUAL 6)
+    # OpenGL was split into OpenGL + OpenGLWidgets in Qt6; Core5Compat provides
+    # QRegExp and other Qt5 legacy classes still referenced by the codebase.
+    find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets Core5Compat)
+endif()
 
 # SDL2 (handled per platform below)
 if(UNIX) # Install for Apple and Linux
@@ -648,8 +654,8 @@ elseif(APPLE)
     add_definitions(-D__STDC_LIMIT_MACROS)
     set(ADDITIONAL_LIBS z)
     find_library(APPSERVICES ApplicationServices)
-    find_package(Qt5Multimedia REQUIRED)
-    list(APPEND ADDITIONAL_LIBS ${APPSERVICES} Qt5::Multimedia)
+    find_package(Qt${QT_VERSION_MAJOR}Multimedia REQUIRED)
+    list(APPEND ADDITIONAL_LIBS ${APPSERVICES} Qt${QT_VERSION_MAJOR}::Multimedia)
 elseif(UNIX)
     add_definitions(-D__STDC_LIMIT_MACROS)
     set(ADDITIONAL_LIBS sndfile asound z ${ADDITIONAL_LIBS})
@@ -755,19 +761,19 @@ target_include_directories(apmplanner2 PRIVATE
 
 # Link Qt and additional libs
 target_link_libraries(apmplanner2
-    Qt5::Widgets
-    Qt5::Network
-    Qt5::OpenGL
-    Qt5::Svg
-    Qt5::Xml
-    Qt5::Sql
-    Qt5::SerialPort
-    Qt5::Quick
-    Qt5::PrintSupport
-    Qt5::Qml
-    Qt5::QuickWidgets
-    Qt5::Test
-    Qt5::DataVisualization
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::OpenGL
+    Qt${QT_VERSION_MAJOR}::Svg
+    Qt${QT_VERSION_MAJOR}::Xml
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::SerialPort
+    Qt${QT_VERSION_MAJOR}::Quick
+    Qt${QT_VERSION_MAJOR}::PrintSupport
+    Qt${QT_VERSION_MAJOR}::Qml
+    Qt${QT_VERSION_MAJOR}::QuickWidgets
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::DataVisualization
     quazip
     alglib
     opmapcontrol
@@ -775,6 +781,13 @@ target_link_libraries(apmplanner2
     ${FLITE_LIBS}
     ${SDL2_LIBRARIES}
 )
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    target_link_libraries(apmplanner2
+        Qt6::OpenGLWidgets
+        Qt6::Core5Compat
+    )
+endif()
 
 # Definitions
 target_compile_definitions(apmplanner2 PRIVATE

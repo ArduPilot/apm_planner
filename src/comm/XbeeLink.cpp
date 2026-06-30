@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QMutex>
+#include <QRegularExpression>
 #include <MG.h>
 #include <configuration.h>
 
@@ -66,7 +67,7 @@ bool XbeeLink::setPortName(QString portName)
 		delete m_portName;
 		m_portName = NULL;
 	}
-	QStringList list = portName.split(QRegExp("\\s+"),QString::SkipEmptyParts);
+	QStringList list = portName.split(QRegularExpression("\\s+"),Qt::SkipEmptyParts);
 	if(list.size()>0)
 	{
 		this->m_portNameLength = list[0].size()+1;

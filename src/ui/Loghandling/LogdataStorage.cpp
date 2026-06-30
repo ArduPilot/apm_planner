@@ -566,7 +566,7 @@ QStringList LogdataStorage::setupUnitData(const QString &timeStampName, double d
                         // find the max index within the first 50 entries and store it within the datatype
                         const auto &valueRow {m_dataStorage[type.m_name]};
                         int maxIndex {0};
-                        int maxEntriesToCheck {valueRow.size() < s_maxItemsToCheck ? valueRow.size() : s_maxItemsToCheck};
+                        int maxEntriesToCheck {static_cast<int>(valueRow.size() < s_maxItemsToCheck ? valueRow.size() : s_maxItemsToCheck)};
 
                         for (int i = 0; i < maxEntriesToCheck; ++i)
                         {

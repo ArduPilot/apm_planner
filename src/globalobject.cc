@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QDesktopServices>
+#include <QStandardPaths>
 
 GlobalObject* GlobalObject::sharedInstance()
 {

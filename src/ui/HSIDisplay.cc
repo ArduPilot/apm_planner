@@ -256,7 +256,7 @@ void HSIDisplay::renderOverlay()
 
     QPainter painter(viewport());
     painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
     // Draw base instrument
     // ----------------------

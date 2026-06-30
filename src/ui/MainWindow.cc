@@ -2469,7 +2469,7 @@ void MainWindow::showTerminalConsole()
         m_terminalDialog = new QDialog(NULL);
         TerminalConsole *terminalConsole = new TerminalConsole(this);
         QVBoxLayout* vLayout = new QVBoxLayout(m_terminalDialog);
-        vLayout->setMargin(0);
+        vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->addWidget(terminalConsole);
         m_terminalDialog->resize(640,325);
         m_terminalDialog->show();

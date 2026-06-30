@@ -33,6 +33,7 @@ This file is part of the APM_PLANNER project
 #include <QJsonObject>
 #include <QMessageBox>
 #include <QSettings>
+#include <QRegExp>
 #include "QGC.h"
 #include "configuration.h"
 

@@ -83,7 +83,7 @@ LinechartWidget::LinechartWidget(int systemid, QWidget *parent) : QWidget(parent
     curvesWidget = new QWidget(ui.curveListWidget);
     ui.curveListWidget->setWidget(curvesWidget);
     curvesWidgetLayout = new QGridLayout(curvesWidget);
-    curvesWidgetLayout->setMargin(2);
+    curvesWidgetLayout->setContentsMargins(2, 2, 2, 2);
     curvesWidgetLayout->setSpacing(4);
     //curvesWidgetLayout->setSizeConstraint(QSizePolicy::Expanding);
     curvesWidgetLayout->setAlignment(Qt::AlignTop);
@@ -215,7 +215,7 @@ void LinechartWidget::createLayout()
     QGridLayout* layout = new QGridLayout(ui.diagramGroupBox);
     mainLayout = layout;
     layout->setSpacing(4);
-    layout->setMargin(2);
+    layout->setContentsMargins(2, 2, 2, 2);
 
     // Create plot container widget
     activePlot = new LinechartPlot(this, sysid);

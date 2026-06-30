@@ -16,7 +16,7 @@
 #include "logging.h"
 #include "ArduPilotMegaMAV.h"
 #include "APMFirmwareVersion.h"
-#include <QRegExp>
+#include <QRegularExpression>
 
 APMFirmwareVersion::APMFirmwareVersion(): _major(0),_minor(0),_patch(0)
 {
@@ -57,17 +57,18 @@ void APMFirmwareVersion::parseVersion(const QString &versionText)
     }
 
 
-    if (VERSION_REXP.indexIn(versionText) == -1) {
+    QRegularExpressionMatch versionMatch = VERSION_REXP.match(versionText);
+    if (!versionMatch.hasMatch()) {
         QLOG_WARN() << "firmware version regex didn't match anything"
                                         << "version text to be parsed" << versionText;
         return;
     }
 
-    QStringList capturedTexts = VERSION_REXP.capturedTexts();
+    QStringList capturedTexts = versionMatch.capturedTexts();
 
     if (capturedTexts.count() < 5) {
         QLOG_WARN() << "something wrong with parsing the version text, not hitting anything"
-                                        << VERSION_REXP.captureCount() << VERSION_REXP.capturedTexts();
+                                        << VERSION_REXP.captureCount() << versionMatch.capturedTexts();
         return;
     }
 

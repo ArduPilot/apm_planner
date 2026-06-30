@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QCoreApplication>
+#include <QRegularExpression>
 
 /** @brief Polling interval in ms */
 #define SERIAL_POLL_INTERVAL 100
@@ -148,12 +149,12 @@ const static quint8 defaultMavlinkSystemId = 252; // Using 252 to 'crudely' iden
         return GlobalObject::sharedInstance()->shareDirectory();
     }
 
-    inline QRegExp paramSplitRegExp() {
-        return QRegExp("\t|,|=");
+    inline QRegularExpression paramSplitRegExp() {
+        return QRegularExpression("\t|,|=");
     }
 
-    inline QRegExp paramLineSplitRegExp() {
-        return QRegExp("\r|\n");
+    inline QRegularExpression paramLineSplitRegExp() {
+        return QRegularExpression("\r|\n");
     }
 
 }

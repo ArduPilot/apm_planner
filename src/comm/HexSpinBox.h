@@ -3,7 +3,7 @@
 
 #include <qspinbox.h>
 
-class QRegExpValidator;
+class QRegularExpressionValidator;
 
 class HexSpinBox : public QSpinBox
 {
@@ -18,7 +18,7 @@ protected:
     QString textFromValue(int value) const;
 
 private:
-    QRegExpValidator *validator;
+    QRegularExpressionValidator *validator;
 };
 
 #endif // HEXSPINBOX_H_

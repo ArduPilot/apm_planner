@@ -1,10 +1,11 @@
 
 #include <QStringList>
+#include <QRegularExpression>
 
 #include "logdata.h"
 
 void DataLine::readFields(FormatLine& format, QString &line) {
-    QStringList parts = line.split(QRegExp(",")); // KeepEmptyParts is default
+    QStringList parts = line.split(QRegularExpression(",")); // KeepEmptyParts is default
 
     const int size = parts.length();
     if(size == (format.fields.length() + 1)) {
@@ -17,7 +18,7 @@ void DataLine::readFields(FormatLine& format, QString &line) {
 }
 
 FormatLine FormatLine::from(QString &line) {
-    QStringList parts = line.split(QRegExp(",")); // KeepEmptyParts is default
+    QStringList parts = line.split(QRegularExpression(",")); // KeepEmptyParts is default
 
     FormatLine f;
 

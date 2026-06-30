@@ -12,10 +12,10 @@ UASQuickView::UASQuickView(QWidget *parent) : QWidget(parent)
     m_currentColumn=0;
     ui.setupUi(this);
 
-    ui.horizontalLayout->setMargin(0);
+    ui.horizontalLayout->setContentsMargins(0, 0, 0, 0);
     //ui.horizontalLayout->setSpacing(0);
     m_verticalLayoutList.append(new QVBoxLayout());
-    m_verticalLayoutList[0]->setMargin(0);
+    m_verticalLayoutList[0]->setContentsMargins(0, 0, 0, 0);
     ui.horizontalLayout->addItem(m_verticalLayoutList[0]);
 
     connect(UASManager::instance(),SIGNAL(activeUASSet(UASInterface*)),this,SLOT(setActiveUAS(UASInterface*)));
@@ -266,7 +266,7 @@ void UASQuickView::sortItems(int columncount)
         QVBoxLayout *layout = new QVBoxLayout();
         ui.horizontalLayout->addItem(layout);
         m_verticalLayoutList.append(layout);
-        layout->setMargin(0);
+        layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(0);
     }
 

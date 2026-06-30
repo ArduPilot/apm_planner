@@ -274,7 +274,13 @@ namespace mapcontrol
     {
         useOpenGL=value;
         if (useOpenGL)
-            setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+        {
+            QSurfaceFormat fmt;
+            fmt.setSamples(4);
+            QOpenGLWidget *glViewport = new QOpenGLWidget();
+            glViewport->setFormat(fmt);
+            setViewport(glViewport);
+        }
         else
             setupViewport(new QWidget());
         update();

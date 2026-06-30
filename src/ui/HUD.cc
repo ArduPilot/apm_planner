@@ -560,7 +560,7 @@ void HUD::paintHUD()
         QPainter painter;
         painter.begin(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+        painter.setRenderHint(QPainter::Antialiasing, true);
         QPixmap pmap = QPixmap::fromImage(glImage).scaledToWidth(width());
         painter.drawPixmap(0, (height() - pmap.height()) / 2, pmap);
 
@@ -1361,7 +1361,7 @@ void HUD::saveImages(bool save)
     if (save)
     {
         QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::DirectoryOnly);
+        dialog.setFileMode(QFileDialog::Directory);
 
         imageLogDirectory = QFileDialog::getExistingDirectory(this, tr("Select image log directory"),
                                                               QGC::appDataDirectory());

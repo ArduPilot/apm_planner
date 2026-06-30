@@ -36,18 +36,19 @@ This file is part of the QGROUNDCONTROL project
 #include "APMFirmwareVersion.h"
 #include <QString>
 #include <QSqlDatabase>
+#include <QRegularExpression>
 
-static const QRegExp APM_COPTER_REXP("^(ArduCopter|APM:Copter)");
-static const QRegExp APM_SOLO_REXP("^(APM:Copter solo-)");
-static const QRegExp APM_PLANE_REXP("^(ArduPlane|APM:Plane)");
-static const QRegExp APM_ROVER_REXP("^(ArduRover|APM:Rover)");
-static const QRegExp APM_SUB_REXP("^(ArduSub|APM:Sub)");
-static const QRegExp APM_PX4NUTTX_REXP("^PX4: .*NuttX: .*");
-static const QRegExp APM_FRAME_REXP("^Frame: ");
-static const QRegExp APM_SYSID_REXP("^PX4v2 ");
+static const QRegularExpression APM_COPTER_REXP("^(ArduCopter|APM:Copter)");
+static const QRegularExpression APM_SOLO_REXP("^(APM:Copter solo-)");
+static const QRegularExpression APM_PLANE_REXP("^(ArduPlane|APM:Plane)");
+static const QRegularExpression APM_ROVER_REXP("^(ArduRover|APM:Rover)");
+static const QRegularExpression APM_SUB_REXP("^(ArduSub|APM:Sub)");
+static const QRegularExpression APM_PX4NUTTX_REXP("^PX4: .*NuttX: .*");
+static const QRegularExpression APM_FRAME_REXP("^Frame: ");
+static const QRegularExpression APM_SYSID_REXP("^PX4v2 ");
 
 // Regex to parse version text coming from APM, gives out firmware type, major, minor and patch level numbers
-static const QRegExp VERSION_REXP("^(APM:Copter|APM:Plane|APM:Rover|APM:Sub|ArduCopter|ArduPlane|ArduRover|ArduSub) +[vV](\\d*)\\.*(\\d*)*\\.*(\\d*)*");
+static const QRegularExpression VERSION_REXP("^(APM:Copter|APM:Plane|APM:Rover|APM:Sub|ArduCopter|ArduPlane|ArduRover|ArduSub) +[vV](\\d*)\\.*(\\d*)*\\.*(\\d*)*");
 
 // minimum firmware versions that don't suffer from mavlink severity inversion bug.
 // https://github.com/diydrones/apm_planner/issues/788

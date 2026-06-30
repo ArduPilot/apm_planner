@@ -10,7 +10,11 @@ extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS];  // defined 
 #include <QtDataVisualization/QScatter3DSeries>
 #include <QtDataVisualization/QScatterDataProxy>
 
+// QtDataVisualization classes live in the QtDataVisualization namespace on Qt5,
+// but are in the global namespace on Qt6.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 using namespace QtDataVisualization;
+#endif
 
 class QCustomPlot;
 class UASInterface;

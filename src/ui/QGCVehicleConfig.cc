@@ -19,6 +19,7 @@
 #include <QDir>
 #include <QXmlStreamReader>
 #include <QMessageBox>
+#include <QRegExp>
 
 QGCVehicleConfig::QGCVehicleConfig(QWidget *parent) :
     QWidget(parent),

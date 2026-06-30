@@ -373,7 +373,7 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
                 packetstream >> ch;
                 if(ch)
                 {
-                    val.append(ch);
+                    val.append(QChar(ch));
                 }
             }
             NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
@@ -387,7 +387,7 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
                 packetstream >> ch;
                 if(ch)
                 {
-                    val.append(ch);
+                    val.append(QChar(ch));
                 }
             }
             NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));
@@ -401,7 +401,7 @@ bool BinLogParser::parseDataByDescriptor(QList<NameValuePair> &NameValuePairList
                 packetstream >> ch;
                 if(ch)
                 {
-                    val.append(ch);
+                    val.append(QChar(ch));
                 }
             }
             NameValuePairList.append(NameValuePair(desc.getLabelAtIndex(i), val));

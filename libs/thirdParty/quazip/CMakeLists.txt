@@ -38,5 +38,11 @@ add_library(quazip STATIC ${SOURCES} ${HEADERS})
 
 target_include_directories(quazip PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
-find_package(Qt5 REQUIRED COMPONENTS Core)
-target_link_libraries(quazip PUBLIC Qt5::Core)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core)
+target_link_libraries(quazip PUBLIC Qt${QT_VERSION_MAJOR}::Core)
+if(QT_VERSION_MAJOR EQUAL 6)
+    # QTextCodec (part of QuaZip's public API) lives in Core5Compat on Qt6.
+    find_package(Qt6 REQUIRED COMPONENTS Core5Compat)
+    target_link_libraries(quazip PUBLIC Qt6::Core5Compat)
+endif()
