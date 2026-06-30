@@ -33,10 +33,10 @@ This file is part of the PIXHAWK project
 #define CAMERAVIEW_H
 
 #include <QImage>
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include "UASInterface.h"
 
-class CameraView : public QGLWidget
+class CameraView : public QOpenGLWidget
 {
     Q_OBJECT
 public:

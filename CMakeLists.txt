@@ -712,6 +712,17 @@ if(ENABLE_CAMERAVIEW)
     set(CAMERA_VIEW_SOURCES src/ui/CameraView.cc)
     set(CAMERA_VIEW_HEADERS src/ui/CameraView.h)
     add_definitions(-DENABLE_CAMRAVIEW)
+    # CameraView calls raw fixed-function GL (glDrawPixels/glOrtho) directly. Qt6's
+    # OpenGLWidgets pulls in the system GL framework, but Qt5's OpenGL module does not,
+    # so link it explicitly to resolve the gl* symbols on both Qt versions.
+    find_package(OpenGL REQUIRED)
+    list(APPEND ADDITIONAL_LIBS OpenGL::GL)
+    if(APPLE)
+        # The fixed-function pipeline is deprecated since macOS 10.14; silence the
+        # warnings. Must be defined before any Qt/GL header is included, so set it
+        # here rather than inside CameraView.cc.
+        add_definitions(-DGL_SILENCE_DEPRECATION)
+    endif()
 else()
     message(STATUS "Skipping support for Camera View")
     set(CAMERA_VIEW_SOURCES "")
