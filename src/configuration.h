@@ -30,7 +30,7 @@
 
 #ifndef APP_PLATFORM
 
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
 #define APP_PLATFORM osx
 #elif defined(Q_LINUX_64) && defined(Q_UBUNTU)
 #define APP_PLATFORM ubuntu64

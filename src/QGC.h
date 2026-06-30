@@ -52,7 +52,7 @@
     // qjsnumbercoercion.h) call std::isinf/std::isnan, which such macros would corrupt.
     // Bring the std overloads into the global namespace so legacy unqualified calls
     // still resolve, on the platforms that historically lacked global isnan/isinf.
-    #if defined(Q_OS_MACX) || defined(Q_OS_WIN)
+    #if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
         using std::isnan;
         using std::isinf;
     #endif

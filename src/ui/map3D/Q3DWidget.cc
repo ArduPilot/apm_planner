@@ -39,7 +39,7 @@ This file is part of the QGROUNDCONTROL project
 #ifdef QGC_OSG_QT_ENABLED
 #include <osgQt/QFontImplementation>
 #endif
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
 #include <Carbon/Carbon.h>
 #endif
 
