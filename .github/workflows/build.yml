@@ -3,7 +3,8 @@
 # Dual Qt5 + Qt6 build matrix. Qt5 is end-of-life but still supported during the
 # gradual transition, so every change is built against BOTH to guard the
 # dual-build invariant (a Qt5-only or Qt6-only regression fails CI). The
-# published release artifact is built against Qt6 only.
+# published release artifact is built against Qt6 only, as a universal
+# (arm64 + x86_64) macOS .dmg.
 #
 # NOTE: there is currently no separate `qgcunittest` CMake target (the Qt `Test`
 # component is linked into the app for QSignalSpy support only), so this is a
@@ -25,10 +26,15 @@ jobs:
       matrix:
         include:
           # Qt5 macOS binaries are Intel-only, so use an Intel runner for that leg.
-          - { os: ubuntu-22.04, qt_series: '5', qt_version: '5.15.2', qt_modules: 'qtdatavis3d qtserialport qtmultimedia' }
-          - { os: ubuntu-22.04, qt_series: '6', qt_version: '6.8.1', qt_modules: 'qt5compat qtdatavis3d qtserialport qtmultimedia' }
-          - { os: macos-13,     qt_series: '5', qt_version: '5.15.2', qt_modules: 'qtdatavis3d qtserialport qtmultimedia' }
-          - { os: macos-latest, qt_series: '6', qt_version: '6.8.1', qt_modules: 'qt5compat qtdatavis3d qtserialport qtmultimedia' }
+          # The Qt6 macOS leg builds universal (arm64 + x86_64) via osx_archs; the
+          # official Qt6 binaries are already universal, so only SDL2 has to be
+          # rebuilt fat (see the universal-SDL2 step below). osx_archs is empty on
+          # every other leg, where CMAKE_OSX_ARCHITECTURES is ignored (Linux) or
+          # falls back to the runner's native arch (Qt5/Intel).
+          - { os: ubuntu-22.04, qt_series: '5', qt_version: '5.15.2', qt_modules: 'qtdatavis3d qtserialport qtmultimedia', osx_archs: '' }
+          - { os: ubuntu-22.04, qt_series: '6', qt_version: '6.8.1', qt_modules: 'qt5compat qtdatavis3d qtserialport qtmultimedia', osx_archs: '' }
+          - { os: macos-13,     qt_series: '5', qt_version: '5.15.2', qt_modules: 'qtdatavis3d qtserialport qtmultimedia', osx_archs: '' }
+          - { os: macos-latest, qt_series: '6', qt_version: '6.8.1', qt_modules: 'qt5compat qtdatavis3d qtserialport qtmultimedia', osx_archs: 'x86_64;arm64' }
 
     steps:
       - uses: actions/checkout@v4
@@ -48,22 +54,52 @@ jobs:
             ninja-build libsdl2-dev libsndfile1-dev flite1-dev \
             libssl-dev libudev-dev libgl1-mesa-dev
 
-      - name: Install system dependencies (macOS)
-        if: runner.os == 'macOS'
+      # Homebrew's sdl2 bottle is single-arch, which is fine for the native-arch
+      # legs but cannot link into a universal binary. Install it only where we
+      # build native; the universal leg gets a fat SDL2 from source below.
+      - name: Install system dependencies (macOS, native legs)
+        if: runner.os == 'macOS' && matrix.osx_archs == ''
         run: brew install ninja sdl2
 
+      - name: Install ninja (macOS universal leg)
+        if: runner.os == 'macOS' && matrix.osx_archs != ''
+        run: brew install ninja
+
+      # Build a universal SDL2 so it can link into the fat app bundle, then expose
+      # it to find_package(SDL2) via CMAKE_PREFIX_PATH.
+      - name: Build universal SDL2 (macOS universal leg)
+        if: runner.os == 'macOS' && matrix.osx_archs != ''
+        run: |
+          SDL2_VER=2.30.9
+          curl -fsSL -o sdl2.tar.gz \
+            "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_VER}/SDL2-${SDL2_VER}.tar.gz"
+          tar xf sdl2.tar.gz
+          cmake -S "SDL2-${SDL2_VER}" -B sdl2-build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="${{ matrix.osx_archs }}" \
+            -DSDL_SHARED=ON -DSDL_STATIC=OFF \
+            -DCMAKE_INSTALL_PREFIX="$PWD/sdl2-install"
+          cmake --build sdl2-build --parallel
+          cmake --install sdl2-build
+          echo "CMAKE_PREFIX_PATH=$PWD/sdl2-install" >> "$GITHUB_ENV"
+
+      # CMAKE_OSX_ARCHITECTURES is empty on Linux (ignored) and the Qt5/Intel leg
+      # (native), and "x86_64;arm64" on the universal Qt6 macOS leg.
       - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="${{ matrix.osx_archs }}"
 
       - name: Build
         run: cmake --build build --parallel
 
       # Package the Qt6 build as the release artifact (Qt5 legs are test-only).
+      # -dmg produces a universal build/apmplanner2.dmg; verify both slices are
+      # present so an accidental thin build fails CI rather than shipping arm64-only.
       - name: Deploy macOS bundle (Qt6 release)
         if: runner.os == 'macOS' && matrix.qt_series == '6'
         run: |
-          macdeployqt build/apmplanner2.app -qmldir=qml
-          ditto -c -k --keepParent build/apmplanner2.app apmplanner2-macos.zip
+          macdeployqt build/apmplanner2.app -qmldir=qml -dmg
+          lipo -archs build/apmplanner2.app/Contents/MacOS/apmplanner2
+          lipo -archs build/apmplanner2.app/Contents/MacOS/apmplanner2 | grep -q "x86_64 arm64"
 
       - name: Upload release artifact (Qt6)
         if: matrix.qt_series == '6'
@@ -71,6 +107,6 @@ jobs:
         with:
           name: apmplanner2-${{ runner.os }}-qt6
           path: |
-            apmplanner2-macos.zip
+            build/apmplanner2.dmg
             build/apmplanner2
           if-no-files-found: ignore
