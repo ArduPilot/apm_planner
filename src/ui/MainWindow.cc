@@ -1312,6 +1312,7 @@ void MainWindow::configureWindowName()
 {
     QList<QHostAddress> hostAddresses = QNetworkInterface::allAddresses();
     QString windowname = qApp->applicationName() + " " + qApp->applicationVersion();
+    windowname.append(" [Qt" + QString::number(QT_VERSION >> 16) + "]");
     bool prevAddr = false;
 
     windowname.append(" (" + QHostInfo::localHostName() + ": ");
