@@ -156,6 +156,14 @@ QT += datavisualization
 ##  testlib is needed even in release flavor for QSignalSpy support
 QT += testlib
 
+# Qt6-only modules (dual Qt5/Qt6 build):
+#  - core5compat   bridges removed Qt5 classes still used in the source (QRegExp etc.)
+#  - openglwidgets QOpenGLWidget moved out of the OpenGL module in Qt6
+#  - svgwidgets    QGraphicsSvgItem moved from QtSvg to QtSvgWidgets in Qt6
+greaterThan(QT_MAJOR_VERSION, 5) {
+    QT += core5compat openglwidgets svgwidgets
+}
+
 # Turn off serial port warnings
 DEFINES += _TTY_NOWARN_
 
@@ -167,7 +175,7 @@ DEFINES += _TTY_NOWARN_
 #################################################################################
 
 # Common settings
-CONFIG  += c++14 #C++14 support
+CONFIG  += c++17 #C++17 support (required by Qt6, valid for Qt5)
 DEFINES += GIT_COMMIT=$$system(git describe --tag --dirty=-DEV --always)
 DEFINES += GIT_HASH=$$system(git log -n 1 --pretty=format:%H)
 

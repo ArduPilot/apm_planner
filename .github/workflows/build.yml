@@ -1,0 +1,76 @@
+# APM Planner 2.0 CI
+#
+# Dual Qt5 + Qt6 build matrix. Qt5 is end-of-life but still supported during the
+# gradual transition, so every change is built against BOTH to guard the
+# dual-build invariant (a Qt5-only or Qt6-only regression fails CI). The
+# published release artifact is built against Qt6 only.
+#
+# NOTE: there is currently no separate `qgcunittest` CMake target (the Qt `Test`
+# component is linked into the app for QSignalSpy support only), so this is a
+# build-only matrix. Add a test step here once a test target exists.
+name: Build
+
+on:
+  push:
+    branches: [master, qt6-support]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.os }} / Qt${{ matrix.qt_series }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Qt5 macOS binaries are Intel-only, so use an Intel runner for that leg.
+          - { os: ubuntu-22.04, qt_series: '5', qt_version: '5.15.2', qt_modules: 'qtdatavis3d qtserialport qtmultimedia' }
+          - { os: ubuntu-22.04, qt_series: '6', qt_version: '6.8.1', qt_modules: 'qt5compat qtdatavis3d qtserialport qtmultimedia' }
+          - { os: macos-13,     qt_series: '5', qt_version: '5.15.2', qt_modules: 'qtdatavis3d qtserialport qtmultimedia' }
+          - { os: macos-latest, qt_series: '6', qt_version: '6.8.1', qt_modules: 'qt5compat qtdatavis3d qtserialport qtmultimedia' }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt ${{ matrix.qt_version }}
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt_version }}
+          modules: ${{ matrix.qt_modules }}
+          cache: true
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            ninja-build libsdl2-dev libsndfile1-dev flite1-dev \
+            libssl-dev libudev-dev libgl1-mesa-dev
+
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ninja sdl2
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      # Package the Qt6 build as the release artifact (Qt5 legs are test-only).
+      - name: Deploy macOS bundle (Qt6 release)
+        if: runner.os == 'macOS' && matrix.qt_series == '6'
+        run: |
+          macdeployqt build/apmplanner2.app -qmldir=qml
+          ditto -c -k --keepParent build/apmplanner2.app apmplanner2-macos.zip
+
+      - name: Upload release artifact (Qt6)
+        if: matrix.qt_series == '6'
+        uses: actions/upload-artifact@v4
+        with:
+          name: apmplanner2-${{ runner.os }}-qt6
+          path: |
+            apmplanner2-macos.zip
+            build/apmplanner2
+          if-no-files-found: ignore

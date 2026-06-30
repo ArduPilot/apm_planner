@@ -23,23 +23,22 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+BUILDDIR = build-deb
+
 build:
 	$(checkdir)
 	#GIT_VERSION=$(git describe --abbrev=1)
 	#git-dch -a --ignore-branch --new-version="2.0.0.$GIT_VERSION"
 	./debian/gitlog-to-changelog.pl > ./debian/changelog
-	qmake PREFIX=debian/tmp/usr apm_planner.pro ${APP_PLATFORM_DEFINES}
-	#cmake -DCMAKE_INSTALL_PREFIX=/usr .
-	#$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" --jobs=3
+	# CMake is the canonical build; it auto-detects Qt6 (preferred) or Qt5.
+	cmake -S . -B $(BUILDDIR) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ${APP_PLATFORM_DEFINES}
+	cmake --build $(BUILDDIR) --parallel 3
 	touch build
 
 clean:
 	$(checkdir)
 	rm -f build
-	#cmake -DCMAKE_INSTALL_PREFIX=/usr .
-	qmake PREFIX=/usr apm_planner.pro ${APP_PLATFORM_DEFINES}
-	[ ! -f Makefile ] || $(MAKE) clean
-	rm -r Makefile
+	rm -rf $(BUILDDIR)
 	rm -rf *~ debian/tmp debian/*~ debian/files* debian/substvars
 
 binary-indep: checkroot build
@@ -55,8 +54,7 @@ binary-arch: checkroot build
 	cp debian/control debian/tmp/DEBIAN
 	install -m 755 debian/postinst debian/postrm debian/tmp/DEBIAN
 	#sed -i "s/VERSION/$GIT_VERSION/g" debian/tmp/DEBIAN/control
-	$(MAKE) install CC="$(CC)" CFLAGS="$(CFLAGS)" --jobs=3
-	#$(MAKE) DESTDIR=$(CURDIR)/debian/tmp $(INSTALL_PROGRAM)
+	DESTDIR=$(CURDIR)/debian/tmp cmake --install $(BUILDDIR)
 	cp -a ./license.txt "$(docdir)/copyright"
 	cp -a debian/changelog "$(docdir)/changelog"
 	#cp -a ChangeLog "$(docdir)/changelog"

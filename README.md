@@ -1,7 +1,7 @@
 APM Planner 2.0
 ===============
 
-**Travis CI Build:**  [![Build Status](https://travis-ci.org/ArduPilot/apm_planner.svg?branch=master)](https://travis-ci.org/ArduPilot/apm_planner)
+**CI Build:**  [![Build](https://github.com/ArduPilot/apm_planner/actions/workflows/build.yml/badge.svg)](https://github.com/ArduPilot/apm_planner/actions/workflows/build.yml)
 
 **Support:**
 [ardupilot.com Support Forum for APM Planner 2.0](https://discuss.ardupilot.org/c/ground-control-software/apm-planner-2-0/)
@@ -350,9 +350,6 @@ Repository Layout
 qgroundcontrol:
 	demo-log.txt
 	license.txt 
-	qgcunittest.pro - For the unit tests.
-	qgcunittest.pro.user
-	qgcvideo.pro
 	qgroundcontrol.pri - Used by qgroundcontrol.pro
 	qgroundcontrol.pro - Project opened in QT to run qgc.
 	qgroundcontrol.pro.user 
