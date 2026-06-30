@@ -102,13 +102,13 @@ Rectangle {
     onConnectedChanged: {
         if (connected){
             console.log("APM Tool BAR QML: connected")
-            connectButton.image = "./resources/apmplanner/toolbar/disconnect.png"
+            connectButton.image = Qt.resolvedUrl("./resources/apmplanner/toolbar/disconnect.png")
             connectButton.label = "DISCONNECT"
             setArmed(armed)
 
         } else {
             console.log("APM Tool BAR QML: disconnected")
-            connectButton.image = "./resources/apmplanner/toolbar/connect.png"
+            connectButton.image = Qt.resolvedUrl("./resources/apmplanner/toolbar/connect.png")
             connectButton.label = "CONNECT"
             stopAnimation = true;
             clearArmedMode()
@@ -138,7 +138,7 @@ Rectangle {
         Button {
             id: flightDataView
             label: "FLIGHT DATA"
-            image: "./resources/apmplanner/toolbar/flightdata.png"
+            image: Qt.resolvedUrl("./resources/apmplanner/toolbar/flightdata.png")
             selected: true
             onClicked: {
                 clearHighlightedButtons()
@@ -150,7 +150,7 @@ Rectangle {
         Button {
             id: flightPlanView
             label: "FLIGHT PLAN"
-            image: "./resources/apmplanner/toolbar/flightplanner.png"
+            image: Qt.resolvedUrl("./resources/apmplanner/toolbar/flightplanner.png")
             onClicked: {
                 clearHighlightedButtons()
                 globalObj.triggerFlightPlanView()
@@ -161,7 +161,7 @@ Rectangle {
         Button {
             id: initialSetupView
             label: "INITIAL SETUP"
-            image: "./resources/apmplanner/toolbar/light_initialsetup_icon.png"
+            image: Qt.resolvedUrl("./resources/apmplanner/toolbar/light_initialsetup_icon.png")
 //            margins: 8
             onClicked: {
                 clearHighlightedButtons()
@@ -173,7 +173,7 @@ Rectangle {
         Button {
             id: configTuningView
             label: "CONFIG/TUNING"
-            image: "./resources/apmplanner/toolbar/light_tuningconfig_icon.png"
+            image: Qt.resolvedUrl("./resources/apmplanner/toolbar/light_tuningconfig_icon.png")
 //            margins: 8
             onClicked: {
                 clearHighlightedButtons()
@@ -185,7 +185,7 @@ Rectangle {
         Button {
             id: plotView
             label: "GRAPHS"
-            image: "./resources/apmplanner/toolbar/simulation.png"
+            image: Qt.resolvedUrl("./resources/apmplanner/toolbar/simulation.png")
             onClicked: {
                 clearHighlightedButtons()
                 globalObj.triggerPlotView()
@@ -196,7 +196,7 @@ Rectangle {
         Button {
             id: donateView
             label: "DONATE"
-            image: "./resources/apmplanner/toolbar/flightdata.png"
+            image: Qt.resolvedUrl("./resources/apmplanner/toolbar/flightdata.png")
             onClicked: {
                 clearHighlightedButtons()
                 globalObj.triggerDonateView()
@@ -346,7 +346,7 @@ Rectangle {
         Button {
             id: connectButton
             label: "CONNECT"
-            image: "./resources/apmplanner/toolbar/connect.png"
+            image: Qt.resolvedUrl("./resources/apmplanner/toolbar/connect.png")
             enabled: !connectionWidget.disable
 
             onClicked: {

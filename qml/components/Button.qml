@@ -20,6 +20,8 @@ Rectangle {
     signal clicked
 
     property string label: "button label"
+    // Callers pass an absolute url (via Qt.resolvedUrl in ApmToolBar.qml) so
+    // the toolbar icons resolve correctly under both Qt5 and Qt6.
     property alias image: buttonImage.source
     property int margins: 2
     property bool selected: false
@@ -58,8 +60,13 @@ Rectangle {
         anchors.margins: margins
         source: image
         fillMode: Image.PreserveAspectFit
-        width: image.width
-        height: image.height
+        // Use the image's natural (implicit) size. The previous
+        // `width: image.width` bound to the source url's (nonexistent)
+        // .width, evaluating to undefined; Qt5 silently fell back to the
+        // implicit size, but Qt6 turns that undefined binding into 0,
+        // rendering every toolbar icon at 0x0 (invisible).
+        width: buttonImage.implicitWidth
+        height: buttonImage.implicitHeight
     }
 
     onSelectedChanged: {
