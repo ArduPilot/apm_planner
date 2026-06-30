@@ -212,21 +212,26 @@ Install the prerequisites:
   `CMAKE_PREFIX_PATH` at it, or drop the SDL2 development files somewhere on the
   prefix path.
 
-From a *Developer Command Prompt / PowerShell for VS* (so the MSVC toolchain is
-on `PATH`):
+From a *Developer PowerShell for VS* (so the MSVC toolchain is on `PATH`). Rather
+than hardcoding a Qt version, let PowerShell discover the newest installed MSVC
+64-bit kit — the equivalent of `$(brew --prefix qt)` on macOS:
 
-```
+```powershell
 git clone https://github.com/ArduPilot/apm_planner.git
 cd apm_planner
 mkdir build
 cd build
-cmake -G Ninja .. -DCMAKE_PREFIX_PATH="C:/Qt/6.8.1/msvc2022_64"
+
+# Auto-detect the latest installed Qt kit (use C:\Qt\5.* for a Qt 5 build)
+$qt = (Get-ChildItem C:\Qt\6.*\msvc*_64 -Directory | Sort-Object Name -Descending | Select-Object -First 1).FullName
+
+cmake -G Ninja .. -DCMAKE_PREFIX_PATH="$qt"
 ninja
 ```
 
-For a Qt 5 build, point `CMAKE_PREFIX_PATH` at the Qt 5 kit instead, e.g.
-`-DCMAKE_PREFIX_PATH="C:/Qt/5.15.2/msvc2019_64"`. Separate multiple prefixes
-(e.g. Qt plus vcpkg) with `;`.
+(Replace `C:\Qt` with your install root if you installed Qt elsewhere.) If you
+also need vcpkg's SDL2 on the prefix path, append it with a `;` separator:
+`-DCMAKE_PREFIX_PATH="$qt;C:/vcpkg/installed/x64-windows"`.
 
 Run the resulting `apmplanner2.exe` from the `build` directory. To gather the Qt
 runtime DLLs next to the executable for distribution, use `windeployqt`:
