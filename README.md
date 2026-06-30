@@ -31,9 +31,43 @@ Mac OS X
 
 To build on Mac OS X (10.6 or later):
 
-Install QT
------------
+APM Planner builds against **Qt 6** (preferred) and still supports Qt 5 for a
+gradual transition. The CMake build auto-detects whichever Qt you point it at
+via `CMAKE_PREFIX_PATH`.
+
+Install Qt 6 (preferred)
+------------------------
 Preferred using "homebrew" https://brew.sh to install.
+
+```
+brew install qt cmake ninja sdl2
+```
+
+Build APM Planner (Qt 6)
+------------------------
+
+Using CMake
+
+```
+cd $HOME
+git clone https://github.com/ArduPilot/apm_planner.git
+cd apm_planner
+mkdir build
+cd build
+cmake -G Ninja .. -DCMAKE_PREFIX_PATH="$(brew --prefix qt);$(brew --prefix)"
+ninja
+```
+
+Once the build finishes, the app bundle is created in the `build` directory. Launch it with:
+
+```
+open apmplanner2.app
+```
+
+Build for Qt 5
+--------------
+
+Qt 5 is end-of-life but still supported. Install it with homebrew:
 
 ```
 brew install qt@5 cmake ninja sdl2
@@ -54,10 +88,7 @@ There are alternative ways to get Qt 5.15.x
 I suggest using the internet if you want to install this way. Brew is easyist IMHO!
 </details>
 
-Build APM Planner
---------------------
-
-Using CMake
+Build with CMake, pointing `CMAKE_PREFIX_PATH` at the Qt 5 keg:
 
 ```
 cd $HOME
@@ -65,11 +96,12 @@ git clone https://github.com/ArduPilot/apm_planner.git
 cd apm_planner
 mkdir build
 cd build
-cmake cmake -G Ninja .. -DCMAKE_PREFIX_PATH="/opt/homebrew/Cellar/qt@5/5.15.16_2;/opt/homebrew"
+cmake -G Ninja .. -DCMAKE_PREFIX_PATH="$(brew --prefix qt@5);$(brew --prefix)"
+ninja
+open apmplanner2.app
 ```
 
-
-Using QMake 
+Using QMake (Qt 5 only)
 
 ```
 cd $HOME

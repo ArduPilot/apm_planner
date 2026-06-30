@@ -250,6 +250,13 @@ void AccelCalibrationConfig::hideEvent(QHideEvent *evt)
 {
     Q_UNUSED(evt);
 
+    // On Qt6 this can fire while MainWindow is still being constructed (the page
+    // is added to a QStackedWidget before the toolbar exists). Nothing here is
+    // meaningful until the main window is up, so bail out early.
+    if (!MainWindow::instance()->isInitialised()) {
+        return;
+    }
+
     if (m_muted) { // turns audio backon, when you leave the page
         GAudioOutput::instance()->mute(false);
         m_muted = false;

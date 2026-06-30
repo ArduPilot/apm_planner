@@ -142,6 +142,14 @@ class MainWindow : public QMainWindow
 public:
     static MainWindow* instance();
 
+    /// True only once the constructor has fully run. Child-widget event
+    /// handlers (e.g. show/hideEvent) can fire synchronously while the
+    /// MainWindow is still being constructed (notably on Qt6, where adding
+    /// pages to a QStackedWidget delivers show/hide events immediately).
+    /// Such handlers must not touch widgets (e.g. the toolbar) that are
+    /// created later in the constructor.
+    bool isInitialised() const { return m_isInitialised; }
+
     ~MainWindow() override;
 
     enum QGC_MAINWINDOW_STYLE
@@ -459,6 +467,9 @@ protected:
 #endif
 
     QPointer<QGCStatusBar> customStatusBar;
+
+    static MainWindow* m_instance;
+    bool m_isInitialised{false};
 
 
     QPointer<QDockWidget> mavlinkInspectorWidget;
