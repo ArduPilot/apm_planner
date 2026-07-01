@@ -19,6 +19,29 @@ if(QT_VERSION_MAJOR EQUAL 6)
     find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets Core5Compat)
 endif()
 
+if(APPLE)
+    # AGL.framework was removed from the macOS SDK in Xcode 26, but Qt's macOS
+    # CMake package still lists the legacy AGL framework in Qt::Gui's link
+    # interface, so the final link fails with "ld: framework 'AGL' not found".
+    # Scrub any AGL reference out of the interface of every imported Qt target.
+    get_property(_apm_imported_targets DIRECTORY PROPERTY IMPORTED_TARGETS)
+    foreach(_apm_target IN LISTS _apm_imported_targets)
+        get_target_property(_apm_libs ${_apm_target} INTERFACE_LINK_LIBRARIES)
+        if(_apm_libs)
+            set(_apm_libs_filtered "")
+            foreach(_apm_lib IN LISTS _apm_libs)
+                # Matches a bare "AGL", "-framework AGL", or genex like
+                # "$<LINK_ONLY:AGL>" without touching names such as "AGLLIB".
+                if(NOT _apm_lib MATCHES "(^|[^A-Za-z])AGL($|[^A-Za-z])")
+                    list(APPEND _apm_libs_filtered "${_apm_lib}")
+                endif()
+            endforeach()
+            set_target_properties(${_apm_target} PROPERTIES
+                INTERFACE_LINK_LIBRARIES "${_apm_libs_filtered}")
+        endif()
+    endforeach()
+endif()
+
 # SDL2 (handled per platform below)
 if(UNIX) # Install for Apple and Linux
     find_package(SDL2 REQUIRED)
