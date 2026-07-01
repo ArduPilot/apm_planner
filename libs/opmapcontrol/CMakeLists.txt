@@ -151,8 +151,15 @@ target_include_directories(opmapcontrol PUBLIC
 
 target_compile_definitions(opmapcontrol PUBLIC EXTERNAL_USE)
 
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
-target_link_libraries(opmapcontrol PUBLIC Qt5::Core Qt5::Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
+target_link_libraries(opmapcontrol PUBLIC Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 
-find_package(Qt5 REQUIRED COMPONENTS Sql OpenGL Svg)
-target_link_libraries(opmapcontrol PRIVATE Qt5::Sql Qt5::OpenGL Qt5::Svg)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Sql OpenGL Svg)
+target_link_libraries(opmapcontrol PRIVATE Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::OpenGL Qt${QT_VERSION_MAJOR}::Svg)
+if(QT_VERSION_MAJOR EQUAL 6)
+    # QGraphicsSvgItem moved from QtSvg to the new QtSvgWidgets module in Qt6;
+    # OpenGL was split into OpenGL + OpenGLWidgets.
+    find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets SvgWidgets)
+    target_link_libraries(opmapcontrol PRIVATE Qt6::OpenGLWidgets Qt6::SvgWidgets)
+endif()

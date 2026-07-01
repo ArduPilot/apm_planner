@@ -48,13 +48,13 @@
 #else
     #include <cmath>
 
-    #if defined(Q_OS_MACX) || defined(Q_OS_WIN)
-        #ifndef isnan
-            #define isnan(x) std::isnan(x)
-        #endif
-        #ifndef isinf
-            #define isinf(x) std::isinf(x)
-        #endif
+    // NOTE: do NOT define isnan()/isinf() as macros here. Qt6 headers (e.g. QtQml's
+    // qjsnumbercoercion.h) call std::isinf/std::isnan, which such macros would corrupt.
+    // Bring the std overloads into the global namespace so legacy unqualified calls
+    // still resolve, on the platforms that historically lacked global isnan/isinf.
+    #if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+        using std::isnan;
+        using std::isinf;
     #endif
 #endif
 

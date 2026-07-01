@@ -8,7 +8,7 @@ UASQuickViewTextItem::UASQuickViewTextItem(QWidget *parent) : UASQuickViewItem(p
     QVBoxLayout *layout = new QVBoxLayout();
     this->setLayout(layout);
     layout->setSpacing(0);
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     titleLabel = new UASQuickViewTextLabel(this);
     //titleLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
     titleLabel->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);

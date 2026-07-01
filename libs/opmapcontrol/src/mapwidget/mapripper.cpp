@@ -26,7 +26,6 @@
 */
 #include "mapripper.h"
 #include <QSettings>
-#include <QDesktopWidget>
 #include <QApplication>
 #include <QScreen>
 #include <QCursor>

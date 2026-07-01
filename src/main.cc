@@ -109,7 +109,11 @@ int main(int argc, char *argv[])
     // this code change the application could crash or hang after a while.
     // see https://forum.qt.io/topic/68721/high-cpu-usage/4
     // MUST be called before construction of QApplication - in our case QGCCore.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt::AA_X11InitThreads was removed in Qt6 (Qt no longer needs the explicit
+    // XInitThreads call), so only set it on Qt5.
     QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
+#endif
 #endif
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

@@ -36,9 +36,6 @@ This file is part of the PIXHAWK project
 #include <QTimer>
 #include <QStringList>
 #include <audio/AlsaAudio.h>
-#ifdef Q_OS_MAC
-#include <QtMultimedia>
-#endif
 
 #ifdef Q_OS_MAC
 struct SpeechChannelRecord;

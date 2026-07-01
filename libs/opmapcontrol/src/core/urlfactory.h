@@ -41,7 +41,6 @@
 #include <QTime>
 #include "cache.h"
 #include "placemark.h"
-#include <QTextCodec>
 #include "cmath"
 
 namespace core {

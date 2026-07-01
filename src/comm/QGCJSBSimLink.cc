@@ -331,7 +331,7 @@ bool QGCJSBSimLink::connectSimulation()
     QString processJSB;
     QString rootJSB;
 
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
     processJSB = "/usr/local/bin/JSBSim";
     rootJSB = "/Applications/FlightGear.app/Contents/Resources/data";
 #endif

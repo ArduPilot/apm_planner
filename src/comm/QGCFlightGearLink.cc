@@ -460,7 +460,7 @@ bool QGCFlightGearLink::connectSimulation()
     QString terraSyncScenery;
     QString fgAircraft;
 
-#ifdef Q_OS_MACX
+#ifdef Q_OS_MACOS
     processFgfs = "/Applications/FlightGear.app/Contents/Resources/fgfs";
     processTerraSync = "/Applications/FlightGear.app/Contents/Resources/terrasync";
     //fgRoot = "/Applications/FlightGear.app/Contents/Resources/data";

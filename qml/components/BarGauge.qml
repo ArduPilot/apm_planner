@@ -1,7 +1,8 @@
 import QtQuick 2.9
-import QtQuick.Controls 1.2
-import QtQuick.Controls.Styles 1.2
 
+// Vertical bar gauge. Rewritten to use plain QtQuick primitives so it builds on
+// both Qt5 and Qt6: the old QtQuick.Controls 1.2 ProgressBar + ProgressBarStyle
+// (with minimumValue/maximumValue/orientation/style) were removed in Qt6.
 Rectangle {
     id: root
     property real value: 0
@@ -21,40 +22,45 @@ Rectangle {
 
     property color actualColor: normalColor
 
+    // Fraction of the bar to fill, clamped to [0, 1].
+    property real fillFraction: {
+        if (maximum <= minimum)
+            return 0;
+        var f = (value - minimum) / (maximum - minimum);
+        return Math.max(0, Math.min(1, f));
+    }
+
     onValueChanged: {
-        if (value > failValue*bar.maximumValue){
+        if (value > failValue*root.maximum){
             actualColor = failColor
             return;
         }
-        if (value > warnValue*bar.maximumValue ) {
+        if (value > warnValue*root.maximum ) {
             actualColor = warnColor;
             return;
         }
         actualColor = normalColor
     }
 
-    ProgressBar {
+    // Bar background
+    Rectangle {
         id: bar
-        width: parent.width
-        height: parent.height
-        minimumValue: root.minimum
-        maximumValue: root.maximum
-        value: root.value
-        orientation: Qt.Vertical
-        style: ProgressBarStyle {
-            background: Rectangle {
-                radius: 2
-                color: "lightgray"
-                border.color: "gray"
-                border.width: 1
-                implicitWidth: bar.width
-                implicitHeight: bar.height
-            }
-            progress: Rectangle {
-                id: barProgressStyle
-                color: actualColor
-                border.color: "black"
-            }
+        anchors.fill: parent
+        radius: 2
+        color: "lightgray"
+        border.color: "gray"
+        border.width: 1
+
+        // Progress fill, growing from the bottom
+        Rectangle {
+            id: barProgress
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: bar.border.width
+            height: (bar.height - 2*bar.border.width) * root.fillFraction
+            color: root.actualColor
+            border.color: "black"
         }
     }
 

@@ -76,6 +76,10 @@ ApmCustomFirmwareConfig::ApmCustomFirmwareConfig(QWidget *parent) :
 void ApmCustomFirmwareConfig::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event)
+    // May fire during MainWindow construction on Qt6, before the toolbar exists.
+    if (!MainWindow::instance()->isInitialised()) {
+        return;
+    }
     QLOG_DEBUG() << "ApmCustomFirmwareConfig: Install Firmware selected";
     MainWindow::instance()->toolBar().disableConnectWidget(true);
 
@@ -91,6 +95,9 @@ void ApmCustomFirmwareConfig::showEvent(QShowEvent *event)
 void ApmCustomFirmwareConfig::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event)
+    if (!MainWindow::instance()->isInitialised()) {
+        return;
+    }
     MainWindow::instance()->toolBar().disableConnectWidget(false);
 }
 

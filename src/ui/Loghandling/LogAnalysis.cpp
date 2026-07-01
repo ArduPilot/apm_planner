@@ -1134,7 +1134,7 @@ void LogAnalysis::filterAcceptClicked()
         disableTableFilter();
         QString regex = m_tableFilterList.join("\\b|");  // Create regex like val1\b|val2\b|val3
         regex.append("\\b");                             // append the final \b
-        mp_tableFilterProxyModel->setFilterRegExp(regex);
+        mp_tableFilterProxyModel->setFilterRegularExpression(regex);
         mp_tableFilterProxyModel->setFilterRole(Qt::DisplayRole);
         mp_tableFilterProxyModel->setFilterKeyColumn(1);
     }

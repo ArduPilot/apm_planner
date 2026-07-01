@@ -1139,7 +1139,12 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
             mavlink_msg_statustext_get_text(&message, b.data());
             // Ensure NUL-termination
             b[b.length()-1] = '\0';
-            QString text = QString(b);
+            // Build from the C string so it stops at the first NUL. The
+            // STATUSTEXT field is a fixed 50-byte buffer the firmware NUL-pads;
+            // QString(const QByteArray&) would keep the whole buffer including
+            // that padding, and Qt6 renders the embedded NULs as .notdef boxes
+            // (a grid of tofu squares over the PFD).
+            QString text = QString::fromUtf8(b.constData());
             int severity = mavlink_msg_statustext_get_severity(&message);
 
             if (text.startsWith("#audio:"))
@@ -1432,7 +1437,7 @@ void UAS::receiveMessage(LinkInterface* link, mavlink_message_t message)
         {
             mavlink_timesync_t timeSync;
             mavlink_msg_timesync_decode(&message, &timeSync);
-            timeSync.tc1 = QDateTime::currentDateTime().toTime_t() * 1000 + QTime::currentTime().msec();
+            timeSync.tc1 = QDateTime::currentDateTime().toSecsSinceEpoch() * 1000 + QTime::currentTime().msec();
 //            QLOG_DEBUG() << "timesync tc1:" << timeSync.tc1 << " ts1:" << timeSync.ts1;
 
             mavlink_message_t answer;

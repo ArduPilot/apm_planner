@@ -60,7 +60,7 @@ WaypointList::WaypointList(QWidget *parent, UASWaypointManager* wpm) :
 
     editableListLayout = new QVBoxLayout(m_ui->editableListWidget);
     editableListLayout->setSpacing(0);
-    editableListLayout->setMargin(0);
+    editableListLayout->setContentsMargins(0, 0, 0, 0);
     editableListLayout->setAlignment(Qt::AlignTop);
     m_ui->editableListWidget->setLayout(editableListLayout);
     m_ui->wpRadiusSpinBox->setEnabled(false);
@@ -92,7 +92,7 @@ WaypointList::WaypointList(QWidget *parent, UASWaypointManager* wpm) :
 
     viewOnlyListLayout = new QVBoxLayout(m_ui->viewOnlyListWidget);
     viewOnlyListLayout->setSpacing(0);
-    viewOnlyListLayout->setMargin(0);
+    viewOnlyListLayout->setContentsMargins(0, 0, 0, 0);
     viewOnlyListLayout->setAlignment(Qt::AlignTop);
     m_ui->viewOnlyListWidget->setLayout(viewOnlyListLayout);
 

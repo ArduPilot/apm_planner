@@ -147,7 +147,7 @@ namespace mapcontrol
 
             painter->setWorldTransform(transform);
             painter->setRenderHint(QPainter::SmoothPixmapTransform,true);
-            painter->setRenderHint(QPainter::HighQualityAntialiasing,true);
+            painter->setRenderHint(QPainter::Antialiasing,true);
 
             {
                 DrawMap2D(painter);

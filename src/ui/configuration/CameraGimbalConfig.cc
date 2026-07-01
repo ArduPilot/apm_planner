@@ -22,6 +22,7 @@ This file is part of the APM_PLANNER project
 
 #include "logging.h"
 #include <QMessageBox>
+#include <QRegularExpression>
 
 #include "CameraGimbalConfig.h"
 
@@ -578,7 +579,7 @@ void CameraGimbalConfig::parameterChanged(int uas, int component, QString parame
     } else if (parameterName.startsWith("CAM")){
         refreshCameraTriggerParameters(parameterName, value);
 
-    } else if (parameterName.contains(QRegExp("SERVO[1-9][1-16]?_FUNCTION$"))){
+    } else if (parameterName.contains(QRegularExpression("SERVO[1-9][1-16]?_FUNCTION$"))){
         // Matches RCXX_FUNCTION for RC channels 1 - 16
         refreshRcFunctionComboxBox(parameterName, value);
 

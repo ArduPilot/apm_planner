@@ -25,7 +25,7 @@
 * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 #include "urlfactory.h"
-#include <QRegExp>
+#include <QRegularExpression>
 #include <qmath.h>
 #include <QRandomGenerator>
 #include <QElapsedTimer>
@@ -133,10 +133,11 @@ namespace core {
                 return;
             }
             QString html=QString(reply->readAll());
-            QRegExp reg("\"*https://mt0.google.com/vt/lyrs=m@(\\d*)",Qt::CaseInsensitive);
-            if(reg.indexIn(html)!=-1)
+            QRegularExpression reg("\"*https://mt0.google.com/vt/lyrs=m@(\\d*)",QRegularExpression::CaseInsensitiveOption);
+            QRegularExpressionMatch match=reg.match(html);
+            if(match.hasMatch())
             {
-                QStringList gc=reg.capturedTexts();
+                QStringList gc=match.capturedTexts();
                 VersionGoogleMap = QString("m@%1").arg(gc[1]);
                 VersionGoogleMapChina = VersionGoogleMap;
 #ifdef DEBUG_URLFACTORY
@@ -144,20 +145,22 @@ namespace core {
 #endif //DEBUG_URLFACTORY
             }
 
-            reg=QRegExp("\"*https://mt0.google.com/vt/lyrs=h@(\\d*)",Qt::CaseInsensitive);
-            if(reg.indexIn(html)!=-1)
+            reg=QRegularExpression("\"*https://mt0.google.com/vt/lyrs=h@(\\d*)",QRegularExpression::CaseInsensitiveOption);
+            match=reg.match(html);
+            if(match.hasMatch())
             {
-                QStringList gc=reg.capturedTexts();
+                QStringList gc=match.capturedTexts();
                 VersionGoogleLabels = QString("h@%1").arg(gc[1]);
                 VersionGoogleLabelsChina = VersionGoogleLabels;
 #ifdef DEBUG_URLFACTORY
                 qDebug()<<"TryCorrectGoogleVersions, VersionGoogleLabels: "<<VersionGoogleLabels;
 #endif //DEBUG_URLFACTORY
             }
-            reg=QRegExp("\"*https://khms\\D?\\d.google.com/kh\\?v=(\\d*)",Qt::CaseInsensitive);
-            if(reg.indexIn(html)!=-1)
+            reg=QRegularExpression("\"*https://khms\\D?\\d.google.com/kh\\?v=(\\d*)",QRegularExpression::CaseInsensitiveOption);
+            match=reg.match(html);
+            if(match.hasMatch())
             {
-                QStringList gc=reg.capturedTexts();
+                QStringList gc=match.capturedTexts();
                 VersionGoogleSatellite = gc[1];
                 VersionGoogleSatelliteKorea = VersionGoogleSatellite;
                 VersionGoogleSatelliteChina = "s@" + VersionGoogleSatellite;
@@ -165,10 +168,11 @@ namespace core {
                 qDebug()<<"TryCorrectGoogleVersions, VersionGoogleSatellite: "<<VersionGoogleSatellite;
 
             }
-            reg=QRegExp("\"*https://mt0.google.com/vt/lyrs=t@(\\d*),r@(\\d*)",Qt::CaseInsensitive);
-            if(reg.indexIn(html)!=-1)
+            reg=QRegularExpression("\"*https://mt0.google.com/vt/lyrs=t@(\\d*),r@(\\d*)",QRegularExpression::CaseInsensitiveOption);
+            match=reg.match(html);
+            if(match.hasMatch())
             {
-                QStringList gc=reg.capturedTexts();
+                QStringList gc=match.capturedTexts();
                 VersionGoogleTerrain = QString("t@%1,r@%2").arg(gc[1],gc[2]);
                 VersionGoogleTerrainChina = VersionGoogleTerrain;
 #ifdef DEBUG_URLFACTORY
@@ -565,7 +569,7 @@ namespace core {
         status = GeoCoderStatusCode::Unknow;
         internals::PointLatLng ret(0,0);
         QString urlEnd = url.mid(url.indexOf("geo?q=")+6);
-        urlEnd.replace( QRegExp(
+        urlEnd.replace( QRegularExpression(
                 "[^"
                 "A-Z,a-z,0-9,"
                 "\\^,\\&,\\',\\@,"
@@ -658,7 +662,7 @@ namespace core {
 #endif //DEBUG_URLFACTORY
         // status = GeoCoderStatusCode::Unknow;
         QString urlEnd = url.right(url.indexOf("geo?hl="));
-        urlEnd.replace( QRegExp(
+        urlEnd.replace( QRegularExpression(
                 "[^"
                 "A-Z,a-z,0-9,"
                 "\\^,\\&,\\',\\@,"
@@ -702,8 +706,7 @@ namespace core {
                 qDebug()<<"GetLatLngFromGeocoderUrl:Reply ok";
 #endif //DEBUG_URLFACTORY
                 QByteArray a=(reply->readAll());
-                QTextCodec *codec = QTextCodec::codecForName("UTF-8");
-                reverse = codec->toUnicode(a);
+                reverse = QString::fromUtf8(a);
 #ifdef DEBUG_URLFACTORY
                 qDebug()<<reverse;
 #endif //DEBUG_URLFACTORY
@@ -723,7 +726,7 @@ namespace core {
         if(reverse.startsWith("200"))
         {
             QString acc = reverse.left(reverse.indexOf('\"'));
-            ret = Placemark(reverse.remove(reverse.indexOf('\"')));
+            ret = Placemark(reverse.remove(QChar(static_cast<int>(reverse.indexOf('\"')))));
             ret.SetAccuracy ((int)  (( (QString) acc.split(',')[1]).toInt())    );
 
         }

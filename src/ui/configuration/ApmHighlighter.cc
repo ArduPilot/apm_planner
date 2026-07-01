@@ -31,6 +31,8 @@ This file is part of the APM_PLANNER project
 
 #include "ApmHighlighter.h"
 
+#include <QRegularExpression>
+
 APMHighlighter::APMHighlighter(QObject *parent) :
     QSyntaxHighlighter(parent)
 {
@@ -43,11 +45,12 @@ void APMHighlighter::highlightBlock(const QString &text)
      myClassFormat.setForeground(Qt::darkMagenta);
      QString pattern = "^\\Ardu[A-Za-z]+\\b";
 
-     QRegExp expression(pattern);
-     int index = text.indexOf(expression);
+     QRegularExpression expression(pattern);
+     QRegularExpressionMatch match;
+     int index = text.indexOf(expression, 0, &match);
      while (index >= 0) {
-         int length = expression.matchedLength();
+         int length = match.capturedLength();
          setFormat(index, length, myClassFormat);
-         index = text.indexOf(expression, index + length);
+         index = text.indexOf(expression, index + length, &match);
      }
  }

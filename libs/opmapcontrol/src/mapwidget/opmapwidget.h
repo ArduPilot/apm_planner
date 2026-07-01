@@ -34,10 +34,15 @@
 #include "../core/diagnostics.h"
 #include "omapconfiguration.h"
 #include <QObject>
-#include <QtOpenGL/QGLWidget>
+#include <QOpenGLWidget>
+#include <QSurfaceFormat>
 #include <QtWidgets/QGraphicsView>
 #include "waypointitem.h"
-#include "QtSvg/QGraphicsSvgItem"
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QtSvgWidgets/QGraphicsSvgItem>
+#else
+#include <QtSvg/QGraphicsSvgItem>
+#endif
 #include "uavitem.h"
 #include "gpsitem.h"
 #include "homeitem.h"

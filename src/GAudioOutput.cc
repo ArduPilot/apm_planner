@@ -37,6 +37,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QApplication>
 #include <QSettings>
 #include <QTemporaryFile>
+#include <QRegularExpression>
 
 #ifdef Q_OS_MAC
 #include <ApplicationServices/ApplicationServices.h>
@@ -230,7 +231,7 @@ bool GAudioOutput::say(QString text, int severity)
 #ifdef FLITE_AUDIO_ENABLED
             // spokenfilename is the filename created from spoken text
             QString spokenFilename = text;
-            spokenFilename.replace(QRegExp(" "), "_");
+            spokenFilename.replace(QRegularExpression(" "), "_");
             spokenFilename = QGC::appDataDirectory() + "/tmp_audio/" + spokenFilename + ".wav";
 
             // alsadriver is a qthread. tmp. files dont work here

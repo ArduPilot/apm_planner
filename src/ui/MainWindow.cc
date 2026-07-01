@@ -126,16 +126,21 @@ void LogWindowSingleton::removeDebugOutput()
 }
 
 
+MainWindow* MainWindow::m_instance{nullptr};
+
 MainWindow* MainWindow::instance()
 {
     // This singleton impl. is NOT thread safe. Fortunately we do not need
     // thread safety as the first call is always done @ application start.
-    static MainWindow* instance{nullptr};
-    if(instance == nullptr)
+    // The constructor assigns m_instance = this as its very first action, so
+    // any call to instance() that re-enters during construction (e.g. a child
+    // widget's show/hideEvent handler firing synchronously on Qt6) returns the
+    // partially-constructed window instead of recursively building another one.
+    if(m_instance == nullptr)
     {
-        instance = new MainWindow();
+        new MainWindow();
     }
-    return instance;
+    return m_instance;
 }
 
 // inline function definitions
@@ -182,6 +187,12 @@ MainWindow::MainWindow(QWidget *parent):
     m_heartbeatEnabled(true),
     m_terminalDialog(NULL)
 {
+    // Publish the singleton pointer before running any construction logic, so
+    // that re-entrant calls to instance() during construction (Qt6 delivers
+    // show/hide events to child widgets synchronously) do not build a second
+    // MainWindow and recurse infinitely.
+    m_instance = this;
+
     QLOG_DEBUG() << "Creating MainWindow";
     setAttribute(Qt::WA_DeleteOnClose);
     hide();
@@ -380,6 +391,9 @@ MainWindow::MainWindow(QWidget *parent):
 
     settings.endGroup();
 
+    // Construction complete: child-widget event handlers may now safely reach
+    // back into the fully-built MainWindow (toolbar, etc.).
+    m_isInitialised = true;
 }
 
 MainWindow::~MainWindow()
@@ -1298,6 +1312,7 @@ void MainWindow::configureWindowName()
 {
     QList<QHostAddress> hostAddresses = QNetworkInterface::allAddresses();
     QString windowname = qApp->applicationName() + " " + qApp->applicationVersion();
+    windowname.append(" [Qt" + QString::number(QT_VERSION >> 16) + "]");
     bool prevAddr = false;
 
     windowname.append(" (" + QHostInfo::localHostName() + ": ");
@@ -2469,7 +2484,7 @@ void MainWindow::showTerminalConsole()
         m_terminalDialog = new QDialog(NULL);
         TerminalConsole *terminalConsole = new TerminalConsole(this);
         QVBoxLayout* vLayout = new QVBoxLayout(m_terminalDialog);
-        vLayout->setMargin(0);
+        vLayout->setContentsMargins(0, 0, 0, 0);
         vLayout->addWidget(terminalConsole);
         m_terminalDialog->resize(640,325);
         m_terminalDialog->show();

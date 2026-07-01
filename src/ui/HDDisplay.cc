@@ -18,7 +18,6 @@
 #include "QGC.h"
 
 #include <QFile>
-#include <QGLWidget>
 #include <QStringList>
 #include <QGraphicsTextItem>
 #include <QDockWidget>
@@ -444,7 +443,7 @@ void HDDisplay::renderOverlay()
 
     QPainter painter(viewport());
     painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing, true);
     //painter.fillRect(QRect(0, 0, width(), height()), backgroundColor);
     const float spacing = 0.4f; // 40% of width
     const float gaugeWidth = vwidth / (((float)columns) + (((float)columns+1) * spacing + spacing * 0.5f));

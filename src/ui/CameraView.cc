@@ -28,14 +28,32 @@ This file is part of the QGROUNDCONTROL project
  *   @author Bill Bonney <billbonney@communistech.com>
  *
  */
-#include "QsLog.h"
+#include "logging.h"
 #include "CameraView.h"
 
-#ifndef Q_OS_MAC
+#ifdef Q_OS_MAC
+// QOpenGLWidget no longer pulls in the legacy GL headers the way QGLWidget did,
+// so the fixed-function calls below (glDrawPixels/glOrtho) need them explicitly.
+// (GL_SILENCE_DEPRECATION is defined by CMake before any header is included.)
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
 #endif
 
-CameraView::CameraView(int width, int height, int depth, int channels, QWidget* parent) : QGLWidget(parent)
+// Replacement for the removed QGLWidget::convertToGLFormat(): produce a bottom-up,
+// RGBA8888 image suitable for glDrawPixels(..., GL_RGBA, GL_UNSIGNED_BYTE, ...).
+// Works on both Qt5 and Qt6.
+static QImage convertToGLFormat(const QImage& image)
+{
+    const QImage rgba = image.convertToFormat(QImage::Format_RGBA8888);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    return rgba.flipped(Qt::Vertical);
+#else
+    return rgba.mirrored(false, true);
+#endif
+}
+
+CameraView::CameraView(int width, int height, int depth, int channels, QWidget* parent) : QOpenGLWidget(parent)
 {
     rawImage = NULL;
     rawBuffer1 = NULL;
@@ -56,7 +74,7 @@ CameraView::CameraView(int width, int height, int depth, int channels, QWidget* 
     fill.setColorCount(1);
     fill.setColor(0, qRgb(70, 200, 70));
     fill.fill(CameraView::initialColor);
-    glImage = QGLWidget::convertToGLFormat(fill);
+    glImage = convertToGLFormat(fill);
 
     resize(fill.size());
 
@@ -122,7 +140,7 @@ void CameraView::setImageSize(int width, int height, int depth, int channels)
 
         // Fill image with black pixels
         image->fill(CameraView::initialColor);
-        glImage = QGLWidget::convertToGLFormat(*image);
+        glImage = convertToGLFormat(*image);
 
         QLOG_DEBUG() << __FILE__ << __LINE__ << "Setting up image";
 
@@ -173,7 +191,7 @@ void CameraView::commitRawDataToGL()
             }
         }
 
-        glImage = QGLWidget::convertToGLFormat(*newImage);
+        glImage = convertToGLFormat(*newImage);
         delete image;
         image = newImage;
         // Switch buffers
@@ -185,7 +203,9 @@ void CameraView::commitRawDataToGL()
             //QLOG_DEBUG() << "Now buffer 1";
         }
     }
-    paintGL();
+    // QOpenGLWidget binds its framebuffer/context only around paintGL(); schedule a
+    // repaint instead of calling paintGL() directly (QGLWidget allowed the direct call).
+    update();
 }
 
 void CameraView::saveImage(QString fileName)

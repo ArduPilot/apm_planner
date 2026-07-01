@@ -5,13 +5,42 @@ project(apmplanner2 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Qt5 components
-find_package(Qt5 REQUIRED COMPONENTS
+# Qt components (Qt6 preferred, Qt5 fallback for a gradual transition)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
     Widgets Network OpenGL Svg Xml Sql SerialPort Quick PrintSupport Qml QuickWidgets Test DataVisualization
 )
+if(QT_VERSION_MAJOR EQUAL 6)
+    # OpenGL was split into OpenGL + OpenGLWidgets in Qt6; Core5Compat provides
+    # QRegExp and other Qt5 legacy classes still referenced by the codebase.
+    find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets Core5Compat)
+endif()
+
+if(APPLE)
+    # AGL.framework was removed from the macOS SDK in Xcode 26, but Qt's macOS
+    # CMake package still lists the legacy AGL framework in Qt::Gui's link
+    # interface, so the final link fails with "ld: framework 'AGL' not found".
+    # Scrub any AGL reference out of the interface of every imported Qt target.
+    get_property(_apm_imported_targets DIRECTORY PROPERTY IMPORTED_TARGETS)
+    foreach(_apm_target IN LISTS _apm_imported_targets)
+        get_target_property(_apm_libs ${_apm_target} INTERFACE_LINK_LIBRARIES)
+        if(_apm_libs)
+            set(_apm_libs_filtered "")
+            foreach(_apm_lib IN LISTS _apm_libs)
+                # Matches a bare "AGL", "-framework AGL", or genex like
+                # "$<LINK_ONLY:AGL>" without touching names such as "AGLLIB".
+                if(NOT _apm_lib MATCHES "(^|[^A-Za-z])AGL($|[^A-Za-z])")
+                    list(APPEND _apm_libs_filtered "${_apm_lib}")
+                endif()
+            endforeach()
+            set_target_properties(${_apm_target} PROPERTIES
+                INTERFACE_LINK_LIBRARIES "${_apm_libs_filtered}")
+        endif()
+    endforeach()
+endif()
 
 # SDL2 (handled per platform below)
 if(UNIX) # Install for Apple and Linux
@@ -648,8 +677,7 @@ elseif(APPLE)
     add_definitions(-D__STDC_LIMIT_MACROS)
     set(ADDITIONAL_LIBS z)
     find_library(APPSERVICES ApplicationServices)
-    find_package(Qt5Multimedia REQUIRED)
-    list(APPEND ADDITIONAL_LIBS ${APPSERVICES} Qt5::Multimedia)
+    list(APPEND ADDITIONAL_LIBS ${APPSERVICES})
 elseif(UNIX)
     add_definitions(-D__STDC_LIMIT_MACROS)
     set(ADDITIONAL_LIBS sndfile asound z ${ADDITIONAL_LIBS})
@@ -707,6 +735,17 @@ if(ENABLE_CAMERAVIEW)
     set(CAMERA_VIEW_SOURCES src/ui/CameraView.cc)
     set(CAMERA_VIEW_HEADERS src/ui/CameraView.h)
     add_definitions(-DENABLE_CAMRAVIEW)
+    # CameraView calls raw fixed-function GL (glDrawPixels/glOrtho) directly. Qt6's
+    # OpenGLWidgets pulls in the system GL framework, but Qt5's OpenGL module does not,
+    # so link it explicitly to resolve the gl* symbols on both Qt versions.
+    find_package(OpenGL REQUIRED)
+    list(APPEND ADDITIONAL_LIBS OpenGL::GL)
+    if(APPLE)
+        # The fixed-function pipeline is deprecated since macOS 10.14; silence the
+        # warnings. Must be defined before any Qt/GL header is included, so set it
+        # here rather than inside CameraView.cc.
+        add_definitions(-DGL_SILENCE_DEPRECATION)
+    endif()
 else()
     message(STATUS "Skipping support for Camera View")
     set(CAMERA_VIEW_SOURCES "")
@@ -755,19 +794,19 @@ target_include_directories(apmplanner2 PRIVATE
 
 # Link Qt and additional libs
 target_link_libraries(apmplanner2
-    Qt5::Widgets
-    Qt5::Network
-    Qt5::OpenGL
-    Qt5::Svg
-    Qt5::Xml
-    Qt5::Sql
-    Qt5::SerialPort
-    Qt5::Quick
-    Qt5::PrintSupport
-    Qt5::Qml
-    Qt5::QuickWidgets
-    Qt5::Test
-    Qt5::DataVisualization
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::OpenGL
+    Qt${QT_VERSION_MAJOR}::Svg
+    Qt${QT_VERSION_MAJOR}::Xml
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::SerialPort
+    Qt${QT_VERSION_MAJOR}::Quick
+    Qt${QT_VERSION_MAJOR}::PrintSupport
+    Qt${QT_VERSION_MAJOR}::Qml
+    Qt${QT_VERSION_MAJOR}::QuickWidgets
+    Qt${QT_VERSION_MAJOR}::Test
+    Qt${QT_VERSION_MAJOR}::DataVisualization
     quazip
     alglib
     opmapcontrol
@@ -775,6 +814,13 @@ target_link_libraries(apmplanner2
     ${FLITE_LIBS}
     ${SDL2_LIBRARIES}
 )
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    target_link_libraries(apmplanner2
+        Qt6::OpenGLWidgets
+        Qt6::Core5Compat
+    )
+endif()
 
 # Definitions
 target_compile_definitions(apmplanner2 PRIVATE

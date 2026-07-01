@@ -1,7 +1,7 @@
 APM Planner 2.0
 ===============
 
-**Travis CI Build:**  [![Build Status](https://travis-ci.org/ArduPilot/apm_planner.svg?branch=master)](https://travis-ci.org/ArduPilot/apm_planner)
+**CI Build:**  [![Build](https://github.com/ArduPilot/apm_planner/actions/workflows/build.yml/badge.svg)](https://github.com/ArduPilot/apm_planner/actions/workflows/build.yml)
 
 **Support:**
 [ardupilot.com Support Forum for APM Planner 2.0](https://discuss.ardupilot.org/c/ground-control-software/apm-planner-2-0/)
@@ -31,9 +31,43 @@ Mac OS X
 
 To build on Mac OS X (10.6 or later):
 
-Install QT
------------
+APM Planner builds against **Qt 6** (preferred) and still supports Qt 5 for a
+gradual transition. The CMake build auto-detects whichever Qt you point it at
+via `CMAKE_PREFIX_PATH`.
+
+Install Qt 6 (preferred)
+------------------------
 Preferred using "homebrew" https://brew.sh to install.
+
+```
+brew install qt cmake ninja sdl2
+```
+
+Build APM Planner (Qt 6)
+------------------------
+
+Using CMake
+
+```
+cd $HOME
+git clone https://github.com/ArduPilot/apm_planner.git
+cd apm_planner
+mkdir build
+cd build
+cmake -G Ninja .. -DCMAKE_PREFIX_PATH="$(brew --prefix qt);$(brew --prefix)"
+ninja
+```
+
+Once the build finishes, the app bundle is created in the `build` directory. Launch it with:
+
+```
+open apmplanner2.app
+```
+
+Build for Qt 5
+--------------
+
+Qt 5 is end-of-life but still supported. Install it with homebrew:
 
 ```
 brew install qt@5 cmake ninja sdl2
@@ -54,10 +88,7 @@ There are alternative ways to get Qt 5.15.x
 I suggest using the internet if you want to install this way. Brew is easyist IMHO!
 </details>
 
-Build APM Planner
---------------------
-
-Using CMake
+Build with CMake, pointing `CMAKE_PREFIX_PATH` at the Qt 5 keg:
 
 ```
 cd $HOME
@@ -65,11 +96,12 @@ git clone https://github.com/ArduPilot/apm_planner.git
 cd apm_planner
 mkdir build
 cd build
-cmake cmake -G Ninja .. -DCMAKE_PREFIX_PATH="/opt/homebrew/Cellar/qt@5/5.15.16_2;/opt/homebrew"
+cmake -G Ninja .. -DCMAKE_PREFIX_PATH="$(brew --prefix qt@5);$(brew --prefix)"
+ninja
+open apmplanner2.app
 ```
 
-
-Using QMake 
+Using QMake (Qt 5 only)
 
 ```
 cd $HOME
@@ -161,76 +193,52 @@ make -j$(nproc)
 
 Windows
 -------
-NOTE: Needs Updating
 
-<details>
-<summary>Build on Windows Platform</summary>
- 
-To build on Windows there are two options:
-* Option 1: Visual Studio 2013 native compile
-    * Download and install [Visual Studio 2013 express](http://www.visualstudio.com/downloads/download-visual-studio-vs#d-express-windows-desktop)
-* Option 2: MinGW cross-compile
+APM Planner builds on Windows with CMake + Ninja against **Qt 6** (preferred) or
+**Qt 5**, the same as the other platforms.
 
-Install Qt with the [online Qt installer](http://www.qt.io/download-open-source): 
-* You will be presented with a list of Qt versions and compiler options to install
-* You can install mulitple versions and compilers beside one another and choose which to use later 
-* Select any one (or mulitple) of the following options, 
-	* Qt 5.5 MSVC2013 32-bit
-	* Qt 5.5 MSVC2013 64-bit
-	* Qt 5.5 MinGW 4.9.2 32-bit (also select the same version of MinGW under Tools)
+> **NOTE:** the Windows build is not yet covered by CI and has not been verified
+> as thoroughly as macOS/Linux. Reports (and fixes) are welcome.
 
-Configure QtCreator:
-* The installer is pretty smart but it's good to double check everything was setup corretly
-* Start QtCreator
-    * Click on the *Tools* menu item then *Options*
-    * Select *Build & Run* on the left hand side
-    * Look at the *Compilers* tab
-        * Under *Auto-detected* should be a list of compilers installed, such as:
-            * Microsoft Visual C++ Compiler 12.0 (x86)
-            * Microsoft Visual C++ Compiler 12.0 (amd64)
-            * MinGW 4.9.2 32bit
-        * If using MSVC there will be a few others listed as well but that is normal
-    * Look at the *Qt Versions* Tab:
-        * Under *Auto-detected* should be a list of the Qt versions you installed earlier:
-		    * Qt 5.5.1 MSVC2013 32bit
-		    * Qt 5.5.1 MSVC2013 32bit
-		    * Qt 5.5.1 MinGW 32bit
-		* If your desired Qt versions is not listed, or you installed one after the initial setup:
-			* Click Add
-			* Find the qmake.exe for the version you want
-			    * For example: c:/Qt/5.5/msvc2013/bin/qmake.exe
-			    * For example: c:/Qt/5.5/mingw492_32/bin/qmake.exe
-			* Click Apply
-    * Look under the *Kits* tab:
-        * Under *Auto-detected* should be a list of the appropriate kits:
-            * Desktop Qt 5.5.1 MSVC2013 32bit
-            * Desktop Qt 5.5.1 MSVC2013 63bit
-            * Desktop Qt 5.5.1 MinGB 32bit
-		* If a kit with your desired Qt versions and/or compiler is not listed, or you installed a new Qt version or compiler after the initial setup:
-			* Click *Add*, give it a nice name (like Qt 5.5.1 MSVC 32bit)
-			* Select the desired compiler from the drop down
-			* Select the Qt version (with matching compiler) from the drop down
-			* Click Apply
-    - Click *Ok* at the bottom of the window
-* QtCreator is now configured for fun
+Install the prerequisites:
 
-Build APM Planner 2.0:
-* Start QtCreator (if not already)
-* Click on *File* then *Open File or Project*
-* Find qgroundcontrol.pro, then click *Open*
-    * The first time will ask you to configure project
-    * Select the desired version (same list of Kits from above) 
-    * Click *Configure Project*
-* Go to *Projects* tab on the left hand side
-    * Select the "Shadow Build" checkbox
-    * Browse to a location where you want the application to build to
-* From the *Build* drop down select *Build Project qgroundcontrol* (or Ctrl+B)
-* Run the generated apmplanner2.exe and enjoy!
+* **Qt** — use the [online Qt installer](https://www.qt.io/download-open-source).
+  Select the MSVC 64-bit component for your chosen series (e.g. *Qt 6.8 MSVC2022
+  64-bit*, or *Qt 5.15 MSVC2019 64-bit*).
+* **Visual Studio** (2019 or 2022) with the *Desktop development with C++*
+  workload — this provides the MSVC compiler, CMake and Ninja.
+* **SDL2** — the Qt installer does not ship it; install via
+  [`vcpkg`](https://vcpkg.io) (`vcpkg install sdl2:x64-windows`) and point
+  `CMAKE_PREFIX_PATH` at it, or drop the SDL2 development files somewhere on the
+  prefix path.
 
-Installing this compiled version: 
-* To Do
+From a *Developer PowerShell for VS* (so the MSVC toolchain is on `PATH`). Rather
+than hardcoding a Qt version, let PowerShell discover the newest installed MSVC
+64-bit kit — the equivalent of `$(brew --prefix qt)` on macOS:
 
-</details>
+```powershell
+git clone https://github.com/ArduPilot/apm_planner.git
+cd apm_planner
+mkdir build
+cd build
+
+# Auto-detect the latest installed Qt kit (use C:\Qt\5.* for a Qt 5 build)
+$qt = (Get-ChildItem C:\Qt\6.*\msvc*_64 -Directory | Sort-Object Name -Descending | Select-Object -First 1).FullName
+
+cmake -G Ninja .. -DCMAKE_PREFIX_PATH="$qt"
+ninja
+```
+
+(Replace `C:\Qt` with your install root if you installed Qt elsewhere.) If you
+also need vcpkg's SDL2 on the prefix path, append it with a `;` separator:
+`-DCMAKE_PREFIX_PATH="$qt;C:/vcpkg/installed/x64-windows"`.
+
+Run the resulting `apmplanner2.exe` from the `build` directory. To gather the Qt
+runtime DLLs next to the executable for distribution, use `windeployqt`:
+
+```
+windeployqt --qmldir ..\qml apmplanner2.exe
+```
 
 Alternatives:
 -------------
@@ -318,9 +326,6 @@ Repository Layout
 qgroundcontrol:
 	demo-log.txt
 	license.txt 
-	qgcunittest.pro - For the unit tests.
-	qgcunittest.pro.user
-	qgcvideo.pro
 	qgroundcontrol.pri - Used by qgroundcontrol.pro
 	qgroundcontrol.pro - Project opened in QT to run qgc.
 	qgroundcontrol.pro.user 

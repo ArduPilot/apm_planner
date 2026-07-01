@@ -1,12 +1,13 @@
 #include "HexSpinBox.h"
 
-#include <qregexp.h>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 HexSpinBox::HexSpinBox(QWidget *parent)
     : QSpinBox(parent), validator(NULL)
 {
     setRange(0, 0x7fffffff);
-    validator = new QRegExpValidator(QRegExp("[0-9A-Fa-f]{1,8}"), this);
+    validator = new QRegularExpressionValidator(QRegularExpression("[0-9A-Fa-f]{1,8}"), this);
 }
 
 HexSpinBox::~HexSpinBox(void)

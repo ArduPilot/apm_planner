@@ -71,7 +71,7 @@ QGCParamWidget::QGCParamWidget(UASInterface* uas, QWidget *parent) :
     horizontalLayout = new QGridLayout(this);
     horizontalLayout->setHorizontalSpacing(6);
     horizontalLayout->setVerticalSpacing(6);
-    horizontalLayout->setMargin(0);
+    horizontalLayout->setContentsMargins(0, 0, 0, 0);
     horizontalLayout->setSizeConstraint(QLayout::SetMinimumSize);
     //horizontalLayout->setSizeConstraint( QLayout::SetFixedSize );
 

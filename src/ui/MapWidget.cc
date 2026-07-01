@@ -47,7 +47,7 @@ void MapWidget::init()
         mc = new qmapcontrol::MapControl(this->size());
         // display the MapControl in the application
         QGridLayout* layout = new QGridLayout(this);
-        layout->setMargin(0);
+        layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(0);
         layout->addWidget(mc, 0, 0);
         setLayout(layout);
@@ -197,7 +197,7 @@ void MapWidget::init()
 
         // add buttons to control the map (zoom, GPS tracking and WP capture)
         QGridLayout* innerlayout = new QGridLayout(mc);
-        innerlayout->setMargin(3);
+        innerlayout->setContentsMargins(3, 3, 3, 3);
         innerlayout->setSpacing(3);
         innerlayout->addWidget(zoomin, 0, 0);
         innerlayout->addWidget(zoomout, 1, 0);

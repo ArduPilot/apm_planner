@@ -180,6 +180,11 @@ void Radio3DRConfig::saveSerialSettings()
 void Radio3DRConfig::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
+    // May fire during MainWindow construction on Qt6, before the toolbar exists;
+    // none of the port-scanning work is meaningful until the app is up.
+    if (!MainWindow::instance()->isInitialised()) {
+        return;
+    }
     // Start refresh Timer
     QLOG_DEBUG() << "3DR Radio Start Serial Port Scanning";
     m_timer.start(RADIO3DR_UPDATE_PORT_TIME);
@@ -191,6 +196,9 @@ void Radio3DRConfig::showEvent(QShowEvent *event)
 void Radio3DRConfig::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event);
+    if (!MainWindow::instance()->isInitialised()) {
+        return;
+    }
     // Stop the port list refeshing
     QLOG_DEBUG() << "3DR Radio Stop Serial Port Scanning";
     m_timer.stop();

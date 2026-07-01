@@ -27,6 +27,7 @@ This file is part of the APM_PLANNER project
 
 #include <QMessageBox>
 #include <QTimer>
+#include <QRegularExpression>
 
 Radio3DREeprom::Radio3DREeprom():
     m_deviceId(0),
@@ -57,7 +58,7 @@ bool Radio3DREeprom::setParameter(QString &parameterString)
      QLOG_DEBUG() << "Radio3DREeprom Param:" << parameterString;
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-     QStringList values = parameterString.split("=", QString::SkipEmptyParts);
+     QStringList values = parameterString.split("=", Qt::SkipEmptyParts);
 #else
      QStringList values = parameterString.split("=", Qt::SkipEmptyParts);
 #endif
@@ -334,7 +335,7 @@ bool Radio3DRSettings::openSerialPort(SerialSettings settings)
         closeSerialPort();
     }
 
-#if defined(Q_OS_MACX) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
+#if defined(Q_OS_MACOS) && ((QT_VERSION == 0x050402)||(QT_VERSION == 0x0500401))
     // temp fix Qt5.4.1 issue on OSX
     // http://code.qt.io/cgit/qt/qtserialport.git/commit/?id=687dfa9312c1ef4894c32a1966b8ac968110b71e
     m_serialPort->setPortName("/dev/cu." + settings.name);
@@ -570,7 +571,7 @@ void Radio3DRSettings::readData()
     } break;
 
     case readLocalVersion:{
-        QRegExp rx("^(.*)SiK\\s+(.*)\\s+on\\s+(.*)");
+        QRegularExpression rx("^(.*)SiK\\s+(.*)\\s+on\\s+(.*)");
         QLOG_INFO() << "3DR Local Radio: Version" << currentLine;
         if(currentLine.contains(rx)) {
             if (!m_localRadio.setVersion(currentLine)) {
@@ -618,7 +619,7 @@ void Radio3DRSettings::readData()
     case readRemoteVersion:{
         m_timerReadWrite.stop();
         disconnect(&m_timerReadWrite, SIGNAL(timeout()), this , SLOT(readRemoteTimeout()));
-        QRegExp rx("^(.*)SiK\\s+(.*)\\s+on\\s+(.*)");
+        QRegularExpression rx("^(.*)SiK\\s+(.*)\\s+on\\s+(.*)");
         if(currentLine.contains(rx)) {
             QLOG_INFO() << "3DR Remote Radio: Version" << currentLine;
             if (!m_remoteRadio.setVersion(currentLine)) {

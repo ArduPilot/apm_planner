@@ -48,13 +48,13 @@ UASListWidget::UASListWidget(QWidget *parent) : QWidget(parent),
 
     // Setup container for scrollbar
     mainLayout = new QHBoxLayout(this);
-    mainLayout->setMargin(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollAreaWidgetContents = new QWidget(scrollArea);
 
     listLayout = new QVBoxLayout(scrollAreaWidgetContents);
-    listLayout->setMargin(0);
+    listLayout->setContentsMargins(0, 0, 0, 0);
     listLayout->setSpacing(3);
     listLayout->setAlignment(Qt::AlignTop);
 

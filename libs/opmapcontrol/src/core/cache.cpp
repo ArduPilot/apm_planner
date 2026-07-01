@@ -76,7 +76,11 @@ namespace core {
             if (file.open(QIODevice::ReadOnly))
             {
                 QTextStream stream(&file);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                stream.setEncoding(QStringConverter::Utf8);
+#else
                 stream.setCodec("UTF-8");
+#endif
                 stream>>ret;
             }
         }
@@ -120,7 +124,11 @@ namespace core {
             qDebug()<<"CacheGeocoder: File Opened!!!:"<<filename;
 #endif //DEBUG_CACHE
             QTextStream stream(&file);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            stream.setEncoding(QStringConverter::Utf8);
+#else
             stream.setCodec("UTF-8");
+#endif
             stream<<content;
         }
     }
@@ -145,7 +153,11 @@ namespace core {
             if (file.open(QIODevice::ReadOnly))
             {
                 QTextStream stream(&file);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                stream.setEncoding(QStringConverter::Utf8);
+#else
                 stream.setCodec("UTF-8");
+#endif
                 stream>>ret;
             }
         }
@@ -188,7 +200,11 @@ namespace core {
             qDebug()<<"CachePlacemark: File Opened!!!:"<<filename;
 #endif //DEBUG_CACHE
             QTextStream stream(&file);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            stream.setEncoding(QStringConverter::Utf8);
+#else
             stream.setCodec("UTF-8");
+#endif
             stream<<content;
         }
     }

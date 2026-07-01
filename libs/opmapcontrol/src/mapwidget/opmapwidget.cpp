@@ -49,6 +49,12 @@ namespace mapcontrol
         diagGraphItem(0)
     {
         setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        // The map is panned by dragging, never scrolled. The default
+        // ScrollBarAsNeeded policy let Qt6 show a stray vertical scrollbar
+        // when the scene rect rounded a pixel larger than the viewport on
+        // resize; force the bars off (they were effectively never used).
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         core=new internals::Core;
         map=new MapGraphicItem(core,config);
         mscene.addItem(map);
@@ -274,7 +280,13 @@ namespace mapcontrol
     {
         useOpenGL=value;
         if (useOpenGL)
-            setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+        {
+            QSurfaceFormat fmt;
+            fmt.setSamples(4);
+            QOpenGLWidget *glViewport = new QOpenGLWidget();
+            glViewport->setFormat(fmt);
+            setViewport(glViewport);
+        }
         else
             setupViewport(new QWidget());
         update();

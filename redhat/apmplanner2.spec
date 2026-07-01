@@ -7,13 +7,16 @@ Group:              Applications/Science/Engineering
 Source:             %{name}-%{version}.tar.gz
 #Patch0:             %{name}-0.patch
 BuildRequires:      make
+BuildRequires:      cmake
+BuildRequires:      ninja-build
 BuildRequires:      mesa-libGL-devel
-BuildRequires:      qt5-qtbase-devel >= 5.2
-BuildRequires:      qt5-qtdeclarative-devel >= 5.2
-BuildRequires:      qt5-qtscript-devel >= 5.2
-BuildRequires:      qt5-qtserialport-devel >= 5.2
-BuildRequires:      qt5-qtsvg-devel >= 5.2
-BuildRequires:      qt5-qtwebkit-devel >= 5.2
+BuildRequires:      qt6-qtbase-devel >= 6.2
+BuildRequires:      qt6-qtdeclarative-devel >= 6.2
+BuildRequires:      qt6-qtserialport-devel >= 6.2
+BuildRequires:      qt6-qtsvg-devel >= 6.2
+BuildRequires:      qt6-qtmultimedia-devel >= 6.2
+BuildRequires:      qt6-qt5compat-devel >= 6.2
+BuildRequires:      qt6-qtdatavis3d-devel >= 6.2
 BuildRequires:      SDL2-devel >= 2.0
 BuildRequires:      alsa-lib-devel
 #BuildRequires:      flite-devel
@@ -31,15 +34,12 @@ ExcludeArch:        s390 s390x
 %autosetup
 
 %build
-qmake-qt5 CONFIG+=%{_arch} apm_planner.pro PREFIX=$RPM_BUILD_ROOT%{_prefix}
-
-NCORES=`cat /proc/cpuinfo | grep ^processor | sort -r | head -n 1 | sed -e 's/^.\+\([0-9]\)\+.*/\1/'`
-NPROCS=$(( ( $NCORES + 1 ) * 2 ));
-
-make -j$NPROCS
+# CMake is the canonical build; it auto-detects Qt6 (preferred) or Qt5.
+%cmake -DCMAKE_BUILD_TYPE=Release
+%cmake_build
 
 %install
-%make_install
+%cmake_install
 
 %clean
 rm -rf $RPM_BUILD_ROOT

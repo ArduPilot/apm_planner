@@ -82,7 +82,7 @@ Mouse6dofInput::Mouse6dofInput(QWidget* parent) :
         Display *display = QX11Info::display();
         if(!display)
         {
-            QLOG_DEBUG() << "Cannot open display!" << endl;
+            QLOG_DEBUG() << "Cannot open display!" << Qt::endl;
         }
         if ( !MagellanInit( display, parent->winId() ) )
         {

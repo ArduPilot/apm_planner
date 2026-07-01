@@ -296,7 +296,7 @@ public:
         QDateTime time = QDateTime::currentDateTime();
         time = time.toUTC();
         /* Return seconds and milliseconds, in milliseconds unit */
-        quint64 milliseconds = time.toTime_t() * static_cast<quint64>(1000);
+        quint64 milliseconds = time.toSecsSinceEpoch() * static_cast<quint64>(1000);
         return static_cast<quint64>(milliseconds + time.time().msec());
     }
 
@@ -314,7 +314,7 @@ public:
         QDateTime time = QDateTime::currentDateTime();
         time = time.toUTC();
         /* Return seconds and milliseconds, in milliseconds unit */
-        quint64 microseconds = time.toTime_t() * static_cast<quint64>(1000000);
+        quint64 microseconds = time.toSecsSinceEpoch() * static_cast<quint64>(1000000);
         return static_cast<quint64>(microseconds + (time.time().msec()*1000));
     }
 
@@ -335,7 +335,7 @@ public:
         QDateTime time = QDateTime();
         /* Set date and time depending on the seconds since unix epoch,
              * integer division truncates the milliseconds */
-        time.setTime_t(msecs / 1000);
+        time.setSecsSinceEpoch(msecs / 1000);
         /* Add the milliseconds, modulo returns the milliseconds part */
         return time.addMSecs(msecs % 1000);
     }
