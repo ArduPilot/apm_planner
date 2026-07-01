@@ -158,12 +158,13 @@ class QCPPolarGraph;
 */
 #ifndef Q_MOC_RUN
 namespace QCP {
-#elif QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-// Qt 6.9+ uses a new moc metaobject format that cannot handle QCustomPlot's
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+// Qt 6 uses a new moc metaobject format that cannot handle QCustomPlot's
 // "Q_GADGET inside a fake class that is really a namespace" trick (it emits
-// qt_create_metaobjectdata<> specializations that don't compile against a
-// namespace). The QCP enum reflection is unused here, so under the new moc we
-// just present QCP as a plain namespace and skip generating its gadget metaobject.
+// TypeAndForceComplete<QCP, ...> / qt_create_metaobjectdata<> specializations
+// that don't compile against a namespace). The QCP enum reflection is unused
+// here, so under Qt 6's moc we just present QCP as a plain namespace and skip
+// generating its gadget metaobject.
 namespace QCP {
 #else
 class QCP { // when in moc-run, make it look like a class, so we get Q_GADGET, Q_ENUMS/Q_FLAGS features in namespace
